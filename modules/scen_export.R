@@ -115,7 +115,7 @@ output[["export_" %+% i]] <- downloadHandler(
       data[vapply(data, function(sheet) identical(nrow(sheet), 0L), logical(1L))] <- NULL
     
     # include metadata sheet in Excel file
-    if(config$activateModules$scenario && config$excelIncludeMeta && 
+    if(config$excelIncludeMeta && 
        !is.null(scenMetaData[[scenIdLong]])){
       metadata <- list(scenMetaData[[scenIdLong]][, -1, drop = FALSE])
       names(metadata) <- lang$nav$excelExport$metadataSheet$title

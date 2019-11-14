@@ -116,8 +116,7 @@ observeEvent(input$btSaveConfirm,
 observeEvent(virtualActionButton(rv$btSaveConfirm), {
   # check whether scenario is currently locked
   errMsg <- NULL
-  if(config$activateModules$sharedScenarios && 
-     !is.null(activeScen) && !saveAsFlag){
+  if(!is.null(activeScen) && !saveAsFlag){
     tryCatch({
       if(activeScen$isReadonlyOrLocked){
         showReadonlyDialog()
@@ -200,8 +199,10 @@ observeEvent(input$btEditMeta, {
   }
   showEditMetaDialog(activeScen$getMetadata(c(uid = "uid", sname = "sname", stime = "stime", stag = "stag",
                                               readPerm = "readPerm", writePerm = "writePerm", execPerm = "execPerm"), noPermFields = FALSE), 
-                     config$activateModules$sharedScenarios, allowAttachments = config$activateModules$attachments, 
-                     attachmentMetadata = attachmentMetadata, attachAllowExec = attachAllowExec, ugroups = c(uid, csv2Vector(ugroups)))
+                     allowAttachments = config$activateModules$attachments, 
+                     attachmentMetadata = attachmentMetadata, 
+                     attachAllowExec = attachAllowExec, 
+                     ugroups = c(uid, csv2Vector(ugroups)))
 })
 
 observeEvent(input$btUpdateMeta, {

@@ -59,21 +59,6 @@ if(is.null(errMsg)){
     }
   })
 }
-if(is.null(errMsg)){
-  if(identical(config$activateModules$scenario, FALSE)){
-    if(identical(config$activateModules$sharedScenarios, TRUE)){
-      warningMsg <- "Can not use module 'share scenarios' without having module 'scenario' activated. 'Share scenarios' module was deactivated."
-      warning(warningMsg)
-      config$activateModules$sharedScenarios <- FALSE
-    }
-    if(identical(config$activateModules$attachments, TRUE)){
-      warningMsgTmp <- "Can not use module 'attachments' without having module 'scenario' activated. 'Attachments' module was deactivated."
-      warning(warningMsgTmp)
-      warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
-      config$activateModules$attachments <- FALSE
-    }
-  }
-}
 
 lang <- NULL
 if(is.null(errMsg)){
@@ -103,9 +88,6 @@ if(is.null(errMsg)){
 
 # load model input and output parameters
 if(is.null(errMsg)){
-  if(identical(Sys.getenv(modelModeEnvVar), "hcube")){
-    config$activateModules$hcubeMode <- TRUE
-  }
   # handsontable options
   hotOptions        <- config[["handsontable"]]
   
@@ -605,7 +587,6 @@ if(is.null(errMsg)){
   scenInputTabs    <- scenInputTabs$tabs
   
   # read graph data for input and output sheets
-  strictMode        <- config$activateModules$strictmode
   config$activateModules$miroLogFile <- length(config$miroLogFile) > 0L && 
     nchar(config$miroLogFile) > 2L
   configGraphsIn    <- vector(mode = "list", length = length(modelIn))
@@ -620,7 +601,7 @@ if(is.null(errMsg)){
       # data rendering object was found in list of model output sheets
       if(!is.na(i)){
         configGraphsOut[[i]] <- config$dataRendering[[el]]
-      }else if(strictMode){
+      }else{
         errMsgTmp <- paste0("'", el, "' was defined to be an object to render, but was not found in either the list of model input or the list of model output sheets.")
         errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
       }
@@ -752,7 +733,7 @@ if(is.null(errMsg)){
   rm(externalDataConfig)
   
   # Hypercube mode configuration
-  if(identical(config$activateModules$hcubeMode, TRUE)){
+  if(LAUNCHHCUBEMODE){
     lapply(seq_along(modelIn), function(i){
       if(!identical(modelIn[[i]]$noHcube, TRUE)){
         switch(modelIn[[i]]$type,
@@ -824,9 +805,9 @@ if(is.null(errMsg)){
              }
              # get dependencies
              tryCatch({
-               choices <- getDependenciesDropdown(choices = modelIn[[i]]$dropdown$choices, modelIn = modelIn, name = name, strictMode = strictMode)
+               choices <- getDependenciesDropdown(choices = modelIn[[i]]$dropdown$choices, modelIn = modelIn, name = name)
                if(!is.null(modelIn[[i]]$dropdown$aliases)){
-                 aliases <- getDependenciesDropdown(choices = modelIn[[i]]$dropdown$aliases, modelIn = modelIn, name = name, strictMode = strictMode)
+                 aliases <- getDependenciesDropdown(choices = modelIn[[i]]$dropdown$aliases, modelIn = modelIn, name = name)
                }else{
                  aliases <- NULL
                }
@@ -1235,7 +1216,7 @@ if(is.null(errMsg)){
     }, character(1L), USE.NAMES = FALSE), collapse = "")
   }
   # validate symbol links
-  if(!config$activateModules$hcubeMode && length(config[["symbolLinks"]])){
+  if(!LAUNCHHCUBEMODE && length(config[["symbolLinks"]])){
     for(symbolLink in config[["symbolLinks"]]){
       source <- tolower(symbolLink[["source"]])
       target <- tolower(symbolLink[["target"]])
@@ -1277,7 +1258,7 @@ if(is.null(errMsg)){
     config[["symbolLinks"]] <- NULL
   }
   if(length(config$scripts)){
-    if(config$activateModules$hcubeMode){
+    if(LAUNCHHCUBEMODE){
       if(any(duplicated(vapply(config$scripts$hcube, "[[", character(1L), "id", USE.NAMES = FALSE)))){
         errMsg <- paste(errMsg, "Some of your Hypercube analysis scripts share the same id. Please make sure the ID is unique.")
       }
@@ -1292,7 +1273,8 @@ if(is.null(errMsg)){
   # define table names (format: modelName_scen.prefix_table.name) where "name" is the name of the dataset
   # scenario data is a concatenated list of outputData and inputData
   scenTableNames    <- c(names(modelOut), inputDsNames)
-  scenTableNames    <- gsub("_", "", modelName, fixed = TRUE) %+% "_" %+% scenTableNames
+  scenTableNames    <- paste0(gsub("_", "", modelName, fixed = TRUE),
+                              "_", scenTableNames)
   # define scenario tables to display in interface
   scenTableNamesToDisplay <- c(names(modelOut)[modelOutToDisplay], inputDsNames[vapply(inputDsNames, function(el){
     if(identical(modelIn[[el]]$dropdown$single, TRUE) || 

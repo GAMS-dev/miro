@@ -130,38 +130,8 @@
          "type":"object",
          "additionalProperties":false,
          "properties":{
-            "scenario":{  
-               "description":"Activate scenario functionality?",
-               "type":"boolean",
-               "default":true,
-               "required":false
-            },
-            "strictmode":{  
-               "description":"Launch App in strict mode? This results in throwing error messages instead of accepting possibly faulty user entries.",
-               "type":"boolean",
-               "default":true,
-               "required":false
-            },
             "loadLocal":{  
                "description":"Activate local data upload module?",
-               "type":"boolean",
-               "default":true,
-               "required":false
-            },
-            "sharedScenarios":{  
-               "description":"Enable scenario sharing between different users?",
-               "type":"boolean",
-               "default":true,
-               "required":false
-            },
-            "hcubeMode":{  
-               "description":"Solve multiple scenarios in Hypercube mode?",
-               "type":"boolean",
-               "default":false,
-               "required":false
-            },
-            "hcubeSwitch":{  
-               "description":"Activate switch to launch Hypercbe mode?",
                "type":"boolean",
                "default":true,
                "required":false

@@ -22,7 +22,7 @@ observe({
     tryCatch({
       jobList <- worker$getJobList()
       if(jobList$newCompleted){
-        showNewCompletedJobsDialog(hcubeMode = config$activateModules$hcubeMode)
+        showNewCompletedJobsDialog(hcubeMode = LAUNCHHCUBEMODE)
       }
       jobList <- jobList$jobList
     }, error = function(e){
@@ -46,7 +46,7 @@ observe({
     
     output$jImport_output <- renderUI(
       getJobsTable(jobList, 
-                   hcubeMode = config$activateModules$hcubeMode,
+                   hcubeMode = LAUNCHHCUBEMODE,
                    showLogFileDialog = any(config$activateModules$logFile, 
                                            config$activateModules$lstFile, 
                                            config$activateModules$miroLogFile)))
@@ -160,7 +160,7 @@ observeEvent(input$btShowHistory, {
   if(err)
     return()
   
-  showJobHistoryDialog(jobList,  hcubeMode = config$activateModules$hcubeMode)
+  showJobHistoryDialog(jobList,  hcubeMode = LAUNCHHCUBEMODE)
 })
 
 observeEvent(input$discardJob, {

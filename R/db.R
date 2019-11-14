@@ -129,7 +129,7 @@ Db <- R6Class("Db",
                   }
                   return(orphanedTables)
                 },
-                getInconsistentTables = function(strictMode = TRUE){
+                getInconsistentTables = function(){
                   errMsg  <- NULL
                   colNames <- private$dbSchema$colNames
                   colTypes <- private$dbSchema$colTypes
@@ -171,35 +171,7 @@ Db <- R6Class("Db",
                         errMsg <<- errMsgTmp
                         return(tabNameRaw)
                       }else if(any(is.na(match(confHeaders, tabColNames)))){
-                        if(strictMode || any(vapply(seq_along(tabColTypes), function(i){
-                          switch(tolower(substr(colTypes[tabNameRaw], i, i)),
-                                 "d" = {
-                                   if(tabColTypes[[i]] %in% numericTypes){
-                                     return(FALSE)
-                                   }else{
-                                     return(TRUE)
-                                   }
-                                 },
-                                 "c" = {
-                                   if(tabColTypes[[i]] %in% numericTypes){
-                                     return(TRUE)
-                                   }else{
-                                     return(FALSE)
-                                   }
-                                 },
-                                 { 
-                                   stop(sprintf("Unsupported column type detected: %s.", 
-                                                substr(colTypes[tabNameRaw], i, i)), call. = FALSE)
-                                }
-                          )
-                        }, logical(1L), USE.NAMES = FALSE))){
-                          errMsg <<- errMsgTmp
-                        }else{
-                          warning(paste(errMsg, sprintf("Database table headers ('%s') are different from those in current configuration ('%s').\nConfiguration was adjusted accordingly. You might want to turn strict mode on in case you would like the execution to stop in such case instead of seeing this warning.",
-                                                           paste(tabColNames, collapse = "', '"),
-                                                           paste(confHeaders, collapse = "', '"))))
-                          headers[[tabNameRaw]] <<- tabColNames
-                        }
+                        errMsg <<- errMsgTmp
                         return(tabNameRaw)
                       }
                     }

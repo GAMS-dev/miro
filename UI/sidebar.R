@@ -1,5 +1,5 @@
 # UI sidebar
-if(identical(config$activateModules$hcubeMode, TRUE)){
+if(LAUNCHHCUBEMODE){
   sidebar <- dashboardSidebar(
     sidebarMenu(id="sidebarMenuId",
                 menuItem(lang$nav$sidebarMenu$hcube$configureRun, tabName="inputData", icon = icon("th")),
@@ -31,13 +31,11 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                 menuItem(lang$nav$sidebarMenu$inputScreen, tabName="inputData", icon = icon("th")),
                 menuItem(lang$nav$sidebarMenu$outputScreen, tabName="outputData", icon = icon("dashboard")),
                 menuItem(lang$nav$sidebarMenu$gams, tabName="gamsinter", icon = icon("cog", lib = "glyphicon")),
-                if(config$activateModules$scenario){
-                  menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("copy"))
-                },
+                menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("copy")),
                 actionButton("btImport", lang$nav$sidebarButtons$importInput, width = "85%", 
                              class = "bt-highlight-3 glow-animation", style = "display:block;"),
                 
-                if(config$activateModules$remoteExec)
+                if(config$activateModules$remoteExecution)
                   tags$div(class = "btn-group btSolve", style = "width:100%",
                            tags$button(class = "btn btn-default bt-highlight-2", type = "button", id = "btSolve", 
                                        style = "width:173px;margin:6px 0px 6px 15px;border-right:0px;",
@@ -62,18 +60,16 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                 tagAppendAttributes(actionButton("btInterrupt", lang$nav$sidebarButtons$interrupt, 
                                                  width = "85%", class = "bt-highlight-2", style = "display:block;"), 
                                     disabled = ""),
-                if(config$activateModules$scenario){
-                  tagList(
-                    actionButton("btSplitView", 
-                                 if(identical(config$defCompMode, "split"))
-                                   lang$nav$sidebarButtons$tabView
-                                 else
-                                   lang$nav$sidebarButtons$splitView, width = "85%", 
-                                 class = "bt-highlight-2", style = "display:block;"),
-                    actionButton("btCompareScen", class = "bt-highlight-3", lang$nav$sidebarButtons$compareStart, 
-                                 width = "85%", style = "display:block;")
-                  )
-                }
+                tagList(
+                  actionButton("btSplitView", 
+                               if(identical(config$defCompMode, "split"))
+                                 lang$nav$sidebarButtons$tabView
+                               else
+                                 lang$nav$sidebarButtons$splitView, width = "85%", 
+                               class = "bt-highlight-2", style = "display:block;"),
+                  actionButton("btCompareScen", class = "bt-highlight-3", lang$nav$sidebarButtons$compareStart, 
+                               width = "85%", style = "display:block;")
+                )
     )
   )
 }

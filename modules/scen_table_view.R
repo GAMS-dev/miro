@@ -2,6 +2,9 @@ observeEvent(input[["table_" %+% i]], {
   # get sheet ID for current scenario
   j <- as.integer(strsplit(isolate(input[[paste0("contentScen_", i)]]), 
                   "_", fixed = TRUE)[[1L]][[3L]])
+  if(!is.integer(j) || j < 1 || j > length(isGroupOfSheets)){
+    return(NULL)
+  }
   if(isGroupOfSheets[[j]]){
     j <- groupSheetToTabIdMap[[j]][[as.integer(strsplit(isolate(input[[paste0("contentScen_", i, "_", j)]]), 
                                                         "_", fixed = TRUE)[[1L]][[4L]])]]

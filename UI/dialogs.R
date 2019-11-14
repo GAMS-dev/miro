@@ -1,5 +1,5 @@
 showReadonlyDialog <- function(){
-  if(config$activateModules$hcubeMode){
+  if(LAUNCHHCUBEMODE){
     modeDescriptor <- "dialogReadonlyHC"
   }else{
     modeDescriptor <- "dialogReadonly"
@@ -53,7 +53,7 @@ showLoginDialog <- function(cred, forwardOnSuccess = NULL){
 
 showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm", 
                               scenTags = character(0L)){
-  if(config$activateModules$hcubeMode){
+  if(LAUNCHHCUBEMODE){
     modeDescriptor <- "dialogNewHCJob"
   }else{
     modeDescriptor <- "dialogNewScen"
@@ -104,7 +104,7 @@ showRemoveScenDialog <- function(forwardTo){
 }
 
 showCloseScenDialog <- function(scenId){
-  if(config$activateModules$hcubeMode){
+  if(LAUNCHHCUBEMODE){
     modeDescriptor <- "dialogRemoveHCJob"
   }else{
     modeDescriptor <- "dialogCloseScen"
@@ -120,7 +120,7 @@ showCloseScenDialog <- function(scenId){
 }
 
 showDeleteScenDialog <- function(){
-  if(config$activateModules$hcubeMode){
+  if(LAUNCHHCUBEMODE){
     modeDescriptor <- "dialogDeleteHCJob"
   }else{
     modeDescriptor <- "dialogDeleteScen"
@@ -209,7 +209,7 @@ onclick="Shiny.setInputValue(\'btLoadScenConfirm\', 1, {priority: \'event\'})">'
                )
              )
            ),
-           if(!identical(id, "remote") && config$activateModules$scenario){
+           if(!identical(id, "remote")){
              tags$div(id = "loadBase_scenNameExists", style = "display:none;",
                       fluidRow(
                         tags$div(id = "loadBase_snameExistsMsg",
@@ -247,7 +247,7 @@ onclick="Shiny.setInputValue(\'btLoadScenConfirm\', 1, {priority: \'event\'})">'
   )
 }
 showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
-  if(config$activateModules$hcubeMode){
+  if(LAUNCHHCUBEMODE){
     modeDescriptor <- "dialogImportHC"
   }else{
     modeDescriptor <- "dialogImport"
@@ -294,7 +294,7 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                                             )
                                           ), icon = icon("external-link-alt"))
   }
-  if(config$activateModule$loadLocal){
+  if(config$activateModules$loadLocal){
     tabLoadFromLocalFile <- tabPanel(lang$nav[[modeDescriptor]]$tabLocal, value = "tb_importData_local",
                                      tags$div(class = "space"),
                                      tags$div(id = "loadLocal_content",
@@ -338,47 +338,45 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                                      icon = icon("file"))
   }
   
-  if(config$activateModules$scenario){
-    tabLoadFromDb <- getLoadDbPanel(id = "remote", 
-                                    title = lang$nav[[modeDescriptor]]$tabDatabase, 
-                                    scenList = scenListDb, tagList = dbTagList,
-                                    iconName = if(config$activateModules[["hcubeMode"]]) "cube" else "database",
-                                    modeDescriptor = modeDescriptor)
-    if(config$activateModules$hcubeMode){
-      tabLoadFromBase <- getLoadDbPanel(id = "base", 
-                                        title = lang$nav[[modeDescriptor]]$tabBase, 
-                                        scenList = character(0L), tagList = character(0L),
-                                        iconName = "database", 
-                                        modeDescriptor = modeDescriptor, async = TRUE)
-    }else{
-      tabLoadFromHcube <- tabPanel(lang$nav[[modeDescriptor]]$tabHcube, value = "tb_importData_hcube",
-                                   fluidRow(
-                                     column(12,
-                                            tags$div(class = "space"),
-                                            tags$div(
-                                              lang$nav[[modeDescriptor]]$hcubeHashDesc,
-                                              HTML(paste0('<div class="small-space"></div>
+  tabLoadFromDb <- getLoadDbPanel(id = "remote", 
+                                  title = lang$nav[[modeDescriptor]]$tabDatabase, 
+                                  scenList = scenListDb, tagList = dbTagList,
+                                  iconName = if(LAUNCHHCUBEMODE) "cube" else "database",
+                                  modeDescriptor = modeDescriptor)
+  if(LAUNCHHCUBEMODE){
+    tabLoadFromBase <- getLoadDbPanel(id = "base", 
+                                      title = lang$nav[[modeDescriptor]]$tabBase, 
+                                      scenList = character(0L), tagList = character(0L),
+                                      iconName = "database", 
+                                      modeDescriptor = modeDescriptor, async = TRUE)
+  }else{
+    tabLoadFromHcube <- tabPanel(lang$nav[[modeDescriptor]]$tabHcube, value = "tb_importData_hcube",
+                                 fluidRow(
+                                   column(12,
+                                          tags$div(class = "space"),
+                                          tags$div(
+                                            lang$nav[[modeDescriptor]]$hcubeHashDesc,
+                                            HTML(paste0('<div class="small-space"></div>
 <input class="form-control" id="hcHashLookup" style="width:95%;font-size:10pt;"/>
                                                          <div class="space"></div>')),
-                                              textInput("hcube_newScenName", 
-                                                        lang$nav[[modeDescriptor]]$newScenName,
-                                                        width = "95%"),
-                                              HTML(paste0('<div class="small-space"></div>
+                                            textInput("hcube_newScenName", 
+                                                      lang$nav[[modeDescriptor]]$newScenName,
+                                                      width = "95%"),
+                                            HTML(paste0('<div class="small-space"></div>
                                                            <div style="text-align:center;">
                                                               <button class="btn btn-default bt-highlight-1" type="button" 
                                                                       onclick="Miro.validateHcubeHash()">',
-                                                          htmltools::htmlEscape(lang$nav[[modeDescriptor]]$hcubeHashButton), 
-                                                          '</button></div>')),
-                                              genSpinner("hcHashLookup_load", absolute = TRUE, hidden = TRUE),
-                                              tags$div(style = "max-height: 500px;overflow:auto;",
-                                                       uiOutput("hcHashLookupResults")
-                                              )
+                                                        htmltools::htmlEscape(lang$nav[[modeDescriptor]]$hcubeHashButton), 
+                                                        '</button></div>')),
+                                            genSpinner("hcHashLookup_load", absolute = TRUE, hidden = TRUE),
+                                            tags$div(style = "max-height: 500px;overflow:auto;",
+                                                     uiOutput("hcHashLookupResults")
                                             )
-                                     )
-                                   ),
-                                   icon = icon("cube")
-      )
-    }
+                                          )
+                                   )
+                                 ),
+                                 icon = icon("cube")
+    )
   }
   
   loadDataTabs <- list(tabLoadFromDb, tabLoadFromLocalFile, tabLoadFromExternalSource, 
@@ -501,11 +499,11 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
     fade = TRUE, easyClose = FALSE
   ))
 }
-showEditMetaDialog <- function(metadata, sharedScen = FALSE, 
+showEditMetaDialog <- function(metadata,
                                ugroups = character(0L), 
                                allowAttachments = FALSE, 
                                attachmentMetadata = character(0L), attachAllowExec = FALSE){
-  if(config$activateModules$hcubeMode){
+  if(LAUNCHHCUBEMODE){
     modeDescriptor <- "dialogEditMetaHC"
   }else{
     modeDescriptor <- "dialogEditMeta"
@@ -532,7 +530,7 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
              )
   )
   writePerm <- csv2Vector(metadata[["writePerm"]][[1]])
-  if(sharedScen && length(ugroups) && any(ugroups %in% writePerm)){
+  if(length(ugroups) && any(ugroups %in% writePerm)){
     readPerm  <- csv2Vector(metadata[["readPerm"]][[1]])
     execPerm <- csv2Vector(metadata[["execPerm"]][[1]])
     

@@ -201,7 +201,7 @@ observeEvent(virtualActionButton(input$btLoadScenConfirm, input$loadHcubeHashSid
                                         colNames = snameIdentifier)[[1]]
       if(db$checkSnameExists(scenNameTmp, uid)){
         flog.debug("A scenario with the same name already exists. Please first delete this scenario before importing another one with the same name.")
-        if(config$activateModules$hcubeMode){
+        if(LAUNCHHCUBEMODE){
           showEl(session, "#loadBase_scenNameExists")
           hideEl(session, "#loadData_content_base")
         }else{
@@ -371,7 +371,9 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       scalarData[["scen_1_"]] <<- scalarDataset
     }
     removeModal()
-    if(!config$activateModules$hcubeMode){
+    if(LAUNCHHCUBEMODE){
+      noOutputData <<- TRUE
+    }else{
       # render output data
       # generate data
       noOutput <- TRUE
@@ -405,8 +407,6 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       if(length(config$scripts$base)){
         scriptOutput$loadResultsBase(scriptDataTmp[[1]])
       }
-    }else{
-      noOutputData <<- TRUE
     }
     
     flog.debug("Scenario: '%s' was loaded into UI", activeScen$getSid())
@@ -521,7 +521,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   return()
 })
 
-if(config$activateModules$hcubeMode){
+if(LAUNCHHCUBEMODE){
   observeEvent(input$tb_importData, {
     if(!identical(isolate(input$tb_importData), "tb_importData_base") ||
        !identical(isolate(input$selLoadScen_base), "")){

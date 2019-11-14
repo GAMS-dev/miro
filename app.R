@@ -71,6 +71,7 @@ filesToInclude <- c("./global.R", "./R/util.R", if(useGdx) "./R/gdxio.R", "./R/j
                     "./R/data_instance.R", "./R/worker.R", "./R/dataio.R", "./R/hcube_data_instance.R", "./R/miro_tabsetpanel.R",
                     "./modules/render_data.R", "./modules/generate_data.R", "./R/script_output.R")
 LAUNCHADMINMODE <- FALSE
+LAUNCHHCUBEMODE <<- FALSE
 if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
   pb <- winProgressBar(title = "Loading GAMS MIRO", label = "Loading required packages",
                        min = 0, max = 1, initial = 0, width = 300)
@@ -182,6 +183,8 @@ if(is.null(errMsg)){
 }
 if(identical(tolower(Sys.getenv(modelModeEnvVar)), "config")){
   LAUNCHADMINMODE <- TRUE
+}else if(identical(tolower(Sys.getenv(modelModeEnvVar)), "hcube")){
+  LAUNCHHCUBEMODE <<- TRUE
 }
 if(is.null(errMsg)){
   rSaveFilePath <- file.path(currentModelDir, 
@@ -205,7 +208,7 @@ if(is.null(errMsg)){
   GAMSClArgs <- c(paste0("execMode=", gamsExecMode),
                   paste0('ImplicitGDXOutput="', MIROGdxOutName, '"'))
   
-  if(isTRUE(config$activateModules$hcubeMode)){
+  if(LAUNCHHCUBEMODE){
     # in Hypercube mode we have to run in a temporary directory
     if(!identical(useTempDir, TRUE)){
       errMsg <- paste(errMsg, "In Hypercube mode, MIRO must be executed in a temporary directory! USETMPDIR=false not allowed!",
@@ -321,8 +324,7 @@ if(is.null(errMsg) && debugMode){
   listOfCustomRenderers <- Set$new()
   requiredPackagesCR <<- NULL
   
-  if(!identical(tolower(Sys.getenv(modelModeEnvVar)), "config") &&
-     !("LAUNCHADMIN" %in% commandArgs(TRUE))){
+  if(!LAUNCHADMINMODE){
     for(customRendererConfig in c(configGraphsOut, configGraphsIn)){
       # check whether non standard renderers were defined in graph config
       if(!is.null(customRendererConfig$rendererName)){
@@ -460,54 +462,52 @@ if(is.null(errMsg)){
   source("./R/install_packages.R", local = TRUE)
   options("DT.TOJSON_ARGS" = list(na = "string"))
   
-  if(config$activateModules$remoteExecution && identical(LAUNCHADMINMODE, FALSE)){
+  if(config$activateModules$remoteExecution && !LAUNCHADMINMODE){
     plan(multiprocess)
   }
   # try to create the DB connection (PostgreSQL)
   auth <- NULL
   db <- NULL
-  if(config$activateModules$scenario){
-    if(identical(tolower(dbConfig$type), "sqlite")){
-      requiredPackages <- c("DBI", "RSQLite")
-    }else{
-      requiredPackages <- c("DBI", "odbc")
-    }
-    source("./R/install_packages.R", local = TRUE)
-    
-    source("./R/db.R")
-    source("./R/db_scen.R")
-    tryCatch({
-      scenMetadataTable <- scenMetadataTablePrefix %+% modelName
-      db   <- Db$new(uid = uid, dbConf = dbConfig, dbSchema = dbSchema,
-                     slocktimeLimit = slocktimeLimit, modelName = modelName,
-                     attachmentConfig = if(config$activateModules$attachments) 
-                       list(maxSize = attachMaxFileSize, maxNo = attachMaxNo)
-                     else NULL,
-                     hcubeActive = config$activateModules$hcubeMode)
-      conn <- db$getConn()
-      flog.debug("Database connection established.")
-    }, error = function(e){
-      flog.error("Problems initialising database class. Error message: %s", e)
-      errMsg <<- conditionMessage(e)
-    })
-    # initialise access management
-    source("./R/db_auth.R")
-    tryCatch({
-      auth <- Auth$new(conn, uid, defaultGroup = defaultGroup, 
-                       tableNameGroups = amTableNameGroups, 
-                       tableNameElements = amTableNameElements, 
-                       tableNameHierarchy = amTableNameHierarchy, 
-                       tableNameMetadata = scenMetadataTable, 
-                       uidIdentifier = uidIdentifier, 
-                       accessIdentifier = accessIdentifier, 
-                       accessElIdentifier = accessElIdentifier)
-      db$accessGroups <- auth$getAccessGroups()
-      flog.debug("Access Control initialised.")
-    }, error = function(e){
-      flog.error("Problems initialising authorisation class. Error message: %s", e)
-      errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
-    })
+  if(identical(tolower(dbConfig$type), "sqlite")){
+    requiredPackages <- c("DBI", "RSQLite")
+  }else{
+    requiredPackages <- c("DBI", "odbc")
   }
+  source("./R/install_packages.R", local = TRUE)
+  
+  source("./R/db.R")
+  source("./R/db_scen.R")
+  tryCatch({
+    scenMetadataTable <- scenMetadataTablePrefix %+% modelName
+    db   <- Db$new(uid = uid, dbConf = dbConfig, dbSchema = dbSchema,
+                   slocktimeLimit = slocktimeLimit, modelName = modelName,
+                   attachmentConfig = if(config$activateModules$attachments) 
+                     list(maxSize = attachMaxFileSize, maxNo = attachMaxNo)
+                   else NULL,
+                   hcubeActive = LAUNCHHCUBEMODE)
+    conn <- db$getConn()
+    flog.debug("Database connection established.")
+  }, error = function(e){
+    flog.error("Problems initialising database class. Error message: %s", e)
+    errMsg <<- conditionMessage(e)
+  })
+  # initialise access management
+  source("./R/db_auth.R")
+  tryCatch({
+    auth <- Auth$new(conn, uid, defaultGroup = defaultGroup, 
+                     tableNameGroups = amTableNameGroups, 
+                     tableNameElements = amTableNameElements, 
+                     tableNameHierarchy = amTableNameHierarchy, 
+                     tableNameMetadata = scenMetadataTable, 
+                     uidIdentifier = uidIdentifier, 
+                     accessIdentifier = accessIdentifier, 
+                     accessElIdentifier = accessElIdentifier)
+    db$accessGroups <- auth$getAccessGroups()
+    flog.debug("Access Control initialised.")
+  }, error = function(e){
+    flog.error("Problems initialising authorisation class. Error message: %s", e)
+    errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
+  })
   tryCatch({
     dataio <- DataIO$new(config = list(modelIn = modelIn, modelOut = modelOut, 
                                        modelName = modelName),
@@ -517,7 +517,7 @@ if(is.null(errMsg)){
     errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
   })
   
-  if(config$activateModules$hcubeMode){
+  if(LAUNCHHCUBEMODE){
     hcubeDirName <<- paste0(modelName, "_", hcubeDirName)
     requiredPackages <- c("digest", "DT")
     source("./R/install_packages.R", local = TRUE)
@@ -526,7 +526,8 @@ if(is.null(errMsg)){
   }
 }
 showRemoveDbTablesBtn <- FALSE
-if(is.null(errMsg) && debugMode && config$activateModules$scenario && identical(LAUNCHADMINMODE, FALSE)){
+if(is.null(errMsg) && debugMode && 
+   !LAUNCHADMINMODE){
   # checking database inconsistencies
   local({
     orphanedTables <- NULL
@@ -549,7 +550,7 @@ This could be caused because you used a different database schema in the past (e
     inconsistentTables <- NULL
     
     tryCatch({
-      inconsistentTables <- db$getInconsistentTables(strictMode = config$activateModules$strictmode)
+      inconsistentTables <- db$getInconsistentTables()
     }, error = function(e){
       flog.error("Problems fetching database tables (for inconsistency checks).\nDetails: '%s'.", e)
       errMsg <<- paste(errMsg, sprintf("Problems fetching database tables (for inconsistency checks). Error message: '%s'.", 
@@ -564,21 +565,7 @@ Those tables are: '%s'.\nError message: '%s'.",
 Those tables are: '%s'.\nError message: '%s'.",
                                    paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg),
                    collapse = "\n")
-      if(config$activateModules$strictmode || length(inconsistentTables$errMsg)){
-        errMsg <<- paste(errMsg, msg, sep = "\n")
-      }else{
-        for(i in seq_along(inconsistentTables$headers)){
-          tabName <- names(inconsistentTables$headers)[i]
-          if(is.null(inconsistentTables$headers[[i]])){
-            next
-          }
-          if(!is.null(names(modelIn[[tabName]]$headers))){
-            names(modelIn[[tabName]]$headers) <<- inconsistentTables$headers[[tabName]]
-          }else if(!identical(tabName, scalarsFileName)){
-            names(modelOut[[tabName]]$headers) <<- inconsistentTables$headers[[tabName]]
-          }
-        }
-      }
+      errMsg <<- paste(errMsg, msg, sep = "\n")
     }
   })
 }
@@ -797,7 +784,7 @@ if(!is.null(errMsg)){
   }
   
   shinyApp(ui = ui_initError, server = server_initError)
-}else if(identical(LAUNCHADMINMODE, TRUE)){
+}else if(LAUNCHADMINMODE){
   if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
     setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
   }else{
@@ -876,8 +863,7 @@ if(!is.null(errMsg)){
   close(pb)
   pb <- NULL
   interruptShutdown <<- FALSE
-  deactivateHcubeSwitch <- config$activateModules$hcubeMode || isShinyProxy || 
-    !config$activateModules$scenario || !config$activateModules$hcubeSwitch
+
   #______________________________________________________
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   #                   Server
@@ -957,32 +943,30 @@ if(!is.null(errMsg)){
                                          extraClArgs = config$extraClArgs, 
                                          includeParentDir = config$includeParentDir, saveTraceFile = config$saveTraceFile,
                                          modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
-                                         timeout = 8L, serverOS = getOS(), modelData = modelData, hcubeMode = config$activateModules$hcubeMode,
+                                         timeout = 8L, serverOS = getOS(), modelData = modelData, hcubeMode = LAUNCHHCUBEMODE,
                                          rememberMeFileName = rememberMeFileName, includeParentDir = config$includeParentDir), 
                          remote = config$activateModules$remoteExecution,
-                         hcube = config$activateModules$hcubeMode,
+                         hcube = LAUNCHHCUBEMODE,
                          db = db)
     if(length(credConfig)){
       do.call(worker$setCredentials, credConfig)
     }
     
-    if(config$activateModules$scenario){
-      scenMetaData     <- list()
-      # scenario metadata of scenario saved in database
-      scenMetaDb       <- NULL
-      scenMetaDbBase   <- NULL
-      scenMetaDbBaseList <- NULL
-      scenTags         <- NULL
-      scenMetaDbSubset <- NULL
-      scenMetaDbBaseSubset <- NULL
-      # save the scenario ids loaded in UI
-      scenCounterMultiComp <- 4L
-      sidsInComp       <- vector("integer", length = maxNumberScenarios + 1)
-      sidsInSplitComp  <- vector("integer", length = 2L)
-      # occupied slots (scenario is loaded in ui with this rv$scenId)
-      occupiedSidSlots <- vector("logical", length = maxNumberScenarios)
-      loadInLeftBoxSplit <- TRUE
-    }
+    scenMetaData     <- list()
+    # scenario metadata of scenario saved in database
+    scenMetaDb       <- NULL
+    scenMetaDbBase   <- NULL
+    scenMetaDbBaseList <- NULL
+    scenTags         <- NULL
+    scenMetaDbSubset <- NULL
+    scenMetaDbBaseSubset <- NULL
+    # save the scenario ids loaded in UI
+    scenCounterMultiComp <- 4L
+    sidsInComp       <- vector("integer", length = maxNumberScenarios + 1)
+    sidsInSplitComp  <- vector("integer", length = 2L)
+    # occupied slots (scenario is loaded in ui with this rv$scenId)
+    occupiedSidSlots <- vector("logical", length = maxNumberScenarios)
+    loadInLeftBoxSplit <- TRUE
     # trigger navigation through tabs by shortcuts
     shortcutNest     <- 0L
     nestTabsetsViaShortcuts <- function(direction){
@@ -1126,7 +1110,7 @@ if(!is.null(errMsg)){
     worker$setWorkDir(workDir)
     scriptOutput <- NULL
     
-    if(config$activateModules$hcubeMode){
+    if(LAUNCHHCUBEMODE){
       if(length(config$scripts)){
         scriptOutput <- ScriptOutput$new(session, workDir, config$scripts, 
                                          lang$nav$scriptOutput$errMsg)
@@ -1252,7 +1236,7 @@ if(!is.null(errMsg)){
       flog.debug("Sidebar menu item: '%s' selected.", isolate(input$sidebarMenuId))
       # reset nest level
       shortcutNest <<- 0L
-      if((config$activateModules$scenario || config$activateModules$hcubeMode)
+      if(LAUNCHHCUBEMODE
          && input$sidebarMenuId == "scenarios"){
         isInSolveMode <<- FALSE
       }else if(identical(input$sidebarMenuId, "importData")){
@@ -1397,10 +1381,12 @@ if(!is.null(errMsg)){
     }
     
     ####### Advanced options
-    source("./modules/download_tmp.R", local = TRUE)
+    if(isTRUE(config$activateModules$downloadTempFiles)){
+      source("./modules/download_tmp.R", local = TRUE)
+    }
     
     ####### Paver interaction
-    if(config$activateModules$hcubeMode){
+    if(LAUNCHHCUBEMODE){
       source("./modules/gams_job_list.R", local = TRUE)
       ####### Hcube import module
       source("./modules/hcube_import.R", local = TRUE)
@@ -1419,102 +1405,73 @@ if(!is.null(errMsg)){
     # delete scenario 
     source("./modules/db_scen_remove.R", local = TRUE)
     # scenario module
-    if(config$activateModules$scenario){
-      #load shared datasets
-      source("./modules/db_external_load.R", local = TRUE)
-      # load scenario
-      source("./modules/db_scen_load.R", local = TRUE)
-      # save scenario
-      source("./modules/db_scen_save.R", local = TRUE)
-      # scenario split screen mode
-      source("./modules/scen_split.R", local = TRUE)
-      skipScenCompObserve <- vector("logical", maxNumberScenarios + 3L)
-      
-      scenCompUpdateTab <- function(scenId, sheetId, groupId = NULL){
-        if(is.null(groupId)){
-          if(!identical(isolate(input[[paste0("contentScen_", scenId)]]), 
-                        paste0("contentScen_", scenId, "_", sheetId)))
-            skipScenCompObserve[scenId] <<- TRUE
-          updateTabsetPanel(session, paste0("contentScen_", scenId),
-                            paste0("contentScen_", scenId, "_", sheetId))
-        }else{
-          updateTabsetPanel(session, paste0("contentScen_", scenId),
-                            paste0("contentScen_", scenId, "_", groupId))
-          updateTabsetPanel(session, paste0("contentScen_", scenId, "_", groupId),
-                            paste0("contentScen_", scenId, "_", groupId, "_", sheetId))
-        }
+    #load shared datasets
+    source("./modules/db_external_load.R", local = TRUE)
+    # load scenario
+    source("./modules/db_scen_load.R", local = TRUE)
+    # save scenario
+    source("./modules/db_scen_save.R", local = TRUE)
+    # scenario split screen mode
+    source("./modules/scen_split.R", local = TRUE)
+    skipScenCompObserve <- vector("logical", maxNumberScenarios + 3L)
+    
+    scenCompUpdateTab <- function(scenId, sheetId, groupId = NULL){
+      if(is.null(groupId)){
+        if(!identical(isolate(input[[paste0("contentScen_", scenId)]]), 
+                      paste0("contentScen_", scenId, "_", sheetId)))
+          skipScenCompObserve[scenId] <<- TRUE
+        updateTabsetPanel(session, paste0("contentScen_", scenId),
+                          paste0("contentScen_", scenId, "_", sheetId))
+      }else{
+        updateTabsetPanel(session, paste0("contentScen_", scenId),
+                          paste0("contentScen_", scenId, "_", groupId))
+        updateTabsetPanel(session, paste0("contentScen_", scenId, "_", groupId),
+                          paste0("contentScen_", scenId, "_", groupId, "_", sheetId))
       }
-      
-      lapply(seq_len(maxNumberScenarios  + 3L), function(i){
-        scenIdLong <- paste0("scen_", i, "_")
-        # table view
-        source("./modules/scen_table_view.R", local = TRUE)
-        
-        # close scenario tab
-        source("./modules/scen_close.R", local = TRUE)
-        
-        # export Scenario to Excel spreadsheet
-        source("./modules/scen_export.R", local = TRUE)
-        
-        # compare scenarios
-        obsCompare[[i]] <<- observe({
-          if(is.null(input[[paste0("contentScen_", i)]]) || 
-             skipScenCompObserve[i]){
-            skipScenCompObserve[i] <<- FALSE
-            return(NULL)
-          }
-          j <- as.integer(strsplit(isolate(input[[paste0("contentScen_", i)]]), 
-                                   "_", fixed = TRUE)[[1]][[3L]])
-          groupId <- NULL
-          if(isGroupOfSheets[[j]]){
-            groupId <- j
-            j <- strsplit(input[[paste0("contentScen_", i, "_", groupId)]], 
-                          "_", fixed = TRUE)[[1L]][[4L]]
-          }
-          if(identical(i, 2L)){
-            scenCompUpdateTab(scenId = i + 1L, sheetId = j, groupId = groupId)
-          }else if(identical(i, 3L)){
-            scenCompUpdateTab(scenId = i - 1L, sheetId = j, groupId = groupId)
-          }else{
-            lapply(names(scenData), function(scen){
-              scenCompUpdateTab(scenId = as.integer(strsplit(scen, "_")[[1]][[2L]]), 
-                                sheetId = j, groupId = groupId)
-            })
-          }
-        }, suspended = TRUE)
-      })
-      
-      # scenario comparison
-      source("./modules/scen_compare.R", local = TRUE)
-      if(!deactivateHcubeSwitch){
-        # switch to Hypercube mode
-        hcubeProcess <- NULL
-        observeEvent(input$switchToHcube, {
-          flog.debug("Switch to Hypercube mode button clicked.")
-          if(!is.null(hcubeProcess)){
-            if(hcubeProcess$is_alive()){
-              flog.debug("Hypercube mode already running.")
-              showHideEl(session, "#hcubeRunning", 4000L)
-              return()
-            }
-            if(!identical(hcubeProcess$get_exit_status(), 0L)){
-              flog.error("Problems launching Hypercube mode. Error message: '%s'.", 
-                         hcubeProcess$read_error())
-              showHideEl(session, "#hcubeLaunchError", 4000L)
-              return()
-            }
-          }
-          
-          hcubeProcess <<- process$new(file.path(R.home("bin"), "RScript"), 
-                                       c("--vanilla", file.path(currentModelDir, "runApp.R"), 
-                                         "LAUNCHHCUBE", commandArgs(TRUE)), stderr = "|")
-        })
-      }
-    }else{
-      id <- 1
-      # export output data to Excel spreadsheet
-      source("./modules/scen_export.R", local = TRUE)
     }
+    
+    lapply(seq_len(maxNumberScenarios  + 3L), function(i){
+      scenIdLong <- paste0("scen_", i, "_")
+      # table view
+      source("./modules/scen_table_view.R", local = TRUE)
+      
+      # close scenario tab
+      source("./modules/scen_close.R", local = TRUE)
+      
+      # export Scenario to Excel spreadsheet
+      source("./modules/scen_export.R", local = TRUE)
+      
+      # compare scenarios
+      obsCompare[[i]] <<- observe({
+        if(is.null(input[[paste0("contentScen_", i)]]) || 
+           skipScenCompObserve[i]){
+          skipScenCompObserve[i] <<- FALSE
+          return(NULL)
+        }
+        j <- as.integer(strsplit(isolate(input[[paste0("contentScen_", i)]]), 
+                                 "_", fixed = TRUE)[[1]][[3L]])
+        groupId <- NULL
+        if(isGroupOfSheets[[j]]){
+          groupId <- j
+          j <- strsplit(input[[paste0("contentScen_", i, "_", groupId)]], 
+                        "_", fixed = TRUE)[[1L]][[4L]]
+        }
+        if(identical(i, 2L)){
+          scenCompUpdateTab(scenId = i + 1L, sheetId = j, groupId = groupId)
+        }else if(identical(i, 3L)){
+          scenCompUpdateTab(scenId = i - 1L, sheetId = j, groupId = groupId)
+        }else{
+          lapply(names(scenData), function(scen){
+            scenCompUpdateTab(scenId = as.integer(strsplit(scen, "_")[[1]][[2L]]), 
+                              sheetId = j, groupId = groupId)
+          })
+        }
+      }, suspended = TRUE)
+    })
+    
+    # scenario comparison
+    source("./modules/scen_compare.R", local = TRUE)
+
     observeEvent(input$btExportScen, {
       if(useGdx){
         exportTypes <- c(gdx = "gdx", xlsx = "xls", csv = "csv")

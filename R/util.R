@@ -154,14 +154,13 @@ getInputType <- function(data, keywordsType, isMultiDropdown = FALSE){
   stop("No valid input type found.", call. = F)
 }
 
-getDependenciesDropdown <- function(choices, modelIn, name = NULL, strictMode = TRUE){
+getDependenciesDropdown <- function(choices, modelIn, name = NULL){
   # Retrieves list of input sheets that dropdown menu depends on (whose data has to be loaded)
   #
   # Args:
   # choices:                    raw list of choices from JSON file
   # modelIn:                    JSON element with model input data (used to verify dependencies)
   # name:                       name of the dropdown menu
-  # strictMode:                 throws an error instead of accepting possibly faulty user entries
   #
   # Returns:
   # list of sheet and column names that need to be loaded for dropdown menu to have all data required (all lower case).
@@ -211,12 +210,8 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL, strictMode = 
             }
             if(!(forwardDep || backwardDep)){
               # neither forward nor backward dependency selected results in error or rendering as string
-              if(strictMode){
-                stop(paste0("Neither a forward nor a backward dependency was defined in: '", choices[[i]], "'. Make sure you define some type of dependency."), call. = F)
-              }else{
-                ddownDep$strings[[k]] <<- choices[[i]]
-                k <<- k + 1
-              }
+              stop(paste0("Neither a forward nor a backward dependency was defined in: '", 
+                          choices[[i]], "'. Make sure you define some type of dependency."), call. = F)
             }
             # make sure that in case a reference is given, the underlying data is also part of the input data
           }else{
@@ -234,12 +229,9 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL, strictMode = 
               depTmp <- strsplit(gsub("^\\$|\\$$", "", choices[[i]]), "\\$")[[1]][c(-1)]
               ddownDep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- getNestedDep(depTmp)
             }else{
-              if(strictMode){
-                stop(paste0("The header: '", el[[2]], "' for input sheet: '", el[[1]], "' could not be found. Make sure you define a valid reference."), call. = F)
-              }else{
-                ddownDep$strings[[k]] <<- choices[[i]]
-                k <<- k + 1
-              }
+              stop(paste0("The header: '", el[[2]], "' for input sheet: '", 
+                          el[[1]], "' could not be found. Make sure you define a valid reference."), 
+                   call. = FALSE)
             }
           }
         }else{
@@ -267,25 +259,15 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL, strictMode = 
                   colFound <- TRUE
                 }else{
                   # neither forward nor backward dependency selected results in error or rendering as string
-                  if(strictMode){
-                    stop(paste0("Neither a forward nor a backward dependency was defined in: '", 
-                                choices[[i]], "'. Make sure you define some type of dependency."), call. = F)
-                  }else{
-                    ddownDep$strings[[k]] <<- choices[[i]]
-                    k <<- k + 1
-                  }
+                  stop(paste0("Neither a forward nor a backward dependency was defined in: '", 
+                              choices[[i]], "'. Make sure you define some type of dependency."), call. = FALSE)
                 }
               }
             }
             # no column was found with matching name (invalid reference)
             if(!colFound){
-              if(strictMode){
-                stop(paste0("A column named: '", elRaw, "' could not be found. Make sure you define a valid reference."),
-                     call. = F)
-              }else{
-                ddownDep$strings[[k]] <<- choices[[i]]
-                k <<- k + 1
-              }
+              stop(paste0("A column named: '", elRaw, "' could not be found. Make sure you define a valid reference."),
+                   call. = FALSE)
             }
           }
         }

@@ -6,7 +6,8 @@ getScenTabData <- function(sheetName){
   if(is.na(i)){
     i <- match(tolower(sheetName), names(modelOut))
     if(is.na(i)){
-      stop(sprintf("Sheet: %s could not be rendered as it was not found in either list of input or output sheets.", sheetName), call. = FALSE)
+      stop(sprintf("Sheet: %s could not be rendered as it was not found in either list of input or output sheets.", 
+                   sheetName), call. = FALSE)
     }else{
       # sheet is output sheet
       tabData$sheetName     <- modelOutAlias[i]
@@ -115,8 +116,10 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                                                       tabId), type = "datatable",
                                                                noDataTxt = noDataTxt)
                                                 }, error = function(e) {
-                                                  flog.error("Problems rendering table for scenario dataset: '%s'. Error message: %s.", sheetName, e)
-                                                  errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderTable$desc, sheetName), sep = "\n")
+                                                  flog.error("Problems rendering table for scenario dataset: '%s'. Error message: %s.", 
+                                                             sheetName, e)
+                                                  errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderTable$desc, 
+                                                                                   sheetName), sep = "\n")
                                                 })
                                               })
                                    )

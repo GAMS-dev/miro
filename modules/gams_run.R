@@ -145,7 +145,7 @@ prepareModelRun <- function(async = FALSE){
   }
   return(list(inputData = inputData, pfFileContent = pfFileContent, dataTmp = if(!async) dataTmp))
 }
-if(identical(config$activateModules$hcubeMode, TRUE)){
+if(LAUNCHHCUBEMODE){
   idsToSolve <- NULL
   idxDiff <- NULL
   scenGmsPar <- NULL
@@ -600,7 +600,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     }
   }
   if(length(activeScen) && !activeScen$hasExecPerm()){
-    if(config$activateModules$hcubeMode){
+    if(LAUNCHHCUBEMODE){
       modeDescriptor <- "dialogNoExecPermHC"
     }else{
       modeDescriptor <- "dialogNoExecPerm"
@@ -615,7 +615,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
                     forwardOnSuccess = "btSolve")
     return(NULL)
   }
-  if(identical(config$activateModules$hcubeMode, TRUE)){
+  if(LAUNCHHCUBEMODE){
     numberScenarios <- noScenToSolve()
     if(numberScenarios > maxNoHcube){
       showModal(modalDialog(title = lang$nav$dialogHcube$exceedMaxNoDialog$title, 

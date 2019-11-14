@@ -55,8 +55,7 @@ hcubeImport <- HcubeImport$new(db, scalarsFileName, scalarsOutName,
                                                       if(config$saveTraceFile) tableNameTracePrefix %+% modelName),
                                config$csvDelim, workDir, gmsColTypes = gmsColTypes, gmsFileHeaders = gmsFileHeaders,
                                gdxio = gdxio, inputSym = inputDsNames, outputSym = names(modelOut),
-                               templates = setNames(c(modelInTemplate, modelOutTemplate), c(names(modelIn), names(modelOut))), 
-                               strictmode = config$activateModules$strictmode)
+                               templates = setNames(c(modelInTemplate, modelOutTemplate), c(names(modelIn), names(modelOut))))
 rm(gmsColTypes)
 duplicatedScenIds <- vector("character", 0L)
 hcubeTags         <- character(0L)

@@ -2,7 +2,7 @@ rowtmp <- list()
 isolate({
   groupIndexMap <- IdIdxMap$new(list(inputGroups = seq_along(configJSON$inputGroups),
                                      outputGroups = seq_along(configJSON$outputGroups)))
-
+  
   groupTemp <- list(inputGroups = list(), outputGroups = list())
   rv$generalConfig$inputGroups <- configJSON$inputGroups
   rv$generalConfig$outputGroups <- configJSON$outputGroups
@@ -33,9 +33,9 @@ insertUI(selector = "#interface_wrapper1",
          tagList(
            tags$h2(lang$adminMode$general$ui$headerGeneral, class="option-category"),
            tags$div(class = "option-wrapper",
-             textInput("general_pageTitle", lang$adminMode$general$pageTitle$label,
-                       value = if(!is.null(configJSON$pageTitle ) && nchar(configJSON$pageTitle )) configJSON$pageTitle  else configJSON$modelTitle
-             )),
+                    textInput("general_pageTitle", lang$adminMode$general$pageTitle$label,
+                              value = if(!is.null(configJSON$pageTitle ) && nchar(configJSON$pageTitle )) configJSON$pageTitle  else configJSON$modelTitle
+                    )),
            tags$div(
              radioButtons("general_theme", lang$adminMode$general$theme$label, 
                           choices = langSpecific$theme,
@@ -44,18 +44,27 @@ insertUI(selector = "#interface_wrapper1",
            tags$label(class = "cb-label", "for" = "general_act_log", lang$adminMode$general$actLog$label),
            tags$div(
              tags$label(class = "checkbox-material", 
-                        checkboxInput("general_act_log", value = if(length(configJSON$activateModules$logFile)) configJSON$activateModules$logFile else config$activateModules$logFile, label = NULL)
+                        checkboxInput("general_act_log", 
+                                      value = if(length(configJSON$activateModules$logFile)) 
+                                        configJSON$activateModules$logFile else config$activateModules$logFile, 
+                                      label = NULL)
              )),
            tags$label(class = "cb-label", "for" = "general_act_lst", lang$adminMode$general$actLst$label),
            tags$div(
              tags$label(class = "checkbox-material", 
-                        checkboxInput("general_act_lst", value = if(length(configJSON$activateModules$lstFile)) configJSON$activateModules$lstFile else config$activateModules$lstFile, label = NULL)
+                        checkboxInput("general_act_lst", 
+                                      value = if(length(configJSON$activateModules$lstFile)) 
+                                        configJSON$activateModules$lstFile else config$activateModules$lstFile, 
+                                      label = NULL)
              )),
            tags$div(class = "option-wrapper info-position",
-                    textInput("general_mirologfile", tags$div(lang$adminMode$general$mirologfile$label, 
-                                                            tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#miro-log", 
-                                                                   tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
-                              value = if(!is.null(configJSON$miroLogFile) && nchar(configJSON$miroLogFile)) configJSON$miroLogFile else ""
+                    textInput("general_mirologfile", 
+                              tags$div(lang$adminMode$general$mirologfile$label, 
+                                       tags$a("", class="info-wrapper",
+                                              href="https://gams.com/miro/customize.html#miro-log", 
+                                              tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                              value = if(!is.null(configJSON$miroLogFile) && nchar(configJSON$miroLogFile)) 
+                                configJSON$miroLogFile else ""
                     )),
            tags$div(class = "option-wrapper info-position",
                     selectInput("general_scen", tags$div(lang$adminMode$general$scen$label, 
@@ -69,7 +78,10 @@ insertUI(selector = "#interface_wrapper1",
                                lang$adminMode$general$auto$label),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_auto", value = if(length(configJSON$autoGenInputGraphs)) configJSON$autoGenInputGraphs else config$autoGenInputGraphs, label = NULL)
+                                 checkboxInput("general_auto", 
+                                               value = if(length(configJSON$autoGenInputGraphs)) 
+                                                 configJSON$autoGenInputGraphs else config$autoGenInputGraphs, 
+                                               label = NULL)
                       ))),
            tags$div(class="option-wrapper",
                     colorPickerInput("general_pivotcolor", label = lang$adminMode$general$pivotcolor$label,
@@ -77,7 +89,8 @@ insertUI(selector = "#interface_wrapper1",
                     )),
            tags$div(class="option-wrapper",
                     sliderInput("general_decimal", label = lang$adminMode$general$decimal$label,
-                                min = 0, max = 6, step = 1, value = if(length(configJSON$roundingDecimals)) configJSON$roundingDecimals else config$roundingDecimals
+                                min = 0, max = 6, step = 1, value = if(length(configJSON$roundingDecimals)) 
+                                  configJSON$roundingDecimals else config$roundingDecimals
                     ))
          ), 
          where = "beforeEnd")
@@ -86,18 +99,23 @@ insertUI(selector = "#interface_wrapper2",
            tags$h2(lang$adminMode$general$ui$headerScalars, class="option-category"),
            if(length(modelOut[[scalarsOutName]])){
              tags$div(class="option-wrapper",
-                      tags$div(class = "info-position", selectInput("general_hidden", 
-                                                                    tags$div(lang$adminMode$general$hidden$label, tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#hidden-scalars", 
-                                                                                                                         tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
-                                                                    choices = setNames(modelOut[[scalarsOutName]]$symnames, modelOut[[scalarsOutName]]$symtext), 
-                                                                    selected = configJSON$hiddenOutputScalars, multiple = TRUE)
+                      tags$div(class = "info-position", 
+                               selectInput("general_hidden", 
+                                           tags$div(lang$adminMode$general$hidden$label, 
+                                                    tags$a("", class="info-wrapper", 
+                                                           href="https://gams.com/miro/customize.html#hidden-scalars", 
+                                                           tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                           choices = setNames(modelOut[[scalarsOutName]]$symnames, modelOut[[scalarsOutName]]$symtext), 
+                                           selected = configJSON$hiddenOutputScalars, multiple = TRUE)
                       ))
            },
            tags$div(class="option-wrapper", title = lang$adminMode$general$aggregate$title,
                     tags$label(class = "cb-label", "for" = "general_aggregate", lang$adminMode$general$aggregate$label),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_aggregate", value = if(length(configJSON$aggregateWidgets)) configJSON$aggregateWidgets else config$aggregateWidgets, label = NULL)
+                                 checkboxInput("general_aggregate", 
+                                               value = if(length(configJSON$aggregateWidgets)) 
+                                                 configJSON$aggregateWidgets else config$aggregateWidgets, label = NULL)
                       ))
            ),
            tags$hr(),
@@ -131,21 +149,27 @@ insertUI(selector = "#module_wrapper1",
            tags$h2(lang$adminMode$general$ui$headerScenData, class="option-category"),
            tags$div(title = lang$adminMode$general$actUpload$title,
                     tags$label(class = "cb-label info-position", "for" = "general_act_upload", 
-                               tags$div(lang$adminMode$general$actUpload$label, tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#local-upload", 
-                                                                                       tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
+                               tags$div(lang$adminMode$general$actUpload$label, 
+                                        tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#local-upload", 
+                                               tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_act_upload", value = if(length(configJSON$activateModules$loadLocal)) configJSON$activateModules$loadLocal else config$activateModules$loadLocal, label = NULL)
+                                 checkboxInput("general_act_upload", 
+                                               value = if(length(configJSON$activateModules$loadLocal)) 
+                                                 configJSON$activateModules$loadLocal else config$activateModules$loadLocal, 
+                                               label = NULL)
                       ))
            ),
            tags$div(class = "shiny-input-container",
                     tags$label(class = "cb-label info-position", "for" = "default_scen_check",
                                tags$div(lang$adminMode$general$defaultScenName$checkbox, tags$a("", class="info-wrapper", 
-                                      href="https://gams.com/miro/customize.html#default-scenario", 
-                                      tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
+                                                                                                href="https://gams.com/miro/customize.html#default-scenario", 
+                                                                                                tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("default_scen_check", label = NULL, value = if(length(configJSON$defaultScenName) && nchar(configJSON$defaultScenName)) TRUE else FALSE)
+                                 checkboxInput("default_scen_check", label = NULL, 
+                                               value = if(length(configJSON$defaultScenName) && 
+                                                          nchar(configJSON$defaultScenName)) TRUE else FALSE)
                       ))
            ),
            conditionalPanel(
@@ -158,7 +182,10 @@ insertUI(selector = "#module_wrapper1",
                                lang$adminMode$general$meta$label),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_meta", value = if(length(configJSON$excelIncludeMeta)) configJSON$excelIncludeMeta else config$excelIncludeMeta, label = NULL)
+                                 checkboxInput("general_meta", 
+                                               value = if(length(configJSON$excelIncludeMeta)) 
+                                                 configJSON$excelIncludeMeta else config$excelIncludeMeta, 
+                                               label = NULL)
                       ))
            ),
            tags$div(title = lang$adminMode$general$empty$title,
@@ -166,64 +193,92 @@ insertUI(selector = "#module_wrapper1",
                                lang$adminMode$general$empty$label),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_empty", value = if(identical(configJSON$excelIncludeEmptySheets, FALSE)) FALSE else TRUE, label = NULL)
+                                 checkboxInput("general_empty", 
+                                               value = if(identical(configJSON$excelIncludeEmptySheets, FALSE)) 
+                                                 FALSE else TRUE, label = NULL)
                       ))
            ),
            tags$div(title = lang$adminMode$general$actAttach$title,
                     tags$label(class = "cb-label info-position", "for" = "general_act_attach", 
-                               tags$div(lang$adminMode$general$actAttach$label, tags$a("", class="info-wrapper", href="https://gams.com/miro/start.html#file-attachment", 
-                                      tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
+                               tags$div(lang$adminMode$general$actAttach$label, 
+                                        tags$a("", class="info-wrapper", 
+                                               href="https://gams.com/miro/start.html#file-attachment", 
+                                               tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_act_attach", value = if(length(configJSON$activateModules$attachments)) configJSON$activateModules$attachments else config$activateModules$attachments, label = NULL)
+                                 checkboxInput("general_act_attach", 
+                                               value = if(length(configJSON$activateModules$attachments)) 
+                                                 configJSON$activateModules$attachments else config$activateModules$attachments, label = NULL)
                       ))
            ),
            tags$div(class="option-wrapper",
-                    sliderInput("general_save_duration", tags$div(lang$adminMode$general$saveDuration$label, 
-                                                                  tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#general-duration", 
-                                                                         tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
-                                min = 0, max = 999, step = 1, value = if(length(configJSON$storeLogFilesDuration)) configJSON$storeLogFilesDuration else config$storeLogFilesDuration
+                    sliderInput("general_save_duration", 
+                                tags$div(lang$adminMode$general$saveDuration$label, 
+                                         tags$a("", class="info-wrapper",
+                                                href="https://gams.com/miro/customize.html#general-duration", 
+                                                tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                min = 0, max = 999, step = 1, 
+                                value = if(length(configJSON$storeLogFilesDuration)) 
+                                  configJSON$storeLogFilesDuration else config$storeLogFilesDuration
                     ))
          ), 
          where = "beforeEnd")
 insertUI(selector = "#module_wrapper2",
          tagList(
            tags$h2(lang$adminMode$general$ui$headerComputation, class="option-category"),
-           tags$label(class = "cb-label", "for" = "general_remote_execution", tags$div(lang$adminMode$general$remoteExecution$label, tags$a("", class="info-wrapper", 
-                                                                                                                                            href="https://gams.com/miro/server.html", 
-                                                                                                                                            tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
+           tags$label(class = "cb-label", "for" = "general_remote_execution", 
+                      tags$div(lang$adminMode$general$remoteExecution$label, 
+                               tags$a("", class="info-wrapper", 
+                                      href="https://gams.com/miro/server.html", 
+                                      tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
            tags$div(
              tags$label(class = "checkbox-material", 
-                        checkboxInput("general_remote_execution", value = if(length(configJSON$activateModules$remoteExecution)) configJSON$activateModules$remoteExecution else config$activateModules$remoteExecution, label = NULL)
+                        checkboxInput("general_remote_execution", 
+                                      value = if(length(configJSON$activateModules$remoteExecution)) 
+                                        configJSON$activateModules$remoteExecution else config$activateModules$remoteExecution, label = NULL)
              )),
-           tags$label(class = "cb-label", "for" = "general_downloadTempFiles", tags$div(lang$adminMode$general$downloadTempFiles$label, tags$a("", class="info-wrapper", 
-                                                                                                                                   href="https://gams.com/miro/customize.html#allow-temp-files", 
-                                                                                                                                   tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
+           tags$label(class = "cb-label", "for" = "general_downloadTempFiles", 
+                      tags$div(lang$adminMode$general$downloadTempFiles$label, 
+                               tags$a("", class="info-wrapper", 
+                                      href="https://gams.com/miro/customize.html#allow-temp-files", 
+                                      tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
            tags$div(
              tags$label(class = "checkbox-material", 
-                        checkboxInput("general_downloadTempFiles", value = if(length(configJSON$activateModules$hcubeSwitch)) configJSON$activateModules$hcubeSwitch else config$activateModules$hcubeSwitch, label = NULL)
+                        checkboxInput("general_downloadTempFiles", 
+                                      value = if(length(configJSON$activateModules$downloadTempFiles)) 
+                                        configJSON$activateModules$downloadTempFiles else config$activateModules$downloadTempFiles, 
+                                      label = NULL)
              )),
            tags$div(title = lang$adminMode$general$saveTrace$title,
-                    tags$label(class = "cb-label", "for" = "general_save_trace", lang$adminMode$general$saveTrace$label),
+                    tags$label(class = "cb-label", "for" = "general_save_trace", 
+                               lang$adminMode$general$saveTrace$label),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_save_trace", value = if(length(configJSON$saveTraceFile)) configJSON$saveTraceFile else config$saveTraceFile, label = NULL)
+                                 checkboxInput("general_save_trace", 
+                                               value = if(length(configJSON$saveTraceFile)) 
+                                                 configJSON$saveTraceFile else config$saveTraceFile, 
+                                               label = NULL)
                       ))
            ),
            tags$label(class = "cb-label info-position", "for" = "general_parent", 
-                      tags$div(lang$adminMode$general$parent$label, tags$a("", class="info-wrapper", 
-                                                                           href="https://gams.com/miro/customize.html#include-parent", 
-                                                                           tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
+                      tags$div(lang$adminMode$general$parent$label, 
+                               tags$a("", class="info-wrapper", 
+                                      href="https://gams.com/miro/customize.html#include-parent", 
+                                      tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
            tags$div(
              tags$label(class = "checkbox-material", 
-                        checkboxInput("general_parent", value = if(length(configJSON$includeParentDir)) configJSON$includeParentDir else config$includeParentDir, label = NULL)
+                        checkboxInput("general_parent", 
+                                      value = if(length(configJSON$includeParentDir)) 
+                                        configJSON$includeParentDir else config$includeParentDir, label = NULL)
              )),
            tags$div(class="option-wrapper",
-                    selectizeInput("general_args", tags$div(lang$adminMode$general$args$label, 
-                                                            tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#command-line-args", 
-                                                                   tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
-                                                            choices = configJSON$extraClArgs, selected = configJSON$extraClArgs, 
-                                                            multiple = TRUE, options = list('create' = TRUE,'persist' = FALSE)))
+                    selectizeInput("general_args", 
+                                   tags$div(lang$adminMode$general$args$label, 
+                                            tags$a("", class="info-wrapper", 
+                                                   href="https://gams.com/miro/customize.html#command-line-args", 
+                                                   tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                   choices = configJSON$extraClArgs, selected = configJSON$extraClArgs, 
+                                   multiple = TRUE, options = list('create' = TRUE,'persist' = FALSE)))
          ), 
          where = "beforeEnd")
 # set default values for input and output groups
@@ -294,8 +349,10 @@ observeEvent(input$widget_general_logo_upload, {
     filesToDelete <- list.files(file.path(currentModelDir, "static"), full.names = TRUE)
     filesFailedToDelete <- !file.remove(filesToDelete)
     if(any(filesFailedToDelete)){
-      flog.error("Problems removing files: '%s'. Do you lack the necessary permissions?", paste(filesToDelete[filesFailedToDelete], collapse = "', '"))
-      showModal(modalDialog(lang$adminMode$general$modalDialog$title, lang$adminMode$general$modalDialog$content))
+      flog.error("Problems removing files: '%s'. Do you lack the necessary permissions?", 
+                 paste(filesToDelete[filesFailedToDelete], collapse = "', '"))
+      showModal(modalDialog(lang$adminMode$general$modalDialog$title, 
+                            lang$adminMode$general$modalDialog$content))
       return()
     }
   }
@@ -344,17 +401,8 @@ observeEvent(input$general_args, {
 observeEvent(input$general_scen, {
   rv$generalConfig$defCompMode <<- input$general_scen
 })
-observeEvent(input$general_act_strict, {
-  rv$generalConfig$activateModules$strictmode <<- input$general_act_strict
-})
 observeEvent(input$general_act_upload, {
   rv$generalConfig$activateModules$loadLocal <<- input$general_act_upload
-})
-observeEvent(input$general_act_share_scen, {
-  rv$generalConfig$activateModules$sharedScenarios <<- input$general_act_share_scen
-})
-observeEvent(input$general_act_hcube, {
-  rv$generalConfig$activateModules$hcubeMode <<- input$general_act_hcube
 })
 observeEvent(input$general_act_log, {
   rv$generalConfig$activateModules$logFile <<- input$general_act_log

@@ -112,7 +112,7 @@ closeScenario <- function(){
   scenTags          <<- NULL
   attachmentList    <<- tibble(name = vector("character", attachMaxNo), 
                                execPerm = vector("logical", attachMaxNo))
-  if(!config$activateModules$hcubeMode){
+  if(!LAUNCHHCUBEMODE){
     lapply(seq_along(config$scripts$base), function(scriptId){
       hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
       hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))

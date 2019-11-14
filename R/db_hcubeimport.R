@@ -4,8 +4,7 @@ HcubeImport <- R6Class("HcubeImport",
                          initialize        = function(db, scalarsInputName, scalarsOutputName, 
                                                       tableNamesCanHave, tableNamesMustHave,
                                                       csvDelim, workDir, gmsColTypes, gmsFileHeaders,
-                                                      gdxio, inputSym, outputSym, templates, 
-                                                      strictmode = TRUE){
+                                                      gdxio, inputSym, outputSym, templates){
                            # R6 class to import scenarios in hcube mode
                            #
                            # Args:      
@@ -24,7 +23,6 @@ HcubeImport <- R6Class("HcubeImport",
                            #   inputSym:                input symbols
                            #   outputSym:               output symbols
                            #   templates:               input/output symbol templates
-                           #   strictmode:              logical that specifies whether strict mode is active
                            #
                            
                            # BEGIN error checks
@@ -40,7 +38,6 @@ HcubeImport <- R6Class("HcubeImport",
                            stopifnot(is.list(gmsFileHeaders), length(gmsFileHeaders) >= 1)
                            stopifnot(is.R6(gdxio), is.character(inputSym), is.character(outputSym),
                                      is.list(templates))
-                           stopifnot(is.logical(strictmode), length(strictmode) == 1)
                            # END error checks
                            
                            private$conn               <- db$getConn()
@@ -61,7 +58,6 @@ HcubeImport <- R6Class("HcubeImport",
                            private$includeTrc         <- private$traceTabName %in% private$tableNamesToVerify
                            private$gmsColTypes        <- gmsColTypes
                            private$gmsFileHeaders     <- gmsFileHeaders
-                           private$strictmode         <- strictmode
                            private$gdxio              <- gdxio
                            private$inputSym           <- inputSym
                            private$outputSym          <- outputSym
@@ -303,7 +299,6 @@ HcubeImport <- R6Class("HcubeImport",
                          duplicatedScenIds       = character(0L),
                          traceColNames           = character(0L),
                          traceTabName            = character(0L),
-                         strictmode              = logical(1L),
                          includeTrc              = logical(0L),
                          noScen                  = integer(1L),
                          inputSym                = character(0L),

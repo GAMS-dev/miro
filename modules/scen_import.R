@@ -192,7 +192,9 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   if(!is.null(errMsg)){
     return(NULL)
   }
-  if(!config$activateModules$hcubeMode){
+  if(LAUNCHHCUBEMODE){
+    noOutputData <<- TRUE
+  }else{
     prog$set(detail = lang$progressBar$importScen$renderOutput, value = 0.8)
     tryCatch({
       outputData <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, 
@@ -224,8 +226,6 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
       scalarData[["scen_1_"]] <<- bind_rows(scenInputData[[scalarIdTmp]], scalarData[["scen_1_"]])
     }
     outputData <- NULL
-  }else{
-    noOutputData <<- TRUE
   }
   
   if(newInputCount){
