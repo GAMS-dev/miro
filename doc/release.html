@@ -77,19 +77,109 @@
                 <div class="doc-body row">
                     <div class="doc-content col-md-9 col-12 order-1">
                         <div class="content-inner">
+                            <section id="v1.0" class="doc-section">
+                                <h2 class="section-title">GAMS MIRO 1.0</h2>
+                                <div class="section-block">
+                                    <h3>New features</h3>
+                                    <ul>
+                                      <li>New deploment environment for configured MIRO applications. You can find more information about this 
+                                      <a href = "./deployment.html">here</a>. The <span style="white-space: nowrap;"><code class="language-gams">--mkapp=1</code></span> option (shortcut creation) is no longer supported.</li>
+                                      <li>MIRO now comes as an independent installer on the platforms Windows, MacOS and Linux. 
+                                      The installation is independent from the GAMS system. To be able to use GAMS MIRO, GAMS 
+                                      version 30.0 or later is required.</li>
+                                      <li>Full <a href = "./customize.html#dark-mode">dark mode</a> support.</li>
+                                      <li>Added <a href = "./customize.html#miro-log">miro log</a> option for custom logs and input validation</li>
+                                      <li>Added support for an individual README starting page (markdown document) which is displayed in the input section.</li>
+                                      <li>New widget type: <a href = "./widgets.html#widget-numeric">numeric Input</a>.</li>
+                                      <li>One-dimensional sets can now be configured as dropdown menu.</li>
+                                      <li>New widget type: <a href = "./widgets.html#widget-multidropdown">Multi-dropdown menu</a> for one-dimensional, 
+                                      dynamic sets.</li>
+                                      <li>Added support for graphs defining the input data.</li>
+                                      <li>Added support for remote importers/exporters: users can import/export data from/to external sources via REST API.</li>
+                                      <li>Symbol links: Data of output symbols can now be used to populate tables of input symbols.</li>
+                                      <li><a href = "./start.html#scenario-concept">Sandbox scenarios</a>: 
+                                      <ul>
+                                        <li>The MIRO user interface can be seen as a sandbox. Data that is loaded into the interface is therefore 
+                                        located in this sandbox 
+                                        as a sandbox scenario. The data of the sandbox scenario can be come from the MIRO database, external databases, 
+                                        GDX containers, excel files, or can be entered manually.</li>
+                                        <li>File attachments are part of a scenario. If attachments are added to a sandbox scenario, 
+                                        they are included when saving this scenario.</li>
+                                        <li>Sandbox scenarios can be loaded in scenario comparison via <i>load active</i> button.</li>
+                                      </ul>
+                                      <li>Added ability to <a href = "./tables.html#table-option-pivot">pivot tables</a> in MIRO via configuration mode. 
+                                      Unlike the <a href = "./model.html#display-tables">table statement</a> in the GAMS model itself, this option does 
+                                      not affect the data contract between GAMS and MIRO resulting in variable columns.</li>
+                                      <li>Added filter option for graphs: </li>
+                                    </ul>
+                                    <h3>Minor new features and improvements</h3>
+                                    <ul>
+                                      <li>New MIRO logo (Thank you <a href = "" target = "_blank">Melina Klöckner</a>!)</li>
+                                      <li>Full chinese <a href = "./customize.html#language-files">language support</a> (Thank you 
+                                      <a href = "https://de.linkedin.com/in/ying-deng-7a3554155?trk=profile-badge-cta" target = "_blank">Ying Deng</a>!)</li>
+                                      <li>Added Link to <a href = "https://forum.gamsworld.org/">GAMS World Forum</a> in help section.</li>
+                                      <li><i>Stop</i> button in GAMS interaction now with soft kill first, then hard kill.</li>
+                                      <li>Scenario comparison: input and output symbol tabs are now displayed in different colors.</li>
+                                      <li>Hypercube section <i>load scenarios</i>: improved display of AND/OR blocks.</li>
+                                      <li>Added option to edit scenario access permissions.</li>
+                                      <li>Element text of singleton sets can now be appended with a double pipe ("||") and will be 
+                                      aggregated/disaggregated when loaded/stored from GDX.                                      
+                                       The element text of a singleton Set can be used in the 
+                                       <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset">eval.Set</a> option to 
+                                       evaluate the element text at compile time and place it into a scoped compile-time variable. 
+                                       This is useful any information about double-dash parameters and GAMS options configured via 
+                                       configuration mode gets lost when exporting a scenario as a GDX file.</li>
+                                      <li>Changed prefix for double-dash parameters and GAMS options from <i>GMSPAR_</i>/<i>GMSOPT_</i> 
+                                      <i>to _gmspar_</i>/<i>_gmsopt_</i>.</li>
+                                      <li>Double-dash parameters and GAMS options can now have the same name as GAMS symbols.</li> 
+                                      <li>Bootstrap dropdown menus are now right aligned per default. They will be left-aligned when space 
+                                      on left is not sufficient.</li>
+                                      <li>First two columns (symbol name and symbol text) of scalar input table are now automatically set 
+                                      to readonly.</li>
+                                      <li>Adding/removing rows is now no longer allowed when at least one column is readonly.</li>
+                                      <li>Variables and equations can now be exported via GDX.</li>
+                                      <li>Changed directory name for custom renderers from <i>customRenderer</i> to 
+                                      <i>custom_renderer</i></li>
+                                      <li>Completely restructured Hypercube mode</li>
+                                      <li>Configuration mode:</li>
+                                      <ul>
+                                      <li>New structure and design.</li>
+                                      <li>Added option to <a href = "./customize.html#naming">rename tab titles and symbol headers</a>.</li>
+                                      <li>Added option to <a href = "./customize.html#application-title">change the application title</a>.</li>
+                                      <li>Added option to <a href = "./customize.html#tab-ordering">reorder symbol tabs</a>.</li>
+                                      <li>Number of tabs visible in Inpupt/Output section can now be configured (rest available via dropdown).</li>
+                                      <li>Input scalars can now be <a href = "./customize.html#hidden-scalars">used in charts</a> as well.</li>
+                                      <li>Charts configuration has now access to MIRO database. Previously saved scenario data can now be 
+                                      used for the graphics configuration (besides the local file upload).</li>
+                                      <li>Added option to display graphic and table in split-screen for pie charts, maps and gantt charts.</li>
+                                      <li>Added custom renderer option for graphics.</li>
+                                      <li>Added support for heatmaps (input tables).</li>
+                                      <li>Bar chart, Line chart, Scatter, plot, Bubble chart: Order logic of axis elements can now be adjusted.</li>
+                                      <li>Removed option to (de)activate the <i>scenario functionality</i>. Is always activated now.</li>
+                                      </ul>
+                                    </ul>
+                                </div>
+                            </section> 
                             <section id="v06" class="doc-section">
                                 <h2 class="section-title">GAMS MIRO 0.6</h2>
                                 <div class="section-block">
                                     <ul>
-                                      <li>MIRO configuration mode: The GAMS MIRO configuration mode can be used to change the settings of your MIRO app as well as to generate new widgets and charts. 
-                                      When configuring your widgets and charts, you get a live preview so that you immediately see the results of your configuration. You don't need to touch JSON code anymore.</li>
-                                      <li>New data import mechanism: Instead of creating an Excel file that the user then has to upload in order to get the first data into MIRO, data relevant to MIRO is automatically extracted from your model and stored in the MIRO database.</li>
+                                      <li>MIRO configuration mode: The GAMS MIRO configuration mode can be used to change the settings of your 
+                                      MIRO app as well as to generate new widgets and charts. When configuring your widgets and charts, you 
+                                      get a live preview so that you immediately see the results of your configuration. You don't need to 
+                                      touch JSON code anymore.</li>
+                                      <li>New data import mechanism: Instead of creating an Excel file that the user then has to upload in 
+                                      order to get the first data into MIRO, data relevant to MIRO is automatically extracted from your 
+                                      model and stored in the MIRO database.</li>
                                       <li>Tab grouping: Group multiple input tabs and output tabs together.</li>
-                                      <li>Automated loading of data on startup: Automatically load data when your MIRO app launches, so tables won’t start out empty.</li>
-                                      <li>Automated scenario import into DB: GDX files that you place in the data_&lt;modelName&gt; folder of your MIRO app will be automatically imported into the MIRO database the next time you launch your app.</li>
+                                      <li>Automated loading of data on startup: Automatically load data when your MIRO app launches, 
+                                      so tables won’t start out empty.</li>
+                                      <li>Automated scenario import into DB: GDX files that you place in the data_&lt;modelName&gt; folder 
+                                      of your MIRO app will be automatically imported into the MIRO database the next time you launch your app.</li>
                                       <li>Improved UTF-8 support: You can now use non-ASCII characters throughout MIRO</li>
                                       <li>Chinese language support (note that the MIRO configuration mode is not yet translated, though).</li>
-                                      <li>Import and export of GDX files: Besides Excel spreadsheets you can now also import and export GDX containers.</li>
+                                      <li>Import and export of GDX files: Besides Excel spreadsheets you can now also import and export 
+                                      GDX containers.</li>
                                       <li>GAMS Studio toolbar to launch MIRO.</li>
                                       <li>Experimental support for Gantt charts.</li>
                                       <li>Bug fixes and performance improvements.</li>
