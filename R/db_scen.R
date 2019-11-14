@@ -657,6 +657,28 @@ Scenario <- R6Class("Scenario",
                           return(FALSE)
                         }
                       },
+                      saveScriptResults = function(scriptResults){
+                        # save script results in database
+                        #
+                        # Args:
+                        #
+                        # Returns:
+                        #   R6 object (referece to self)
+                        
+                        stopifnot(inherits(scriptResults, "data.frame"), 
+                                  length(scriptResults) == 2L)
+                        
+                        names(scriptResults) <- private$dbSchema$colNames[['_scenScripts']][-1]
+                        
+                        for(i in 1:2){
+                          if(!is.character(scriptResults[[i]])){
+                            scriptResults[[i]] <- as.character(scriptResults[[i]])
+                          }
+                        }
+                        
+                        super$exportScenDataset(private$bindSidCol(scriptResults), 
+                                                private$dbSchema$tabName[['_scenScripts']])
+                      },
                       finalize = function(){
                         if(length(private$sid)){
                           flog.debug("Scenario: '%s' unlocked.", private$sid)

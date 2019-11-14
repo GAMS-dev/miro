@@ -159,8 +159,13 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
       scenTags   <<- NULL
     }
     activeScen$save(scenData[[scenStr]], msgProgress = lang$progressBar$saveScenDb)
-    if(config$saveTraceFile && length(traceData)){
-      activeScen$saveTraceData(traceData)
+    if(saveOutput){
+      if(config$saveTraceFile && length(traceData)){
+        activeScen$saveTraceData(traceData)
+      }
+      if(!is.null(scriptOutput) && scriptOutput$hasResults()){
+        activeScen$saveScriptResults(scriptOutput$getResults())
+      }
     }
     flog.debug("%s: Scenario saved to database (Scenario: %s).", uid, activeScen$getScenName())
   }, error = function(e) {

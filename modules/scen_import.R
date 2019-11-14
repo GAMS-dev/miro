@@ -16,8 +16,7 @@ observeEvent(input$btImportLocal, {
     idsToFetch <- seq_along(modelIn)
   }
   datasetsImported <- vapply(idsToFetch, function(i){
-    if(length(isolate(rv[[paste0("in_", i)]])) || 
-       isolate(rv$datasetsModified[i])){
+    if(length(isolate(rv[[paste0("in_", i)]]))){
       return(TRUE)
     }else{
       return(FALSE)

@@ -299,8 +299,11 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         loadAsName      <- sidsToLoad[[1]]
         sidsToLoad[[1]] <- NULL
       }
-      scenDataTmp <- db$loadScenarios(unlist(sidsToLoad, use.names = FALSE), 
+      sidsToLoadVector <- unlist(sidsToLoad, use.names = FALSE)
+      scenDataTmp <- db$loadScenarios(sidsToLoadVector, 
                                       msgProgress = lang$progressBar$loadScenDb)
+      scriptDataTmp <- db$loadScriptResults(sidsToLoadVector,
+                                            msgProgress = lang$progressBar$loadScenDb)
     }, error = function(e){
       flog.error("Some error occurred loading scenarios: '%s' from database. Error message: %s.", 
                  paste(sidsToLoad, collapse = ", "), e)
@@ -397,6 +400,11 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       }
       # rendering tables and graphs
       renderOutputData()
+      
+      # load script results
+      if(length(config$scripts$base)){
+        scriptOutput$loadResultsBase(scriptDataTmp[[1]])
+      }
     }else{
       noOutputData <<- TRUE
     }
@@ -471,7 +479,10 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       }
       
       source("./modules/scen_render.R", local = TRUE)
-      
+      # load script results
+      if(length(config$scripts$base)){
+        scriptOutput$loadResultsBase(scriptDataTmp[[i]], scenId)
+      }
     }, error = function(e){
       flog.error(e)
       errMsg  <<- lang$errMsg$loadScen$desc
