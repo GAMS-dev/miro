@@ -69,7 +69,7 @@ if("gdxrrw" %in% installedPackages){
 # vector of required files
 filesToInclude <- c("./global.R", "./R/util.R", if(useGdx) "./R/gdxio.R", "./R/json.R", "./R/load_scen_data.R", 
                     "./R/data_instance.R", "./R/worker.R", "./R/dataio.R", "./R/hcube_data_instance.R", "./R/miro_tabsetpanel.R",
-                    "./modules/render_data.R", "./modules/generate_data.R")
+                    "./modules/render_data.R", "./modules/generate_data.R", "./R/script_output.R")
 LAUNCHADMINMODE <- FALSE
 if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
   pb <- winProgressBar(title = "Loading GAMS MIRO", label = "Loading required packages",
@@ -1124,6 +1124,77 @@ if(!is.null(errMsg)){
               modelName, uid, workDir)
     
     worker$setWorkDir(workDir)
+    scriptOutput <- NULL
+    
+    if(config$activateModules$hcubeMode){
+      if(length(config$scripts)){
+        scriptOutput <- ScriptOutput$new(session, workDir, config$scripts, 
+                                         lang$nav$scriptOutput$errMsg)
+      }
+    }else{
+      if(length(config$scripts$base)){
+        scriptOutput <- ScriptOutput$new(session, workDir, config$scripts, 
+                                         lang$nav$scriptOutput$errMsg)
+        observeEvent(input$runScript, {
+          scriptId <- suppressWarnings(as.integer(input$runScript))
+          if(is.na(scriptId) || scriptId < 1 || 
+             scriptId > length(config$scripts$base)){
+            flog.error("A script with id: '%s' was attempted to be executed. However, this script does not exist. Looks like an attempt to tamper with the app!",
+                       input$runScript)
+            return()
+          }
+          if(scriptOutput$isRunning(scriptId)){
+            flog.debug("Button to interrupt script: '%s' clicked.", scriptId)
+            scriptOutput$interrupt(scriptId)
+            hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
+            hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
+            showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
+            
+            showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"), 
+                             lang$nav$scriptOutput$runButton)
+            return()
+          }
+          flog.debug("Button to execute script: '%s' clicked.", scriptId)
+          
+          if(!dir.exists(file.path(workDir, "scripts"))){
+            flog.info("No 'scripts' directory was found. Did you forget to include it in 'model_files.txt'?")
+            hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
+            showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
+            return(scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$noScript, scriptId))
+          }
+          showEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
+          hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
+          hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
+          
+          errMsg <- NULL
+          
+          tryCatch({
+            saveAsFlag <<- FALSE
+            source("./modules/scen_save.R", local = TRUE)
+            data <- scenData[[scenIdLong]]
+            names(data) <- c(names(modelOut), inputDsNames)
+            gdxio$wgdx(file.path(workDir, "scripts", "data.gdx"), data, squeezeZeros = 'n')
+          }, error = function(e){
+            flog.error("Problems writing gdx file for script: '%s'. Error message: '%s'.", 
+                       scriptId, conditionMessage(e))
+            errMsg <<- sprintf(lang$errMsg$fileWrite$desc, "data.gdx")
+            hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
+            hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
+            scriptOutput$sendContent(errMsg, scriptId)
+          })
+          if(!is.null(errMsg)){
+            return()
+          }
+          scriptOutput$run(scriptId)
+          showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"), 
+                           lang$nav$scriptOutput$interruptButton)
+        })
+        observeEvent(input$outputGenerated,{
+          noOutputData <<- FALSE
+        })
+      }
+    }
+    
     if(!dir.exists(workDir) && !dir.create(workDir, recursive = TRUE)){
       flog.fatal("Working directory could not be initialised.")
       showErrorMsg(lang$errMsg$fileWrite$title, lang$errMsg$fileWrite$desc)
@@ -1136,8 +1207,7 @@ if(!is.null(errMsg)){
                          btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
                          btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
                          btSplitView = 0L, noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
-                         loadHcubeHashSid = 0L, jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L,
-                         datasetsModified = vector(mode = "logical", length = length(modelIn)))
+                         loadHcubeHashSid = 0L, jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L)
     # list of scenario IDs to load
     sidsToLoad <- list()
     # list with input data
@@ -1190,8 +1260,6 @@ if(!is.null(errMsg)){
       }
     })
     
-    # activate solve button when all datasets that have to be 
-    # imported are actually imported
     lapply(seq_along(modelIn), function(i){
       if(modelIn[[i]]$type == "hot"){
         observeEvent(input[["in_" %+% i %+% "_select"]], {
@@ -1237,7 +1305,6 @@ if(!is.null(errMsg)){
           noCheck[i] <<- FALSE
           return()
         }
-        isolate(rv$datasetsModified[i] <- TRUE)
         # if scenario includes output data set dirty flag
         if(!noOutputData){
           dirtyFlag <<- TRUE
@@ -1290,18 +1357,14 @@ if(!is.null(errMsg)){
         i <- match(el, names(modelIn))[[1]]
         if(length(rv[["in_" %+% i]])){
           return(TRUE)
-        }else if(rv$datasetsModified[i]){
-          return(TRUE)
         }else{
           return(FALSE)
         }
       }, logical(1), USE.NAMES = FALSE)
       if(all(datasetsImported)){
         addClassEl(session, "#btSolve", "glow-animation")
-        enableEl(session, "#btSolve")
       }else{
         removeClassEl(session, "#btSolve", "glow-animation")
-        disableEl(session, "#btSolve")
       }
     })
     # UI elements (modalDialogs)

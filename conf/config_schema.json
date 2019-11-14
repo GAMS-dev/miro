@@ -1852,6 +1852,103 @@
             "minLength":4
           }
         }
+      },
+      "scripts":{
+        "type":"object",
+        "description": "Specify external scripts that will be executed and the results displayed in MIRO",
+        "additionalProperties":false,
+        "properties":{
+           "base": {
+             "type":"array",
+             "uniqueItems":true,
+             "items":{
+                "type":"object",
+                "description": "Scripts that will be displayed in the output section and feeded with both input and output data",
+                "additionalProperties":false,
+                "properties":{
+                  "tabTitle": {
+                    "description":"Tab title",
+                    "type":"string",
+                    "minLength":2
+                  },
+                  "id": {
+                    "description":"Unique identifier of script",
+                    "type":"string",
+                    "minLength":2
+                  },
+                  "command": {
+                    "description":"Command to be executed",
+                    "type":"string",
+                    "minLength":1
+                  },
+                  "args": {
+                    "description":"Additional arguments to pass to command",
+                    "type": "array",
+                    "items":{
+                      "type":"string",
+                      "minLength":1
+                    }
+                  },
+                  "outputFile": {
+                    "description":"Output filename that shall be displayed in MIRO once script is finished. Note that the file must be located inside the scripts folder.",
+                    "type":"string",
+                    "minLength":3
+                  },
+                  "timeout": {
+                    "description":"Timeout (seconds) when process shall be interrupted. -1 for infinity.",
+                    "type":"integer",
+                    "minimum":-1
+                  }
+                },
+                "required": ["tabTitle", "id", "command", "outputFile"]
+             }
+          },
+          "hcube": {
+            "type":"array",
+             "uniqueItems":true,
+             "items":{
+                "type":"object",
+                "description": "Scripts that will be displayed in the analysis section in the Hypercube mode and is feeded with input and output data of all selected scenarios",
+                "additionalProperties":false,
+                "properties":{
+                  "title": {
+                    "description":"Tab title",
+                    "type":"string",
+                    "minLength":2
+                  },
+                  "id": {
+                    "description":"Unique identifier of script",
+                    "type":"string",
+                    "minLength":2
+                  },
+                  "command": {
+                    "description":"Command to be executed",
+                    "type":"string",
+                    "minLength":1
+                  },
+                  "args": {
+                    "description":"Additional arguments to pass to command",
+                    "type": "array",
+                    "items":{
+                      "type":"string",
+                      "minLength":1
+                    }
+                  },
+                  "outputFile": {
+                    "description":"Output filename that shall be displayed in MIRO once script is finished",
+                    "type":"string",
+                    "minLength":3
+                  },
+                  "timeout": {
+                    "description":"Timeout (seconds) when process shall be interrupted. -1 for infinity.",
+                    "type":"integer",
+                    "minimum":-1
+                  }
+                },
+                "required": ["title", "id", "command", "outputFile"]
+             }
+          }
+        }
       }
    }
 }

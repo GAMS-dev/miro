@@ -394,6 +394,24 @@ $(document).ready(() => {
       $(id).show();
     }
   });
+  Shiny.addCustomMessageHandler('gms-scriptExecuted', (data) => {
+    let scriptOutputContainer;
+    if (data.sid == null) {
+      scriptOutputContainer = $(`#scriptOutput_${data.id} .script-output`);
+      Shiny.setInputValue('outputGenerated', 1,
+        {
+          priority: 'event',
+        });
+      $(`#scriptOutput_${data.id} .script-spinner`).hide();
+    } else {
+      scriptOutputContainer = $(`#scenScript_${data.sid}_${data.id}`);
+    }
+    const scriptOutputContainerIframe = scriptOutputContainer[0].contentWindow.document;
+    scriptOutputContainerIframe.open();
+    scriptOutputContainerIframe.write(data.data);
+    scriptOutputContainerIframe.close();
+    scriptOutputContainer.show();
+  });
   Shiny.addCustomMessageHandler('gms-showElReplaceTxt', (data) => {
     $(data.id).text(data.txt).show();
   });

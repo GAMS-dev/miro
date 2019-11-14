@@ -770,9 +770,11 @@ getNestedDep <- function(depStr){
     return(depStr)
   }
 }
-genSpinner <- function(id = NULL, hidden = FALSE, absolute = TRUE, externalStyle = FALSE){
+genSpinner <- function(id = NULL, hidden = FALSE, absolute = TRUE, externalStyle = NULL){
   div(id = id, class = "lds-ellipsis", 
-      style = if(!externalStyle) paste0("top:50%;left:50%;z-index:1;margin-left:-32px;margin-top:-32px;", 
+      style = paste0(if(is.null(externalStyle))
+        "top:50%;left:50%;z-index:1;margin-left:-32px;margin-top:-32px;" else
+        externalStyle, 
       if(absolute) "position:absolute;" else "display:block;", if(hidden) "display:none;"), 
       div(class = "gen-spinner"),
       div(class = "gen-spinner"),

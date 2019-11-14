@@ -86,6 +86,11 @@ observeEvent(input$loadActiveScenSplitComp, {
   }
 
   source("./modules/scen_render.R", local = TRUE)
+  # load script results
+  if(length(config$scripts$base)){
+    scriptOutput$loadResultsBase(scriptOutput$getResults(), 
+                                 scenId = scenId)
+  }
   sidsInSplitComp[id - 1L] <<- NA_integer_
 })
 

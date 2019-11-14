@@ -533,6 +533,72 @@ if(config$activateModules$hcubeMode){
       )
     }
   )
+  outputTabContent <- lapply(seq_along(outputTabs), function(tabId){
+    content <- lapply(outputTabs[[tabId]], function(i){
+      tabContent <- tagList(
+        tags$div(id = paste0("graph-out_", i), class = "render-output", 
+                 style = if(!is.null(configGraphsOut[[i]]$height)) 
+                   sprintf("min-height: %s;", addCssDim(configGraphsOut[[i]]$height, 5)),
+                 renderDataUI(paste0("tab_",i), type = configGraphsOut[[i]]$outType, 
+                              graphTool = configGraphsOut[[i]]$graph$tool, 
+                              customOptions = configGraphsOut[[i]]$options,
+                              filterOptions = configGraphsOut[[i]]$graph$filter,
+                              height = configGraphsOut[[i]]$height, 
+                              noDataTxt = lang$nav$outputScreen$boxResults$noData)
+        ),
+        tags$div(id = paste0("data-out_", i), class = "render-output", style = "display:none;",{
+          tryCatch({
+            renderDataUI(paste0("table-out_",i), type = "datatable", 
+                         noDataTxt = lang$nav$outputScreen$boxResults$noData)
+          }, error = function(e) {
+            flog.error(paste0(sprintf(lang$errMsg$renderTable$desc, name), e))
+            eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderTable$desc, name), sep = "\n")
+          })
+        })
+      )
+      if(length(outputTabTitles[[tabId]]) > 1L){
+        titleId <- match(i, outputTabs[[tabId]]) + 1L
+        return(tabPanel(
+          title = outputTabTitles[[tabId]][titleId],
+          value = paste0("outputTabset", tabId, "_", titleId - 1L),
+          tags$div(class="small-space"),
+          tabContent,
+          tags$div(class="small-space")
+        ))
+      }
+      return(tabContent)
+    })
+    return(tabPanel(
+      title = outputTabTitles[[tabId]][1],
+      value = paste0("outputTabset_", tabId),
+      if(length(outputTabTitles[[tabId]]) > 1L){
+        do.call(tabsetPanel, c(id = paste0("outputTabset", tabId), content))
+      }else{
+        tagList(tags$div(class="small-space"), 
+                content,
+                tags$div(class="small-space"))
+      }
+    ))
+  })
+  if(length(config$scripts$base)){
+    outputTabContent <- c(
+      outputTabContent,
+      lapply(seq_along(config$scripts$base), function(scriptId){
+        tabPanel(
+        title = config$scripts$base[[scriptId]]$tabTitle,
+        value = paste0("outputTabset_", length(outputTabContent) + scriptId),
+        tagList(tags$div(class="small-space"),
+                tags$button(type = "button", class = "btn btn-default btn-run-script", lang$nav$scriptOutput$runButton,
+                            onclick = paste0("Shiny.setInputValue('runScript', ", scriptId, ", {priority: 'event'})")),
+                tags$div(class="small-space"),
+                tags$div(id = paste0("scriptOutput_", scriptId), class="script-wrapper",
+                         tags$div(class = "out-no-data", lang$nav$outputScreen$boxResults$noData),
+                         tags$div(class="script-spinner", style = "display:none;text-align:center;",
+                                  genSpinner(absolute = FALSE, externalStyle = "margin-top: 50px")),
+                         tags$iframe(class = "script-output")),
+                tags$div(class="small-space"))
+      )}))
+  }
   tabItemList <- c(tabItemList, list(
     tabItem(tabName="gamsinter",
             if(config$activateModules$remoteExecution){
@@ -607,53 +673,7 @@ if(config$activateModules$hcubeMode){
               ),
               tags$div(class="small-space"),
               MIROtabBox(id = "outputTabset", btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs, 
-                         lapply(seq_along(outputTabs), function(tabId){
-                           content <- lapply(outputTabs[[tabId]], function(i){
-                             tabContent <- tagList(
-                               tags$div(id = paste0("graph-out_", i), class = "render-output", 
-                                        style = if(!is.null(configGraphsOut[[i]]$height)) 
-                                          sprintf("min-height: %s;", addCssDim(configGraphsOut[[i]]$height, 5)),
-                                        renderDataUI(paste0("tab_",i), type = configGraphsOut[[i]]$outType, 
-                                                     graphTool = configGraphsOut[[i]]$graph$tool, 
-                                                     customOptions = configGraphsOut[[i]]$options,
-                                                     filterOptions = configGraphsOut[[i]]$graph$filter,
-                                                     height = configGraphsOut[[i]]$height, 
-                                                     noDataTxt = lang$nav$outputScreen$boxResults$noData)
-                               ),
-                               tags$div(id = paste0("data-out_", i), class = "render-output", style = "display:none;",{
-                                 tryCatch({
-                                   renderDataUI(paste0("table-out_",i), type = "datatable", 
-                                                noDataTxt = lang$nav$outputScreen$boxResults$noData)
-                                 }, error = function(e) {
-                                   flog.error(paste0(sprintf(lang$errMsg$renderTable$desc, name), e))
-                                   eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderTable$desc, name), sep = "\n")
-                                 })
-                               })
-                             )
-                             if(length(outputTabTitles[[tabId]]) > 1L){
-                               titleId <- match(i, outputTabs[[tabId]]) + 1L
-                               return(tabPanel(
-                                 title = outputTabTitles[[tabId]][titleId],
-                                 value = paste0("outputTabset", tabId, "_", titleId - 1L),
-                                 tags$div(class="small-space"),
-                                 tabContent,
-                                 tags$div(class="small-space")
-                               ))
-                             }
-                             return(tabContent)
-                           })
-                           return(tabPanel(
-                             title = outputTabTitles[[tabId]][1],
-                             value = paste0("outputTabset_", tabId),
-                             if(length(outputTabTitles[[tabId]]) > 1L){
-                               do.call(tabsetPanel, c(id = paste0("outputTabset", tabId), content))
-                             }else{
-                               tagList(tags$div(class="small-space"), 
-                                       content,
-                                       tags$div(class="small-space"))
-                             }
-                           ))
-                         }))
+                         outputTabContent)
               )
             )
     )

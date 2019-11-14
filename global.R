@@ -1,5 +1,5 @@
 # gams model name
-modelName <- "pickstock"
+modelName <- "transport"
 # miro workspace
 miroWorkspaceDir <- ".miro"
 # turn debug mode on or off
@@ -131,6 +131,7 @@ exclTraceCols <- c("NLP", "MIP", "NumberOfEquations", "NumberOfVariables", "Numb
 tableNameTracePrefix <- "_sys_trace_"
 
 tableNameAttachPrefix <- "_sys_attach_"
+tableNameScriptsPrefix <- "_sys_scripts_"
 attachAllowExec       <- TRUE
 attachMaxFileSize     <- 1e7
 attachMaxNo           <- 5L

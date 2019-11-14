@@ -12,7 +12,6 @@ closeScenario <- function(){
   modelInputData     <<- modelInTemplate
   tableContent       <<- vector(mode = "list", length = length(modelIn))
   inputInitialized[] <<- FALSE
-  isolate(rv$datasetsModified[] <- FALSE)
   noCheck[]         <<- FALSE
   if(resetWidgetsOnClose){
     lapply(seq_along(modelIn), function(i){
@@ -113,8 +112,14 @@ closeScenario <- function(){
   scenTags          <<- NULL
   attachmentList    <<- tibble(name = vector("character", attachMaxNo), 
                                execPerm = vector("logical", attachMaxNo))
-  if(length(modelInMustImport))
-    disableEl(session, "#btSolve")
+  if(!config$activateModules$hcubeMode){
+    lapply(seq_along(config$scripts$base), function(scriptId){
+      hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
+      hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
+      showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
+    })
+  }
+  
   markSaved()
   noOutputData      <<- TRUE
   if(!is.null(errMsg)){

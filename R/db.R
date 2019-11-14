@@ -208,8 +208,14 @@ Db <- R6Class("Db",
                   badTables <- badTables[!is.na(badTables)]
                   return(list(names = badTables, headers = headers[names(headers) %in% badTables], errMsg = errMsg))
                 },
-                removeTablesModel     = function(){
-                  tableNames <- c(private$getTableNamesModel(), private$dbSchema$tabName[['_scenAttach']])
+                removeTablesModel     = function(tableNames = NULL){
+                  stopifnot(is.character(tableNames))
+                  
+                  if(!length(tableNames)){
+                    tableNames <- c(private$getTableNamesModel(), private$dbSchema$tabName[['_scenAttach']],
+                                    private$dbSchema$tabName[['_scenScripts']])
+                  }
+                  
                   # bring metadata table to front as others depend on it
                   if(inherits(private$conn, "PostgreSQL")){
                     query <- paste0("DROP TABLE IF EXISTS ",  
@@ -456,6 +462,42 @@ Db <- R6Class("Db",
                     })
                   })
                   return(scenData)
+                },
+                loadScriptResults = function(sids, limit = 1e7, msgProgress){
+                  # Load script results from database
+                  #
+                  # Args:
+                  #   sids:             scenario IDs to load 
+                  #   limit:            maxmimum number of rows to fetch per dataset
+                  #   msgProgress:      title and progress info for the progress bar
+                  #
+                  # Returns:
+                  #   list of scenario datasets
+                  
+                  #BEGIN error checks 
+                  sids <- suppressWarnings(as.integer(sids))
+                  stopifnot(!any(is.na(sids)), length(sids) >= 1)
+                  stopifnot(is.numeric(limit), length(limit) == 1)
+                  stopifnot(is.character(msgProgress$title), length(msgProgress$title) == 1)
+                  stopifnot(is.character(msgProgress$progress), length(msgProgress$progress) == 1)
+                  #END error checks
+                  
+                  #initialize progress bar
+                  prog <- Progress$new()
+                  on.exit(prog$close())
+                  prog$set(message = msgProgress$title, value = 0)
+                  incAmount <- 1/(length(sids) * length(private$tableNamesScenario))
+                  updateProgress <- function(detail = NULL) {
+                    prog$inc(amount = incAmount, detail = detail)
+                  }
+                  scriptData <- lapply(seq_along(sids), function(i){
+                    dataset <- self$importDataset(tableName = private$dbSchema$tabName[["_scenScripts"]], 
+                                                  subsetSids = sids[i], limit = limit)
+                    dataset[, private$scenMetaColnames['sid']] <- NULL
+                    updateProgress(detail = msgProgress$progress %+% i)
+                    return(dataset)
+                  })
+                  return(scriptData)
                 },
                 deleteRows        = function(tableName, colNames = NULL, values = NULL, conditionSep = c("AND", "OR"), 
                                              subsetSids = NULL){
