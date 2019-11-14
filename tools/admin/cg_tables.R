@@ -198,13 +198,6 @@ getDtOptions <- reactive({
                ))
     ),
     tags$div(class = "shiny-input-container",
-             tags$label(class = "cb-label", "for" = "dt_colReorder", lang$adminMode$tables$dt$colReorder$label),
-             tags$div(
-               tags$label(class = "checkbox-material", 
-                          checkboxInput("dt_colReorder", value = "ColReorder" %in% configJSON$datatable$extensions, label = NULL)
-               ))
-    ),
-    tags$div(class = "shiny-input-container",
              tags$label(class = "cb-label", "for" = "dt_buttons", lang$adminMode$tables$dt$buttons$label),
              tags$div(
                tags$label(class = "checkbox-material", 
@@ -496,19 +489,6 @@ observe({
     rv$tableConfig$datatable$extensions <<- dtExtensions$get()
   })
 })
-observeEvent(input$dt_colReorder, {
-  if(input$dt_colReorder){
-    rv$tableConfig$datatable$options$colReorder <<- TRUE
-    rv$tableConfig$datatable$extensions <<- c(rv$tableConfig$datatable$extensions, "ColReorder")
-  }else{
-    rv$tableConfig$datatable$options$colReorder <<- NULL
-    newExtensionsVector <- rv$tableConfig$datatable$extensions[!rv$tableConfig$datatable$extensions %in% "ColReorder"]
-    if(!length(newExtensionsVector))
-      newExtensionsVector <- NULL
-    rv$tableConfig$datatable$extensions <<- newExtensionsVector
-  }
-})
-
 
 observe({
   req(rv$tableConfig$tableType)
@@ -603,7 +583,7 @@ validateTableConfig <- function(configJSON){
   if(!length(configJSON$alias) || identical(nchar(trimws(configJSON$alias)), 0L)){
     return(lang$adminMode$widgets$validate[["val1"]])
   }
-  if(identical(grepl("\\s", currentWidgetSymbolName), TRUE)){
+  if(identical(grepl("\\s", currentTableSymbolName), TRUE)){
     return(lang$adminMode$widgets$validate$val39)
   }
   
@@ -613,7 +593,7 @@ validateTableConfig <- function(configJSON){
   if(!is.logical(configJSON$heatmap)){
     return(lang$adminMode$widgets$validate$val33)
   }
-  if(any(!configJSON$readonlyCols %in% inputSymHeaders[[currentWidgetSymbolName]])){
+  if(any(!configJSON$readonlyCols %in% inputSymHeaders[[currentTableSymbolName]])){
     return(lang$adminMode$widgets$validate$val34)
   }
   return("")
