@@ -89,8 +89,62 @@
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                         <img class="img-fluid" src="assets/images/launch-miro-btn.png" alt="Launch MIRO button" />
                                     </div>
-                                    In order to launch MIRO from the old GAMS IDE or via the command line, the GAMS option statement <span class="code" style="white-space:nowrap">miro=launch</span> has to be added to the command line (e.g. <kbd style="white-space: nowrap;">cd path/to/model && gams transport.gms miro=launch</kbd>).
-                                    <p><b>Note</b>: To run GAMS MIRO from the command prompt, it has to be either added to the <a href="https://en.wikipedia.org/wiki/PATH_(variable)" target="_blank">PATH</a> environment variable of your operating system or called with an absolute path!</p>
+                                    <p id = "start-via-command-line">If MIRO is not to be started from Studio, but from the command line, a few environment variables need to be set first before 
+                                    MIRO can be started. On Windows the default installation location is <span class="code">C:\Program Files\GAMS MIRO\GAMS MIRO.exe</span> 
+                                    or <span class="code">C:\Users\&lt;user&gt;\AppData\Local\Programs\GAMS MIRO\GAMS MIRO.exe</span> depending on whether the installation 
+                                    was performed for all users or not.
+                                    <ul class="nav nav-tabs" id="startMIRO" role="tablist">
+                                      <li class="nav-item">
+                                        <a class="nav-link active" id="win-start" data-toggle="tab" href="#windows" role="tab" aria-controls="windows" aria-selected="true">Windows</a>
+                                      </li>
+                                      <li class="nav-item">
+                                        <a class="nav-link" id="macos-start" data-toggle="tab" href="#macos" role="tab" aria-controls="macos" aria-selected="false">MacOS</a>
+                                      </li>
+                                      <li class="nav-item">
+                                        <a class="nav-link" id="linux-start" data-toggle="tab" href="#linux" role="tab" aria-controls="linux" aria-selected="false">Linux</a>
+                                      </li>
+                                    </ul>
+                                    <div class="tab-content tab-console-content">
+                                      <div class="tab-pane fade show active" id="windows" role="tabpanel" aria-labelledby="win-start">
+                                          <div class = "console-box">
+                                            <span class="console-content">
+                                              &gt; set MIRO_DEV_MODE=true<br>
+                                              &gt; set MIRO_MODEL_PATH=C:\Users\&lt;user&gt;\Documents\GAMSStudio\workspace\transport.gms<br>
+                                              &gt; set MIRO_MODE=base<br>
+                                              &gt; "C:\Program Files\GAMS MIRO\GAMS MIRO.exe"<br>
+                                            </span>
+                                          </div>
+                                      </div>
+                                      <div class="tab-pane fade" id="macos" role="tabpanel" aria-labelledby="macos-start">
+                                         <div class = "console-box">
+                                           <span class="console-content">
+                                             &gt; export MIRO_DEV_MODE=true<br>
+                                             &gt; export MIRO_MODEL_PATH="/Users/&lt;user&gt;/Documents/model/transport/transport.gms"<br>
+                                             &gt; export MIRO_MODE=base<br>
+                                             &gt; "/Applications/GAMS MIRO.app/Contents/MacOS/GAMS MIRO"<br>
+                                           </span>
+                                         </div>
+                                      </div>
+                                      <div class="tab-pane fade" id="linux" role="tabpanel" aria-labelledby="linux-start">
+                                         <div class = "console-box">
+                                           <span class="console-content">
+                                             &gt; export MIRO_DEV_MODE=true<br>
+                                             &gt; export MIRO_MODEL_PATH=/Users/&lt;user&gt;/Documents/model/transport/transport.gms<br>
+                                             &gt; export MIRO_MODE=base<br>
+                                             &gt; /GAMS-MIRO-1.0.AppImage<br>
+                                           </span>
+                                         </div>
+                                      </div>
+                                    </div>
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Note:</b>
+                                            <p>GAMS MIRO requires GAMS version 30.0 or later. Make sure this version is added to the PATH variable of the operating system!</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
                                 </div><!--//section-block-->
                                 <div  id="miro-structure"  class="section-block">
                                     <h3 class="block-title">Structure of GAMS MIRO</h3>
@@ -128,12 +182,7 @@
 
                                     <h6>Main window:</h6>
                                     <p>The main window always displays the content of the section selected by the user in the navigation bar. Here, for example, data is visualized, scenarios are compared and analyses are carried out.</p>
-                                    <p>Besides navigation bar and main window, some important functions are accessible via the header bar:</p>
-                                    <ul class="fa-ul">
-                                      <li><span class="fa-li" id = "launch-hcube-button"><i class="fa fa-cube"></i><i class="fa fa-arrow-right"></i></span><b>&nbsp;Launch Hypercube: </b><br/>
-                                        &nbsp;Launches the <a href="./hypercube.html">Hypercube mode</a>.
-                                      </li>
-                                    </ul>
+                                    <p>Besides navigation bar and main window, some functions are accessible in the header bar:</p>
                                     <ul>
                                       <li><b>Scenario:</b><br/>
                                         Scenario management - load, save, edit, delete and export scenario data.
@@ -167,6 +216,15 @@
                                         <ul>
                                         <li>In addition, already saved results can be re-imported and compared at any time.</li>
                                         </ul>
+                                        <div class="callout-block callout-success">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-thumbs-up"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <b class="callout-title">What is a scenario? What is a sandbox scenario? What data is used for a model run?</b>
+                                              <p>To understand the MIRO data concept, what a scenario is and how it differs from a sandbox scenario, you should have a look at the sectios <a href = "#data-concept" class="scrollto">data concept</a> and <a href = "#scenario-concept" class="scrollto">scenario concept</a>!</p>
+                                          </div><!--//content-->
+                                        </div><!--//callout-block-->
                                     </div>
                                     <div id="import-data"  class="section-block">
                                         <h3 class="block-title">Import data</h3>
@@ -181,9 +239,13 @@
                                                       <img class="img-fluid" src="assets/images/import-local.png" alt="Local Import" />
                                                 </div>
                                             </div>
-                                        <p><br>You can decide whether you want to import an existing scenario from the database or load a spreadsheet from your local computer. Scenarios that you have previously named and saved in the MIRO database will be displayed in <i>Database</i>. 
-                                        When you start a GAMS MIRO app for the first time, GAMS automatically extracts the data from your model and loads this data into the database. This happens every time you rebuild your MIRO app i.e. every time you launch it from GAMS Studio or via the GAMS option <kbd>miro=launch</kbd>. 
-                                        A special scenario with the name <i>default</i> is created for this purpose and overridden every time you rebuild your app!
+                                        <p><br>You can decide whether you want to import an existing scenario from the database or load a spreadsheet from your local computer. 
+                                        Scenarios that you have previously named and saved in the MIRO database will be displayed in <i>Database</i>. 
+                                        When you start a GAMS MIRO app for the first time, GAMS automatically extracts the data from your model and loads this data into the 
+                                        database. This happens every time you rebuild your MIRO app i.e. every time you launch it in the 
+                                        <a href = "./model.html#development-mode">development mode</a> via GAMS Studio 
+                                        or the command line. A special scenario with the name <i>default</i> is created for this purpose and overridden every time you 
+                                        rebuild your app!
                                         </p>
                                         <div class="callout-block callout-success">
                                           <div class="icon-holder">
@@ -191,7 +253,8 @@
                                           </div><!--//icon-holder-->
                                           <div class="content">
                                               <b class="callout-title">Tip:</b>
-                                                <p>Every time you start a MIRO app in development mode (via GAMS Studio or the GAMS option <kbd>miro=launch</kbd>), the data relevant to MIRO is extracted from your model and stored in the MIRO database as a special scenario named <i>default</i>.</p>
+                                                <p>Every time you start a MIRO app in <a href = "./model.html#development-mode">development mode</a> (via GAMS Studio or the command line), the data relevant 
+                                                to MIRO is extracted from your model and stored in the MIRO database as a special scenario named <i>default</i>.</p>
                                             </div><!--//content-->
                                         </div><!--//callout-block-->
                                         <p>To import a file from your local machine, either in the form of a gdx container or as an Excel spreadsheet, select the menu item <i>Local</i> and click on </i>browse</i>. Navigate to the directory where your file resides and select it.
@@ -267,19 +330,10 @@
                                         </div>
                                         <p></p>
                                         <h6 class="callout-title">Download temporary files:</h6>
-                                        <p>All temporarily created files of the model run (like solution reports or the <span class="code">lst</span> and <span class="code">log</span> files) can be downloaded separately or as a ZIP archive with a click on the <img class="img-fluid" width="25" height="25" align="middle" src="assets/images/advanced-button.png" alt="Download temporary files" /> button.</p>
+                                        <p>If this <a href = "./customize.html#general-temp-dir">option</a> is not disabled, all temporarily created files of the model run (like solution reports or the <span class="code">lst</span> and <span class="code">log</span> files) can be downloaded separately or as a ZIP archive with a click on the <img class="img-fluid" width="25" height="25" align="middle" src="assets/images/advanced-button.png" alt="Download temporary files" /> button.</p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                              <img class="img-fluid" style="max-height:325pt;" src="assets/images/advanced-options.png" alt="Output data screen - scalars" />
                                         </div>
-                                        <div class="callout-block callout-success">
-                                          <div class="icon-holder">
-                                              <i class="fas fa-thumbs-up"></i>
-                                          </div><!--//icon-holder-->
-                                          <div class="content">
-                                              <b class="callout-title">What is a scenario? What is a sandbox scenario? What data is used for a model run?</b>
-                                              <p>To understand the MIRO data concept, what a scenario is and how it differs from a sandbox scenario, you should have a look at the sectios <a href = "#data-concept" class="scrollto">data concept</a> and <a href = "#scenario-concept" class="scrollto">scenario concept</a>!</p>
-                                          </div><!--//content-->
-                                        </div><!--//callout-block-->
                                     </div><!--//section-block-->
                                     <div id="save-results"  class="section-block">
                                         <h3 class="block-title">Save scenario</h3>
@@ -524,6 +578,13 @@
     <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
     <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
     <script type="text/javascript" src="assets/js/main.js"></script>
-
+    <script type = "application/javascript">
+       if (navigator.appVersion.indexOf("Mac")!==-1){
+         $('#startMIRO a[href="#macos"]').tab('show')
+       };
+       if (navigator.appVersion.indexOf("Linux")!==-1){
+         $('#startMIRO a[href="#linux"]').tab('show')
+       };
+    </script>
 </body>
 </html>
