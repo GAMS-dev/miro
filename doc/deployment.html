@@ -74,9 +74,14 @@
                             <section id="deployment-introduction" class="doc-section">
                                 <h2 class="section-title">Introduction</h2>
                                 <div class="section-block">
-                                    <div class="callout-warning" style="padding:5px;">
+                                    <div class="callout-warning" style="padding:5px;margin:10px 0px;">
                                         <p style="margin: 5px;"> This chapter deals with the deployment of a MIRO application. All configuration should be completed beforehand.</p>
                                     </div><!--//callout-block-->
+                                    <p>This chapter deals with the things that need to be done to make a MIRO application ready for its end use. When a MIRO 
+                                    application is deployed, it goes "live" and can be used in daily business. The starting point is a completely configured app, 
+                                    the chapters <a href="./model.html">model deployment</a> and <a href="./customize.html">configuration</a> are therefore 
+                                    run through. This means that all required GAMS symbols have been integrated into MIRO and all graphics, widgets and options 
+                                    have been configured.</p>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
                             <section id="development-deployment" class="doc-section">
@@ -117,6 +122,24 @@
                                     </div><!--//callout-block-->
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
+                            <section id="step-by-step" class="doc-section">
+                                <h2 class="section-title">App deployment - step by step</h2>
+                                <div class="section-block">
+                                    <p>Deploying an application consists of two parts: The creation of an app bundle and its integration into the final deployment environment.</p>
+                                    <ol>
+                                      <li>The creation of an app bundle
+                                        <p>As explained <a href="#development-deployment" class="scrollto">before</a>, we need the latest miroconf files. To make sure that 
+                                        the files are up to date, it is better to create both files again by starting both the <i>Base mode</i> and the <i>Hypercube mode</i> 
+                                        e.g. from GAMS Studio.</p>
+                                        <p>Creation of the <i>.miroapp</i> bundle</p>
+                                      </li> 
+                                      <li style="padding-top:10px;">Integration into the deployment environment
+                                      </li>
+                                    </ol>
+                                    
+                                    Integration into the deployment environment takes place on the target machine of the application. The packed app bundle can now be given to the end user.
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
                         </div><!--//content-inner-->
                     </div><!--//doc-content-->
                     <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
@@ -124,6 +147,7 @@
 	                        <nav id="doc-menu" class="nav doc-menu flex-column sticky">
 	                            <a class="nav-link scrollto" href="#deployment-introduction">Introduction</a>
 	                            <a class="nav-link scrollto" href="#development-deployment">Development vs. Deployment</a>
+	                            <a class="nav-link scrollto" href="#step-by-step">App deployment - step by step</a>
                         </div>
                     </div><!--//doc-sidebar-->
                 </div><!--//doc-body-->
