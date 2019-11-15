@@ -78,6 +78,7 @@
                             <section id="pie-chart" class="doc-section">
                                 <h2 class="section-title">Pie chart</h2>
                                 <div class="section-block">
+                                  <p>MIRO uses <a href = "https://plot.ly/r/pie-charts/" target = "_blank">Plotly</a> to render pie charts.</p>
                                   <h3 class="block-title">Configuration</h3>
                                     <p>Any GAMS symbol with a value column can be displayed as a pie chart.</p>
                                     <p>Example: Model <i>Pickstock</i>, parameter <i>weight</i></p>
@@ -129,6 +130,7 @@ stock_weight(s) = w.l(s);
                             <section id="donut-chart" class="doc-section">
                                 <h2 class="section-title">Donut chart</h2>
                                 <div class="section-block">
+                                  <p>MIRO uses <a href = "https://plot.ly/r/pie-charts/#donut-chart" target = "_blank">Plotly</a> to render donut charts.</p>
                                   <h3 class="block-title">Configuration</h3>
                                     <p>A donut chart is a pie chart with a hole. In the configuration mode the donut chart is therefore to be found under <i>pie chart</i>. 
                                     Only the size of the donut hole can be configured here additionally.</p>
@@ -162,6 +164,7 @@ stock_weight(s) = w.l(s);
                             <section id="bar-chart" class="doc-section">
                                 <h2 class="section-title">Bar chart</h2>
                                 <div class="section-block">
+                                  <p>MIRO uses <a href = "https://plot.ly/r/bar-charts/" target = "_blank">Plotly</a> to render bar charts.</p>
                                   <h3 class="block-title">Configuration</h3>
                                     <p>If a symbol is to be visualized as a bar chart, an index must be specified for the x-axis as well as for the y-axis. 
                                     Several data series can be plotted simultaneously on the x-axis. </p>
@@ -236,6 +239,7 @@ stock_weight(s) = w.l(s);
                             <section id="scatter-chart" class="doc-section">
                                 <h2 class="section-title">Scatter plot</h2>
                                 <div class="section-block">
+                                  <p>MIRO uses <a href = "https://plot.ly/r/line-and-scatter/" target = "_blank">Plotly</a> to render scatter plots.</p>
                                   <h3 class="block-title">Configuration</h3>
                                     <p></p>
                                     <p>Example: Model <i>Pickstock</i>, parameter <i>absolute error</i></p>
@@ -327,6 +331,7 @@ abserror(ntd,'absolute error test')    = error(ntd);
                             <section id="line-chart" class="doc-section">
                                 <h2 class="section-title">Line chart</h2>
                                 <div class="section-block">
+                                  <p>MIRO uses <a href = "https://plot.ly/r/line-and-scatter/" target = "_blank">Plotly</a> to render line charts.</p>
                                   <h3 class="block-title">Configuration</h3>
                                     <p>Line charts also include area charts.</p>
                                     <p>Example: Model <i>Pickstock</i>, parameter <i>absolute error</i></p>
@@ -398,6 +403,7 @@ abserror(ntd,'absolute error test')    = error(ntd);
                             <section id="bubble-chart" class="doc-section">
                                 <h2 class="section-title">Bubble chart</h2>
                                 <div class="section-block">
+                                  <p>MIRO uses <a href = "https://plot.ly/r/bubble-charts/" target = "_blank">Plotly</a> to render bubble charts.</p>
                                   <h3 class="block-title">Configuration</h3>
                                     <p>A bubble chart is a scatter plot where the size and the color of a single plot depends on a value.</p>
                                     <p>Example: Model <i>Pickstock</i>, parameter <i>absolute error</i></p>
@@ -462,6 +468,7 @@ abserror(ntd,'absolute error test')    = error(ntd);
                             <section id="histogram-chart" class="doc-section">
                                 <h2 class="section-title">Histogram</h2>
                                 <div class="section-block">
+                                  <p>MIRO uses <a href = "https://plot.ly/r/histograms/" target = "_blank">Plotly</a> to render histograms.</p>
                                   <h3 class="block-title">Configuration</h3>
                                     <p></p>
                                     <p>Example: Model <i>Pickstock</i>, parameter <i>absolute error</i></p>
@@ -513,6 +520,7 @@ abserror(ntd,'absolute error test')    = error(ntd);
                             <section id="map-chart" class="doc-section">
                                 <h2 class="section-title">Map</h2>
                                 <div class="section-block">
+                                  <p>MIRO uses <a href = "https://rstudio.github.io/leaflet/" target = "_blank">Leaflet</a> to render maps.</p>
                                   <h3 class="block-title">Configuration</h3>
                                     <p>Example: Model <i>Transport</i>, parameter <i>shipment quantities in cases</i></p>
                                     <p>The parameter to plot represents the shipment quantities between canning plants and markets. <br>
@@ -671,6 +679,7 @@ schedule(i,j, 'quantities') = x.l(i,j);
                             <section id="timeseries-chart" class="doc-section">
                                 <h2 class="section-title">Time series diagram</h2>
                                 <div class="section-block">
+                                  <p>MIRO uses <a href = "https://rstudio.github.io/dygraphs/" target = "_blank">DyGraphs</a> to render time series diagrams.</p>
                                   <h3 class="block-title">Configuration</h3>
                                     <p>As the name of the graphic type suggests, the graphics configured here are based on time series. 
                                     An important property of such time series is the format of the data. You should make sure that the elements of the index set, which should represent the time component of your graphic, have their data available in a date format or at least can be formatted into such a format. 
@@ -815,6 +824,7 @@ dowVSindex(d,'index fund')     = fund(d);
                             <section id="pivot-chart" class="doc-section">
                                 <h2 class="section-title">Pivot table</h2>
                                 <div class="section-block">
+                                  <p>MIRO uses <a href = "https://cran.r-project.org/web/packages/rpivotTable/vignettes/rpivotTableIntroduction.html" target = "_blank">rpivottable</a> to render pivot tables.</p>
                                   <h3 class="block-title">Configuration</h3>
                                     <p>The live preview of the pivot table already allows you to move and change the elements directly in the graphic. 
                                     This can lead to confusion, because the actual configuration of the graphic has to be done on the left side as with all other graphics. 
@@ -851,6 +861,7 @@ dowVSindex(d,'index fund')     = fund(d);
                             <section id="gantt-chart" class="doc-section">
                                 <h2 class="section-title">Gantt chart</h2>
                                 <div class="section-block">
+                                  <p>MIRO uses <a href = "https://github.com/daattali/timevis" target = "_blank">timevis</a> to render gantt charts.</p>
                                   <h3 class="block-title">Configuration</h3>
                                     <p>The GAMS symbol, whose data should be visualized as a gantt chart, must contain the following index sets: </p>
                                     <ul>
