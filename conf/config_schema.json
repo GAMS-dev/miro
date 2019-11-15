@@ -159,6 +159,12 @@
                "type": "boolean",
                "default":false,
                "required":false
+            },
+            "downloadTempFiles":{
+               "description": "Should users be allowed to access the temporary directory out of MIRO?",
+               "type": "boolean",
+               "default":true,
+               "required":false
             }
          }
       },
