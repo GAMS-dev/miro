@@ -1,8 +1,7 @@
 observeEvent(input$removeDbTables, {
-  showModal(modalDialog(paste0(
-    "Please confirm that you want to remove all database tables that belong to the model: ",
-    modelName, " by typing \"confirm\" in the text field below."),
-    textInput("removeDbConfirmTxt", NULL),
+  showModal(modalDialog(
+    "Please confirm that you want to remove all database tables that belong to the model.",
+    checkboxInput_MIRO("removeDbConfirmCb", "Remove all tables?"),
     footer = tagList(
       modalButton("Cancel"),
       actionButton("removeDbTablesConfirm", "Confirm", class = "bt-highlight-1 bt-gms-confirm")
@@ -10,12 +9,39 @@ observeEvent(input$removeDbTables, {
     title = "Remove database tables"))
 })
 observeEvent(input$removeDbTablesConfirm, {
-  if(!identical(input$removeDbConfirmTxt, "confirm")){
+  if(isFALSE(input$removeDbConfirmCb)){
     return()
   }
   disableEl(session, "#removeDbTablesConfirm")
   tryCatch({
     db$removeTablesModel()
+  }, error = function(e){
+    flog.error("Unexpected error: '%s'. Please contact GAMS if this error persists.", e)
+    showHideEl(session, "#unknownError", 6000L)
+  })
+  removeModal()
+  showHideEl(session, "#removeSuccess", 3000L)
+})
+observeEvent(input$removeDbOrphans, {
+  showModal(modalDialog(
+    "Please confirm that you want to remove all orphaned database tables that belong to the model.",
+    checkboxInput_MIRO("removeDbOrphansConfirmCb", "Remove all orphaned tables?"),
+    footer = tagList(
+      modalButton("Cancel"),
+      actionButton("removeDbOrphansConfirm", "Confirm", class = "bt-highlight-1 bt-gms-confirm")
+    ),
+    title = "Remove orphaned database tables"))
+})
+observeEvent(input$removeDbOrphansConfirm, {
+  if(isFALSE(input$removeDbOrphansConfirmCb)){
+    return()
+  }
+  disableEl(session, "#removeDbOrphansConfirmCb")
+  tryCatch({
+    orphanedTables <- db$getOrphanedTables(hcubeScalars = getHcubeScalars(modelIn))
+    if(length(orphanedTables)){
+      db$removeTablesModel(orphanedTables)
+    }
   }, error = function(e){
     flog.error("Unexpected error: '%s'. Please contact GAMS if this error persists.", e)
     showHideEl(session, "#unknownError", 6000L)

@@ -1253,7 +1253,13 @@
       "removeDialogTitle": "删除数据库表",
       "removeDialogDesc": "确定要删除所有数据库表吗？该操作无法撤消！ 在继续该操作之前，请先保存数据库。",
       "removeDialogCancel": "取消",
-      "removeDialogConfirm": "删除表格"
+      "removeDialogConfirm": "删除表格",
+      "removeOrphansWrapper": "You want to remove all the orphaned tables that belong to your model?",
+      "removeOrphansDialogBtn": "Delete all orphaned database tables",
+      "removeOrphansDialogTitle": "Remove orphaned database tables",
+      "removeOrphansDialogDesc": "Are you sure that you want to delete all orphaned database tables? This can not be undone! You might want to save the database first before proceeding.",
+      "removeOrphansDialogCancel": "取消",
+      "removeOrphansDialogConfirm": "删除表格"
     },
     "graphs":{
       "toolCategories": {

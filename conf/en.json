@@ -1254,7 +1254,13 @@
       "removeDialogTitle": "Remove database tables",
       "removeDialogDesc": "Are you sure that you want to delete all database tables? This can not be undone! You might want to save the database first before proceeding.",
       "removeDialogCancel": "Cancel",
-      "removeDialogConfirm": "Remove tables"
+      "removeDialogConfirm": "Remove tables",
+      "removeOrphansWrapper": "You want to remove all the orphaned tables that belong to your model?",
+      "removeOrphansDialogBtn": "Delete all orphaned database tables",
+      "removeOrphansDialogTitle": "Remove orphaned database tables",
+      "removeOrphansDialogDesc": "Are you sure that you want to delete all orphaned database tables? This can not be undone! You might want to save the database first before proceeding.",
+      "removeOrphansDialogCancel": "Cancel",
+      "removeOrphansDialogConfirm": "Remove tables"
     },
     "graphs":{
       "toolCategories": {

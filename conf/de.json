@@ -1254,7 +1254,13 @@
       "removeDialogTitle": "Datenbanktabellen entfernen",
       "removeDialogDesc": "Sind Sie sicher, dass Sie alle Datenbanktabellen löschen wollen? Das kann nicht rückgängig gemacht werden! Möglicherweise möchten Sie zuerst die Datenbank speichern, bevor Sie fortfahren.",
       "removeDialogCancel": "Abbrechen",
-      "removeDialogConfirm": "Tabellen entfernen"
+      "removeDialogConfirm": "Tabellen entfernen",
+      "removeOrphansWrapper": "Sie wollen alle verwaisten Tabellen, die zu Ihrem Modell gehören, entfernen?",
+      "removeOrphansDialogBtn": "Alle verwaisten Datenbanktabellen löschen",
+      "removeOrphansDialogTitle": "Verwaiste Datenbanktabellen löschen",
+      "removeOrphansDialogDesc": "Sind Sie sicher, dass Sie alle verwaisten Datenbanktabellen löschen wollen? Das kann nicht rückgängig gemacht werden! Möglicherweise möchten Sie die Datenbank zuerst speichern, bevor Sie fortfahren.",
+      "removeOrphansDialogCancel": "Abbrechen",
+      "removeOrphansDialogConfirm": "Tabellen entfernen"
     },
     "graphs":{
       "toolCategories": {

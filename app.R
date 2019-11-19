@@ -1,5 +1,5 @@
 #version number
-MIROVersion <- "0.9.3"
+MIROVersion <- "0.9.4"
 APIVersion  <- "1"
 MIRORDate   <- "Nov 19 2019"
 #####packages:
@@ -541,10 +541,7 @@ if(is.null(errMsg) && debugMode &&
   local({
     orphanedTables <- NULL
     tryCatch({
-      orphanedTables <- db$getOrphanedTables(hcubeScalars = names(modelIn)[vapply(seq_along(modelIn), 
-                                                                                  function(i) 
-                                                                                    identical(modelIn[[i]]$type, "dropdown"), 
-                                                                                  logical(1L), USE.NAMES = FALSE)])
+      orphanedTables <- db$getOrphanedTables(hcubeScalars = getHcubeScalars(modelIn))
     }, error = function(e){
       flog.error("Problems fetching orphaned database tables. Error message: '%s'.", e)
       errMsg <<- paste(errMsg, sprintf("Problems fetching orphaned database tables. Error message: '%s'.", 
@@ -552,7 +549,8 @@ if(is.null(errMsg) && debugMode &&
     })
     if(length(orphanedTables)){
       msg <- sprintf("There are orphaned tables in your database: '%s'.\n
-This could be caused because you used a different database schema in the past (e.g. due to different inputs and/or outputs).",
+This could be caused because you used a different database schema in the past (e.g. due to different inputs and/or outputs). 
+Note that you can remove orphaned database tables using the configuration mode ('Database management' section).",
                      paste(orphanedTables, collapse = "', '"))
       flog.warn(msg)
     }

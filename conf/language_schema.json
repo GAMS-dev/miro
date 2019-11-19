@@ -5787,6 +5787,36 @@
               "type":"string",
               "minLength":1,
               "required":true
+            },
+            "removeOrphansWrapper":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeOrphansDialogBtn":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeOrphansDialogTitle":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeOrphansDialogDesc":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeOrphansDialogCancel":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeOrphansDialogConfirm":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
             }
           }
         },

@@ -1167,3 +1167,10 @@ zipMiro <- function(zipfile, files, baseDir, ...){
   
   suppressMessages(zip::zip(zipfile, files, ...))
 }
+getHcubeScalars <- function(modelIn){
+  return(names(modelIn)[vapply(seq_along(modelIn), 
+                               function(i) 
+                                 identical(modelIn[[i]]$type, "dropdown") ||
+                                 identical(modelIn[[i]]$type, "checkbox"), 
+                               logical(1L), USE.NAMES = FALSE)])
+}
