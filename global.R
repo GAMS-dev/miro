@@ -50,7 +50,7 @@ logFileDir <- paste0("logs", .Platform$file.sep)
 # whether to print log output in console (in additional to file) or not
 logToConsole <- TRUE
 # specify the logging level (["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"])
-loggingLevel <- "TRACE"
+loggingLevel <- Sys.getenv("MIRO_LOG_LEVEL", "TRACE")
 # name of table with scenario/hcube metadata as well as scenario locks
 scenMetadataTablePrefix <- "_sys_metadata_"
 tableNameMetaHcubePrefix <- "_sys_hcubemeta_"
