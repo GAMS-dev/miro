@@ -474,21 +474,29 @@ if(LAUNCHHCUBEMODE){
     ),
     tabItem(tabName = "hcubeAnalyze",
             box(width = NULL, solidHeader = TRUE, status="primary", title = lang$nav$hcubeAnalyze$title, 
-                tabsetPanel(id = "tabs_paver_results",
-                            tabPanel("Index", value = "tabs_paver_1",
+                tabsetPanel(id = "analysisResults",
+                            tabPanel("Index", value = "analysisResults_1",
                                      tags$div(style = "overflow: auto; height: 75vh;",
-                                              tags$div(id = "paverLoad", class = "centered-div",
+                                              tags$div(id = "analysisLoad", class = "centered-div",
                                                        style = "display:none;",
                                                        lang$nav$hcubeAnalyze$loadMsg,
-                                                       genSpinner(hidden = TRUE),
-                                                       actionButton("btPaverInterrupt", lang$nav$hcubeAnalyze$btCancel)
+                                                       tags$div(class = "space"),
+                                                       genSpinner(absolute = FALSE),
+                                                       actionButton("btAnalysisInterrupt", lang$nav$hcubeAnalyze$btCancel)
                                               ),
                                               tags$div(id = "paverFail", class = "gmsalert gmsalert-error", 
                                                        lang$nav$hcubeAnalyze$failMsg
                                               ),
                                               tags$div(id = "newPaverRunButton", class = "centered-div",
-                                                       actionButton("btNewPaverRun", lang$nav$hcubeAnalyze$btNew)
+                                                       actionButton("btNewAnalysisRun", lang$nav$hcubeAnalyze$btNew)
                                               ),
+                                              tags$div(id = "scriptOutput_hcube", class="script-wrapper",
+                                                       tags$div(class = "out-no-data", lang$nav$outputScreen$boxResults$noData,
+                                                                style = "display:none"),
+                                                       tags$div(class = "out-no-data script-error",
+                                                                style = "display:none"),
+                                                       tags$div(class = "space"),
+                                                       tags$iframe(class = "script-output", style = "height:70vh;")),
                                               htmlOutput("paverResults")
                                      )
                             ))

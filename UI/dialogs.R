@@ -104,17 +104,12 @@ showRemoveScenDialog <- function(forwardTo){
 }
 
 showCloseScenDialog <- function(scenId){
-  if(LAUNCHHCUBEMODE){
-    modeDescriptor <- "dialogRemoveHCJob"
-  }else{
-    modeDescriptor <- "dialogCloseScen"
-  }
   showModal(modalDialog(
-    title = lang$nav[[modeDescriptor]]$title,
-    lang$nav[[modeDescriptor]]$desc,
+    title = lang$nav[["dialogCloseScen"]]$title,
+    lang$nav[["dialogCloseScen"]]$desc,
     footer = tagList(
-      modalButton(lang$nav[[modeDescriptor]]$cancelButton),
-      actionButton("btCloseFinal_" %+% scenId, lang$nav[[modeDescriptor]]$okButton, 
+      modalButton(lang$nav[["dialogCloseScen"]]$cancelButton),
+      actionButton("btCloseFinal_" %+% scenId, lang$nav[["dialogCloseScen"]]$okButton, 
                    class = "bt-highlight-1 bt-gms-confirm")),
     fade=FALSE, easyClose=FALSE))
 }
@@ -791,73 +786,109 @@ showDuplicatedScenDialog <- function(noDupScen, dupScenTags, noScen){
 }
 # Hypercube analyze module
 showHcubeLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver = "", 
-                                      maxConcurentLoad = 0L, hasRemovePerm = FALSE, exclAttribChoices = NULL){
+                                      maxConcurentLoad = 0L, hasRemovePerm = FALSE, exclAttribChoices = NULL,
+                                      customScripts = NULL){
+  analysisTabset <- tagList(lang$nav$hcubeMode$hcubeLoadDialog$paverDesc,
+                            selectInput("selPaverAttribs", lang$nav$hcubeMode$hcubeLoadDialog$selPaverAttribs, 
+                                        attribs, multiple = TRUE, width = "100%"),
+                            tags$div(style = "text-align:left;",
+                                     tags$i(class="fas fa-arrow-down", 
+                                            onclick = "$(this).next().slideToggle();$(this).toggleClass('fa-arrow-up');$(this).toggleClass('fa-arrow-down');", 
+                                            style = "cursor: pointer;"),
+                                     tags$div(style = "display:none;",
+                                              selectInput("paverExclAttrib", label = lang$nav$hcubeMode$hcubeLoadDialog$selIgnoreAttribs, 
+                                                          choices = attribs, selected = exclAttribChoices, multiple = TRUE),
+                                              selectizeInput("paverClArgs", lang$nav$hcubeMode$hcubeLoadDialog$selClArgs, c(),
+                                                             multiple = TRUE, options = list(
+                                                               'create' = TRUE,
+                                                               'persist' = FALSE))
+                                     )
+                            ))
+  
+  if(length(customScripts)){
+    analysisTabset <- MIROtabsetPanel(id = "tabsetAnalysisMethod", 
+                                      onclick = "$('#btRunPaver').toggle();$('#btRunHcubeScript').toggle();",
+                                      list(tabPanel(lang$nav$hcubeMode$hcubeLoadDialog$tabScript,
+                                                    value = "tabsetAnalysisMethodScript",
+                                                    tags$div(class = "space"),
+                                                    selectInput("selHcubeAnalysisScript", lang$nav$hcubeMode$hcubeLoadDialog$selAnalysisScript, 
+                                                                setNames(vapply(customScripts, "[[", character(1L), "id", USE.NAMES = FALSE),
+                                                                         vapply(customScripts, "[[", character(1L), "title", USE.NAMES = FALSE)),
+                                                                multiple = FALSE, width = "100%"),
+                                                    tags$div(class = "space")
+                                      ),
+                                      tabPanel(lang$nav$hcubeMode$hcubeLoadDialog$tabPaver,
+                                               value = "tabsetAnalysisMethodPaver",
+                                               tags$div(class = "space"),
+                                               tags$div(id="deleteTrace", style = "display:none;",
+                                                        lang$nav$hcubeMode$hcubeLoadDialog$delTrace
+                                               ),
+                                               analysisTabset,
+                                               tags$div(class = "space"))
+                                      ))
+  }
   showModal(modalDialog(
-    title = list(lang$nav$hcubeMode$configPaverDialog$title, 
+    title = list(lang$nav$hcubeMode$hcubeLoadDialog$title, 
                  HTML('<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>')),
     tags$div(class = "gmsalert gmsalert-error", id = "paverRunNoTrc", 
-             lang$nav$hcubeMode$configPaverDialog$noTrc),
-    tags$div(class = "gmsalert gmsalert-error", id = "paverRunUnknownError", 
+             lang$nav$hcubeMode$hcubeLoadDialog$noTrc),
+    tags$div(class = "gmsalert gmsalert-error", id = "analysisRunScriptRunning", 
+             lang$nav$hcubeMode$hcubeLoadDialog$analysisRunScriptRunning),
+    tags$div(class = "gmsalert gmsalert-error", id = "analysisRunUnknownError", 
              lang$errMsg$unknownError),
     tags$div(class = "gmsalert gmsalert-error", id = "configPaverMaxSolversErr", 
-             sprintf(lang$nav$hcubeMode$configPaverDialog$tooManySolvers, 
+             sprintf(lang$nav$hcubeMode$hcubeLoadDialog$tooManySolvers, 
                      maxSolversPaver)),
     if(hasRemovePerm){
       tagList(
         tags$div(class = "gmsalert gmsalert-success", id = "hcubeRemoveSuccess",
-                 lang$nav$hcubeMode$configPaverDialog$removeSuccess),
+                 lang$nav$hcubeMode$hcubeLoadDialog$removeSuccess),
         tags$div(class = "gmsalert gmsalert-error", id = "hcubeRemoveError",
                  lang$errMsg$unknownError),
         tags$div(id = "hcubeRemoveConfirm", style = "display:none;",
-                 sprintf(lang$nav$hcubeMode$configPaverDialog$removeConfirm, noScenSelected)
+                 sprintf(lang$nav$hcubeMode$hcubeLoadDialog$removeConfirm, noScenSelected)
         )
       )
     },
     tags$div(id="hcubeLoadMethod",
              if(length(sidsToLoad) <= maxConcurentLoad){
-               lang$nav$hcubeMode$configPaverDialog$selectMethod
+               lang$nav$hcubeMode$hcubeLoadDialog$selectMethod
              }else{
-               sprintf(lang$nav$hcubeMode$configPaverDialog$maxScenWarning1, maxConcurentLoad) %+% 
-               lang$nav$hcubeMode$configPaverDialog$maxScenWarning2
+               sprintf(lang$nav$hcubeMode$hcubeLoadDialog$maxScenWarning1, maxConcurentLoad) %+% 
+               lang$nav$hcubeMode$hcubeLoadDialog$maxScenWarning2
              }
     ),
-    tags$div(id="configPaver", style = "display:none;",
-            lang$nav$hcubeMode$configPaverDialog$desc,
-            selectInput("selPaverAttribs", lang$nav$hcubeMode$configPaverDialog$selAttribs, 
-                         attribs, multiple = TRUE, width = "100%")
-    ),
-    tags$div(id="deleteTrace", style = "display:none;",
-                    lang$nav$hcubeMode$configPaverDialog$delTrace
+    tags$div(id="configDownload", style = "display:none",
+             selectInput("selExportFiletype", lang$nav$hcubeMode$hcubeLoadDialog$selExportType, 
+                         c("gdx", "csv"), width = "100%")),
+    tags$div(id="configAnalysis", style = "display:none;",
+             analysisTabset
+            
     ),
     footer = tagList(
-      tags$div(style = "text-align:left;display:none;", id = "paverExclAttribContainer",
-               tags$i(class="fas fa-arrow-down", 
-                      onclick = "$(this).next().slideToggle();$(this).toggleClass('fa-arrow-up');$(this).toggleClass('fa-arrow-down');", 
-                      style = "cursor: pointer;"),
-               tags$div(style = "display:none;",
-                        selectInput("paverExclAttrib", label = lang$nav$hcubeMode$configPaverDialog$selIgnoreAttribs, 
-                                    choices = attribs, selected = exclAttribChoices, multiple = TRUE),
-                        selectizeInput("paverClArgs", lang$nav$hcubeMode$configPaverDialog$selClArgs, c(),
-                                       multiple = TRUE, options = list(
-                                         'create' = TRUE,
-                                         'persist' = FALSE))
-               )
-      ),
       if(hasRemovePerm){
         actionButton("btHcubeRemove", 
-                     lang$nav$hcubeMode$configPaverDialog$removeButton,
+                     lang$nav$hcubeMode$hcubeLoadDialog$removeButton,
                      class = "bt-remove")
       },
-      tags$a(id="btHcubeDownload", class='btn btn-default shiny-download-link',
-             href='', target='_blank', download=NA, lang$nav$hcubeMode$configPaverDialog$downloadButton),
-      tagAppendAttributes(actionButton("btPaverConfig", lang$nav$hcubeMode$configPaverDialog$paverButton),
-                          onclick = "$('#paverExclAttribContainer').show();$('#configPaver').show();
-$('#btPaver').show();$('#btHcubeLoad').hide();$('#hcubeLoadMethod').hide();$('#btPaverConfig').hide();
-                          $('#btHcubeDownload').hide();$('#btHcubeRemove').hide();"),
-      actionButton("btPaver", lang$nav$hcubeMode$configPaverDialog$runButton, 
+      tags$button(id = "btHcubeDownload", class = "btn btn-default",
+                  type = "button", onclick = "$('#configDownload').show();
+$('#btHcubeDownloadConfirm').show();$('#btHcubeLoad').hide();$('#hcubeLoadMethod').hide();$('#btAnalysisConfig').hide();
+                          $('#btHcubeDownload').hide();$('#btHcubeRemove').hide();Shiny.bindAll();",  
+                  lang$nav$hcubeMode$hcubeLoadDialog$downloadButton),
+      downloadButton("btHcubeDownloadConfirm", style = "display:none", 
+                     lang$nav$hcubeMode$hcubeLoadDialog$downloadButton),
+      tagAppendAttributes(actionButton("btAnalysisConfig", lang$nav$hcubeMode$hcubeLoadDialog$paverButton),
+                          onclick = paste0("$('#configAnalysis').show();
+$('#", if(length(customScripts)) "btRunHcubeScript" else "btRunPaver", 
+"').show();$('#btHcubeLoad').hide();$('#hcubeLoadMethod').hide();$('#btAnalysisConfig').hide();
+                          $('#btHcubeDownload').hide();$('#btHcubeRemove').hide();")),
+      actionButton("btRunPaver", lang$nav$hcubeMode$hcubeLoadDialog$runPaverButton, 
+                   class = "bt-highlight-1 bt-gms-confirm", style = "display:none;"),
+      actionButton("btRunHcubeScript", lang$nav$hcubeMode$hcubeLoadDialog$runScriptButton, 
                    class = "bt-highlight-1 bt-gms-confirm", style = "display:none;"),
       if(length(sidsToLoad) <= maxConcurentLoad)
-        actionButton("btHcubeLoad", lang$nav$hcubeMode$configPaverDialog$interactiveButton)
+        actionButton("btHcubeLoad", lang$nav$hcubeMode$hcubeLoadDialog$interactiveButton)
     ),
     fade = TRUE, easyClose = FALSE
   ))

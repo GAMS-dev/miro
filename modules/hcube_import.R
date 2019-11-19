@@ -259,7 +259,6 @@ observeEvent(input$updateJobProgress, {
   if(is.null(currentProgress)){
     return()
   }
-  print(currentProgress)
   session$sendCustomMessage("gms-updateJobProgress", 
                             list(id = paste0("#hcubeProgress", jID), 
                                  progress = currentProgress))

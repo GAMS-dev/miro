@@ -11,7 +11,7 @@ if(LAUNCHHCUBEMODE){
                 actionButton("btImport", lang$nav$sidebarButtons$importInput, width = "85%", 
                              class = "bt-highlight-3 glow-animation", style = "display:block;"),
                 actionButton("btSolve", lang$nav$sidebarButtons$solveHcube, width = "85%", 
-                             class = "bt-highlight-2", style = "display:block;"),
+                             class = "bt-highlight-2 btSolve", style = "display:block;"),
                 actionButton("btSplitView", class = "bt-highlight-3", 
                              if(identical(config$defCompMode, "split"))
                                lang$nav$sidebarButtons$tabView

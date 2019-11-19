@@ -159,6 +159,12 @@
                "type": "boolean",
                "default":false,
                "required":false
+            },
+            "downloadTempFiles":{
+              "description": "Whether one should be able to download files from workspace",
+               "type": "boolean",
+               "default":false,
+               "required":false
             }
          }
       },

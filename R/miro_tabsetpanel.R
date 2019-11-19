@@ -14,7 +14,7 @@ MIROtabBox <- function(tabs, id = NULL, selected = NULL,
 }
 MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL, 
                             maxTabsExpanded = 5L, btCollapsedTabs = "",
-                            noTabsGrouped = -1L)
+                            noTabsGrouped = -1L, onclick = NULL)
 {
   foundSelected <- FALSE
   tabs <- lapply(tabs, function(div) {
@@ -53,7 +53,8 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
   }
   tabsetId <- shiny:::p_randomInt(1000, 10000)
   expandedTabs <- lapply(seq_len(noExpandedTabs), MIRObuildTabItem,
-                         tabsetId = tabsetId, tabs = tabs, noTabsGrouped = noTabsGrouped)
+                         tabsetId = tabsetId, tabs = tabs, noTabsGrouped = noTabsGrouped,
+                         onclick = onclick)
   liTagList <- lapply(expandedTabs, "[[", 1)
   divTagList <- lapply(expandedTabs, "[[", 2)
   
@@ -62,7 +63,8 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
                            to = noTabs)
     ddTabs <- lapply(collapsedTabIds, MIRObuildTabItem,
                      tabsetId = tabsetId, 
-                     tabs = tabs, noTabsGrouped = noTabsGrouped)
+                     tabs = tabs, noTabsGrouped = noTabsGrouped,
+                     onclick = onclick)
     ddLiTagList <- lapply(ddTabs, "[[", 1)
     divTagList <- c(divTagList, lapply(ddTabs, "[[", 2))
     
@@ -126,15 +128,15 @@ MIROinsertTab <- function(inputId, tab, target,
 
 MIRObuildTabItem <- function(index, tabsetId, tabs = NULL, 
                              divTag = NULL, buttonID = NULL, buttonTT = NULL,
-                             noTabsGrouped = -1L) {
+                             noTabsGrouped = -1L, onclick = NULL) {
   
   divTag <- if (!is.null(divTag)) divTag else tabs[[index]]
-
   # tabPanel item: create the tab's liTag and divTag
   tabId <- paste("tab", tabsetId, index, sep = "-")
   liTag <- tags$li(
     tags$a(
       href = paste("#", tabId, sep = ""),
+      onclick = onclick,
       class = if(noTabsGrouped > -1L) 
         paste("miro-tabset-group-", if(index <= noTabsGrouped) "1" else "2", sep = ""),
       `data-toggle` = "tab",

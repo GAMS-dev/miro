@@ -161,6 +161,9 @@ if(LAUNCHHCUBEMODE){
       return(paste0("--", substring(names(modelIn)[id],
                                     nchar(prefixDDPar) + 1L)))
     }else if(names(modelIn)[id] %in% inputDsNames){
+      if(isTRUE(modelIn[[id]]$dropdown$single)){
+        return(paste0("--HCUBE_SCALARV_", names(modelIn)[id]))
+      }
       return(paste0("--HCUBE_STATIC_", names(modelIn)[id]))
     }else{
       return(paste0("--HCUBE_SCALARV_", names(modelIn)[id]))
@@ -272,25 +275,27 @@ if(LAUNCHHCUBEMODE){
                }
              },
              dropdown = {
-               if(identical(modelIn[[i]]$dropdown$single, FALSE)){
+               if(isFALSE(modelIn[[i]]$dropdown$single)){
                  data <- tibble(input[["dropdown_" %+% i]])
                  names(data) <- tolower(names(modelIn))[i]
                  return(paste0(parPrefix, "=", digest(data, algo = "md5")))
                }
-               value <- strsplit(input[["dropdown_" %+% i]], "||", fixed = TRUE)
-               text <- vapply(value, function(valEl){
-                 if(length(valEl) > 1L) 
-                   return(paste0(" --HCUBE_SCALART_", tolower(names(modelIn)[i]), 
-                                 "=", paste(valEl[-1], collapse = "||")))
-                 return("")}, character(1L), USE.NAMES = FALSE)
-               value <- paste0(vapply(value, "[[", character(1L), 1L, USE.NAMES = FALSE),
-                               text)
-               
+               value <- input[["dropdown_" %+% i]]
+               if(length(modelIn[[i]]$dropdown$aliases)){
+                 text <- paste0(" --HCUBE_SCALART_", tolower(names(modelIn)[i]), 
+                                "=", escapeGAMSCL(modelIn[[i]]$dropdown$
+                                                    aliases[[match(value, 
+                                                                   modelIn[[i]]$
+                                                                     dropdown$choices)]]))
+               }else{
+                 text <- ""
+               }
+               value <- paste0(escapeGAMSCL(value), text)
                if("_" %in% value){
                  value <- value[value != "_"]
                  return(c(if(length(value)) paste0(parPrefix, "=", escapeGAMSCL(value)), ""))
                }
-               return(paste0(parPrefix, "=", escapeGAMSCL(value)))
+               return(paste0(parPrefix, "=", value))
              },
              date = {
                return(paste0(parPrefix, "=", input[["date_" %+% i]]))

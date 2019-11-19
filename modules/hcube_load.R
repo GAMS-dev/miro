@@ -81,7 +81,8 @@ if(length(modelOut[[scalarsOutName]])){
   scalarTables <- c(scalarTables, scalarsTabNameOut)
 }
 
-hcubeLoad <- HcubeLoad$new(db, scalarsFileHeaders[c(1, 3)],
+hcubeLoad <- HcubeLoad$new(db, scalarsFileHeaders[c(1, 3)], modelName,
+                           inputDsNamesNotToDisplay,
                            scalarTables, scalarKeyTypeList)
 metaCols <- db$getScenMetaColnames()
 fields <- c("", scenMetadataTable %+% "." %+% metaCols[c("uid", "stime", "stag")])
@@ -328,7 +329,8 @@ observeEvent(input$hcubeLoadSelected, {
   hcubeRemoveConfirmed <<- FALSE
   sidsToLoad <<- as.integer(rv$fetchedScenarios[[1]][input$hcubeLoadResults_rows_selected])
   showHcubeLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad,
-                            hasRemovePerm = TRUE, exclAttribChoices = exclAttribChoices)
+                            hasRemovePerm = TRUE, exclAttribChoices = exclAttribChoices,
+                            customScripts = config$scripts$hcube)
 })
 observeEvent(input$hcubeLoadCurrent, {
   flog.debug("Button to load current page of scenarios (Hypercube load) clicked.")
@@ -338,7 +340,8 @@ observeEvent(input$hcubeLoadCurrent, {
   hcubeRemoveConfirmed <<- FALSE
   sidsToLoad <<- as.integer(rv$fetchedScenarios[[1]][input$hcubeLoadResults_rows_current])
   showHcubeLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad,
-                            hasRemovePerm = TRUE, exclAttribChoices = exclAttribChoices)
+                            hasRemovePerm = TRUE, exclAttribChoices = exclAttribChoices,
+                            customScripts = config$scripts$hcube)
 })
 observeEvent(input$hcubeLoadAll, {
   flog.debug("Button to load all scenarios (Hypercube load) clicked.")
@@ -348,10 +351,11 @@ observeEvent(input$hcubeLoadAll, {
   hcubeRemoveConfirmed <<- FALSE
   sidsToLoad     <<- as.integer(rv$fetchedScenarios[[1]])
   showHcubeLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad, 
-                            hasRemovePerm = TRUE, exclAttribChoices = exclAttribChoices)
+                            hasRemovePerm = TRUE, exclAttribChoices = exclAttribChoices,
+                            customScripts = config$scripts$hcube)
 })
 
-output$btHcubeDownload <- downloadHandler(
+output$btHcubeDownloadConfirm <- downloadHandler(
   filename = function() {
     tolower(modelName) %+% "_data.zip"
   },
@@ -370,7 +374,6 @@ output$btHcubeDownload <- downloadHandler(
     on.exit(unlink(tmpDir, recursive = TRUE, force = TRUE), add = TRUE)
     if(dir.exists(tmpDir)){
       unlink(tmpDir, recursive = TRUE, force = TRUE)
-      Sys.sleep(0.5)
     }
     if(!dir.create(tmpDir)){
       flog.error("Temporary folder could not be created")
@@ -384,8 +387,13 @@ output$btHcubeDownload <- downloadHandler(
       prog$inc(amount = incAmount, detail = detail)
     }
     tryCatch({
-      hcubeLoad$genCsvFiles(sidsToLoad, tmpDir, prog)
-      return(zipr(file, list.files(tmpDir, full.names = TRUE), compression_level = 6))
+      if(identical(isolate(input$selExportFiletype), "csv")){
+        hcubeLoad$genCsvFiles(sidsToLoad, tmpDir, prog)
+      }else{
+        hcubeLoad$genGdxFiles(sidsToLoad, tmpDir, gdxio, prog)
+      }
+      return(zipr(file, list.files(tmpDir, full.names = TRUE), 
+                  compression_level = 6))
     }, error = function(e){
       flog.error(e)
     })

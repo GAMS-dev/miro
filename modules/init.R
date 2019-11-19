@@ -1276,11 +1276,13 @@ if(is.null(errMsg)){
   scenTableNames    <- paste0(gsub("_", "", modelName, fixed = TRUE),
                               "_", scenTableNames)
   # define scenario tables to display in interface
-  scenTableNamesToDisplay <- c(names(modelOut)[modelOutToDisplay], inputDsNames[vapply(inputDsNames, function(el){
+  inputIdsNotToDisplay <- vapply(inputDsNames, function(el){
     if(identical(modelIn[[el]]$dropdown$single, TRUE) || 
        identical(modelIn[[el]]$dropdown$checkbox, TRUE)) 
-      return(FALSE) 
-    return(TRUE)}, logical(1L), USE.NAMES = FALSE)])
+      return(TRUE) 
+    return(FALSE)}, logical(1L), USE.NAMES = FALSE)
+  inputDsNamesNotToDisplay <- inputDsNames[inputIdsNotToDisplay]
+  scenTableNamesToDisplay <- c(names(modelOut)[modelOutToDisplay], inputDsNames[!inputIdsNotToDisplay])
   groupSheetToTabIdMap <- lapply(seq_len(length(outputTabs) + length(scenInputTabs)), function(groupId){
     if(groupId > length(outputTabs)){
       return(lapply(scenInputTabs[[groupId - length(outputTabs)]], function(sheetId){

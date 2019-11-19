@@ -175,7 +175,7 @@ observeEvent(input$discardJob, {
   tryCatch({
     worker$updateJobStatus(JOBSTATUSMAP[['discarded']], 
                            jID, 
-                           tags = isolate(input[["jTag_" %+% jID]]))
+                           tags = input[["jTag_" %+% jID]])
     rv$jobListPanel <- rv$jobListPanel + 1L
   }, error = function(e){
     errMsg <- conditionMessage(e)

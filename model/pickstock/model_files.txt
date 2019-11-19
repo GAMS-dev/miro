@@ -1,2 +1,3 @@
 pickstock.gms
 dowjones2016.csv
+scripts/hcube_analysis.ipynb

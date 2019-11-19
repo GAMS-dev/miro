@@ -258,6 +258,15 @@ if(is.null(errMsg)){
       errMsg <- paste(errMsg, "No model data ('model_files.txt') found.", 
                       sep = "\n")
     }
+  }else{
+    overwriteLang <- Sys.getenv("MIRO_LANG")
+    if(!identical(overwriteLang, "") && !identical(overwriteLang, config$language)){
+      if(file.exists(file.path(".", "conf", paste0(overwriteLang, ".json")))){
+        lang <- fromJSON(file.path(".", "conf", paste0(overwriteLang, ".json")),
+                         simplifyDataFrame = FALSE, 
+                         simplifyMatrix = FALSE)
+      }
+    }
   }
 }
 if(is.null(errMsg)){
@@ -372,7 +381,7 @@ if(is.null(errMsg) && debugMode){
                 "groupSheetToTabIdMap", "scalarsInTemplate", "modelInWithDep",
                 "modelOutAlias", "colsWithDep", "scalarsInMetaData",
                 "modelInMustImport", "modelInAlias", "DDPar", "GMSOpt", 
-                "modelInToImportAlias", "modelInToImport", 
+                "modelInToImportAlias", "modelInToImport", "inputDsNamesNotToDisplay",
                 "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
                 "GAMSReturnCodeMap", "dependentDatasets", "outputTabs", 
                 "installPackage", "dbSchema", "scalarInputSym",
@@ -1068,13 +1077,13 @@ if(!is.null(errMsg)){
         flog.debug("Navigated %d data tabs in paver output tabpanel (using shortcut).", direction)
         # go to next data sheet
         local({
-          tabsetName <- isolate(input$tabs_paver_results)
+          tabsetName <- isolate(input$analysisResults)
           currentSheet <- suppressWarnings(as.numeric(substr(tabsetName, 
                                                              nchar(tabsetName), nchar(tabsetName))))
           if(is.na(currentSheet))
             return()
-          updateTabsetPanel(session, "tabs_paver_results", 
-                            paste0("tabs_paver_", currentSheet + direction))
+          updateTabsetPanel(session, "analysisResults", 
+                            paste0("analysisResults_", currentSheet + direction))
         })
       }
     }
@@ -1144,7 +1153,7 @@ if(!is.null(errMsg)){
             flog.info("No 'scripts' directory was found. Did you forget to include it in 'model_files.txt'?")
             hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
             showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-            return(scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$noScript, scriptId))
+            return(scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$noScript, scriptId, isError = TRUE))
           }
           showEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
           hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
@@ -1164,7 +1173,7 @@ if(!is.null(errMsg)){
             errMsg <<- sprintf(lang$errMsg$fileWrite$desc, "data.gdx")
             hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
             hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-            scriptOutput$sendContent(errMsg, scriptId)
+            scriptOutput$sendContent(errMsg, scriptId, isError = TRUE)
           })
           if(!is.null(errMsg)){
             return()
@@ -1393,9 +1402,7 @@ if(!is.null(errMsg)){
       ####### Hcube load module
       source("./modules/hcube_load.R", local = TRUE)
       # analyze button clicked
-      source("./modules/paver_run.R", local = TRUE)
-      # Interrupt button clicked
-      source("./modules/paver_interrupt.R", local = TRUE)
+      source("./modules/analysis_run.R", local = TRUE)
     }else if(config$activateModules$remoteExecution){
       source("./modules/gams_job_list.R", local = TRUE)
       # remote job import

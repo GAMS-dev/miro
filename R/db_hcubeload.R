@@ -1,13 +1,16 @@
 HcubeLoad <- R6Class("HcubeLoad", 
                      public = list(
-                       initialize        = function(db, scalarColNames, scalarTables = NULL, 
-                                                    scalarKeyTypeList = NULL, tableFieldSep = "."){
+                       initialize        = function(db, scalarColNames, modelName, inputDsNamesNotToDisplay, 
+                                                    scalarTables = NULL, scalarKeyTypeList = NULL, 
+                                                    tableFieldSep = "."){
                          # R6 class to import scenarios in hcube mode
                          #
                          # Args:      
                          #   db:                      R6 database object
                          #   scalarColNames:          column names of scalar tables 
                          #                            for fields and values
+                         #   modelName:               name of the currently running model
+                         #   inputDsNamesNotToDisplay: input datasets that are not displayed in UI
                          #   scalarKeyTypeList:       list with keys and types for each scalar table
                          #   scalarTables:            table names of scalar tables where 
                          #                            field/value paris should be fetched from (optional)
@@ -15,7 +18,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                          #
                          
                          # BEGIN error checks
-                         stopifnot(is.R6(db))
+                         stopifnot(is.R6(db), is.character(modelName), length(modelName) == 1L)
                          #stopifnot(is.character(scalarColNames), length(scalarColNames) == 2L)
                          if(!is.null(scalarTables)){
                            stopifnot(is.character(scalarTables), length(scalarTables) >= 1L)
@@ -28,6 +31,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                          private$conn               <- db$getConn()
                          private$sidCol             <- dbQuoteIdentifier(private$conn, 
                                                                          db$getScenMetaColnames()['sid'])
+                         private$modelName          <- modelName
                          private$scalarColNames     <- scalarColNames
                          private$tabNameMeta        <- db$getTableNameMetadata()
                          private$scalarTables       <- scalarTables
@@ -36,6 +40,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                          private$dbSchema           <- db$getDbSchema()
                          private$tableNameTrace     <- private$dbSchema$tabName[["_scenTrc"]]
                          private$traceColNames      <- private$dbSchema$colNames[["_scenTrc"]]
+                         private$inputDsNamesNotToDisplay <- inputDsNamesNotToDisplay
                          
                          if(inherits(private$conn, "PostgreSQL")){
                            dbExecute(private$conn, "CREATE EXTENSION IF NOT EXISTS tablefunc")
@@ -201,11 +206,93 @@ HcubeLoad <- R6Class("HcubeLoad",
                          })
                          
                        },
+                       genGdxFiles = function(scenIds, tmpDir, gdxio, progressBar = NULL, 
+                                              genScenList = FALSE){
+                         stopifnot(length(scenIds) >= 1L, is.character(tmpDir), 
+                                   length(tmpDir) == 1L)
+                         
+                         scenTableNames <- private$db$getTableNamesScenario()
+                         if(!length(scenTableNames)){
+                           return(invisible(self))
+                         }
+                         names(scenTableNames) <- substring(scenTableNames, 
+                                                            nchar(private$modelName) + 2L)
+                         scenTableNames <- scenTableNames[!names(scenTableNames) %in% private$
+                                                            inputDsNamesNotToDisplay]
+                         noScenTables   <- length(scenTableNames)
+                         noScenIds <- length(scenIds)
+                         colScenName <- private$db$getScenMetaColnames()['sname']
+                         
+                         scenIdDirNameMap <- vector("list", length(scenIds))
+                         
+                         if(!is.null(progressBar)){
+                           noProgressSteps <- noScenTables + noScenIds + 1L
+                         }
+                         scenIdNameMap <- private$db$
+                           importDataset(private$db$getTableNameMetadata(), 
+                                         subsetSids = scenIds,
+                                         colNames = c(private$db$getScenMetaColnames()['sid'], 
+                                                      colScenName))
+                         scenIdsOrdered <- scenIdNameMap[[1]]
+                         scenIdNameMap  <- setNames(scenIdNameMap[[2]], scenIdsOrdered)
+                         
+                         j <- 1L
+                         dataTmp <- lapply(scenTableNames, function(tableName){
+                           if(!is.null(progressBar)){
+                             progressBar$inc(amount = 1/noProgressSteps, 
+                                             message = sprintf("Importing table %s of %d from database.", 
+                                                               j, noScenTables))
+                             j <<- j + 1L
+                           }
+                           dataDbTmp <- private$db$importDataset(tableName, 
+                                                                 subsetSids = scenIds)
+                           return(split(dataDbTmp[-1], dataDbTmp[[1L]]))
+                         })
+                         sameNameCounter   <- list()
+                         
+                         
+                         j <- 1L
+                         
+                         scenNameList <- vector("character", length(scenIds))
+                         
+                         for(scenId in as.character(scenIds)){
+                           if(!is.null(progressBar)){
+                             progressBar$inc(amount = 1/noProgressSteps, 
+                                             message = sprintf("Writing dataset %d of %d.", 
+                                                               j, noScenIds))
+                           }
+                           scenName <- scenIdNameMap[[scenId]]
+                           if(is.null(sameNameCounter[[scenName]])){
+                             sameNameCounter[[scenName]] <- 1L
+                           }else{
+                             scenName <- paste0(scenName, "_", sameNameCounter[[scenName]])
+                             sameNameCounter[[scenName]] <- sameNameCounter[[scenName]] + 1L
+                           }
+                           scenNameList[[j]] <- paste0(scenName, ".gdx")
+                           j <- j + 1L
+                           gdxio$wgdx(paste0(tmpDir, .Platform$file.sep, scenName, ".gdx"), 
+                                      lapply(dataTmp, function(data){
+                                        if(scenId %in% names(data)){
+                                          return(data[[scenId]])
+                                        }
+                                        return(tibble())
+                                      }))
+                         }
+                         if(genScenList){
+                           write_lines(scenNameList, file.path(tmpDir, "hcube_file_names.txt"))
+                         }
+                         if(!is.null(progressBar)){
+                           progressBar$inc(amount = 1/noProgressSteps, 
+                                           message = "Generating zip file.")
+                         }
+                         return(invisible(self))
+                       },
                        genCsvFiles = function(scenIds, tmpDir, progressBar = NULL){
                          stopifnot(length(scenIds) >= 1L)
                          stopifnot(is.character(tmpDir), length(tmpDir) == 1L)
                          
-                         scenTableNames <- c(private$db$getTableNameMetadata(), private$db$getTableNamesScenario(), 
+                         scenTableNames <- c(private$db$getTableNameMetadata(), 
+                                             private$db$getTableNamesScenario(), 
                                              private$tableNameTrace)
                          noScenTables   <- length(scenTableNames)
                          colScenName <- private$db$getScenMetaColnames()['sname']
@@ -216,23 +303,29 @@ HcubeLoad <- R6Class("HcubeLoad",
                            noProgressSteps <- (noScenTables * 2L + 1L)
                          }
                          sameNameCounter   <- list()
+                         startCharTableName <- nchar(private$modelName) + 2L
                          for(tabId in seq_along(scenTableNames)){
                            if(identical(tabId, 1L)){
                              tableName <- "_metadata_"
                            }else if(identical(tabId, length(scenTableNames))){
                              tableName <- "_trace_"
                            }else{
-                             tableName <- regmatches(scenTableNames[[tabId]], 
-                                                     regexpr("_", scenTableNames[[tabId]]), invert = TRUE)[[1]][[2]]
+                             tableName <- substring(scenTableNames[[tabId]], startCharTableName)
                              if(startsWith(tableName, "_")){
                                tableName <- substring(tableName, 2)
                              }
                            }
+                           if(tableName %in% private$inputDsNamesNotToDisplay){
+                             noProgressSteps <- noProgressSteps - 2L
+                             next
+                           }
                            if(!is.null(progressBar)){
                              progressBar$inc(amount = 1/noProgressSteps, 
-                                             message = sprintf("Importing table %d of %d from database.", tabId, noScenTables))
+                                             message = sprintf("Importing table %d of %d from database.", 
+                                                               tabId, noScenTables))
                            }
-                           tableTmp <- private$db$importDataset(scenTableNames[[tabId]], subsetSids = scenIds)
+                           tableTmp <- private$db$importDataset(scenTableNames[[tabId]], 
+                                                                subsetSids = scenIds)
                            
                            if(length(tableTmp)){
                              tableTmp <- split(tableTmp, tableTmp[[1]])
@@ -243,7 +336,8 @@ HcubeLoad <- R6Class("HcubeLoad",
                            
                            if(!is.null(progressBar)){
                              progressBar$inc(amount = 1/noProgressSteps, 
-                                             message = sprintf("Writing CSV files for table %d of %d.", tabId, noScenTables))
+                                             message = sprintf("Writing dataset %d of %d.", 
+                                                               tabId, noScenTables))
                            }
                            lapply(seq_along(tableTmp), function(i){
                              scenId   <- tableTmp[[i]][[1L]][[1L]]
@@ -266,15 +360,16 @@ HcubeLoad <- R6Class("HcubeLoad",
                                               dirNameScen), call. = FALSE)
                                }
                              }
-                             write_csv(tableTmp[[i]][-1L], paste0(scenIdDirNameMap[[scenId]], 
-                                                                  .Platform$file.sep, tableName, ".csv"))
+                             write_csv(tableTmp[[i]][-1L], 
+                                       paste0(scenIdDirNameMap[[scenId]], 
+                                              .Platform$file.sep, tableName, ".csv"))
                            })
                          }
                          if(!is.null(progressBar)){
                            progressBar$inc(amount = 1/noProgressSteps, 
                                            message = "Generating zip file.")
                          }
-                         return(invisible())
+                         return(invisible(self))
                        },
                        finalize = function(){
                          NULL
@@ -283,6 +378,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                      private = list(
                        db                      = NULL,
                        conn                    = NULL,
+                       modelName               = character(1L),
                        scalarColNames          = character(0L),
                        sidCol                  = character(0L),
                        tabNameMeta             = character(0L),
@@ -290,6 +386,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                        scalarTables            = character(0L),
                        tableNameTrace          = character(0L),
                        traceColNames           = character(0L),
+                       inputDsNamesNotToDisplay = character(0L),
                        tableFieldSep           = character(0L),
                        keyTypeList             = NULL,
                        values                  = list(),

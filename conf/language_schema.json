@@ -2425,7 +2425,7 @@
               },
               "required":true
             },
-            "configPaverDialog":{
+            "hcubeLoadDialog":{
               "type":"object",
               "additionalProperties":false,
               "required":true,
@@ -2436,6 +2436,11 @@
                   "required":true
                 },
                 "selectMethod":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "selExportType": {
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -2460,7 +2465,17 @@
                   "minLength":1,
                   "required":true
                 },
-                "desc":{
+                "selAnalysisScript":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "tabScript":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "tabPaver":{
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -2480,7 +2495,12 @@
                   "minLength":1,
                   "required":true
                 },
-                "selAttribs":{
+                "analysisRunScriptRunning": {
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "selPaverAttribs":{
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -2505,7 +2525,12 @@
                   "minLength":1,
                   "required":true
                 },
-                "runButton":{
+                "runPaverButton":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "runScriptButton": {
                   "type":"string",
                   "minLength":1,
                   "required":true

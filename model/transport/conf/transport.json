@@ -124,8 +124,7 @@
     "lstFile": true,
     "loadLocal": true,
     "attachments": true,
-    "remoteExecution": false,
-    "hcubeSwitch": true
+    "remoteExecution": false
   },
   "autoGenInputGraphs": true,
   "aggregateWidgets": true,

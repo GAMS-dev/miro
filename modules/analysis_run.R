@@ -34,11 +34,7 @@ genPaverArgs <- function(traceFilenames, clArgs = NULL){
     traceFilenames, if(length(extraClArgs)) extraClArgs, "--writehtml", paverFileDir , "--writeimg", paverFileDir, "--gmswebiter", gmswebiter)
 }
 
-observeEvent(input$btPaverConfig, {
-  hideEl(session, "#btHcubeLoad")
-  hideEl(session, "#hcubeLoadMethod")
-  hideEl(session, "#btPaverConfig")
-  hideEl(session, "#btHcubeDownload")
+observeEvent(input$btAnalysisConfig, {
   # if already tracefiles in tracefiledir show deletion warning
   if(length(list.files(traceFileDir)) > 0){
     showEl(session, "#deleteTrace")
@@ -46,15 +42,19 @@ observeEvent(input$btPaverConfig, {
 })
 
 gmswebiter <- 0
-observeEvent(input$btPaver, {
+observeEvent(input$btRunPaver, {
   flog.debug("Run paver button clicked.")
-  gmswebiter <<- gmswebiter + 1
   req(input$selPaverAttribs)
+  if(!is.null(paver) || (length(scriptOutput) && scriptOutput$isRunning())){
+    showHideEl(session, "#analysisRunScriptRunning", 6000L)
+    return()
+  }
+  gmswebiter <<- gmswebiter + 1
   noErr <- TRUE
   scenToFetch <- rv$fetchedScenarios[[1]] %in% sidsToLoad
   if(!any(scenToFetch)){
     flog.warn("Paver was attempted to be started while no scenarios were selected.")
-    showHideEl(session, "#paverRunUnknownError", 6000L)
+    showHideEl(session, "#analysisRunUnknownError", 6000L)
     return()
   }
   tryCatch({
@@ -64,7 +64,7 @@ observeEvent(input$btPaver, {
   }, error = function(e){
       noErr <<- FALSE
       flog.error("Problems identifying whether maximum number of solvers for paver is exceeded Error message: '%s'.", e)
-      showHideEl(session, "#paverRunUnknownError", 6000L)
+      showHideEl(session, "#analysisRunUnknownError", 6000L)
   })
   if(!noErr)
     return()
@@ -106,7 +106,7 @@ observeEvent(input$btPaver, {
                },
                {
                  flog.error("Unknown error exeuting Paver. Error message: '%s'.", e)
-                 showHideEl(session, "#paverRunUnknownError", 6000L)
+                 showHideEl(session, "#analysisRunUnknownError", 6000L)
                })
       })
     if(!noErr)
@@ -114,45 +114,40 @@ observeEvent(input$btPaver, {
     traceFiles <- list.files(traceFileDir, pattern=".trc", full.names = TRUE)
   }
   addResourcePath("paver", paverDir)
-  
+  hideEl(session, "#scriptOutput_hcube")
   removeModal()
   if(is.null(paver) || !is.null(paver$get_exit_status())){
     flog.debug("Run Paver button clicked.")
     if(gmswebiter > 0){
-      removeTab("tabs_paver_results", "tabs_paver_2")
-      removeTab("tabs_paver_results", "tabs_paver_3")
-      removeTab("tabs_paver_results", "tabs_paver_4")
-      removeTab("tabs_paver_results", "tabs_paver_5")
-      removeTab("tabs_paver_results", "tabs_paver_6")
+      removeTab("analysisResults", "analysisResults_2")
+      removeTab("analysisResults", "analysisResults_3")
+      removeTab("analysisResults", "analysisResults_4")
+      removeTab("analysisResults", "analysisResults_5")
+      removeTab("analysisResults", "analysisResults_6")
     }
     
-    hideEl(session, "#btLoadHcube")
     hideEl(session, "#paverFail")
-    updateTabsetPanel(session, "tabs_paver_results", selected = "tabs_paver_1")
+    updateTabsetPanel(session, "analysisResults", selected = "analysisResults_1")
     output$paverResults <- renderUI(character())
-    showEl(session, "#paverLoad")
+    showEl(session, "#analysisLoad")
     hideEl(session, "#newPaverRunButton")
-    enableEl(session, "#btPaverInterrupt")
+    enableEl(session, "#btAnalysisInterrupt")
     switchTab(session, "hcubeAna")
     
     errMsg <- NULL
     # run paver
     tryCatch({
-      if(length(gamsSysDir) && nchar(gamsSysDir)){
-        pyExec <- file.path(gamsSysDir, "GMSPython", "python")
+      if(isWindows()){
+        pyExec <- "python"
       }else{
-        if(isWindows())
-          pyExec <- "python"
-        else
-          pyExec <- "python3"
+        pyExec <- "python3"
       }
-      
       paver <<- processx::process$new(pyExec, args = genPaverArgs(traceFiles, paverClArgs), 
                                       windows_hide_window = TRUE,
-                                      stdout = file.path(workDir, modelName %+% ".paverlog"),
+                                      stdout = paste0(workDir, .Platform$file.sep, modelName, ".paverlog"),
                                       stderr = "|")
-      rm(pyExec)
     }, error = function(e) {
+      paver <<- NULL
       errMsg <<- lang$errMsg$paverExec$desc
       flog.error("Paver did not execute successfully. Error message: %s.", e)
     })
@@ -174,12 +169,12 @@ observeEvent(input$btPaver, {
       paverStatusObs$destroy()
       paverStatus <- NULL
       if(paverStatus() == 0){
-        hideEl(session, "#paverLoad")
-        paverResultTabs     <- paste0("tabs_paver_", 1:6)
+        hideEl(session, "#analysisLoad")
+        paverResultTabs     <- paste0("analysisResults_", 1:6)
         paverResultFiles    <- c("index", "stat_Status", "stat_Efficiency", "stat_SolutionQuality", "solvedata", "documentation")
         paverResultTabNames <- c("Index", "Status", "Efficiency", "Solution Quality", "Solve data", "Documentation")
         lapply(2:length(paverResultTabs), function(i){
-          insertTab("tabs_paver_results", target = paverResultTabs[i - 1L], position = "after",
+          insertTab("analysisResults", target = paverResultTabs[i - 1L], position = "after",
                     tabPanel(paverResultTabNames[i], value = paverResultTabs[i],
                              tags$div(id = "wrapper-" %+% paverResultTabs[i], 
                                       style = "overflow: auto; height: 75vh;",
@@ -198,8 +193,9 @@ observeEvent(input$btPaver, {
         return(includeHTML(paste0(paverDir, .Platform$file.sep, paverResultFiles[1], ".html")))
       }
       paverError <- paver$read_error()
+      paver <<- NULL
       flog.error("Problems while running paver. Error message: '%s'.", paverError)
-      hideEl(session, "#paverLoad")
+      hideEl(session, "#analysisLoad")
       duplicatedInstances <- regmatches(paverError, regexpr('on instance [^>]*$', paverError))
       if(length(duplicatedInstances))
         showElReplaceTxt(session, "#paverFail", sprintf(lang$nav$hcubeAnalyze$duplicatesMsg, 
@@ -219,3 +215,100 @@ observeEvent(input$btPaver, {
     ))
   }
 })
+
+observeEvent(input$btAnalysisInterrupt,{
+  if(is.null(paver)){
+    if(length(scriptOutput) && scriptOutput$isRunning()){
+      errMsg <- NULL
+      tryCatch({
+        scriptOutput$interrupt()
+      }, error= function(e){
+        flog.error("Problems interrupting process. Error message: %s.", e)
+      })
+    }else{
+      flog.error("Interrupt analysis script button was pressed, but no script is currently running. Likely to be an attempt to tamper with the app!")
+      return()
+    }
+  }else{
+    errMsg <- NULL
+    tryCatch({
+      paver$kill()
+    }, error= function(e){
+      flog.error("Problems interrupting process. Error message: %s.", e)
+      errMsg <<- lang$errMsg$paverTerm$desc
+    })
+    showErrorMsg(lang$errMsg$paverTerm$title, errMsg)
+  }
+  disableEl(session, "#btAnalysisInterrupt")
+  hideEl(session, "#scriptOutput_hcube")
+  hideEl(session, "#analysisLoad")
+  showEl(session, "#newPaverRunButton")
+})
+observeEvent(input$btNewAnalysisRun,{
+  updateTabsetPanel(session, "sidebarMenuId", selected = "loadResults")
+})
+
+if(length(config$scripts$hcube)){
+  observeEvent(input$btRunHcubeScript, {
+    scriptId <- suppressWarnings(as.integer(input$btRunHcubeScript))
+    flog.debug("Button to execute Hypercube analysis script: '%s' clicked.", scriptId)
+    
+    if(is.na(scriptId) || scriptId < 1 || scriptId > length(config$scripts$hcube)){
+      flog.error("A script with id: '%s' was attempted to be executed. However, this script does not exist. Looks like an attempt to tamper with the app!",
+                 scriptId)
+      showHideEl(session, "#analysisRunUnknownError", 6000L)
+      return()
+    }
+    if(!is.null(paver) || scriptOutput$isRunning()){
+      flog.debug("A script is already running.")
+      showHideEl(session, "#analysisRunScriptRunning", 6000L)
+      return()
+    }
+    
+    if(!dir.exists(file.path(workDir, "scripts"))){
+      flog.info("No 'scripts' directory was found. Did you forget to include it in 'model_files.txt'?")
+      showHideEl(session, "#analysisRunUnknownError", 6000L)
+      return()
+    }
+    removeModal()
+    if(gmswebiter > 0){
+      removeTab("analysisResults", "analysisResults_2")
+      removeTab("analysisResults", "analysisResults_3")
+      removeTab("analysisResults", "analysisResults_4")
+      removeTab("analysisResults", "analysisResults_5")
+      removeTab("analysisResults", "analysisResults_6")
+    }
+    hideEl(session, "#paverFail")
+    hideEl(session, "#scriptOutput_hcube")
+    updateTabsetPanel(session, "analysisResults", selected = "analysisResults_1")
+    output$paverResults <- renderUI(character())
+    showEl(session, "#analysisLoad")
+    hideEl(session, "#newPaverRunButton")
+    enableEl(session, "#btAnalysisInterrupt")
+    switchTab(session, "hcubeAna")
+    
+    errMsg <- NULL
+    
+    prog <- Progress$new()
+    on.exit(prog$close(), add = TRUE)
+    prog$set(message = lang$nav$dialogHcube$waitDialog$title, value = 0)
+    updateProgress <- function(incAmount, detail = NULL) {
+      prog$inc(amount = incAmount, detail = detail)
+    }
+    tryCatch({
+      hcubeLoad$genGdxFiles(sidsToLoad, file.path(workDir, "scripts"), gdxio, prog, 
+                            genScenList = TRUE)
+    }, error = function(e){
+      flog.error("Problems writing gdx files for script: '%s'. Error message: '%s'.", 
+                 scriptId, conditionMessage(e))
+      errMsg <<- sprintf(lang$errMsg$fileWrite$desc, "data.gdx")
+      hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
+      hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
+      scriptOutput$sendContent(errMsg, scriptId, isError = TRUE)
+    })
+    if(!is.null(errMsg)){
+      return()
+    }
+    scriptOutput$run(scriptId, hcube = TRUE)
+  })
+}

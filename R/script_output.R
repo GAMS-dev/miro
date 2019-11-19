@@ -6,7 +6,10 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
     private$errorMsg <- errorMsg
     private$workDir <- workDir
   },
-  isRunning = function(id){
+  isRunning = function(id = NULL){
+    if(is.null(id)){
+      return(length(private$activeScripts) > 0L)
+    }
     scriptId <- paste0("script_", id)
     return(scriptId %in% names(private$activeScripts))
   },
@@ -28,11 +31,17 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
     }
     return(private$scriptResults[[scriptId]])
   },
-  sendContent = function(data, id, scenId = NULL){
+  sendContent = function(data, id, scenId = NULL, 
+                         hcube = FALSE, isError = FALSE){
     private$session$sendCustomMessage("gms-scriptExecuted", 
                                       list(id = id,
                                            sid = scenId,
-                                           data = data))
+                                           data = data,
+                                           hcube = hcube,
+                                           isError = isError))
+    if(hcube){
+      hideEl(private$session, "#analysisLoad")
+    }
   },
   loadResultsBase = function(data, scenId = NULL){
     idsToLoad  <- data[[1]]
@@ -62,9 +71,14 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
       }
     }
   },
-  interrupt = function(scriptId){
+  interrupt = function(scriptId = NULL){
+    if(is.null(scriptId)){
+      if(!length(private$activeScripts)){
+        return()
+      }
+      scriptId <- names(private$activeScripts)[[1L]]
+    }
     if(scriptId %in% names(private$activeScripts)){
-      private$clearProcess(scriptId)
       private$clearProcess(scriptId)
       if(private$killScript(scriptId)){
         flog.debug("Script: '%s' was interrupted.", scriptId)
@@ -100,12 +114,12 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
       if(private$activeScriptsTo[[scriptId]] == 0L){
         flog.info("Script: '%s' timed out.", scriptId)
         private$killScript(scriptId)
-        self$sendContent(private$errorMsg$timeout, id)
+        self$sendContent(private$errorMsg$timeout, id, hcube = hcube, isError = TRUE)
         private$clearProcess(scriptId)
       }else if(length(private$pingProcess(scriptId))){
         if(identical(private$pingProcess(scriptId), 0L)){
           flog.info("Script: '%s' terminated successfully.", scriptId)
-          self$sendContent(self$readOutput(id, scriptId, hcube), id)
+          self$sendContent(self$readOutput(id, scriptId, hcube), id, hcube = hcube)
         }else{
           stdout <- tryCatch({
             private$activeScripts[[scriptId]]$read_output()
@@ -114,7 +128,7 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
           })
           flog.warn("Script output: '%s' terminated with exit code: '%s'. Stdout/err: '%s'.", 
                     scriptId, private$pingProcess(scriptId), stdout)
-          self$sendContent(private$errorMsg$crash, id)
+          self$sendContent(private$errorMsg$crash, id, hcube = hcube, isError = TRUE)
         }
         private$clearProcess(scriptId)
       }else{

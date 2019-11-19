@@ -396,7 +396,11 @@ $(document).ready(() => {
   });
   Shiny.addCustomMessageHandler('gms-scriptExecuted', (data) => {
     let scriptOutputContainer;
-    if (data.sid == null) {
+    if (data.hcube === true) {
+      scriptOutputContainer = $('#scriptOutput_hcube');
+      scriptOutputContainer.show();
+      scriptOutputContainer = scriptOutputContainer.children('.script-output');
+    } else if (data.sid == null) {
       scriptOutputContainer = $(`#scriptOutput_${data.id} .script-output`);
       Shiny.setInputValue('outputGenerated', 1,
         {
@@ -408,7 +412,8 @@ $(document).ready(() => {
     }
     const scriptOutputContainerIframe = scriptOutputContainer[0].contentWindow.document;
     scriptOutputContainerIframe.open();
-    scriptOutputContainerIframe.write(data.data);
+    scriptOutputContainerIframe.write(data.isError === true ? `<div style='margin:5px;color:#F39619;font-weight:bold;font-size:15pt;text-align:center;'>\
+${data.data}</div>` : data.data);
     scriptOutputContainerIframe.close();
     scriptOutputContainer.show();
   });

@@ -114,7 +114,8 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                                 tryCatch({
                                                   renderDataUI(paste0("table_tab_", scenCounter, "_",
                                                                       tabId), type = "datatable",
-                                                               noDataTxt = noDataTxt)
+                                                               noDataTxt = noDataTxt,
+                                                               createdDynamically = createdDynamically)
                                                 }, error = function(e) {
                                                   flog.error("Problems rendering table for scenario dataset: '%s'. Error message: %s.", 
                                                              sheetName, e)

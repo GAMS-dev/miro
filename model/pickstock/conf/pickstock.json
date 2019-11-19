@@ -268,8 +268,6 @@
   "storeLogFilesDuration": 7,
   "roundingDecimals": 2,
   "activateModules": {
-    "scenario": true,
-    "strictmode": true,
     "loadLocal": true,
     "logFile": true,
     "lstFile": true,
@@ -296,6 +294,17 @@
       "members": ["dowvsindex", "abserror"]
     }
   ],
+  "scripts": {
+    "hcube": [
+      {
+        "title": "Test script",
+        "id": "script1",
+        "command": "jupyter",
+        "args": ["nbconvert", "--to", "html", "--execute", "scripts/hcube_analysis.ipynb"],
+        "outputFile": "hcube_analysis.html"
+      }
+    ]
+  },
   "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
   "handsontable": {
     "stretchH": "all",

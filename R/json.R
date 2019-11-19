@@ -12,7 +12,7 @@ validateJson <- function(jsonFileLocation, jsonSchemaLocation, verbose = TRUE, g
   #   boolean specifying whether JSON file is valid or not. If boolean is FALSE, an additional attribute "errors" is returned.
   
   if(!file.exists(jsonFileLocation)){
-    stop("JSON file could not be found. Check if the path you specified is valid.", call. = F)
+    stop("JSON file could not be found. Check if the path you specified is valid.", call. = FALSE)
   }
   if(!file.exists(jsonSchemaLocation)){
     stop("JSON Schema file could not be found. Check if the path you specified is valid.")
@@ -38,7 +38,9 @@ validateJson <- function(jsonFileLocation, jsonSchemaLocation, verbose = TRUE, g
     if(addDefaults){
       return(list(jsonAddDefaults(jsonFileLocation = jsonFileLocation, jsonSchemaLocation = jsonSchemaLocation), NULL))
     }else{
-      json <- suppressWarnings(jsonlite::fromJSON(jsonFileLocation, simplifyDataFrame = F, simplifyMatrix = F))
+      json <- suppressWarnings(jsonlite::fromJSON(jsonFileLocation, 
+                                                  simplifyDataFrame = FALSE, 
+                                                  simplifyMatrix = FALSE))
     }
   }else{
     errors <- attr(validatedJson, 'errors')

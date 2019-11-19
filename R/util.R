@@ -1139,7 +1139,6 @@ hotToR <- function(data, metaData, fixType = TRUE){
     fixedCols <- length(metaData$headers) - 2L
     names(dataTmp) <- unlist(data$params$colHeaders)
     names(dataTmp)[1:fixedCols] <- unlist(data$params$rColHeaders)[1:fixedCols]
-    print(dataTmp)
     return(dataTmp)
   }
   dataTmp <- fixColTypes(dataTmp,
