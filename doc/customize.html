@@ -95,13 +95,12 @@
                                     This chapter shows how to configure MIRO using the graphical interface. 
                                     For those who feel more comfortable writing JSON, section <a href ="#jsonfiles" class="scrollto">Configuration via JSON</a> shows 
                                     how to configure a MIRO app without using the graphical help tool. However, we strongly recommend to use the configuration mode.</p>
-                                    <p>The <i>Configuration mode</i> is directly accessible via the GAMS Studio version of the GAMS MIRO installation, see below. </p> 
+                                    <p>The <i>Configuration mode</i> is directly accessible via GAMS Studio, see below. </p> 
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/start_studio.png" alt="start the configuration mode" />
                                     </div>
-                                    <p>In order to launch the configuration mode from the old GAMS IDE or via the command line, besides the GAMS option statement 
-                                    <span class="code" style="white-space:nowrap">miro=launch</span> <span class="code">miromode=2</span> has to be added to the 
-                                    command line (e.g. <kbd style="white-space: nowrap;">cd path/to/model && gams transport.gms miro=launch miromode=2</kbd>).
+                                    <p>In order to launch the configuration mode via the command line, the environment variable <span class="code">MIRO_MODE=config</span> needs to 
+                                    be set instead of <span class="code">MIRO_MODE=base</span>. The other steps (see <a href = "./start.html#start-via-command-line">here</a>) remain the same.</p>
                                     <p>After the startup the following screen appears:</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/configuration_mode.png" alt="start the configuration mode" />
@@ -129,7 +128,7 @@
                                   <p>As the name suggests, general options can be set in this section (click on an item to see more information).</p>
                                   <h4 class="docu-general-header">General</h4>
                                   <h6 id = "application-title" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Application title</h6>
-                                  <div class="collapsed"><p>With this option the title of the application can be adjusted, which is displayed in the browser window. 
+                                  <div class="expanded"><p>With this option the title of the application can be adjusted, which is displayed in the browser window. 
                                   If a <a href = "https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARtitle" target = "_blank">$title</a> has been 
                                   defined in the GAMS model, this is used by default. </p>
                                       <div class="section-block">
@@ -138,8 +137,8 @@
                                       <p></p>
                                   </div>
                                   <h6 id = "dark-mode" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Color theme to use</h6>
-                                  <div class="collapsed"><p>Allows you to choose between MIRO light and dark mode as well as the dynamic adaptation of the 
-                                  theme based on the system settings set by the user.</p>
+                                  <div class="expanded"><p>Allows you to choose between MIRO light and dark mode as well as the dynamic adaptation of the 
+                                  theme based on the user's system settings.</p>
                                       <div class="row">
                                           <div class="col-md-6">
                                                 <p>Light mode:</p>
@@ -153,7 +152,7 @@
                                       <p></p>
                                   </div>
                                   <h6 id="show-log" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Show log file in UI</h6>
-                                  <div class="collapsed"><p>Enable or disable the display of the GAMS <i>log</i> file in the <i>GAMS interaction</i> section 
+                                  <div class="expanded"><p>Enable or disable the display of the GAMS <i>log</i> file in the <i>GAMS interaction</i> section 
                                   of your MIRO application.</p>
                                       <div class="section-block">
                                           <img class="img-fluid" style= "max-height:350pt;padding-bottom:25pt;" src="assets/images/configuration_mode/log_file.png" alt="GAMS Log file" />
@@ -161,7 +160,7 @@
                                       <p></p>
                                   </div>
                                   <h6 id="show-lst" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Show listing (lst) file in UI</h6>
-                                  <div class="collapsed"><p>Enable or disable the display of the GAMS listing (<i>lst</i>) file in the <i>GAMS interaction</i> 
+                                  <div class="expanded"><p>Enable or disable the display of the GAMS listing (<i>lst</i>) file in the <i>GAMS interaction</i> 
                                   section of your MIRO application.</p>
                                       <div class="section-block">
                                           <img class="img-fluid" style= "max-height:350pt;padding-bottom:25pt;" src="assets/images/configuration_mode/lst_file.png" alt="GAMS Log file" />
@@ -169,7 +168,7 @@
                                       <p></p>
                                   </div>
                                   <h6 id="miro-log" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Use custom MIRO log</h6>
-                                  <div class="collapsed"><p>You can write an own report and integrate it into MIRO. Per default, the GAMS <i>log</i> and 
+                                  <div class="expanded"><p>You can write an own report and integrate it into MIRO. Per default, the GAMS <i>log</i> and 
                                   <i>listing</i> (<i>lst</i>) files are visible in the <i>GAMS interaction</i> section. 
                                   Besides these files generated by GAMS you can also write your own log (e.g. with the 
                                   <a href="https://www.gams.com/latest/docs/UG_Put.html" target="_blank">Put Writing Facility</a>). If you already use an own 
@@ -183,7 +182,7 @@
                                       </div><!--//icon-holder-->
                                       <div class="content">
                                           <b class="callout-title">Note:</b>
-                                          <p>MIRO is running your GAMS model from a temporary working directory. If the log file is created and filled from within 
+                                          <p>MIRO is running your GAMS model from a temporary working directory per default. If the log file is created and filled from within 
                                           the GAMS model without a given path, it will be located in the working directory after the model run. 
                                           <br>In case the log file comes from a different place, it needs to be copied to the working directory before the model 
                                           run is finished. GAMS MIRO is providing you the path to that directory via 
@@ -275,22 +274,22 @@ putclose log;
                                   </div>
                                   
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default scenario comparison mode</h6>
-                                  <p class="collapsed">This option sets the default comparison method for scenarios (more information about scenario comparison 
+                                  <p class="expanded">This option sets the default comparison method for scenarios (more information about scenario comparison 
                                   can be found <a href = "./start.html#scenario-comparison">here</a>). 
                                   Regardless of the selected option, you can always switch between split screen and tab view within the MIRO application.</p>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Generate graphs for each input sheet 
                                   automatically (pivot tool)</h6>
-                                  <p class="collapsed">If this option is activated, a pivottable is generated for each input symbol apart from the 
+                                  <p class="expanded">If this option is activated, a pivottable is generated for each input symbol apart from the 
                                   tabular representation. 
                                   If an additional graphic is configured for a symbol, then this graphic is displayed instead.</p>
                                   <h6 id="pivot-background" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Background color 
                                   of row and column headers in pivot tables</h6>
-                                  <div class="collapsed"><p>Sets the global background color of all pivot tables used in the MIRO application. </p>
+                                  <div class="expanded"><p>Sets the global background color of all pivot tables used in the MIRO application. </p>
                                       <p></p>
                                   </div>
                                   <h6 id="decimal-places" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Number of decimal 
                                   places used for rounding output values</h6>
-                                  <div class="collapsed"><p>Sets the number of decimal places for numeric symbols in the MIRO application. Note that this only 
+                                  <div class="expanded"><p>Sets the number of decimal places for numeric symbols in the MIRO application. Note that this only 
                                   applies to symbols treated as numerical values by MIRO. For example, elements of GAMS <i>Sets</i> may contain numbers, but they 
                                   are not treated as such, but as strings. These are therefore not affected by the set maximum decimal place.</p>
                                       <p></p>
@@ -298,7 +297,7 @@ putclose log;
                                   <h4 class="docu-general-header">Scalars</h4>
                                   <h6 id="hidden-scalars" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Scalars that should 
                                   not be displayed in the scalars table but can be used in graphs etc.</h6>
-                                  <div class="collapsed"><p>For some graphs it may be useful to include scalar data from another GAMS symbol. 
+                                  <div class="expanded"><p>For some graphs it may be useful to include scalar data from another GAMS symbol. 
                                   In the following example from the pickstock model, the scalar output value "End of training phase" has been integrated into the 
                                   graph to identify exactly this phase.</p>
                                   <div class="section-block">
@@ -310,11 +309,11 @@ putclose log;
                                   </div>
                                   <h6 id="aggregate-widgets" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should all input 
                                   widgets (slider, dropdown menu, etc.) be aggregated on a single tab?</h6>
-                                  <p class="collapsed">If enabled, all scalar input widgets are displayed in the same tab and separated otherwise.</p>
+                                  <p class="expanded">If enabled, all scalar input widgets are displayed in the same tab and separated otherwise.</p>
                                   <h4 class="docu-general-header">Logo</h4>
                                   <h6 id="app-logo" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Upload a custom logo for 
                                   your MIRO app: png/jpg file (best format: 4,6:1)</h6>
-                                  <div class="collapsed"><p>This option allows you to use your own logo for a single MIRO application, displayed in the top left corner.</p>
+                                  <div class="expanded"><p>This option allows you to use your own logo for a single MIRO application, displayed in the top left corner.</p>
                                       <div class="section-block">
                                           <img class="img-fluid" style= "max-height:200pt;" src="assets/images/configuration_mode/app-logo.png" alt="App logo" />
                                       </div>
@@ -322,7 +321,7 @@ putclose log;
                                   </div>
                                   <h4 id="app-readme" class="docu-general-header">README file</h4>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Create an individual starting page</h6>
-                                  <div class="collapsed"><p>You have the possibility to integrate a README file into the MIRO application. 
+                                  <div class="expanded"><p>You have the possibility to integrate a README file into the MIRO application. 
                                   Its content is displayed in the input section in the first tab and is therefore the first thing the user 
                                   sees after starting the application. This separate and individual starting page can be used by the developer 
                                   to introduce and explain the MIRO application or the underlying GAMS model before the user starts working 
@@ -348,7 +347,7 @@ putclose log;
                                   </div>
                                   <h4 class="docu-general-header">Symbol configuration: Naming, ordering, grouping</h4>
                                   <h6 id="naming" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Naming</h6>
-                                  <div class="collapsed"> <p>Under the heading <i>Naming</i>, the names of the GAMS symbols displayed in MIRO can be adapted. 
+                                  <div class="expanded"> <p>Under the heading <i>Naming</i>, the names of the GAMS symbols displayed in MIRO can be adapted. 
                                   This includes the labels of the tabs displayed for each symbol as well as the individual table column labels. 
                                   Note that the naming only affects the representation of the symbols in the MIRO application and not the symbols in the GAMS model itself.
                                   </p>
@@ -368,7 +367,7 @@ putclose log;
                                   </ul>
                                   </div>
                                   <h6 id="tab-ordering" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Ordering</h6>
-                                  <div class="collapsed"> <p>Here you can adjust the tab order in which the symbols are to be displayed in MIRO. 
+                                  <div class="expanded"> <p>Here you can adjust the tab order in which the symbols are to be displayed in MIRO. 
                                   To do this, the symbols simply have to be dragged and dropped into the desired order. </p>
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:300pt;" src="assets/images/configuration_mode/general_ordering.png" alt="Ordering" />
@@ -386,7 +385,7 @@ putclose log;
                                   </div><!--//callout-block-->
                                   </div>
                                   <h6 id="tab-grouping" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Tab grouping</h6>
-                                  <div class="collapsed"> <p>Multiple tabs of input symbols (or output symbols) can be grouped together. All symbols of a group are displayed in an own tab.</p>
+                                  <div class="expanded"> <p>Multiple tabs of input symbols (or output symbols) can be grouped together. All symbols of a group are displayed in an own tab.</p>
                                   <p>Example:<br>
                                   For the input data of the transport model, one might want to group the symbols with geo data together:</p>
                                   <div class="section-block">
@@ -399,29 +398,29 @@ putclose log;
                                   </div>
                                   <h4 class="docu-general-header">Scenario & data</h4>
                                   <h6 id="local-upload" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Activate local data upload module?</h6>
-                                  <div class="collapsed"><p>If enabled, scenario data can be loaded via local files.</p>
+                                  <div class="expanded"><p>If enabled, scenario data can be loaded via local files.</p>
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:325pt;" src="assets/images/import-local.png" alt="Import local data" />
                                   </div>
                                   </div>
                                   <h6 id="default-scenario" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Use a default scenario that will be loaded on startup?</h6>
-                                  <p class="collapsed">Allows you to pre-populate tables and widgets with data when starting MIRO. 
+                                  <p class="expanded">Allows you to pre-populate tables and widgets with data when starting MIRO. 
                                   If this option is set and a scenario name is specified, MIRO looks for the corresponding scenario in the database at the application startup and automatically loads all data into the interface. 
                                   If the same input data is always used as basic data, this option allows you to skip the data import step in MIRO.</p>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Include a metadata sheet in the Excel file (when exporting a scenario)?</h6>
-                                  <div class="collapsed"><p>The metatdata sheet contains information about the user name, the scenario name and the time when the creation time of the scenario.</p>
+                                  <div class="expanded"><p>The metatdata sheet contains information about the user name, the scenario name and the time when the creation time of the scenario.</p>
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/general_export_metadata.png" alt="Metadata sheet" />
                                   </div>
                                   </div>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Include empty sheets in the Excel file?</h6>
-                                  <div class="collapsed"><p>This option specifies whether empty sheets should be included when exporting a scenario. 
+                                  <div class="expanded"><p>This option specifies whether empty sheets should be included when exporting a scenario. 
                                   Sheets can be empty e.g. when a scenario contains only input data.</p>
                                   </div>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should users be allowed to add attachments to scenarios?</h6>
-                                  <p class="collapsed">Enables to save file attachments for scenarios. Read more about this in the <i>File attachments</i> section <a href="./start.html#file-attachments">here</a>.</p>
+                                  <p class="expanded">Enables to save file attachments for scenarios. Read more about this in the <i>File attachments</i> section <a href="./start.html#file-attachments">here</a>.</p>
                                   <h6 id="general-duration" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Duration the GAMS log and lst files are stored in the database (in days)</h6>
-                                  <div class="collapsed"><p>If you want to save the log and lst files of individual GAMS jobs, you can use this option to specify how long the files should be saved. 
+                                  <div class="expanded"><p>If you want to save the log and lst files of individual GAMS jobs, you can use this option to specify how long the files should be saved. 
                                   0 means files are not stored at all, 999 means files are stored indefinitely. This setting is ignored when the attachment module is not active. Note that this is currently only supported in the MIRO base mode. </p>
                                   <div class="callout-block callout-warning">
                                       <div class="icon-holder">
@@ -435,19 +434,24 @@ putclose log;
                                   </div>
                                   <h4 class="docu-general-header">Computation</h4>
                                   <h6 id="general-remote" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Remote Job execution (GAMS MIRO Server only)</h6>
-                                  <div class="collapsed"><p>If enabled, the GAMS jobs can be executed on a server instead of on the local machine. For this purpose, the corresponding server information must be specified in the MIRO application. 
+                                  <div class="expanded"><p>If enabled, the GAMS jobs can be executed on a server instead of on the local machine. For this purpose, the corresponding server information must be specified in the MIRO application. 
                                   A detailed description of the remote execution and MIRO server in general can be found <a href = "./index.html" >here</a>.</p>
                                   </div>
-                                  <h6 id="general-remote" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should it be possible to start the Hypercube mode from the MIRO base mode?</h6>
-                                  <div class="collapsed"><p>As described <a href = "./start.html#launch-hcube-button" >here</a>, the MIRO <a href = "./hypercube.html" >Hypercube mode</a> can be started from within the base mode 
-                                  by clicking on the <img class="img-fluid" src="assets/images/hcube-button.png" width="25" height="25" align="middle" alt="Change to Hypercube mode" /> button in the header bar. This option causes said button to disappear in the MIRO base mode.</p>
+                                  <h6 id="general-temp-dir" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Allow access to the temporary directory?</h6>
+                                  <div class="expanded"><p>This option specifies whether all temporarily created files of the model run (like solution reports or the 
+                                  <span class="code">lst</span> and <span class="code">log</span> files) can be accessed by the user. 
+                                  If set to true, the files can be downloaded separately or as a ZIP archive with a click on the 
+                                  <img class="img-fluid" width="25" height="25" align="middle" src="assets/images/advanced-button.png" alt="Download temporary files" /> button.</p>
+                                        <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                             <img class="img-fluid" style="max-height:325pt;" src="assets/images/advanced-options.png" alt="Output data screen - scalars" />
+                                        </div>
                                   </div>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Save trace file with each GAMS run (Hypercube mode)</h6>
-                                  <p class="collapsed">The trace file gives performance information about a GAMS run. For performance analysis with the integrated analysis tool PAVER, this option needs to be activated.</p>
+                                  <p class="expanded">The trace file gives performance information about a GAMS run. For performance analysis with the integrated analysis tool PAVER, this option needs to be activated.</p>
                                   <h6 id="include-parent" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Include parent directory of the model folder in your model runs (e.g. because several models share files)</h6>
-                                  <p class="collapsed">In general, GAMS searches for input and include files in the current working directory only. This option sets an include directory to the parent directory of the GAMS model.</p>
+                                  <p class="expanded">In general, GAMS searches for input and include files in the current working directory only. This option sets an include directory to the parent directory of the GAMS model.</p>
                                   <h6 id="command-line-args" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Specify extra command line arguments that GAMS will be called with</h6>
-                                  <p class="collapsed">With this option GAMS Command line arguments can be specified, which are set for the model with every GAMS run started out of MIRO.
+                                  <p class="expanded">With this option GAMS Command line arguments can be specified, which are set for the model with every GAMS run started out of MIRO.
                                   This can be GAMS options like <span class="code">limrow=10</span> or <span class="code">threads=4</span> but also custom double-dash parameter. 
                                   Note, that the command line arguments set with this option are not visible in MIRO.
                                   <br>For command line parameters that can be set from MIRO using widgets like sliders, dropdown menus, checkboxes etc. click <a href="./model.html#command-line">here</a>.</p>
@@ -458,31 +462,31 @@ putclose log;
                                     as well as the individual settings of multi-dimensional input symbol tables.
                                     <h4 class="docu-general-header">Input tables (global settings)</h4>
                                     <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Height of input tables (in px)</h6>
-                                    <div class="collapsed"><p>Sets the height of the table. If the table content is higher than the configured height, a scroll bar is displayed. </p>
+                                    <div class="expanded"><p>Sets the height of the table. If the table content is higher than the configured height, a scroll bar is displayed. </p>
                                     </div>
                                     <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Restrict editing of tables? If activated, tables can not be modified by the user.</h6>
-                                    <div class="collapsed"><p>Sets all input tables to readonly. No manual edits can be made by the user. Database scenarios or local data can still be loaded.</p>
+                                    <div class="expanded"><p>Sets all input tables to readonly. No manual edits can be made by the user. Database scenarios or local data can still be loaded.</p>
                                     </div>
                                     <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Highlight the column/row of current active cell</h6>
-                                    <div class="collapsed"><p>With these options you can enable/disable the highlighting of selected rows/columns in the table.
+                                    <div class="expanded"><p>With these options you can enable/disable the highlighting of selected rows/columns in the table.
                                     Note, that there is no live preview available for these options.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/tables_highlight.png" alt="Highlighting of columsn/rows" />
                                     </div>
                                     </div>
                                     <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default column stretching</h6>
-                                    <div class="collapsed"><p>Sets the general stretch behavior of columns. Available options are <i>no stretch</i>, 
+                                    <div class="expanded"><p>Sets the general stretch behavior of columns. Available options are <i>no stretch</i>, 
                                     <i>stretch last column</i> and <i>stretch all columns</i>. Stretched columns mean that the table always fills the 
                                     entire window width. With large tables, this can have a negative effect on the performance of the application. 
                                     Columns that are not set to stretch have a default column with
                                     of 300px.</p>
                                     </div>
                                     <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Set custom column width</h6>
-                                    <div class="collapsed"><p>Here, the default column with of 300px can be adjusted. It is recommended 
+                                    <div class="expanded"><p>Here, the default column with of 300px can be adjusted. It is recommended 
                                     not to select too thin column widths, otherwise the table contents might not be displayed correctly. </p>
                                     </div>
                                     <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enable column sorting in ascending/descending order</h6>
-                                    <div class="collapsed"><p>If activated, table columns can be sorted in ascending and descending order.</p>
+                                    <div class="expanded"><p>If activated, table columns can be sorted in ascending and descending order.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/tables_column_sorting.png" alt="Column sorting" />
                                     </div>
@@ -497,13 +501,13 @@ putclose log;
                                     </div><!--//callout-block-->
                                     </div>
                                     <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enable manual column resizing</h6>
-                                    <div class="collapsed"><p>Enables/disables the manual setting of the column width by the user. </p>
+                                    <div class="expanded"><p>Enables/disables the manual setting of the column width by the user. </p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/tables_resize.png" alt="Manual column resizing" />
                                     </div>
                                     </div>
                                     <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enable table context menu (accessible via right mouse click)</h6>
-                                    <div class="collapsed"><p>The context menu (accessible by right-clicking in the table) allows you to access various functions, such 
+                                    <div class="expanded"><p>The context menu (accessible by right-clicking in the table) allows you to access various functions, such 
                                     as adding or deleting a table row, or undoing the last modifications.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:200pt;" src="assets/images/configuration_mode/tables_context_menu.png" alt="Context menu" />
@@ -511,7 +515,7 @@ putclose log;
                                     </div>
                                     <h4 class="docu-general-header">Output tables (global settings)</h4>
                                     <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Table style</h6>
-                                    <div class="collapsed"><p>Output tables can be changed regarding their design. Different designs are available. Example:</p>
+                                    <div class="expanded"><p>Output tables can be changed regarding their design. Different designs are available. Example:</p>
                                     <div class="row">
                                         <div class="col-md-6">
                                               <h6>Table style: <i>display</i> (default)</h6>
@@ -524,7 +528,7 @@ putclose log;
                                     </div>
                                     </div>
                                     <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Include column filters</h6>
-                                    <div class="collapsed"><p>Table filters can be used to search each table column individually for entries. If there are strings 
+                                    <div class="expanded"><p>Table filters can be used to search each table column individually for entries. If there are strings 
                                     in the column, the filter is based on a text search. For exclusively numeric values, a numeric range can be specified 
                                     as the filter with the help of a slider. The filters can be displayed above or below the table or can be deactivated completely.</p>
                                     <div class="section-block">
@@ -532,17 +536,17 @@ putclose log;
                                     </div>
                                     </div>
                                     <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Number of items to display per page</h6>
-                                    <div class="collapsed"><p>Specifies the default value of how many rows should be displayed per table sheet. The value can be 
+                                    <div class="expanded"><p>Specifies the default value of how many rows should be displayed per table sheet. The value can be 
                                     adjusted in the running applicaiton.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:200pt;" src="assets/images/configuration_mode/tables_entries.png" alt="Numer of items to show" />
                                     </div>
                                     </div>
                                     <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Show row numbers?</h6>
-                                    <div class="collapsed"><p>Determines whether line numbers should be displayed or not. </p>
+                                    <div class="expanded"><p>Determines whether line numbers should be displayed or not. </p>
                                     </div>
                                     <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Add export buttons?</h6>
-                                    <div class="collapsed"><p>The export buttons <i>copy</i>, <i>CSV</i>, <i>Excel</i>, <i>PDF</i> and <i>print</i> are available. 
+                                    <div class="expanded"><p>The export buttons <i>copy</i>, <i>CSV</i>, <i>Excel</i>, <i>PDF</i> and <i>print</i> are available. 
                                     Note, that only the data of the visible table sheet will be exported!</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:200pt;" src="assets/images/configuration_mode/tables_buttons.png" alt="Export buttons" />
@@ -561,14 +565,14 @@ putclose log;
                                     <h5 class="block-title">Available Options</h5>
                                     <p>The following options are available for a symbol table:</p>
                                     <h6 id="table-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Name of the widget tab</h6>
-                                    <div class="collapsed"><p>With this option the tab name of the symbol is defined, see screenshot below. 
+                                    <div class="expanded"><p>With this option the tab name of the symbol is defined, see screenshot below. 
                                     The default value of the element name is the explanatory text of the symbol.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui_name.png" alt="Element name"/>
                                     </div>
                                     </div>
                                     <h6 id="table-option-large" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Are large amounts of data stored in the table (i.e. more than 20,000 records)?</h6>
-                                    <div class="collapsed"><p>This option is intended for situations in which large amounts of data are to be displayed within a table. 
+                                    <div class="expanded"><p>This option is intended for situations in which large amounts of data are to be displayed within a table. 
                                     If it is active, a table consisting of several pages is displayed instead of a long, 1-page table. In this table only the currently visible data is loaded on the client side. <br>
                                     This type of tabular representation corresponds to that of output data.</p>
                                     <div class="section-block">
@@ -576,10 +580,10 @@ putclose log;
                                     </div>
                                     </div>
                                     <h6 id="table-option-readonly" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should table be readonly?</h6>
-                                    <div class="collapsed"><p>This option prevents the user from making manual changes in the input table of a scenario. 
+                                    <div class="expanded"><p>This option prevents the user from making manual changes in the input table of a scenario. 
                                     If active, the table can only be filled with scenario data from the database.</p></div>
                                     <h6 id="table-option-pivot" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Select a column to pivot</h6>
-                                    <div class="collapsed"><p>This option allows you to expand a table column of a symbol, i.e. to have a new column from each of the elements in this column:</p> 
+                                    <div class="expanded"><p>This option allows you to expand a table column of a symbol, i.e. to have a new column from each of the elements in this column:</p> 
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_pivot.png" alt="Pivot column"/>
                                     </div>
@@ -612,13 +616,13 @@ $offExternalInput
                                     In this case we should stick to the <i>parameter view</i>.</p>
                                     </div>
                                     <h6 id="table-option-readonlycol" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Select columns to be readonly</h6>
-                                    <div class="collapsed"><p>This option prevents the user from making manual changes in selected columns of the input table. 
+                                    <div class="expanded"><p>This option prevents the user from making manual changes in selected columns of the input table. 
                                     Note that this option is only available for table columns that have not been pivoted (see option above).</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui_readonlycols.png" alt="Heatmap"/>
                                     </div></div>
                                     <h6 id="table-option-readonlycol" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Turn table into a heatmap?</h6>
-                                    <div class="collapsed"><p>Colors cells with numeric content according to the relative value. 
+                                    <div class="expanded"><p>Colors cells with numeric content according to the relative value. 
                                     </p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui.png" alt="Heatmap"/>
@@ -702,7 +706,7 @@ $offExternalInput
                                           </div><!--//icon-holder-->
                                           <div class="content">
                                               <b class="callout-title">Warning:</b>
-                                              <p>The following GAMS options are reserved by GAMS MIRO and can not be configured: <span class="code">idir1, idir2, curdir, trace, traceopt, miro</span></p>
+                                              <p>The following GAMS options are reserved by GAMS MIRO and can not be configured: <span class="code">idir1, idir2, curdir, trace, traceopt</span></p>
                                           </div><!--//content-->
                                       </div><!--//callout-block-->
                                     </li>
@@ -979,18 +983,18 @@ $offExternalInput
                                     and options in this context, however, it may happen that not all of them are available in the configuration mode
                                     immediately. This section gives an overview of those options. </p>
                                     <h6 id = "remote-import-export" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Remote data import and export</h6>
-                                  <div class="collapsed"><p>A MIRO application can be supplied with data from various sources:</p>
-                                  <ul>
-                                    <li>Internal database: Import existing scenario data</li>
-                                    <li>local files: GDX, Excel</li>
-                                    <li>Manual entered data</li>
-                                  </ul>
-                                  <p>In addition to these standard interfaces, the data can also come from or go to <b>external sources</b>. </p>
-                                  The data connector is implemented as a REST service. To exchanges data from external sources with the web client, the 
-                                  corresponding information must be stored in the <a href = "./faqs.html#file-config"><i>modelname.json</i></a> file.
-                                  External data sources are configured symbol-based. In the following example, an external data 
-                                  connector is used to import data for the symbol <i>price</i>:
-                                  </p><pre><code class="language-json">"remoteImport": [
+                                    <div class="expanded"><p>A MIRO application can be supplied with data from various sources:</p>
+                                    <ul>
+                                      <li>Internal database: Import existing scenario data</li>
+                                      <li>local files: GDX, Excel</li>
+                                      <li>Manual entered data</li>
+                                    </ul>
+                                    <p>In addition to these standard interfaces, the data can also come from or go to <b>external sources</b>. </p>
+                                    The data connector is implemented as a REST service. To exchanges data from external sources with the web client, the 
+                                    corresponding information must be stored in the <a href = "./faqs.html#file-config"><i>modelname.json</i></a> file.
+                                    External data sources are configured symbol-based. In the following example, an external data 
+                                    connector is used to import data for the symbol <i>price</i>:
+                                    </p><pre><code class="language-json">"remoteImport": [
     {
     "name": "Importer",
       "templates": [
@@ -1008,15 +1012,15 @@ $offExternalInput
       ]
     }
   ]</code></pre>
-                                  <p>The setup is pretty simple: Besides the symbol name (<i>price</i>) and the method (<i>GET</i>), the url of the web server to connect
-                                  is configured. In the section <i>httpBody</i> key-value pairs can be specified, which have to be interpreted by the server.
-                                  This simple example server uses a Python/Flask interface together with pandas data connectors to retrieve data from a CSV file 
-                                  (<i>price_data.csv</i>).
-                                  </p>
-                                  
-                                  <p>The same logic is also true for the export of data. In the example the data of the symbol stock_weight should be exported 
-                                  to a CSV file (<i>export_stock_weight.csv</i>). The only difference to importing data is the method, which is now <i>POST</i> 
-                                  instead of <i>GET</i>:</p><pre><code class="language-json">"remoteExport": [
+                                    <p>The setup is pretty simple: Besides the symbol name (<i>price</i>) and the method (<i>GET</i>), the url of the web server to connect
+                                    is configured. In the section <i>httpBody</i> key-value pairs can be specified, which have to be interpreted by the server.
+                                    This simple example server uses a Python/Flask interface together with pandas data connectors to retrieve data from a CSV file 
+                                    (<i>price_data.csv</i>).
+                                    </p>
+                                    
+                                    <p>The same logic is also true for the export of data. In the example the data of the symbol stock_weight should be exported 
+                                    to a CSV file (<i>export_stock_weight.csv</i>). The only difference to importing data is the method, which is now <i>POST</i> 
+                                    instead of <i>GET</i>:</p><pre><code class="language-json">"remoteExport": [
     {
       "name": "Exporter",
       "templates": [
@@ -1034,7 +1038,7 @@ $offExternalInput
       ]
     }
   ]</code></pre>
-                                  <div class="callout-block callout-success">
+                                    <div class="callout-block callout-success">
                                         <div class="icon-holder">
                                             <i class="fas fa-thumbs-up"></i>
                                         </div><!--//icon-holder-->
@@ -1043,6 +1047,36 @@ $offExternalInput
                                             <p>The data import via such a data connector happens automatically when the MIRO application is started. The corresponding symbol table is then filled directly with the external data. A data export is carried out automatically after a model run. </p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
+                                  </div>
+                                  <h6 id = "symbol-links" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Use output data as input data</h6>
+                                  <div class="expanded"><p>In some situations you may want to run a model and use the results of the run as input for the next run. 
+                                  Such an iterative process is possible by creating a link between the output and input symbol. By doing so, input data for a symbol 
+                                  can be populated from an output sheet.</p><pre><code class="language-json">"symbolLinks":[
+  {
+   "source": "outputsymbol1",
+   "target": "inputsymbol1"
+  },
+  {
+   "source": "outputsymbol2",
+   "target": "inputsymbol2"
+  }
+]</code></pre>
+                                  <p>The transfer of the data from the output to the input symbol does not happen automatically, but is triggered manually.</p>
+                                  <div class="callout-block callout-warning">
+                                      <div class="icon-holder">
+                                          <i class="fas fa-info-circle"></i>
+                                      </div><!--//icon-holder-->
+                                      <div class="content">
+                                          <b class="callout-title">Note:</b>
+                                          <p>Each symbol can only be used once as target or source.</p>
+                                      </div><!--//content-->
+                                  </div><!--//callout-block--> 
+                                  </div>
+                                  <h6 id = "input-graphs" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Graphs as input data</h6>
+                                  <div class="expanded"><p>MIRO has an API that allows you to use graphics to produce input data. Thus not 
+                                  only a graphic based on input data is generated but the generated graphic can be interactively modified by 
+                                  the user. These adjustments in turn generate the input data with which the GAMS model is fed with. 
+                                  </p>
                                   </div>
                                 </div>
                             </section>
@@ -1061,7 +1095,7 @@ $offExternalInput
                                     </div><!--//callout-block-->
                                     <ol class="list">
                                       <li><h6>&lt;modelname&gt;_io.json</h6>
-                                        This <a href="./faqs.html#file-io">file</a> is generated automatically each time a GAMS model is run with the command line parameter <span class="code" style="white-space:nowrap;">miro=build</span> or <span class="code" style="white-space:nowrap;"><nobr>miro=launch</nobr></span>.
+                                        This <a href="./faqs.html#file-io">file</a> is generated automatically each time MIRO is run in <a href = "./model.html#development-mode">development mode</a>.
                                         It lists those GAMS symbols that are marked in your GAMS model with the <code class="language-gams">$onExternalInput
                                         </code> / <code class="language-gams">$offExternalInput
                                         </code> and <code class="language-gams">$onExternalOutput
@@ -1431,7 +1465,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                 <a class="nav-link scrollto" href="#configurationMode">The configuration mode</a>
                                 <nav class="doc-sub-menu nav flex-column">
                                     <a class="nav-link scrollto" href="#general-settings">General settings</a>
-                                    <a class="nav-link scrollto" href="#table-settings">Table settings</a>
+                                    <a class="nav-link scrollto" href="#table-settings">Configure tables</a>
                                     <a class="nav-link scrollto" href="#configure-widgets">Configure widgets</a>
                                     <a class="nav-link scrollto" href="#configure-graphs">Configure graphs</a>
                                     <a class="nav-link scrollto" href="#database-management">Database management</a>

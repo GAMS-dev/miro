@@ -78,7 +78,7 @@ $(document).ready(function(){
                                   <h3 class="block-title">Available Options</h3>
                                     <p>The following options are available for a slider widget:</p>
                                     <h6 id="slider-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
-                                    <div class="collapsed"><p>With this option the tab name of the symbol is defined, see screenshot below. 
+                                    <div class="expanded"><p>With this option the tab name of the symbol is defined, see screenshot below. 
                                     The default value of the element name is the explanatory text of the symbol.</p>
                                     <div class="callout-block callout-warning">
                                       <div class="icon-holder">
@@ -94,14 +94,14 @@ $(document).ready(function(){
                                     </div>
                                     </div>
                                     <h6 id="slider-option-label" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a label</h6>
-                                    <div class="collapsed"><p>If a label has been specified, it will be displayed above the slider. In the example below the label 
+                                    <div class="expanded"><p>If a label has been specified, it will be displayed above the slider. In the example below the label 
                                     <i>select the maximum number of stocks</i> is used. A label is optional.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_slider_label.png" alt="Element label"/>
                                     </div>
                                     </div>
                                     <h6 id="slider-option-minmaxdef" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Minimum / maximum / default value</h6>
-                                    <div class="collapsed"><p><i>Minimum / maximum value</i>: Both a minimum and a maximum value are required for a slider. These limit the range in which the user can select values. 
+                                    <div class="expanded"><p><i>Minimum / maximum value</i>: Both a minimum and a maximum value are required for a slider. These limit the range in which the user can select values. 
                                     <br><i>Default value</i>: A default value is the initial value of the slider i.e. the slider value set when starting the application. This is optional. 
                                     A warning will be issued if the value doesn't fit between the minimum and maximum value.
                                     If this value is not specified, the configured minimum value is always used as default value. As soon as data is loaded which contains a value for the slider symbol, the default value is replaced with this value.</p>
@@ -135,13 +135,13 @@ $(document).ready(function(){
                                     <p>More on Dependencies among Widgets can be found <a href="./customize.html#widgets-dependencies">here</a>.</p>
                                     </div>
                                     <h6 id="slider-option-step" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Step size</h6>
-                                    <div class="collapsed"><p>The step size specifies the interval between each selectable value on the slider. The value must be greater than 0 and must not exceed the total range of the slider.</p>
+                                    <div class="expanded"><p>The step size specifies the interval between each selectable value on the slider. The value must be greater than 0 and must not exceed the total range of the slider.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:40pt;" src="assets/images/configuration_mode/widget_slider_step.png" alt="Step size"/>
                                     </div>
                                     </div>
                                     <h6 id="slider-option-tick" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Sow tick marks?</h6>
-                                    <div class="collapsed"><p>Tick marks are displayed below the sliders and help to visually subdivide the entire slider width. </p>
+                                    <div class="expanded"><p>Tick marks are displayed below the sliders and help to visually subdivide the entire slider width. </p>
                                     <p>Slider without tick marks:</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_slider_label.png" alt="Slider without tick marks"/>
@@ -152,7 +152,7 @@ $(document).ready(function(){
                                     </div>
                                     </div>
                                     <h6 id="slider-option-expand" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should element be expanded automatically in Hypercube mode?</h6>
-                                    <div class="collapsed"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding section</a> on Hypercube mode, the display of configured widgets changes in Hypercube mode. 
+                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding section</a> on Hypercube mode, the display of configured widgets changes in Hypercube mode. 
                                     With the option available here, the automatic expansion of a widget can be switched off.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/batch_img/regular_batch.png" alt="Expand in Hypercube mode"/>
@@ -235,17 +235,17 @@ $(document).ready(function(){
                                   <h3 class="block-title">Available Options</h3>
                                     <p>The following options are available for a checkbox widget:</p>
                                     <h6 id="checkbox-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
-                                    <div class="collapsed"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
+                                    <div class="expanded"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
                                     The default value of the element name is the explanatory text of the symbol.</p>
                                     </div>
                                     <h6 id="checkbox-option-label" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a label</h6>
-                                    <div class="collapsed"><p>If a label has been specified, it will be displayed above the checkbox. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
+                                    <div class="expanded"><p>If a label has been specified, it will be displayed above the checkbox. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
                                     </div>
                                     <h6 id="checkbox-option-default" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default value</h6>
-                                    <div class="collapsed"><p>The default value specifies the initial state of the checkbox (checked or unchecked).</p>
+                                    <div class="expanded"><p>The default value specifies the initial state of the checkbox (checked or unchecked).</p>
                                     </div>
                                     <h6 id="checkbox-option-expand" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should element be expanded automatically in Hypercube mode?</h6>
-                                    <div class="collapsed"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding section</a> on Hypercube mode, the display of configured widgets changes in Hypercube mode. 
+                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding section</a> on Hypercube mode, the display of configured widgets changes in Hypercube mode. 
                                     In Hypercube mode a checkbox becomes a multi dropdwon menu with the entries <i>yes</i> and <i>no</i>. With the option available here, the automatic expansion of a widget can be switched off.</p>
                                     </div>
                                 </div><!--//section-block-->
@@ -301,14 +301,14 @@ $(document).ready(function(){
                                   <h3 class="block-title">Available Options</h3>
                                     <p>The following options are available for a checkbox widget:</p>
                                     <h6 id="dropdown-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
-                                    <div class="collapsed"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
+                                    <div class="expanded"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
                                     The default value of the element name is the explanatory text of the symbol.</p>
                                     </div>
                                     <h6 id="dropdown-option-label" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a label</h6>
-                                    <div class="collapsed"><p>If a label has been specified, it will be displayed above the dropdown menu. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
+                                    <div class="expanded"><p>If a label has been specified, it will be displayed above the dropdown menu. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
                                     </div>
                                     <h6 id="dropdown-option-choices" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Static Choices / dynamic choices</h6>
-                                    <div class="collapsed"><p>As with a slider, the values/elements of a dropdown menu can be filled either statically or dynamically. 
+                                    <div class="expanded"><p>As with a slider, the values/elements of a dropdown menu can be filled either statically or dynamically. 
                                     Static choices remain unchanged, regardless of the loaded data. In contrast to this the selectable elements of a dropdown menu with dynamic choices are filled depending on the loaded data.</p>
                                     <br><h4 id="static-dropdown">Static choices:</h4>
                                     <p>For a static dropdown menu the following options are available:</p>
@@ -412,7 +412,7 @@ $(document).ready(function(){
                                     </ul>
                                     </div>
                                     <h6 id="dropdown-option-expand" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should element be expanded automatically in Hypercube mode?</h6>
-                                    <div class="collapsed"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding section</a> on Hypercube mode, the display of configured widgets changes in Hypercube mode. 
+                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding section</a> on Hypercube mode, the display of configured widgets changes in Hypercube mode. 
                                     In Hypercube mode a dropdown menu becomes a multi dropdwon menu. With the option available here, the automatic expansion of a widget can be switched off.</p>
                                     </div>
                                 </div><!--//section-block-->
@@ -531,25 +531,25 @@ $offExternalInput
                                   <h3 class="block-title">Available Options</h3>
                                     <p>The following options are available for a date selector widget:</p>
                                     <h6 id="date-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
-                                    <div class="collapsed"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
+                                    <div class="expanded"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
                                     The default value of the element name is the explanatory text of the symbol.</p>
                                     </div>
                                     <h6 id="date-option-label" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a label</h6>
-                                    <div class="collapsed"><p>If a label has been specified, it will be displayed above the date selector. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
+                                    <div class="expanded"><p>If a label has been specified, it will be displayed above the date selector. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
                                     </div>
                                     <h6 id="date-option-minmaxdef" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default / earliest / latest date</h6>
-                                    <div class="collapsed"><p>When configuring a date selector, the earliest and the latest date that can be selected by the MIRO user can be specified. 
+                                    <div class="expanded"><p>When configuring a date selector, the earliest and the latest date that can be selected by the MIRO user can be specified. 
                                     Data outside this range cannot be selected in the widget. In addition, a specific date can be set as the default date. 
                                     The dates for the earliest and the latest selectable date are optional. If required, they can be set statically by specifying a fixed date. 
                                     The default date is not optional. Here either a static date string can be specified or the option <i>Use current date</i> can be activated. 
                                     The current date is then always selected as the default. </p>
                                     </div>
                                     <h6 id="date-option-format" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose how you want the date to be formatted</h6>
-                                    <div class="collapsed"><p>This option specifies the format of the date to display in the browser. The defaults is <i>yyyy-mm-dd</i>. 
+                                    <div class="expanded"><p>This option specifies the format of the date to display in the browser. The defaults is <i>yyyy-mm-dd</i>. 
                                     This setting does not affect the actual format of the string the widget returns.</p>
                                     </div>
                                     <h6 id="date-option-range" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ What date range should be displayed per default?</h6>
-                                    <div class="collapsed"><p>Specifies the start screen of the date overview. The start screens <i>Month</i>, <i>Year</i> and <i>Decade</i> are available.</p>
+                                    <div class="expanded"><p>Specifies the start screen of the date overview. The start screens <i>Month</i>, <i>Year</i> and <i>Decade</i> are available.</p>
                                     <div class = "row">
                                         <div class = "col-lg-4 col-6">
                                             <p>Month:</p>
@@ -573,7 +573,7 @@ $offExternalInput
                                     <p>If you click on a year, the monthly overview opens. From there, you can click on a month to go to the detailed day view.</p>
                                     </div>
                                     <h6 id="date-option-start" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ What day shall be the start of the week?</h6>
-                                    <div class="collapsed"><p>This option determines the day of the week with which every row of the date overview shall begin.</p>
+                                    <div class="expanded"><p>This option determines the day of the week with which every row of the date overview shall begin.</p>
                                         <div class = "row">
                                             <div class = "col-lg-4 col-6">
                                                 <p>Start on Sunday:</p>
@@ -590,14 +590,14 @@ $offExternalInput
                                         </div>
                                     </div>
                                     <h6 id="date-option-disable" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Select weekdays that you want to disable</h6>
-                                    <div class="collapsed"><p>Individual weekdays can be deactivated in the date overview, so that the corresponding days are not selectable by the user. </p>
+                                    <div class="expanded"><p>Individual weekdays can be deactivated in the date overview, so that the corresponding days are not selectable by the user. </p>
                                     </div>
                                     <h6 id="date-option-close" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should datepicker be closed immediately when a date is selected?</h6>
-                                    <div class="collapsed"><p>This option refers only to the handling of the widget itself. If active, the date overview of the widget will be closed as soon as a date is clicked. 
+                                    <div class="expanded"><p>This option refers only to the handling of the widget itself. If active, the date overview of the widget will be closed as soon as a date is clicked. 
                                     Otherwise the widget remains open and closes only when you click somewhere else.</p>
                                     </div>
                                     <h6 id="date-option-expand" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should element be expanded automatically in Hypercube mode?</h6>
-                                    <div class="collapsed"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding section</a> on Hypercube mode, the display of configured widgets changes in Hypercube mode. 
+                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding section</a> on Hypercube mode, the display of configured widgets changes in Hypercube mode. 
                                     With the option available here, the automatic expansion of a widget can be switched off.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/batch_img/regular_batch.png" alt="Expand in Hypercube mode"/>
@@ -641,13 +641,13 @@ $offExternalInput
                                     <p>The available options of a date range selector are nearly identical to those of a <a href = "./widgets.html#widget-date-options" class = "scrollto">single date selector</a>. 
                                     The following options are available in addition for a date range selector widget:</p>
                                     <h6 id="daterange-option-default" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default dates</h6>
-                                    <div class="collapsed"><p>Since the widget is used for date <i>ranges</i> the date range selector needs two default dates instead of one. 
+                                    <div class="expanded"><p>Since the widget is used for date <i>ranges</i> the date range selector needs two default dates instead of one. 
                                     The configuration of these does not differ from that of the <a href = "#date-option-minmaxdef" class = "scrollto">singe date selector</a>.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:60pt;" src="assets/images/configuration_mode/widget_daterange_separator.png" alt="Date range separator"/>
                                     </div>
                                     </div><h6 id="daterange-option-separator" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Select the separator between start and end date selector</h6>
-                                    <div class="collapsed"><p>With this option you can determine what should be displayed between the two date selectors (default: "<i>to</i>").</p>
+                                    <div class="expanded"><p>With this option you can determine what should be displayed between the two date selectors (default: "<i>to</i>").</p>
                                     <p>Example with two different separators:</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:60pt;" src="assets/images/configuration_mode/widget_daterange_separator.png" alt="Date range separator"/>
@@ -693,17 +693,17 @@ $offExternalInput
                                   <h3 class="block-title">Available Options</h3>
                                     <p>The following options are available for a text input widget:</p>
                                     <h6 id="textbox-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
-                                    <div class="collapsed"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
+                                    <div class="expanded"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
                                     The default value of the element name is the explanatory text of the symbol.</p>
                                     </div>
                                     <h6 id="textbox-option-label" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a label</h6>
-                                    <div class="collapsed"><p>If a label has been specified, it will be displayed above the text input. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
+                                    <div class="expanded"><p>If a label has been specified, it will be displayed above the text input. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
                                     </div>
                                     <h6 id="textbox-option-default" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose the default value</h6>
-                                    <div class="collapsed"><p>A default value is the initial value of the text input i.e. the text set when starting the application. This is optional. </p>
+                                    <div class="expanded"><p>A default value is the initial value of the text input i.e. the text set when starting the application. This is optional. </p>
                                     </div>
                                     <h6 id="textbox-option-placeholder" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a placeholder</h6>
-                                    <div class="collapsed"><p>A placeholder is a text that is displayed in the text box as long as no input has been made by the user. 
+                                    <div class="expanded"><p>A placeholder is a text that is displayed in the text box as long as no input has been made by the user. 
                                     This is primarily for orientation purposes. A placeholder does not set a value and is optional.</p>
                                     </div>
                                 </div><!--//section-block-->
@@ -739,23 +739,23 @@ $offExternalInput
                                   <h3 class="block-title">Available Options</h3>
                                     <p>The following options are available for a Numeric input widget:</p>
                                     <h6 id="numeric-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
-                                    <div class="collapsed"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
+                                    <div class="expanded"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
                                     The default value of the element name is the explanatory text of the symbol.</p>
                                     </div>
                                     <h6 id="numeric-option-label" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a label</h6>
-                                    <div class="collapsed"><p>If a label has been specified, it will be displayed above the numeric input. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
+                                    <div class="expanded"><p>If a label has been specified, it will be displayed above the numeric input. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
                                     </div>
                                     <h6 id="numeric-option-default" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default value</h6>
-                                    <div class="collapsed"><p>A default value is the initial value of the numeric input i.e. the value set when starting the application. This is optional. </p>
+                                    <div class="expanded"><p>A default value is the initial value of the numeric input i.e. the value set when starting the application. This is optional. </p>
                                     </div>
                                     <h6 id="numeric-option-minimum" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Minimum value</h6>
-                                    <div class="collapsed"><p>Specifies the minimum valid value for the widget. This is optional. </p>
+                                    <div class="expanded"><p>Specifies the minimum valid value for the widget. This is optional. </p>
                                     </div>
                                     <h6 id="numeric-option-maximum" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Maximum value</h6>
-                                    <div class="collapsed"><p>Specifies the maximum valid value for the widget. This is optional. </p>
+                                    <div class="expanded"><p>Specifies the maximum valid value for the widget. This is optional. </p>
                                     </div>
                                     <h6 id="numeric-option-sign" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Currency symbol</h6>
-                                    <div class="collapsed"><p>Places a symbol in front of the entered value, e.g. a dollar sign. This option is used exclusively for visual support. 
+                                    <div class="expanded"><p>Places a symbol in front of the entered value, e.g. a dollar sign. This option is used exclusively for visual support. 
                                     As value the plain number is returned by the widget. This is optional. </p>
                                     </div>
                                 </div><!--//section-block-->

@@ -161,7 +161,7 @@
                "required":false
             },
             "downloadTempFiles":{
-              "description": "Whether one should be able to download files from workspace",
+               "description": "Should users be allowed to access the temporary directory out of MIRO?",
                "type": "boolean",
                "default":false,
                "required":false

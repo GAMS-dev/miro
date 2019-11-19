@@ -88,20 +88,13 @@
                             <section id="hypercube-overview" class="doc-section">
                                 <h2 class="section-title">Overview</h2>
                                 <div class="section-block">
-                                    <p>There is little to do to get from the MIRO <i>base mode</i> to the Hypercube interface. When you are in the base mode, 
-                                    you can simply click the <img class="img-fluid" src="assets/images/hcube-button.png" width="25" height="25" align="middle" alt="Change to Hypercube mode" /> 
-                                    button in the header bar and you will automatically be redirected. Alternatively, you can start the Hypercube mode directly via the switch: 
-                                    <span class="code" style="white-space: nowrap;">miromode=1</span> (in addition to <span class="code" style="white-space: nowrap;">miro=launch</span>) 
-                                    in the development mode:</p>
-                                    <div class="section-block" style="text-align:center;">
-                                        <img class="img-fluid" style="max-height:30pt; display:block; margin:auto;" src="assets/images/batch_img/batch_launch.png" alt="Launch MIRO in Hypercube mode" />
-                                    </div>
-                                    <p>Or from the command line:
-                                    <span class="code" style="white-space: nowrap;">gams transport.gms miro=launch miromode=1</span></p>
-                                    <p>MIRO automatically processes and adjusts your base mode configuration so that it will work in Hypercube mode.</p>
+                                    <p>Just like the Base mode, the Hypercube mode can be started directly from GAMS Studio or the command line. 
+                                    For the latter, the environment variable <span class="code">MIRO_MODE=hcube</span> needs to 
+                                    be set instead of <span class="code">MIRO_MODE=base</span>. The other steps (see <a href = "./start.html#start-via-command-line">here</a>) 
+                                    remain the same. MIRO automatically processes and adjusts your base mode configuration so that it will work in Hypercube mode.</p>
                                     <p>Visually, the Hypercube interface hardly differs from the regular mode. After starting the application, the following familiar startup screen appears.</p>
                                     <div class="section-block" style="text-align:center;">
-                                        <img class="img-fluid" src="assets/images/batch_img/batch_start.png" alt="start screen in Hypercube mode" />
+                                        <img class="img-fluid" src="assets/images/batch_img/hcube_start.png" alt="start screen in Hypercube mode" />
                                     </div>
                                     <p><br>The navigation menu on the left side now consists of the following sections:</p>
                                         <ol class="fa-ul">
@@ -120,7 +113,7 @@
                                         <li><span class="fa-li"><i class="fas fa-chart-pie"></i></span><b>Analyze scenarios:</b><br/>
                                           Automatic performance analyses with the integrated analysis tool PAVER.
                                         </li><br>
-                                        <li><span style="color: #fff;" class="fa-li"><i class="fas fa-square"></i></span><b>Load data:</b><br/>
+                                        <li><span class="fa-li"><i class="fas fa-square"></i></span><b>Load data:</b><br/>
                                           Loading input data for a Hypercube job. This can be an Excel spreadsheet or existing data from the database.
                                         </li>
                                         <li><span style="color: #F39619;" class="fa-li"><i class="fas fa-square"></i></span><b>Submit jobs:</b><br/>
@@ -132,7 +125,11 @@
                             <section id="hypercube-scengen" class="doc-section">
                                 <h2 class="section-title">Scenario generation</h2>
                                 <div class="section-block">
-                                    <p>A <a href="./faqs.html#def-scenario">scenario</a> is characterized by a particular set of model input (and output) parameters. If, for example, for a run of the <i>transport</i> model, the freight cost is set to 90 and the minimum shipment of goods is set to 100, then this parameterization characterizes the scenario (together with the other input and output parameters). The Hypercube configuration discussed here makes it possible to automatically submit several of those scenarios at once. </p>
+                                    <p>A <a href="./faqs.html#def-scenario">scenario</a> is characterized by a particular set of model input 
+                                    (and output) parameters. If, for example, for a run of the <i>transport</i> model, the freight cost is set 
+                                    to 90 and the minimum shipment of goods is set to 100, then this parameterization characterizes the scenario 
+                                    (together with the other input and output parameters as well as attachments). The Hypercube configuration 
+                                    discussed here makes it possible to automatically submit several of those scenarios at once. </p>
                                     <p>The configuration of such a Hypercube job for a model is done in the section <i>Configure Hypercube job</i>. Let's take a look at an example.</p>
                                     <div  id="scengen-config"  class="section-block">
                                         <h3 class="block-title">Configuration of a Hypercube job</h3>
@@ -234,7 +231,7 @@
                                                 <img class="img-fluid" style="margin-bottom:15px; max-height:250pt" src="assets/images/batch_img/cart_prod.png" alt="cartesian product of configured parameters" />
                                             </div>
                                             <p id="nobatch">It becomes clear that the number of scenarios resulting from a particular Hypercube job configuration can increase rapidly with the number of scalar that are expanded. Depending on how computationally intensive the underlying GAMS model is, the scenarios should be carefully configured.
-                                            <br>You may want to restrict certain input widgets to be transformed: This can be done in the MIRO <a href="./customize.html#configurationMode">configuration mode</a> by unchecking the widget-specific option <i>Should element be expanded automatically in Hypercube mode?</i>. 
+                                            <br>You may want to restrict certain input widgets to be transformed: This can be done in the MIRO <a href="./customize.html#configurationMode">configuration mode</a> by unchecking the widget-specific option <a href = "./widgets.html#slider-option-expand"><i>Should element be expanded automatically in Hypercube mode?</i></a>. 
                                             <div class="section-block" style="text-align:center;">
                                                 <img class="img-fluid" style="max-height:40pt;" src="assets/images/batch_img/no_expand.png" alt="Should element be expanded automatically in Hypercube mode?" />
                                             </div>
@@ -384,13 +381,13 @@
                                              <p><b>Each row of the file contains the information needed for exactly one scenario</b>.<br>Example: In the first line of the shown Hypercube file it says: </p>
                                              <p>
                                              <span class="code">2d30a49f5fb10b2aa8aab9e133db4f079c8c753a23ce6f67f1086b572f57ba7c: gams transport.gms
---HCUBE_STATIC_a=8bc030208cf6482932608872c5681310         <br>
---HCUBE_STATIC_b=a5126cbcb9f17e29d4b0e49aaf1087ff         <br>
---HCUBE_STATIC_d=50ae5383d3e43c0c902144abbf0b3e8e         <br>
---HCUBE_SCALAR_f=75                                       <br>
---HCUBE_SCALAR_mins=20                                    <br>
---HCUBE_SCALAR_beta=0.97                                  <br>
---type="mip"
+<span style="white-space:nowrap">--HCUBE_STATIC_a=8bc030208cf6482932608872c5681310</span>         <br>
+<span style="white-space:nowrap">--HCUBE_STATIC_b=a5126cbcb9f17e29d4b0e49aaf1087ff</span>         <br>
+<span style="white-space:nowrap">--HCUBE_STATIC_d=50ae5383d3e43c0c902144abbf0b3e8e</span>         <br>
+<span style="white-space:nowrap">--HCUBE_SCALAR_f=75</span>                                       <br>
+<span style="white-space:nowrap">--HCUBE_SCALAR_mins=20</span>                                    <br>
+<span style="white-space:nowrap">--HCUBE_SCALAR_beta=0.97</span>                                 <br>
+<span style="white-space:nowrap">--type="mip"</span>
 miro=RUN
 --HCUBE=1
 execMode=0
@@ -439,7 +436,7 @@ idir1="..\..\transport"</span>
                                             <p>Each line in the Hypercube job file consists of a scenario-specific hash value followed by an executable 
                                             GAMS call. For each line, we need to remember the hash, extract the call and execute it. Later we store the 
                                             results of each run in a folder that we name by the hash. The <i>hcube_submission.gms</i> script that is 
-                                            invluded in the archive you downloaded provides you with a template (in this case using Python) to do just 
+                                            included in the archive you downloaded provides you with a template (in this case using Python) to do just 
                                             that. Depending on your infrastructure, you can either extend this script or write a new one from scratch. 
                                             The only thing you need to make sure is that when you retrieve the results, they must be structured in a 
                                             special way in order to import them back into MIRO. The graphic below shows schematically how the 
@@ -584,7 +581,7 @@ $offExternalInput
                                             <h6>Scenario comparison:</h6>
                                             <p>The scenario comparison module is used to directly compare the input and output data for a small number of scenarios. The scenario comparison module is pretty much identical to the one in the <a href="./start.html#scenario-comparison">base mode</a>: This means that the charts you configured in the base mode will also work in the Hypercube mode. However, there are some subtle differences: A scenario that resulted from a Hypercube job does not have a name assigned (the name is the 256-bit SHA-2 hash). As the hash values are hard to distinguish for the human eye, MIRO will assign a number to each scenario you import. This number is simply a counter that increments every time you load a new scenario and resets when you close the current session. You might be interested in seeing two scenarios that you find particularly important, side by side: all you need to do is remember the numbers that were assigned to those two scenarios and switch to the split view comparison mode. If you load a scenario here, you will notice that there is a new <i>local</i> tab. Here you can choose any of the scenarios that is already opened in the tab view comparison mode:
                                             <div class="section-block" style="text-align:center;">
-                                               <img class="img-fluid" style="display:block; margin:auto; max-height:300px;" src="assets/images/batch_img/hcube-splitcomp-load.png" alt="Load Hypercube scenarios into split view comparison mode" />
+                                               <img class="img-fluid" style="display:block; margin:auto; max-height:250px;" src="assets/images/batch_img/hcube-splitcomp-load.png" alt="Load Hypercube scenarios into split view comparison mode" />
                                             </div>
                                         </div>
                                         <div  id="internal-paver"  class="section-block">

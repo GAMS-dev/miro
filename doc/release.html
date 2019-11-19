@@ -85,16 +85,22 @@
                                       <li>MIRO now comes as an independent installer on the platforms Windows, MacOS and Linux. 
                                       The installation is independent from the GAMS system. To be able to use GAMS MIRO, GAMS 
                                       version 30.0 or later is required.</li>
+                                      <li><span class = "code">[MIRO:table]</span> syntax for pivoting a table column in MIRO is no longer supported. 
+                                      Instead, a symbol can now simply be declared as a table. Read more <a href = "./model.html#display-tables">here</a>.</li>
+                                      <li>Added ability to <a href = "./tables.html#table-option-pivot">pivot tables</a> in MIRO via configuration mode. 
+                                      Unlike the <a href = "./model.html#display-tables">table statement</a> in the GAMS model itself, this option does 
+                                      not affect the data contract between GAMS and MIRO resulting in variable columns.</li>
                                       <li>Full <a href = "./customize.html#dark-mode">dark mode</a> support.</li>
                                       <li>Added <a href = "./customize.html#miro-log">miro log</a> option for custom logs and input validation</li>
-                                      <li>Added support for an individual README starting page (markdown document) which is displayed in the input section.</li>
+                                      <li>Added support for an individual <a href = "./customize.html#app-readme">README starting page</a> (markdown document) which is displayed in the input section.</li>
                                       <li>New widget type: <a href = "./widgets.html#widget-numeric">numeric Input</a>.</li>
                                       <li>One-dimensional sets can now be configured as dropdown menu.</li>
                                       <li>New widget type: <a href = "./widgets.html#widget-multidropdown">Multi-dropdown menu</a> for one-dimensional, 
                                       dynamic sets.</li>
-                                      <li>Added support for graphs defining the input data.</li>
-                                      <li>Added support for remote importers/exporters: users can import/export data from/to external sources via REST API.</li>
-                                      <li>Symbol links: Data of output symbols can now be used to populate tables of input symbols.</li>
+                                      <li>Added support for <a href = "./customize.html#input-graphs">graphs defining the input data</a>.</li>
+                                      <li>Added support for <a href = "./customize.html#remote-import-export">remote data import and export</a>: 
+                                      users can import/export data from/to external sources via REST API.</li>
+                                      <li><a href = "./customize.html#symbol-links">Symbol links</a>: Data of output symbols can now be used to populate tables of input symbols.</li>
                                       <li><a href = "./start.html#scenario-concept">Sandbox scenarios</a>: 
                                       <ul>
                                         <li>The MIRO user interface can be seen as a sandbox. Data that is loaded into the interface is therefore 
@@ -105,16 +111,17 @@
                                         they are included when saving this scenario.</li>
                                         <li>Sandbox scenarios can be loaded in scenario comparison via <i>load active</i> button.</li>
                                       </ul>
-                                      <li>Added ability to <a href = "./tables.html#table-option-pivot">pivot tables</a> in MIRO via configuration mode. 
-                                      Unlike the <a href = "./model.html#display-tables">table statement</a> in the GAMS model itself, this option does 
-                                      not affect the data contract between GAMS and MIRO resulting in variable columns.</li>
-                                      <li>Added filter option for graphs: </li>
+                                      <li>Added filter option for graphs: One dimension of a symbol visualized as a graphic can be configured as a 
+                                      filter dimension. Its elements can then be selected via a (multi-)drop-down menu. Only the data 
+                                      belonging to this selection is displayed in the graphic.</li>
                                     </ul>
                                     <h3>Minor new features and improvements</h3>
                                     <ul>
                                       <li>New MIRO logo (Thank you <a href = "" target = "_blank">Melina Klöckner</a>!)</li>
                                       <li>Full chinese <a href = "./customize.html#language-files">language support</a> (Thank you 
                                       <a href = "https://de.linkedin.com/in/ying-deng-7a3554155?trk=profile-badge-cta" target = "_blank">Ying Deng</a>!)</li>
+                                      <li>Changed directory name for custom renderers from <i>customRenderer</i> to 
+                                      <i>custom_renderer</i></li>
                                       <li>Added Link to <a href = "https://forum.gamsworld.org/">GAMS World Forum</a> in help section.</li>
                                       <li><i>Stop</i> button in GAMS interaction now with soft kill first, then hard kill.</li>
                                       <li>Scenario comparison: input and output symbol tabs are now displayed in different colors.</li>
@@ -126,7 +133,8 @@
                                        <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset">eval.Set</a> option to 
                                        evaluate the element text at compile time and place it into a scoped compile-time variable. 
                                        This is useful any information about double-dash parameters and GAMS options configured via 
-                                       configuration mode gets lost when exporting a scenario as a GDX file.</li>
+                                       configuration mode gets lost when exporting a scenario as a GDX file. Read more 
+                                       <a href = "./model.html#display-sinset">here</a>.</li>
                                       <li>Changed prefix for double-dash parameters and GAMS options from <i>GMSPAR_</i>/<i>GMSOPT_</i> 
                                       <i>to _gmspar_</i>/<i>_gmsopt_</i>.</li>
                                       <li>Double-dash parameters and GAMS options can now have the same name as GAMS symbols.</li> 
@@ -136,8 +144,6 @@
                                       to readonly.</li>
                                       <li>Adding/removing rows is now no longer allowed when at least one column is readonly.</li>
                                       <li>Variables and equations can now be exported via GDX.</li>
-                                      <li>Changed directory name for custom renderers from <i>customRenderer</i> to 
-                                      <i>custom_renderer</i></li>
                                       <li>Completely restructured Hypercube mode</li>
                                       <li>Configuration mode:</li>
                                       <ul>
