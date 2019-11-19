@@ -297,7 +297,7 @@
   "scripts": {
     "hcube": [
       {
-        "title": "Test script",
+        "title": "High level scalar analysis",
         "id": "script1",
         "command": "jupyter",
         "args": ["nbconvert", "--to", "html", "--execute", "scripts/hcube_analysis.ipynb"],
