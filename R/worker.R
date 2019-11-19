@@ -212,7 +212,6 @@ Worker <- R6Class("Worker", public = list(
       }
       process <- private$process
     }
-    
     if(is.null(hardKill)){
       hardKill <- FALSE
       if(private$hardKill){
@@ -259,10 +258,26 @@ Worker <- R6Class("Worker", public = list(
     gamsRetCode <- NULL
     if(status %in% c(JOBSTATUSMAP[['imported']], 
                      JOBSTATUSMAP[['discarded']])){
-      jobStatus   <- private$getJobStatus(status, pID, jID)
+      jobStatus   <- private$getJobStatus(pID, jID)
       gamsRetCode <- jobStatus$gamsRetCode
-      status      <- jobStatus$status
-      
+      if(identical(status, JOBSTATUSMAP[['discarded']])){
+        if(jobStatus$status >= JOBSTATUSMAP[['corrupted']] &&
+           jobStatus$status < JOBSTATUSMAP[['discarded']]){
+          status <- JOBSTATUSMAP[['discarded(corrupted)']]
+        }else if(identical(jobStatus$status, JOBSTATUSMAP[['running']])){
+          self$interrupt(hardKill = TRUE, process = pID)
+          status <- JOBSTATUSMAP[['discarded(running)']]
+        }else if(identical(jobStatus$status, JOBSTATUSMAP[['completed']])){
+          status <- JOBSTATUSMAP[['discarded(completed)']]
+        }
+        if(private$hcube){
+          hcubeJobDir <- file.path(private$metadata$currentModelDir, hcubeDirName, jID)
+          if(dir.exists(hcubeJobDir) && 
+             identical(unlink(hcubeJobDir,recursive = TRUE, force = TRUE), 1L)){
+            flog.error("Problems removing Hypercube job workspace: '%s'.", hcubeJobDir)
+          }
+        }
+      }
     }
     
     colNames <- private$dbColNames[['status']]
@@ -322,7 +337,7 @@ Worker <- R6Class("Worker", public = list(
       if(jStatus[i] > JOBSTATUSMAP[['running']])
         next
       
-      jobStatus   <- private$getJobStatus(jStatus[i], pIDs[i], jIDs[i])
+      jobStatus   <- private$getJobStatus(pIDs[i], jIDs[i])
       gamsRetCode <- jobStatus$gamsRetCode
       newStatus   <- jobStatus$status
       
@@ -402,6 +417,9 @@ Worker <- R6Class("Worker", public = list(
                    self$getActiveDownloads()))
   },
   removeActiveDownload = function(jID){
+    if(!private$remote){
+      return(invisible(self))
+    }
     jIDChar <- as.character(jID)
     private$fJobRes[[jIDChar]] <- NULL
     if(file.exists(private$jobResultsFile[[jIDChar]])){
@@ -465,9 +483,6 @@ Worker <- R6Class("Worker", public = list(
                               Timestamp = as.character(Sys.time(), usetz = TRUE)), 
                   timeout(2L))
       if(!identical(status_code(ret), 200L)){
-        print(paste0(private$metadata$url, 
-                     if(private$hcube) "/hypercube/" else "/jobs/", 
-                     self$getPid(jID), "/result"))
         stop(status_code(ret), call. = FALSE)}
         
       
@@ -518,6 +533,12 @@ Worker <- R6Class("Worker", public = list(
                                         maxSize = private$metadata$maxSizeToRead,
                                         chunkNo = chunkNo, getSize = getSize))
   },
+  pingLog = function(){
+    if(inherits(private$process, "process")){
+      return(private$pingLocalLog())
+    }
+    return(private$updateLog)
+  },
   pingProcess = function(){
     if(is.integer(private$status)){
       return(private$status)
@@ -529,7 +550,7 @@ Worker <- R6Class("Worker", public = list(
   },
   getReactiveLog = function(session){
     return(reactivePoll2(500, session, checkFunc = function(){
-      private$updateLog
+      self$pingLog()
     }, valueFunc = function(){
       log <- private$log
       private$log <- ""
@@ -861,23 +882,27 @@ Worker <- R6Class("Worker", public = list(
     return(status_code(ret))
   },
   pingLocalProcess = function(){
+    exitStatus  <- private$process$get_exit_status()
+
+    if(length(exitStatus)){
+      private$gamsRet <- exitStatus
+      private$status  <- exitStatus
+    }
+    return(private$status)
+  },
+  pingLocalLog = function(){
+    if(!length(private$process)){
+      return(private$updateLog)
+    }
     tryCatch(
       private$log <- private$process$read_output(),
-    error = function(e){
-      private$log <- ""
-    })
+      error = function(e){
+        private$log <- ""
+      })
     if(!identical(private$log, "")){
       private$updateLog <- private$updateLog + 1L
     }
-    if(length(private$gamsRet)){
-      private$status <- private$gamsRet
-      return(private$status)
-    }
-    exitStatus  <- private$process$get_exit_status()
-    if(length(exitStatus)){
-      private$gamsRet <- exitStatus
-    }
-    return(private$status)
+    return(private$updateLog)
   },
   pingRemoteProcess = function(){
     if(private$wait > 0L){
@@ -1090,6 +1115,7 @@ Worker <- R6Class("Worker", public = list(
     }
     if(!is.null(errMsg)){
       errMsg <- NULL
+      flog.info("Interrupting process with pid: '%s'.", pID)
       if(private$metadata$serverOS == 'windows'){
         tryCatch({
           processx::run(command = 'taskkill', args = c(if(hardKill) "/F", 
@@ -1158,26 +1184,26 @@ Worker <- R6Class("Worker", public = list(
           timeout(2L)))
     return(c(jobProgress$finished, jobProgress$job_count))
   },
-  getHcubeJobStatusLocal = function(status, pID, jID){
+  getHcubeJobStatusLocal = function(pID, jID){
     jobDir <- file.path(private$metadata$currentModelDir, hcubeDirName, jID)
     if(dir.exists(jobDir)){
       if(file.exists(file.path(jobDir, "4upload.zip"))){
         status <- JOBSTATUSMAP[['completed']]
-      }else if(status < JOBSTATUSMAP[["corrupted"]]){
-        if(!pidExists(pID)){
-          flog.info("Job with ID: '%s' is not running anymore, but results archive could not be found. Job was marked: 'corrupted'.",
-                    jID)
-          status <- JOBSTATUSMAP[['corrupted(noProcess)']]
-        }
-      } 
-    }else if(status < JOBSTATUSMAP[["corrupted"]]){
+      }else if(pidExists(pID)){
+        status <- JOBSTATUSMAP[['running']]
+      }else{
+        flog.info("Job with ID: '%s' is not running anymore, but results archive could not be found. Job was marked: 'corrupted'.",
+                  jID)
+        status <- JOBSTATUSMAP[['corrupted(noProcess)']]
+      }
+    }else{
       flog.info("Job with ID: '%s' could not be accessed (directory is missing or lacks read permissions). Job was marked: 'corrupted'.", 
                 jID)
       status <- JOBSTATUSMAP[['corrupted(noDir)']]
     }
     return(list(status = status, gamsRetCode = NULL))
   },
-  getHcubeJobStatusRemote = function(status, pID, jID){
+  getHcubeJobStatusRemote = function(pID, jID){
     jobProgress <- tryCatch(private$getHcubeJobProgressRemote(jID),
                             error = function(e){
                               errMsg <- conditionMessage(e)
@@ -1194,24 +1220,14 @@ Worker <- R6Class("Worker", public = list(
     if(!length(jobProgress))
       stop("Problems determining job status. If this problem persists, please contact a system administrator!",
            call. = FALSE)
-    if(status == JOBSTATUSMAP[['discarded']]){
-      if(identical(length(jobProgress), 1L) &&
-         jobProgress %in% c(-404L, -405L)){
-        status <- JOBSTATUSMAP[['discarded(corrupted)']]
-      }else if(identical(length(jobProgress), 2L) &&
-               identical(jobProgress[[1L]], jobProgress[[2L]])){
-        status <- JOBSTATUSMAP[['discarded(completed)']]
-      }else{
-        self$interrupt(hardKill = TRUE, process = pID)
-        status <- JOBSTATUSMAP[['discarded(running)']]
-      }
-    }else if(identical(length(jobProgress), 1L) &&
+    if(length(jobProgress) == 1L &&
              jobProgress %in% c(-404L, -405L)){
       status <- JOBSTATUSMAP[['corrupted(noProcess)']]
-    }else if(status < JOBSTATUSMAP[['imported']] && 
-             length(jobProgress) == 2L &&
+    }else if(length(jobProgress) == 2L &&
              identical(jobProgress[[1L]], jobProgress[[2L]])){
       status <- JOBSTATUSMAP[['completed']]
+    }else{
+      status <- JOBSTATUSMAP[['running']]
     }
     return(list(status = status, gamsRetCode = NULL))
   },
@@ -1269,9 +1285,9 @@ Worker <- R6Class("Worker", public = list(
     
     return(invisible(self))
   },
-  getJobStatus = function(status, pID, jID = NULL){
+  getJobStatus = function(pID, jID = NULL){
     if(private$hcube)
-      return(private$getHcubeJobStatus(status, pID, jID))
+      return(private$getHcubeJobStatus(pID, jID))
     gamsRetCode <- tryCatch(private$getGAMSRetCode(pID),
                             error = function(e){
                               errMsg <- conditionMessage(e)
@@ -1286,34 +1302,23 @@ Worker <- R6Class("Worker", public = list(
                               }
                             })
     
-    if(status == JOBSTATUSMAP[['discarded']]){
-      if(length(gamsRetCode)){
-        if(identical(length(gamsRetCode), 1L) &&
-           gamsRetCode %in% c(-404L, -405L)){
-          status <- JOBSTATUSMAP[['discarded(corrupted)']]
-          gamsRetCode <- NULL
-        }else{
-          status <- JOBSTATUSMAP[['discarded(completed)']]
-        }
+    if(length(gamsRetCode)){
+      if(gamsRetCode %in% c(-404L, -405L)){
+        status <- JOBSTATUSMAP[['corrupted(noProcess)']]
+        gamsRetCode <- NULL
       }else{
-        self$interrupt(hardKill = TRUE, process = pID)
-        status <- JOBSTATUSMAP[['discarded(running)']]
+        status <- JOBSTATUSMAP[['completed']]
       }
-    }else if(identical(length(gamsRetCode), 1L) && 
-             gamsRetCode %in% c(-404L, -405L)){
-      status <- JOBSTATUSMAP[['corrupted(noProcess)']]
-      gamsRetCode <- NULL
-    }else if(status != JOBSTATUSMAP[['imported']] &&
-             length(gamsRetCode)){
-      status <- JOBSTATUSMAP[['completed']]
+    }else{
+      status <- JOBSTATUSMAP[['running']]
     }
     return(list(status = status, gamsRetCode = gamsRetCode))
   },
-  getHcubeJobStatus = function(status, pID, jID ){
+  getHcubeJobStatus = function(pID, jID ){
     if(private$remote)
-      return(private$getHcubeJobStatusRemote(status, pID, jID))
+      return(private$getHcubeJobStatusRemote(pID, jID))
     
-    return(private$getHcubeJobStatusLocal(status, pID, jID))
+    return(private$getHcubeJobStatusLocal(pID, jID))
   },
   getGAMSRetCode = function(pID){
     if(private$remote){
