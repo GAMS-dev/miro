@@ -114,6 +114,11 @@ server_admin <- function(input, output, session){
   # ------------------------------------------------------
   source(file.path("tools", "admin", "db_management.R"), local = TRUE)
   
+  observeEvent(input$fetchUpdateString, {
+    insertUI(".miro-update-text", where = "afterBegin", 
+             HTML(getUpdateString()))
+  })
+  
   hideEl(session, "#loading-screen")
   session$onSessionEnded(function() {
     appDisconnected <<- TRUE

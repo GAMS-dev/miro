@@ -577,38 +577,17 @@ Those tables are: '%s'.\nError message: '%s'.",
   })
 }
 
-MIROVersionLatest <- NULL
-if(is.null(errMsg) && !isShinyProxy && curl::has_internet()){
-  try(
-    local({
-      verCon <- url("https://gams.com/miro/latest.ver")
-      on.exit(close(verCon))
-      MIROVersionLatestTmp <- suppressWarnings(read.csv(
-        verCon, 
-        header = FALSE))
-      currentMIROVersion <- strsplit(MIROVersion, ".", fixed = TRUE)[[1]]
-      if(MIROVersionLatestTmp[[1]][1] > currentMIROVersion[1] ||
-         (MIROVersionLatestTmp[[1]][1] == currentMIROVersion[1] && 
-          MIROVersionLatestTmp[[2]][1] > currentMIROVersion[2]) ||
-         (MIROVersionLatestTmp[[1]][1] == currentMIROVersion[1] && 
-          MIROVersionLatestTmp[[2]][1] == currentMIROVersion[2] && 
-          MIROVersionLatestTmp[[3]][1] > currentMIROVersion[3])){
-        MIROVersionLatest <<- paste0("<br/><br/><b style=\\'color:#f90;\\'>A new version of GAMS MIRO is available! The latest version is: v.",
-                                     MIROVersionLatestTmp[[1]][1], ".",
-                                     MIROVersionLatestTmp[[2]][1], ".",
-                                     MIROVersionLatestTmp[[3]][1], 
-                                     "</b><br/>To download the latest version, click <a href=\\'https://gams.com/miro/\\' target=\\'_blank\\'>here</a>")
-        
-        
-      }
-    })
-    , silent = TRUE)
+MIROVersionLatest <<- NULL
+if(is.null(errMsg) && !isShinyProxy && !interactive()){
+  MIROVersionLatest <<- process$new(file.path(R.home("bin"), "Rscript"), 
+                                    c("--vanilla", file.path("tools", "check_updates.R"), 
+                                      MIROVersion),
+                                    stdout = "|")
 }
-
 aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "Release Date: ", MIRORDate, "<br/>", 
-                          "Copyright (c) 2019 GAMS Software GmbH <support@gams.com><br/>",
-                          "Copyright (c) 2019 GAMS Development Corp. <support@gams.com><br/><br/>",
+                          "Copyright (c) 2019 GAMS Software GmbH &lt;support@gams.com&gt;<br/>",
+                          "Copyright (c) 2019 GAMS Development Corp. &lt;support@gams.com&gt;<br/><br/>",
                           "This program is free software: you can redistribute it and/or modify ",
                           "it under the terms of version 3 of the GNU General Public License as published by ",
                           "the Free Software Foundation.<br/><br/>",
@@ -619,7 +598,7 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "You should have received a copy of the GNU General Public License ",
                           "along with this program. If not, see ",
                           "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
-                          MIROVersionLatest)
+                          "<div class=\\'miro-update-text\\'></div>")
 
 if(is.null(errMsg)){
   tryCatch({
@@ -1505,36 +1484,13 @@ if(!is.null(errMsg)){
              csv = exportFileType <<- "csv",
              flog.warn("Unknown export file type: '%s'.", input$exportFileType))
     })
-    if(!isShinyProxy && 
-       curl::has_internet() && 
-       file.exists(file.path(currentModelDir, ".crash.zip"))){
-      showModal(modalDialog(title = "Unexpected behavior",
-                            paste0("MIRO discovered it was behaving unexpectedly. We are constantly striving to improve MIRO.
-                            Would you like to send the error report to GAMS in order to avoid such crashes in the future?
-                            The ONLY files that we send (encrypted via HTTPS) are the configuration files: '", modelName, 
-                                   "_io.json' and '", modelName, ".json' as well as the error log. 
-                            None of your .gms model files will be sent!"), 
-                            footer = tagList(actionButton("crash_dontsend", "Don't send"),
-                                             actionButton("crash_send", "Send", class = "bt-highlight-1"))))
-      observeEvent(input$crash_dontsend, {
-        unlink(file.path(currentModelDir, ".crash.zip"))
-        removeModal()
-      })
-      observeEvent(input$crash_send, {
-        on.exit(unlink(file.path(currentModelDir, ".crash.zip")))
-        try(
-          uploadFile(
-            file = file.path(currentModelDir, ".crash.zip"), 
-            url = paste0(bugReportUrl$url, format(Sys.time(), "%y.%m.%d_%H.%M.%S"), 
-                         "_", substr(modelName, 1L, 3L), ".zip"), 
-            userpwd = paste0(bugReportUrl$dir, ":")
-          )
-          , silent = TRUE)
-        
-        removeModal()
+    hideEl(session, "#loading-screen")
+    if(!isShinyProxy){
+      observeEvent(input$fetchUpdateString, {
+        insertUI(".miro-update-text", where = "afterBegin", 
+                 HTML(getUpdateString()))
       })
     }
-    hideEl(session, "#loading-screen")
     # This code will be run after the client has disconnected
     session$onSessionEnded(function() {
       # remove temporary files and folders
@@ -1557,7 +1513,6 @@ if(!is.null(errMsg)){
                                     config$storeLogFilesDuration)
       }
       gc()
-      
       if(!interactive()){
         if(isShinyProxy){
           interruptShutdown <<- FALSE
