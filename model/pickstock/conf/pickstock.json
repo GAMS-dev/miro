@@ -207,7 +207,7 @@
         "tool": "dygraphs",
         "title": "Price (stocks & dow jones)",
         "color": "uni",
-        "filter":{
+        "filter": {
           "col": "uni",
           "multiple": true,
           "label": "Select stock symbol"
@@ -271,7 +271,9 @@
     "loadLocal": true,
     "logFile": true,
     "lstFile": true,
-    "attachments": true
+    "attachments": true,
+    "remoteExecution": false,
+    "downloadTempFiles": false
   },
   "aggregateWidgets": true,
   "includeParentDir": false,
@@ -279,21 +281,7 @@
   "excelIncludeEmptySheets": true,
   "saveTraceFile": true,
   "autoGenInputGraphs": true,
-  "datatable": {
-    "class": "display",
-    "filter": "none",
-    "rownames": false,
-    "options": {
-      "pageLength": 15
-    }
-  },
   "theme": "browser",
-  "outputGroups": [
-    {
-      "name": "Dow Jones vs. Index Fund 🙀",
-      "members": ["dowvsindex", "abserror"]
-    }
-  ],
   "scripts": {
     "hcube": [
       {
@@ -305,6 +293,21 @@
       }
     ]
   },
+  "defCompMode": "split",
+  "datatable": {
+    "class": "display",
+    "filter": "none",
+    "rownames": false,
+    "options": {
+      "pageLength": 15
+    }
+  },
+  "symbolLinks": [
+    {
+      "source": "pricemerge",
+      "target": "price"
+    }
+  ],
   "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
   "handsontable": {
     "stretchH": "all",
@@ -320,6 +323,13 @@
       "allowReadOnly": false,
       "allowComments": true
     },
-    "height": 700
-  }
+    "height": 700,
+    "colWidths": 300
+  },
+  "outputGroups": [
+    {
+      "name": "Dow Jones vs. Index Fund 🙀",
+      "members": ["dowvsindex", "abserror"]
+    }
+  ]
 }

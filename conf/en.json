@@ -832,6 +832,7 @@
         "headerLogo": "Logo",
         "headerScalars": "Scalars",
         "headerTabGrouping": "Tab grouping",
+        "headerTabSymlinks": "Symbol links",
         "headerInputGroups": "Input groups",
         "headerOutputGroups": "Output groups",
         "headerSymbolNaming": "Naming",
@@ -868,6 +869,9 @@
       "groups":{
         "input": "Divide input symbols into groups",
         "output": "Divide output symbols into groups"
+      },
+      "symlinks":{
+        "label": "Specify symbol links (results that can be used as input data)"
       },
       "overwriteSheetOrder":{
         "input": "Specify the tab order of the input symbols (drag & drop)",
@@ -1086,7 +1090,8 @@
         "val43": "For a slider range 2 default values need to be defined!",
         "val44": "A separator must be provided!",
         "val45": "The name of the command line parameter must be at least 1 character long.",
-        "val46": "Please specify command line arguments and values separately."
+        "val46": "Please specify command line arguments and values separately.",
+        "val47": "Source and target symbol must have the same dimension!"
       },
       "widgetOptions":{
         "slider": "Slider",
@@ -1498,6 +1503,10 @@
         "addOutputGroup":{
           "symbolOutputgroups": "Name of the output group?",
           "groupMemberOut": "Select group members"
+        },
+        "addSymlink":{
+          "source": "Name of the output symbol",
+          "target": "Name of the input symbol to link to"
         },
         "addDyEvent":{
           "dyDyEvent": "Which symbol shall be used?",

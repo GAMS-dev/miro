@@ -535,10 +535,26 @@ body_admin <- dashboardBody({
                                                    ),
                                                    tags$h4(lang$adminMode$general$ui$headerInputGroups),
                                                    tags$div(class="option-wrapper-indented",
-                                                            createArray(session, "symbol_inputGroups", lang$adminMode$general$groups$input, autoCreate = FALSE)),
+                                                            createArray(session, "symbol_inputGroups", 
+                                                                        lang$adminMode$general$groups$input, 
+                                                                        autoCreate = FALSE)),
                                                    tags$h4(lang$adminMode$general$ui$headerOutputGroups),
                                                    tags$div(class="option-wrapper-indented",
-                                                            createArray(session, "symbol_outputGroups", lang$adminMode$general$groups$output, autoCreate = FALSE))
+                                                            createArray(session, "symbol_outputGroups", 
+                                                                        lang$adminMode$general$groups$output, 
+                                                                        autoCreate = FALSE))
+                                                 ),
+                                                 tags$div(class = "space"),
+                                                 tags$div(class = "option-wrapper",
+                                                          tags$div(class = "info-position",
+                                                                   tags$h2((lang$adminMode$general$ui$headerTabSymlinks), 
+                                                                           tags$a(class="info-wrapper", style="top:-10px;", href="https://gams.com/miro/customize.html#tab-symlinks", 
+                                                                                  tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))
+                                                          ),
+                                                          tags$div(class="option-wrapper-indented",
+                                                                   createArray(session, "symbol_links", 
+                                                                               lang$adminMode$general$symlinks$label, 
+                                                                               autoCreate = FALSE))
                                                  )
                                         )
                                )),

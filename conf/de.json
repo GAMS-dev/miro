@@ -832,6 +832,7 @@
         "headerLogo": "Logo",
         "headerScalars": "Skalare",
         "headerTabGrouping": "Tab-Gruppierung",
+        "headerTabSymlinks": "Symbolverknüpfungen",
         "headerInputGroups": "Eingabegruppen",
         "headerOutputGroups": "Ausgabegruppen",
         "headerSymbolNaming": "Benennung",
@@ -868,6 +869,9 @@
       "groups":{
         "input": "Eingabesymbole in Gruppen einteilen",
         "output": "Ausgabesymbole in Gruppen einteilen"
+      },
+      "symlinks":{
+        "label": "Symbolverknüpfungen festlegen (Ergebnisse, die als Eingabedaten verwendet werden können)"
       },
       "overwriteSheetOrder":{
         "input": "Legen Sie die Reihenfolge fest, in welcher die Eingabesymbole angezeigt werden sollen (Drag & Drop).",
@@ -1086,7 +1090,8 @@
         "val43": "Bei einem Doppelslider müssen 2 Standardwerte angegeben werden!",
         "val44": "Es muss ein Seperator angegeben werden!",
         "val45": "Der Name des Kommandozeilenparameters muss mindestens 1 Zeichen lang sein.",
-        "val46": "Bitte geben Sie Kommandozeilenargumente und -werte separat an."
+        "val46": "Bitte geben Sie Kommandozeilenargumente und -werte separat an.",
+        "val47": "Quell- und Zielsymbol müssen die gleiche Dimension haben!"
       },
       "widgetOptions":{
         "slider": "Schieberegler",
@@ -1498,6 +1503,10 @@
         "addOutputGroup":{
           "symbolOutputgroups": "Name der Ausgabegruppe?",
           "groupMemberOut": "Gruppenmitglieder auswählen"
+        },
+        "addSymlink":{
+          "source": "Name des Ausgabesymbols",
+          "target": "Name des Eingabesymbols, auf das verwiesen werden soll"
         },
         "addDyEvent":{
           "dyDyEvent": "Welches Symbol soll verwendet werden?",

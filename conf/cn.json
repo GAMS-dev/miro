@@ -832,6 +832,7 @@
         "headerLogo": "标志",
         "headerScalars": "标量",
         "headerTabGrouping": "组合选项卡",
+        "headerTabSymlinks": "Symbol links",
         "headerInputGroups": "输入组",
         "headerOutputGroups": "输入组",
         "headerSymbolNaming": "指定名称",
@@ -868,6 +869,9 @@
       "groups":{
         "input": "将输入GAMS符号分组",
         "output": "将输出GAMS符号分组"
+      },
+      "symlinks":{
+        "label": "Specify symbol links (results that can be used as input data)"
       },
 	  "overwriteSheetOrder":{
         "input": "指定输入符号的制表顺序（拖放）",
@@ -1086,7 +1090,8 @@
         "val43": "对于滑动条范围，需要定义两个默认值！",
         "val44": "必须带有分隔符！",
         "val45": "命令行参数的名称必须至少为一个字符长。",
-        "val46": "请分别指定命令行的参数和值。"
+        "val46": "请分别指定命令行的参数和值。",
+        "val47": "Source and target symbol must have the same dimension!"
       },
       "widgetOptions":{
 	    "slider": "滑动条",
@@ -1497,6 +1502,10 @@
         "addOutputGroup":{
           "symbolOutputgroups": "输出组的名称？",
           "groupMemberOut": "选择该组成员"
+        },
+        "addSymlink":{
+          "source": "Name of the output symbol",
+          "target": "Name of the input symbol to link to"
         },
         "addDyEvent":{
           "dyDyEvent": "使用哪个GAMS符号？",

@@ -3788,6 +3788,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "headerTabSymlinks":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "headerInputGroups":{ 
                   "type":"string",
                   "minLength":1,
@@ -3958,6 +3963,18 @@
                   "required":true
                 },
                 "output":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "symlinks":{          
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{  
+                "label":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4962,6 +4979,11 @@
                   "required":true
                 },
                 "val46":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val47":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -7020,6 +7042,23 @@
                       "required":true
                     },
                     "groupMemberOut":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    }
+                  }
+                },
+                "addSymlink":{  
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{ 
+                    "source":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "target":{ 
                       "type":"string",
                       "minLength":1,
                       "required":true

@@ -1,11 +1,13 @@
 rowtmp <- list()
 isolate({
-  groupIndexMap <- IdIdxMap$new(list(inputGroups = seq_along(configJSON$inputGroups),
-                                     outputGroups = seq_along(configJSON$outputGroups)))
+  indexMap <- IdIdxMap$new(list(inputGroups = seq_along(configJSON$inputGroups),
+                                outputGroups = seq_along(configJSON$outputGroups),
+                                symlink = seq_along(configJSON$symbolLinks)))
   
   groupTemp <- list(inputGroups = list(), outputGroups = list())
   rv$generalConfig$inputGroups <- configJSON$inputGroups
   rv$generalConfig$outputGroups <- configJSON$outputGroups
+  rv$generalConfig$symbolLinks <- configJSON$symbolLinks
 })
 scalarSymbols <- setNames(c(names(modelIn), 
                             if(length(modelIn[[scalarsFileName]])) 
@@ -281,12 +283,13 @@ insertUI(selector = "#module_wrapper2",
                                    multiple = TRUE, options = list('create' = TRUE,'persist' = FALSE)))
          ), 
          where = "beforeEnd")
-# set default values for input and output groups
+# set default values for array elements
 if(length(configJSON$inputGroups))
   addArrayEl(session, "symbol_inputGroups", defaults = configJSON$inputGroups)
 if(length(configJSON$outputGroups))
   addArrayEl(session, "symbol_outputGroups", defaults = configJSON$outputGroups)
-
+if(length(configJSON$symbolLinks))
+  addArrayEl(session, "symbol_links", defaults = configJSON$symbolLinks)
 
 output$general_logo_preview <- renderImage({
   rv$customLogoChanged
@@ -514,7 +517,7 @@ observeEvent(input$add_general, {
     return()
   }
   arrayID  <- strsplit(input$add_general[3], "_")[[1]][2]
-  arrayIdx <- groupIndexMap$push(arrayID, input$add_general[1])
+  arrayIdx <- indexMap$push(arrayID, input$add_general[1])
   
   if(length(input$add_general) < 3L || nchar(trimws(input$add_general[2])) < 1L){
     # name has no characters
@@ -551,8 +554,73 @@ observeEvent(input$add_general, {
     groupTemp[[arrayID]][[arrayIdx]]$name <<- newName
   }
 })
+validateSymbolLink <- function(sourceSym, targetSym, arrayId){
+  if(!identical(vapply(modelInRaw[[targetSym]]$headers, 
+                       "[[", character(1L), "type",
+                       USE.NAMES = FALSE),
+                vapply(modelOut[[sourceSym]]$headers, 
+                       "[[", character(1L), "type",
+                       USE.NAMES = FALSE))){
+    showElReplaceTxt(session, paste0("#symlink_target", 
+                                     arrayId, "_err"),
+                     lang$adminMode$widgets$validate$val47)
+  }else{
+    hideEl(session, paste0("#symlink_target", 
+                           arrayId, "_err"))
+  }
+}
+observeEvent(input$add_symlink, {
+  if(!length(inputSymMultiDim) || length(input$add_symlink) < 3L){
+    return()
+  }
+  arrayIdx <- indexMap$push("symlink", input$add_symlink[1])
+  
+  if(!length(arrayIdx)){
+    flog.error("Bad index for symbolLink detected: '%s'. Please report to GAMS!", arrayIdx)
+    return()
+  }
+  if(arrayIdx <= length(rv$generalConfig$symbolLinks)){
+    rv$generalConfig$symbolLinks[[arrayIdx]]$source <<- input$add_symlink[2]
+    validateSymbolLink(input$add_symlink[2], 
+                       rv$generalConfig$symbolLinks[[arrayIdx]]$target,
+                       input$add_symlink[1])
+  }else{
+    rv$generalConfig$symbolLinks[[arrayIdx]] <<- list(source = input$add_symlink[2],
+                                                      target = inputSymMultiDim[[1L]])
+    validateSymbolLink(input$add_symlink[2], 
+                       inputSymMultiDim[[1L]],
+                       input$add_symlink[1])
+  }
+})
+observeEvent(input$symlink_target, {
+  if(length(input$symlink_target) < 2L){
+    return()
+  }
+  arrayIdx <- indexMap$push("symlink", 
+                            input$symlink_target[1])
+  
+  if(length(arrayIdx) && arrayIdx <= length(rv$generalConfig$symbolLinks)){
+    targetSym <- input$symlink_target[2]
+    rv$generalConfig$symbolLinks[[arrayIdx]]$target <<- targetSym
+    sourceSym <- rv$generalConfig$symbolLinks[[arrayIdx]]$source
+    validateSymbolLink(sourceSym, targetSym, input$symlink_target[1])
+  }
+})
+observeEvent(input$remove_symlink, {
+  if(length(input$remove_symlink) < 3L){
+    return()
+  }
+  arrayIdx <- indexMap$pop("symlink", 
+                           input$remove_symlink[3])
+  if(length(arrayIdx) && arrayIdx <= length(rv$generalConfig$symbolLinks)){
+    rv$generalConfig$symbolLinks[[arrayIdx]] <<- NULL
+    if(!length(rv$generalConfig$symbolLinks)){
+      rv$generalConfig$symbolLinks <<- NULL
+    }
+  }
+})
 changeAndValidateGroupMembers <- function(arrayID, groupMembers, HTMLarrayID){
-  arrayIdx <- groupIndexMap$push(arrayID, groupMembers[1])
+  arrayIdx <- indexMap$push(arrayID, groupMembers[1])
   
   if(length(groupMembers) > 2L && 
      !any(groupMembers[-1] %in% unlist(lapply(rv$generalConfig[[arrayID]][-arrayIdx], "[[", "members"), use.names = FALSE))){
@@ -595,8 +663,8 @@ observeEvent(input$group_memberOut, {
 })
 observeEvent(input$remove_general, {
   arrayID <- strsplit(input$remove_general[1], "_")[[1]][2]
-  arrayIdx <- groupIndexMap$pop(arrayID, 
-                                input$remove_general[2])
+  arrayIdx <- indexMap$pop(arrayID, 
+                           input$remove_general[2])
   
   if(length(arrayIdx)){
     if(arrayIdx <= length(rv$generalConfig[[arrayID]])){
@@ -628,6 +696,6 @@ observeEvent(rv$generalConfig, {
   }else{
     configJSON <<- modifyList(configJSON, rv$generalConfig)
   }
-  
+  configJSON$symbolLinks <<- rv$generalConfig$symbolLinks
   write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
 })
