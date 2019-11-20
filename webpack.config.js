@@ -3,7 +3,15 @@ const TerserJSPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const RemovePlugin = require('remove-files-webpack-plugin');
-module.exports = {
+const plugins = [
+   new MiniCssExtractPlugin({
+    // Options similar to the same options in webpackOptions.output
+    // all options are optional
+    filename: '[name].css',
+    chunkFilename: '[id].css',
+    ignoreOrder: false, // Enable to remove warnings about conflicting order
+  })]
+module.exports = (env, argv) => ({
     mode: 'development',
     entry: {
       skin_browser: './less/skins/browser.js',
@@ -24,14 +32,8 @@ module.exports = {
     externals: {
       jquery: 'jQuery'
     },
-    plugins: [
-      new MiniCssExtractPlugin({
-        // Options similar to the same options in webpackOptions.output
-        // all options are optional
-        filename: '[name].css',
-        chunkFilename: '[id].css',
-        ignoreOrder: false, // Enable to remove warnings about conflicting order
-      }),
+    plugins: argv.mode === 'production'? [
+      ...plugins,
       new RemovePlugin({
           after: {
             test: [{
@@ -42,7 +44,7 @@ module.exports = {
             }]
           }
       })
-    ],
+    ]: [...plugins],
     module: {
         rules: [
           {
@@ -66,7 +68,8 @@ module.exports = {
                 presets: [[
                     '@babel/preset-env',
                     {
-                        "useBuiltIns": "entry"
+                        "useBuiltIns": "entry",
+                        "corejs": "3"
                     }
                 ]]
               }
@@ -102,4 +105,4 @@ module.exports = {
           }
         ]
     }
-};
+});
