@@ -242,8 +242,7 @@ if(is.null(errMsg)){
                          sep = "\n")
       })
       if(is.null(errMsg) && useTempDir && 
-         (!identical(Sys.getenv("MIRO_BUILD_ARCHIVE"), "false") ||
-          miroBuildonly)){
+         !identical(Sys.getenv("MIRO_BUILD_ARCHIVE"), "false")){
         tryCatch({
           zipMiro(file.path(currentModelDir, paste0(modelName, ".zip")),
                   modelFiles, currentModelDir)
