@@ -35,7 +35,10 @@ class InputArray {
       this.elements = elements;
       this.rObserveID = rObserveID;
       this.options = options;
-      if (options.elRequired === undefined) {
+
+      if (options.uniqueItems === true) {
+        this.options.elRequired = true;
+      } else if (options.elRequired === undefined) {
         this.options.elRequired = true;
       }
       if (options.updateTxtWithLabel === undefined) {
@@ -80,7 +83,12 @@ class InputArray {
                     }
                   }
                 }
-                [selected] = choices;
+                if (this.resetDefault() || typeof v[4] === 'undefined') {
+                  [selected] = choices;
+                } else {
+                  [,,,, selected] = v;
+                }
+
                 labelID = selected;
                 [label] = aliases;
                 for (let i = 1; i < elID; i++) {
@@ -94,9 +102,6 @@ class InputArray {
                 [,, choices, aliases] = v;
                 [selected] = choices;
                 [label] = aliases;
-              }
-              if (this.resetDefault()) {
-                selected = '';
               }
               // tell R that new element was addded to array: (ID, label of element)
               Shiny.setInputValue(rAddID, [elID, selected, k], { priority: 'event' });
@@ -199,7 +204,9 @@ class InputArray {
         }
         idx += 1;
       });
-      arrayContent += `${(!this.options.elRequired || elID > 1) ? `<button type="button" onclick="Miro.removeArrayEl('${this.arrayID}','${elID}')" class="btn btn-default bt-icon"><i class="far fa-minus-square"></i></button>\n` : ''}<hr></div>`;
+      arrayContent += `${(!this.options.elRequired || this.options.uniqueItems === true || elID > 1)
+        ? `<button type="button" onclick="Miro.removeArrayEl('${this.arrayID}','${elID}\
+')" class="btn btn-default bt-icon"><i class="far fa-minus-square"></i></button>\n` : ''}<hr></div>`;
 
       $(`#${this.arrayID}_wrapper .array-wrapper`).append(arrayContent);
       this.registerChangeHandlers(this.elements, rAddID, elID, this.options);

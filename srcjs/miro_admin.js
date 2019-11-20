@@ -78,6 +78,26 @@ const arrayTypes = {
     };
     return ([elements, { elRequired: false, myopicDefaults: true }, 'general']);
   },
+  symbol_links(defaults) {
+    let source;
+    let target;
+
+    if (defaults !== undefined) {
+      ({ source, target } = defaults);
+    }
+    const scalarOutputSym = outputSymbols.map(sym => ['_scalars_out', '_scalarsve_out'].find(sSym => sym === sSym));
+    const scalarInputSym = inputSymbols.map(sym => ['_scalars', '_scalarsve'].find(sSym => sym === sSym));
+
+    const elements = {
+      symbol_links: ['select', lang.addSymlink.source,
+        outputSymbols.filter((sym, id) => scalarOutputSym[id] === undefined),
+        outputSymbolsAliases.filter((sym, id) => scalarOutputSym[id] === undefined), source],
+      symlink_target: ['select', lang.addSymlink.target,
+        inputSymbols.filter((sym, id) => scalarInputSym[id] === undefined),
+        inputSymbolsAliases.filter((sym, id) => scalarInputSym[id] === undefined), target],
+    };
+    return ([elements, { myopicDefaults: true, uniqueItems: true }, 'symlink']);
+  },
   dy_dyEvent() {
     const elements = {
       dy_dyEvent: ['select', lang.addDyEvent.dyDyEvent, outputScalars, outputScalarAliases],
