@@ -305,7 +305,9 @@ observeEvent(input$general_language, {
   rv$generalConfig$language <<- input$general_language
 })
 observeEvent(input$general_pageTitle, {
-  rv$generalConfig$pageTitle <<- input$general_pageTitle
+  if(length(input$general_pageTitle) && nchar(input$general_pageTitle)){
+    rv$generalConfig$pageTitle <<- input$general_pageTitle
+  }
 })
 observeEvent(input$general_theme, {
   rv$generalConfig$theme <<- input$general_theme
@@ -417,42 +419,56 @@ observeEvent(input$general_aggregate, {
   rv$generalConfig$aggregateWidgets <<- input$general_aggregate
 })
 observeEvent(input$general_overwriteSheetOrderInput, {
-  rv$generalConfig$overwriteSheetOrder$input <<- input$general_overwriteSheetOrderInput
+  if(!identical(input$general_overwriteSheetOrderInput, unname(inputSymMultiDim))){
+    rv$generalConfig$overwriteSheetOrder$input <<- input$general_overwriteSheetOrderInput
+  }
 })
 observeEvent(input$general_overwriteSheetOrderOutput, {
-  rv$generalConfig$overwriteSheetOrder$output <<- input$general_overwriteSheetOrderOutput
-})
-observeEvent(input$general_overwriteSheetOrderOutput, {
-  rv$generalConfig$overwriteSheetOrder$output <<- input$general_overwriteSheetOrderOutput
+  if(!identical(input$general_overwriteSheetOrderOutput, names(modelOut))){
+    rv$generalConfig$overwriteSheetOrder$output <<- input$general_overwriteSheetOrderOutput
+  }
 })
 lapply(c(names(modelInRaw), names(modelOut)), function(name){
   observeEvent(input[[paste0("general_overwriteSymAlias_", name)]], {
     if(length(input[[paste0("general_overwriteSymAlias_", name)]]) && 
        nchar(input[[paste0("general_overwriteSymAlias_", name)]]) > 0L){
+      newAlias <- input[[paste0("general_overwriteSymAlias_", name)]]
+      if(name %in% names(modelOut)){
+        if(identical(newAlias, modelOut[[name]]$alias)){
+          return()
+        }
+      }else{
+        if(identical(newAlias, modelInRaw[[name]]$alias)){
+          return()
+        }
+      }
       if(!length(rv$generalConfig$overwriteAliases)){
         rv$generalConfig$overwriteAliases <- list()
       }
-      rv$generalConfig$overwriteAliases[[name]] <<- list(newAlias = input[[paste0("general_overwriteSymAlias_", name)]])
+      rv$generalConfig$overwriteAliases[[name]] <<- list(newAlias = newAlias)
     }
   })
   observeEvent(input[[paste0("general_overwriteSymHeaders_", name)]], {
-    i <- match(name, names(modelInRaw))
-    if(is.na(i)){
-      i <- match(name, names(modelOut))
-      if(is.na(i)){
+    newHeaders <- input[[paste0("general_overwriteSymHeaders_", name)]]
+    if(name %in% names(modelOut)){
+      if(length(newHeaders) != length(modelOut[[name]]$headers) ||
+         identical(newHeaders, vapply(modelOut[[name]]$headers, "[[", 
+                                      character(1L), "alias",
+                                      USE.NAMES = FALSE))){
         return()
       }
-      headerLen <- length(modelOut[[i]]$headers)
     }else{
-      headerLen <- length(modelInRaw[[i]]$headers)
-    }
-    if(length(input[[paste0("general_overwriteSymHeaders_", name)]]) ==
-       headerLen){
-      if(!length(rv$generalConfig$overwriteAliases)){
-        rv$generalConfig$overwriteHeaderAliases <- list()
+      if(length(newHeaders) != length(modelInRaw[[name]]$headers) ||
+         identical(newHeaders, vapply(modelInRaw[[name]]$headers, "[[", 
+                                      character(1L), "alias",
+                                      USE.NAMES = FALSE))){
+        return()
       }
-      rv$generalConfig$overwriteHeaderAliases[[name]] <<- list(newHeaders = input[[paste0("general_overwriteSymHeaders_", name)]])
     }
+    if(!length(rv$generalConfig$overwriteAliases)){
+      rv$generalConfig$overwriteHeaderAliases <- list()
+    }
+    rv$generalConfig$overwriteHeaderAliases[[name]] <<- list(newHeaders = newHeaders)
   })
 })
 observeEvent(input$general_remote_execution, {

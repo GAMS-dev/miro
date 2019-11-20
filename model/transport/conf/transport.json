@@ -57,62 +57,6 @@
       }
     }
   },
-  "overwriteSheetOrder": {
-    "input": ["a", "b", "d", "_scalars", "ilocdata", "jlocdata"],
-    "output": ["schedule", "_scalars_out"]
-  },
-  "overwriteAliases": {
-    "a": {
-      "newAlias": "capacity of plant i in cases"
-    },
-    "b": {
-      "newAlias": "demand at market j in cases"
-    },
-    "d": {
-      "newAlias": "distance in thousands of miles"
-    },
-    "_scalars": {
-      "newAlias": "Scalars"
-    },
-    "ilocdata": {
-      "newAlias": "Plant location information"
-    },
-    "jlocdata": {
-      "newAlias": "Market location information"
-    },
-    "schedule": {
-      "newAlias": "shipment quantities in cases"
-    },
-    "_scalars_out": {
-      "newAlias": "Output Scalars"
-    }
-  },
-  "overwriteHeaderAliases": {
-    "a": {
-      "newHeaders": ["canning plants", "capacity of plant i in cases"]
-    },
-    "b": {
-      "newHeaders": ["markets", "demand at market j in cases"]
-    },
-    "d": {
-      "newHeaders": ["canning plants", "markets", "distance in thousands of miles"]
-    },
-    "_scalars": {
-      "newHeaders": ["Scalar Name", "Scalar Description", "Scalar Value"]
-    },
-    "ilocdata": {
-      "newHeaders": ["canning plants", "lat", "lng"]
-    },
-    "jlocdata": {
-      "newHeaders": ["markets", "lat", "lng"]
-    },
-    "schedule": {
-      "newHeaders": ["canning plants", "markets", "lngp", "latp", "lngm", "latm", "cap", "demand", "quantities"]
-    },
-    "_scalars_out": {
-      "newHeaders": ["Scalar Name", "Scalar Description", "Scalar Value"]
-    }
-  },
   "pivottable": {
     "bgColor": "rgb(255,128,0)"
   },
@@ -124,7 +68,8 @@
     "lstFile": true,
     "loadLocal": true,
     "attachments": true,
-    "remoteExecution": false
+    "remoteExecution": false,
+    "downloadTempFiles": false
   },
   "autoGenInputGraphs": true,
   "aggregateWidgets": true,
@@ -133,6 +78,14 @@
   "excelIncludeEmptySheets": true,
   "saveTraceFile": true,
   "includeParentDir": false,
+  "datatable": {
+    "class": "display",
+    "filter": "none",
+    "rownames": false,
+    "options": {
+      "pageLength": 15
+    }
+  },
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
@@ -149,13 +102,5 @@
     },
     "height": 700,
     "colWidths": 300
-  },
-  "datatable": {
-    "class": "display",
-    "filter": "none",
-    "rownames": false,
-    "options": {
-      "pageLength": 15
-    }
   }
 }
