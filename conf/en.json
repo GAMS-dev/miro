@@ -945,7 +945,7 @@
         "label": "Include empty sheets in the Excel file?"
       },
       "remoteExecution":{
-        "label": "Remote Job execution (GAMS MIRO Server only)"
+        "label": "Remote job execution (GAMS MIRO Server only)"
       },
       "downloadTempFiles":{
         "label": "Allow access to the temporary directory?"
