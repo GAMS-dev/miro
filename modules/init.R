@@ -1216,7 +1216,7 @@ if(is.null(errMsg)){
     }, character(1L), USE.NAMES = FALSE), collapse = "")
   }
   # validate symbol links
-  if(!LAUNCHHCUBEMODE && length(config[["symbolLinks"]])){
+  if(!LAUNCHHCUBEMODE && !LAUNCHADMINMODE && length(config[["symbolLinks"]])){
     for(symbolLink in config[["symbolLinks"]]){
       source <- tolower(symbolLink[["source"]])
       target <- tolower(symbolLink[["target"]])
@@ -1240,9 +1240,8 @@ if(is.null(errMsg)){
                                         target))
         next
       }
-      if(length(modelOut[[source]]$headers) != length(modelIn[[target]]$headers) ||
-         any(vapply(modelOut[[source]]$headers, "[[", character(1L), "type", USE.NAMES = FALSE) != 
-             vapply(modelIn[[target]]$headers, "[[", character(1L), "type", USE.NAMES = FALSE))){
+      if(!identical(vapply(modelOut[[source]]$headers, "[[", character(1L), "type", USE.NAMES = FALSE),
+                    vapply(modelIn[[target]]$headers, "[[", character(1L), "type", USE.NAMES = FALSE))){
         errMsg <- paste(errMsg, sprintf("The symbols: '%s' - '%s' are incompatible and can therefore not be linked together.", 
                                         source, target))
         next
