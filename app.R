@@ -577,13 +577,6 @@ Those tables are: '%s'.\nError message: '%s'.",
   })
 }
 
-MIROVersionLatest <<- NULL
-if(is.null(errMsg) && !isShinyProxy && !interactive()){
-  MIROVersionLatest <<- process$new(file.path(R.home("bin"), "Rscript"), 
-                                    c("--vanilla", file.path("tools", "check_updates.R"), 
-                                      MIROVersion),
-                                    stdout = "|")
-}
 aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "Release Date: ", MIRORDate, "<br/>", 
                           "Copyright (c) 2019 GAMS Software GmbH &lt;support@gams.com&gt;<br/>",
@@ -1485,12 +1478,7 @@ if(!is.null(errMsg)){
              flog.warn("Unknown export file type: '%s'.", input$exportFileType))
     })
     hideEl(session, "#loading-screen")
-    if(!isShinyProxy){
-      observeEvent(input$fetchUpdateString, {
-        insertUI(".miro-update-text", where = "afterBegin", 
-                 HTML(getUpdateString()))
-      })
-    }
+
     # This code will be run after the client has disconnected
     session$onSessionEnded(function() {
       # remove temporary files and folders

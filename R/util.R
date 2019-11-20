@@ -1174,26 +1174,3 @@ getHcubeScalars <- function(modelIn){
                                  identical(modelIn[[i]]$type, "checkbox"), 
                                logical(1L), USE.NAMES = FALSE)])
 }
-getUpdateString <- function(){
-  updateString <- ""
-  if(length(MIROVersionLatest)){
-    if(is.R6(MIROVersionLatest)){
-      if(isFALSE(MIROVersionLatest$is_alive())){
-        if(identical(MIROVersionLatest$get_exit_status(), 0L)){
-          updateString <- MIROVersionLatest$read_all_output()
-          if(length(updateString)){
-            updateString <- trimws(updateString[[1L]])
-          }else{
-            updateString <- ""
-          }
-        }
-      }else{
-        MIROVersionLatest$kill()
-      }
-      MIROVersionLatest <<- updateString
-    }else{
-      updateString <- MIROVersionLatest
-    }
-  }
-  return(updateString)
-}

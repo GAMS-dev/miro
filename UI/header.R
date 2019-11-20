@@ -40,8 +40,7 @@ header <- dashboardHeader(
                                    target = "_blank", lang$nav$header$help$forum)),
                     tags$li(HTML(paste0('<a href="#" class="action-button" onclick="Miro.confirmModalShow(\'',
                                         'About GAMS MIRO\', \'', 
-                                        htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\');
-                                        Shiny.setInputValue(\'fetchUpdateString\', 1, {priority: \'event\'});">',
+                                        htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\');">',
                                         lang$nav$header$help$about, '</a>'))
                     ))),
   title = config$pageTitle, disable = FALSE)
