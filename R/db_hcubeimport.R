@@ -36,7 +36,7 @@ HcubeImport <- R6Class("HcubeImport",
                            stopifnot(is.character(traceColNames), length(traceColNames) >= 1)
                            stopifnot(is.character(gmsColTypes), length(gmsColTypes) >= 1)
                            stopifnot(is.list(gmsFileHeaders), length(gmsFileHeaders) >= 1)
-                           stopifnot(is.R6(gdxio), is.character(inputSym), is.character(outputSym),
+                           stopifnot(is.R6(gdxio), is.character(outputSym),
                                      is.list(templates))
                            # END error checks
                            
@@ -59,7 +59,7 @@ HcubeImport <- R6Class("HcubeImport",
                            private$gmsColTypes        <- gmsColTypes
                            private$gmsFileHeaders     <- gmsFileHeaders
                            private$gdxio              <- gdxio
-                           private$inputSym           <- inputSym
+                           private$inputSym           <- if(is.null(inputSym)) character(0L) else inputSym
                            private$outputSym          <- outputSym
                            private$templates          <- templates
                            private$noScen             <- NA_integer_

@@ -276,7 +276,6 @@
     "downloadTempFiles": false
   },
   "aggregateWidgets": true,
-  "includeParentDir": false,
   "excelIncludeMeta": true,
   "excelIncludeEmptySheets": true,
   "saveTraceFile": true,
@@ -308,6 +307,12 @@
       "target": "price"
     }
   ],
+  "outputGroups": [
+    {
+      "name": "Dow Jones vs. Index Fund 🙀",
+      "members": ["dowvsindex", "abserror"]
+    }
+  ],
   "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
   "handsontable": {
     "stretchH": "all",
@@ -325,11 +330,5 @@
     },
     "height": 700,
     "colWidths": 300
-  },
-  "outputGroups": [
-    {
-      "name": "Dow Jones vs. Index Fund 🙀",
-      "members": ["dowvsindex", "abserror"]
-    }
-  ]
+  }
 }

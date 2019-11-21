@@ -52,12 +52,6 @@
         "default":",",
         "required":false
       },
-      "includeParentDir":{
-        "description":"Boolean which specifies whether to include the parent directory of the current model folder (e.g. because several models share files)",
-         "type":"boolean",
-         "default":false,
-         "required":false
-      },
       "excelIncludeMeta":{  
          "description":"Boolean which specifies whether to include a metadata sheet in the Excel file (exporting a scenario)",
          "type":"boolean",

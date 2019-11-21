@@ -15,7 +15,6 @@
     "attachments": true
   },
   "aggregateWidgets": true,
-  "includeParentDir": false,
   "excelIncludeMeta": true,
   "excelIncludeEmptySheets": true,
   "saveTraceFile": true,

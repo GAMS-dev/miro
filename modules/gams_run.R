@@ -369,38 +369,7 @@ if(LAUNCHHCUBEMODE){
   
   prevJobSubmitted <- Sys.time()
   
-  genHcubeJobFolder <- function(fromDir, submFileDir, toDir, scenGmsPar){
-    prog <- Progress$new()
-    on.exit(prog$close())
-    prog$set(message = lang$nav$dialogHcube$waitDialog$title, value = 0)
-    updateProgress <- function(incAmount, detail = NULL) {
-      prog$inc(amount = incAmount, detail = detail)
-    }
-    
-    if(config$includeParentDir){
-      parentDirName <- basename(dirname(fromDir))
-      scenGmsPar    <- paste0(scenGmsPar, ' idir1="', 
-                              gmsFilePath(file.path("..", "..", parentDirName, basename(fromDir))),
-                              '" idir2="', gmsFilePath(file.path("..", "..", parentDirName, '"')))
-      fromDir <- dirname(fromDir)
-    }else{
-      scenGmsPar <- paste0(scenGmsPar, ' idir1="', gmsFilePath(file.path("..", "..", 
-                                                             basename(fromDir))), '"')
-    }
-    
-    writeLines(scenGmsPar, file.path(toDir, tolower(modelName) %+% ".hcube"))
-    
-    # Copy files that are needed to solve model
-    file.copy(fromDir, toDir, recursive = TRUE)
-    staticFilePath <- file.path(currentModelDir, hcubeDirName, "static")
-    if(dir.exists(staticFilePath))
-      file.copy(staticFilePath, toDir, recursive = TRUE)
-    unlink(staticFilePath, recursive = TRUE, force = TRUE)
-    file.copy(file.path(submFileDir, hcubeSubmissionFile %+% ".gms"), toDir)
-    updateProgress(incAmount = 1, detail = lang$nav$dialogHcube$waitDialog$desc)
-  }
-  
-  runHcubeJob <- function(scenGmsPar){
+  runHcubeJob <- function(scenGmsPar, downloadFile = NULL){
     if(!length(scenGmsPar)){
       flog.debug("No scenarios selected to be solved in Hypercube mode.")
       return()
@@ -415,9 +384,32 @@ if(LAUNCHHCUBEMODE){
       }
       hideEl(session, "#jobSubmissionWrapper")
       showEl(session, "#jobSubmissionLoad")
+      prog <- Progress$new()
+      on.exit(prog$close(), add = TRUE)
+      prog$set(message = lang$nav$dialogHcube$waitDialog$title, value = 0)
+      updateProgress <- function(incAmount, detail = NULL) {
+        prog$inc(amount = incAmount, detail = detail)
+      }
+      if(!is.null(downloadFile)){
+        workDirHcube <- file.path(tempdir(), "hcube")
+        on.exit(unlink(workDirHcube, recursive = TRUE, force = TRUE), 
+                add = TRUE)
+        worker$createHcubeWorkDir(workDirHcube, hcubeData, staticData, 
+                                  attachmentFilePaths)
+        removeModal()
+        if(!file.copy(file.path(getwd(), "resources", hcubeSubmissionFile %+% ".gms"), 
+                      workDirHcube)){
+          flog.error("Problems copying Hypercube submission file from: '%s' to: '%s'.",
+                     file.path(getwd(), "resources", hcubeSubmissionFile %+% ".gms"),
+                     workDirHcube)
+        }
+        updateProgress(incAmount = 0.9, detail = lang$nav$dialogHcube$waitDialog$desc)
+        return(zipr(downloadFile, workDirHcube, compression_level = 6))
+      }
       worker$runHcube(staticData, hcubeData, 
                       sid, tags = isolate(input$newHcubeTags), 
                       attachmentFilePaths = attachmentFilePaths)
+      updateProgress(incAmount = 1, detail = lang$nav$dialogHcube$waitDialog$desc)
       showHideEl(session, "#hcubeSubmitSuccess", 2000)
     }, error = function(e){
       errMsg <- conditionMessage(e)
@@ -471,26 +463,7 @@ if(LAUNCHHCUBEMODE){
     },
     content = function(file) {
       # solve all scenarios in Hypercube run
-      
-      workDirHcube <- file.path(tempdir(), "hcube")
-      unlink(workDirHcube, recursive = TRUE, force = TRUE)
-      dir.create(workDirHcube, showWarnings = FALSE, recursive = TRUE)
-      homeDir <- getwd()
-      setwd(workDirHcube)
-      on.exit(setwd(homeDir), add = TRUE)
-      on.exit(unlink(workDirHcube, recursive = TRUE, force = TRUE), add = TRUE)
-      
-      genHcubeJobFolder(fromDir = currentModelDir, 
-                        submFileDir = file.path(homeDir, "resources"),
-                        toDir = workDirHcube, scenGmsPar = scenGmsPar)
-      filesToInclude <- list.files(recursive = TRUE)
-      idsToExclude   <- startsWith(filesToInclude, 
-                                   file.path(basename(currentModelDir), 
-                                             hcubeDirName)) | 
-        endsWith(filesToInclude, ".miroconf")
-      filesToInclude <- filesToInclude[!idsToExclude]
-      removeModal()
-      zip(file, filesToInclude, compression_level = 6)
+      runHcubeJob(scenGmsPar, downloadFile = file)
     },
     contentType = "application/zip")
   
@@ -500,21 +473,8 @@ if(LAUNCHHCUBEMODE){
     },
     content = function(file) {
       # solve only scenarios that do not yet exist
-      
-      workDirHcube <- file.path(tempdir(), "hcube")
-      unlink(workDirHcube, recursive = TRUE, force = TRUE)
-      dir.create(workDirHcube, showWarnings = FALSE, recursive = TRUE)
-      homeDir <- getwd()
-      setwd(workDirHcube)
-      on.exit(setwd(homeDir), add = TRUE)
-      on.exit(unlink(workDirHcube, recursive = TRUE, force = TRUE), add = TRUE)
-      
-      genHcubeJobFolder(fromDir = currentModelDir, 
-                        submFileDir = file.path(homeDir, "resources"),
-                        toDir = workDirHcube, scenGmsPar = scenGmsPar[idxDiff])
-      
-      removeModal()
-      zip(file, list.files(recursive = TRUE), compression_level = 6)
+      hcubeData$subsetJobIDs(idxDiff)
+      runHcubeJob(scenGmsPar[idxDiff], downloadFile = file)
     },
     contentType = "application/zip")
 }else{

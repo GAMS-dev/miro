@@ -205,6 +205,57 @@ Worker <- R6Class("Worker", public = list(
     flog.trace("Process ID: '%s' added to Hypercube job ID: '%s'.", pID, private$jID)
     return(0L)
   },
+  createHcubeWorkDir = function(workDir, dynamicPar, staticData = NULL,
+                                attachmentFilePaths = NULL){
+    
+    if(dir.exists(workDir)){
+      flog.warn("Hypercube job directory: '%s' already existed. Removing old data.", workDir)
+      if(identical(unlink(workDir, recursive = TRUE, force = TRUE), 1L))
+        stop(sprintf("Problems removing Hypercube job directory: '%s'.", workDir), call. = FALSE)
+    }
+    
+    if(!dir.create(workDir, recursive = TRUE, showWarnings = FALSE))
+      stop(sprintf("Problems creating Hypercube job directory: '%s'.", workDir), call. = FALSE)
+    
+    staticDir <- file.path(workDir, "static")
+    
+    if(!dir.create(staticDir))
+      stop(sprintf("Problems creating static directory: '%s'.", staticDir), call. = FALSE)
+    
+    if(length(staticData))
+      staticData$writeDisk(staticDir, fileName = private$metadata$MIROGdxInName)
+    
+    if(length(attachmentFilePaths)){
+      if(!dir.create(staticDir) || !all(file.copy(attachmentFilePaths, staticDir)))
+        stop(sprintf("Problems writing attachment data to: '%s'.", 
+                     staticDir), call. = FALSE)
+    }
+    if(length(private$metadata$modelData)){
+      zip::unzip(private$metadata$modelData, 
+                 overwrite = TRUE, junkpaths = FALSE, 
+                 exdir = workDir)
+    }
+    scenGmsPar <- c(if(length(private$metadata$extraClArgs)) private$metadata$extraClArgs, 
+                    private$metadata$clArgs,
+                    paste0('ImplicitGDXInput="', 
+                           if(is.null(workDir)){
+                             gmsFilePath(file.path(staticDir, 
+                                                   private$metadata$MIROGdxInName))
+                           }else{
+                             gmsFilePath(file.path("..", "..", "static", 
+                                                   private$metadata$MIROGdxInName))
+                           },'"'))
+    if(private$metadata$saveTraceFile){
+      scenGmsPar <- c(scenGmsPar, paste0('trace="', tableNameTracePrefix, 
+                                         private$metadata$modelName, '.trc"'), "traceopt=3")
+    }
+    
+    writeLines(scenGmsPar, file.path(workDir, tolower(private$metadata$modelName) %+% ".pf"))
+    dynamicPar$writeHcube(paste0(workDir, .Platform$file.sep))
+    flog.trace("New folder for Hypercube job was created: '%s'.", workDir)
+    
+    return(invisible(self))
+  },
   interrupt = function(hardKill = NULL, process = NULL){
     if(is.null(process)){
       if(is.null(private$process)){
@@ -271,7 +322,7 @@ Worker <- R6Class("Worker", public = list(
           status <- JOBSTATUSMAP[['discarded(completed)']]
         }
         if(private$hcube){
-          hcubeJobDir <- file.path(private$metadata$currentModelDir, hcubeDirName, jID)
+          hcubeJobDir <- file.path(hcubeDirName, jID)
           if(dir.exists(hcubeJobDir) && 
              identical(unlink(hcubeJobDir,recursive = TRUE, force = TRUE), 1L)){
             flog.error("Problems removing Hypercube job workspace: '%s'.", hcubeJobDir)
@@ -400,7 +451,7 @@ Worker <- R6Class("Worker", public = list(
   },
   getJobResultsPath = function(jID){
     if(!private$remote && private$hcube)
-      return(file.path(private$metadata$currentModelDir, hcubeDirName, 
+      return(file.path(hcubeDirName, 
                        jID, "4upload.zip"))
     
     jIDChar <- as.character(jID)
@@ -687,50 +738,8 @@ Worker <- R6Class("Worker", public = list(
     return(self)
   },
   runHcubeLocal = function(dynamicPar, staticData = NULL, attachmentFilePaths = NULL){
-    
-    hcubeDir <- file.path(private$metadata$currentModelDir, hcubeDirName, private$jID)
-    
-    if(dir.exists(hcubeDir)){
-      flog.warn("Hypercube job directory: '%s' already existed. Removing old data.", hcubeDir)
-      if(identical(unlink(hcubeDir, recursive = TRUE, force = TRUE), 1L))
-        stop(sprintf("Problems removing Hypercube job directory: '%s'.", hcubeDir), call. = FALSE)
-    }
-    
-    if(!dir.create(hcubeDir, recursive = TRUE, showWarnings = FALSE))
-      stop(sprintf("Problems creating Hypercube job directory: '%s'.", hcubeDir), call. = FALSE)
-    
-    staticDir <- file.path(hcubeDir, "static")
-    
-    if(!dir.create(staticDir))
-      stop(sprintf("Problems creating static directory: '%s'.", staticDir), call. = FALSE)
-    
-    if(length(staticData))
-      staticData$writeDisk(staticDir, fileName = private$metadata$MIROGdxInName)
-    
-    if(length(attachmentFilePaths)){
-      if(!dir.create(staticDir) || !all(file.copy(attachmentFilePaths, staticDir)))
-        stop(sprintf("Problems writing attachment data to: '%s'.", 
-                     staticDir), call. = FALSE)
-    }
-    if(length(private$metadata$modelData)){
-      zip::unzip(private$metadata$modelData, 
-                 overwrite = TRUE, junkpaths = FALSE, 
-                 exdir = hcubeDir)
-    }
-    scenGmsPar <- c(if(length(private$metadata$extraClArgs)) private$metadata$extraClArgs, 
-                    private$metadata$clArgs,
-                    paste0('ImplicitGDXInput="', 
-                           gmsFilePath(file.path(staticDir, 
-                                                 private$metadata$MIROGdxInName)),'"'))
-    if(private$metadata$saveTraceFile){
-      scenGmsPar <- c(scenGmsPar, paste0('trace="', tableNameTracePrefix, 
-                                         private$metadata$modelName, '.trc"'), "traceopt=3")
-    }
-    
-    writeLines(scenGmsPar, file.path(hcubeDir, tolower(private$metadata$modelName) %+% ".pf"))
-    dynamicPar$writeHcube(paste0(hcubeDir, .Platform$file.sep))
-    flog.trace("New folder for Hypercube job was created: '%s'.", hcubeDir)
-    
+    hcubeDir <- file.path(hcubeDirName, private$jID)
+    self$createHcubeWorkDir(hcubeDir, dynamicPar, staticData, attachmentFilePaths)
     # create daemon to execute Hypercube job
     hcubeSubmDir <- gmsFilePath(file.path(getwd(), "resources", hcubeSubmissionFile %+% ".gms"))
     curdir       <- gmsFilePath(hcubeDir)
@@ -1156,7 +1165,7 @@ Worker <- R6Class("Worker", public = list(
     return(0L)
   },
   getHcubeJobProgressLocal = function(jID){
-    logFilePath <- file.path(private$metadata$currentModelDir, hcubeDirName, 
+    logFilePath <- file.path(hcubeDirName, 
                              jID, paste0(jID, ".log"))
     
     if(file.access(logFilePath, 4L) != -1L){
@@ -1185,7 +1194,7 @@ Worker <- R6Class("Worker", public = list(
     return(c(jobProgress$finished, jobProgress$job_count))
   },
   getHcubeJobStatusLocal = function(pID, jID){
-    jobDir <- file.path(private$metadata$currentModelDir, hcubeDirName, jID)
+    jobDir <- file.path(hcubeDirName, jID)
     if(dir.exists(jobDir)){
       if(file.exists(file.path(jobDir, "4upload.zip"))){
         status <- JOBSTATUSMAP[['completed']]

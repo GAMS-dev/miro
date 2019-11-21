@@ -77,7 +77,6 @@
   "excelIncludeMeta": true,
   "excelIncludeEmptySheets": true,
   "saveTraceFile": true,
-  "includeParentDir": false,
   "datatable": {
     "class": "display",
     "filter": "none",

@@ -262,17 +262,6 @@ insertUI(selector = "#module_wrapper2",
                                                label = NULL)
                       ))
            ),
-           tags$label(class = "cb-label info-position", "for" = "general_parent", 
-                      tags$div(lang$adminMode$general$parent$label, 
-                               tags$a("", class="info-wrapper", 
-                                      href="https://gams.com/miro/customize.html#include-parent", 
-                                      tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
-           tags$div(
-             tags$label(class = "checkbox-material", 
-                        checkboxInput("general_parent", 
-                                      value = if(length(configJSON$includeParentDir)) 
-                                        configJSON$includeParentDir else config$includeParentDir, label = NULL)
-             )),
            tags$div(class="option-wrapper",
                     selectizeInput("general_args", 
                                    tags$div(lang$adminMode$general$args$label, 
@@ -314,9 +303,6 @@ observeEvent(input$general_pageTitle, {
 })
 observeEvent(input$general_theme, {
   rv$generalConfig$theme <<- input$general_theme
-})
-observeEvent(input$general_parent, {
-  rv$generalConfig$includeParentDir <<- input$general_parent
 })
 observeEvent(input$general_meta, {
   rv$generalConfig$excelIncludeMeta <<- input$general_meta

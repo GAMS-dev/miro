@@ -100,6 +100,10 @@ if(is.null(errMsg)){
   config[["inputSymbols"]]  <- NULL
   config[["outputSymbols"]] <- NULL
   
+  if(LAUNCHHCUBEMODE && !length(modelIn)){
+    errMsg <- "Can not launch Hypercube mode without having input data defined! Please define input data and try again."
+  }
+  
   if(!length(config$pageTitle) || nchar(config$pageTitle) == 0L){
     config$pageTitle <- config$modelTitle
   }

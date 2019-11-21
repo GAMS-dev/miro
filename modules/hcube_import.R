@@ -35,7 +35,8 @@ additionalInputScalars <- inputDsNames[vapply(inputDsNames, function(el){
            identical(modelIn[[el]]$dropdown$checkbox, TRUE))
 }, logical(1L), USE.NAMES = FALSE)]
 scalarInToVerify <- c(scalarInToVerify, additionalInputScalars)
-scalarInToVerify <- scalarInToVerify[!startsWith(scalarInToVerify, "_")]
+if(length(scalarInToVerify))
+  scalarInToVerify <- scalarInToVerify[!startsWith(scalarInToVerify, "_")]
 scalarOutToVerify <- NULL
 if(scalarsOutName %in% names(modelOut)){
   scalarOutToVerify <- modelOut[[scalarsOutName]]$symnames

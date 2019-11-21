@@ -280,9 +280,7 @@ if(is.null(errMsg)){
     errMsg <- paste(errMsg, sprintf("No model data ('%s') found.", paste0(modelName, ".zip")), 
                     sep = "\n")
   }else{
-    GAMSClArgs <- c(GAMSClArgs, paste0('idir1="', gmsFilePath(currentModelDir), '"'),
-                    if(config$includeParentDir) 
-                      paste0('idir2="', gmsFilePath(dirname(currentModelDir)), '"'))
+    GAMSClArgs <- c(GAMSClArgs, paste0('idir1="', gmsFilePath(currentModelDir), '"'))
   }
 }
 
@@ -526,7 +524,14 @@ if(is.null(errMsg)){
   })
   
   if(LAUNCHHCUBEMODE){
-    hcubeDirName <<- paste0(modelName, "_", hcubeDirName)
+    hcubeDirName <<- file.path(miroWorkspace, hcubeDirName, modelName)
+    if(!dir.exists(hcubeDirName) && 
+       !dir.create(hcubeDirName, showWarnings = TRUE, recursive = TRUE)){
+      msg <- sprintf("Problems creating Hypercube jobs directory: '%s'. Do you miss write permissions?",
+                     hcubeDirName)
+      flog.error(errMsgTmp)
+      errMsg <- paste(msg, errMsgTmp, sep = '\n')
+    }
     requiredPackages <- c("digest", "DT")
     source("./R/install_packages.R", local = TRUE)
     source("./R/db_hcubeimport.R")
@@ -917,12 +922,12 @@ if(!is.null(errMsg)){
                                          clArgs = GAMSClArgs, 
                                          text_entities = c(paste0(modelName, ".lst"), 
                                                            if(config$activateModules$miroLogFile) config$miroLogFile),
-                                         currentModelDir = currentModelDir, gamsExecMode = gamsExecMode,
+                                         gamsExecMode = gamsExecMode,
                                          extraClArgs = config$extraClArgs, 
-                                         includeParentDir = config$includeParentDir, saveTraceFile = config$saveTraceFile,
+                                         saveTraceFile = config$saveTraceFile,
                                          modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
                                          timeout = 8L, serverOS = getOS(), modelData = modelData, hcubeMode = LAUNCHHCUBEMODE,
-                                         rememberMeFileName = rememberMeFileName, includeParentDir = config$includeParentDir), 
+                                         rememberMeFileName = rememberMeFileName), 
                          remote = config$activateModules$remoteExecution,
                          hcube = LAUNCHHCUBEMODE,
                          db = db)
