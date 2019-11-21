@@ -102,6 +102,7 @@ pivotData <- function(i, tabData){
   return(list(data = tabData, colnames = attrTmp))
 }
 observe({
+  req(input$inputTabset)
   i <- as.integer(strsplit(input$inputTabset, "_")[[1]][2])
   if(is.na(i) || i < 1L){
     disableEl(session, "#btGraphIn")

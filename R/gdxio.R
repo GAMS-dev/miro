@@ -92,7 +92,9 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     }
   },
   wgdx = function(gdxName, data, squeezeZeros = c('y', 'n', 'e')){
-    stopifnot(length(names(data)) > 0L)
+    if(!length(names(data))){
+      return(invisible(self))
+    }
     squeezeZeros <- match.arg(squeezeZeros)
     # tabular data
     scalarIdList <- NULL

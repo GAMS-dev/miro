@@ -316,8 +316,9 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                                                            conditionalPanel(
                                                              condition = "input.cbSelectManuallyLoc === true",
                                                              selectInput("selInputDataLoc", lang$nav[[modeDescriptor]]$selInputData, 
-                                                                         setNames(names(modelInToImport), 
-                                                                                  modelInToImportAlias), 
+                                                                         if(length(modelInToImport)) 
+                                                                           setNames(names(modelInToImport), 
+                                                                                    modelInToImportAlias) else NULL, 
                                                                          multiple = TRUE, width = "100%")
                                                            )
                                                     )

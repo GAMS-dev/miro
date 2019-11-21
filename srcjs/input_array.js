@@ -272,7 +272,7 @@ class InputArray {
       const arrayLabel = this.removeElAtomic($(`#${this.arrayID}${elID}_wrapper`).children('.form-group'), idx, elID);
 
       if (arrayLabel.length === 0) {
-        throw new Error(`Failed to remove array element: Could not find identifier for array element: ${
+        console.error(`Could not find identifier for array element: ${
           this.arrayID} (label ID: ${this.arrayID}${elID}).`);
       }
 

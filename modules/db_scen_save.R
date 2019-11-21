@@ -52,10 +52,10 @@ observeEvent(input$btSaveReadonly,
 # enter scenario name
 observeEvent(virtualActionButton(rv$btSaveAs), {
   saveAsFlag <<- TRUE
-  if(!is.null(rv$activeSname)){
-    tmpScenName <- rv$activeSname
-  }else{
+  if(is.null(rv$activeSname)){
     tmpScenName <- lang$nav$dialogNewScen$newScenName
+  }else{
+    tmpScenName <- rv$activeSname
   }
   currentTags <- character(0L)
   if(length(activeScen) && !length(activeScen$getSid())){
@@ -104,7 +104,6 @@ observeEvent(input$btCheckName, {
       showEl(session, "#dialogSaveConfirm")
       return(NULL)
     }else{
-      rv$activeSname   <- scenName
       scenTags         <<- scenTags
       rv[[input$btCheckName]] <- rv[[input$btCheckName]] + 1L
     }
