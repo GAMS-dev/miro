@@ -60,31 +60,38 @@ observeEvent(input$loadActiveScenSplitComp, {
   }
   scenId   <- id
   source("./modules/scen_save.R", local = TRUE)
-  scenMetaData[[scenIdLong]] <<- db$getMetadata(sid = NA_integer_, uid = uid, 
-                                                sname = if(length(isolate(rv$activeSname))) rv$activeSname
-                                                else lang$nav$dialogNewScen$newScenName, 
-                                                stime = Sys.time(),
-                                                uidAlias = lang$nav$excelExport$metadataSheet$uid, 
-                                                snameAlias = lang$nav$excelExport$metadataSheet$sname, 
-                                                stimeAlias = lang$nav$excelExport$metadataSheet$stime)
+  scenIdLongNew <- paste0("scen_", scenId, "_")
+  
+  # copy data over as scen_save.R stores data in active scenario (scen_1_), 
+  # but here we need it in (scen_2_ or scen_3_ respectively)
+  scenData[[scenIdLongNew]] <<- scenData[[scenIdLong]]
+  scalarData[[scenIdLongNew]] <<- scalarData[[scenIdLong]]
+  
+  scenMetaData[[scenIdLongNew]] <<- db$getMetadata(sid = NA_integer_, uid = uid, 
+                                                   sname = if(length(isolate(rv$activeSname))) rv$activeSname
+                                                   else lang$nav$dialogNewScen$newScenName, 
+                                                   stime = Sys.time(),
+                                                   uidAlias = lang$nav$excelExport$metadataSheet$uid, 
+                                                   snameAlias = lang$nav$excelExport$metadataSheet$sname, 
+                                                   stimeAlias = lang$nav$excelExport$metadataSheet$stime)
   idxScalarOut <- match(paste0(gsub("_", "", modelName, fixed = TRUE), 
                                "_", scalarsOutName), scenTableNames)[[1]]
   idxScalarIn <- match(paste0(gsub("_", "", modelName, fixed = TRUE), 
                               "_", scalarsFileName), scenTableNames)[[1]]
   # load scalar data if available
-  if(!is.na(idxScalarIn) && nrow(scenData[[scenIdLong]][[idxScalarIn]])){
-    scalarData[[scenIdLong]]               <<- scenData[[scenIdLong]][[idxScalarIn]]
+  if(!is.na(idxScalarIn) && nrow(scenData[[scenIdLongNew]][[idxScalarIn]])){
+    scalarData[[scenIdLongNew]]               <<- scenData[[scenIdLongNew]][[idxScalarIn]]
   }else{
-    scalarData[[scenIdLong]]               <<- tibble()
+    scalarData[[scenIdLongNew]]               <<- tibble()
   }
-  if(!is.na(idxScalarOut) && nrow(scenData[[scenIdLong]][[idxScalarOut]])){
+  if(!is.na(idxScalarOut) && nrow(scenData[[scenIdLongNew]][[idxScalarOut]])){
     # scalar data exists
-    rowIdsToRemove                         <- tolower(scenData[[scenIdLong]][[idxScalarOut]][[1]]) %in% config$hiddenOutputScalars
-    scalarData[[scenIdLong]]               <<- bind_rows(scalarData[[scenIdLong]], 
-                                                         scenData[[scenIdLong]][[idxScalarOut]])
-    scenData[[scenIdLong]][[idxScalarOut]] <<- scenData[[scenIdLong]][[idxScalarOut]][!rowIdsToRemove, ]
+    rowIdsToRemove                         <- tolower(scenData[[scenIdLongNew]][[idxScalarOut]][[1]]) %in% config$hiddenOutputScalars
+    scalarData[[scenIdLongNew]]               <<- bind_rows(scalarData[[scenIdLongNew]], 
+                                                            scenData[[scenIdLongNew]][[idxScalarOut]])
+    scenData[[scenIdLongNew]][[idxScalarOut]] <<- scenData[[scenIdLongNew]][[idxScalarOut]][!rowIdsToRemove, ]
   }
-
+  
   source("./modules/scen_render.R", local = TRUE)
   # load script results
   if(length(config$scripts$base)){

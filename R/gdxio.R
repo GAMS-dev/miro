@@ -93,6 +93,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
   },
   wgdx = function(gdxName, data, squeezeZeros = c('y', 'n', 'e')){
     if(!length(names(data))){
+      gdxrrw::wgdx(gdxName, list())
       return(invisible(self))
     }
     squeezeZeros <- match.arg(squeezeZeros)

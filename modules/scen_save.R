@@ -23,10 +23,11 @@ if(is.null(scalarData[[scenIdLong]]) || !nrow(scalarData[[scenIdLong]])){
     scalarData[[scenIdLong]] <<- tibble()
   }
 }
-
-# save input data 
-saveInputDb <- TRUE
-source("./modules/input_save.R", local = TRUE)
-lapply(seq_along(dataTmp), function(i){
-  scenData[[scenIdLong]][[i + length(modelOut)]] <<- dataTmp[[i]]
-})
+if(length(modelIn)){
+  # save input data 
+  saveInputDb <- TRUE
+  source("./modules/input_save.R", local = TRUE)
+  lapply(seq_along(dataTmp), function(i){
+    scenData[[scenIdLong]][[i + length(modelOut)]] <<- dataTmp[[i]]
+  })
+}
