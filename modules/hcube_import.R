@@ -31,8 +31,8 @@ getCombinationsSlider <- function(lowerVal, upperVal, stepSize = 1){
   return(ret)
 }
 additionalInputScalars <- inputDsNames[vapply(inputDsNames, function(el){
-  return(identical(modelIn[[el]]$dropdown$single, TRUE) || 
-           identical(modelIn[[el]]$dropdown$checkbox, TRUE))
+  return(isTRUE(modelIn[[el]]$dropdown$single) || 
+           isTRUE(modelIn[[el]]$dropdown$checkbox))
 }, logical(1L), USE.NAMES = FALSE)]
 scalarInToVerify <- c(scalarInToVerify, additionalInputScalars)
 if(length(scalarInToVerify))
@@ -49,10 +49,19 @@ disableEl(session, "#btUploadHcube")
 
 # initialise hcube import class
 hcubeImport <- HcubeImport$new(db, scalarsFileName, scalarsOutName, 
-                               tableNamesCanHave = c(setdiff(inputDsNames, additionalInputScalars), 
-                                                     names(modelOut)),
-                               tableNamesMustHave = c(if(scalarsFileName %in% inputDsNames) scalarInToVerify, 
-                                                      if(scalarsOutName %in% names(modelOut)) scalarOutToVerify, 
+                               tableNamesCanHave = c(setdiff(c(inputDsNames,
+                                                               modelIn[[scalarsFileName]]$symnames,
+                                                               modelIn[[scalarEquationsName]]$symnames), 
+                                                             c(additionalInputScalars,
+                                                                             scalarsFileName,
+                                                                             scalarEquationsName)), 
+                                                     setdiff(c(names(modelOut),
+                                                               modelOut[[scalarsOutName]]$symnames,
+                                                               modelOut[[scalarEquationsOutName]]$symnames), 
+                                                             c(scalarsOutName,
+                                                               scalarEquationsOutName))),
+                               tableNamesMustHave = c(scalarInToVerify, 
+                                                      scalarOutToVerify,
                                                       if(config$saveTraceFile) tableNameTracePrefix %+% modelName),
                                config$csvDelim, workDir, gmsColTypes = gmsColTypes, gmsFileHeaders = gmsFileHeaders,
                                gdxio = gdxio, inputSym = inputDsNames, outputSym = names(modelOut),

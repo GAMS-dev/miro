@@ -276,7 +276,7 @@ if(is.null(errMsg)){
   if(useTempDir && 
      file.exists(file.path(currentModelDir, paste0(modelName, ".zip")))){
     modelData <- file.path(currentModelDir, paste0(modelName, ".zip"))
-  }else if(config$activateModules$remoteExecution){
+  }else if(config$activateModules$remoteExecution || LAUNCHHCUBEMODE){
     errMsg <- paste(errMsg, sprintf("No model data ('%s') found.", paste0(modelName, ".zip")), 
                     sep = "\n")
   }else{
