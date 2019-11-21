@@ -1214,8 +1214,7 @@ if(!is.null(errMsg)){
       flog.debug("Sidebar menu item: '%s' selected.", isolate(input$sidebarMenuId))
       # reset nest level
       shortcutNest <<- 0L
-      if(LAUNCHHCUBEMODE
-         && input$sidebarMenuId == "scenarios"){
+      if(identical(input$sidebarMenuId, "scenarios")){
         isInSolveMode <<- FALSE
       }else if(identical(input$sidebarMenuId, "importData")){
         rv$jobListPanel <- rv$jobListPanel + 1L
