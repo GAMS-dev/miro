@@ -252,6 +252,14 @@ if(is.null(errMsg)){
                                            paste0(modelName, ".zip"), conditionMessage(e)),
                            sep = "\n")
         })
+      }else if(miroBuildonly){
+        if(LAUNCHHCUBEMODE){
+          errMsg <- paste(errMsg, "Hypercube mode requires the environment variable MIRO_BUILD_ARCHIVE set to 'true'!", 
+                          sep = "\n")
+        }else if(config$activateModules$remoteExecution){
+          errMsg <- paste(errMsg, "Remote execution mode requires the environment variable MIRO_BUILD_ARCHIVE set to 'true'!", 
+                          sep = "\n")
+        }
       }
     }else if(miroBuildonly){
       errMsg <- paste(errMsg, paste0("No model data ('", modelName, "_files.txt') found."), 
