@@ -266,7 +266,8 @@ if(length(config$scripts$hcube)){
     }
     
     if(!dir.exists(file.path(workDir, "scripts"))){
-      flog.info("No 'scripts' directory was found. Did you forget to include it in 'model_files.txt'?")
+      flog.info("No 'scripts' directory was found. Did you forget to include it in '%s_files.txt'?",
+                modelName)
       showHideEl(session, "#analysisRunUnknownError", 6000L)
       return()
     }

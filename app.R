@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "0.9.5"
+MIROVersion <- "0.9.6"
 APIVersion  <- "1"
-MIRORDate   <- "Nov 21 2019"
+MIRORDate   <- "Nov 22 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -231,14 +231,14 @@ if(is.null(errMsg)){
                                       "miro.sqlite3"))
   }
   if(debugMode){
-    if(file.exists(file.path(currentModelDir, "model_files.txt"))){
+    if(file.exists(file.path(currentModelDir, paste0(modelName, "_files.txt")))){
       tryCatch({
         modelFiles <- gsub("^[.][/\\\\]", "", readLines(file.path(currentModelDir, 
-                                                                  "model_files.txt"),
+                                                                  paste0(modelName, "_files.txt")),
                                                         warn = FALSE))
       }, error = function(e){
-        errMsg <<- paste(errMsg, sprintf("Problems reading file: 'model_files.txt'. Error message: '%s'.", 
-                                         conditionMessage(e)),
+        errMsg <<- paste(errMsg, sprintf("Problems reading file: '%s_files.txt'. Error message: '%s'.", 
+                                         modelName, conditionMessage(e)),
                          sep = "\n")
       })
       if(is.null(errMsg) && useTempDir && 
@@ -254,7 +254,7 @@ if(is.null(errMsg)){
         })
       }
     }else if(miroBuildonly){
-      errMsg <- paste(errMsg, "No model data ('model_files.txt') found.", 
+      errMsg <- paste(errMsg, paste0("No model data ('", modelName, "_files.txt') found."), 
                       sep = "\n")
     }
   }else{
@@ -389,7 +389,7 @@ if(is.null(errMsg) && debugMode){
 if(miroBuildonly){
   if(!is.null(errMsg)){
     warning(errMsg)
-    if(identical(errMsg, "\nNo model data ('model_files.txt') found.")){
+    if(identical(errMsg, paste0("\nNo model data ('", modelName, "_files.txt') found."))){
       quit("no", status = 2)
     }else{
       quit("no", status = 1) 
@@ -1124,7 +1124,8 @@ if(!is.null(errMsg)){
           flog.debug("Button to execute script: '%s' clicked.", scriptId)
           
           if(!dir.exists(file.path(workDir, "scripts"))){
-            flog.info("No 'scripts' directory was found. Did you forget to include it in 'model_files.txt'?")
+            flog.info("No 'scripts' directory was found. Did you forget to include it in '%s_files.txt'?",
+                      modelName)
             hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
             showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
             return(scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$noScript, scriptId, isError = TRUE))
