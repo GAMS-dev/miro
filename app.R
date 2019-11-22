@@ -1,5 +1,5 @@
 #version number
-MIROVersion <- "0.9.6"
+MIROVersion <- "0.9.7"
 APIVersion  <- "1"
 MIRORDate   <- "Nov 22 2019"
 #####packages:
