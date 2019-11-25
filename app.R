@@ -181,9 +181,10 @@ if(is.null(errMsg)){
                         "Please make sure you specify a valid gms file path.", modelGmsName, modelPath)
   }
 }
-if(identical(tolower(Sys.getenv(modelModeEnvVar)), "config")){
+if(!miroBuildonly &&
+   identical(tolower(Sys.getenv("GMSMODE")), "config")){
   LAUNCHADMINMODE <- TRUE
-}else if(identical(tolower(Sys.getenv(modelModeEnvVar)), "hcube")){
+}else if(identical(tolower(Sys.getenv("GMSMODE")), "hcube")){
   LAUNCHHCUBEMODE <<- TRUE
 }
 if(is.null(errMsg)){
@@ -195,7 +196,7 @@ if(is.null(errMsg)){
                                       MIROVersion
                                     else
                                       Sys.getenv("MIRO_VERSION_STRING"), 
-                                    if(identical(Sys.getenv(modelModeEnvVar), "hcube")) "_hcube",
+                                    if(identical(Sys.getenv("GMSMODE"), "hcube")) "_hcube",
                                     ".miroconf"))
   if(debugMode){
     source("./modules/init.R", local = TRUE)
@@ -394,6 +395,29 @@ if(miroBuildonly){
     }else{
       quit("no", status = 1) 
     }
+  }
+  if(identical(Sys.getenv("MIRO_COMPILE_ONLY"), "true")){
+    quit("no")
+  }
+  if(identical(Sys.getenv("GMSMODE"), "full")){
+    Sys.setenv(MIRO_COMPILE_ONLY = "true")
+    Sys.setenv(GMSMODE = "hcube")
+    buildProcHcube <- process$new(file.path(R.home(), 'bin', 'Rscript'), 
+                                  c('--vanilla', './app.R'), 
+                                  error_on_status = FALSE)
+    buildProcHcube$wait()
+    procHcubeRetC <- buildProcHcube$get_exit_status()
+    if(!identical(procHcubeRetC, 0L)){
+      if(interactive())
+        stop()
+      quit("no", procHcubeRetC)
+    }
+    rSaveFilePath <- c(rSaveFilePath, 
+                       file.path(currentModelDir, 
+                                 paste0(modelNameRaw, "_1",
+                                        APIVersion, "_",
+                                        MIROVersion, 
+                                        "_hcube.miroconf")))
   }
   tryCatch({
     if(file.exists(file.path(currentModelDir, "static"))){

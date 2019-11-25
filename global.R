@@ -8,7 +8,6 @@ debugMode <- TRUE
 miroDataDirPrefix <- "data_"
 # name of the environment variable used in shiny proxy to identify model name to use
 modelPathEnvVar <- "GMSMODELNAME"
-modelModeEnvVar <- "GMSMODE"
 # keywords in JSON input data that define that the data is NOT to be imported by an external source
 keywordsNoImport <- c("noImport")
 # keywords that define data does not HAVE TO BE imported in order to run the model
