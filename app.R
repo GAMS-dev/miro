@@ -105,7 +105,7 @@ if(is.null(errMsg)){
   # set maximum upload size
   options(shiny.maxRequestSize = maxUploadSize*1024^2)
   # get model path and name
-  modelPath    <- getModelPath(modelPath, isShinyProxy, modelPathEnvVar,
+  modelPath    <- getModelPath(modelPath, isShinyProxy, "MIRO_MODEL_PATH",
                                file.path(getwd(), modelDir))
   modelNameRaw <- modelPath[[4]]
   modelName    <- modelPath[[3]]
@@ -182,21 +182,21 @@ if(is.null(errMsg)){
   }
 }
 if(!miroBuildonly &&
-   identical(tolower(Sys.getenv("GMSMODE")), "config")){
+   identical(tolower(Sys.getenv("MIRO_MODE")), "config")){
   LAUNCHADMINMODE <- TRUE
-}else if(identical(tolower(Sys.getenv("GMSMODE")), "hcube")){
+}else if(identical(tolower(Sys.getenv("MIRO_MODE")), "hcube")){
   LAUNCHHCUBEMODE <<- TRUE
 }
 if(is.null(errMsg)){
   rSaveFilePath <- file.path(currentModelDir, 
                              paste0(modelNameRaw, "_",
-                                    if(useTempDir) "1" else "0", "_",
+                                    if(useTempDir) "1_" else "0_",
                                     APIVersion, "_",
                                     if(identical(Sys.getenv("MIRO_VERSION_STRING"), ""))
                                       MIROVersion
                                     else
                                       Sys.getenv("MIRO_VERSION_STRING"), 
-                                    if(identical(Sys.getenv("GMSMODE"), "hcube")) "_hcube",
+                                    if(identical(Sys.getenv("MIRO_MODE"), "hcube")) "_hcube",
                                     ".miroconf"))
   if(debugMode){
     source("./modules/init.R", local = TRUE)
@@ -255,10 +255,10 @@ if(is.null(errMsg)){
         })
       }else if(miroBuildonly){
         if(LAUNCHHCUBEMODE){
-          errMsg <- paste(errMsg, "Hypercube mode requires the environment variable MIRO_BUILD_ARCHIVE set to 'true'!", 
+          errMsg <- paste(errMsg, "Hypercube mode requires to be executed in temporary directory. Set the environment variable MIRO_BUILD_ARCHIVE to 'true'!", 
                           sep = "\n")
         }else if(config$activateModules$remoteExecution){
-          errMsg <- paste(errMsg, "Remote execution mode requires the environment variable MIRO_BUILD_ARCHIVE set to 'true'!", 
+          errMsg <- paste(errMsg, "Remote execution mode requires to be executed in temporary directory. Set the environment variable MIRO_BUILD_ARCHIVE to 'true'!", 
                           sep = "\n")
         }
       }
@@ -407,12 +407,14 @@ if(miroBuildonly){
   if(identical(Sys.getenv("MIRO_COMPILE_ONLY"), "true")){
     quit("no")
   }
-  if(identical(Sys.getenv("GMSMODE"), "full")){
+  if(identical(Sys.getenv("MIRO_MODE"), "full")){
     Sys.setenv(MIRO_COMPILE_ONLY = "true")
-    Sys.setenv(GMSMODE = "hcube")
-    buildProcHcube <- process$new(file.path(R.home(), 'bin', 'Rscript'), 
-                                  c('--vanilla', './app.R'), 
-                                  error_on_status = FALSE)
+    Sys.setenv(USETMPDIR = "false")
+    Sys.setenv(MIRO_MODE = "hcube")
+    buildProcHcube <- processx::process$new(file.path(R.home(), 'bin', 'Rscript'), 
+                                            c('--vanilla', './app.R'))
+    Sys.setenv(MIRO_COMPILE_ONLY = "")
+    Sys.setenv(MIRO_MODE = "full")
     buildProcHcube$wait()
     procHcubeRetC <- buildProcHcube$get_exit_status()
     if(!identical(procHcubeRetC, 0L)){
@@ -422,7 +424,7 @@ if(miroBuildonly){
     }
     rSaveFilePath <- c(rSaveFilePath, 
                        file.path(currentModelDir, 
-                                 paste0(modelNameRaw, "_1",
+                                 paste0(modelNameRaw, "_1_",
                                         APIVersion, "_",
                                         MIROVersion, 
                                         "_hcube.miroconf")))

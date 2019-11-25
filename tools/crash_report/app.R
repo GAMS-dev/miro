@@ -13,7 +13,7 @@ uploadFile <- function(file, url, userpwd){
   curl::curl_fetch_memory(url, handle = h)
 }
 
-modelPath <- Sys.getenv("GMSMODELNAME")
+modelPath <- Sys.getenv("MIRO_MODEL_PATH")
 modelName <- basename(modelPath)
 modelPath <- dirname(modelPath)
 
