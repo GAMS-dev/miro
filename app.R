@@ -415,6 +415,7 @@ if(miroBuildonly){
                                             c('--vanilla', './app.R'))
     Sys.setenv(MIRO_COMPILE_ONLY = "")
     Sys.setenv(MIRO_MODE = "full")
+    Sys.setenv(USETMPDIR = if(useTempDir) "true" else "false")
     buildProcHcube$wait()
     procHcubeRetC <- buildProcHcube$get_exit_status()
     if(!identical(procHcubeRetC, 0L)){
