@@ -364,13 +364,13 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     loadMode  <-  "scen"
     newInputCount <- 0L
     source("./modules/input_load.R", local = TRUE)
-    if(!is.null(errMsg)){
-      return()
+    if(is.null(errMsg)){
+      removeModal()
     }
     if(length(scalarDataset) && nrow(scalarDataset)){
       scalarData[["scen_1_"]] <<- scalarDataset
     }
-    removeModal()
+    
     if(LAUNCHHCUBEMODE){
       noOutputData <<- TRUE
     }else{

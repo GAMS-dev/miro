@@ -147,7 +147,7 @@ prepareModelRun <- function(async = FALSE){
 }
 if(LAUNCHHCUBEMODE){
   idsToSolve <- NULL
-  idxDiff <- NULL
+  idsSolved <- NULL
   scenGmsPar <- NULL
   attachmentFilePaths <- NULL
   staticData <- NULL
@@ -183,10 +183,15 @@ if(LAUNCHHCUBEMODE){
                  
                  stepSize <- input[["hcubeStep_" %+% i]]
                  range <- floor((value[2] - value[1])/stepSize) + 1
-                 if(!is.numeric(stepSize) || stepSize <= 0 
-                    || is.numeric(modelIn[[i]]$slider$step) 
-                    && stepSize < modelIn[[i]]$slider$step){
+                 if(!is.numeric(stepSize) || stepSize <= 0){
                    # non valid step size selected
+                   return(-1L)
+                 }
+                 if(length(modelIn[[i]]$slider$minStep)){
+                   if(stepSize < modelIn[[i]]$slider$minStep){
+                     return(-1L)
+                   }
+                 }else if(stepSize < modelIn[[i]]$slider$step){
                    return(-1L)
                  }
                  if(identical(modelIn[[i]]$slider$single, TRUE)){
@@ -358,6 +363,7 @@ if(LAUNCHHCUBEMODE){
       }
     }
     updateProgress(incAmount = 15/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
+    print(gmsString)
     scenIds <- hcubeData$pushJobIDs(vapply(gmsString, digest, character(1L), algo = "sha256", 
                                            serialize = FALSE, USE.NAMES = FALSE))
     
@@ -452,8 +458,8 @@ if(LAUNCHHCUBEMODE){
     }
     prevJobSubmitted <<- Sys.time()
     
-    hcubeData$subsetJobIDs(idxDiff)
-    runHcubeJob(scenGmsPar[idxDiff])
+    hcubeData$subsetJobIDs(idsSolved)
+    runHcubeJob(scenGmsPar[!idsToSolve %in% idsSolved])
   })
   
   
@@ -473,8 +479,8 @@ if(LAUNCHHCUBEMODE){
     },
     content = function(file) {
       # solve only scenarios that do not yet exist
-      hcubeData$subsetJobIDs(idxDiff)
-      runHcubeJob(scenGmsPar[idxDiff], downloadFile = file)
+      hcubeData$subsetJobIDs(idsSolved)
+      runHcubeJob(scenGmsPar[!idsToSolve %in% idsSolved], downloadFile = file)
     },
     contentType = "application/zip")
 }else{
@@ -601,10 +607,10 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     on.exit(suppressWarnings(prog$close()))
     prog$set(message = lang$progressBar$prepRun$title, value = 0)
     
-    idsSolved <- db$importDataset(scenMetadataTable, colNames = snameIdentifier, 
-                                  tibble(scodeIdentifier, SCODEMAP[['scen']], ">"))
+    idsSolved <<- db$importDataset(scenMetadataTable, colNames = snameIdentifier, 
+                                   tibble(scodeIdentifier, SCODEMAP[['scen']], ">"))
     if(length(idsSolved)){
-      idsSolved <- unique(idsSolved[[1L]])
+      idsSolved <<- unique(idsSolved[[1L]])
     }
     errMsg <- NULL
     prog$inc(amount = 0.5, detail = lang$progressBar$prepRun$sendInput)
@@ -635,7 +641,6 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     }
     
     sidsDiff <- setdiff(idsToSolve, idsSolved)
-    idxDiff  <<- match(sidsDiff, idsToSolve)
     prog$close()
     showHcubeSubmitDialog(noIdsToSolve = length(idsToSolve), noIdsExist = length(idsToSolve) - length(sidsDiff))
   

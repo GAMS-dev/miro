@@ -3,9 +3,10 @@ errMsg <- NULL
 if(!identical(loadMode, "scen")){
   tryCatch({
     tabularDatasetsToFetch <- datasetsToFetch[tolower(datasetsToFetch) %in% modelInTabularData]
-    metaDataTmp            <- modelIn[names(modelIn) %in% tabularDatasetsToFetch]
-    namesScenInputData     <- names(modelIn)[names(modelIn) %in% tabularDatasetsToFetch]
-    modelInTemplateTmp     <- modelInTemplate
+    tabularIdsToFetchId    <- names(modelIn) %in% tabularDatasetsToFetch
+    metaDataTmp            <- modelIn[tabularIdsToFetchId]
+    namesScenInputData     <- names(modelIn)[tabularIdsToFetchId]
+    modelInTemplateTmp     <- modelInTemplate[tabularIdsToFetchId]
     if(length(scalarsInMetaData) && !scalarsFileName %in% tabularDatasetsToFetch){
       tabularDatasetsToFetch <- c(tabularDatasetsToFetch, scalarsFileName)
       namesScenInputData <- c(namesScenInputData, scalarsFileName)
@@ -43,11 +44,12 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
         dataTmp <- scenInputData[[dataset]]
         if(length(dataTmp) && nrow(dataTmp)){
           
-          if(identical(names(modelIn)[[i]], tolower(scalarsFileName))){
-            if(verifyScalarInput(dataTmp, modelIn[[i]]$headers, scalarInputSym)){
+          if(identical(names(modelIn)[[i]], scalarsFileName)){
+            if(verifyScalarInput(dataTmp, modelIn[[i]]$headers, 
+                                 c(scalarInputSym, scalarInputSymToVerify))){
               scalarDataset <<- dataTmp 
               attr(dataTmp, "aliases")  <- attr(modelInTemplate[[i]], "aliases")
-              modelInputData[[i]] <<- dataTmp[!(tolower(dataTmp[[1]]) %in% names(modelIn)), , drop = FALSE]
+              modelInputData[[i]] <<- dataTmp[dataTmp[[1]] %in% modelIn[[i]]$symnames, , drop = FALSE]
               inputVerified <- TRUE
             }
           }else{
@@ -98,21 +100,21 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
           if((modelIn[[i]]$type == "slider" && length(modelIn[[i]]$slider$default) > 1) || 
              (modelIn[[i]]$type == "daterange")){
             dataTmp <- scalarDataset[tolower(scalarDataset[[colId]]) %in% 
-                                       paste0(rowName, c("_lo", "_up")), ][[colValue]]
+                                       paste0(rowName, c("$lo", "$up")), ][[colValue]]
             if(identical(modelIn[[i]]$type, "slider")){
               dataTmp <- as.numeric(dataTmp)
             }
             if(!is.null(dataTmp) && length(dataTmp)){
               modelInputData[[i]]      <<- dataTmp
               
-              if(identical(modelIn[[i]]$slider$single, TRUE) ||
-                 identical(modelIn[[i]]$slider$double, TRUE)){
+              if(isTRUE(modelIn[[i]]$slider$single) ||
+                 isTRUE(modelIn[[i]]$slider$double)){
                 modelInputDataHcubeTmp  <- scalarDataset[tolower(scalarDataset[[colId]]) %in% 
-                                                           paste0(rowName, "_step"), ][[colValue]]
-                if(identical(modelIn[[i]]$slider$double, TRUE)){
+                                                           paste0(rowName, "$step"), ][[colValue]]
+                if(isTRUE(modelIn[[i]]$slider$double)){
                   modelInputDataHcubeTmp <- c(modelInputDataHcubeTmp, 
                                               scalarDataset[tolower(scalarDataset[[colId]]) %in% 
-                                                              paste0(rowName, "_mode"), ][[colValue]])
+                                                              paste0(rowName, "$mode"), ][[colValue]])
                 }
                 modelInputDataHcube[[i]] <<- as.numeric(modelInputDataHcubeTmp)
               }

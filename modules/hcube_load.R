@@ -25,16 +25,16 @@ k <- 1L
 for(j in seq_along(modelIn)){
   i <- match(modelInSorted[[j]], names(modelIn))
   if(!is.null(modelIn[[i]]$daterange)){
-    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]] %+% "_lo", type = "string", alias = modelInAlias[[i]] %+% " (lower)")
-    scalarKeyTypeList[[scalarsTabNameIn]][[k + 1L]] <- list(key = names(modelIn)[[i]] %+% "_up", type = "string", alias = modelInAlias[[i]] %+% " (upper)")
+    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]] %+% "$lo", type = "string", alias = modelInAlias[[i]] %+% " (lower)")
+    scalarKeyTypeList[[scalarsTabNameIn]][[k + 1L]] <- list(key = names(modelIn)[[i]] %+% "$up", type = "string", alias = modelInAlias[[i]] %+% " (upper)")
     k <- k + 2L
   }else if(!is.null(modelIn[[i]]$slider) && identical(modelIn[[i]]$slider$double, TRUE)){
-    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]] %+% "_lo", type = "number", alias = modelInAlias[[i]] %+% " (lower)")
-    scalarKeyTypeList[[scalarsTabNameIn]][[k + 1L]] <- list(key = names(modelIn)[[i]] %+% "_up", type = "number", alias = modelInAlias[[i]] %+% " (upper)")
+    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]] %+% "$lo", type = "number", alias = modelInAlias[[i]] %+% " (lower)")
+    scalarKeyTypeList[[scalarsTabNameIn]][[k + 1L]] <- list(key = names(modelIn)[[i]] %+% "$up", type = "number", alias = modelInAlias[[i]] %+% " (upper)")
     k <- k + 2L
   }else if(!is.null(modelIn[[i]]$daterange)){
-    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]] %+% "_lo", type = "string", alias = modelInAlias[[i]] %+% " (lower)")
-    scalarKeyTypeList[[scalarsTabNameIn]][[k + 1L]] <- list(key = names(modelIn)[[i]] %+% "_up", type = "string", alias = modelInAlias[[i]] %+% " (upper)")
+    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]] %+% "$lo", type = "string", alias = modelInAlias[[i]] %+% " (lower)")
+    scalarKeyTypeList[[scalarsTabNameIn]][[k + 1L]] <- list(key = names(modelIn)[[i]] %+% "$up", type = "string", alias = modelInAlias[[i]] %+% " (upper)")
     k <- k + 2L
   }else if(modelIn[[i]]$type %in% c("slider", "checkbox", "numericinput") || identical(modelIn[[i]]$dropdown$checkbox, TRUE)){
     scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]], type = "number", alias = modelInAlias[[i]])
@@ -430,6 +430,8 @@ observeEvent(input$btHcubeRemove, {
       return(NULL)
     }
     showHideEl(session, "#hcubeRemoveSuccess", 2000L)
+    rv$fetchedScenarios <- tibble()
+    hideEl(session, "#hcubeLoadButtons")
     hideModal(session, 2L)
   }else{
     hideEl(session, "#btHcubeLoad")

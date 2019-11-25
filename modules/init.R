@@ -1032,6 +1032,21 @@ if(is.null(errMsg)){
   }
 
 if(is.null(errMsg)){
+  if(LAUNCHHCUBEMODE && scalarsFileName %in% names(modelIn)){
+    scalarInputSymToVerify <- unlist(lapply(scalarInputSym, function(el){
+      if(identical(modelIn[[el]]$type, "slider") && length(modelIn[[el]]$slider$default) > 1){
+        if(isTRUE(modelIn[[el]]$slider$double)){
+          return(paste0(el, c("","$lo", "$up", "$step", "$mode")))
+        }
+        return(paste0(el, c("", "$lo", "$up", "$step")))
+      }else if(identical(modelIn[[el]]$type, "daterange")){
+        return(paste0(el, c("", "$lo", "$up")))
+      }
+      return(NULL)
+    }), use.names = FALSE)
+  }else{
+    scalarInputSymToVerify <- NULL
+  }
   # determine the filenames for the model input datasets
   if(scalarsFileName %in% modelInTabularData){
     scalarInputSym <- c(scalarInputSym, modelIn[[scalarsFileName]]$symnames)
@@ -1103,7 +1118,15 @@ if(is.null(errMsg)){
         return(character())
       })
       names(headers) <- names(modelIn[[i]]$headers)
-      modelInTemplate[[i]] <<- tibble(!!!headers)
+      
+      if(identical(el, scalarsFileName)){
+        modelInTemplate[[i]] <<- tibble(a = modelIn[[scalarsFileName]]$symnames,
+                                        b = modelIn[[scalarsFileName]]$symtext,
+                                        c = NA_real_)
+        names(modelInTemplate[[i]]) <<- names(headers)
+      }else{
+        modelInTemplate[[i]] <<- tibble(!!!headers)
+      }
       attr(modelInTemplate[[i]], "aliases") <<- vapply(seq_along(modelIn[[i]]$headers), function(j){
         alias <- modelIn[[i]]$headers[[j]]$alias
         if(!length(alias)){

@@ -390,7 +390,7 @@ if(is.null(errMsg) && debugMode){
                 "modelInToImportAlias", "modelInToImport", "inputDsNamesNotToDisplay",
                 "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
                 "GAMSReturnCodeMap", "dependentDatasets", "outputTabs", 
-                "installPackage", "dbSchema", "scalarInputSym",
+                "installPackage", "dbSchema", "scalarInputSym", "scalarInputSymToVerify",
                 "requiredPackagesCR", "datasetsRemoteExport"), 
        file = rSaveFilePath)
   rm(listOfCustomRenderers)

@@ -56,11 +56,11 @@ lapply(seq_along(modelIn), function(i){
            # add name and description fields
            if(length(value) > 1){
              # double slider (two values)
-             scalar      <- paste0(tolower(names(modelIn))[[i]], c("_lo", "_up"))
+             scalar      <- paste0(tolower(names(modelIn))[[i]], c("$lo", "$up"))
              description <- paste0(modelInAlias[i], c(" (min)", " (max)"))
              if(identical(modelIn[[i]]$slider$double, TRUE)){
                scalar      <- c(scalar, paste0(tolower(names(modelIn))[[i]], 
-                                                c("_step", "_mode")))
+                                                c("$step", "$mode")))
                description <- c(description, paste0(modelInAlias[i], 
                                                     c(" (step size)", " (mode)")))
                value       <- c(value, isolate(input[["hcubeStep_" %+% i]]),
@@ -68,7 +68,7 @@ lapply(seq_along(modelIn), function(i){
              }
              if(identical(modelIn[[i]]$slider$single, TRUE)){
                scalar      <- c(scalar, paste0(tolower(names(modelIn))[[i]], 
-                                                "_step"))
+                                                "$step"))
                description <- c(description, paste0(modelInAlias[i], 
                                                     " (step size)"))
                value       <- c(value, isolate(input[["hcubeStep_" %+% i]]))
@@ -107,7 +107,7 @@ lapply(seq_along(modelIn), function(i){
              return(NULL)
            }
            # add name and description fields
-           scalar      <- paste0(names(modelIn)[[i]], c("_lo", "_up"))
+           scalar      <- paste0(names(modelIn)[[i]], c("$lo", "$up"))
            description <- paste0(modelInAlias[i], c(" (lower)", " (upper)"))
            addScalarVal(scalar, description, value)
          },

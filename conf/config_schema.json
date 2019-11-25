@@ -314,6 +314,11 @@
                        "string"
                      ]
                    },
+                   "minStep":{
+                     "description":"Specifies the minimum step size that the user is allowed to specify in the Hypercube mode",
+                     "type":"number",
+                     "minimum": 0
+                   },
                    "width":{  
                      "description":"Width of the slider (optional)",
                      "type":"number"

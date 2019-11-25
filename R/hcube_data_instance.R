@@ -20,9 +20,13 @@ HcubeDataInstance <- R6Class("HcubeDataInstance", public = list(
     private$jobIDs <- jobIDs
     return(jobIDs)
   },
-  subsetJobIDs = function(jobIdx){
-    private$jobIDs     <- private$jobIDs[jobIdx]
-    parValCombinations <- private$parValCombinations[jobIdx]
+  getJobIDs = function(){
+    return(private$jobIDs)
+  },
+  subsetJobIDs = function(idsSolved){
+    subsetIds          <- !private$jobIDs %in% idsSolved
+    private$jobIDs     <- private$jobIDs[subsetIds]
+    private$parValCombinations <- private$parValCombinations[subsetIds]
     return(invisible(self))
   },
   writeHcube = function(workDir){

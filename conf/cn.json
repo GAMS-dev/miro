@@ -1091,7 +1091,8 @@
         "val44": "必须带有分隔符！",
         "val45": "命令行参数的名称必须至少为一个字符长。",
         "val46": "请分别指定命令行的参数和值。",
-        "val47": "Source and target symbol must have the same dimension!"
+        "val47": "Source and target symbol must have the same dimension!",
+        "val48": "The minimum step size must not be less than zero."
       },
       "widgetOptions":{
 	    "slider": "滑动条",
@@ -1125,6 +1126,7 @@
         },
         "depSelector": "静态值？",
         "step": "步长（支持小数）",
+        "minStep": "Minimum step size (only relevant in Hypercube mode). If empty, the step size is used.",
         "ticks": "显示刻度线？",
         "hcube": "是否允许元素在Hypercube模式下自动扩展？"
       },

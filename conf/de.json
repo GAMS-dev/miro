@@ -1091,7 +1091,8 @@
         "val44": "Es muss ein Seperator angegeben werden!",
         "val45": "Der Name des Kommandozeilenparameters muss mindestens 1 Zeichen lang sein.",
         "val46": "Bitte geben Sie Kommandozeilenargumente und -werte separat an.",
-        "val47": "Quell- und Zielsymbol müssen die gleiche Dimension haben!"
+        "val47": "Quell- und Zielsymbol müssen die gleiche Dimension haben!",
+        "val48": "Die minimale Schrittweite darf nicht kleiner als Null sein."
       },
       "widgetOptions":{
         "slider": "Schieberegler",
@@ -1126,6 +1127,7 @@
         },
         "depSelector": "Statischer Wert?",
         "step": "Schrittweite (auch Dezimalstellen möglich)",
+        "minStep": "Minimale Schrittweite (nur relevant im Hypercube-Modus). Wenn leer, wird die Schrittweite genommen.",
         "ticks": "Markierungen Anzeigen?",
         "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
       },

@@ -1091,7 +1091,8 @@
         "val44": "A separator must be provided!",
         "val45": "The name of the command line parameter must be at least 1 character long.",
         "val46": "Please specify command line arguments and values separately.",
-        "val47": "Source and target symbol must have the same dimension!"
+        "val47": "Source and target symbol must have the same dimension!",
+        "val48": "The minimum step size must not be less than zero."
       },
       "widgetOptions":{
         "slider": "Slider",
@@ -1126,6 +1127,7 @@
         },
         "depSelector": "Static value?",
         "step": "Step size (also decimal places possible)",
+        "minStep": "Minimum step size (only relevant in Hypercube mode). If empty, the step size is used.",
         "ticks": "Show tick marks?",
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },

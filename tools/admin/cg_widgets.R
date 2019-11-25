@@ -107,8 +107,14 @@ validateWidgetConfig <- function(widgetJSON){
            if(!is.logical(widgetJSON$tick)){
              return(lang$adminMode$widgets$validate[["val8"]])
            }
-           if(!is.numeric(widgetJSON$step)){
+           if(!is.numeric(widgetJSON$step) || widgetJSON$step <= 0L){
              return(lang$adminMode$widgets$validate[["val9"]])
+           }
+           if(length(widgetJSON$minStep)){
+             if(!is.numeric(widgetJSON$minStep) ||
+                widgetJSON$minStep < 0L){
+               return(lang$adminMode$widgets$validate[["val48"]])
+             }
            }
          },
          dropdown = ,
@@ -449,6 +455,7 @@ observeEvent({input$widget_type
                                    step = if(length(currentConfig$step)) currentConfig$step else 1L,
                                    ticks = isTRUE(currentConfig$ticks),
                                    noHcube = isTRUE(currentConfig$noHcube))
+           rv$widgetConfig$minStep <- currentConfig$minStep
            rv$widgetConfig$label <- currentConfig$label
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
@@ -595,7 +602,8 @@ observeEvent({input$widget_type
                                )
                       ),
                       tags$div(class="option-wrapper",
-                               numericInput("slider_step", lang$adminMode$widgets$slider$step, value = rv$widgetConfig$step, min = 0L)),
+                               numericInput("slider_step", lang$adminMode$widgets$slider$step, value = rv$widgetConfig$step, min = 0L),
+                               numericInput("slider_minStep", lang$adminMode$widgets$slider$minStep, value = rv$widgetConfig$minStep, min = 0L)),
                       tags$div(class = "shiny-input-container",
                                checkboxInput_MIRO("slider_ticks", lang$adminMode$widgets$slider$ticks,
                                                   rv$widgetConfig$ticks)
@@ -630,6 +638,7 @@ observeEvent({input$widget_type
                                    step = if(length(currentConfig$step)) currentConfig$step else 1L,
                                    ticks = isTRUE(currentConfig$ticks),
                                    noHcube = isTRUE(currentConfig$noHcube))
+           rv$widgetConfig$minStep <- currentConfig$minStep
            rv$widgetConfig$label <- currentConfig$label
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
@@ -736,7 +745,9 @@ observeEvent({input$widget_type
                                                      value = rv$widgetConfig$default[2]))),
                       tags$div(class="two-col-left",
                                numericInput("slider_step", lang$adminMode$widgets$sliderrange$step, 
-                                            value = rv$widgetConfig$step, min = 0L)),
+                                            value = rv$widgetConfig$step, min = 0L),
+                               numericInput("slider_minStep", lang$adminMode$widgets$slider$minStep, 
+                                            value = rv$widgetConfig$minStep, min = 0L)),
                       tags$div(class = "shiny-input-container",
                                checkboxInput_MIRO("slider_ticks", lang$adminMode$widgets$sliderrange$ticks,
                                                   rv$widgetConfig$ticks)
@@ -1272,6 +1283,13 @@ observeEvent(input$slider_step, {
   if(!is.numeric(input$slider_step))
     return()
   rv$widgetConfig$step <<- input$slider_step
+})
+observeEvent(input$slider_minStep, {
+  if(!is.numeric(input$slider_minStep)){
+    rv$widgetConfig$minStep <<- NULL
+    return()
+  }
+  rv$widgetConfig$minStep <<- input$slider_minStep
 })
 observeEvent(input$slider_ticks, {
   if(!is.logical(input$slider_ticks))

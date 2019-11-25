@@ -697,7 +697,6 @@ showHcubeSubmitDialog <- function(noIdsToSolve, noIdsExist){
              style = "position:relative;", 
              lang$nav$dialogRemoteLogin$invalidCred),
     tags$div(class = "gmsalert gmsalert-error", id = "hcubeSubmitWait",
-             style = "position:relative;", 
              lang$nav$dialogHcube$waitTime),
     tags$div(class = "gmsalert gmsalert-error", id = "hcubeSubmitUnknownError",
              style = "position:relative;", 
