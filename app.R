@@ -409,16 +409,18 @@ if(miroBuildonly){
   }
   if(identical(Sys.getenv("MIRO_MODE"), "full")){
     Sys.setenv(MIRO_COMPILE_ONLY = "true")
-    Sys.setenv(USETMPDIR = "false")
+    Sys.setenv(USETMPDIR = "true")
     Sys.setenv(MIRO_MODE = "hcube")
     buildProcHcube <- processx::process$new(file.path(R.home(), 'bin', 'Rscript'), 
-                                            c('--vanilla', './app.R'))
+                                            c('--vanilla', './app.R'),
+                                            stderr = "|")
     Sys.setenv(MIRO_COMPILE_ONLY = "")
     Sys.setenv(MIRO_MODE = "full")
     Sys.setenv(USETMPDIR = if(useTempDir) "true" else "false")
     buildProcHcube$wait()
     procHcubeRetC <- buildProcHcube$get_exit_status()
     if(!identical(procHcubeRetC, 0L)){
+      warning(buildProcHcube$read_error())
       if(interactive())
         stop()
       quit("no", procHcubeRetC)
