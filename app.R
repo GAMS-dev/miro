@@ -160,16 +160,6 @@ if(is.null(errMsg)){
       ugroups <- defaultGroup
     }
   }
-  
-  #initialise loggers
-  if(!dir.exists(logFileDir)){
-    tryCatch({
-      if(!dir.create(logFileDir, showWarnings = FALSE))
-        stop()
-    }, error = function(e){
-      errMsg <<- "Log file directory could not be created. Check that you have sufficient read/write permissions in application folder."
-    })
-  }
 }
 if(is.null(errMsg)){
   # name of the R save file
@@ -465,6 +455,15 @@ if(is.null(errMsg)){
                                        miroWorkspace, conditionMessage(e)), sep = "\n")
         })
     }
+  }
+  #initialise loggers
+  if(!dir.exists(logFileDir)){
+    tryCatch({
+      if(!dir.create(logFileDir, showWarnings = FALSE))
+        stop()
+    }, error = function(e){
+      errMsg <<- "Log file directory could not be created. Check that you have sufficient read/write permissions in application folder."
+    })
   }
 }
 requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx", 
