@@ -1202,7 +1202,7 @@ if(!is.null(errMsg)){
     if(!dir.exists(workDir) && !dir.create(workDir, recursive = TRUE)){
       flog.fatal("Working directory could not be initialised.")
       showErrorMsg(lang$errMsg$fileWrite$title, lang$errMsg$fileWrite$desc)
-      return(NULL)
+      stop()
     }else{
       flog.debug("Working directory was created: '%s'.", workDir)
     }

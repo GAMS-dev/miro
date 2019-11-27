@@ -609,7 +609,7 @@ Worker <- R6Class("Worker", public = list(
     }))
   },
   getReactiveStatus = function(session){
-    return(reactivePoll2(1000, session, checkFunc = function(){
+    return(reactivePoll2(1100, session, checkFunc = function(){
       self$pingProcess()
     }, valueFunc = function(){
       private$status

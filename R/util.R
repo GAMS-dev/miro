@@ -166,14 +166,22 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL){
   # list of sheet and column names that need to be loaded for dropdown menu to have all data required (all lower case).
   # list also contains singular elements without dependencies
   
-  ddownDep          <- list()
-  ddownDep$strings  <- list()
-  ddownDep$fw       <- list()
-  ddownDep$bw       <- list()
+  ddownDep          <- list(fw = list(), bw = list())
   # define indexing variable for strings as c() is slow
   k <- 1
   
   if(length(choices)){
+    elRaw <- choices
+    forwardDep  <- startsWith(choices, "$") & !startsWith(choices, "$$")
+    elRaw[forwardDep] <- stringi::stri_trim_left(elRaw[forwardDep], 
+                                                 pattern = "[^\\$]")
+    backwardDep <- endsWith(choices, "$") & !endsWith(choices, "$$")
+    elRaw[backwardDep] <- stringi::stri_trim_right(elRaw[backwardDep], 
+                                                   pattern = "[^\\$]")
+    hasDep <- forwardDep | backwardDep
+    ddownDep$strings <- unlist(gsub("$$", "$", choices[!hasDep], 
+                                    fixed = TRUE), use.names = FALSE)
+    
     lapply(seq_along(choices), function(i){
       #check for each element of "choices" if it contains a data reference in json (in the form of a string, e.g. "dataset_1$column_3") or a simple string or number
       # examples: "$a$b"   <- column b from sheet a are choices for dropdown
@@ -186,35 +194,16 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL){
       # examples : "a$$b"  <- "a$b" (string without dependencies), "a$$" -> "a$" (same), "$$a" <- "$a" (same)
       
       # check case with both backward and forward dependency on the same column and issue error if stric mode is active
-      if(grepl("([^\\$]+\\$[^\\$]+)|(^\\$[^\\$]+)|([^\\$]+\\$$)", choices[[i]])){
+      if(hasDep[i]){
         # find out if column has dependency defined and replace leading and ending signs
-        forwardDep  <- grepl("^\\$", choices[[i]])
-        backwardDep <- grepl("\\$$", choices[[i]])
-        elRaw <- tolower(gsub("^\\$|\\$$", "", choices[[i]]))
-        if(grepl("\\$", elRaw)){
+        
+        if(grepl("$", elRaw[i], fixed = TRUE)){
           # split string into the layers/elements ("dataset_1$column_3" -> "dataset_1", "column_3")
-          el <- strsplit(elRaw, "\\$")[[1]]
+          el <- strsplit(elRaw[i], "$", fixed = TRUE)[[1]]
           # check if elements in el match with the structure of the considered input data.
           idx1 <- match(el[[1]], names(modelIn))[1]
-          idx2 <- match(el[[2]], tolower(names(modelIn[[idx1]]$headers)))[1]
-          if(!is.na(idx2)){
-            # add another forward dependency
-            if(forwardDep){
-              j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
-              ddownDep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
-            }
-            # add another backward dependency
-            if(backwardDep){
-              j <- length(ddownDep$bw[[names(modelIn)[[idx1]]]]) + 1
-              ddownDep$bw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
-            }
-            if(!(forwardDep || backwardDep)){
-              # neither forward nor backward dependency selected results in error or rendering as string
-              stop(paste0("Neither a forward nor a backward dependency was defined in: '", 
-                          choices[[i]], "'. Make sure you define some type of dependency."), call. = F)
-            }
-            # make sure that in case a reference is given, the underlying data is also part of the input data
-          }else{
+          idx2 <- match(el[[2]], names(modelIn[[idx1]]$headers))[1]
+          if(is.na(idx2)){
             if(identical(el[[1]], name)){
               # first index is element itself, thus it is a reference to a shared database
               if(length(el) > 1){
@@ -223,14 +212,31 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL){
                 ddownDep$shared <<- el[[1]]
               }
               return(ddownDep)
-            }else if(!is.na(idx1) && identical(modelIn[[idx1]]$type, "dropdown") && length(el) > 1 && forwardDep){
+            }else if(!is.na(idx1) && 
+                     identical(modelIn[[idx1]]$type, "dropdown") &&
+                     length(el) > 1 && forwardDep[i]){
               # dependency on another dropdown menu, so dont check header info
               j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
-              depTmp <- strsplit(gsub("^\\$|\\$$", "", choices[[i]]), "\\$")[[1]][c(-1)]
-              ddownDep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- getNestedDep(depTmp)
+              ddownDep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- getNestedDep(el[-1])
             }else{
               stop(paste0("The header: '", el[[2]], "' for input sheet: '", 
                           el[[1]], "' could not be found. Make sure you define a valid reference."), 
+                   call. = FALSE)
+            }
+          }else{
+            # add another forward dependency
+            if(forwardDep[i]){
+              j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
+              ddownDep$fw[[names(modelIn)[[idx1]]]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
+            }
+            # add another backward dependency
+            if(backwardDep[i]){
+              j <- length(ddownDep$bw[[names(modelIn)[[idx1]]]]) + 1
+              ddownDep$bw[[names(modelIn)[[idx1]]]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
+            }else if(!forwardDep[i]){
+              # neither forward nor backward dependency selected results in error or rendering as string
+              stop(paste0("Neither a forward nor a backward dependency was defined in: '", 
+                          choices[[i]], "'. Make sure you define some type of dependency."), 
                    call. = FALSE)
             }
           }
@@ -242,20 +248,20 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL){
           if(length(modelIn)){
             for(idx1 in seq_along(modelIn)){
               # return index if available
-              idx2 <- match(elRaw, tolower(names(modelIn[[idx1]]$headers)))[1]
+              idx2 <- match(elRaw[i], names(modelIn[[idx1]]$headers))[1]
               if(!is.na(idx2)){
                 # add another forward dependency
-                if(forwardDep){
+                if(forwardDep[i]){
                   j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
-                  ddownDep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
+                  ddownDep$fw[[names(modelIn)[[idx1]]]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
                 }
                 # add another backward dependency
-                if(backwardDep){
+                if(backwardDep[i]){
                   j <- length(ddownDep$bw[[names(modelIn)[[idx1]]]]) + 1
-                  ddownDep$bw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
+                  ddownDep$bw[[names(modelIn)[[idx1]]]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
                 }
                 # new element was added so increment counter
-                if(forwardDep || backwardDep){
+                if(forwardDep[i] || backwardDep[i]){
                   colFound <- TRUE
                 }else{
                   # neither forward nor backward dependency selected results in error or rendering as string
@@ -266,21 +272,13 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL){
             }
             # no column was found with matching name (invalid reference)
             if(!colFound){
-              stop(paste0("A column named: '", elRaw, "' could not be found. Make sure you define a valid reference."),
+              stop(paste0("A column named: '", elRaw[i], "' could not be found. Make sure you define a valid reference."),
                    call. = FALSE)
             }
           }
         }
-      }else{
-        # element is a simple string or number (replace double dollars by single dollar)
-        string <- gsub("\\$\\$", "\\$", choices[[i]])
-        ddownDep$strings[[k]] <<- string
-        k <<- k + 1
       }
     })
-    if(length(ddownDep$strings)){
-      ddownDep$strings <- unlist(ddownDep$strings, use.names = FALSE)
-    }
     return(ddownDep)
   }else{
     stop("The dropdown menu does not have any choices defined. Please make sure you define atleast one option to choose from in the JSON file.", call. = F)
@@ -305,53 +303,61 @@ getDependenciesSlider <- function(min, max, def, step, modelIn, listOfOperators)
   
   listOfValues <- c("min" = min, "max" = max, "def" = def, "step" = step)
   # check if any value of slider has dependency on external data
-  if(any(grepl("\\(", listOfValues))){
+  if(any(grepl("(", listOfValues, fixed = TRUE))){
     # evaluate slider values
     sliderDep <- lapply(listOfValues, function(el){
-      if(grepl("\\(", el)){
+      if(grepl("(", el, fixed = TRUE)){
         # split string in operator and operand part
-        splitted <- strsplit(el, "\\(|\\)")[[1]]
-        operator <- tolower(splitted[[1]])
-        if(!operator %in% listOfOperators){
-          stop(paste0("'", operator, "' is not a valid operator for sliders."), call. = F)
+        splitted <- tolower(strsplit(el, "\\(|\\)")[[1]])
+        operator <- splitted[[1]]
+        operatorId <- match(operator, listOfOperators)[1]
+        if(is.na(operatorId)){
+          stop(paste0("'", operator, "' is not a valid operator for sliders."), 
+               call. = FALSE)
         }
         dep      <- splitted[[2]]
         # split string into the sheets/elements ("dataset_1$column_3" -> "dataset_1", "column_3")
-        dep <- strsplit(dep, "\\$")[[1]]
+        dep <- strsplit(dep, "$", fixed = TRUE)[[1]]
         # make sure that in case a reference is given, the underlying data is also part of the input data
-        idx1 <- match(tolower(dep[1]), names(modelIn))[1]
-        idx2 <- match(tolower(dep[2]), tolower(names(modelIn[[idx1]]$headers)))[1]
-        if(!is.na(idx2)){
-          sliderValue <- list()
-          sliderValue[[tolower(dep[[1]])]] <- names(modelIn[[idx1]]$headers)[[idx2]]
-          sliderValue[["$operator"]] <- names(listOfOperators)[[match(operator,listOfOperators)]]
-          return(sliderValue)
-        }else{
-          if(!is.na(idx1) && modelIn[[idx1]]$type == "daterange"){
-            # dependency on daterange selector
-            sliderValue <- list()
-            sliderValue[[tolower(dep[[1]])]] <- "$daterange"
-            sliderValue[["$operator"]] <- names(listOfOperators)[[match(operator, listOfOperators)]]
-            return(sliderValue)
-          }else if(!is.na(idx1) && modelIn[[idx1]]$type == "dropdown" && length(dep) > 1){
-            # dependency on another dropdown menu
-            sliderValue <- list()
-            sliderValue[[tolower(dep[[1]])]] <- getNestedDep(dep[c(-1)])
-            sliderValue[["$operator"]] <- names(listOfOperators)[[match(operator, listOfOperators)]]
-            return(sliderValue)
+        idx1 <- match(dep[1], names(modelIn))[1]
+        idx2 <- match(dep[2], names(modelIn[[idx1]]$headers))[1]
+        if(is.na(idx2)){
+          if(!is.na(idx1)){
+            if(identical(modelIn[[idx1]]$type, "daterange")){
+              # dependency on daterange selector
+              sliderValue <- list()
+              sliderValue[[tolower(dep[[1]])]] <- "$daterange"
+              sliderValue[["$operator"]] <- names(listOfOperators)[[operatorId]]
+              return(sliderValue)
+            }else if(identical(modelIn[[idx1]]$type, "dropdown") && length(dep) > 1){
+              # dependency on another dropdown menu
+              sliderValue <- list()
+              sliderValue[[tolower(dep[[1]])]] <- getNestedDep(dep[c(-1)])
+              sliderValue[["$operator"]] <- names(listOfOperators)[[operatorId]]
+              return(sliderValue)
+            }
           }
+          
           if(length(dep) > 1){
-            stop(paste0("Invalid reference. The header: '", dep[[2]], "' specified for input sheet: '", dep[[1]], "' could not be found."), call. = F)
+            stop(paste0("Invalid reference. The header: '", dep[[2]], 
+                        "' specified for input sheet: '", dep[[1]], 
+                        "' could not be found."), call. = FALSE)
           }else{
-            stop(paste0("Invalid reference. The reference: '", dep, "' specified could not be found."), call. = F)
+            stop(paste0("Invalid reference. The reference: '", dep, 
+                        "' specified could not be found."), call. = FALSE)
           }
+        }else{
+          sliderValue <- list()
+          sliderValue[[dep[[1]]]] <- names(modelIn[[idx1]]$headers)[[idx2]]
+          sliderValue[["$operator"]] <- names(listOfOperators)[[operatorId]]
+          return(sliderValue)
         }
       }else{
-        if(!is.na(as.numeric(el))){
-          return(as.numeric(el))
-        }else{
-          stop(paste0("'", el, "' is not a valid ", deparse(substitute(el))," value for a slider."), call. = F)
+        if(is.na(as.numeric(el))){
+          stop(paste0("'", el, "' is not a valid value for a slider."), 
+               call. = FALSE)
         }
+        return(as.numeric(el))
       }
     })
     return(sliderDep)
@@ -399,15 +405,15 @@ renderOutput <- function(data, type, dtOptions = NULL, graphOptions = NULL, mapO
   )
   tryCatch({
     customRenderer <- match.fun(paste0("render", toupper(substr(type, 1, 1)), tolower(substr(type, 2, nchar(type)))))
-    }, error = function(e){
-      stop(paste0("A custom renderer function: '", type, "' was not found. Please make sure you first define such a function."), call. = F)
-    })
+  }, error = function(e){
+    stop(paste0("A custom renderer function: '", type, "' was not found. Please make sure you first define such a function."), call. = F)
+  })
   tryCatch({
     return(customRenderer(data, options = customOptions))
   }, error = function(e){
     stop(paste0("An error occurred while using the custom renderer: '", type, "'. Error message: ", conditionMessage(e)), call. = F)
   })
-    
+  
 }
 isDate <- function(x){
   tryCatch(!is.na(as.Date(x[[1]])), error = function(e){FALSE})
@@ -496,7 +502,7 @@ addHtmlLineBreaks <- function(string){
 getOS <- function(){
   # returns string that identifies the operationg system 
   # that shiny is running on
-
+  
   sysinf <- Sys.info()
   if (!is.null(sysinf)){
     os <- sysinf['sysname']
@@ -756,8 +762,8 @@ genSpinner <- function(id = NULL, hidden = FALSE, absolute = TRUE, externalStyle
   div(id = id, class = "lds-ellipsis", 
       style = paste0(if(is.null(externalStyle))
         "top:50%;left:50%;z-index:1;margin-left:-32px;margin-top:-32px;" else
-        externalStyle, 
-      if(absolute) "position:absolute;" else "display:block;", if(hidden) "display:none;"), 
+          externalStyle, 
+        if(absolute) "position:absolute;" else "display:block;", if(hidden) "display:none;"), 
       div(class = "gen-spinner"),
       div(class = "gen-spinner"),
       div(class = "gen-spinner"),
@@ -766,11 +772,11 @@ genSpinner <- function(id = NULL, hidden = FALSE, absolute = TRUE, externalStyle
 }
 checkboxInput_MIRO <- function(inputId, label, value = FALSE){
   tags$div(class = "shiny-input-container",
-    tags$label(class = "cb-label", "for" = inputId, label),
-    tags$div(
-      tags$label(class = "checkbox-material", 
-                 checkboxInput(inputId, label = NULL, value)
-      ))
+           tags$label(class = "cb-label", "for" = inputId, label),
+           tags$div(
+             tags$label(class = "checkbox-material", 
+                        checkboxInput(inputId, label = NULL, value)
+             ))
   )
 }
 autoNumericInput <- function(id, label = NULL, value = NULL, min = NULL, max = NULL, sign = NULL){
@@ -861,7 +867,7 @@ fixColTypes <- function(data, colTypes){
 pidExists <- function(pid){
   if(isWindows()){
     grepl("Mem Usage", run("tasklist", c("/FI", paste0("PID eq ", pid)), 
-          windows_hide_window = TRUE)$stdout, fixed = TRUE)
+                           windows_hide_window = TRUE)$stdout, fixed = TRUE)
   }else{
     pidExists <- TRUE
     tryCatch(processx::run("ps", c("-p", pid)), error = function(e){
@@ -983,7 +989,7 @@ Set <- R6Class("Set", inherit = CharArray, public = list(
       return(invisible(self))
     }
     super$update(old, new)
-}))
+  }))
 IdIdxMap <- R6Class("IdIdxMap", public = list(
   push = function(arrayID, elID){
     stopifnot(identical(length(arrayID), 1L), is.character(arrayID))
@@ -1055,8 +1061,8 @@ parseMiroLog <- function(session, logPath,
     if(symbolName %in% inputSymbols){
       parsedLog[[symbolName]] <- c(parsedLog[[symbolName]], 
                                    paste0('<li ondblclick="Miro.jumpToLogMark(', i, ')">', 
-                                   paste(logLineSplitted[-1], collapse = ""),
-                                   '</li>'))
+                                          paste(logLineSplitted[-1], collapse = ""),
+                                          '</li>'))
       logContent[i] <- paste0('<mark id="mlogMark_', i, 
                               '" class="miro-log-mark">', logContent[i], '</mark>')
       next
@@ -1098,7 +1104,7 @@ setDbConfig <- function(){
   
   for(i in seq_along(envNameDbDataMap)){
     metaData <- envNameDbDataMap[[i]]
-                
+    
     data <- Sys.getenv(metaData$envVar, unset = NA)
     if(is.na(data)){
       if(length(metaData$default)){
@@ -1150,7 +1156,7 @@ isAbsolutePath <- function(path){
   if(isWindows()){
     # credits to: agent-j @ https://stackoverflow.com/questions/6416065/c-sharp-regex-for-file-paths-e-g-c-test-test-exe
     return(grepl("^(?:[a-zA-Z]\\:|\\\\\\\\[\\w\\.]+\\\\[\\w.$]+)\\\\(?:[\\w]+\\\\)*\\w([\\w.])+$", 
-          path, perl = TRUE))
+                 path, perl = TRUE))
   }
   return(startsWith(path, "/"))
 }
