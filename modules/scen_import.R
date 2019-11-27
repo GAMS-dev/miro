@@ -9,7 +9,7 @@ observeEvent(input$btImportLocal, {
   
   # check whether current input datasets are empty
   if(input$cbSelectManuallyLoc && length(input$selInputDataLoc)){
-    idsToFetch <- match(tolower(input$selInputDataLoc), tolower(names(modelIn)))
+    idsToFetch <- match(tolower(input$selInputDataLoc), names(modelIn))
     # remove NAs
     idsToFetch <- idsToFetch[!is.na(idsToFetch)]
   }else{
@@ -65,7 +65,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   
   if(identical(fileType, "gdx") && useGdx){
     loadMode <- "gdx"
-    datasetsToFetch <- inputDsNames
+    datasetsToFetch <- names(modelIn)
   }else if(identical(fileType, "zip")){
     loadMode <- "csv"
     tryCatch({
@@ -162,6 +162,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     showErrorMsg(lang$errMsg$readOutput$title, lang$errMsg$readOutput$desc)
     return()
   }
+
   datasetsToFetch <- datasetsToFetch[datasetsToFetch %in% names(modelInToImport)]
   
   # extract scalar sheets
@@ -183,7 +184,8 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   
   # find out which datasets to import from Excel sheet
   if(input$cbSelectManuallyLoc && length(input$selInputDataLoc)){
-    datasetsToFetch <- datasetsToFetch[tolower(datasetsToFetch) %in% tolower(isolate(input$selInputDataLoc))]
+    datasetsToFetch <- datasetsToFetch[tolower(datasetsToFetch) %in% 
+                                         tolower(isolate(input$selInputDataLoc))]
   }
   prog$set(detail = lang$progressBar$importScen$renderInput, value = 0.4)
   
