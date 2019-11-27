@@ -237,7 +237,7 @@ Worker <- R6Class("Worker", public = list(
     }
     scenGmsPar <- c(if(length(private$metadata$extraClArgs)) private$metadata$extraClArgs, 
                     private$metadata$clArgs,
-                    paste0('ImplicitGDXInput="', 
+                    paste0('IDCGDXInput="', 
                            if(is.null(workDir)){
                              gmsFilePath(file.path(staticDir, 
                                                    private$metadata$MIROGdxInName))
@@ -724,7 +724,7 @@ Worker <- R6Class("Worker", public = list(
     
     gamsArgs <- c(if(length(private$metadata$extraClArgs)) private$metadata$extraClArgs, 
                   paste0('curdir="', private$workDir, '"'), "lo=3", private$metadata$clArgs, 
-                  paste0('ImplicitGDXInput="', private$metadata$MIROGdxInName, '"'), 
+                  paste0('IDCGDXInput="', private$metadata$MIROGdxInName, '"'), 
                   "LstTitleLeftAligned=1")
     if(private$metadata$saveTraceFile){
       gamsArgs <- c(gamsArgs, paste0('trace="', tableNameTracePrefix, private$metadata$modelName, '.trc"'), "traceopt=3")
@@ -784,12 +784,12 @@ Worker <- R6Class("Worker", public = list(
           dataFilesToFetch <- c(dataFilesToFetch, traceFileName)
       }
       if(is.R6(hcubeData)){
-        gamsArgs <- c(gamsArgs, paste0('ImplicitGDXInput="', 
+        gamsArgs <- c(gamsArgs, paste0('IDCGDXInput="', 
                                        metadata$MIROGdxInName, '"'))
         requestBody$hypercube_file <- upload_file(hcubeData$writeHcube(workDir), 
                                                   type = 'application/json')
       }else{
-        gamsArgs <- c(gamsArgs, paste0('ImplicitGDXInput="', metadata$MIROGdxInName, '"'))
+        gamsArgs <- c(gamsArgs, paste0('IDCGDXInput="', metadata$MIROGdxInName, '"'))
         requestBody$text_entities   <- paste(metadata$text_entities, collapse = ",")
         requestBody$stdout_filename <- paste0(metadata$modelName, ".log")
       }

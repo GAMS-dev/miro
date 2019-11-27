@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "0.9.9"
+MIROVersion <- "0.9.10"
 APIVersion  <- "1"
-MIRORDate   <- "Nov 25 2019"
+MIRORDate   <- "Nov 27 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -197,7 +197,7 @@ if(is.null(errMsg)){
     load(rSaveFilePath)
   }
   GAMSClArgs <- c(paste0("execMode=", gamsExecMode),
-                  paste0('ImplicitGDXOutput="', MIROGdxOutName, '"'))
+                  paste0('IDCGDXOutput="', MIROGdxOutName, '"'))
   
   if(LAUNCHHCUBEMODE){
     # in Hypercube mode we have to run in a temporary directory
@@ -205,7 +205,7 @@ if(is.null(errMsg)){
       errMsg <- paste(errMsg, "In Hypercube mode, MIRO must be executed in a temporary directory! USETMPDIR=false not allowed!",
                       sep = "\n")
     }
-    GAMSClArgs <- c(GAMSClArgs, paste0('ImplicitDataContractGDX="', 
+    GAMSClArgs <- c(GAMSClArgs, paste0('IDCGenerateGDXInput="', 
                                        MIROGdxInName, '"'))
   }
   if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
