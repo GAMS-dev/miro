@@ -395,6 +395,11 @@ $(document).ready(() => {
   Shiny.addCustomMessageHandler('gms-addArrayEl', (data) => {
     setTimeout(addArrayDataElWrapper, 200, data.arrayID, data.defaults);
   });
+  Shiny.addCustomMessageHandler('gms-destroyArray', (arrayID) => {
+    if (arrayID) {
+      inputArrayFactory.destroy(arrayID);
+    }
+  });
   const colorPickerBinding = new Shiny.InputBinding();
   $.extend(colorPickerBinding, {
     find(scope) {

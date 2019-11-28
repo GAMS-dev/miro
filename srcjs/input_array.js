@@ -519,6 +519,12 @@ export default class InputArrayFactory {
     this.inputArrays[arrayID].createEl();
   }
 
+  destroy(arrayID) {
+    if (Object.prototype.hasOwnProperty.call(this.inputArrays, arrayID)) {
+      delete this.inputArrays[arrayID];
+    }
+  }
+
   remove(arrayID, elID) {
     if (Object.prototype.hasOwnProperty.call(this.inputArrays, arrayID)) {
       this.inputArrays[arrayID].removeArrayEl(elID);

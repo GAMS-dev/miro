@@ -4,8 +4,13 @@ addArrayEl <- function(session, arrayID, plotlyChartType = "", defaults = NULL){
 }
 createArray <- function(session, arrayID, label, plotlyChartType = "", autoCreate = TRUE, 
                         class_outer = "array-wrapper-outer-default", hr = TRUE){
-  if(autoCreate)
+  if(autoCreate){
     addArrayEl(session, arrayID, plotlyChartType)
+  }else if(length(session)){
+    # destroy existing array elements
+    session$sendCustomMessage("gms-destroyArray", arrayID)
+  }
+  
   arrayID <- paste0(arrayID, plotlyChartType)
   HTML(paste0('<div id="', arrayID, '_wrapper" class="shiny-input-container ', class_outer, '">\n', 
               if ( hr ) "<hr>\n" else '',

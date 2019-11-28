@@ -414,10 +414,26 @@ observeEvent(input$leafFlow_color, {
     rv$graphConfig$graph$flows[[idLabelMap$leaflet_flows[[as.integer(input$leafFlow_color[1])]]]]$color <<- NULL
 })
 observeEvent(input$leafFlow_minThickness, {
-  rv$graphConfig$graph$flows[[idLabelMap$leaflet_flows[[as.integer(input$leafFlow_minThickness[1])]]]]$minThickness <<- input$leafFlow_minThickness[2]
+  minThickness <- as.numeric(input$leafFlow_minThickness[2])
+  if(is.na(minThickness)){
+    flog.error("Minimum thickness: '%s' could not be converted to numeric.", 
+               input$leafFlow_minThickness[2])
+    return()
+  }
+  rv$graphConfig$graph$flows[[idLabelMap$
+                                leaflet_flows[[as.integer(input$
+                                                            leafFlow_minThickness[1])]]]]$minThickness <<- minThickness
 })
 observeEvent(input$leafFlow_maxThickness, {
-  rv$graphConfig$graph$flows[[idLabelMap$leaflet_flows[[as.integer(input$leafFlow_maxThickness[1])]]]]$maxThickness <<- input$leafFlow_maxThickness[2]
+  maxThickness <- as.numeric(input$leafFlow_maxThickness[2])
+  if(is.na(maxThickness)){
+    flog.error("Minimum thickness: '%s' could not be converted to numeric.", 
+               input$leafFlow_maxThickness[2])
+    return()
+  }
+  rv$graphConfig$graph$flows[[idLabelMap$
+                                leaflet_flows[[as.integer(input$
+                                                            leafFlow_maxThickness[1])]]]]$maxThickness <<- maxThickness
 })
 
 

@@ -535,12 +535,12 @@ body_admin <- dashboardBody({
                                                    ),
                                                    tags$h4(lang$adminMode$general$ui$headerInputGroups),
                                                    tags$div(class="option-wrapper-indented",
-                                                            createArray(session, "symbol_inputGroups", 
+                                                            createArray(NULL, "symbol_inputGroups", 
                                                                         lang$adminMode$general$groups$input, 
                                                                         autoCreate = FALSE)),
                                                    tags$h4(lang$adminMode$general$ui$headerOutputGroups),
                                                    tags$div(class="option-wrapper-indented",
-                                                            createArray(session, "symbol_outputGroups", 
+                                                            createArray(NULL, "symbol_outputGroups", 
                                                                         lang$adminMode$general$groups$output, 
                                                                         autoCreate = FALSE))
                                                  ),
@@ -552,7 +552,7 @@ body_admin <- dashboardBody({
                                                                                   tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))
                                                           ),
                                                           tags$div(class="option-wrapper-indented",
-                                                                   createArray(session, "symbol_links", 
+                                                                   createArray(NULL, "symbol_links", 
                                                                                lang$adminMode$general$symlinks$label, 
                                                                                autoCreate = FALSE))
                                                  )

@@ -163,7 +163,7 @@ if(is.null(errMsg)){
 }
 if(is.null(errMsg)){
   # name of the R save file
-  useTempDir <- !identical(Sys.getenv("USETMPDIR"), "false")
+  useTempDir <- !identical(Sys.getenv("MIRO_USE_TMP"), "false")
   # check if GAMS model file exists
   currentModelDir  <- modelPath
   if(!useTempDir && ! file.exists(file.path(modelPath, modelGmsName))){
@@ -202,7 +202,7 @@ if(is.null(errMsg)){
   if(LAUNCHHCUBEMODE){
     # in Hypercube mode we have to run in a temporary directory
     if(!identical(useTempDir, TRUE)){
-      errMsg <- paste(errMsg, "In Hypercube mode, MIRO must be executed in a temporary directory! USETMPDIR=false not allowed!",
+      errMsg <- paste(errMsg, "In Hypercube mode, MIRO must be executed in a temporary directory! MIRO_USE_TMP=false not allowed!",
                       sep = "\n")
     }
     GAMSClArgs <- c(GAMSClArgs, paste0('IDCGenerateGDXInput="', 
@@ -400,14 +400,14 @@ if(miroBuildonly){
   }
   if(identical(Sys.getenv("MIRO_MODE"), "full")){
     Sys.setenv(MIRO_COMPILE_ONLY = "true")
-    Sys.setenv(USETMPDIR = "true")
+    Sys.setenv(MIRO_USE_TMP = "true")
     Sys.setenv(MIRO_MODE = "hcube")
     buildProcHcube <- processx::process$new(file.path(R.home(), 'bin', 'Rscript'), 
                                             c('--vanilla', './app.R'),
                                             stderr = "|")
     Sys.setenv(MIRO_COMPILE_ONLY = "")
     Sys.setenv(MIRO_MODE = "full")
-    Sys.setenv(USETMPDIR = if(useTempDir) "true" else "false")
+    Sys.setenv(MIRO_USE_TMP = if(useTempDir) "true" else "false")
     buildProcHcube$wait()
     procHcubeRetC <- buildProcHcube$get_exit_status()
     if(!identical(procHcubeRetC, 0L)){
