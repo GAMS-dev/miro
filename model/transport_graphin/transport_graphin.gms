@@ -34,12 +34,12 @@ Scalar f 'freight in dollars per case per thousand miles' / 90 /
        minS 'minimum shipment (MIP- and MINLP-only)' / 100 /
        beta 'beta (MINLP-only)' / 0.95 /;
 
-Table ilocData(i,locHdr) 'Plant location information [MIRO:table]'
+Table ilocData(i,locHdr) 'Plant location information'
                lat           lng     
 Seattle     47.608013  -122.335167
 San-Diego   32.715736  -117.161087;
 
-Table jlocData(j,locHdr) 'Market location information [MIRO:table]'
+Table jlocData(j,locHdr) 'Market location information'
            lat           lng     
 New-York   40.730610  -73.935242
 Chicago    41.881832  -87.623177
@@ -114,8 +114,9 @@ Set scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM', 'latM', 'cap', 'dema
 
 $onExternalOutput
 Parameter
-   schedule(i,j,scheduleHdr) 'shipment quantities in cases [MIRO:table]'
+   schedule(i,j,scheduleHdr) 'shipment quantities in cases'
    total_cost                'total transportation costs in thousands of dollars';
+Table schedule;
 $offExternalOutput
 
 total_cost = z.l;

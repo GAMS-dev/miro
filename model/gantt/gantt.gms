@@ -36,8 +36,11 @@ Parameter
    b(j) 'demand at market j in cases'
         / new-york   325
           chicago    300
-          topeka     275 /
-   gantt(id, start, end, content, group) 'UIOutput: asdasd' ;
+          topeka     275 /;
+$onExternalOutput
+Parameter
+   gantt(id, start, end, content, group) 'asdasd' ;
+$offExternalOutput
 *gantt(id, start, end, content, group)$(ord(id) = ord(start) and (ord(id) = ord(end)) and (ord(id) = ord(content))) = 1;
 gantt('1', '2016-01-04', '2016-01-05', 'test1', 'a') = 1;
 gantt('2', '2016-01-05', '2016-01-06', 'test2', 'a') = 1;
