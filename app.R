@@ -574,7 +574,7 @@ if(is.null(errMsg)){
     source("./R/db_hcubeload.R")
   }
 }
-showRemoveDbTablesBtn <- FALSE
+inconsistentTableNames <- FALSE
 if(is.null(errMsg) && debugMode && 
    !LAUNCHADMINMODE){
   # checking database inconsistencies
@@ -595,7 +595,6 @@ Note that you can remove orphaned database tables using the configuration mode (
       flog.warn(msg)
     }
     inconsistentTables <- NULL
-    
     tryCatch({
       inconsistentTables <- db$getInconsistentTables()
     }, error = function(e){
@@ -604,7 +603,8 @@ Note that you can remove orphaned database tables using the configuration mode (
                                        conditionMessage(e)), sep = '\n')
     })
     if(length(inconsistentTables$names)){
-      showRemoveDbTablesBtn <<- TRUE
+      inconsistentTableNames <<- paste0(gsub("_", "", modelName, fixed = TRUE), 
+                                        "_", inconsistentTables$names)
       flog.error(sprintf("There are tables in your database that do not match the current database schema of your model.\n
 Those tables are: '%s'.\nError message: '%s'.",
                          paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg))
@@ -746,9 +746,14 @@ if(!is.null(errMsg)){
                , class = "initErrors"),
              HTML("<br>"),
              verbatimTextOutput("errorMessages"),
-             if(identical(isShinyProxy, FALSE) && identical(showRemoveDbTablesBtn, TRUE)){
+             if(length(inconsistentTableNames)){
                actionButton("removeDbTablesPre", lang$adminMode$database$remove)
                tagList(
+                 tags$div(id = "db_remove_wrapper",
+                          "You want to remove all the inconsistent tables?",
+                          actionButton("removeInconsistentDbTables", 
+                                       "Delete inconsistent database tables")
+                 ),
                  tags$div(id = "db_remove_wrapper",
                           if(!exists("lang") || is.null(lang$adminMode$database$removeWrapper)){
                             "You want to remove all the tables that belong to your model (e.g. because the schema changed)?"
@@ -768,7 +773,7 @@ if(!is.null(errMsg)){
     )
   )
   server_initError <- function(input, output, session){
-    if(identical(isShinyProxy, FALSE) && identical(showRemoveDbTablesBtn, TRUE)){
+    if(length(inconsistentTableNames)){
       if(!exists("lang") || is.null(lang$adminMode$database$removeDialogTitle)){
         removeDbTabLang <- list(title = "Remove database tables",
                                 desc = "Are you sure that you want to delete all database tables? This can not be undone! You might want to save the database first before proceeding.",
@@ -780,6 +785,25 @@ if(!is.null(errMsg)){
                                 cancel = lang$adminMode$database$removeDialogCancel,
                                 confirm = lang$adminMode$database$removeDialogConfirm)
       }
+      observeEvent(input$removeInconsistentDbTables, {
+        showModal(modalDialog(title = removeDbTabLang$title,
+                              "Are you sure that you want to delete all inconsistent database tables? This can not be undone! You might want to save the database first before proceeding.", footer = tagList(
+                                modalButton(removeDbTabLang$cancel),
+                                actionButton("removeInconsistentDbTablesConfirm", label = removeDbTabLang$confirm, 
+                                             class = "bt-highlight-1"))))
+      })
+      observeEvent(input$removeInconsistentDbTablesConfirm, {
+        tryCatch({
+          if(length(inconsistentTableNames)){
+            db$removeTablesModel(inconsistentTableNames)
+          }
+        }, error = function(e){
+          flog.error("Unexpected error: '%s'. Please contact GAMS if this error persists.", e)
+          showHideEl(session, "#unknownError", 6000L)
+        })
+        removeModal()
+        showHideEl(session, "#removeSuccess", 3000L)
+      })
       observeEvent(input$removeDbTablesPre, {
         showModal(modalDialog(title = removeDbTabLang$title,
                               removeDbTabLang$desc, footer = tagList(
@@ -829,17 +853,16 @@ if(!is.null(errMsg)){
     newScen <- NULL
     tryCatch({
       if(length(miroDataFiles)){
-        isScalarDataset <- match(modelInTabularData, scalarsFileName)
-        modelInTabularDataNoScalar <- modelInTabularData[is.na(isScalarDataset)]
-        dataModelIn <- modelIn[names(modelIn) %in% modelInTabularDataNoScalar]
-        modelInTemplateTmp <- modelInTemplate[!vapply(modelInTemplate, is.null, logical(1L), USE.NAMES = FALSE)]
-        if(scalarsFileName %in% names(modelInRaw)){
-          dataModelIn <- c(dataModelIn, modelInRaw[scalarsFileName])
-          modelInTemplateTmp <- c(modelInTemplateTmp, list(scalarsInTemplate))
-          scalarId <- which(!is.na(isScalarDataset))
-          if(length(scalarId)){
-            modelInTemplateTmp[scalarId] <- NULL
-          }
+        tabularDatasetsToFetch <- modelInTabularData
+        tabularIdsToFetchId    <- names(modelIn) %in% tabularDatasetsToFetch
+        metaDataTmp            <- modelIn[tabularIdsToFetchId]
+        namesScenInputData     <- names(modelIn)[tabularIdsToFetchId]
+        modelInTemplateTmp     <- modelInTemplate[tabularIdsToFetchId]
+        if(length(scalarsInMetaData) && !scalarsFileName %in% tabularDatasetsToFetch){
+          tabularDatasetsToFetch <- c(tabularDatasetsToFetch, scalarsFileName)
+          namesScenInputData <- c(namesScenInputData, scalarsFileName)
+          modelInTemplateTmp[[length(metaDataTmp) + 1L]] <- scalarsInTemplate
+          metaDataTmp <- c(metaDataTmp, scalarsInMetaData)
         }
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
@@ -852,8 +875,12 @@ if(!is.null(errMsg)){
           newScen <- Scenario$new(db = db, sname = gsub("\\.[^\\.]*$", "", miroDataFile), isNewScen = TRUE)
           dataOut <- loadScenData(scalarsOutName, modelOut, miroDataDir, modelName, scalarsFileHeaders,
                                   modelOutTemplate, method = method, fileName = miroDataFile)$tabular
-          dataIn  <- loadScenData(scalarsFileName, dataModelIn, miroDataDir, modelName, scalarsFileHeaders,
-                                  modelInTemplateTmp, method = method, fileName = miroDataFile)$tabular
+          dataIn  <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp, 
+                                  workDir = miroDataDir, 
+                                  modelName = modelName, errMsg = lang$errMsg$GAMSInput$badInputData,
+                                  scalarsFileHeaders = scalarsFileHeaders,
+                                  templates = modelInTemplateTmp, method = method,
+                                  fileName = miroDataFile, DDPar = DDPar, GMSOpt = GMSOpt)$tabular
           
           if(!scalarsFileName %in% names(modelInRaw) && length(scalarInputSym)){
             # additional command line parameters that are not GAMS symbols

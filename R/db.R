@@ -181,7 +181,7 @@ Db <- R6Class("Db",
                   return(list(names = badTables, headers = headers[names(headers) %in% badTables], errMsg = errMsg))
                 },
                 removeTablesModel     = function(tableNames = NULL){
-                  stopifnot(is.character(tableNames))
+                  stopifnot(is.null(tableNames) || is.character(tableNames))
                   
                   if(!length(tableNames)){
                     tableNames <- c(private$getTableNamesModel(), private$dbSchema$tabName[['_scenAttach']],

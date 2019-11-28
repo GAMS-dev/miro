@@ -880,6 +880,7 @@ if(is.null(errMsg)){
                modelInWithDep[[name]]        <<- modelIn[i]
              }
              if(identical(modelIn[[i]]$symtype, "set")){
+               modelIn[[i]]$headers <<- modelInRaw[[name]]$headers
                return(name)
              }else if(isTRUE(modelIn[[i]]$dropdown$multiple)){
                modelIn[[i]]$headers <<- list(list(type = "string", 

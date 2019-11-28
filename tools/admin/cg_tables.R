@@ -97,7 +97,7 @@ getHotOptions <- reactive({
       condition = "input.hot_customWidth===true && input.hot_stretch !== 'all'",
       tags$div(style = "padding-left:40px;max-width:440px;",
                numericInput("hot_colwidth", lang$adminMode$tables$hot$colwidth, min = 0L, 
-                            value = if(length(configJSON$handsontable$colWidths)) configJSON$handsontable$colWidths else 300L))),
+                            value = if(length(configJSON$handsontable$colWidths)) configJSON$handsontable$colWidths else 150L))),
     tags$div(class = "shiny-input-container",
              tags$label(class = "cb-label", "for" = "hot_sort",
                         lang$adminMode$tables$hot$sort),
