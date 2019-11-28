@@ -339,7 +339,7 @@ body_admin <- dashboardBody({
                                       verbatimTextOutput("preview_output_custom"),
                                       tags$h4(lang$adminMode$uiR$custom$steps),
                                       tags$ol(
-                                        tags$li(sprintf(lang$adminMode$uiR$custom$li1, modelName)), 
+                                        tags$li(sprintf(lang$adminMode$uiR$custom$li1, modelName, modelName)), 
                                         tags$li(sprintf(lang$adminMode$uiR$custom$li2, modelName)), 
                                         tags$li(lang$adminMode$uiR$custom$li3a, 
                                                 tags$a(href = "https://gams.com/miro/customize.html#custom-renderers", 

@@ -1,5 +1,5 @@
 # gams model name
-modelName <- "transport"
+modelName <- "pickstock"
 # miro workspace
 miroWorkspaceDir <- ".miro"
 # turn debug mode on or off
@@ -66,8 +66,6 @@ defOutType <- "datatable"
 defInType <- "pivot"
 # default height of pivot table
 pivotDefaultHeight <- 800
-# folder with custom renderer functions
-customRendererDirName <- "custom_renderer"
 # name and headers of the csv file that scalars will be saved in
 scalarsFileName    <- "_scalars"
 scalarsOutName     <- "_scalars_out"

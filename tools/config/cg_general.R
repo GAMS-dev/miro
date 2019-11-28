@@ -286,7 +286,9 @@ output$general_logo_preview <- renderImage({
     if(identical(rv$generalConfig$UILogo, "gams_logo.png") || !length(rv$generalConfig$UILogo)){
       filename <- normalizePath(file.path(getwd(), "www", "gams_logo.png"))
     }else{
-      filename <- normalizePath(file.path(currentModelDir, "static", rv$generalConfig$UILogo))
+      filename <- normalizePath(paste0(currentModelDir, .Platform$file.sep, 
+                                       "static_", modelName, .Platform$file.sep, 
+                                       rv$generalConfig$UILogo))
     }
   })
   list(src = filename, height = "50px", width = "230px", alt = "custom logo")
@@ -328,16 +330,17 @@ observeEvent(input$widget_general_logo_upload, {
   inFile   <- input$widget_general_logo_upload
   filePath <- inFile$datapath
   fileName <- inFile$name
-  if(!dir.exists(file.path(currentModelDir, "static"))){
-    if(!dir.create(file.path(currentModelDir, "static"))){
+  if(!dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))){
+    if(!dir.create(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))){
       flog.error("A problem occurred creating directory: %s. Maybe you have insufficient permissions?", 
-                 file.path(currentModelDir, "static"))
+                 paste0(currentModelDir, .Platform$file.sep, "static_", modelName))
       showModal(modalDialog(lang$adminMode$general$modalDialog$title, 
                             lang$adminMode$general$modalDialog$content))
       return()
     }
   }else{
-    filesToDelete <- list.files(file.path(currentModelDir, "static"), full.names = TRUE)
+    filesToDelete <- list.files(paste0(currentModelDir, .Platform$file.sep, "static_", modelName), 
+                                full.names = TRUE)
     filesFailedToDelete <- !file.remove(filesToDelete)
     if(any(filesFailedToDelete)){
       flog.error("Problems removing files: '%s'. Do you lack the necessary permissions?", 
@@ -347,9 +350,9 @@ observeEvent(input$widget_general_logo_upload, {
       return()
     }
   }
-  if(!file.copy(filePath, file.path(currentModelDir, "static", fileName))){
+  if(!file.copy(filePath, file.path(currentModelDir, paste0("static_", modelName), fileName))){
     flog.error("A problem occurred copying image (%s) to folder: %s. Maybe you have insufficient permissions?", 
-               filePath, file.path(currentModelDir, "static"))
+               filePath, paste0(currentModelDir, .Platform$file.sep, "static_", modelName))
     showModal(modalDialog(lang$adminMode$general$modalDialog$title, 
                           lang$adminMode$general$modalDialog$content))
     return()

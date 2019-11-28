@@ -1,23 +1,17 @@
 {
   "miroLogFile": "miro.log",
   "inputWidgets": {
-    "f": {
-      "widgetType": "slider",
-      "alias": "freight in dollars per case per thousand miles",
-      "label": "freight in dollars per case per thousand miles",
-      "min": 1,
-      "max": 500,
-      "default": 90,
-      "step": 1
-    },
     "mins": {
       "widgetType": "slider",
       "alias": "minimum shipment (MIP- and MINLP-only)",
-      "label": "minimum shipment (MIP- and MINLP-only)",
       "min": 0,
       "max": 500,
       "default": 100,
-      "step": 1
+      "step": 1,
+      "ticks": false,
+      "noHcube": false,
+      "label": "minimum shipment (MIP- and MINLP-only)",
+      "minStep": 0
     },
     "beta": {
       "widgetType": "slider",

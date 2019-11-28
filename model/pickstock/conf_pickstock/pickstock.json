@@ -287,7 +287,7 @@
         "title": "High level scalar analysis",
         "id": "script1",
         "command": "jupyter",
-        "args": ["nbconvert", "--to", "html", "--execute", "scripts/hcube_analysis.ipynb"],
+        "args": ["nbconvert", "--to", "html", "--execute", "scripts_pickstock/hcube_analysis.ipynb"],
         "outputFile": "hcube_analysis.html"
       }
     ]
@@ -307,13 +307,13 @@
       "target": "price"
     }
   ],
+  "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
   "outputGroups": [
     {
       "name": "Dow Jones vs. Index Fund 🙀",
       "members": ["dowvsindex", "abserror"]
     }
   ],
-  "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
   "handsontable": {
     "stretchH": "all",
     "readonly": false,

@@ -690,8 +690,9 @@ if(LAUNCHHCUBEMODE){
   ))
 }
 body <- dashboardBody({
-  if(dir.exists(file.path(currentModelDir, "static"))){
-    addResourcePath("static", file.path(currentModelDir, "static"))
+  if(dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))){
+    addResourcePath("static", paste0(currentModelDir, .Platform$file.sep, 
+                                     "static_", modelName))
   }
   tagList(
     tags$head(
@@ -712,10 +713,16 @@ body <- dashboardBody({
       tags$script(src = "miro.js", type = "application/javascript"),
       # css sheets that depend on data from config JSON file
       # Logo ratio should be 4,6 (width/height)
-      tags$style(HTML(paste0('
+      tags$style(HTML(
+        paste0('
 .main-header .logo {
-  background-image: url("', if(!identical(config$UILogo, "gams_logo.png") && dir.exists(file.path(currentModelDir, "static"))) "static/", config$UILogo, '") ',
-                             if(!identical(config$UILogo, "gams_logo.png") && dir.exists(file.path(currentModelDir, "static"))) '!important;
+  background-image: url("', 
+               if(!identical(config$UILogo, "gams_logo.png") && 
+                  dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) 
+                 'static/', config$UILogo, '") ',
+               if(!identical(config$UILogo, "gams_logo.png") && 
+                  dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) 
+                  '!important;
   background-size: contain;
 }
 .pvtRows, .pvtCols { 

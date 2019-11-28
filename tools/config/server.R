@@ -1,10 +1,10 @@
-source(file.path("tools", "admin", "util.R"))
+source(file.path("tools", "config", "util.R"))
 
 appDisconnected <- FALSE
 oneLayerEl <- c("dygraphs")
 twoLayerEl <- c("pie", "hist")
-configJSONFileName <- file.path(currentModelDir, "conf", 
-                                modelName %+% ".json")
+configJSONFileName <- paste0(currentModelDir, .Platform$file.sep, "conf_", modelName, 
+                             .Platform$file.sep, modelName, ".json")
 dateFormatChoices <- c("1910-06-22" = "yyyy-mm-dd", "22.06.1910" = "dd.mm.yyyy")
 
 outputSymMultiDimChoices <- setNames(names(modelOut), 
@@ -96,23 +96,23 @@ server_admin <- function(input, output, session){
   # ------------------------------------------------------
   #     General settings
   # ------------------------------------------------------
-  source(file.path("tools", "admin", "cg_general.R"), local = TRUE)  
+  source(file.path("tools", "config", "cg_general.R"), local = TRUE)  
   # ------------------------------------------------------
   #     Input widgets
   # ------------------------------------------------------
-  source(file.path("tools", "admin", "cg_widgets.R"), local = TRUE)
+  source(file.path("tools", "config", "cg_widgets.R"), local = TRUE)
   # ------------------------------------------------------
   #     Table settings
   # ------------------------------------------------------
-  source(file.path("tools", "admin", "cg_tables.R"), local = TRUE)  
+  source(file.path("tools", "config", "cg_tables.R"), local = TRUE)  
   # ------------------------------------------------------
   #     CUSTOMIZE GRAPHS
   # ------------------------------------------------------
-  source(file.path("tools", "admin", "cg_graphs.R"), local = TRUE)
+  source(file.path("tools", "config", "cg_graphs.R"), local = TRUE)
   # ------------------------------------------------------
   #     DB MANAGEMENT
   # ------------------------------------------------------
-  source(file.path("tools", "admin", "db_management.R"), local = TRUE)
+  source(file.path("tools", "config", "db_management.R"), local = TRUE)
   
   hideEl(session, "#loading-screen")
   session$onSessionEnded(function() {

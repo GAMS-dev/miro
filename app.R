@@ -70,7 +70,7 @@ if("gdxrrw" %in% installedPackages){
 filesToInclude <- c("./global.R", "./R/util.R", if(useGdx) "./R/gdxio.R", "./R/json.R", "./R/load_scen_data.R", 
                     "./R/data_instance.R", "./R/worker.R", "./R/dataio.R", "./R/hcube_data_instance.R", "./R/miro_tabsetpanel.R",
                     "./modules/render_data.R", "./modules/generate_data.R", "./R/script_output.R")
-LAUNCHADMINMODE <- FALSE
+LAUNCHCONFIGMODE <- FALSE
 LAUNCHHCUBEMODE <<- FALSE
 if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
   pb <- winProgressBar(title = "Loading GAMS MIRO", label = "Loading required packages",
@@ -173,7 +173,7 @@ if(is.null(errMsg)){
 }
 if(!miroBuildonly &&
    identical(tolower(Sys.getenv("MIRO_MODE")), "config")){
-  LAUNCHADMINMODE <- TRUE
+  LAUNCHCONFIGMODE <- TRUE
 }else if(identical(tolower(Sys.getenv("MIRO_MODE")), "hcube")){
   LAUNCHHCUBEMODE <<- TRUE
 }
@@ -276,7 +276,8 @@ if(is.null(errMsg)){
      file.exists(file.path(currentModelDir, paste0(modelName, ".zip")))){
     modelData <- file.path(currentModelDir, paste0(modelName, ".zip"))
   }else if(config$activateModules$remoteExecution || LAUNCHHCUBEMODE){
-    errMsg <- paste(errMsg, sprintf("No model data ('%s') found.", paste0(modelName, ".zip")), 
+    errMsg <- paste(errMsg, sprintf("No model data ('%s.zip') found. Please make sure that you specify the files that belong to your model in a text file named '%s_files.txt'.", 
+                                    modelName, modelName), 
                     sep = "\n")
   }else{
     GAMSClArgs <- c(GAMSClArgs, paste0('idir1="', gmsFilePath(currentModelDir), '"'))
@@ -304,7 +305,7 @@ if(is.null(errMsg) && debugMode){
     }
   }
   customRendererDirs <<- file.path(c(file.path(currentModelDir, ".."),
-                                     currentModelDir), customRendererDirName)
+                                     currentModelDir), paste0("renderer_", modelName))
   for(customRendererDir in customRendererDirs){
     rendererFiles <- list.files(customRendererDir, pattern = "\\.R$")
     lapply(rendererFiles, function(file){
@@ -329,7 +330,7 @@ if(is.null(errMsg) && debugMode){
   listOfCustomRenderers <- Set$new()
   requiredPackagesCR <<- NULL
   
-  if(!LAUNCHADMINMODE){
+  if(!LAUNCHCONFIGMODE){
     for(customRendererConfig in c(configGraphsOut, configGraphsIn)){
       # check whether non standard renderers were defined in graph config
       if(!is.null(customRendererConfig$rendererName)){
@@ -423,8 +424,8 @@ if(miroBuildonly){
                                         "_hcube.miroconf")))
   }
   tryCatch({
-    if(file.exists(file.path(currentModelDir, "static"))){
-      modelFiles <- c(modelFiles, "static")
+    if(file.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))){
+      modelFiles <- c(modelFiles, paste0("static_", modelName))
     }
     if(file.exists(file.path(currentModelDir, 
                              paste0(miroDataDirPrefix, modelName)))){
@@ -485,7 +486,7 @@ if(is.null(errMsg)){
     source("./R/install_packages.R", local = TRUE)
     rm(requiredPackagesCR)
   }
-  if(LAUNCHADMINMODE){
+  if(LAUNCHCONFIGMODE){
     requiredPackages <- c("plotly", "dygraphs", "leaflet", "leaflet.minicharts", "timevis")
   }else{
     requiredPackages <- c(if(identical(installPackage$plotly, TRUE)) "plotly",
@@ -504,7 +505,7 @@ if(is.null(errMsg)){
   source("./R/install_packages.R", local = TRUE)
   options("DT.TOJSON_ARGS" = list(na = "string"))
   
-  if(config$activateModules$remoteExecution && !LAUNCHADMINMODE){
+  if(config$activateModules$remoteExecution && !LAUNCHCONFIGMODE){
     plan(multiprocess)
   }
   # try to create the DB connection (PostgreSQL)
@@ -574,9 +575,9 @@ if(is.null(errMsg)){
     source("./R/db_hcubeload.R")
   }
 }
-inconsistentTableNames <- FALSE
+inconsistentTableNames <- NULL
 if(is.null(errMsg) && debugMode && 
-   !LAUNCHADMINMODE){
+   !LAUNCHCONFIGMODE){
   # checking database inconsistencies
   local({
     orphanedTables <- NULL
@@ -827,7 +828,7 @@ if(!is.null(errMsg)){
   }
   
   shinyApp(ui = ui_initError, server = server_initError)
-}else if(LAUNCHADMINMODE){
+}else if(LAUNCHCONFIGMODE){
   if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
     setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
   }else{
@@ -836,14 +837,14 @@ if(!is.null(errMsg)){
   close(pb)
   pb <- NULL
   
-  source("./tools/admin/server.R", local = TRUE)
-  source("./tools/admin/ui.R", local = TRUE)
+  source("./tools/config/server.R", local = TRUE)
+  source("./tools/config/ui.R", local = TRUE)
   shinyApp(ui = ui_admin, server = server_admin)
 }else{
   if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
     setWinProgressBar(pb, 0.6, label= "Importing new data")
   }
-  rm(LAUNCHADMINMODE, installedPackages)
+  rm(LAUNCHCONFIGMODE, installedPackages)
   
   local({
     miroDataDir   <- file.path(currentModelDir, paste0(miroDataDirPrefix, modelName))
@@ -1186,9 +1187,9 @@ if(!is.null(errMsg)){
           }
           flog.debug("Button to execute script: '%s' clicked.", scriptId)
           
-          if(!dir.exists(file.path(workDir, "scripts"))){
-            flog.info("No 'scripts' directory was found. Did you forget to include it in '%s_files.txt'?",
-                      modelName)
+          if(!dir.exists(paste0(workDir, .Platform$file.sep, "scripts_", modelName))){
+            flog.info("No 'scripts_%s' directory was found. Did you forget to include it in '%s_files.txt'?",
+                      modelName, modelName)
             hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
             showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
             return(scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$noScript, scriptId, isError = TRUE))
@@ -1204,7 +1205,9 @@ if(!is.null(errMsg)){
             source("./modules/scen_save.R", local = TRUE)
             data <- scenData[[scenIdLong]]
             names(data) <- c(names(modelOut), inputDsNames)
-            gdxio$wgdx(file.path(workDir, "scripts", "data.gdx"), data, squeezeZeros = 'n')
+            gdxio$wgdx(paste0(workDir, .Platform$file.sep, 
+                              "scripts_", modelName, .Platform$file.sep, "data.gdx"), 
+                       data, squeezeZeros = 'n')
           }, error = function(e){
             flog.error("Problems writing gdx file for script: '%s'. Error message: '%s'.", 
                        scriptId, conditionMessage(e))

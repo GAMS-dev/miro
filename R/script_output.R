@@ -155,7 +155,8 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
     }
     return(tryCatch({
       private$scriptResults[[scriptId]] <- read_file(file.path(private$workDir, 
-                                                               "scripts", outputFile))
+                                                               paste0("scripts_", modelName), 
+                                                               outputFile))
       return(private$scriptResults[[scriptId]])
     }, error = function(e){
       flog.error("Problems reading output file of script: '%s'. Error message: '%s'.", 

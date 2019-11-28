@@ -813,7 +813,7 @@
       "custom":{
         "skeleton": "Grundgerüst:",
         "steps": "Schritte:",
-        "li1": "Erstellen Sie ein Verzeichnis custom_renderer in Ihrem Modellverzeichnis mit einer Datei %s_custom.R darin.",
+        "li1": "Erstellen Sie ein Verzeichnis renderer_%s in Ihrem Modellverzeichnis mit einer Datei %s_custom.R darin.",
         "li2": "Kopiere den obenstehenden Code und füge ihn in die Datei %s_custom.R ein.",
         "li3a": "Schreibe deinen eigenen Renderer! Für eine detaillierte Beschreibung, wie man einen solchen benutzerdefinierten Renderer schreibt, siehe ",
         "li3b": "hier",

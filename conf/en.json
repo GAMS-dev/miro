@@ -813,7 +813,7 @@
       "custom":{
         "skeleton": "skeleton:",
         "steps": "Steps:",
-        "li1": "Create a directory custom_renderer in your model directory with a file %s_custom.R in it.",
+        "li1": "Create a directory renderer_%s in your model directory with a file %s_custom.R in it.",
         "li2": "Copy the above code and paste it into the %s_custom.R file.",
         "li3a": "Write your own custom renderer! For a detailed description of how to write such a custom renderer, see ",
         "li3b": "here",

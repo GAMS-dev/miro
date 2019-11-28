@@ -265,9 +265,9 @@ if(length(config$scripts$hcube)){
       return()
     }
     
-    if(!dir.exists(file.path(workDir, "scripts"))){
-      flog.info("No 'scripts' directory was found. Did you forget to include it in '%s_files.txt'?",
-                modelName)
+    if(!dir.exists(paste0(workDir, .Platform$file.sep, "scripts_", modelName))){
+      flog.info("No 'scripts_%s' directory was found. Did you forget to include it in '%s_files.txt'?",
+                modelName, modelName)
       showHideEl(session, "#analysisRunUnknownError", 6000L)
       return()
     }
@@ -297,8 +297,8 @@ if(length(config$scripts$hcube)){
       prog$inc(amount = incAmount, detail = detail)
     }
     tryCatch({
-      hcubeLoad$genGdxFiles(sidsToLoad, file.path(workDir, "scripts"), gdxio, prog, 
-                            genScenList = TRUE)
+      hcubeLoad$genGdxFiles(sidsToLoad, paste0(workDir, .Platform$file.sep, "scripts_", modelName),
+                            gdxio, prog, genScenList = TRUE)
     }, error = function(e){
       flog.error("Problems writing gdx files for script: '%s'. Error message: '%s'.", 
                  scriptId, conditionMessage(e))

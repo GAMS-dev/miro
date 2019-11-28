@@ -2,19 +2,25 @@ requiredPackages <- c("jsonvalidate", "V8")
 source("./R/install_packages.R", local = TRUE)
 # check whether there exists a config file and if not create an empty one
 if(is.null(errMsg)){
-  if(!file.exists(file.path(currentModelDir, "conf", modelName %+% ".json"))){
-    tryCatch(cat("{}\n", file = file.path(currentModelDir, "conf", modelName %+% ".json")),
+  if(!file.exists(paste0(currentModelDir, .Platform$file.sep, "conf_", modelName,
+                         .Platform$file.sep, modelName, ".json"))){
+    tryCatch(cat("{}\n", file = paste0(currentModelDir, .Platform$file.sep, "conf_", modelName,
+                                       .Platform$file.sep, modelName, ".json")),
              error = function(e){
                errMsg <<- paste0("A configuration file was not found and no data could be written to the location of the config folder. Please check read/write permissions in folder: ",
-                                 file.path(currentModelDir, "conf"))
+                                 paste0(currentModelDir, .Platform$file.sep, "conf_", modelName))
              })
   }
 }
 
 if(is.null(errMsg)){
   # files that require schema file
-  jsonFilesWithSchema <- c(file.path(currentModelDir, "conf", paste0(modelName,".json")), 
-                           file.path(currentModelDir, "conf", paste0(modelName, "_io.json")))
+  jsonFilesWithSchema <- c(paste0(currentModelDir, .Platform$file.sep,
+                                  "conf_", modelName, .Platform$file.sep, 
+                                  modelName, ".json"), 
+                           paste0(currentModelDir, .Platform$file.sep,
+                                  "conf_", modelName, .Platform$file.sep, 
+                                  modelName, "_io.json"))
   jsonFilesMissing    <- !file.exists(jsonFilesWithSchema)
   if(any(jsonFilesMissing)){
     errMsg <- paste(errMsg, paste0("JSON file(s): '", basename(jsonFilesWithSchema[jsonFilesMissing]), 
@@ -122,7 +128,7 @@ if(is.null(errMsg)){
     modelOut[[scalarsOutName]]$headers[[2]]$alias <- lang$nav$scalarAliases$cols$desc
     modelOut[[scalarsOutName]]$headers[[3]]$alias <- lang$nav$scalarAliases$cols$value
   }
-  if(length(config[["overwriteAliases"]]) && !LAUNCHADMINMODE){
+  if(length(config[["overwriteAliases"]]) && !LAUNCHCONFIGMODE){
     overwriteSymNames <- names(config[["overwriteAliases"]])
     for (idx in seq_along(config[["overwriteAliases"]])){
       i <- match(overwriteSymNames[idx], names(modelIn))
@@ -140,7 +146,7 @@ if(is.null(errMsg)){
     }
     config[["overwriteAliases"]] <- NULL
   }
-  if(length(config[["overwriteHeaderAliases"]]) && !LAUNCHADMINMODE){
+  if(length(config[["overwriteHeaderAliases"]]) && !LAUNCHCONFIGMODE){
     overwriteSymNames <- names(config[["overwriteHeaderAliases"]])
     for (idx in seq_along(config[["overwriteHeaderAliases"]])){
       i <- match(names(config[["overwriteHeaderAliases"]])[[idx]], names(modelIn))
@@ -538,7 +544,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
            tabSheetMap = tabSheetMap))
   }
   
-  if(length(config$overwriteSheetOrder$input) && !LAUNCHADMINMODE){
+  if(length(config$overwriteSheetOrder$input) && !LAUNCHCONFIGMODE){
     if(any(is.na(match(config$overwriteSheetOrder$input, names(modelIn))))){
       errMsg <- paste(errMsg, "Some of the input elements in the 'overwriteSheetOrder' option are not defined in the data model!",
                       sep = "\n")
@@ -1187,7 +1193,7 @@ if(is.null(errMsg)){
     else
       return(TRUE)
   }, logical(1L), USE.NAMES = FALSE)
-  if(length(config$overwriteSheetOrder$output) && !LAUNCHADMINMODE){
+  if(length(config$overwriteSheetOrder$output) && !LAUNCHCONFIGMODE){
     if(length(modelOut) != length(config$overwriteSheetOrder$output)){
       errMsg <- paste(errMsg, "Some of the output elements defined in the data contract are missing in the 'overwriteSheetOrder' option!",
                       sep = "\n")
@@ -1244,7 +1250,7 @@ if(is.null(errMsg)){
     }, character(1L), USE.NAMES = FALSE), collapse = "")
   }
   # validate symbol links
-  if(!LAUNCHHCUBEMODE && !LAUNCHADMINMODE && length(config[["symbolLinks"]])){
+  if(!LAUNCHHCUBEMODE && !LAUNCHCONFIGMODE && length(config[["symbolLinks"]])){
     for(symbolLink in config[["symbolLinks"]]){
       source <- tolower(symbolLink[["source"]])
       target <- tolower(symbolLink[["target"]])
@@ -1329,16 +1335,16 @@ if(is.null(errMsg)){
   installPackage    <- list()
   installPackage$DT <- any(vapply(seq_along(modelIn), function(i){if(identical(modelIn[[i]]$type, "dt")) TRUE else FALSE}, 
                                   logical(1L), USE.NAMES = FALSE))
-  installPackage$plotly <- LAUNCHADMINMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
+  installPackage$plotly <- LAUNCHCONFIGMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
                                                          function(conf){if(identical(conf$graph$tool, "plotly")) TRUE else FALSE}, 
                                                          logical(1L), USE.NAMES = FALSE))
-  installPackage$dygraphs <- LAUNCHADMINMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
+  installPackage$dygraphs <- LAUNCHCONFIGMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
                                                            function(conf){if(identical(conf$graph$tool, "dygraphs")) TRUE else FALSE}, 
                                                            logical(1L), USE.NAMES = FALSE))
-  installPackage$leaflet <- LAUNCHADMINMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
+  installPackage$leaflet <- LAUNCHCONFIGMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
                                                            function(conf){if(identical(conf$graph$tool, "leaflet")) TRUE else FALSE}, 
                                                            logical(1L), USE.NAMES = FALSE))
-  installPackage$timevis <- LAUNCHADMINMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
+  installPackage$timevis <- LAUNCHCONFIGMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
                                                           function(conf){if(identical(conf$graph$tool, "timevis")) TRUE else FALSE}, 
                                                           logical(1L), USE.NAMES = FALSE))
   
