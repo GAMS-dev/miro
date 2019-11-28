@@ -333,8 +333,8 @@ HcubeImport <- R6Class("HcubeImport",
                                    private$templates[[symName]]
                                  })
                                  names(scenData) <- names(private$templates[[symName]])
-                                 return(scenData %>% mutate_if(is.numeric , replace_na, replace = 0) %>% 
-                                          replace(is.na(.), ""))
+                                 return(scenData %>% mutate_if(is.character, 
+                                                               replace_na, replace = ""))
                                }))
                              }, error = function(e){
                                stop(sprintf("Problems reading file: '%s'. Error message: %s.", filePath, e),

@@ -388,7 +388,7 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                lang$nav$dialogImport$hcubeHashNoMatch),
       tags$div(id = "importScenSnameExistsErr", class = "gmsalert gmsalert-error", 
                lang$nav$dialogImport$scenNameExistsErr),
-      tags$div(id = "importSceNoDsSelected", class = "gmsalert gmsalert-error", 
+      tags$div(id = "importScenNoDsSelected", class = "gmsalert gmsalert-error", 
               lang$nav$dialogLoadScen$noDsSelected),
       tags$div(id = "importScenInvalidFile", class = "gmsalert gmsalert-error", 
                lang$nav$dialogLoadScen$invalidFile),

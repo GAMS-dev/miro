@@ -133,15 +133,21 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
       datasetsToFetch <- loadModeFileName
     }else if(!isTRUE(input$cbSelectManuallyLoc) || length(input$selInputDataLoc) != 1L){
       flog.debug("Local file import stopped as no datasheet was specified (must be specified when uploading csv files).")
-      showHideEl(session, "#importSceNoDsSelected", 4000L)
+      showHideEl(session, "#importScenNoDsSelected", 4000L)
       return()
     }else{
       if(!input$selInputDataLoc %in% names(modelInToImport)){
         flog.error("Selected input dataset is not in list of model data to import. This looks like an attempt to tamper with the app!")
-        showHideEl(session, "#importSceNoDsSelected", 4000L)
+        showHideEl(session, "#importScenNoDsSelected", 4000L)
         return()
       }
       datasetsToFetch <- input$selInputDataLoc
+      if(!file.rename(input$localInput$datapath, 
+                      paste0(loadModeWorkDir, .Platform$file.sep, 
+                             datasetsToFetch, ".csv"))){
+        showHideEl(session, "#importScenError", 4000L)
+        return()
+      }
     }
   }else if(fileType %in% c("xls", "xlsx")){
     loadMode <- "xls"

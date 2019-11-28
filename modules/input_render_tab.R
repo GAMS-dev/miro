@@ -4,9 +4,8 @@ proxy <- vector("list", length(modelIn))
 getInputDataset <- function(id, visible = FALSE){
   if(!length(modelIn[[id]]$pivotCols)){
     return(getInputDatasetRaw(id) %>%
-             mutate_if(is.numeric , 
-                       replace_na, replace = 0) %>% 
-             replace(is.na(.), ""))
+             mutate_if(is.character, 
+                       replace_na, replace = ""))
   }
   if(visible){
     if(identical(modelIn[[id]]$type, "hot")){
@@ -25,9 +24,8 @@ getInputDataset <- function(id, visible = FALSE){
   if(modelIn[[id]]$pivotCols[[1]] %in% names(intermDataTmp)){
     # table not yet initialised (so not pivoted either)
     return(intermDataTmp %>%
-             mutate_if(is.numeric , 
-                       replace_na, replace = 0) %>% 
-             replace(is.na(.), ""))
+             mutate_if(is.character, 
+                       replace_na, replace = ""))
   }
   keyIdx        <- match(modelIn[[id]]$pivotCols[[1]], 
                          names(modelIn[[id]]$headers))[[1L]]

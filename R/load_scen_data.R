@@ -160,9 +160,8 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
       }
       ret$tabular[[i]] <<- fixColTypes(ret$tabular[[i]],  metaData[[i]]$colTypes)
       names(ret$tabular[[i]]) <<- names(metaData[[i]]$headers)
-      ret$tabular[[i]] <<- ret$tabular[[i]] %>% mutate_if(is.numeric , 
-                                                          replace_na, replace = 0) %>% 
-        replace(is.na(.), "")
+      ret$tabular[[i]] <<- ret$tabular[[i]] %>% mutate_if(is.character, 
+                                                          replace_na, replace = "")
       if(!hasValidHeaderTypes(ret$tabular[[i]], metaData[[i]]$colTypes)){
         flog.warn("Dataset: '%s' has invalid header types ('%s'). Header types should be: '%s'.", 
                   names(metaData)[i], paste(vapply(ret$tabular[[i]], function(el) return(class(el)[[1L]]), 
