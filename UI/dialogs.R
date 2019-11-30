@@ -176,8 +176,9 @@ getLoadDbPanel <- function(id, title, scenList, tagList, iconName, modeDescripto
     ),
     tags$div(class = "small-space"),
     tags$div(style = "text-align: center;",
-             HTML(paste0('<button type="button" id="btLoadScenConfirm2" class="btn btn-default bt-highlight-1 bt-gms-confirm" 
-onclick="Shiny.setInputValue(\'btLoadScenConfirm\', 1, {priority: \'event\'})">', lang$nav$dialogLoadScen$okButton, '</button>'))
+             actionButton(if(identical(id, "remote")) "btLoadScenConfirm" else "btLoadFromBase", 
+                          lang$nav$dialogLoadScen$okButton, 
+                          class = "bt-highlight-1 bt-gms-confirm")
     )
   )
   tabPanel(title, value = "tb_importData_" %+% id,
@@ -204,40 +205,6 @@ onclick="Shiny.setInputValue(\'btLoadScenConfirm\', 1, {priority: \'event\'})">'
                )
              )
            ),
-           if(!identical(id, "remote")){
-             tags$div(id = "loadBase_scenNameExists", style = "display:none;",
-                      fluidRow(
-                        tags$div(id = "loadBase_snameExistsMsg",
-                                 tags$div(class = "err-msg",
-                                          lang$nav[[modeDescriptor]]$scenNameExists
-                                 )
-                        ),
-                        tags$div(id="loadBase_newName", style = "display:none;",
-                                 textInput("base_newScenName", 
-                                           lang$nav[[modeDescriptor]]$newScenName,
-                                           width = "100%")
-                          
-                        )
-                      ),
-                      HTML(paste0(
-                        '<div style="text-align: center;">
-                        <div id="base-overwrite-container">
-                          <button class="btn btn-default action-button" type="button" 
-                                  onclick="Shiny.setInputValue(\'btOverwriteScen\', 1, 
-                                                               {priority: \'event\'})">',
-                        htmltools::htmlEscape(lang$nav[[modeDescriptor]]$overwriteButton), '</button>
-                          <button class="btn btn-default action-button bt-highlight-1 bt-gms-confirm" 
-                        type="button" onclick="Miro.showNewNameBaseDialog()">',
-                        htmltools::htmlEscape(lang$nav[[modeDescriptor]]$newNameButton), '</button>
-                        </div>
-                        <button id="btCheckSnameBase" class="btn btn-default bt-highlight-1 
-                        bt-gms-confirm" type="button" style="display:none;" 
-                        onclick="Miro.validateSname(\'#base_newScenName\', \'btCheckSnameBaseConfirm\')">', 
-                        htmltools::htmlEscape(lang$nav[[modeDescriptor]]$okButton), '</button>
-                        </div>'
-                      ))
-             )
-           },
            icon = icon(iconName)
   )
 }
@@ -355,9 +322,6 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                                             HTML(paste0('<div class="small-space"></div>
 <input class="form-control" id="hcHashLookup" style="width:95%;font-size:10pt;"/>
                                                          <div class="space"></div>')),
-                                            textInput("hcube_newScenName", 
-                                                      lang$nav[[modeDescriptor]]$newScenName,
-                                                      width = "95%"),
                                             HTML(paste0('<div class="small-space"></div>
                                                            <div style="text-align:center;">
                                                               <button class="btn btn-default bt-highlight-1" type="button" 
@@ -423,7 +387,8 @@ getHcubeHashLookupTable <- function(hashLookupResults){
                  tags$th(lang$nav$importJobsDialog$header$date)
                ),
                do.call("tagList", lapply(seq_len(nrow(hashLookupResults)), function(i){
-                 tags$tr(onclick = paste0("Miro.hcHashImport(", hashLookupResults[[1]][i], ")"),
+                 tags$tr(onclick = paste0("Shiny.setInputValue('loadHcubeHashSid',",
+                                          hashLookupResults[[1]][i], ",{priority: 'event'});"),
                          tags$td(substr(hashLookupResults[[2]][i], 2, 
                                         nchar(hashLookupResults[[2]][i]) - 1L)),
                          tags$td(hashLookupResults[[3]][i])

@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "0.9.11"
+MIROVersion <- "0.9.12"
 APIVersion  <- "1"
-MIRORDate   <- "Nov 28 2019"
+MIRORDate   <- "Nov 30 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -1241,9 +1241,10 @@ if(!is.null(errMsg)){
                          btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
                          btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
                          btSplitView = 0L, noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
-                         loadHcubeHashSid = 0L, jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L)
+                         jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L)
     # list of scenario IDs to load
     sidsToLoad <- list()
+    loadIntoSandbox <- FALSE
     # list with input data
     modelInputData  <- vector(mode = "list", length = length(modelIn))
     modelInputDataVisible <- vector(mode = "list", length = length(modelIn))

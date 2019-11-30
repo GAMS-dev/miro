@@ -131,13 +131,6 @@ export function slideToggleEl(data) {
   $(data.id).slideToggle(duration);
 }
 
-export function showNewNameBaseDialog() {
-  $('#base-overwrite-container').hide();
-  $('#loadBase_snameExistsMsg').hide();
-  $('#loadBase_newName').show();
-  $('#btCheckSnameBase').show();
-}
-
 export function confirmModalShow(title, desc, cancelTxt, confirmTxt = null, confirmCall = null) {
   const btDataDismiss = `<button type="button" class="btn btn-default" data-dismiss="modal">${cancelTxt}</button>`;
   let btDataConfirm = '';
@@ -213,9 +206,6 @@ export function validateHcubeHash() {
   const hashVal = $('#hcHashLookup').val();
 
   if (/^[a-f0-9]{64}$/i.test(hashVal) === true) {
-    if (!validateSname('#hcube_newScenName', 'internal')) {
-      return;
-    }
     $('#hcHashLookup').removeClass('invalidInput');
     Shiny.setInputValue('hcHashLookup', hashVal, {
       priority: 'event',
@@ -224,15 +214,6 @@ export function validateHcubeHash() {
   }
 
   $('#hcHashLookup').addClass('invalidInput');
-}
-
-export function hcHashImport(sid) {
-  if (!validateSname('#hcube_newScenName', 'internal')) {
-    return;
-  }
-  Shiny.setInputValue('loadHcubeHashSid', sid, {
-    priority: 'event',
-  });
 }
 
 export async function jumpToLogMark(id) {

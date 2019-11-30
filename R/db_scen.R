@@ -106,7 +106,6 @@ Scenario <- R6Class("Scenario",
                       getReadPerm = function() csv2Vector(private$readPerm),
                       getWritePerm = function() csv2Vector(private$writePerm),
                       getExecPerm = function() csv2Vector(private$execPerm),
-                      isFromOtherMode = function() private$dataFromOtherMode,
                       getMetadata = function(aliases = character(0L), noPermFields = TRUE){
                         # Generates dataframe containing scenario metadata
                         #
@@ -723,7 +722,6 @@ Scenario <- R6Class("Scenario",
                       scenSaved           = logical(1L),
                       newScen             = logical(1L),
                       traceData           = tibble(),
-                      dataFromOtherMode   = logical(1L),
                       localAttachments    = list(filePaths = character(0L), 
                                                  execPerm = logical(0L)),
                       attachmentsToRemove = character(0L),
@@ -764,7 +762,6 @@ Scenario <- R6Class("Scenario",
                             private$suid      <- private$uid
                             private$stime     <- Sys.time()
                             private$tags      <- metadata[[private$scenMetaColnames['stag']]][1]
-                            private$dataFromOtherMode <- TRUE
                             traceData         <- super$importDataset(private$dbSchema$tabName[["_scenTrc"]],
                                                                      subsetSids = sid, limit = 1L)
                             if(length(traceData) && nrow(traceData)){

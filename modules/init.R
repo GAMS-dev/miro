@@ -1030,11 +1030,12 @@ if(is.null(errMsg)){
   modelInTabularData <- unlist(modelInTabularData, use.names = FALSE)
   # get scalar input names
   scalarInputSym <- names(modelIn)[vapply(seq_along(modelIn), function(i){
-    if("headers" %in% names(modelIn[[i]])){
-      return(FALSE)
-    }else{
+    if(!"headers" %in% names(modelIn[[i]]) || 
+       isTRUE(modelIn[[i]]$dropdown$single) || 
+       isTRUE(modelIn[[i]]$dropdown$checkbox)){
       return(TRUE)
     }
+    return(FALSE)
   }, logical(1L), USE.NAMES = FALSE)]
   }
 

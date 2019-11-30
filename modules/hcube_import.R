@@ -34,7 +34,6 @@ additionalInputScalars <- inputDsNames[vapply(inputDsNames, function(el){
   return(isTRUE(modelIn[[el]]$dropdown$single) || 
            isTRUE(modelIn[[el]]$dropdown$checkbox))
 }, logical(1L), USE.NAMES = FALSE)]
-scalarInToVerify <- c(scalarInToVerify, additionalInputScalars)
 if(length(scalarInToVerify))
   scalarInToVerify <- scalarInToVerify[!startsWith(scalarInToVerify, "_")]
 scalarOutToVerify <- NULL
@@ -53,8 +52,8 @@ hcubeImport <- HcubeImport$new(db, scalarsFileName, scalarsOutName,
                                                                modelIn[[scalarsFileName]]$symnames,
                                                                modelIn[[scalarEquationsName]]$symnames), 
                                                              c(additionalInputScalars,
-                                                                             scalarsFileName,
-                                                                             scalarEquationsName)), 
+                                                               scalarsFileName,
+                                                               scalarEquationsName)), 
                                                      setdiff(c(names(modelOut),
                                                                modelOut[[scalarsOutName]]$symnames,
                                                                modelOut[[scalarEquationsOutName]]$symnames), 
