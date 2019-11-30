@@ -2,13 +2,38 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                          templates, errMsg = NULL, method = "csv", csvDelim = ",", 
                          hiddenOutputScalars = character(0L),
                          fileName = character(0L), DDPar = character(0L), GMSOpt = character(0L)){
+  ret <- list(tabular = NULL, scalar = NULL)
+  
   if(identical(method, "xls")){
     xlsPath <- file.path(workDir, fileName)
     if(!file.exists(xlsPath)){
       stop(sprintf("File: '%s' could not be found.", xlsPath), call. = FALSE)
     }
     xlsSheetNames <- tolower(excel_sheets(xlsPath))
-    xlsSheetNames <- vapply(strsplit(xlsSheetNames, " ", fixed = TRUE), "[[", character(1L), 1L)
+    xlsSheetNames <- vapply(strsplit(xlsSheetNames, " ", fixed = TRUE), 
+                            "[[", character(1L), 1L)
+    if(scalarsName %in% names(metaData)){
+      scalarXlsSheetIds <- match(metaData[[scalarsName]]$symnames, xlsSheetNames)
+      scalarXlsSheetIds <- scalarXlsSheetIds[!is.na(scalarXlsSheetIds)]
+      if(length(scalarXlsSheetIds)){
+        tryCatch({
+          scalarDataTmp <- vapply(scalarXlsSheetIds, function(sheetID){
+            data <- read_excel(xlsPath, sheetID, col_names = FALSE)
+            if(length(data) != 1L){
+              stop(sprintf("Invalid length of scalar sheet: %s.", sheetID), call. = FALSE)
+            }
+            return(as.character(data[[1]][1]))
+          }, character(1L), USE.NAMES = FALSE)
+        }, error = function(e){
+          flog.info("Could not read one or more scalar sheets of spreadsheet. Please make sure to only specify the scalar's value in A1.")
+          stop("Could not read scalar sheets.", call. = FALSE)
+        })
+        scalarIds <- match(xlsSheetNames[scalarXlsSheetIds], metaData[[scalarsName]]$symnames)
+        ret$scalar <- as_tibble(list(name  = metaData[[scalarsName]]$symnames[scalarIds],
+                                     text  = metaData[[scalarsName]]$symtext[scalarIds],
+                                     value = scalarDataTmp))
+      }
+    }
   }else if(identical(method, "gdx")){
     gdxPath <- file.path(workDir, fileName)
     if(!file.exists(gdxPath)){
@@ -20,7 +45,6 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
   if(!length(errMsg)){
     errMsg <- "Dataset: '%s' is not valid. Please check the format of the data you wish to import."
   }
-  ret         <- list(tabular = NULL, scalar = NULL)
   # read scalar data in case it exists
   isNewGdx <- TRUE
   tryCatch({
@@ -53,9 +77,13 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
            xls = {
              sheetID <- match(scalarsName, xlsSheetNames)[[1]]
              if(!is.na(sheetID)){
-               ret$scalar <- read_excel(xlsPath, sheetID, 
-                                        col_types = c("text", "text", "text"))
-               
+               scalarTmp <- read_excel(xlsPath, sheetID, 
+                                       col_types = c("text", "text", "text"))
+               if(length(ret$scalar)){
+                 ret$scalar <- bind_rows(scalarTmp, ret$scalar)
+               }else{
+                 ret$scalar <- scalarTmp
+               }
              }
            },
            gdx = {
@@ -151,8 +179,8 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                  }
                })
       }, error = function(e) {
-        stop(sprintf("Model file: '%s' could not be read (model: '%s'). Error message: %s", 
-                     names(metaData)[[i]], modelName, e), call. = FALSE)
+        stop(sprintf("Model file: '%s' could not be read. Error message: %s", 
+                     names(metaData)[[i]], e), call. = FALSE)
       })
       if(!identical(length(ret$tabular[[i]]), length(metaData[[i]]$headers))){
         flog.warn("Invalid data attempted to be read (number of headers of table does not match io_config schema).")
