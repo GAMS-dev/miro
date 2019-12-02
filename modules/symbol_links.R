@@ -48,6 +48,7 @@ observeEvent(input$btSymbolLink, {
   names(scenInputData) <- modelOut[[i]]$symbolLink
   datasetsToFetch <- modelOut[[i]]$symbolLink
   source("./modules/input_load.R", local = TRUE)
+  markUnsaved(markDirty = TRUE)
   if(!is.null(errMsg)){
     return(NULL)
   }

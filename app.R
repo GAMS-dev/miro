@@ -1349,10 +1349,16 @@ if(!is.null(errMsg)){
       }, priority = 1000L)
     })
     
-    markUnsaved <- function(){
-      hideEl(session, "#dirtyFlagIcon")
-      hideEl(session, "#dirtyFlagIconO")
-      dirtyFlag     <<- FALSE
+    markUnsaved <- function(markDirty = FALSE){
+      if(markDirty && !noOutputData){
+        showEl(session, "#dirtyFlagIcon")
+        showEl(session, "#dirtyFlagIconO")
+        dirtyFlag     <<- TRUE
+      }else{
+        hideEl(session, "#dirtyFlagIcon")
+        hideEl(session, "#dirtyFlagIconO")
+        dirtyFlag     <<- FALSE
+      }
       rv$unsavedFlag <<- TRUE
       return(invisible())
     }
