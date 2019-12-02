@@ -124,11 +124,25 @@ DataIO <- R6Class("DataIO", public = list(
     }
     return(content(req, as = 'text', encoding = 'UTF-8'))
   },
+  retrieveVal = function(val){
+    if(startsWith(val, "@env:")){
+      return(Sys.getenv(substring(val, 6L)))
+    }
+    return(val)
+  },
   buildHTTPHeader = function(item){
     headerValues <- vapply(item$httpHeaders, "[[", character(1L), 
                            "value", USE.NAMES = FALSE)
     headerKeys <- vapply(item$httpHeaders, "[[", character(1L), 
                          "key", USE.NAMES = FALSE)
+    if(length(item$authentication)){
+      headerKeys <- c(headerKeys, "Authorization")
+      headerValues <- c(headerValues, 
+                        paste0("Basic ", 
+                               base64_encode(charToRaw(
+                                 paste0(private$retrieveVal(item$authentication$username), ":",
+                                        private$retrieveVal(item$authentication$password))))))
+    }
     if(any(duplicated(headerKeys))){
       stop("Duplicated header keys found", call. = FALSE)
     }

@@ -1606,6 +1606,29 @@
                       "type":"string",
                       "minLength": 10
                     },
+                    "authentication":{
+                      "description":"Basic authentication credentials (note that you must make sure to use HTTPS when using this, or your credentials will be transmitted in plain text!)",
+                      "type":"object",
+                      "additionalProperties":false,
+                      "properties":{
+                         "username": {
+                          "description":"Username used for authentication",
+                          "type":"string",
+                          "minLength":1
+                        },
+                        "password": {
+                          "description":"Password used for authentication",
+                          "type":"string",
+                          "minLength":1
+                        },
+                        "method": {
+                          "description":"Authentication method",
+                          "type":"string",
+                          "enum":["basic"]
+                        }
+                      },
+                      "required": ["username", "password"]
+                    },
                     "method":{
                       "description":"HTTP method (of REST request)",
                       "type":"string",
@@ -1724,6 +1747,29 @@
                        "type":"string",
                        "minLength": 10
                      },
+                     "authentication":{
+                        "description":"Basic authentication credentials (note that you must make sure to use HTTPS when using this, or your credentials will be transmitted in plain text!)",
+                        "type":"object",
+                        "additionalProperties":false,
+                        "properties":{
+                           "username": {
+                            "description":"Username used for authentication",
+                            "type":"string",
+                            "minLength":1
+                          },
+                          "password": {
+                            "description":"Password used for authentication",
+                            "type":"string",
+                            "minLength":1
+                          },
+                          "method": {
+                            "description":"Authentication method",
+                            "type":"string",
+                            "enum":["basic"]
+                          }
+                        },
+                        "required": ["username", "password"]
+                      },
                      "method":{
                        "description":"HTTP method (of REST request)",
                        "type":"string",
