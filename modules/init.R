@@ -1137,9 +1137,17 @@ if(is.null(errMsg)){
     )
     names(scalarsInMetaData[[1]]$headers) <- scalarsFileHeaders
     names(scalarsInMetaData) <- scalarsFileName
-    scalarsInTemplate        <- tibble('a' = modelIn[[scalarsFileName]]$symnames, 
-                                       'b' = modelIn[[scalarsFileName]]$symtext, 
-                                       'c' = NA_character_)
+    
+    if(length(modelIn[[scalarsFileName]]$symnames)){
+      scalarsInTemplate        <- tibble('a' = modelIn[[scalarsFileName]]$symnames, 
+                                         'b' = modelIn[[scalarsFileName]]$symtext, 
+                                         'c' = NA_character_)
+    }else{
+      scalarsInTemplate        <- tibble('a' = character(0L), 
+                                         'b' = character(0L), 
+                                         'c' = character(0L))
+    }
+    
     names(scalarsInTemplate) <- scalarsFileHeaders
     attr(scalarsInTemplate, "aliases") <- c(lang$scalarAliases$cols$name, 
                                             lang$scalarAliases$cols$desc,
@@ -1223,7 +1231,7 @@ if(is.null(errMsg)){
       
       modelOutTemplate[[i]] <<- tibble('a' = modelOut[[scalarsOutName]]$symnames[nonHiddenScalars], 
                                        'b' = modelOut[[scalarsOutName]]$symtext[nonHiddenScalars], 
-                                       'c' = character(0L))
+                                       'c' = NA_character_)
       names(modelOutTemplate[[i]]) <<- names(headers)
     }else if(identical(names(modelOut)[i], scalarEquationsOutName)){
       modelOutTemplate[[i]] <<- tibble(a = modelOut[[scalarEquationsOutName]]$symnames,
