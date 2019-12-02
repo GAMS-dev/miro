@@ -338,6 +338,10 @@ observeEvent({input$widget_symbol
     currentWidgetSymbolName <<- input$widget_symbol
     if(length(modelInRaw[[input$widget_symbol]]$headers) == 2L){
       widgetOptions <- langSpecificWidget$widgetOptionsSet
+    }else{
+      flog.error("Unknown input symbol: '%s'.", input$widget_symbol)
+      showHideEl(session, "#unknownErrorWidgets", 4000L)
+      return()
     }
   }else{
     flog.error("Unknown input symbol: '%s'.", input$widget_symbol)
@@ -431,7 +435,7 @@ observeEvent({input$widget_type
     if(length(currentConfig$alias) && nchar(currentConfig$alias)){
       widgetAlias <- currentConfig$alias
     }else{
-      widgetSymbolID <- match(isolate(input$widget_symbol), widgetSymbols)
+      widgetSymbolID <- match(input$widget_symbol, widgetSymbols)
       if(!is.na(widgetSymbolID)){
         widgetAlias <- names(widgetSymbols)[[widgetSymbolID]]
       }
@@ -1544,12 +1548,7 @@ observeEvent(input$deleteWidgetConfirm, {
     widgetSymbols <<- widgetSymbols[widgetSymbols != currentWidgetSymbolName]
     updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
   }else if(currentWidgetSymbolName %in% scalarInputSymWithAliases){
-    if(!scalarsFileName %in% widgetSymbols){
-      widgetSymbols <<- c(widgetSymbols, setNames(scalarsFileName, modelInRaw[[scalarsFileName]]$alias))
-      updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
-    }else{
-      showEl(session, "#noWidgetConfigMsg")
-    }
+    showEl(session, "#noWidgetConfigMsg")
   }
   removeModal()
   showHideEl(session, "#widgetUpdateSuccess", 4000L)

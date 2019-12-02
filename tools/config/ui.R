@@ -5,6 +5,26 @@ names(langSpecificUI$tableType) <- lang$adminMode$tables$ui$choices
 langSpecificUI$symbolType <- c("Symbol" = "gams", "New GAMS option" = "go", 
                                "New double dash parameter" = "dd")
 names(langSpecificUI$symbolType) <- lang$adminMode$widgets$ui$choices
+inputTabs <- c(inputSymMultiDim, 
+               setNames("_widgets", 
+                        lang$nav$inputScreen$widgetTabTitle))
+if(length(configJSON$overwriteSheetOrder$input)){
+  tabIdsTmp <- match(configJSON$overwriteSheetOrder$input, inputTabs)
+  if(any(is.na(tabIdsTmp))){
+    flog.error("Invalid input symbol(s) in 'overwriteSheetOrder' found. Resetting to original sheet order.")
+  }else{
+    inputTabs <- inputTabs[tabIdsTmp]
+  }
+}
+outputTabs <- setNames(names(modelOut), modelOutAlias)
+if(length(configJSON$overwriteSheetOrder$output)){
+  tabIdsTmp <- match(configJSON$overwriteSheetOrder$output, outputTabs)
+  if(any(is.na(tabIdsTmp))){
+    flog.error("Invalid output symbol(s) in 'overwriteSheetOrder' found. Resetting to original sheet order.")
+  }else{
+    outputTabs <- outputTabs[tabIdsTmp]
+  }
+}
 
 header_admin <- dashboardHeader(
   tags$li(class = "dropdown", 
@@ -514,16 +534,13 @@ body_admin <- dashboardBody({
                                                                 tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"), class="option-category"),
                                                  tags$div(class = "option-wrapper",
                                                           selectizeInput("general_overwriteSheetOrderInput", lang$adminMode$general$overwriteSheetOrder$input, 
-                                                                         choices = if(length(configJSON$overwriteSheetOrder$input)) 
-                                                                           configJSON$overwriteSheetOrder$input else inputSymMultiDim, 
-                                                                         selected = if(length(configJSON$overwriteSheetOrder$input)) 
-                                                                           configJSON$overwriteSheetOrder$input else inputSymMultiDim, multiple = TRUE, 
+                                                                         choices = inputTabs,
+                                                                         selected = inputTabs,
+                                                                         multiple = TRUE, 
                                                                          options = list(plugins = list("drag_drop", "no_delete"))),
                                                           selectizeInput("general_overwriteSheetOrderOutput", lang$adminMode$general$overwriteSheetOrder$output, 
-                                                                         choices = if(length(configJSON$overwriteSheetOrder$output)) 
-                                                                           configJSON$overwriteSheetOrder$output else setNames(names(modelOut), modelOutAlias), 
-                                                                         selected = if(length(configJSON$overwriteSheetOrder$output)) 
-                                                                           configJSON$overwriteSheetOrder$output else setNames(names(modelOut), modelOutAlias), 
+                                                                         choices = outputTabs, 
+                                                                         selected = outputTabs, 
                                                                          multiple = TRUE, options = list(plugins = list("drag_drop", "no_delete")))
                                                  ),
                                                  tags$div(class = "space"),

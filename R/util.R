@@ -428,9 +428,13 @@ verifyScalarInput <- function(data, scalarHeaders, scalarSymbols){
   #
   # Returns:
   #   boolean specifying whether input data is valid (TRUE) or not (FASLE)
-  if(!verifyInput(data, scalarHeaders) || 
-     any(is.na(match(tolower(data[[1]]), tolower(scalarSymbols))))){
+  if(!verifyInput(data, scalarHeaders)){
     return(FALSE)
+  }
+  additionalInputScalars <- is.na(match(tolower(data[[1]]), tolower(scalarSymbols)))
+  if(any(additionalInputScalars)){
+    flog.info("Additional input scalars found in the dataset you just imported: '%s'. These will be skipped!",
+              paste(data[[1]][additionalInputScalars], collapse = "', '"))
   }
   return(TRUE)
 }

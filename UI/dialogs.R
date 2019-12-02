@@ -389,6 +389,7 @@ getHcubeHashLookupTable <- function(hashLookupResults){
                do.call("tagList", lapply(seq_len(nrow(hashLookupResults)), function(i){
                  tags$tr(onclick = paste0("Shiny.setInputValue('loadHcubeHashSid',",
                                           hashLookupResults[[1]][i], ",{priority: 'event'});"),
+                         style = "cursor:pointer",
                          tags$td(substr(hashLookupResults[[2]][i], 2, 
                                         nchar(hashLookupResults[[2]][i]) - 1L)),
                          tags$td(hashLookupResults[[3]][i])

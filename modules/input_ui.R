@@ -38,7 +38,9 @@ observeEvent(input$btImport, {
     scenListDb <- db$formatScenList(scenMetaDbSubset, 
                                     stimeIdentifier, desc = TRUE)
   }
-    
+  if(!LAUNCHHCUBEMODE){
+    output$hcHashLookupResults <- renderUI(tags$div())
+  }
   showLoadDataDialog(scenListDb = scenListDb, dbTagList = dbTagList)
   if(maxNoScenExceeded)
     showHideEl(session, "#importScenMaxNoScen", 4000L)

@@ -180,7 +180,7 @@ if(is.null(errMsg)){
     }
     config[["overwriteHeaderAliases"]] <- NULL
   }
-  scalarTableIds <- match(c(scalarsFileName), names(modelIn))
+  scalarTableIds <- match(c(scalarsFileName, scalarEquationsName), names(modelIn))
   scalarTableIds <- scalarTableIds[!is.na(scalarTableIds)]
   for(scalarTableId in scalarTableIds){
     modelIn[[scalarTableId]]$headers[[1]]$readonly <- TRUE
@@ -250,7 +250,7 @@ if(is.null(errMsg)){
         }
         modelIn[[elL]][[widgetType]] <- widgetConfig
       }else{
-        errMsgTmp <- paste0("'", el, "' was defined to be an input widget, but is not amongst the symbols you defined to be input data to your model!")
+        errMsgTmp <- paste0("'", el, "' was defined to be an input widget, but is not part of the data contract!")
         errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
       }
     }else{
@@ -431,7 +431,8 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
       idsToDisplay <- seq_along(names)
     }
     for(i in idsToDisplay){
-      if(identical(isOutput, TRUE) || modelIn[[i]]$type %in% c("hot", "dt", "custom")){
+      if(identical(isOutput, TRUE) || 
+         modelIn[[i]]$type %in% c("hot", "dt", "custom")){
         if(isAssigned[i]){
           next
         }
@@ -545,6 +546,16 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
   }
   
   if(length(config$overwriteSheetOrder$input) && !LAUNCHCONFIGMODE){
+    widgetOverwriteId <- match("_widgets", config$overwriteSheetOrder$input)
+    if(!is.na(widgetOverwriteId)){
+      if(length(modelIn) > length(modelInRaw)){
+        widgetIdTmp <- which(is.na(match(names(modelIn), 
+                                         names(modelInRaw))))[1]
+        config$overwriteSheetOrder$input[widgetOverwriteId] <- names(modelIn)[widgetIdTmp]
+      }else{
+        config$overwriteSheetOrder$input <- config$overwriteSheetOrder$input[-widgetOverwriteId]
+      }
+    }
     if(any(is.na(match(config$overwriteSheetOrder$input, names(modelIn))))){
       errMsg <- paste(errMsg, "Some of the input elements in the 'overwriteSheetOrder' option are not defined in the data model!",
                       sep = "\n")
@@ -578,7 +589,6 @@ if(is.null(errMsg)){
   tabSheetMap <- list(input = NULL, output = NULL)
   tabSheetMap$input <- inputTabs$tabSheetMap
   inputTabs    <- inputTabs$tabs
-  
   # get input tabs where scalars are merged to single table (scenario comparison mode)
   widgetIdsMultiDim <- vapply(inputSheetIdsToDisplay, function(i){
     if(identical(modelIn[[i]]$dropdown$multiple, TRUE) && 
@@ -1114,6 +1124,27 @@ if(is.null(errMsg)){
       }), use.names = FALSE)
     }
   }
+  scalarsInMetaData <- NULL
+  scalarsInTemplate <- NULL
+  if(scalarsFileName %in% inputDsNames){
+    scalarsInMetaData <- list(list(alias = "Input Scalars",
+                                   colTypes = "ccc",
+                                   headers = list(
+                                     'a' = list(type = "string"),
+                                     'b' = list(type = "string"),
+                                     'c' = list(type = "string")
+                                   ))
+    )
+    names(scalarsInMetaData[[1]]$headers) <- scalarsFileHeaders
+    names(scalarsInMetaData) <- scalarsFileName
+    scalarsInTemplate        <- tibble('a' = modelIn[[scalarsFileName]]$symnames, 
+                                       'b' = modelIn[[scalarsFileName]]$symtext, 
+                                       'c' = NA_character_)
+    names(scalarsInTemplate) <- scalarsFileHeaders
+    attr(scalarsInTemplate, "aliases") <- c(lang$scalarAliases$cols$name, 
+                                            lang$scalarAliases$cols$desc,
+                                            lang$scalarAliases$cols$value)
+  }
   # initialize data frames for model input data
   modelInTemplate <- vector(mode = "list", length = length(modelIn))
   lapply(modelInTabularData, function(el){
@@ -1128,9 +1159,15 @@ if(is.null(errMsg)){
       names(headers) <- names(modelIn[[i]]$headers)
       
       if(identical(el, scalarsFileName)){
-        modelInTemplate[[i]] <<- tibble(a = modelIn[[scalarsFileName]]$symnames,
-                                        b = modelIn[[scalarsFileName]]$symtext,
-                                        c = NA_real_)
+        modelInTemplate[[i]] <<- scalarsInTemplate
+      }else if(identical(el, scalarEquationsName)){
+        modelInTemplate[[i]] <<- tibble(a = modelIn[[scalarEquationsName]]$symnames,
+                                        b = modelIn[[scalarEquationsName]]$symtext,
+                                        c = NA_real_,
+                                        d = NA_real_,
+                                        e = NA_real_,
+                                        f = NA_real_,
+                                        g = NA_real_)
         names(modelInTemplate[[i]]) <<- names(headers)
       }else{
         modelInTemplate[[i]] <<- tibble(!!!headers)
@@ -1181,7 +1218,26 @@ if(is.null(errMsg)){
       return(character())
     })
     names(headers) <- names(modelOut[[i]]$headers)
-    modelOutTemplate[[i]] <<- tibble::tibble(!!!headers)
+    if(identical(names(modelOut)[i], scalarsOutName)){
+      nonHiddenScalars <- !modelOut[[scalarsOutName]]$symnames %in% config$hiddenOutputScalars
+      
+      modelOutTemplate[[i]] <<- tibble('a' = modelOut[[scalarsOutName]]$symnames[nonHiddenScalars], 
+                                       'b' = modelOut[[scalarsOutName]]$symtext[nonHiddenScalars], 
+                                       'c' = character(0L))
+      names(modelOutTemplate[[i]]) <<- names(headers)
+    }else if(identical(names(modelOut)[i], scalarEquationsOutName)){
+      modelOutTemplate[[i]] <<- tibble(a = modelOut[[scalarEquationsOutName]]$symnames,
+                                      b = modelOut[[scalarEquationsOutName]]$symtext,
+                                      c = NA_real_,
+                                      d = NA_real_,
+                                      e = NA_real_,
+                                      f = NA_real_,
+                                      g = NA_real_)
+      names(modelOutTemplate[[i]]) <<- names(headers)
+    }else{
+      modelOutTemplate[[i]] <<- tibble::tibble(!!!headers)
+    }
+    
     attr(modelOutTemplate[[i]], "aliases") <<- vapply(seq_along(modelOut[[i]]$headers), function(j){
       alias <- modelOut[[i]]$headers[[j]]$alias
       if(!length(alias)){
@@ -1392,28 +1448,6 @@ if(is.null(errMsg)){
   dbSchema$colNames  <- c(dbSchema$colNames, scenColNamesTmp)
   dbSchema$colTypes  <- c(dbSchema$colTypes, unlist(scenColTypesTmp))
   rm(dsIsNoTable, scenColNamesTmp, scenColTypesTmp)
-  
-  scalarsInMetaData <- NULL
-  scalarsInTemplate <- NULL
-  if(scalarsFileName %in% inputDsNames){
-    scalarsInMetaData <- list(list(alias = "Input Scalars",
-                                   colTypes = "ccc",
-                                   headers = list(
-                                     'a' = list(type = "string"),
-                                     'b' = list(type = "string"),
-                                     'c' = list(type = "string")
-                                   ))
-    )
-    names(scalarsInMetaData[[1]]$headers) <- scalarsFileHeaders
-    names(scalarsInMetaData) <- scalarsFileName
-    scalarsInTemplate        <- tibble('a' = character(0L), 
-                                       'b' = character(0L), 
-                                       'c' = character(0L))
-    names(scalarsInTemplate) <- scalarsFileHeaders
-    attr(scalarsInTemplate, "aliases") <- c(lang$scalarAliases$cols$name, 
-                                            lang$scalarAliases$cols$desc,
-                                            lang$scalarAliases$cols$value)
-  }
   
   # generate GAMS return code map
   GAMSReturnCodeMap <- c(
