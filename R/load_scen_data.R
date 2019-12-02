@@ -77,8 +77,10 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
            xls = {
              sheetID <- match(scalarsName, xlsSheetNames)[[1]]
              if(!is.na(sheetID)){
-               scalarTmp <- read_excel(xlsPath, sheetID, 
-                                       col_types = c("text", "text", "text"))
+               scalarTmp <- suppressMessages(
+                 read_excel(xlsPath, sheetID, 
+                            col_types = c("text", "text", "text"),
+                            col_names = TRUE))
                if(length(ret$scalar)){
                  ret$scalar <- bind_rows(scalarTmp, ret$scalar)
                }else{
@@ -152,15 +154,16 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                  sheetID <- match(names(metaData)[[i]], xlsSheetNames)[[1]]
                  if(!is.na(sheetID)){
                    headerTypes <- metaData[[i]]$colTypes
-                   ret$tabular[[i]] <<- read_excel(xlsPath, sheetID, 
-                                                   col_types = 
-                                                     vapply(seq_along(metaData[[i]]$headers), 
-                                                            function(colId){
-                                                              if(identical(substr(headerTypes, colId, colId), "c"))
-                                                                return("text")
-                                                              return("numeric")
-                                                            }, character(1L), USE.NAMES = FALSE), 
-                                                   col_names = TRUE)
+                   ret$tabular[[i]] <<- suppressMessages(
+                     read_excel(xlsPath, sheetID, 
+                                col_types = 
+                                  vapply(seq_along(metaData[[i]]$headers), 
+                                         function(colId){
+                                           if(identical(substr(headerTypes, colId, colId), "c"))
+                                             return("text")
+                                           return("numeric")
+                                         }, character(1L), USE.NAMES = FALSE), 
+                                col_names = TRUE))
                  }else{
                    ret$tabular[[i]] <<- templates[[i]]
                    return()

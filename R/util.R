@@ -868,6 +868,29 @@ fixColTypes <- function(data, colTypes){
   })
   return(data)
 }
+ddToTibble <- function(values, metaData){
+  choiceIdx         <- match(values, 
+                             metaData$dropdown$choices)
+  if(length(metaData$headers)){
+    headers <- names(metaData$headers)
+  }else{
+    headers <- "val"
+  }
+  aliases <- ""
+  if(length(choiceIdx)){
+    if(!any(is.na(choiceIdx)) && 
+       length(metaData$dropdown$aliases)){
+      aliasCol          <- metaData$dropdown$aliases[choiceIdx]
+      aliasCol[is.na(aliasCol)] <- ""
+      aliases <- aliasCol
+    }
+  }else{
+    aliases <- character(0L)
+  }
+  ddTibble <- tibble(val = values, text = aliases)
+  names(ddTibble) <- headers
+  return(ddTibble)
+}
 pidExists <- function(pid){
   if(isWindows()){
     grepl("Mem Usage", run("tasklist", c("/FI", paste0("PID eq ", pid)), 

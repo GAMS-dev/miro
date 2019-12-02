@@ -157,8 +157,7 @@ lapply(seq_along(modelIn), function(i){
            value <- value[value != "_"]
            if(identical(modelIn[[i]]$dropdown$multiple, TRUE)){
              # generate data frame (multi dropdown menu)
-             dataTmp[[j]]        <<- tibble(value)
-             names(dataTmp[[j]]) <<- tolower(names(modelIn))[[i]]
+             dataTmp[[j]] <<- ddToTibble(value, modelIn[[i]])
              j <<- j + 1L
            }else{
              # standard dropdown menu (one value)
@@ -185,7 +184,7 @@ lapply(seq_along(modelIn), function(i){
          {
            if(names(modelIn)[[i]] != scalarsFileName){
              tryCatch({
-               dataTmp[[j]] <<- getInputDataset(i)
+               dataTmp[[j]] <<- fixColTypes(getInputDataset(i), modelIn[[i]]$colTypes)
              }, error = function(e){
                flog.error("Dataset: '%s' could not be loaded. Error message: '%s'.", modelInAlias[i], e)
                errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, 

@@ -105,22 +105,7 @@ prepareModelRun <- function(async = FALSE){
       }
       rm(GMSOptValues, DDParValues)
     }else if(identical(modelIn[[names(dataTmp)[[i]]]]$dropdown$multiple, TRUE)){
-      # append alias column
-      csvData           <- dataTmp[[i]]
-      choiceIdx         <- match(csvData[[1L]], 
-                                 modelIn[[names(dataTmp)[[i]]]]$dropdown$choices)
-      if(length(choiceIdx)){
-        if(any(is.na(choiceIdx)) || 
-           !length(modelIn[[names(dataTmp)[[i]]]]$dropdown$aliases)){
-          csvData[["text"]] <- ""
-        }else{
-          aliasCol          <- modelIn[[names(dataTmp)[[i]]]]$dropdown$aliases[choiceIdx]
-          aliasCol[is.na(aliasCol)] <- ""
-          csvData[["text"]] <- aliasCol
-        }
-      }else{
-        csvData[["text"]] <- character(0L)
-      }
+      csvData <- ddToTibble(dataTmp[[i]][[1L]], modelIn[[names(dataTmp)[[i]]]])
     }else{
       csvData <- dataTmp[[i]]
     }
@@ -363,7 +348,6 @@ if(LAUNCHHCUBEMODE){
       }
     }
     updateProgress(incAmount = 15/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
-    print(gmsString)
     scenIds <- hcubeData$pushJobIDs(vapply(gmsString, digest, character(1L), algo = "sha256", 
                                            serialize = FALSE, USE.NAMES = FALSE))
     
