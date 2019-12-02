@@ -36,10 +36,6 @@ additionalInputScalars <- inputDsNames[vapply(inputDsNames, function(el){
 }, logical(1L), USE.NAMES = FALSE)]
 if(length(scalarInToVerify))
   scalarInToVerify <- scalarInToVerify[!startsWith(scalarInToVerify, "_")]
-scalarOutToVerify <- NULL
-if(scalarsOutName %in% names(modelOut)){
-  scalarOutToVerify <- modelOut[[scalarsOutName]]$symnames
-}
 
 gmsColTypes <- db$getDbSchema()$colTypes
 gmsFileHeaders <- db$getDbSchema()$colNames
@@ -60,7 +56,6 @@ hcubeImport <- HcubeImport$new(db, scalarsFileName, scalarsOutName,
                                                              c(scalarsOutName,
                                                                scalarEquationsOutName))),
                                tableNamesMustHave = c(scalarInToVerify, 
-                                                      scalarOutToVerify,
                                                       if(config$saveTraceFile) tableNameTracePrefix %+% modelName),
                                config$csvDelim, workDir, gmsColTypes = gmsColTypes, gmsFileHeaders = gmsFileHeaders,
                                gdxio = gdxio, inputSym = inputDsNames, outputSym = names(modelOut),

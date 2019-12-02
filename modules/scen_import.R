@@ -213,7 +213,8 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
                                  hiddenOutputScalars = config$hiddenOutputScalars, 
                                  fileName = loadModeFileName) 
     }, error = function(e){
-      flog.info("Problems loading output data. Error message: %s.", e)
+      flog.info("Problems loading output data. Error message: %s.", 
+                conditionMessage(e))
       errMsg <<- lang$errMsg$badOutputData$badOutputData
     })
     if(is.null(showErrorMsg(lang$errMsg$GAMSOutput$title, errMsg))){
