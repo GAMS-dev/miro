@@ -62,9 +62,9 @@ gamsSysDir <- Sys.getenv("GAMS_SYS_DIR")
 
 installedPackages <- installed.packages()[, "Package"]
 useGdx <- FALSE
-if("gdxrrw" %in% installedPackages){
+if("gdxrrwMIRO" %in% installedPackages){
   useGdx <- TRUE
-  requiredPackages <- c(requiredPackages, "gdxrrw")
+  requiredPackages <- c(requiredPackages, "gdxrrwMIRO")
 }
 # vector of required files
 filesToInclude <- c("./global.R", "./R/util.R", if(useGdx) "./R/gdxio.R", "./R/json.R", "./R/load_scen_data.R", 

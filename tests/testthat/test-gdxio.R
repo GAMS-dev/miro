@@ -4,7 +4,7 @@ load(file.path(getwd(), "data/test_gdxio.miroconf"), .GlobalEnv)
 source("../../global.R")
 source("../../R/gdxio.R")
 
-gdxio <- GdxIO$new('', c(modelInRaw, modelOut), 
+gdxio <- GdxIO$new(Sys.getenv("GAMS_SYS_DIR"), c(modelInRaw, modelOut), 
                    scalarsFileName, scalarsOutName, 
                    scalarEquationsName, 
                    scalarEquationsOutName)
