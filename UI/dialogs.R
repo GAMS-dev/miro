@@ -407,7 +407,7 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
                            value = "loadScenUI",
                            tags$div(class = "space"),
                            selectInput("selLoadScenUI", lang$nav$dialogLoadScen$selLoadScen, 
-                                       uiScenList, 
+                                       uiScenList, uiScenList[1L],
                                        multiple = FALSE, width = "100%")
     )
   }
