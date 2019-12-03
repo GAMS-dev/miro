@@ -266,13 +266,18 @@ if(LAUNCHHCUBEMODE){
              },
              dropdown = {
                if(isFALSE(modelIn[[i]]$dropdown$single)){
-                 data <- tibble(input[["dropdown_" %+% i]])
-                 names(data) <- tolower(names(modelIn))[i]
+                 data <- ddToTibble(sort(input[["dropdown_" %+% i]]), modelIn[[i]])
                  return(paste0(parPrefix, "=", digest(data, algo = "md5")))
                }
                value <- input[["dropdown_" %+% i]]
+               value <- value[value != "_"]
+               
+               if(!length(value)){
+                 return("")
+               }
+               
                if(length(modelIn[[i]]$dropdown$aliases)){
-                 text <- paste0(" --HCUBE_SCALART_", tolower(names(modelIn)[i]), 
+                 text <- paste0(" --HCUBE_SCALART_", names(modelIn)[i], 
                                 "=", escapeGAMSCL(modelIn[[i]]$dropdown$
                                                     aliases[[match(value, 
                                                                    modelIn[[i]]$
@@ -280,15 +285,11 @@ if(LAUNCHHCUBEMODE){
                }else{
                  text <- ""
                }
-               value <- paste0(escapeGAMSCL(value), text)
-               if("_" %in% value){
-                 value <- value[value != "_"]
-                 return(c(if(length(value)) paste0(parPrefix, "=", escapeGAMSCL(value)), ""))
-               }
-               return(paste0(parPrefix, "=", value))
+               return(paste0(parPrefix, "=", escapeGAMSCL(value), text))
              },
              date = {
-               return(paste0(parPrefix, "=", input[["date_" %+% i]]))
+               return(paste0(parPrefix, "=", escapeGAMSCL(
+                 as.character(input[["date_" %+% i]]))))
              },
              daterange = {
                value <- as.character(input[["daterange_" %+% i]])
@@ -315,7 +316,7 @@ if(LAUNCHHCUBEMODE){
                input[['in_' %+% i]]
                errMsg <- NULL
                tryCatch({
-                 data <- getInputDataset(i)
+                 data <- fixColTypes(getInputDataset(i), modelIn[[i]]$colTypes)
                }, error = function(e){
                  flog.error("Dataset: '%s' could not be loaded. Error message: '%s'.", 
                             modelInAlias[i], e)
