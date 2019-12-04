@@ -98,6 +98,42 @@ const arrayTypes = {
     };
     return ([elements, { myopicDefaults: true, uniqueItems: true }, 'symlink']);
   },
+  scripts_base(defaults) {
+    let id; let tabTitle; let command; let args; let outputFile; let
+      timeout;
+    if (defaults !== undefined) {
+      ({
+        id, tabTitle, command, args, outputFile, timeout,
+      } = defaults);
+    }
+    const elements = {
+      scripts_base: ['text', lang.addScript.id, id],
+      scriptsB_title: ['text', lang.addScript.title, tabTitle],
+      scriptsB_cmd: ['text', lang.addScript.cmd, command],
+      scriptsB_args: ['select', lang.addScript.args, args, args, args, true, true],
+      scriptsB_outFile: ['text', lang.addScript.outFile, outputFile],
+      scriptsB_timeout: ['numeric', lang.addScript.timeout, timeout, -1, Infinity, 1],
+    };
+    return ([elements, { elRequired: false, myopicDefaults: true, noEventOnDefault: true }, 'script']);
+  },
+  scripts_hcube(defaults) {
+    let id; let title; let command; let args; let outputFile; let
+      timeout;
+    if (defaults !== undefined) {
+      ({
+        id, title, command, args, outputFile, timeout,
+      } = defaults);
+    }
+    const elements = {
+      scripts_hcube: ['text', lang.addScript.id, id],
+      scriptsH_title: ['text', lang.addScript.title, title],
+      scriptsH_cmd: ['text', lang.addScript.cmd, command],
+      scriptsH_args: ['select', lang.addScript.args, args, args, args, true, true],
+      scriptsH_outFile: ['text', lang.addScript.outFile, outputFile],
+      scriptsH_timeout: ['numeric', lang.addScript.timeout, timeout, -1, Infinity, 1],
+    };
+    return ([elements, { elRequired: false, myopicDefaults: true, noEventOnDefault: true }, 'script']);
+  },
   dy_dyEvent() {
     const elements = {
       dy_dyEvent: ['select', lang.addDyEvent.dyDyEvent, outputScalars, outputScalarAliases],

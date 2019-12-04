@@ -532,7 +532,7 @@
         "maxScenWarning2":"减少场景数或使用PAVER模块进行比较。",
         "cancelButton":"取消",
         "paverButton":"分析",
-        "tabScripts": "Scripts",
+        "tabScript": "Scripts",
         "tabPaver": "PAVER",
         "delTrace":"注意：使用PAVER模块时,当前工作目录中的trace文件将被删除。",
         "tooManySolvers":"太多场景均有该属性，无法比较（不超过%s个场景），请减少场景数量。",
@@ -828,6 +828,7 @@
 		"tabInterface": "界面",
         "tabSymbols": "GAMS符号配置",
         "tabModules": "模块",
+        "tabScripts": "Analysis scripts",
         "headerGeneral": "通用",
         "headerLogo": "标志",
         "headerScalars": "标量",
@@ -837,6 +838,8 @@
         "headerOutputGroups": "输入组",
         "headerSymbolNaming": "指定名称",
         "headerSymbolGrouping": "组合",
+        "headerBaseScripts": "Base mode",
+        "headerHcubeScripts": "Hypercube mode",
         "headerScenData": "场景和数据",
         "headerComputation": "计算"
       },
@@ -872,6 +875,10 @@
       },
       "symlinks":{
         "label": "Specify symbol links (results that can be used as input data)"
+      },
+      "scripts":{
+        "base": "Specify custom analysis scripts for the Base mode",
+        "hcube": "Specify custom analysis scripts for the Hypercube mode"
       },
 	  "overwriteSheetOrder":{
         "input": "指定输入符号的制表顺序（拖放）",
@@ -1092,7 +1099,12 @@
         "val45": "命令行参数的名称必须至少为一个字符长。",
         "val46": "请分别指定命令行的参数和值。",
         "val47": "Source and target symbol must have the same dimension!",
-        "val48": "The minimum step size must not be less than zero."
+        "val48": "The minimum step size must not be less than zero.",
+        "val49": "The script identifier must not be empty and must only contain alphanumeric characters!",
+        "val50": "The script identifier must be unique!",
+        "val51": "The title is required.",
+        "val52": "The command is required.",
+        "val53": "The output filename is required."
       },
       "widgetOptions":{
 	    "slider": "滑动条",
@@ -1106,6 +1118,7 @@
         "numericinput": "Numeric input"						  
       },
       "table":{
+        "bigData": "Are large amounts of data stored in the table (i.e. more than 20,000 records)?",
         "readonly": "设定表格为只读吗？",
         "readonlyCols": "设定表格的某些列为只读",
 		"pivotCols": "选择要旋转的列",
@@ -1508,6 +1521,14 @@
         "addSymlink":{
           "source": "Name of the output symbol",
           "target": "Name of the input symbol to link to"
+        },
+        "addScript":{
+          "id": "Unique identifier (alphanumeric)",
+          "title": "Script alias (displayed in UI)",
+          "cmd": "Command to run",
+          "args": "Arguments to the command",
+          "outFile": "Name of the output file (including file extension)",
+          "timeout": "Timeout (seconds ,-1 for infinite)"
         },
         "addDyEvent":{
           "dyDyEvent": "使用哪个GAMS符号？",

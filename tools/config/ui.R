@@ -587,6 +587,27 @@ body_admin <- dashboardBody({
                                                  tags$div(id = "module_wrapper2"),
                                                  tags$div(class = "space")
                                         )      
+                               )),
+                      tabPanel(lang$adminMode$general$ui$tabScripts, 
+                               tags$div(class = "col-sm-6", style = "padding-top: 20px;",
+                                        tags$div(class="main-tab",
+                                                 tags$h2(lang$adminMode$general$ui$headerBaseScripts),
+                                                 tags$div(class="option-wrapper-indented",
+                                                          createArray(NULL, "scripts_base", 
+                                                                      lang$adminMode$general$scripts$base, 
+                                                                      autoCreate = FALSE)),
+                                                 tags$div(class = "space")
+                                        )      
+                               ),
+                               tags$div(class = "col-sm-6", style = "padding-top: 20px;",
+                                        tags$div(class="main-tab",
+                                                 tags$h2(lang$adminMode$general$ui$headerHcubeScripts),
+                                                 tags$div(class="option-wrapper-indented",
+                                                          createArray(NULL, "scripts_hcube", 
+                                                                      lang$adminMode$general$scripts$hcube, 
+                                                                      autoCreate = FALSE)),
+                                                 tags$div(class = "space")
+                                        )      
                                ))
                     )
                 )

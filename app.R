@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "0.9.15"
+MIROVersion <- "0.9.16"
 APIVersion  <- "1"
-MIRORDate   <- "Dec 03 2019"
+MIRORDate   <- "Dec 04 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -232,8 +232,12 @@ if(is.null(errMsg)){
                                          modelName, conditionMessage(e)),
                          sep = "\n")
       })
-      if(is.null(errMsg) && useTempDir && 
-         !identical(Sys.getenv("MIRO_BUILD_ARCHIVE"), "false")){
+      buildArchive <- !identical(Sys.getenv("MIRO_BUILD_ARCHIVE"), "false")
+      if(!buildArchive && miroBuildonly){
+        flog.warn("When MIRO_BUILD is specified, archive must be created (MIRO_BUILD_ARCHIVE must not be 'false')! Setting MIRO_BUILD_ARCHIVE to 'true'...")
+        buildArchive <- TRUE
+      }
+      if(is.null(errMsg) && useTempDir && buildArchive){
         tryCatch({
           zipMiro(file.path(currentModelDir, paste0(modelName, ".zip")),
                   modelFiles, currentModelDir)

@@ -43,3 +43,85 @@ isNonemptyDataset <- function(datasets){
       TRUE
   }, logical(1L), USE.NAMES = FALSE)
 }
+Validator <- R6Class("Validator", public = list(
+  initialize = function(keys, data = NULL, requiredKeys = NULL){
+    if(!length(requiredKeys)){
+      requiredKeys <- keys
+    }
+    private$keys <- keys
+    private$template <- vector("list", length(requiredKeys))
+    names(private$template) <- requiredKeys
+    private$template$isValid <- FALSE
+    
+    if(length(data)){
+      private$data <- lapply(data, function(el){
+        return(c(el, isValid = TRUE))
+      })
+      names(private$data) <- as.character(seq_along(data))
+      private$validData <- data
+    }
+    invisible(self)
+  },
+  getValid = function(key){
+    return(lapply(private$data, function(el){
+      if(isTRUE(el[["isValid"]])){
+        return(el[[key]])
+      }
+    }))
+  },
+  getValidData = function(){
+    if(private$cacheClean){
+      return(private$validData)
+    }
+    data <- lapply(unname(private$data), function(el){
+      if(isTRUE(el[["isValid"]])){
+        el[["isValid"]] <- NULL
+        return(el)
+      }
+      return(NULL)
+    })
+    data[vapply(data, is.null, logical(1), USE.NAMES = FALSE)] <- NULL
+    private$validData <- data
+    private$cacheClean <- TRUE
+    return(data)
+  },
+  removeEl = function(id){
+    private$data[[as.character(id)]] <- NULL
+    private$cacheClean <- FALSE
+    invisible(self)
+  },
+  removeKey = function(id, key){
+    private$data[[as.character(id)]][[key]] <- NULL
+    private$cacheClean <- FALSE
+    if(!key %in% names(private$template)){
+      return(invisible(self))
+    }
+    # required key
+    private$data[[as.character(id)]] <- c(private$data[[as.character(id)]], 
+                                          setNames(list(NULL), key))
+    private$data[[as.character(id)]][["isValid"]] <- FALSE
+    
+    invisible(self)
+  },
+  setVal = function(id, key, val){
+    id <- as.character(id)
+    if(!id %in% names(private$data)){
+      private$data[[id]] <- private$template
+      private$data[[id]][[key]] <- val
+    }else{
+      private$data[[id]][[key]] <- val
+      if(!any(vapply(private$data[[id]], is.null, 
+                     logical(1L), USE.NAMES = FALSE))){
+        private$data[[id]][["isValid"]] <- TRUE
+        private$cacheClean <- FALSE
+      }
+    }
+    invisible(self)
+  }
+), private = list(
+  cacheClean = TRUE,
+  keys = character(1L),
+  template = NULL,
+  validData = list(),
+  data = list()
+))

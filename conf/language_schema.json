@@ -3768,6 +3768,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "tabScripts": { 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "headerGeneral":{ 
                   "type":"string",
                   "minLength":1,
@@ -3809,6 +3814,16 @@
                   "required":true
                 },
                 "headerSymbolGrouping":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerBaseScripts":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerHcubeScripts":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -3975,6 +3990,23 @@
               "required":true,
               "properties":{  
                 "label":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "scripts":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{  
+                "base":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "hcube":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4989,6 +5021,31 @@
                   "required":true
                 },
                 "val48":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val49":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val50":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val51":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val52":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val53":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -7069,6 +7126,43 @@
                       "required":true
                     },
                     "target":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    }
+                  }
+                },
+                "addScript":{
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{ 
+                    "id":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "title":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "cmd":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "args":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "outFile":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "timeout":{ 
                       "type":"string",
                       "minLength":1,
                       "required":true

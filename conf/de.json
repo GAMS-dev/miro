@@ -828,6 +828,7 @@
         "tabInterface": "Benutzeroberfläche",
         "tabSymbols": "Symbol-Konfiguration",
         "tabModules": "Module",
+        "tabScripts": "Analyseskripte",
         "headerGeneral": "Allgemein",
         "headerLogo": "Logo",
         "headerScalars": "Skalare",
@@ -837,6 +838,8 @@
         "headerOutputGroups": "Ausgabegruppen",
         "headerSymbolNaming": "Benennung",
         "headerSymbolGrouping": "Reihenfolge",
+        "headerBaseScripts": "Basismodus",
+        "headerHcubeScripts": "Hypercube-Modus",
         "headerScenData": "Szenario & Daten",
         "headerComputation": "Berechnung"
       },
@@ -872,6 +875,10 @@
       },
       "symlinks":{
         "label": "Symbolverknüpfungen festlegen (Ergebnisse, die als Eingabedaten verwendet werden können)"
+      },
+      "scripts":{
+        "base": "Spezifizieren Sie individuelle Analyseskripte für den Basismodus.",
+        "hcube": "Spezifizieren Sie individuelle Analyseskripte für den Hypercube-Modus."
       },
       "overwriteSheetOrder":{
         "input": "Legen Sie die Reihenfolge fest, in welcher die Eingabesymbole angezeigt werden sollen (Drag & Drop).",
@@ -1092,7 +1099,12 @@
         "val45": "Der Name des Kommandozeilenparameters muss mindestens 1 Zeichen lang sein.",
         "val46": "Bitte geben Sie Kommandozeilenargumente und -werte separat an.",
         "val47": "Quell- und Zielsymbol müssen die gleiche Dimension haben!",
-        "val48": "Die minimale Schrittweite darf nicht kleiner als Null sein."
+        "val48": "Die minimale Schrittweite darf nicht kleiner als Null sein.",
+        "val49": "Die Skriptkennung darf nicht leer sein und nur alphanumerische Zeichen enthalten!",
+        "val50": "Die Skriptkennung muss eindeutig sein!",
+        "val51": "Der Titel ist erforderlich.",
+        "val52": "Der Befehl ist erforderlich.",
+        "val53": "Der Name der Ausgabedatei ist erforderlich."
       },
       "widgetOptions":{
         "slider": "Schieberegler",
@@ -1302,7 +1314,7 @@
         "chartTitle": "Wählen Sie einen Titel für Ihre Grafik",
         "height": "Wählen Sie eine Höhe für Ihre Grafik (px) (keine Live-Vorschau)",
         "tool": "Charttyp",
-        "choices": ["Kreisdiagramm", "Balkendiagramm", "Streudiagramm", "Liniendiagramm", "Blasendiagramm", "Histogramm", "Zeitreihen-Diagramm", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle", "Wertebox für skalare Werte", "Eigener Renderer"],
+        "choices": ["Kreisdiagramm", "Balkendiagramm", "Streudiagramm", "Liniendiagramm", "Blasendiagramm", "Histogramm", "Zeitreihen-Diagramm", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle und Pivot-Charts", "Wertebox für skalare Werte", "Eigener Renderer"],
         "deleteGraph": "Löschen",
         "saveGraph": "Speichern"
       },
@@ -1315,7 +1327,7 @@
         "errContent1": "Es wurden keine gültigen Datensätze gefunden. Bitte laden Sie eine korrekt formatierte Excel- oder gdx-Datei mit Daten hoch."
       },
       "updateToolScalars": ["Wertebox für skalare Werte"],
-      "updateToolNoScalars": ["Kreisdiagramm", "Balkendiagramm", "Streudiagramm", "Liniendiagramm", "Blasendiagramm", "Histogramm", "Zeitreihen-Diagramm", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle", "Eigener Renderer"],
+      "updateToolNoScalars": ["Kreisdiagramm", "Balkendiagramm", "Streudiagramm", "Liniendiagramm", "Blasendiagramm", "Histogramm", "Zeitreihen-Diagramm", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle und Pivot-Charts", "Eigener Renderer"],
       "pieOptions":{
         "labels": "Bezeichnung",
         "values": "Werte",
@@ -1509,6 +1521,14 @@
         "addSymlink":{
           "source": "Name des Ausgabesymbols",
           "target": "Name des Eingabesymbols, auf das verwiesen werden soll"
+        },
+        "addScript":{
+          "id": "Eindeutige Skriptkennung (alphanumerisch)",
+          "title": "Skript-Alias (wird in der Benutzeroberfläche angezeigt)",
+          "cmd": "Auszuführender Befehl",
+          "args": "Argumente für den Befehl",
+          "outFile": "Name der Ausgabedatei (inklusive Dateiendung)",
+          "timeout": "Timeout (Sekunden, -1 für unendlich)"
         },
         "addDyEvent":{
           "dyDyEvent": "Welches Symbol soll verwendet werden?",

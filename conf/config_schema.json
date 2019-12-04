@@ -1904,7 +1904,7 @@
                   },
                   "args": {
                     "description":"Additional arguments to pass to command",
-                    "type": "array",
+                    "type": ["array", "string"],
                     "items":{
                       "type":"string",
                       "minLength":1
@@ -1949,7 +1949,7 @@
                   },
                   "args": {
                     "description":"Additional arguments to pass to command",
-                    "type": "array",
+                    "type": ["array", "string"],
                     "items":{
                       "type":"string",
                       "minLength":1

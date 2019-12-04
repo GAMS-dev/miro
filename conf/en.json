@@ -828,6 +828,7 @@
         "tabInterface": "Interface",
         "tabSymbols": "Symbol configuration",
         "tabModules": "Modules",
+        "tabScripts": "Analysis scripts",
         "headerGeneral": "General",
         "headerLogo": "Logo",
         "headerScalars": "Scalars",
@@ -837,6 +838,8 @@
         "headerOutputGroups": "Output groups",
         "headerSymbolNaming": "Naming",
         "headerSymbolGrouping": "Ordering",
+        "headerBaseScripts": "Base mode",
+        "headerHcubeScripts": "Hypercube mode",
         "headerScenData": "Scenario & data",
         "headerComputation": "Computation"
       },
@@ -872,6 +875,10 @@
       },
       "symlinks":{
         "label": "Specify symbol links (results that can be used as input data)"
+      },
+      "scripts":{
+        "base": "Specify custom analysis scripts for the Base mode",
+        "hcube": "Specify custom analysis scripts for the Hypercube mode"
       },
       "overwriteSheetOrder":{
         "input": "Specify the tab order of the input symbols (drag & drop)",
@@ -1092,7 +1099,12 @@
         "val45": "The name of the command line parameter must be at least 1 character long.",
         "val46": "Please specify command line arguments and values separately.",
         "val47": "Source and target symbol must have the same dimension!",
-        "val48": "The minimum step size must not be less than zero."
+        "val48": "The minimum step size must not be less than zero.",
+        "val49": "The script identifier must not be empty and must only contain alphanumeric characters!",
+        "val50": "The script identifier must be unique!",
+        "val51": "The title is required.",
+        "val52": "The command is required.",
+        "val53": "The output filename is required."
       },
       "widgetOptions":{
         "slider": "Slider",
@@ -1302,7 +1314,7 @@
         "chartTitle": "Choose a title for your chart",
         "height": "Choose a height for your chart (px) (no live preview)",
         "tool": "Charting type",
-        "choices": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram", "Time Series Diagram", "Map chart", "Gantt chart", "Pivot table", "Valuebox for scalar values", "Custom renderer"],
+        "choices": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram", "Time Series Diagram", "Map chart", "Gantt chart", "Pivot table and pivot charts", "Valuebox for scalar values", "Custom renderer"],
         "deleteGraph": "Delete",
         "saveGraph": "Save"
       },
@@ -1315,7 +1327,7 @@
         "errContent1": "No valid datasets were found. Please upload a properly formatted Excel or gdx file with data."
       },
       "updateToolScalars": ["Valuebox for scalar values"],
-      "updateToolNoScalars": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram", "Time Series Diagram", "Map chart", "Gantt chart", "Pivot table", "Custom renderer"],
+      "updateToolNoScalars": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram", "Time Series Diagram", "Map chart", "Gantt chart", "Pivot table and pivot charts", "Custom renderer"],
       "pieOptions":{
         "labels": "Labels",
         "values": "Values",
@@ -1509,6 +1521,14 @@
         "addSymlink":{
           "source": "Name of the output symbol",
           "target": "Name of the input symbol to link to"
+        },
+        "addScript":{
+          "id": "Unique identifier (alphanumeric)",
+          "title": "Script alias (displayed in UI)",
+          "cmd": "Command to run",
+          "args": "Arguments to the command",
+          "outFile": "Name of the output file (including file extension)",
+          "timeout": "Timeout (seconds, -1 for infinite)"
         },
         "addDyEvent":{
           "dyDyEvent": "Which symbol shall be used?",

@@ -116,7 +116,7 @@ class InputArray {
             }
 
             arrayContent += InputArray.createSelectInput(k, elID, v[1],
-              choices, aliases, selected, v[5]);
+              choices, aliases, selected, v[5], v[6]);
             break;
           case 'selectDep':
             [,,, [selected]] = v;
@@ -144,7 +144,8 @@ class InputArray {
             } else {
               value = (v[2] !== undefined ? v[2] : '');
             }
-            if (idx === 0 && this.options.elRequired === false) {
+            if (idx === 0 && this.options.elRequired === false
+              && !(this.options.noEventOnDefault === true && value)) {
               // tell R that new element was addded to array: (ID)
               Shiny.setInputValue(rAddID, [elID, value, k], { priority: 'event' });
             }
@@ -305,7 +306,7 @@ class InputArray {
       $.each(elements, (k, v) => {
         if (v[0] === 'select' || v[0] === 'selectDep') {
           if (!notFirstIdx && idx === 0) {
-            $(`#${k}${htmlID}`).selectize({
+            $(`#${k + htmlID}`).selectize({
               onChange(value) {
                 if (options.elRequired) {
                   Miro.updateArrayEl(arrayID, elID, value);
@@ -323,11 +324,13 @@ class InputArray {
               },
             });
           } else {
-            $(`#${k}${htmlID}`).selectize({
+            const selectizeOptions = $(`#${k + htmlID}`).parent().find(`script[data-for="${k + htmlID}"]`);
+            const addOptions = selectizeOptions.length ? JSON.parse(selectizeOptions.text()) : {};
+            $(`#${k}${htmlID}`).selectize($.extend({
               onChange(value) {
                 Shiny.setInputValue(k, [elID, value], { priority: 'event' });
               },
-            });
+            }, addOptions));
           }
           if (v[0] === 'selectDep') {
             const altElements = {};
@@ -338,34 +341,34 @@ class InputArray {
           }
         } else if (v[0] === 'checkbox') {
           if (!notFirstIdx && idx === 0) {
-            $(`#${k}${htmlID}`).on('change', function () {
+            $(`#${k + htmlID}`).on('change', function () {
               Shiny.setInputValue(rAddID, [elID, $(this).prop('checked'), k, 'change'], { priority: 'event' });
             });
           } else {
-            $(`#${k}${htmlID}`).on('change', function () {
+            $(`#${k + htmlID}`).on('change', function () {
               Shiny.setInputValue(k, [elID, $(this).prop('checked')], { priority: 'event' });
             });
           }
         } else if (v[0] === 'color') {
           if (!notFirstIdx && idx === 0) {
-            $(`#${k}${htmlID}`).colorpicker({
+            $(`#${k + htmlID}`).colorpicker({
               align: 'left',
             }).on('changeColor', $.debounce(500, function () {
               Shiny.setInputValue(rAddID, [elID, $(this).val(), k, 'change'], { priority: 'event' });
             }));
           } else {
-            $(`#${k}${htmlID}`).colorpicker({
+            $(`#${k + htmlID}`).colorpicker({
               align: 'left',
             }).on('changeColor', $.debounce(500, function () {
               Shiny.setInputValue(k, [elID, $(this).val()]);
             }));
           }
         } else if (!notFirstIdx && idx === 0) {
-          $(`#${k}${htmlID}`).on('change', $.debounce(250, function () {
+          $(`#${k + htmlID}`).on('change', $.debounce(250, function () {
             Shiny.setInputValue(rAddID, [elID, $(this).val(), k, 'change'], { priority: 'event' });
           }));
         } else {
-          $(`#${k}${htmlID}`).on('change', $.debounce(250, function () {
+          $(`#${k + htmlID}`).on('change', $.debounce(250, function () {
             Shiny.setInputValue(k, [elID, $(this).val()], { priority: 'event' });
           }));
         }
@@ -388,7 +391,8 @@ class InputArray {
       this.elInArray[elID] = newLabel;
     }
 
-    static createSelectInput(arrayID, elID, label, choices, aliases = choices, selectedRaw = '', multiple = false) {
+    static createSelectInput(arrayID, elID, label, choices, aliases = choices, selectedRaw = '',
+      multiple = false, create = false) {
       const id = arrayID + elID;
       let selected = selectedRaw;
       let optionsHTML = '';
@@ -396,16 +400,18 @@ class InputArray {
       if (!$.isArray(selected)) {
         selected = [selected];
       }
+      if (choices) {
+        for (let i = 0, itemLen = choices.length; i < itemLen;
+          optionsHTML += `<option value="${choices[i]}"${$.inArray(choices[i], selected) !== -1 ? ' selected' : ''
+          }>${aliases[i++]}</option>\n`);
+      }
 
-      for (let i = 0, itemLen = choices.length; i < itemLen;
-        optionsHTML += `<option value="${choices[i]}"${$.inArray(choices[i], selected) !== -1 ? ' selected' : ''
-        }>${aliases[i++]}</option>\n`);
-
-      return (`<div class="config-array-err" id="${id}_err" style="display:none;"></div>`
-  + '<div class="form-group">\n'
-  + `<label class="control-label" for="${
-    id}">${label}</label>\n`
-  + `<div><select id="${id}"${multiple === true ? ' multiple="multiple"' : ''}>${optionsHTML}</select>\n</div>\n</div>`);
+      return (`<div class="config-array-err" id="${id}_err" style="display:none;"></div>\
+<div class="form-group">\n\
+<label class="control-label" for="${id}">${label}</label>\n\
+<div><select id="${id}"${multiple === true ? ' multiple="multiple"' : ''}>${optionsHTML}</select>\
+${create === true ? `<script type="application/json" data-for="${id}">{"create":true,"persist":false,"openOnFocus":false}</script>` : ''}\
+\n</div>\n</div>`);
     }
 
     static createTextInput(arrayID, elID, label, value = '', placeholder = null) {
