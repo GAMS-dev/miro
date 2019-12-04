@@ -1,5 +1,5 @@
 #version number
-MIROVersion <- "0.9.16"
+MIROVersion <- "0.9.17"
 APIVersion  <- "1"
 MIRORDate   <- "Dec 04 2019"
 #####packages:
@@ -45,8 +45,13 @@ isShinyProxy <- !identical(Sys.getenv("SHINYPROXY_USERNAME"), "")
 debugMode <- TRUE
 RLibPath <- NULL
 miroBuildonly <- identical(Sys.getenv("MIRO_BUILD"), "true")
+miroDeploy <- miroBuildonly
+if(identical(Sys.getenv("MIRO_TEST_DEPLOY"), "true")){
+  miroDeploy <- TRUE
+  miroBuildonly <- FALSE
+}
 logToConsole <- TRUE
-if(identical(Sys.getenv("NODEBUG"), "true") && !miroBuildonly){
+if(identical(Sys.getenv("NODEBUG"), "true") && !miroDeploy){
   debugMode <- FALSE
   logToConsole <- FALSE
 }else if(isShinyProxy){
@@ -166,12 +171,12 @@ if(is.null(errMsg)){
   useTempDir <- !identical(Sys.getenv("MIRO_USE_TMP"), "false")
   # check if GAMS model file exists
   currentModelDir  <- modelPath
-  if(!useTempDir && ! file.exists(file.path(modelPath, modelGmsName))){
+  if(!useTempDir && !file.exists(file.path(modelPath, modelGmsName))){
     errMsg <- sprintf("The GAMS model file: '%s' could not be found in the directory: '%s'." %+%
                         "Please make sure you specify a valid gms file path.", modelGmsName, modelPath)
   }
 }
-if(!miroBuildonly &&
+if(!miroDeploy &&
    identical(tolower(Sys.getenv("MIRO_MODE")), "config")){
   LAUNCHCONFIGMODE <- TRUE
 }else if(identical(tolower(Sys.getenv("MIRO_MODE")), "hcube")){
@@ -233,7 +238,7 @@ if(is.null(errMsg)){
                          sep = "\n")
       })
       buildArchive <- !identical(Sys.getenv("MIRO_BUILD_ARCHIVE"), "false")
-      if(!buildArchive && miroBuildonly){
+      if(!buildArchive && miroDeploy){
         flog.warn("When MIRO_BUILD is specified, archive must be created (MIRO_BUILD_ARCHIVE must not be 'false')! Setting MIRO_BUILD_ARCHIVE to 'true'...")
         buildArchive <- TRUE
       }
@@ -247,7 +252,7 @@ if(is.null(errMsg)){
                                            paste0(modelName, ".zip"), conditionMessage(e)),
                            sep = "\n")
         })
-      }else if(miroBuildonly){
+      }else if(miroDeploy){
         if(LAUNCHHCUBEMODE){
           errMsg <- paste(errMsg, "Hypercube mode requires to be executed in temporary directory. Set the environment variable MIRO_BUILD_ARCHIVE to 'true'!", 
                           sep = "\n")
@@ -256,9 +261,34 @@ if(is.null(errMsg)){
                           sep = "\n")
         }
       }
-    }else if(miroBuildonly){
+    }else if(miroDeploy){
       errMsg <- paste(errMsg, paste0("No model data ('", modelName, "_files.txt') found."), 
                       sep = "\n")
+    }
+    if(miroDeploy){
+      if(file.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))){
+        modelFiles <- c(modelFiles, paste0("static_", modelName))
+      }
+      if(file.exists(file.path(currentModelDir, 
+                               paste0(miroDataDirPrefix, modelName)))){
+        modelFiles <- c(modelFiles, paste0(miroDataDirPrefix, modelName))
+      }
+      if(is.null(errMsg) && identical(Sys.getenv("MIRO_TEST_DEPLOY"), "true")){
+        modelPath <- file.path(tmpFileDir, modelName, "test_deploy")
+        if(dir.exists(modelPath) && 
+           unlink(modelPath, recursive = TRUE, force = TRUE) != 0L){
+          errMsg <- sprintf("Problems removing temporary directory: '%s'. No write permissions?",
+                            modelPath)
+        }
+        if(is.null(errMsg) && any(!file.copy2(file.path(currentModelDir, modelFiles), 
+                                             file.path(modelPath, modelFiles)))){
+          errMsg <- sprintf("Problems moving files from: '%s' to: '%s'. No write permissions?",
+                            currentModelDir, modelPath)
+        }
+        if(is.null(errMsg)){
+          currentModelDir <- modelPath
+        }
+      }
     }
   }else{
     overwriteLang <- Sys.getenv("MIRO_LANG")
@@ -428,13 +458,6 @@ if(miroBuildonly){
                                         "_hcube.miroconf")))
   }
   tryCatch({
-    if(file.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))){
-      modelFiles <- c(modelFiles, paste0("static_", modelName))
-    }
-    if(file.exists(file.path(currentModelDir, 
-                             paste0(miroDataDirPrefix, modelName)))){
-      modelFiles <- c(modelFiles, paste0(miroDataDirPrefix, modelName))
-    }
     zipMiro(file.path(currentModelDir, paste0(modelNameRaw, ".miroapp")), 
             c(modelFiles, basename(rSaveFilePath)), currentModelDir)
   }, error = function(e){
@@ -869,6 +892,10 @@ if(!is.null(errMsg)){
           modelInTemplateTmp[[length(metaDataTmp) + 1L]] <- scalarsInTemplate
           metaDataTmp <- c(metaDataTmp, scalarsInMetaData)
         }
+        inputIdsTmp        <- match(inputDsNames, names(metaDataTmp))
+        inputIdsTmp        <- inputIdsTmp[!is.na(inputIdsTmp)]
+        metaDataTmp        <- metaDataTmp[inputIdsTmp]
+        modelInTemplateTmp <- modelInTemplateTmp[inputIdsTmp]
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
           flog.info("New data: '%s' is being stored in the database. Please wait a until the import is finished.", miroDataFile)
@@ -887,7 +914,7 @@ if(!is.null(errMsg)){
                                   templates = modelInTemplateTmp, method = method,
                                   fileName = miroDataFile, DDPar = DDPar, GMSOpt = GMSOpt)$tabular
           
-          if(!scalarsFileName %in% names(modelInRaw) && length(scalarInputSym)){
+          if(!scalarsFileName %in% names(metaDataTmp) && length(scalarInputSym)){
             # additional command line parameters that are not GAMS symbols
             scalarsTemplate <- tibble(a = character(0L), b = character(0L), c = character(0L))
             names(scalarsTemplate) <- scalarsFileHeaders

@@ -1156,14 +1156,34 @@ setDbConfig <- function(){
   return(list(data = config, errMsg = errMsg))
 }
 file.move <- function(from, to){
-  nonExistingDirs <- !dir.exists(dirname(to))
+  createDirIfNonExistent(to)
+  file.rename(from = from,  to = to)
+}
+file.copy2 <- function(from, to){
+  createDirIfNonExistent(to)
+  fromIsDir <- dir.exists(from)
+  ret1 <- file.copy(from[!fromIsDir], to[!fromIsDir], overwrite = TRUE)
+  if(any(!ret1)){
+    return(FALSE)
+  }
+  fromDirs <- from[fromIsDir]
+  toDirs   <- dirname(to[fromIsDir])
+  for(i in seq_along(fromDirs)){
+    if(!file.copy(fromDirs[i], toDirs[i], 
+                  recursive = TRUE, overwrite = TRUE)){
+      return(FALSE)
+    }
+  }
+  return(TRUE)
+}
+createDirIfNonExistent <- function(dirs){
+  nonExistingDirs <- !dir.exists(dirname(dirs))
   if(any(nonExistingDirs)){
-    nonExistingDirs <- dirname(to)[nonExistingDirs]
+    nonExistingDirs <- unique(dirname(dirs)[nonExistingDirs])
     for(nonExistingDir in nonExistingDirs){
       dir.create(nonExistingDir, recursive=TRUE)
     }
   }
-  file.rename(from = from,  to = to)
 }
 hotToR <- function(data, metaData, fixType = TRUE){
   dataTmp <- suppressWarnings(as_tibble(
