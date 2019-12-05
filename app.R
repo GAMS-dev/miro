@@ -423,6 +423,8 @@ if(is.null(errMsg) && debugMode){
 if(miroBuildonly){
   if(!is.null(errMsg)){
     warning(errMsg)
+    if(interactive())
+      stop()
     if(identical(errMsg, paste0("\nNo model data ('", modelName, "_files.txt') found."))){
       quit("no", status = 2)
     }else{

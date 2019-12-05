@@ -569,9 +569,6 @@ observeEvent(input$pivot_cols, ignoreNULL = FALSE, {
 })
 observeEvent(input$pivot_aggregatorName, {
   rv$graphConfig$pivottable$aggregatorName <<- input$pivot_aggregatorName
-  rv$graphConfig$pivottable$vals <<- NULL
-  updateSelectInput(session, "pivot_vals", selected = "_")
-  updateSelectInput(session, "pivot_vals2", selected = "_")
 })
 observeEvent(c(input$pivot_vals, input$pivot_vals2), {
   if(identical(input$pivot_vals, "_") || identical(input$pivot_vals, NULL))
@@ -2096,10 +2093,9 @@ getPivotOptions <- reactive({
                          selected = "Sum"),
              tags$div(class = "shiny-input-container",
                       style = "max-height:800px;max-height: 80vh;padding-right:30px;padding-left:40px;",
-                      conditionalPanel(condition = "input.pivot_aggregatorName != 'Count' && input.pivot_aggregatorName != 'Count as Fraction of Total' && 
-                     input.pivot_aggregatorName != 'Count as Fraction of Rows' && input.pivot_aggregatorName != 'Count as Fraction of Columns'",
+                      conditionalPanel(condition = "input.pivot_aggregatorName && !input.pivot_aggregatorName.startsWith('Count')",
                                        selectInput("pivot_vals", lang$adminMode$graphs$pivotOptions$vals, choices = c("_", indices),
-                                                   selected = indices %in% scalarIndices)
+                                                   selected = if(length(scalarIndices)) scalarIndices[[1]])
                       ),  
                       conditionalPanel(condition = "input.pivot_aggregatorName === 'Sum over Sum' || input.pivot_aggregatorName === '80% Upper Bound' || 
                      input.pivot_aggregatorName === '80% Lower Bound'",
