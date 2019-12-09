@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "0.9.17"
+MIROVersion <- "0.9.18"
 APIVersion  <- "1"
-MIRORDate   <- "Dec 04 2019"
+MIRORDate   <- "Dec 09 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -666,7 +666,8 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
 if(is.null(errMsg)){
   tryCatch({
     if(useGdx){
-      gdxio <<- GdxIO$new(gamsSysDir, c(modelInRaw, modelOut), scalarsFileName,
+      gdxio <<- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", "bin"), 
+                          c(modelInRaw, modelOut), scalarsFileName,
                           scalarsOutName, scalarEquationsName, scalarEquationsOutName)
     }
   }, error = function(e){

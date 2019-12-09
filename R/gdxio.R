@@ -1,15 +1,15 @@
 GdxIO <- R6::R6Class("GdxIO", public = list(
-  initialize = function(gamsSysDir, metaData, 
+  initialize = function(libDir, metaData, 
                         scalarsFileName, scalarsOutName, 
                         scalarEquationsName, 
                         scalarEquationsOutName){
     stopifnot(is.list(metaData), length(metaData) > 0L,
-              is.character(gamsSysDir), identical(length(gamsSysDir), 1L))
-    if(gdxrrwMIRO::igdx(gamsSysDir, silent = TRUE, returnStr = FALSE)){
+              is.character(libDir), identical(length(libDir), 1L))
+    if(gdxrrwMIRO::igdx(libDir, silent = TRUE, returnStr = FALSE)){
       private$gdxDllLoaded <- TRUE
     }else{
-      stop(sprintf("Could not find gdx library in GAMS system directory: '%s'.", 
-                   gamsSysDir), call. = FALSE)
+      stop(sprintf("Could not find gdx library in: '%s'.", 
+                   libDir), call. = FALSE)
     }
     private$metaData <- metaData
     private$scalarsFileName <- scalarsFileName
