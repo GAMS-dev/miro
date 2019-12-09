@@ -59,7 +59,7 @@ maxNumberScenarios <- 50
 # maximum number of scenarios that can be displayed in dropdown menu
 maxNoScenToShow <- 2e2
 # local user ID (single user)
-uid <- Sys.info()[["login"]]
+uid <- Sys.info()[["user"]]
 # define the default type for output format
 defOutType <- "datatable"
 # define the default format for input sheets
