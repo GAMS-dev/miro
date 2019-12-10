@@ -79,6 +79,9 @@
       "pageLength": 15
     }
   },
+  "overwriteSheetOrder": {
+    "input": ["a", "b", "d", "_scalars", "ilocdata", "jlocdata", "_widgets"]
+  },
   "handsontable": {
     "stretchH": "none",
     "readonly": false,

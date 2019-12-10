@@ -174,7 +174,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
     return(NULL)
   }
   # check whether output data was saved and in case it was set identifier accordingly
-  if(any(vapply(scenData[[scenStr]][seq_along(modelOut)], 
+  if(!LAUNCHHCUBEMODE && any(vapply(scenData[[scenStr]][seq_along(modelOut)], 
                 hasContent, logical(1L), USE.NAMES = FALSE))){
     noOutputData <<- FALSE
   }else{

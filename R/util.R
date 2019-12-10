@@ -887,7 +887,12 @@ ddToTibble <- function(values, metaData){
   }else{
     aliases <- character(0L)
   }
-  ddTibble <- tibble(val = values, text = aliases)
+  if(length(headers) > 1L){
+    ddTibble <- tibble(val = values, text = aliases)
+  }else{
+    ddTibble <- tibble(val = values)
+  }
+  
   names(ddTibble) <- headers
   return(ddTibble)
 }

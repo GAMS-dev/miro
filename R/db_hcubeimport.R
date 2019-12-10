@@ -332,7 +332,9 @@ HcubeImport <- R6Class("HcubeImport",
                                  }, error = function(e){
                                    private$templates[[symName]]
                                  })
-                                 names(scenData) <- names(private$templates[[symName]])
+                                 if(length(private$templates[[symName]])){
+                                   names(scenData) <- names(private$templates[[symName]])
+                                 }
                                  return(scenData %>% mutate_if(is.character, 
                                                                replace_na, replace = ""))
                                }))

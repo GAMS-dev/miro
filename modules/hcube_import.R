@@ -58,7 +58,8 @@ hcubeImport <- HcubeImport$new(db, scalarsFileName, scalarsOutName,
                                tableNamesMustHave = c(scalarInToVerify, 
                                                       if(config$saveTraceFile) tableNameTracePrefix %+% modelName),
                                config$csvDelim, workDir, gmsColTypes = gmsColTypes, gmsFileHeaders = gmsFileHeaders,
-                               gdxio = gdxio, inputSym = inputDsNames, outputSym = names(modelOut),
+                               gdxio = gdxio, inputSym = setdiff(inputDsNames, additionalInputScalars), 
+                               outputSym = names(modelOut),
                                templates = setNames(c(modelInTemplate, modelOutTemplate), c(names(modelIn), names(modelOut))))
 rm(gmsColTypes)
 duplicatedScenIds <- vector("character", 0L)
@@ -96,6 +97,7 @@ observeEvent(rv$uploadHcube, {
   prog$set(detail = lang$progressBar$hcubeImport$zipValidation, value = 1/6)
   # validate here so only valid scenarios will be read
   invalidScenIds <- hcubeImport$validateScenFiles()
+  flog.trace("Scenario files validated.")
   if(length(hcubeImport$getScenNames()) - length(invalidScenIds) == 0){
     showErrorMsg(lang$errMsg$hcubeImport$invalidJob$title, 
                  lang$errMsg$hcubeImport$invalidJob$desc)
@@ -108,6 +110,7 @@ observeEvent(rv$uploadHcube, {
   
   tryCatch({  
     hcubeImport$readAllScenData()
+    flog.trace("Scenario data read into memory.")
   }, error = function(e){
     flog.error("Problems reading scenario data. Error message: %s.", e)
     errMsg <<- lang$errMsg$hcubeImport$scenRead$desc
@@ -138,6 +141,7 @@ observeEvent(virtualActionButton(rv$noInvalidData), {
   tryCatch({
     duplicatedScen    <- hcubeImport$getScenDuplicates()
     duplicatedScenIds <<- duplicatedScen[[snameIdentifier]]
+    flog.trace("Duplicated scenarios identified.")
     if(nrow(duplicatedScen)){
       dupScenTags <- paste(unique(duplicatedScen[[stagIdentifier]]), collapse = ", ")
       noDupScen   <- length(unique(duplicatedScenIds))

@@ -1193,13 +1193,13 @@ if(!is.null(errMsg)){
     
     if(LAUNCHHCUBEMODE){
       if(length(config$scripts)){
-        scriptOutput <- ScriptOutput$new(session, workDir, config$scripts, 
-                                         lang$nav$scriptOutput$errMsg)
+        scriptOutput <- ScriptOutput$new(session, file.path(workDir, paste0("scripts_", modelName)), 
+                                         config$scripts, lang$nav$scriptOutput$errMsg)
       }
     }else{
       if(length(config$scripts$base)){
-        scriptOutput <- ScriptOutput$new(session, workDir, config$scripts, 
-                                         lang$nav$scriptOutput$errMsg)
+        scriptOutput <- ScriptOutput$new(session, file.path(workDir, paste0("scripts_", modelName)),
+                                         config$scripts, lang$nav$scriptOutput$errMsg)
         observeEvent(input$runScript, {
           scriptId <- suppressWarnings(as.integer(input$runScript))
           if(is.na(scriptId) || scriptId < 1 || 

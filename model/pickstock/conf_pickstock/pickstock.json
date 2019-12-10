@@ -281,17 +281,6 @@
   "saveTraceFile": true,
   "autoGenInputGraphs": true,
   "theme": "browser",
-  "scripts": {
-    "hcube": [
-      {
-        "title": "High level scalar analysis",
-        "id": "script1",
-        "command": "jupyter",
-        "args": ["nbconvert", "--to", "html", "--execute", "scripts_pickstock/hcube_analysis.ipynb"],
-        "outputFile": "hcube_analysis.html"
-      }
-    ]
-  },
   "defCompMode": "split",
   "datatable": {
     "class": "display",
@@ -307,6 +296,20 @@
       "target": "price"
     }
   ],
+  "overwriteSheetOrder": {
+    "input": ["price", "_scalars", "_widgets"]
+  },
+  "scripts": {
+    "hcube": [
+      {
+        "title": "High level scalar analysis",
+        "id": "script1",
+        "command": "jupyter",
+        "args": ["nbconvert", "--to", "html", "--execute", "hcube_analysis.ipynb"],
+        "outputFile": "hcube_analysis.html"
+      }
+    ]
+  },
   "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
   "outputGroups": [
     {

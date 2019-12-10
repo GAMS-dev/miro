@@ -154,8 +154,7 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
       outputFile <- private$config[[id]]$outputFile
     }
     return(tryCatch({
-      private$scriptResults[[scriptId]] <- read_file(file.path(private$workDir, 
-                                                               paste0("scripts_", modelName), 
+      private$scriptResults[[scriptId]] <- read_file(file.path(private$workDir,
                                                                outputFile))
       return(private$scriptResults[[scriptId]])
     }, error = function(e){

@@ -5,20 +5,23 @@
   "defCompMode": "split",
   "storeLogFilesDuration": 7,
   "roundingDecimals": 2,
-  "defaultScenName": "",
   "activateModules": {
-    "scenario": true,
-    "strictmode": true,
     "loadLocal": true,
     "logFile": true,
     "lstFile": true,
-    "attachments": true
+    "attachments": true,
+    "remoteExecution": false,
+    "downloadTempFiles": false
   },
   "aggregateWidgets": true,
   "excelIncludeMeta": true,
   "excelIncludeEmptySheets": true,
   "saveTraceFile": true,
   "autoGenInputGraphs": true,
+  "overwriteSheetOrder": {
+    "input": "_widgets"
+  },
+  "theme": "browser",
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
@@ -33,6 +36,7 @@
       "allowReadOnly": false,
       "allowComments": true
     },
-    "height": 700
+    "height": 700,
+    "colWidths": 150
   }
 }
