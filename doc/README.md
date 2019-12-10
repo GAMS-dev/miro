@@ -1,3 +1,5 @@
+# License
+Note that the template used for this documentation is release under the Creative Commons Attribution 3.0 License. The template can be found here: https://github.com/xriley/PrettyDocs-Theme 
 # Documentation style guide
 This style guide aims to standardize the structure and style of the documentation for the GAMS WebUI. When you write a new chapter, please follow these guidelines:
 
