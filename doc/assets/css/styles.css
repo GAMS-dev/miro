@@ -275,6 +275,12 @@ body{
   max-width:100%;
   overflow:auto;
 }
+.page-wrapper .key {
+  border: 1px solid #000;
+  display: inline-block;
+  text-align: center;
+  width: 25px;
+}
 .page-wrapper p {
   line-height: 1.5;
 }
