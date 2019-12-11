@@ -10,7 +10,7 @@ DataIO <- R6Class("DataIO", public = list(
     private$auth <- auth
     private$db <- db
   },
-  import = function(item){
+  import = function(item, dsName){
     stopifnot(length(item) > 0L, is.list(item))
     data <- NULL
     if(identical(item$source, "database")){
@@ -18,7 +18,7 @@ DataIO <- R6Class("DataIO", public = list(
         stop("No auth object provided. Cannot connect to internal database.", 
              call. = FALSE)
       }
-      data <- auth$importShared(tableName = paste0(sharedTablePrefix, "_", item$name), 
+      data <- auth$importShared(tableName = paste0(sharedTablePrefix, "_", dsName), 
                                 keyCol = if(length(item$colSubset)) item$colSubset else character(0L))
     }else{
       if(!length(item$method)){
@@ -30,7 +30,7 @@ DataIO <- R6Class("DataIO", public = list(
       item$headers <- private$buildHTTPHeader(item)
       bodyValues <- lapply(item$httpBody, "[[", 
                            "value")
-      bodyValues <- c(bodyValues, private$config$modelName, item$name)
+      bodyValues <- c(bodyValues, private$config$modelName, dsName)
       bodyKeys <- vapply(item$httpBody, "[[", character(1L), 
                          "key", USE.NAMES = FALSE)
       bodyKeys <- c(bodyKeys, "modelname", "dataset")
@@ -41,9 +41,9 @@ DataIO <- R6Class("DataIO", public = list(
       item$body <- bodyValues
       data <- as_tibble(fromJSON(private$sendHTTPRequest(item)))
     }
-    return(private$validateData(item$name, data))
+    return(private$validateData(dsName, data))
   },
-  export = function(data, item){
+  export = function(data, item, dsName){
     stopifnot(inherits(data, "data.frame"), length(item) > 0L, is.list(item))
     
     # at the moment support only rest endpoint
@@ -75,7 +75,7 @@ DataIO <- R6Class("DataIO", public = list(
                                          "key", USE.NAMES = FALSE)
              item$body <- list(data = data, 
                                modelname = private$config$modelName, 
-                               dataset = item$name,
+                               dataset = dsName,
                                options = bodyValues)
              item$headers <- private$buildHTTPHeader(item)
              private$sendHTTPRequest(item)
@@ -93,26 +93,26 @@ DataIO <- R6Class("DataIO", public = list(
   sendHTTPRequest = function(item){
     switch(item$method,
            GET = {
-             req <- GET(url = item$url, query = item$body, item$headers, timeout(2))
+             req <- GET(url = item$url, query = item$body, item$headers, timeout(20))
            },
            HEAD = {
-             req <- HEAD(url = item$url, query = item$body, item$headers, timeout(2))
+             req <- HEAD(url = item$url, query = item$body, item$headers, timeout(20))
            },
            POST = {
-             req <- POST(url = item$url, body = item$body, item$headers, timeout(2),
+             req <- POST(url = item$url, body = item$body, item$headers, timeout(20),
                          encode = if(length(item$encode)) item$encode else "json")
              
            },
            PUT = {
-             req <- PUT(url = item$url, body = item$body, item$headers, timeout(2),
+             req <- PUT(url = item$url, body = item$body, item$headers, timeout(20),
                         encode = if(length(item$encode)) item$encode else "json")
            },
            PATCH = {
-             req <- PATCH(url = item$url, body = item$body, item$headers, timeout(2),
+             req <- PATCH(url = item$url, body = item$body, item$headers, timeout(20),
                         encode = if(length(item$encode)) item$encode else "json")
            },
            DELETE = {
-             req <- DELETE(url = item$url, body = item$body, item$headers, timeout(2),
+             req <- DELETE(url = item$url, body = item$body, item$headers, timeout(20),
                            encode = if(length(item$encode)) item$encode else "json")
            },
            {

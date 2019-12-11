@@ -833,7 +833,7 @@
         "headerLogo": "Logo",
         "headerScalars": "Scalars",
         "headerTabGrouping": "Tab grouping",
-        "headerTabSymlinks": "Symbol links",
+        "headerTabSymlinks": "Use output data as input data",
         "headerInputGroups": "Input groups",
         "headerOutputGroups": "Output groups",
         "headerSymbolNaming": "Naming",

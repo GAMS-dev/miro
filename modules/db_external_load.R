@@ -54,15 +54,14 @@ observeEvent(input$btImportExternal, {
     if(!length(item)){
       return()
     }
-    item$name <- inputName
-    i <- match(item$name, names(modelIn))
+    i <- match(inputName, names(modelIn))
     
     # load from database
     tryCatch({
-      externalInputData[[i]] <<- dataio$import(item)
+      externalInputData[[i]] <<- dataio$import(item, inputName)
     }, error = function(e) {
       flog.error("Problems fetching external data. Error message: %s.", e)
-      errMsg <<- paste(errMsg, sprintf(lang$errMsg$fetchDataset$desc, item$name), sep = "\n")
+      errMsg <<- paste(errMsg, sprintf(lang$errMsg$fetchDataset$desc, inputName), sep = "\n")
     })
     if(!is.null(errMsg)){
       return(NULL)
@@ -78,7 +77,7 @@ observeEvent(input$btImportExternal, {
                if(any(is.na(subsetIdx))){
                  errMsg <<- paste(errMsg, sprintf(lang$errMsg$fetchDataset$badColName, 
                                                   paste(item$colSubset[is.na(subsetIdx)], collapse = ","), 
-                                                  item$name), sep = "\n")
+                                                  inputName), sep = "\n")
                  return(NULL)
                }
                choices <- externalInputData[[i]][item$colSubset]

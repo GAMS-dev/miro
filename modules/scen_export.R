@@ -177,14 +177,16 @@ observeEvent(input[[paste0("remote_export_", i)]], {
     names(data) <- c(names(modelOut), inputDsNames)
     noDatasets <- length(dsToExport)
     errMsg <- NULL
-    for(dataId in seq_along(data)){
-      dsName <- names(data)[dataId]
-      expId <- match(dsName, dsToExport)
-      if(is.na(expId)){
-        return()
+    for(expId in seq_along(dsToExport)){
+      dataId <- match(dsToExport[expId], names(data))
+      if(is.na(dataId)){
+        next
       }
-      prog$inc(amount = 0.8/noDatasets, detail = sprintf(lang$progressBar$exportScen$exportDs, dataId, noDatasets))
-      tryCatch(dataio$export(data[[dsName]], expConfig[[expId]]), 
+      dsName <- names(data)[dataId]
+      prog$inc(amount = 0.8/noDatasets, 
+               detail = sprintf(lang$progressBar$exportScen$exportDs, 
+                                expId, noDatasets))
+      tryCatch(dataio$export(data[[dsName]], expConfig[[expId]], dsName), 
                error = function(e){
                  flog.warn("Problems exporting data (export name: '%s', dataset: '%s'). Error message: '%s'.",
                            input$exportFileType, dsName, e)
@@ -195,7 +197,6 @@ observeEvent(input[[paste0("remote_export_", i)]], {
       }
     }
     flog.debug("Data exported successfully.")
-    removeModal(session)
     return()
   }
 })

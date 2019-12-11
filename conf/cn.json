@@ -833,7 +833,7 @@
         "headerLogo": "标志",
         "headerScalars": "标量",
         "headerTabGrouping": "组合选项卡",
-        "headerTabSymlinks": "Symbol links",
+        "headerTabSymlinks": "Use output data as input data",
         "headerInputGroups": "输入组",
         "headerOutputGroups": "输入组",
         "headerSymbolNaming": "指定名称",
