@@ -396,6 +396,21 @@ putclose log;
                                       <img class="img-fluid" style= "max-height:325pt;" src="assets/images/configuration_mode/general_inputGroups2.png" alt="Input group in MIRO" />
                                   </div>
                                   </div>
+                                  <h6 id = "symbol-links" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Use output data as input data</h6>
+                                  <div class="expanded"><p>In some situations you may want to run a model and use the results of the run as input for the next run. 
+                                  Such an iterative process is possible by creating a link between the output and input symbol. By doing so, input data for a symbol 
+                                  can be populated from an output sheet.</p>
+                                  <p>Populating an input table from the linked dataset can be initiated by clicking the <img class="img-fluid" src="assets/images/configuration_mode/symlink-btn.png" alt="Symbol link button" width="25" height="25" align="middle"> button.</p>
+                                  <div class="callout-block callout-warning">
+                                      <div class="icon-holder">
+                                          <i class="fas fa-info-circle"></i>
+                                      </div><!--//icon-holder-->
+                                      <div class="content">
+                                          <b class="callout-title">Note:</b>
+                                          <p>Each output dataset can only populate a single input table.</p>
+                                      </div><!--//content-->
+                                  </div><!--//callout-block--> 
+                                  </div>
                                   <h4 class="docu-general-header">Scenario & data</h4>
                                   <h6 id="local-upload" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Activate local data upload module?</h6>
                                   <div class="expanded"><p>If enabled, scenario data can be loaded via local files.</p>
@@ -428,7 +443,7 @@ putclose log;
                                       </div><!--//icon-holder-->
                                       <div class="content">
                                           <b class="callout-title">Note:</b>
-                                          <p>When this option is activated, additional files will be saved to each solved scenario. You should make sure that the amount of used memory does not become excessive.</p>
+                                          <p>When this option is activated, additional files will be saved to each solved scenario. You should make sure that the disk space used does not become excessive (e.g. by limiting the output written to the lst file).</p>
                                       </div><!--//content-->
                                   </div><!--//callout-block-->
                                   </div>
@@ -457,21 +472,23 @@ putclose log;
                                   <br>For command line parameters that can be set from MIRO using widgets like sliders, dropdown menus, checkboxes etc. click <a href="./model.html#command-line">here</a>.</p>
                                   <h4 class="docu-general-header">Analysis scripts</h4>
                                   <p>MIRO allows you to run custom analysis scripts in both Base and Hypercube mode. These scripts have to generate HTML output which will be displayed in the interface once the script finished. Scripts need to be placed in a folder called <span class="code">scripts_&lt;modelName&gt;</span>; this is also where MIRO executes them (important when you use relative paths in your script).</p>
-                                  <h6>Base mode</h6>
-                                  <p>In the Base mode, your analysis scripts will appear as a new tab in the output data section. When the user runs your script, MIRO stores the data of the current scenario in a gdx file called <span class="code">data.gdx</span> in: <span class="code">scripts_&lt;modelName&gt;</span>. Your script can then read and analyse this data and produce output in the form of a single HTML file. This file will be loaded and displayed in MIRO once your script finished. Script results are stored in the database as part of a scenario. This means that when you load a scenario (either to compare it with other scenarios or to modify it), the script results are loaded as well.</p>
-                                  <h6 id="hcube-analysis-scripts">Hypercube mode</h6>
-                                  <p>In the Hypercube mode, custom scripts can be used to run analyses on multiple scenarios at once. Let's consider the example that comes with the <i>pickstock</i> model: a <a href="https://jupyter.org" target="_blank">Jupyter Notebook</a> that tries to answer high-level questions like "How many training days should I use" and "How many stocks should I choose". You can find this script in <span class="code">scripts_pickstock/hcube_analysis.ipynb</span>. Before we look at the script, let's first tell MIRO about it. The configuration mode allows us to set everything up:</p>
-                                  <div class="section-block" style="text-align:center;">
-                                      <img class="img-fluid" style="max-height:300pt" src="assets/images/configuration_mode/hcube_script_example.png" alt="Hypercube analysis script configuration" />
-                                  </div>
-                                  <p>Each script has to have a unique identifier. The identifier is only used internally and should not be changed. What's displayed in the user interface is the script alias. The command to run is "jupyter", because we want to run a Jupyter Notebook. Note that in order for this to work, <a href="https://jupyter.org/install" target="_blank">Jupyter</a> needs to be installed on the client's machine and added to the <a href="https://en.wikipedia.org/wiki/PATH_(variable)" target="_blank">PATH</a>. Jupyter allows us to run and convert our notebook to HTML. In order to do so, we specify the relevant arguments. The resulting call would be: <kbd>jupyter nbconvert --to html --execute hcube_analysis.ipynb</kbd>.</p>
-                                  <p>Now that we set everything up, we can start testing our script. We select a few scenarios that we want to analyze, and click on "Analyze". The following dialog opens:</p>
-                                  <div class="section-block" style="text-align:center;">
-                                      <img class="img-fluid" style="max-height:150pt" src="assets/images/batch_img/hcube_script_select.png" alt="Dialog to select Hypercube analysis script" />
-                                  </div>
-                                  <p>We select the script we want to run and click on "Start script". MIRO will now generate GDX containers with the data for each scenario you selected to be analyzed and store them inside: <span class="code">scripts_&lt;modelName&gt;</span>. Additionally, MIRO writes a file: <span class="code">hcube_file_names.txt</span>. This file simply lists the filenames of the gdx containers to be analyzed (separated by a newline). Once the script finished, the results are read by MIRO and displayed:</p>
-                                  <div class="section-block" style="text-align:center;">
-                                      <img class="img-fluid" style="max-height:300pt" src="assets/images/batch_img/hcube_script_results.png" alt="Hypercube analysis script results" />
+                                  <h6 onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Base mode</h6>
+                                  <p class="expanded">In the Base mode, your analysis scripts will appear as a new tab in the output data section. When the user runs your script, MIRO saves the data of the current scenario in a gdx file called <span class="code">data.gdx</span> in: <span class="code">scripts_&lt;modelName&gt;</span>. Your script can then read and analyse this data and produce output in the form of a single HTML file. This file will be loaded and displayed in MIRO once your script finished. Script results are stored in the database as part of a scenario. This means that when you load a scenario (either to compare it with other scenarios or to modify it), the script results are loaded as well.</p>
+                                  <h6 id="hcube-analysis-scripts" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Hypercube mode</h6>
+                                  <div class="expanded">
+                                    <p>In the Hypercube mode, custom scripts can be used to run analyses on multiple scenarios at once. Let's consider the example that comes with the <i>pickstock</i> model: a <a href="https://jupyter.org" target="_blank">Jupyter Notebook</a> that tries to answer high-level questions like "How many training days should I use" and "How many stocks should I choose". You can find this script in <span class="code">scripts_pickstock/hcube_analysis.ipynb</span>. Before we look at the script, let's first tell MIRO about it. The configuration mode allows us to set everything up:</p>
+                                    <div class="section-block" style="text-align:center;">
+                                        <img class="img-fluid" style="max-height:300pt" src="assets/images/configuration_mode/hcube_script_example.png" alt="Hypercube analysis script configuration" />
+                                    </div>
+                                    <p>Each script has to have a unique identifier. The identifier is only used internally and should not be changed. What's displayed in the user interface is the script alias. The command to run is "jupyter", because we want to run a Jupyter Notebook. Note that in order for this to work, <a href="https://jupyter.org/install" target="_blank">Jupyter</a> needs to be installed on the client's machine and added to the <a href="https://en.wikipedia.org/wiki/PATH_(variable)" target="_blank">PATH</a>. Jupyter allows us to run and convert our notebook to HTML. In order to do so, we specify the relevant arguments. The resulting call would be: <kbd>jupyter nbconvert --to html --execute hcube_analysis.ipynb</kbd>.</p>
+                                    <p>Now that we set everything up, we can start testing our script. We select a few scenarios that we want to analyze, and click on "Analyze". The following dialog opens:</p>
+                                    <div class="section-block" style="text-align:center;">
+                                        <img class="img-fluid" style="max-height:150pt" src="assets/images/batch_img/hcube_script_select.png" alt="Dialog to select Hypercube analysis script" />
+                                    </div>
+                                    <p>We select the script we want to run and click on "Start script". MIRO will now generate GDX containers with the data for each scenario you selected to be analyzed and store them inside: <span class="code">scripts_&lt;modelName&gt;</span>. Additionally, MIRO writes a file: <span class="code">hcube_file_names.txt</span>. This file simply lists the filenames of the gdx containers to be analyzed (separated by a newline). Once the script finished, the results are read by MIRO and displayed:</p>
+                                    <div class="section-block" style="text-align:center;">
+                                        <img class="img-fluid" style="max-height:300pt" src="assets/images/batch_img/hcube_script_results.png" alt="Hypercube analysis script results" />
+                                    </div>
                                   </div>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="table-settings">
@@ -997,21 +1014,17 @@ $offExternalInput
                                 <h2 class="section-title">Options not available in configuration mode</h2>
                                 <div class="section-block">
                                     <p>With the <a href = "#configurationMode" class="scrollto">configuration mode</a> we pursue the goal that a user can completely configure a MIRO application 
-                                    without having to write any JSON code. Due to the continuous development of MIRO and new functionalities 
-                                    and options in this context, however, it may happen that not all of them are available in the configuration mode
-                                    immediately. This section gives an overview of those options. </p>
+                                    without having to write any JSON code. However, there are a few advanced option that are not yet available in the configuration mode and will have to be configured manually when desired. The following section describes these options.</p>
                                     <h6 id = "remote-import-export" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Remote data import and export</h6>
                                     <div class="expanded"><p>A MIRO application can be supplied with data from various sources:</p>
                                     <ul>
                                       <li>Internal database: Import existing scenario data</li>
-                                      <li>local files: GDX, Excel</li>
-                                      <li>Manual entered data</li>
+                                      <li>Local files: GDX, Excel, CSV</li>
+                                      <li>Manually entered data</li>
                                     </ul>
-                                    <p>In addition to these standard interfaces, the data can also come from or go to <b>external sources</b>. </p>
-                                    The data connector is implemented as a REST service. To exchanges data from external sources with the web client, the 
-                                    corresponding information must be stored in the <a href = "./faqs.html#file-config"><i>modelname.json</i></a> file.
-                                    External data sources are configured symbol-based. In the following example, an external data 
-                                    connector is used to import data for the symbol <i>price</i>:
+                                    <p>In addition to these default interfaces, the data can also come from or go to <b>external sources</b>. </p>
+                                    This MIRO data connector is implemented as a <a href="https://en.wikipedia.org/wiki/Representational_state_transfer" target="_blank">REST</a> service. To set up a new external data source, you have to edit the <a href = "./faqs.html#file-config"><i>&lt;modelname&gt;.json</i></a> file which is located in the directory: <i>conf_&lt;modelname&gt;</i>.
+                                    The following example shows how to set up an external data source to populate the symbol <i>price</i>:
                                     </p><pre><code class="language-json">"remoteImport": [
     {
     "name": "Importer",
@@ -1020,25 +1033,35 @@ $offExternalInput
           "symNames": "price",
           "url": "http://127.0.0.1:5000/io",
           "method": "GET",
+          "authentication": {
+            "username": "@env:API_USER",
+            "password": "@env:API_PASS"
+          },
           "httpBody": [
             {
               "key": "filename",
-              "value": "/Users/admin/Documents/products/miro/model/pickstock/price_data.csv"
+              "value": "/Users/miro/Documents/importer/pickstock/price_data.csv"
             }
           ]
         }
       ]
     }
   ]</code></pre>
-                                    <p>The setup is pretty simple: Besides the symbol name (<i>price</i>) and the method (<i>GET</i>), the url of the web server to connect
-                                    is configured. In the section <i>httpBody</i> key-value pairs can be specified, which have to be interpreted by the server.
-                                    This simple example server uses a Python/Flask interface together with pandas data connectors to retrieve data from a CSV file 
-                                    (<i>price_data.csv</i>).
+                                    <p>The configuration of external data sources is template-based. This means that you can specify one and the same template for multiple input symbols. First, we have to specify which input symbols this template should apply to. Then we have to tell MIRO about the endpoint to connect to (in this case a server running on localhost on port 5000). Supported protocols are HTTP and HTTPS.
                                     </p>
-                                    
-                                    <p>The same logic is also true for the export of data. In the example the data of the symbol stock_weight should be exported 
-                                    to a CSV file (<i>export_stock_weight.csv</i>). The only difference to importing data is the method, which is now <i>POST</i> 
-                                    instead of <i>GET</i>:</p><pre><code class="language-json">"remoteExport": [
+                                    <p>When the user requests to import data via this data source "Importer", the resulting HTTP request looks as follows: <kbd>GET /io?filename=%2FUsers%2Fmiro%2FDocuments%2Fimporter%2Fpickstock%2Fprice_data.csv&modelname=pickstock&dataset=price HTTP/1.1</kbd>. When observing the request, you will notice that in addition to the <kbd>filename</kbd> key that you specified, MIRO sends two more key-value pairs: <kbd>modelname</kbd> and <kbd>dataset</kbd> set to the name of the model and dataset being requested. These will always be appended to the body provided by you.</p>
+                                    <p>One more aspect worth talking about is authentication. When your API is not running on the local machine, but a remote server, you might want to provide credentials with your request. In the example above, we provided the username and password used to authenticate to the API. However, instead of hardcoding these credentials in the configuration file (which is possible), it is recommended to use the special prefix <kbd>@env:</kbd> that instructs MIRO to read the credentials from environment variables. Currently, the only supported authentication method is <a href="https://en.wikipedia.org/wiki/Basic_access_authentication" target="_blank">basic access authentication</a>. In case you need another method, send us an email or a pull request!</p>
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Warning:</b>
+                                            <p>When using basic access authentication, username and password are sent in plain text! Therefore, you have to use HTTPS instead of HTTP to provide confidentiality!!</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                    <p>Instead of importing data from a remote data source, you can also export data to a remote destination. In this example the data of the symbol stock_weight should be exported 
+                                    to a CSV file: <i>export_stock_weight.csv</i>. As we now push data to the API, we use the POST HTTP method. The structure of the JSON configuration is identical to that of remote importers you have seen before:</p><pre><code class="language-json">"remoteExport": [
     {
       "name": "Exporter",
       "templates": [
@@ -1046,52 +1069,25 @@ $offExternalInput
           "symNames": "stock_weight",
           "url": "http://127.0.0.1:5000/io",
           "method": "POST",
+          "authentication": {
+            "username": "@env:API_USER",
+            "password": "@env:API_PASS"
+          },
           "httpBody": [
             {
               "key": "filename",
-              "value": "/Users/admin/Documents/products/miro/model/pickstock/export_stock_weight.csv"
+              "value": "/Users/miro/Documents/exporter/pickstock/export_stock_weight.csv"
             }
           ]
         }
       ]
     }
   ]</code></pre>
-                                    <div class="callout-block callout-success">
-                                        <div class="icon-holder">
-                                            <i class="fas fa-thumbs-up"></i>
-                                        </div><!--//icon-holder-->
-                                        <div class="content">
-                                            <b class="callout-title">Tip:</b>
-                                            <p>The data import via such a data connector happens automatically when the MIRO application is started. The corresponding symbol table is then filled directly with the external data. A data export is carried out automatically after a model run. </p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block-->
-                                  </div>
-                                  <h6 id = "symbol-links" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Use output data as input data</h6>
-                                  <div class="expanded"><p>In some situations you may want to run a model and use the results of the run as input for the next run. 
-                                  Such an iterative process is possible by creating a link between the output and input symbol. By doing so, input data for a symbol 
-                                  can be populated from an output sheet.</p><pre><code class="language-json">"symbolLinks":[
-  {
-   "source": "outputsymbol1",
-   "target": "inputsymbol1"
-  },
-  {
-   "source": "outputsymbol2",
-   "target": "inputsymbol2"
-  }
-]</code></pre>
-                                  <p>The transfer of the data from the output to the input symbol does not happen automatically, but is triggered manually.</p>
-                                  <div class="callout-block callout-warning">
-                                      <div class="icon-holder">
-                                          <i class="fas fa-info-circle"></i>
-                                      </div><!--//icon-holder-->
-                                      <div class="content">
-                                          <b class="callout-title">Note:</b>
-                                          <p>Each symbol can only be used once as target or source.</p>
-                                      </div><!--//content-->
-                                  </div><!--//callout-block--> 
+                                  <p>What's more interesting is the request body that MIRO sends to the remote server:</p><pre><code class="language-json">{"data":[{"symbol":"AXP","value":0.472295069483016},{"symbol":"MMM","value":0.316292266161662},{"symbol":"MSFT","value":0.406195141778428}],"modelname":"pickstock","dataset":"stock_weight","options":{"filename":"/Users/miro/Documents/importer/pickstock/price_data.csv"}}</code></pre>
+                                  <p>MIRO sends data serialized as JSON. The <kbd>modelname</kbd> and <kbd>dataset</kbd> keys are sent along just like in the GET request we saw previously when importing data. In addition, we get the custom key-value pairs we specified in a special object called <kbd>options</kbd> as well as the actual data of the symbol in <kbd>data</kbd>. Note how the table is serialized. In case you need MIRO to serialize tables in a different format, send us an email or a pull request.</p>
                                   </div>
                                   <h6 id = "input-graphs" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Graphs as input data</h6>
-                                  <div class="expanded"><p>MIRO has an API that allows you to use graphics to produce input data. Thus not 
+                                  <div class="expanded"><p>MIRO has an API that allows you to use charts to produce input data. Thus not 
                                   only a graphic based on input data is generated but the generated graphic can be interactively modified by 
                                   the user. These adjustments in turn generate the input data with which the GAMS model is fed with. 
                                   </p>
