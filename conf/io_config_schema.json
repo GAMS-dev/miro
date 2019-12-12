@@ -130,7 +130,6 @@
     "outputSymbols":{  
       "description":"Name of the symbols to export to MIRO once computation has finished. Identifiers are case insensitive (will always be lower case).",
       "type":"object",
-      "minProperties":1,
       "additionalProperties":{
         "oneOf": [
           { "$ref": "#/definitions/scalarSymbol" },

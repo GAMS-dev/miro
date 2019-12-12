@@ -1371,6 +1371,9 @@ if(is.null(errMsg)){
   # define table names (format: modelName_scen.prefix_table.name) where "name" is the name of the dataset
   # scenario data is a concatenated list of outputData and inputData
   scenTableNames    <- c(names(modelOut), inputDsNames)
+  if(!length(scenTableNames)){
+    errMsg <- "You have defined neither input nor output symbols. Please enter at least one external symbol!"
+  }
   scenTableNames    <- paste0(gsub("_", "", modelName, fixed = TRUE),
                               "_", scenTableNames)
   # define scenario tables to display in interface
