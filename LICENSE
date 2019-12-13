@@ -103,6 +103,7 @@ these components are included below):
 - zoo https://github.com/cran/zoo or https://cran.r-project.org/web/packages/zoo/index.html
 - RSQLite https://github.com/r-dbi/RSQLite or https://cran.r-project.org/web/packages/RSQLite/index.html
 - memoise https://github.com/r-lib/memoise https://cran.r-project.org/web/packages/memoise/index.html
+- gdxrrwMIRO https://github.com/GAMS-dev/gdxrrw-miro
 
 - bindr https://github.com/krlmlr/bindr or https://cran.r-project.org/web/packages/bindr/index.html
 - cli https://github.com/r-lib/cli or https://cran.r-project.org/web/packages/cli/index.html
@@ -1058,6 +1059,7 @@ Library.
         - vctrs, Copyright (c)  Hadley Wickham [aut, cre], Lionel Henry [aut], Davis Vaughan [aut], RStudio [cph]
         - ellipsis, Copyright (c)  Hadley Wickham [aut, cre], RStudio [cph]
         - withr, Copyright (c) Jim Hester [aut, cre], Kirill Müller [aut], Kevin Ushey [aut], Hadley Wickham [aut], Winston Chang [aut], Richard Cotton [ctb], RStudio [cph]
+        - gdxrrwMIRO [expanded from: EPL2 with Secondary License GPL-2.0 or greater], Copyright (c) GAMS Development Corp. [aut, cre, cph], Steve Dirkse [aut], Michael Ferris [aut], Rishabh Jain [aut], Frederik Proske [ctb]
 -----------------------------------------------------------------------------
 
                     GNU GENERAL PUBLIC LICENSE
