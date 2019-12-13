@@ -238,8 +238,8 @@ if(is.null(errMsg)){
                          sep = "\n")
       })
       buildArchive <- !identical(Sys.getenv("MIRO_BUILD_ARCHIVE"), "false")
-      if(!buildArchive && miroDeploy){
-        flog.warn("When MIRO_BUILD is specified, archive must be created (MIRO_BUILD_ARCHIVE must not be 'false')! Setting MIRO_BUILD_ARCHIVE to 'true'...")
+      if(miroBuildonly && !buildArchive && miroDeploy){
+        warning("When MIRO_BUILD is specified, archive must be created (MIRO_BUILD_ARCHIVE must not be 'false')! Setting MIRO_BUILD_ARCHIVE to 'true'...")
         buildArchive <- TRUE
       }
       if(is.null(errMsg) && useTempDir && buildArchive){

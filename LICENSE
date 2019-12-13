@@ -138,10 +138,7 @@ these components are included below):
 - autoNumeric, https://github.com/autoNumeric/autoNumeric
 - showdown, https://github.com/showdownjs/showdown
 
-- pandas https://github.com/pandas-dev/pandas
-- pandas_datareader https://github.com/pydata/pandas-datareader
-- geocoder https://github.com/DenisCarriere/geocoder
-- geopy https://github.com/geopy/geopy
+- ICU4C http://site.icu-project.org
 - libuv https://github.com/libuv/libuv
 
 
@@ -669,31 +666,6 @@ Section 8 -- Interpretation.
         - munsell, Copyright (c) 2016 Charlotte Wickham
         - reshape2, Copyright (c) 2008-2016 Hadley Wickham
         - plyr, Copyright (c) 2014 Hadley Wickham [aut, cre]
-        - geocoder, Copyright (c) 2013-15 Denis Carriere
-        - geopy, Copyright (c) 2006-2018 geopy Adam Tygart <mozes@ksu.edu>, Adrián López <alopez@smartvel.com> ,Afonso Queiros <afonso.queiros@deliveryhero.com> ,Albina <aalmukhametova@gmail.com> ,Alessandro Pasotti <apasotti@gmail.com> ,Andrea Tosatto <andrea.tosy@gmail.com>
-                                                 ,Ann Paul <ann@coffeemeetsbagel.com> ,Antonis Kanouras <antonis@metadosis.eu>
-                                                 ,Arsen Mamikonyan <arsen@locu.com> ,Arsen Mamikonyan <arsen@mamikonyan.am> ,Arthur Pemberton <pembo13@gmail.com> ,Artur <atnartur@users.noreply.github.com>
-                                                 ,avdd <Adrian Dries avdd@modernnoise.com> ,Benjamin Henne <henne@dcsec.uni-hannover.de> ,Benjamin Trigona-Harany <bosth@alumni.sfu.ca> ,Benjamin Trigona-Harany <bosth@boundlessgeo.com>
-                                                 ,Benoit Grégoire <benoitg@coeus.ca> ,Bernd Schlapsi ,Brian Beck ,Charles Karney <charles@karney.com>
-                                                 ,crccheck <c@crccheck.com> ,Dale <dale@puredistortion.com> ,Daniel Thul <daniel.thul@gmail.com> ,Danny Finkelstein <danfinkelstein@cfl.rr.com>
-                                                 ,Dave Arter <dave@minus-zero.org> ,David Gilman <davidgilman1@gmail.com> ,deeplook <gherman@darwin.in-berlin.de> ,Demeter Sztanko <Demeter Sztanko>
-                                                 ,Dody Suria Wijaya <dodysw@gmail.com> ,dutko.adam ,Edward Betts <edward@4angle.com> ,Emile Aben <emileaben@gmail.com>
-                                                 ,Eric Palakovich Carr <carreric@gmail.com> ,exogen ,Fabien Reboia <srounet@gmail.com> ,Feanil Patel <feanil@gmail.com>
-                                                 ,gary.bernhardt ,Gregory Nicholas <nicholas.g.gregory@gmail.com> ,groovecoder <luke.crouch@gmail.com> ,Hanno Schlichting <hanno@hannosch.eu>
-                                                 ,Ian Edwards ,Ian Wilson <ian.owings@gmail.com> ,ijl <uijllji@gmail.com> ,ironfroggy@gmail.com <ironfroggy@gmail.com>
-                                                 ,Isaac Sijaranamual <isaacsijaranamual@gmail.com> ,James Maddox <jhmaddox@gmail.com> ,James Mills <j.mills@griffith.edu.au> ,jhmaddox <jhmaddox@gmail.com>
-                                                 ,Joel Natividad <jnatividad@opengov.com> ,John.L.Clark ,Jonathan Batchelor <jmb@thebatchelors.net> ,Jordan Bouvier <jbouvier@gmail.com>
-                                                 ,Jose Martin <j.martin.bejarano@gmail.com> ,jqnatividad <joel.natividad@ontodia.com> ,Karimov Dmitriy <karimov_dm@tgt72.ru> ,Kostya Esmukov <kostya@esmukov.ru>
-                                                 ,Luca Marra ,Luke Hubbard <luke@codegent.com> ,Magnus Hiie <magnus.hiie@gmail.com> ,Marc-Olivier Titeux <marcoliviertiteux@gmail.com>
-                                                 ,Marco Milanesi <kpanic@gmail.com> ,Mariana Georgieva <mariana.georgieva@valkfleet.com> ,Martin <spatialbits@posteo.net> ,Micah Cochran
-                                                 ,Michal Migurski <mike@teczno.com> ,Mike Tigas <mike@tig.as> ,Mike Toews <mwtoews@gmail.com> ,mtmail <mtmail@gmx.net>
-                                                 ,mz <mattgeoc@autistici.org> ,navidata <kontakt@navidata.pl> ,nucflash <tsagias@gmail.com> ,Oleg <izhyk.oleh@gmail.com>
-                                                 ,Oskar Hollmann <oskarhollmann@gmail.com> ,Pavel <pppessoas@gmail.com> ,Paweł Mandera <pawel.mandera@ugent.be> ,Pedro Rodrigues <medecau@gmail.com>
-                                                 ,Peter Gullekson <peter11235@gmail.com> ,Philip Kimmey <philip.kimmey@gmail.com> ,Risent Zhang <shengqi542@gmail.com> ,Rocky Meza <rocky@fusionbox.com>
-                                                 ,Ryan Nagle <rnagle@tribune.com> ,scottessner <scott.essner@gmail.com> ,Sebastian Neubauer <sebineubauer@gmail.com> ,SemiNormal <bbengels@gmail.com>
-                                                 ,Serphentas ,svalee <triksrimer@gmail.com> ,Svetlana Konovalova ,Sébastien Barré <sheub@users.noreply.github.com>
-                                                 ,Thomas <thomas_gratier@yahoo.fr> ,Tom Wallroth <tomwallroth@gmail.com> ,tony <jinzc1@lenovo.com> ,tristan <tristanhomsi@gmail.com>
-                                                 ,Vladimir Kalinkin <vova.kalinkin@gmail.com> ,William Hammond <william.t.hammond@gmail.com> ,willr <willr@plotwatt.com> ,Yorick Holkamp <github@nextpulse.nl>
         - fastmap, Copyright (c) 2019 RStudio
         - bootstrap, Copyright (c) 2011-2019 Twitter, Inc. 
                      Copyright (c) 2011-2019 The Bootstrap Authors
@@ -1805,9 +1777,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         - colorspace, Copyright (c) 2005-2016
             COPYRIGHT HOLDER: Ross Ihaka, Paul Murrell, Kurt Hornik, Jason C. Fisher, Reto Stauffer, Achim Zeileis
             ORGANIZATION: Ross Ihaka, Paul Murrell, Kurt Hornik, Jason C. Fisher, Reto Stauffer, Achim Zeileis
-        - pandas, Copyright (c) 2008-2012, AQR Capital Management, LLC, Lambda Foundry, Inc. and PyData Development Team
-        - pandas_datareader, Copyright (c) 2011-2012, Lambda Foundry, Inc. and PyData Development Team All rights reserved.
-                             Copyright (c) 2008-2011 AQR Capital Management, LLC All rights reserved.
         - yaml, Copyright (C) 2008-2018 
                       COPYRIGHT HOLDER: Vanderbilt University Medical Center
                       ORGANIZATION: Vanderbilt University Medical Center
@@ -2786,3 +2755,74 @@ furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
+
+-----------------------------------------------------------------------------
+
+ICU4C is licensed as follows:
+
+ICU 58 and later:
+
+Copyright © 1991-2019 Unicode, Inc. All rights reserved.
+Distributed under the Terms of Use in http://www.unicode.org/copyright.html.
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Unicode data files and any associated documentation
+(the "Data Files") or Unicode software and any associated documentation
+(the "Software") to deal in the Data Files or Software
+without restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, and/or sell copies of
+the Data Files or Software, and to permit persons to whom the Data Files
+or Software are furnished to do so, provided that either
+(a) this copyright and permission notice appear with all copies
+of the Data Files or Software, or
+(b) this copyright and permission notice appear in associated
+Documentation.
+
+THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF
+ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT OF THIRD PARTY RIGHTS.
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS
+NOTICE BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL
+DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
+DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THE DATA FILES OR SOFTWARE.
+
+Except as contained in this notice, the name of a copyright holder
+shall not be used in advertising or otherwise to promote the sale,
+use or other dealings in these Data Files or Software without prior
+written authorization of the copyright holder.
+
+ICU 1.8.1 to ICU 57.1:
+
+Copyright (c) 1995-2016 International Business Machines Corporation and others
+All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, and/or sell copies of the Software, and to permit persons
+to whom the Software is furnished to do so, provided that the above
+copyright notice(s) and this permission notice appear in all copies of
+the Software and that both the above copyright notice(s) and this
+permission notice appear in supporting documentation.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY
+SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER
+RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF
+CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+Except as contained in this notice, the name of a copyright holder
+shall not be used in advertising or otherwise to promote the sale, use
+or other dealings in this Software without prior written authorization
+of the copyright holder.
+
+All trademarks and registered trademarks mentioned herein are the
+property of their respective owners.
