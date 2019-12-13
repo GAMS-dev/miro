@@ -318,7 +318,7 @@ if(is.null(errMsg)){
   }
 }
 
-if(is.null(errMsg) && debugMode){
+if(is.null(errMsg)){
   # load default and custom renderers (output data)
   rendererFiles <- list.files("./modules/renderers/", pattern = "\\.R$")
   for(file in rendererFiles){
@@ -338,6 +338,8 @@ if(is.null(errMsg) && debugMode){
       errMsg <- "File: '" %+% file %+% "' could not be found or user has no read permissions."
     }
   }
+}
+if(is.null(errMsg) && debugMode){
   customRendererDirs <<- file.path(c(file.path(currentModelDir, ".."),
                                      currentModelDir), paste0("renderer_", modelName))
   for(customRendererDir in customRendererDirs){
