@@ -31,6 +31,7 @@ model/**/*.miroapp
 model/**/*.zip
 model/**/*.bat
 model/**/*.gdx
+!model/**/data_*/*.gdx
 model/**/runapp.R
 model/**/*_miro.gms
 model/**/*_hcube_jobs
