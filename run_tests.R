@@ -1,6 +1,10 @@
 library(testthat)
 library(shinytest)
 
+if(!dependenciesInstalled()){
+  installDependencies()
+}
+
 modelsToTest <- c()
 
 # BEGIN setup
