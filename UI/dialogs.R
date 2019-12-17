@@ -773,7 +773,6 @@ showHcubeLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolvers
   
   if(length(customScripts)){
     analysisTabset <- MIROtabsetPanel(id = "tabsetAnalysisMethod", 
-                                      onclick = "$('#btRunPaver').toggle();$('#btRunHcubeScript').toggle();",
                                       list(tabPanel(lang$nav$hcubeMode$hcubeLoadDialog$tabScript,
                                                     value = "tabsetAnalysisMethodScript",
                                                     tags$div(class = "space"),

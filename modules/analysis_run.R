@@ -41,6 +41,19 @@ observeEvent(input$btAnalysisConfig, {
   }
 })
 
+observeEvent(input$tabsetAnalysisMethod, {
+  if(identical(input$tabsetAnalysisMethod, "tabsetAnalysisMethodPaver")){
+    hideEl(session, "#btRunHcubeScript")
+    showEl(session, "#btRunPaver")
+    return()
+  }
+  if(identical(input$tabsetAnalysisMethod, "tabsetAnalysisMethodScript")){
+    hideEl(session, "#btRunPaver")
+    showEl(session, "#btRunHcubeScript")
+    return()
+  }
+})
+
 gmswebiter <- 0
 observeEvent(input$btRunPaver, {
   flog.debug("Run paver button clicked.")

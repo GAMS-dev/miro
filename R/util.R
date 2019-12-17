@@ -1185,9 +1185,11 @@ createDirIfNonExistent <- function(dirs){
   nonExistingDirs <- !dir.exists(dirname(dirs))
   if(any(nonExistingDirs)){
     nonExistingDirs <- unique(dirname(dirs)[nonExistingDirs])
-    for(nonExistingDir in nonExistingDirs){
-      dir.create(nonExistingDir, recursive=TRUE)
-    }
+    suppressWarnings({
+      for(nonExistingDir in nonExistingDirs){
+        dir.create(nonExistingDir, recursive=TRUE)
+      }
+    })
   }
 }
 hotToR <- function(data, metaData, fixType = TRUE){
