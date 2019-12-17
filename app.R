@@ -1,5 +1,5 @@
 #version number
-MIROVersion <- "0.9.21"
+MIROVersion <- "0.9.22"
 APIVersion  <- "1"
 MIRORDate   <- "Dec 17 2019"
 #####packages:
@@ -200,6 +200,9 @@ if(is.null(errMsg)){
                       rSaveFilePath)
   }else{
     load(rSaveFilePath)
+    for (customRendererName  in customRendererNames){
+      assign(customRendererName, get(customRendererName), envir = .GlobalEnv)
+    }
   }
   GAMSClArgs <- c(paste0("execMode=", gamsExecMode),
                   paste0('IDCGDXOutput="', MIROGdxOutName, '"'))
@@ -398,8 +401,8 @@ if(is.null(errMsg) && debugMode){
     }
   }
   requiredPackagesCR <- unique(requiredPackagesCR)
-  
-  save(list = c(listOfCustomRenderers$get(), "modelIn", "modelInRaw", 
+  customRendererNames <- listOfCustomRenderers$get()
+  save(list = c("customRendererNames", customRendererNames, "modelIn", "modelInRaw", 
                 "modelOut", "config", "lang", "inputDsNames", "inputDsAliases", 
                 "outputTabTitles", "modelInTemplate", "scenDataTemplate", 
                 "modelInTabularData", "externalInputConfig", "tabSheetMap",
