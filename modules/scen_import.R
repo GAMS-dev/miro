@@ -163,13 +163,15 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     }
     xlsWbNames <- vapply(strsplit(xlsWbNames, " ", fixed = TRUE), "[[", character(1L), 1L)
     # extract only sheets which are also in list of input parameters
-    datasetsToFetch <- xlsWbNames[tolower(xlsWbNames) %in% c(modelInTabularData, scalarsFileName)]
+    datasetsToFetch <- xlsWbNames[tolower(xlsWbNames) %in% 
+                                    c(modelInTabularData, scalarsFileName, 
+                                      scalarInputSym)]
   }else{
     showErrorMsg(lang$errMsg$readOutput$title, lang$errMsg$readOutput$desc)
     return()
   }
-
-  datasetsToFetch <- datasetsToFetch[datasetsToFetch %in% names(modelInToImport)]
+  datasetsToFetch <- datasetsToFetch[datasetsToFetch %in% c(names(modelInToImport), 
+                                                            scalarsFileName)]
   
   # extract scalar sheets
   if(length(modelIn) > length(modelInTabularData)){

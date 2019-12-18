@@ -2,7 +2,6 @@
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
     assign(".lib.loc", Sys.getenv("R_LIB_PATHS"), envir = environment(.libPaths))
 }
-options(shiny.autoload.r = FALSE)
 suppressMessages(shiny::runApp(
   Sys.getenv("RE_SHINY_PATH"),
   host = "127.0.0.1",

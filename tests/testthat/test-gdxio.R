@@ -2,7 +2,7 @@ context("gdxio read")
 
 load(file.path(getwd(), "data/test_gdxio.miroconf"), .GlobalEnv)
 source("../../global.R")
-source("../../R/gdxio.R")
+source("../../components/gdxio.R")
 
 gdxio <- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", "bin"), c(modelInRaw, modelOut), 
                    scalarsFileName, scalarsOutName, 

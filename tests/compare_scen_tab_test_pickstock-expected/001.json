@@ -1,6 +1,16 @@
 {
   "output": {
-    "title_4": "pickstock",
-    "title_5": "test1234"
+    "title_4": {
+      "html": "New Scenario",
+      "deps": [
+
+      ]
+    },
+    "title_5": {
+      "html": "test123",
+      "deps": [
+
+      ]
+    }
   }
 }

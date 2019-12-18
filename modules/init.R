@@ -1,5 +1,5 @@
 requiredPackages <- c("jsonvalidate", "V8")
-source("./R/install_packages.R", local = TRUE)
+source("./components/install_packages.R", local = TRUE)
 # check whether there exists a config file and if not create an empty one
 if(is.null(errMsg)){
   if(!file.exists(paste0(currentModelDir, .Platform$file.sep, "conf_", modelName,
@@ -1535,7 +1535,7 @@ if(is.null(errMsg)){
     if(endsWith(tolower(readmeFilePath), 'html')){
       config$readmeFile <- read_file(readmeFilePath)
     }else if(file.exists(readmeFilePath)){
-      source(file.path("R", "md_parser.R"), local = TRUE)
+      source(file.path("components", "md_parser.R"), local = TRUE)
       markdownParser <- MarkdownParser$new()
       config$readmeFile <- markdownParser$parseFile(readmeFilePath)
     }

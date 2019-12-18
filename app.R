@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "0.9.22"
+MIROVersion <- "0.9.23"
 APIVersion  <- "1"
-MIRORDate   <- "Dec 17 2019"
+MIRORDate   <- "Dec 18 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -72,9 +72,12 @@ if("gdxrrwMIRO" %in% installedPackages){
   requiredPackages <- c(requiredPackages, "gdxrrwMIRO")
 }
 # vector of required files
-filesToInclude <- c("./global.R", "./R/util.R", if(useGdx) "./R/gdxio.R", "./R/json.R", "./R/load_scen_data.R", 
-                    "./R/data_instance.R", "./R/worker.R", "./R/dataio.R", "./R/hcube_data_instance.R", "./R/miro_tabsetpanel.R",
-                    "./modules/render_data.R", "./modules/generate_data.R", "./R/script_output.R")
+filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./components/gdxio.R", 
+                    "./components/json.R", "./components/load_scen_data.R", 
+                    "./components/data_instance.R", "./components/worker.R", 
+                    "./components/dataio.R", "./components/hcube_data_instance.R", 
+                    "./components/miro_tabsetpanel.R", "./modules/render_data.R", 
+                    "./modules/generate_data.R", "./components/script_output.R")
 LAUNCHCONFIGMODE <- FALSE
 LAUNCHHCUBEMODE <<- FALSE
 if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
@@ -84,7 +87,7 @@ if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
 }else{
   pb <- txtProgressBar(file = stderr())
 }
-source("./R/install_packages.R", local = TRUE)
+source("./components/install_packages.R", local = TRUE)
 if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
   setWinProgressBar(pb, 0.3, label= "Initialising GAMS MIRO")
 }else{
@@ -500,7 +503,7 @@ if(is.null(errMsg)){
 requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx", 
                       "dplyr", "readxl", "writexl", "rhandsontable", 
                       "rpivotTable", "futile.logger", "tidyr")
-source("./R/install_packages.R", local = TRUE)
+source("./components/install_packages.R", local = TRUE)
 
 if(is.null(errMsg)){
   flog.appender(do.call(if(identical(logToConsole, TRUE)) "appender.tee" else "appender.file", 
@@ -513,7 +516,7 @@ if(is.null(errMsg)){
   loggerInitialised <- TRUE
   if(!is.null(requiredPackagesCR)){
     requiredPackages <- requiredPackagesCR
-    source("./R/install_packages.R", local = TRUE)
+    source("./components/install_packages.R", local = TRUE)
     rm(requiredPackagesCR)
   }
   if(LAUNCHCONFIGMODE){
@@ -532,7 +535,7 @@ if(is.null(errMsg)){
   }else if(length(externalInputConfig) || length(datasetsRemoteExport)){
     requiredPackages <- c(requiredPackages, "httr")
   }
-  source("./R/install_packages.R", local = TRUE)
+  source("./components/install_packages.R", local = TRUE)
   options("DT.TOJSON_ARGS" = list(na = "string"))
   
   if(config$activateModules$remoteExecution && !LAUNCHCONFIGMODE){
@@ -546,10 +549,10 @@ if(is.null(errMsg)){
   }else{
     requiredPackages <- c("DBI", "odbc")
   }
-  source("./R/install_packages.R", local = TRUE)
+  source("./components/install_packages.R", local = TRUE)
   
-  source("./R/db.R")
-  source("./R/db_scen.R")
+  source("./components/db.R")
+  source("./components/db_scen.R")
   tryCatch({
     scenMetadataTable <- scenMetadataTablePrefix %+% modelName
     db   <- Db$new(uid = uid, dbConf = dbConfig, dbSchema = dbSchema,
@@ -565,7 +568,7 @@ if(is.null(errMsg)){
     errMsg <<- conditionMessage(e)
   })
   # initialise access management
-  source("./R/db_auth.R")
+  source("./components/db_auth.R")
   tryCatch({
     auth <- Auth$new(conn, uid, defaultGroup = defaultGroup, 
                      tableNameGroups = amTableNameGroups, 
@@ -600,9 +603,9 @@ if(is.null(errMsg)){
       errMsg <- paste(msg, errMsgTmp, sep = '\n')
     }
     requiredPackages <- c("digest", "DT")
-    source("./R/install_packages.R", local = TRUE)
-    source("./R/db_hcubeimport.R")
-    source("./R/db_hcubeload.R")
+    source("./components/install_packages.R", local = TRUE)
+    source("./components/db_hcubeimport.R")
+    source("./components/db_hcubeload.R")
   }
 }
 inconsistentTableNames <- NULL
