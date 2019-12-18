@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "0.9.20"
+MIROVersion <- "0.9.22"
 APIVersion  <- "1"
-MIRORDate   <- "Dec 12 2019"
+MIRORDate   <- "Dec 17 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -200,6 +200,9 @@ if(is.null(errMsg)){
                       rSaveFilePath)
   }else{
     load(rSaveFilePath)
+    for (customRendererName  in customRendererNames){
+      assign(customRendererName, get(customRendererName), envir = .GlobalEnv)
+    }
   }
   GAMSClArgs <- c(paste0("execMode=", gamsExecMode),
                   paste0('IDCGDXOutput="', MIROGdxOutName, '"'))
@@ -238,10 +241,6 @@ if(is.null(errMsg)){
                          sep = "\n")
       })
       buildArchive <- !identical(Sys.getenv("MIRO_BUILD_ARCHIVE"), "false")
-      if(miroBuildonly && !buildArchive && miroDeploy){
-        warning("When MIRO_BUILD is specified, archive must be created (MIRO_BUILD_ARCHIVE must not be 'false')! Setting MIRO_BUILD_ARCHIVE to 'true'...")
-        buildArchive <- TRUE
-      }
       if(is.null(errMsg) && useTempDir && buildArchive){
         tryCatch({
           zipMiro(file.path(currentModelDir, paste0(modelName, ".zip")),
@@ -402,8 +401,8 @@ if(is.null(errMsg) && debugMode){
     }
   }
   requiredPackagesCR <- unique(requiredPackagesCR)
-  
-  save(list = c(listOfCustomRenderers$get(), "modelIn", "modelInRaw", 
+  customRendererNames <- listOfCustomRenderers$get()
+  save(list = c("customRendererNames", customRendererNames, "modelIn", "modelInRaw", 
                 "modelOut", "config", "lang", "inputDsNames", "inputDsAliases", 
                 "outputTabTitles", "modelInTemplate", "scenDataTemplate", 
                 "modelInTabularData", "externalInputConfig", "tabSheetMap",
@@ -663,7 +662,8 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "You should have received a copy of the GNU General Public License ",
                           "along with this program. If not, see ",
                           "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
-                          "<div class=\\'miro-update-text\\'></div>")
+                          "For more information about third-party software included in MIRO, see ",
+                          "<a href=\\'http://www.gams.com/miro/license.html\\' target=\\'_blank\\'>here</a>.")
 
 if(is.null(errMsg)){
   tryCatch({

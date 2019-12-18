@@ -17,6 +17,7 @@ logs
 *.gpr
 *.sqlite3
 .matplotlib
+test-out.xml
 tmp
 examples
 tools/paver/examples
@@ -25,6 +26,7 @@ tools/paver/results
 packrat/src/
 doc/latest.ver
 doc/schema.html
+model/**/*.ipynb_checkpoints
 model/**/*.xlsx
 model/**/*.miroconf
 model/**/*.miroapp

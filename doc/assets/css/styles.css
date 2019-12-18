@@ -17,6 +17,10 @@
   width: 64px;
   height: 64px;
 }
+#miro-license {
+  max-height: 800px;
+  max-height: 80vh;
+}
 .lds-ellipsis div {
   position: absolute;
   top: 27px;

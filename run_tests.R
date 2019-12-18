@@ -1,27 +1,26 @@
 library(testthat)
 library(shinytest)
 
-modelsToTest <- c("pickstock", "pickstock_live",
-                  "transport", "transport_live",
-                  "kport")
+if(!dependenciesInstalled()){
+  installDependencies()
+}
+RLibPath <- Sys.getenv("LIB_PATH")
+if(!identical(RLibPath, "")) {
+  .libPaths( c( RLibPath, .libPaths()) )
+}
+
+modelsToTest <- c()
 
 # BEGIN setup
 options(testthat.output_file = "test-out.xml")
 options(testthat.default_reporter = "junit")
 
-Sys.setenv(SHINYTEST = "yes")
-
-if(file.exists("sqlitetests.sqlite3")){
-  if(unlink("sqlitetests.sqlite3", force = TRUE)){
+if(file.exists(file.path("tests", "miro.sqlite3"))){
+  if(unlink(file.path("tests", "miro.sqlite3"), force = TRUE)){
     stop("Could not remove old database SQLite file for tests")
   }
 }
-if(!file.rename("conf/db_config.json", "conf/db_config_prod.json")){
-  stop("Could not rename db_config file")
-}
-if(!file.copy("tests/data/db_config.json", "conf/db_config.json", overwrite = FALSE)){
-  stop("Could not copy database config file for tests")
-}
+Sys.setenv(DBPATH = file.path(getwd(), "tests"))
 # END setup
 
 errMsg <- NULL
@@ -29,7 +28,7 @@ testFiles <- c("excel_upload_test", "excel_upload_overwrite_test",
                "load_from_db_test", "gams_interrupt_test",
                "compare_scen_split_test", "compare_scen_tab_test")
 for(modelToTest in modelsToTest){
-  Sys.setenv(GMSMODELNAME = modelToTest)
+  Sys.setenv(MIRO_MODEL_PATH = file.path(".", "model", modelToTest, paste0(modelToTest, ".gms")))
   for(testFile in testFiles){
     file.copy(paste0("tests/", testFile, ".R"), 
               paste0("tests/", testFile, "_", modelToTest, ".R"), overwrite = TRUE)
@@ -53,19 +52,9 @@ for(modelToTest in modelsToTest){
       errMsg <<- e
     })
 }
+source(file.path("tests", "testthat.R"))
 
 # BEGIN teardown
-Sys.setenv(SHINYTEST = "")
-Sys.setenv(GMSMODELNAME = "")
-if(!file.remove("conf/db_config.json")){
-  stop("Could not remove database config file for tests")
-}
-if(!file.rename("conf/db_config_prod.json", "conf/db_config.json")){
-  stop("Could not rename production database config file")
-}
-if(!file.remove("sqlitetests.sqlite3")){
-  stop("Could not remove database SQLite file for tests")
-}
 if(!is.null(errMsg)){
   stop(errMsg)
 }
