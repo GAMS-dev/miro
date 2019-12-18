@@ -670,6 +670,7 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
 
 if(is.null(errMsg)){
   tryCatch({
+    gdxio <<- NULL
     if(useGdx){
       gdxio <<- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", "bin"), 
                           c(modelInRaw, modelOut), scalarsFileName,

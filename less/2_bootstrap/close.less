@@ -8,13 +8,23 @@
   font-size: (@font-size-base * 1.5);
   font-weight: @close-font-weight;
   line-height: 1;
-  color: @close-color;
+  .responsiveDark({
+     color: @close-color;
+  },
+  {
+     color: @close-color-dark;
+  });
   text-shadow: @close-text-shadow;
   .opacity(.2);
 
   &:hover,
   &:focus {
-    color: @close-color;
+    .responsiveDark({
+       color: @close-color;
+    },
+    {
+       color: @close-color-dark;
+    });
     text-decoration: none;
     cursor: pointer;
     .opacity(.5);
