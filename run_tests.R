@@ -4,6 +4,10 @@ library(shinytest)
 if(!dependenciesInstalled()){
   installDependencies()
 }
+RLibPath <- Sys.getenv("LIB_PATH")
+if(!identical(RLibPath, "")) {
+  .libPaths( c( RLibPath, .libPaths()) )
+}
 
 modelsToTest <- c()
 
