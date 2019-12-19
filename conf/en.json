@@ -762,7 +762,7 @@
       "extract":{
         "title": "Error extracting archive",
         "desc": "Problems extracting the archive. Please make sure you upload a valid zip file.",
-        "invalidFiles": "The archive you are trying to import contains invalid files. Only trace and csv files allowed!"
+        "invalidFiles": "The archive you are trying to import contains invalid files. Only trace files, CSV files and GDX files allowed!"
       },
       "scenRead":{
         "title": "Error reading files",
@@ -1615,7 +1615,7 @@
         "addBarDataEl":{
           "chartYdatabar": "What should be plotted on the y axis?",
           "chartYlabel": "What label should be used?",
-          "color": "Select bar color",
+          "color": "Select bar color (delete color for automated selection)",
           "lineWidth": "Select bar outline width",
           "lineColor": "Select bar outline color"
         },

@@ -762,7 +762,7 @@
       "extract":{
         "title":"提取存档时出错",
         "desc":"提取存档时出现错误，请确保上传有效的zip文件。",
-        "invalidFiles":"要导入的存档包含无效文件，只允许trace和csv文件！"
+        "invalidFiles":"要导入的存档包含无效文件，Only trace files, CSV files and GDX files allowed!""
       },
       "scenRead":{
         "title":"读取文件时出错",
@@ -1615,7 +1615,7 @@
         "addBarDataEl":{
           "chartYdatabar": "在y轴上绘制什么？",
           "chartYlabel": "使用什么标签？",
-          "color": "选择柱形颜色",
+          "color": "选择柱形颜色 (delete color for automated selection)",
           "lineWidth": "选择柱形轮廓宽度",
           "lineColor": "选择柱形轮廓颜色"
         },

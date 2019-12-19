@@ -130,7 +130,7 @@
   .selectize-dropdown,
   .selectize-input,
   .selectize-input input {
-    color: #000;
+    color: #eeeeee;
   }
 }
 .selectize-input,
@@ -4402,7 +4402,7 @@ output {
 }
 @media (prefers-color-scheme: dark) {
   output {
-    color: #000;
+    color: #eeeeee;
   }
 }
 .form-control {
@@ -4425,7 +4425,7 @@ output {
 }
 @media (prefers-color-scheme: dark) {
   .form-control {
-    color: #000;
+    color: #eeeeee;
     background-color: #848991;
   }
 }
@@ -6329,7 +6329,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 }
 @media (prefers-color-scheme: dark) {
   .input-group-addon {
-    color: #000;
+    color: #eeeeee;
   }
 }
 @media (prefers-color-scheme: dark) {
