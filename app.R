@@ -276,6 +276,10 @@ if(is.null(errMsg)){
                                paste0(miroDataDirPrefix, modelName)))){
         modelFiles <- c(modelFiles, paste0(miroDataDirPrefix, modelName))
       }
+      if(file.exists(file.path(currentModelDir, 
+                               paste0("renderer_", modelName)))){
+        modelFiles <- c(modelFiles, paste0("renderer_", modelName))
+      }
       if(is.null(errMsg) && identical(Sys.getenv("MIRO_TEST_DEPLOY"), "true")){
         modelPath <- file.path(tmpFileDir, modelName, "test_deploy")
         if(dir.exists(modelPath) && 
