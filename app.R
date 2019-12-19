@@ -444,7 +444,7 @@ if(miroBuildonly){
     quit("no")
   }
   if(identical(Sys.getenv("MIRO_MODE"), "full")){
-    buildArchive <- !identical(Sys.getenv(MIRO_BUILD_ARCHIVE), "false")
+    buildArchive <- !identical(Sys.getenv("MIRO_BUILD_ARCHIVE"), "false")
     Sys.setenv(MIRO_COMPILE_ONLY = "true")
     Sys.setenv(MIRO_USE_TMP = "true")
     Sys.setenv(MIRO_BUILD_ARCHIVE = "true")
