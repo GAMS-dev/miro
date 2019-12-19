@@ -117,6 +117,7 @@ if(is.null(errMsg)){
                                file.path(getwd(), modelDir))
   modelNameRaw <- modelPath[[4]]
   modelName    <- modelPath[[3]]
+  modelName    <<- modelName
   modelGmsName <- modelPath[[2]]
   modelPath    <- modelPath[[1]]
 }
