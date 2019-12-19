@@ -636,8 +636,8 @@ if(is.null(errMsg)){
         categoricalHeaders <- modelIn[[i]]$headers
       }
       categoricalHeaders <- unlist(lapply(seq_along(categoricalHeaders), function(hdrId){
-        if(identical(modelOut[[i]]$headers[[hdrId]]$type, "string"))
-          return(names(modelOut[[i]]$headers)[[hdrId]])
+        if(identical(categoricalHeaders[[hdrId]]$type, "string"))
+          return(names(categoricalHeaders)[[hdrId]])
         return(NULL)
       }), use.names = FALSE)
       if(!length(config$dataRendering[[el]]$graph$filter$col) || 
