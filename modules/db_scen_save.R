@@ -165,6 +165,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
         activeScen$saveScriptResults(scriptOutput$getResults())
       }
     }
+    scenMetaData[["scen_1_"]] <<- activeScen$getMetadata(lang$nav$excelExport$metadataSheet)
     flog.debug("%s: Scenario saved to database (Scenario: %s).", uid, activeScen$getScenName())
   }, error = function(e) {
     flog.error("Some error occurred saving scenario to database. Error message: %s.", e)
