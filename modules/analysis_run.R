@@ -323,6 +323,13 @@ if(length(config$scripts$hcube)){
     if(!is.null(errMsg)){
       return()
     }
-    scriptOutput$run(scriptId, hcube = TRUE)
+    tryCatch({
+      scriptOutput$run(scriptId, hcube = TRUE)
+    }, error = function(e){
+      flog.info("Script: '%s' crashed during startup. Error message: '%s'.",
+                scriptId, conditionMessage(e))
+      scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$crash, scriptId, 
+                               hcube = TRUE, isError = TRUE)
+    })
   })
 }

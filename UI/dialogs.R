@@ -845,13 +845,13 @@ $('#btHcubeDownloadConfirm').show();$('#btHcubeLoad').hide();$('#hcubeLoadMethod
                      lang$nav$hcubeMode$hcubeLoadDialog$downloadButton),
       tagAppendAttributes(actionButton("btAnalysisConfig", lang$nav$hcubeMode$hcubeLoadDialog$paverButton),
                           onclick = paste0("$('#configAnalysis').show();
-$('#", if(length(customScripts)) "btRunHcubeScript" else "btRunPaver", 
-"').show();$('#btHcubeLoad').hide();$('#hcubeLoadMethod').hide();$('#btAnalysisConfig').hide();
+$('#hcAnaButtonWrapper').show();$('#btHcubeLoad').hide();$('#hcubeLoadMethod').hide();$('#btAnalysisConfig').hide();
                           $('#btHcubeDownload').hide();$('#btHcubeRemove').hide();")),
-      actionButton("btRunPaver", lang$nav$hcubeMode$hcubeLoadDialog$runPaverButton, 
-                   class = "bt-highlight-1 bt-gms-confirm", style = "display:none;"),
-      actionButton("btRunHcubeScript", lang$nav$hcubeMode$hcubeLoadDialog$runScriptButton, 
-                   class = "bt-highlight-1 bt-gms-confirm", style = "display:none;"),
+      tags$div(style = "display:none;", id = "hcAnaButtonWrapper",
+               actionButton("btRunPaver", lang$nav$hcubeMode$hcubeLoadDialog$runPaverButton, 
+                            class = "bt-highlight-1 bt-gms-confirm", style = "display:none;"),
+               actionButton("btRunHcubeScript", lang$nav$hcubeMode$hcubeLoadDialog$runScriptButton, 
+                            class = "bt-highlight-1 bt-gms-confirm", style = "display:none;")),
       if(length(sidsToLoad) <= maxConcurentLoad)
         actionButton("btHcubeLoad", lang$nav$hcubeMode$hcubeLoadDialog$interactiveButton)
     ),

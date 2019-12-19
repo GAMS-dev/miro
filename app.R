@@ -1267,9 +1267,16 @@ if(!is.null(errMsg)){
           if(!is.null(errMsg)){
             return()
           }
-          scriptOutput$run(scriptId)
-          showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"), 
-                           lang$nav$scriptOutput$interruptButton)
+          tryCatch({
+            scriptOutput$run(scriptId)
+            showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"), 
+                             lang$nav$scriptOutput$interruptButton)
+          }, error = function(e){
+            flog.info("Script: '%s' crashed during startup. Error message: '%s'.",
+                      scriptId, conditionMessage(e))
+            scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$crash, scriptId, 
+                                     hcube = FALSE, isError = TRUE)
+          })
         })
         observeEvent(input$outputGenerated,{
           noOutputData <<- FALSE
@@ -1278,9 +1285,11 @@ if(!is.null(errMsg)){
     }
     
     if(!dir.exists(workDir) && !dir.create(workDir, recursive = TRUE)){
-      flog.fatal("Working directory could not be initialised.")
-      showErrorMsg(lang$errMsg$fileWrite$title, lang$errMsg$fileWrite$desc)
-      stop()
+      if(!dir.exists(workDir)){
+        flog.fatal("Working directory: '%s' could not be initialised.", workDir)
+        showErrorMsg(lang$errMsg$fileWrite$title, lang$errMsg$fileWrite$desc)
+        stop()
+      }
     }else{
       flog.debug("Working directory was created: '%s'.", workDir)
     }
