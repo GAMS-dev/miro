@@ -120,7 +120,7 @@
 .selectize-dropdown,
 .selectize-input,
 .selectize-input input {
-  color: #000;
+  color: #eeeeee;
   font-family: inherit;
   font-size: inherit;
   line-height: 20px;
@@ -4021,7 +4021,7 @@ output {
   padding-top: 7px;
   font-size: 14px;
   line-height: 1.42857143;
-  color: #000;
+  color: #eeeeee;
 }
 .form-control {
   display: block;
@@ -4030,7 +4030,7 @@ output {
   padding: 6px 12px;
   font-size: 14px;
   line-height: 1.42857143;
-  color: #000;
+  color: #eeeeee;
   background-color: #848991;
   background-image: none;
   border: 1px solid #ccc;
@@ -5373,7 +5373,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   font-size: 14px;
   font-weight: normal;
   line-height: 1;
-  color: #000;
+  color: #eeeeee;
   text-align: center;
   background-color: #111111;
   border: 1px solid #ccc;

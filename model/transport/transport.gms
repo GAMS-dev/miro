@@ -58,9 +58,10 @@ put log '        Validating data'/;
 put log '------------------------------------'/;
 if(sum(i, a(i)) < sum(j, b(j)),
   put log 'a:: Capacity insufficient to meet demand'/;
+else
+  put log 'OK'/;
 );
 putclose log;
-
 
 Variable
    x(i,j) 'shipment quantities in cases'

@@ -607,7 +607,11 @@ observeEvent({input$widget_type
                       ),
                       tags$div(class="option-wrapper",
                                numericInput("slider_step", lang$adminMode$widgets$slider$step, value = rv$widgetConfig$step, min = 0L),
-                               numericInput("slider_minStep", lang$adminMode$widgets$slider$minStep, value = rv$widgetConfig$minStep, min = 0L)),
+                               tags$div(class = "info-position",
+                                 numericInput("slider_minStep", tags$div(lang$adminMode$widgets$slider$minStep, 
+                                                                         tags$a("", class="info-wrapper", href="https://gams.com/miro/widgets.html#slider-option-minstep", 
+                                                                                tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                              value = rv$widgetConfig$minStep, min = 0L))),
                       tags$div(class = "shiny-input-container",
                                checkboxInput_MIRO("slider_ticks", lang$adminMode$widgets$slider$ticks,
                                                   rv$widgetConfig$ticks)

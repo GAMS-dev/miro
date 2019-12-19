@@ -762,7 +762,7 @@
       "extract":{
         "title": "Fehler beim Extrahieren des Archivs",
         "desc": "Probleme beim Extrahieren des Archivs. Bitte stellen Sie sicher, dass Sie eine gültige Zip-Datei hochladen.",
-        "invalidFiles": "Das Archiv, das Sie zu importieren versuchen, enthält ungültige Dateien. Nur Trace- und CSV-Dateien erlaubt!"
+        "invalidFiles": "Das Archiv, das Sie zu importieren versuchen, enthält ungültige Dateien. Nur Trace-, CSV- und GDX-Dateien erlaubt!"
       },
       "scenRead":{
         "title": "Fehler beim Lesen von Dateien",
@@ -1615,7 +1615,7 @@
         "addBarDataEl":{
           "chartYdatabar": "Was soll auf der y-Achse dargestellt werden?",
           "chartYlabel": "Welches Label soll verwendet werden?",
-          "color": "Balkenfarbe auswählen",
+          "color": "Balkenfarbe auswählen (Farbe für die automatische Auswahl löschen)",
           "lineWidth": "Balkenumrandungsbreite wählen",
           "lineColor": "Balkenumrandungsfarbe wählen"
         },
