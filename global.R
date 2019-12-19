@@ -2,8 +2,6 @@
 modelName <- "pickstock"
 # miro workspace
 miroWorkspaceDir <- ".miro"
-# turn debug mode on or off
-debugMode <- TRUE
 # miro data folder prefix
 miroDataDirPrefix <- "data_"
 # keywords in JSON input data that define that the data is NOT to be imported by an external source
@@ -44,8 +42,6 @@ maxScalarsValBox <- 20L
 slocktimeLimit <- 3600
 # log file directory and name
 logFileDir <- paste0("logs", .Platform$file.sep)
-# whether to print log output in console (in additional to file) or not
-logToConsole <- TRUE
 # specify the logging level (["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"])
 loggingLevel <- Sys.getenv("MIRO_LOG_LEVEL", "TRACE")
 # name of table with scenario/hcube metadata as well as scenario locks

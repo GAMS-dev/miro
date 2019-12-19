@@ -117,6 +117,7 @@ if(is.null(errMsg)){
                                file.path(getwd(), modelDir))
   modelNameRaw <- modelPath[[4]]
   modelName    <- modelPath[[3]]
+  modelName    <<- modelName
   modelGmsName <- modelPath[[2]]
   modelPath    <- modelPath[[1]]
 }
@@ -274,6 +275,10 @@ if(is.null(errMsg)){
       if(file.exists(file.path(currentModelDir, 
                                paste0(miroDataDirPrefix, modelName)))){
         modelFiles <- c(modelFiles, paste0(miroDataDirPrefix, modelName))
+      }
+      if(file.exists(file.path(currentModelDir, 
+                               paste0("renderer_", modelName)))){
+        modelFiles <- c(modelFiles, paste0("renderer_", modelName))
       }
       if(is.null(errMsg) && identical(Sys.getenv("MIRO_TEST_DEPLOY"), "true")){
         modelPath <- file.path(tmpFileDir, modelName, "test_deploy")
@@ -439,14 +444,17 @@ if(miroBuildonly){
     quit("no")
   }
   if(identical(Sys.getenv("MIRO_MODE"), "full")){
+    buildArchive <- !identical(Sys.getenv("MIRO_BUILD_ARCHIVE"), "false")
     Sys.setenv(MIRO_COMPILE_ONLY = "true")
     Sys.setenv(MIRO_USE_TMP = "true")
+    Sys.setenv(MIRO_BUILD_ARCHIVE = "true")
     Sys.setenv(MIRO_MODE = "hcube")
     buildProcHcube <- processx::process$new(file.path(R.home(), 'bin', 'Rscript'), 
                                             c('--vanilla', './app.R'),
                                             stderr = "|")
     Sys.setenv(MIRO_COMPILE_ONLY = "")
     Sys.setenv(MIRO_MODE = "full")
+    Sys.setenv(MIRO_BUILD_ARCHIVE = if(buildArchive) "true" else "false")
     Sys.setenv(MIRO_USE_TMP = if(useTempDir) "true" else "false")
     buildProcHcube$wait()
     procHcubeRetC <- buildProcHcube$get_exit_status()

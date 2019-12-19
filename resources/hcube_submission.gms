@@ -19,10 +19,9 @@ $if not set exec $set exec "true"
 $onEmbeddedCode Python:
 import os
 import re
-import shlex
 import json
 
-bfdir = r"%bfdir%"
+bfdir = r"%bfdir% ".strip()
 job_sub_fname = r"%fJobSubName%"
 out_script = "%outScript%"
 zipname = "%zipname%"
@@ -48,7 +47,7 @@ use_pf_arg = ""
 model_name = os.path.splitext(os.path.basename(model_gms_name))[0].lower()
 
 if os.path.isfile(os.path.join(bfdir, model_name + ".pf")):
-   use_pf_arg = " pf=" + shlex.quote(os.path.join(bfdir, model_name + ".pf"))
+   use_pf_arg = " pf=\"" + os.path.join(bfdir, model_name + ".pf") +"\""
 
 if out_script == "gams":
    # write GAMS $calls into job submission file
@@ -63,7 +62,7 @@ if out_script == "gams":
       linestmp += "$if errorlevel 1 $abort problems mkdir " + tmpdir + "\n"
          
       # gams call
-      linestmp += "$call cd " + zipname + "/" + tmpdir + " && gams " + shlex.quote(os.path.join(bfdir, model_gms_name)) + " " + " ".join(hc_job['arguments']) + use_pf_arg + "\n"      
+      linestmp += "$call cd " + zipname + "/" + tmpdir + " && gams \"" + os.path.join(bfdir, model_gms_name) + "\" " + " ".join(hc_job['arguments']) + use_pf_arg + "\n"      
       linestmp += "$if dexist " + dirname + " $call rm -r " + dirname + "\n"
       linestmp += "$call cd " + zipname + " && " + "mv " + tmpdir + " " + dirname + "\n\n"
       linestmp += "$onecho > \"%jobID%.log\"\n"
