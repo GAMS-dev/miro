@@ -23,6 +23,9 @@ HcubeDataInstance <- R6Class("HcubeDataInstance", public = list(
   getJobIDs = function(){
     return(private$jobIDs)
   },
+  getNoJobs = function(){
+    return(length(private$jobIDs))
+  },
   subsetJobIDs = function(idsSolved){
     subsetIds          <- !private$jobIDs %in% idsSolved
     private$jobIDs     <- private$jobIDs[subsetIds]

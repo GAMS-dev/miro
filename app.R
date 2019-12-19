@@ -440,14 +440,17 @@ if(miroBuildonly){
     quit("no")
   }
   if(identical(Sys.getenv("MIRO_MODE"), "full")){
+    buildArchive <- !identical(Sys.getenv(MIRO_BUILD_ARCHIVE), "false")
     Sys.setenv(MIRO_COMPILE_ONLY = "true")
     Sys.setenv(MIRO_USE_TMP = "true")
+    Sys.setenv(MIRO_BUILD_ARCHIVE = "true")
     Sys.setenv(MIRO_MODE = "hcube")
     buildProcHcube <- processx::process$new(file.path(R.home(), 'bin', 'Rscript'), 
                                             c('--vanilla', './app.R'),
                                             stderr = "|")
     Sys.setenv(MIRO_COMPILE_ONLY = "")
     Sys.setenv(MIRO_MODE = "full")
+    Sys.setenv(MIRO_BUILD_ARCHIVE = if(buildArchive) "true" else "false")
     Sys.setenv(MIRO_USE_TMP = if(useTempDir) "true" else "false")
     buildProcHcube$wait()
     procHcubeRetC <- buildProcHcube$get_exit_status()
