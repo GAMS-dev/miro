@@ -879,7 +879,12 @@ animation: none !important;
   border-collapse: collapse;
 }
 .block {
-  background:#f0f0f0; 
+  .responsiveDark({
+     background:#f0f0f0; 
+  },
+  {
+     background: lighten(#393e46, 5%);
+  });
   padding:10px;
   border: 1px solid #c2c2c2;
 }

@@ -85,6 +85,7 @@ class Paver :
     htmlheader = '''
         <STYLE>
         table.dataframe { text-align: right; font-size: 12px; border: 1px; border-collapse: collapse}
+        @media (prefers-color-scheme: dark) {table.dataframe {border-color:#444a54;}
         </STYLE>
         ''';
     

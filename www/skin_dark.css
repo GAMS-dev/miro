@@ -5500,7 +5500,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   border-radius: 4px 4px 0 0;
 }
 .nav-tabs > li > a:hover {
-  border-color: #111111 #111111 #ddd;
+  border-color: #444a54 #444a54 #ddd;
 }
 .nav-tabs > li.active > a,
 .nav-tabs > li.active > a:hover,
@@ -16720,7 +16720,7 @@ body {
   border-collapse: collapse;
 }
 .block {
-  background: #f0f0f0;
+  background: #444a54;
   padding: 10px;
   border: 1px solid #c2c2c2;
 }
