@@ -1,4 +1,4 @@
-/* global $:false Shiny: false HTMLWidgets:false MathJax:false Selectize:false */
+/* global $:false Shiny: false HTMLWidgets:false Selectize:false */
 
 const spinnerActive = {};
 
@@ -181,10 +181,6 @@ export function showJobsDialog(hcubeMode) {
   }
   switchTab('gamsinter');
   switchTabInTabset('jobListPanel', 'joblist');
-}
-
-export function renderMathJax() {
-  MathJax.Hub.Queue(['Typeset', MathJax.Hub, 'wrapper-documentation']);
 }
 
 export function validateSname(el, inputID = 'btCheckSnameLocalConfirm') {

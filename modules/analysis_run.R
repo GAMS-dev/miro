@@ -131,7 +131,7 @@ observeEvent(input$btRunPaver, {
   hideEl(session, "#scriptOutput_hcube")
   removeModal()
   if(is.null(paver) || !is.null(paver$get_exit_status())){
-    if(gmswebiter > 0){
+    if(gmswebiter > 1){
       removeTab("analysisResults", "analysisResults_2")
       removeTab("analysisResults", "analysisResults_3")
       removeTab("analysisResults", "analysisResults_4")
@@ -285,7 +285,7 @@ if(length(config$scripts$hcube)){
       return()
     }
     removeModal()
-    if(gmswebiter > 0){
+    if(gmswebiter > 1){
       removeTab("analysisResults", "analysisResults_2")
       removeTab("analysisResults", "analysisResults_3")
       removeTab("analysisResults", "analysisResults_4")
