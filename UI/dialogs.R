@@ -853,7 +853,8 @@ $('#", if(length(customScripts)) "btRunHcubeScript" else "btRunPaver",
       actionButton("btRunHcubeScript", lang$nav$hcubeMode$hcubeLoadDialog$runScriptButton, 
                    class = "bt-highlight-1 bt-gms-confirm", style = "display:none;"),
       if(length(sidsToLoad) <= maxConcurentLoad)
-        actionButton("btHcubeLoad", lang$nav$hcubeMode$hcubeLoadDialog$interactiveButton)
+        actionButton("btHcubeLoad", lang$nav$hcubeMode$hcubeLoadDialog$interactiveButton, 
+                     style = "margin-left: 5px;")
     ),
     fade = TRUE, easyClose = FALSE
   ))
