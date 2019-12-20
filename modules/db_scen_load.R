@@ -68,6 +68,7 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
       scenMetaDb <<- scenMetaDb[!as.character(scenMetaDb[[1]]) %in% sidsInComp, ]
     }
   }
+  maxNoScenExceeded <- FALSE
   if(!is.null(scenMetaDb) && nrow(scenMetaDb)){
     if(length(scenMetaDb) && nrow(scenMetaDb) > maxNoScenToShow){
       scenMetaDbSubset <<- scenMetaDb[order(scenMetaDb[[stimeIdentifier]], 
