@@ -58,7 +58,8 @@ gmswebiter <- 0
 observeEvent(input$btRunPaver, {
   flog.debug("Run paver button clicked.")
   req(input$selPaverAttribs)
-  if(!is.null(paver) || (length(scriptOutput) && scriptOutput$isRunning())){
+  if((!is.null(paver) && is.null(paver$get_exit_status())) || 
+     (length(scriptOutput) && scriptOutput$isRunning())){
     showHideEl(session, "#analysisRunScriptRunning", 6000L)
     return()
   }
@@ -87,7 +88,7 @@ observeEvent(input$btRunPaver, {
     return()
   }else{
     errMsg <- NULL
-    paverDir <- paste0(workDir, "paver")
+    paverDir <- file.path(workDir, "paver")
     paverClArgs <- isolate(input$paverClArgs)
     tryCatch({
       if(dir.exists(traceFileDir)){
@@ -130,7 +131,6 @@ observeEvent(input$btRunPaver, {
   hideEl(session, "#scriptOutput_hcube")
   removeModal()
   if(is.null(paver) || !is.null(paver$get_exit_status())){
-    flog.debug("Run Paver button clicked.")
     if(gmswebiter > 0){
       removeTab("analysisResults", "analysisResults_2")
       removeTab("analysisResults", "analysisResults_3")
@@ -272,7 +272,7 @@ if(length(config$scripts$hcube)){
       showHideEl(session, "#analysisRunUnknownError", 6000L)
       return()
     }
-    if(!is.null(paver) || scriptOutput$isRunning()){
+    if((!is.null(paver) && is.null(paver$get_exit_status())) || scriptOutput$isRunning()){
       flog.debug("A script is already running.")
       showHideEl(session, "#analysisRunScriptRunning", 6000L)
       return()

@@ -436,7 +436,7 @@ observeEvent(input$btHcubeRemove, {
   }else{
     hideEl(session, "#btHcubeLoad")
     hideEl(session, "#hcubeLoadMethod")
-    hideEl(session, "#btPaverConfig")
+    hideEl(session, "#btAnalysisConfig")
     hideEl(session, "#btHcubeDownload")
     showEl(session, "#hcubeRemoveConfirm")
     hcubeRemoveConfirmed <<- TRUE

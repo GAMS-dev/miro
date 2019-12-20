@@ -214,7 +214,7 @@ Worker <- R6Class("Worker", public = list(
         stop(sprintf("Problems removing Hypercube job directory: '%s'.", workDir), call. = FALSE)
     }
     
-    if(!dir.create(workDir, recursive = TRUE, showWarnings = FALSE))
+    if(!dir.exists(workDir) && !dir.create(workDir, recursive = TRUE, showWarnings = FALSE))
       stop(sprintf("Problems creating Hypercube job directory: '%s'.", workDir), call. = FALSE)
     
     staticDir <- file.path(workDir, "static")
