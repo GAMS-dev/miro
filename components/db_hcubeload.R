@@ -486,6 +486,15 @@ HcubeLoad <- R6Class("HcubeLoad",
                                                   full_join, by = sidColName)
                          names(dataset)[1] <- paste0(private$tabNameMeta, ".", 
                                                      names(metaData)[1])
+                         colNames     <- paste0(names(colNames), ".", colNames)
+                         colNamesNew  <- !colNames %in% names(dataset)
+                         colNamesSym  <- rlang::syms(colNames[!colNamesNew])
+                         dataset      <- select(dataset, !!!colNamesSym)
+                         missingVals  <- numeric(0L)
+                         if(length(dataset) && nrow(dataset)){
+                           missingVals <- NA_real_
+                         }
+                         dataset[, colNames[colNamesNew]] <- missingVals
                          if(length(subsetList) > 1L || length(subsetList[[1L]])){
                            subsetRows <- private$db$buildRowSubsetSubquery(subsetList, " & ", 
                                                                            " | ", SQL = FALSE)
@@ -494,11 +503,6 @@ HcubeLoad <- R6Class("HcubeLoad",
                              dataset    <- filter(dataset, !!subsetRows)
                            }
                          }
-                         colNames     <- paste0(names(colNames), ".", colNames)
-                         colNamesNew  <- !(colNames %in% names(dataset))
-                         colNamesSym  <- rlang::syms(colNames[!colNamesNew])
-                         dataset      <- select(dataset, !!!colNamesSym)
-                         dataset[, colNames[colNamesNew]] <- NA
                          return(dataset[, colNames])
                        },
                        importScalarValues      = function(table, field){
