@@ -122,7 +122,7 @@ inputTabContent <- lapply(seq_along(inputTabs), function(tabId) {
                                  ),
                                  conditionalPanel("input.hcubeMode_" %+% i, 
                                                   column(width = 1, style = "min-width: 100px; min-height:100px;",
-                                                         numericInput("hcubeStep_" %+% i, "Step size", 
+                                                         numericInput("hcubeStep_" %+% i, lang$nav$hcubeMode$stepsize, 
                                                                       sliderStepSize, min = 0)
                                                   )
                                  )
@@ -134,7 +134,7 @@ inputTabContent <- lapply(seq_along(inputTabs), function(tabId) {
                                         slider
                                  ),
                                  column(width = 1, style = "min-width: 100px; min-height:100px;",
-                                        numericInput("hcubeStep_" %+% i, "Step size", 
+                                        numericInput("hcubeStep_" %+% i, lang$nav$hcubeMode$stepsize, 
                                                      sliderStepSize, min = 0)
                                  )
                                )
@@ -454,8 +454,9 @@ if(LAUNCHHCUBEMODE){
     tabItem(tabName = "importData",
             fluidRow(
               box(title = tagList(lang$nav$hcubeImport$title, 
-                                  tags$div(style = "float: right;", 
-                                           actionButton(inputId = "refreshActiveJobs", 
+                                  tags$div(title = lang$nav$hcubeImport$refresh, style = "float: right;", 
+                                           actionButton(
+                                                        inputId = "refreshActiveJobs", 
                                                         class = "bt-icon", 
                                                         icon = icon("refresh"), label = NULL))),
                   status="primary", solidHeader = TRUE, width = 12,

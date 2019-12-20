@@ -523,6 +523,7 @@
     },
     "hcubeMode":{
       "sliderAllCombinations": "Alle Kombinationen?",
+      "stepsize": "Schrittweite",
       "checkboxAliases":["Nein", "Ja"],
       "hcubeLoadDialog":{
         "title": "Aktion auswählen",
@@ -633,6 +634,7 @@
     },
     "hcubeImport":{
       "title": "Hypercube-Job wird importiert",
+      "refresh": "Aktualisieren",
       "unzip": "Extrahieren des Archivs",
       "zipValidation": "Validierung des Archivs",
       "scenValidation": "Validierung der Szenariodaten",

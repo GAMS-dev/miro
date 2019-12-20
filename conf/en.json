@@ -523,6 +523,7 @@
     },
     "hcubeMode":{
       "sliderAllCombinations": "All combinations?",
+      "stepsize": "Step size",
       "checkboxAliases":["No", "Yes"],
       "hcubeLoadDialog":{
         "title": "Select action",
@@ -633,6 +634,7 @@
     },
     "hcubeImport":{
       "title": "Importing Hypercube job",
+      "refresh": "refresh",
       "unzip": "Extracting zip file",
       "zipValidation": "Validating zip file",
       "scenValidation": "Validating scenario data",

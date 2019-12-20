@@ -2414,6 +2414,11 @@
               "minLength":1,
               "required":true
             },
+            "stepsize":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "checkboxAliases":{  
               "type":"array",
               "uniqueItems": true,
@@ -2913,6 +2918,11 @@
           "required":true,
           "properties":{  
             "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "refresh":{  
               "type":"string",
               "minLength":1,
               "required":true

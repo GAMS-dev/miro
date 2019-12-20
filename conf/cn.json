@@ -523,6 +523,7 @@
     },
     "hcubeMode":{
       "sliderAllCombinations":"所有组合？",
+      "stepsize": "Step size",
       "checkboxAliases":["否","是"],
       "hcubeLoadDialog":{
         "title": "Select action",
@@ -633,6 +634,7 @@
     },
     "hcubeImport":{
       "title":"正在导入Hypercube作业",
+      "refresh": "refresh",
       "unzip":"提取zip文件",
       "zipValidation":"验证zip文件",
       "scenValidation":"验证场景数据",
