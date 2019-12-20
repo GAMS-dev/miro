@@ -143,17 +143,15 @@ insertUI(selector = "#interface_wrapper2",
                                imageOutput("general_logo_preview", height = "50px", width = "230px")
                       )),
            tags$hr(),
-           tags$h2(lang$adminMode$general$readme$label, class="option-category"),
-           tags$div(class = "option-wrapper info-position",
-                    textInput("general_readmeTabtitle", tags$div(lang$adminMode$general$readme$tabTitle, 
-                                                                 tags$a("", class="info-wrapper", href="https://gams.com/miro/", 
-                                                                        tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
-                              value = if(!is.null(configJSON$readme$tabTitle) && nchar(configJSON$readme$tabTitle)) configJSON$readme$tabTitle else "")
+           tags$h2(lang$adminMode$general$readme$label, 
+                   tags$a("", class="info-header", href="https://gams.com/miro/customize.html#app-readme", 
+                          tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"), class="option-category info-position"),
+           tags$div(class = "option-wrapper",
+                    textInput("general_readmeTabtitle", tags$div(lang$adminMode$general$readme$tabTitle,
+                              value = if(!is.null(configJSON$readme$tabTitle) && nchar(configJSON$readme$tabTitle)) configJSON$readme$tabTitle else ""))
            ),
            tags$div(class = "option-wrapper info-position",
-                    textInput("general_readmeAltFileName", tags$div(lang$adminMode$general$readme$fileName, 
-                                                                    tags$a("", class="info-wrapper", href="https://gams.com/miro/", 
-                                                                           tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                    textInput("general_readmeAltFileName", lang$adminMode$general$readme$fileName,
                               value = if(!is.null(configJSON$readme$altFilename) && nchar(configJSON$readme$altFilename)) configJSON$readme$altFilename else "")
            )
          ),where = "beforeEnd")
