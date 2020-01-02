@@ -53,7 +53,7 @@
                 <div class="branding">
                     <h1 class="logo">
                         <a href="index.html">
-                          <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
+                          <img class="img-fluid" style="height:75px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
                         </a>
                     </h1>
                 </div><!--//branding-->
@@ -367,14 +367,14 @@
                                               <br>This folder is a copy of the directory of the underlying GAMS model. If files are included in the model using relative paths, they should be located in this folder.</li>
                                               <li><i>hcube_submission.gms</i>
                                               <br>Script which is used in the <a href="#auto-jobsubmit" class="scrollto">automated job submission</a> to convert the Hypercube file into executable GAMS calls. The folder structure of the downloaded ZIP file corresponds to the structure assumed in the hcube_submission.gms file.</li>
-                                              <li>transport.hcube
-                                              <br>Hypercube file. Contains the GAMS calls as well as the hash values for each scenario in the Hypercube job.</li>
+                                              <li>hcube.json
+                                              <br>Hypercube file. Contains information on all scenarios to be calculated in the Hypercube job (scenario ID, command line arguments).</li>
                                             </ul>
                                             <div class="section-block" style="text-align:center;">
                                                 <img class="img-fluid" style="max-height:100pt;" src="assets/images/batch_img/hcube-zip.png" alt="Zip file for manual job submission" />
                                             </div>
                                             <p>When submitting your Hypercube job manually, you need to write a script that takes the information provided in the <i>.hcube</i> file and transform it into some sort of executable script. Of course, you can simply take the <span class="code">hcube_submission.gms</span> file that lies in the archive you downloaded. In case you need to customize this script e.g. because you want to send the GAMS jobs to some sort of compute server, you will need to adjust this file accordingly.</p>
-                                            <p>Let's have a brief look at the <i>transport.hcube</i> file:</p>
+                                            <p>Let's have a brief look at the <i>hcube.json</i> file:</p>
                                             <div class="section-block" style="text-align:center;">
                                                 <img class="img-fluid" style="margin-bottom:15px; max-height:300pt;" src="assets/images/batch_img/config_batch_file.png" alt="generated Hypercube file" />
                                             </div>

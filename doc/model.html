@@ -53,7 +53,7 @@
                 <div class="branding">
                     <h1 class="logo">
                         <a href="index.html">
-                          <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
+                          <img class="img-fluid" style="height:75px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
                         </a>
                     </h1>
                 </div><!--//branding-->
@@ -279,13 +279,10 @@ Positive Variable x;
                                         all files generated during the run. When the model has finished the execution phase successfully, the results can 
                                         be examined. Since MIRO is connected to a database, you can store results there, fetch previously saved results 
                                         and modify them or use them to compare with other scenarios.</p>
-                                        <p>After the startup, you will find a new folder named <i>conf</i> in the directory where your model is located. 
-                                        This folder contains the file <span class="code">&lt;modelname&gt;_io.json</span>: The metadata of all input and output 
-                                        symbols we just defined in our model are declared here in JSON syntax. You should not modify this file.
-                                            </br>Additionally, you will find a folder named <span class="code">data_&lt;modelname&gt;</span> with a gdx 
+                                        <p>After the startup, you will find a new folder named <i>conf_&lt;modelname&gt;</i> in the directory where your model is located. This folder contains the file <span class="code">&lt;modelname&gt;_io.json</span>: The metadata of all input and output symbols we just defined in our model are declared here in JSON syntax. You should not modify this file.
+                                            </br>Additionally, there is a folder named <span class="code">data_&lt;modelname&gt;</span> with a gdx 
                                             container named <span class="code">default.gdx</span>. This gdx file holds all the data relevant to MIRO that 
-                                            GAMS extracted from your model. It will be automatically imported into the MIRO database the next time you launch 
-                                            your app.
+                                            GAMS extracted from your model. It will be automatically imported into the MIRO database the next time you launch your app.
                                              </p>
                                              <div class="callout-block callout-success">
                                                <div class="icon-holder">
@@ -828,96 +825,48 @@ $offExternalInput
                             </section><!--//doc-section-->
                             <section id="development-mode" class="doc-section">
                                 <h2 class="section-title">Development mode</h2>
-                                <p>When using GAMS MIRO, it is important to understand the differences between the developement and deployment of an application. 
-                                In the development phase, the interface between GAMS model and MIRO application is defined, graphics and widgets are configured 
-                                and general options are set. You usually start the MIRO app via GAMS Studio or the command line during that time. 
-                                <div  id="development-files"  class="section-block">
-                                    <h3 class="block-title">Files and directories</h3>
-                                    The following things happen during the application startup in development mode: </p>
-                                    <ol>
-                                    <li>The GAMS model is parsed. All symbols declared between the <code class="language-gams">$onExternalInput
+                                <div class="section-block">
+                                    <p>When using GAMS MIRO, it is important to understand the differences between the developement and deployment of an application. 
+                                    In the development phase, the interface between GAMS model and MIRO application is defined, graphics and widgets are configured 
+                                    and general options are set. You usually start the MIRO app via GAMS Studio or the command line during that time. The <a href = "./deployment.html">deployment mode</a>, on the other hand, describes the use of fully configured applications by the end user.
+                                    <div  id="development-files"  class="section-block">
+                                        <h3 class="block-title">Files and directories</h3>
+                                        The following steps are run through during the application startup in development mode: </p>
+                                        <ol>
+                                        <li id="json-configuration-files">The GAMS model is parsed. All symbols declared between the <code class="language-gams">$onExternalInput
 </code> / <code class="language-gams">$offExternalInput
 </code> and <code class="language-gams">$onExternalOutput
 </code> / <code class="language-gams">$offExternalOutput
 </code> 
-                                    tags are included in the GAMS/MIRO data contract (<a href="./faqs.html#file-io"><i>&lt;modelname&gt;_io.json</i></a>) and are 
-                                    visible in the interface from now on.</li>
-                                    <li>The data of the tagged symbols is extracted from the model and stored as a special scenario named <i>default</i> in the MIRO database.</li>
-                                    <li>If available, the configuration file <a href="./faqs.html#file-config"><i>&lt;modelname&gt;.json</i></a> is parsed. 
-                                    It contains the configuration of an app created by the user (graphics, widgets, general settings, etc.). 
-                                    If the file does not yet exist, it is created empty.</li>
-                                    <li>In MIRO, several initialization steps are performed. These include setting up internal data structures.</li> 
-                                    <li>The information from the steps 1, 3 & 4 is stored in <a href="#binary-files" class="scrollto">binary files</a>. 
-                                    In deployment mode, these files are read at startup. The previously enumerated initialization steps are then omitted.</li>
-                                    <li>The file <a href="#development-runapp">runapp.R</a> and the <a href="#development-logs">logs</a> folder are created, see below.</li>
-                                    </ol>
-                                    <p>The following is an overview of all files that are involved in MIRO's startup in development mode:</p>
-                                    <table class="custom-table">
-                                      <tr id="json-configuration-files">
-                                        <td>
-                                          <img style="height:85px" src="assets/images/folder_conf.png" alt="configuration folder" />
-                                        </td>
-                                        <td>
-                                          If not yet existing, a folder <i>conf_&lt;modelname&gt;/</i> with the files <a href="./faqs.html#file-io"><i>&lt;modelname&gt;_io.json</i></a> 
-                                          and <a href="./faqs.html#file-config"><i>&lt;modelname&gt;.json</i></a> is created in the model directory. The former 
-                                          contains information about the GAMS/MIRO data contract and the latter contains the user-defined configuration of an app.
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td>
-                                          <img style="height:85px" src="assets/images/folder_data.png" alt="data folder" />
-                                        </td>
-                                        <td>
-                                          Another directory <span class="code">data_&lt;modelname&gt;</span> with a gdx file: 
-                                          <a href="./faqs.html#file-gdx">default.gdx</a> is created that contains the data extracted from your GAMS model. 
-                                          This file will be stored in the MIRO database under the scenario name: <i>default</i> at the next start of MIRO. 
-                                          The GDX file is deleted when the application is closed. 
-                                          <br>You can use this folder to import multiple scenarios 
-                                          into your database at the same time. For more information, see <a href = "./start.html#startup-import">here</a>. 
-                                        </td>
-                                      </tr>
-                                      <tr id="development-logs">
-                                        <td>
-                                          <img style="height:85px" src="assets/images/folder_log.png" alt="logs folder" />
-                                        </td>
-                                        <td>
-                                          In this folder MIRO log files (not the GAMS log files) are stored. 
-                                        </td>
-                                      </tr>
-                                      <tr id="development-runapp">
-                                        <td>
-                                          <img style="height:85px" src="assets/images/file_runapp.png" alt="runapp file" />
-                                        </td>
-                                        <td>
-                                          The file <a href="./faqs.html#file-appR"><i>runapp.R</i></a> contains code necessary to launch the MIRO app. 
-                                          It is called by GAMS Studio during the startup process. You should not modify this file.
-                                        </td>
-                                      </tr>
-                                      <tr id="binary-files">
-                                        <td>
-                                          <img style="height:95px;" src="assets/images/file_miroconf.png" alt="miroconf files" />
-                                        </td>
-                                        <td>
-                                          The binary configuration files <a href="./faqs.html#file-miroconf"><i>&lt;modelname&gt;_&lt;version_number&gt;.miroconf</i></a> 
-                                      and <a href="./faqs.html#file-miroconf"><i>&lt;modelname&gt;_&lt;version_number&gt;_hcube.miroconf</i></a> contain the 
-                                      configuration and initialization steps of an application and are used for its <a href="./deployment.html">deployment</a>.
-                                      The following information is included in there:
-                                      <ol>
-                                        <li>The metadata of all input and output symbols defined between the <code class="language-gams">$onExternalInput
-</code> / <code class="language-gams">$offExternalInput
-</code> and <code class="language-gams">$onExternalOutput
-</code> / <code class="language-gams">$offExternalOutput
-</code> 
-                                            tags in the corresponding GAMS model.</li>
-                                        <li>The whole configuration of the MIRO app including configured graphics, input widgets and general options.</li>
-                                        <li>Initialization of MIRO-internal data structures.</li>
-                                      </ol>
-                                        </td>
-                                      </tr>
-                                    </table>
-                                    <p>After developing an MIRO application, i.e. the complete configuration (<a href="./customize.html">next chapter</a>), 
-                                    the final step is the <a href="./deployment.html">deployment</a>.</p>
-                                </div><!--//section-block-->
+                                        tags are included in the GAMS/MIRO data contract and are visible in the interface from now on. If not yet existing, a folder <i>conf_&lt;modelname&gt;</i> is created in the model directory where the data contract is stored in the file <a href="./faqs.html#file-io"><i>&lt;modelname&gt;_io.json</i></a>.</li>
+                                        <li>The data of the tagged symbols is extracted from the model and stored in the directory <span class="code">data_&lt;modelname&gt;</span> as a GDX file <a href="./faqs.html#file-gdx">default.gdx</a>. 
+                                        From this GDX file a special scenario named <i>default</i> is automatically saved in the MIRO database when MIRO is started. The GDX file is deleted when the application is closed. 
+                                        <div class="callout-block callout-success">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-thumbs-up"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <b class="callout-title">Tip:</b>
+                                              <p>You can use the <span class="code">data_&lt;modelname&gt;</span> folder to import multiple scenarios into your database at the same time. For more information, see <a href = "./start.html#startup-import">here</a>.</p>
+                                          </div><!--//content-->
+                                        </div><!--//callout-block-->
+                                        </li>
+                                        <li>If available, the configuration file <a href="./faqs.html#file-config"><i>&lt;modelname&gt;.json</i></a> in the <i>conf_&lt;modelname&gt;</i> folder is parsed. 
+                                        It contains the configuration of an app created by the user (graphics, widgets, general settings, etc.). 
+                                        If the file does not yet exist, it is created empty.</li>
+                                        <li>In MIRO, several initialization steps are performed. These include setting up internal data structures.</li> 
+                                        <li id="binary-files">The information from the steps 1, 3 & 4 is stored in the binary configuration files <a href="./faqs.html#file-miroconf"><i>&lt;modelname&gt;_&lt;version_number&gt;.miroconf</i></a> 
+                                          and <a href="./faqs.html#file-miroconf"><i>&lt;modelname&gt;_&lt;version_number&gt;_hcube.miroconf</i></a>.  
+                                        In deployment mode, these files are read at startup. The previously enumerated initialization steps are then omitted.</li>
+                                        </ol>
+                                        <p>Using the transport model as an example, the following files and folders are added to the model directory after starting the MIRO application:</p>
+                                        <div class="section-block" style="text-align:center;">
+                                            <img class="img-fluid" style="max-height:100pt;" src="assets/images/startup_files.png" alt="Files and folders in model directory" />
+                                        </div>
+                                        <p>After developing an MIRO application, i.e. the complete configuration (<a href="./customize.html">next chapter</a>), 
+                                        the final step is the <a href="./deployment.html">deployment</a>.</p>
+                                    </div>
+                                </div>
                                 <div  id="development-directory"  class="section-block">
                                     <h3 class="block-title">Using a temporary directory</h3>
                                     <p>By default, MIRO executes the GAMS model in the directory it is located. However, there is an option 
@@ -958,7 +907,7 @@ $offExternalInput
                                         <i>idir1</i> or absolute paths must also be located in this temporary directory. In order 
                                         for MIRO to know which files these are, the user must specify them. The selection can be made directly in GAMS 
                                         Studio. If GAMS Studio is not used, a file <i>&lt;modelname&gt;_files.txt</i> must be created manually in the model directory 
-                                        and another environment variables needs to be set. Read more about this <a href = "./deployment.html">here</a>.
+                                        and another environment variables needs to be set. Read more about this <a href = "./deployment.html#sbs-create-app">here</a>.
                                       </li>
                                     </ul>
                                     </p>      

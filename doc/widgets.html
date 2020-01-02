@@ -46,7 +46,7 @@ $(document).ready(function(){
                 <div class="branding">
                     <h1 class="logo">
                         <a href="index.html">
-                          <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
+                          <img class="img-fluid" style="height:75px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
                         </a>
                     </h1>
                 </div><!--//branding-->
@@ -71,7 +71,7 @@ $(document).ready(function(){
                                     <p>Sliders are useful in situations where the user has to select a numeric value from a range. </p>
                                     <p>Example:</p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_slider_config.png" alt="Slider configuration"/>
+                                        <img class="img-fluid" src="assets/images/configuration_mode/widget_slider_config2.png" alt="Slider configuration"/>
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block" id = "widget-slider-options">
@@ -140,6 +140,38 @@ $(document).ready(function(){
                                         <img class="img-fluid" style= "max-height:40pt;" src="assets/images/configuration_mode/widget_slider_step.png" alt="Step size"/>
                                     </div>
                                     </div>
+                                    <h6 id="slider-option-minstep" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Minimum step size</h6>
+                                    <div class="expanded">
+                                    <div class="callout-block callout-success" style="margin-top:10px;">
+                                       <div class="icon-holder">
+                                           <i class="fas fa-thumbs-up"></i>
+                                       </div><!--//icon-holder-->
+                                       <div class="content">
+                                            <p>The minimum step size defines the minimum interval that can be used for scenario creation in Hypercube mode for a sliderrange. </p>
+                                            <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_sliderrange_minstep_example_marked.png" alt="Sliderrange with step size of 5 and minimum step size of 1"/>
+                                    </div>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                    <p>In Hypercube mode, when a slider range is used, scenarios are generated depending on the specified step size. Example: We configure a single slider with a lower bound of 70, an upper bound of 100 and a step size of 5. In the Hypercube mode this single slider becomes a slider range with the same limits and the same step size. In the image below the selected limits of 75 to 90 and a step size of 5 result in 4 different variants (75, 80, 85, 90), i.e. 4 scenarios to be calculated.<p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_sliderrange_step_example.png" alt="Sliderrange with step size of 5"/>
+                                    </div>
+                                    <p>The <i>minimum step size</i> sets the minimum value the user can specify as step size in Hypercube mode. The value may be lower than the regular step size. For example, if the slider above is configured with a regular step size of 5, the limits of the slider can be set in increments of 5. However, the step size for scenario generation on the right side can differ, e.g. be set in smaller intervals. If set to 1, for example, this would result in 16 scenarios (75, 76, 77, ..., 89, 90).</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_sliderrange_minstep_example.png" alt="Sliderrange with step size of 5 and minimum step size of 1"/>
+                                    </div>
+                                    
+                                    <div class="callout-block callout-warning">
+                                      <div class="icon-holder">
+                                          <i class="fas fa-info-circle"></i>
+                                      </div><!--//icon-holder-->
+                                      <div class="content">
+                                          <b class="callout-title">Note:</b>
+                                          <p>The minimum step size is only relevant in Hypercube mode.</p>
+                                      </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                    </div>
                                     <h6 id="slider-option-tick" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Sow tick marks?</h6>
                                     <div class="expanded"><p>Tick marks are displayed below the sliders and help to visually subdivide the entire slider width. </p>
                                     <p>Slider without tick marks:</p>
@@ -190,8 +222,27 @@ $(document).ready(function(){
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_sliderrange_config.png" alt="Slider range configuration"/>
                                     </div>
                                     <p>In the GAMS model we can access the selected range with
-                                    <code class="language-gams">%RANGE_LO%</code> for the lower value and <code class="language-gams">%RANGE_UP%</code> for the upper value.</p>
+                                    <code class="language-gams">%RANGE$LO%</code> for the lower value and <code class="language-gams">%RANGE$UP%</code> for the upper value.</p>
                                     <p>More on widgets with ranges can be found <a href="./customize.html#widgets-ranges">here</a>.</p>
+                                    <h6 class="block-title">Sliderrange in Hypercube mode</h6>
+                                    <p>A slider range in base mode becomes a slider range in Hypercube mode with an additional checkbox:</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_sliderrange_hypercube.png" alt="Sliderrange in Hypercube mode"/>
+                                    </div>
+                                    <p>With this checkbox you can determine if the selected range of the slider should result in a single scenario (<i>All combinations?</i> unchecked) or if all possible combinations within this range should be used (<i>All combinations?</i> checked). In the example above - <i>All combinations?</i> is checked - the selected step size determines which scenarios are generated for the Hypercube job. With a step size of 5, this would result in 10 different symbol ranges / scenarios:</p>
+                                    <ul>
+                                      <li>75 - 90</li>
+                                      <li>80 - 90</li>
+                                      <li>85 - 90</li>
+                                      <li>90 - 90</li>
+                                      <li>75 - 85</li>
+                                      <li>80 - 85</li>
+                                      <li>85 - 85</li>
+                                      <li>75 - 80</li>
+                                      <li>80 - 80</li>
+                                      <li>75 - 75</li>
+                                    </ul>
+                                    <p>An unchecked <i>All combinations?</i> would result in a single scenario. In this scenario, the symbol would have a range from 75 to 90.
                                 </div><!--//section-block-->
                                 <div class="section-block" id = "widget-sliderrange-options">
                                   <h3 class="block-title">Available Options</h3>
