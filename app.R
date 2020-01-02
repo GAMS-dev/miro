@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "0.9.24"
+MIROVersion <- "0.9.25"
 APIVersion  <- "1"
-MIRORDate   <- "Dec 20 2019"
+MIRORDate   <- "Jan 02 2020"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -872,23 +872,11 @@ if(!is.null(errMsg)){
   }
   
   shinyApp(ui = ui_initError, server = server_initError)
-}else if(LAUNCHCONFIGMODE){
-  if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
-    setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
-  }else{
-    setTxtProgressBar(pb, 1)
-  }
-  close(pb)
-  pb <- NULL
-  
-  source("./tools/config/server.R", local = TRUE)
-  source("./tools/config/ui.R", local = TRUE)
-  shinyApp(ui = ui_admin, server = server_admin)
 }else{
+  rm(installedPackages)
   if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
     setWinProgressBar(pb, 0.6, label= "Importing new data")
   }
-  rm(LAUNCHCONFIGMODE, installedPackages)
   
   local({
     miroDataDir   <- file.path(currentModelDir, paste0(miroDataDirPrefix, modelName))
@@ -957,725 +945,731 @@ if(!is.null(errMsg)){
   }
   close(pb)
   pb <- NULL
-  interruptShutdown <<- FALSE
-
-  #______________________________________________________
-  #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-  #                   Server
-  #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-  #______________________________________________________
-  server <- function(input, output, session){
-    newTab <- vector("list", maxNumberScenarios + 3L)
-    btSortNameDesc     <- FALSE
-    btSortTimeDesc     <- TRUE
-    btSortTime         <- TRUE
-    btSortNameDescBase <- FALSE
-    btSortTimeDescBase <- TRUE
-    btSortTimeBase     <- TRUE
-    interruptShutdown  <<- TRUE
-    jobImportID        <- NULL
-    resetWidgetsOnClose <- TRUE
-    # boolean that specifies whether output data should be saved
-    saveOutput         <- TRUE
-    # count number of open scenario tabs
-    numberScenTabs     <- 0L
-    # boolean that specifies whether input data shall be overridden
-    overwriteInput      <- FALSE
-    # boolean that specifies whether data shall be saved under a new name 
-    # or existing scenario shall be overridden
-    saveAsFlag         <- TRUE
-    # boolean that specifies whether output data is included in currently loaded dataset
-    noOutputData       <- TRUE
-    # count number of prepared scenarios for asynchronous solve
-    asyncCount         <- 1L
-    asyncLogLoaded     <- vector(mode = "logical", 3L)
-    asyncResObs        <- NULL
-    # parameters used for saving scenario data
-    scenData           <- list()
-    scenData[["scen_1_"]] <- scenDataTemplate
-    # parameter used for saving (hidden) scalar data
-    scalarData         <- list()
-    traceData          <- data.frame()
-    # boolean that specifies whether handsontable is initialised
-    hotInit            <- vector("logical", length = length(modelIn))
-    # boolean that specifies whether check if data is unsaved should be skipped
-    noCheck            <- vector("logical", length = length(modelIn))
-    noCheck[]          <- TRUE
-    # when inputs change values quickly, they sometimes lag in updating its element in 
-    # 'input' list. Thus, we remember currently selected values in this list
-    selectedDepEl      <- vector(mode = "list", length = length(modelIn))
-    # list of attachments for active scenario
-    attachmentList     <- tibble(name = vector("character", attachMaxNo),
-                                 execPerm = vector("logical", attachMaxNo))
-    # boolean that specifies whether input data does not match output data
-    dirtyFlag          <- FALSE
-    isInSplitView      <- if(identical(config$defCompMode, "split")) TRUE else FALSE
-    if(isInSplitView){
-      enableEl(session, "#btCompareScen")
-    }
-    isInCompareMode    <- FALSE
-    isInSolveMode      <- TRUE
-    modelStatus        <- NULL
+  if(LAUNCHCONFIGMODE){
+    source("./tools/config/server.R", local = TRUE)
+    source("./tools/config/ui.R", local = TRUE)
+    shinyApp(ui = ui_admin, server = server_admin)
+  }else{
+    interruptShutdown <<- FALSE
     
-    # currently active scenario (R6 object)
-    activeScen         <- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
-                                       isNewScen = TRUE)
-    exportFileType     <- if(useGdx) "gdx" else "xls"
-    
-    # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
-    sidCompOrder     <- NULL
-    
-    worker <- Worker$new(metadata = list(uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
-                                         tableNameTracePrefix = tableNameTracePrefix, maxSizeToRead = 5000,
-                                         modelDataFiles = if(identical(config$fileExchange, "gdx")) 
-                                           c(MIROGdxInName, MIROGdxOutName) else 
-                                             paste0(c(names(modelOut), inputDsNames), ".csv"),
-                                         MIROGdxInName = MIROGdxInName,
-                                         clArgs = GAMSClArgs, 
-                                         text_entities = c(paste0(modelName, ".lst"), 
-                                                           if(config$activateModules$miroLogFile) config$miroLogFile),
-                                         gamsExecMode = gamsExecMode,
-                                         extraClArgs = config$extraClArgs, 
-                                         saveTraceFile = config$saveTraceFile,
-                                         modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
-                                         timeout = 8L, serverOS = getOS(), modelData = modelData, hcubeMode = LAUNCHHCUBEMODE,
-                                         rememberMeFileName = rememberMeFileName), 
-                         remote = config$activateModules$remoteExecution,
-                         hcube = LAUNCHHCUBEMODE,
-                         db = db)
-    if(length(credConfig)){
-      do.call(worker$setCredentials, credConfig)
-    }
-    
-    scenMetaData     <- list()
-    # scenario metadata of scenario saved in database
-    scenMetaDb       <- NULL
-    scenMetaDbBase   <- NULL
-    scenMetaDbBaseList <- NULL
-    scenTags         <- NULL
-    scenMetaDbSubset <- NULL
-    scenMetaDbBaseSubset <- NULL
-    # save the scenario ids loaded in UI
-    scenCounterMultiComp <- 4L
-    sidsInComp       <- vector("integer", length = maxNumberScenarios + 1)
-    sidsInSplitComp  <- vector("integer", length = 2L)
-    # occupied slots (scenario is loaded in ui with this rv$scenId)
-    occupiedSidSlots <- vector("logical", length = maxNumberScenarios)
-    loadInLeftBoxSplit <- TRUE
-    # trigger navigation through tabs by shortcuts
-    shortcutNest     <- 0L
-    nestTabsetsViaShortcuts <- function(direction){
-      shortcutNest <<- min(2L, shortcutNest + direction)
-    }
-    observeEvent(input$tabsetShortcutNest, {
-      nestTabsetsViaShortcuts(direction = +1L)
-    })
-    observeEvent(input$tabsetShortcutUnnest, {
-      nestTabsetsViaShortcuts(direction = -1L)
-    })
-    navigateTabsViaShortcuts <- function(direction){
+    #______________________________________________________
+    #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    #                   Server
+    #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    #______________________________________________________
+    server <- function(input, output, session){
+      newTab <- vector("list", maxNumberScenarios + 3L)
+      btSortNameDesc     <- FALSE
+      btSortTimeDesc     <- TRUE
+      btSortTime         <- TRUE
+      btSortNameDescBase <- FALSE
+      btSortTimeDescBase <- TRUE
+      btSortTimeBase     <- TRUE
+      interruptShutdown  <<- TRUE
+      jobImportID        <- NULL
+      resetWidgetsOnClose <- TRUE
+      # boolean that specifies whether output data should be saved
+      saveOutput         <- TRUE
+      # count number of open scenario tabs
+      numberScenTabs     <- 0L
+      # boolean that specifies whether input data shall be overridden
+      overwriteInput      <- FALSE
+      # boolean that specifies whether data shall be saved under a new name 
+      # or existing scenario shall be overridden
+      saveAsFlag         <- TRUE
+      # boolean that specifies whether output data is included in currently loaded dataset
+      noOutputData       <- TRUE
+      # count number of prepared scenarios for asynchronous solve
+      asyncCount         <- 1L
+      asyncLogLoaded     <- vector(mode = "logical", 3L)
+      asyncResObs        <- NULL
+      # parameters used for saving scenario data
+      scenData           <- list()
+      scenData[["scen_1_"]] <- scenDataTemplate
+      # parameter used for saving (hidden) scalar data
+      scalarData         <- list()
+      traceData          <- data.frame()
+      # boolean that specifies whether handsontable is initialised
+      hotInit            <- vector("logical", length = length(modelIn))
+      # boolean that specifies whether check if data is unsaved should be skipped
+      noCheck            <- vector("logical", length = length(modelIn))
+      noCheck[]          <- TRUE
+      # when inputs change values quickly, they sometimes lag in updating its element in 
+      # 'input' list. Thus, we remember currently selected values in this list
+      selectedDepEl      <- vector(mode = "list", length = length(modelIn))
+      # list of attachments for active scenario
+      attachmentList     <- tibble(name = vector("character", attachMaxNo),
+                                   execPerm = vector("logical", attachMaxNo))
+      # boolean that specifies whether input data does not match output data
+      dirtyFlag          <- FALSE
+      isInSplitView      <- if(identical(config$defCompMode, "split")) TRUE else FALSE
+      if(isInSplitView){
+        enableEl(session, "#btCompareScen")
+      }
+      isInCompareMode    <- FALSE
+      isInSolveMode      <- TRUE
+      modelStatus        <- NULL
       
-      if(isolate(input$sidebarMenuId) == "inputData"){
-        flog.debug("Navigated %d input tab (using shortcut).", direction)
-        currentGroup <- as.numeric(gsub("\\D", "", isolate(input$inputTabset)))
-        if(shortcutNest && length(inputTabs[[currentGroup]]) > 1L){
-          currentSheet <- as.integer(strsplit(isolate(input[[paste0("inputTabset", 
-                                                                    currentGroup)]]), "_")[[1]][2])
-          updateTabsetPanel(session, paste0("inputTabset", currentGroup), 
-                            paste0("inputTabset", currentGroup, "_", 
-                                   currentSheet + direction))
-        }else{
-          updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", 
-                                                           currentGroup + direction))
-        }
-      }else if(isolate(input$sidebarMenuId) == "outputData"){
-        flog.debug("Navigated %d output tabs (using shortcut).", direction)
-        currentGroup <- as.numeric(gsub("\\D", "", isolate(input$outputTabset)))
-        if(shortcutNest && length(outputTabs[[currentGroup]]) > 1L){
-          currentSheet <- as.integer(strsplit(isolate(input[[paste0("outputTabset", 
-                                                                    currentGroup)]]), "_")[[1]][2])
-          updateTabsetPanel(session, paste0("outputTabset", currentGroup), 
-                            paste0("outputTabset", 
-                                   currentGroup, "_", currentSheet + direction))
-        }else{
-          updateTabsetPanel(session, "outputTabset", 
-                            paste0("outputTabset_", currentGroup + direction))
-        }
-      }else if(isolate(input$sidebarMenuId) == "scenarios"){
-        if(isInSplitView){
-          flog.debug("Navigated %d data tabs in split view scenario comparison view (using shortcut).", direction)
-          currentScen <- 2
-          currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen)]]),
-                                              "_", fixed = TRUE)[[1L]][[3L]])
-          if(shortcutNest > 0L && isGroupOfSheets[[currentSheet]]){
-            # nest to group of sheets
-            currentGroup <- currentSheet
-            currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen, "_", 
-                                                                      currentGroup)]]),
-                                                "_", fixed = TRUE)[[1L]][[4L]])
-            updateTabsetPanel(session, paste0("contentScen_", currentScen, 
-                                              "_", currentGroup), 
-                              paste0("contentScen_", currentScen, "_", 
-                                     currentGroup, "_", currentSheet + direction))
-            
-            updateTabsetPanel(session, paste0("contentScen_", currentScen + 1L, 
-                                              "_", currentGroup), 
-                              paste0("contentScen_", currentScen + 1L, "_", 
+      # currently active scenario (R6 object)
+      activeScen         <- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
+                                         isNewScen = TRUE)
+      exportFileType     <- if(useGdx) "gdx" else "xls"
+      
+      # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
+      sidCompOrder     <- NULL
+      
+      worker <- Worker$new(metadata = list(uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
+                                           tableNameTracePrefix = tableNameTracePrefix, maxSizeToRead = 5000,
+                                           modelDataFiles = if(identical(config$fileExchange, "gdx")) 
+                                             c(MIROGdxInName, MIROGdxOutName) else 
+                                               paste0(c(names(modelOut), inputDsNames), ".csv"),
+                                           MIROGdxInName = MIROGdxInName,
+                                           clArgs = GAMSClArgs, 
+                                           text_entities = c(paste0(modelName, ".lst"), 
+                                                             if(config$activateModules$miroLogFile) config$miroLogFile),
+                                           gamsExecMode = gamsExecMode,
+                                           extraClArgs = config$extraClArgs, 
+                                           saveTraceFile = config$saveTraceFile,
+                                           modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
+                                           timeout = 8L, serverOS = getOS(), modelData = modelData, hcubeMode = LAUNCHHCUBEMODE,
+                                           rememberMeFileName = rememberMeFileName), 
+                           remote = config$activateModules$remoteExecution,
+                           hcube = LAUNCHHCUBEMODE,
+                           db = db)
+      if(length(credConfig)){
+        do.call(worker$setCredentials, credConfig)
+      }
+      
+      scenMetaData     <- list()
+      # scenario metadata of scenario saved in database
+      scenMetaDb       <- NULL
+      scenMetaDbBase   <- NULL
+      scenMetaDbBaseList <- NULL
+      scenTags         <- NULL
+      scenMetaDbSubset <- NULL
+      scenMetaDbBaseSubset <- NULL
+      # save the scenario ids loaded in UI
+      scenCounterMultiComp <- 4L
+      sidsInComp       <- vector("integer", length = maxNumberScenarios + 1)
+      sidsInSplitComp  <- vector("integer", length = 2L)
+      # occupied slots (scenario is loaded in ui with this rv$scenId)
+      occupiedSidSlots <- vector("logical", length = maxNumberScenarios)
+      loadInLeftBoxSplit <- TRUE
+      # trigger navigation through tabs by shortcuts
+      shortcutNest     <- 0L
+      nestTabsetsViaShortcuts <- function(direction){
+        shortcutNest <<- min(2L, shortcutNest + direction)
+      }
+      observeEvent(input$tabsetShortcutNest, {
+        nestTabsetsViaShortcuts(direction = +1L)
+      })
+      observeEvent(input$tabsetShortcutUnnest, {
+        nestTabsetsViaShortcuts(direction = -1L)
+      })
+      navigateTabsViaShortcuts <- function(direction){
+        
+        if(isolate(input$sidebarMenuId) == "inputData"){
+          flog.debug("Navigated %d input tab (using shortcut).", direction)
+          currentGroup <- as.numeric(gsub("\\D", "", isolate(input$inputTabset)))
+          if(shortcutNest && length(inputTabs[[currentGroup]]) > 1L){
+            currentSheet <- as.integer(strsplit(isolate(input[[paste0("inputTabset", 
+                                                                      currentGroup)]]), "_")[[1]][2])
+            updateTabsetPanel(session, paste0("inputTabset", currentGroup), 
+                              paste0("inputTabset", currentGroup, "_", 
+                                     currentSheet + direction))
+          }else{
+            updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", 
+                                                             currentGroup + direction))
+          }
+        }else if(isolate(input$sidebarMenuId) == "outputData"){
+          flog.debug("Navigated %d output tabs (using shortcut).", direction)
+          currentGroup <- as.numeric(gsub("\\D", "", isolate(input$outputTabset)))
+          if(shortcutNest && length(outputTabs[[currentGroup]]) > 1L){
+            currentSheet <- as.integer(strsplit(isolate(input[[paste0("outputTabset", 
+                                                                      currentGroup)]]), "_")[[1]][2])
+            updateTabsetPanel(session, paste0("outputTabset", currentGroup), 
+                              paste0("outputTabset", 
                                      currentGroup, "_", currentSheet + direction))
           }else{
-            # switch to next group
-            updateTabsetPanel(session, paste0("contentScen_", currentScen), 
-                              paste0("contentScen_", currentScen, "_", currentSheet + direction))
-            updateTabsetPanel(session, paste0("contentScen_", currentScen + 1L), 
-                              paste0("contentScen_", currentScen + 1L, "_", currentSheet + direction))
+            updateTabsetPanel(session, "outputTabset", 
+                              paste0("outputTabset_", currentGroup + direction))
           }
-        }else{
-          if(is.null(sidCompOrder)){
-            return()
-          }
-          currentScen <- as.integer(strsplit(isolate(input$scenTabset), "_", fixed = TRUE)[[1L]][[2L]])
-          if(shortcutNest > 0L){
-            flog.debug("Navigated %d data tabs in scenario comparison view (using shortcut).", direction)
+        }else if(isolate(input$sidebarMenuId) == "scenarios"){
+          if(isInSplitView){
+            flog.debug("Navigated %d data tabs in split view scenario comparison view (using shortcut).", direction)
+            currentScen <- 2
             currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen)]]),
                                                 "_", fixed = TRUE)[[1L]][[3L]])
-            if(shortcutNest > 1L && isGroupOfSheets[[currentSheet]]){
+            if(shortcutNest > 0L && isGroupOfSheets[[currentSheet]]){
               # nest to group of sheets
               currentGroup <- currentSheet
               currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen, "_", 
                                                                         currentGroup)]]),
                                                   "_", fixed = TRUE)[[1L]][[4L]])
-              updateTabsetPanel(session, paste0("contentScen_", currentScen, "_", currentGroup), 
+              updateTabsetPanel(session, paste0("contentScen_", currentScen, 
+                                                "_", currentGroup), 
                                 paste0("contentScen_", currentScen, "_", 
+                                       currentGroup, "_", currentSheet + direction))
+              
+              updateTabsetPanel(session, paste0("contentScen_", currentScen + 1L, 
+                                                "_", currentGroup), 
+                                paste0("contentScen_", currentScen + 1L, "_", 
                                        currentGroup, "_", currentSheet + direction))
             }else{
               # switch to next group
               updateTabsetPanel(session, paste0("contentScen_", currentScen), 
                                 paste0("contentScen_", currentScen, "_", currentSheet + direction))
+              updateTabsetPanel(session, paste0("contentScen_", currentScen + 1L), 
+                                paste0("contentScen_", currentScen + 1L, "_", currentSheet + direction))
             }
           }else{
-            flog.debug("Navigated %d scenario tabs in scenario comparison view (using shortcut).", direction)
-            # go to next scenario tab
-            idx <- which(sidCompOrder == currentScen)[1]
-            updateTabsetPanel(session, "scenTabset", paste0("scen_", sidCompOrder[idx + direction], "_"))
+            if(is.null(sidCompOrder)){
+              return()
+            }
+            currentScen <- as.integer(strsplit(isolate(input$scenTabset), "_", fixed = TRUE)[[1L]][[2L]])
+            if(shortcutNest > 0L){
+              flog.debug("Navigated %d data tabs in scenario comparison view (using shortcut).", direction)
+              currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen)]]),
+                                                  "_", fixed = TRUE)[[1L]][[3L]])
+              if(shortcutNest > 1L && isGroupOfSheets[[currentSheet]]){
+                # nest to group of sheets
+                currentGroup <- currentSheet
+                currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen, "_", 
+                                                                          currentGroup)]]),
+                                                    "_", fixed = TRUE)[[1L]][[4L]])
+                updateTabsetPanel(session, paste0("contentScen_", currentScen, "_", currentGroup), 
+                                  paste0("contentScen_", currentScen, "_", 
+                                         currentGroup, "_", currentSheet + direction))
+              }else{
+                # switch to next group
+                updateTabsetPanel(session, paste0("contentScen_", currentScen), 
+                                  paste0("contentScen_", currentScen, "_", currentSheet + direction))
+              }
+            }else{
+              flog.debug("Navigated %d scenario tabs in scenario comparison view (using shortcut).", direction)
+              # go to next scenario tab
+              idx <- which(sidCompOrder == currentScen)[1]
+              updateTabsetPanel(session, "scenTabset", paste0("scen_", sidCompOrder[idx + direction], "_"))
+            }
           }
+        }else if(isolate(input$sidebarMenuId) == "hcubeAnalyze"){
+          flog.debug("Navigated %d data tabs in paver output tabpanel (using shortcut).", direction)
+          # go to next data sheet
+          local({
+            tabsetName <- isolate(input$analysisResults)
+            currentSheet <- suppressWarnings(as.numeric(substr(tabsetName, 
+                                                               nchar(tabsetName), nchar(tabsetName))))
+            if(is.na(currentSheet))
+              return()
+            updateTabsetPanel(session, "analysisResults", 
+                              paste0("analysisResults_", currentSheet + direction))
+          })
         }
-      }else if(isolate(input$sidebarMenuId) == "hcubeAnalyze"){
-        flog.debug("Navigated %d data tabs in paver output tabpanel (using shortcut).", direction)
-        # go to next data sheet
-        local({
-          tabsetName <- isolate(input$analysisResults)
-          currentSheet <- suppressWarnings(as.numeric(substr(tabsetName, 
-                                                             nchar(tabsetName), nchar(tabsetName))))
-          if(is.na(currentSheet))
-            return()
-          updateTabsetPanel(session, "analysisResults", 
-                            paste0("analysisResults_", currentSheet + direction))
-        })
       }
-    }
-    observeEvent(input$tabsetShortcutNext, {
-      navigateTabsViaShortcuts(direction = +1L)
-    })
-    observeEvent(input$tabsetShortcutPrev,{
-      navigateTabsViaShortcuts(direction = -1L)
-    })
-    
-    # initially set rounding precision to default
-    roundPrecision <- config$roundingDecimals
-    
-    # set local working directory
-    unzipModelFilesProcess <- NULL
-    if(useTempDir){
-      workDir <- file.path(tmpFileDir, session$token)
-      if(!config$activateModules$remoteExecution && length(modelData)){
-        tryCatch({
-          unzipModelFilesProcess <- unzip_process()$new(modelData, exdir = workDir, 
-                                                        stderr = NULL)
-        }, error = function(e){
-          flog.error("Problems creating process to extract model file archive. Error message: '%s'.", 
-                     conditionMessage(e))
-        })
+      observeEvent(input$tabsetShortcutNext, {
+        navigateTabsViaShortcuts(direction = +1L)
+      })
+      observeEvent(input$tabsetShortcutPrev,{
+        navigateTabsViaShortcuts(direction = -1L)
+      })
+      
+      # initially set rounding precision to default
+      roundPrecision <- config$roundingDecimals
+      
+      # set local working directory
+      unzipModelFilesProcess <- NULL
+      if(useTempDir){
+        workDir <- file.path(tmpFileDir, session$token)
+        if(!config$activateModules$remoteExecution && length(modelData)){
+          tryCatch({
+            unzipModelFilesProcess <- unzip_process()$new(modelData, exdir = workDir, 
+                                                          stderr = NULL)
+          }, error = function(e){
+            flog.error("Problems creating process to extract model file archive. Error message: '%s'.", 
+                       conditionMessage(e))
+          })
+        }
+      }else{
+        workDir <- currentModelDir
       }
-    }else{
-      workDir <- currentModelDir
-    }
-    flog.info("Session started (model: '%s', user: '%s', workdir: '%s').", 
-              modelName, uid, workDir)
-    
-    worker$setWorkDir(workDir)
-    scriptOutput <- NULL
-    
-    if(LAUNCHHCUBEMODE){
-      if(length(config$scripts)){
-        scriptOutput <- ScriptOutput$new(session, file.path(workDir, paste0("scripts_", modelName)), 
-                                         config$scripts, lang$nav$scriptOutput$errMsg)
-      }
-    }else{
-      if(length(config$scripts$base)){
-        scriptOutput <- ScriptOutput$new(session, file.path(workDir, paste0("scripts_", modelName)),
-                                         config$scripts, lang$nav$scriptOutput$errMsg)
-        observeEvent(input$runScript, {
-          scriptId <- suppressWarnings(as.integer(input$runScript))
-          if(is.na(scriptId) || scriptId < 1 || 
-             scriptId > length(config$scripts$base)){
-            flog.error("A script with id: '%s' was attempted to be executed. However, this script does not exist. Looks like an attempt to tamper with the app!",
-                       input$runScript)
-            return()
-          }
-          if(scriptOutput$isRunning(scriptId)){
-            flog.debug("Button to interrupt script: '%s' clicked.", scriptId)
-            scriptOutput$interrupt(scriptId)
-            hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-            hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
-            showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
+      flog.info("Session started (model: '%s', user: '%s', workdir: '%s').", 
+                modelName, uid, workDir)
+      
+      worker$setWorkDir(workDir)
+      scriptOutput <- NULL
+      
+      if(LAUNCHHCUBEMODE){
+        if(length(config$scripts)){
+          scriptOutput <- ScriptOutput$new(session, file.path(workDir, paste0("scripts_", modelName)), 
+                                           config$scripts, lang$nav$scriptOutput$errMsg)
+        }
+      }else{
+        if(length(config$scripts$base)){
+          scriptOutput <- ScriptOutput$new(session, file.path(workDir, paste0("scripts_", modelName)),
+                                           config$scripts, lang$nav$scriptOutput$errMsg)
+          observeEvent(input$runScript, {
+            scriptId <- suppressWarnings(as.integer(input$runScript))
+            if(is.na(scriptId) || scriptId < 1 || 
+               scriptId > length(config$scripts$base)){
+              flog.error("A script with id: '%s' was attempted to be executed. However, this script does not exist. Looks like an attempt to tamper with the app!",
+                         input$runScript)
+              return()
+            }
+            if(scriptOutput$isRunning(scriptId)){
+              flog.debug("Button to interrupt script: '%s' clicked.", scriptId)
+              scriptOutput$interrupt(scriptId)
+              hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
+              hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
+              showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
+              
+              showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"), 
+                               lang$nav$scriptOutput$runButton)
+              return()
+            }
+            flog.debug("Button to execute script: '%s' clicked.", scriptId)
             
-            showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"), 
-                             lang$nav$scriptOutput$runButton)
-            return()
-          }
-          flog.debug("Button to execute script: '%s' clicked.", scriptId)
-          
-          if(!dir.exists(paste0(workDir, .Platform$file.sep, "scripts_", modelName))){
-            flog.info("No 'scripts_%s' directory was found. Did you forget to include it in '%s_files.txt'?",
-                      modelName, modelName)
-            hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-            showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-            return(scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$noScript, scriptId, isError = TRUE))
-          }
-          showEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-          hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
-          hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-          
-          errMsg <- NULL
-          
-          tryCatch({
-            saveAsFlag <<- FALSE
-            source("./modules/scen_save.R", local = TRUE)
-            data <- scenData[[scenIdLong]]
-            names(data) <- c(names(modelOut), inputDsNames)
-            gdxio$wgdx(paste0(workDir, .Platform$file.sep, 
-                              "scripts_", modelName, .Platform$file.sep, "data.gdx"), 
-                       data, squeezeZeros = 'n')
-          }, error = function(e){
-            flog.error("Problems writing gdx file for script: '%s'. Error message: '%s'.", 
-                       scriptId, conditionMessage(e))
-            errMsg <<- sprintf(lang$errMsg$fileWrite$desc, "data.gdx")
-            hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
+            if(!dir.exists(paste0(workDir, .Platform$file.sep, "scripts_", modelName))){
+              flog.info("No 'scripts_%s' directory was found. Did you forget to include it in '%s_files.txt'?",
+                        modelName, modelName)
+              hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
+              showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
+              return(scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$noScript, scriptId, isError = TRUE))
+            }
+            showEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
+            hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
             hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-            scriptOutput$sendContent(errMsg, scriptId, isError = TRUE)
+            
+            errMsg <- NULL
+            
+            tryCatch({
+              saveAsFlag <<- FALSE
+              source("./modules/scen_save.R", local = TRUE)
+              data <- scenData[[scenIdLong]]
+              names(data) <- c(names(modelOut), inputDsNames)
+              gdxio$wgdx(paste0(workDir, .Platform$file.sep, 
+                                "scripts_", modelName, .Platform$file.sep, "data.gdx"), 
+                         data, squeezeZeros = 'n')
+            }, error = function(e){
+              flog.error("Problems writing gdx file for script: '%s'. Error message: '%s'.", 
+                         scriptId, conditionMessage(e))
+              errMsg <<- sprintf(lang$errMsg$fileWrite$desc, "data.gdx")
+              hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
+              hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
+              scriptOutput$sendContent(errMsg, scriptId, isError = TRUE)
+            })
+            if(!is.null(errMsg)){
+              return()
+            }
+            tryCatch({
+              scriptOutput$run(scriptId)
+              showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"), 
+                               lang$nav$scriptOutput$interruptButton)
+            }, error = function(e){
+              flog.info("Script: '%s' crashed during startup. Error message: '%s'.",
+                        scriptId, conditionMessage(e))
+              scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$crash, scriptId, 
+                                       hcube = FALSE, isError = TRUE)
+            })
           })
-          if(!is.null(errMsg)){
-            return()
-          }
-          tryCatch({
-            scriptOutput$run(scriptId)
-            showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"), 
-                             lang$nav$scriptOutput$interruptButton)
-          }, error = function(e){
-            flog.info("Script: '%s' crashed during startup. Error message: '%s'.",
-                      scriptId, conditionMessage(e))
-            scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$crash, scriptId, 
-                                     hcube = FALSE, isError = TRUE)
+          observeEvent(input$outputGenerated,{
+            noOutputData <<- FALSE
           })
-        })
-        observeEvent(input$outputGenerated,{
-          noOutputData <<- FALSE
-        })
-      }
-    }
-    
-    if(!dir.exists(workDir) && !dir.create(workDir, recursive = TRUE)){
-      if(!dir.exists(workDir)){
-        flog.fatal("Working directory: '%s' could not be initialised.", workDir)
-        showErrorMsg(lang$errMsg$fileWrite$title, lang$errMsg$fileWrite$desc)
-        stop()
-      }
-    }else{
-      flog.debug("Working directory was created: '%s'.", workDir)
-    }
-    # initialization of several variables
-    rv <- reactiveValues(scenId = 4L, unsavedFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
-                         btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
-                         btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
-                         btSplitView = 0L, noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
-                         jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L)
-    # list of scenario IDs to load
-    sidsToLoad <- list()
-    loadIntoSandbox <- FALSE
-    # list with input data
-    modelInputData  <- vector(mode = "list", length = length(modelIn))
-    modelInputDataVisible <- vector(mode = "list", length = length(modelIn))
-    modelInputGraphVisible <- vector(mode = "logical", length = length(modelIn))
-    modelInputDataHcube <- vector(mode = "list", length = length(modelIn))
-    externalInputData <- vector(mode = "list", length = length(modelIn))
-    externalInputData_filtered <- vector(mode = "list", length = length(modelIn))
-    # list with input data before new data was loaded as shiny is lazy when data is equal and wont update
-    previousInputData <- vector(mode = "list", length = length(modelIn))
-    # initialize model input data
-    modelInputData <- modelInTemplate
-    
-    tryCatch({
-      if(length(config$defaultScenName) && nchar(trimws(config$defaultScenName))){
-        defSid <- db$getSid(config$defaultScenName)
-        if(!identical(defSid, 0L)){
-          sidsToLoad <- list(defSid)
-          rv$btOverwriteScen <- isolate(rv$btOverwriteScen) + 1L
         }
       }
-    }, error = function(e){
-      flog.warn("Problems loading default scenario. Error message: '%s'.", e)
-    })
-    
-    # initialise list of reactive expressions returning data for model input
-    dataModelIn <- vector(mode = "list", length = length(modelIn))
-    # auxiliary vector that specifies whether data frame has no data or data was overwritten
-    isEmptyInput <- vector(mode = "logical", length = length(modelIn))
-    # input is empty in the beginning
-    isEmptyInput[] <- TRUE
-    # list of data frames which save changes made in handsontable
-    hotInput <- vector(mode = "list", length = length(modelIn))
-    tableContent <- vector(mode = "list", length = length(modelIn))
-    # gams process object
-    gams <- NULL
-    # boolean that specifies whether input data should be overridden
-    inputOverwriteConfirmed <- FALSE
-    
-    observeEvent(input$sidebarMenuId,{
-      flog.debug("Sidebar menu item: '%s' selected.", isolate(input$sidebarMenuId))
-      # reset nest level
-      shortcutNest <<- 0L
-      if(identical(input$sidebarMenuId, "scenarios")){
-        isInSolveMode <<- FALSE
-      }else if(identical(input$sidebarMenuId, "importData")){
-        rv$jobListPanel <- rv$jobListPanel + 1L
+      
+      if(!dir.exists(workDir) && !dir.create(workDir, recursive = TRUE)){
+        if(!dir.exists(workDir)){
+          flog.fatal("Working directory: '%s' could not be initialised.", workDir)
+          showErrorMsg(lang$errMsg$fileWrite$title, lang$errMsg$fileWrite$desc)
+          stop()
+        }
+      }else{
+        flog.debug("Working directory was created: '%s'.", workDir)
       }
-    })
-    
-    lapply(seq_along(modelIn), function(i){
-      if(modelIn[[i]]$type == "hot"){
-        observeEvent(input[["in_" %+% i %+% "_select"]], {
-          hotInit[[i]] <<- TRUE
-          isEmptyInput[[i]] <<- FALSE
+      # initialization of several variables
+      rv <- reactiveValues(scenId = 4L, unsavedFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
+                           btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
+                           btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
+                           btSplitView = 0L, noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
+                           jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L)
+      # list of scenario IDs to load
+      sidsToLoad <- list()
+      loadIntoSandbox <- FALSE
+      # list with input data
+      modelInputData  <- vector(mode = "list", length = length(modelIn))
+      modelInputDataVisible <- vector(mode = "list", length = length(modelIn))
+      modelInputGraphVisible <- vector(mode = "logical", length = length(modelIn))
+      modelInputDataHcube <- vector(mode = "list", length = length(modelIn))
+      externalInputData <- vector(mode = "list", length = length(modelIn))
+      externalInputData_filtered <- vector(mode = "list", length = length(modelIn))
+      # list with input data before new data was loaded as shiny is lazy when data is equal and wont update
+      previousInputData <- vector(mode = "list", length = length(modelIn))
+      # initialize model input data
+      modelInputData <- modelInTemplate
+      
+      tryCatch({
+        if(length(config$defaultScenName) && nchar(trimws(config$defaultScenName))){
+          defSid <- db$getSid(config$defaultScenName)
+          if(!identical(defSid, 0L)){
+            sidsToLoad <- list(defSid)
+            rv$btOverwriteScen <- isolate(rv$btOverwriteScen) + 1L
+          }
+        }
+      }, error = function(e){
+        flog.warn("Problems loading default scenario. Error message: '%s'.", e)
+      })
+      
+      # initialise list of reactive expressions returning data for model input
+      dataModelIn <- vector(mode = "list", length = length(modelIn))
+      # auxiliary vector that specifies whether data frame has no data or data was overwritten
+      isEmptyInput <- vector(mode = "logical", length = length(modelIn))
+      # input is empty in the beginning
+      isEmptyInput[] <- TRUE
+      # list of data frames which save changes made in handsontable
+      hotInput <- vector(mode = "list", length = length(modelIn))
+      tableContent <- vector(mode = "list", length = length(modelIn))
+      # gams process object
+      gams <- NULL
+      # boolean that specifies whether input data should be overridden
+      inputOverwriteConfirmed <- FALSE
+      
+      observeEvent(input$sidebarMenuId,{
+        flog.debug("Sidebar menu item: '%s' selected.", isolate(input$sidebarMenuId))
+        # reset nest level
+        shortcutNest <<- 0L
+        if(identical(input$sidebarMenuId, "scenarios")){
+          isInSolveMode <<- FALSE
+        }else if(identical(input$sidebarMenuId, "importData")){
+          rv$jobListPanel <- rv$jobListPanel + 1L
+        }
+      })
+      
+      lapply(seq_along(modelIn), function(i){
+        if(modelIn[[i]]$type == "hot"){
+          observeEvent(input[["in_" %+% i %+% "_select"]], {
+            hotInit[[i]] <<- TRUE
+            isEmptyInput[[i]] <<- FALSE
+            if(noCheck[i]){
+              noCheck[i] <<- FALSE
+            }
+          })
+        }
+        observe({
+          switch(modelIn[[i]]$type,
+                 hot = {
+                   input[["in_" %+% i]]
+                 },
+                 dt ={
+                   input[[paste0("in_", i, "_cell_edit")]]
+                 }, 
+                 slider = {
+                   input[["slider_" %+% i]]
+                   input[["hcubeStep_" %+% i]]
+                   input[["hcubeMode_" %+% i]]
+                 },
+                 textinput ={
+                   input[["text_" %+% i]]
+                 }, 
+                 numericinput ={
+                   input[["numeric_" %+% i]]
+                 }, 
+                 dropdown = {
+                   input[["dropdown_" %+% i]]
+                 },
+                 date = {
+                   input[["date_" %+% i]]
+                 },
+                 daterange = {
+                   input[["daterange_" %+% i]]
+                 },
+                 checkbox = {
+                   input[["cb_" %+% i]]
+                 })
           if(noCheck[i]){
             noCheck[i] <<- FALSE
+            return()
           }
-        })
-      }
-      observe({
-        switch(modelIn[[i]]$type,
-               hot = {
-                 input[["in_" %+% i]]
-               },
-               dt ={
-                 input[[paste0("in_", i, "_cell_edit")]]
-               }, 
-               slider = {
-                 input[["slider_" %+% i]]
-                 input[["hcubeStep_" %+% i]]
-                 input[["hcubeMode_" %+% i]]
-               },
-               textinput ={
-                 input[["text_" %+% i]]
-               }, 
-               numericinput ={
-                 input[["numeric_" %+% i]]
-               }, 
-               dropdown = {
-                 input[["dropdown_" %+% i]]
-               },
-               date = {
-                 input[["date_" %+% i]]
-               },
-               daterange = {
-                 input[["daterange_" %+% i]]
-               },
-               checkbox = {
-                 input[["cb_" %+% i]]
-               })
-        if(noCheck[i]){
-          noCheck[i] <<- FALSE
-          return()
-        }
-        # if scenario includes output data set dirty flag
-        if(!noOutputData){
-          dirtyFlag <<- TRUE
+          # if scenario includes output data set dirty flag
+          if(!noOutputData){
+            dirtyFlag <<- TRUE
+            showEl(session, "#dirtyFlagIcon")
+            showEl(session, "#dirtyFlagIconO")
+          }
+          rv$unsavedFlag <<- TRUE
+        }, priority = 1000L)
+      })
+      
+      markUnsaved <- function(markDirty = FALSE){
+        if(markDirty && !noOutputData){
           showEl(session, "#dirtyFlagIcon")
           showEl(session, "#dirtyFlagIconO")
+          dirtyFlag     <<- TRUE
+        }else{
+          hideEl(session, "#dirtyFlagIcon")
+          hideEl(session, "#dirtyFlagIconO")
+          dirtyFlag     <<- FALSE
         }
         rv$unsavedFlag <<- TRUE
-      }, priority = 1000L)
-    })
-    
-    markUnsaved <- function(markDirty = FALSE){
-      if(markDirty && !noOutputData){
-        showEl(session, "#dirtyFlagIcon")
-        showEl(session, "#dirtyFlagIconO")
-        dirtyFlag     <<- TRUE
-      }else{
+        return(invisible())
+      }
+      
+      markSaved <- function(){
         hideEl(session, "#dirtyFlagIcon")
         hideEl(session, "#dirtyFlagIconO")
         dirtyFlag     <<- FALSE
+        rv$unsavedFlag <<- FALSE
+        return(invisible())
       }
-      rv$unsavedFlag <<- TRUE
-      return(invisible())
-    }
-    
-    markSaved <- function(){
-      hideEl(session, "#dirtyFlagIcon")
-      hideEl(session, "#dirtyFlagIconO")
-      dirtyFlag     <<- FALSE
-      rv$unsavedFlag <<- FALSE
-      return(invisible())
-    }
-    
-    # print scenario title in input and output sheets
-    getScenTitle <- reactive({
-      nameSuffix <- ""
-      if(rv$unsavedFlag){
-        nameSuffix <- " (*)"
-      }
-      if(is.null(activeScen) || !length(activeScen$getSid())){
-        if(length(rv$activeSname)){
-          if(length(activeScen))
-            activeScen$updateMetadata(newName = rv$activeSname)
-          return(tags$i(paste0("<", htmltools::htmlEscape(rv$activeSname), ">", nameSuffix)))
+      
+      # print scenario title in input and output sheets
+      getScenTitle <- reactive({
+        nameSuffix <- ""
+        if(rv$unsavedFlag){
+          nameSuffix <- " (*)"
         }
-        return(tags$i(paste0("<", htmltools::htmlEscape(lang$nav$dialogNewScen$newScenName), ">", nameSuffix)))
-      }else{
-        return(paste0(htmltools::htmlEscape(rv$activeSname), nameSuffix))
-      }
-    })
-    output$inputDataTitle <- renderUI(getScenTitle())
-    output$outputDataTitle <- renderUI(getScenTitle())
-    
-    # activate solve button once all model input files are imported
-    observe({
-      datasetsImported <- vapply(names(modelInMustImport), function(el){
-        i <- match(el, names(modelIn))[[1]]
-        if(length(rv[["in_" %+% i]])){
-          return(TRUE)
+        if(is.null(activeScen) || !length(activeScen$getSid())){
+          if(length(rv$activeSname)){
+            if(length(activeScen))
+              activeScen$updateMetadata(newName = rv$activeSname)
+            return(tags$i(paste0("<", htmltools::htmlEscape(rv$activeSname), ">", nameSuffix)))
+          }
+          return(tags$i(paste0("<", htmltools::htmlEscape(lang$nav$dialogNewScen$newScenName), ">", nameSuffix)))
         }else{
-          return(FALSE)
+          return(paste0(htmltools::htmlEscape(rv$activeSname), nameSuffix))
         }
-      }, logical(1), USE.NAMES = FALSE)
-      if(all(datasetsImported)){
-        addClassEl(session, "#btSolve", "glow-animation")
-      }else{
-        removeClassEl(session, "#btSolve", "glow-animation")
-      }
-    })
-    # UI elements (modalDialogs)
-    source("./UI/dialogs.R", local = TRUE)
-    ####### Model input
-    # render tabular input datasets
-    source("./modules/input_render_tab.R", local = TRUE)
-    # render non tabular input datasets (e.g. slider, dropdown)
-    source("./modules/input_render_nontab.R", local = TRUE)
-    # generate import dialogue
-    source("./modules/input_ui.R", local = TRUE)
-    # load input data from Excel sheet
-    source("./modules/scen_import.R", local = TRUE)
-    
-    ####### GAMS interaction
-    # solve button clicked
-    source("./modules/gams_run.R", local = TRUE)
-    # Interrupt button clicked
-    source("./modules/gams_interrupt.R", local = TRUE)
-    
-    
-    ####### Model output
-    # render output graphs
-    source("./modules/output_render.R", local = TRUE)
-    obsCompare <- vector("list", maxNumberScenarios)
-    # switch between tabular view and output graphs
-    source("./modules/output_table_view.R", local = TRUE)
-    if(isTRUE(config$hasSymbolLinks)){
-      source("./modules/symbol_links.R", local = TRUE)
-    }
-    
-    ####### Advanced options
-    if(isTRUE(config$activateModules$downloadTempFiles)){
-      source("./modules/download_tmp.R", local = TRUE)
-    }
-    
-    ####### Paver interaction
-    if(LAUNCHHCUBEMODE){
-      source("./modules/gams_job_list.R", local = TRUE)
-      ####### Hcube import module
-      source("./modules/hcube_import.R", local = TRUE)
-      ####### Hcube load module
-      source("./modules/hcube_load.R", local = TRUE)
-      # analyze button clicked
-      source("./modules/analysis_run.R", local = TRUE)
-    }else if(config$activateModules$remoteExecution){
-      source("./modules/gams_job_list.R", local = TRUE)
-      # remote job import
-      source("./modules/job_import.R", local = TRUE)
-    }
-    
-    # delete scenario 
-    source("./modules/db_scen_remove.R", local = TRUE)
-    # scenario module
-    #load shared datasets
-    source("./modules/db_external_load.R", local = TRUE)
-    # load scenario
-    source("./modules/db_scen_load.R", local = TRUE)
-    # save scenario
-    source("./modules/db_scen_save.R", local = TRUE)
-    # scenario split screen mode
-    source("./modules/scen_split.R", local = TRUE)
-    skipScenCompObserve <- vector("logical", maxNumberScenarios + 3L)
-    
-    scenCompUpdateTab <- function(scenId, sheetId, groupId = NULL){
-      if(is.null(groupId)){
-        if(!identical(isolate(input[[paste0("contentScen_", scenId)]]), 
-                      paste0("contentScen_", scenId, "_", sheetId)))
-          skipScenCompObserve[scenId] <<- TRUE
-        updateTabsetPanel(session, paste0("contentScen_", scenId),
-                          paste0("contentScen_", scenId, "_", sheetId))
-      }else{
-        updateTabsetPanel(session, paste0("contentScen_", scenId),
-                          paste0("contentScen_", scenId, "_", groupId))
-        updateTabsetPanel(session, paste0("contentScen_", scenId, "_", groupId),
-                          paste0("contentScen_", scenId, "_", groupId, "_", sheetId))
-      }
-    }
-    
-    lapply(seq_len(maxNumberScenarios  + 3L), function(i){
-      scenIdLong <- paste0("scen_", i, "_")
-      # table view
-      source("./modules/scen_table_view.R", local = TRUE)
+      })
+      output$inputDataTitle <- renderUI(getScenTitle())
+      output$outputDataTitle <- renderUI(getScenTitle())
       
-      # close scenario tab
-      source("./modules/scen_close.R", local = TRUE)
-      
-      # export Scenario to Excel spreadsheet
-      source("./modules/scen_export.R", local = TRUE)
-      
-      # compare scenarios
-      obsCompare[[i]] <<- observe({
-        if(is.null(input[[paste0("contentScen_", i)]]) || 
-           skipScenCompObserve[i]){
-          skipScenCompObserve[i] <<- FALSE
-          return(NULL)
-        }
-        j <- as.integer(strsplit(isolate(input[[paste0("contentScen_", i)]]), 
-                                 "_", fixed = TRUE)[[1]][[3L]])
-        groupId <- NULL
-        if(isGroupOfSheets[[j]]){
-          groupId <- j
-          j <- strsplit(input[[paste0("contentScen_", i, "_", groupId)]], 
-                        "_", fixed = TRUE)[[1L]][[4L]]
-        }
-        if(identical(i, 2L)){
-          scenCompUpdateTab(scenId = i + 1L, sheetId = j, groupId = groupId)
-        }else if(identical(i, 3L)){
-          scenCompUpdateTab(scenId = i - 1L, sheetId = j, groupId = groupId)
+      # activate solve button once all model input files are imported
+      observe({
+        datasetsImported <- vapply(names(modelInMustImport), function(el){
+          i <- match(el, names(modelIn))[[1]]
+          if(length(rv[["in_" %+% i]])){
+            return(TRUE)
+          }else{
+            return(FALSE)
+          }
+        }, logical(1), USE.NAMES = FALSE)
+        if(all(datasetsImported)){
+          addClassEl(session, "#btSolve", "glow-animation")
         }else{
-          lapply(names(scenData), function(scen){
-            scenCompUpdateTab(scenId = as.integer(strsplit(scen, "_")[[1]][[2L]]), 
-                              sheetId = j, groupId = groupId)
-          })
+          removeClassEl(session, "#btSolve", "glow-animation")
         }
-      }, suspended = TRUE)
-    })
-    
-    # scenario comparison
-    source("./modules/scen_compare.R", local = TRUE)
-
-    observeEvent(input$btExportScen, {
-      if(useGdx){
-        exportTypes <- c(gdx = "gdx", xlsx = "xls", csv = "csv")
-      }else{
-        exportTypes <- c(csv = "csv", xlsx = "xls")
-      }
-      if(length(datasetsRemoteExport)){
-        exportTypes <- c(exportTypes, setNames(names(datasetsRemoteExport), 
-                                               names(datasetsRemoteExport)))
-      }
-      showScenExportDialog(input$btExportScen, exportTypes)
-    })
-    observeEvent(input$exportFileType, {
-      stopifnot(length(input$exportFileType) > 0L)
+      })
+      # UI elements (modalDialogs)
+      source("./UI/dialogs.R", local = TRUE)
+      ####### Model input
+      # render tabular input datasets
+      source("./modules/input_render_tab.R", local = TRUE)
+      # render non tabular input datasets (e.g. slider, dropdown)
+      source("./modules/input_render_nontab.R", local = TRUE)
+      # generate import dialogue
+      source("./modules/input_ui.R", local = TRUE)
+      # load input data from Excel sheet
+      source("./modules/scen_import.R", local = TRUE)
       
-      if(length(datasetsRemoteExport) && 
-         input$exportFileType %in% names(datasetsRemoteExport)){
-        hideEl(session, ".file-export")
-        showEl(session, ".remote-export")
-        return()
+      ####### GAMS interaction
+      # solve button clicked
+      source("./modules/gams_run.R", local = TRUE)
+      # Interrupt button clicked
+      source("./modules/gams_interrupt.R", local = TRUE)
+      
+      
+      ####### Model output
+      # render output graphs
+      source("./modules/output_render.R", local = TRUE)
+      obsCompare <- vector("list", maxNumberScenarios)
+      # switch between tabular view and output graphs
+      source("./modules/output_table_view.R", local = TRUE)
+      if(isTRUE(config$hasSymbolLinks)){
+        source("./modules/symbol_links.R", local = TRUE)
       }
       
-      switch(input$exportFileType,
-             xls = exportFileType <<- "xlsx",
-             gdx = exportFileType <<- "gdx",
-             csv = exportFileType <<- "csv",
-             flog.warn("Unknown export file type: '%s'.", input$exportFileType))
-    })
-    hideEl(session, "#loading-screen")
-
-    # This code will be run after the client has disconnected
-    session$onSessionEnded(function() {
-      # remove temporary files and folders
-      if(useTempDir){
-        unlink(workDir, recursive=TRUE)
+      ####### Advanced options
+      if(isTRUE(config$activateModules$downloadTempFiles)){
+        source("./modules/download_tmp.R", local = TRUE)
       }
-      suppressWarnings(rm(activeScen))
-      try(flog.info("Session ended (model: '%s', user: '%s').", modelName, uid), 
-          silent = TRUE)
-      if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")){
-        # clean up
-        try(db$deleteRows(scenMetadataTable, 
-                          uidIdentifier, 
-                          uid), silent = TRUE)
+      
+      ####### Paver interaction
+      if(LAUNCHHCUBEMODE){
+        source("./modules/gams_job_list.R", local = TRUE)
+        ####### Hcube import module
+        source("./modules/hcube_import.R", local = TRUE)
+        ####### Hcube load module
+        source("./modules/hcube_load.R", local = TRUE)
+        # analyze button clicked
+        source("./modules/analysis_run.R", local = TRUE)
+      }else if(config$activateModules$remoteExecution){
+        source("./modules/gams_job_list.R", local = TRUE)
+        # remote job import
+        source("./modules/job_import.R", local = TRUE)
+      }
+      
+      # delete scenario 
+      source("./modules/db_scen_remove.R", local = TRUE)
+      # scenario module
+      #load shared datasets
+      source("./modules/db_external_load.R", local = TRUE)
+      # load scenario
+      source("./modules/db_scen_load.R", local = TRUE)
+      # save scenario
+      source("./modules/db_scen_save.R", local = TRUE)
+      # scenario split screen mode
+      source("./modules/scen_split.R", local = TRUE)
+      skipScenCompObserve <- vector("logical", maxNumberScenarios + 3L)
+      
+      scenCompUpdateTab <- function(scenId, sheetId, groupId = NULL){
+        if(is.null(groupId)){
+          if(!identical(isolate(input[[paste0("contentScen_", scenId)]]), 
+                        paste0("contentScen_", scenId, "_", sheetId)))
+            skipScenCompObserve[scenId] <<- TRUE
+          updateTabsetPanel(session, paste0("contentScen_", scenId),
+                            paste0("contentScen_", scenId, "_", sheetId))
+        }else{
+          updateTabsetPanel(session, paste0("contentScen_", scenId),
+                            paste0("contentScen_", scenId, "_", groupId))
+          updateTabsetPanel(session, paste0("contentScen_", scenId, "_", groupId),
+                            paste0("contentScen_", scenId, "_", groupId, "_", sheetId))
+        }
+      }
+      
+      lapply(seq_len(maxNumberScenarios  + 3L), function(i){
+        scenIdLong <- paste0("scen_", i, "_")
+        # table view
+        source("./modules/scen_table_view.R", local = TRUE)
         
-      }
-      if(config$activateModules$attachments && 
-         config$storeLogFilesDuration > 0L){
-        db$removeExpiredAttachments(paste0(modelName, c(".log", ".lst")), 
-                                    config$storeLogFilesDuration)
-      }
-      gc()
-      if(!interactive()){
-        if(isShinyProxy){
-          interruptShutdown <<- FALSE
-          promises::then(future(Sys.sleep(SERVER_SHUTDOWN_DELAY)),
-                         function(val) {
-                           if(identical(interruptShutdown, FALSE)){
-                             stopApp()
-                           }}, function(val){
-                             stopApp()
-                           })
+        # close scenario tab
+        source("./modules/scen_close.R", local = TRUE)
+        
+        # export Scenario to Excel spreadsheet
+        source("./modules/scen_export.R", local = TRUE)
+        
+        # compare scenarios
+        obsCompare[[i]] <<- observe({
+          if(is.null(input[[paste0("contentScen_", i)]]) || 
+             skipScenCompObserve[i]){
+            skipScenCompObserve[i] <<- FALSE
+            return(NULL)
+          }
+          j <- as.integer(strsplit(isolate(input[[paste0("contentScen_", i)]]), 
+                                   "_", fixed = TRUE)[[1]][[3L]])
+          groupId <- NULL
+          if(isGroupOfSheets[[j]]){
+            groupId <- j
+            j <- strsplit(input[[paste0("contentScen_", i, "_", groupId)]], 
+                          "_", fixed = TRUE)[[1L]][[4L]]
+          }
+          if(identical(i, 2L)){
+            scenCompUpdateTab(scenId = i + 1L, sheetId = j, groupId = groupId)
+          }else if(identical(i, 3L)){
+            scenCompUpdateTab(scenId = i - 1L, sheetId = j, groupId = groupId)
+          }else{
+            lapply(names(scenData), function(scen){
+              scenCompUpdateTab(scenId = as.integer(strsplit(scen, "_")[[1]][[2L]]), 
+                                sheetId = j, groupId = groupId)
+            })
+          }
+        }, suspended = TRUE)
+      })
+      
+      # scenario comparison
+      source("./modules/scen_compare.R", local = TRUE)
+      
+      observeEvent(input$btExportScen, {
+        if(useGdx){
+          exportTypes <- c(gdx = "gdx", xlsx = "xls", csv = "csv")
         }else{
-          tryCatch({
-            if(length(unzipModelFilesProcess) && 
-               !length(unzipModelFilesProcess$get_exit_status())){
-              unzipModelFilesProcess$kill()
-            }
-          }, error = function(e){
-            flog.error("Problems killing process to extract model files. Error message: '%s'.", 
-                       conditionMessage(e))
-          }, finally = {
-            unzipModelFilesProcess <- NULL
-          })
-          stopApp()
+          exportTypes <- c(csv = "csv", xlsx = "xls")
         }
-      }
-    })
+        if(length(datasetsRemoteExport)){
+          exportTypes <- c(exportTypes, setNames(names(datasetsRemoteExport), 
+                                                 names(datasetsRemoteExport)))
+        }
+        showScenExportDialog(input$btExportScen, exportTypes)
+      })
+      observeEvent(input$exportFileType, {
+        stopifnot(length(input$exportFileType) > 0L)
+        
+        if(length(datasetsRemoteExport) && 
+           input$exportFileType %in% names(datasetsRemoteExport)){
+          hideEl(session, ".file-export")
+          showEl(session, ".remote-export")
+          return()
+        }
+        
+        switch(input$exportFileType,
+               xls = exportFileType <<- "xlsx",
+               gdx = exportFileType <<- "gdx",
+               csv = exportFileType <<- "csv",
+               flog.warn("Unknown export file type: '%s'.", input$exportFileType))
+      })
+      hideEl(session, "#loading-screen")
+      
+      # This code will be run after the client has disconnected
+      session$onSessionEnded(function() {
+        # remove temporary files and folders
+        if(useTempDir){
+          unlink(workDir, recursive=TRUE)
+        }
+        suppressWarnings(rm(activeScen))
+        try(flog.info("Session ended (model: '%s', user: '%s').", modelName, uid), 
+            silent = TRUE)
+        if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")){
+          # clean up
+          try(db$deleteRows(scenMetadataTable, 
+                            uidIdentifier, 
+                            uid), silent = TRUE)
+          
+        }
+        if(config$activateModules$attachments && 
+           config$storeLogFilesDuration > 0L){
+          db$removeExpiredAttachments(paste0(modelName, c(".log", ".lst")), 
+                                      config$storeLogFilesDuration)
+        }
+        gc()
+        if(!interactive()){
+          if(isShinyProxy){
+            interruptShutdown <<- FALSE
+            promises::then(future(Sys.sleep(SERVER_SHUTDOWN_DELAY)),
+                           function(val) {
+                             if(identical(interruptShutdown, FALSE)){
+                               stopApp()
+                             }}, function(val){
+                               stopApp()
+                             })
+          }else{
+            tryCatch({
+              if(length(unzipModelFilesProcess) && 
+                 !length(unzipModelFilesProcess$get_exit_status())){
+                unzipModelFilesProcess$kill()
+              }
+            }, error = function(e){
+              flog.error("Problems killing process to extract model files. Error message: '%s'.", 
+                         conditionMessage(e))
+            }, finally = {
+              unzipModelFilesProcess <- NULL
+            })
+            stopApp()
+          }
+        }
+      })
+    }
+    
+    #______________________________________________________
+    #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    #                 UI
+    #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    #______________________________________________________
+    
+    
+    source("./UI/scen_tabset.R", local = TRUE)
+    source("./UI/header.R", local = TRUE)
+    source("./UI/sidebar.R", local = TRUE)
+    source("./UI/body.R", local = TRUE)
+    
+    ui <- dashboardPage(header, sidebar, body, skin = "black")
+    
+    app <- shinyApp(ui = ui, server = server)
   }
-  
-  #______________________________________________________
-  #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-  #                 UI
-  #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-  #______________________________________________________
-  
-  
-  source("./UI/scen_tabset.R", local = TRUE)
-  source("./UI/header.R", local = TRUE)
-  source("./UI/sidebar.R", local = TRUE)
-  source("./UI/body.R", local = TRUE)
-  
-  ui <- dashboardPage(header, sidebar, body, skin = "black")
-  
-  app <- shinyApp(ui = ui, server = server)
 }
