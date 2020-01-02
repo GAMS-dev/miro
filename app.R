@@ -856,7 +856,7 @@ if(!is.null(errMsg)){
                                 actionButton("removeDbTables", label = removeDbTabLang$confirm, 
                                              class = "bt-highlight-1"))))
       })
-      source(file.path('tools', 'admin', 'db_management.R'), local = TRUE)
+      source(file.path("tools", "config", "db_management.R"), local = TRUE)
     }
     output$errorMessages <- renderText(
       errMsg
