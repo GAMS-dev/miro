@@ -44,6 +44,10 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
     }
   },
   loadResultsBase = function(data, scenId = NULL){
+    if(length(data) < 2L){
+      flog.debug("Script results not loaded since no data was provided.")
+      return()
+    }
     idsToLoad  <- data[[1]]
     dataToLoad <- data[[2]]
     idsLoaded <- lapply(seq_along(private$config), function(id){
