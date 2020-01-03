@@ -276,7 +276,8 @@ if(LAUNCHHCUBEMODE){
                  return("")
                }
                
-               if(length(modelIn[[i]]$dropdown$aliases)){
+               if(!names(modelIn)[i] %in% c(DDPar, GMSOpt) && 
+                   length(modelIn[[i]]$dropdown$aliases)){
                  text <- paste0(" --HCUBE_SCALART_", names(modelIn)[i], 
                                 "=", escapeGAMSCL(modelIn[[i]]$dropdown$
                                                     aliases[[match(value, 
