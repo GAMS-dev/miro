@@ -230,8 +230,8 @@ Worker <- R6Class("Worker", public = list(
         stop(sprintf("Problems writing attachment data to: '%s'.", 
                      staticDir), call. = FALSE)
     }
-    if(length(private$metadata$modelData)){
-      zip::unzip(private$metadata$modelData, 
+    if(length(private$metadata[["modelData"]])){
+      zip::unzip(private$metadata[["modelData"]], 
                  overwrite = TRUE, junkpaths = FALSE, 
                  exdir = workDir)
     }
@@ -804,7 +804,7 @@ Worker <- R6Class("Worker", public = list(
                                       type = 'application/zip')
       
       if(identical(metadata$useRegistered, FALSE)){
-        requestBody$model_data <- upload_file(metadata$modelData, 
+        requestBody$model_data <- upload_file(metadata[["modelData"]], 
                                               type = 'application/zip')
       }
       ret <- POST(paste0(metadata$url, if(is.R6(hcubeData)) "/hypercube" else "/jobs"), 
