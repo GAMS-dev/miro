@@ -52,7 +52,7 @@
                 <div class="branding">
                     <h1 class="logo">
                         <a href="index.html">
-                          <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
+                          <img class="img-fluid" style="height:75px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
                         </a>
                     </h1>
                 </div><!--//branding-->
@@ -259,6 +259,27 @@
                                         </div><!--//callout-block-->
                                         <p>To import a file from your local machine, either in the form of a gdx container or as an Excel spreadsheet, select the menu item <i>Local</i> and click on </i>browse</i>. Navigate to the directory where your file resides and select it.
                                         Confirm the data import with a click on <i>import</i>. If you started with an empty sheet, a new, unnamed scenario is now shown in the interface. To save it, click on <i>save as</i> and give it a name.</p>
+                                        <div style="outline: solid 1px black; outline-offset: 5px; margin:20px 0px">
+                                            <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Excel spreadsheeet - import rules</h6>
+                                            <div class="section-block" style="display:none">
+                                                <p>If you want to use data from a spreadsheet, this spreadsheet must meet certain criteria regarding the format in which the data is provided:</p>
+                                                <ul>
+                                                  <li>Only one GAMS symbol file per spreadsheet tab is allowed.</li>
+                                                  <li>The name of the spreadsheet tab is equal to the symbol name</li>
+                                                  <li>The header of a table must be equal to the domains of the GAMS symbol</li>
+                                                  <br>The image below shows a valid spreadsheet for the transport model:
+                                                  <div class="section-block" style="display:block; margin:auto;">
+                                                      <img class="img-fluid" style="max-height:175pt;" src="assets/images/import_excel_file.png" alt="Valid Excel file" />
+                                                  </div>
+                                                  <br>For scalars there are 2 possibilities:<br> 
+                                                  <li>Either each scalar value is stored in a separate tab as with other symbols (tab name = symbol name). The "table" then consists only of the scalar value in cell A1. There is therefore no header.</li>
+                                                  <li>Alternatively, all scalar values are combined in one tab named "_scalars". The resulting table then has the header "Scalar", "Description", "Value". This is the format in which scalars are normally communicated with MIRO.</li>
+                                                  <div class="section-block" style="display:block; margin:auto;">
+                                                      <img class="img-fluid" style="max-height:175pt;" src="assets/images/import_excel_scalars.png" alt="All scalars in one tab" />
+                                                  </div>
+                                                </ul>
+                                            </div>
+                                        </div>
                                         <p>Instead of importing all the datasets for your model, you can also load individual symbols of your input data. For this click on <i>Manually choose datasets</i> and select the desired symbols to be imported from the selected spreadsheet. The other data remain unchanged. </p>
                                         <p>Besides the local and the database import there is the third option: <i>Hypercube</i>. This tab allows you to import scenarios that have been generated and saved in the <a href="./hypercube.html">Hypercube mode</a>.
                                         Such a scenario that is generated in Hypercube mode corresponds to a scenario from the base mode, except that the former additionally contains a <a href = "https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOtraceopt" target = "_blank">trace file</a>. 
