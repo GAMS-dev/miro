@@ -905,6 +905,7 @@
       },
       "readme":{
         "label": "README file",
+        "useReadme": "Include README file",
         "tabTitle": "README tab title (if available)",
         "fileName": "Alternative README file name"
       },

@@ -146,14 +146,24 @@ insertUI(selector = "#interface_wrapper2",
            tags$h2(lang$adminMode$general$readme$label, 
                    tags$a("", class="info-header", href="https://gams.com/miro/customize.html#app-readme", 
                           tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"), class="option-category info-position"),
-           tags$div(class = "option-wrapper",
-                    textInput("general_readmeTabtitle", tags$div(lang$adminMode$general$readme$tabTitle,
-                              value = if(!is.null(configJSON$readme$tabTitle) && nchar(configJSON$readme$tabTitle)) configJSON$readme$tabTitle else ""))
-           ),
-           tags$div(class = "option-wrapper info-position",
-                    textInput("general_readmeAltFileName", lang$adminMode$general$readme$fileName,
-                              value = if(!is.null(configJSON$readme$altFilename) && nchar(configJSON$readme$altFilename)) configJSON$readme$altFilename else "")
-           )
+           tags$label(class = "cb-label", "for" = "general_useReadme", lang$adminMode$general$readme$useReadme),
+           tags$div(
+             tags$label(class = "checkbox-material", 
+                        checkboxInput("general_useReadme", 
+                                      value = if(isTRUE(configJSON$readme$useReadme)) 
+                                        configJSON$readme$useReadme else config$readme$useReadme, 
+                                      label = NULL)
+             )),
+           conditionalPanel(
+             condition = "input.general_useReadme===true",
+             tags$div(class = "option-wrapper option-wrapper-indented", style = "padding-left:40px;",
+                      textInput("general_readmeTabtitle", tags$div(lang$adminMode$general$readme$tabTitle,
+                                                                   value = if(!is.null(configJSON$readme$tabTitle) && nchar(configJSON$readme$tabTitle)) configJSON$readme$tabTitle else ""))
+             ),
+             tags$div(class = "option-wrapper info-position option-wrapper-indented", style = "padding-left:40px;",
+                      textInput("general_readmeAltFileName", lang$adminMode$general$readme$fileName,
+                                value = if(!is.null(configJSON$readme$altFilename) && nchar(configJSON$readme$altFilename)) configJSON$readme$altFilename else "")
+             ))
          ),where = "beforeEnd")
 insertUI(selector = "#module_wrapper1",
          tagList(
@@ -372,6 +382,21 @@ observeEvent(input$widget_general_logo_upload, {
   }
   rv$generalConfig$UILogo <<- fileName
   rv$customLogoChanged <<- rv$customLogoChanged + 1L
+})
+observeEvent(input$general_useReadme, {
+  if(isFALSE(input$general_useReadme)){
+    configJSON$readme <<- NULL
+    rv$generalConfig$readme <<- NULL
+  }else if(isTRUE(input$general_useReadme)){
+    if(length(input$general_readmeTabtitle) && 
+       nchar(trimws(input$general_readmeTabtitle))){
+      rv$generalConfig$readme$tabTitle <<- input$general_readmeTabtitle
+    }
+    if(length(input$general_readmeAltFileName) && 
+       nchar(trimws(input$general_readmeAltFileName))){
+      rv$generalConfig$readme$altFilename <<- input$general_readmeAltFileName
+    }
+  }
 })
 observeEvent(input$general_readmeTabtitle, {
   if(!nchar(input$general_readmeTabtitle))
