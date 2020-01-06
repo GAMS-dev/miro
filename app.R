@@ -1,5 +1,5 @@
 #version number
-MIROVersion <- "0.9.28"
+MIROVersion <- "0.9.29"
 APIVersion  <- "1"
 MIRORDate   <- "Jan 06 2020"
 #####packages:
@@ -410,6 +410,19 @@ if(is.null(errMsg) && debugMode){
   }
   requiredPackagesCR <- unique(requiredPackagesCR)
   customRendererNames <- listOfCustomRenderers$get()
+  rm(listOfCustomRenderers)
+}
+if(miroBuildonly){
+  if(!is.null(errMsg)){
+    warning(errMsg)
+    if(interactive())
+      stop()
+    if(identical(errMsg, paste0("\nNo model data ('", modelName, "_files.txt') found."))){
+      quit("no", status = 2)
+    }else{
+      quit("no", status = 1) 
+    }
+  }
   save(list = c("customRendererNames", customRendererNames, "modelIn", "modelInRaw", 
                 "modelOut", "config", "lang", "inputDsNames", "inputDsAliases", 
                 "outputTabTitles", "modelInTemplate", "scenDataTemplate", 
@@ -427,19 +440,6 @@ if(is.null(errMsg) && debugMode){
                 "installPackage", "dbSchema", "scalarInputSym", "scalarInputSymToVerify",
                 "requiredPackagesCR", "datasetsRemoteExport"), 
        file = rSaveFilePath)
-  rm(listOfCustomRenderers)
-}
-if(miroBuildonly){
-  if(!is.null(errMsg)){
-    warning(errMsg)
-    if(interactive())
-      stop()
-    if(identical(errMsg, paste0("\nNo model data ('", modelName, "_files.txt') found."))){
-      quit("no", status = 2)
-    }else{
-      quit("no", status = 1) 
-    }
-  }
   if(identical(Sys.getenv("MIRO_COMPILE_ONLY"), "true")){
     quit("no")
   }
@@ -478,6 +478,9 @@ if(miroBuildonly){
     stop(sprintf("Problems creating app bundle. Error message: '%s'.", 
                  conditionMessage(e)), call. = FALSE)
   })
+  if(!identical(unlink(rSaveFilePath), 0L)){
+    flog.warn("Could not remove miroconf file: '%s'.", rSaveFilePath)
+  }
   if(interactive())
     stop()
   quit("no")
