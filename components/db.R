@@ -1250,7 +1250,22 @@ Db <- R6Class("Db",
                     op    <- dataFrame[[3]][i]
                     val   <- vals[i]
                     switch(op,
+                           "!=" = {
+                             if(is.na(valsRaw[i]) || (length(valsRaw[i]) && !nchar(valsRaw[i]))){
+                               return(paste0("!is.na(", field, ")"))
+                             }
+                             valNum <- suppressWarnings(as.numeric(valsRaw[i]))
+                             if(is.na(valNum)){
+                               val <- paste0("'", val, "'")
+                             }else{
+                               val <- valNum
+                             }
+                             return(paste0(field, "!=", val))
+                           },
                            "=" = {
+                             if(is.na(valsRaw[i]) || (length(valsRaw[i]) && !nchar(valsRaw[i]))){
+                               return(paste0("is.na(", field, ")"))
+                             }
                              valNum <- suppressWarnings(as.numeric(valsRaw[i]))
                              if(is.na(valNum)){
                                val <- paste0("'", val, "'")
