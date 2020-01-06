@@ -723,6 +723,24 @@ animation: none !important;
   line-height: 70px;
   color: #737373;
 }
+.or-sign{
+  position: absolute;
+  left: 48%;
+  text-align: center;
+  top: -9px;
+  border-left: 3px solid;
+  border-right: 3px solid;
+  .responsiveDark({
+     color: @or-sign;
+     background-color: @modal-bg;
+     border-color: @modal-bg;
+  },
+  {
+     color: @or-sign-dark;
+     background-color: @modal-bg-dark;
+     border-color: @modal-bg-dark;
+  });
+}
 .cJob-wrapper {
   width: 100%;
   border-collapse: collapse;

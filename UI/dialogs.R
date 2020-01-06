@@ -1196,7 +1196,8 @@ addHcubeLoadBlock <- function(id, choices){
     selector = "#selectorsWrapper",
     where = "beforeEnd",
     ui = tags$div(id = "block" %+% id, style="position:relative;", if(id > 1L){
-      tags$hr()
+      tags$div(tags$hr(),
+      tags$div(class = "or-sign", lang$nav$hcubeLoad$orButton))
     },
     tags$div(class="and-wrapper", 
              tags$div(class="and-sign", "&"),
