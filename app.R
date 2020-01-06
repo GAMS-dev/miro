@@ -289,7 +289,7 @@ if(is.null(errMsg)){
         }
         if(is.null(errMsg) && any(!file.copy2(file.path(currentModelDir, modelFiles), 
                                              file.path(modelPath, modelFiles)))){
-          errMsg <- sprintf("Problems moving files from: '%s' to: '%s'. No write permissions?",
+          errMsg <- sprintf("Problems copying files from: '%s' to: '%s'. No write permissions?",
                             currentModelDir, modelPath)
         }
         if(is.null(errMsg)){
@@ -1229,11 +1229,23 @@ if(!is.null(errMsg)){
             flog.debug("Button to execute script: '%s' clicked.", scriptId)
             
             if(!dir.exists(paste0(workDir, .Platform$file.sep, "scripts_", modelName))){
-              flog.info("No 'scripts_%s' directory was found. Did you forget to include it in '%s_files.txt'?",
-                        modelName, modelName)
-              hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-              showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-              return(scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$noScript, scriptId, isError = TRUE))
+              if(dir.exists(paste0(currentModelDir, .Platform$file.sep, "scripts_", modelName))){
+                if(!file.copy2(paste0(currentModelDir, .Platform$file.sep, "scripts_", modelName),
+                               paste0(workDir, .Platform$file.sep, "scripts_", modelName))){
+                  flog.error("Problems copying files from: '%s' to: '%s'.",
+                             paste0(workDir, .Platform$file.sep, "scripts_", modelName),
+                             paste0(currentModelDir, .Platform$file.sep, "scripts_", modelName))
+                  hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
+                  hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
+                  return(scriptOutput$sendContent(lang$errMsg$unknownError, scriptId, isError = TRUE))
+                }
+              }else{
+                flog.info("No 'scripts_%s' directory was found. Did you forget to include it in '%s_files.txt'?",
+                          modelName, modelName)
+                hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
+                showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
+                return(scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$noScript, scriptId, isError = TRUE))
+              }
             }
             showEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
             hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))

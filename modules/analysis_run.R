@@ -279,10 +279,21 @@ if(length(config$scripts$hcube)){
     }
     
     if(!dir.exists(paste0(workDir, .Platform$file.sep, "scripts_", modelName))){
-      flog.info("No 'scripts_%s' directory was found. Did you forget to include it in '%s_files.txt'?",
-                modelName, modelName)
-      showHideEl(session, "#analysisRunUnknownError", 6000L)
-      return()
+      if(dir.exists(paste0(currentModelDir, .Platform$file.sep, "scripts_", modelName))){
+        if(!file.copy2(paste0(currentModelDir, .Platform$file.sep, "scripts_", modelName),
+                       paste0(workDir, .Platform$file.sep, "scripts_", modelName))){
+          flog.error("Problems copying files from: '%s' to: '%s'.",
+                     paste0(workDir, .Platform$file.sep, "scripts_", modelName),
+                     paste0(currentModelDir, .Platform$file.sep, "scripts_", modelName))
+          showHideEl(session, "#analysisRunUnknownError", 6000L)
+          return()
+        }
+      }else{
+        flog.info("No 'scripts_%s' directory was found. Did you forget to include it in '%s_files.txt'?",
+                  modelName, modelName)
+        showHideEl(session, "#analysisRunUnknownError", 6000L)
+        return()
+      }
     }
     removeModal()
     if(gmswebiter > 1){
