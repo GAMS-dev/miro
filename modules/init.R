@@ -1527,20 +1527,17 @@ if(is.null(errMsg)){
   if(length(config$readme$altFilename)){
     readmeFilePath   <- file.path(currentModelDir, 
                                   config$readme$altFilename)
-  }else{
-    readmeFilePath   <- file.path(currentModelDir, 
-                                  "README.md")
+    tryCatch({
+      if(endsWith(tolower(readmeFilePath), 'html')){
+        config$readmeFile <- read_file(readmeFilePath)
+      }else if(file.exists(readmeFilePath)){
+        source(file.path("components", "md_parser.R"), local = TRUE)
+        markdownParser <- MarkdownParser$new()
+        config$readmeFile <- markdownParser$parseFile(readmeFilePath)
+      }
+    }, error = function(e){
+      errMsg <<- sprintf("Problems parsing README markdown file. Error message: %s",
+                         conditionMessage(e))
+    })
   }
-  tryCatch({
-    if(endsWith(tolower(readmeFilePath), 'html')){
-      config$readmeFile <- read_file(readmeFilePath)
-    }else if(file.exists(readmeFilePath)){
-      source(file.path("components", "md_parser.R"), local = TRUE)
-      markdownParser <- MarkdownParser$new()
-      config$readmeFile <- markdownParser$parseFile(readmeFilePath)
-    }
-  }, error = function(e){
-    errMsg <<- sprintf("Problems parsing README markdown file. Error message: %s",
-                       conditionMessage(e))
-  })
 }
