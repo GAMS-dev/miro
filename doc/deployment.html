@@ -83,18 +83,17 @@
                                 <p>The deployment of an application consists of two parts: The creation of a self-contained app bundle and its installation.</p>
                                 <div class="section-block" id="sbs-create-app">
                                     <h3>Create an app bundle</h3>
-                                    <p>Before you export your app bundle, MIRO needs to know about the files that belong to your model. To tell MIRO about these files, create a text file in the root directory of your model called <span class="code">&lt;modelname&gt;_files.txt</span> or use <i>GAMS Studio</i> to create this file for you. For the latter you can select in the menu <i>MIRO</i> under <i>create model assembly</i> those folders and files which are needed. If you select a folder, all files in it will be included. If you want to use only single files of a folder, you have to expand the folder and select the corresponding file(s). 
+                                    <p>Before you export your app bundle, MIRO needs to know about the files that belong to your model. This is primarily the main model file, but also all files necessary to calculate all inputs and outputs, e.g. files that are included in the model. To tell MIRO about these files, create a text file in the root directory of your model called <span class="code">&lt;modelname&gt;_files.txt</span> or use <i>GAMS Studio</i> to create this file for you. For the latter you can select in the menu <i>MIRO</i> under <i>create model assembly</i> those folders and files which are needed. If you select a folder, all files in it will be included. If you want to use only single files of a folder, you have to expand the folder and select the corresponding file(s). 
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" style="max-height:350pt" src="assets/images/deployment/model-assembly.png" alt="create model assembly file" />
                                     </div>
-                                    <p>Note: In the above example the directory <i>data_pickstock</i> was included. This directory contains a <a href = "./customize.html#app-logo">logo</a> that should be used for the MIRO app.</p>
                                     <div class="callout-block callout-warning">
                                         <div class="icon-holder">
                                             <i class="fas fa-info-circle"></i>
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <b class="callout-title">Attention</b>
-                                            <p>In case you have specified <a href = "./customize.html#analysis-scripts">custom analysis scripts</a> or a <a href = "./customize.html#app-readme">README file</a>, make sure to include these here as well!</p>
+                                            <p>In case you have specified <a href = "./customize.html#analysis-scripts">custom analysis scripts</a>, make sure to include these here as well!</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                     If you want to create the text file on your own, specify the relative paths to the files that are part of your model separated by a new line. An example for a model named <span class="code">example</span> can be found below:</p>
