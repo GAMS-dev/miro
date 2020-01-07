@@ -12,9 +12,12 @@ $offText
 Set
    i      'canning plants'
    j      'markets'
-   locHdr 'location data header' / lat, lng /;
+   t      'available model types' / lp, mip, minlp /
+   locHdr 'location data header'  / lat, lng /;
 
 $onExternalInput
+Singleton Set type(t) 'selected model type' / lp /;
+
 Parameter
    a(i<) 'capacity of plant i in cases'
         / Seattle     350
@@ -102,6 +105,7 @@ Equation
 
 Model transportMINLP / transportMIP - cost + costnlp /;
 
+$eval.Set type type.TL
 $if not set type $set type lp
 
 *some starting point
@@ -121,7 +125,6 @@ Table schedule;
 $offExternalOutput
 
 total_cost = z.l;
-
 schedule(i,j, 'lngP')       = iLocData(i,'lng');
 schedule(i,j, 'latP')       = iLocData(i,'lat');
 schedule(i,j, 'lngM')       = jLocData(j,'lng');
