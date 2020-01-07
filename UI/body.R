@@ -105,28 +105,28 @@ inputTabContent <- lapply(seq_along(inputTabs), function(tabId) {
                            }
                            if(LAUNCHHCUBEMODE){
                              if(identical(modelIn[[i]]$slider$double, TRUE)){
-                               tagList(
-                                 column(width = 8, style = "padding-left:0px;",
-                                        slider
-                                 ),
-                                 column(width = 2, style = "min-width: 130px; min-height:100px;",
-                                        tagList(
-                                          tags$label(class = "cb-label", "for" = "hcubeMode_" %+% i, 
-                                                     lang$nav$hcubeMode$sliderAllCombinations), 
-                                          tags$div(
-                                            tags$label(class = "checkbox-material", "for" = "hcubeMode_" %+% i, 
-                                                       checkboxInput("hcubeMode_" %+% i, label = NULL, 
-                                                                     value = modelIn[[i]]$checkbox$value))
-                                          )
+                               tags$div(style = "overflow:auto",
+                                        column(width = 8, style = "padding-left:0px;",
+                                               slider
+                                        ),
+                                        column(width = 2, style = "min-width: 130px; min-height:100px;",
+                                               tagList(
+                                                 tags$label(class = "cb-label", "for" = "hcubeMode_" %+% i, 
+                                                            lang$nav$hcubeMode$sliderAllCombinations), 
+                                                 tags$div(
+                                                   tags$label(class = "checkbox-material", "for" = "hcubeMode_" %+% i, 
+                                                              checkboxInput("hcubeMode_" %+% i, label = NULL, 
+                                                                            value = modelIn[[i]]$checkbox$value))
+                                                 )
+                                               )
+                                        ),
+                                        conditionalPanel("input.hcubeMode_" %+% i, 
+                                                         column(width = 1, style = "min-width: 100px; min-height:100px;",
+                                                                numericInput("hcubeStep_" %+% i, lang$nav$hcubeMode$stepsize, 
+                                                                             sliderStepSize, min = 0)
+                                                         )
                                         )
-                                 ),
-                                 conditionalPanel("input.hcubeMode_" %+% i, 
-                                                  column(width = 1, style = "min-width: 100px; min-height:100px;",
-                                                         numericInput("hcubeStep_" %+% i, lang$nav$hcubeMode$stepsize, 
-                                                                      sliderStepSize, min = 0)
-                                                  )
-                                 )
-                                 
+                                        
                                )
                              }else if(identical(modelIn[[i]]$slider$single, TRUE)){
                                tagList(

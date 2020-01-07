@@ -84,7 +84,7 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
   tabNavList <- tags$ul(class = ulClass, id = id,
                         `data-tabsetid` = tabsetId, liTagList)
   
-  tabContent <- tags$div(class = "tab-content", style = "overflow: auto;",
+  tabContent <- tags$div(class = "tab-content",
                          `data-tabsetid` = tabsetId, divTagList)
   
   # create the tab div
