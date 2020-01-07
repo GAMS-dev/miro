@@ -93,6 +93,7 @@
                                       <li>Full <a href = "./customize.html#dark-mode">dark mode</a> support.</li>
                                       <li>Added <a href = "./customize.html#miro-log">miro log</a> option for custom logs and input validation</li>
                                       <li>Added support for an individual <a href = "./customize.html#app-readme">README starting page</a> (markdown document) which is displayed in the input section.</li>
+                                      <li>Added support for own <a href = "./customize.html#analysis-scripts">custom scripts</a> for analysis purposes in Base and Hypercube mode.</li>
                                       <li>New widget type: <a href = "./widgets.html#widget-numeric">numeric Input</a>.</li>
                                       <li>One-dimensional sets can now be configured as dropdown menu.</li>
                                       <li>New widget type: <a href = "./widgets.html#widget-multidropdown">Multi-dropdown menu</a> for one-dimensional, 
@@ -104,9 +105,7 @@
                                       <li><a href = "./start.html#scenario-concept">Sandbox scenarios</a>: 
                                       <ul>
                                         <li>The MIRO user interface can be seen as a sandbox. Data that is loaded into the interface is therefore 
-                                        located in this sandbox 
-                                        as a sandbox scenario. The data of the sandbox scenario can be come from the MIRO database, external databases, 
-                                        GDX containers, excel files, or can be entered manually.</li>
+                                        located in this sandbox as a sandbox scenario. The data of the sandbox scenario can be come from the MIRO database, external databases, GDX containers, excel files, or can be entered manually.</li>
                                         <li>File attachments are part of a scenario. If attachments are added to a sandbox scenario, 
                                         they are included when saving this scenario.</li>
                                         <li>Sandbox scenarios can be loaded in scenario comparison via <i>load active</i> button.</li>
@@ -144,24 +143,26 @@
                                       on left is not sufficient.</li>
                                       <li>First two columns (symbol name and symbol text) of scalar input table are now automatically set 
                                       to readonly.</li>
+                                      <li>Import data via spreadsheet: Added possibility to use a sheet dedicated to a single scalar with the sheet name being the name of the scalar and its value being in column A1.</li>
                                       <li>Adding/removing rows is now no longer allowed when at least one column is readonly.</li>
                                       <li>Variables and equations can now be exported via GDX.</li>
+                                      <li>Numeric NAs are not converted to 0 anymore.</li>
                                       <li>Completely restructured Hypercube mode. This includes the change from CSV to GDX file format for scenario input and output data. This is espacially relevant for the <a href = "./hypercube.html#manual-jobsubmit">manual job submission</a>.</li>
                                       <li>Configuration mode:</li>
                                       <ul>
-                                      <li>New structure and design.</li>
-                                      <li>Added option to <a href = "./customize.html#naming">rename tab titles and symbol headers</a>.</li>
-                                      <li>Added option to <a href = "./customize.html#application-title">change the application title</a>.</li>
-                                      <li>Added option to <a href = "./customize.html#tab-ordering">reorder symbol tabs</a>.</li>
-                                      <li>Number of tabs visible in Inpupt/Output section can now be configured (rest available via dropdown).</li>
-                                      <li>Input scalars can now be <a href = "./customize.html#hidden-scalars">used in charts</a> as well.</li>
-                                      <li>Charts configuration has now access to MIRO database. Previously saved scenario data can now be 
-                                      used for the graphics configuration (besides the local file upload).</li>
-                                      <li>Added option to display graphic and table in split-screen for pie charts, maps and gantt charts.</li>
-                                      <li>Added custom renderer option for graphics.</li>
-                                      <li>Added support for heatmaps (input tables).</li>
-                                      <li>Bar chart, Line chart, Scatter, plot, Bubble chart: Order logic of axis elements can now be adjusted.</li>
-                                      <li>Removed option to (de)activate the <i>scenario functionality</i>. Is always activated now.</li>
+                                        <li>New structure and design.</li>
+                                        <li>Added option to <a href = "./customize.html#naming">rename tab titles and symbol headers</a>.</li>
+                                        <li>Added option to <a href = "./customize.html#application-title">change the application title</a>.</li>
+                                        <li>Added option to <a href = "./customize.html#tab-ordering">reorder symbol tabs</a>.</li>
+                                        <li>Number of tabs visible in Inpupt/Output section can now be configured (rest available via dropdown).</li>
+                                        <li>Input scalars can now be <a href = "./customize.html#hidden-scalars">used in charts</a> as well.</li>
+                                        <li>Charts configuration has now access to MIRO database. Previously saved scenario data can now be 
+                                        used for the graphics configuration (besides the local file upload).</li>
+                                        <li>Added option to display graphic and table in split-screen for pie charts, maps and gantt charts.</li>
+                                        <li>Added custom renderer option for graphics.</li>
+                                        <li>Added support for heatmaps (input tables).</li>
+                                        <li>Bar chart, Line chart, Scatter, plot, Bubble chart: Order logic of axis elements can now be adjusted.</li>
+                                        <li>Removed option to (de)activate the <i>scenario functionality</i>. Is always activated now.</li>
                                       </ul>
                                     </ul>
                                 </div>
