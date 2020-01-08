@@ -1263,15 +1263,15 @@ if(is.null(errMsg)){
       return(TRUE)
   }, logical(1L), USE.NAMES = FALSE)
   if(length(config$overwriteSheetOrder$output) && !LAUNCHCONFIGMODE){
-    if(length(modelOut) != length(config$overwriteSheetOrder$output)){
-      errMsg <- paste(errMsg, "Some of the output elements defined in the data contract are missing in the 'overwriteSheetOrder' option!",
-                      sep = "\n")
-    }else if(any(is.na(match(config$overwriteSheetOrder$output, names(modelOut))))){
-      errMsg <- paste(errMsg, "Some of the output elements in the 'overwriteSheetOrder' option are not defined in the data model!",
-                      sep = "\n")
-    }else{
-      outputSheetIdsToDisplay <- match(config$overwriteSheetOrder$output, 
-                                       names(modelOut)[modelOutToDisplay])
+    namesModelOutToDisplay <- names(modelOut)[modelOutToDisplay]
+    outputSheetIdsToDisplay <- match(config$overwriteSheetOrder$output, 
+                                     namesModelOutToDisplay)
+    outputSheetIdsToDisplay <- outputSheetIdsToDisplay[!is.na(outputSheetIdsToDisplay)]
+    if(length(modelOut) > length(outputSheetIdsToDisplay)){
+      outputSheetIdsToDisplay <- c(outputSheetIdsToDisplay, 
+                                   match(namesModelOutToDisplay[!namesModelOutToDisplay %in% 
+                                                                  config$overwriteSheetOrder$output], 
+                                         namesModelOutToDisplay))
     }
   }else{
     outputSheetIdsToDisplay <- seq_along(modelOut)[modelOutToDisplay]
