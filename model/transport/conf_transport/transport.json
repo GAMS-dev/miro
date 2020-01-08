@@ -54,8 +54,55 @@
   },
   "dataRendering": {
     "schedule": {
-      "outType": "transport1",
-      "packages": ["leaflet", "leaflet.minicharts"]
+      "outType": "graph",
+      "graph": {
+        "title": "",
+        "tool": "leaflet",
+        "layersControl": {
+          "options": {
+            "collapsed": true
+          },
+          "position": "topright"
+        },
+        "markers": {
+          "1": {
+            "lng": "lngp",
+            "lat": "latp",
+            "labelOptions": {
+              "textsize": "12px",
+              "permanent": true,
+              "style": {
+                "color": "#000000",
+                "background-color": "#f58300"
+              }
+            },
+            "label": "[i] (capacity: [cap])"
+          },
+          "2": {
+            "lng": "lngm",
+            "lat": "latm",
+            "labelOptions": {
+              "textsize": "12px",
+              "permanent": true
+            },
+            "label": "[j] (demand: [demand])"
+          }
+        },
+        "flows": {
+          "1": {
+            "lng0": "lngp",
+            "lat0": "latp",
+            "lng1": "lngm",
+            "lat1": "latm",
+            "flow": "quantities",
+            "color": "#261a1a",
+            "minThickness": 1,
+            "maxThickness": 13,
+            "layerId": "From [i] to [j]"
+          }
+        }
+      },
+      "height": 700
     },
     "_scalars_out": {
       "outType": "valueBox",
@@ -93,10 +140,16 @@
     }
   },
   "overwriteSheetOrder": {
-    "input": ["_widgets", "_scalars", "a", "b", "d", "ilocdata", "jlocdata"],
+    "input": ["a", "b", "d", "ilocdata", "jlocdata", "_widgets"],
     "output": ["schedule", "_scalars_out"]
   },
   "pageTitle": "A transportation problem",
+  "inputGroups": [
+    {
+      "name": "location information",
+      "members": ["ilocdata", "jlocdata"]
+    }
+  ],
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
@@ -112,12 +165,6 @@
       "allowComments": true
     },
     "height": 700,
-    "colWidths": 300
-  },
-  "inputGroups": [
-    {
-      "name": "location information",
-      "members": ["ilocdata", "jlocdata"]
-    }
-  ]
+    "colWidths": 150
+  }
 }
