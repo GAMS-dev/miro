@@ -39,7 +39,13 @@ $(document).ready(function() {
         $(this).ekkoLightbox();
     });    
 
-
+    function hashHandler() {
+        if(window.location.hash && $(window.location.hash).length){
+            $(window.location.hash).next().show();
+        }
+    }
+    hashHandler()
+    window.addEventListener('hashchange', hashHandler, false);
 });
 (function ($) {
     /**

@@ -931,7 +931,7 @@ if(!is.null(errMsg)){
             newScen$save(c(dataOut, dataIn))
           }
           
-          if(!file.remove(file.path(miroDataDir, miroDataFile))){
+          if(!debugMode && !file.remove(file.path(miroDataDir, miroDataFile))){
             flog.info("Could not remove file: '%s'.", miroDataFile)
           }
         }
