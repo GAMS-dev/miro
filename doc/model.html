@@ -4,7 +4,7 @@
 <!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
 <head>
-    <title>GAMS MIRO - Model deployment</title>
+    <title>GAMS MIRO - Model preperation</title>
     <!-- Meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -59,14 +59,14 @@
                 </div><!--//branding-->
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                    <li class="breadcrumb-item active">Model deployment</li>
+                    <li class="breadcrumb-item active">Model preperation</li>
                 </ol>
             </div><!--//container-->
         </header><!--//header-->
         <div class="doc-wrapper">
             <div class="container">
                 <div id="doc-header" class="doc-header text-center">
-                    <h1 class="doc-title"><i class="icon fas fa-sliders-h"></i> Model deployment</h1>
+                    <h1 class="doc-title"><i class="icon fas fa-edit"></i> Model preperation</h1>
                 </div><!--//doc-header-->
                 <div class="doc-body row">
                     <div class="doc-content col-md-9 col-12 order-1">
@@ -242,21 +242,11 @@ Positive Variable x;
 
 [...]</code></pre>
                                         <p>That's it. We defined both input and output data for use in MIRO. The model is now ready to be deployed with GAMS MIRO.</p>
-                                        <div class="callout-block callout-success">
-                                          <div class="icon-holder">
-                                              <i class="fas fa-thumbs-up"></i>
-                                          </div><!--//icon-holder-->
-                                          <div class="content">
-                                              <b class="callout-title">Tip:</b>
-                                              <p>You can also use MIRO to set GAMS options and double dash parameters for a model run. More about 
-                                              this is explained <a href="#command-line" class="scrollto">here</a>.</p>
-                                          </div><!--//content-->
-                                        </div><!--//callout-block-->
                                     </div><!--//section-block-->
 
                                     <div id="launch-miro" class="section-block">
                                         <h3 class="block-title">Launch MIRO</h3>
-                                        <p>To launch MIRO from within GAMS Studio, simply click the <kbd>Launch MIRO</kbd> button or press F11.</p>
+                                        <p>To launch MIRO from within GAMS Studio, simply click on <i>Run base mode</i>.</p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                             <img class="img-fluid" style = "max-height:175pt;" src="assets/images/launch-miro-btn.png" alt="Launch MIRO button" />
                                         </div>
@@ -274,27 +264,20 @@ Positive Variable x;
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                             <img class="img-fluid" src="assets/images/initial-screen.png" alt="initial GAMS MIRO screen" />
                                         </div>    
-                                        <p>With the basic configuration you can upload local files, modify them from within the interface and start or 
+                                        <p>With the basic configuration you can load data, modify it from within the interface and start or 
                                         stop a GAMS job. You also have access to the <i>log</i> and <i>listing</i> (<i>lst</i>) files of GAMS as well as 
                                         all files generated during the run. When the model has finished the execution phase successfully, the results can 
                                         be examined. Since MIRO is connected to a database, you can store results there, fetch previously saved results 
                                         and modify them or use them to compare with other scenarios.</p>
-                                        <p>After the startup, you will find a new folder named <i>conf_&lt;modelname&gt;</i> in the directory where your model is located. This folder contains the file <span class="code">&lt;modelname&gt;_io.json</span>: The metadata of all input and output symbols we just defined in our model are declared here in JSON syntax. You should not modify this file.
-                                            </br>Additionally, there is a folder named <span class="code">data_&lt;modelname&gt;</span> with a gdx 
-                                            container named <span class="code">default.gdx</span>. This gdx file holds all the data relevant to MIRO that 
-                                            GAMS extracted from your model. It will be automatically imported into the MIRO database the next time you launch your app.
-                                             </p>
-                                             <div class="callout-block callout-success">
-                                               <div class="icon-holder">
-                                                   <i class="fas fa-thumbs-up"></i>
-                                               </div><!--//icon-holder-->
-                                               <div class="content">
-                                                   <b class="callout-title">Tip:</b>
-                                                   <p>All gdx files inside the <span class="code">data_&lt;modelname&gt;</span> folder will be stored into 
-                                                   the MIRO database the next time your MIRO app is launched! The name of the gdx file determines the 
-                                                   name of the scenario. This way you can easily import several scenarios at once.</p>
-                                               </div><!--//content-->
-                                             </div><!--//callout-block-->
+                                        <div class="callout-block callout-success">
+                                            <div class="icon-holder">
+                                                <i class="fas fa-thumbs-up"></i>
+                                            </div><!--//icon-holder-->
+                                            <div class="content">
+                                                <b class="callout-title">Tip:</b>
+                                                <p>After the startup, you will find new configuration files in the directory where your model is located. You can read more about the startup process and related files <a href = "./model.html#development-files" class = "scrollto">here</a>.</p>
+                                            </div><!--//content-->
+                                        </div><!--//callout-block-->
                                     </div><!--//section-block-->
                             <section id="gams-symbols" class="doc-section">
                                 <h2 class="section-title">GAMS symbols</h2>
@@ -674,7 +657,7 @@ $offExternalInput
                                     <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style="max-height:150pt;" src="assets/images/singleton-multi-table.png" alt="Visualization of multidimensional singleton sets in a table" />
                                     </div>
-                                    <p><b>How to use singleton sets for the creation of compile-time variables:</b>
+                                    <p id = "singleton-compile"><b>How to use singleton sets for the creation of compile-time variables:</b>
                                     <br>What singleton sets and scalar values have in common is a symbol name and an 
                                     explanatory text. However, the value is different. Unlike scalars (a numeric value), singleton sets 
                                     can have a label and an element text. To be able to display both in the scalars table in MIRO, label 
@@ -847,7 +830,7 @@ $offExternalInput
                                           </div><!--//icon-holder-->
                                           <div class="content">
                                               <b class="callout-title">Tip:</b>
-                                              <p>You can use the <span class="code">data_&lt;modelname&gt;</span> folder to import multiple scenarios into your database at the same time. For more information, see <a href = "./start.html#startup-import">here</a>.</p>
+                                              <p>You can use the <span class="code">data_&lt;modelname&gt;</span> folder to import multiple scenarios into your database at the same time. All gdx files inside this folder will be stored into the MIRO database the next time your MIRO app is launched! The name of the gdx file determines the name of the scenario. This way you can easily import several scenarios at once. For more information, see <a href = "./start.html#startup-import">here</a>.</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
                                         </li>
@@ -855,23 +838,14 @@ $offExternalInput
                                         It contains the configuration of an app created by the user (graphics, widgets, general settings, etc.). 
                                         If the file does not yet exist, it is created empty.</li>
                                         <li>In MIRO, several initialization steps are performed. These include setting up internal data structures.</li> 
-                                        <li id="binary-files">The information from the steps 1, 3 & 4 is stored in the binary configuration files <a href="./faqs.html#file-miroconf"><i>&lt;modelname&gt;_&lt;version_number&gt;.miroconf</i></a> 
-                                          and <a href="./faqs.html#file-miroconf"><i>&lt;modelname&gt;_&lt;version_number&gt;_hcube.miroconf</i></a>.  
-                                        In deployment mode, these files are read at startup. The previously enumerated initialization steps are then omitted.</li>
                                         </ol>
-                                        <p>Using the transport model as an example, the following files and folders are added to the model directory after starting the MIRO application:</p>
-                                        <div class="section-block" style="text-align:center;">
-                                            <img class="img-fluid" style="max-height:100pt;" src="assets/images/startup_files.png" alt="Files and folders in model directory" />
-                                        </div>
-                                        <p>After developing an MIRO application, i.e. the complete configuration (<a href="./customize.html">next chapter</a>), 
-                                        the final step is the <a href="./deployment.html">deployment</a>.</p>
                                     </div>
                                 </div>
                                 <div  id="development-directory"  class="section-block">
                                     <h3 class="block-title">Using a temporary directory</h3>
                                     <p>By default, MIRO executes the GAMS model in the directory it is located. However, there is an option 
                                     to change this behaviour and run the model in a temporary directory. If after completion of the MIRO application 
-                                    (i.e. in <a href = "deployment.html">deployment</a>) several users should have access to it at the same time, 
+                                    (i.e. for <a href = "deployment.html">deployment</a>) several users should have access to it at the same time, 
                                     the GAMS model is always executed in a temporary directory. By doing this while developing, 
                                     the developer of the MIRO application can already test under real conditions if everything works as expected. 
                                     When running in a temporary directory, a few aspects have to be considered. What exactly is described 
