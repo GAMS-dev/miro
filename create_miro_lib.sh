@@ -14,7 +14,8 @@ mv transport/transport.conf.unzip miro_lib
 cp transport/transport.gms miro_lib
 mv pickstock/pickstock.conf.unzip miro_lib
 cp pickstock/pickstock.gms pickstock/dowjones2016.csv miro_lib
+zip -r miroDemoApps.zip miro_lib -x "*.DS_Store"
 cd ../doc
-zip -r miroDemoApps.zip ../model/miro_lib -x "*.DS_Store"
+mv ../model/miroDemoApps.zip .
 rm -rf ../model/miro_lib
 cd ..
