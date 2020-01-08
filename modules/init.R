@@ -1133,7 +1133,11 @@ if(is.null(errMsg)){
                                      'a' = list(type = "string"),
                                      'b' = list(type = "string"),
                                      'c' = list(type = "string")
-                                   ))
+                                   ),
+                                   symnames = c(modelInRaw[[scalarsFileName]]$symnames,
+                                                DDPar, GMSOpt),
+                                   symtext = c(modelInRaw[[scalarsFileName]]$symtext,
+                                               character(length(DDPar) + length(GMSOpt))))
     )
     names(scalarsInMetaData[[1]]$headers) <- scalarsFileHeaders
     names(scalarsInMetaData) <- scalarsFileName

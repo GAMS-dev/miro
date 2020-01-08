@@ -18,7 +18,7 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
       if(length(scalarXlsSheetIds)){
         tryCatch({
           scalarDataTmp <- vapply(scalarXlsSheetIds, function(sheetID){
-            data <- read_excel(xlsPath, sheetID, col_names = FALSE)
+            data <- suppressMessages(read_excel(xlsPath, sheetID, col_names = FALSE))
             if(length(data) != 1L){
               stop(sprintf("Invalid length of scalar sheet: %s.", sheetID), call. = FALSE)
             }
