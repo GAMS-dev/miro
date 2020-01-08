@@ -1,5 +1,8 @@
 observe({
   i <- as.integer(strsplit(input$outputTabset, "_")[[1]][2])
+  if(i > length(outputTabTitles)){
+    return(hideEl(session, "#btSymbolLink"))
+  }
   if(length(outputTabTitles[[i]]) > 1L){
     j <- as.integer(strsplit(input[[paste0("outputTabset", i)]], "_")[[1]][2])
     i <- outputTabs[[i]][j]
