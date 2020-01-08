@@ -906,8 +906,8 @@
       "readme":{
         "label": "README file",
         "useReadme": "Include README file",
-        "tabTitle": "README tab title (if available)",
-        "fileName": "Alternative README file name"
+        "tabTitle": "README tab title",
+        "fileName": "README file name"
       },
       "saveDuration":{
         "label": "Duration the GAMS log and lst files are stored in the database (in days)."

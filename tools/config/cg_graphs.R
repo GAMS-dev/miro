@@ -2329,6 +2329,7 @@ observeEvent(input$saveGraphConfirm, rv$saveGraphConfirm <- rv$saveGraphConfirm 
 observeEvent(rv$saveGraphConfirm, {
   req(rv$saveGraphConfirm > 0L)
   configJSON$dataRendering[[activeSymbol$name]] <<- rv$graphConfig
+  configJSON$dataRendering[[activeSymbol$name]]$height <<- 700
   if(rv$graphConfig$graph$tool == "pivot"){
     configJSON$dataRendering[[activeSymbol$name]]$graph <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$options <<- NULL
@@ -2340,6 +2341,7 @@ observeEvent(rv$saveGraphConfirm, {
     configJSON$dataRendering[[activeSymbol$name]]$outType <<- "valueBox"
   }else if(rv$graphConfig$graph$tool == "custom"){
     configJSON$dataRendering[[activeSymbol$name]]$graph <<- NULL
+    configJSON$dataRendering[[activeSymbol$name]]$height <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$options <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$pivottable <<- NULL
   }else{

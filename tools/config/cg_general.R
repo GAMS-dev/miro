@@ -150,19 +150,22 @@ insertUI(selector = "#interface_wrapper2",
            tags$div(
              tags$label(class = "checkbox-material", 
                         checkboxInput("general_useReadme", 
-                                      value = if(isTRUE(configJSON$readme$useReadme)) 
-                                        configJSON$readme$useReadme else config$readme$useReadme, 
+                                      value = length(configJSON$readme$filename) > 0L, 
                                       label = NULL)
              )),
            conditionalPanel(
              condition = "input.general_useReadme===true",
              tags$div(class = "option-wrapper option-wrapper-indented", style = "padding-left:40px;",
-                      textInput("general_readmeTabtitle", tags$div(lang$adminMode$general$readme$tabTitle,
-                                                                   value = if(!is.null(configJSON$readme$tabTitle) && nchar(configJSON$readme$tabTitle)) configJSON$readme$tabTitle else ""))
+                      textInput("general_readmeTabtitle", lang$adminMode$general$readme$tabTitle,
+                                value = if(!is.null(configJSON$readme$tabTitle) && nchar(configJSON$readme$tabTitle)) 
+                                  configJSON$readme$tabTitle 
+                                else "")
              ),
              tags$div(class = "option-wrapper info-position option-wrapper-indented", style = "padding-left:40px;",
-                      textInput("general_readmeAltFileName", lang$adminMode$general$readme$fileName,
-                                value = if(!is.null(configJSON$readme$altFilename) && nchar(configJSON$readme$altFilename)) configJSON$readme$altFilename else "")
+                      textInput("general_readmeFileName", lang$adminMode$general$readme$fileName,
+                                value = if(!is.null(configJSON$readme$filename) && nchar(configJSON$readme$filename)) 
+                                  configJSON$readme$filename 
+                                else "")
              ))
          ),where = "beforeEnd")
 insertUI(selector = "#module_wrapper1",
@@ -392,9 +395,9 @@ observeEvent(input$general_useReadme, {
        nchar(trimws(input$general_readmeTabtitle))){
       rv$generalConfig$readme$tabTitle <<- input$general_readmeTabtitle
     }
-    if(length(input$general_readmeAltFileName) && 
-       nchar(trimws(input$general_readmeAltFileName))){
-      rv$generalConfig$readme$altFilename <<- input$general_readmeAltFileName
+    if(length(input$general_readmeFileName) && 
+       nchar(trimws(input$general_readmeFileName))){
+      rv$generalConfig$readme$filename <<- input$general_readmeFileName
     }
   }
 })
@@ -408,15 +411,15 @@ observeEvent(input$general_readmeTabtitle, {
   }
   rv$generalConfig$readme$tabTitle <<- NULL
 })
-observeEvent(input$general_readmeAltFileName, {
-  if(!nchar(input$general_readmeAltFileName))
-    configJSON$readme$altFilename <<- NULL
-  if(length(input$general_readmeAltFileName) && 
-     nchar(trimws(input$general_readmeAltFileName))){
-    rv$generalConfig$readme$altFilename <<- input$general_readmeAltFileName
+observeEvent(input$general_readmeFileName, {
+  if(!nchar(input$general_readmeFileName))
+    configJSON$readme$filename <<- NULL
+  if(length(input$general_readmeFileName) && 
+     nchar(trimws(input$general_readmeFileName))){
+    rv$generalConfig$readme$filename <<- input$general_readmeFileName
     return()
   }
-  rv$generalConfig$readme$altFilename <<- NULL
+  rv$generalConfig$readme$filename <<- NULL
 })
 observeEvent(input$general_auto, {
   rv$generalConfig$autoGenInputGraphs <<- input$general_auto
@@ -425,9 +428,14 @@ observeEvent(input$general_save_duration, {
   rv$generalConfig$storeLogFilesDuration <<- input$general_save_duration
 })
 
-observeEvent(input$general_args, {
-  req(length(input$general_args))
-  rv$generalConfig$extraClArgs <<- input$general_args
+observeEvent(input$general_args, ignoreNULL = FALSE, {
+  if(!length(input$general_args)){
+    rv$generalConfig$extraClArgs <<- NULL
+    configJSON$extraClArgs <<- NULL
+  }
+  else{
+    rv$generalConfig$extraClArgs <<- input$general_args
+  }
 })
 
 observeEvent(input$general_scen, {
