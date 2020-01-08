@@ -906,8 +906,8 @@
       "readme":{
         "label": "README file",
         "useReadme": "Include README file",
-        "tabTitle": "README tab title (if available)",
-        "fileName": "Alternative README file name"
+        "tabTitle": "README tab title",
+        "fileName": "README file name"
       },
       "saveDuration":{
         "label": "数据库中保留GAMS日志和lst文件的时长（以天为单位）。"

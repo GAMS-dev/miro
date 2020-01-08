@@ -1528,9 +1528,9 @@ if(is.null(errMsg)){
 }
 if(is.null(errMsg)){
   # parse README.md file 
-  if(length(config$readme$altFilename)){
+  if(length(config$readme$filename)){
     readmeFilePath   <- file.path(currentModelDir, 
-                                  config$readme$altFilename)
+                                  config$readme$filename)
     tryCatch({
       if(endsWith(tolower(readmeFilePath), 'html')){
         config$readmeFile <- read_file(readmeFilePath)

@@ -906,8 +906,8 @@
       "readme":{
         "label": "README Datei",
         "useReadme": "README-Datei einbinden",
-        "tabTitle": "README Reitertitel (falls vorhanden)",
-        "fileName": "Alternativer README-Dateiname"
+        "tabTitle": "README Reitertitel",
+        "fileName": "README-Dateiname"
       },
       "saveDuration":{
         "label": "Speicherdauer für GAMS Log und lst Dateien in der Datenbank (in Tagen)."
