@@ -10,8 +10,10 @@ cd ..
 rm -rf miro_lib || true
 mkdir miro_lib
 cp mirolib.glb miro_lib
-cp transport/transport.conf.unzip transport/transport.gms miro_lib
-cp pickstock/pickstock.gms pickstock/dowjones2016.csv pickstock/pickstock.conf.unzip miro_lib
+mv transport/transport.conf.unzip miro_lib
+cp transport/transport.gms miro_lib
+mv pickstock/pickstock.conf.unzip miro_lib
+cp pickstock/pickstock.gms pickstock/dowjones2016.csv miro_lib
 cd ../doc
 zip -r miroDemoApps.zip ../model/miro_lib -x "*.DS_Store"
 rm -rf ../model/miro_lib
