@@ -1,7 +1,18 @@
 #!/bin/sh
 
 cd model
-zip -r transport.conf.unzip conf_transport
-zip miroDemoApps.zip pickstock/pickstock.gms pickstock/dowjones2016.csv pickstock/conf/pickstock.json pickstock/static/pickstock.png kport/kport.gms kport/conf/kport.json kport/static/kport.jpg transport/transport.gms transport/conf/transport.json transport/custom_renderer/* transport_live/transport_live.gms transport_live/conf/transport_live.json transport_live/custom_renderer/*
-mv miroDemoApps.zip ../doc
+cd transport
+zip transport.conf.unzip conf_transport/transport.json -x "*.DS_Store"
+cd ..
+cd pickstock
+zip -r pickstock.conf.unzip conf_pickstock/pickstock.json scripts_pickstock/hcube_analysis.ipynb static_pickstock -x "*.DS_Store"
+cd ..
+rm -rf miro_lib || true
+mkdir miro_lib
+cp mirolib.glb miro_lib
+cp transport/transport.conf.unzip transport/transport.gms miro_lib
+cp pickstock/pickstock.gms pickstock/dowjones2016.csv pickstock/pickstock.conf.unzip miro_lib
+cd ../doc
+zip -r miroDemoApps.zip ../model/miro_lib -x "*.DS_Store"
+rm -rf ../model/miro_lib
 cd ..
