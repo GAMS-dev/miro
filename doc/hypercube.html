@@ -380,7 +380,7 @@
             "--HCUBE_SCALARV_mins=20", 
             "--HCUBE_SCALARV_beta=0.97", 
             "--HCUBE_SCALARV_f=75", 
-            "--type=\"mip\" --HCUBE_SCALART__gmspar_type=\"MIP\""
+            "--type=\"mip\""
         ]
     },
     {
@@ -389,7 +389,7 @@
             "--HCUBE_SCALARV_mins=40", 
             "--HCUBE_SCALARV_beta=0.97", 
             "--HCUBE_SCALARV_f=75", 
-            "--type=\"mip\" --HCUBE_SCALART__gmspar_type=\"MIP\""
+            "--type=\"mip\""
         ]
     },
     {
@@ -398,7 +398,7 @@
             "--HCUBE_SCALARV_mins=60", 
             "--HCUBE_SCALARV_beta=0.97", 
             "--HCUBE_SCALARV_f=75", 
-            "--type=\"mip\" --HCUBE_SCALART__gmspar_type=\"MIP\""]
+            "--type=\"mip\""]
     },
     
     [...]
@@ -432,7 +432,7 @@ $if dexist 4upload $call rm -r 4upload
 $call mkdir 4upload
 $call cd 4upload && mkdir tmp0
 $if errorlevel 1 $abort problems mkdir tmp0
-$call cd 4upload/tmp0 && gams "C:\Users\Robin\Documents\.miro\hcube_jobs\transport\1\transport.gms" --HCUBE_SCALARV_mins=20 --HCUBE_SCALARV_beta=0.97 --HCUBE_SCALARV_f=75 --type="mip" --HCUBE_SCALART__gmspar_type="MIP" pf="C:\Users\Robin\Documents\.miro\hcube_jobs\transport\1\transport.pf"
+$call cd 4upload/tmp0 && gams "C:\Users\Robin\Documents\.miro\hcube_jobs\transport\1\transport.gms" --HCUBE_SCALARV_mins=20 --HCUBE_SCALARV_beta=0.97 --HCUBE_SCALARV_f=75 --type="mip" pf="C:\Users\Robin\Documents\.miro\hcube_jobs\transport\1\transport.pf"
 $if dexist e505eb77f2fed92ecb6c7609a6873974ea87d69b620a7ca9aa8d6a1a62e7159b $call rm -r e505eb77f2fed92ecb6c7609a6873974ea87d69b620a7ca9aa8d6a1a62e7159b
 $call cd 4upload && mv tmp0 e505eb77f2fed92ecb6c7609a6873974ea87d69b620a7ca9aa8d6a1a62e7159b
 
@@ -441,7 +441,7 @@ $onecho > "%jobID%.log"
 $offecho
 $call cd 4upload && mkdir tmp1
 $if errorlevel 1 $abort problems mkdir tmp1
-$call cd 4upload/tmp1 && gams "C:\Users\Robin\Documents\.miro\hcube_jobs\transport\1\transport.gms" --HCUBE_SCALARV_mins=40 --HCUBE_SCALARV_beta=0.97 --HCUBE_SCALARV_f=75 --type="mip" --HCUBE_SCALART__gmspar_type="MIP" pf="C:\Users\Robin\Documents\.miro\hcube_jobs\transport\1\transport.pf"
+$call cd 4upload/tmp1 && gams "C:\Users\Robin\Documents\.miro\hcube_jobs\transport\1\transport.gms" --HCUBE_SCALARV_mins=40 --HCUBE_SCALARV_beta=0.97 --HCUBE_SCALARV_f=75 --type="mip" pf="C:\Users\Robin\Documents\.miro\hcube_jobs\transport\1\transport.pf"
 $if dexist 834cc2ff77d5cddc70f6462263a500ab43d22f084a0d98ff1fd8cfc354c8e6ec $call rm -r 834cc2ff77d5cddc70f6462263a500ab43d22f084a0d98ff1fd8cfc354c8e6ec
 $call cd 4upload && mv tmp1 834cc2ff77d5cddc70f6462263a500ab43d22f084a0d98ff1fd8cfc354c8e6ec
 
@@ -450,7 +450,7 @@ $onecho > "%jobID%.log"
 $offecho
 $call cd 4upload && mkdir tmp2
 $if errorlevel 1 $abort problems mkdir tmp2
-$call cd 4upload/tmp2 && gams "C:\Users\Robin\Documents\.miro\hcube_jobs\transport\1\transport.gms" --HCUBE_SCALARV_mins=60 --HCUBE_SCALARV_beta=0.97 --HCUBE_SCALARV_f=75 --type="mip" --HCUBE_SCALART__gmspar_type="MIP" pf="C:\Users\Robin\Documents\.miro\hcube_jobs\transport\1\transport.pf"
+$call cd 4upload/tmp2 && gams "C:\Users\Robin\Documents\.miro\hcube_jobs\transport\1\transport.gms" --HCUBE_SCALARV_mins=60 --HCUBE_SCALARV_beta=0.97 --HCUBE_SCALARV_f=75 --type="mip" pf="C:\Users\Robin\Documents\.miro\hcube_jobs\transport\1\transport.pf"
 $if dexist 867432ac65a22a251ee6fca0ce5eb7ba45195538e389406abe7593f21b8255c4 $call rm -r 867432ac65a22a251ee6fca0ce5eb7ba45195538e389406abe7593f21b8255c4
 $call cd 4upload && mv tmp2 867432ac65a22a251ee6fca0ce5eb7ba45195538e389406abe7593f21b8255c4
 
@@ -458,10 +458,9 @@ $call cd 4upload && mv tmp2 867432ac65a22a251ee6fca0ce5eb7ba45195538e389406abe75
                                             </code></pre>
                                             <p>We can see the commands for running through the first three scenarios of the <a href = "#hcube-json-file" class = "scrollto">hcube.json</a> file. A separate (temporary) folder is created for each scenario to be calculated. In the main GAMS call all arguments contained in the hcube.json file which belong to the scenario are listed as command line parameters.</p>
                                             <pre><code class="language-gams">
-$call [...] gams "[...]\transport.gms" --HCUBE_SCALARV_mins=20 --HCUBE_SCALARV_beta=0.97 --HCUBE_SCALARV_f=75 --type="mip" --HCUBE_SCALART__gmspar_type="MIP" [...]
+$call [...] gams "[...]\transport.gms" --HCUBE_SCALARV_mins=20 --HCUBE_SCALARV_beta=0.97 --HCUBE_SCALARV_f=75 --type="mip" [...]
                                             </code></pre>
                                             <p>GAMS Scalars can usually not be set via a GAMS call, but are defined in the model. In order to be able to set scalars via the command line, MIRO adds a special prefix: <span class="code">--HCUBE_SCALARV_&lt;scalar-name&gt;=&lt;scalar-value&gt;</span>, e.g. <span class="code">--HCUBE_SCALARV_f=90</span> for scalar <span class="code" style="white-space:nowrap">f</span> and a value of 90. To continue this example, if a GAMS model is called with <a href = "https://www.gams.com/30/docs/UG_GamsCall.html#GAMSAOidcgdxinput" target = "_blank"><span class="code">IDCGDXInput</span></a> (which is done here using the <a href = "#pf-file" class = "scrollto">pf file</a>) and the compile-time variable <span class="code">--HCUBE_SCALARV_f=90</span>, a scalar <span class="code">f</span> is searched in the list of symbols declared in your GAMS model and, if declared, set to the value of the compile-time variable, i.e. 90. The set text of a singleton set is communicated via the prefix <span class="code">--HCUBE_SCALART_</span>.</p>
-                                            <p>Command line parameters which are <a href="./model.html#command-line">set via MIRO</a> are prefixed with <i>_gmspar_</i> (double dash parameter) or <i>_gmsopt_</i> (GAMS option).</p>
                                             <div class="callout-block callout-warning">
                                                <div class="icon-holder">
                                                    <i class="fas fa-info-circle"></i>
