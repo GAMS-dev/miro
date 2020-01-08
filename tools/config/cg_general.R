@@ -425,9 +425,14 @@ observeEvent(input$general_save_duration, {
   rv$generalConfig$storeLogFilesDuration <<- input$general_save_duration
 })
 
-observeEvent(input$general_args, {
-  req(length(input$general_args))
-  rv$generalConfig$extraClArgs <<- input$general_args
+observeEvent(input$general_args, ignoreNULL = FALSE, {
+  if(!length(input$general_args)){
+    rv$generalConfig$extraClArgs <<- NULL
+    configJSON$extraClArgs <<- NULL
+  }
+  else{
+    rv$generalConfig$extraClArgs <<- input$general_args
+  }
 })
 
 observeEvent(input$general_scen, {
