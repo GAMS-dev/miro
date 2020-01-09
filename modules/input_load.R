@@ -134,10 +134,12 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
       
       # check if input data is valid
       if(inputVerified){
-        flog.debug("Dataset: %s loaded successfully (mode: %s, overwrite: %s)", dataset, loadMode, overwriteInput)
-        newInputCount <<- newInputCount + 1
-        # set identifier that data was overwritten 
-        isEmptyInput[i] <<- TRUE
+        if(!isTRUE(isEmptyInput[i])){
+          flog.debug("Dataset: %s loaded successfully (mode: %s, overwrite: %s)", dataset, loadMode, overwriteInput)
+          newInputCount <<- newInputCount + 1
+          # set identifier that data was overwritten 
+          isEmptyInput[i] <<- TRUE
+        }
         if(!identical(loadMode, "scen")){
           # set unsaved flag
           rv$unsavedFlag <<- TRUE
