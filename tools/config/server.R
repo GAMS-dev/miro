@@ -9,12 +9,16 @@ dateFormatChoices <- c("1910-06-22" = "yyyy-mm-dd", "22.06.1910" = "dd.mm.yyyy")
 
 outputSymMultiDimChoices <- setNames(names(modelOut), 
                                      paste0(names(modelOut), ": ", modelOutAlias))
-
-inputSymMultiDim <- setNames(names(modelInRaw), 
-                             vapply(modelInRaw, "[[", 
+modelInRawTmp <- modelInRaw
+if(scalarsFileName %in% names(modelInRaw) && 
+   !scalarsFileName %in% names(modelIn)){
+  modelInRawTmp <- modelInRaw[names(modelInRaw) != scalarsFileName]
+}
+inputSymMultiDim <- setNames(names(modelInRawTmp), 
+                             vapply(modelInRawTmp, "[[", 
                                     character(1L), "alias", USE.NAMES = FALSE))
-inputSymMultiDimChoices <- setNames(names(modelInRaw), vapply(seq_along(modelInRaw), function(idx){
-  paste0(names(modelInRaw)[[idx]], ": ", modelInRaw[[idx]][["alias"]])}, character(1L), USE.NAMES = FALSE))
+inputSymMultiDimChoices <- setNames(names(modelInRawTmp), vapply(seq_along(modelInRawTmp), function(idx){
+  paste0(names(modelInRawTmp)[[idx]], ": ", modelInRawTmp[[idx]][["alias"]])}, character(1L), USE.NAMES = FALSE))
 
 inputSymHeaders <- lapply(inputSymMultiDim, function(el){
   headers <- modelInRaw[[el]]$headers
