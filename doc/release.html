@@ -119,6 +119,7 @@
                                       <li>New MIRO logo (Thank you <a href = "" target = "_blank">Melina Klöckner</a>!)</li>
                                       <li>Full chinese <a href = "./customize.html#language-files">language support</a> (Thank you 
                                       <a href = "https://de.linkedin.com/in/ying-deng-7a3554155?trk=profile-badge-cta" target = "_blank">Ying Deng</a>!)</li>
+                                      <li>Completely restructured Hypercube mode. This includes the change from CSV to GDX file format for scenario input and output data. This is espacially relevant for the <a href = "./hypercube.html#manual-jobsubmit">manual job submission</a>.</li>
                                       <li>Changed directory name for custom renderers from <i>customRenderer</i> to 
                                       <i>renderer_&lt;modelname&gt;</i></li>
                                       <li>Changed directory name for configuration files from <i>conf</i> to 
@@ -126,7 +127,6 @@
                                       <li>Added Link to <a href = "https://forum.gamsworld.org/">GAMS World Forum</a> in help section.</li>
                                       <li><i>Stop</i> button in GAMS interaction now with soft kill first, then hard kill.</li>
                                       <li>Scenario comparison: input and output symbol tabs are now displayed in different colors.</li>
-                                      <li>Hypercube section <i>load scenarios</i>: improved display of AND/OR blocks.</li>
                                       <li>Added option to edit scenario access permissions.</li>
                                       <li>Element text of singleton sets can now be appended with a double pipe ("||") and will be 
                                       aggregated/disaggregated when loaded/stored from GDX.                                      
@@ -139,6 +139,7 @@
                                       <li>Changed prefix for double-dash parameters and GAMS options from <i>GMSPAR_</i>/<i>GMSOPT_</i> 
                                       <i>to _gmspar_</i>/<i>_gmsopt_</i>.</li>
                                       <li>Double-dash parameters and GAMS options can now have the same name as GAMS symbols.</li> 
+                                      <li>Maximum number of symbol tabs visible in Inpupt/Output section set to 5 (rest available via dropdown).</li>
                                       <li>Bootstrap dropdown menus are now right aligned per default. They will be left-aligned when space 
                                       on left is not sufficient.</li>
                                       <li>First two columns (symbol name and symbol text) of scalar input table are now automatically set 
@@ -147,14 +148,12 @@
                                       <li>Adding/removing rows is now no longer allowed when at least one column is readonly.</li>
                                       <li>Variables and equations can now be exported via GDX.</li>
                                       <li>Numeric NAs are not converted to 0 anymore.</li>
-                                      <li>Completely restructured Hypercube mode. This includes the change from CSV to GDX file format for scenario input and output data. This is espacially relevant for the <a href = "./hypercube.html#manual-jobsubmit">manual job submission</a>.</li>
                                       <li>Configuration mode:</li>
                                       <ul>
                                         <li>New structure and design.</li>
                                         <li>Added option to <a href = "./customize.html#naming">rename tab titles and symbol headers</a>.</li>
                                         <li>Added option to <a href = "./customize.html#application-title">change the application title</a>.</li>
                                         <li>Added option to <a href = "./customize.html#tab-ordering">reorder symbol tabs</a>.</li>
-                                        <li>Number of tabs visible in Inpupt/Output section can now be configured (rest available via dropdown).</li>
                                         <li>Input scalars can now be <a href = "./customize.html#hidden-scalars">used in charts</a> as well.</li>
                                         <li>Charts configuration has now access to MIRO database. Previously saved scenario data can now be 
                                         used for the graphics configuration (besides the local file upload).</li>
