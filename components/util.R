@@ -897,6 +897,10 @@ ddToTibble <- function(values, metaData){
   return(ddTibble)
 }
 pidExists <- function(pid){
+  pid <- suppressWarnings(as.integer(pid))
+  if(!length(pid) || is.na(pid)){
+    return(FALSE)
+  }
   if(isWindows()){
     grepl("Mem Usage", run("tasklist", c("/FI", paste0("PID eq ", pid)), 
                            windows_hide_window = TRUE)$stdout, fixed = TRUE)
