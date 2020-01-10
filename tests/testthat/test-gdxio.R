@@ -7,7 +7,8 @@ source("../../components/gdxio.R")
 gdxio <- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", "bin"), c(modelInRaw, modelOut), 
                    scalarsFileName, scalarsOutName, 
                    scalarEquationsName, 
-                   scalarEquationsOutName)
+                   scalarEquationsOutName,
+                   list())
 
 test_that("Reading of set works", {
   expect_equal(gdxio$rgdx(file.path(getwd(), "data/test_gdxio.gdx"), "i"), 
@@ -159,4 +160,56 @@ test_that("Writing of equations works", {
   gdxio$wgdx(filePath, data)
   expect_identical(gdxio$rgdx(file.path(getwd(), "data/tests_gdxioeq.gdx"), "supply"), 
                    eqData)
+})
+
+test_that("Writing of singleton set with data from dropdown works", {
+  gdxio <- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", "bin"), 
+                     c(modelInRaw, modelOut), 
+                     scalarsFileName, scalarsOutName, 
+                     scalarEquationsName, 
+                     scalarEquationsOutName,
+                     list(sub_i = list(aliases = c("test", "bla"), 
+                                       choices = c("seattle", "san-diego"),
+                                       clearValue = FALSE)))
+  scalarData <- tibble::tibble(`scalarSymbols$symnames` = 'sub_i',
+                               `scalarSymbols$symtext` = 'sub_i',
+                               `vapply(...)` = 'seattle')
+  data <- list(scalarData)
+  names(data) <- scalarsFileName
+  filePath <- file.path(getwd(), "data/tests_gdxio.gdx")
+  on.exit(unlink(filePath), add = TRUE)
+  gdxio$wgdx(filePath, data)
+  expect_equal(gdxio$rgdx(filePath, scalarsFileName), 
+               tibble::tibble(`scalarSymbols$symnames` = c('sub_i', 'f', 'mins', 'beta'),
+                              `scalarSymbols$symtext` = c('sub_i', 'freight in dollars per case per thousand miles',
+                                                         'minimum shipment (MIP- and MINLP-only)',
+                                                         'beta (MINLP-only)'),
+                              `vapply(...)` = c('seattle||test', NA_character_, NA_character_,
+                                                NA_character_)))
+})
+
+test_that("Writing of singleton set with data from dropdown and clearValue=TRUE works", {
+  gdxio <- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", "bin"), 
+                     c(modelInRaw, modelOut), 
+                     scalarsFileName, scalarsOutName, 
+                     scalarEquationsName, 
+                     scalarEquationsOutName,
+                     list(sub_i = list(aliases = c("test", "bla"), 
+                                       choices = c("seattle", "san-diego"),
+                                       clearValue = TRUE)))
+  scalarData <- tibble::tibble(`scalarSymbols$symnames` = 'sub_i',
+                               `scalarSymbols$symtext` = 'sub_i',
+                               `vapply(...)` = 'seattle')
+  data <- list(scalarData)
+  names(data) <- scalarsFileName
+  filePath <- file.path(getwd(), "data/tests_gdxio.gdx")
+  on.exit(unlink(filePath), add = TRUE)
+  gdxio$wgdx(filePath, data)
+  expect_equal(gdxio$rgdx(filePath, scalarsFileName), 
+               tibble::tibble(`scalarSymbols$symnames` = c('sub_i', 'f', 'mins', 'beta'),
+                              `scalarSymbols$symtext` = c('sub_i', 'freight in dollars per case per thousand miles',
+                                                          'minimum shipment (MIP- and MINLP-only)',
+                                                          'beta (MINLP-only)'),
+                              `vapply(...)` = c('||test', NA_character_, NA_character_,
+                                                NA_character_)))
 })

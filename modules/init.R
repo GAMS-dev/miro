@@ -1544,4 +1544,16 @@ if(is.null(errMsg)){
                          conditionMessage(e))
     })
   }
+  dropdownAliases <- lapply(modelIn, function(el){
+    if(identical(el$type, "dropdown") && 
+       length(el$dropdown$aliases) && 
+       isFALSE(el$dropdown$multiple)){
+      return(list(aliases = el$dropdown$aliases,
+                  choices = el$dropdown$choices,
+                  clearValue = isTRUE(el$dropdown$clearValue)))
+    }
+    return(NULL)
+  })
+  dropdownAliases <- dropdownAliases[!vapply(dropdownAliases, is.null, 
+                                             logical(1L), USE.NAMES = FALSE)]
 }

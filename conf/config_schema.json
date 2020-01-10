@@ -402,6 +402,10 @@
                         "number",
                         "null"
                       ]
+                    },
+                    "clearValue":{
+                      "description":"Whether to clear the value (set to empty string) when communicating with GAMS. This will not mess up the UEL order. Only relevant for singleton sets!",
+                      "type":"boolean"
                     }
                   },
                    "required":[  
