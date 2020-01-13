@@ -1292,7 +1292,7 @@ observeEvent(input$add_array_el, {
                               size = 6L,
                               line = list(width = 0L)
                             ),
-                            showlegend = FALSE)
+                            showlegend = TRUE)
       }else if(identical(input$chart_tool, "bubble")){
         newContent  <- list(label = label, 
                             mode = "markers",
@@ -1303,7 +1303,7 @@ observeEvent(input$add_array_el, {
                               color = label,
                               line = list(width = 0L)
                             ),
-                            showlegend = FALSE)
+                            showlegend = TRUE)
       }else if(identical(input$chart_tool, "line")){
         newContent  <- list(label = label, 
                             mode = "lines",
@@ -1311,7 +1311,7 @@ observeEvent(input$add_array_el, {
                               width = 2L,
                               shape = "linear",
                               dash = "solid"),
-                            showlegend = FALSE)
+                            showlegend = TRUE)
       }else{
         newContent <- list(label = label,
                            mode = "lines",
@@ -1749,7 +1749,7 @@ getScatterOptions  <- reactive({
                                                                   size = 6L,
                                                                   line = list(width = 0L)
                                                                 ),
-                                                                showlegend = FALSE)
+                                                                showlegend = TRUE)
       idLabelMap$chart_ydata[[1]] <<- scalarIndices[[1]]
     }else{
       idLabelMap$chart_ydata[[1]] <<- "1"
@@ -1772,7 +1772,7 @@ getBubbleOptions  <- reactive({
                                                                   color = scalarIndices[1],
                                                                   line = list(width = 0L)
                                                                 ),
-                                                                showlegend = FALSE)
+                                                                showlegend = TRUE)
       idLabelMap$chart_ydata[[1]] <<- scalarIndices[[1]]
     }else{
       idLabelMap$chart_ydata[[1]] <<- "1"
@@ -1791,7 +1791,7 @@ getLineOptions  <- reactive({
                                                               line = list(width = 2L,
                                                                           shape = "linear",
                                                                           dash = "solid"),
-                                                              showlegend = FALSE)
+                                                              showlegend = TRUE)
     idLabelMap$chart_ydata[[1]] <<- scalarIndices[[1]]
     }else{
       idLabelMap$chart_ydata[[1]] <<- "1"
