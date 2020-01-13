@@ -727,7 +727,11 @@ observeEvent(c(input$donut_hole, input$pie_donut), {
     rv$graphConfig$graph$hole <<- NULL
 })
 observeEvent(input$marker_symbol, {
-  rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_symbol[1])]]]]$marker$symbol <<- input$marker_symbol[2]
+  if(identical(input$marker_symbol[2], "_")){
+    rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_symbol[1])]]]]$marker$symbol <<- NULL
+  }else{
+    rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_symbol[1])]]]]$marker$symbol <<- input$marker_symbol[2]
+  }
 }, priority = -500)
 observeEvent(input$marker_color, {
   if(nchar(input$marker_color[2]))
@@ -1198,6 +1202,13 @@ observeEvent(input$chart_color, {
     rv$graphConfig$graph$color <<- input$chart_color
   }
 })
+observeEvent(input$chart_symbol, {
+  if(identical(input$chart_symbol, "_")){
+    rv$graphConfig$graph$symbol <<- NULL
+  }else{
+    rv$graphConfig$graph$symbol <<- input$chart_symbol
+  }
+})
 observeEvent(input$bar_width, {
   if(identical(input$bar_width, "_"))
     rv$graphConfig$graph$width <<- NULL
@@ -1287,7 +1298,6 @@ observeEvent(input$add_array_el, {
                             mode = "markers",
                             fill = "none",
                             marker = list(
-                              symbol = "circle",
                               opacity = 1L,
                               size = 6L,
                               line = list(width = 0L)
@@ -1744,7 +1754,6 @@ getScatterOptions  <- reactive({
                                                                 mode = "markers",
                                                                 fill = "none",
                                                                 marker = list(
-                                                                  symbol = "circle",
                                                                   opacity = 1L,
                                                                   size = 6L,
                                                                   line = list(width = 0L)
@@ -1755,7 +1764,12 @@ getScatterOptions  <- reactive({
       idLabelMap$chart_ydata[[1]] <<- "1"
     }
   })
-  getChartOptions()
+  tagList(
+    getChartOptions(),
+    tags$div(class="cat-body cat-body-10", style="display:none;",
+             selectInput("chart_symbol", lang$adminMode$graphs$chartOptions$symbol,
+                         choices = c("_", indices))
+    ))
 })
 getBubbleOptions  <- reactive({
   indices       <- activeSymbol$indices

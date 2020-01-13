@@ -48,18 +48,10 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
         p <- NULL
         lapply(seq_along(options$ydata), function(j){
           if(j==1){
-            marker <- list(symbol = options$ydata[[1]]$marker$symbol,
-                           opacity = options$ydata[[1]]$marker$opacity,
-                           size = options$ydata[[1]]$marker$size,
-                           line = list(color = options$ydata[[1]]$marker$line$color,
-                                       width = options$ydata[[1]]$marker$line$width))
-            if(length(options$ydata[[1]]$marker$color)){
-              marker$color <- options$ydata[[1]]$marker$color
-            }
             p <<- plot_ly(data, x = ~try(get(options$xdata)), y = ~try(get(names(options$ydata)[[1]])), 
                           name = options$ydata[[1]]$label, 
                           mode = options$ydata[[1]]$mode, 
-                          marker = marker,
+                          marker = getMarkerInfo(options$ydata[[1]]$marker),
                           line = list(color = options$ydata[[1]]$line$color,
                                       width = options$ydata[[1]]$line$width,
                                       shape = options$ydata[[1]]$line$shape,
@@ -73,17 +65,9 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                           frame = if(!is.null(options$ydata[[1]]$frame)){~try(get(options$ydata[[1]]$frame))}) 
             
           }else{
-            marker <- list(symbol = options$ydata[[j]]$marker$symbol,
-                           opacity = options$ydata[[j]]$marker$opacity,
-                           size = options$ydata[[j]]$marker$size,
-                           line = list(color = options$ydata[[j]]$marker$line$color,
-                                       width = options$ydata[[j]]$marker$line$width))
-            if(length(options$ydata[[j]]$marker$color)){
-              marker$color <- options$ydata[[j]]$marker$color
-            }
             p <<- add_trace(p, y = ~try(get(names(options$ydata)[[j]])), name = options$ydata[[j]]$label, 
                             mode = options$ydata[[j]]$mode, 
-                            marker = marker,
+                            marker = getMarkerInfo(options$ydata[[j]]$marker),
                             line = list(color = options$ydata[[j]]$line$color, 
                                         width = options$ydata[[j]]$line$width,
                                         shape = options$ydata[[j]]$line$shape,
@@ -593,6 +577,19 @@ getEvent <- function(configData, eventId){
     # config data does not exist, so return string
     return(eventId)
   }
+}
+getMarkerInfo <- function(data){
+  marker <- list(opacity = data$opacity,
+                 size = data$size,
+                 line = list(color = data$line$color,
+                             width = data$line$width))
+  if(length(data$color)){
+    marker$color <- data$color
+  }
+  if(length(data$symbol)){
+    marker$symbol <- data$symbol
+  }
+  return(marker)
 }
 parseLabel <- function(label, colNames){
   if(!nchar(label))

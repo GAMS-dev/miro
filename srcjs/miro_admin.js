@@ -240,7 +240,7 @@ const arrayTypes = {
     const elements = {
       chart_ydata: ['select', lang.addScatterDataEl.chartYdata, scalarIndices, scalarIndexAliases],
       chart_ylabel: ['text', lang.addScatterDataEl.chartYlabel, 'label'],
-      marker_symbol: ['select', lang.addScatterDataEl.symbol, ['circle', 'circle-open', 'square',
+      marker_symbol: ['select', lang.addScatterDataEl.symbol, ['_', 'circle', 'circle-open', 'square',
         'square-open', 'diamond', 'diamond-open', 'cross', 'cross-open', 'x', 'x-open', 'triangle-up',
         'triangle-up-open', 'triangle-down', 'triangle-down-open', 'pentagon', 'pentagon-open',
         'hexagon', 'hexagon-open', 'octagon', 'octagon-open', 'star', 'star-open', 'hexagram',

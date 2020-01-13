@@ -6271,6 +6271,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "symbol":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "options":{ 
                   "type":"object",
                   "additionalProperties":false,
@@ -7671,8 +7676,8 @@
                     "symbolChoices":{
                       "type":"array",
                       "uniqueItems": true,
-                      "minItems":32,
-                      "maxItems":32,
+                      "minItems":33,
+                      "maxItems":33,
                       "items": {
                           "type":"string",
                           "minLength": 1
