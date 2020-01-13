@@ -7,8 +7,12 @@ configJSONFileName <- paste0(currentModelDir, .Platform$file.sep, "conf_", model
                              .Platform$file.sep, modelName, ".json")
 dateFormatChoices <- c("1910-06-22" = "yyyy-mm-dd", "22.06.1910" = "dd.mm.yyyy")
 
-outputSymMultiDimChoices <- setNames(names(modelOut), 
-                                     paste0(names(modelOut), ": ", modelOutAlias))
+outputSymMultiDimChoices <- character(0L)
+if(length(modelOut)){
+  outputSymMultiDimChoices <- setNames(names(modelOut), 
+                                       paste0(names(modelOut), ": ", modelOutAlias))
+}
+
 modelInRawTmp <- modelInRaw
 if(scalarsFileName %in% names(modelInRaw) && 
    !scalarsFileName %in% names(modelIn)){
