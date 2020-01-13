@@ -284,7 +284,7 @@ if(LAUNCHHCUBEMODE){
                                                                    modelIn[[i]]$
                                                                      dropdown$choices)]))
                  if(isTRUE(modelIn[[i]]$dropdown$clearValue)){
-                   value <- "string.empty"
+                   return(text)
                  }
                }else{
                  text <- ""
