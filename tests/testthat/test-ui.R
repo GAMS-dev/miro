@@ -25,6 +25,7 @@ for(modelToTest in modelsToTest){
   Sys.setenv(MIRO_MODEL_PATH = file.path(testModelPath, 
                                          paste0(modelToTest, ".gms")))
   Sys.setenv(GMSMODELNAME = modelToTest)
+  Sys.setenv(MIRO_MODE="base")
   
   for(testFile in testFiles){
     file.copy(paste0(testDir, .Platform$file.sep, testFile, ".R"), 

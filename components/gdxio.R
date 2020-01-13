@@ -2,7 +2,8 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
   initialize = function(libDir, metaData, 
                         scalarsFileName, scalarsOutName, 
                         scalarEquationsName, 
-                        scalarEquationsOutName){
+                        scalarEquationsOutName,
+                        dropdownAliases){
     stopifnot(is.list(metaData), length(metaData) > 0L,
               is.character(libDir), identical(length(libDir), 1L))
     if(gdxrrwMIRO::igdx(libDir, silent = TRUE, returnStr = FALSE)){
@@ -16,6 +17,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     private$scalarsOutName <- scalarsOutName
     private$scalarEquationsName <- scalarEquationsName
     private$scalarEquationsOutName <- scalarEquationsOutName
+    private$dropdownAliases <- dropdownAliases
     return(invisible(self))
   },
   getSymbols = function(gdxName = NULL){
@@ -239,8 +241,23 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
           dim     <- 1L
           v       <- matrix(1L)
           symVal  <- symVals[[j]]
-          uels    <- list(symVal[1])
-          te      <- paste0(symVal[-1], collapse = "||")
+          if(symName %in% names(private$dropdownAliases)){
+            aliasId <- match(symVal, private$dropdownAliases[[symName]]$choices)
+            if(is.na(aliasId)){
+              uels    <- list(symVal[1])
+              te      <- paste0(symVal[-1], collapse = "||")
+            }else{
+              if(isTRUE(private$dropdownAliases[[symName]]$clearValue)){
+                uels    <- list("")
+              }else{
+                uels    <- list(symVal[1])
+              }
+              te      <- private$dropdownAliases[[symName]]$aliases[[aliasId]]
+            }
+          }else{
+            uels    <- list(symVal[1])
+            te      <- paste0(symVal[-1], collapse = "||")
+          }
         }else{
           stop(sprintf("Unknown symbol type: '%s'.", symType), 
                call. = FALSE)
@@ -275,6 +292,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
   scalarsOutName = character(1L),
   scalarEquationsName = character(1L),
   scalarEquationsOutName = character(1L),
+  dropdownAliases = list(),
   rgdxVe = function(symName, names = NULL){
     sym <- gdxrrwMIRO::rgdx(private$rgdxName, 
                             list(name = symName, 

@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "0.9.32"
+MIROVersion <- "0.9.33"
 APIVersion  <- "1"
-MIRORDate   <- "Jan 08 2020"
+MIRORDate   <- "Jan 10 2020"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -438,7 +438,7 @@ if(miroBuildonly){
                 "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
                 "GAMSReturnCodeMap", "dependentDatasets", "outputTabs", 
                 "installPackage", "dbSchema", "scalarInputSym", "scalarInputSymToVerify",
-                "requiredPackagesCR", "datasetsRemoteExport"), 
+                "requiredPackagesCR", "datasetsRemoteExport", "dropdownAliases"), 
        file = rSaveFilePath)
   if(identical(Sys.getenv("MIRO_COMPILE_ONLY"), "true")){
     quit("no")
@@ -470,6 +470,9 @@ if(miroBuildonly){
                                         APIVersion, "_",
                                         MIROVersion, 
                                         "_hcube.miroconf")))
+    if(!paste0(modelName, ".zip") %in% modelFiles){
+      modelFiles <- c(modelFiles, paste0(modelName, ".zip"))
+    }
   }
   tryCatch({
     zipMiro(file.path(currentModelDir, paste0(modelNameRaw, ".miroapp")), 
@@ -685,7 +688,8 @@ if(is.null(errMsg)){
     if(useGdx){
       gdxio <<- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", "bin"), 
                           c(modelInRaw, modelOut), scalarsFileName,
-                          scalarsOutName, scalarEquationsName, scalarEquationsOutName)
+                          scalarsOutName, scalarEquationsName, scalarEquationsOutName,
+                          dropdownAliases)
     }
   }, error = function(e){
     flog.error(e)

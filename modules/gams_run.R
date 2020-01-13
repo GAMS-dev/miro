@@ -283,6 +283,9 @@ if(LAUNCHHCUBEMODE){
                                                     aliases[match(value, 
                                                                    modelIn[[i]]$
                                                                      dropdown$choices)]))
+                 if(isTRUE(modelIn[[i]]$dropdown$clearValue)){
+                   value <- "string.empty"
+                 }
                }else{
                  text <- ""
                }
