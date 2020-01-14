@@ -805,19 +805,20 @@ observeEvent(input$trace_frame, {
     #                                        transition = 2e-06,
     #                                        slider = list(fontcolor = "#000000",
     #                                                      hide = FALSE))
-    #       
+    # 
+    frameTmp <- if(!is.null(input$animation_frame) && length(input$animation_frame)) {
+      1000/input$animation_frame
+    }else {
+      500
+    }
     rv$graphConfig$graph$animation <- list(easing = if(!is.null(input$animation_easing) && length(input$animation_easing)) input$animation_easing else "linear",
                                            mode = if(!is.null(input$animation_mode) && length(input$animation_mode)) input$animation_mode else "immediate",
                                            redraw = if(!is.null(input$animation_redraw) && length(input$animation_redraw)) input$animation_redraw else TRUE,
-                                           frame = if(!is.null(input$animation_frame) && length(input$animation_frame)) {
-                                             1/(input$animation_frame*1000)
-                                           }else {
-                                             2e-06
-                                           },
+                                           frame = frameTmp,
                                            transition = if(!is.null(input$animation_transition) && length(input$animation_transition)) {
-                                             1/(input$animation_transition*1000)
+                                             min(input$animation_transition, frameTmp)
                                            }else {
-                                             2e-06
+                                             frameTmp
                                            },
                                            slider = list(fontcolor = if(!is.null(input$animation_slider_font_color) && length(input$animation_slider_font_color)) input$animation_slider_font_color else "#000000",
                                                          hide = if(!is.null(input$animation_slider_hide) && length(input$animation_slider_hide)) input$animation_slider_hide else FALSE))
@@ -833,50 +834,53 @@ observeEvent(input$trace_frame, {
   rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$trace_frame[1])]]]]$frame <<- traceframetmp
 }, priority = -450)
 observeEvent(input$animation_frame, {
-  req(input$trace_frame)
+  req(input$trace_frame, rv$graphConfig$graph$animation)
   #frame = amount of time between frames (in milliseconds)
-  frametmp <- input$animation_frame
-  frameopt <- 1/(frametmp*1000)
-  rv$graphConfig$graph$animation$frame <<- frameopt
+  frameTmp <- 1000/input$animation_frame
+  rv$graphConfig$graph$animation$frame <<- frameTmp
+  if(length(rv$graphConfig$graph$animation$transition) && 
+     rv$graphConfig$graph$animation$transition > rv$graphConfig$graph$animation$frame){
+    rv$graphConfig$graph$animation$transition <<- frameTmp
+  }
 }, priority = -500)
 observeEvent(input$animation_transition, {
-  req(input$trace_frame)
-  transitiontmp <- input$animation_transition
-  transitionopt <- 1/(transitiontmp*1000)
-  rv$graphConfig$graph$animation$transition <<- transitionopt
+  req(rv$graphConfig$graph$animation)
+  if(length(input$animation_frame))
+    return(rv$graphConfig$graph$animation$transition <<- min(1000/input$animation_frame, input$animation_transition))
+  rv$graphConfig$graph$animation$transition <<- input$animation_transition
 }, priority = -500)
 observeEvent(input$animation_easing, {
-  req(input$trace_frame)
+  req(rv$graphConfig$graph$animation)
   rv$graphConfig$graph$animation$easing <<- input$animation_easing
 }, priority = -500)
 observeEvent(input$animation_redraw, {
-  req(input$trace_frame)
+  req(rv$graphConfig$graph$animation)
     rv$graphConfig$graph$animation$redraw <<- as.logical(input$animation_redraw)
 }, priority = -500)
 observeEvent(input$animation_mode, {
-  req(input$trace_frame)
+  req(rv$graphConfig$graph$animation)
   rv$graphConfig$graph$animation$mode <<- input$animation_mode
 })
 observeEvent(input$animation_slider_hide, {
-  req(input$trace_frame)
+  req(rv$graphConfig$graph$animation)
   rv$graphConfig$graph$animation$slider$hide <<- as.logical(input$animation_slider_hide)
 }, priority = -500)
 observeEvent(input$animation_slider_label, {
-  req(input$trace_frame)
+  req(rv$graphConfig$graph$animation)
   if(length(input$animation_slider_label) && !identical(input$animation_slider_prefix, ""))
     rv$graphConfig$graph$animation$slider$label <<- input$animation_slider_label
   else 
     rv$graphConfig$graph$animation$slider$label <<- NULL
 }, priority = -500)
 observeEvent(input$animation_slider_prefix, {
-  req(input$trace_frame)
+  req(rv$graphConfig$graph$animation)
   if(length(input$animation_slider_prefix) && !identical(input$animation_slider_prefix, ""))
     rv$graphConfig$graph$animation$slider$prefix <<- input$animation_slider_prefix
   else
     rv$graphConfig$graph$animation$slider$prefix <<- NULL
 }, priority = -500)
 observeEvent(input$animation_slider_font_color, {
-  req(input$trace_frame)
+  req(rv$graphConfig$graph$animation)
   if(nchar(input$animation_slider_font_color))
     rv$graphConfig$graph$animation$slider$fontcolor <<- input$animation_slider_font_color
   else
@@ -1741,7 +1745,8 @@ getOptionSection <- reactive({
 })
 getOuttype <- reactive({
   tagList(
-    checkboxInput_MIRO("outType", lang$adminMode$graphs$chartOptions$options$outType, value = FALSE)
+    checkboxInput_MIRO("outType", tags$div(lang$adminMode$graphs$chartOptions$options$outType, tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#table-graph-split-screen", 
+                                                                                                      tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")), value = FALSE)
   )
 })
 getScatterOptions  <- reactive({
@@ -1845,7 +1850,7 @@ getValueboxOptions  <- reactive({
 })
 getAnimationOptions  <- reactive({
   tagList(
-    numericInput("animation_frame", lang$adminMode$graphs$animationOptions$frame, min = 0L, value = 500L), 
+    numericInput("animation_frame", lang$adminMode$graphs$animationOptions$frame, min = 0L, value = 1L), 
     numericInput("animation_transition", lang$adminMode$graphs$animationOptions$transition, min = 0L, value = 500L),
     selectInput("animation_easing", lang$adminMode$graphs$animationOptions$easing, choices = langSpecificGraphs$easingChoices),
     checkboxInput_MIRO("animation_redraw", lang$adminMode$graphs$animationOptions$redraw, value = TRUE),
@@ -2188,7 +2193,6 @@ observe({
   req(rv$graphConfig$graph$tool, activeSymbol$id > 0L, allDataAvailable)
   if(identical(rv$graphConfig$graph$tool, "plotly") && identical(length(rv$graphConfig$graph$type), 0L))
     return()
-  
   if(activeSymbol$id > length(modelIn)){
     data <- modelOutputData[[activeSymbol$id - length(modelIn)]]
   }else{
