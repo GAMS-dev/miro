@@ -428,7 +428,7 @@ $offExternalInput
                                             </div><!--//icon-holder-->
                                             <div class="content">
                                                 <b class="callout-title">Tip:</b>
-                                                <p>Unlike using the GAMS table method, the <a href="./widgets.html#table-option-pivot">pivot option</a> set in the MIRO configuration mode, does NOT affect the structure of the data contract. The number of columns are therefore variable. 
+                                                <p>Unlike using the GAMS table method, the <a href="./widgets.html#table-option-pivot">pivot option</a> set in the MIRO Configuration mode, does NOT affect the structure of the data contract. The number of columns are therefore variable. 
                                                 If you just want to display all elements of a set side by side in a separate column you should use this option instead. </p>
                                             </div><!--//content-->
                                         </div><!--//callout-block-->
@@ -447,7 +447,7 @@ $onExternalOutput
 Parameter schedule(i,j,scheduleHdr) 'shipment quantities in cases';
 $offExternalOutput
 </pre></code>                             <p>We want to use this symbol to display a <a href = "./charts.html#map-chart">map</a> in MIRO. On this map, markers are to be set based on the geodata available in the symbol. If the symbol is used as a normal parameter, columns 
-                                       <span class="code">i</span>, <span class="code">j</span> and <span class="code">scheduleHdr</span> are communicated with MIRO. The geoinformation is now only available as elements of the last dimension. In the <a href = "./customize.html#configurationMode">configuration mode</a> we now see only the one value column <span class="code">scheduleHdr</span> for selection:</p> 
+                                       <span class="code">i</span>, <span class="code">j</span> and <span class="code">scheduleHdr</span> are communicated with MIRO. The geoinformation is now only available as elements of the last dimension. In the <a href = "./customize.html#configurationMode">Configuration mode</a> we now see only the one value column <span class="code">scheduleHdr</span> for selection:</p> 
                                        <div class="section-block" style="text-align:center;">
                                            <img class="img-fluid" style="max-height:225pt;" src="assets/images/no-multi-col-map.png" alt="Map configuration without Table statement" />
                                        </div>
@@ -650,7 +650,7 @@ $log What you see here is the %fn%
                                     <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style="max-height:150pt;" src="assets/images/singleton-set-log.png" alt="Singleton set in MIRO" />
                                     </div>                                   
-                                    <p>You can <a href = "./model.html#command-line">configure</a> GAMS options and double-dash parameters in the MIRO configuration mode.
+                                    <p>You can <a href = "./model.html#command-line">configure</a> GAMS options and double-dash parameters in the MIRO Configuration mode.
                                     When saving a scenario, those compile-time parameters are also stored in the 
                                     MIRO internal database. However, the information about them is lost when a scenario is 
                                     exported as a GDX file. This is especially relevant in Hypercube mode, because the data 
@@ -663,7 +663,7 @@ $log What you see here is the %fn%
                                        <div class="content">
                                            <b class="callout-title">Note:</b>
                                            <p>We recommend the use of GAMS Singleton Sets instead of double-dash parameters 
-                                           and GAMS options configured via the configuration mode. </p> 
+                                           and GAMS options configured via the Configuration mode. </p> 
                                        </div><!--//content-->
                                    </div><!--//callout-block-->
                                 </div><!--//section-block-->
@@ -716,7 +716,7 @@ $offExternalInput
                                     <h3 class="block-title">Command line parameters</h3>
                                     <p>In addition to GAMS symbols like parameters and scalars, MIRO allows you to set command line parameters (<a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS Options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">Double dash parameters</a>).
                                     The configuration of these command line parameters differs from that of GAMS symbols. While sets, parameters, scalars etc. are declared directly in the GAMS code and can therefore be tagged, command line parameters lack such a formal declaration.
-                                    To be able to set them from MIRO, you must declare them in the <a href="./customize.html#configure-widgets">configuration mode</a> (or in the <a href="./customize.html#widgets-commandLine"><i>&lt;modelname&gt;.json</i></a> file).
+                                    To be able to set them from MIRO, you must declare them in the <a href="./customize.html#configure-widgets">Configuration mode</a> (or in the <a href="./customize.html#widgets-commandLine"><i>&lt;modelname&gt;.json</i></a> file).
                                     </p>
                                     <div class="callout-block callout-warning">
                                        <div class="icon-holder">
@@ -739,7 +739,7 @@ $offExternalInput
                                     <p>The first time you save a scenario in the database, the schema of your GAMS input and output symbols is analyzed and the database schema derived from that. This has important implications: 
                                     in case you change the underlying model, the database schema changes as well. If the two schemas are incompatible (e.g. because you added another index to a parameter), MIRO will issue an error as it won't just overwrite existing data.
                                     To resolve this, the database tables of your model must be recreated, resulting in the loss of all previously stored data. To avoid this, you can save your database tables before removing them; manually adjust the saved records to your new schema (e.g. add/remove columns) and then use the result to restore your database. 
-                                    You do so by using the <a href="./customize.html#database-management">configuration mode</i></a> built into MIRO.</p>
+                                    You do so by using the <a href="./customize.html#database-management">Configuration mode</i></a> built into MIRO.</p>
                                     <div class="callout-block callout-warning">
                                        <div class="icon-holder">
                                            <i class="fas fa-info-circle"></i>

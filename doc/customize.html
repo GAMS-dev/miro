@@ -88,20 +88,20 @@
                                 </div>
                             </section>       
                             <section id="configurationMode" class="doc-section">
-                                <h2 class="section-title">The configuration mode</h2>
+                                <h2 class="section-title">The Configuration mode</h2>
                                 <div class="section-block">
                                     This chapter shows how to configure MIRO using the graphical interface. 
                                     For those who feel more comfortable writing JSON, section <a href ="#jsonfiles" class="scrollto">Configuration via JSON</a> shows 
-                                    how to configure a MIRO app without using the graphical interface. However, we strongly recommend to use the configuration mode, especially when you just started using GAMS MIRO.</p>
+                                    how to configure a MIRO app without using the graphical interface. However, we strongly recommend to use the Configuration mode, especially when you just started using GAMS MIRO.</p>
                                     <p>The <i>Configuration mode</i> is directly accessible via GAMS Studio: </p> 
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/start_studio.png" alt="start the configuration mode" />
+                                        <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/start_studio.png" alt="start the Configuration mode" />
                                     </div>
-                                    <p>In order to launch the configuration mode via the command line, the environment variable <span class="code">MIRO_MODE=config</span> needs to 
+                                    <p>In order to launch the Configuration mode via the command line, the environment variable <span class="code">MIRO_MODE=config</span> needs to 
                                     be set instead of <span class="code">MIRO_MODE=base</span>. The other steps (see <a href = "./start.html#start-via-command-line">here</a>) remain the same.</p>
                                     <p>After starting, the following screen appears:</p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/configuration_mode.png" alt="start the configuration mode" />
+                                        <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/configuration_mode.png" alt="start the Configuration mode" />
                                     </div>
                                     Visually, this mode is very similar to a classic MIRO app. The tabs on the left side lead to the following categories:</p>
                                     <ul>
@@ -196,7 +196,7 @@ loop(j, put @3, j.tl, @15, b(j)/);
 put  / / 'Transportation Model Results' / / ;
 loop((i,j), put i.tl, @12, j.tl, @24, x.l(i,j):8:4 /);
 </pre></code>
-                                  <p>Now we want to integrate it into MIRO. In configuration mode we specify the name of the report file in the general settings:</p>
+                                  <p>Now we want to integrate it into MIRO. In the Configuration mode we specify the name of the report file in the general settings:</p>
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:125pt;" src="assets/images/configuration_mode/transport_log_config.png" alt="Configure a custom log file in MIRO" />
                                   </div>
@@ -295,7 +295,7 @@ putclose log;
                                   </div>
                                   <p><b>Usage:</b><br>
                                   The readme file must be a <a href = "https://guides.github.com/features/mastering-markdown/" target = "_blank">markdown</a> or HTML
-                                  document which is located in the model directory. The README option must be activated in the configuration mode. Two options are available: 
+                                  document which is located in the model directory. The README option must be activated in the Configuration mode. Two options are available: 
                                   <ul>
                                     <li><b>README tab title</b> (mandatory)<br>
                                     With this option you can customize the title of the README tab in the input section. Default: <i>README</i></li>
@@ -432,7 +432,7 @@ putclose log;
                                   <p class="expanded">In the Base mode, your analysis scripts will appear as a new tab in the output data section. When the user runs your script, MIRO saves the data of the current scenario in a gdx file called <span class="code">data.gdx</span> in: <span class="code">scripts_&lt;modelname&gt;</span>. Your script can then read and analyse this data and produce output in the form of a single HTML file. This file will be loaded and displayed in MIRO once your script finished. Script results are stored in the database as part of a scenario. This means that when you load a scenario (either to compare it with other scenarios or to modify it), the script results are loaded as well.</p>
                                   <h6 id="hcube-analysis-scripts" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Hypercube mode</h6>
                                   <div class="expanded">
-                                    <p>In the Hypercube mode, custom scripts can be used to run analyses on multiple scenarios at once. Let's consider the example that comes with the <i>pickstock</i> model: a <a href="https://jupyter.org" target="_blank">Jupyter Notebook</a> that tries to answer high-level questions like "How many training days should I use" and "How many stocks should I choose". You can find this script in <span class="code">scripts_pickstock/hcube_analysis.ipynb</span>. First, we have to tell MIRO that we want to use a custom analysis script. The configuration mode allows us to set everything up:</p>
+                                    <p>In the Hypercube mode, custom scripts can be used to run analyses on multiple scenarios at once. Let's consider the example that comes with the <i>pickstock</i> model: a <a href="https://jupyter.org" target="_blank">Jupyter Notebook</a> that tries to answer high-level questions like "How many training days should I use" and "How many stocks should I choose". You can find this script in <span class="code">scripts_pickstock/hcube_analysis.ipynb</span>. First, we have to tell MIRO that we want to use a custom analysis script. The Configuration mode allows us to set everything up:</p>
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" style="max-height:300pt" src="assets/images/configuration_mode/hcube_script_example.png" alt="Hypercube analysis script configuration" />
                                     </div>
@@ -619,7 +619,7 @@ $offExternalInput
                                 <div class="section-block" id="configure-widgets">
                                   <h3 class="block-title">Configure widgets</h3>
                                   <p><i>Input widgets</i> can be used instead of tables to enter scalar input data. Examples of such widgets include: sliders, dropdown menus, date selectors or checkboxes. 
-                                  In the <i>configure widgets</i> section of the configuration mode you can configure widgets for:</p>
+                                  In the <i>configure widgets</i> section of the Configuration mode you can configure widgets for:</p>
                                   <ul>
                                     <li><a href="https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Scalars" target="_blank">Scalars</a></li>
                                     <li><a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_Subsets" target="_blank">Simple (1-dimensional) Subsets</a></li>
@@ -785,7 +785,7 @@ $offExternalInput
                                   A lot of plotting types are available and only need to be configured, i.e. adapted to your model-specific data. 
                                   </p>
                                   <p>If you want to configure a graphic for a GAMS symbol, you have to be aware of how many dimensions your GAMS symbol has, as this influences the type of graph to choose. 
-                                  GAMS symbols sometimes have many dimensions. Different chart types allow you to visualize a different number of dimension. Wherease a pie chart allows you to visualize two dimensions: a numerical one that defines the area of the slices and a categorical one that defines the labels of the slices. A bar chart, on the other hand, allows three dimensions to be visualized: a numerical dimension that defines the height of the bars, a categorical one that defines the discrete set of bars on the x-axis, and another categorical one that defines the color of the bars. In fact, we could even display a fourth, numerical dimension that defines the width of the bars.</p><p>As an example we can look at the parameter <code class="language-gams">d(i,j) 'distance in thousands of miles'</code> in the model <i>transport</i>. In addition to the domains '<i>i</i>' - the set of plants - and '<i>j</i>' - the set of markets - there is the value column, i.e. a total of 3 dimensions:</p>
+                                  GAMS symbols sometimes have many dimensions. Different chart types allow you to visualize a different number of dimension. Whereas a pie chart allows you to visualize two dimensions - a numerical one that defines the area of the slices and a categorical one that defines the labels of the slices - a bar chart allows three dimensions to be visualized: a numerical dimension that defines the height of the bars, a categorical one that defines the discrete set of bars on the x-axis, and another categorical one that defines the color of the bars. In fact, we could even display a fourth, numerical dimension that defines the width of the bars.</p><p>As an example we can look at the parameter <code class="language-gams">d(i,j) 'distance in thousands of miles'</code> in the model <i>transport</i>. In addition to the domains '<i>i</i>' - the set of plants - and '<i>j</i>' - the set of markets - there is the value column, i.e. a total of 3 dimensions:</p>
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:100pt; display: block; margin:auto;" src="assets/images/configuration_mode/graphs_dimensions3.png" alt="Symbol d: three dimensions" />
                                   </div>
@@ -796,15 +796,15 @@ $offExternalInput
                                   <p>What if we had a fourth domain, e.g. another categorical dimension? A scatter plot allows us to visualize a forth dimension in the form of the marker type (e.g. cirle, square, triangle etc.).</p>
                                   <p>The more dimensions we try to plot in one chart, the harder it is to understand what is actually going on. Instead of trying to plot as many dimensions as possible in a single chart, we should think about reducing the number of dimensions. One way to do this is to animate our chart (e.g. to show how our data changes over time). Another way is to use a filter that allows us to select a particular slice of our data. Both of these options are supported by MIRO!</p>
                                   <p>The following section shows some examples for different chart types you can use in MIRO. It is not useful to describe all possible options MIRO supports. Instead, you should just explore it yourself! 
-                                  Start the configuration mode and play around with the data until you get a satisfactory result. </p>
+                                  Start the Configuration mode and play around with the data until you get a satisfactory result. </p>
                                   <div class="callout-block callout-warning">
                                         <div class="icon-holder">
                                             <i class="fas fa-info-circle"></i>
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <b class="callout-title">Note:</b>
-                                            <p>Currently already configured graphics are not preloaded at the start of the Configuration Mode. 
-                                            This means that if you want to make changes to an existing graphic after restarting the configuration mode, you must reconfigure it from the beginning.</p>
+                                            <p>Currently already configured graphics are not preloaded at the start of the Configuration mode. 
+                                            This means that if you want to make changes to an existing graphic after restarting the Configuration mode, you must reconfigure it from the beginning.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                   <div id="graphs-wrapper" class="cards-section text-center cards-wrapper row" style="background:white;">
@@ -948,10 +948,10 @@ $offExternalInput
                                 </div>
                             </section>   
                             <section id="not-in-configuration-mode" class="doc-section">
-                                <h2 class="section-title">Options not available in configuration mode</h2>
+                                <h2 class="section-title">Options not available in Configuration mode</h2>
                                 <div class="section-block">
-                                    <p>With the <a href = "#configurationMode" class="scrollto">configuration mode</a> we pursue the goal that a user can completely configure a MIRO application 
-                                    without having to write any JSON code. However, there are a few advanced options that are not yet available in the configuration mode and will have to be configured manually when desired. The following section describes these options.</p>
+                                    <p>With the <a href = "#configurationMode" class="scrollto">Configuration mode</a> we pursue the goal that a user can completely configure a MIRO application 
+                                    without having to write any JSON code. However, there are a few advanced options that are not yet available in the Configuration mode and will have to be configured manually when desired. The following section describes these options.</p>
                                     <h6 id = "remote-import-export" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Remote data import and export</h6>
                                     <div class="expanded"><p>A MIRO application can be supplied with data from various sources:</p>
                                     <ul>
@@ -1281,7 +1281,7 @@ $offExternalInput
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <b class="callout-title">Note:</b>
-                                            <p>Basic maps can now be configured in the new <a href="#configurationMode" class="scrollto">configuration mode</a>. The following example nevertheless shows how to use the R API for customized graphics in general.</p>
+                                            <p>Basic maps can now be configured in the new <a href="#configurationMode" class="scrollto">Configuration mode</a>. The following example nevertheless shows how to use the R API for customized graphics in general.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                   <div class="section-block">
@@ -1404,7 +1404,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                         <div id="doc-nav" class="doc-nav">
                             <nav id="doc-menu" class="nav doc-menu flex-column sticky">
                                 <a class="nav-link scrollto" href="#intro">Introduction</a>
-                                <a class="nav-link scrollto" href="#configurationMode">The configuration mode</a>
+                                <a class="nav-link scrollto" href="#configurationMode">The Configuration mode</a>
                                 <nav class="doc-sub-menu nav flex-column">
                                     <a class="nav-link scrollto" href="#general-settings">General settings</a>
                                     <a class="nav-link scrollto" href="#table-settings">Configure tables</a>
@@ -1412,7 +1412,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                     <a class="nav-link scrollto" href="#configure-graphs">Configure graphs</a>
                                     <a class="nav-link scrollto" href="#database-management">Database management</a>
                                 </nav>
-                                <a class="nav-link scrollto" href="#not-in-configuration-mode">Options not available in configuration mode</a>
+                                <a class="nav-link scrollto" href="#not-in-configuration-mode">Options not available in Configuration mode</a>
                                 <a class="nav-link scrollto" href="#jsonfiles">Configuration via JSON files</a>
                                 <nav class="doc-sub-menu nav flex-column">
                                     <a class="nav-link scrollto" href="#widgets-tables">Example: tables</a>
