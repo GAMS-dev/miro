@@ -1352,6 +1352,7 @@
         "xdata": "Was soll auf der x-Achse dargestellt werden?",
         "ydata": "Datenreihe hinzufügen",
         "color": "Wählen Sie die Domäne aus, die für das Plotten gruppiert werden soll. Farben sind nur gültig, wenn keine Linien- oder Markierungsfarben gesetzt sind.",
+        "symbol": "Wählen Sie eine Dimension aus, um sie verschiedenen Symbolen zuzuordnen. Es darf kein Markersymbol gesetzt werden.",
         "options":{
           "title": "Optionen",
           "paperBgColor": "Welche Hintergrundfarbe soll das Papier haben?",
@@ -1626,7 +1627,7 @@
           "chartYdata": "Was soll auf der y-Achse dargestellt werden?",
           "chartYlabel": "Welches Label soll verwendet werden?",
           "symbol": "Markersymbol auswählen",
-          "symbolChoices": ["Kreis", "Kreis ungefüllt", "Quadrat", "Quadrat ungefüllt", "Diamant","Diamant ungefüllt", "Kreuz", "Kreuz ungefüllt","x", "x ungefüllt", "Dreieck-oben","Dreieck-oben ungefüllt","Dreieck-unten", "Dreieck-unten ungefüllt","Pentagon", "Pentagon ungefüllt", "Hexagon","Hexagon ungefüllt", "Octagon", "Octagon ungefüllt", "Stern", "Stern ungefüllt", "Hexagram","Hexagram ungefüllt", "asterisk", "asterisk ungefüllt", "hash", "hash ungefüllt", "line horizontal", "line horizontal ungefüllt", "line vertikal", "line vertikal ungefüllt"],
+          "symbolChoices": ["_", "Kreis", "Kreis ungefüllt", "Quadrat", "Quadrat ungefüllt", "Diamant","Diamant ungefüllt", "Kreuz", "Kreuz ungefüllt","x", "x ungefüllt", "Dreieck-oben","Dreieck-oben ungefüllt","Dreieck-unten", "Dreieck-unten ungefüllt","Pentagon", "Pentagon ungefüllt", "Hexagon","Hexagon ungefüllt", "Octagon", "Octagon ungefüllt", "Stern", "Stern ungefüllt", "Hexagram","Hexagram ungefüllt", "asterisk", "asterisk ungefüllt", "hash", "hash ungefüllt", "line horizontal", "line horizontal ungefüllt", "line vertikal", "line vertikal ungefüllt"],
           "color": "Markerfarbe auswählen",
           "size": "Markergröße auswählen",
           "lineWidth": "Markerumriss-Breite wählen",

@@ -240,7 +240,7 @@ const arrayTypes = {
     const elements = {
       chart_ydata: ['select', lang.addScatterDataEl.chartYdata, scalarIndices, scalarIndexAliases],
       chart_ylabel: ['text', lang.addScatterDataEl.chartYlabel, 'label'],
-      marker_symbol: ['select', lang.addScatterDataEl.symbol, ['circle', 'circle-open', 'square',
+      marker_symbol: ['select', lang.addScatterDataEl.symbol, ['_', 'circle', 'circle-open', 'square',
         'square-open', 'diamond', 'diamond-open', 'cross', 'cross-open', 'x', 'x-open', 'triangle-up',
         'triangle-up-open', 'triangle-down', 'triangle-down-open', 'pentagon', 'pentagon-open',
         'hexagon', 'hexagon-open', 'octagon', 'octagon-open', 'star', 'star-open', 'hexagram',
@@ -250,7 +250,7 @@ const arrayTypes = {
       marker_size: ['numeric', lang.addScatterDataEl.size, 6, 0],
       marker_line_width: ['numeric', lang.addScatterDataEl.lineWidth, 0, 0],
       marker_line_color: ['color', lang.addScatterDataEl.lineColor],
-      trace_legend: ['checkbox', lang.addScatterDataEl.legend],
+      trace_legend: ['checkbox', lang.addScatterDataEl.legend, true],
       trace_frame: ['select', lang.addScatterDataEl.frame, ['_'].concat(indices), ['_'].concat(indexAliases)],
     };
     return ([elements]);
@@ -264,7 +264,7 @@ const arrayTypes = {
       line_shape: ['select', lang.addLineDataEl.shape, ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'], lang.addLineDataEl.shapeChoices],
       line_dash: ['select', lang.addLineDataEl.dash, ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'], lang.addLineDataEl.dashChoices],
       line_fill: ['select', lang.addLineDataEl.fill, ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx', 'toself', 'tonext'], lang.addLineDataEl.fillChoices],
-      trace_legend: ['checkbox', lang.addLineDataEl.legend],
+      trace_legend: ['checkbox', lang.addLineDataEl.legend, true],
       trace_frame: ['select', lang.addLineDataEl.frame, ['_'].concat(indices), ['_'].concat(indexAliases)],
     };
     return ([elements]);
@@ -312,7 +312,7 @@ const arrayTypes = {
       marker_maxsize: ['numeric', lang.addBubbleDataEl.maxsize, 0, 0],
       marker_line_width: ['numeric', lang.addBubbleDataEl.lineWidth, 0, 0],
       marker_line_color: ['color', lang.addBubbleDataEl.lineColor],
-      trace_legend: ['checkbox', lang.addBubbleDataEl.legend],
+      trace_legend: ['checkbox', lang.addBubbleDataEl.legend, true],
       trace_frame: ['select', lang.addBubbleDataEl.frame, ['_'].concat(indices), ['_'].concat(indexAliases)],
     };
     return ([elements]);

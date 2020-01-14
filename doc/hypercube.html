@@ -467,11 +467,10 @@ $call [...] gams "[...]\transport.gms" --HCUBE_SCALARV_mins=20 --HCUBE_SCALARV_b
                                                </div><!--//icon-holder-->
                                                <div class="content">
                                                    <b class="callout-title">Note:</b>
-                                                   <p>GAMS options and double-dash parameters associated with a scenario are stored in the MIRO internal database. However, the information about them is lost when a scenario is exported as a GDX file in MIRO. We therefore recommend the use of GAMS Singleton Sets instead of command line parameters, whose element text in the model can then be migrated to compile-time variables using the Dollar Control Options 
-                                                   <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset" target = "__blank">eval.Set</a>, 
-                                                   <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalglobalset" target = "__blank">evalGlobal.Set</a>, 
-                                                   and <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevallocalset" target = "__blank">evalLocal.Set</a> 
-                                                   during compile time.</p>
+                                                   <p>The GAMS options and double-dash parameters associated with a scenario are stored in MIRO's internal database. However, the information about them is lost when a scenario is exported as a GDX file. We therefore recommend using singleton sets instead of command line parameters. Both the element label and the element text of a set can be migrated to compile time variables using the Dollar Control Options 
+                                           <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset" target = "__blank">eval.Set</a>, 
+                                           <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalglobalset" target = "__blank">evalGlobal.Set</a>, 
+                                           and <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevallocalset" target = "__blank">evalLocal.Set</a>.</p>
                                                </div><!--//content-->
                                             </div><!--//callout-block-->
                                             <p id = "pf-file">Besides this scenario-specific data, a GDX file containing all static data is included at the end of the <i>$call</i> as part of a pf file:</p>
