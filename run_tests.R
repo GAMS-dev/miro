@@ -1,4 +1,5 @@
 library(testthat)
+library(R6)
 
 options(testthat.output_file = "test-out.xml")
 options(testthat.default_reporter = "junit")
