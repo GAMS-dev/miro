@@ -101,38 +101,38 @@ $(document).ready(function(){
                                     </div>
                                     </div>
                                     <h6 id="slider-option-minmaxdef" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Minimum / maximum / default value</h6>
-                                    <div class="expanded"><p><i>Minimum / maximum value</i>: Both a minimum and a maximum value are required for a slider. These limit the range in which the user can select values. 
+                                    <div class="expanded"><p><i>Minimum / maximum value</i>: Both a minimum and a maximum value are required for a slider. These define the range from which the user can select values. 
                                     <br><i>Default value</i>: A default value is the initial value of the slider i.e. the slider value set when starting the application. This is optional. 
-                                    A warning will be issued if the value doesn't fit between the minimum and maximum value.
-                                    If this value is not specified, the configured minimum value is always used as default value. As soon as data is loaded which contains a value for the slider symbol, the default value is replaced with this value.</p>
-                                    <p>All three values can be set either statically or dynamically. A static value always remains unchanged. If the desired slider does not change with changing data sets, it is a good idea to configure it as a slider with static values
-                                    This means, for example, that the lower and upper limits of a sliders are always 1 and 10. Scenario data do not change these values.</p>
+                                    If the value does not fall between the minimum and maximum values, a warning is issued.
+                                    If this value is not specified, the minimum value is used as the default value. As soon as data is loaded which contains a value for the slider symbol, the slider is set to that value.</p>
+                                    <p>All three parameters can be set either statically or dynamically. If the range of the slider is independent of the data loaded, it is a good idea to configure it as a static slider.
+                                    This means, for example, that the lower and upper limits of a slider are always 1 and 10. Scenario data does not change these.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:60pt;" src="assets/images/configuration_mode/widget_slider_static.png" alt="Static values"/>
                                     </div>
                                     <p id="dynamic-limits"><br><br><b>Dynamic limits</b>:
-                                    <br>In many cases it makes sense to assign the limits and default values of a slider not with static but with dynamic values. This is done, for example, in the demo model <i>pickstock</i>. 
-                                    Here, two sliders are used. In the first one the <i>maxmimum number of stocks</i> can be selected, in the second one the <i>number of training days</i>.</p>
+                                    <br>Sometimes it makes sense to adapt the limits to the data. An example for this can be found in the demo model <i>pickstock</i>. 
+                                    Here, two sliders are used. With one of the sliders, the user can select the <i>maxmimum number of stocks</i>, with the other one the <i>number of training days</i>.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:150pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider3.png" alt="Configuration of a slider (3)" />
                                     </div>
-                                    <p>In both sliders, the maximum value results from the input data of the parameter <i>price</i>.</p>
+                                    <p>In both sliders the maximum value - the upper limit - results from the input data of the parameter <i>Price</i>.</p>
                                     <div class="section-block" id="input-symbol-price">
                                         <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider4.png" alt="Configuration of a slider (4)" />
                                     </div>
-                                    <p>The maximum value for the <i>maximum number of stocks</i> is 30, because the used data set <i>price</i> contains 30 stocks. If the user deletes e.g. all values of the stock <i>AAPL</i> from the data, the maximum value of the slider changes dynamically to 29.
-                                    The same is true for the second slider for the <i>number of training days</i>. Here the maximum value of 252 results from the number of available <i>dates</i> in <i>price</i>.
-                                    <br>In the Configuration mode we can easily set such dynamic limits. For the first slider the configuration looks like this:</p>
+                                    <p>The maximum value for the <i>maximum number of stocks</i> is 30, since the data set <i>Price</i> that is currently loaded contains 30 stocks. If the user deletes e.g. all values of the stock <i>AAPL</i> from the data, the maximum value of the slider changes to 29.
+                                    The same is true for the second slider: the <i>number of training days</i>. Here the maximum value of 252 results from the number of available <i>dates</i> in <i>price</i>.
+                                    <br>In the Configuration mode we can easily define such dynamic limits. For the first slider the configuration looks as follows:</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:250pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider5.png" alt="Configuration of a slider (4)" />
                                     </div>
-                                    <p>The <i>Static value?</i> box was unchecked for the maximum value. Since the maximum slider value should result from the data of the symbol <i>price</i>, it is selected with the corresponding header <i>stock symbol</i> in which the stocks are contained (see <a href="#input-symbol-price" class="scrollto">table above</a>). 
+                                    <p>The <i>Static value?</i> box is unchecked for the maximum value. Since the maximum slider value should result from the data of the symbol <i>price</i>, the corresponding header <i>stock symbol</i> in which the stocks are contained is selected (see <a href="#input-symbol-price" class="scrollto">table above</a>). 
                                     The <i>operator</i> is set to <i>count</i> since we want to count all stock symbols in our data to set the maximum value.</p>
                                     <p>For the calculation of such limits from the data, the following operators are available: </p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider7.png" alt="Configuration of a slider (5)" />
                                     </div>
-                                    <p>More on Dependencies among Widgets can be found <a href="./customize.html#widgets-dependencies">here</a>.</p>
+                                    <p>More on Dependencies among widgets can be found <a href="./customize.html#widgets-dependencies">here</a>.</p>
                                     </div>
                                     <h6 id="slider-option-step" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Step size</h6>
                                     <div class="expanded"><p>The step size specifies the interval between each selectable value on the slider. The value must be greater than 0 and must not exceed the total range of the slider.</p>
@@ -147,7 +147,7 @@ $(document).ready(function(){
                                            <i class="fas fa-thumbs-up"></i>
                                        </div><!--//icon-holder-->
                                        <div class="content">
-                                            <p>The minimum step size defines the minimum interval that can be used for scenario creation in Hypercube mode for a sliderrange. </p>
+                                            <p>The minimum step size defines the minimum interval that can be used for scenario creation in Hypercube mode for a range slider. </p>
                                             <div class="section-block">
                                         <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_sliderrange_minstep_example_marked.png" alt="Sliderrange with step size of 5 and minimum step size of 1"/>
                                     </div>
@@ -157,7 +157,7 @@ $(document).ready(function(){
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_sliderrange_step_example.png" alt="Sliderrange with step size of 5"/>
                                     </div>
-                                    <p>The <i>minimum step size</i> sets the minimum value the user can specify as step size in Hypercube mode. The value may be lower than the regular step size. For example, if the slider above is configured with a regular step size of 5, the limits of the slider can be set in increments of 5. However, the step size for scenario generation on the right side can differ, e.g. be set in smaller intervals. If set to 1, for example, this would result in 16 scenarios (75, 76, 77, ..., 89, 90).</p>
+                                    <p>The <i>minimum step size</i> sets the minimum value the user can specify as step size in Hypercube mode. The value may be lower than the regular step size. For example, if the slider above is configured with a regular step size of 5, the limits of the slider can be set in increments of 5. However, the step size for scenario generation on the right side can differ, e.g. be set in smaller intervals. If set to 1, this would result in 16 scenarios (75, 76, 77, ..., 89, 90).</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_sliderrange_minstep_example.png" alt="Sliderrange with step size of 5 and minimum step size of 1"/>
                                     </div>
@@ -172,8 +172,8 @@ $(document).ready(function(){
                                       </div><!--//content-->
                                     </div><!--//callout-block-->
                                     </div>
-                                    <h6 id="slider-option-tick" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Sow tick marks?</h6>
-                                    <div class="expanded"><p>Tick marks are displayed below the sliders and help to visually subdivide the entire slider width. </p>
+                                    <h6 id="slider-option-tick" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Show tick marks?</h6>
+                                    <div class="expanded"><p>Tick marks are displayed below the sliders and help to visually divide the entire slider width. </p>
                                     <p>Slider without tick marks:</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_slider_label.png" alt="Slider without tick marks"/>
@@ -184,8 +184,8 @@ $(document).ready(function(){
                                     </div>
                                     </div>
                                     <h6 id="slider-option-expand" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should element be expanded automatically in Hypercube mode?</h6>
-                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding section</a> on Hypercube mode, the display of configured widgets changes in Hypercube mode. 
-                                    With the option available here, the automatic expansion of a widget can be switched off. The picture below shows expanded widgets.</p>
+                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube mode. 
+                                    With the option available here, the automatic extension of a widget can be switched off. The picture below shows extended widgets.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/batch_img/regular_batch.png" alt="Expand in Hypercube mode"/>
                                     </div>
@@ -212,24 +212,24 @@ $(document).ready(function(){
                                 </div><!--//section-block-->
                             </section>
                             <section id="widget-sliderrange" class="doc-section">
-                                <h2 class="section-title">Slider range</h2>
+                                <h2 class="section-title">Range slider</h2>
                                 <div class="section-block" id="widget-sliderrange-configuration">
                                   <h3 class="block-title">Configuration</h3>
-                                    <p>A slider with a range returns two numeric values. For this reason such a slider is not suitable for GAMS scalars, but only for GAMS command line parameters, i.e. GAMS options and double-dash parameters.</p>
+                                    <p>A range slider returns two numeric values. For this reason, such a slider is not suitable for GAMS scales, but only for GAMS command line parameters, i.e. double-dash parameters.</p>
                                     <p>Example:</p>
                                     <p>In the Configuration mode we define a double-dash parameter <i>--range</i> with the bounds <i>1</i> and <i>100</i>. The lower default value shall be <i>42</i> and the upper default value <i>75</i>:</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_sliderrange_config.png" alt="Slider range configuration"/>
                                     </div>
                                     <p>In the GAMS model we can access the selected range with
-                                    <code class="language-gams">%RANGE$LO%</code> for the lower value and <code class="language-gams">%RANGE$UP%</code> for the upper value.</p>
+                                    <code class="language-gams">%RANGE_LO%</code> for the lower value and <code class="language-gams">%RANGE_UP%</code> for the upper value.</p>
                                     <p>More on widgets with ranges can be found <a href="./customize.html#widgets-ranges">here</a>.</p>
-                                    <h6 class="block-title">Sliderrange in Hypercube mode</h6>
-                                    <p>A slider range in base mode becomes a slider range in Hypercube mode with an additional checkbox:</p>
+                                    <h6 class="block-title">Range sliders in Hypercube mode</h6>
+                                    <p>A range slider in base mode becomes a range slider in Hypercube mode with an additional checkbox:</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_sliderrange_hypercube.png" alt="Sliderrange in Hypercube mode"/>
                                     </div>
-                                    <p>With this checkbox you can determine if the selected range of the slider should result in a single scenario (<i>All combinations?</i> unchecked) or if all possible combinations within this range should be used (<i>All combinations?</i> checked). In the example above - <i>All combinations?</i> is checked - the selected step size determines which scenarios are generated for the Hypercube job. With a step size of 5, this would result in 10 different symbol ranges / scenarios:</p>
+                                    <p>With this checkbox you can determine if the selected range of the slider should result in a single scenario (<i>All combinations?</i> unchecked) or if all possible combinations within this range should be used (<i>All combinations?</i> checked). In the example above - <i>All combinations?</i> is checked - the selected step size determines which scenarios are generated for the Hypercube job. With a step size of 5 this would result in 10 different symbol ranges / scenarios:</p>
                                     <ul>
                                       <li>75 - 90</li>
                                       <li>80 - 90</li>
@@ -246,8 +246,7 @@ $(document).ready(function(){
                                 </div><!--//section-block-->
                                 <div class="section-block" id = "widget-sliderrange-options">
                                   <h3 class="block-title">Available Options</h3>
-                                    <p>The available options of a sliderrange are identical to those of a <a href = "./widgets.html#widget-slider-options" class = "scrollto">normal slider</a>. The only difference is that instead of a single default value, two of these values are set. 
-                                    Since this is the only difference between a sliderrange and a slider, the two default values are not optional.</p>
+                                    <p>The available options of a range slider are identical to those of a <a href = "./widgets.html#widget-slider-options" class = "scrollto">normal slider</a>. The only difference is that instead of a single default value, two of these values need to be specified.</p>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widget-sliderrange-json">
                                   <h3 class="block-title">JSON example</h3>
@@ -296,7 +295,7 @@ $(document).ready(function(){
                                     <div class="expanded"><p>The default value specifies the initial state of the checkbox (checked or unchecked).</p>
                                     </div>
                                     <h6 id="checkbox-option-expand" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should element be expanded automatically in Hypercube mode?</h6>
-                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding section</a> on Hypercube mode, the display of configured widgets changes in Hypercube mode. 
+                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube mode. 
                                     In Hypercube mode a checkbox becomes a multi dropdwon menu with the entries <i>yes</i> and <i>no</i>. With the option available here, the automatic expansion of a widget can be switched off.</p>
                                     </div>
                                 </div><!--//section-block-->
@@ -334,7 +333,7 @@ $(document).ready(function(){
                                        </div><!--//icon-holder-->
                                        <div class="content">
                                            <b class="callout-title">Tip:</b>
-                                            <p>Similar to the dynamic limits of a slider, the choices of a dropdown menu can also be filled dynamically, depending on the loaded data.</p>
+                                            <p>Similar to the dynamic limits of a slider, the selectable options of a dropdown menu can be filled dynamically, depending on the loaded data.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                     
@@ -344,12 +343,12 @@ $(document).ready(function(){
                                        </div><!--//icon-holder-->
                                        <div class="content">
                                            <b class="callout-title">Tip:</b>
-                                            <p>If you configure a dropdown menu and you want a choice to be <i>nothing</i>, use the symbol "_" as a choice. MIRO treats an underscore character internally as if nothing is set.</p>
+                                            <p>If you configure a dropdown menu and you want a choice to be <i>nothing</i>, use the symbol "_" as a choice. MIRO treats an underscore internally as if nothing is set.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                 </div><!--//section-block-->
                                 <div class="section-block" id = "widget-dropdown-options">
-                                  <h3 class="block-title">Available Options</h3>
+                                  <h3 class="block-title">Available options</h3>
                                     <p>The following options are available for a checkbox widget:</p>
                                     <h6 id="dropdown-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
                                     <div class="expanded"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
@@ -387,12 +386,12 @@ $(document).ready(function(){
                                     <p>In the following example a dropdown menu with dynamic choices is configured in the model <i>Pickstock</i> for a <i>double-dash parameter</i>. 
                                     The dropdown menu should always contain all stocks that are included in the existing data.
                                     Note that this example is not part of the <i>Pickstock</i> demo model.</p>
-                                    <p>The following options are avialable when using dynamic choices.</p>
+                                    <p>The following options are available when using dynamic choices.</p>
                                     <ul>
                                       <li>Select symbol and header to depend upon:
-                                      <br>If the choices of a dropdown menu are to be filled dynamically, the symbol from whose elements the choices are to be derived must be specified.  
+                                      <br>If the selection options of a dropdown menu are to be filled dynamically, the set from whose elements the choices are to be derived must be specified.  
                                       For this purpose, those symbols are available which are used as <a href = "./model.html#model-adjustments">input symbols</a> in MIRO (i.e. those symbols which were tagged with <code class="language-gams">$onExternalInput</code> / <code class="language-gams">$offExternalInput</code> in the GAMS model). 
-                                      In this example the symbol Price is used, which contains all stocks:
+                                      In this example the symbol <i>Price</i> is used, which contains all stocks:
                                       <div class="section-block">
                                           <img class="img-fluid" style= "max-height:150pt;" src="assets/images/table-form.png" alt="Symbol price"/>
                                       </div>
@@ -405,15 +404,15 @@ $(document).ready(function(){
                                          </div><!--//icon-holder-->
                                          <div class="content">
                                              <b class="callout-title">Tip:</b>
-                                              <p>Instead of a single symbol, all input symbols contained in MIRO can also be used for filling. To do this, simply remove the selected symbol. An <i>All</i> is shown then:
+                                              <p>Instead of a single symbol, all input symbols whose domain the selected set is part of can be used to fill the drop-down menu with data. To do this, simply remove the selected symbol. An <i>All</i> is shown then:
                                               <div class="section-block">
                                                   <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_dropdown_dynamic_all.png" alt="All symbols"/>
                                               </div>
                                               </p>
                                           </div><!--//content-->
                                       </div><!--//callout-block-->
-                                      <p>Next we specify the column of the symbol <i>Price</i> from which the data for the dropdown menu should come. 
-                                      Since we are interested in the individual stocks, we select the corresponding column <i>stock symbol</i>.</p>
+                                      <p>Next, we specify the column of the symbol <i>Price</i> where the data for the drop-down menu should come from. 
+                                      Since we are interested in the individual stocks, we select the column <i>stock symbol</i>.</p>
                                       <div class="section-block">
                                           <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/widget_dropdown_dynamic2.png" alt="Symbol header selection"/>
                                       </div>
@@ -435,14 +434,14 @@ $(document).ready(function(){
                                             <p>Only those headers / columns that contain <a href = "https://www.gams.com/latest/docs/UG_SetDefinition.html" target = "_blank">set elements</a> of the selected symbol can be specified. Value columns cannot be used to fill the dropdown choices.</p>
                                         </div><!--//content-->
                                      </div><!--//callout-block-->
-                                     <p>These two specifications are sufficient to dynamically fill the choices of the dropdown menu. </p>
+                                     <p>These two options are sufficient to dynamically fill the choices of the dropdown menu. </p>
                                      </li>
                                       <li>Should the symbol table(s) be filtered depending on the selection in the dropdown menu?:
                                       <br>This option is optional. 
                                       <div class="section-block">
                                           <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/widget_dropdown_dynamic3.png" alt="Table filtering"/>
                                       </div>
-                                      When active, it has the following effects: The user selects a stock in his dynamically filled dropdown menu (e.g. <i>AAPL</i>). 
+                                      When active, it has the following effects: The user selects a stock in the dropdown menu (e.g. <i>AAPL</i>). 
                                       <div class="section-block">
                                           <img class="img-fluid" style= "max-height:200pt;" src="assets/images/configuration_mode/widget_dropdown_dynamic4.png" alt="Filter selection"/>
                                       </div>
@@ -456,20 +455,20 @@ $(document).ready(function(){
                                          </div><!--//icon-holder-->
                                          <div class="content">
                                              <b class="callout-title">Tip:</b>
-                                              <p>The filter is used exclusively for visual support. A table filtered in this way is always transferred to the GAMS model as a whole, i.e. unfiltered, regardless of the filtered state.</p>
+                                              <p>The filter is used exclusively for visual support. A table filtered in this way is always transferred to the GAMS model as a whole, i.e. unfiltered, regardless of what is currently displayed in the interface.</p>
                                           </div><!--//content-->
                                       </div><!--//callout-block-->
                                        </li>
                                     </ul>
                                     </div>
                                     <h6 id="dropdown-option-expand" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should element be expanded automatically in Hypercube mode?</h6>
-                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding section</a> on Hypercube mode, the display of configured widgets changes in Hypercube mode. 
+                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube mode. 
                                     In Hypercube mode a dropdown menu becomes a multi dropdwon menu. With the option available here, the automatic expansion of a widget can be switched off.</p>
                                     </div>
                                 </div><!--//section-block-->
                                 <div id = "singleton-set-dropdown">
                                     <h6 class="block-title">Dropdown menu for a Singleton Set</h6>
-                                    <p>Besides normal GAMS scalars, a drop down menu can also be used for singleton sets. Unlike scalars, singleton sets can have a label and an element text instead of a numeric value. What is specified as <i>choices</i> when configuring the dropdown menu is communicated as the element <i>label</i> between MIRO and GAMS. The <i>alias</i> assigned to the dropdown choice defines the <i>element text</i> in the model.
+                                    <p>Besides normal GAMS scalars, a dropdown menu can also be used for singleton sets. Unlike scalars, singleton sets can have a label and an element text instead of a numeric value. What is specified as <i>choices</i> when configuring the dropdown menu is communicated as the element <i>label</i> between MIRO and GAMS. The <i>alias</i> assigned to the dropdown choice defines the <i>element text</i> in the model.
                                     </p>
                                     <p>Read more about Singleton Sets in MIRO <a href = "./model.html#display-sinset">here</a>.</p>
                                 </div>
@@ -501,10 +500,10 @@ $(document).ready(function(){
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <b class="callout-title">Note:</b>
-                                            <p>A multidropdown menu can only be used for one-dimensional, dynamic sets.</p>
+                                            <p>A multi-dropdown menu can only be used for one-dimensional, dynamic sets.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
-                                    <p>Example: Model <i>Pickstock</i>. We define a new dynamic Set <i>subdate(date)</i>. In MIRO we want to fill the elements of <i>subset</i> via a multidropdown menu.<br></p>
+                                    <p>Example: Model <i>Pickstock</i>. We define a new dynamic set <i>subdate(date)</i>. In MIRO we want to fill the elements of <i>subset</i> via a multi-dropdown menu.<br></p>
                                     <pre><code class="language-gams">Set       date                 'date'
           symbol               'stock symbol';
           
@@ -528,7 +527,7 @@ set       subdate(date)        'subset of dates' /2016-01-04/;
 $offExternalInput
 
 </code></pre>
-                                    <p>In the configuation mode we can configure a multidropdown menu for symbol <i>subdate</i>:<p>
+                                    <p>In the configuation mode we can configure a multi-dropdown menu for symbol <i>subdate</i>:<p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_multidropdown_config.png" alt="Multi-dropdown menu configuration"/>
                                     </div>
@@ -551,7 +550,7 @@ $offExternalInput
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block" id = "widget-multidropdown-options">
-                                  <h3 class="block-title">Available Options</h3>
+                                  <h3 class="block-title">Available options</h3>
                                     <p>The available options of a multidropdown menu are identical to those of a <a href = "./widgets.html#widget-dropdown-options" class = "scrollto">single dropdown menu</a>.</p>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widget-multidropdown-json">
@@ -585,7 +584,7 @@ $offExternalInput
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block" id = "widget-date-options">
-                                  <h3 class="block-title">Available Options</h3>
+                                  <h3 class="block-title">Available options</h3>
                                     <p>The following options are available for a date selector widget:</p>
                                     <h6 id="date-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
                                     <div class="expanded"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
@@ -595,8 +594,8 @@ $offExternalInput
                                     <div class="expanded"><p>If a label has been specified, it will be displayed above the date selector. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
                                     </div>
                                     <h6 id="date-option-minmaxdef" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default / earliest / latest date</h6>
-                                    <div class="expanded"><p>When configuring a date selector, the earliest and the latest date that can be selected by the MIRO user can be specified. 
-                                    Data outside this range cannot be selected in the widget. In addition, a specific date can be set as the default date. 
+                                    <div class="expanded"><p>When configuring a date selector, the earliest and the latest date that can be selected by the user can be specified. 
+                                    Dates outside this range cannot be selected. In addition, a specific date can be set as the default date. 
                                     The dates for the earliest and the latest selectable date are optional. If required, they can be set statically by specifying a fixed date. 
                                     The default date is not optional. Here either a static date string can be specified or the option <i>Use current date</i> can be activated. 
                                     The current date is then always selected as the default. </p>
@@ -630,7 +629,7 @@ $offExternalInput
                                     <p>If you click on a year, the monthly overview opens. From there, you can click on a month to go to the detailed day view.</p>
                                     </div>
                                     <h6 id="date-option-start" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ What day shall be the start of the week?</h6>
-                                    <div class="expanded"><p>This option determines the day of the week with which every row of the date overview shall begin.</p>
+                                    <div class="expanded"><p>This option determines the day of the week with which each line of the date overview should begin.</p>
                                         <div class = "row">
                                             <div class = "col-lg-4 col-6">
                                                 <p>Start on Sunday:</p>
@@ -650,12 +649,12 @@ $offExternalInput
                                     <div class="expanded"><p>Individual weekdays can be deactivated in the date overview, so that the corresponding days are not selectable by the user. </p>
                                     </div>
                                     <h6 id="date-option-close" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should datepicker be closed immediately when a date is selected?</h6>
-                                    <div class="expanded"><p>This option refers only to the handling of the widget itself. If active, the date overview of the widget will be closed as soon as a date is clicked. 
-                                    Otherwise the widget remains open and closes only when you click somewhere else.</p>
+                                    <div class="expanded"><p>If active, the date overview of the widget will be closed as soon as a date is clicked. 
+                                    Otherwise, the widget remains open and closes only when you click outside the datepicker.</p>
                                     </div>
                                     <h6 id="date-option-expand" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should element be expanded automatically in Hypercube mode?</h6>
-                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding section</a> on Hypercube mode, the display of configured widgets changes in Hypercube mode. 
-                                    With the option available here, the automatic expansion of a widget can be switched off.</p>
+                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube mode. 
+                                    With the option available here, the automatic extension of a widget can be switched off.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/batch_img/regular_batch.png" alt="Expand in Hypercube mode"/>
                                     </div>
@@ -694,12 +693,12 @@ $offExternalInput
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block" id = "widget-daterange-options">
-                                  <h3 class="block-title">Available Options</h3>
-                                    <p>The available options of a date range selector are nearly identical to those of a <a href = "./widgets.html#widget-date-options" class = "scrollto">single date selector</a>. 
-                                    The following options are available in addition for a date range selector widget:</p>
+                                  <h3 class="block-title">Available options</h3>
+                                    <p>The available options of a date range selector are almost identical to those of a <a href = "./widgets.html#widget-date-options" class = "scrollto">date selector</a>. 
+                                    The following options are available in addition to a date selector:</p>
                                     <h6 id="daterange-option-default" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default dates</h6>
                                     <div class="expanded"><p>Since the widget is used for date <i>ranges</i> the date range selector needs two default dates instead of one. 
-                                    The configuration of these does not differ from that of the <a href = "#date-option-minmaxdef" class = "scrollto">singe date selector</a>.</p>
+                                    The configuration of these does not differ from that of the <a href = "#date-option-minmaxdef" class = "scrollto">standard date selector</a>.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:60pt;" src="assets/images/configuration_mode/widget_daterange_separator.png" alt="Date range separator"/>
                                     </div>
@@ -739,7 +738,7 @@ $offExternalInput
                                 <h2 class="section-title">Text input</h2>
                                 <div class="section-block" id="widget-textbox-configuration">
                                   <h3 class="block-title">Configuration</h3>
-                                    <p>Returns the inserted text.</p>
+                                    <p>Returns the entered text.</p>
                                     <p>Example: </p>
                                     <p>Text input for double-dash parameter <i>comment</i>:<p>
                                     <div class="section-block">
@@ -747,7 +746,7 @@ $offExternalInput
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block" id = "widget-textbox-options">
-                                  <h3 class="block-title">Available Options</h3>
+                                  <h3 class="block-title">Available options</h3>
                                     <p>The following options are available for a text input widget:</p>
                                     <h6 id="textbox-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
                                     <div class="expanded"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
@@ -757,11 +756,11 @@ $offExternalInput
                                     <div class="expanded"><p>If a label has been specified, it will be displayed above the text input. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
                                     </div>
                                     <h6 id="textbox-option-default" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose the default value</h6>
-                                    <div class="expanded"><p>A default value is the initial value of the text input i.e. the text set when starting the application. This is optional. </p>
+                                    <div class="expanded"><p>The default value is the initial value of the text input i.e. the text set when starting the application. This is optional.</p>
                                     </div>
                                     <h6 id="textbox-option-placeholder" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a placeholder</h6>
                                     <div class="expanded"><p>A placeholder is a text that is displayed in the text box as long as no input has been made by the user. 
-                                    This is primarily for orientation purposes. A placeholder does not set a value and is optional.</p>
+                                    This is primarily for orientation purposes. A placeholder is optional.</p>
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widget-textbox-json">
@@ -793,8 +792,8 @@ $offExternalInput
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block" id = "widget-numeric-options">
-                                  <h3 class="block-title">Available Options</h3>
-                                    <p>The following options are available for a Numeric input widget:</p>
+                                  <h3 class="block-title">Available options</h3>
+                                    <p>The following options are available for a numeric input widget:</p>
                                     <h6 id="numeric-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
                                     <div class="expanded"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
                                     The default value of the element name is the explanatory text of the symbol.</p>
@@ -803,7 +802,7 @@ $offExternalInput
                                     <div class="expanded"><p>If a label has been specified, it will be displayed above the numeric input. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
                                     </div>
                                     <h6 id="numeric-option-default" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default value</h6>
-                                    <div class="expanded"><p>A default value is the initial value of the numeric input i.e. the value set when starting the application. This is optional. </p>
+                                    <div class="expanded"><p>A default value is the initial value of the numeric input i.e. the value set when starting the application. This is optional.</p>
                                     </div>
                                     <h6 id="numeric-option-minimum" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Minimum value</h6>
                                     <div class="expanded"><p>Specifies the minimum valid value for the widget. This is optional. </p>
@@ -813,7 +812,7 @@ $offExternalInput
                                     </div>
                                     <h6 id="numeric-option-sign" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Currency symbol</h6>
                                     <div class="expanded"><p>Places a symbol in front of the entered value, e.g. a dollar sign. This option is used exclusively for visual support. 
-                                    As value the plain number is returned by the widget. This is optional. </p>
+                                    Only the number is returned as value. This is optional. </p>
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widget-numeric-json">
