@@ -18,6 +18,12 @@ langSpecificWidget$widgetOptionsAll <- setNames(c("slider", "sliderrange", "drop
                                                   lang$adminMode$widgets$widgetOptions$daterange,
                                                   lang$adminMode$widgets$widgetOptions$text,
                                                   lang$adminMode$widgets$widgetOptions$numericinput))
+langSpecificWidget$widgetOptionsGo <- setNames(c("slider", "dropdown", "checkbox", "textinput", "numericinput"), 
+                                                c(lang$adminMode$widgets$widgetOptions$slider, 
+                                                  lang$adminMode$widgets$widgetOptions$dropdown,
+                                                  lang$adminMode$widgets$widgetOptions$checkbox,
+                                                  lang$adminMode$widgets$widgetOptions$text,
+                                                  lang$adminMode$widgets$widgetOptions$numericinput))
 langSpecificWidget$widgetOptionsSet <- setNames("multidropdown", lang$adminMode$widgets$widgetOptions$dropdown)
 langSpecificWidget$widgetOptionsDate <- setNames("date", lang$adminMode$widgets$widgetOptions$date)
 langSpecificWidget$minDepOp <- c("Minimum" = "min", "Maximum" = "max", "Count" = "card",
@@ -329,11 +335,12 @@ observeEvent({input$widget_symbol
     currentWidgetSymbolName <<- input$widget_symbol
     if(startsWith(currentWidgetSymbolName,prefixGMSOpt)){
       showEl(session, "#optionConfigMsg")
+      widgetOptions <- langSpecificWidget$widgetOptionsGo
     }
     if(startsWith(currentWidgetSymbolName, prefixDDPar)){
       showEl(session, "#doubledashConfigMsg")
+      widgetOptions <- langSpecificWidget$widgetOptionsAll
     }
-    widgetOptions <- langSpecificWidget$widgetOptionsAll
   }else if(input$widget_symbol %in% names(modelInRaw)){
     currentWidgetSymbolName <<- input$widget_symbol
     if(length(modelInRaw[[input$widget_symbol]]$headers) == 2L){
@@ -383,7 +390,12 @@ observeEvent(input$widget_symbol_type, {
     hideEl(session, "#noWidgetMsg")
     hideEl(session, "#doubledashConfigMsg")
     hideEl(session, "#noWidgetConfigMsg")
-    updateSelectInput(session, "widget_type", choices = langSpecificWidget$widgetOptionsAll)
+    updateSelectInput(session, "widget_type", choices = 
+                        if(identical(input$widget_symbol_type, "dd")){
+                          langSpecificWidget$widgetOptionsAll
+                        }else if(identical(input$widget_symbol_type, "go")){
+                          langSpecificWidget$widgetOptionsGo
+                        })
     if(!length(latest_widget_symbol_type)){
       latest_widget_symbol_type <<- input$widget_symbol_type
       return()

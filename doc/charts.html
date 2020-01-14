@@ -112,13 +112,14 @@ stock_weight(s) = w.l(s);
 {
   "dataRendering": {
     "stock_weight": {
-      "outType": "graph",
+      "outType": "dtGraph",
       "graph": {
-        "title": "weight",
+        "title": "Portfolio composition",
         "tool": "plotly",
+        "type": "pie",
         "labels": "symbol",
         "values": "value",
-        "type": "pie"
+        "showlegend": true
       },
       "height": 700
     }
@@ -145,13 +146,14 @@ stock_weight(s) = w.l(s);
 {
   "dataRendering": {
     "stock_weight": {
-      "outType": "graph",
+      "outType": "dtGraph",
       "graph": {
-        "title": "weight",
+        "title": "Portfolio composition",
         "tool": "plotly",
+        "type": "pie",
         "labels": "symbol",
         "values": "value",
-        "type": "pie",
+        "showlegend": true,
         "hole": 0.6
       },
       "height": 700
@@ -197,7 +199,7 @@ stock_weight(s) = w.l(s);
     "stock_weight": {
       "outType": "graph",
       "graph": {
-        "title": "weight",
+        "title": "Portfolio composition",
         "tool": "plotly",
         "type": "bar",
         "barmode": "group",
@@ -209,29 +211,29 @@ stock_weight(s) = w.l(s);
               "line": {
                 "width": 0
               },
-              "color": "#c50e0e"
+              "color": "#ed0652"
             }
           }
         },
         "xdata": "symbol",
         "showlegend": false,
-        "outType": "graph",
         "xaxis": {
           "title": "stock symbol",
           "showgrid": false,
           "zeroline": false,
-          "showticklabels": true
+          "showticklabels": true,
+          "categoryorder": "trace"
         },
         "yaxis": {
           "title": "weight",
-          "showgrid": true,
-          "zeroline": true,
-          "showticklabels": true
+          "showgrid": false,
+          "zeroline": false,
+          "showticklabels": true,
+          "categoryorder": "trace"
         }
       },
       "height": 700
     }
-  }
 }
                                     </code></pre>
                                 </div><!--//section-block-->
@@ -282,7 +284,7 @@ abserror(ntd,'absolute error test')    = error(ntd);
     "abserror": {
       "outType": "graph",
       "graph": {
-        "title": "absolute error",
+        "title": "Absolute error",
         "tool": "plotly",
         "type": "scatter",
         "ydata": {
@@ -293,32 +295,33 @@ abserror(ntd,'absolute error test')    = error(ntd);
             "marker": {
               "symbol": "circle",
               "opacity": 1,
-              "size": "15",
+              "size": "12",
               "line": {
                 "width": "2",
-                "color": "#121212"
+                "color": "#000000"
               },
-              "color": "#d11515"
+              "color": "#ff0000"
             },
             "showlegend": false
           }
         },
         "xdata": "date",
-        "showlegend": false,
-        "outType": "graph",
+        "showlegend": true,
         "xaxis": {
           "title": "date",
           "showgrid": false,
           "zeroline": false,
           "showticklabels": true,
+          "categoryorder": "trace",
           "rangefrom": "2016-01-01",
           "rangeto": "2016-05-01"
         },
         "yaxis": {
           "title": "absolute error train",
-          "showgrid": true,
+          "showgrid": false,
           "zeroline": false,
-          "showticklabels": true
+          "showticklabels": true,
+          "categoryorder": "trace"
         }
       },
       "height": 700
@@ -348,7 +351,7 @@ abserror(ntd,'absolute error test')    = error(ntd);
     "abserror": {
       "outType": "graph",
       "graph": {
-        "title": "absolute error",
+        "title": "Absolute error",
         "tool": "plotly",
         "type": "scatter",
         "ydata": {
@@ -358,8 +361,7 @@ abserror(ntd,'absolute error test')    = error(ntd);
             "line": {
               "width": 2,
               "shape": "linear",
-              "dash": "solid",
-              "color": "#0f93c0"
+              "dash": "solid"
             },
             "showlegend": false,
             "fill": "tozeroy"
@@ -372,26 +374,27 @@ abserror(ntd,'absolute error test')    = error(ntd);
               "shape": "linear",
               "dash": "solid"
             },
-            "showlegend": true,
+            "showlegend": false,
             "fill": "tozeroy"
           }
         },
         "xdata": "date",
-        "showlegend": false,
-        "outType": "graph",
+        "showlegend": true,
         "xaxis": {
           "title": "date",
           "showgrid": false,
           "zeroline": false,
-          "showticklabels": true
+          "showticklabels": true,
+          "categoryorder": "trace"
         },
         "yaxis": {
           "title": "absolute error train",
           "showgrid": false,
           "zeroline": false,
-          "showticklabels": false
+          "showticklabels": true,
+          "categoryorder": "trace"
         },
-        "plot_bgcolor": "#f5f0f0"
+        "plot_bgcolor": "rgba(95,95,95,0.08)"
       },
       "height": 700
     }
@@ -420,7 +423,7 @@ abserror(ntd,'absolute error test')    = error(ntd);
     "abserror": {
       "outType": "graph",
       "graph": {
-        "title": "absolute error",
+        "title": "Absolute error",
         "tool": "plotly",
         "type": "bubble",
         "ydata": {
@@ -435,19 +438,19 @@ abserror(ntd,'absolute error test')    = error(ntd);
               "line": {
                 "width": 0
               },
-              "maxsize": 31
+              "maxsize": 20
             },
             "showlegend": false
           }
         },
         "xdata": "date",
         "showlegend": false,
-        "outType": "graph",
         "xaxis": {
           "title": "date",
           "showgrid": false,
           "zeroline": false,
           "showticklabels": true,
+          "categoryorder": "trace",
           "rangefrom": "2016-01-01",
           "rangeto": "2016-05-01"
         },
@@ -455,7 +458,8 @@ abserror(ntd,'absolute error test')    = error(ntd);
           "title": "absolute error train",
           "showgrid": false,
           "zeroline": false,
-          "showticklabels": true
+          "showticklabels": true,
+          "categoryorder": "trace"
         }
       },
       "height": 700
@@ -485,30 +489,32 @@ abserror(ntd,'absolute error test')    = error(ntd);
     "abserror": {
       "outType": "graph",
       "graph": {
-        "title": "Absolute error - comparison",
+        "title": "Absolute error",
         "tool": "plotly",
         "type": "hist",
         "xdata": {
           "absolute error train": {
-            "color": "#14ca76",
-            "alpha": 1,
-            "labels": "absolute error train"
+            "labels": "absolute error train",
+            "color": "rgba(40,181,35,0.73)"
           },
           "absolute error test": {
             "labels": "absolute error test",
-            "color": "rgba(255,0,0,0.6)",
-            "alpha": 1
+            "color": "rgba(255,0,0,0.62)"
           }
         },
         "histnorm": "",
-        "nbins": 10,
+        "nbins": 5,
         "barmode": "overlay",
+        "alpha": 0.6,
         "xaxis": {
-          "title": "Absolute error"
+          "title": "absolute error train"
         },
+        "cumulative": false,
+        "horizontal": false,
         "yaxis": {
           "title": "Frequency"
-        }
+        },
+        "showlegend": true
       },
       "height": 700
     }
@@ -562,7 +568,7 @@ schedule(i,j, 'quantities') = x.l(i,j);
                                     </div>
                                     <p>In the Configuration mode we then can configure a map.</p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_map_config.png" alt="Map configuration"/>
+                                        <img class="img-fluid" src="assets/images/configuration_mode/graphs_map_config.png" alt="Map configuration"/>
                                     </div>
                                     <p>With regard to map-based graphics, a multitude of possible visualizations are conceivable. In the Configuration mode of MIRO, the following features can be realized on a map:</p>
                                     <ul>
@@ -571,7 +577,7 @@ schedule(i,j, 'quantities') = x.l(i,j);
                                       Marker labels can be set dynamically, i.e. based on data. In the following example, the marker label is set to <i>Market: [j]</i>. 
                                       If you now click on a marker on the resulting map, the label will not be <i>Market: [j]</i>. Instead, the <i>[j]</i> is replaced with the element of the GAMS index set belonging to the marker (here: <i>Chicago</i>). 
                                       <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/map_markers.png" alt="Map markers"/>
+                                        <img class="img-fluid" src="assets/images/configuration_mode/map_markers.png" alt="Map markers"/>
                                       </div>
                                       The second index of the symbol <i>schedule</i> contains the markets <i>j</i>. The indices <i>lngM</i> and <i>latM</i> were selected as longitude and latitude data. 
                                       For a given longitude-latitude combination, the corresponding element from the second index <i>j</i> is now displayed as label.
@@ -582,14 +588,14 @@ schedule(i,j, 'quantities') = x.l(i,j);
                                       In the example below the flows have been configured to point from <i>lngP</i>/<i>latP</i> to <i>lngM</i>/<i>latM</i>. 
                                       The thickness depends on the data in the column <i>quantities</i>.
                                       <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/map_flows.png" alt="Map flows"/>
+                                        <img class="img-fluid" src="assets/images/configuration_mode/map_flows.png" alt="Map flows"/>
                                       </div>
                                       </li>
                                       <li><b>Charts</b><br>
                                       You can display small diagrams on your map. The following example shows a pie chart for each of the 16 German states.
                                       <p>Example: Model <i>Simple</i> (see <a href="./gallery.html">GAMS MIRO gallery</a>), parameter <i>energy mix report</i></p>
                                       <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/map_charts.png" alt="Map charts"/>
+                                        <img class="img-fluid" src="assets/images/configuration_mode/map_charts.png" alt="Map charts"/>
                                       </div>
                                       The graph is based on the data below:
                                       <div class="section-block">
@@ -607,7 +613,7 @@ schedule(i,j, 'quantities') = x.l(i,j);
                                     In Configuration mode you can specify such layers. In the resulting graphic you can select the different layers and display only the corresponding markers.</p>
                                     <p>Example: Model <i>Transport</i>, parameter <i>shipment quantities in cases</i></p>
                                     <div class="section-block">
-                                      <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/map_layers.png" alt="Map charts data"/>
+                                      <img class="img-fluid" src="assets/images/configuration_mode/map_layers.png" alt="Map charts data"/>
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block">
@@ -625,7 +631,7 @@ schedule(i,j, 'quantities') = x.l(i,j);
             "collapsed": true
           },
           "position": "topright",
-          "overlayGroups": ["Canning plants", "Markets"]
+          "baseGroups": ["plants", "markets"]
         },
         "markers": {
           "1": {
@@ -635,8 +641,8 @@ schedule(i,j, 'quantities') = x.l(i,j);
               "textsize": "12px",
               "permanent": false
             },
-            "label": "Canning plant [i]",
-            "group": "Canning plants"
+            "label": "Plant [i]",
+            "group": "plants"
           },
           "2": {
             "lng": "lngm",
@@ -646,22 +652,21 @@ schedule(i,j, 'quantities') = x.l(i,j);
               "permanent": false
             },
             "label": "Market [j]",
-            "group": "Markets"
+            "group": "markets"
           }
         },
         "flows": {
           "1": {
-            "lng0": "lngm",
-            "lat0": "latm",
-            "lng1": "lngp",
-            "lat1": "latp",
-            "flow": "lngp",
+            "lng0": "lngp",
+            "lat0": "latp",
+            "lng1": "lngm",
+            "lat1": "latm",
+            "flow": "quantities",
             "color": "#0000ff",
             "minThickness": 1,
-            "maxThickness": "8"
+            "maxThickness": 10
           }
-        },
-        "minicharts": {}
+        }
       },
       "height": 700
     }
@@ -701,7 +706,7 @@ dowVSindex(d,'index fund')     = fund(d);
                                     </div>
                                      <p>In the Configuration mode we then can configure a time series diagram:</p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_timeseries_config.png" alt="Time series configuration"/>
+                                        <img class="img-fluid" src="assets/images/configuration_mode/graphs_timeseries_config.png" alt="Time series configuration"/>
                                     </div>
                                     <p>The picture in this example shows a red dotted vertical line showing the "last day of training phase". A scalar output value has been integrated into the graph to define this event. 
                                     <br><b>Note:</b> To use such a scalar in the graphic, MIRO must of course know this symbol. You therefore need to tag it with <code class="language-gams">$onExternalInput
@@ -722,19 +727,19 @@ dowVSindex(d,'index fund')     = fund(d);
                                     <ul>
                                       <li><b>Event line</b>
                                         <div class="section-block">
-                                          <img class="img-fluid" style= "max-height:250pt;" src="assets/images/configuration_mode/timeseries_event.png" alt="Vertical event"/>
+                                          <img class="img-fluid" src="assets/images/configuration_mode/timeseries_event.png" alt="Vertical event"/>
                                       </div></li>
                                       <li><b>Limit line</b>
                                         <div class="section-block">
-                                          <img class="img-fluid" style= "max-height:250pt;" src="assets/images/configuration_mode/timeseries_limit.png" alt="Horizontal line"/>
+                                          <img class="img-fluid" src="assets/images/configuration_mode/timeseries_limit.png" alt="Horizontal line"/>
                                       </div></li>
                                       <li><b>Annotation</b>
                                         <div class="section-block">
-                                          <img class="img-fluid" style= "max-height:250pt;" src="assets/images/configuration_mode/timeseries_annotation.png" alt="Annotation"/>
+                                          <img class="img-fluid" src="assets/images/configuration_mode/timeseries_annotation.png" alt="Annotation"/>
                                       </div></li>
                                       <li><b>Shading</b>
                                         <div class="section-block">
-                                          <img class="img-fluid" style= "max-height:250pt;" src="assets/images/configuration_mode/timeseries_shading.png" alt="Shading"/>
+                                          <img class="img-fluid" src="assets/images/configuration_mode/timeseries_shading.png" alt="Shading"/>
                                       </div></li>
                                     </ul>
                                 </div><!--//section-block-->
@@ -746,7 +751,7 @@ dowVSindex(d,'index fund')     = fund(d);
     "dowvsindex": {
       "outType": "graph",
       "graph": {
-        "title": "dow jones vs. index fund",
+        "title": "Dow Jones vs. Index fund",
         "tool": "dygraphs",
         "xdata": "date",
         "ydata": {
@@ -782,15 +787,22 @@ dowVSindex(d,'index fund')     = fund(d);
           "pointSize": 2
         },
         "dyHighlight": {
+          "highlightCircleSize": 3,
           "highlightSeriesBackgroundAlpha": 0.5,
-          "hideOnMouseOut": true,
-          "highlightCircleSize": 3
+          "hideOnMouseOut": true
         },
         "xaxis": {
           "title": "date"
         },
         "yaxis": {
           "title": "dow jones"
+        },
+        "dyRangeSelector": {
+          "height": 30,
+          "strokeColor": "#808fab",
+          "fillColor": "#a7b1c4",
+          "retainDateWindow": false,
+          "keepMouseZoom": true
         },
         "dyEvent": {
           "lastdaytraining": {
@@ -799,13 +811,6 @@ dowVSindex(d,'index fund')     = fund(d);
             "strokePattern": "dashed",
             "label": "last day of training phase"
           }
-        },
-        "dyRangeSelector": {
-          "height": 40,
-          "strokeColor": "#808fab",
-          "fillColor": "#a7b1c4",
-          "retainDateWindow": false,
-          "keepMouseZoom": true
         }
       },
       "height": 700
@@ -826,7 +831,7 @@ dowVSindex(d,'index fund')     = fund(d);
                                     <p>Example: Model <i>Transport</i>, parameter <i>shipment quantities in cases</i></p>
                                     <p>For an example in GAMS, see the <a href="#map-chart" class="scrollto">map example</a>.</p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_pivot_config.png" alt="Pivottable configuration"/>
+                                        <img class="img-fluid" src="assets/images/configuration_mode/graphs_pivot_config.png" alt="Pivottable configuration"/>
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block">
@@ -908,7 +913,7 @@ gantt('6', '2016-01-09 19:00:00', '2016-01-10 19:00:00', 'test6', 'b') = 1;</cod
                                     </div>
                                     <p>In the Configuration mode we can then configure a Gantt chart.</p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_gantt_config.png" alt="Gantt chart configuration"/>
+                                        <img class="img-fluid" src="assets/images/configuration_mode/graphs_gantt_config.png" alt="Gantt chart configuration"/>
                                     </div>
                                     <p>More information on the tool we use for Gantt charts can be found <a href="https://github.com/daattali/timevis" target="_blank">here</a>.</p>
                                     
@@ -921,7 +926,7 @@ gantt('6', '2016-01-09 19:00:00', '2016-01-10 19:00:00', 'test6', 'b') = 1;</cod
     "gantt": {
       "outType": "graph",
       "graph": {
-        "title": "asdasd",
+        "title": "",
         "tool": "timevis",
         "showZoom": true,
         "fit": true,
@@ -934,10 +939,10 @@ gantt('6', '2016-01-09 19:00:00', '2016-01-10 19:00:00', 'test6', 'b') = 1;</cod
             "end": "end",
             "title": "content",
             "group": "group",
-            "groupTitle": "content"
+            "groupTitle": "group"
           }
         },
-        "editable": true,
+        "editable": false,
         "multiselect": false,
         "showCurrentTime": false
       },
@@ -995,7 +1000,66 @@ else
 }
                                     </code></pre>
                                 </div><!--//section-block-->
-                            </section>                             
+                            </section>             
+                            <section id="graph-options" class="doc-section">
+                                <h2 class="section-title">Options</h2>
+                                <div class="section-block">
+                                    <p>As already mentioned, not all options that exist for the different graphics are explained here. Nevertheless, a few options are explained here as examples, especially those which are applicable to several graphic types.</p>
+                                    <h6 id = "group-domain" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Group domain</h6>
+                                    <div class="expanded">
+                                        <p>With some graphic types, a symbol dimension can be internally pivoted. This makes the graphic independent of the data.</p>
+                                        <p>In the model Pickstock there is the parameter <i>Price</i>, which contains all stock symbols of the Dow Jones index with their daily prices for a period of one year:</p>
+                                        <pre><code class="language-gams">Set       date                 'date'
+        symbol               'stock symbol';
+$onExternalInput
+Parameter price(date<,symbol<) 'Price';
+$offExternalInput
+</pre></code> 
+                                        <p><i>Price</i> is not declared as a table but as a normal parameter. For MIRO, this means that the data is available in list format with the headers <i>date</i> and <i>symbol</i>. The individual stocks are listed in the rows:</p>
+                                        <div class="section-block" style="text-align:center;">
+                                            <img class="img-fluid" style="max-height:250pt;" src="assets/images/single-col-line-table.png" alt="Parameter Price" />
+                                        </div>
+                                        <p>We want to configure a line chart in which the price trend of each stock symbol is plotted separately. 
+                                        Now MIRO needs the price information of each symbol for each date. The problem is that MIRO only knows about one value column: <i>Price</i>. 
+                                        Hence, we cannot distinguish between the prices of individual stocks. In the resulting line chart a single 
+                                        line is plotted which contains all prices of all stock symbols:</p>
+                                        <div class="section-block" style="text-align:center;">
+                                            <img class="img-fluid" style="max-height:250pt;" src="assets/images/single-col-line.png" alt="Line chart configuration without Table statement" />
+                                        </div>
+                                        <p>In the section <i>Filters & Domains</i> we can can select a domain we want to pivot internally. 
+                                        If we select the domain <i>stock symbol</i> here, the tool plots a line for each individual stock symbol:</p> 
+                                        <div class="section-block" style="text-align:center;">
+                                            <img class="img-fluid" style="max-height:300pt;" src="assets/images/single-col-line-domain.png" alt="Line chart configuration without Table statement" />
+                                        </div>
+                                        <p>With this option, the chart configuration is completely independent of the data. We could even import data from another stock index - say the French CAC40 - and plot these accordingly.</p>
+                                        <p>The internal pivoting is available for the chart types <a href = "./charts.html#bar-chart">Bar chart</a>, 
+                                        <a href = "./charts.html#scatter-chart">Scatter plot</a>, <a href = "./charts.html#line-chart">Line chart</a>, 
+                                        <a href = "./charts.html#bubble-chart">Bubble chart</a>, <a href = "./charts.html#histogram-chart">Histogram</a> and 
+                                        <a href = "./charts.html#timeseries-chart">Time series diagram</a>.</p>
+                                        <p>Please also see the chapter about <a href="./model.html#table-miro">tables in MIRO</a> to understand the difference between the MIRO-internal pivoting done here and the GAMS Table statement.</p>
+                                    </div>
+                                    <h6 id = "filter-option" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Filter graph</h6>
+                                    <div class="expanded">
+                                        <p>One dimension of a symbol visualized as a graphic can be configured as a filter dimension. Its elements can then be selected via a (multi-)drop-down menu. Only the data belonging to this selection is displayed in the graphic.</p>
+                                        <p>Example: Model <i>Pickstock</i>, parameter <i>price</i></p>
+                                        <p>The Paramter <i>price</i> has the dimensions <i>date</i> and <i>symbol</i>: <code class="language-gams">Parameter price(date,symbol) 'Price';</code>. With the previous option <a href="#group-domain" class="scrollto">Group domain</a> we made sure that each stock is displayed as a separate line (and the graphic is therefore independent of the data). Now we can activate the checkbox <i>Should one domain of the symbol be selectable via a dropdown menu?</i> in the same category <i>Filters & Domains</i> and select the dimension <i>stocks</i> as filter dimension. In the result a (multi-) dropdown menu appears above the chart, in which we can select the individual stocks. Only those stocks are displayed which are selected in the filter. </p>
+                                        <div class="section-block">
+                                            <img class="img-fluid" src="assets/images/configuration_mode/filter-graph.png" alt="Filter graph by domain"/>
+                                        </div>
+                                    </div>
+                                    <h6 id = "table-graph-split-screen" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Show graphic and data table in split screen</h6>
+                                    <div class="expanded">
+                                        <p>If you have configured a graphical representation of your data, you can always switch between plot and data table by clicking on the <img class="img-fluid" src="assets/images/tabular-btn.png" width="25" height="25" align="middle" alt="Switch to tabular view button" /> button in the upper right corner:</p>
+                                        <div class="section-block">
+                                              <img class="img-fluid" src="assets/images/configuration_mode/table-graph-separate.png" alt="Table and chart separated" />
+                                        </div>
+                                        <p>With the option <i>Show graphic and data table in split screen</i> in the section <i>General</i> in Configuration mode, both data representations can be displayed next to each other:</p>
+                                        <div class="section-block">
+                                              <img class="img-fluid" src="assets/images/configuration_mode/table-graph-split.png" alt="Table and chart in split screen" />
+                                        </div>
+                                    </div>
+                                </div><!--//section-block-->
+                            </section>                       
                         </div><!--//content-inner-->
                     </div><!--//doc-content-->
                     <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
@@ -1013,6 +1077,7 @@ else
                              <a class="nav-link scrollto" href="#pivot-chart">Pivot table</a>
                              <a class="nav-link scrollto" href="#gantt-chart">Gantt chart</a>
                              <a class="nav-link scrollto" href="#valuebox">Valuebox</a>
+                             <a class="nav-link scrollto" href="#graph-options">Options</a>
                             </nav><!--//doc-menu-->
                         </div>
                     </div><!--//doc-sidebar-->
