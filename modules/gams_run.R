@@ -73,18 +73,25 @@ prepareModelRun <- function(async = FALSE){
     # write compile time variable file and remove compile time variables from scalar dataset
     if(identical(tolower(names(dataTmp)[[i]]), scalarsFileName)){
       # scalars file exists, so remove compile time variables from it
-      DDParIdx           <- grepl(paste("^", DDPar, "(_lo|_up)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
-      GMSOptIdx          <- grepl(paste("^", GMSOpt, "(_lo|_up)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
+      DDParIdx           <- dataTmp[[i]][[1]] %in% outer(DDPar, c("", "_lo", "_up"), 
+                                                         FUN = "paste0")
+      GMSOptIdx          <- dataTmp[[i]][[1]] %in% GMSOpt
       DDParValues        <- dataTmp[[i]][DDParIdx, , drop = FALSE]
       GMSOptValues       <- dataTmp[[i]][GMSOptIdx, , drop = FALSE]
       if(nrow(DDParValues) || nrow(GMSOptValues)){
         pfGMSPar      <- vapply(seq_along(DDParValues[[1]]), 
                                 function(i){
-                                  if(!DDParValues[[3]][i] %in% c("_", "system.empty", "")) 
-                                    paste0('--', substring(DDParValues[[1]][i], nchar(prefixDDPar) + 1L), '=', 
-                                           escapeGAMSCL(DDParValues[[3]][i]))
-                                  else
-                                    NA_character_
+                                  if(DDParValues[[3]][i] %in% c("_", "system.empty", "")) 
+                                    return(NA_character_)
+                                  symbolTmp <- substring(DDParValues[[1]][i], 
+                                                         nchar(prefixDDPar) + 1L)
+                                  if(endsWith(symbolTmp, "$lo")){
+                                    symbolTmp <- paste0(substring(symbolTmp, 1, nchar(symbolTmp) - 3), "_lo")
+                                  }else if(endsWith(symbolTmp, "$up")){
+                                    symbolTmp <- paste0(substring(symbolTmp, 1, nchar(symbolTmp) - 3), "_up")
+                                  }
+                                  paste0('--', symbolTmp, '=', 
+                                         escapeGAMSCL(DDParValues[[3]][i]))
                                 }, character(1L), USE.NAMES = FALSE)
         pfGMSPar      <- pfGMSPar[!is.na(pfGMSPar)]
         # do not write '_' in pf file (no selection)

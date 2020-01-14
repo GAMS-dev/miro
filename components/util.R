@@ -1238,3 +1238,32 @@ getHcubeScalars <- function(modelIn){
                                  identical(modelIn[[i]]$type, "checkbox"), 
                                logical(1L), USE.NAMES = FALSE)])
 }
+loadPfFileContent <- function(content, GMSOpt = character(0L), DDPar = character(0L)){
+  content <- stri_split_regex(content, "=| ", 2)
+  content <- tryCatch(tibble(scalar = trimws(vapply(content, "[[", 
+                                                    character(1L), 1L, 
+                                                    USE.NAMES = FALSE), "left", "-"), 
+                             description = character(length(content)), 
+                             value = trimws(vapply(content, "[[", 
+                                                   character(1L), 2L, 
+                                                   USE.NAMES = FALSE), "both", '"')), 
+                      error = function(e){
+                        return(tibble())
+                      })
+  if(!length(content)){
+    return(tibble())
+  }
+  content       <- content[tolower(content[[1]]) %in% 
+                             c(GMSOpt, 
+                               outer(DDPar, c("", "_lo", "_up"), FUN = "paste0")), , 
+                           drop = FALSE]
+  clArgsTmp     <- stri_replace_first_regex(content[[1]], 
+                                            "_lo$", "\\$lo")
+  clArgsTmp     <- stri_replace_first_regex(clArgsTmp, "_up$", "\\$up")
+  if(!length(clArgsTmp)){
+    return(tibble())
+  }
+  content[[1]]  <- clArgsTmp
+  return(content)
+}
+

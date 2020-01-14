@@ -58,20 +58,14 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
              if(length(c(DDPar, GMSOpt)) > 0 &&
                 (length(ret$scalar) == 0L || length(ret$scalar) == 3L) &&
                 file.exists(file.path(workDir, modelName %+% '.pf'))){
-               pfFileContent <- read_lines(file.path(workDir, modelName %+% '.pf'), 
-                                           n_max = length(c(DDPar, GMSOpt)))
-               pfFileContent <- stri_split_fixed(pfFileContent, "=", 2)
-               pfFileContent <- tibble(scalar = trimws(vapply(pfFileContent, "[[", 
-                                                       character(1L), 1L, 
-                                                       USE.NAMES = FALSE), "left", "-"), 
-                                       description = character(length(pfFileContent)), 
-                                       value = trimws(vapply(pfFileContent, "[[", 
-                                                             character(1L), 2L, 
-                                                             USE.NAMES = FALSE), "both", '"'))
-               if(length(ret$scalar)){
-                 names(pfFileContent) <- names(ret$scalar)
+               pfFileContent <- loadPfFileContent(read_lines(
+                 file.path(workDir, modelName %+% '.pf')), GMSOpt, DDPar)
+               if(length(pfFileContent) == 3L){
+                 if(length(ret$scalar)){
+                   names(pfFileContent) <- names(ret$scalar)
+                 }
+                 ret$scalar <- bind_rows(ret$scalar, pfFileContent)
                }
-               ret$scalar <- bind_rows(ret$scalar, pfFileContent)
              }
            },
            xls = {
