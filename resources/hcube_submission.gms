@@ -57,12 +57,15 @@ if out_script == "gams":
    for id, hc_job in enumerate(hc_jobs):
       dirname = hc_job['id']
       tmpdir = "tmp"+str(id)
+      hcjob_args = hc_job['arguments']
+      if not isinstance(hcjob_args, list):
+         hcjob_args = [hcjob_args]
       
       linestmp += "$call cd " + zipname + " && mkdir " + tmpdir + "\n"
       linestmp += "$if errorlevel 1 $abort problems mkdir " + tmpdir + "\n"
          
       # gams call
-      linestmp += "$call cd " + zipname + "/" + tmpdir + " && gams \"" + os.path.join(bfdir, model_gms_name) + "\" " + " ".join(hc_job['arguments']) + use_pf_arg + "\n"      
+      linestmp += "$call cd " + zipname + "/" + tmpdir + " && gams \"" + os.path.join(bfdir, model_gms_name) + "\" " + " ".join(hcjob_args) + use_pf_arg + "\n"      
       linestmp += "$if dexist " + dirname + " $call rm -r " + dirname + "\n"
       linestmp += "$call cd " + zipname + " && " + "mv " + tmpdir + " " + dirname + "\n\n"
       linestmp += "$onecho > \"%jobID%.log\"\n"
