@@ -1938,7 +1938,8 @@ getDygraphsOptions <- reactive({
                          class_outer="array-wrapper-outer-graph", hr = FALSE),
              getAxisOptions("y", names(scalarIndices)[1], labelOnly = TRUE)),
     tags$div(class="cat-body cat-body-29", style="display:none;",
-             selectInput("chart_color", lang$adminMode$graphs$dygraphsOptions$color,
+             selectInput("chart_color", tags$div(lang$adminMode$graphs$dygraphsOptions$color, tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#group-domain", 
+                                                                                            tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
                          choices = c("_", indices)),
              getFilterOptions()),
     if(length(configScalars) && nrow(configScalars)){
@@ -2137,7 +2138,9 @@ getColorPivotOptions <- reactive({
   rv$refreshContent
   indices    <- activeSymbol$indices
   tagList(
-  selectInput("chart_color", lang$adminMode$graphs$chartOptions$color,
+  selectInput("chart_color", tags$div(lang$adminMode$graphs$chartOptions$color, 
+              tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#group-domain", 
+                     tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
               choices = c("_", indices)))
 })
 getFilterOptions <- reactive({
@@ -2150,7 +2153,7 @@ getFilterOptions <- reactive({
   })
   tagList(
     tags$label(class = "cb-label info-position", "for" = "filter_dim", 
-               tags$div(lang$adminMode$graphs$filterOptions$filter, tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html", 
+               tags$div(lang$adminMode$graphs$filterOptions$filter, tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#filter-option", 
                                                                                                         tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
     tags$div(
       tags$label(class = "checkbox-material", 
