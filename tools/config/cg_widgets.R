@@ -1,6 +1,16 @@
 latest_widget_symbol_type  <- NULL
 currentWidgetSymbolName <- character(0L)
 
+updateSelectInputNoClear <- function(id, choices){
+  selected <- NULL
+  if(selected %in% choices){
+    selected <- input[[id]]
+  }
+  updateSelectInput(session, id, 
+                    choices = choices, 
+                    selected = selected)
+}
+
 langSpecificWidget <- list()
 langSpecificWidget$widgetOptionsInput <- setNames(c("slider", "dropdown", "checkbox", "numericinput"),
                                                   c(lang$adminMode$widgets$widgetOptions$slider,
@@ -1268,7 +1278,7 @@ observeEvent(input$slider_min, {
   rv$widgetConfig$min <<- input$slider_min
 })
 observeEvent(input$slider_min_dep, {
-  updateSelectInput(session, "slider_min_dep_header", choices = inputSymHeaders[[input$slider_min_dep]])
+  updateSelectInputNoClear(session, "slider_min_dep_header", choices = inputSymHeaders[[input$slider_min_dep]])
 })
 observeEvent(input$slider_max, {
   if(!is.numeric(input$slider_max))
@@ -1276,7 +1286,7 @@ observeEvent(input$slider_max, {
   rv$widgetConfig$max <<- input$slider_max
 })
 observeEvent(input$slider_max_dep, {
-  updateSelectInput(session, "slider_max_dep_header", choices = inputSymHeaders[[input$slider_max_dep]])
+  updateSelectInputNoClear(session, "slider_max_dep_header", choices = inputSymHeaders[[input$slider_max_dep]])
 })
 observeEvent(input$slider_def, {
   if(is.na(input$slider_def))
@@ -1287,7 +1297,7 @@ observeEvent(input$slider_def, {
     rv$widgetConfig$default <<- NULL
 })
 observeEvent(input$slider_def_dep, {
-  updateSelectInput(session, "slider_def_dep_header", choices = inputSymHeaders[[input$slider_def_dep]])
+  updateSelectInputNoClear(session, "slider_def_dep_header", choices = inputSymHeaders[[input$slider_def_dep]])
 })
 observeEvent(input$slider_def1, {
   if(!is.numeric(input$slider_def1))
@@ -1327,10 +1337,11 @@ observeEvent(input$dd_choices, ignoreNULL = FALSE, {
 })
 observeEvent(input$dd_choice_dep, {
   if(identical(input$dd_choice_dep, "")){
-    updateSelectInput(session, "dd_choice_dep_header", 
-                      choices = allInputSymHeaders)
+    updateSelectInputNoClear(session, "dd_choice_dep_header", 
+                             choices = allInputSymHeaders)
   }else{
-    updateSelectInput(session, "dd_choice_dep_header", choices = inputSymHeaders[[input$dd_choice_dep]])
+    updateSelectInputNoClear(session, "dd_choice_dep_header", 
+                             choices = inputSymHeaders[[input$dd_choice_dep]])
   }
 })
 observe({
