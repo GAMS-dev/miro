@@ -1,10 +1,10 @@
 latest_widget_symbol_type  <- NULL
 currentWidgetSymbolName <- character(0L)
 
-updateSelectInputNoClear <- function(id, choices){
-  selected <- NULL
-  if(selected %in% choices){
-    selected <- input[[id]]
+updateSelectInputNoClear <- function(session, id, choices){
+  selected <- input[[id]]
+  if(length(selected) && !selected %in% choices){
+    selected <- NULL
   }
   updateSelectInput(session, id, 
                     choices = choices, 
