@@ -1487,6 +1487,7 @@ observeEvent(input$saveWidget, {
                                            input$dd_choice_dep_header, "$")
       }else{
         rv$widgetConfig$choices <<- paste0("$", input$dd_choice_dep, 
+                                           if(nchar(input$dd_choice_dep)){"$"},
                                            input$dd_choice_dep_header)
       }
     }
