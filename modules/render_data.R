@@ -32,7 +32,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
     }else if(graphTool == "timevis"){
       dataGraph <- timevisOutput(ns("graph"), height = height)
     }else{
-      stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS WebUI."))
+      stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS MIRO."))
     }
     if(length(filterOptions$col)){
       data <- tagList(tags$div(class = "data-filter-wrapper", 
