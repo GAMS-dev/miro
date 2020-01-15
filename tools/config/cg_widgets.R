@@ -1509,6 +1509,19 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
   if(identical(configJSON$inputWidgets[[currentWidgetSymbolName]]$pivotCols, "_")){
     configJSON$inputWidgets[[currentWidgetSymbolName]]$pivotCols <<- NULL
   }
+  if(configJSON$inputWidgets[[currentWidgetSymbolName]]$widgetType %in% c("dropdown", "multidropdown") && 
+     isTRUE(input$dd_choice_dep_selector)){
+    configJSON$inputWidgets[[currentWidgetSymbolName]]$
+      choices <- gsub("$", "$$", 
+                      configJSON$inputWidgets[[currentWidgetSymbolName]]$choices,
+                      fixed = TRUE)
+    if(length(configJSON$inputWidgets[[currentWidgetSymbolName]]$aliases)){
+      configJSON$inputWidgets[[currentWidgetSymbolName]]$
+        aliases <- gsub("$", "$$", 
+                        configJSON$inputWidgets[[currentWidgetSymbolName]]$aliases,
+                        fixed = TRUE)
+    }
+  }
   
   symbolDDNeedsUpdate <- FALSE
   

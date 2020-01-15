@@ -109,6 +109,7 @@ getWidgetDependencies <- function(widgetType, depString){
              return(character(0L))
            }
            if(startsWith(depString, "$")){
+             depString <- substring(depString, 2L)
              if(endsWith(depString, "$")){
                depID <- 2L
              }else{
