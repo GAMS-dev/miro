@@ -16,7 +16,6 @@ scalarSymbols <- setNames(c(names(modelIn),
                             if(length(modelIn[[scalarsFileName]])) 
                               modelIn[[scalarsFileName]]$symtext))
 scalarSymbols <- scalarSymbols[scalarSymbols %in% scalarInputSym]
-updateSelectInput(session, "general_hidden", choices = scalarSymbols)
 
 baseScriptValidator  <- Validator$new(c("id", "tabTitle", "command", 
                                         "args", "outputFile", "timeout"),
