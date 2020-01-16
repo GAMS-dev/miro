@@ -1460,6 +1460,8 @@ observeEvent(input$numericinput_max, {
   rv$widgetConfig$max <<- input$numericinput_max
 })
 observeEvent(input$numericinput_sign, {
+  if(!nchar(input$numericinput_sign))
+    return()
   rv$widgetConfig$sign <<- input$numericinput_sign
 })
 
@@ -1595,7 +1597,7 @@ observeEvent(input$deleteWidgetConfirm, {
   showHideEl(session, "#widgetUpdateSuccess", 4000L)
   hideEl(session, "#noSymbolMsg")
   hideEl(session, "#noWidgetMsg")
-  hideEl(session, "#noWidgetConfigMsg")
+  showEl(session, "#noWidgetConfigMsg")
   hideEl(session, "#optionConfigMsg")
   hideEl(session, "#doubledashConfigMsg")
   if(!length(widgetSymbols)){
