@@ -24,6 +24,9 @@ appendInputTypeList <- function(scalarsTabName){
 k <- 1L
 for(j in seq_along(modelIn)){
   i <- match(modelInSorted[[j]], names(modelIn))
+  if(identical(modelIn[[i]]$symtype, "set")){
+    next
+  }
   if(!is.null(modelIn[[i]]$daterange)){
     scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]] %+% "$lo", type = "string", alias = modelInAlias[[i]] %+% " (lower)")
     scalarKeyTypeList[[scalarsTabNameIn]][[k + 1L]] <- list(key = names(modelIn)[[i]] %+% "$up", type = "string", alias = modelInAlias[[i]] %+% " (upper)")
@@ -40,7 +43,7 @@ for(j in seq_along(modelIn)){
     scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]], type = "number", alias = modelInAlias[[i]])
     k <- k + 1L
   }else if(modelIn[[i]]$type %in% c("dropdown", "dropdowne", "date", "textinput") && 
-           !identical(modelIn[[i]]$dropdown$single, FALSE)){
+           !isFALSE(modelIn[[i]]$dropdown$single)){
     scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]], type = "string", alias = modelInAlias[[i]])
     k <- k + 1L
   }
