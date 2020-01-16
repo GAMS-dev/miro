@@ -274,9 +274,14 @@ $(document).ready(function(){
                                 <h2 class="section-title">Checkbox</h2>
                                 <div class="section-block" id="widget-checkbox-configuration">
                                   <h3 class="block-title">Configuration</h3>
-                                    <p>A checkbox returns 0 or 1 and is therefore suitable for specifying logical values.</p>
+                                    <p>A checkbox returns 0 or 1 and is therefore suitable for use in binary decisions.</p>
                                     <p>Example:</p>
-                                    <p>Configuration of the GAMS option <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOkeep" target="_blank">keep</a> as a checkbox:</p>
+                                    <p>Configuration of a GAMS Scalar <i>binaryDecision</i> as a checkbox:</p>
+                                    <pre><code class="language-gams">
+$onExternalInput
+Scalar binaryDecision 'binary decision' / 0 /;
+$offExternalInput
+                                    </code></pre>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_checkbox_config.png" alt="Checkbox configuration"/>
                                     </div>
@@ -321,22 +326,27 @@ $(document).ready(function(){
                                 <h2 class="section-title">Dropdown menu</h2>
                                 <div class="section-block" id="widget-dropdown-configuration">
                                   <h3 class="block-title">Configuration</h3>
-                                    <p>Returns a string.</p>
+                                    <p id = "singleton-set-dropdown">Besides normal GAMS scalars, a dropdown menu can also be used for singleton sets. Unlike scalars, singleton sets can have a label and an element text instead of a numeric value. What is specified as <i>choices</i> when configuring the dropdown menu is communicated as the element <i>label</i> between MIRO and GAMS. The <i>alias</i> assigned to the dropdown choice defines the <i>element text</i> in the model. Read more about Singleton Sets in MIRO <a href = "./model.html#display-sinset">here</a>.</p>
                                     <p>Example: </p>
-                                    <p>Dropdown menu with MIP solvers as choices:<p>
+                                    <p>Dropdown menu for a Singleton Set with model types as choices:<p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_dropdown_config.png" alt="Dropdown menu configuration"/>
                                     </div>
-                                    <div class="callout-block callout-success" style="margin-top:10px;">
-                                       <div class="icon-holder">
-                                           <i class="fas fa-thumbs-up"></i>
-                                       </div><!--//icon-holder-->
-                                       <div class="content">
-                                           <b class="callout-title">Tip:</b>
-                                            <p>Similar to the dynamic limits of a slider, the selectable options of a dropdown menu can be filled dynamically, depending on the loaded data.</p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block-->
-                                    
+                                    <p>The <i>model type</i> for which the dropdown menu is configurated, is a GAMS Singleton Set (symbol name: <i>typeSelect</i>). The configuration of a GAMS option has been avoided because the information about such a command-line parameter is lost when a scenario is exported as a GDX file or used in Hypercube mode. By using a singleton set instead, this information is saved:</p>
+                                    <pre><code class="language-gams">
+Set t      'Available model types' / lp, mip, minlp /;
+
+$onExternalInput
+Singleton Set typeSelect(t) 'model type' / lp /;
+$offExternalInput
+
+[...]
+ 
+$eval.Set type typeSelect.TL;
+
+solve transport%type% using %type% minimizing z;
+                                    </code></pre>
+                                    <p>The value of the singleton set which comes from MIRO is stored in the compile-time variable <i>type</i> by using the Dollar Control Option <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset" target = "__blank">eval.Set</a>. This can then be used (in compile time) to run the desired model.</p>
                                     <div class="callout-block callout-success" style="margin-top:10px;">
                                        <div class="icon-holder">
                                            <i class="fas fa-thumbs-up"></i>
@@ -344,6 +354,15 @@ $(document).ready(function(){
                                        <div class="content">
                                            <b class="callout-title">Tip:</b>
                                             <p>If you configure a dropdown menu and you want a choice to be <i>nothing</i>, use the symbol "_" as a choice. MIRO treats an underscore internally as if nothing is set.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                    <div class="callout-block callout-success" style="margin-top:10px;">
+                                       <div class="icon-holder">
+                                           <i class="fas fa-thumbs-up"></i>
+                                       </div><!--//icon-holder-->
+                                       <div class="content">
+                                           <b class="callout-title">Tip:</b>
+                                            <p>Similar to the dynamic limits of a slider, the selectable options of a dropdown menu can be <a href = "#dropdown-option-choices" class = "scrollto">filled dynamically</a>, depending on the loaded data.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                 </div><!--//section-block-->
@@ -383,8 +402,13 @@ $(document).ready(function(){
                                         <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/widget_dropdown_static2.png" alt="Static dropdown menu"/>
                                     </div>
                                     <br><h4 id="dynamic-dropdown">Dynamic choices:</h4>
-                                    <p>In the following example a dropdown menu with dynamic choices is configured in the model <i>Pickstock</i> for a <i>double-dash parameter</i>. 
-                                    The dropdown menu should always contain all stocks that are included in the existing data.
+                                    <p>In the following example a dropdown menu with dynamic choices is configured in the model <i>Pickstock</i> for a <i>Singleton Set</i>:</p>
+                                    <pre><code class="language-gams">
+$onExternalInput
+Singleton Set stock 'stock' / AAPL /;
+$offExternalInput
+                                    </code></pre>
+                                    <p>The dropdown menu should always contain all stocks that are included in the existing data.
                                     Note that this example is not part of the <i>Pickstock</i> demo model.</p>
                                     <p>The following options are available when using dynamic choices.</p>
                                     <ul>
@@ -396,7 +420,7 @@ $(document).ready(function(){
                                           <img class="img-fluid" style= "max-height:150pt;" src="assets/images/table-form.png" alt="Symbol price"/>
                                       </div>
                                       <div class="section-block">
-                                          <img class="img-fluid" style= "max-height:100pt;" src="assets/images/configuration_mode/widget_dropdown_dynamic1.png" alt="Symbol selection"/>
+                                          <img class="img-fluid" style= "max-height:125pt;" src="assets/images/configuration_mode/widget_dropdown_dynamic1.png" alt="Symbol selection"/>
                                       </div>
                                       <div class="callout-block callout-success" style="margin-top:10px;">
                                          <div class="icon-holder">
@@ -406,7 +430,7 @@ $(document).ready(function(){
                                              <b class="callout-title">Tip:</b>
                                               <p>Instead of a single symbol, all input symbols whose domain the selected set is part of can be used to fill the drop-down menu with data. To do this, simply remove the selected symbol. An <i>All</i> is shown then:
                                               <div class="section-block">
-                                                  <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_dropdown_dynamic_all.png" alt="All symbols"/>
+                                                  <img class="img-fluid" style= "max-height:125pt;" src="assets/images/configuration_mode/widget_dropdown_dynamic_all.png" alt="All symbols"/>
                                               </div>
                                               </p>
                                           </div><!--//content-->
@@ -414,7 +438,7 @@ $(document).ready(function(){
                                       <p>Next, we specify the column of the symbol <i>Price</i> where the data for the drop-down menu should come from. 
                                       Since we are interested in the individual stocks, we select the column <i>stock symbol</i>.</p>
                                       <div class="section-block">
-                                          <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/widget_dropdown_dynamic2.png" alt="Symbol header selection"/>
+                                          <img class="img-fluid" style= "max-height:125pt;" src="assets/images/configuration_mode/widget_dropdown_dynamic2.png" alt="Symbol header selection"/>
                                       </div>
                                       <div class="callout-block callout-warning">
                                         <div class="icon-holder">
@@ -439,7 +463,7 @@ $(document).ready(function(){
                                       <li>Should the symbol table(s) be filtered depending on the selection in the dropdown menu?:
                                       <br>This option is optional. 
                                       <div class="section-block">
-                                          <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/widget_dropdown_dynamic3.png" alt="Table filtering"/>
+                                          <img class="img-fluid" style= "max-height:125pt;" src="assets/images/configuration_mode/widget_dropdown_dynamic3.png" alt="Table filtering"/>
                                       </div>
                                       When active, it has the following effects: The user selects a stock in the dropdown menu (e.g. <i>AAPL</i>). 
                                       <div class="section-block">
@@ -466,12 +490,6 @@ $(document).ready(function(){
                                     In Hypercube mode a dropdown menu becomes a multi dropdwon menu. With the option available here, the automatic expansion of a widget can be switched off.</p>
                                     </div>
                                 </div><!--//section-block-->
-                                <div id = "singleton-set-dropdown">
-                                    <h6 class="block-title">Dropdown menu for a Singleton Set</h6>
-                                    <p>Besides normal GAMS scalars, a dropdown menu can also be used for singleton sets. Unlike scalars, singleton sets can have a label and an element text instead of a numeric value. What is specified as <i>choices</i> when configuring the dropdown menu is communicated as the element <i>label</i> between MIRO and GAMS. The <i>alias</i> assigned to the dropdown choice defines the <i>element text</i> in the model.
-                                    </p>
-                                    <p>Read more about Singleton Sets in MIRO <a href = "./model.html#display-sinset">here</a>.</p>
-                                </div>
                                 <div class="section-block" id="widget-dropdown-json">
                                   <h3 class="block-title">JSON example</h3>
                                     Static dropdown menu:
@@ -509,18 +527,9 @@ $(document).ready(function(){
           
 $onExternalInput
 Parameter price(date<,symbol<) 'Price';
-Scalar    maxstock             'maximum number of stocks to select'  /  2 /
-          trainingdays         'number of days for training'         / 99 /;
 $offExternalInput
 
-* load price information
-$setNames "%gams.input%" fp fn fe
-$if not set fileName $set fileName %fp%dowjones2016.csv
-$if not exist "%fileName%" $abort CSV file with stock prices missing
-$call csv2gdx "%fileName%" output=stockdata.gdx ValueDim=0 id=price Index="(1,2)" Value=3 UseHeader=y
-$if errorlevel 1 $abort problems reading CSV data
-$gdxin stockdata
-$load price
+[...];
 
 $onExternalInput
 set       subdate(date)        'subset of dates' /2016-01-04/;
@@ -578,7 +587,12 @@ $offExternalInput
                                   <h3 class="block-title">Configuration</h3>
                                     <p>Returns a date string in the format yyyy-mm-dd.</p>
                                     <p>Example: </p>
-                                    <p>Date selector for double-dash parameter <i>date</i> (which can be accessed via <code class="language-gams">%date%</code> in the GAMS model):<p>
+                                    <p>Date selector for Singleton Set <i>singleDate</i>:<p>
+                                    <pre><code class="language-gams">
+$onExternalInput
+Singleton Set singleDate 'single date' / 2016-01-01 /;
+$offExternalInput
+                                    </code></pre>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:550pt;" src="assets/images/configuration_mode/widget_date_config.png" alt="Date selector configuration"/>
                                     </div>
@@ -653,7 +667,7 @@ $offExternalInput
                                     Otherwise, the widget remains open and closes only when you click outside the datepicker.</p>
                                     </div>
                                     <h6 id="date-option-expand" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should element be expanded automatically in Hypercube mode?</h6>
-                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube mode. 
+                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube mode. A date selector in Base mode will become a date range selector in Hypercube mode.
                                     With the option available here, the automatic extension of a widget can be switched off.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/batch_img/regular_batch.png" alt="Expand in Hypercube mode"/>
@@ -665,16 +679,18 @@ $offExternalInput
                                     <pre><code class="language-json">
 {
   "inputWidgets": {
-    "_gmspar_date": {
+    "singledate": {
       "widgetType": "date",
-      "alias": "Date",
+      "alias": "single date",
       "format": "yyyy-mm-dd",
       "startview": "month",
-      "weekstart": 1,
-      "autoclose": false,
+      "weekstart": 0,
+      "autoclose": true,
       "noHcube": false,
       "label": "Select a date",
-      "daysofweekdisabled": [6, 0]
+      "value": "2016-01-01",
+      "min": "2016-01-01",
+      "max": "2017-01-01"
     }
   }
 }
@@ -685,7 +701,7 @@ $offExternalInput
                                 <h2 class="section-title">Daterange selector</h2>
                                 <div class="section-block" id="widget-daterange-configuration">
                                   <h3 class="block-title">Configuration</h3>
-                                    <p>Returns two dates. For more on widget ranges, see <a href="#widgets-advanced" class="scrollto">here</a>.</p>
+                                    <p>Returns two dates. For more on widget ranges, see <a href="./customize.html#widgets-advanced">here</a>.</p>
                                     <p>Example: </p>
                                     <p>Date range selector for double-dash parameter <i>date</i>:<p>
                                     <div class="section-block">
@@ -717,17 +733,15 @@ $offExternalInput
   "inputWidgets": {
     "_gmspar_date": {
       "widgetType": "daterange",
-      "alias": "Date range",
-      "label": "Select a time range",
-      "start": "2019-01-01",
-      "min": null,
-      "max": null,
+      "alias": "date range",
       "format": "yyyy-mm-dd",
       "startview": "month",
       "weekstart": 0,
       "separator": " to ",
       "autoclose": true,
-      "noHcube": false
+      "noHcube": false,
+      "label": "Select a time range",
+      "start": "2020-01-01"
     }
   }
 }
@@ -786,7 +800,7 @@ $offExternalInput
                                   <h3 class="block-title">Configuration</h3>
                                     <p>Returns a number.</p>
                                     <p>Example: </p>
-                                    <p>Numeric input for double-dash parameter <i>numeric</i>:<p>
+                                    <p>Numeric input for Scalar <i>maxstock</i> (<i>maximum numer of stocks to select</i>):<p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_numeric_config.png" alt="Numeric input configuration"/>
                                     </div>
@@ -820,14 +834,14 @@ $offExternalInput
                                     <pre><code class="language-json">
 {
   "inputWidgets": {
-    "_gmspar_numeric": {
+    "maxstock": {
       "widgetType": "numericinput",
-      "alias": "Test numeric input",
-      "label": "Set a value",
-      "value": 1000,
+      "alias": "maximum number of stocks to select",
+      "value": 4,
       "min": 0,
-      "max": 100000,
-      "sign": "$"
+      "max": 30,
+      "sign": null,
+      "label": "Select the maximum number of stocks"
     }
   }
 }

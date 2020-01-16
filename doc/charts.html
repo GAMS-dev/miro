@@ -723,7 +723,17 @@ dowVSindex(d,'index fund')     = fund(d);
                                             <p>You want to use a scalar value in a graph but not in the scalars table in MIRO? You can do this by <a href="./customize.html#hidden-scalars">hiding that symbol</a>.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
-                                    <p>The tool for creating time series diagrams supports the integration of scalars for the following features:</p>
+                                    <p>The tool for creating time series diagrams supports the integration of static or dynamic scalar values. A static value could show a limit in the data in the form of a horizontal line. A dynamic scalar can be a date which results from the model calculations (i.e. output scalar) and is displayed in the graphic as an vertical event line.</p>
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Note:</b>
+                                            <p>Dynamic scalar values can only be displayed in graphics of output symbols!</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                    <p>The following options are available:</p>
                                     <ul>
                                       <li><b>Event line</b>
                                         <div class="section-block">
@@ -1057,6 +1067,31 @@ $offExternalInput
                                         <div class="section-block">
                                               <img class="img-fluid" src="assets/images/configuration_mode/table-graph-split.png" alt="Table and chart in split screen" />
                                         </div>
+                                    </div>
+                                    <h6 id = "animation" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Animation</h6>
+                                    <div class="expanded">
+                                        <p>Chart data can be animated in order to show how the data changes over time. </p>
+                                        
+                                        
+                                        
+                                        <div class="callout-block callout-success" style="margin-top:10px;">
+                                           <div class="icon-holder">
+                                               <i class="fas fa-thumbs-up"></i>
+                                           </div><!--//icon-holder-->
+                                           <div class="content">
+                                               <b class="callout-title">Tip:</b>
+                                                <p>When using animations, it is often useful to define the visible ranges for both axes. Otherwise it can happen that areas are preselected in which no data is visible.</p>
+                                            </div><!--//content-->
+                                        </div><!--//callout-block-->
+                                        <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Note:</b>
+                                            <p>The data of the dimension selected as 'data dimension for animation' is not available for the actual diagram. </p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
                                     </div>
                                 </div><!--//section-block-->
                             </section>                       
