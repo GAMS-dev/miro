@@ -353,6 +353,9 @@ observeEvent({input$widget_symbol
     }
   }else if(input$widget_symbol %in% names(modelInRaw)){
     currentWidgetSymbolName <<- input$widget_symbol
+    if(!currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
+      showEl(session, "#noWidgetConfigMsg")
+    }
     if(length(modelInRaw[[input$widget_symbol]]$headers) == 2L){
       widgetOptions <- langSpecificWidget$widgetOptionsSet
     }else{
@@ -372,19 +375,16 @@ observeEvent({input$widget_symbol
        identical(length(configJSON$inputWidgets[[currentWidgetSymbolName]]$default), 2L)){
       selectedType <- "sliderrange"
     }else if(identical(selectedType, "dropdown") && 
-             isTRUE(configJSON$inputWidgets[[currentWidgetSymbolName]]$multiple)){
+             (isTRUE(configJSON$inputWidgets[[currentWidgetSymbolName]]$multiple) ||
+              length(modelInRaw[[currentWidgetSymbolName]]$headers) == 2L)){
       selectedType <- "multidropdown"
     }
   }
-  if(identical(input$widget_type, selectedType)){
-    updateSelectInput(session, "widget_type", 
-                      choices = widgetOptions)
+  updateSelectInput(session, "widget_type", 
+                    choices = widgetOptions,
+                    selected = selectedType)
+  if(identical(input$widget_type, selectedType))
     rv$widget_type <- rv$widget_type + 1L
-  }else{
-    updateSelectInput(session, "widget_type", 
-                      choices = widgetOptions, 
-                      selected = selectedType)
-  } 
 })
 observeEvent(input$widget_go, {
   currentWidgetSymbolName <<- prefixGMSOpt %+% tolower(input$widget_go)
