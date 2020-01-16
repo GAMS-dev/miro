@@ -2,7 +2,8 @@ DataInstance <- R6Class("DataInstance", public = list(
   initialize = function(datasetNames = character(0L), 
                         fileExchange = c("csv", "gdx"), 
                         gdxio = NULL,
-                        csvDelim = ","){
+                        csvDelim = ",",
+                        sortedNames = character(0L)){
     if(!length(datasetNames)){
       private$datasetNames <- character(0L)
     }else{
@@ -11,6 +12,9 @@ DataInstance <- R6Class("DataInstance", public = list(
     }
     if(length(gdxio)){
       private$gdxio <- gdxio
+    }
+    if(is.character(sortedNames) && length(sortedNames)){
+      private$sortedNames <- sortedNames
     }
     private$fileExchange <- match.arg(fileExchange)
     private$csvDelim     <- csvDelim
@@ -69,6 +73,8 @@ DataInstance <- R6Class("DataInstance", public = list(
         return(self)
       }
       idsToWrite <- match(datasetName, names(private$data))
+    }else if(length(private$sortedNames)){
+      idsToWrite <- order(match(names(private$data), private$sortedNames))
     }else{
       idsToWrite <- seq_along(private$data)
     }
@@ -96,6 +102,7 @@ DataInstance <- R6Class("DataInstance", public = list(
   datasetNames = character(0L),
   fileExchange = character(1L),
   csvDelim = character(1L),
+  sortedNames = character(0L),
   writeGDX = function(filePath, idsToWrite, squeezeZeros = c('y', 'n', 'e')){
     squeezeZeros <- match.arg(squeezeZeros)
     private$gdxio$wgdx(filePath, private$data[idsToWrite], squeezeZeros)

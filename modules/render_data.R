@@ -54,7 +54,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
   }else if(type == "valuebox"){
     data <- lapply(seq_len(customOptions$count), function(i){
       valueBoxOutput(ns("valBox" %+% i),
-                     width = if(identical(customOptions$width, NULL)) 4 else customOptions$width)
+                     width = if(is.null(customOptions$width)) 4 else customOptions$width)
     })
   }else{
     tryCatch({

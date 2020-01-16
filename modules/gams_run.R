@@ -243,7 +243,8 @@ if(LAUNCHHCUBEMODE){
     }
     hcubeData <<- HcubeDataInstance$new(modelGmsName)
     staticData <<- DataInstance$new(fileExchange = config$fileExchange,
-                                    gdxio = gdxio, csvDelim = config$csvDelim)
+                                    gdxio = gdxio, csvDelim = config$csvDelim,
+                                    sortedNames = names(modelIn))
     modelInSorted <- sort(names(modelIn))
     elementValues <- lapply(seq_along(modelIn), function(j){
       updateProgress(incAmount = 1/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
