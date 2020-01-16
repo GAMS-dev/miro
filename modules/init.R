@@ -755,7 +755,7 @@ if(is.null(errMsg)){
   # Hypercube mode configuration
   if(LAUNCHHCUBEMODE){
     lapply(seq_along(modelIn), function(i){
-      if(!identical(modelIn[[i]]$noHcube, TRUE)){
+      if(!isTRUE(modelIn[[i]]$noHcube)){
         switch(modelIn[[i]]$type,
                checkbox = {
                  modelIn[[i]]$type <<- "dropdown"
@@ -776,10 +776,17 @@ if(is.null(errMsg)){
                  modelIn[[i]]$checkbox <<- NULL
                },
                dropdown = {
-                 if(!identical(modelIn[[i]]$dropdown$multiple, TRUE)){
-                   # specify that dropdown menu is originally a single select menu
-                   modelIn[[i]]$dropdown$single   <<- TRUE
-                   modelIn[[i]]$dropdown$multiple <<- TRUE
+                 if(!isTRUE(modelIn[[i]]$dropdown$multiple)){
+                   if(identical(modelIn[[i]]$symtype, "set")){
+                     warningMsgTmp <- sprintf("The dataset: '%s' is a set configured as a single dropdown menu. Single dropdown menus for sets are not expanded in Hypercube mode! Use singleton set instead.", 
+                                              names(modelIn)[i])
+                     warning(warningMsgTmp)
+                     warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
+                   }else{
+                     # specify that dropdown menu is originally a single select menu
+                     modelIn[[i]]$dropdown$single   <<- TRUE
+                     modelIn[[i]]$dropdown$multiple <<- TRUE
+                   }
                  }
                },
                slider = {

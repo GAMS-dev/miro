@@ -111,7 +111,8 @@ prepareModelRun <- function(async = FALSE){
         csvData <- dataTmp[[i]]
       }
       rm(GMSOptValues, DDParValues)
-    }else if(names(dataTmp)[[i]] %in% modelInTabularDataBase){
+    }else if(identical(modelIn[[names(dataTmp)[[i]]]]$type, "dropdown") &&
+             names(dataTmp)[[i]] %in% modelInTabularDataBase){
       csvData <- ddToTibble(dataTmp[[i]][[1L]], modelIn[[names(dataTmp)[[i]]]])
     }else{
       csvData <- dataTmp[[i]]
@@ -201,7 +202,7 @@ if(LAUNCHHCUBEMODE){
                return(1L)
              },
              dropdown = {
-               if(identical(modelIn[[i]]$dropdown$single, TRUE)){
+               if(isTRUE(modelIn[[i]]$dropdown$single)){
                  return(length(input[["dropdown_" %+% i]]))
                }
                return(1L)
@@ -260,7 +261,7 @@ if(LAUNCHHCUBEMODE){
                  }
                  
                  stepSize <- input[["hcubeStep_" %+% i]]
-                 if(identical(modelIn[[i]]$slider$single, TRUE)){
+                 if(isTRUE(modelIn[[i]]$slider$single)){
                    return(paste0(parPrefix, "=", seq(value[1], value[2], stepSize)))
                  }
                  # double slider all combinations
@@ -272,8 +273,9 @@ if(LAUNCHHCUBEMODE){
                }
              },
              dropdown = {
-               if(isFALSE(modelIn[[i]]$dropdown$single)){
+               if(!isTRUE(modelIn[[i]]$dropdown$single)){
                  data <- ddToTibble(sort(input[["dropdown_" %+% i]]), modelIn[[i]])
+                 staticData$push(names(modelIn)[[i]], data)
                  return(paste0(parPrefix, "=", digest(data, algo = "md5")))
                }
                value <- input[["dropdown_" %+% i]]

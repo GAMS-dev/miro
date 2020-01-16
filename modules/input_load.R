@@ -69,6 +69,7 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
               inputVerified <- TRUE
             }
           }
+          isEmptyInput[[i]] <<- FALSE
         }else{
           # empty dataset
           if(length(modelInTemplate[[i]]))

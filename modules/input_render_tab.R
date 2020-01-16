@@ -272,137 +272,135 @@ lapply(modelInTabularData, function(sheet){
       return(tableContent[[i]])
     })
   }
-  switch(modelIn[[i]]$type,
-         hot = {
-           # rendering handsontables for input data 
-           output[[paste0("in_", i)]] <- renderRHandsontable({
-             noCheck[i] <<- TRUE
-             isPivoted <- FALSE
-             tabData <- dataModelIn[[i]]()
-             
-             if(length(modelIn[[i]]$pivotCols)){
-               isPivoted <- TRUE
-               tabData  <- pivotData(i, tabData)
-               colnames <- tabData$colnames
-               tabData  <- tabData$data
-             }else{
-               colnames <- attr(modelInputData[[i]], "aliases")
-               if(!length(colnames)){
-                 colnames <- attr(modelInTemplate[[i]], "aliases")
-               }
-             }
-             
-             # check for readonly columns
-             colsReadonly <- vapply(seq_along(modelIn[[i]]$headers), function(j){
-               if(identical(modelIn[[i]]$headers[[j]]$readonly, TRUE)){
-                 modelIn[[i]]$headers[[j]]$alias
-               }else{
-                 NA_character_
-               }
-             }, character(1L), USE.NAMES = FALSE)
-             colsReadonly <- colsReadonly[!is.na(colsReadonly)]
-             
-             isRo <- FALSE
-             if(isTRUE(modelIn[[i]]$readonly) || length(colsReadonly) > 0L){
-               isRo <- TRUE
-             }
-             ht <- rhandsontable(tabData, height = hotOptions$height, 
-                                 colHeaders = colnames, useTypes = !isPivoted,
-                                 width = hotOptions$width, search = hotOptions$search, 
-                                 readOnly = if(isTRUE(modelIn[[i]]$readonly)) TRUE else NULL, 
-                                 selectCallback = TRUE)
-             ht <- hot_table(ht, contextMenu = hotOptions$contextMenu$enabled, 
-                             highlightCol = hotOptions$highlightCol, 
-                             highlightRow = hotOptions$highlightRow,
-                             rowHeaderWidth = hotOptions$rowHeaderWidth, 
-                             enableComments = hotOptions$enableComments, 
-                             stretchH = hotOptions$stretchH,
-                             overflow = hotOptions$overflow)
-             ht <- hot_context_menu(ht, allowRowEdit = if(isRo) FALSE else hotOptions$contextMenu$allowRowEdit, 
-                                    allowColEdit = isPivoted, 
-                                    allowReadOnly = hotOptions$contextMenu$allowReadOnly, 
-                                    allowComments = hotOptions$contextMenu$allowComments)
-             ht <- hot_cols(ht, columnSorting = if(isPivoted) FALSE else hotOptions$columnSorting, 
-                            manualColumnMove = hotOptions$manualColumnMove, 
-                            manualColumnResize = hotOptions$manualColumnResize, 
-                            colWidths = hotOptions$colWidths, 
-                            fixedColumnsLeft = hotOptions$fixedColumnsLeft)
-             
-             if(length(colsReadonly))
-               ht <- hot_col(ht, colsReadonly, readOnly = TRUE)
-             if(identical(modelIn[[i]]$heatmap, TRUE))
-               return(hot_heatmap(ht))
-             return(ht)
-           })
-         },
-         dt = {
-           output[["in_" %+% i]] <- renderDT({
-             errMsg <- NULL
-             tabData <- dataModelIn[[i]]()
-             
-             if(length(modelIn[[i]]$pivotCols)){
-               isPivoted <- TRUE
-               tabData  <- pivotData(i, tabData)
-               colnames <- tabData$colnames
-               tabData  <- tabData$data
-             }else{
-               colnames <- attr(modelInputData[[i]], "aliases")
-               if(!length(colnames)){
-                 colnames <- attr(modelInTemplate[[i]], "aliases")
-               }
-             }
-             tryCatch({
-               dtOptions <- modifyList(config$datatable,
-                                       list(editable = !identical(modelIn[[i]]$readonly, 
-                                                                  TRUE),
-                                            options = list(scrollX = TRUE),
-                                            colnames = colnames))
-               
-               dt <- renderDTable(tabData, dtOptions, 
-                                  roundPrecision = roundPrecision, render = FALSE)
-             }, error = function(e){
-               flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
-                          modelInAlias[[i]], e) 
-               errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
-             })
-             if(is.null(showErrorMsg(lang$errMsg$renderTable$title, errMsg))){
-               return(dataModelIn[[i]]())
-             }
-             return(dt)
-           })
-           proxy[[i]] <<- dataTableProxy("in_" %+% i)
-           
-           observeEvent(input[[paste0("in_", i, "_cell_edit")]], {
-             rownames <- config$datatable$rownames
-             info <- input[[paste0("in_", i, "_cell_edit")]]
-             row <- info$row
-             if(rownames){
-               col <- info$col
-               if(col < 1){
-                 return()
-               }
-             }else{
-               col <- info$col + 1L
-             }
-             val <- info$value
-             tableContent[[i]][row, col] <<- suppressWarnings(coerceValue(val, 
-                                                                          tableContent[[i]][[col]][row]))
-             replaceData(proxy[[i]], tableContent[[i]], resetPaging = FALSE, rownames = rownames)
-           })
-         },
-         {
-           observe({
-             tryCatch({
-               modelInputDataVisible[[i]] <<- callModule(generateData, paste0("data-in_", i), 
-                                                         type = modelIn[[i]]$rendererName, 
-                                                         data = dataModelIn[[i]](),
-                                                         customOptions = modelIn[[i]]$options)
-             }, error = function(e){
-               flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
-                          modelInAlias[[i]], e)
-               errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
-             })
-           })
-         }
-  )
+  if(identical(modelIn[[i]]$type, "hot")){
+    # rendering handsontables for input data 
+    output[[paste0("in_", i)]] <- renderRHandsontable({
+      noCheck[i] <<- TRUE
+      isPivoted <- FALSE
+      tabData <- dataModelIn[[i]]()
+      
+      if(length(modelIn[[i]]$pivotCols)){
+        isPivoted <- TRUE
+        tabData  <- pivotData(i, tabData)
+        colnames <- tabData$colnames
+        tabData  <- tabData$data
+      }else{
+        colnames <- attr(modelInputData[[i]], "aliases")
+        if(!length(colnames)){
+          colnames <- attr(modelInTemplate[[i]], "aliases")
+        }
+      }
+      
+      # check for readonly columns
+      colsReadonly <- vapply(seq_along(modelIn[[i]]$headers), function(j){
+        if(identical(modelIn[[i]]$headers[[j]]$readonly, TRUE)){
+          modelIn[[i]]$headers[[j]]$alias
+        }else{
+          NA_character_
+        }
+      }, character(1L), USE.NAMES = FALSE)
+      colsReadonly <- colsReadonly[!is.na(colsReadonly)]
+      
+      isRo <- FALSE
+      if(isTRUE(modelIn[[i]]$readonly) || length(colsReadonly) > 0L){
+        isRo <- TRUE
+      }
+      ht <- rhandsontable(tabData, height = hotOptions$height, 
+                          colHeaders = colnames, useTypes = !isPivoted,
+                          width = hotOptions$width, search = hotOptions$search, 
+                          readOnly = if(isTRUE(modelIn[[i]]$readonly)) TRUE else NULL, 
+                          selectCallback = TRUE)
+      ht <- hot_table(ht, contextMenu = hotOptions$contextMenu$enabled, 
+                      highlightCol = hotOptions$highlightCol, 
+                      highlightRow = hotOptions$highlightRow,
+                      rowHeaderWidth = hotOptions$rowHeaderWidth, 
+                      enableComments = hotOptions$enableComments, 
+                      stretchH = hotOptions$stretchH,
+                      overflow = hotOptions$overflow)
+      ht <- hot_context_menu(ht, allowRowEdit = if(isRo) FALSE else hotOptions$contextMenu$allowRowEdit, 
+                             allowColEdit = isPivoted, 
+                             allowReadOnly = hotOptions$contextMenu$allowReadOnly, 
+                             allowComments = hotOptions$contextMenu$allowComments)
+      ht <- hot_cols(ht, columnSorting = if(isPivoted) FALSE else hotOptions$columnSorting, 
+                     manualColumnMove = hotOptions$manualColumnMove, 
+                     manualColumnResize = hotOptions$manualColumnResize, 
+                     colWidths = hotOptions$colWidths, 
+                     fixedColumnsLeft = hotOptions$fixedColumnsLeft)
+      
+      if(length(colsReadonly))
+        ht <- hot_col(ht, colsReadonly, readOnly = TRUE)
+      if(identical(modelIn[[i]]$heatmap, TRUE))
+        return(hot_heatmap(ht))
+      return(ht)
+    })
+  }else if(identical(modelIn[[i]]$type, "dt")){
+    output[["in_" %+% i]] <- renderDT({
+      errMsg <- NULL
+      tabData <- dataModelIn[[i]]()
+      
+      if(length(modelIn[[i]]$pivotCols)){
+        isPivoted <- TRUE
+        tabData  <- pivotData(i, tabData)
+        colnames <- tabData$colnames
+        tabData  <- tabData$data
+      }else{
+        colnames <- attr(modelInputData[[i]], "aliases")
+        if(!length(colnames)){
+          colnames <- attr(modelInTemplate[[i]], "aliases")
+        }
+      }
+      tryCatch({
+        dtOptions <- modifyList(config$datatable,
+                                list(editable = !identical(modelIn[[i]]$readonly, 
+                                                           TRUE),
+                                     options = list(scrollX = TRUE),
+                                     colnames = colnames))
+        
+        dt <- renderDTable(tabData, dtOptions, 
+                           roundPrecision = roundPrecision, render = FALSE)
+      }, error = function(e){
+        flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
+                   modelInAlias[[i]], e) 
+        errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
+      })
+      if(is.null(showErrorMsg(lang$errMsg$renderTable$title, errMsg))){
+        return(dataModelIn[[i]]())
+      }
+      return(dt)
+    })
+    proxy[[i]] <<- dataTableProxy("in_" %+% i)
+    
+    observeEvent(input[[paste0("in_", i, "_cell_edit")]], {
+      rownames <- config$datatable$rownames
+      info <- input[[paste0("in_", i, "_cell_edit")]]
+      row <- info$row
+      if(rownames){
+        col <- info$col
+        if(col < 1){
+          return()
+        }
+      }else{
+        col <- info$col + 1L
+      }
+      val <- info$value
+      tableContent[[i]][row, col] <<- suppressWarnings(coerceValue(val, 
+                                                                   tableContent[[i]][[col]][row]))
+      replaceData(proxy[[i]], tableContent[[i]], resetPaging = FALSE, rownames = rownames)
+    })
+  }else if(!modelIn[[i]]$type %in% c("slider", "dropdown", "dropdowne", "daterange", 
+                                     "date", "checkbox", "textinput", "numericinput")){
+    if(modelIn[[i]]$type )
+      observe({
+        tryCatch({
+          modelInputDataVisible[[i]] <<- callModule(generateData, paste0("data-in_", i), 
+                                                    type = modelIn[[i]]$rendererName, 
+                                                    data = dataModelIn[[i]](),
+                                                    customOptions = modelIn[[i]]$options)
+        }, error = function(e){
+          flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
+                     modelInAlias[[i]], e)
+          errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
+        })
+      })
+  }
 })
