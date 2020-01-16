@@ -1047,6 +1047,9 @@ if(is.null(errMsg)){
     }
     return(FALSE)
   }, logical(1L), USE.NAMES = FALSE)]
+  modelInTabularDataBase <- modelInTabularData
+  if(length(modelInTabularDataBase))
+    modelInTabularDataBase <- modelInTabularDataBase[!modelInTabularDataBase %in% scalarInputSym]
   }
 
 if(is.null(errMsg)){

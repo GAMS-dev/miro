@@ -146,7 +146,7 @@ lapply(seq_along(modelIn), function(i){
              value <- isolate(input[[paste0("dropdown_", i)]])
            }else if(!is.null(modelIn[[i]]$dropdown$selected)){
              value <- modelIn[[i]]$dropdown$selected
-           }else if(identical(modelIn[[i]]$dropdown$multiple, TRUE)){
+           }else if(names(modelIn)[[i]] %in% modelInTabularDataBase){
              value <- character(0L)
            }else{
              flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
@@ -155,7 +155,7 @@ lapply(seq_along(modelIn), function(i){
              return(NULL)
            }
            value <- value[value != "_"]
-           if(identical(modelIn[[i]]$dropdown$multiple, TRUE)){
+           if(names(modelIn)[[i]] %in% modelInTabularDataBase){
              # generate data frame (multi dropdown menu)
              dataTmp[[j]] <<- ddToTibble(value, modelIn[[i]])
              j <<- j + 1L

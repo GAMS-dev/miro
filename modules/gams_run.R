@@ -111,7 +111,7 @@ prepareModelRun <- function(async = FALSE){
         csvData <- dataTmp[[i]]
       }
       rm(GMSOptValues, DDParValues)
-    }else if(identical(modelIn[[names(dataTmp)[[i]]]]$dropdown$multiple, TRUE)){
+    }else if(names(dataTmp)[[i]] %in% modelInTabularDataBase){
       csvData <- ddToTibble(dataTmp[[i]][[1L]], modelIn[[names(dataTmp)[[i]]]])
     }else{
       csvData <- dataTmp[[i]]

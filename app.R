@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "0.9.37"
+MIROVersion <- "0.9.38"
 APIVersion  <- "1"
-MIRORDate   <- "Jan 14 2020"
+MIRORDate   <- "Jan 16 2020"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -426,7 +426,7 @@ if(miroBuildonly){
   save(list = c("customRendererNames", customRendererNames, "modelIn", "modelInRaw", 
                 "modelOut", "config", "lang", "inputDsNames", "inputDsAliases", 
                 "outputTabTitles", "modelInTemplate", "scenDataTemplate", 
-                "modelInTabularData", "externalInputConfig", "tabSheetMap",
+                "modelInTabularData", "modelInTabularDataBase", "externalInputConfig", "tabSheetMap",
                 "modelInFileNames", "ddownDep", "aliasesNoDep", "idsIn",
                 "choicesNoDep", "sliderValues", "configGraphsOut", 
                 "configGraphsIn", "hotOptions", "inputTabs", "inputTabTitles", 
