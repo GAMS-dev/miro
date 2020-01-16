@@ -1596,7 +1596,7 @@ if(!is.null(errMsg)){
       source("./modules/scen_compare.R", local = TRUE)
       
       observeEvent(input$btExportScen, {
-        if(useGdx){
+        if(useGdx && !LAUNCHHCUBEMODE){
           exportTypes <- c(gdx = "gdx", xlsx = "xls", csv = "csv")
         }else{
           exportTypes <- c(csv = "csv", xlsx = "xls")
