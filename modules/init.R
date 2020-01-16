@@ -591,7 +591,8 @@ if(is.null(errMsg)){
   inputTabs    <- inputTabs$tabs
   # get input tabs where scalars are merged to single table (scenario comparison mode)
   widgetIdsMultiDim <- vapply(inputSheetIdsToDisplay, function(i){
-    if(identical(modelIn[[i]]$symtype, "set") ||
+    if(identical(modelIn[[i]]$symtype, "set") && 
+       length(modelIn[[i]]$dropdown) ||
        isTRUE(modelIn[[i]]$dropdown$multiple) &&
        !isTRUE(modelIn[[i]]$dropdown$checkbox) && 
        !isTRUE(modelIn[[i]]$dropdown$single)){

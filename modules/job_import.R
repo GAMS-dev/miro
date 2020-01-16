@@ -160,7 +160,7 @@ observeEvent(
     }
     tryCatch({
       activeScen <<- Scenario$new(db = db, sname = rv$activeSname, 
-                                  tags = scenTags, overwrite = TRUE, 
+                                  tags = scenTags,
                                   isNewScen = TRUE)
       scenTags   <<- NULL
       rv$importJobConfirm <- rv$importJobConfirm + 1L
@@ -191,7 +191,7 @@ observeEvent(virtualActionButton(
     errMsg <- NULL
     overwriteInput <- TRUE
     scalarDataset <- NULL
-    loadMode <- "csv"
+    loadMode <- "gdx"
     datasetsToFetch <- names(modelIn)
     
     progress <- Progress$new()
@@ -214,7 +214,7 @@ observeEvent(virtualActionButton(
       return()
     
     loadModeWorkDir  <- tmpdir
-    loadModeFileName <- NULL
+    loadModeFileName <- MIROGdxInName
     tryCatch({
       progress$set(message = lang$progressBar$importScen$renderInput, value = 0.5)
       # load input data 
@@ -229,6 +229,7 @@ observeEvent(virtualActionButton(
                                  scalarsFileHeaders = scalarsFileHeaders, fileName = MIROGdxOutName,
                                  templates = modelOutTemplate, method = config$fileExchange, 
                                  csvDelim = config$csvDelim, hiddenOutputScalars = config$hiddenOutputScalars)
+      noOutputData <<- FALSE
     }, error = function(e){
       flog.error("Problems reading job output data. Error message: '%s'.", conditionMessage(e))
       errMsg <<- lang$errMsg$readOutput$desc
