@@ -1143,6 +1143,7 @@ setDbConfig <- function(){
     metaData <- envNameDbDataMap[[i]]
     
     data <- Sys.getenv(metaData$envVar, unset = NA)
+    Sys.unsetenv(metaData$envVar)
     if(is.na(data)){
       if(length(metaData$default)){
         config[[metaData$keyName]] <- metaData$default

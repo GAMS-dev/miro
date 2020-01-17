@@ -47,8 +47,9 @@ Worker <- R6Class("Worker", public = list(
     }
     ret <- HEAD(url, timeout(2L))$url
     if(!startsWith(ret, "https://") && 
-       (!startsWith(ret, "http://localhost") ||
-        startsWith(ret, "http://localhost."))){
+       (!identical(ret, "http://localhost") ||
+        !startsWith(ret, "http://localhost:") ||
+        !startsWith(ret, "http://localhost/"))){
       stop(426, call. = FALSE)
     }
     private$metadata$username  <- username
