@@ -222,7 +222,7 @@ if(is.null(errMsg)){
     GAMSClArgs <- c(GAMSClArgs, paste0('IDCGenerateGDXInput="', 
                                        MIROGdxInName, '"'))
   }
-  if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
+  if(isShinyProxy || identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
     dbConfig <- setDbConfig()
     if(isShinyProxy)
       config$activateModules$remoteExecution <- TRUE
