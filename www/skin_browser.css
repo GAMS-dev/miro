@@ -16543,6 +16543,7 @@ a > .info-box {
 @media (prefers-color-scheme: dark) {
   .handsontable th {
     background-color: #848991;
+    color: #eeeeee;
   }
 }
 .handsontable thead th {
@@ -16784,6 +16785,7 @@ a > .info-box {
   .handsontable tbody th.ht__active_highlight,
   .handsontable thead th.ht__active_highlight {
     background-color: #00adb5;
+    color: #fff;
   }
 }
 .handsontable .wtBorder.corner {
@@ -16832,7 +16834,7 @@ a > .info-box {
 }
 @media (prefers-color-scheme: dark) {
   .handsontable .htDimmed {
-    color: #848991;
+    color: #aab0b9;
   }
 }
 .handsontable .htSubmenu {

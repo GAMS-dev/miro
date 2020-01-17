@@ -271,11 +271,12 @@
 .handsontable th {
     .responsiveDark({
        background-color: @header-color;
+       color: @header-textcolor;
     },
     {
        background-color: @header-color-dark; 
+       color: @header-textcolor-dark;
     });
-    color: #222;
     text-align: center;
     font-weight: 400;
     white-space: nowrap
@@ -539,11 +540,12 @@ screen and (-ms-high-contrast:active) {
 .handsontable thead th.ht__active_highlight {
     .responsiveDark({
        background-color: @light-blue;
+       color: @header-textcolor-active;
     },
     {
        background-color: @light-blue-dark;
+       color: @header-textcolor-active-dark;
     });
-    color: #000
 }
 
 .handsontable .wtBorder.corner {
