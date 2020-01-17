@@ -893,7 +893,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   # refresh even when modelStatus message is hidden (i.e. user is on another tab)
   outputOptions(output, "modelStatus", suspendWhenHidden = FALSE)
 })
-if(config$activateModules$remoteExecution){
+if(!isShinyProxy && config$activateModules$remoteExecution){
   observeEvent(input$btRemoteExecLogin, {
     showLoginDialog(cred = worker$getCredentials())
   })

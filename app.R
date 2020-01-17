@@ -41,7 +41,7 @@ if(R.version[["major"]] < 3 ||
                                      R.version[["minor"]]) < 6){
   stop("The R version you are using is not supported. At least version 3.6 is required to run GAMS MIRO.", call. = FALSE)
 }
-isShinyProxy <- !identical(Sys.getenv("SHINYPROXY_USERNAME"), "")
+isShinyProxy <<- !identical(Sys.getenv("SHINYPROXY_USERNAME"), "")
 debugMode <- TRUE
 RLibPath <- NULL
 miroBuildonly <- identical(Sys.getenv("MIRO_BUILD"), "true")

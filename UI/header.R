@@ -1,6 +1,6 @@
 # UI header
 header <- dashboardHeader(
-  if(config$activateModules$remoteExecution){
+  if(!isShinyProxy && config$activateModules$remoteExecution){
     tags$li(class = "dropdown", 
             HTML(paste0('<a href="#" id="remoteExecLogoutDiv" class="action-button" ', 
                         if(!length(credConfig)) 'style="display:none;" ',
