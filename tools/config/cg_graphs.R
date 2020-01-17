@@ -669,7 +669,7 @@ observeEvent(input$timevis_showCurrentTime, {
 })
 
 observeEvent(input$valuebox_width, {
-  rv$graphConfig$options$width <<- input$valuebox_width
+  rv$graphConfig$options$width <<- as.numeric(input$valuebox_width)
 })
 observeEvent(input$valuebox_color, {
   rv$graphConfig$options$color <<- input$valuebox_color
@@ -1829,7 +1829,9 @@ getValueboxOptions  <- reactive({
   #})
   tagList(
     tags$div(class="cat-body cat-body-49",
-             numericInput("valuebox_width", lang$adminMode$graphs$valueboxOptions$width, min = 0L, value = 4L),
+             selectInput("valuebox_width", lang$adminMode$graphs$valueboxOptions$width,
+                         choices = c("1" = 12, "2" = 6, "3" = 4, "4" = 3), 
+                         selected = 4),
              selectInput("valuebox_color", lang$adminMode$graphs$valueboxOptions$color,
                          choices = langSpecificGraphs$valueboxColor, 
                          selected = "aqua"),

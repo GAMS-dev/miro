@@ -1369,7 +1369,7 @@
         "width": "Domäne, anhand derer verschiedene Balkenbreiten ausgewählt werden"
       },
       "valueboxOptions":{
-        "width": "Breite der Wertebox auswählen",
+        "width": "Maximale Anzahl an Boxen je Reihe (keine Vorschau)",
         "color": "Wählen Sie die Farbe der Wertebox aus",
         "colorChoices": ["rot", "gelb", "aqua", "blau", "hellblau", "grün", "marineblau", "blaugrün", "oliv", "limette", "orange", "fuchsia", "lila", "kastanienbraun", "schwarz"],
         "useIcon": "Soll ein Icon angezeigt werden?",

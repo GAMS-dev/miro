@@ -1369,7 +1369,7 @@
         "width": "Domain that is used to select different bar widths"
       },
       "valueboxOptions":{
-        "width": "Select width of the valuebox",
+        "width": "Maximum number of boxes per row (no preview)",
         "color": "Select color of the valuebox",
         "colorChoices": ["red", "yellow", "aqua", "blue", "light-blue", "green", "navy", "teal", "olive", "lime", "orange", "fuchsia", "purple", "maroon", "black"],
         "useIcon": "Use an icon for the valuebox?",

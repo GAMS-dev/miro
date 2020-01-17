@@ -1369,7 +1369,7 @@
         "width": "用于选择不同柱形宽的域"
       },
       "valueboxOptions":{
-        "width": "选择值框的宽度",
+        "width": "Maximum number of boxes per row (no preview)",
         "color": "选择值框的颜色",
         "colorChoices": ["红色", "黄色", "水蓝色", "蓝色", "浅蓝色", "绿色", "藏青色", "蓝绿色", "橄榄绿", "鲜绿色", "橙色", "品红", "紫色", "栗色", "黑色"],
         "useIcon": "要对值框使用图标吗？",
