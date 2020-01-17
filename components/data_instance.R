@@ -35,11 +35,10 @@ DataInstance <- R6Class("DataInstance", public = list(
     stopifnot(is.character(modelDataFiles), is.character(workDir), 
               identical(length(workDir), 1L))
     
-    inexFileName <- "_inex_file_"
+    inexFileName <- file.path(workDir, "_inex_file_")
     
     jsonlite::write_json(list(files = modelDataFiles, type = "include"), 
-                         file.path(workDir, inexFileName), auto_unbox = TRUE)
-    self$addFilePaths(file.path(workDir, inexFileName))
+                         inexFileName, auto_unbox = TRUE)
     
     return(inexFileName)
   },

@@ -41,11 +41,14 @@ Worker <- R6Class("Worker", public = list(
     url <- trimws(url, "right", whitespace = "/")
     private$metadata$url       <- url
     
-    if(!startsWith(url, "https://")){
+    if(!startsWith(url, "https://") &&
+       !startsWith(url, "http://localhost")){
       stop(426, call. = FALSE)
     }
     ret <- HEAD(url, timeout(2L))$url
-    if(!startsWith(ret, "https://")){
+    if(!startsWith(ret, "https://") && 
+       (!startsWith(ret, "http://localhost") ||
+        startsWith(ret, "http://localhost."))){
       stop(426, call. = FALSE)
     }
     private$metadata$username  <- username
@@ -760,6 +763,8 @@ Worker <- R6Class("Worker", public = list(
   },
   runRemote = function(inputData, hcubeData = NULL){
     private$status  <- "s"
+    inputData$writeDisk(private$workDir, 
+                        fileName = private$metadata$MIROGdxInName)
     private$fRemoteSub  <- future({
       suppressWarnings(suppressMessages({
         library(zip)
@@ -783,6 +788,7 @@ Worker <- R6Class("Worker", public = list(
         if(length(dataFilesToFetch))
           dataFilesToFetch <- c(dataFilesToFetch, traceFileName)
       }
+      textEntities <- ""
       if(is.R6(hcubeData)){
         gamsArgs <- c(gamsArgs, paste0('IDCGDXInput="', 
                                        metadata$MIROGdxInName, '"'))
@@ -790,15 +796,18 @@ Worker <- R6Class("Worker", public = list(
                                                   type = 'application/json')
       }else{
         gamsArgs <- c(gamsArgs, paste0('IDCGDXInput="', metadata$MIROGdxInName, '"'))
-        requestBody$text_entities   <- paste(metadata$text_entities, collapse = ",")
+        textEntities <- URLencode(paste0("?text_entities=", paste(metadata$text_entities, 
+                                                                  collapse = "&text_entities=")))
         requestBody$stdout_filename <- paste0(metadata$modelName, ".log")
       }
-      pfFilePath <- gmsFilePath(file.path(workDir, tolower(metadata$modelName) %+% ".pf"))
+      pfFilePath <- gmsFilePath(file.path(workDir, paste0(tolower(metadata$modelName), ".pf")))
       writeLines(c(pfFileContent, gamsArgs), pfFilePath)
       
-      requestBody$inex_filename <- inputData$addInexFile(workDir, dataFilesToFetch)
+      requestBody$inex_file <- upload_file(inputData$
+                                             addInexFile(workDir, 
+                                                         dataFilesToFetch),
+                                           type = 'application/zip')
       requestBody$data <- upload_file(inputData$
-                                        writeDisk(workDir, fileName = metadata$MIROGdxInName)$
                                         addFilePaths(pfFilePath)$
                                         compress(), 
                                       type = 'application/zip')
@@ -807,7 +816,7 @@ Worker <- R6Class("Worker", public = list(
         requestBody$model_data <- upload_file(metadata[["modelData"]], 
                                               type = 'application/zip')
       }
-      ret <- POST(paste0(metadata$url, if(is.R6(hcubeData)) "/hypercube" else "/jobs"), 
+      ret <- POST(paste0(metadata$url, if(is.R6(hcubeData)) "/hypercube" else "/jobs", textEntities), 
                   encode = "multipart", 
                   body = requestBody,
                   add_headers(Authorization = authHeader, 
@@ -1091,9 +1100,10 @@ Worker <- R6Class("Worker", public = list(
     return(0L)
   },
   getRemoteStatus = function(jID){
-    GET(paste0(private$metadata$url, "/jobs/", jID, "/status"),
+    GET(paste0(private$metadata$url, "/jobs/", jID),
         add_headers(Authorization = private$authHeader,
-                    Timestamp = as.character(Sys.time(), usetz = TRUE)),
+                    Timestamp = as.character(Sys.time(), usetz = TRUE),
+                    "X-Fields" = "process_status"),
         timeout(2L))
   },
   interruptLocal = function(hardKill = FALSE, process = NULL){
@@ -1332,7 +1342,7 @@ Worker <- R6Class("Worker", public = list(
   getGAMSRetCode = function(pID){
     if(private$remote){
       return(private$validateAPIResponse(
-        private$getRemoteStatus(pID))$gams_return_code)
+        private$getRemoteStatus(pID))$process_status)
     }
     return("")
   },
