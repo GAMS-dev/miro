@@ -191,7 +191,7 @@ observeEvent(virtualActionButton(
     errMsg <- NULL
     overwriteInput <- TRUE
     scalarDataset <- NULL
-    loadMode <- "gdx"
+    loadMode <- config$fileExchange
     datasetsToFetch <- names(modelIn)
     
     progress <- Progress$new()
@@ -214,7 +214,7 @@ observeEvent(virtualActionButton(
       return()
     
     loadModeWorkDir  <- tmpdir
-    loadModeFileName <- MIROGdxInName
+    loadModeFileName <- if(identical(config$fileExchange, "gdx")) MIROGdxInName else NULL
     tryCatch({
       progress$set(message = lang$progressBar$importScen$renderInput, value = 0.5)
       # load input data 

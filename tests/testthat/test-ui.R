@@ -13,7 +13,7 @@ if(file.exists(file.path(testDir, "miro.sqlite3"))){
     stop("Could not remove old database SQLite file for tests")
   }
 }
-Sys.setenv(DBPATH = testDir)
+Sys.setenv(MIRO_DB_PATH = testDir)
 # END setup
 
 errMsg <- NULL

@@ -51,7 +51,7 @@ if(identical(Sys.getenv("MIRO_TEST_DEPLOY"), "true")){
   miroBuildonly <- FALSE
 }
 logToConsole <- TRUE
-if(identical(Sys.getenv("NODEBUG"), "true") && !miroDeploy){
+if(identical(Sys.getenv("MIRO_NO_DEBUG"), "true") && !miroDeploy){
   debugMode <- FALSE
   logToConsole <- FALSE
 }else if(isShinyProxy){
@@ -132,13 +132,13 @@ if(is.null(errMsg)){
     if (identical(miroWorkspace, "")){
       miroWorkspace <- file.path(path.expand("~"), miroWorkspaceDir)
     }
-    miroDbDir     <- Sys.getenv("DBPATH")
+    miroDbDir     <- Sys.getenv("MIRO_DB_PATH")
     if(identical(miroDbDir, "")){
       miroDbDir <- miroWorkspace
     }
   }
-  if(!identical(Sys.getenv("LOGPATH"), "")){
-    logFileDir <- Sys.getenv("LOGPATH")
+  if(!identical(Sys.getenv("MIRO_LOG_PATH"), "")){
+    logFileDir <- Sys.getenv("MIRO_LOG_PATH")
   }else if(isShinyProxy){
     logFileDir <- file.path(tmpFileDir, logFileDir)
   }else{
@@ -222,7 +222,8 @@ if(is.null(errMsg)){
   }
   if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
     dbConfig <- setDbConfig()
-    config$activateModules$remoteExecution <- TRUE
+    if(isShinyProxy)
+      config$activateModules$remoteExecution <- TRUE
     if(length(dbConfig$errMsg)){
       errMsg <- dbConfig$errMsg
     }else{
