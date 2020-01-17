@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "0.9.40"
+MIROVersion <- "0.9.41"
 APIVersion  <- "1"
-MIRORDate   <- "Jan 16 2020"
+MIRORDate   <- "Jan 17 2020"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -126,7 +126,9 @@ if(is.null(errMsg)){
   miroWorkspace <- NULL
   miroDbDir     <- NULL
   
-  if(!isShinyProxy){
+  if(isShinyProxy){
+    miroWorkspace <- file.path(getwd(), "ws")
+  }else{
     # initialise MIRO workspace
     miroWorkspace <- Sys.getenv("WORKSPACEPATH")
     if (identical(miroWorkspace, "")){
@@ -750,6 +752,8 @@ if(!is.null(errMsg)){
   if(loggerInitialised){
     if(length(warningMsg)) flog.warn(warningMsg)
     flog.fatal(errMsg)
+  }else{
+    warning(errMsg)
   }
   if(isShinyProxy){
     stop('An error occured. Check log for more information!', call. = FALSE)
@@ -882,70 +886,83 @@ if(!is.null(errMsg)){
   shinyApp(ui = ui_initError, server = server_initError)
 }else{
   rm(installedPackages)
-  if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
-    setWinProgressBar(pb, 0.6, label= "Importing new data")
-  }
-  
   local({
-    miroDataDir   <- file.path(currentModelDir, paste0(miroDataDirPrefix, modelName))
-    miroDataFiles <- list.files(miroDataDir)
-    dataFileExt   <- tolower(tools::file_ext(miroDataFiles))
-    miroDataFiles <- miroDataFiles[dataFileExt %in% c(if(useGdx) "gdx", "xlsx", "xls")]
-    newScen <- NULL
-    tryCatch({
-      if(length(miroDataFiles)){
-        tabularDatasetsToFetch <- modelInTabularData
-        tabularIdsToFetchId    <- names(modelIn) %in% tabularDatasetsToFetch
-        metaDataTmp            <- modelIn[tabularIdsToFetchId]
-        namesScenInputData     <- names(modelIn)[tabularIdsToFetchId]
-        modelInTemplateTmp     <- modelInTemplate[tabularIdsToFetchId]
-        if(length(scalarsInMetaData) && !scalarsFileName %in% tabularDatasetsToFetch){
-          tabularDatasetsToFetch <- c(tabularDatasetsToFetch, scalarsFileName)
-          namesScenInputData <- c(namesScenInputData, scalarsFileName)
-          modelInTemplateTmp[[length(metaDataTmp) + 1L]] <- scalarsInTemplate
-          metaDataTmp <- c(metaDataTmp, scalarsInMetaData)
-        }
-        inputIdsTmp        <- match(inputDsNames, names(metaDataTmp))
-        inputIdsTmp        <- inputIdsTmp[!is.na(inputIdsTmp)]
-        metaDataTmp        <- metaDataTmp[inputIdsTmp]
-        modelInTemplateTmp <- modelInTemplateTmp[inputIdsTmp]
-        for(i in seq_along(miroDataFiles)){
-          miroDataFile <- miroDataFiles[i]
-          flog.info("New data: '%s' is being stored in the database. Please wait a until the import is finished.", miroDataFile)
-          if(dataFileExt[i] %in% c("xls", "xlsx")){
-            method <- "xls"
-          }else{
-            method <- dataFileExt[i]
-          }
-          newScen <- Scenario$new(db = db, sname = gsub("\\.[^\\.]*$", "", miroDataFile), isNewScen = TRUE)
-          dataOut <- loadScenData(scalarsOutName, modelOut, miroDataDir, modelName, scalarsFileHeaders,
-                                  modelOutTemplate, method = method, fileName = miroDataFile)$tabular
-          dataIn  <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp, 
-                                  workDir = miroDataDir, 
-                                  modelName = modelName, errMsg = lang$errMsg$GAMSInput$badInputData,
-                                  scalarsFileHeaders = scalarsFileHeaders,
-                                  templates = modelInTemplateTmp, method = method,
-                                  fileName = miroDataFile, DDPar = DDPar, GMSOpt = GMSOpt)$tabular
-          
-          if(!scalarsFileName %in% names(metaDataTmp) && length(scalarInputSym)){
-            # additional command line parameters that are not GAMS symbols
-            scalarsTemplate <- tibble(a = character(0L), b = character(0L), c = character(0L))
-            names(scalarsTemplate) <- scalarsFileHeaders
-            newScen$save(c(dataOut, dataIn, list(scalarsTemplate)))
-          }else{
-            newScen$save(c(dataOut, dataIn))
-          }
-          
-          if(!debugMode && !file.remove(file.path(miroDataDir, miroDataFile))){
-            flog.info("Could not remove file: '%s'.", miroDataFile)
-          }
-        }
+    populateDbOnly <- identical(Sys.getenv("MIRO_POPULATE_DB"), "true")
+    if(!isShinyProxy || populateDbOnly){
+      if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
+        setWinProgressBar(pb, 0.6, label= "Importing new data")
       }
-    }, error = function(e){
-      flog.error("Problems saving MIRO data to database. Error message: '%s'.", e)
-      gc()
-    })
+      miroDataDir   <- file.path(currentModelDir, paste0(miroDataDirPrefix, modelName))
+      miroDataFiles <- list.files(miroDataDir)
+      dataFileExt   <- tolower(tools::file_ext(miroDataFiles))
+      miroDataFiles <- miroDataFiles[dataFileExt %in% c(if(useGdx) "gdx", "xlsx", "xls")]
+      newScen <- NULL
+      tryCatch({
+        if(length(miroDataFiles)){
+          tabularDatasetsToFetch <- modelInTabularData
+          tabularIdsToFetchId    <- names(modelIn) %in% tabularDatasetsToFetch
+          metaDataTmp            <- modelIn[tabularIdsToFetchId]
+          namesScenInputData     <- names(modelIn)[tabularIdsToFetchId]
+          modelInTemplateTmp     <- modelInTemplate[tabularIdsToFetchId]
+          if(length(scalarsInMetaData) && !scalarsFileName %in% tabularDatasetsToFetch){
+            tabularDatasetsToFetch <- c(tabularDatasetsToFetch, scalarsFileName)
+            namesScenInputData <- c(namesScenInputData, scalarsFileName)
+            modelInTemplateTmp[[length(metaDataTmp) + 1L]] <- scalarsInTemplate
+            metaDataTmp <- c(metaDataTmp, scalarsInMetaData)
+          }
+          inputIdsTmp        <- match(inputDsNames, names(metaDataTmp))
+          inputIdsTmp        <- inputIdsTmp[!is.na(inputIdsTmp)]
+          metaDataTmp        <- metaDataTmp[inputIdsTmp]
+          modelInTemplateTmp <- modelInTemplateTmp[inputIdsTmp]
+          for(i in seq_along(miroDataFiles)){
+            miroDataFile <- miroDataFiles[i]
+            flog.info("New data: '%s' is being stored in the database. Please wait a until the import is finished.", miroDataFile)
+            if(dataFileExt[i] %in% c("xls", "xlsx")){
+              method <- "xls"
+            }else{
+              method <- dataFileExt[i]
+            }
+            newScen <- Scenario$new(db = db, sname = gsub("\\.[^\\.]*$", "", miroDataFile), isNewScen = TRUE)
+            dataOut <- loadScenData(scalarsOutName, modelOut, miroDataDir, modelName, scalarsFileHeaders,
+                                    modelOutTemplate, method = method, fileName = miroDataFile)$tabular
+            dataIn  <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp, 
+                                    workDir = miroDataDir, 
+                                    modelName = modelName, errMsg = lang$errMsg$GAMSInput$badInputData,
+                                    scalarsFileHeaders = scalarsFileHeaders,
+                                    templates = modelInTemplateTmp, method = method,
+                                    fileName = miroDataFile, DDPar = DDPar, GMSOpt = GMSOpt)$tabular
+            
+            if(!scalarsFileName %in% names(metaDataTmp) && length(scalarInputSym)){
+              # additional command line parameters that are not GAMS symbols
+              scalarsTemplate <- tibble(a = character(0L), b = character(0L), c = character(0L))
+              names(scalarsTemplate) <- scalarsFileHeaders
+              newScen$save(c(dataOut, dataIn, list(scalarsTemplate)))
+            }else{
+              newScen$save(c(dataOut, dataIn))
+            }
+            
+            if(!debugMode && !file.remove(file.path(miroDataDir, miroDataFile))){
+              flog.info("Could not remove file: '%s'.", miroDataFile)
+            }
+          }
+        }
+      }, error = function(e){
+        flog.error("Problems saving MIRO data to database. Error message: '%s'.", e)
+        gc()
+        if(populateDbOnly){
+          if(interactive())
+            stop()
+          quit("no", 1L)
+        }
+      })
+      if(populateDbOnly){
+        if(interactive())
+          stop()
+        quit("no", 0L)
+      }
+    }
   })
+  
   if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
     setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
   }else{
