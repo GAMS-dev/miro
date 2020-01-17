@@ -1671,8 +1671,12 @@ if(!is.null(errMsg)){
             promises::then(future(Sys.sleep(SERVER_SHUTDOWN_DELAY)),
                            function(val) {
                              if(identical(interruptShutdown, FALSE)){
+                               flog.info("Shutting down container..")
                                stopApp()
+                             }else{
+                               flog.info("Container shutdown was interrupted.")
                              }}, function(val){
+                               flog.info("Shutting down container..")
                                stopApp()
                              })
           }else{
