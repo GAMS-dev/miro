@@ -83,6 +83,7 @@
                                 <p>The deployment of an application consists of two parts: The creation of a self-contained app bundle and its installation.</p>
                                 <div class="section-block" id="sbs-create-app">
                                     <h3>Create an app bundle</h3>
+                                    <b id="model-assembly-file">The model assembly file:</b><br>
                                     <p>Before you export your app bundle, MIRO needs to know about the files that belong to your model. This is primarily the main model file, but also all files necessary to calculate all inputs and outputs, e.g. files that are included in the model. To tell MIRO about these files, create a text file in the root directory of your model called <span class="code">&lt;modelname&gt;_files.txt</span> or use <i>GAMS Studio</i> to create this file for you. For the latter you can select in the menu <i>MIRO</i> under <i>create model assembly</i> those folders and files which are needed. If you select a folder, all files in it will be included. If you want to use only single files of a folder, you have to expand the folder and select the corresponding file(s). 
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" style="max-height:350pt" src="assets/images/deployment/model-assembly.png" alt="create model assembly file" />
@@ -105,6 +106,7 @@ inc/inc1.inc
 inc/inc2.inc
                                     </code></pre>
                                     <p>This would result in the files <span class="code">example.gms</span>, <span class="code">inc/inc1.inc</span>, <span class="code">inc/inc2.inc</span> and the entire directory <span class="code">data</span> to be included.</p>
+                                    <b>Export app:</b><br>
                                     <p>Once you specified the files that belong to your model, you are ready to export your MIRO app! 
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" style="max-height:350pt" src="assets/images/deployment/deploy.png" alt="Deploy MIRO model" />

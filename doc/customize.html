@@ -647,21 +647,21 @@ $offExternalInput
                                       </div><!--//callout-block-->
                                     </li>
                                     <li><p><b>New GAMS option</b> / <b>New double dash parameter</b>
-                                      <br>As the name suggests, <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">double-dash parameterss</a> can be configured here as an input widget.
+                                      <br>As the name suggests, <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">double-dash parameters</a> can be configured here as an input widget.
                                       <br>Since those parameters are specified via the command line in GAMS, they can not be tagged in the GAMS code with <code class="language-gams">$onExternalInput
                                      </code> / <code class="language-gams">$offExternalInput
                                      </code>. So that they can be set for a GAMS run via MIRO, they must be explicitly specified in the configuration.</p>
                                       <p>If a GAMS option or a double dash parameter is set via MIRO, your GAMS model will automatically be called with these command line parameters. The values the user selected are therefore available to the GAMS model at <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_TwoPass" target="_blank">compile time</a>.</p>
-                                      <div class="callout-block callout-warning">
+                                      <div class="callout-block callout-success">
                                           <div class="icon-holder">
-                                              <i class="fas fa-info-circle"></i>
+                                              <i class="fas fa-thumbs-up"></i>
                                           </div><!--//icon-holder-->
                                           <div class="content">
-                                              <b class="callout-title">Note:</b>
+                                              <b class="callout-title">Tip:</b>
                                               <p>The GAMS options and double-dash parameters associated with a scenario are stored in MIRO's internal database. However, the information about them is lost when a scenario is exported as a GDX file. We therefore recommend using singleton sets instead of command line parameters. Both the element label and the element text of a set can be migrated to compile time variables using the Dollar Control Options 
                                            <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset" target = "__blank">eval.Set</a>, 
                                            <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalglobalset" target = "__blank">evalGlobal.Set</a>, 
-                                           and <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevallocalset" target = "__blank">evalLocal.Set</a>.</p>
+                                           and <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevallocalset" target = "__blank">evalLocal.Set</a>.</p><p>Read more <a href = "./model.html#command-line">here</a>.</p>
                                           </div><!--//content-->
                                       </div><!--//callout-block-->
                                       <p>Example:<br>If we set the double dash parameter <span class="code">numberPeriods</span> to 11 and for the GAMS option <span class="code">mip</span> we select CPLEX from within MIRO, then the GAMS model is run with: <pre><span class="code">gams &lt;modelname&gt;.gms --numberPeriods=11 MIP=CPLEX</span></pre></p>

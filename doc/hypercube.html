@@ -92,6 +92,7 @@
                             <section id="hypercube-overview" class="doc-section">
                                 <h2 class="section-title">Overview</h2>
                                 <div class="section-block">
+                                    <p>Before using the Hypercube mode the first time MIRO has to know which files belong to the GAMS model. This is primarily the main model file, but also all files necessary to calculate all inputs and outputs, e.g. files that are included in the model. The reason for this is that model calculations in Hypercube mode are always executed in a temporary directory. For this purpose, the files assigned to the GAMS model are copied to the temporary directory so that they are available during the calculations. Read more on how you can tell MIRO which files belong to your GAMS model via the <a href = "./deployment.html#model-assembly-file">model assembly file</a>.</p>
                                     <p>Just like the Base mode, the Hypercube mode can be started directly from GAMS Studio or the command line. 
                                     For the latter, the environment variable <span class="code">MIRO_MODE=hcube</span> needs to 
                                     be set instead of <span class="code">MIRO_MODE=base</span>. The other steps (see <a href = "./start.html#start-via-command-line">here</a>) 
