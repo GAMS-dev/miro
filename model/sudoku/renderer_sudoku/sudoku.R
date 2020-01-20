@@ -7,6 +7,10 @@ renderSudoku <- function(input, output, session, data, options = NULL, path = NU
   force(data)
   dataTmp <- data
   if(length(data) && nrow(data)){
+    if(!isTRUE(options$isInput)){
+      initialData <- which(dataTmp < 0)
+      dataTmp     <- abs(dataTmp[-1L])
+    }
     dataTmp <- dataTmp[-1L] %>%
       mutate_if(is.double, as.integer)
   }else{
@@ -22,8 +26,25 @@ renderSudoku <- function(input, output, session, data, options = NULL, path = NU
                                              bottom = list(width = 4, color = "black"),
                                              right = list(width = 4, color = "black"))
                                          })) %>%
-                                         hot_cols(colWidths = 50) %>%
-                                         hot_rows(rowHeights = 50))
+                                         hot_cols(colWidths = 50, renderer = if(isTRUE(options$isInput)) {
+                                           "function (instance, td, row, col, prop, value, cellProperties) {
+                                             Handsontable.renderers.NumericRenderer.apply(this, arguments);
+                                             if (value > 0.5) {
+                                              td.style.fontWeight = 900;
+                                              td.style.fontFamily = 'Verdana';
+                                             }
+                                            }"
+                                         }else{
+                                           paste0("function (instance, td, row, col, prop, value, cellProperties) {
+                                             Handsontable.renderers.NumericRenderer.apply(this, arguments);
+                                             if ([", paste0(initialData, collapse = ","),
+                                             "].includes(col*9+row+1)){
+                                              td.style.fontWeight = 900;
+                                              td.style.fontFamily = 'Verdana';
+                                             }
+                                            }")
+                                         }) %>%
+    hot_rows(rowHeights = 50))
   if(isTRUE(options$isInput)){
     return(reactive({
         dataTmp <- hot_to_r(input$sudoku)

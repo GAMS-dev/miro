@@ -17,7 +17,7 @@ $onExternalInput
 table initial_state(row,col)
      col1 col2 col3 col4 col5 col6 col7 col8 col9
 row1                     8    6
-row2      0         9         2
+row2      7         9         2
 row3 6    9                        2         8
 row4 8                   9         7         2
 row5 4                                       3
@@ -93,4 +93,4 @@ if(card(solnpool) > 1,
 $onExternalOutput
 table results(row,col);
 $offExternalOutput
-results(row,col) = sum(val$x.l(col,row,val), ord(val));
+results(row,col) = sum(val$x.l(col,row,val), ord(val)) * (1-2$(initial_state(row,col)>0.5));
