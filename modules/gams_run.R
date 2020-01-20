@@ -668,7 +668,6 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   }
   if(config$activateModules$remoteExecution)
     updateTabsetPanel(session, "jobListPanel", selected = "current")
-  updateTabsetPanel(session, "sidebarMenuId", selected = "gamsinter")
   updateTabsetPanel(session, "logFileTabsset", selected = "log")
   
   #activate Interrupt button as GAMS is running now
@@ -807,7 +806,6 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
         statusText <- lang$nav$gamsModelStatus$error %+% returnCodeText
         if(config$activateModules$miroLogFile && length(miroLogAnnotations)){
           session$sendCustomMessage("gms-showValidationErrors", miroLogAnnotations)
-          switchTab(session, "input")
           valIdHead <- match(names(miroLogAnnotations)[[1L]], names(modelIn))
           if(length(valIdHead) && !is.na(valIdHead)){
             valTabId <- 0L

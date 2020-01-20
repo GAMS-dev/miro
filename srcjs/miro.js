@@ -566,6 +566,7 @@ ${data.data}</div>` : data.data);
       }
     });
     $('.input-validation-error').show();
+    switchTab('input');
   });
   const autoNumericBinding = new Shiny.InputBinding();
   $.extend(autoNumericBinding, {
