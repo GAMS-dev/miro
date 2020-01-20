@@ -834,7 +834,7 @@ observeEvent(input$trace_frame, {
   rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$trace_frame[1])]]]]$frame <<- traceframetmp
 }, priority = -450)
 observeEvent(input$animation_frame, {
-  req(input$trace_frame, rv$graphConfig$graph$animation)
+  req(input$trace_frame, rv$graphConfig$graph$animation, input$animation_frame)
   #frame = amount of time between frames (in milliseconds)
   frameTmp <- 1000/input$animation_frame
   rv$graphConfig$graph$animation$frame <<- frameTmp
