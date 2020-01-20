@@ -1014,7 +1014,7 @@ else
                             <section id="graph-options" class="doc-section">
                                 <h2 class="section-title">Options</h2>
                                 <div class="section-block">
-                                    <p>As already mentioned, not all options that exist for the different graphics are explained here. Nevertheless, a few options are explained here as examples, especially those which are applicable to several graphic types.</p>
+                                    <p>As already mentioned, not all the options available for the different graphs are explained here. Nevertheless, some options are given as examples, especially those that are applicable to several graphic types.</p>
                                     <h6 id = "group-domain" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Group domain</h6>
                                     <div class="expanded">
                                         <p>With some graphic types, a symbol dimension can be internally pivoted. This makes the graphic independent of the data.</p>
@@ -1067,6 +1067,27 @@ $offExternalInput
                                         <div class="section-block">
                                               <img class="img-fluid" src="assets/images/configuration_mode/table-graph-split.png" alt="Table and chart in split screen" />
                                         </div>
+                                    </div>
+                                    <h6 id = "animation" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Animation</h6>
+                                    <div class="expanded">
+                                        <p>Chart data can be animated in order to show how the data changes over time. Example: We want to animate a chart that shows the individual stocks of the Dow Jones index over time. The Y axis shows the price of a stock, the X axis shows the date. Now we want to display all stocks one after the other with an animation. For this we select in the category <i>Y axix</i> the dimension, which should be used in the animation for the single frames. Since we want to show all stock symbols one after the other, we choose <i>stock symbol</i>:</p>
+                                        <div class="section-block">
+                                              <img class="img-fluid" src="assets/images/configuration_mode/animation_y_axis.png" alt="Data dimension to animate" />
+                                        </div>
+                                        <p>After the selection the animation is rendered and a slider with play button appears under the graphic. <br><b>Note</b>: The animation of graphics can require a lot of computing power. It is therefore possible that it takes a little time until the preview graphics are rendered. This is especially true if you select a dimension for animation that consists of many individual values.</p>
+                                        <p>Under <i>Animation</i> we can further customize the animation, for example by setting the number of frames per second or the type of transition between two frame transitions. </p>
+                                        <div class="section-block">
+                                              <img class="img-fluid" src="assets/images/configuration_mode/animation_options.png" alt="Animation customization" />
+                                        </div>
+                                        <div class="callout-block callout-success" style="margin-top:10px;">
+                                           <div class="icon-holder">
+                                               <i class="fas fa-thumbs-up"></i>
+                                           </div><!--//icon-holder-->
+                                           <div class="content">
+                                               <b class="callout-title">Tip:</b>
+                                                <p>When using animations, it is often useful to define the visible areas for both axes in the corresponding axis categories. Otherwise it can happen that areas are preselected in which no data is visible.</p>
+                                            </div><!--//content-->
+                                        </div><!--//callout-block-->
                                     </div>
                                 </div><!--//section-block-->
                             </section>                       
