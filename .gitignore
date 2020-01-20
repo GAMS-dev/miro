@@ -33,6 +33,8 @@ model/**/*.miroconf
 model/**/*.miroapp
 model/**/*.zip
 model/**/*.bat
+model/**/*.opt
+model/**/*.pf
 model/**/*.gdx
 !model/**/data_*/*.gdx
 model/**/runapp.R
