@@ -467,16 +467,17 @@ body_admin <- dashboardBody({
                                                                 tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"), class="option-category"),
                                                  tags$h4(lang$adminMode$general$overwriteSymbolAliases$input, class="option-category"),
                                                  tags$div(class = "small-space"),
-                                                 lapply(names(modelInRaw), function(name){
+                                                 lapply(names(inputSymHeaders), function(name){
                                                    if(name %in% names(configJSON$overwriteAliases)){
                                                      symAlias <- configJSON$overwriteAliases[[name]]$newAlias
                                                    }else{
                                                      symAlias <- modelInRaw[[name]]$alias
                                                    }
-                                                   symHeaders <- configJSON$overwriteHeaderAliases[[name]]$newHeaders
                                                    if(!name %in% names(configJSON$overwriteHeaderAliases) ||
                                                       length(modelInRaw[[name]]$headers) != length(symHeaders)){
                                                      symHeaders <- names(inputSymHeaders[[name]])
+                                                   }else{
+                                                     symHeaders <- configJSON$overwriteHeaderAliases[[name]]$newHeaders
                                                    }
                                                    
                                                    tags$div(
