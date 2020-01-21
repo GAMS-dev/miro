@@ -317,10 +317,12 @@ lapply(modelInTabularData, function(sheet){
                       enableComments = hotOptions$enableComments, 
                       stretchH = hotOptions$stretchH,
                       overflow = hotOptions$overflow)
-      ht <- hot_context_menu(ht, allowRowEdit = if(isRo) FALSE else hotOptions$contextMenu$allowRowEdit, 
-                             allowColEdit = isPivoted, 
-                             allowReadOnly = hotOptions$contextMenu$allowReadOnly, 
-                             allowComments = hotOptions$contextMenu$allowComments)
+      if(isTRUE(hotOptions$contextMenu$enabled)){
+        ht <- hot_context_menu(ht, allowRowEdit = if(isRo) FALSE else hotOptions$contextMenu$allowRowEdit, 
+                               allowColEdit = isPivoted, 
+                               allowReadOnly = hotOptions$contextMenu$allowReadOnly, 
+                               allowComments = hotOptions$contextMenu$allowComments)
+      }
       ht <- hot_cols(ht, columnSorting = if(isPivoted) FALSE else hotOptions$columnSorting, 
                      manualColumnMove = hotOptions$manualColumnMove, 
                      manualColumnResize = hotOptions$manualColumnResize, 
