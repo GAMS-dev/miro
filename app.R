@@ -694,7 +694,8 @@ if(is.null(errMsg)){
   tryCatch({
     gdxio <<- NULL
     if(useGdx){
-      gdxio <<- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", "bin"), 
+      gdxio <<- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", 
+                                    if(isWindows()) file.path("bin", "x64") else "bin"), 
                           c(modelInRaw, modelOut), scalarsFileName,
                           scalarsOutName, scalarEquationsName, scalarEquationsOutName,
                           dropdownAliases)
