@@ -8,7 +8,7 @@ cd pickstock
 zip -r pickstock.conf.unzip pickstock_files.txt conf_pickstock/pickstock.json scripts_pickstock/hcube_analysis.ipynb static_pickstock -x "*.DS_Store"
 cd ..
 cd sudoku
-zip -r sudoku.conf.unzip sudoku_files.txt conf_sudoku/sudoku.json renderer_sudoku/sudoku.R -x "*.DS_Store"
+zip -r sudoku.conf.unzip sudoku_files.txt conf_sudoku/sudoku.json renderer_sudoku/sudoku.R static_sudoku -x "*.DS_Store"
 cd ..
 rm -rf miro_lib || true
 mkdir miro_lib
