@@ -66,9 +66,9 @@ config <- list()
 gamsSysDir <- Sys.getenv("GAMS_SYS_DIR")
 
 installedPackages <- installed.packages()[, "Package"]
-useGdx <- FALSE
+useGdx <<- FALSE
 if("gdxrrwMIRO" %in% installedPackages){
-  useGdx <- TRUE
+  useGdx <<- TRUE
   requiredPackages <- c(requiredPackages, "gdxrrwMIRO")
 }
 # vector of required files
@@ -209,6 +209,12 @@ if(is.null(errMsg)){
     for (customRendererName  in customRendererNames){
       assign(customRendererName, get(customRendererName), envir = .GlobalEnv)
     }
+  }
+  if(!useGdx && identical(config$fileExchange, "gdx")){
+    errMsg <- paste(errMsg, 
+                    sprintf("Can not use 'gdx' as file exchange with GAMS if gdxrrwMIRO library is not installed.\n
+Please make sure you have a valid gdxrrwMIRO installation in your R library: '%s'.", .libPaths()[1]),
+                    sep = "\n")
   }
   GAMSClArgs <- c(paste0("execMode=", gamsExecMode),
                   paste0('IDCGDXOutput="', MIROGdxOutName, '"'))
@@ -1389,6 +1395,7 @@ if(!is.null(errMsg)){
               noCheck[i] <<- FALSE
             }
           })
+          return()
         }
         observe({
           switch(modelIn[[i]]$type,
