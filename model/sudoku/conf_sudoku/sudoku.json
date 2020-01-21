@@ -37,6 +37,8 @@
       }
     }
   },
+  "pageTitle": "Sudoku solver",
+  "miroLogFile": "miro.log",
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
@@ -53,7 +55,5 @@
     },
     "height": 700,
     "colWidths": 62
-  },
-  "pageTitle": "Sudoku solver",
-  "miroLogFile": "miro.log"
+  }
 }

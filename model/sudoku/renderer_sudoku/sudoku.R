@@ -7,11 +7,10 @@ renderSudoku <- function(input, output, session, data, options = NULL, path = NU
   force(data)
   dataTmp <- data
   if(length(data) && nrow(data)){
-    if(isTRUE(options$isInput)){
-      dataTmp     <- dataTmp[-1L]
-    }else{
+    dataTmp     <- dataTmp[-1L]
+    if(!isTRUE(options$isInput)){
       initialData <- which(dataTmp < 0)
-      dataTmp     <- abs(dataTmp[-1L])
+      dataTmp     <- abs(dataTmp)
     }
     dataTmp <- dataTmp %>%
       mutate_if(is.double, as.integer)
