@@ -73,7 +73,7 @@ prepareModelRun <- function(async = FALSE){
     # write compile time variable file and remove compile time variables from scalar dataset
     if(identical(tolower(names(dataTmp)[[i]]), scalarsFileName)){
       # scalars file exists, so remove compile time variables from it
-      DDParIdx           <- dataTmp[[i]][[1]] %in% outer(DDPar, c("", "_lo", "_up"), 
+      DDParIdx           <- dataTmp[[i]][[1]] %in% outer(DDPar, c("", "$lo", "$up"), 
                                                          FUN = "paste0")
       GMSOptIdx          <- dataTmp[[i]][[1]] %in% GMSOpt
       DDParValues        <- dataTmp[[i]][DDParIdx, , drop = FALSE]
