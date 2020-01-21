@@ -643,6 +643,8 @@ if(is.null(errMsg)){
                })
       }
     })
+  }else{
+    scalarSymbolsBase <- character(0L)
   }
   
   widgetIds    <- unlist(widgetIds[!vapply(widgetIds, is.null,
