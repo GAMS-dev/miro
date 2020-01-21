@@ -1,6 +1,26 @@
 {
 	"modelTitle":	"G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m",
 	"inputSymbols":	{
+		"_scalars":	{
+			"alias":	"Input Scalars",
+			"symnames":	["force_unique_sol"],
+			"symtext":	["force_unique_sol"],
+			"symtypes":	["parameter"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		},
 		"initial_state":	{
 			"alias":	"initial_state",
 			"symtype":	"parameter",

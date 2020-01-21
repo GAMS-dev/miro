@@ -35,6 +35,14 @@
       "options": {
         "isInput": true
       }
+    },
+    "force_unique_sol": {
+      "widgetType": "checkbox",
+      "alias": "force_unique_sol",
+      "value": 1,
+      "noHcube": false,
+      "class": "checkbox-material",
+      "label": "Compute only if solution is unique?"
     }
   },
   "pageTitle": "Sudoku solver",
@@ -54,6 +62,6 @@
       "allowComments": true
     },
     "height": 700,
-    "colWidths": 62
+    "colWidths": 150
   }
 }

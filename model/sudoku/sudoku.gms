@@ -14,6 +14,7 @@ set col 'col' /col1*col9/
     quad9.(col7*col9).(row7*row9)
 /;
 $onExternalInput
+scalar force_unique_sol /1/;
 table initial_state(row,col)
      col1 col2 col3 col4 col5 col6 col7 col8 col9
 row1                     8    6
@@ -27,7 +28,7 @@ row8                5         8         2
 row9                3    7
 ;
 $offExternalInput
-
+initial_state(row,col)$mapVal(initial_state(row,col)) = 0;
 set error01(row,col);
 error01(row,col) = initial_state(row,col) < 0 or initial_state(row,col) > 9 or mod(initial_state(row,col),1) <> 0;
 
@@ -86,7 +87,7 @@ Set
 
 execute_load 'solnpool.gdx', solnpool=index;
 
-if(card(solnpool) > 1,
+if(force_unique_sol and card(solnpool) > 1,
   putclose log 'The solution to the input data you provided is not unique!'/;
   abort "Solution is not unique!");
 
