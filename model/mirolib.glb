@@ -19,3 +19,11 @@ Files = pickstock.gms,dowjones2016.csv,pickstock.conf.unzip
 2 = pickstock
 3 = gms, csv
 4 = Stock selection problem with MIRO
+
+*$*$*$
+Files = sudoku.gms,sudoku.conf.unzip
+1 = 003
+2 = sudoku
+3 = gms
+4 = Solve Sudokus with MIRO
+

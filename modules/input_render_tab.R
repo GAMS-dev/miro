@@ -389,18 +389,17 @@ lapply(modelInTabularData, function(sheet){
     })
   }else if(!modelIn[[i]]$type %in% c("slider", "dropdown", "dropdowne", "daterange", 
                                      "date", "checkbox", "textinput", "numericinput")){
-    if(modelIn[[i]]$type )
-      observe({
-        tryCatch({
-          modelInputDataVisible[[i]] <<- callModule(generateData, paste0("data-in_", i), 
-                                                    type = modelIn[[i]]$rendererName, 
-                                                    data = dataModelIn[[i]](),
-                                                    customOptions = modelIn[[i]]$options)
-        }, error = function(e){
-          flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
-                     modelInAlias[[i]], e)
-          errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
-        })
+    observe({
+      tryCatch({
+        modelInputDataVisible[[i]] <<- callModule(generateData, paste0("data-in_", i), 
+                                                  type = modelIn[[i]]$rendererName, 
+                                                  data = dataModelIn[[i]](),
+                                                  customOptions = modelIn[[i]]$options)
+      }, error = function(e){
+        flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
+                   modelInAlias[[i]], e)
+        errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
       })
+    })
   }
 })

@@ -1,0 +1,59 @@
+{
+  "overwriteSheetOrder": {
+    "input": ["initial_state", "_widgets"]
+  },
+  "pivottable": {
+    "bgColor": "rgb(255,128,0)"
+  },
+  "theme": "browser",
+  "defCompMode": "split",
+  "roundingDecimals": 2,
+  "activateModules": {
+    "logFile": false,
+    "lstFile": false,
+    "loadLocal": true,
+    "attachments": true,
+    "remoteExecution": false,
+    "downloadTempFiles": false
+  },
+  "autoGenInputGraphs": true,
+  "aggregateWidgets": true,
+  "storeLogFilesDuration": 7,
+  "excelIncludeMeta": true,
+  "excelIncludeEmptySheets": true,
+  "saveTraceFile": true,
+  "dataRendering": {
+    "results": {
+      "outType": "sudoku"
+    }
+  },
+  "inputWidgets": {
+    "initial_state": {
+      "widgetType": "custom",
+      "rendererName": "sudoku",
+      "alias": "Initial state",
+      "options": {
+        "isInput": true
+      }
+    }
+  },
+  "handsontable": {
+    "stretchH": "none",
+    "readonly": false,
+    "highlightCol": true,
+    "highlightRow": true,
+    "columnSorting": true,
+    "manualColumnResize": true,
+    "contextMenu": {
+      "enabled": true,
+      "allowRowEdit": true,
+      "allowColEdit": true,
+      "allowReadOnly": false,
+      "allowComments": true
+    },
+    "height": 700,
+    "colWidths": 62
+  },
+  "pageTitle": "Sudoku solver",
+  "miroLogFile": "miro.log"
+}

@@ -294,6 +294,10 @@ if(is.null(errMsg)){
         widgetConfig$rendererName  <- NULL
         widgetConfig$packages      <- NULL
       }
+      if(!is.null(widgetConfig$options)){
+        modelIn[[i]]$options      <- widgetConfig$options
+        widgetConfig$options      <- NULL
+      }
       if(!widgetType %in% c("table", "custom")){
         modelIn[[i]]$headers       <- NULL
         modelIn[[i]][[widgetType]] <- widgetConfig

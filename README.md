@@ -51,7 +51,7 @@ shiny::runApp(launch.browser=TRUE)
 
 ## Build Javascript/CSS
 We use Node.JS, npm and webpack to lint, bundle and minify Javascript and compile Less to CSS. You can install npm from [here](https://www.npmjs.com/get-npm). 
-To install the required dependencies, run `npm install` from root of the GAMS MIRO repository. To build CSS and Javascript files from the `srcjs` and `less` directories, run `npm run build`. This creates bundled and minified files inside the `www` directory. MIRO only reads these minified versions and not the source files.
+To install the required dependencies, run `npm install` from the root of the GAMS MIRO repository. To build CSS and Javascript files from the `srcjs` and `less` directories, run `npm run build`. This creates bundled and minified files inside the `www` directory. MIRO only reads these minified versions and not the source files.
 While you are developing you can run `npm run watch` to rebuild the output whenever you change one of the source files. 
 
 ## License
