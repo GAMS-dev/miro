@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "0.9.43"
+MIROVersion <- "0.9.44"
 APIVersion  <- "1"
-MIRORDate   <- "Jan 20 2020"
+MIRORDate   <- "Jan 21 2020"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -626,8 +626,7 @@ if(is.null(errMsg)){
   }
 }
 inconsistentTableNames <- NULL
-if(is.null(errMsg) && debugMode && 
-   !LAUNCHCONFIGMODE){
+if(is.null(errMsg) && debugMode){
   # checking database inconsistencies
   local({
     orphanedTables <- NULL
