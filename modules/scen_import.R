@@ -167,7 +167,10 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
                                     c(modelInTabularData, scalarsFileName, 
                                       scalarInputSym)]
   }else{
-    showErrorMsg(lang$errMsg$readOutput$title, lang$errMsg$readOutput$desc)
+    showErrorMsg(lang$errMsg$invalidFileType$title, 
+                 sprintf(lang$errMsg$invalidFileType$desc, paste0(c("xls", "xlsx", "csv", if(useGdx) "gdx"),
+                                                                  collapse = ",")))
+    flog.info("Invalid file type: '%s' attempted to be imported. Import interrupted.", fileType)
     return()
   }
   datasetsToFetch <- datasetsToFetch[datasetsToFetch %in% c(names(modelInToImport), 

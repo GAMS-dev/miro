@@ -2999,6 +2999,23 @@
             }
           }
         },
+        "invalidFileType":{  
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
         "fileWrite":{  
           "type":"object",
           "additionalProperties":false,
