@@ -1088,7 +1088,7 @@ observeEvent({input$widget_type
                                                  tags$div(class = "shiny-input-container",
                                                           checkboxInput_MIRO("date_start_off", 
                                                                              lang$adminMode$widgets$daterange$startOff,
-                                                                             !is.null(rv$widgetConfig$start))
+                                                                             is.null(rv$widgetConfig$start))
                                                  ))
                                )),
                       tags$div(class = "shiny-input-container",
@@ -1096,7 +1096,7 @@ observeEvent({input$widget_type
                                tags$div(class = "conditional",
                                         tags$div(class = "col-sm-8",
                                                  conditionalPanel(condition = "input.date_end_off!==true",
-                                                                  dateInput("date_start", lang$adminMode$widgets$daterange$defaultEnd, 
+                                                                  dateInput("date_end", lang$adminMode$widgets$daterange$defaultEnd, 
                                                                             value = rv$widgetConfig$end)
                                                  )),
                                         tags$div(class = "col-sm-4",
