@@ -37,9 +37,9 @@ additionalInputScalars <- inputDsNames[vapply(inputDsNames, function(el){
 if(length(scalarInToVerify))
   scalarInToVerify <- scalarInToVerify[!startsWith(scalarInToVerify, "_")]
 
-gmsColTypes <- db$getDbSchema()$colTypes
-gmsFileHeaders <- db$getDbSchema()$colNames
-
+gmsColTypes <- c(db$getDbSchema()$colTypes, setNames("ccc", scalarsFileName))
+gmsFileHeaders <- c(db$getDbSchema()$colNames, setNames(list(scalarsFileHeaders), 
+                                                        scalarsFileName))
 disableEl(session, "#btUploadHcube")
 
 # initialise hcube import class
@@ -108,20 +108,6 @@ observeEvent(rv$uploadHcube, {
     showInvalidScenIdsDialog(invalidScenIds)
     return(NULL)
   }
-  
-  tryCatch({  
-    hcubeImport$readAllScenData()
-    flog.trace("Scenario data read into memory.")
-  }, error = function(e){
-    flog.error("Problems reading scenario data. Error message: %s.", e)
-    errMsg <<- lang$errMsg$hcubeImport$scenRead$desc
-  })
-  if(is.null(showErrorMsg(lang$errMsg$hcubeImport$scenRead$title, errMsg))){
-    return(NULL)
-  }
-  
-  prog$inc(amount = 0, detail = lang$progressBar$hcubeImport$scenValidation)
-  
   rv$noInvalidData <- rv$noInvalidData + 1L
 })
 
@@ -133,10 +119,23 @@ observeEvent(input$btHcubeImportInvalid,
              )
 observeEvent(virtualActionButton(rv$noInvalidData), {
   prog <- Progress$new()
-  prog$set(message = lang$progressBar$hcubeImport$scenRead, value = 2/6)
+  prog$set(message = lang$progressBar$hcubeImport$scenValidation, value = 2/6)
   on.exit(prog$close())
   errMsg <- NULL
   removeModal()
+  
+  tryCatch({
+    hcubeImport$readAllScenData()
+    flog.trace("Scenario data read into memory.")
+  }, error = function(e){
+    flog.error("Problems reading scenario data. Error message: %s.", e)
+    errMsg <<- lang$errMsg$hcubeImport$scenRead$desc
+  })
+  if(is.null(showErrorMsg(lang$errMsg$hcubeImport$scenRead$title, errMsg))){
+    return(NULL)
+  }
+  
+  prog$inc(amount = 0, detail = lang$progressBar$hcubeImport$scenRead)
   
   prog$inc(amount = 1/6, detail = lang$progressBar$hcubeImport$duplicateCheck)
   tryCatch({

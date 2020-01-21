@@ -172,6 +172,7 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL){
   k <- 1
   
   if(length(choices)){
+    choices <- as.character(choices)
     elRaw <- choices
     forwardDep  <- startsWith(choices, "$") & !startsWith(choices, "$$")
     elRaw[forwardDep] <- stringi::stri_trim_left(elRaw[forwardDep], 

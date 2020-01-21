@@ -154,7 +154,8 @@ if(LAUNCHHCUBEMODE){
       return(paste0("--", substring(names(modelIn)[id],
                                     nchar(prefixDDPar) + 1L)))
     }else if(names(modelIn)[id] %in% inputDsNames){
-      if(isTRUE(modelIn[[id]]$dropdown$single)){
+      if(isTRUE(modelIn[[id]]$dropdown$single) || 
+         isTRUE(modelIn[[id]]$dropdown$checkbox)){
         return(paste0("--HCUBE_SCALARV_", names(modelIn)[id]))
       }
       return(paste0("--HCUBE_STATIC_", names(modelIn)[id]))
@@ -195,14 +196,14 @@ if(LAUNCHHCUBEMODE){
                }
                return(1L)
              },
-             hot = {
-               return(1L)
-             },
-             dt = {
+             dt = ,
+             hot = ,
+             custom = {
                return(1L)
              },
              dropdown = {
-               if(isTRUE(modelIn[[i]]$dropdown$single)){
+               if(isTRUE(modelIn[[i]]$dropdown$single) || 
+                  isTRUE(modelIn[[i]]$dropdown$checkbox)){
                  return(length(input[["dropdown_" %+% i]]))
                }
                return(1L)
@@ -274,10 +275,14 @@ if(LAUNCHHCUBEMODE){
                }
              },
              dropdown = {
-               if(!isTRUE(modelIn[[i]]$dropdown$single)){
+               if(isTRUE(modelIn[[i]]$dropdown$checkbox)){
+                 convertNumeric <- TRUE
+               }else if(!isTRUE(modelIn[[i]]$dropdown$single)){
                  data <- ddToTibble(sort(input[["dropdown_" %+% i]]), modelIn[[i]])
                  staticData$push(names(modelIn)[[i]], data)
                  return(paste0(parPrefix, "=", digest(data, algo = "md5")))
+               }else{
+                 convertNumeric <- FALSE
                }
                value <- input[["dropdown_" %+% i]]
                value <- value[value != "_"]
@@ -298,6 +303,9 @@ if(LAUNCHHCUBEMODE){
                  }
                }else{
                  text <- ""
+               }
+               if(convertNumeric){
+                 return(paste0(parPrefix, "=", as.numeric(value), text))
                }
                return(paste0(parPrefix, "=", escapeGAMSCL(value), text))
              },
@@ -326,7 +334,8 @@ if(LAUNCHHCUBEMODE){
                return(paste0(parPrefix, "=", val))
              },
              dt =,
-             hot = {
+             hot = ,
+             custom = {
                input[['in_' %+% i]]
                errMsg <- NULL
                tryCatch({

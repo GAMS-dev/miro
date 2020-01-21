@@ -168,6 +168,9 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                    ret$tabular[[i]] <<- gdxio$rgdx(gdxPath, names(metaData)[[i]], 
                                                    names = names(metaData[[i]]$headers),
                                                    isNewGdx = isNewGdx)
+                   if(!inherits(ret$tabular[[i]], "data.frame")){
+                     ret$tabular[[i]] <<- ddToTibble(ret$tabular[[i]], metaData[[i]])
+                   }
                  }, error = function(e){
                    ret$tabular[[i]] <<- templates[[i]]
                  })

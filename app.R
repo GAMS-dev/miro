@@ -936,8 +936,7 @@ if(!is.null(errMsg)){
                                     scalarsFileHeaders = scalarsFileHeaders,
                                     templates = modelInTemplateTmp, method = method,
                                     fileName = miroDataFile, DDPar = DDPar, GMSOpt = GMSOpt)$tabular
-            
-            if(!scalarsFileName %in% names(metaDataTmp) && length(scalarInputSym)){
+            if(!scalarsFileName %in% names(metaDataTmp) && length(c(DDPar, GMSOpt))){
               # additional command line parameters that are not GAMS symbols
               scalarsTemplate <- tibble(a = character(0L), b = character(0L), c = character(0L))
               names(scalarsTemplate) <- scalarsFileHeaders
