@@ -808,15 +808,6 @@ observeEvent({input$widget_type
            rv$widgetConfig$label <- currentConfig$label
            rv$widgetConfig$aliases <- currentConfig$aliases
            dynamicChoices <- getWidgetDependencies("dropdown", rv$widgetConfig$choices)
-           if(length(dynamicChoices)){
-             if(identical(dynamicChoices[[2]], "")){
-               depHeader <- allInputSymHeaders
-             }else{
-               depHeader <- inputSymHeaders[[dynamicChoices[2]]]
-             }
-           }else{
-             depHeader <- inputSymHeaders[[1]]
-           }
            staticChoiceInput <- tagList(
              selectizeInput("dd_choices", lang$adminMode$widgets$dropdown$choices, 
                             if(!length(dynamicChoices)) currentConfig$choices else c(), 
@@ -845,6 +836,15 @@ observeEvent({input$widget_type
                       tags$div(class = "shiny-input-container conditional highlight-block",
                                tags$div(class = "col-sm-8",
                                         if(length(inputSymMultiDim)){
+                                          if(length(dynamicChoices)){
+                                            if(identical(dynamicChoices[[2]], "")){
+                                              depHeader <- allInputSymHeaders
+                                            }else{
+                                              depHeader <- inputSymHeaders[[dynamicChoices[2]]]
+                                            }
+                                          }else{
+                                            depHeader <- inputSymHeaders[[1]]
+                                          }
                                           tagList(
                                             conditionalPanel(condition = "input.dd_choice_dep_selector===true",
                                                              staticChoiceInput
