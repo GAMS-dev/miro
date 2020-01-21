@@ -210,7 +210,7 @@ if(is.null(errMsg)){
       assign(customRendererName, get(customRendererName), envir = .GlobalEnv)
     }
   }
-  if(!useGdx && identical(config$fileExchange, "gdx")){
+  if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildonly){
     errMsg <- paste(errMsg, 
                     sprintf("Can not use 'gdx' as file exchange with GAMS if gdxrrwMIRO library is not installed.\n
 Please make sure you have a valid gdxrrwMIRO installation in your R library: '%s'.", .libPaths()[1]),
