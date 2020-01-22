@@ -94,7 +94,12 @@
   .input-group-addon {
     .border-radius(@input-radius);
     border-color: @gray-lte;
-    background-color: #fff;
+    .responsiveDark({
+       background-color: #fff;
+    },
+    {
+       background-color: @date-range-middle-dark;
+    });
   }
 }
 

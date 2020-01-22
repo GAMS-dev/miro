@@ -517,7 +517,12 @@ animation: none !important;
     -o-transition: all ease 0.2s;
     -moz-transition: all ease 0.2s;
     border-radius: 1em;
-    background-color: gray;
+    .responsiveDark({
+       background-color: grey;
+    },
+    {
+       background-color: @checkbox-unchecked-dark;
+    });
     overflow: hidden;
 }
 .checkbox-material .checkbox span::before {
