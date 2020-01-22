@@ -38,7 +38,7 @@
     },
     "force_unique_sol": {
       "widgetType": "checkbox",
-      "alias": "force_unique_sol",
+      "alias": "Force unique solution",
       "value": 1,
       "noHcube": false,
       "class": "checkbox-material",
