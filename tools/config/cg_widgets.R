@@ -1219,6 +1219,7 @@ observeEvent({input$widget_type
                                    value = if(length(currentConfig$value)) currentConfig$value else 2L,
                                    min = if(length(currentConfig$min)) currentConfig$min else 0L,
                                    max = if(length(currentConfig$max)) currentConfig$max else 10L,
+                                   decimal = if(length(currentConfig$decimal)) currentConfig$decimal else 0L,
                                    sign = if(length(currentConfig$sign)) currentConfig$sign else NULL)
            rv$widgetConfig$label <- currentConfig$label
            insertUI(selector = "#widget_options",
@@ -1241,6 +1242,11 @@ observeEvent({input$widget_type
                                         numericInput("numericinput_value", lang$adminMode$widgets$numericinput$value, 
                                                      value = if(is.numeric(rv$widgetConfig$value)) rv$widgetConfig$value else 0L)),
                                tags$div(class = "two-col-right",
+                                        numericInput("numericinput_decimal", lang$adminMode$widgets$numericinput$decimal, 
+                                                     min = 0, 
+                                                     value = if(is.numeric(rv$widgetConfig$decimal)) rv$widgetConfig$decimal else 0L))),
+                      tags$div(class="shiny-input-container two-col-wrapper",
+                               tags$div(class = "two-col-left",
                                         textInput("numericinput_sign", lang$adminMode$widgets$numericinput$sign, value = rv$widgetConfig$sign)))
                     ), 
                     where = "beforeEnd")
@@ -1251,7 +1257,8 @@ observeEvent({input$widget_type
                               value = rv$widgetConfig$value,
                               min = rv$widgetConfig$min,
                               max = rv$widgetConfig$max,
-                              sign = rv$widgetConfig$sign)
+                              sign = rv$widgetConfig$sign,
+                              decimal = rv$widgetConfig$decimal)
            })
          }
   )
@@ -1462,6 +1469,13 @@ observeEvent(input$numericinput_max, ignoreNULL = FALSE, {
     return()
   }
   rv$widgetConfig$max <<- input$numericinput_max
+})
+observeEvent(input$numericinput_decimal, {
+  if(!is.numeric(input$numericinput_decimal)){
+    rv$widgetConfig$decimal <<- NULL
+    return()
+  }
+  rv$widgetConfig$decimal <<- input$numericinput_decimal
 })
 observeEvent(input$numericinput_sign, {
   if(!nchar(input$numericinput_sign))

@@ -750,6 +750,11 @@
                      "type":["number","null"],
                      "minLength":1
                    },
+                   "decimal":{  
+                     "description":"Number of decimal places",
+                     "type":["number","null"],
+                     "minLength":1
+                   },
                    "sign":{  
                      "description":"currency sign",
                      "type":["string","null"],
