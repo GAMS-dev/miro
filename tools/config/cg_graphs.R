@@ -384,6 +384,13 @@ observeEvent(input$localInput, {
 observeEvent(input$chart_title, {
   rv$graphConfig$graph$title <<- input$chart_title
 })
+observe({
+  if(isTRUE(input$fixed_width)){
+    rv$graphConfig$graph$fixedWidth <<- 700L
+  }else{
+    rv$graphConfig$graph$fixedWidth <<- NULL
+  }
+})
 observeEvent(input$leafFlow_lng, {
   rv$graphConfig$graph$flows[[idLabelMap$leaflet_flows[[as.integer(input$leafFlow_lng[1])]]]]$lng0 <<- input$leafFlow_lng[2]
 })
@@ -750,6 +757,9 @@ observeEvent(input$marker_size, {
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_size[1])]]]]$marker$size <<- input$marker_size[2]
   else
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_size[1])]]]]$marker$size <<- NULL
+}, priority = -500)
+observeEvent(input$marker_sizemode, {
+  rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_sizemode[1])]]]]$marker$sizemode <<- input$marker_sizemode[2]
 }, priority = -500)
 observeEvent(input$marker_maxsize, {
   if(nchar(input$marker_maxsize[2]) && !identical(as.numeric(input$marker_maxsize[2]), 0))
@@ -1314,6 +1324,7 @@ observeEvent(input$add_array_el, {
                               symbol = "circle",
                               opacity = 1L,
                               size = label,
+                              sizemode = "area",
                               color = label,
                               line = list(width = 0L)
                             ),
@@ -1737,6 +1748,9 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
 getOptionSection <- reactive({
   tagList(
     textInput("chart_title", lang$adminMode$graphs$ui$chartTitle),
+    if(!identical(rv$graphConfig$graph$type, "pie")){
+      checkboxInput_MIRO("fixed_width", lang$adminMode$graphs$chartOptions$options$fixedWidth, value = FALSE)
+    },
     checkboxInput_MIRO("showlegend", lang$adminMode$graphs$chartOptions$options$showlegend, value = TRUE),
     colorPickerInput("paper_bgcolor", lang$adminMode$graphs$chartOptions$options$paperBgColor, value = NULL),
     colorPickerInput("plot_bgcolor", lang$adminMode$graphs$chartOptions$options$plotBgColor, value = NULL),
@@ -1788,6 +1802,7 @@ getBubbleOptions  <- reactive({
                                                                   symbol = "circle",
                                                                   opacity = 1L,
                                                                   size = scalarIndices[1],
+                                                                  sizemode = "area",
                                                                   color = scalarIndices[1],
                                                                   line = list(width = 0L)
                                                                 ),
@@ -2206,9 +2221,12 @@ observe({
           showEl(session, "#pieValues")
           hideEl(session, "#preview-content-plotly")
       }else{
+        graphOptionsTmp <- rv$graphConfig$graph
+        if(length(rv$graphConfig$graph$fixedWidth))
+          graphOptionsTmp$fixedWidth <- 350
         callModule(renderData, "preview_output_plotly", type = "graph", 
                    data = data, configData = configScalars, 
-                   graphOptions = rv$graphConfig$graph,
+                   graphOptions = graphOptionsTmp,
                    roundPrecision = roundPrecision, modelDir = modelDir)
         showEl(session, "#preview-content-plotly")
         hideEl(session, "#pieValues")

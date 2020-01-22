@@ -282,6 +282,7 @@ const arrayTypes = {
       marker_colorDep: ['selectDep', [lang.addBubbleDataEl.colorCheck, 'color', lang.addBubbleDataEl.colorCheckTrue], lang.addBubbleDataEl.colorCheckFalse, scalarIndices, scalarIndexAliases, '.index'],
       marker_size: ['select', lang.addBubbleDataEl.size, scalarIndices, scalarIndexAliases, '.index'],
       marker_maxsize: ['numeric', lang.addBubbleDataEl.maxsize, 0, 0],
+      marker_sizemode: ['select', lang.addBubbleDataEl.sizemode, ['area', 'diameter'], lang.addBubbleDataEl.sizemodeChoices],
       marker_line_width: ['numeric', lang.addBubbleDataEl.lineWidth, 0, 0],
       marker_line_color: ['color', lang.addBubbleDataEl.lineColor],
       trace_legend: ['checkbox', lang.addBubbleDataEl.legend, true],

@@ -139,7 +139,7 @@ insertUI(selector = "#interface_wrapper2",
                               accept = c(".png", ".PNG", ".jpg", ".JPG"))),
            tags$label(class = "cb-label", "for" = "general_logo_preview", style = "padding-left: 25px;", lang$adminMode$general$logo$header,
                       tags$div(class="logo-wrapper",
-                               imageOutput("general_logo_preview", height = "50px", width = "230px")
+                               imageOutput("general_logo_preview", height = "50px")
                       )),
            tags$hr(),
            tags$h2(lang$adminMode$general$readme$label, 
@@ -316,7 +316,7 @@ output$general_logo_preview <- renderImage({
                                        rv$generalConfig$UILogo))
     }
   })
-  list(src = filename, height = "50px", width = "230px", alt = "custom logo")
+  list(src = filename, height = "50px", alt = "custom logo")
 }, deleteFile = FALSE)
 
 
