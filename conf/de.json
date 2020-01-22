@@ -651,6 +651,10 @@
       "title":"Fehler beim Lesen von Datei",
       "desc":"Beim Lesen der Datei: '%s' ist ein Fehler aufgetreten."
     },
+    "invalidFileType":{  
+      "title":"Ungültiger Dateityp",
+      "desc":"Die Datei, die Sie zu importieren versuchen, kann von MIRO nicht gelesen werden. Unterstützte Dateitypen sind: %s."
+    },
     "fileWrite":{  
       "title":"Fehler beim Schreiben von Datei",
       "desc":"Beim Schreiben der Datei: '%s' ist ein Fehler aufgetreten."

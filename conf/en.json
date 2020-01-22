@@ -651,6 +651,10 @@
       "title":"Error reading file",
       "desc":"Some error occurred reading file: '%s'."
     },
+    "invalidFileType":{  
+      "title":"Invalid file type",
+      "desc":"The file you are trying to import can not be read by MIRO. Supported file types are: %s."
+    },
     "fileWrite":{  
       "title":"Error writing file",
       "desc":"Some error occurred writing file: '%s'."

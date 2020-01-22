@@ -651,6 +651,10 @@
       "title":"读取文件时出错",
       "desc":"读取以下文件时出现错误：'%s'。"
     },
+    "invalidFileType":{  
+      "title":"Invalid file type",
+      "desc":"The file you are trying to import can not be read by MIRO. Supported file types are: %s."
+    },
     "fileWrite":{
       "title":"保存文件时出错",
       "desc":"保存以下文件时出现错误：'%s'。"

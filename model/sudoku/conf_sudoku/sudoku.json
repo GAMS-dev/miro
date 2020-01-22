@@ -35,8 +35,18 @@
       "options": {
         "isInput": true
       }
+    },
+    "force_unique_sol": {
+      "widgetType": "checkbox",
+      "alias": "force_unique_sol",
+      "value": 1,
+      "noHcube": false,
+      "class": "checkbox-material",
+      "label": "Compute only if solution is unique?"
     }
   },
+  "pageTitle": "Sudoku solver",
+  "miroLogFile": "miro.log",
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
@@ -52,8 +62,6 @@
       "allowComments": true
     },
     "height": 700,
-    "colWidths": 62
-  },
-  "pageTitle": "Sudoku solver",
-  "miroLogFile": "miro.log"
+    "colWidths": 150
+  }
 }

@@ -1,5 +1,5 @@
 #version number
-MIROVersion <- "0.9.44"
+MIROVersion <- "0.9.47"
 APIVersion  <- "1"
 MIRORDate   <- "Jan 21 2020"
 #####packages:
@@ -66,9 +66,9 @@ config <- list()
 gamsSysDir <- Sys.getenv("GAMS_SYS_DIR")
 
 installedPackages <- installed.packages()[, "Package"]
-useGdx <- FALSE
+useGdx <<- FALSE
 if("gdxrrwMIRO" %in% installedPackages){
-  useGdx <- TRUE
+  useGdx <<- TRUE
   requiredPackages <- c(requiredPackages, "gdxrrwMIRO")
 }
 # vector of required files
@@ -209,6 +209,12 @@ if(is.null(errMsg)){
     for (customRendererName  in customRendererNames){
       assign(customRendererName, get(customRendererName), envir = .GlobalEnv)
     }
+  }
+  if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildonly){
+    errMsg <- paste(errMsg, 
+                    sprintf("Can not use 'gdx' as file exchange with GAMS if gdxrrwMIRO library is not installed.\n
+Please make sure you have a valid gdxrrwMIRO installation in your R library: '%s'.", .libPaths()[1]),
+                    sep = "\n")
   }
   GAMSClArgs <- c(paste0("execMode=", gamsExecMode),
                   paste0('IDCGDXOutput="', MIROGdxOutName, '"'))
@@ -688,7 +694,8 @@ if(is.null(errMsg)){
   tryCatch({
     gdxio <<- NULL
     if(useGdx){
-      gdxio <<- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", "bin"), 
+      gdxio <<- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", 
+                                    if(isWindows()) file.path("bin", "x64") else "bin"), 
                           c(modelInRaw, modelOut), scalarsFileName,
                           scalarsOutName, scalarEquationsName, scalarEquationsOutName,
                           dropdownAliases)
@@ -930,8 +937,7 @@ if(!is.null(errMsg)){
                                     scalarsFileHeaders = scalarsFileHeaders,
                                     templates = modelInTemplateTmp, method = method,
                                     fileName = miroDataFile, DDPar = DDPar, GMSOpt = GMSOpt)$tabular
-            
-            if(!scalarsFileName %in% names(metaDataTmp) && length(scalarInputSym)){
+            if(!scalarsFileName %in% names(metaDataTmp) && length(c(DDPar, GMSOpt))){
               # additional command line parameters that are not GAMS symbols
               scalarsTemplate <- tibble(a = character(0L), b = character(0L), c = character(0L))
               names(scalarsTemplate) <- scalarsFileHeaders
@@ -1389,6 +1395,7 @@ if(!is.null(errMsg)){
               noCheck[i] <<- FALSE
             }
           })
+          return()
         }
         observe({
           switch(modelIn[[i]]$type,

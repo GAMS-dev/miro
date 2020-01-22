@@ -7,16 +7,17 @@ renderSudoku <- function(input, output, session, data, options = NULL, path = NU
   force(data)
   dataTmp <- data
   if(length(data) && nrow(data)){
+    dataTmp     <- dataTmp[-1L]
     if(isTRUE(options$isInput)){
-      dataTmp     <- dataTmp[-1L]
+      dataTmp[dataTmp == 0] <- ''
     }else{
       initialData <- which(dataTmp < 0)
-      dataTmp     <- abs(dataTmp[-1L])
+      dataTmp     <- abs(dataTmp)
     }
     dataTmp <- dataTmp %>%
       mutate_if(is.double, as.integer)
   }else{
-    dataTmp <- as_tibble(vapply(paste0("col", 1:9), function(el){integer(9L)}, integer(9L)))
+    dataTmp <- as_tibble(vapply(paste0("col", 1:9), function(el){character(9L)}, character(9L)))
   }
   output$sudoku <- renderRHandsontable(rhandsontable(dataTmp, readOnly = !isTRUE(options$isInput), rowHeaders = FALSE) %>%
                                          hot_table(contextMenu = FALSE, customBorders = lapply(0:8, function(i){
@@ -50,7 +51,7 @@ renderSudoku <- function(input, output, session, data, options = NULL, path = NU
     hot_col(1:9, valign = "htMiddle htCenter"))
   if(isTRUE(options$isInput)){
     return(reactive({
-        dataTmp <- hot_to_r(input$sudoku)
+        dataTmp <- hot_to_r(input$sudoku) %>% mutate_all(as.integer)
         if(length(dataTmp) && nrow(dataTmp) == 9L){
             return(bind_cols(row = paste0("row", 1:9), dataTmp))
         }else{

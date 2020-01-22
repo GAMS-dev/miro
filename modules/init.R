@@ -584,6 +584,69 @@ if(is.null(errMsg)){
     }
   })
   
+  # Hypercube mode configuration
+  if(LAUNCHHCUBEMODE){
+    scalarSymbolsBase <- lapply(seq_along(modelIn), function(i){
+      if(!isTRUE(modelIn[[i]]$noHcube)){
+        switch(modelIn[[i]]$type,
+               checkbox = {
+                 modelIn[[i]]$type <<- "dropdown"
+                 modelIn[[i]]$dropdown$label <<- modelIn[[i]]$checkbox$label
+                 value <- modelIn[[i]]$checkbox$value
+                 if(is.null(modelIn[[i]]$checkbox$max) || !is.na(suppressWarnings(as.integer(modelIn[[i]]$checkbox$max)))){
+                   modelIn[[i]]$dropdown$aliases <<- lang$nav$hcubeMode$checkboxAliases
+                   modelIn[[i]]$dropdown$choices <<- c(0L, 1L)
+                 }else{
+                   modelIn[[i]]$checkbox$max      <<- paste0("$", modelIn[[i]]$checkbox$max)
+                   modelIn[[i]]$dropdown$operator <<- modelIn[[i]]$checkbox$operator
+                   modelIn[[i]]$dropdown$choices  <<- modelIn[[i]]$checkbox$max
+                 }
+                 modelIn[[i]]$dropdown$selected <<- modelIn[[i]]$checkbox$value
+                 modelIn[[i]]$dropdown$width <<- modelIn[[i]]$checkbox$width
+                 modelIn[[i]]$dropdown$multiple <<- TRUE
+                 modelIn[[i]]$dropdown$checkbox <<- TRUE
+                 modelIn[[i]]$checkbox <<- NULL
+                 return(names(modelIn)[i])
+               },
+               dropdown = {
+                 if(!isTRUE(modelIn[[i]]$dropdown$multiple)){
+                   if(identical(modelIn[[i]]$symtype, "set")){
+                     warningMsgTmp <- sprintf("The dataset: '%s' is a set configured as a single dropdown menu. Single dropdown menus for sets are not expanded in Hypercube mode! Use singleton set instead.", 
+                                              names(modelIn)[i])
+                     warning(warningMsgTmp)
+                     warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
+                   }else{
+                     # specify that dropdown menu is originally a single select menu
+                     modelIn[[i]]$dropdown$single   <<- TRUE
+                     modelIn[[i]]$dropdown$multiple <<- TRUE
+                   }
+                   return(names(modelIn)[i])
+                 }
+               },
+               slider = {
+                 if(length(modelIn[[i]]$slider$default) == 1){
+                   modelIn[[i]]$slider$single <<- TRUE
+                   modelIn[[i]]$slider$default <<-  rep(modelIn[[i]]$slider$default, 2L)
+                 }else{
+                   modelIn[[i]]$slider$double <<- TRUE
+                 }
+               },
+               date =,
+               daterange = ,
+               textinput = ,
+               numericinput = {
+                 warningMsgTmp <- sprintf("The dataset: '%s' uses a widget that is not supported in Hypercube mode.
+                                   Thus, it will not be transformed and stays static.", 
+                                          names(modelIn)[i])
+                 warning(warningMsgTmp)
+                 warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
+               })
+      }
+    })
+  }else{
+    scalarSymbolsBase <- character(0L)
+  }
+  
   widgetIds    <- unlist(widgetIds[!vapply(widgetIds, is.null,
                                            numeric(1L), USE.NAMES = FALSE)], 
                          use.names = FALSE)
@@ -757,65 +820,6 @@ if(is.null(errMsg)){
   externalInputConfig  <- externalDataConfig[["remoteImport"]]
   datasetsRemoteExport <- externalDataConfig[["remoteExport"]]
   rm(externalDataConfig)
-  
-  # Hypercube mode configuration
-  if(LAUNCHHCUBEMODE){
-    lapply(seq_along(modelIn), function(i){
-      if(!isTRUE(modelIn[[i]]$noHcube)){
-        switch(modelIn[[i]]$type,
-               checkbox = {
-                 modelIn[[i]]$type <<- "dropdown"
-                 modelIn[[i]]$dropdown$label <<- modelIn[[i]]$checkbox$label
-                 value <- modelIn[[i]]$checkbox$value
-                 if(is.null(modelIn[[i]]$checkbox$max) || !is.na(suppressWarnings(as.integer(modelIn[[i]]$checkbox$max)))){
-                   modelIn[[i]]$dropdown$aliases <<- lang$nav$hcubeMode$checkboxAliases
-                   modelIn[[i]]$dropdown$choices <<- c(0L, 1L)
-                 }else{
-                   modelIn[[i]]$checkbox$max      <<- paste0("$", modelIn[[i]]$checkbox$max)
-                   modelIn[[i]]$dropdown$operator <<- modelIn[[i]]$checkbox$operator
-                   modelIn[[i]]$dropdown$choices  <<- modelIn[[i]]$checkbox$max
-                 }
-                 modelIn[[i]]$dropdown$selected <<- modelIn[[i]]$checkbox$value
-                 modelIn[[i]]$dropdown$width <<- modelIn[[i]]$checkbox$width
-                 modelIn[[i]]$dropdown$multiple <<- TRUE
-                 modelIn[[i]]$dropdown$checkbox <<- TRUE
-                 modelIn[[i]]$checkbox <<- NULL
-               },
-               dropdown = {
-                 if(!isTRUE(modelIn[[i]]$dropdown$multiple)){
-                   if(identical(modelIn[[i]]$symtype, "set")){
-                     warningMsgTmp <- sprintf("The dataset: '%s' is a set configured as a single dropdown menu. Single dropdown menus for sets are not expanded in Hypercube mode! Use singleton set instead.", 
-                                              names(modelIn)[i])
-                     warning(warningMsgTmp)
-                     warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
-                   }else{
-                     # specify that dropdown menu is originally a single select menu
-                     modelIn[[i]]$dropdown$single   <<- TRUE
-                     modelIn[[i]]$dropdown$multiple <<- TRUE
-                   }
-                 }
-               },
-               slider = {
-                 if(length(modelIn[[i]]$slider$default) == 1){
-                   modelIn[[i]]$slider$single <<- TRUE
-                   modelIn[[i]]$slider$default <<-  rep(modelIn[[i]]$slider$default, 2L)
-                 }else{
-                   modelIn[[i]]$slider$double <<- TRUE
-                 }
-               },
-               date =,
-               daterange = ,
-               textinput = ,
-               numericinput = {
-                 warningMsgTmp <- sprintf("The dataset: '%s' uses a widget that is not supported in Hypercube mode.
-                                   Thus, it will not be transformed and stays static.", 
-                                          names(modelIn)[i])
-                 warning(warningMsgTmp)
-                 warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
-               })
-      }
-      })
-  }
   
   # get input sheets with dependencies on other sheets
   # get dropdown dependencies
@@ -1087,7 +1091,7 @@ if(is.null(errMsg)){
     # scalars should always be the highest indexed dataset
     modelInFileNames <- c(modelInTabularData[modelInTabularData != scalarsFileName], scalarsFileName)
     inputDsAliases   <- modelInAlias[match(modelInFileNames, names(modelIn))]
-  }else if(length(modelIn) > length(modelInTabularData)){
+  }else if(length(modelIn) > (length(modelInTabularData) - length(scalarSymbolsBase))){
     modelInFileNames <- c(modelInTabularData, scalarsFileName)
     inputDsAliases   <- c(modelInAlias[match(modelInTabularData, names(modelIn))], lang$nav$scalarAliases$scalars)
   }else{
