@@ -129,7 +129,7 @@ inputTabContent <- lapply(seq_along(inputTabs), function(tabId) {
                                         
                                )
                              }else if(identical(modelIn[[i]]$slider$single, TRUE)){
-                               tagList(
+                               tags$div(style = "overflow:auto",
                                  column(width = 10, style = "padding-left:0px;",
                                         slider
                                  ),
