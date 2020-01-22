@@ -1252,6 +1252,7 @@
         "value": "Default value (optional)",
         "min": "Minimum value (optional)",
         "max": "Maximum value (optional)",
+        "decimal": "Number of decimal places (optional)",
         "sign": "Currency symbol (optional)"
       },
       "removeDialog":{

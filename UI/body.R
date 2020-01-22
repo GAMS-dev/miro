@@ -263,6 +263,7 @@ inputTabContent <- lapply(seq_along(inputTabs), function(tabId) {
                                               value = modelIn[[i]]$numericinput$value,
                                               min = modelIn[[i]]$numericinput$min,
                                               max = modelIn[[i]]$numericinput$max,
+                                              decimal = modelIn[[i]]$numericinput$decimal,
                                               sign = modelIn[[i]]$numericinput$sign)
                            )
                          },

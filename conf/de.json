@@ -1252,6 +1252,7 @@
         "value": "Standardwert (optional)",
         "min": "Minimalwert (optional)",
         "max": "Maximalwert (optional)",
+        "decimal": "Anzahl Dezimalstellen (optional)",
         "sign": "Soll ein Währungssymbol angezeigt werden (optional)?"
       },
       "removeDialog":{
