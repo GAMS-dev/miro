@@ -1,3 +1,7 @@
+isColor <- function(x) {
+    tryCatch(is.matrix(col2rgb(x)), 
+             error = function(e) FALSE)
+}
 renderGraph <- function(data, configData, options, height = NULL, input = NULL, filterCol = NULL){
   # Renders the graph for a dataframe using the provided configuration.
   #
@@ -31,13 +35,16 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
           if(length(markerColor))
             markerStyle$color <- markerColor
           if(j==1){
-            p <<- plot_ly(data) %>% add_bars(x = ~try(get(options$xdata)),
-                                             y = ~try(get(names(options$ydata)[1])), 
-                                             name = yData$label, height = height, 
-                                             color=if(!is.null(options$color)){~try(get(options$color))},
-                                             marker = markerStyle,
-                                             width=if(!is.null(options$width)){~try(get(options$width))},
-                                             orientation = options$orientation)
+            p <<- plot_ly(data,
+                          height = if(!is.null(options$fixedWidth)) options$fixedWidth else height, 
+                          width = if(!is.null(options$fixedWidth)) options$fixedWidth) %>% 
+              add_bars(x = ~try(get(options$xdata)),
+                       y = ~try(get(names(options$ydata)[1])), 
+                       name = yData$label, height = height, 
+                       color=if(!is.null(options$color)){~try(get(options$color))},
+                       marker = markerStyle,
+                       width=if(!is.null(options$width)){~try(get(options$width))},
+                       orientation = options$orientation)
           }else{
             p <<- add_trace(p, y = ~try(get(names(options$ydata)[j])), name = yData$label,
                             marker = markerStyle)
@@ -61,7 +68,9 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                           color = if(!is.null(options$color)){~try(get(options$color))}, 
                           symbol = if(!is.null(options$symbol)){~try(get(options$symbol))}, 
                           colors = options$colors, symbols = options$symbols, 
-                          size = options$ydata[[1]]$size, type = 'scatter', height = height,
+                          size = options$ydata[[1]]$size, type = 'scatter', 
+                          height = if(!is.null(options$fixedWidth)) options$fixedWidth else height, 
+                          width = if(!is.null(options$fixedWidth)) options$fixedWidth,
                           frame = if(!is.null(options$ydata[[1]]$frame)){~try(get(options$ydata[[1]]$frame))}) 
             
           }else{
@@ -109,7 +118,6 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
           if(!is.null(maxsize) && !is.null(sizevalues)){
             sizeref <- 2.0 * max(sizevalues) / (maxsize**2)
           }
-          
           if(j==1){
             p <<- plot_ly(data, x = ~try(get(options$xdata)), y = ~try(get(names(options$ydata)[[1]])), 
                           name = options$ydata[[1]]$label, 
@@ -117,8 +125,14 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                           marker = list(symbol = options$ydata[[1]]$marker$symbol,
                                         opacity = options$ydata[[1]]$marker$opacity,
                                         size = if(!is.null(options$ydata[[1]]$marker$size)){~try(get(options$ydata[[1]]$marker$size))}, 
-                                        sizemode = if(!is.null(maxsize)){'area'}, sizeref = sizeref,
-                                        color = if(!is.null(options$ydata[[1]]$marker$color)){~try(get(options$ydata[[1]]$marker$color))},
+                                        sizemode = if(!is.null(maxsize)){options$ydata[[1]]$marker$sizemode}, sizeref = sizeref,
+                                        color = if(!is.null(options$ydata[[1]]$marker$color)){
+                                          if(isColor(options$ydata[[1]]$marker$color) || 
+                                             startsWith(options$ydata[[1]]$marker$color, "rgba("))
+                                            options$ydata[[1]]$marker$color
+                                          else
+                                            ~try(get(options$ydata[[1]]$marker$color))
+                                        },
                                         #color = options$ydata[[1]]$marker$colorDep,
                                         line = list(color = options$ydata[[1]]$marker$line$color,
                                                     width = options$ydata[[1]]$marker$line$width)),
@@ -130,7 +144,9 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                           color = if(!is.null(options$color)){~try(get(options$color))}, 
                           symbol = if(!is.null(options$symbol)){~try(get(options$symbol))}, 
                           colors = options$colors, symbols = options$symbols, 
-                          size = options$ydata[[1]]$size, type = 'scatter', height = height,
+                          size = options$ydata[[1]]$size, type = 'scatter', 
+                          height = if(!is.null(options$fixedWidth)) options$fixedWidth else height, 
+                          width = if(!is.null(options$fixedWidth)) options$fixedWidth, 
                           frame = if(!is.null(options$ydata[[1]]$frame)){~try(get(options$ydata[[1]]$frame))}) 
             
           }else{
@@ -139,7 +155,8 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                             marker = list(symbol = options$ydata[[j]]$marker$symbol,
                                           opacity = options$ydata[[j]]$marker$opacity,
                                           size = if(!is.null(options$ydata[[j]]$marker$size)){~try(get(options$ydata[[j]]$marker$size))}, 
-                                          sizemode = if(!is.null(maxsize)){'area'}, sizeref = sizeref,
+                                          sizemode = if(!is.null(maxsize)){options$ydata[[1]]$marker$sizemode}, 
+                                          sizeref = sizeref,
                                           color = if(!is.null(options$ydata[[j]]$marker$color)){~try(get(options$ydata[[j]]$marker$color))},
                                           #color = options$ydata[[1]]$marker$colorDep,
                                           line = list(color = options$ydata[[j]]$marker$line$color, 
@@ -180,7 +197,9 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
             if(length(markerColor))
               markerStyle$color <- markerColor
             if(j==1){
-              p <<- plot_ly(data, type = 'histogram', histnorm = options$histnorm, height = height, 
+              p <<- plot_ly(data, type = 'histogram', histnorm = options$histnorm, 
+                            height = if(!is.null(options$fixedWidth)) options$fixedWidth else height, 
+                            width = if(!is.null(options$fixedWidth)) options$fixedWidth,
                             nbinsy = options$nbins,  
                             color = if(!is.null(options$color)){~try(get(options$color))}, 
                             alpha = if(!is.null(options$alpha)){try(options$alpha)},
@@ -202,7 +221,9 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
             if(length(markerColor))
               markerStyle$color <- markerColor
             if(j==1){
-              p <<- plot_ly(data, type = 'histogram', histnorm = options$histnorm, height = height, 
+              p <<- plot_ly(data, type = 'histogram', histnorm = options$histnorm, 
+                            height = if(!is.null(options$fixedWidth)) options$fixedWidth else height, 
+                            width = if(!is.null(options$fixedWidth)) options$fixedWidth, 
                             nbinsx = options$nbins,
                             color = if(!is.null(options$color)){~try(get(options$color))}, 
                             alpha = if(!is.null(options$alpha)){try(options$alpha)},
