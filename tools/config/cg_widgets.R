@@ -1449,14 +1449,18 @@ observeEvent(input$numericinput_value, {
     return()
   rv$widgetConfig$value <<- input$numericinput_value
 })
-observeEvent(input$numericinput_min, {
-  if(!is.numeric(input$numericinput_min))
+observeEvent(input$numericinput_min, ignoreNULL = FALSE, {
+  if(!is.numeric(input$numericinput_min)){
+    rv$widgetConfig$min <<- NULL
     return()
+  }
   rv$widgetConfig$min <<- input$numericinput_min
 })
-observeEvent(input$numericinput_max, {
-  if(!is.numeric(input$numericinput_max))
+observeEvent(input$numericinput_max, ignoreNULL = FALSE, {
+  if(!is.numeric(input$numericinput_max)){
+    rv$widgetConfig$max <<- NULL
     return()
+  }
   rv$widgetConfig$max <<- input$numericinput_max
 })
 observeEvent(input$numericinput_sign, {
