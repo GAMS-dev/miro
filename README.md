@@ -44,6 +44,10 @@ In order to launch GAMS MIRO you need R (v. 3.6.0 or later) with the following p
 * RSQLite
 * digest
 
+If you want to use gdx as a file exchange with GAMS (which is the default for all sample models), you will also need to install either the gdxrrwMIO package, which you can find [here](https://git.gams.com/fproske/gmswebui).  
+Alternatively you can install the official gdxrrw package from [here](https://support.gams.com/gdxrrw:interfacing_gams_and_r) and set the environment variable `GAMS_SYS_DIR` to your GAMS installation path.
+
+
 To start the application, run the following command from an R console:
 ```
 shiny::runApp(launch.browser=TRUE)
