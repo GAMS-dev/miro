@@ -67,18 +67,9 @@ gamsSysDir <- Sys.getenv("GAMS_SYS_DIR")
 
 installedPackages <- installed.packages()[, "Package"]
 useGdx <<- FALSE
-gdxLibDir <- NULL
 if("gdxrrwMIRO" %in% installedPackages){
   useGdx <<- TRUE
   requiredPackages <- c(requiredPackages, "gdxrrwMIRO")
-  # gdx library is shipped with gdxrrwMIRO
-  gdxLibDir <- file.path(.libPaths()[1], "gdxrrwMIRO", 
-                         if(identical(tolower(Sys.info()[["sysname"]]), "windows")) 
-                           file.path("bin", "x64") else "bin")
-}else if("gdxrrw" %in% installedPackages){
-  useGdx <<- TRUE
-  requiredPackages <- c(requiredPackages, "gdxrrw")
-  gdxLibDir <- gamsSysDir
 }
 # vector of required files
 filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./components/gdxio.R", 
@@ -222,9 +213,7 @@ if(is.null(errMsg)){
   if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildonly){
     errMsg <- paste(errMsg, 
                     sprintf("Can not use 'gdx' as file exchange with GAMS if gdxrrw library is not installed.\n
-Please make sure you have a valid gdxrrw installation in your R library: '%s'. \n
-Additionally,GAMS_SYS_DIR needs to be set to the path of your GAMS installation.\n
-Additionally, you can install gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw-miro).", .libPaths()[1]),
+Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw-miro) installation in your R library: '%s'.", .libPaths()[1]),
                     sep = "\n")
   }
   GAMSClArgs <- c(paste0("execMode=", gamsExecMode),
@@ -705,7 +694,9 @@ if(is.null(errMsg)){
   tryCatch({
     gdxio <<- NULL
     if(useGdx){
-      gdxio <<- GdxIO$new(gdxLibDir, 
+      gdxio <<- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", 
+                                    if(identical(tolower(Sys.info()[["sysname"]]), "windows")) 
+                                      file.path("bin", "x64") else "bin"), 
         c(modelInRaw, modelOut), scalarsFileName,
         scalarsOutName, scalarEquationsName, scalarEquationsOutName,
         dropdownAliases)
