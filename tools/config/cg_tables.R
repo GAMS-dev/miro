@@ -286,8 +286,9 @@ observeEvent({input$table_symbol
 })
 
 createTableData <- function(symbol, pivotCol){
-  headers_tmp <- names(inputSymHeaders[[symbol]])
-  data        <- data.frame(matrix(c(replicate(length(headers_tmp) - 1L,
+  headersRaw <- inputSymHeaders[[symbol]]
+  headersTmp <- names(headersRaw)
+  data        <- data.frame(matrix(c(replicate(length(headersTmp) - 1L,
                                                letters[1:10]), 1:10),
                                    10))
   isPivotTable <- FALSE
@@ -298,13 +299,14 @@ createTableData <- function(symbol, pivotCol){
     data <- pivot_wider(data, names_from = !!pivotIdx, 
                         values_from = !!length(data), 
                         values_fill = setNames(list(0L), names(data)[length(data)]))
-    attrTmp <- headers_tmp[-c(pivotIdx, length(headers_tmp))]
+    attrTmp <- headersTmp[-c(pivotIdx, length(headersTmp))]
     attrTmp <- c(attrTmp, 
                  names(data)[seq(length(attrTmp) + 1L, 
                                  length(data))])
-    headers_tmp  <- attrTmp
+    headersTmp  <- attrTmp
   }
-  return(list(data = data, headers = headers_tmp, isPivotTable = isPivotTable))
+  return(list(data = data, headers = headersTmp, headersRaw = headersRaw,
+              isPivotTable = isPivotTable))
 }
 output$hot_preview <- renderRHandsontable({
   req(input$table_symbol %in% names(inputSymHeaders))
@@ -313,17 +315,18 @@ output$hot_preview <- renderRHandsontable({
   }
   data <- createTableData(input$table_symbol, input$table_pivotCols)
   
-  headers_tmp <- data$headers
+  headersTmp <- data$headersRaw
+  headersUnnamed <- unname(headersTmp)
   pivotTable <- data$isPivotTable
   data <- data$data
   
   ht <- rhandsontable(data = data,
-                      colHeaders = headers_tmp,
+                      colHeaders = headersUnnamed,
                       readOnly = input$table_readonly)
   if(!pivotTable && length(input$table_readonlyCols) && 
-     input$table_readonlyCols %in% headers_tmp){
-    ht <- hot_col(ht, names(headers_tmp)[match(input$table_readonlyCols, 
-                                               headers_tmp)], 
+     input$table_readonlyCols %in% headersTmp){
+    ht <- hot_col(ht, headersUnnamed[match(input$table_readonlyCols, 
+                                           headersTmp)], 
                   readOnly = TRUE)
   }
   if(isTRUE(input$table_heatmap)){
@@ -338,25 +341,11 @@ output$dt_preview <- renderDT({
 
   data <- createTableData(input$table_symbol, input$table_pivotCols)
   
-  headers_tmp <- data$headers
+  headersTmp <- unname(data$headers)
   data <- data$data
-  data        <- data.frame(matrix(c(replicate(length(headers_tmp) - 1L,
-                                               letters[1:10]), 1:10),
-                                   10))
-  if(length(input$table_pivotCols) && input$table_pivotCols != "_"){
-    pivotIdx <- match(input$table_pivotCols, inputSymHeaders[[input$table_symbol]])[[1L]]
-    data[length(data)] <- as.integer(data[[length(data)]])
-    data <- pivot_wider(data, names_from = !!pivotIdx, 
-                        values_from = !!length(data), 
-                        values_fill = setNames(list(0L), names(data)[length(data)]))
-    attrTmp <- headers_tmp[-c(pivotIdx, length(headers_tmp))]
-    attrTmp <- c(attrTmp, 
-                 names(data)[seq(length(attrTmp) + 1L, 
-                                 length(data))])
-    headers_tmp  <- attrTmp
-  }
+  
   dtOptions <- list(editable = !isTRUE(input$table_readonly),
-                    colnames = headers_tmp)
+                    colnames = headersTmp)
   
   if(!isTRUE(rv$tableWidgetConfig$bigData)){
     showEl(session, "#hot_preview")
