@@ -1355,6 +1355,7 @@
         "symbol": "Select a dimension to map to different symbols. No marker symbol must be set.",
         "options":{
           "title": "Options",
+          "fixedWidth": "Should x- and y-axis be the same length? Note that the legend, if displayed, is part of the x-axis width. ",
           "paperBgColor": "What background color shall the paper have?",
           "plotBgColor": "What background color shall the plot have?",
           "showlegend": "Show legend?",
@@ -1657,6 +1658,8 @@
           "colorCheckTrue": "Select marker color",
           "colorCheckFalse": "Select a domain on which the color should depend on.",
           "size": "Select marker size",
+          "sizemode": "How should the size be measured?",
+          "sizemodeChoices": ["area", "diameter"],
           "maxsize": "Select maximum marker size (optional)",
           "lineWidth": "Select marker outline width",
           "lineColor": "Select marker outline color",

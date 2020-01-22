@@ -6286,6 +6286,11 @@
                       "minLength":1,
                       "required":true
                     },
+                    "fixedWidth":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
                     "paperBgColor":{ 
                       "type":"string",
                       "minLength":1,
@@ -7839,6 +7844,22 @@
                     "size":{ 
                       "type":"string",
                       "minLength":1,
+                      "required":true
+                    },
+                    "sizemode":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "sizemodeChoices":{
+                      "type":"array",
+                      "uniqueItems": true,
+                      "minItems":2,
+                      "maxItems":2,
+                      "items": {
+                          "type":"string",
+                          "minLength": 1
+                      },
                       "required":true
                     },
                     "maxsize":{ 

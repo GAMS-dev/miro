@@ -1355,6 +1355,7 @@
         "symbol": "Wählen Sie eine Dimension aus, um sie verschiedenen Symbolen zuzuordnen. Es darf kein Markersymbol gesetzt werden.",
         "options":{
           "title": "Optionen",
+          "fixedWidth": "Sollen X- und Y-achse gleichlang sein? Die Legende ist, falls angezeigt, Teil der X-Achsenbreite.",
           "paperBgColor": "Welche Hintergrundfarbe soll das Papier haben?",
           "plotBgColor": "Welche Hintergrundfarbe soll das Diagramm haben?",
           "showlegend": "Legende zeigen?",
@@ -1657,6 +1658,8 @@
           "colorCheckTrue": "Markerfarbe auswählen",
           "colorCheckFalse": "Wählen Sie eine Domäne aus, von der die Farbe abhängen soll.",
           "size": "Markergröße wählen",
+          "sizemode": "Woran soll die Größe bemessen werden?",
+          "sizemdoeChoices": ["area", "diameter"],
           "maxsize": "Maximale Markergröße wählen (optional)",
           "lineWidth": "Markerumriss-Breite wählen",
           "lineColor": "Markerumriss-Farbe auswählen",
