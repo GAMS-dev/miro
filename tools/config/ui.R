@@ -481,7 +481,7 @@ body_admin <- dashboardBody({
                                                    tags$div(
                                                      column(6L, tags$div(paste0(name, " (", 
                                                                                 paste0(names(modelInRaw[[name]]$headers), 
-                                                                                       collapse = ","), ")"))),
+                                                                                       collapse = ", "), ")"))),
                                                      column(6L, 
                                                             textInput(paste0("general_overwriteSymAlias_", name), 
                                                                       lang$adminMode$general$overwriteSymbolAliases$label,
@@ -514,7 +514,7 @@ body_admin <- dashboardBody({
                                                    tags$div(
                                                      column(6L, tags$div(paste0(name, " (", 
                                                                                 paste0(names(modelOut[[name]]$headers), 
-                                                                                       collapse = ","), ")"))),
+                                                                                       collapse = ", "), ")"))),
                                                      column(6L, 
                                                             textInput(paste0("general_overwriteSymAlias_", name), 
                                                                       lang$adminMode$general$overwriteSymbolAliases$label,
