@@ -73,7 +73,7 @@ insertUI(selector = "#interface_wrapper1",
            tags$div(class = "option-wrapper info-position",
                     textInput("general_mirologfile", 
                               tags$div(lang$adminMode$general$mirologfile$label, 
-                                       tags$a("", class="info-wrapper",
+                                       tags$a("", title = lang$adminMode$general$ui$tooltipDocs, class="info-wrapper",
                                               href="https://gams.com/miro/customize.html#miro-log", 
                                               tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
                               value = if(!is.null(configJSON$miroLogFile) && nchar(configJSON$miroLogFile)) 
@@ -81,7 +81,7 @@ insertUI(selector = "#interface_wrapper1",
                     )),
            tags$div(class = "option-wrapper info-position",
                     selectInput("general_scen", tags$div(lang$adminMode$general$scen$label, 
-                                                         tags$a("", class="info-wrapper", href="https://gams.com/miro/start.html#scenario-comparison", 
+                                                         tags$a("", title = lang$adminMode$general$ui$tooltipDocs, class="info-wrapper", href="https://gams.com/miro/start.html#scenario-comparison", 
                                                                 tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")), 
                                 choices = langSpecific$scen,
                                 selected = if(length(configJSON$defCompMode)) configJSON$defCompMode else config$defCompMode
@@ -98,7 +98,7 @@ insertUI(selector = "#interface_wrapper1",
                       ))),
            tags$div(class="option-wrapper",
                     colorPickerInput("general_pivotcolor", label = lang$adminMode$general$pivotcolor$label,
-                                     value = if(length(configJSON$pivottable$bgColor)) configJSON$pivottable$bgColor else "rgb(255, 128, 0)"
+                                     value = if(length(configJSON$pivottable$bgColor)) configJSON$pivottable$bgColor else "#00000000"
                     )),
            tags$div(class="option-wrapper",
                     sliderInput("general_decimal", label = lang$adminMode$general$decimal$label,
@@ -144,7 +144,7 @@ insertUI(selector = "#interface_wrapper2",
                       )),
            tags$hr(),
            tags$h2(lang$adminMode$general$readme$label, 
-                   tags$a("", class="info-header", href="https://gams.com/miro/customize.html#app-readme", 
+                   tags$a("", title = lang$adminMode$general$ui$tooltipDocs, class="info-header", href="https://gams.com/miro/customize.html#app-readme", 
                           tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"), class="option-category info-position"),
            tags$label(class = "cb-label", "for" = "general_useReadme", lang$adminMode$general$readme$useReadme),
            tags$div(
@@ -542,7 +542,7 @@ observeEvent(input$general_decimal, {
 })
 observeEvent(input$general_pivotcolor, {
   if(!nchar(input$general_pivotcolor))
-    configJSON$pivottable$bgColor <<- NULL
+    configJSON$pivottable$bgColor <<- "#00000000"
   if(nchar(input$general_pivotcolor))
     rv$generalConfig$pivottable$bgColor <<- input$general_pivotcolor
   else

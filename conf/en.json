@@ -847,7 +847,8 @@
         "headerBaseScripts": "Base mode",
         "headerHcubeScripts": "Hypercube mode",
         "headerScenData": "Scenario & data",
-        "headerComputation": "Computation"
+        "headerComputation": "Computation",
+        "tooltipDocs": "Open documentation"
       },
       "modalDialog":{
         "title": "Error copying image", 

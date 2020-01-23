@@ -847,7 +847,8 @@
         "headerBaseScripts": "Basismodus",
         "headerHcubeScripts": "Hypercube-Modus",
         "headerScenData": "Szenario & Daten",
-        "headerComputation": "Berechnung"
+        "headerComputation": "Berechnung",
+        "tooltipDocs": "Dokumentation öffnen"
       },
       "modalDialog":{
         "title": "Fehler beim Kopieren des Bildes", 
