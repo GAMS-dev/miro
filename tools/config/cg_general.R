@@ -8,6 +8,7 @@ isolate({
   rv$generalConfig$inputGroups <- configJSON$inputGroups
   rv$generalConfig$outputGroups <- configJSON$outputGroups
   rv$generalConfig$symbolLinks <- configJSON$symbolLinks
+  rv$generalConfig$UILogo <- configJSON$UILogo
 })
 scalarSymbols <- setNames(c(names(modelIn), 
                             if(length(modelIn[[scalarsFileName]])) 
@@ -345,12 +346,6 @@ observeEvent(c(input$default_scen_check, input$general_default_scen_name), {
   else
     rv$generalConfig$defaultScenName <<- NULL
 })
-observeEvent(input$general_logo, {
-  if(identical(input$general_logo, FALSE)){
-    rv$generalConfig$UILogo <<- "gams_logo.png"
-    rv$customLogoChanged <<- rv$customLogoChanged + 1L
-  }
-})
 observeEvent(input$widget_general_logo_upload, {
   inFile   <- input$widget_general_logo_upload
   filePath <- inFile$datapath
@@ -364,18 +359,15 @@ observeEvent(input$widget_general_logo_upload, {
       return()
     }
   }else{
-    filesToDelete <- list.files(paste0(currentModelDir, .Platform$file.sep, "static_", modelName), 
-                                full.names = TRUE)
-    filesFailedToDelete <- !file.remove(filesToDelete)
+    filesToDelete <- file.path(currentModelDir, paste0("static_", modelName), 
+                               rv$generalConfig$UILogo)
+    filesFailedToDelete <- !suppressWarnings(file.remove(filesToDelete))
     if(any(filesFailedToDelete)){
-      flog.error("Problems removing files: '%s'. Do you lack the necessary permissions?", 
-                 paste(filesToDelete[filesFailedToDelete], collapse = "', '"))
-      showModal(modalDialog(lang$adminMode$general$modalDialog$title, 
-                            lang$adminMode$general$modalDialog$content))
-      return()
+      flog.warn("Problems removing files: '%s'. Do you lack the necessary permissions?", 
+                paste(filesToDelete[filesFailedToDelete], collapse = "', '"))
     }
   }
-  if(!file.copy(filePath, file.path(currentModelDir, paste0("static_", modelName), fileName))){
+  if(!file.copy(filePath, file.path(currentModelDir, paste0("static_", modelName), fileName), overwrite = TRUE)){
     flog.error("A problem occurred copying image (%s) to folder: %s. Maybe you have insufficient permissions?", 
                filePath, paste0(currentModelDir, .Platform$file.sep, "static_", modelName))
     showModal(modalDialog(lang$adminMode$general$modalDialog$title, 
