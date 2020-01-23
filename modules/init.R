@@ -128,15 +128,16 @@ if(is.null(errMsg)){
     modelOut[[scalarsOutName]]$headers[[2]]$alias <- lang$nav$scalarAliases$cols$desc
     modelOut[[scalarsOutName]]$headers[[3]]$alias <- lang$nav$scalarAliases$cols$value
   }
-  if(length(config[["overwriteAliases"]]) && !LAUNCHCONFIGMODE){
+  if(length(config[["overwriteAliases"]])){
     overwriteSymNames <- names(config[["overwriteAliases"]])
     for (idx in seq_along(config[["overwriteAliases"]])){
       i <- match(overwriteSymNames[idx], names(modelIn))
       if(is.na(i)){
         i <- match(overwriteSymNames[idx], names(modelOut))
         if(is.na(i)){
-          errMsg <- paste(errMsg, sprintf("The alias of symbol: '%s' was selected to be overwritten. However, this symbol could not be found.", 
-                                          overwriteSymNames[idx]), sep = "\n")
+          if(!LAUNCHCONFIGMODE)
+            errMsg <- paste(errMsg, sprintf("The alias of symbol: '%s' was selected to be overwritten. However, this symbol could not be found.", 
+                                            overwriteSymNames[idx]), sep = "\n")
           next
         }
         modelOut[[i]]$alias <- config[["overwriteAliases"]][[idx]][["newAlias"]]
@@ -146,7 +147,7 @@ if(is.null(errMsg)){
     }
     config[["overwriteAliases"]] <- NULL
   }
-  if(length(config[["overwriteHeaderAliases"]]) && !LAUNCHCONFIGMODE){
+  if(length(config[["overwriteHeaderAliases"]])){
     overwriteSymNames <- names(config[["overwriteHeaderAliases"]])
     for (idx in seq_along(config[["overwriteHeaderAliases"]])){
       i <- match(names(config[["overwriteHeaderAliases"]])[[idx]], names(modelIn))
@@ -154,13 +155,15 @@ if(is.null(errMsg)){
         i <- match(overwriteSymNames[idx], names(modelOut))
         newHeaders <- config[["overwriteHeaderAliases"]][[idx]][["newHeaders"]]
         if(is.na(i)){
-          errMsg <- paste(errMsg, sprintf("The headers of symbol: '%s' were selected to be overwritten. However, this symbol could not be found.", 
-                                          overwriteSymNames[idx]), sep = "\n")
+          if(!LAUNCHCONFIGMODE)
+            errMsg <- paste(errMsg, sprintf("The headers of symbol: '%s' were selected to be overwritten. However, this symbol could not be found.", 
+                                            overwriteSymNames[idx]), sep = "\n")
           next
         }
         if(length(modelOut[[i]]$headers) != length(newHeaders)){
-          errMsg <- paste(errMsg, sprintf("The headers of symbol: '%s' were selected to be overwritten. However, the dimensions do not match!", 
-                                          overwriteSymNames[idx]), sep = "\n")
+          if(!LAUNCHCONFIGMODE)
+            errMsg <- paste(errMsg, sprintf("The headers of symbol: '%s' were selected to be overwritten. However, the dimensions do not match!", 
+                                            overwriteSymNames[idx]), sep = "\n")
           next
         }
         for (j in seq_along(modelOut[[i]]$headers)){
