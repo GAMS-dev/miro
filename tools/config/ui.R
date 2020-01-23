@@ -492,6 +492,7 @@ body_admin <- dashboardBody({
                                                                            multiple = TRUE,  options = list(
                                                                              'maxItems' = length(symHeaders),
                                                                              'create' = TRUE,
+                                                                             'persist' = FALSE,
                                                                              plugins = list("restore_on_backspace"))))
                                                    )
                                                  }),
@@ -524,6 +525,7 @@ body_admin <- dashboardBody({
                                                                            multiple = TRUE,  options = list(
                                                                              'maxItems' = length(symHeaders),
                                                                              'create' = TRUE,
+                                                                             'persist' = FALSE,
                                                                              plugins = list("restore_on_backspace"))))
                                                    )
                                                  }),
