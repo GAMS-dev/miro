@@ -344,11 +344,15 @@ observeEvent({input$widget_symbol
   }else if(any(startsWith(input$widget_symbol, c(prefixDDPar, prefixGMSOpt)))){
     currentWidgetSymbolName <<- input$widget_symbol
     if(startsWith(currentWidgetSymbolName,prefixGMSOpt)){
-      showEl(session, "#optionConfigMsg")
+      showElReplaceTxt(session, "#optionConfigMsg", 
+                       sprintf(lang$adminMode$widgets$ui$optionConfigMsg, 
+                               substring(currentWidgetSymbolName, nchar(prefixGMSOpt) + 1L)))
       widgetOptions <- langSpecificWidget$widgetOptionsGo
     }
     if(startsWith(currentWidgetSymbolName, prefixDDPar)){
-      showEl(session, "#doubledashConfigMsg")
+      showElReplaceTxt(session, "#doubledashConfigMsg", 
+                       sprintf(lang$adminMode$widgets$ui$doubledashConfigMsg, 
+                               substring(currentWidgetSymbolName, nchar(prefixDDPar) + 1L)))
       widgetOptions <- langSpecificWidget$widgetOptionsAll
     }
   }else if(input$widget_symbol %in% names(modelInRaw)){
