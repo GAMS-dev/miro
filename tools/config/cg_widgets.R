@@ -1604,6 +1604,7 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
   }
   removeModal()
   showHideEl(session, "#widgetUpdateSuccess", 4000L)
+  updateTabsetPanel(session, "widget_symbol_type", "gams")
 })
 observeEvent(input$deleteWidget, {
   req(length(input$widget_symbol) > 0L, nchar(input$widget_symbol) > 0L)
