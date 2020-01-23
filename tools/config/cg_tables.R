@@ -156,15 +156,6 @@ getHotOptions <- reactive({
                                                    value = if(length(configJSON$handsontable$contextMenu$allowReadOnly)) configJSON$handsontable$contextMenu$allowReadOnly 
                                                    else config$handsontable$contextMenu$allowReadOnly, label = NULL)
                           ))
-               ),
-               tags$div(tags$label(class = "cb-label", "for" = "hot_context_comments",
-                                   lang$adminMode$tables$hot$contextComments),
-                        tags$div(
-                          tags$label(class = "checkbox-material", 
-                                     checkboxInput("hot_context_comments", 
-                                                   value = if(length(configJSON$handsontable$contextMenu$allowComments)) configJSON$handsontable$contextMenu$allowComments 
-                                                   else config$handsontable$contextMenu$allowComments, label = NULL)
-                          ))
                )
              )
     )
@@ -405,9 +396,6 @@ observeEvent(input$hot_context_coledit, {
 })
 observeEvent(input$hot_context_readonly, {
   rv$tableConfig$handsontable$contextMenu$allowReadOnly <<- input$hot_context_readonly
-})
-observeEvent(input$hot_context_comments, {
-  rv$tableConfig$handsontable$contextMenu$allowComments <<- input$hot_context_comments
 })
 
 observeEvent(input$dt_class, {
