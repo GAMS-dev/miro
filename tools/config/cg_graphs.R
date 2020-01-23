@@ -1681,7 +1681,6 @@ getChartOptions <- reactive({
   scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
     rv$graphConfig$graph$xdata      <<- indices[[1]]
-    rv$graphConfig$graph$showlegend <<- TRUE
     rv$graphConfig$outType <<- "graph" 
   })
   tagList(
@@ -1770,8 +1769,11 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
   )
 }
 getOptionSection <- reactive({
+  isolate({
+    rv$graphConfig$graph$showlegend <<- TRUE
+  })
   tagList(
-    textInput("chart_title", lang$adminMode$graphs$ui$chartTitle),
+    textInput("chart_title", lang$adminMode$graphs$ui$chartTitle, value = activeSymbol$alias),
     if(!identical(rv$graphConfig$graph$type, "pie")){
       checkboxInput_MIRO("fixed_width", lang$adminMode$graphs$chartOptions$options$fixedWidth, value = FALSE)
     },
