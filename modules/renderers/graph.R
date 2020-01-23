@@ -15,6 +15,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
   #   rendered graph for the provided dataframe
   data <- type_convert(data, cols())
   if(options$tool == 'plotly'){
+    pieGrid <- NULL
     return(renderPlotly({
       if(length(filterCol) && length(input$data_filter)){
         data <- filter(data, !!filterCol %in% input$data_filter)
@@ -22,8 +23,28 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
       
       if(options$type == 'pie'){
         # pie chart
-        p <- plot_ly(data, labels = ~try(get(options$labels)), values = ~try(get(options$values)), type = 'pie', 
-                     height = height, hole = if(!is.null(options$hole)){options$hole})
+        p <- NULL
+        chartsPerRow <- if(is.numeric(options$gridRows)) options$gridRows else 3L
+        pieGrid <- list(rows = (length(options$traces) -1L) %/% chartsPerRow + 1L,
+                        columns = if(length(options$traces) < chartsPerRow) 
+                          length(options$traces) else chartsPerRow)
+        lapply(seq_along(options$traces), function(j){
+          if(j==1){
+            p <<- plot_ly(height = height) %>%
+              add_pie(p, data = data, labels = ~try(get(options$traces[[1]]$labels)), 
+                      values = ~try(get(options$traces[[1]]$values)), 
+                      hole = options$traces[[1]]$hole,
+                      name = options$traces[[1]]$name, 
+                      domain = list(row = 0L, column = 0L))
+          }else{
+            p <<- add_pie(p, labels = try(data[[options$traces[[j]]$labels]]), 
+                          values = try(data[[options$traces[[j]]$values]]), 
+                          hole = options$traces[[j]]$hole,
+                          name = options$traces[[j]]$name,
+                          domain = list(row = (j - 1L) %/% chartsPerRow, 
+                                        column = (j - 1L) %% chartsPerRow))
+          }
+        })
       }else if(options$type == 'bar'){
         # bar plot
         p <- NULL
@@ -252,7 +273,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                           categoryorder = options$yaxis$categoryorder),
              paper_bgcolor = if(length(options$paper_bgcolor)) options$paper_bgcolor else "rgba(0,0,0,0)",
              plot_bgcolor = if(length(options$plot_bgcolor)) options$plot_bgcolor else "rgba(0,0,0,0)",
-             showlegend = options$showlegend,
+             showlegend = options$showlegend, grid = pieGrid,
              legend = options$legend, bargap = options$bargap, bargroupgap = options$bargroupgap)}))
     
   }else if(options$tool == 'dygraphs'){

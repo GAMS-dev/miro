@@ -1335,12 +1335,6 @@
       },
       "updateToolScalars": ["Wertebox für skalare Werte"],
       "updateToolNoScalars": ["Kreisdiagramm", "Balkendiagramm", "Streudiagramm", "Liniendiagramm", "Blasendiagramm", "Histogramm", "Zeitreihen-Diagramm", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle und Pivot-Charts", "Eigener Renderer"],
-      "pieOptions":{
-        "labels": "Bezeichnung",
-        "values": "Werte",
-        "donut": "Donut-Diagramm?",
-        "donutHole": "Größe des Donutlochs"
-      },
       "axisOptions":{
         "title": "Achsenbeschriftung (%s-Achse)",
         "showgrid": "Gitter anzeigen (%s-Achse)?",
@@ -1620,6 +1614,12 @@
           "legend": "Soll eine Legende (Datenspaltennamen) sichtbar sein?",
           "legendPosition": "Legendenposition",
           "legendPositionChoices": ["oben rechts", "topleft", "unten rechts", "unten links"]
+        },
+        "addPieDataEl":{
+          "chartValues": "Werte",
+          "chartLabels": "Bezeichnung",
+          "holeSize": "Größe des Donutlochs",
+          "chartName": "Bezeichnung des Elements (nur relevant, wenn mehrere Tortendiagramme angezeigt werden)"
         },
         "addBarDataEl":{
           "chartYdatabar": "Was soll auf der y-Achse dargestellt werden?",

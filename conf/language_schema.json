@@ -6183,33 +6183,6 @@
               },
               "required":true
             },
-            "pieOptions":{  
-              "type":"object",
-              "additionalProperties":false,
-              "required":true,
-              "properties":{ 
-                "labels":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "values":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "donut":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "donutHole":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                }                 
-              }
-            },
             "axisOptions":{  
               "type":"object",
               "additionalProperties":false,
@@ -7639,6 +7612,33 @@
                           "type":"string",
                           "minLength": 1
                       },
+                      "required":true
+                    }
+                  }
+                },
+                "addPieDataEl":{
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{ 
+                    "chartValues":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "chartLabels":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "holeSize":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "chartName":{ 
+                      "type":"string",
+                      "minLength":1,
                       "required":true
                     }
                   }
