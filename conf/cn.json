@@ -847,7 +847,8 @@
         "headerBaseScripts": "Base mode",
         "headerHcubeScripts": "Hypercube mode",
         "headerScenData": "场景和数据",
-        "headerComputation": "计算"
+        "headerComputation": "计算",
+        "tooltipDocs": "Open documentation"
       },
       "modalDialog":{
         "title": "复制图像时出错", 

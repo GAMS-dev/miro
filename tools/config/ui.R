@@ -461,7 +461,7 @@ body_admin <- dashboardBody({
                                tags$div(class = "col-sm-6", style = "padding-top: 20px;",
                                         tags$div(class="main-tab",
                                                  tags$h2(lang$adminMode$general$ui$headerSymbolNaming, 
-                                                         tags$a(class="info-wrapper", style="top:-10px;", href="https://gams.com/miro/customize.html#naming", 
+                                                         tags$a(title = lang$adminMode$general$ui$tooltipDocs, class="info-wrapper", style="top:-10px;", href="https://gams.com/miro/customize.html#naming", 
                                                                 tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"), class="option-category"),
                                                  tags$h4(lang$adminMode$general$overwriteSymbolAliases$input, class="option-category"),
                                                  tags$div(class = "small-space"),
