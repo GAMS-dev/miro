@@ -490,9 +490,9 @@ body_admin <- dashboardBody({
                                                                            lang$adminMode$general$overwriteSymbolHeaders$label,
                                                                            choices = symHeaders, selected = symHeaders,
                                                                            multiple = TRUE,  options = list(
+                                                                             'maxItems' = length(symHeaders),
                                                                              'create' = TRUE,
-                                                                             'persist' = FALSE,
-                                                                             'maxItems' = length(symHeaders))))
+                                                                             plugins = list("restore_on_backspace"))))
                                                    )
                                                  }),
                                                  tags$div(class = "space"),
@@ -520,9 +520,9 @@ body_admin <- dashboardBody({
                                                                            lang$adminMode$general$overwriteSymbolHeaders$label,
                                                                            choices = symHeaders, selected = symHeaders,
                                                                            multiple = TRUE,  options = list(
+                                                                             'maxItems' = length(symHeaders),
                                                                              'create' = TRUE,
-                                                                             'persist' = FALSE,
-                                                                             'maxItems' = length(symHeaders))))
+                                                                             plugins = list("restore_on_backspace"))))
                                                    )
                                                  }),
                                                  tags$div(class = "space")
