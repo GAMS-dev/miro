@@ -82,31 +82,6 @@
                             </section><!--//doc-section-->
                             <section id="creating-section" class="doc-section">
                                 <h2 class="section-title">Turn your GAMS model into a GAMS MIRO app</h2>
-                                    <div  id="demo-applications"  class="section-block">
-                                        <h3 class="block-title">Demo Applications</h3>
-                                        <p>The MIRO demo applications can be found in the GAMS data utilities library. You can get them e.g. in GAMS Studio via the <i>Model Library Explorer</i> (shortcut <i>F6</i>). You can also find those demo applications <a href="./index.html#demo-download" target="_blank">here</a>.</p>
-                                        <p>The following demos are available:</p>
-                                        <ul>
-                                        <li>transport<br>
-                                        This problem looks for a least cost shipping schedule that meets requirements at markets and supplies at factories. More about this transportation problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">here</a>.
-                                        <div class="callout-block callout-warning">
-                                            <div class="icon-holder">
-                                                <i class="fas fa-info-circle"></i>
-                                            </div><!--//icon-holder-->
-                                            <div class="content">
-                                                <b class="callout-title">Note:</b>
-                                                <p>The well-known model from the GAMS model library is called <i>trnsport</i>. To avoid two models of the same name, the GAMS MIRO Demo model is called <i>transport</i>.</p>
-                                            </div><!--//content-->
-                                        </div><!--//callout-block--></li>
-                                        <li>transport_live<br>
-                                        A "live" version of the transport model. Extends transport in the sense that locations of suppliers and markets can be adjusted right from within MIRO. Geographical information about the cities you entered is automatically fetched and the distance matrix calculated via <a href="https://www.gams.com/latest/docs/UG_EmbeddedCode.html" target="_blank">embedded Python code</a>.
-                                        <br>This model needs an internet connection.</li>
-                                        <li>pickstock<br>
-                                        Optimization model to find a small subset of stocks of the Dow Jones index together with some weights, such that this portfolio has a similar behavior to the overall index.</li>
-                                        <li>kport<br>
-                                        This problem computes minimal cost solutions satisfying the demand of certain product portfolios. More about this optimization problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_kport.html" target="_blank">here</a>.</li>
-                                        </ul>
-                                    </div><!--//section-block-->
                                     <div  id="model-adjustments"  class="section-block">
                                         <h3 class="block-title">Model adjustments</h3>
                                         <p>Every GAMS model can be deployed with MIRO in just a few steps. First, those GAMS symbols that you want to be visible in the interface need to be declared. This can be done by wrapping the corresponding <i>symbol declarations</i> with the tags <code class="language-gams">$onExternalInput
@@ -794,7 +769,6 @@ $log What you see here is the %fn%
 	                            <a class="nav-link scrollto" href="#introduction-section">Introduction</a>
 	                            <a class="nav-link scrollto" href="#creating-section">Turn your GAMS model into a MIRO app</a>
                                 <nav class="doc-sub-menu nav flex-column">
-                                    <a class="nav-link scrollto" href="#demo-applications">Demo applications</a>
                                     <a class="nav-link scrollto" href="#model-adjustments">Model adjustments</a>
                                     <a class="nav-link scrollto" href="#launch-miro">Launch MIRO</a>
                                 </nav><!--//nav-->
