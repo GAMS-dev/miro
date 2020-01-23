@@ -999,8 +999,7 @@
         "enable": "允许使用表格的上下文菜单（通过鼠标右键单击访问）。",
         "contextRowedit": "允许行编辑",
         "contextColedit": "允许列编辑",
-        "contextReadonly": "允许只读功能",
-        "contextComments": "允许在表格中评论。 该功能在解决模型时会被自动忽略，并且不会保存在数据库中。"
+        "contextReadonly": "允许只读功能"
       },
       "dt":{
         "class":{
@@ -1047,8 +1046,8 @@
         "noSymbolMsg": "没有在MIRO中可使用的GAMS符号",
         "noWidgetMsg": "尚未配置任何小部件",
         "noWidgetConfigMsg": "当前没有为此GAMS符号配置小部件",
-        "optionConfigMsg": "消息：您选择的符号是GAMS选项",
-        "doubledashConfigMsg": "消息： 您选择的符号是一个double-dash parameter",
+        "optionConfigMsg": "消息：您选择的符号是GAMS选项：%s",
+        "doubledashConfigMsg": "消息： 您选择的符号是一个double-dash parameter：%s",
         "inputSymbol": "为哪个输入符号创建一个小部件？",
         "widgetGo": "GAMS option",
         "widgetDd": "double-dash parameter",

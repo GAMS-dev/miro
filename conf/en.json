@@ -999,8 +999,7 @@
         "enable": "Enable table context menu (accessible via right mouse click).",
         "contextRowedit": "Enable row editing",
         "contextColedit": "Enable column editing",
-        "contextReadonly": "Enable readonly toggle",
-        "contextComments": "Enable comments in table. Will be ignored when solving the model and are not saved in database."
+        "contextReadonly": "Enable readonly toggle"
       },
       "dt":{
         "class":{
@@ -1047,8 +1046,8 @@
         "noSymbolMsg": "No GAMS symbol has been tagged for use in MIRO",
         "noWidgetMsg": "No widget has been configured yet",
         "noWidgetConfigMsg": "Currently, there is no widget configured for this symbol",
-        "optionConfigMsg": "Info: The symbol you selected is a GAMS option",
-        "doubledashConfigMsg": "Info: The symbol you selected is a double-dash parameter",
+        "optionConfigMsg": "Info: The symbol you selected is a GAMS option: %s",
+        "doubledashConfigMsg": "Info: The symbol you selected is a double-dash parameter: %s",
         "inputSymbol": "Input symbol",
         "widgetGo": "GAMS option",
         "widgetDd": "Double-dash parameter",

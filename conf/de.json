@@ -999,8 +999,7 @@
         "enable": "Kontextmenü der Tabelle aktivieren (erreichbar über rechte Maustaste).",
         "contextRowedit": "Zeilenbearbeitung aktivieren",
         "contextColedit": "Spaltenbearbeitung aktivieren",
-        "contextReadonly": "schreibgeschützt-Toggle aktivieren",
-        "contextComments": "Kommentare in der Tabelle aktivieren. Wird bei der Lösung des Modells ignoriert und nicht in der Datenbank gespeichert."
+        "contextReadonly": "schreibgeschützt-Toggle aktivieren"
       },
       "dt":{
         "class":{
@@ -1047,8 +1046,8 @@
         "noSymbolMsg": "Es wurde kein GAMS symbol für die Verwendung mit MIRO markiert",
         "noWidgetMsg": "Es wurde noch kein Widget konfiguriert",
         "noWidgetConfigMsg": "Derzeit ist kein Widget für dieses Symbol konfiguriert",
-        "optionConfigMsg": "Info: Das von Ihnen gewählte Symbol ist eine GAMS-Option",
-        "doubledashConfigMsg": "Info: Das von Ihnen gewählte Symbol ist ein Double-Dash-Parameter",
+        "optionConfigMsg": "Info: Das von Ihnen gewählte Symbol ist eine GAMS-Option: %s",
+        "doubledashConfigMsg": "Info: Das von Ihnen gewählte Symbol ist ein Double-Dash-Parameter: %s",
         "inputSymbol": "Wählen Sie ein Eingabesymbol",
         "widgetGo": "Name der GAMS Option (z.B.'LP' oder 'OptCR')",
         "widgetDd": "Name des Double-Dash-Parameters (ohne '--')",
