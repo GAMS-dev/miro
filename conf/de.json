@@ -921,7 +921,7 @@
       },
       "logo":{
         "header": "Logo Vorschau:",
-        "label": "Laden Sie ein eigenes Logo für Ihre MIRO-App hoch: png/jpg-Datei (bestes Format: 4,6:1)"
+        "label": "Laden Sie ein eigenes Logo für Ihre MIRO-App hoch: png/jpg-Datei (bestes Format: 4,6:1 oder 230*50px)"
       }, 
       "actScen":{
         "title" :"Szenarien speichern, löschen und vergleichen",
