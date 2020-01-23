@@ -19,7 +19,8 @@ renderSudoku <- function(input, output, session, data, options = NULL, path = NU
   }else{
     dataTmp <- as_tibble(vapply(paste0("col", 1:9), function(el){character(9L)}, character(9L)))
   }
-  output$sudoku <- renderRHandsontable(rhandsontable(dataTmp, readOnly = !isTRUE(options$isInput), rowHeaders = FALSE) %>%
+  output$sudoku <- renderRHandsontable(rhandsontable(dataTmp, readOnly = !isTRUE(options$isInput), 
+                                                     rowHeaders = FALSE, colHeaders = FALSE) %>%
                                          hot_table(contextMenu = FALSE, customBorders = lapply(0:8, function(i){
                                            list(
                                              range = list(from = list(row = i%%3L*3L, col = i%/%3L*3L),
@@ -29,6 +30,7 @@ renderSudoku <- function(input, output, session, data, options = NULL, path = NU
                                              bottom = list(width = 4, color = "black"),
                                              right = list(width = 4, color = "black"))
                                          })) %>%
+                                         hot_validate_numeric(cols = 1:9, min = 1, max = 9, allowInvalid = TRUE) %>%
                                          hot_cols(colWidths = 50, renderer = if(isTRUE(options$isInput)) {
                                            "function (instance, td, row, col, prop, value, cellProperties) {
                                              Handsontable.renderers.NumericRenderer.apply(this, arguments);
