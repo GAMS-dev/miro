@@ -470,14 +470,24 @@ lapply(c(names(modelInRaw), names(modelOut)), function(name){
     if(length(input[[paste0("general_overwriteSymAlias_", name)]]) && 
        nchar(input[[paste0("general_overwriteSymAlias_", name)]]) > 0L){
       newAlias <- input[[paste0("general_overwriteSymAlias_", name)]]
+      defaultAlias <- FALSE
       if(name %in% names(modelOut)){
         if(identical(newAlias, modelOut[[name]]$alias)){
-          return()
+          defaultAlias <- TRUE
         }
       }else{
         if(identical(newAlias, modelInRaw[[name]]$alias)){
-          return()
+          defaultAlias <- TRUE
         }
+      }
+      if(defaultAlias){
+        rv$generalConfig$overwriteAliases[[name]] <<- NULL
+        configJSON$overwriteAliases[[name]] <<- NULL
+        if(!length(rv$generalConfig$overwriteAliases)){
+          rv$generalConfig$overwriteAliases <<- NULL
+          configJSON$overwriteAliases <<- NULL
+        }
+        return()
       }
       if(!length(rv$generalConfig$overwriteAliases)){
         rv$generalConfig$overwriteAliases <- list()
@@ -487,22 +497,32 @@ lapply(c(names(modelInRaw), names(modelOut)), function(name){
   })
   observeEvent(input[[paste0("general_overwriteSymHeaders_", name)]], {
     newHeaders <- input[[paste0("general_overwriteSymHeaders_", name)]]
+    defaultAlias <- FALSE
     if(name %in% names(modelOut)){
       if(length(newHeaders) != length(modelOut[[name]]$headers) ||
          identical(newHeaders, vapply(modelOut[[name]]$headers, "[[", 
                                       character(1L), "alias",
                                       USE.NAMES = FALSE))){
-        return()
+        defaultAlias <- TRUE
       }
     }else{
       if(length(newHeaders) != length(modelInRaw[[name]]$headers) ||
          identical(newHeaders, vapply(modelInRaw[[name]]$headers, "[[", 
                                       character(1L), "alias",
                                       USE.NAMES = FALSE))){
-        return()
+        defaultAlias <- TRUE
       }
     }
-    if(!length(rv$generalConfig$overwriteAliases)){
+    if(defaultAlias){
+      rv$generalConfig$overwriteHeaderAliases[[name]] <<- NULL
+      configJSON$overwriteHeaderAliases[[name]] <<- NULL
+      if(!length(rv$generalConfig$overwriteHeaderAliases)){
+        rv$generalConfig$overwriteHeaderAliases <<- NULL
+        configJSON$overwriteHeaderAliases <<- NULL
+      }
+      return()
+    }
+    if(!length(rv$generalConfig$overwriteHeaderAliases)){
       rv$generalConfig$overwriteHeaderAliases <- list()
     }
     rv$generalConfig$overwriteHeaderAliases[[name]] <<- list(newHeaders = newHeaders)
@@ -734,7 +754,6 @@ observeEvent(input$scriptsB_args, {
     return()
   }
   if(length(input$scriptsB_args) < 2L){
-    print('asd')
     rv$generalConfig$scripts$base <- baseScriptValidator$
       removeKey(arrayID, "args")$
       getValidData()
