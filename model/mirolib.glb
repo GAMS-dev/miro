@@ -14,7 +14,7 @@ Files = transport.gms,transport.conf.unzip
 4 = Classical transportation problem with MIRO
 
 *$*$*$
-Files = pickstock.gms,dowjones2016.csv,pickstock.conf.unzip
+Files = pickstock.gms,pickstock.conf.unzip
 1 = 002
 2 = pickstock
 3 = gms, csv
