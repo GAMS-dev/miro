@@ -306,14 +306,13 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
         }
       }
     }
-  }else{
-    overwriteLang <- Sys.getenv("MIRO_LANG")
-    if(!identical(overwriteLang, "") && !identical(overwriteLang, config$language)){
-      if(file.exists(file.path(".", "conf", paste0(overwriteLang, ".json")))){
-        lang <- fromJSON(file.path(".", "conf", paste0(overwriteLang, ".json")),
-                         simplifyDataFrame = FALSE, 
-                         simplifyMatrix = FALSE)
-      }
+  }
+  overwriteLang <- Sys.getenv("MIRO_LANG")
+  if(!identical(overwriteLang, "") && !identical(overwriteLang, config$language)){
+    if(file.exists(file.path(".", "conf", paste0(overwriteLang, ".json")))){
+      lang <- fromJSON(file.path(".", "conf", paste0(overwriteLang, ".json")),
+                       simplifyDataFrame = FALSE, 
+                       simplifyMatrix = FALSE)
     }
   }
 }
