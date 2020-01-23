@@ -404,12 +404,18 @@ observeEvent(input$widget_symbol_type, {
     hideEl(session, "#noWidgetMsg")
     hideEl(session, "#doubledashConfigMsg")
     hideEl(session, "#noWidgetConfigMsg")
-    updateSelectInput(session, "widget_type", choices = 
-                        if(identical(input$widget_symbol_type, "dd")){
-                          langSpecificWidget$widgetOptionsAll
-                        }else if(identical(input$widget_symbol_type, "go")){
-                          langSpecificWidget$widgetOptionsGo
-                        })
+    hideEl(session, "#deleteWidget")
+    updateTextInput(session, "widget_alias", value = "")
+    updateTextInput(session, "widget_label", value = "")
+    if(identical(input$widget_symbol_type, "dd")){
+      updateTextInput(session, "widget_dd", value = "")
+      updateSelectInput(session, "widget_type", choices = 
+                          langSpecificWidget$widgetOptionsAll)
+    }else if(identical(input$widget_symbol_type, "go")){
+      updateTextInput(session, "widget_go", value = "")
+      updateSelectInput(session, "widget_type", choices = 
+                          langSpecificWidget$widgetOptionsGo)
+    }
     if(!length(latest_widget_symbol_type)){
       latest_widget_symbol_type <<- input$widget_symbol_type
       return()
@@ -440,10 +446,12 @@ observeEvent(input$widget_symbol_type, {
   }else if(!length(widgetSymbols)){
     showEl(session, "#noSymbolMsg")
     showEl(session, "#noWidgetMsg")
+    showEl(session, "#deleteWidget")
     currentWidgetSymbolName <<- character(0L)
     latest_widget_symbol_type <<- input$widget_symbol_type
     return()
   }
+  showEl(session, "#deleteWidget")
   latest_widget_symbol_type <<- input$widget_symbol_type
   rv$widget_symbol <- rv$widget_symbol + 1L
 })
