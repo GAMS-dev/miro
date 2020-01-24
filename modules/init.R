@@ -24,7 +24,11 @@ if(is.null(errMsg)){
   jsonFilesMissing    <- !file.exists(jsonFilesWithSchema)
   if(any(jsonFilesMissing)){
     errMsg <- paste(errMsg, paste0("JSON file(s): '", basename(jsonFilesWithSchema[jsonFilesMissing]), 
-                                   "' is required/are required but missing or you have no read permissions. Please make sure this file/these files are available."), 
+                                   "' is required/are required but missing or you have no read permissions. Please make sure this file/these files are available.\n
+If you run MIRO for the first time with your new model, the GAMS/MIRO data contract needs to be generated.\n
+Run \"gams ", modelName, ".gms IDCGenerateJSON=conf_", modelName, "/", modelName, "_io.json IDCGenerateGDX=data_", 
+                                   modelName, "/", "default.gdx\" inside your model directory to generate the data contract as well as a default scenario.\n
+Note that GAMS will not create the directories 'conf_", modelName, "' and 'data_", modelName, "', so you need to create these first."), 
                     sep = "\n")
   }
   rm(jsonFilesMissing)
