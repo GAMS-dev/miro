@@ -342,7 +342,7 @@ const arrayTypes = {
   },
 };
 
-export function addArrayDataEl(arrayID, defaultsRaw, reinitialize = false) {
+export function addArrayDataEl(arrayID, defaultsRaw) {
   if ($(`#${arrayID}_wrapper .btn-add-array-el`).is(':disabled')) {
     return;
   }
@@ -355,14 +355,20 @@ export function addArrayDataEl(arrayID, defaultsRaw, reinitialize = false) {
       throw new ReferenceError(`Array ID: ${arrayID} not defined.`);
     }
     const [elements, options, rObserveID] = arrayTypes[arrayID](def);
-    inputArrayFactory.add(arrayID, elements, options, rObserveID, reinitialize);
+    inputArrayFactory.add(arrayID, elements, options, rObserveID);
   });
 }
-function addArrayDataElWrapper(arrayID, defaults, cnt = 1) {
-  if ($(`#${arrayID}_wrapper`).is(':visible') || cnt === 6) {
-    addArrayDataEl(arrayID, defaults, true);
-  } else if (cnt <= 6) {
-    setTimeout(addArrayDataElWrapper, 200, arrayID, defaults, cnt + 1);
+function addArrayDataElWrapper(arrayID, defaults, symbol, cnt = 1) {
+  let arrayWrapper;
+  if (symbol) {
+    arrayWrapper = $(`#${arrayID}_wrapper[data-symbol="${symbol}"]`);
+  } else {
+    arrayWrapper = $(`#${arrayID}_wrapper`);
+  }
+  if (arrayWrapper.is(':visible') || cnt === 8) {
+    addArrayDataEl(arrayID, defaults);
+  } else if (cnt <= 8) {
+    setTimeout(addArrayDataElWrapper, 200, arrayID, defaults, symbol, cnt + 1);
   }
 }
 
@@ -411,7 +417,10 @@ $(document).ready(() => {
     } = symData);
   });
   Shiny.addCustomMessageHandler('gms-addArrayEl', (data) => {
-    setTimeout(addArrayDataElWrapper, 200, data.arrayID, data.defaults);
+    if (data.destroy === true && data.arrayID) {
+      inputArrayFactory.destroy(data.arrayID);
+    }
+    setTimeout(addArrayDataElWrapper, 300, data.arrayID, data.defaults, data.symbol);
   });
   Shiny.addCustomMessageHandler('gms-destroyArray', (arrayID) => {
     if (arrayID) {

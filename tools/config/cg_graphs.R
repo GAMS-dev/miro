@@ -720,11 +720,11 @@ observeEvent(input$add_piedata, {
   if(length(input$add_piedata) < 3L){
     return()
   }
-  arrayId <- suppressWarnings(as.integer(input$add_piedata[1]))
-  if(is.na(arrayId)){
+  arrayId <- input$add_piedata[1]
+  if(!length(arrayId) || !nchar(arrayId)){
     return()
   }
-  if(arrayId > length(rv$graphConfig$graph$traces)){
+  if(!arrayId %in% names(rv$graphConfig$graph$traces)){
     rv$graphConfig$graph$traces[[arrayId]] <<- list(labels = activeSymbol$indices[[1]],
                                                     values = input$add_piedata[2],
                                                     name = input$add_piedata[2],
@@ -734,12 +734,24 @@ observeEvent(input$add_piedata, {
     rv$graphConfig$graph$traces[[arrayId]]$name   <<- input$add_piedata[2]
   }
 })
+observeEvent(input$remove_piedata, {
+  if(length(input$remove_piedata) < 3L){
+    return()
+  }
+  arrayId <- input$remove_piedata[3]
+  if(!length(arrayId) || 
+     !arrayId %in% names(rv$graphConfig$graph$traces)){
+    return()
+  }
+  rv$graphConfig$graph$traces[[arrayId]] <<- NULL
+})
 observeEvent(input$chart_pielabel, {
   if(length(input$chart_pielabel) < 2L){
     return()
   }
-  arrayId <- suppressWarnings(as.integer(input$chart_pielabel[1]))
-  if(is.na(arrayId) || arrayId > length(rv$graphConfig$graph$traces)){
+  arrayId <- input$chart_pielabel[1]
+  if(!length(arrayId) || 
+     !arrayId %in% names(rv$graphConfig$graph$traces)){
     return()
   }
   rv$graphConfig$graph$traces[[arrayId]]$labels <- input$chart_pielabel[2]
@@ -748,8 +760,9 @@ observeEvent(input$chart_piehole, {
   if(length(input$chart_piehole) < 2L){
     return()
   }
-  arrayId <- suppressWarnings(as.integer(input$chart_piehole[1]))
-  if(is.na(arrayId) || arrayId > length(rv$graphConfig$graph$traces)){
+  arrayId <- input$chart_piehole[1]
+  if(!length(arrayId) || 
+     !arrayId %in% names(rv$graphConfig$graph$traces)){
     return()
   }
   holeTmp <- suppressWarnings(as.numeric(input$chart_piehole[2]))
@@ -762,8 +775,9 @@ observeEvent(input$chart_piename, {
   if(length(input$chart_piename) < 2L){
     return()
   }
-  arrayId <- suppressWarnings(as.integer(input$chart_piename[1]))
-  if(is.na(arrayId) || arrayId > length(rv$graphConfig$graph$traces)){
+  arrayId <- input$chart_piename[1]
+  if(!length(arrayId) || 
+     !arrayId %in% names(rv$graphConfig$graph$traces)){
     return()
   }
   if(nchar(input$chart_piename[2])){
@@ -1655,21 +1669,27 @@ observeEvent({
   })
 getPieOptions <- reactive({
   req(rv$initData)
-  rv$refreshContent
+  if(rv$refreshContent == 0){
+    return()
+  }
   indices       <- activeSymbol$indices
   scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
     valuesTmp <- if(length(scalarIndices)) scalarIndices[[1]] else ""
     rv$graphConfig$graph$traces <<- list()
-    rv$graphConfig$graph$traces[[1]] <<- list(labels = indices[[1]],
+    rv$graphConfig$graph$traces[['1']] <<- list(labels = indices[[1]],
                                               values = valuesTmp,
                                               hole = 0,
                                               name = valuesTmp)
   })
+  # We have to provide the symbol name with create array el, because else Javascript 
+  # will insert the new array element inside the wrapper of the previous selected symbol 
+  # due to the delay between R sending the new HTML content and the javascript call to be executed
   tagList(
     tags$div(class="cat-body cat-body-1",
              createArray(session, "chart_piedata", lang$adminMode$graphs$chartOptions$ydata, 
-                         class_outer="array-wrapper-outer-graph", hr = FALSE)),
+                         class_outer="array-wrapper-outer-graph", hr = FALSE, 
+                         symbolName = activeSymbol$name)),
     tags$div(class="cat-body cat-body-2", style="display:none;",
              getOptionSection()
     )

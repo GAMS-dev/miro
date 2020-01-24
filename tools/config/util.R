@@ -1,20 +1,24 @@
-addArrayEl <- function(session, arrayID, plotlyChartType = "", defaults = NULL){
+addArrayEl <- function(session, arrayID, plotlyChartType = "", defaults = NULL, destroy = FALSE, symbolName = NULL){
   arrayID <- paste0(arrayID, plotlyChartType)
-  session$sendCustomMessage("gms-addArrayEl", list(arrayID = arrayID, defaults = defaults))
+  session$sendCustomMessage("gms-addArrayEl", list(arrayID = arrayID, defaults = defaults, destroy = destroy,
+                                                   symbol = symbolName))
 }
 createArray <- function(session, arrayID, label, plotlyChartType = "", autoCreate = TRUE, 
-                        class_outer = "array-wrapper-outer-default", hr = TRUE){
+                        class_outer = "array-wrapper-outer-default", hr = TRUE, symbolName = NULL){
   if(autoCreate){
-    addArrayEl(session, arrayID, plotlyChartType)
+    addArrayEl(session, arrayID, plotlyChartType, destroy = TRUE, 
+               symbolName = symbolName)
   }else if(length(session)){
     # destroy existing array elements
     session$sendCustomMessage("gms-destroyArray", arrayID)
   }
   
   arrayID <- paste0(arrayID, plotlyChartType)
-  HTML(paste0('<div id="', arrayID, '_wrapper" class="shiny-input-container ', class_outer, '">\n', 
+  HTML(paste0('<div id="', arrayID, '_wrapper" ', 
+              if(length(symbolName)) paste0('data-symbol="', symbolName, '" ') else '',
+              'class="shiny-input-container ', class_outer, '">\n', 
               if ( hr ) "<hr>\n" else '',
- '<div class="array-wrapper"></div>\n
+              '<div class="array-wrapper"></div>\n
    <div onclick="Miro.addArrayDataEl(\'', arrayID, '\')" style="cursor:pointer">\n
      <button type="button" class="btn btn-default bt-icon btn-add-array-el" style="font-size:20px;">\n
        <i class="far fa-plus-square"></i>\n

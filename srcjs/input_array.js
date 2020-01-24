@@ -21,6 +21,8 @@ class InputArray {
 
     options;
 
+    isDisabled = false;
+
     indexEl;
 
     elCount = 0;
@@ -52,6 +54,10 @@ class InputArray {
     }
 
     createEl() {
+      if (this.isDisabled) {
+        console.warn('Array is disabled. Will not create new element.');
+        return;
+      }
       const rAddID = `add_${this.rObserveID}`;
       const elID = this.incElCount();
 
@@ -74,6 +80,7 @@ class InputArray {
                 this.indexEl = k;
 
                 if (v[2].length - 1 === this.elCount) {
+                  this.isDisabled = true;
                   $(`#${this.arrayID}_wrapper .btn-add-array-el`).prop('disabled', true);
                 }
                 for (let i = 0; i < v[2].length; i++) {
@@ -209,7 +216,6 @@ class InputArray {
       arrayContent += `${(!this.options.elRequired || this.options.uniqueItems === true || elID > 1)
         ? `<button type="button" onclick="Miro.removeArrayEl('${this.arrayID}','${elID}\
 ')" class="btn btn-default bt-icon"><i class="far fa-minus-square"></i></button>\n` : ''}<hr></div>`;
-
       $(`#${this.arrayID}_wrapper .array-wrapper`).append(arrayContent);
       this.registerChangeHandlers(this.elements, rAddID, elID, this.options);
       this.isNewElement = false;
@@ -287,6 +293,7 @@ class InputArray {
           labelEl[0].selectize.enable();
         }
       }
+      this.isDisabled = false;
       $(`#${this.arrayID}_wrapper .btn-add-array-el:disabled`).prop('disabled', false);
       Shiny.setInputValue(`remove_${this.rObserveID}`, [this.arrayID, arrayLabel, elID], {
         priority: 'event',
