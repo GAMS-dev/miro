@@ -1340,12 +1340,6 @@
       },
       "updateToolScalars": ["Valuebox for scalar values"],
       "updateToolNoScalars": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram", "Time Series Diagram", "Map chart", "Gantt chart", "Pivot table and pivot charts", "Custom renderer"],
-      "pieOptions":{
-        "labels": "Labels",
-        "values": "Values",
-        "donut": "Donut chart?",
-        "donutHole": "Size of donut hole"
-      },
       "axisOptions":{
         "title": "Axis label (%s axis)",
         "showgrid": "Show grid (%s axis)?",
@@ -1625,6 +1619,12 @@
           "legend": "Should a legend (data column names) be visible?",
           "legendPosition": "Legend position",
           "legendPositionChoices": ["topright", "topleft", "bottomright", "bottomleft"]
+        },
+        "addPieDataEl":{
+          "chartValues": "Values",
+          "chartLabels": "Labels",
+          "holeSize": "Size of donut hole",
+          "chartName": "Name of element (only relevant if multiple pie charts are displayed)"
         },
         "addBarDataEl":{
           "chartYdatabar": "What should be plotted on the y axis?",

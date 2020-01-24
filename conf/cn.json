@@ -1340,12 +1340,6 @@
       },
       "updateToolScalars": ["标量值的值框"],
       "updateToolNoScalars": ["饼图", "柱形图", "散点图", "折线图", "气泡图", "直方图", "时间序列图形工具", "地图工具", "甘特图", "数据透视表", "自定义绘制器"],
-      "pieOptions":{
-        "labels": "标签",
-        "values": "值",
-        "donut": "绘制成圆环图？",
-        "donutHole": "圆环图的大小"
-      },
       "axisOptions":{
         "title": "轴标签（％s 轴）",
         "showgrid": "显示网格（％s 轴）？",
@@ -1625,6 +1619,12 @@
           "legend": "是否显示图例（数据列名称）？",
           "legendPosition": "图例位置",
           "legendPositionChoices": ["右上方", "左上方", "右下方", "左下方" ]
+        },
+        "addPieDataEl":{
+          "chartValues": "值",
+          "chartLabels": "标签",
+          "holeSize": "圆环图的大小",
+          "chartName": "Name of element (only relevant if multiple pie charts are displayed)"
         },
         "addBarDataEl":{
           "chartYdatabar": "在y轴上绘制什么？",

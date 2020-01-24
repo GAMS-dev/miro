@@ -226,6 +226,15 @@ const arrayTypes = {
     };
     return ([elements, { elRequired: false }]);
   },
+  chart_piedata() {
+    const elements = {
+      chart_piedata: ['select', lang.addPieDataEl.chartValues, scalarIndices, scalarIndexAliases],
+      chart_pielabel: ['select', lang.addPieDataEl.chartLabels, nonScalarIndices, nonScalarIndexAliases],
+      chart_piehole: ['numeric', lang.addPieDataEl.holeSize, 0, 0, 1, 0.1],
+      chart_piename: ['text', lang.addPieDataEl.chartName, 'label'],
+    };
+    return ([elements, { elRequired: true }, 'piedata']);
+  },
   chart_ydatabar() {
     const elements = {
       chart_ydata: ['select', lang.addBarDataEl.chartYdatabar, indices, indexAliases],

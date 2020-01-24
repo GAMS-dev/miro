@@ -175,17 +175,12 @@ saveAndReload <- function(...){
     allDataAvailable <<- TRUE
   }else if(subsetIdx == 1L){
     isolate({
-      title <- rv$graphConfig$graph$title
-      rv$graphConfig$graph <- list()
-      rv$graphConfig$graph$title <- title
+      rv$graphConfig$graph <- list(title = rv$graphConfig$graph$title)
     })
   }else{
     isolate({
-      title <- rv$graphConfig$graph$title
-      tool  <- rv$graphConfig$graph$tool
-      rv$graphConfig$graph <- list()
-      rv$graphConfig$graph$title <- title
-      rv$graphConfig$graph$tool  <- tool
+      rv$graphConfig$graph <- list(title = rv$graphConfig$graph$title, 
+                                   tool = rv$graphConfig$graph$tool)
     })
   }
 }
@@ -721,17 +716,61 @@ observeEvent(input$hist_horizontal, {
   else
     rv$graphConfig$graph$horizontal <<- FALSE
 })
-observeEvent(input$pie_labels, {
-  rv$graphConfig$graph$labels <<- input$pie_labels
+observeEvent(input$add_piedata, {
+  if(length(input$add_piedata) < 3L){
+    return()
+  }
+  arrayId <- suppressWarnings(as.integer(input$add_piedata[1]))
+  if(is.na(arrayId)){
+    return()
+  }
+  if(arrayId > length(rv$graphConfig$graph$traces)){
+    rv$graphConfig$graph$traces[[arrayId]] <<- list(labels = activeSymbol$indices[[1]],
+                                                    values = input$add_piedata[2],
+                                                    name = input$add_piedata[2],
+                                                    hole = 0)
+  }else{
+    rv$graphConfig$graph$traces[[arrayId]]$values <<- input$add_piedata[2]
+    rv$graphConfig$graph$traces[[arrayId]]$name   <<- input$add_piedata[2]
+  }
 })
-observeEvent(input$pie_values, {
-  rv$graphConfig$graph$values <<- input$pie_values
+observeEvent(input$chart_pielabel, {
+  if(length(input$chart_pielabel) < 2L){
+    return()
+  }
+  arrayId <- suppressWarnings(as.integer(input$chart_pielabel[1]))
+  if(is.na(arrayId) || arrayId > length(rv$graphConfig$graph$traces)){
+    return()
+  }
+  rv$graphConfig$graph$traces[[arrayId]]$labels <- input$chart_pielabel[2]
 })
-observeEvent(c(input$donut_hole, input$pie_donut), {
-  if(!is.null(input$donut_hole) && identical(input$pie_donut, TRUE))
-    rv$graphConfig$graph$hole <<- input$donut_hole
-  else
-    rv$graphConfig$graph$hole <<- NULL
+observeEvent(input$chart_piehole, {
+  if(length(input$chart_piehole) < 2L){
+    return()
+  }
+  arrayId <- suppressWarnings(as.integer(input$chart_piehole[1]))
+  if(is.na(arrayId) || arrayId > length(rv$graphConfig$graph$traces)){
+    return()
+  }
+  holeTmp <- suppressWarnings(as.numeric(input$chart_piehole[2]))
+  if(is.na(holeTmp)){
+    return()
+  }
+  rv$graphConfig$graph$traces[[arrayId]]$hole <- holeTmp
+})
+observeEvent(input$chart_piename, {
+  if(length(input$chart_piename) < 2L){
+    return()
+  }
+  arrayId <- suppressWarnings(as.integer(input$chart_piename[1]))
+  if(is.na(arrayId) || arrayId > length(rv$graphConfig$graph$traces)){
+    return()
+  }
+  if(nchar(input$chart_piename[2])){
+    rv$graphConfig$graph$traces[[arrayId]]$name <- input$chart_piename[2]
+  }else{
+    rv$graphConfig$graph$traces[[arrayId]]$name <- NULL
+  }
 })
 observeEvent(input$marker_symbol, {
   if(identical(input$marker_symbol[2], "_")){
@@ -1620,32 +1659,17 @@ getPieOptions <- reactive({
   indices       <- activeSymbol$indices
   scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
-    rv$graphConfig$graph$labels <<- indices[[1]]
-    if(length(scalarIndices)){
-      rv$graphConfig$graph$values <<- scalarIndices[[1]]
-    }else{
-      rv$graphConfig$graph$values <<- ""
-    }
-    rv$graphConfig$graph$donut_hole <<- NULL
+    valuesTmp <- if(length(scalarIndices)) scalarIndices[[1]] else ""
+    rv$graphConfig$graph$traces <<- list()
+    rv$graphConfig$graph$traces[[1]] <<- list(labels = indices[[1]],
+                                              values = valuesTmp,
+                                              hole = 0,
+                                              name = valuesTmp)
   })
   tagList(
     tags$div(class="cat-body cat-body-1",
-             selectInput("pie_labels", lang$adminMode$graphs$pieOptions$labels,
-                         choices = indices),
-             selectInput("pie_values", lang$adminMode$graphs$pieOptions$values,
-                         choices = scalarIndices),
-             tags$div(class = "shiny-input-container conditional",
-                      tags$div(class = "col-sm-4", style = "padding: inherit;",
-                               tags$div(class = "shiny-input-container",
-                                        checkboxInput_MIRO("pie_donut", lang$adminMode$graphs$pieOptions$donut)
-                               )),
-                      tags$div(class = "col-sm-8", style = "padding: inherit;",
-                               conditionalPanel(condition = "input.pie_donut===true",
-                                                numericInput("donut_hole", lang$adminMode$graphs$pieOptions$donutHole, 
-                                                             value = 0.6, min = 0, max = 1, step = 0.1)
-                               )
-                      )
-             )),
+             createArray(session, "chart_piedata", lang$adminMode$graphs$chartOptions$ydata, 
+                         class_outer="array-wrapper-outer-graph", hr = FALSE)),
     tags$div(class="cat-body cat-body-2", style="display:none;",
              getOptionSection()
     )
@@ -1657,7 +1681,6 @@ getChartOptions <- reactive({
   scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
     rv$graphConfig$graph$xdata      <<- indices[[1]]
-    rv$graphConfig$graph$showlegend <<- TRUE
     rv$graphConfig$outType <<- "graph" 
   })
   tagList(
@@ -1746,8 +1769,11 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
   )
 }
 getOptionSection <- reactive({
+  isolate({
+    rv$graphConfig$graph$showlegend <<- TRUE
+  })
   tagList(
-    textInput("chart_title", lang$adminMode$graphs$ui$chartTitle),
+    textInput("chart_title", lang$adminMode$graphs$ui$chartTitle, value = activeSymbol$alias),
     if(!identical(rv$graphConfig$graph$type, "pie")){
       checkboxInput_MIRO("fixed_width", lang$adminMode$graphs$chartOptions$options$fixedWidth, value = FALSE)
     },
@@ -2217,7 +2243,8 @@ observe({
   }
   tryCatch({
     if(isolate(rv$graphConfig$graph$tool) == "plotly"){
-      if(identical(rv$graphConfig$graph$type, "pie") && nrow(data[rv$graphConfig$graph$values]) > 100){
+      if(identical(rv$graphConfig$graph$type, "pie") && 
+         nrow(data) > 100){
           showEl(session, "#pieValues")
           hideEl(session, "#preview-content-plotly")
       }else{

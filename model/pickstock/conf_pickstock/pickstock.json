@@ -87,23 +87,20 @@
     "stock_weight": {
       "outType": "dtGraph",
       "graph": {
+        "title": "Part of portfolio",
         "tool": "plotly",
         "type": "pie",
-        "showlegend": true,
-        "title": "Part of the portfolio",
-        "labels": "symbol",
-        "values": "value",
-        "xaxis": {
-          "showgrid": false,
-          "zeroline": false,
-          "showticklabels": false
-        },
-        "yaxis": {
-          "showgrid": false,
-          "zeroline": false,
-          "showticklabels": false
-        }
-      }
+        "traces": [
+          {
+            "labels": "symbol",
+            "values": "value",
+            "hole": 0,
+            "name": "weight"
+          }
+        ],
+        "showlegend": true
+      },
+      "height": 700
     },
     "dowvsindex": {
       "outType": "graph",
@@ -297,7 +294,7 @@
     }
   ],
   "overwriteSheetOrder": {
-    "input": ["price", "_scalars", "_widgets"]
+    "input": ["price", "_widgets"]
   },
   "scripts": {
     "hcube": [
@@ -310,13 +307,13 @@
       }
     ]
   },
-  "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
   "outputGroups": [
     {
       "name": "Dow Jones vs. Index Fund 🙀",
       "members": ["dowvsindex", "abserror"]
     }
   ],
+  "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
   "handsontable": {
     "stretchH": "all",
     "readonly": false,
@@ -328,8 +325,7 @@
       "enabled": true,
       "allowRowEdit": true,
       "allowColEdit": true,
-      "allowReadOnly": false,
-      "allowComments": true
+      "allowReadOnly": false
     },
     "height": 700,
     "colWidths": 300
