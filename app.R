@@ -901,7 +901,7 @@ if(!is.null(errMsg)){
       miroDataDir   <- file.path(currentModelDir, paste0(miroDataDirPrefix, modelName))
       miroDataFiles <- list.files(miroDataDir)
       dataFileExt   <- tolower(tools::file_ext(miroDataFiles))
-      miroDataFiles <- miroDataFiles[dataFileExt %in% c(if(useGdx) "gdx", "xlsx", "xls")]
+      miroDataFiles <- miroDataFiles[dataFileExt %in% c(if(useGdx) "gdx", "xlsx", "xls", "zip")]
       newScen <- NULL
       tryCatch({
         if(length(miroDataFiles)){
@@ -925,14 +925,35 @@ if(!is.null(errMsg)){
             flog.info("New data: '%s' is being stored in the database. Please wait a until the import is finished.", miroDataFile)
             if(dataFileExt[i] %in% c("xls", "xlsx")){
               method <- "xls"
+              tmpDir <- miroDataDir
+            }else if(dataFileExt[i] == "zip"){
+              method <- "csv"
+              tmpDir <- tryCatch(
+                getValidCsvFromZip(file.path(miroDataDir, miroDataFile), 
+                                   c(names(modelOut), 
+                                     inputDsNames), uid)$tmpDir
+                , error = function(e){
+                  flog.error(conditionMessage(e))
+                  return("e")
+                })
+              if(identical(tmpDir, "e")){
+                next
+              }
+              on.exit({
+                if(identical(unlink(tmpDir, recursive = TRUE), 0L)){
+                  flog.debug("Temporary directory: '%s' removed.", tmpDir)
+                }else{
+                  flog.error("Problems removing temporary directory: '%s'.", tmpDir)
+                }}, add = TRUE)
             }else{
               method <- dataFileExt[i]
+              tmpDir <- miroDataDir
             }
             newScen <- Scenario$new(db = db, sname = gsub("\\.[^\\.]*$", "", miroDataFile), isNewScen = TRUE)
-            dataOut <- loadScenData(scalarsOutName, modelOut, miroDataDir, modelName, scalarsFileHeaders,
+            dataOut <- loadScenData(scalarsOutName, modelOut, tmpDir, modelName, scalarsFileHeaders,
                                     modelOutTemplate, method = method, fileName = miroDataFile)$tabular
             dataIn  <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp, 
-                                    workDir = miroDataDir, 
+                                    workDir = tmpDir, 
                                     modelName = modelName, errMsg = lang$errMsg$GAMSInput$badInputData,
                                     scalarsFileHeaders = scalarsFileHeaders,
                                     templates = modelInTemplateTmp, method = method,

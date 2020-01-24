@@ -61,74 +61,38 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   on.exit(suppressWarnings(prog$close()))
   prog$set(message = lang$progressBar$importScen$title, value = 0.1)
   
-  removeModal()
-  
   if(identical(fileType, "gdx") && useGdx){
     loadMode <- "gdx"
     datasetsToFetch <- names(modelIn)
   }else if(identical(fileType, "zip")){
     loadMode <- "csv"
-    tryCatch({
-      filesInArchive <- zip_list(input$localInput$datapath)
-    }, error = function(e){
-      flog.error("Could not read zip archive: '%s'.", input$localInput$datapath)
-      showHideEl(session, "#importScenError", 4000L)
-      errMsg <- "e"
-    })
-    if(!is.null(errMsg)){
-      return()
-    }
-    
-    filesInArchive   <- filesInArchive[filesInArchive$compressed_size > 0, ]$filename
-    validFileNames <- grep("^((?!\\.\\.).)*\\.csv$", filesInArchive, 
-                           ignore.case = TRUE, value = TRUE, perl = TRUE)
-    validFileNames <- validFileNames[tolower(validFileNames) %in% paste0(c(names(modelOut), 
-                                                                           inputDsNames), ".csv")]
-    
-    if(!identical(length(filesInArchive), length(validFileNames))){
-      flog.error("Zip archive contains invalid files: '%s'.", input$localInput$datapath)
-      showHideEl(session, "#importScenInvalidFile", 4000L)
-      return()
-    }
-    
-    tmpDir <- file.path(tempdir(), paste0(uid, "_imp_tmp_dir"))
-    
-    if(file.exists(tmpDir) && !identical(unlink(tmpDir, recursive = TRUE), 0L)){
-      flog.error("Could not remove temporary directory: '%s'.", tmpDir)
-      showHideEl(session, "#importScenError", 4000L)
-      return()
-    }
-    if(!dir.create(tmpDir, recursive = TRUE)){
-      flog.error("Could not create temporary directory: '%s'.", tmpDir)
-      showHideEl(session, "#importScenError", 4000L)
+    csvFiles <- tryCatch(
+      getValidCsvFromZip(input$localInput$datapath, 
+                         c(names(modelOut), 
+                           inputDsNames), uid)
+      , error = function(e){
+        errMsg <- conditionMessage(e)
+        if(startsWith(errMsg, "e:")){
+          showHideEl(session, "#importScenError", 4000L)
+          flog.error(errMsg)
+        }else{
+          flog.info(errMsg)
+          showHideEl(session, "#importScenInvalidFile", 4000L)
+        }
+        return("e")
+      })
+    if(identical(csvFiles,"e")){
       return()
     }
     on.exit({
-      if(identical(unlink(tmpDir, recursive = TRUE), 0L)){
-        flog.debug("Temporary directory: '%s' removed.", tmpDir)
+      if(identical(unlink(csvFiles$tmpDir, recursive = TRUE), 0L)){
+        flog.debug("Temporary directory: '%s' removed.", csvFiles$tmpDir)
       }else{
-        flog.error("Problems removing temporary directory: '%s'.", tmpDir)
+        flog.error("Problems removing temporary directory: '%s'.", csvFiles$tmpDir)
       }}, add = TRUE)
-    
-    tryCatch(
-      csvPaths <- zip::unzip(input$localInput$datapath, exdir = tmpDir, 
-                             junkpaths = TRUE)
-    , error = function(e){
-      flog.error("Problems extracting zip archive. Error message: '%s'.", conditionMessage(e))
-      showHideEl(session, "#importScenError", 4000L)
-      errMsg <<- "e"
-    })
-    if(!is.null(errMsg)){
-      return()
-    }
-    if(any(Sys.readlink(file.path(tmpDir, validFileNames)) != "")){
-      flog.error("zip archive contains symlinks! Import stopped.")
-      showHideEl(session, "#importScenInvalidFile", 4000L)
-      return()
-    }
-    datasetsToFetch <- substr(validFileNames, 1L, 
-                              nchar(validFileNames) - 4L)
-    loadModeWorkDir <- tmpDir
+    datasetsToFetch <- substr(csvFiles$validFileNames, 1L, 
+                              nchar(csvFiles$validFileNames) - 4L)
+    loadModeWorkDir <- csvFiles$tmpDir
   }else if(identical(fileType, "csv")){
     loadMode <- "csv"
     if(length(loadModeFileName) && loadModeFileName %in% c(modelInTabularData, scalarsFileName)){
@@ -169,12 +133,14 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
                                     c(modelInTabularData, scalarsFileName, 
                                       scalarInputSym)]
   }else{
+    removeModal()
     showErrorMsg(lang$errMsg$invalidFileType$title, 
                  sprintf(lang$errMsg$invalidFileType$desc, paste0(c("xls", "xlsx", "csv", if(useGdx) "gdx"),
                                                                   collapse = ",")))
     flog.info("Invalid file type: '%s' attempted to be imported. Import interrupted.", fileType)
     return()
   }
+  removeModal()
   datasetsToFetch <- datasetsToFetch[datasetsToFetch %in% c(names(modelInToImport), 
                                                             scalarsFileName)]
   

@@ -1271,3 +1271,44 @@ loadPfFileContent <- function(content, GMSOpt = character(0L), DDPar = character
   return(content)
 }
 
+getValidCsvFromZip <- function(zipFileName, dsToVerify, uid){
+  tryCatch({
+    filesInArchive <- zip_list(zipFileName)
+  }, error = function(e){
+    stop(sprintf("e: Could not read zip archive: '%s'.", 
+                 zipFileName))
+  })
+  
+  filesInArchive   <- filesInArchive[filesInArchive$compressed_size > 0, ]$filename
+  validFileNames <- grep("^((?!\\.\\.).)*\\.csv$", filesInArchive, 
+                         ignore.case = TRUE, value = TRUE, perl = TRUE)
+  validFileNames <- validFileNames[tolower(validFileNames) %in% paste0(dsToVerify, ".csv")]
+  
+  if(!identical(length(filesInArchive), length(validFileNames))){
+    stop(sprintf("Zip archive contains invalid files: '%s'.", 
+                 zipFileName))
+  }
+  
+  tmpDir <- file.path(tempdir(), paste0(uid, "_imp_tmp_dir"))
+  
+  if(file.exists(tmpDir) && !identical(unlink(tmpDir, recursive = TRUE), 0L)){
+    stop(sprintf("e: Could not remove temporary directory: '%s'.", tmpDir))
+  }
+  if(!dir.create(tmpDir, recursive = TRUE)){
+    stop(sprintf("e: Could not create temporary directory: '%s'.", tmpDir))
+  }
+  
+  tryCatch(
+    csvPaths <- zip::unzip(zipFileName, exdir = tmpDir, 
+                           junkpaths = TRUE)
+    , error = function(e){
+      unlink(tmpDir, recursive = TRUE)
+      stop(sprintf("e: Problems extracting zip archive. Error message: '%s'.", 
+                   conditionMessage(e)))
+    })
+  if(any(Sys.readlink(file.path(tmpDir, validFileNames)) != "")){
+    unlink(tmpDir, recursive = TRUE)
+    stop(sprintf("zip archive contains symlinks! Import stopped."))
+  }
+  return(list(tmpDir = tmpDir, validFileNames = validFileNames))
+}
