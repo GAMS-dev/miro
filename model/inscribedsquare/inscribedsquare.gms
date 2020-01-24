@@ -80,7 +80,7 @@ y.l = fy(t.l('1'));
 a.l = 1;
 b.l = 1;
 
-option DNLP = IPOPT;
+inscribedsquare.optcr = 0.01;
 
 Solve inscribedsquare max z using DNLP;
 
