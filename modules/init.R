@@ -197,6 +197,8 @@ if(is.null(errMsg)){
   modelInRaw        <- modelIn
   customPackages    <- vector("list", length(modelIn))
   
+  invalidWidgetsToRender <- character(0L)
+  
   for(el in names(config$inputWidgets)){
     i    <- match(tolower(el), names(modelIn))
     el_l <- tolower(el)
@@ -256,6 +258,8 @@ if(is.null(errMsg)){
           widgetConfig$noImport  <- NULL
         }
         modelIn[[elL]][[widgetType]] <- widgetConfig
+      }else if(LAUNCHCONFIGMODE){
+        invalidWidgetsToRender <- c(invalidWidgetsToRender, el)
       }else{
         errMsgTmp <- paste0("'", el, "' was defined to be an input widget, but is not part of the data contract!")
         errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
@@ -688,6 +692,8 @@ if(is.null(errMsg)){
   configGraphsIn    <- vector(mode = "list", length = length(modelIn))
   configGraphsOut   <- vector(mode = "list", length = length(modelOut))
   
+  invalidGraphsToRender <- character(0L)
+  
   for(el in names(config$dataRendering)){
     i <- match(tolower(el), names(modelIn))[[1]]
     isOutputGraph <- FALSE
@@ -697,6 +703,8 @@ if(is.null(errMsg)){
       # data rendering object was found in list of model output sheets
       if(!is.na(i)){
         configGraphsOut[[i]] <- config$dataRendering[[el]]
+      }else if(LAUNCHCONFIGMODE){
+        invalidGraphsToRender <- c(invalidGraphsToRender, el)
       }else{
         errMsgTmp <- paste0("'", el, "' was defined to be an object to render, but was not found in either the list of model input or the list of model output sheets.")
         errMsg <- paste(errMsg, errMsgTmp, sep = "\n")

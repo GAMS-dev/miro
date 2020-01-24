@@ -3676,6 +3676,43 @@
       "required":true,
       "additionalProperties":false,
       "properties":{
+        "invalidSymbolsDialog":{  
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{
+            "title":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "desc":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "msgSuccess": { 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "btRemoveWidgets":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "btRemoveGraphs":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "btCancel":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
         "uiR":{  
           "type":"object",
           "additionalProperties":false,

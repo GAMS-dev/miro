@@ -809,6 +809,14 @@
     }
   },
   "adminMode":{
+    "invalidSymbolsDialog":{
+      "title": "Ungültige Konfiguration",
+      "desc": "Einige Grafiken und/oder Widgets wurden für Symbole konfiguriert, die nicht mehr Teil Ihres GAMS/MIRO-Datenvertrags sind. Wollen Sie diese aus Ihrer Konfiguration entfernen? Beachten Sie, dass dies nicht rückgängig gemacht werden kann! Grafische Konfiguration für ungültige(s) Symbol(e): '%s'. Widget-Konfiguration für ungültige(s) Symbol(e): '%s'.",
+      "msgSuccess": "Ungültige Konfiguration wurde erfolgreich entfernt",
+      "btRemoveWidgets": "Ungültige Widgets entfernen",
+      "btRemoveGraphs": "Ungültige Grafiken entfernen", 
+      "btCancel": "Abbrechen"
+    },
     "uiR":{
       "adminPanel": "GAMS MIRO Administrationsoberfläche",
       "general": "Allgemeine Einstellungen",

@@ -122,6 +122,68 @@ server_admin <- function(input, output, session){
   # ------------------------------------------------------
   source(file.path("tools", "config", "db_management.R"), local = TRUE)
   
+  if(length(invalidWidgetsToRender) || length(invalidGraphsToRender)){
+    showModal(modalDialog(
+      title = lang$adminMode$invalidSymbolsDialog$title,
+      tags$div(class = "gmsalert gmsalert-success", id = "invalidSymbolsDialogSuccess", 
+               lang$adminMode$invalidSymbolsDialog$msgSuccess),
+      sprintf(lang$adminMode$invalidSymbolsDialog$desc, 
+              paste0(invalidGraphsToRender, collapse = ", "),
+              paste0(invalidWidgetsToRender, collapse = ", ")),
+      if(length(invalidWidgetsToRender)){
+        tags$div(style = "margin:10px;",
+                 actionButton("btRemoveInvalidWidgets", 
+                              label = lang$adminMode$invalidSymbolsDialog$btRemoveWidgets))
+      },
+      if(length(invalidGraphsToRender)){
+        tags$div(style = "margin:10px;",
+                 actionButton("btRemoveInvalidGraphs", 
+                              label = lang$adminMode$invalidSymbolsDialog$btRemoveGraphs))
+      },
+      footer = tagList(
+        modalButton(lang$adminMode$invalidSymbolsDialog$btCancel)),
+      fade = TRUE, easyClose = FALSE
+    ))
+    observeEvent(input$btRemoveInvalidWidgets, {
+      if(length(invalidWidgetsToRender) == 0L){
+        flog.info("No invalid widgets. Nothing was removed.")
+        return()
+      }
+      configJSON$inputWidgets <<- configJSON$inputWidgets[!vapply(names(configJSON$inputWidgets), 
+                                                                  function(el){
+                                                                    el %in% invalidWidgetsToRender
+                                                                  }, logical(1L), USE.NAMES = FALSE)]
+      write_json(configJSON, configJSONFileName, pretty = TRUE, 
+                 auto_unbox = TRUE, null = "null")
+      invalidWidgetsToRender <<- character(0L)
+      if(length(invalidGraphsToRender)){
+        hideEl(session, "#btRemoveInvalidWidgets")
+        showHideEl(session, "#invalidSymbolsDialogSuccess")
+      }else{
+        removeModal()
+      }
+    })
+    observeEvent(input$btRemoveInvalidGraphs, {
+      if(length(invalidGraphsToRender) == 0L){
+        flog.info("No invalid graphs Nothing was removed.")
+        return()
+      }
+      configJSON$dataRendering <<- configJSON$dataRendering[!vapply(names(configJSON$dataRendering), 
+                                                                    function(el){
+                                                                      el %in% invalidGraphsToRender
+                                                                    }, logical(1L), USE.NAMES = FALSE)]
+      write_json(configJSON, configJSONFileName, pretty = TRUE, 
+                 auto_unbox = TRUE, null = "null")
+      invalidGraphsToRender <<- character(0L)
+      if(length(invalidWidgetsToRender)){
+        hideEl(session, "#btRemoveInvalidGraphs")
+        showHideEl(session, "#invalidSymbolsDialogSuccess")
+      }else{
+        removeModal()
+      }
+    })
+  }
+  
   hideEl(session, "#loading-screen")
   session$onSessionEnded(function() {
     appDisconnected <<- TRUE

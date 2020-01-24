@@ -809,6 +809,14 @@
     }
   },
   "adminMode":{
+    "invalidSymbolsDialog":{
+      "title": "Invalid configuration",
+      "desc": "Some graphics and/or widgets have been configured for symbols that are no longer part of your GAMS/MIRO data contract. Do you want to remove them from your configuration? Note that this cannot be undone! Graphic configuration for invalid symbol(s): '%s'. Widget configuration for invalid symbol(s): '%s'.",
+      "msgSuccess": "Invalid configuration was successfully removed",
+      "btRemoveWidgets": "Remove invalid widgets",
+      "btRemoveGraphs": "Remove invalid graphs", 
+      "btCancel": "Cancel"
+    },
     "uiR":{
       "adminPanel": "GAMS MIRO admin panel",
       "general": "General settings",
