@@ -126,6 +126,8 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
       showHideEl(session, "#importScenInvalidFile", 4000L)
       return()
     }
+    datasetsToFetch <- substr(validFileNames, 1L, 
+                              nchar(validFileNames) - 4L)
     loadModeWorkDir <- tmpDir
   }else if(identical(fileType, "csv")){
     loadMode <- "csv"

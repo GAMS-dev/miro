@@ -120,6 +120,7 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
                 modelInputDataHcube[[i]] <<- as.numeric(modelInputDataHcubeTmp)
               }
               inputVerified <- TRUE
+              newInputCount <<- newInputCount + 1
             }
           }else{
             dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[colId]]) == rowName, 
@@ -127,6 +128,7 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
             if(length(dataTmp) && length(dataTmp)){
               modelInputData[[i]] <<- dataTmp
               inputVerified <- TRUE
+              newInputCount <<- newInputCount + 1
             }
           }
         }
