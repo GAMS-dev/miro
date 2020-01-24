@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "0.9.51"
+MIROVersion <- "0.9.52"
 APIVersion  <- "1"
-MIRORDate   <- "Jan 23 2020"
+MIRORDate   <- "Jan 24 2020"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -130,7 +130,7 @@ if(is.null(errMsg)){
     miroWorkspace <- file.path(getwd(), "ws")
   }else{
     # initialise MIRO workspace
-    miroWorkspace <- Sys.getenv("WORKSPACEPATH")
+    miroWorkspace <- Sys.getenv("MIRO_WS_PATH")
     if (identical(miroWorkspace, "")){
       miroWorkspace <- file.path(path.expand("~"), miroWorkspaceDir)
     }
