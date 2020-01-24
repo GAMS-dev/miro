@@ -44,6 +44,18 @@ In order to launch GAMS MIRO you need R (v. 3.6.0 or later) with the following p
 * RSQLite
 * digest
 
+MIRO will install these packages automatically when you first launch it. When using certain graphs and especially in the MIRO Configuration mode, the following additional packages are required:
+
+* plotly
+* xts
+* dygraphs
+* leaflet
+* leaflet.minicharts
+* timevis
+* DT
+
+MIRO will install these when it detects that they are required.
+
 If you want to use gdx as a file exchange with GAMS (which is the default for all sample models), you will also need to install either the gdxrrwMIO package, which you can find [here](https://git.gams.com/fproske/gmswebui).
 
 
