@@ -37,6 +37,9 @@ model/**/*.opt
 model/**/*.pf
 model/**/*.gdx
 !model/**/data_*/*.gdx
+!model/**/data_*/*.xls
+!model/**/data_*/*.xlsx
+!model/**/data_*/*.zip
 model/**/runapp.R
 model/**/*_miro.gms
 model/**/*_hcube_jobs
