@@ -542,7 +542,7 @@ if(is.null(errMsg)){
     rm(requiredPackagesCR)
   }
   if(LAUNCHCONFIGMODE){
-    requiredPackages <- c("plotly", "xts", "dygraphs", "leaflet", "leaflet.minicharts", "timevis")
+    requiredPackages <- c("plotly", "xts", "dygraphs", "leaflet", "leaflet.minicharts", "timevis", "DT")
   }else{
     requiredPackages <- c(if(identical(installPackage$plotly, TRUE)) "plotly",
                           if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
