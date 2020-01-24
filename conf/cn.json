@@ -845,7 +845,9 @@
         "headerSymbolNaming": "指定名称",
         "headerSymbolGrouping": "组合",
         "headerBaseScripts": "Base mode",
+        "baseScriptsTooltip": "Run custom analysis scripts which will be displayed in the output section",
         "headerHcubeScripts": "Hypercube mode",
+        "hcubeScriptsTooltip": "Run custom analysis scripts for multiple scenarios at once",
         "headerScenData": "场景和数据",
         "headerComputation": "计算",
         "tooltipDocs": "Open documentation"
@@ -871,6 +873,7 @@
       },
       "defaultScenName":{
         "checkbox": "要使用一个在启动时加载的默认场景吗？",
+        "tooltip": "Allows you to pre-populate tables and widgets with data when starting MIRO",
         "label": "默认场景的名称"
       },
       "args":{
@@ -910,6 +913,7 @@
       },
       "readme":{
         "label": "README file",
+        "readmeTooltip": "A README file is displayed in the input section as an individual start page",
         "useReadme": "Include README file",
         "tabTitle": "README tab title",
         "fileName": "README file name"

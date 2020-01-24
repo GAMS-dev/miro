@@ -380,13 +380,13 @@ putclose log;
                                   <p class="expanded">Allows you to pre-populate tables and widgets with data when starting MIRO. 
                                   If this option is set and a scenario name is specified, MIRO looks for the corresponding scenario in the database at the application startup and automatically loads all data into the interface. 
                                   In case always the same input data is used as base data, the step of data import into MIRO can be skipped with this option.</p>
-                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Include a metadata sheet in the Excel file (when exporting a scenario)?</h6>
+                                  <h6 id = "include-metadata" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Include a metadata sheet in the Excel file (when exporting a scenario)?</h6>
                                   <div class="expanded"><p>The metatdata sheet contains information about the user name, the scenario name and the time the scenario was created.</p>
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/general_export_metadata.png" alt="Metadata sheet" />
                                   </div>
                                   </div>
-                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Include empty sheets in the Excel file?</h6>
+                                  <h6 id = "include-empty" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Include empty sheets in the Excel file?</h6>
                                   <div class="expanded"><p>This option specifies whether empty sheets should be included when exporting a scenario. 
                                   Sheets can be empty e.g. when a scenario contains only input data (has not been solved).</p>
                                   </div>
@@ -419,7 +419,7 @@ putclose log;
                                              <img class="img-fluid" style="max-height:325pt;" src="assets/images/advanced-options.png" alt="Output data screen - scalars" />
                                         </div>
                                   </div>
-                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Save trace file with each GAMS run (Hypercube mode)</h6>
+                                  <h6 id = "save-trace-file" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Save trace file with each GAMS run (Hypercube mode)</h6>
                                   <p class="expanded">The trace file gives performance information about a GAMS run. For performance analysis with the analysis tool PAVER - which is integrated into the MIRO Hypercube mode - this option needs to be activated. More on the trace file in general can be found <a href = "https://www.gams.com/latest/docs/UG_SolverUsage.html#UG_SolverUsage_TraceFile" target = "_blank">here</a>.</p>
                                   <h6 id="command-line-args" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Specify extra command line arguments that GAMS will be called with</h6>
                                   <p class="expanded">With this option, command line arguments can be specified that are set for each GAMS run that is started from MIRO.
