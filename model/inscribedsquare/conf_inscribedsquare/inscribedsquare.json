@@ -10,7 +10,7 @@
   "roundingDecimals": 4,
   "activateModules": {
     "logFile": true,
-    "lstFile": true,
+    "lstFile": false,
     "loadLocal": true,
     "attachments": true,
     "remoteExecution": false,
@@ -44,7 +44,7 @@
       "label": "Solver to use for DNLP models",
       "choices": ["IPOPT", "CONOPT", "MSNLP", "LINDO"],
       "multiple": false,
-      "selected": "IPOPT"
+      "selected": "MSNLP"
     }
   },
   "datatable": {
