@@ -161,8 +161,7 @@
       "enabled": true,
       "allowRowEdit": true,
       "allowColEdit": true,
-      "allowReadOnly": false,
-      "allowComments": true
+      "allowReadOnly": false
     },
     "height": 700,
     "colWidths": 150
