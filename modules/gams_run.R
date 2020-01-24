@@ -288,7 +288,7 @@ if(LAUNCHHCUBEMODE){
                value <- value[value != "_"]
                
                if(!length(value)){
-                 return("")
+                 return(NA)
                }
                
                if(!names(modelIn)[i] %in% c(DDPar, GMSOpt) && 
@@ -323,15 +323,23 @@ if(LAUNCHHCUBEMODE){
                return(paste0(parPrefix, "=", input[["cb_" %+% i]]))
              },
              numericinput = {
-               return(paste0(parPrefix, "=", input[["numeric_" %+% i]]))
+               valueTmp <- input[["numeric_" %+% i]]
+               if(length(valueTmp) != 1L){
+                 # user removed input
+                 if(length(modelIn[[i]]$numericinput$value) == 1L){
+                   valueTmp <- modelIn[[i]]$numericinput$value
+                 }else{
+                   valueTmp <- 0L
+                 }
+               }
+               return(paste0(parPrefix, "=", valueTmp))
              },
              textinput = {
                val <- input[["text_" %+% i]]
                if(!length(val) || !nchar(val))
-                 val <- NA
-               else 
-                 val <- escapeGAMSCL(val)
-               return(paste0(parPrefix, "=", val))
+                 return(NA)
+               
+               return(paste0(parPrefix, "=", escapeGAMSCL(val)))
              },
              dt =,
              hot = ,
