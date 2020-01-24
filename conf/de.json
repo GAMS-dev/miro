@@ -845,7 +845,9 @@
         "headerSymbolNaming": "Benennung",
         "headerSymbolGrouping": "Reihenfolge",
         "headerBaseScripts": "Basismodus",
+        "baseScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte aus, die im Ausgabeabschnitt angezeigt werden",
         "headerHcubeScripts": "Hypercube-Modus",
+        "hcubeScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte für mehrere Szenarien auf einmal aus",
         "headerScenData": "Szenario & Daten",
         "headerComputation": "Berechnung",
         "tooltipDocs": "Dokumentation öffnen"
@@ -871,6 +873,7 @@
       },
       "defaultScenName":{
         "checkbox": "Soll ein Standardszenario definiert werden, welches beim Start geladen wird?",
+        "tooltip": "Erlaubt es Ihnen, Tabellen und Widgets beim Start von MIRO mit Daten vorzufüllen",
         "label": "Name des Standardszenarios"
       },
       "args":{
@@ -910,6 +913,7 @@
       },
       "readme":{
         "label": "README Datei",
+        "readmeTooltip": "Eine README-Datei wird im Eingabebereich als individuelle Startseite angezeigt",
         "useReadme": "README-Datei einbinden",
         "tabTitle": "README Reitertitel",
         "fileName": "README-Dateiname"
