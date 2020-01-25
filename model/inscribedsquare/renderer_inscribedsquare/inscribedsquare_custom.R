@@ -30,8 +30,8 @@ renderCurve <- function(input, output, session, data, options = NULL, path = NUL
     fy <- eval(parse(text=fyfunc))
     
     # evaluate corner points of rectangle
-    # this seems to be t.l
-    t <- data[[2]]  #unlist(data[2], use.names = FALSE)
+    # data[[2]] this seems to be t.l, but we want only the first 4 elements (5 and 6 were added to store fx and fy in the label)
+    t <- data[[2]][1:4]
     fsolx <- eval(parse(text=fxfunc))
     fsoly <- eval(parse(text=fyfunc))
     
