@@ -27,3 +27,10 @@ Files = sudoku.gms,sudoku.conf.unzip
 3 = gms
 4 = Solve Sudokus with MIRO
 
+*$*$*$
+Files = inscribedsquare.gms,inscribedsquare.conf.unzip
+1 = 004
+2 = inscribedsquare
+3 = gms
+4 = Inscribed Square Problem with MIRO
+
