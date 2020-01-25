@@ -920,6 +920,9 @@ if(!is.null(errMsg)){
           inputIdsTmp        <- inputIdsTmp[!is.na(inputIdsTmp)]
           metaDataTmp        <- metaDataTmp[inputIdsTmp]
           modelInTemplateTmp <- modelInTemplateTmp[inputIdsTmp]
+          
+          tmpDirToRemove     <- character(0L)
+          
           for(i in seq_along(miroDataFiles)){
             miroDataFile <- miroDataFiles[i]
             flog.info("New data: '%s' is being stored in the database. Please wait a until the import is finished.", miroDataFile)
@@ -939,12 +942,7 @@ if(!is.null(errMsg)){
               if(identical(tmpDir, "e")){
                 next
               }
-              on.exit({
-                if(identical(unlink(tmpDir, recursive = TRUE), 0L)){
-                  flog.debug("Temporary directory: '%s' removed.", tmpDir)
-                }else{
-                  flog.error("Problems removing temporary directory: '%s'.", tmpDir)
-                }}, add = TRUE)
+              tmpDirToRemove <- tmpDir
             }else{
               method <- dataFileExt[i]
               tmpDir <- miroDataDir
@@ -969,6 +967,13 @@ if(!is.null(errMsg)){
             
             if(!debugMode && !file.remove(file.path(miroDataDir, miroDataFile))){
               flog.info("Could not remove file: '%s'.", miroDataFile)
+            }
+          }
+          if(length(tmpDirToRemove)){
+            if(identical(unlink(tmpDirToRemove, recursive = TRUE), 0L)){
+              flog.debug("Temporary directory: '%s' removed.", tmpDirToRemove)
+            }else{
+              flog.error("Problems removing temporary directory: '%s'.", tmpDirToRemove)
             }
           }
         }
