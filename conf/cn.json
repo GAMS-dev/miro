@@ -768,7 +768,7 @@
       "extract":{
         "title":"提取存档时出错",
         "desc":"提取存档时出现错误，请确保上传有效的zip文件。",
-        "invalidFiles":"要导入的存档包含无效文件，Only trace files, CSV files and GDX files allowed!""
+        "invalidFiles":"要导入的存档包含无效文件，Only trace files, CSV files and GDX files allowed!"
       },
       "scenRead":{
         "title":"读取文件时出错",
