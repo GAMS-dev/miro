@@ -43,3 +43,4 @@ for(langToTest in langsToTest){
                                   compareImages = FALSE)))
   }
 }
+Sys.setenv(MIRO_LANG = "en")
