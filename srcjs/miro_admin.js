@@ -2,8 +2,16 @@ import InputArrayFactory from './input_array';
 
 export { confirmModalShow, slideToggleEl } from './miro';
 
-/* global $:false Shiny:false */
+/* global $:false Shiny:false showdown:false */
 
+
+const converter = new showdown.Converter({
+  tables: true,
+  tasklists: true,
+  strikethrough: true,
+  noHeaderId: true,
+  openLinksInNewWindow: true,
+});
 let lang = {};
 let indices = [];
 let indexAliases = [];
@@ -341,6 +349,14 @@ const arrayTypes = {
     return ([elements, { elRequired: false }]);
   },
 };
+export function mdToHTML(mdContent, destId) {
+  $(destId).html(converter.makeHtml(mdContent));
+}
+
+export function mdSave(mdContentId) {
+  Shiny.setInputValue('btMdSave', $(mdContentId).val(),
+    { priority: 'event' });
+}
 
 export function addArrayDataEl(arrayID, defaultsRaw) {
   if ($(`#${arrayID}_wrapper .btn-add-array-el`).is(':disabled')) {

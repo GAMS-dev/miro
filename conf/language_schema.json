@@ -4213,6 +4213,38 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
+                },
+                "btEdit": { 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "dialogEdit": {
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{
+                    "title":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "msgErrSave":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "btCancel":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "btSave":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    }
+                  }
                 }
               }
             },
