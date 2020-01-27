@@ -54,11 +54,16 @@ sidebar_admin <- dashboardSidebar(
 
 
 body_admin <- dashboardBody({
+  if(dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))){
+    addResourcePath("static", paste0(currentModelDir, .Platform$file.sep, 
+                                     "static_", modelName))
+  }
   tagList(
     tags$head(
       tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
       tags$link(type = "text/css", rel = "stylesheet", href = "bootstrap-colorpicker.min.css"),
       tags$script(src = "autoNumeric.min.js", type = "application/javascript"),
+      tags$script(src = "showdown.min.js", type = "application/javascript"),
       tags$script(src = "bootstrap-colorpicker.min.js", type = "application/javascript"),
       tags$script(src = "miro_admin.js", type = "application/javascript"),
       tags$style(HTML(paste0('

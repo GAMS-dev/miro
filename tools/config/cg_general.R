@@ -169,7 +169,16 @@ insertUI(selector = "#interface_wrapper2",
                                 value = if(!is.null(configJSON$readme$filename) && nchar(configJSON$readme$filename)) 
                                   configJSON$readme$filename 
                                 else "")
-             ))
+             ),
+             tags$div(class = "option-wrapper info-position option-wrapper-indented", style = "padding-left:40px;",{
+               editButtonArgs <- list(inputId = "btEditReadme",
+                                      label = lang$adminMode$general$readme$btEdit)
+               if(!length(configJSON$readme$filename) || 
+                  !nchar(trimws(configJSON$readme$filename))){
+                 editButtonArgs$disabled <- ""
+               }
+               do.call("actionButton", editButtonArgs)
+             }))
          ),where = "beforeEnd")
 insertUI(selector = "#module_wrapper1",
          tagList(
@@ -412,6 +421,9 @@ observeEvent(input$general_useReadme, {
     if(length(input$general_readmeFileName) && 
        nchar(trimws(input$general_readmeFileName))){
       rv$generalConfig$readme$filename <<- input$general_readmeFileName
+      enableEl(session, "btEditReadme")
+    }else{
+      disableEl(session, "btEditReadme")
     }
   }
 })
@@ -426,7 +438,7 @@ observeEvent(input$general_readmeTabtitle, {
   rv$generalConfig$readme$tabTitle <<- NULL
 })
 observeEvent(input$general_readmeFileName, {
-  if(!nchar(input$general_readmeFileName))
+  if(!nchar(trimws(input$general_readmeFileName)))
     configJSON$readme$filename <<- NULL
   if(length(input$general_readmeFileName) && 
      nchar(trimws(input$general_readmeFileName))){
@@ -991,7 +1003,53 @@ observeEvent(input$remove_general, {
     }
   }
 })
-
+observeEvent(input$btEditReadme, {
+  req(length(rv$generalConfig$readme$filename) > 0L, 
+      nchar(trimws(rv$generalConfig$readme$filename)) > 0L)
+  readmeContent <- character(0L)
+  readmeContentParsed <- character(0L)
+  if(length(rv$generalConfig$readme$filename) && 
+     file.exists(rv$generalConfig$readme$filename)){
+    readmeContent <- read_file(file.path(currentModelDir, 
+                                         rv$generalConfig$readme$filename))
+    readmeContentParsed <- HTML(markdownParser$
+                                  parseFile(file.path(currentModelDir,
+                                                      rv$generalConfig$
+                                                        readme$filename)))
+  }
+  
+  showModal(modalDialog(
+    title = lang$adminMode$general$readme$dialogEdit$title,
+    tags$div(class = "gmsalert gmsalert-error", id = "mdSaveError", 
+             lang$adminMode$general$readme$dialogEdit$msgErrSave),
+    fluidRow(
+      column(6L,
+             tags$textarea(id = "mdContent", class = "readme-wrapper",
+                           oninput="Miro.mdToHTML(this.value, '#mdConvertedContent')",
+                           onload = "Miro.mdToHTML(this.value, '#mdConvertedContent')",
+                           readmeContent)
+      ),
+      column(6L, 
+             tags$div(id = "mdConvertedContent", class = "readme-wrapper", readmeContentParsed),
+      )
+    ),
+    footer = tagList(
+      modalButton(lang$adminMode$general$readme$dialogEdit$btCancel),
+      tags$button(id = "btMdSave", lang$adminMode$general$readme$dialogEdit$btSave, onclick = "Miro.mdSave('#mdContent')",
+                  class = "btn btn-default bt-highlight-1")),
+    fade = TRUE, easyClose = FALSE, size = "l"
+  ))
+})
+observeEvent(input$btMdSave, {
+  req(length(rv$generalConfig$readme$filename))
+  tryCatch({
+    write_file(input$btMdSave, file.path(currentModelDir, 
+                                         rv$generalConfig$readme$filename))
+    removeModal()
+  }, error = function(e){
+    showHideEl(session, "mdSaveError", 4000L)
+  })
+})
 
 #  =======================================
 #          SAVE JSON (automatically)

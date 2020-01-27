@@ -87,6 +87,8 @@ allInputSymHeaders <- allInputSymHeaders[!duplicated(allInputSymHeaders)]
 configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, 
                                                   simplifyDataFrame = FALSE, 
                                                   simplifyMatrix = FALSE))
+source(file.path("components", "md_parser.R"), local = TRUE)
+markdownParser <- MarkdownParser$new()
 
 server_admin <- function(input, output, session){
   rv <- reactiveValues(plotly_type = 0L, saveGraphConfirm = 0L, resetRE = 0L,

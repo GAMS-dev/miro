@@ -924,7 +924,14 @@
         "readmeTooltip": "Eine README-Datei wird im Eingabebereich als individuelle Startseite angezeigt",
         "useReadme": "README-Datei einbinden",
         "tabTitle": "README Reitertitel",
-        "fileName": "README-Dateiname"
+        "fileName": "README-Dateiname",
+        "btEdit": "README bearbeiten",
+        "dialogEdit": {
+          "title": "README erstellen",
+          "msgErrSave": "Probleme beim Schreiben der README-Datei. Prüfen Sie, ob Sie ausreichende Schreibrechte in Ihrem Modell-Verzeichnis haben.",
+          "btCancel": "Abbrechen",
+          "btSave": "Speichern"
+        }
       },
       "saveDuration":{
         "label": "Speicherdauer für GAMS Log und lst Dateien in der Datenbank (in Tagen)."

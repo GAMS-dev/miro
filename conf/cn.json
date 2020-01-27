@@ -924,7 +924,14 @@
         "readmeTooltip": "A README file is displayed in the input section as an individual start page",
         "useReadme": "Include README file",
         "tabTitle": "README tab title",
-        "fileName": "README file name"
+        "fileName": "README file name",
+        "btEdit": "Edit README",
+        "dialogEdit": {
+          "title": "Create Readme",
+          "msgErrSave": "Problems writing the README file. Check whether you have sufficient write permissions in your model directory.",
+          "btCancel": "Cancel",
+          "btSave": "Save"
+        }
       },
       "saveDuration":{
         "label": "数据库中保留GAMS日志和lst文件的时长（以天为单位）。"
