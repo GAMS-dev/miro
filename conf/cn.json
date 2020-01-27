@@ -934,7 +934,8 @@
       },
       "logo":{
         "header": "预览标志:",
-        "label": "上传该MIRO app的自定义标志： png文件或者jpg文件（最佳格式：4,6：1）"
+        "label": "上传该MIRO app的自定义标志： png文件或者jpg文件（最佳格式：4,6：1）",
+        "placeholder": "No file selected"
       }, 
       "actScen":{
         "title" :"保存场景，删除场景和比较场景",
@@ -1676,7 +1677,7 @@
           "colorCheckFalse": "选择颜色应该依赖的域。",
           "size": "选择标记大小",
           "sizemode": "How should the size be measured?",
-          "sizemdoeChoices": ["area", "diameter"],
+          "sizemodeChoices": ["area", "diameter"],
           "maxsize": "选择最大标记尺寸（可选）",
           "lineWidth": "选择标记轮廓宽度",
           "lineColor": "选择标记轮廓颜色",

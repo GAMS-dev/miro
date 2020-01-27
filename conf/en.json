@@ -934,7 +934,8 @@
       },
       "logo":{
         "header": "Logo preview:",
-        "label": "Upload a custom logo for your MIRO app: png/jpg file (best format: 4.6:1 or 230:50px)"
+        "label": "Upload a custom logo for your MIRO app: png/jpg file (best format: 4.6:1 or 230:50px)",
+        "placeholder": "No file selected"
       }, 
       "actScen":{
         "title" :"Save, delete and compare scenarios",

@@ -934,7 +934,8 @@
       },
       "logo":{
         "header": "Logo Vorschau:",
-        "label": "Laden Sie ein eigenes Logo für Ihre MIRO-App hoch: png/jpg-Datei (bestes Format: 4,6:1 oder 230*50px)"
+        "label": "Laden Sie ein eigenes Logo für Ihre MIRO-App hoch: png/jpg-Datei (bestes Format: 4,6:1 oder 230*50px)",
+        "placeholder": "Keine Datei ausgewählt"
       }, 
       "actScen":{
         "title" :"Szenarien speichern, löschen und vergleichen",
@@ -1676,7 +1677,7 @@
           "colorCheckFalse": "Wählen Sie eine Domäne aus, von der die Farbe abhängen soll.",
           "size": "Markergröße wählen",
           "sizemode": "Woran soll die Größe bemessen werden?",
-          "sizemdoeChoices": ["area", "diameter"],
+          "sizemodeChoices": ["area", "diameter"],
           "maxsize": "Maximale Markergröße wählen (optional)",
           "lineWidth": "Markerumriss-Breite wählen",
           "lineColor": "Markerumriss-Farbe auswählen",
