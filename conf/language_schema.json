@@ -4229,6 +4229,16 @@
                       "minLength":1,
                       "required":true
                     },
+                    "reamdeHeader":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "markdownHeader":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
                     "msgErrSave":{ 
                       "type":"string",
                       "minLength":1,

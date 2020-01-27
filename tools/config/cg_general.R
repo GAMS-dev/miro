@@ -410,43 +410,21 @@ observeEvent(input$widget_general_logo_upload, {
   rv$generalConfig$UILogo <<- fileName
   rv$customLogoChanged <<- rv$customLogoChanged + 1L
 })
-observeEvent(input$general_useReadme, {
-  if(isFALSE(input$general_useReadme)){
+observe({
+  if(isFALSE(input$general_useReadme) ||
+     !length(input$general_readmeTabtitle) ||
+     !nchar(trimws(input$general_readmeTabtitle)) ||
+     !length(input$general_readmeFileName) ||
+     nchar(trimws(input$general_readmeFileName)) < 3L){
     configJSON$readme <<- NULL
     rv$generalConfig$readme <<- NULL
-  }else if(isTRUE(input$general_useReadme)){
-    if(length(input$general_readmeTabtitle) && 
-       nchar(trimws(input$general_readmeTabtitle))){
-      rv$generalConfig$readme$tabTitle <<- input$general_readmeTabtitle
-    }
-    if(length(input$general_readmeFileName) && 
-       nchar(trimws(input$general_readmeFileName))){
-      rv$generalConfig$readme$filename <<- input$general_readmeFileName
-      enableEl(session, "btEditReadme")
-    }else{
-      disableEl(session, "btEditReadme")
-    }
-  }
-})
-observeEvent(input$general_readmeTabtitle, {
-  if(!nchar(input$general_readmeTabtitle))
-    configJSON$readme$tabTitle <<- NULL
-  if(length(input$general_readmeTabtitle) && 
-     nchar(trimws(input$general_readmeTabtitle))){
-    rv$generalConfig$readme$tabTitle <<- input$general_readmeTabtitle
+    disableEl(session, "#btEditReadme")
     return()
   }
-  rv$generalConfig$readme$tabTitle <<- NULL
-})
-observeEvent(input$general_readmeFileName, {
-  if(!nchar(trimws(input$general_readmeFileName)))
-    configJSON$readme$filename <<- NULL
-  if(length(input$general_readmeFileName) && 
-     nchar(trimws(input$general_readmeFileName))){
-    rv$generalConfig$readme$filename <<- input$general_readmeFileName
-    return()
-  }
-  rv$generalConfig$readme$filename <<- NULL
+  isolate(rv$generalConfig$readme <<- list(
+    tabTitle = input$general_readmeTabtitle,
+    filename = input$general_readmeFileName))
+  enableEl(session, "#btEditReadme")
 })
 observeEvent(input$general_auto, {
   rv$generalConfig$autoGenInputGraphs <<- input$general_auto
@@ -1025,13 +1003,16 @@ observeEvent(input$btEditReadme, {
              lang$adminMode$general$readme$dialogEdit$msgErrSave),
     fluidRow(
       column(6L,
-             tags$textarea(id = "mdContent", class = "readme-wrapper",
+             tags$div(class = "readme-preview-header", lang$adminMode$general$readme$dialogEdit$reamdeHeader),
+             tags$textarea(id = "mdContent", class = "readme-wrapper readme-preview-markdown",
                            oninput="Miro.mdToHTML(this.value, '#mdConvertedContent')",
                            onload = "Miro.mdToHTML(this.value, '#mdConvertedContent')",
                            readmeContent)
       ),
       column(6L, 
-             tags$div(id = "mdConvertedContent", class = "readme-wrapper", readmeContentParsed),
+             tags$div(class = "readme-preview-header", lang$adminMode$general$readme$dialogEdit$markdownHeader),
+             tags$div(id = "mdConvertedContent", 
+                      class = "readme-wrapper readme-preview-output", readmeContentParsed)
       )
     ),
     footer = tagList(

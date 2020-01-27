@@ -55,6 +55,37 @@ body{
      background: @modal-bg-dark;
   });
 }
+.readme-preview-markdown {
+  width: 100%;
+  height: 65vh;
+  resize: none;
+  .responsiveDark({
+     background-color: @readme-preview;
+  },
+  {
+     background-color: @readme-preview-dark;
+  });
+}
+textarea.readme-preview-markdown:focus {
+  .responsiveDark({
+  },
+  {
+     outline-color: @light-blue-dark;
+  });
+}
+.readme-preview-output {  
+  height: 65vh;
+  .responsiveDark({
+     border: 1px solid @readme-preview-border;
+  },
+  {
+     border: 1px solid @readme-preview-border-dark;
+  });
+}
+.readme-preview-header {
+  font-size: 22px;
+  padding-bottom: 5px;
+}
 .btn-default:hover {
   color: #000;
 }
