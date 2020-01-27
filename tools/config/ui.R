@@ -477,7 +477,7 @@ body_admin <- dashboardBody({
                                                      symAlias <- modelInRaw[[name]]$alias
                                                    }
                                                    if(!name %in% names(configJSON$overwriteHeaderAliases) ||
-                                                      length(modelInRaw[[name]]$headers) != length(symHeaders)){
+                                                      length(modelInRaw[[name]]$headers) != length(inputSymHeaders[[name]])){
                                                      symHeaders <- names(inputSymHeaders[[name]])
                                                    }else{
                                                      symHeaders <- configJSON$overwriteHeaderAliases[[name]]$newHeaders
