@@ -46,6 +46,9 @@ model/**/*_hcube_jobs
 tests/*_kport.R
 tests/*_transport*.R
 tests/*_pickstock*.R
+tests/*_de*.R
+tests/*_en*.R
+tests/*_cn*.R
 node_modules/
 libraries/
 packages/
