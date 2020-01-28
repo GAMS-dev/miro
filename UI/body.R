@@ -692,8 +692,8 @@ if(LAUNCHHCUBEMODE){
 }
 body <- dashboardBody({
   if(dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))){
-    addResourcePath("static", paste0(currentModelDir, .Platform$file.sep, 
-                                     "static_", modelName))
+    addResourcePath(paste0("static_", modelName), paste0(currentModelDir, .Platform$file.sep, 
+                                                         "static_", modelName))
   }
   tagList(
     tags$head(
@@ -720,10 +720,10 @@ body <- dashboardBody({
   background-image: url("', 
                if(!identical(config$UILogo, "gams_logo.png") && 
                   dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) 
-                 'static/', config$UILogo, '") ',
+                 "static_", modelName, "/", config$UILogo, '") ',
                if(!identical(config$UILogo, "gams_logo.png") && 
                   dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) 
-                  '!important;
+                 '!important;
   background-size: contain;
 }
 .pvtRows, .pvtCols { 

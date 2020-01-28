@@ -26,18 +26,18 @@ In order to simulate this the stock data is devided into two parts: the **traini
 The training phase is be the model input data, i.e. the data the model uses to find an index fund to approximate the Dow Jones index as good as possible. 
 When the model finds a solution, the results can be evaluated in the testing phase.  
 
-![Training and testing phase](static/training_testing.png =800x276)
+![Training and testing phase](static_pickstock/training_testing.png =800x276)
 
 The data of the testing phase is not used for the optimization but only for the evaluation.
 Since the objective function minimizes the absolute deviation between the DJ index and the selected stocks,the area between the two lines shows how good the solution is. 
 
-![Example](static/example.png =800x389)
+![Example](static_pickstock/example.png =800x389)
 
 ### Optimization model: 
 Select a subset (≤ maxstock) of Dow Jones stocks, along with weights, so that this portfolio behaves similarly to the overall index (in the training phase).
 The model is based on a linear regression over the time series, but it minimizes the loss using the L1-norm (absolute value), and allows only a fixed number of weights to take nonzero variable.
 
-![Pickstock model](static/model.png =500x217)
+![Pickstock model](static_pickstock/model.png =500x217)
 
 Important Sets and Parameters:
 ```
