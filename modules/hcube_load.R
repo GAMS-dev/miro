@@ -186,7 +186,7 @@ observeEvent(input$btSendQuery, {
       table[b]  <<- tableField[[1]]
       field[b]  <<- tableField[[2]]
       op[b]     <<- input[["op_" %+% i %+% "_" %+% j]]
-      if(grepl("%", op[b])[[1]] && inherits(db$getConn(), "PostgreSQL")){
+      if(grepl("%", op[b])[[1]] && inherits(db$getConn(), "PqConnection")){
         switch(op[b],
                "%LIKE" = {
                  val[b] <<- "%" %+% 

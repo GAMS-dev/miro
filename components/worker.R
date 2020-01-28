@@ -678,10 +678,10 @@ Worker <- R6Class("Worker", public = list(
                                           else
                                             SCODEMAP[['scen']]), ",", 
                       DBI::dbQuoteString(private$conn, name), ")",
-                      if(inherits(private$conn, "PostgreSQL")) 
+                      if(inherits(private$conn, "PqConnection")) 
                         paste0(" RETURNING", DBI::dbQuoteIdentifier(private$conn, colNames[[1]]))
       )
-      if(inherits(private$conn, "PostgreSQL")) {
+      if(inherits(private$conn, "PqConnection")) {
         jID <- DBI::dbGetQuery(private$conn, query)[[1L]][1L]
       }else{
         DBI::dbExecute(private$conn, query)
