@@ -1174,6 +1174,27 @@ observeEvent(input$plot_bgcolor, {
 observeEvent(input$showlegend, {
   rv$graphConfig$graph$showlegend <<- input$showlegend
 })
+observe({
+  req(input$chart_tool %in% plotlyChartTools)
+  if(isFALSE(input$fixedHeightCheck) ||
+     !is.numeric(input$fixedHeight) ||
+     input$fixedHeight < 0){
+    rv$graphConfig$graph$fixedHeight <<- NULL
+    return()
+  }
+  rv$graphConfig$graph$fixedHeight <<- input$fixedHeight
+})
+observe({
+  req(input$chart_tool %in% plotlyChartTools)
+  if(isFALSE(input$fixedWidthCheck) ||
+     !is.numeric(input$fixedWidth) ||
+     input$fixedWidth < 0){
+    rv$graphConfig$graph$fixedWidth <<- NULL
+    return()
+  }
+  rv$graphConfig$graph$fixedWidth <<- input$fixedWidth
+})
+
 observeEvent(input$outType, {
   if(identical(input$outType, TRUE))
     outTypetmp <<- "dtGraph"
@@ -1787,7 +1808,7 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
     selectInput(id %+% "_categoryorder", "axis order", choices = langSpecificGraphs$categoryorderChoices),
     if(!identical(rv$graphConfig$graph$type, "pie") && identical(id, "y")){
       tags$div(class = "shiny-input-container", style = "display:inline-block;",
-               tags$div(id = "range-wrapper",
+               tags$div(
                         tags$div(style = "max-width:400px;",
                                  tags$div(style="display:inline-block", 
                                           checkboxInput_MIRO("scaleratio_check", 
@@ -1829,6 +1850,34 @@ getOptionSection <- reactive({
     if(!identical(input$chart_tool, "pie")){
       checkboxInput_MIRO("dragmode", lang$adminMode$graphs$chartOptions$options$dragmode, value = TRUE)
     },
+      #tagList(
+        tags$div(class = "shiny-input-container", 
+                   tags$div(style = "max-width:400px;",
+                            tags$div(style="display:inline-block", 
+                                     checkboxInput_MIRO("fixedHeightCheck", 
+                                                        lang$adminMode$graphs$chartOptions$options$fixedHeightCheck, 
+                                                        value = FALSE)),
+                            conditionalPanel(condition = 'input.fixedHeightCheck===true', 
+                                             style="display:inline-block; padding-left:35px;", 
+                                             numericInput("fixedHeight", 
+                                                          lang$adminMode$graphs$chartOptions$options$fixedHeight, 
+                                                          min = 1L, value = 700L, step = 1L)
+                            ))
+        ),
+        tags$div(class = "shiny-input-container", 
+                 tags$div(style = "max-width:400px;",
+                          tags$div(style="display:inline-block", 
+                                   checkboxInput_MIRO("fixedWidthCheck", 
+                                                      lang$adminMode$graphs$chartOptions$options$fixedWidthCheck, 
+                                                      value = FALSE)),
+                          conditionalPanel(condition = 'input.fixedWidthCheck===true', 
+                                           style="display:inline-block; padding-left:35px;",
+                                           numericInput("fixedWidth", 
+                                                        lang$adminMode$graphs$chartOptions$options$fixedWidth, 
+                                                        min = 1L, value = 1335L, step = 1L)
+                          ))
+        ),
+      #)
     colorPickerInput("paper_bgcolor", lang$adminMode$graphs$chartOptions$options$paperBgColor, value = NULL),
     colorPickerInput("plot_bgcolor", lang$adminMode$graphs$chartOptions$options$plotBgColor, value = NULL),
     getOuttype()
