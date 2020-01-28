@@ -1382,6 +1382,10 @@
           "plotBgColor": "该图有多少背景颜色？",
           "showlegend": "要显示图例吗？",
           "dragmode": "Allow zoom?",
+          "fixedHeightCheck": "Fix chart height?",
+          "fixedHeight": "Height (px)",
+          "fixedWidthCheck": "Fix chart width?",
+          "fixedWidth": "Width (px)",
           "outType": "要分屏显示图形和数据表吗？ （不支持实时预览）"
         }
       },

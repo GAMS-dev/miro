@@ -6410,6 +6410,26 @@
                       "minLength":1,
                       "required":true
                     },
+                    "fixedHeightCheck":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "fixedHeight":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "fixedWidthCheck":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "fixedWidth":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
                     "dragmode":{ 
                       "type":"string",
                       "minLength":1,

@@ -1382,6 +1382,10 @@
           "plotBgColor": "Welche Hintergrundfarbe soll das Diagramm haben?",
           "showlegend": "Legende zeigen?",
           "dragmode": "Allow zoom?",
+          "fixedHeightCheck": "Charthöhe fixieren?",
+          "fixedHeight": "Höhe (px)",
+          "fixedWidthCheck": "Chartbreite fixieren?",
+          "fixedWidth": "Breite (px)",
           "outType": "Grafik- und Datentabelle im geteilten Bildschirm anzeigen? (keine Live-Vorschau)"
         }
       },

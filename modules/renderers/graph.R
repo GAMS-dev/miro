@@ -30,7 +30,9 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                           length(options$traces) else chartsPerRow)
         lapply(seq_along(options$traces), function(j){
           if(j==1){
-            p <<- plot_ly(height = height) %>%
+            p <<- plot_ly( 
+              height = if(!is.null(options$fixedHeight)) options$fixedHeight else height, 
+              width = if(!is.null(options$fixedWidth)) options$fixedWidth) %>%
               add_pie(p, data = data, labels = ~try(get(options$traces[[1]]$labels)), 
                       values = ~try(get(options$traces[[1]]$values)), 
                       hole = options$traces[[1]]$hole,
@@ -56,7 +58,9 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
           if(length(markerColor))
             markerStyle$color <- markerColor
           if(j==1){
-            p <<- plot_ly(data, height =  height) %>% 
+            p <<- plot_ly(data, 
+                          height = if(!is.null(options$fixedHeight)) options$fixedHeight else height, 
+                          width = if(!is.null(options$fixedWidth)) options$fixedWidth) %>% 
               add_bars(x = ~try(get(options$xdata)),
                        y = ~try(get(names(options$ydata)[1])), 
                        name = yData$label, height = height, 
@@ -88,7 +92,8 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                           symbol = if(!is.null(options$symbol)){~try(get(options$symbol))}, 
                           colors = options$colors, symbols = options$symbols, 
                           size = options$ydata[[1]]$size, type = 'scatter', 
-                          height = height, 
+                          height = if(!is.null(options$fixedHeight)) options$fixedHeight else height, 
+                          width = if(!is.null(options$fixedWidth)) options$fixedWidth,
                           frame = if(!is.null(options$ydata[[1]]$frame)){~try(get(options$ydata[[1]]$frame))}) 
             
           }else{
@@ -162,8 +167,9 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                           color = if(!is.null(options$color)){~try(get(options$color))}, 
                           symbol = if(!is.null(options$symbol)){~try(get(options$symbol))}, 
                           colors = options$colors, symbols = options$symbols, 
-                          size = options$ydata[[1]]$size, type = 'scatter', 
-                          height = height, 
+                          size = options$ydata[[1]]$size, type = 'scatter',
+                          height = if(!is.null(options$fixedHeight)) options$fixedHeight else height, 
+                          width = if(!is.null(options$fixedWidth)) options$fixedWidth,
                           frame = if(!is.null(options$ydata[[1]]$frame)){~try(get(options$ydata[[1]]$frame))}) 
             
           }else{
@@ -215,7 +221,8 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
               markerStyle$color <- markerColor
             if(j==1){
               p <<- plot_ly(data, type = 'histogram', histnorm = options$histnorm, 
-                            height = height, 
+                            height = if(!is.null(options$fixedHeight)) options$fixedHeight else height, 
+                            width = if(!is.null(options$fixedWidth)) options$fixedWidth,
                             nbinsy = options$nbins,  
                             color = if(!is.null(options$color)){~try(get(options$color))}, 
                             alpha = if(!is.null(options$alpha)){try(options$alpha)},
@@ -237,8 +244,9 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
             if(length(markerColor))
               markerStyle$color <- markerColor
             if(j==1){
-              p <<- plot_ly(data, type = 'histogram', histnorm = options$histnorm, 
-                            height = height, 
+              p <<- plot_ly(data, type = 'histogram', histnorm = options$histnorm,
+                            height = if(!is.null(options$fixedHeight)) options$fixedHeight else height, 
+                            width = if(!is.null(options$fixedWidth)) options$fixedWidth,
                             nbinsx = options$nbins,
                             color = if(!is.null(options$color)){~try(get(options$color))}, 
                             alpha = if(!is.null(options$alpha)){try(options$alpha)},
