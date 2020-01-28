@@ -540,7 +540,7 @@ Worker <- R6Class("Worker", public = list(
                                self$getPid(jID), "/result"), 
                   add_headers(Authorization = private$authHeader,
                               Timestamp = as.character(Sys.time(), usetz = TRUE)), 
-                  timeout(2L))
+                  timeout(4L))
       if(!identical(status_code(ret), 200L)){
         stop(status_code(ret), call. = FALSE)}
         
@@ -860,7 +860,7 @@ Worker <- R6Class("Worker", public = list(
                          URLencode(text_entity)),
                   add_headers(Authorization = private$authHeader,
                               Timestamp = as.character(Sys.time(), usetz = TRUE)),
-                  timeout(2L))
+                  timeout(4L))
       
       if(!identical(status_code(ret), 200L)){
         return(status_code(ret))
@@ -1371,7 +1371,7 @@ Worker <- R6Class("Worker", public = list(
        !startsWith(url, "http://localhost")){
       return(FALSE)
     }
-    ret <- HEAD(url, timeout(2L))$url
+    ret <- HEAD(url, timeout(4L))$url
     if(!startsWith(ret, "https://") && 
        (!identical(ret, "http://localhost") ||
         !startsWith(ret, "http://localhost:") ||
@@ -1384,7 +1384,7 @@ Worker <- R6Class("Worker", public = list(
     return(status_code(HEAD(paste0(private$metadata$url, "/jobs"), 
                             add_headers(Authorization = private$authHeader,
                                         Timestamp = as.character(Sys.time(), usetz = TRUE)),
-                            timeout(2L))))
+                            timeout(4L))))
   },
   registerUser = function(){
     private$validateAPIResponse(POST(paste0(private$metadata$url, "/users/?username=", 
