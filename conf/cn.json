@@ -1367,7 +1367,9 @@
         "rangeFrom": "范围起始值（％s 轴）。",
         "rangeTo": "范围结束值（％s 轴）。",
         "animationDataFormatSelector": "是日期格式的数据？",
-		"categoryorderChoices": ["默认顺序", "按字母数字顺序升序", "按字母数字顺序降序", "按数值大小升序", "按数值大小降序", "按最小值升序", "按最小值降序", "按最大值升序", "按最大值降序", "按和的大小升序", "按和的大小降序", "按平均值大小升序", "按平均值大小降序", "按中值大小升序", "按中值大小降序"]																																																																											
+		"categoryorderChoices": ["默认顺序", "按字母数字顺序升序", "按字母数字顺序降序", "按数值大小升序", "按数值大小降序", "按最小值升序", "按最小值降序", "按最大值升序", "按最大值降序", "按和的大小升序", "按和的大小降序", "按平均值大小升序", "按平均值大小降序", "按中值大小升序", "按中值大小降序"],
+        "scaleRatioCheck": "Fixed-ratio axes?",
+        "scaleRatio": "Scale ratio (y/x)"
       },
       "chartOptions":{
         "xdata": "在x轴上绘制什么？",
@@ -1376,11 +1378,10 @@
         "symbol": "Select a dimension to map to different symbols. No marker symbol must be set.",
         "options":{
           "title": "选项",
-          "scaleRatioCheck": "Fixed-ratio axes?",
-          "scaleRatio": "Scale ratio (y/x)",
           "paperBgColor": "设置纸张的背景颜色",
           "plotBgColor": "该图有多少背景颜色？",
           "showlegend": "要显示图例吗？",
+          "dragmode": "Allow zoom?",
           "outType": "要分屏显示图形和数据表吗？ （不支持实时预览）"
         }
       },

@@ -1367,7 +1367,9 @@
         "rangeFrom": "Range start (%s axis).",
         "rangeTo": "Range end (%s axis).",
         "animationDataFormatSelector": "Data in date format?",
-        "categoryorderChoices": ["trace", "category ascending", "category descending", "total ascending", "total descending", "min ascending", "min descending", "max ascending", "max descending", "sum ascending", "sum descending", "mean ascending", "mean descending", "median ascending", "median descending"]
+        "categoryorderChoices": ["trace", "category ascending", "category descending", "total ascending", "total descending", "min ascending", "min descending", "max ascending", "max descending", "sum ascending", "sum descending", "mean ascending", "mean descending", "median ascending", "median descending"],
+        "scaleRatioCheck": "Fixed-ratio axes?",
+        "scaleRatio": "Scale ratio (y/x)"
       },
       "chartOptions":{
         "xdata": "What should be plotted on the x axis?",
@@ -1376,11 +1378,10 @@
         "symbol": "Select a dimension to map to different symbols. No marker symbol must be set.",
         "options":{
           "title": "Options",
-          "scaleRatioCheck": "Fixed-ratio axes?",
-          "scaleRatio": "Scale ratio (y/x)",
           "paperBgColor": "What background color shall the paper have?",
           "plotBgColor": "What background color shall the plot have?",
           "showlegend": "Show legend?",
+          "dragmode": "Allow zoom?",
           "outType": "Show graphic and data table in split screen? (no live preview)"
         }
       },

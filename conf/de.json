@@ -1367,7 +1367,9 @@
         "rangeFrom": "Bereichsanfang (%s-Achse).",
         "rangeTo": "Bereichsende (%s-Achse).",
         "animationDataFormatSelector": "Daten im Datumsformat?",
-        "categoryorderChoices": ["trace", "category ascending", "category descending", "total ascending", "total descending", "min ascending", "min descending", "max ascending", "max descending", "sum ascending", "sum descending", "mean ascending", "mean descending", "median ascending", "median descending"]
+        "categoryorderChoices": ["trace", "category ascending", "category descending", "total ascending", "total descending", "min ascending", "min descending", "max ascending", "max descending", "sum ascending", "sum descending", "mean ascending", "mean descending", "median ascending", "median descending"],
+        "scaleRatioCheck": "Achsen mit festem Verhältnis?",
+        "scaleRatio": "Skalierungsverhältnis (y/x)"
       },
       "chartOptions":{
         "xdata": "Was soll auf der x-Achse dargestellt werden?",
@@ -1376,11 +1378,10 @@
         "symbol": "Wählen Sie eine Dimension aus, um sie verschiedenen Symbolen zuzuordnen. Es darf kein Markersymbol gesetzt werden.",
         "options":{
           "title": "Optionen",
-          "scaleRatioCheck": "Achsen mit festem Verhältnis?",
-          "scaleRatio": "Skalierungsverhältnis (y/x)",
           "paperBgColor": "Welche Hintergrundfarbe soll das Papier haben?",
           "plotBgColor": "Welche Hintergrundfarbe soll das Diagramm haben?",
           "showlegend": "Legende zeigen?",
+          "dragmode": "Allow zoom?",
           "outType": "Grafik- und Datentabelle im geteilten Bildschirm anzeigen? (keine Live-Vorschau)"
         }
       },

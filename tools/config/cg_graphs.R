@@ -1153,6 +1153,12 @@ observeEvent(input$dyShading_axis, {
     return()
   rv$graphConfig$graph$dyShading[[idLabelMap$dy_dyShading[[chart_id]]]]$axis <<- input$dyShading_axis[2]
 })
+observeEvent(input$dragmode, {
+  if(isTRUE(input$dragmode))
+    rv$graphConfig$graph$dragmode <<- "zoom"
+  else
+    rv$graphConfig$graph$dragmode <<- FALSE
+})
 observeEvent(input$paper_bgcolor, {
   if(nchar(input$paper_bgcolor))
     rv$graphConfig$graph$paper_bgcolor <<- input$paper_bgcolor
@@ -1682,6 +1688,7 @@ getPieOptions <- reactive({
   isolate({
     valuesTmp <- if(length(scalarIndices)) scalarIndices[[1]] else ""
     rv$graphConfig$graph$traces <<- list()
+    rv$graphConfig$graph$showlegend <<- TRUE
     rv$graphConfig$graph$traces[['1']] <<- list(labels = indices[[1]],
                                               values = valuesTmp,
                                               hole = 0,
@@ -1707,6 +1714,7 @@ getChartOptions <- reactive({
   isolate({
     rv$graphConfig$graph$xdata      <<- indices[[1]]
     rv$graphConfig$outType <<- "graph" 
+    rv$graphConfig$graph$showlegend <<- TRUE
   })
   tagList(
     tags$div(class="cat-body cat-body-3 cat-body-8 cat-body-13 cat-body-18", 
@@ -1783,13 +1791,13 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
                         tags$div(style = "max-width:400px;",
                                  tags$div(style="display:inline-block", 
                                           checkboxInput_MIRO("scaleratio_check", 
-                                                             lang$adminMode$graphs$chartOptions$options$scaleRatioCheck, 
+                                                             lang$adminMode$graphs$axisOptions$scaleRatioCheck, 
                                                              value = FALSE)),
                                  conditionalPanel(condition = 'input.scaleratio_check===true', 
                                                   style="display:inline-block; padding-left:35px;", 
                                                   tags$div(
                                                     numericInput("scaleratio", 
-                                                                 lang$adminMode$graphs$chartOptions$options$scaleRatio, 
+                                                                 lang$adminMode$graphs$axisOptions$scaleRatio, 
                                                                  min = 0.1, value = 1L, step = 0.1))
                                  ))
                )
@@ -1818,6 +1826,9 @@ getOptionSection <- reactive({
   tagList(
     textInput("chart_title", lang$adminMode$graphs$ui$chartTitle, value = activeSymbol$alias),
     checkboxInput_MIRO("showlegend", lang$adminMode$graphs$chartOptions$options$showlegend, value = TRUE),
+    if(!identical(input$chart_tool, "pie")){
+      checkboxInput_MIRO("dragmode", lang$adminMode$graphs$chartOptions$options$dragmode, value = TRUE)
+    },
     colorPickerInput("paper_bgcolor", lang$adminMode$graphs$chartOptions$options$paperBgColor, value = NULL),
     colorPickerInput("plot_bgcolor", lang$adminMode$graphs$chartOptions$options$plotBgColor, value = NULL),
     getOuttype()
@@ -1962,6 +1973,7 @@ getHistOptions <- reactive({
     rv$graphConfig$graph$xaxis$title <<- label
     rv$graphConfig$graph$cumulative  <<- FALSE
     rv$graphConfig$graph$horizontal  <<- FALSE
+    rv$graphConfig$graph$showlegend  <<- TRUE
     if(length(scalarIndices)){
       idLabelMap$hist_xdata[[1]]       <<- scalarIndices[[1]]
     }else{

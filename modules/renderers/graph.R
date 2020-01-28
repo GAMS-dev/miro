@@ -270,6 +270,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
              paper_bgcolor = if(length(options$paper_bgcolor)) options$paper_bgcolor else "rgba(0,0,0,0)",
              plot_bgcolor = if(length(options$plot_bgcolor)) options$plot_bgcolor else "rgba(0,0,0,0)",
              showlegend = options$showlegend, grid = pieGrid,
+             dragmode = if(length(options$dragmode)) options$dragmode else  "zoom",
              legend = options$legend, bargap = options$bargap, bargroupgap = options$bargroupgap)}))
     
   }else if(options$tool == 'dygraphs'){

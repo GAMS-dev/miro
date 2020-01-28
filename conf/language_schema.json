@@ -6347,6 +6347,16 @@
                       "minLength": 1
                   },
                   "required":true
+                },
+                "scaleRatioCheck":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "scaleRatio":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 }           
               }
             },
@@ -6385,16 +6395,6 @@
                       "minLength":1,
                       "required":true
                     },
-                    "scaleRatioCheck":{ 
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "scaleRatio":{ 
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
                     "paperBgColor":{ 
                       "type":"string",
                       "minLength":1,
@@ -6406,6 +6406,11 @@
                       "required":true
                     },
                     "showlegend":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "dragmode":{ 
                       "type":"string",
                       "minLength":1,
                       "required":true
