@@ -13,7 +13,8 @@ if(length(configJSON$overwriteSheetOrder$input)){
   if(any(is.na(tabIdsTmp))){
     flog.error("Invalid input symbol(s) in 'overwriteSheetOrder' found. Resetting to original sheet order.")
   }else{
-    inputTabs <- inputTabs[tabIdsTmp]
+    inputTabsTmp <- inputTabs[tabIdsTmp]
+    inputTabs <- c(inputTabsTmp, inputTabs[!inputTabs %in% inputTabsTmp])
   }
 }
 outputTabs <- setNames(names(modelOut), modelOutAlias)
@@ -22,7 +23,8 @@ if(length(configJSON$overwriteSheetOrder$output)){
   if(any(is.na(tabIdsTmp))){
     flog.error("Invalid output symbol(s) in 'overwriteSheetOrder' found. Resetting to original sheet order.")
   }else{
-    outputTabs <- outputTabs[tabIdsTmp]
+    outputTabsTmp <- outputTabs[tabIdsTmp]
+    outputTabs <- c(outputTabsTmp, outputTabs[!outputTabs %in% outputTabsTmp])
   }
 }
 
@@ -477,7 +479,7 @@ body_admin <- dashboardBody({
                                                      symAlias <- modelInRaw[[name]]$alias
                                                    }
                                                    if(!name %in% names(configJSON$overwriteHeaderAliases) ||
-                                                      length(modelInRaw[[name]]$headers) != length(symHeaders)){
+                                                      length(modelInRaw[[name]]$headers) != length(inputSymHeaders[[name]])){
                                                      symHeaders <- names(inputSymHeaders[[name]])
                                                    }else{
                                                      symHeaders <- configJSON$overwriteHeaderAliases[[name]]$newHeaders

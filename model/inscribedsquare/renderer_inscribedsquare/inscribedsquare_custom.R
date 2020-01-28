@@ -37,7 +37,7 @@ renderCurve <- function(input, output, session, data, options = NULL, path = NUL
     
     # plot curve and rectangle corner points
     output$curve <- renderPlot({
-      plot(fx, fy, type="l", ann=FALSE, bty="n", xaxt="n", yaxt="n")
+      plot(fx, fy, type="l", ann=FALSE, bty="n", xaxt="n", yaxt="n", asp = 1L)
       points(fsolx, fsoly, col="red")
     })
 }
