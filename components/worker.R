@@ -1381,14 +1381,14 @@ Worker <- R6Class("Worker", public = list(
     return(TRUE)
   },
   checkAuthenticationStatus = function(){
-    return(status_code(HEAD(paste0(private$url, "/jobs"), 
+    return(status_code(HEAD(paste0(private$metadata$url, "/jobs"), 
                             add_headers(Authorization = private$authHeader,
                                         Timestamp = as.character(Sys.time(), usetz = TRUE)),
                             timeout(2L))))
   },
   registerUser = function(){
-    validateAPIResponse(POST(paste0(private$url, "/users/?username=", 
-                                    private$username), 
+    validateAPIResponse(POST(paste0(private$metadata$url, "/users/?username=", 
+                                    private$metadata$username), 
                              timeout(4L)))
     return(invisible(self))
   }
