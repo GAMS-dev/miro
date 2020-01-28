@@ -59,7 +59,7 @@ Worker <- R6Class("Worker", public = list(
     private$metadata$username  <- username
     private$metadata$useRegistered <- useRegistered
     private$metadata$password  <- password
-    private$buildAuthHeader(FALSE)
+    private$buildAuthHeader()
     
     private$metadata$namespace <- namespace
     
@@ -1268,7 +1268,7 @@ Worker <- R6Class("Worker", public = list(
       return(TRUE)
     return(FALSE)
   },
-  buildAuthHeader = function(useTokenAuth){
+  buildAuthHeader = function(useTokenAuth = FALSE){
     if(useTokenAuth){
       private$authHeader <- paste0("Bearer ", private$metadata$password)
       return(invisible(self))
