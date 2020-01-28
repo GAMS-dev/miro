@@ -1352,7 +1352,7 @@ observeEvent(input$dd_choices, ignoreNULL = FALSE, {
   }else{
     choicestmp <- input$dd_choices
   }
-  updateSelectInput(session, "dd_default", choices = choicestmp)
+  updateSelectInputNoClear(session, "dd_default", choices = choicestmp)
 })
 observeEvent(input$dd_choice_dep, {
   if(identical(input$dd_choice_dep, "")){
