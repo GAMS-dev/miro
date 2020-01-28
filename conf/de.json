@@ -1376,7 +1376,8 @@
         "symbol": "Wählen Sie eine Dimension aus, um sie verschiedenen Symbolen zuzuordnen. Es darf kein Markersymbol gesetzt werden.",
         "options":{
           "title": "Optionen",
-          "fixedWidth": "Sollen X- und Y-achse gleichlang sein? Die Legende ist, falls angezeigt, Teil der X-Achsenbreite.",
+          "scaleRatioCheck": "Achsen mit festem Verhältnis?",
+          "scaleRatio": "Skalierungsverhältnis (y/x)",
           "paperBgColor": "Welche Hintergrundfarbe soll das Papier haben?",
           "plotBgColor": "Welche Hintergrundfarbe soll das Diagramm haben?",
           "showlegend": "Legende zeigen?",

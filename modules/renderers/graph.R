@@ -56,9 +56,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
           if(length(markerColor))
             markerStyle$color <- markerColor
           if(j==1){
-            p <<- plot_ly(data,
-                          height = if(!is.null(options$fixedWidth)) options$fixedWidth else height, 
-                          width = if(!is.null(options$fixedWidth)) options$fixedWidth) %>% 
+            p <<- plot_ly(data, height =  height) %>% 
               add_bars(x = ~try(get(options$xdata)),
                        y = ~try(get(names(options$ydata)[1])), 
                        name = yData$label, height = height, 
@@ -90,8 +88,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                           symbol = if(!is.null(options$symbol)){~try(get(options$symbol))}, 
                           colors = options$colors, symbols = options$symbols, 
                           size = options$ydata[[1]]$size, type = 'scatter', 
-                          height = if(!is.null(options$fixedWidth)) options$fixedWidth else height, 
-                          width = if(!is.null(options$fixedWidth)) options$fixedWidth,
+                          height = height, 
                           frame = if(!is.null(options$ydata[[1]]$frame)){~try(get(options$ydata[[1]]$frame))}) 
             
           }else{
@@ -166,8 +163,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                           symbol = if(!is.null(options$symbol)){~try(get(options$symbol))}, 
                           colors = options$colors, symbols = options$symbols, 
                           size = options$ydata[[1]]$size, type = 'scatter', 
-                          height = if(!is.null(options$fixedWidth)) options$fixedWidth else height, 
-                          width = if(!is.null(options$fixedWidth)) options$fixedWidth, 
+                          height = height, 
                           frame = if(!is.null(options$ydata[[1]]$frame)){~try(get(options$ydata[[1]]$frame))}) 
             
           }else{
@@ -219,8 +215,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
               markerStyle$color <- markerColor
             if(j==1){
               p <<- plot_ly(data, type = 'histogram', histnorm = options$histnorm, 
-                            height = if(!is.null(options$fixedWidth)) options$fixedWidth else height, 
-                            width = if(!is.null(options$fixedWidth)) options$fixedWidth,
+                            height = height, 
                             nbinsy = options$nbins,  
                             color = if(!is.null(options$color)){~try(get(options$color))}, 
                             alpha = if(!is.null(options$alpha)){try(options$alpha)},
@@ -243,8 +238,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
               markerStyle$color <- markerColor
             if(j==1){
               p <<- plot_ly(data, type = 'histogram', histnorm = options$histnorm, 
-                            height = if(!is.null(options$fixedWidth)) options$fixedWidth else height, 
-                            width = if(!is.null(options$fixedWidth)) options$fixedWidth, 
+                            height = height, 
                             nbinsx = options$nbins,
                             color = if(!is.null(options$color)){~try(get(options$color))}, 
                             alpha = if(!is.null(options$alpha)){try(options$alpha)},
@@ -270,7 +264,9 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
              yaxis = list(title = options$yaxis$title, showgrid = options$yaxis$showgrid, 
                           zeroline = options$yaxis$zeroline, showticklabels = options$yaxis$showticklabels, 
                           range = c(options$yaxis$rangefrom, options$yaxis$rangeto),
-                          categoryorder = options$yaxis$categoryorder),
+                          categoryorder = options$yaxis$categoryorder,
+                          scaleanchor = if(!is.null(options$yaxis$scaleanchor)) options$yaxis$scaleanchor,
+                          scaleratio = if(!is.null(options$yaxis$scaleratio)) options$yaxis$scaleratio),
              paper_bgcolor = if(length(options$paper_bgcolor)) options$paper_bgcolor else "rgba(0,0,0,0)",
              plot_bgcolor = if(length(options$plot_bgcolor)) options$plot_bgcolor else "rgba(0,0,0,0)",
              showlegend = options$showlegend, grid = pieGrid,

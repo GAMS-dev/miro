@@ -379,13 +379,6 @@ observeEvent(input$localInput, {
 observeEvent(input$chart_title, {
   rv$graphConfig$graph$title <<- input$chart_title
 })
-observe({
-  if(isTRUE(input$fixed_width)){
-    rv$graphConfig$graph$fixedWidth <<- 700L
-  }else{
-    rv$graphConfig$graph$fixedWidth <<- NULL
-  }
-})
 observeEvent(input$leafFlow_lng, {
   rv$graphConfig$graph$flows[[idLabelMap$leaflet_flows[[as.integer(input$leafFlow_lng[1])]]]]$lng0 <<- input$leafFlow_lng[2]
 })
@@ -1188,6 +1181,18 @@ observeEvent(input$x_title, {
 observeEvent(input$x_categoryorder, {
   rv$graphConfig$graph$xaxis$categoryorder <<- input$x_categoryorder
 })
+observe({
+  req(input$chart_tool %in% plotlyChartTools, !identical(input$chart_tool, "pie"))
+  if(isFALSE(input$scaleratio_check) ||
+     !is.numeric(input$scaleratio) ||
+     input$scaleratio < 0.1){
+    rv$graphConfig$graph$yaxis$scaleratio <<- NULL
+    rv$graphConfig$graph$yaxis$scaleanchor <<- NULL
+    return()
+  }
+  rv$graphConfig$graph$yaxis$scaleratio <<- input$scaleratio
+  rv$graphConfig$graph$yaxis$scaleanchor <<- "x"
+})
 observeEvent(input$x_showgrid, {
   rv$graphConfig$graph$xaxis$showgrid <<- input$x_showgrid
 })
@@ -1772,6 +1777,24 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
   tagList(
     textInput(id %+% "_title", sprintf(lang$adminMode$graphs$axisOptions$title, id), value = title),
     selectInput(id %+% "_categoryorder", "axis order", choices = langSpecificGraphs$categoryorderChoices),
+    if(!identical(rv$graphConfig$graph$type, "pie") && identical(id, "y")){
+      tags$div(class = "shiny-input-container", style = "display:inline-block;",
+               tags$div(id = "range-wrapper",
+                        tags$div(style = "max-width:400px;",
+                                 tags$div(style="display:inline-block", 
+                                          checkboxInput_MIRO("scaleratio_check", 
+                                                             lang$adminMode$graphs$chartOptions$options$scaleRatioCheck, 
+                                                             value = FALSE)),
+                                 conditionalPanel(condition = 'input.scaleratio_check===true', 
+                                                  style="display:inline-block; padding-left:35px;", 
+                                                  tags$div(
+                                                    numericInput("scaleratio", 
+                                                                 lang$adminMode$graphs$chartOptions$options$scaleRatio, 
+                                                                 min = 0.1, value = 1L, step = 0.1))
+                                 ))
+               )
+      )
+    },
     checkboxInput_MIRO(id %+% "_showgrid", sprintf(lang$adminMode$graphs$axisOptions$showgrid, id)),
     checkboxInput_MIRO(id %+% "_zeroline", sprintf(lang$adminMode$graphs$axisOptions$zeroline, id)),
     checkboxInput_MIRO(id %+% "_showticklabels", sprintf(lang$adminMode$graphs$axisOptions$showticklabels, id), TRUE),
@@ -1794,9 +1817,6 @@ getOptionSection <- reactive({
   })
   tagList(
     textInput("chart_title", lang$adminMode$graphs$ui$chartTitle, value = activeSymbol$alias),
-    if(!identical(rv$graphConfig$graph$type, "pie")){
-      checkboxInput_MIRO("fixed_width", lang$adminMode$graphs$chartOptions$options$fixedWidth, value = FALSE)
-    },
     checkboxInput_MIRO("showlegend", lang$adminMode$graphs$chartOptions$options$showlegend, value = TRUE),
     colorPickerInput("paper_bgcolor", lang$adminMode$graphs$chartOptions$options$paperBgColor, value = NULL),
     colorPickerInput("plot_bgcolor", lang$adminMode$graphs$chartOptions$options$plotBgColor, value = NULL),
@@ -2268,12 +2288,9 @@ observe({
           showEl(session, "#pieValues")
           hideEl(session, "#preview-content-plotly")
       }else{
-        graphOptionsTmp <- rv$graphConfig$graph
-        if(length(rv$graphConfig$graph$fixedWidth))
-          graphOptionsTmp$fixedWidth <- 350
         callModule(renderData, "preview_output_plotly", type = "graph", 
                    data = data, configData = configScalars, 
-                   graphOptions = graphOptionsTmp,
+                   graphOptions = rv$graphConfig$graph,
                    roundPrecision = roundPrecision, modelDir = modelDir)
         showEl(session, "#preview-content-plotly")
         hideEl(session, "#pieValues")
