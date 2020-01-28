@@ -710,10 +710,11 @@ if(is.null(errMsg)){
   credConfig <- NULL
   if(isShinyProxy){
     credConfig <- list(url = Sys.getenv("MIRO_GAMS_HOST"), 
-                       username = if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) "admin" else uid,
+                       username = if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) "user" else uid,
                        password = "",
                        namespace = "global",
-                       useRegistered = TRUE)
+                       useRegistered = TRUE,
+                       registerUser = TRUE)
   }else if(config$activateModules$remoteExecution){
     tryCatch({
       if(file.exists(file.path(miroWorkspace, "pinned_pub_keys"))){

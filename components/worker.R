@@ -25,13 +25,25 @@ Worker <- R6Class("Worker", public = list(
     unlink(private$metadata$rememberMeFileName, force = TRUE)
   },
   setCredentials = function(url, username, password, namespace,
-                            useRegistered){
+                            useRegistered, registerUser = FALSE){
     private$metadata$url       <- url
     private$metadata$username  <- username
     private$metadata$useRegistered <- useRegistered
     private$metadata$password  <- password
     private$metadata$namespace <- namespace
-    private$buildAuthHeader(TRUE)
+    if(registerUser){
+      private$buildAuthHeader()
+      authenticationStatus <- private$checkAuthenticationStatus()
+      if(identical(authenticationStatus, 401L)){
+        private$registerUser()
+      }else if(!identical(authenticationStatus, 200L)){
+        flog.fatal("Could not check authentication status. Return code from remote executor: %s.", 
+                   authenticationStatus)
+        stop()
+      }
+    }else{
+      private$buildAuthHeader(TRUE)
+    }
     return(invisible(self))
   },
   login = function(url, username, password, namespace, 
@@ -41,21 +53,13 @@ Worker <- R6Class("Worker", public = list(
     url <- trimws(url, "right", whitespace = "/")
     private$metadata$url       <- url
     
-    if(!startsWith(url, "https://") &&
-       !startsWith(url, "http://localhost")){
-      stop(426, call. = FALSE)
-    }
-    ret <- HEAD(url, timeout(2L))$url
-    if(!startsWith(ret, "https://") && 
-       (!identical(ret, "http://localhost") ||
-        !startsWith(ret, "http://localhost:") ||
-        !startsWith(ret, "http://localhost/"))){
+    if(!private$testConnection()){
       stop(426, call. = FALSE)
     }
     private$metadata$username  <- username
     private$metadata$useRegistered <- useRegistered
     private$metadata$password  <- password
-    private$buildAuthHeader(FALSE)
+    private$buildAuthHeader()
     
     private$metadata$namespace <- namespace
     
@@ -1264,7 +1268,7 @@ Worker <- R6Class("Worker", public = list(
       return(TRUE)
     return(FALSE)
   },
-  buildAuthHeader = function(useTokenAuth){
+  buildAuthHeader = function(useTokenAuth = FALSE){
     if(useTokenAuth){
       private$authHeader <- paste0("Bearer ", private$metadata$password)
       return(invisible(self))
@@ -1361,5 +1365,31 @@ Worker <- R6Class("Worker", public = list(
     })
     
     return(ret)
+  },
+  testConnection = function(){
+    if(!startsWith(url, "https://") &&
+       !startsWith(url, "http://localhost")){
+      return(FALSE)
+    }
+    ret <- HEAD(url, timeout(2L))$url
+    if(!startsWith(ret, "https://") && 
+       (!identical(ret, "http://localhost") ||
+        !startsWith(ret, "http://localhost:") ||
+        !startsWith(ret, "http://localhost/"))){
+      return(FALSE)
+    }
+    return(TRUE)
+  },
+  checkAuthenticationStatus = function(){
+    return(status_code(HEAD(paste0(private$metadata$url, "/jobs"), 
+                            add_headers(Authorization = private$authHeader,
+                                        Timestamp = as.character(Sys.time(), usetz = TRUE)),
+                            timeout(2L))))
+  },
+  registerUser = function(){
+    validateAPIResponse(POST(paste0(private$metadata$url, "/users/?username=", 
+                                    private$metadata$username), 
+                             timeout(4L)))
+    return(invisible(self))
   }
 ))
