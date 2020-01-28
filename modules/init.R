@@ -563,7 +563,12 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
   if(length(config$overwriteSheetOrder$input) && !LAUNCHCONFIGMODE){
     widgetOverwriteId <- match("_widgets", config$overwriteSheetOrder$input)
     if(!is.na(widgetOverwriteId)){
-      if(length(modelIn) > length(modelInRaw)){
+      if(any(vapply(modelIn, function(el){
+        if(el$type %in% c("hot", "dt", "custom")){
+          return(FALSE)
+        }
+        return(TRUE)
+      }, logical(1L), USE.NAMES = FALSE))){
         widgetIdTmp <- which(is.na(match(names(modelIn), 
                                          names(modelInRaw))))[1]
         config$overwriteSheetOrder$input[widgetOverwriteId] <- names(modelIn)[widgetIdTmp]
