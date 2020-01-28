@@ -1388,7 +1388,8 @@ Worker <- R6Class("Worker", public = list(
   },
   registerUser = function(){
     private$validateAPIResponse(POST(paste0(private$metadata$url, "/users/?username=", 
-                                            private$metadata$username), 
+                                            private$metadata$username, "&password=", 
+                                            private$metadata$password), 
                                      timeout(4L)))
     return(invisible(self))
   }

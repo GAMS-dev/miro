@@ -709,9 +709,10 @@ if(is.null(errMsg)){
                                modelName)
   credConfig <- NULL
   if(isShinyProxy){
+    usernameTmp <- if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) "user" else uid
     credConfig <- list(url = Sys.getenv("MIRO_GAMS_HOST"), 
-                       username = if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) "user" else uid,
-                       password = "",
+                       username = usernameTmp,
+                       password = usernameTmp,
                        namespace = "global",
                        useRegistered = TRUE,
                        registerUser = TRUE)
