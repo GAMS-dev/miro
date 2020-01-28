@@ -713,7 +713,8 @@ if(is.null(errMsg)){
                        username = if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) "admin" else uid,
                        password = "",
                        namespace = "global",
-                       useRegistered = TRUE)
+                       useRegistered = TRUE,
+                       registerUser = TRUE)
   }else if(config$activateModules$remoteExecution){
     tryCatch({
       if(file.exists(file.path(miroWorkspace, "pinned_pub_keys"))){
