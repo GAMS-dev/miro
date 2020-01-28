@@ -1387,9 +1387,9 @@ Worker <- R6Class("Worker", public = list(
                             timeout(2L))))
   },
   registerUser = function(){
-    validateAPIResponse(POST(paste0(private$metadata$url, "/users/?username=", 
-                                    private$metadata$username), 
-                             timeout(4L)))
+    private$validateAPIResponse(POST(paste0(private$metadata$url, "/users/?username=", 
+                                            private$metadata$username), 
+                                     timeout(4L)))
     return(invisible(self))
   }
 ))
