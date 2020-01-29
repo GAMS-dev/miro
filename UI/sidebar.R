@@ -9,7 +9,7 @@ if(LAUNCHHCUBEMODE){
                 menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("copy")),
                 menuItem(lang$nav$sidebarMenu$hcube$analyze, tabName="hcubeAnalyze", icon = icon("pie-chart")),
                 actionButton("btImport", lang$nav$sidebarButtons$importInput, width = "85%", 
-                             class = paste0("bt-highlight-3", if(length(config$defaultScenName)) " glow-animation"), 
+                             class = paste0("bt-highlight-3", if(!length(config$defaultScenName)) " glow-animation"), 
                              style = "display:block;"),
                 actionButton("btSolve", lang$nav$sidebarButtons$solveHcube, width = "85%", 
                              class = "bt-highlight-2 btSolve", style = "display:block;"),
@@ -34,7 +34,7 @@ if(LAUNCHHCUBEMODE){
                 menuItem(lang$nav$sidebarMenu$gams, tabName="gamsinter", icon = icon("cog", lib = "glyphicon")),
                 menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("copy")),
                 actionButton("btImport", lang$nav$sidebarButtons$importInput, width = "85%", 
-                             class = paste0("bt-highlight-3", if(length(config$defaultScenName)) " glow-animation"),
+                             class = paste0("bt-highlight-3", if(!length(config$defaultScenName)) " glow-animation"),
                              style = "display:block;"),
                 
                 if(config$activateModules$remoteExecution)

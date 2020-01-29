@@ -927,7 +927,7 @@
         "fileName": "README-Dateiname",
         "btEdit": "README bearbeiten",
         "dialogEdit": {
-          "title": "README erstellen",
+          "title": "README Editor",
           "reamdeHeader": "Markdown content",
           "markdownHeader": "Readme preview",
           "msgErrSave": "Probleme beim Schreiben der README-Datei. Prüfen Sie, ob Sie ausreichende Schreibrechte in Ihrem Modell-Verzeichnis haben.",
