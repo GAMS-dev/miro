@@ -69,8 +69,10 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                        width=if(!is.null(options$width)){try(data[[options$width]])},
                        orientation = options$orientation)
           }else{
-            p <<- add_trace(p, y = try(data[[names(options$ydata)[j]]]), name = yData$label,
-                            marker = markerStyle)
+            p <<- add_bars(p, x = try(data[[options$xdata]]),
+                           y = try(data[[names(options$ydata)[j]]]), name = yData$label,
+                           marker = markerStyle,
+                           orientation = options$orientation)
           }
         })
       }else if(options$type=='scatter'){
