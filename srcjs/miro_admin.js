@@ -205,7 +205,7 @@ const arrayTypes = {
       leafFlow_lng1: ['select', lang.addLeafletFlows.lng1, scalarIndices, scalarIndexAliases],
       leafFlow_flow: ['select', lang.addLeafletFlows.flow, scalarIndices, scalarIndexAliases],
       leafFlow_time: ['select', lang.addLeafletFlows.time, ['_'].concat(nonScalarIndices), ['_'].concat(nonScalarIndexAliases)],
-      leafFlow_label: ['text', lang.addLeafletFlows.label],
+      leafFlow_label: ['text', `${lang.addLeafletFlows.label}<a title="${lang.addLeafletFlows.labelTooltip}" class="info-wrapper" href="https://gams.com/miro/charts.html#unique-flow-label" target="_blank"><span class="fas fa-info-circle info-icon"></span></a>`],
       optionsStart: ['optionsStart', lang.addLeafletFlows.options],
       leafFlow_color: ['color', lang.addLeafletFlows.color, '#0000ff'],
       leafFlow_minThickness: ['numeric', lang.addLeafletFlows.minThickness, 1, 0],

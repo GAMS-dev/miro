@@ -1804,7 +1804,7 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
     ))
   }
   tagList(
-    textInput(id %+% "_title", sprintf(lang$adminMode$graphs$axisOptions$title, id), value = title),
+    textInput(id %+% "_title", lang$adminMode$graphs$axisOptions$title, value = title),
     selectInput(id %+% "_categoryorder", "axis order", choices = langSpecificGraphs$categoryorderChoices),
     if(!identical(rv$graphConfig$graph$type, "pie") && identical(id, "y")){
       tags$div(class = "shiny-input-container", style = "display:inline-block;",
@@ -1815,7 +1815,7 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
                                                              lang$adminMode$graphs$axisOptions$scaleRatioCheck, 
                                                              value = FALSE)),
                                  conditionalPanel(condition = 'input.scaleratio_check===true', 
-                                                  style="display:inline-block; padding-left:35px;", 
+                                                  style="display:inline-block;padding-left:35px;", 
                                                   tags$div(
                                                     numericInput("scaleratio", 
                                                                  lang$adminMode$graphs$axisOptions$scaleRatio, 
@@ -1824,17 +1824,17 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
                )
       )
     },
-    checkboxInput_MIRO(id %+% "_showgrid", sprintf(lang$adminMode$graphs$axisOptions$showgrid, id)),
-    checkboxInput_MIRO(id %+% "_zeroline", sprintf(lang$adminMode$graphs$axisOptions$zeroline, id)),
-    checkboxInput_MIRO(id %+% "_showticklabels", sprintf(lang$adminMode$graphs$axisOptions$showticklabels, id), TRUE),
+    checkboxInput_MIRO(id %+% "_showgrid", lang$adminMode$graphs$axisOptions$showgrid),
+    checkboxInput_MIRO(id %+% "_zeroline", lang$adminMode$graphs$axisOptions$zeroline),
+    checkboxInput_MIRO(id %+% "_showticklabels", lang$adminMode$graphs$axisOptions$showticklabels, TRUE),
     if(identical(input$chart_tool, "scatter") || identical(input$chart_tool, "line") || identical(input$chart_tool, "bubble")){
       tags$div(class = "shiny-input-container", style = "display:inline-block;",
                tags$label(class = "cb-label shiny-input-container", "for" = "range-wrapper", lang$adminMode$graphs$axisOptions$range),
                tags$div(style = "padding-top: 10px;",
                  tags$div(id = "range-wrapper",
                           tags$div(style = "max-width:400px;",
-                                   tags$div(style="display:inline-block", textInput(id %+% "_rangefrom", sprintf(lang$adminMode$graphs$axisOptions$rangeFrom, id), value = NULL)),
-                                   tags$div(style="display:inline-block", textInput(id %+% "_rangeto", sprintf(lang$adminMode$graphs$axisOptions$rangeTo, id), value = NULL)))
+                                   tags$div(style="display:inline-block", textInput(id %+% "_rangefrom", lang$adminMode$graphs$axisOptions$rangeFrom, value = NULL)),
+                                   tags$div(style="display:inline-block", textInput(id %+% "_rangeto", lang$adminMode$graphs$axisOptions$rangeTo, value = NULL)))
                  ))
       )
     }
