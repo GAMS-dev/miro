@@ -536,6 +536,15 @@ observeEvent(input$leafMark_labelsize, {
   }
   rv$graphConfig$graph$markers[[idLabelMap$leaflet_markers[[as.integer(input$leafMark_labelsize[1])]]]]$labelOptions$textsize <<- textsize
 })
+observeEvent(input$leafMark_icon, {
+  rv$graphConfig$graph$markers[[idLabelMap$leaflet_markers[[as.integer(input$leafMark_icon[1])]]]]$iconOptions$icon <<- input$leafMark_icon[2]
+})
+observeEvent(input$leafMark_iconColor, {
+  rv$graphConfig$graph$markers[[idLabelMap$leaflet_markers[[as.integer(input$leafMark_iconColor[1])]]]]$iconOptions$iconColor <<- input$leafMark_iconColor[2]
+})
+observeEvent(input$leafMark_markerColor, {
+  rv$graphConfig$graph$markers[[idLabelMap$leaflet_markers[[as.integer(input$leafMark_markerColor[1])]]]]$iconOptions$markerColor <<- input$leafMark_markerColor[2]
+})
 observeEvent(input$leafMark_labelPermanent, {
   rv$graphConfig$graph$markers[[idLabelMap$leaflet_markers[[as.integer(input$leafMark_labelPermanent[1])]]]]$labelOptions$permanent <<- identical(input$leafMark_labelPermanent[2], 0L)
 })
@@ -1454,6 +1463,9 @@ observeEvent(input$add_array_el, {
   }else if(identical(el_id, "leaflet_markers")){
     newContent <- list(lng = input$add_array_el[2], 
                        lat = input$add_array_el[2],
+                       iconOptions = list(icon = "circle", 
+                                          iconColor = "#000000",
+                                          markerColor = "blue"),
                        labelOptions = list(textsize = "12px", permanent = FALSE))
   }else if(identical(el_id, "leaflet_flows")){
     newContent <- list(lng0 = input$add_array_el[2], 

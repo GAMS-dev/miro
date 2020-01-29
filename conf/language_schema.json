@@ -7567,6 +7567,48 @@
                       "minLength":1,
                       "required":true
                     },
+                    "iconOptions":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "icon":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "iconChoices":{ 
+                      "type":"array",
+                      "uniqueItems": true,
+                      "minItems":22,
+                      "maxItems":22,
+                      "items": {
+                          "type":"string",
+                          "minLength": 1
+                      },
+                      "required":true
+                    },
+                    "iconColor":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "markerColor":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "markerColorChoices":{ 
+                      "type":"array",
+                      "uniqueItems": true,
+                      "minItems":19,
+                      "maxItems":19,
+                      "items": {
+                          "type":"string",
+                          "minLength": 1
+                      },
+                      "required":true
+                    },
                     "options":{ 
                       "type":"string",
                       "minLength":1,
