@@ -426,8 +426,24 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
       p   <- leaflet(data) %>% addTiles()
       
       lapply(seq_along(options$markers), function(j){
+        icons <- awesomeIcons(
+          icon = if(length(options$markers[[j]]$iconOptions$icon)) 
+            options$markers[[j]]$iconOptions$icon 
+          else 
+            "circle",
+          iconColor = if(length(options$markers[[j]]$iconOptions$iconColor)) 
+            options$markers[[j]]$iconOptions$iconColor 
+          else 
+            "#000000",
+          markerColor = if(length(options$markers[[j]]$iconOptions$markerColor)) 
+            options$markers[[j]]$iconOptions$markerColor 
+          else 
+            "blue",
+          library = 'fa'
+        )
         p <<- addAwesomeMarkers(p, lng = data[[options$markers[[j]]$lng]], 
                                 lat = data[[options$markers[[j]]$lat]], layerId = j,
+                                icon = icons,
                                 group = options$markers[[j]]$group,
                                 label = if(length(options$markers[[j]][["label"]])) 
                                   eval(parseLabel(options$markers[[j]][["label"]], names(data))),
