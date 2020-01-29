@@ -988,7 +988,8 @@ observeEvent(input$btEditReadme, {
   readmeContent <- character(0L)
   readmeContentParsed <- character(0L)
   if(length(rv$generalConfig$readme$filename) && 
-     file.exists(rv$generalConfig$readme$filename)){
+     file.exists(file.path(currentModelDir, 
+                           rv$generalConfig$readme$filename))){
     readmeContent <- read_file(file.path(currentModelDir, 
                                          rv$generalConfig$readme$filename))
     readmeContentParsed <- HTML(markdownParser$
