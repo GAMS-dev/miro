@@ -1620,7 +1620,7 @@ observeEvent({
       rv$graphConfig$graph$layersControl <<- NULL
     if(!identical(chartTool, "valuebox"))
       rv$graphConfig$options <<- NULL
-    saveAndReload(isolate(chartTool), "pie")
+    #saveAndReload(isolate(chartTool), "pie")
     removeUI(selector = "#tool_options div", multiple = TRUE)
     if(chartTool %in% plotlyChartTools){
       rv$graphConfig$graph$tool <<- "plotly"
