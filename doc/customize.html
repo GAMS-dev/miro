@@ -183,10 +183,10 @@
                                   In this example we extend our transport model with a few lines of code for creating a report <i>transport.dat</i>:</p>
                                   <pre><code class="language-gams">File log /transport.dat/;
 put log;
-put log '--------------------------------'/;
-put log '            Report'/;
-put log '--------------------------------'/;
-put  / / 'Transportation Model parameters' / /
+put '--------------------------------'/;
+put '            Report'/;
+put '--------------------------------'/;
+put / / 'Transportation Model parameters' / /
     'Freight cost  ', f,
     @1#6, 'Plant capacity'/;
 loop(i, put @3, i.tl, @15, a(i)/);
