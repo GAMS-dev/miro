@@ -801,8 +801,8 @@ Worker <- R6Class("Worker", public = list(
                                                   type = 'application/json')
       }else{
         gamsArgs <- c(gamsArgs, paste0('IDCGDXInput="', metadata$MIROGdxInName, '"'))
-        textEntities <- URLencode(paste0("?text_entities=", paste(metadata$text_entities, 
-                                                                  collapse = "&text_entities=")))
+        textEntities <- URLencode(paste0("?text_entries=", paste(metadata$text_entities, 
+                                                                  collapse = "&text_entries=")))
         requestBody$stdout_filename <- paste0(metadata$modelName, ".log")
       }
       pfFilePath <- gmsFilePath(file.path(workDir, paste0(tolower(metadata$modelName), ".pf")))
@@ -856,7 +856,7 @@ Worker <- R6Class("Worker", public = list(
       jID <- private$process
     }
     if(!is.null(maxSize)){
-      ret <- HEAD(paste0(private$metadata$url, "/jobs/", jID, "/text-entity/", 
+      ret <- HEAD(paste0(private$metadata$url, "/jobs/", jID, "/text-entry/", 
                          URLencode(text_entity)),
                   add_headers(Authorization = private$authHeader,
                               Timestamp = as.character(Sys.time(), usetz = TRUE)),
@@ -878,7 +878,7 @@ Worker <- R6Class("Worker", public = list(
       teLength <- NULL
     }
     
-    ret <- GET(paste0(private$metadata$url, "/jobs/", jID, "/text-entity/", 
+    ret <- GET(paste0(private$metadata$url, "/jobs/", jID, "/text-entry/", 
                       URLencode(text_entity)),
                query = if(!is.null(teLength)) 
                  list(start_position = startPos, 
