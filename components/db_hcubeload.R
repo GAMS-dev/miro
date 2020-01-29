@@ -42,7 +42,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                          private$traceColNames      <- private$dbSchema$colNames[["_scenTrc"]]
                          private$inputDsNamesNotToDisplay <- inputDsNamesNotToDisplay
                          
-                         if(inherits(private$conn, "PostgreSQL")){
+                         if(inherits(private$conn, "PqConnection")){
                            dbExecute(private$conn, "CREATE EXTENSION IF NOT EXISTS tablefunc")
                          }
                        },
@@ -104,7 +104,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                                       paste(c(private$tabNameMeta, innerTables), collapse = ", "))
                            return(tibble())
                          }
-                         if(inherits(private$conn, "PostgreSQL")){
+                         if(inherits(private$conn, "PqConnection")){
                            data <- private$fetchResultsPG(subsetList = subsetList, 
                                                           colNames = colNames, limit = limit)
                          }else{
@@ -126,7 +126,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                          stopifnot(inherits(data, "data.frame"))
                          stopifnot(is.character("attribs"), length(attribs) > 0L)
                          
-                         if(!inherits(private$conn, "PostgreSQL")){
+                         if(!inherits(private$conn, "PqConnection")){
                            names(data) <- gsub("^.+\\.", "", names(data))
                          }
                          attribs          <- gsub("^.+\\.", "", attribs)

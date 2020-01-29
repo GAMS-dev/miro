@@ -526,7 +526,7 @@ getOS <- function(){
 
 dateColToChar <- function(conn, df){
   # converts date columns to character
-  if(inherits(conn, "PostgreSQL")){
+  if(inherits(conn, "PqConnection")){
     return(df)
   }
   df[] <- lapply(df, function(col){
@@ -1134,7 +1134,6 @@ setDbConfig <- function(){
   
   envNameDbDataMap <- list(
     list(envVar = 'MIRO_DB_TYPE', keyName = 'type', desc = 'database type', default = 'postgres'),
-    list(envVar = 'MIRO_DB_DRIVER', keyName = 'driver', desc = 'database driver', default = 'PostgreSQL Unicode'),
     list(envVar = 'MIRO_DB_USERNAME', keyName = 'username', desc = 'database username'),
     list(envVar = 'MIRO_DB_PASSWORD', keyName = 'password', desc = 'database password'),
     list(envVar = 'MIRO_DB_NAME', keyName = 'name', desc = 'database name'),

@@ -1,5 +1,5 @@
 #version number
-MIROVersion <- "0.9.59"
+MIROVersion <- "0.9.60"
 APIVersion  <- "1"
 MIRORDate   <- "Jan 28 2020"
 #####packages:
@@ -26,7 +26,7 @@ MIRORDate   <- "Jan 28 2020"
 # leaflet         #GPL-3
 # leaflet.minicharts #GPL >=v2
 
-# odbc (Scenario mode) #MIT
+# RPostgres (Scenario mode) #GPL-3
 # DBI (Scenario mode)  #LGPL >=2
 # RSQLite(Scenario mode) #LGPL >=2
 # digest (Hypercube mode) #GPL >=2
@@ -569,7 +569,7 @@ if(is.null(errMsg)){
   if(identical(tolower(dbConfig$type), "sqlite")){
     requiredPackages <- c("DBI", "RSQLite")
   }else{
-    requiredPackages <- c("DBI", "odbc")
+    requiredPackages <- c("DBI", "RPostgres")
   }
   source("./components/install_packages.R", local = TRUE)
   
@@ -709,9 +709,10 @@ if(is.null(errMsg)){
                                modelName)
   credConfig <- NULL
   if(isShinyProxy){
+    usernameTmp <- if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) "user" else uid
     credConfig <- list(url = Sys.getenv("MIRO_GAMS_HOST"), 
-                       username = if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) "user" else uid,
-                       password = "",
+                       username = usernameTmp,
+                       password = usernameTmp,
                        namespace = "global",
                        useRegistered = TRUE,
                        registerUser = TRUE)
