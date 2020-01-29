@@ -97,7 +97,7 @@ server_admin <- function(input, output, session){
                        initData = FALSE, refreshContent = 0L, widget_type = 0L, widget_symbol = 0L, 
                        saveWidgetConfirm = 0L, updateLeafletGroups = 0L, 
                        saveTableConfirm = 0L, widgetTableConfig = list(), table_symbol = 0L,
-                       reset_table_input = 0L)
+                       reset_table_input = 0L, refreshOptions = 0L)
   session$sendCustomMessage("gms-setGAMSSymbols", list(gamsSymbols = list(inSym = unname(inputSymMultiDim), 
                                                                           inAlias = names(inputSymMultiDim),
                                                                           outSym = names(modelOut),

@@ -219,6 +219,9 @@ changeActiveSymbol <- function(id){
   }
   indices       <- activeSymbol$indices
   rv$graphConfig$graph$title <- activeSymbol$alias
+  if(isFALSE(rv$initData) || identical(input$chart_tool, "pie")){
+    rv$refreshOptions <- rv$refreshOptions + 1L
+  }
   rv$initData <- FALSE
   rv$initData <- TRUE
 }
@@ -1602,7 +1605,7 @@ observeEvent(input$gams_symbols, {
 })
 observeEvent({
   input$chart_tool
-  rv$initData}, {
+  rv$refreshOptions}, {
     req(rv$initData)
     allDataAvailable <<- FALSE
     if(length(newChartTool)){
