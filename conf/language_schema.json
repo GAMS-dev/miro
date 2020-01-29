@@ -7634,6 +7634,11 @@
                       "minLength":1,
                       "required":true
                     },
+                    "labelTooltip":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
                     "options":{ 
                       "type":"string",
                       "minLength":1,

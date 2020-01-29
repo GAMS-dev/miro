@@ -1621,6 +1621,7 @@
           "flow": "Select flow data",
           "time": "Select time data",
           "label": "Choose a unique label for each flow (optional)",
+          "labelTooltip": "A suitable configuration for a label is to specify the originator and the recipient for each flow - open documentation",
           "options": "Additional flow options",
           "color": "Choose a color",
           "minThickness": "Choose the minimum thickness",

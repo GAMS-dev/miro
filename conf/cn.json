@@ -1621,6 +1621,7 @@
           "flow": "选择流量的数据",
           "time": "选择时间的数据",
           "label": "选择一个标签",
+          "labelTooltip": "A suitable configuration for a label is to specify the originator and the recipient for each flow - open documentation",
           "options": "其他流量选项",
           "color": "选择颜色",
           "minThickness": "选择最小厚度",

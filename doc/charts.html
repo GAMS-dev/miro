@@ -583,12 +583,26 @@ schedule(i,j, 'quantities') = x.l(i,j);
                                       For a given longitude-latitude combination, the corresponding element from the second index <i>j</i> is now displayed as label.
                                       </li>
                                       <li><b>Flows</b><br>
-                                      Flows can be displayed between different points on the map. The thickness of the arrows depends on the flow data.
+                                      Flows can be displayed between different points on the map. If configured accordingly, the thickness of the arrows can depend on the flow data.
                                       The data overview from the <a href="#map-data" class="scrollto">table above</a> also helps to understand this: 
                                       In the example below the flows have been configured to point from <i>lngP</i>/<i>latP</i> to <i>lngM</i>/<i>latM</i>. 
                                       The thickness depends on the data in the column <i>quantities</i>.
                                       <div class="section-block">
                                         <img class="img-fluid" src="assets/images/configuration_mode/map_flows.png" alt="Map flows"/>
+                                      </div>
+                                      <b id="unique-flow-label">Unique flow labels</b>:
+                                      <p>When configuring flows, you can optionally specify a unique label for each flow. This label appears when you click on a flow. It is important that the label is different for each flow. If this is not the case, only one flow is displayed for each duplicated label. A suitable configuration for a label is to specify the originator and the recipient for each flow. You can achieve this by using the quare brackets syntax to address the symbol/data domains. In the example above the symbol <i>schedule</i> is used to display a map:</p><pre><code class="language-gams">Set   
+    i           'canning plants'
+    j           'markets'
+    scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM', 'latM', 'cap', 'demand', 'quantities' /;
+  
+$onExternalOutput
+Table  schedule(i,j,scheduleHdr) 'shipment quantities in cases';
+$offExternalOutput
+</code></pre>
+                                      <p>Originator and recipient in this case are the domains <i>i</i> and <i>j</i> of the symbol <i>schedule</i>. If you configure the label as follows: <span class="code">From [i] to [j]</span> - then the originator and recipient cities appear as labels for each arrow:</p>
+                                      <div class="section-block">
+                                        <img class="img-fluid" src="assets/images/configuration_mode/map_flows_label.png" alt="Unique label"/>
                                       </div>
                                       </li>
                                       <li><b>Charts</b><br>

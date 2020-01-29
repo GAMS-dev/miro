@@ -1621,6 +1621,7 @@
           "flow": "Strömungsdaten auswählen",
           "time": "Zeitdaten auswählen",
           "label": "Wählen Sie eine Bezeichnung",
+          "labelTooltip": "Eine geeignete Konfiguration für ein Label ist die Angabe des Absenders und des Empfängers für jeden Fluss - Dokumentation öffnen",
           "options": "Zusätzliche Optionen",
           "color": "Wählen Sie eine Farbe",
           "minThickness": "Wählen Sie die Mindestdicke",
