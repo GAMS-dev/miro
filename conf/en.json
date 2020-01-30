@@ -659,7 +659,8 @@
     },
     "initErrors":{  
       "title":"Some errors occurred",
-      "desc":"Please fix the errors mentioned below and restart MIRO:"
+      "desc":"Please fix the errors mentioned below and restart MIRO:",
+      "okButton": "Ok"
     },
     "fetchScenData":{  
       "title":"Error fetching scenario metadata",

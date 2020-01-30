@@ -659,7 +659,8 @@
     },
     "initErrors":{  
       "title":"Es sind Fehler aufgetreten",
-      "desc":"Bitte beheben Sie die nachfolgend aufgeführten Fehler und starten Sie MIRO neu."
+      "desc":"Bitte beheben Sie die nachfolgend aufgeführten Fehler und starten Sie MIRO neu.",
+      "okButton": "Ok"
     },
     "fetchScenData":{  
       "title":"Fehler beim Lesen der Szenariodaten",

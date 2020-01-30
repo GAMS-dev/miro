@@ -834,7 +834,10 @@ if(!is.null(errMsg)){
                  )
                )
              },
-             tableOutput("JSONErrorMessages")
+             tableOutput("JSONErrorMessages"),
+             tags$div(style = "text-align:center;margin-top:20px;", 
+                      actionButton("btCloseInitErrWindow", if(!exists("lang") || is.null(lang$errMsg$initErrors$okButton))
+                        "Ok" else lang$errMsg$initErrors$okButton))
     )
   )
   server_initError <- function(input, output, session){
@@ -884,6 +887,11 @@ if(!is.null(errMsg)){
     output$JSONErrorMessages <- renderTable(
       if(exists("jsonErrors")) jsonErrors, bordered = TRUE
     )
+    observeEvent(input$btCloseInitErrWindow, {
+      if(!interactive()){
+        stopApp()
+      }
+    })
     session$onSessionEnded(function() {
       if(!interactive()){
         stopApp()

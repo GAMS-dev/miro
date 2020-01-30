@@ -659,7 +659,8 @@
     },
     "initErrors":{
       "title":"发生了一些错误",
-      "desc":"请修正下面提到的错误并重新启动MIRO："
+      "desc":"请修正下面提到的错误并重新启动MIRO：",
+      "okButton":"确认"
     },
     "fetchScenData":{
       "title":"获取场景元数据时出错",

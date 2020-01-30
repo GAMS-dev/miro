@@ -3037,6 +3037,11 @@
               "type":"string",
               "minLength":1,
               "required":true
+            },
+            "okButton": {  
+              "type":"string",
+              "minLength":1,
+              "required":true
             }
           }
         },
