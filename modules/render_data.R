@@ -36,10 +36,15 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
     }
     if(length(filterOptions$col)){
       data <- tagList(tags$div(class = "data-filter-wrapper", 
-                      selectInput(ns("data_filter"), 
-                                  filterOptions$label, 
-                                  choices = c(), multiple = isTRUE(filterOptions$multiple)),
-                      dataGraph))
+                               if(isTRUE(filterOptions$date)){
+                                 dateRangeInput(ns("data_filter"),
+                                                filterOptions$label)
+                               }else{
+                                 selectInput(ns("data_filter"), 
+                                             filterOptions$label, 
+                                             choices = c(), multiple = isTRUE(filterOptions$multiple))
+                               },
+                               dataGraph))
     }else{
       data <- dataGraph
     }
@@ -96,9 +101,16 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
   if(length(graphOptions$filter) && graphOptions$filter$col %in% names(data)){
     showEl(session, "#" %+% session$ns("data_filter_wrapper"))
     filterCol <- as.name(graphOptions$filter$col)
-    choices <- data[[graphOptions$filter$col]]
-    updateSelectInput(session, "data_filter", choices = choices, 
-                      selected = choices[1])
+    if(isTRUE(graphOptions$filter$date)){
+      choices <- data[[graphOptions$filter$col]]
+      updateDateRangeInput(session, "data_filter", min = choices[1], 
+                           max = choices[length(choices)], 
+                           start = choices[1], end = choices[length(choices)])
+    }else{
+      choices <- data[[graphOptions$filter$col]]
+      updateSelectInput(session, "data_filter", choices = choices, 
+                        selected = choices[1])
+    }
   }
   if(type == "pivot"){
     output$pivottable <- renderPivot(data, options = pivotOptions, roundPrecision = roundPrecision)

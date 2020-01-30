@@ -1527,7 +1527,8 @@
         "dimension": "筛选哪列数据？",
         "label": "筛选器标签（不支持预览）",
         "placeholder": "按元素筛选",
-        "multiple": "是否允许同时选择几个元素作为筛选器？ （不提供单个下拉菜单的实时预览）"
+        "multiple": "是否允许同时选择几个元素作为筛选器？ （不提供单个下拉菜单的实时预览）",
+        "date": "The data in the column to be filtered contain dates (times). No live preview available!"
       },					   
       "saveJson":{
         "warnTitle": "数据存在",
