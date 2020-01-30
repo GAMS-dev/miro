@@ -11,7 +11,7 @@ inputTabs <- c(inputSymMultiDim,
 if(length(configJSON$overwriteSheetOrder$input)){
   tabIdsTmp <- match(configJSON$overwriteSheetOrder$input, inputTabs)
   if(any(is.na(tabIdsTmp))){
-    flog.error("Invalid input symbol(s) in 'overwriteSheetOrder' found. Resetting to original sheet order.")
+    flog.info("Invalid input symbol(s) in 'overwriteSheetOrder' found. Resetting to original sheet order.")
   }else{
     inputTabsTmp <- inputTabs[tabIdsTmp]
     inputTabs <- c(inputTabsTmp, inputTabs[!inputTabs %in% inputTabsTmp])
@@ -21,7 +21,7 @@ outputTabs <- setNames(names(modelOut), modelOutAlias)
 if(length(configJSON$overwriteSheetOrder$output)){
   tabIdsTmp <- match(configJSON$overwriteSheetOrder$output, outputTabs)
   if(any(is.na(tabIdsTmp))){
-    flog.error("Invalid output symbol(s) in 'overwriteSheetOrder' found. Resetting to original sheet order.")
+    flog.info("Invalid output symbol(s) in 'overwriteSheetOrder' found. Resetting to original sheet order.")
   }else{
     outputTabsTmp <- outputTabs[tabIdsTmp]
     outputTabs <- c(outputTabsTmp, outputTabs[!outputTabs %in% outputTabsTmp])

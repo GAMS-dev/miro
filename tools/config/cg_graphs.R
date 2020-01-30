@@ -95,10 +95,13 @@ langSpecificGraphs$categoryorderChoices <- c("trace" = "trace", "category ascend
                                       "median descending" = "median descending")
 names(langSpecificGraphs$categoryorderChoices) <- lang$adminMode$graphs$axisOptions$categoryorderChoices
 
-hideEl(session, "#preview_output_plotly-data_filter")
-hideEl(session, "#preview_output_dygraphs-data_filter")
-hideEl(session, "#preview_output_leaflet-data_filter")
-hideEl(session, "#preview_output_timevis-data_filter")
+hideFilter <- function(){
+  hideEl(session, "#preview_output_plotly-data_filter")
+  hideEl(session, "#preview_output_dygraphs-data_filter")
+  hideEl(session, "#preview_output_leaflet-data_filter")
+  hideEl(session, "#preview_output_timevis-data_filter")
+}
+hideFilter()
 #hideEl(session, any(startsWith("#preview_output_") && endsWith("-data_filter")))
 scenMetaDb <- NULL
 tryCatch({
@@ -171,15 +174,18 @@ saveAndReload <- function(...){
   currentSelection <<- selected[seq_len(subsetIdx)]
   current <- paste(currentSelection, collapse = "")
   if(length(currentConfig[[current]])){
-    isolate(rv$graphConfig$graph <- currentConfig[[current]])
+    isolate({
+      rv$graphConfig$graph <- currentConfig[[current]]
+      rv$graphConfig$graph$title <- activeSymbol$alias
+    })
     allDataAvailable <<- TRUE
   }else if(subsetIdx == 1L){
     isolate({
-      rv$graphConfig$graph <- list(title = rv$graphConfig$graph$title)
+      rv$graphConfig$graph <- list()
     })
   }else{
     isolate({
-      rv$graphConfig$graph <- list(title = rv$graphConfig$graph$title, 
+      rv$graphConfig$graph <- list(title = activeSymbol$alias, 
                                    tool = rv$graphConfig$graph$tool)
     })
   }
@@ -709,6 +715,7 @@ observeEvent(input$hist_nbins, {
 observeEvent(input$hist_barmode, {
   rv$graphConfig$graph$barmode <<- input$hist_barmode
 })
+# useful when color is specified automatically based on a domain!
 observeEvent(input$hist_alpha, {
   rv$graphConfig$graph$alpha <<- input$hist_alpha
 })
@@ -732,11 +739,12 @@ observeEvent(input$add_piedata, {
   if(!arrayId %in% names(rv$graphConfig$graph$traces)){
     rv$graphConfig$graph$traces[[arrayId]] <<- list(labels = activeSymbol$indices[[1]],
                                                     values = input$add_piedata[2],
-                                                    name = input$add_piedata[2],
+                                                    name = names(activeSymbol$indices)[1],
                                                     hole = 0)
   }else{
     rv$graphConfig$graph$traces[[arrayId]]$values <<- input$add_piedata[2]
-    rv$graphConfig$graph$traces[[arrayId]]$name   <<- input$add_piedata[2]
+    rv$graphConfig$graph$traces[[arrayId]]$name   <<- names(activeSymbol$indices)[match(input$add_piedata[2],
+                                                                                        activeSymbol$indices)[1]]
   }
 })
 observeEvent(input$remove_piedata, {
@@ -1590,8 +1598,6 @@ observeEvent(input$gams_symbols, {
     symbolID <- match(isolate(input$gams_symbols), names(modelOut)) + length(modelIn)
   }
   changeActiveSymbol(symbolID)
-  rv$graphConfig$graph$title <- activeSymbol$alias
-  updateTextInput(session, "chart_title", value = activeSymbol$alias)
   
   if(identical(input$gams_symbols, scalarsOutName)){
     updateSelectInput(session, "chart_tool", choices = setNames(c("valuebox"),
@@ -1625,7 +1631,8 @@ observeEvent({
       rv$graphConfig$graph$layersControl <<- NULL
     if(!identical(chartTool, "valuebox"))
       rv$graphConfig$options <<- NULL
-    #saveAndReload(isolate(chartTool), "pie")
+    saveAndReload(isolate(chartTool), "pie")
+    hideFilter()
     removeUI(selector = "#tool_options div", multiple = TRUE)
     if(chartTool %in% plotlyChartTools){
       rv$graphConfig$graph$tool <<- "plotly"
@@ -1861,6 +1868,7 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
   )
 }
 getOptionSection <- reactive({
+  req(rv$initData)
   isolate({
     rv$graphConfig$graph$showlegend <<- TRUE
   })

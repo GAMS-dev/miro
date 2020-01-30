@@ -61,18 +61,18 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
             p <<- plot_ly(data, 
                           height = if(!is.null(options$fixedHeight)) options$fixedHeight else height, 
                           width = if(!is.null(options$fixedWidth)) options$fixedWidth) %>% 
-              add_bars(x = try(data[[options$xdata]]),
-                       y = try(data[[names(options$ydata)[1]]]), 
-                       name = yData$label, height = height, 
-                       color=if(!is.null(options$color)){try(data[[options$color]])},
-                       marker = markerStyle,
-                       width=if(!is.null(options$width)){try(data[[options$width]])},
-                       orientation = options$orientation)
+              add_trace(x = try(data[[options$xdata]]), type = "bar",
+                        y = try(data[[names(options$ydata)[1]]]), 
+                        name = yData$label, 
+                        color=if(!is.null(options$color)){try(data[[options$color]])},
+                        marker = markerStyle,
+                        width=if(!is.null(options$width)){try(data[[options$width]])},
+                        orientation = options$orientation)
           }else{
-            p <<- add_bars(p, x = try(data[[options$xdata]]),
-                           y = try(data[[names(options$ydata)[j]]]), name = yData$label,
-                           marker = markerStyle,
-                           orientation = options$orientation)
+            p <<- add_trace(p, x = try(data[[options$xdata]]), type = "bar",
+                            y = try(data[[names(options$ydata)[j]]]), name = yData$label,
+                            marker = markerStyle,
+                            orientation = options$orientation)
           }
         })
       }else if(options$type=='scatter'){

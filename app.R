@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "0.9.62"
+MIROVersion <- "0.9.63"
 APIVersion  <- "1"
-MIRORDate   <- "Jan 29 2020"
+MIRORDate   <- "Jan 30 2020"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -89,7 +89,7 @@ if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
 }
 source("./components/install_packages.R", local = TRUE)
 if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
-  setWinProgressBar(pb, 0.3, label= "Initialising GAMS MIRO")
+  setWinProgressBar(pb, 0.3, label= "Initializing GAMS MIRO")
 }else{
   setTxtProgressBar(pb, 0.3)
 }
