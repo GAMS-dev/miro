@@ -324,7 +324,7 @@ body_admin <- dashboardBody({
                     ),
                     tags$div(class = "col-sm-6 preview-outer-wrapper",
                              tags$div(id = "preview-error", class = "err-msg"),
-                             tags$div(id = "preview-content-plotly", 
+                             tags$div(id = "preview-content-plotly", style="overflow: auto;",
                                       renderDataUI("preview_output_plotly", type = "graph", 
                                                    graphTool = "plotly", 
                                                    filterOptions = list(label = NULL, 
