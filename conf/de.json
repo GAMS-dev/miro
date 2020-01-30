@@ -1381,7 +1381,7 @@
           "paperBgColor": "Welche Hintergrundfarbe soll das Papier haben?",
           "plotBgColor": "Welche Hintergrundfarbe soll das Diagramm haben?",
           "showlegend": "Legende zeigen?",
-          "dragmode": "Allow zoom?",
+          "staticPlot": "Einen statischen Plot rendern?",
           "fixedHeightCheck": "Charthöhe fixieren?",
           "fixedHeight": "Höhe (px)",
           "fixedWidthCheck": "Chartbreite fixieren?",

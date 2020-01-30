@@ -1173,15 +1173,11 @@ observeEvent(input$dyShading_axis, {
     return()
   rv$graphConfig$graph$dyShading[[idLabelMap$dy_dyShading[[chart_id]]]]$axis <<- input$dyShading_axis[2]
 })
-observeEvent(input$dragmode, {
-  if(isTRUE(input$dragmode)){
-    rv$graphConfig$graph$dragmode <<- "zoom"
-    rv$graphConfig$graph$xaxis$fixedrange <<- FALSE
-    rv$graphConfig$graph$yaxis$fixedrange <<- FALSE
+observeEvent(input$staticPlot, {
+  if(isTRUE(input$staticPlot)){
+    rv$graphConfig$graph$staticPlot <<- TRUE
   }else{
-    rv$graphConfig$graph$dragmode <<- FALSE
-    rv$graphConfig$graph$xaxis$fixedrange <<- TRUE
-    rv$graphConfig$graph$yaxis$fixedrange <<- TRUE
+    rv$graphConfig$graph$staticPlot <<- FALSE
   }
 })
 observeEvent(input$paper_bgcolor, {
@@ -1875,9 +1871,6 @@ getOptionSection <- reactive({
   tagList(
     textInput("chart_title", lang$adminMode$graphs$ui$chartTitle, value = activeSymbol$alias),
     checkboxInput_MIRO("showlegend", lang$adminMode$graphs$chartOptions$options$showlegend, value = TRUE),
-    if(!identical(input$chart_tool, "pie")){
-      checkboxInput_MIRO("dragmode", lang$adminMode$graphs$chartOptions$options$dragmode, value = TRUE)
-    },
       #tagList(
         tags$div(class = "shiny-input-container", 
                    tags$div(style = "max-width:400px;",
@@ -1908,6 +1901,7 @@ getOptionSection <- reactive({
       #)
     colorPickerInput("paper_bgcolor", lang$adminMode$graphs$chartOptions$options$paperBgColor, value = NULL),
     colorPickerInput("plot_bgcolor", lang$adminMode$graphs$chartOptions$options$plotBgColor, value = NULL),
+    checkboxInput_MIRO("staticPlot", lang$adminMode$graphs$chartOptions$options$staticPlot, value = FALSE),
     getOuttype()
   )
 })

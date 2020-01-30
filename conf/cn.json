@@ -1381,7 +1381,7 @@
           "paperBgColor": "设置纸张的背景颜色",
           "plotBgColor": "该图有多少背景颜色？",
           "showlegend": "要显示图例吗？",
-          "dragmode": "Allow zoom?",
+          "staticPlot": "Render a static plot?",
           "fixedHeightCheck": "Fix chart height?",
           "fixedHeight": "Height (px)",
           "fixedWidthCheck": "Fix chart width?",

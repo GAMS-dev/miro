@@ -6430,7 +6430,7 @@
                       "minLength":1,
                       "required":true
                     },
-                    "dragmode":{ 
+                    "staticPlot":{ 
                       "type":"string",
                       "minLength":1,
                       "required":true
