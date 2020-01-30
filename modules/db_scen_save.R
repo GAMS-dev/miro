@@ -138,14 +138,16 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   removeModal()
   # save to database
   scenStr <- "scen_1_"
+  duplicatedMetadata <- NULL
   tryCatch({
     if(saveAsFlag){
       if(!is.null(activeScen)){
-        if(!length(activeScen$getSid())){
-          activeScen$updateMetadata(newName = input$scenName, newTags = scenTags)
-        }else{
+        if(length(activeScen$getSid())){
+          duplicatedMetadata <- activeScen$getMetadataInfo()
           activeScen <<- NULL
           gc()
+        }else{
+          activeScen$updateMetadata(newName = input$scenName, newTags = scenTags)
         }
       }
       rv$activeSname <<- input$scenName
@@ -153,7 +155,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
     if(is.null(activeScen)){
       activeScen <<- Scenario$new(db = db, sname = isolate(rv$activeSname), 
                                   tags = scenTags, overwrite = identical(saveAsFlag, TRUE),
-                                  isNewScen = TRUE)
+                                  isNewScen = TRUE, duplicatedMetadata = duplicatedMetadata)
       scenTags   <<- NULL
     }
     activeScen$save(scenData[[scenStr]], msgProgress = lang$progressBar$saveScenDb)

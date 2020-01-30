@@ -4,7 +4,8 @@ Scenario <- R6Class("Scenario",
                     public = list(
                       initialize                    = function(db, sid = NULL, sname = NULL,
                                                                readPerm = NULL, writePerm = NULL, execPerm = NULL,
-                                                               tags = NULL, overwrite = FALSE, isNewScen = FALSE){
+                                                               tags = NULL, overwrite = FALSE, isNewScen = FALSE, 
+                                                               duplicatedMetadata = NULL){
                         # Initialize scenario class
                         #
                         # Args:
@@ -17,6 +18,7 @@ Scenario <- R6Class("Scenario",
                         #   tags:              vector of tags that can be specified (optional)
                         #   overwrite:         logical that specifies whether data should be overwritten or appended
                         #   isNewScen:         whether the scenario is not yet stored in the database
+                        #   duplicatedMetadata: metadata information of to apply
                         
                         #BEGIN error checks 
                         stopifnot(is.R6(db), is.logical(isNewScen), length(isNewScen) == 1L)
@@ -75,6 +77,15 @@ Scenario <- R6Class("Scenario",
                           private$stime     <- Sys.time()
                           private$suid      <- private$uid
                           private$sname     <- sname
+                          if(length(duplicatedMetadata)){
+                            private$localAttachments <- duplicatedMetadata$localAttachments
+                            private$attachmentsToRemove <- duplicatedMetadata$attachmentsToRemove
+                            private$attachmentsUpdateExec <- duplicatedMetadata$attachmentsUpdateExec
+                            if(length(duplicatedMetadata$sidToDuplicate)){
+                              private$sidToDuplicate <- as.integer(duplicatedMetadata$sidToDuplicate)
+                              private$duplicateAttachmentsOnNextSave <- TRUE
+                            }
+                          }
                         }else{
                           if(is.null(sid)){
                             tryCatch({
@@ -106,6 +117,13 @@ Scenario <- R6Class("Scenario",
                       getReadPerm = function() csv2Vector(private$readPerm),
                       getWritePerm = function() csv2Vector(private$writePerm),
                       getExecPerm = function() csv2Vector(private$execPerm),
+                      getMetadataInfo = function(){
+                        stopifnot(length(private$sid) > 0L)
+                        return(list(localAttachments = private$localAttachments,
+                                    attachmentsToRemove = private$attachmentsToRemove,
+                                    attachmentsUpdateExec = private$attachmentsUpdateExec,
+                                    sidToDuplicate = private$sid))
+                      },
                       getMetadata = function(aliases = character(0L), noPermFields = TRUE){
                         # Generates dataframe containing scenario metadata
                         #
@@ -220,6 +238,9 @@ Scenario <- R6Class("Scenario",
                           private$localAttachments <- list(filePaths = character(0L), 
                                                            execPerm = logical(0L))
                           
+                        }
+                        if(isTRUE(private$duplicateAttachmentsOnNextSave)){
+                          private$duplicateAttachments()
                         }
                         Map(function(dataset, tableName){
                           if(!is.null(dataset) && nrow(dataset)){
@@ -722,6 +743,8 @@ Scenario <- R6Class("Scenario",
                       scenSaved           = logical(1L),
                       newScen             = logical(1L),
                       traceData           = tibble(),
+                      duplicateAttachmentsOnNextSave = FALSE,
+                      sidToDuplicate      = integer(0L),
                       localAttachments    = list(filePaths = character(0L), 
                                                  execPerm = logical(0L)),
                       attachmentsToRemove = character(0L),
@@ -1048,6 +1071,24 @@ Scenario <- R6Class("Scenario",
                         return(tibble(fileName = fileNames, fileExt = tools::file_ext(filePaths), 
                                       execPerm = execPerm, 
                                       fileContent = content, timestamp = as.character(Sys.time(), usetz = TRUE, tz = "GMT")))
+                      },
+                      duplicateAttachments = function(){
+                        stopifnot(is.integer(private$sidToDuplicate), 
+                                  length(private$sidToDuplicate) == 1L, !is.na(private$sidToDuplicate),
+                                  length(private$sid) == 1L)
+                        tableName      <- private$dbSchema$tabName[["_scenAttach"]]
+                        colNames       <- private$dbSchema$colNames[["_scenAttach"]]
+                        dbExecute(private$conn, 
+                                  paste0("INSERT INTO ", dbQuoteIdentifier(private$conn, tableName),
+                                         "(", paste0(dbQuoteIdentifier(private$conn, colNames), 
+                                                     collapse = ","), ") SELECT ", private$sid, ",", 
+                                         paste0(dbQuoteIdentifier(private$conn, colNames[-1]),
+                                                collapse = ","), " FROM ", 
+                                         dbQuoteIdentifier(private$conn, tableName),
+                                         " WHERE ", dbQuoteIdentifier(private$conn, colNames[1]),
+                                         "=", private$sidToDuplicate, ";"))
+                        private$duplicateAttachmentsOnNextSave <- FALSE
+                        return(invisible(self))
                       }
                     )
 )
