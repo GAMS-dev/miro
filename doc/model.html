@@ -697,6 +697,24 @@ $log What you see here is the %fn%
                                     </p>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
+                            <section id="create-custom" class="doc-section">
+                                <h2 class="section-title">Custom configuration</h2>
+                                <div class="section-block">
+                                    <p>When the basic interface - the data contract - between a GAMS model and MIRO is configured, you can start customizing MIRO to leverage its full potential. Have a look at the <a href="./customize.html">next chapter</a> and learn how to customize MIRO.</p>
+                                    <div class="section-block" style="text-align:center;">
+                                            <img class="img-fluid" src="assets/images/gams_miro.png" alt="GAMS MIRO - visualization" />
+                                    </div>
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+                            <section id="custom-log" class="doc-section">
+                                <h2 class="section-title">Custom log</h2>
+                                <div class="section-block">
+                                    <p>Among many other customization features of your MIRO app, one of them is to display a custom log in the application. This log can be created directly in the GAMS model and displayed in MIRO after the run. Learn more about this <a href = "./customize.html#miro-log">here</a>.</p>
+                                    <div class="section-block" style="text-align:center;">
+                                            <img class="img-fluid" src="assets/images/miro_log.png" alt="Custom MIRO log" />
+                                    </div>
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
                             <section id="database" class="doc-section">
                                 <h2 class="section-title">Database</h2>
                                 <div  id="database"  class="section-block">
@@ -714,15 +732,6 @@ $log What you see here is the %fn%
                                            <p>In case you saved a lot of data in your database you should use the native backup capabilities the database server (SQLite if you are using MIRO Desktop or PostgreSQL on MIRO Server) rather than using the MIRO admin mode.</p>
                                        </div><!--//content-->
                                    </div><!--//callout-block-->
-                                </div><!--//section-block-->
-                            </section><!--//doc-section-->
-                            <section id="create-custom" class="doc-section">
-                                <h2 class="section-title">Custom configuration</h2>
-                                <div class="section-block">
-                                    <p>When the basic interface - the data contract - between a GAMS model and MIRO is configured, you can start customizing MIRO to leverage its full potential. Have a look at the <a href="./customize.html">next chapter</a> and learn how to customize MIRO.</p>
-                                    <div class="section-block" style="text-align:center;">
-                                            <img class="img-fluid" src="assets/images/gams_miro.png" alt="GAMS MIRO - visualization" />
-                                    </div>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
                             <section id="development-mode" class="doc-section">
@@ -788,10 +797,13 @@ $log What you see here is the %fn%
                                     <a class="nav-link scrollto" href="#display-scalar-vareq">Scalar Variables & Equations</a>
                                     <a class="nav-link scrollto" href="#command-line">Command line Parameters</a>
                                 </nav><!--//nav-->
-                                <a class="nav-link scrollto" href="#database">Database</a>
-                                <a class="nav-link scrollto" href="#create-custom">Custom configuration</a>
-                                <a class="nav-link scrollto" href="#development-mode">Development mode</a>
-
+                                <a class="nav-link scrollto" href="#model-advanced">Advanced</a>
+                                <nav class="doc-sub-menu nav flex-column">
+                                    <a class="nav-link scrollto" href="#create-custom">Custom configuration</a>
+                                    <a class="nav-link scrollto" href="#custom-log">Custom log</a>
+                                    <a class="nav-link scrollto" href="#database">Database</a>
+                                    <a class="nav-link scrollto" href="#development-mode">Development mode</a>
+                                </nav><!--//nav-->
 	                        </nav><!--//doc-menu-->
                         </div>
                     </div><!--//doc-sidebar-->

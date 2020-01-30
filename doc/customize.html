@@ -219,9 +219,9 @@ set error01(date, symbol);
 error01(date, symbol) = price(date, symbol) < 0;
 
 file log / miro.log /;
-put log '------------------------------------'/;
-put log '        Data validation'/;
-put log '------------------------------------'/;
+put '------------------------------------'/;
+put '        Data validation'/;
+put '------------------------------------'/;
 if(card(error01),
   put log 'price:: No negative prices allowed!'/;
   loop(error01(date, symbol),
