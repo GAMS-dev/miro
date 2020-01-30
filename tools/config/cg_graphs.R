@@ -1170,10 +1170,15 @@ observeEvent(input$dyShading_axis, {
   rv$graphConfig$graph$dyShading[[idLabelMap$dy_dyShading[[chart_id]]]]$axis <<- input$dyShading_axis[2]
 })
 observeEvent(input$dragmode, {
-  if(isTRUE(input$dragmode))
+  if(isTRUE(input$dragmode)){
     rv$graphConfig$graph$dragmode <<- "zoom"
-  else
+    rv$graphConfig$graph$xaxis$fixedrange <<- FALSE
+    rv$graphConfig$graph$yaxis$fixedrange <<- FALSE
+  }else{
     rv$graphConfig$graph$dragmode <<- FALSE
+    rv$graphConfig$graph$xaxis$fixedrange <<- TRUE
+    rv$graphConfig$graph$yaxis$fixedrange <<- TRUE
+  }
 })
 observeEvent(input$paper_bgcolor, {
   if(nchar(input$paper_bgcolor))
