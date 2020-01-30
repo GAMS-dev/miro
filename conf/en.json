@@ -1527,7 +1527,8 @@
         "dimension": "Which dimension should be filterable?",
         "label": "Label of the filter (no live preview)",
         "placeholder": "Filter by element",
-        "multiple": "Should several elements be selectable as filter at the same time? (No live preview for single dropdown menu available)"
+        "multiple": "Should several elements be selectable as filter at the same time? (No live preview for single dropdown menu available)",
+        "date": "The data in the column to be filtered contain dates (times). No live preview available!"
       },
       "saveJson":{
         "warnTitle": "Data exists",

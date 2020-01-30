@@ -1133,6 +1133,7 @@
                            "filter":{  
                              "type":"object",
                              "description":"Add an interactive filter above the graph to slice the data",
+                             "additionalProperties":false,
                              "properties":{  
                                 "col":{  
                                   "description":"Column to filter on",
@@ -1141,6 +1142,11 @@
                                 },
                                 "multiple":{  
                                    "description":"Allow multiple filter options to be selected",
+                                   "type":"boolean",
+                                   "default":false
+                                },
+                                "date":{  
+                                   "description":"Column to be filtered contains date data",
                                    "type":"boolean",
                                    "default":false
                                 },

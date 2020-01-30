@@ -13,12 +13,20 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
   #
   # Returns:
   #   rendered graph for the provided dataframe
+  
   data <- type_convert(data, cols())
+  
   if(options$tool == 'plotly'){
     pieGrid <- NULL
     return(renderPlotly({
       if(length(filterCol) && length(input$data_filter)){
-        data <- filter(data, !!filterCol %in% input$data_filter)
+        if(isTRUE(options$filter$date)){
+          filterTmp <- as.POSIXct(input$data_filter)
+          data <- filter(data, between(!!filterCol, filterTmp[1], 
+                                       max(filterTmp[1], filterTmp[2])))
+        }else{
+          data <- filter(data, !!filterCol %in% input$data_filter)
+        }
       }
       
       if(options$type == 'pie'){
@@ -289,7 +297,13 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
   }else if(options$tool == 'dygraphs'){
     return(renderDygraph({
       if(length(filterCol) && length(input$data_filter)){
-        data <- filter(data, !!filterCol %in% input$data_filter)
+        if(isTRUE(options$filter$date)){
+          filterTmp <- as.POSIXct(input$data_filter)
+          data <- filter(data, between(!!filterCol, filterTmp[1], 
+                                       max(filterTmp[1], filterTmp[2])))
+        }else{
+          data <- filter(data, !!filterCol %in% input$data_filter)
+        }
       }
       # time series chart
       p <- NULL
@@ -426,7 +440,13 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
   }else if(options$tool == 'leaflet'){
     return(renderLeaflet({
       if(length(filterCol) && length(input$data_filter)){
-        data <- filter(data, !!filterCol %in% input$data_filter)
+        if(isTRUE(options$filter$date)){
+          filterTmp <- as.POSIXct(input$data_filter)
+          data <- filter(data, between(!!filterCol, filterTmp[1], 
+                                       max(filterTmp[1], filterTmp[2])))
+        }else{
+          data <- filter(data, !!filterCol %in% input$data_filter)
+        }
       }
       p   <- leaflet(data) %>% addTiles()
       
@@ -506,7 +526,13 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
   }else if(options$tool == 'timevis'){
     return(renderTimevis({
       if(length(filterCol) && length(input$data_filter)){
-        data <- filter(data, !!filterCol %in% input$data_filter)
+        if(isTRUE(options$filter$date)){
+          filterTmp <- as.POSIXct(input$data_filter)
+          data <- filter(data, between(!!filterCol, filterTmp[1], 
+                                       max(filterTmp[1], filterTmp[2])))
+        }else{
+          data <- filter(data, !!filterCol %in% input$data_filter)
+        }
       }
       p <- timevis()
       

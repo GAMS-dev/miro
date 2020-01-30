@@ -1566,7 +1566,8 @@ observeEvent(input$filter_dim, {
  }else{
    rv$graphConfig$graph$filter <<- list(col = input$filter_col,
                                         label = input$filter_label,
-                                        multiple = input$filter_multiple)
+                                        multiple = input$filter_multiple,
+                                        date = FALSE)
    showEl(session, paste0("#preview_output_", chartToolTmp, "-data_filter"))
  }
 })
@@ -1589,6 +1590,10 @@ observeEvent(input$filter_label, {
 observeEvent(input$filter_multiple, {
   req(isTRUE(input$filter_dim))
   rv$graphConfig$graph$filter$multiple <<- input$filter_multiple
+})
+observeEvent(input$filter_date, {
+  req(isTRUE(input$filter_dim))
+  rv$graphConfig$graph$filter$date <<- input$filter_date
 })
 
 observeEvent(input$gams_symbols, {
@@ -2357,6 +2362,8 @@ getFilterOptions <- reactive({
                            choices = setIndices),
                textInput("filter_label", lang$adminMode$graphs$filterOptions$label, placeholder = lang$adminMode$graphs$filterOptions$placeholder),
                checkboxInput_MIRO("filter_multiple", lang$adminMode$graphs$filterOptions$multiple, 
+                                  value = FALSE),
+               checkboxInput_MIRO("filter_date", lang$adminMode$graphs$filterOptions$date, 
                                   value = FALSE)
              ))
   )
