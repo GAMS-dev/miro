@@ -34,3 +34,10 @@ Files = inscribedsquare.gms,inscribedsquare.conf.unzip
 3 = gms
 4 = Inscribed Square Problem with MIRO
 
+*$*$*$
+Files = tsp.gms,tsp.conf.unzip
+1 = 005
+2 = tsp
+3 = gms
+4 = Traveling Salesman Problem with MIRO
+
