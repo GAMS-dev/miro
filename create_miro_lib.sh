@@ -13,6 +13,9 @@ cd ..
 cd inscribedsquare
 zip -r inscribedsquare.conf.unzip inscribedsquare_files.txt conf_inscribedsquare/inscribedsquare.json renderer_inscribedsquare/inscribedsquare_custom.R data_inscribedsquare -x "*.DS_Store"
 cd ..
+cd tsp
+zip -r tsp.conf.unzip tsp_files.txt conf_tsp/tsp.json data_tsp static_tsp -x "*.DS_Store"
+cd ..
 rm -rf miro_lib || true
 mkdir miro_lib
 cp mirolib.glb miro_lib
@@ -24,6 +27,8 @@ mv sudoku/sudoku.conf.unzip miro_lib
 cp sudoku/sudoku.gms miro_lib
 mv inscribedsquare/inscribedsquare.conf.unzip miro_lib
 cp inscribedsquare/inscribedsquare.gms miro_lib
+mv tsp/tsp.conf.unzip miro_lib
+cp tsp/tsp.gms miro_lib
 zip -r miroDemoApps.zip miro_lib -x "*.DS_Store"
 cd ../doc
 mv ../model/miroDemoApps.zip .
