@@ -293,10 +293,8 @@ observeEvent(input$btUpdateMeta, {
                                 newReadPerm, newWritePerm, newExecPerm)
       rv$activeSname <- scenName
       scenMetaData[["scen_1_"]] <<- activeScen$getMetadata(lang$nav$excelExport$metadataSheet)
-      hideEl(session, "#editMetaUI")
-      showEl(session, "#editMetaSuccess")
       markUnsaved()
-      hideModal(session, 1L)
+      removeModal()
     }, error = function(e){
       flog.error("Problems updating scenario metadata. Error message: %s.", e)
       errMsg <<- character(1L)

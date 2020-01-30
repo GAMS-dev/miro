@@ -953,11 +953,6 @@
               "minLength":1,
               "required":true
             },
-            "success":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
             "errMsg":{  
               "type":"string",
               "minLength":1,
@@ -1061,11 +1056,6 @@
               "required":true
             },
             "attachForbiddenFnameError":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
-            "success":{  
               "type":"string",
               "minLength":1,
               "required":true

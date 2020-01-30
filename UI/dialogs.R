@@ -572,8 +572,6 @@ showEditMetaDialog <- function(metadata,
     tags$div(
       tags$div(class = "gmsalert gmsalert-error", id = "editMetaError", 
                langData$errMsg),
-      tags$div(id = "editMetaSuccess", style = "display:none;", 
-               langData$success),
       tags$div(id = "editMetaUI",
                content)
     ),
