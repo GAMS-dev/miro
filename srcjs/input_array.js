@@ -60,6 +60,7 @@ class InputArray {
       }
       const rAddID = `add_${this.rObserveID}`;
       const elID = this.incElCount();
+      this.options.updateTxtWithLabel = [];
 
       let arrayContent = `<div id="${this.arrayID}${elID}_wrapper" class="config-array-el">\n`;
       let idx = 0;
