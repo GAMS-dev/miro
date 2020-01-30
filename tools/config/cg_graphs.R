@@ -182,7 +182,8 @@ saveAndReload <- function(...){
     })
   }else{
     isolate({
-      rv$graphConfig$graph <- list()
+      rv$graphConfig$graph <- list(title = rv$graphConfig$graph$title, 
+                                   tool = rv$graphConfig$graph$tool)
     })
   }
 }
