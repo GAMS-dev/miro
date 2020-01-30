@@ -11,33 +11,40 @@ Files = transport.gms,transport.conf.unzip
 1 = 001
 2 = transport
 3 = gms
-4 = Classical transportation problem with MIRO
+4 = Classical transportation problem
 
 *$*$*$
 Files = pickstock.gms,pickstock.conf.unzip
 1 = 002
 2 = pickstock
 3 = gms, csv
-4 = Stock selection problem with MIRO
+4 = Stock selection problem
 
 *$*$*$
 Files = sudoku.gms,sudoku.conf.unzip
 1 = 003
 2 = sudoku
 3 = gms
-4 = Solve Sudokus with MIRO
+4 = Solve Sudokus
 
 *$*$*$
 Files = inscribedsquare.gms,inscribedsquare.conf.unzip
 1 = 004
 2 = inscribedsquare
 3 = gms
-4 = Inscribed Square Problem with MIRO
+4 = Inscribed Square Problem
 
 *$*$*$
 Files = tsp.gms,tsp.conf.unzip
 1 = 005
 2 = tsp
 3 = gms
-4 = Traveling Salesman Problem with MIRO
+4 = Traveling Salesman Problem
+
+*$*$*$
+Files = farming.gms,farming.conf.unzip
+1 = 006
+2 = farming
+3 = gms
+4 = Crop plant alloction problem with stochastic crop yield
 
