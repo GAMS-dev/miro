@@ -711,6 +711,7 @@ observeEvent(input$hist_nbins, {
 observeEvent(input$hist_barmode, {
   rv$graphConfig$graph$barmode <<- input$hist_barmode
 })
+# useful when color is specified automatically based on a domain!
 observeEvent(input$hist_alpha, {
   rv$graphConfig$graph$alpha <<- input$hist_alpha
 })
