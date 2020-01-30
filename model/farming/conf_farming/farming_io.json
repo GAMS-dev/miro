@@ -1,0 +1,163 @@
+{
+	"modelTitle":	"Crop plant alloction problem with stochastic crop yield",
+	"inputSymbols":	{
+		"cd":	{
+			"alias":	"crop data",
+			"symtype":	"parameter",
+			"headers":	{
+				"crop":	{
+					"type":	"string",
+					"alias":	"crop"
+				},
+				"yield":	{
+					"type":	"numeric",
+					"alias":	"yield [tons/acre]"
+				},
+				"cost":	{
+					"type":	"numeric",
+					"alias":	"plant cost [$/acre]"
+				},
+				"pprice":	{
+					"type":	"numeric",
+					"alias":	"purchase price [$/ton]"
+				},
+				"minreq":	{
+					"type":	"numeric",
+					"alias":	"minimum requirements of crop to feed cattle [tons]"
+				}
+			}
+		},
+		"_scalars":	{
+			"alias":	"Input Scalars",
+			"symnames":	["yf", "land", "nums"],
+			"symtext":	["yield factor", "available land [acre]", "number of scenarios"],
+			"symtypes":	["parameter", "parameter", "parameter"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		},
+		"pricecurve":	{
+			"alias":	"price curve data",
+			"symtype":	"parameter",
+			"headers":	{
+				"crop":	{
+					"type":	"string",
+					"alias":	"crop"
+				},
+				"seq":	{
+					"type":	"string",
+					"alias":	"price curve segments"
+				},
+				"price":	{
+					"type":	"numeric",
+					"alias":	"crop sales price [$/ton]"
+				},
+				"amount":	{
+					"type":	"numeric",
+					"alias":	"max amount of crop sold at sales price [tons]"
+				}
+			}
+		}
+	},
+	"outputSymbols":	{
+		"rep":	{
+			"alias":	"report",
+			"symtype":	"parameter",
+			"headers":	{
+				"rh":	{
+					"type":	"string",
+					"alias":	"report header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"report"
+				}
+			}
+		},
+		"repc":	{
+			"alias":	"crop report",
+			"symtype":	"parameter",
+			"headers":	{
+				"c":	{
+					"type":	"string",
+					"alias":	"Aliased with crop"
+				},
+				"yield":	{
+					"type":	"numeric",
+					"alias":	"crop yield [tons]"
+				},
+				"planted":	{
+					"type":	"numeric",
+					"alias":	"crop planted [acres]"
+				},
+				"seedcost":	{
+					"type":	"numeric",
+					"alias":	"seed cost [$]"
+				},
+				"sold":	{
+					"type":	"numeric",
+					"alias":	"crop sold [tons]"
+				},
+				"sales":	{
+					"type":	"numeric",
+					"alias":	"crop revenue [$]"
+				},
+				"purchased":	{
+					"type":	"numeric",
+					"alias":	"crop purchased [tons]"
+				},
+				"pcost":	{
+					"type":	"numeric",
+					"alias":	"purchase cost [$]"
+				}
+			}
+		},
+		"repcompare":	{
+			"alias":	"crop comparison deterministic versus stochastic",
+			"symtype":	"parameter",
+			"headers":	{
+				"c":	{
+					"type":	"string",
+					"alias":	"Aliased with crop"
+				},
+				"planted_d":	{
+					"type":	"numeric",
+					"alias":	"deterministic: crop planted [acres]"
+				},
+				"planted_s":	{
+					"type":	"numeric",
+					"alias":	"stochastic: crop planted [acres]"
+				}
+			}
+		},
+		"repfinance":	{
+			"alias":	"financial report by scenario",
+			"symtype":	"parameter",
+			"headers":	{
+				"s":	{
+					"type":	"string",
+					"alias":	"scenarios"
+				},
+				"rh":	{
+					"type":	"string",
+					"alias":	"report header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"financial report by scenario"
+				}
+			}
+		}
+	}
+}
