@@ -174,7 +174,10 @@ saveAndReload <- function(...){
   currentSelection <<- selected[seq_len(subsetIdx)]
   current <- paste(currentSelection, collapse = "")
   if(length(currentConfig[[current]])){
-    isolate(rv$graphConfig$graph <- currentConfig[[current]])
+    isolate({
+      rv$graphConfig$graph <- currentConfig[[current]]
+      rv$graphConfig$graph$title <- activeSymbol$alias
+    })
     allDataAvailable <<- TRUE
   }else if(subsetIdx == 1L){
     isolate({
@@ -182,7 +185,7 @@ saveAndReload <- function(...){
     })
   }else{
     isolate({
-      rv$graphConfig$graph <- list(title = rv$graphConfig$graph$title, 
+      rv$graphConfig$graph <- list(title = activeSymbol$alias, 
                                    tool = rv$graphConfig$graph$tool)
     })
   }
@@ -1595,8 +1598,6 @@ observeEvent(input$gams_symbols, {
     symbolID <- match(isolate(input$gams_symbols), names(modelOut)) + length(modelIn)
   }
   changeActiveSymbol(symbolID)
-  rv$graphConfig$graph$title <- activeSymbol$alias
-  updateTextInput(session, "chart_title", value = activeSymbol$alias)
   
   if(identical(input$gams_symbols, scalarsOutName)){
     updateSelectInput(session, "chart_tool", choices = setNames(c("valuebox"),
@@ -1867,6 +1868,7 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
   )
 }
 getOptionSection <- reactive({
+  req(rv$initData)
   isolate({
     rv$graphConfig$graph$showlegend <<- TRUE
   })
