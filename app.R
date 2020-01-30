@@ -89,7 +89,7 @@ if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
 }
 source("./components/install_packages.R", local = TRUE)
 if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
-  setWinProgressBar(pb, 0.3, label= "Initialising GAMS MIRO")
+  setWinProgressBar(pb, 0.3, label= "Initializing GAMS MIRO")
 }else{
   setTxtProgressBar(pb, 0.3)
 }

@@ -95,10 +95,13 @@ langSpecificGraphs$categoryorderChoices <- c("trace" = "trace", "category ascend
                                       "median descending" = "median descending")
 names(langSpecificGraphs$categoryorderChoices) <- lang$adminMode$graphs$axisOptions$categoryorderChoices
 
-hideEl(session, "#preview_output_plotly-data_filter")
-hideEl(session, "#preview_output_dygraphs-data_filter")
-hideEl(session, "#preview_output_leaflet-data_filter")
-hideEl(session, "#preview_output_timevis-data_filter")
+hideFilter <- function(){
+  hideEl(session, "#preview_output_plotly-data_filter")
+  hideEl(session, "#preview_output_dygraphs-data_filter")
+  hideEl(session, "#preview_output_leaflet-data_filter")
+  hideEl(session, "#preview_output_timevis-data_filter")
+}
+hideFilter()
 #hideEl(session, any(startsWith("#preview_output_") && endsWith("-data_filter")))
 scenMetaDb <- NULL
 tryCatch({
@@ -175,12 +178,11 @@ saveAndReload <- function(...){
     allDataAvailable <<- TRUE
   }else if(subsetIdx == 1L){
     isolate({
-      rv$graphConfig$graph <- list(title = rv$graphConfig$graph$title)
+      rv$graphConfig$graph <- list()
     })
   }else{
     isolate({
-      rv$graphConfig$graph <- list(title = rv$graphConfig$graph$title, 
-                                   tool = rv$graphConfig$graph$tool)
+      rv$graphConfig$graph <- list()
     })
   }
 }
@@ -1620,7 +1622,8 @@ observeEvent({
       rv$graphConfig$graph$layersControl <<- NULL
     if(!identical(chartTool, "valuebox"))
       rv$graphConfig$options <<- NULL
-    #saveAndReload(isolate(chartTool), "pie")
+    saveAndReload(isolate(chartTool), "pie")
+    hideFilter()
     removeUI(selector = "#tool_options div", multiple = TRUE)
     if(chartTool %in% plotlyChartTools){
       rv$graphConfig$graph$tool <<- "plotly"
