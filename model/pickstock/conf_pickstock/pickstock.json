@@ -26,11 +26,11 @@
       "alias": "number of days for training",
       "widgetType": "slider"
     },
-    "_gmsopt_mip": {
+    "solver": {
       "alias": "MIP-Solver",
       "widgetType": "dropdown",
       "label": "Solver to use",
-      "choices": ["CBC", "CPLEX", "MOSEK", "SCIP", "XPRESS"],
+      "choices": ["BARON", "BDMLP", "CBC", "CPLEX", "LINDO", "LINDOGLOBAL", "MOSEK", "SCIP", "XPRESS"],
       "selected": "CPLEX"
     }
   },
@@ -260,7 +260,7 @@
     }
   },
   "pivottable": {
-    "bgColor": "rgb(255,128,0)"
+    "bgColor": "transparent"
   },
   "storeLogFilesDuration": 7,
   "roundingDecimals": 2,
@@ -270,7 +270,7 @@
     "lstFile": true,
     "attachments": true,
     "remoteExecution": false,
-    "downloadTempFiles": false
+    "downloadTempFiles": true
   },
   "aggregateWidgets": true,
   "excelIncludeMeta": true,
@@ -279,14 +279,6 @@
   "autoGenInputGraphs": true,
   "theme": "browser",
   "defCompMode": "split",
-  "datatable": {
-    "class": "display",
-    "filter": "none",
-    "rownames": false,
-    "options": {
-      "pageLength": 15
-    }
-  },
   "symbolLinks": [
     {
       "source": "pricemerge",
@@ -294,11 +286,18 @@
     }
   ],
   "overwriteSheetOrder": {
-    "input": ["price", "_widgets"]
+    "input": ["_widgets", "price"],
+    "output": ["dowvsindex", "stock_weight", "abserror", "pricemerge", "_scalars_out"]
   },
+  "pageTitle": "Stock Selection Optimization",
+  "defaultScenName": "default",
   "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
+  "readme": {
+    "tabTitle": "Readme",
+    "filename": "Readme.md"
+  },
   "handsontable": {
-    "stretchH": "all",
+    "stretchH": "none",
     "readonly": false,
     "highlightCol": true,
     "highlightRow": true,
@@ -307,12 +306,18 @@
     "contextMenu": {
       "enabled": true,
       "allowRowEdit": true,
-      "allowColEdit": true,
+      "allowColEdit": false,
       "allowReadOnly": false
     },
     "height": 700,
-    "colWidths": 300
+    "colWidths": 200
   },
+  "outputGroups": [
+    {
+      "name": "Dow Jones vs. Index Fund ⨠",
+      "members": ["dowvsindex", "abserror"]
+    }
+  ],
   "scripts": {
     "hcube": [
       {
@@ -324,14 +329,12 @@
       }
     ]
   },
-  "outputGroups": [
-    {
-      "name": "Dow Jones vs. Index Fund 🙀",
-      "members": ["dowvsindex", "abserror"]
+  "datatable": {
+    "class": "stripe",
+    "filter": "bottom",
+    "rownames": false,
+    "options": {
+      "pageLength": 15
     }
-  ],
-  "readme": {
-    "tabTitle": "Readme",
-    "filename": "Readme.md"
   }
 }

@@ -14,6 +14,8 @@ $if not set fileName $set fileName %fp%dowjones2016.csv
 $call.checkErrorLevel csv2gdx "%fileName%" output=stockdata.gdx ValueDim=0 id=price Index="(1,2)" Value=3 UseHeader=y
 $gdxin stockdata
 $load price
+
+Singleton Set solver / CPLEX /;
 $offExternalInput
 
 Alias (d,date), (s,symbol);
@@ -45,6 +47,8 @@ if(card(error01),
       put log / ' Symbol ' symbol.tl:4 ' has negative price at the date: ' date.tl:0;
     );
   abort "Data errors detected."
+else
+  put log 'Data OK'/;
 );
 putclose log;
     
@@ -84,6 +88,8 @@ option optCR=0.01;
 td(d) = ord(d)<=trainingdays;
 ntd(d) = not td(d);
 
+$if not set solver $eval.Set solver solver.TL
+option mip = %solver%;
 solve pickStock min obj using mip;
 
 fund(d)  = sum(s, price(d, s)*w.l(s));
