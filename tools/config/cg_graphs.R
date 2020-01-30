@@ -734,11 +734,12 @@ observeEvent(input$add_piedata, {
   if(!arrayId %in% names(rv$graphConfig$graph$traces)){
     rv$graphConfig$graph$traces[[arrayId]] <<- list(labels = activeSymbol$indices[[1]],
                                                     values = input$add_piedata[2],
-                                                    name = input$add_piedata[2],
+                                                    name = names(activeSymbol$indices)[1],
                                                     hole = 0)
   }else{
     rv$graphConfig$graph$traces[[arrayId]]$values <<- input$add_piedata[2]
-    rv$graphConfig$graph$traces[[arrayId]]$name   <<- input$add_piedata[2]
+    rv$graphConfig$graph$traces[[arrayId]]$name   <<- names(activeSymbol$indices)[match(input$add_piedata[2],
+                                                                                        activeSymbol$indices)[1]]
   }
 })
 observeEvent(input$remove_piedata, {

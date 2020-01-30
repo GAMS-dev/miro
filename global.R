@@ -1,5 +1,5 @@
 # gams model name
-modelName <- "pickstock"
+modelName <- "farming"
 # miro workspace
 miroWorkspaceDir <- ".miro"
 # miro data folder prefix
