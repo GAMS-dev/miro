@@ -48,3 +48,9 @@ Files = farming.gms,farming.conf.unzip
 3 = gms
 4 = Crop plant alloction problem with stochastic crop yield
 
+*$*$*$
+Files = cpack.gms,cpack.conf.unzip
+1 = 007
+2 = cpack
+3 = gms
+4 = Packing identical size circles in the unit circle

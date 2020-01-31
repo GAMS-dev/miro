@@ -1,0 +1,49 @@
+{
+	"modelTitle":	"Packing identical size circles in the unit circle (CPACK,SEQ=387)",
+	"inputSymbols":	{
+		"_scalars":	{
+			"alias":	"Input Scalars",
+			"symnames":	["k"],
+			"symtext":	["number of circles"],
+			"symtypes":	["parameter"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		}
+	},
+	"outputSymbols":	{
+		"circledata":	{
+			"alias":	"circle data",
+			"symtype":	"parameter",
+			"headers":	{
+				"circle":	{
+					"type":	"string",
+					"alias":	"Aliased with *"
+				},
+				"x":	{
+					"type":	"numeric",
+					"alias":	"x"
+				},
+				"y":	{
+					"type":	"numeric",
+					"alias":	"y"
+				},
+				"radius":	{
+					"type":	"numeric",
+					"alias":	"radius"
+				}
+			}
+		}
+	}
+}
