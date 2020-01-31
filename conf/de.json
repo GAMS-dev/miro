@@ -1312,7 +1312,24 @@
       "removeOrphansDialogTitle": "Verwaiste Datenbanktabellen löschen",
       "removeOrphansDialogDesc": "Sind Sie sicher, dass Sie alle verwaisten Datenbanktabellen löschen wollen? Das kann nicht rückgängig gemacht werden! Möglicherweise möchten Sie die Datenbank zuerst speichern, bevor Sie fortfahren.",
       "removeOrphansDialogCancel": "Abbrechen",
-      "removeOrphansDialogConfirm": "Tabellen entfernen"
+      "removeOrphansDialogConfirm": "Tabellen entfernen",
+      "removeInconsistent": "Wollen Sie alle inkonsistenten Datenbanktabellen löschen?",
+      "removeInconsistentConfirm": "Sind Sie sicher, dass Sie alle inkonsistenten Datenbanktabellen löschen wollen?",
+      "cannotBeUndone": "Das kann nicht rückgängig gemacht werden! Möglicherweise möchten Sie die Datenbank zuerst speichern, bevor Sie fortfahren.",
+      "removeTitle": "Datenbanktabellen entfernen",
+      "removeConfirm": "Bitte bestätigen Sie, dass Sie alle zum Modell gehörenden Datenbanktabellen entfernen möchten.",
+      "removeCheck": "Alle Tabellen entfernen?",
+      "confirm": "Bestätigen",
+      "cancel": "Abbrechen",
+      "removeOrphans": "Bitte bestätigen Sie, dass Sie alle verwaisten Datenbanktabellen, die zu dem Modell gehören, entfernen möchten.",
+      "removeOrphansCheck": "Alle verwaisten Tabellen entfernen?",
+      "removeOrphansTitle": "Verwaiste Datenbanktabellen löschen",
+      "saveMsg": "Datenbank wird gespeichert...",
+      "compressMsg": "Dateien komprimieren...",
+      "decompressMsg": "Dateien dekomprimieren...",
+      "validateMsg": "Dateien validieren...",
+      "uploadMsg": "Dateien hochladen...",
+      "finishedMsg": "Beendet..."
     },
     "graphs":{
       "toolCategories": {

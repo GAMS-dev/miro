@@ -1,12 +1,12 @@
 observeEvent(input$removeDbTables, {
   showModal(modalDialog(
-    "Please confirm that you want to remove all database tables that belong to the model.",
-    checkboxInput_MIRO("removeDbConfirmCb", "Remove all tables?"),
+    lang$adminMode$database$removeConfirm,
+    checkboxInput_MIRO("removeDbConfirmCb", lang$adminMode$database$removeCheck),
     footer = tagList(
-      modalButton("Cancel"),
-      actionButton("removeDbTablesConfirm", "Confirm", class = "bt-highlight-1 bt-gms-confirm")
+      modalButton(lang$adminMode$database$cancel),
+      actionButton("removeDbTablesConfirm", lang$adminMode$database$confirm, class = "bt-highlight-1 bt-gms-confirm")
     ),
-    title = "Remove database tables"))
+    title = lang$adminMode$database$removeTitle))
 })
 observeEvent(input$removeDbTablesConfirm, {
   if(isFALSE(input$removeDbConfirmCb)){
@@ -24,13 +24,13 @@ observeEvent(input$removeDbTablesConfirm, {
 })
 observeEvent(input$removeDbOrphans, {
   showModal(modalDialog(
-    "Please confirm that you want to remove all orphaned database tables that belong to the model.",
-    checkboxInput_MIRO("removeDbOrphansConfirmCb", "Remove all orphaned tables?"),
+    lang$adminMode$database$removeOrphans,
+    checkboxInput_MIRO("removeDbOrphansConfirmCb", lang$adminMode$database$removeOrphansCheck),
     footer = tagList(
-      modalButton("Cancel"),
-      actionButton("removeDbOrphansConfirm", "Confirm", class = "bt-highlight-1 bt-gms-confirm")
+      modalButton(lang$adminMode$database$cancel),
+      actionButton("removeDbOrphansConfirm", lang$adminMode$database$confirm, class = "bt-highlight-1 bt-gms-confirm")
     ),
-    title = "Remove orphaned database tables"))
+    title = lang$adminMode$database$removeOrphansTitle))
 })
 observeEvent(input$removeDbOrphansConfirm, {
   if(isFALSE(input$removeDbOrphansConfirmCb)){
@@ -56,13 +56,13 @@ output$dbSaveAll <- downloadHandler(
   content = function(file) {
     prog <- Progress$new()
     on.exit(prog$close(), add = TRUE)
-    prog$set(message = "Database is being saved...", value = 0.2)
+    prog$set(message = lang$adminMode$database$saveMsg, value = 0.2)
     tryCatch({
       tempDir <- file.path(tempdir(), "db_save")
       dir.create(tempDir, showWarnings = FALSE, recursive = TRUE)
       on.exit(unlink(tempDir, recursive = TRUE), add = TRUE)
       db$saveTablesModel(tempDir)
-      prog$inc(amount = 0.8, detail = "Compressing files...")
+      prog$inc(amount = 0.8, detail = lang$adminMode$database$compressMsg)
       zipr(file, list.files(tempDir, recursive = FALSE, full.names = TRUE), compression_level = 9)
     }, error = function(e){
       switch(conditionMessage(e),
@@ -97,7 +97,7 @@ observeEvent(input$restoreDb, {
     }
     on.exit(unlink(tempDir, recursive = TRUE, force = TRUE), add = TRUE)
     grepEx <- "^((?!\\.\\.).)*\\.csv$"
-    prog$inc(amount = 0.2, detail = "Decompressing files...")
+    prog$inc(amount = 0.2, detail = lang$adminMode$database$decompressMsg)
     zipFilePath <- isolate(input$dbBackupZip$datapath)
     filesToUnzip <- grep(grepEx, zip_list(zipFilePath)$filename, 
                          ignore.case = TRUE, value = TRUE, perl = TRUE)
@@ -122,7 +122,7 @@ observeEvent(input$restoreDb, {
                 paste(tableNames[!tableNames %in% scenTableNames], collapse = "', '"))
       stop("valErr", call. = FALSE)
     }
-    prog$inc(amount = 0.2, detail = "Validating files...")
+    prog$inc(amount = 0.2, detail = lang$adminMode$database$validateMsg)
     validatedTables <- vector("list", length(unzippedFiles))
     validatedTables <- lapply(seq_along(unzippedFiles), function(i){
       tableName <- tableNames[i]
@@ -158,7 +158,7 @@ observeEvent(input$restoreDb, {
       
       return(data)
     })
-    prog$inc(amount = 0.2, detail = "Uploading files...")
+    prog$inc(amount = 0.2, detail = lang$adminMode$database$uploadMsg)
     lapply(seq_along(validatedTables), function(i){
       tableName <- tableNames[i]
       if(identical(tableName, dbSchema$tabName[["_scenMeta"]])){
@@ -174,7 +174,7 @@ observeEvent(input$restoreDb, {
                            addForeignKey = tableName %in% scenTableNames)
       prog$inc(amount = 0.2/length(validatedTables), detail = "Finished...")
     })
-    prog$inc(amount = 0.2, detail = "Finished...")
+    prog$inc(amount = 0.2, detail = lang$adminMode$database$finishedMsg)
     
   }, error = function(e){
     noErr <<- FALSE
