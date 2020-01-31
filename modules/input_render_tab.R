@@ -225,19 +225,27 @@ lapply(modelInTabularData, function(sheet){
       if(identical(modelIn[[i]]$type, "hot")){
         if(!nrow(data)){
           data[1, ] <- ""
-          disableEl(session, "#btGraphIn")
+          if(!is.null(configGraphsIn[[i]])){
+            disableEl(session, "#btGraphIn")
+          }
           isEmptyInput[i] <<- TRUE
         }else{
-          enableEl(session, "#btGraphIn")
+          if(!is.null(configGraphsIn[[i]])){
+            enableEl(session, "#btGraphIn")
+          }
           isEmptyInput[i] <<- FALSE
         }
         modelInputDataVisible[[i]] <<- data
       }else{
         if(!nrow(data)){
-          disableEl(session, "#btGraphIn")
+          if(!is.null(configGraphsIn[[i]])){
+            disableEl(session, "#btGraphIn")
+          }
           isEmptyInput[i] <<- TRUE
         }else{
-          enableEl(session, "#btGraphIn")
+          if(!is.null(configGraphsIn[[i]])){
+            enableEl(session, "#btGraphIn")
+          }
           isEmptyInput[i] <<- FALSE
         }
         tableContent[[i]] <<- data
@@ -251,21 +259,29 @@ lapply(modelInTabularData, function(sheet){
       if(identical(modelIn[[i]]$type, "hot")){
         if(length(modelInputData[[i]]) && 
            nrow(modelInputData[[i]]) > 0L){
-          enableEl(session, "#btGraphIn")
+          if(!is.null(configGraphsIn[[i]])){
+            enableEl(session, "#btGraphIn")
+          }
           isEmptyInput[i] <<- FALSE
         }else{
           modelInputData[[i]][1, ] <<- ""
-          disableEl(session, "#btGraphIn")
+          if(!is.null(configGraphsIn[[i]])){
+            disableEl(session, "#btGraphIn")
+          }
           isEmptyInput[i] <<- TRUE
         }
         return(modelInputData[[i]])
       }
       if(length(modelInputData[[i]]) &&
          nrow(modelInputData[[i]]) > 0L){
-        enableEl(session, "#btGraphIn")
+        if(!is.null(configGraphsIn[[i]])){
+          enableEl(session, "#btGraphIn")
+        }
         isEmptyInput[i] <<- FALSE
       }else{
-        disableEl(session, "#btGraphIn")
+        if(!is.null(configGraphsIn[[i]])){
+          disableEl(session, "#btGraphIn")
+        }
         isEmptyInput[i] <<- TRUE
       }
       tableContent[[i]] <<- modelInputData[[i]]
