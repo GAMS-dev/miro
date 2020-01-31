@@ -1093,6 +1093,9 @@ Scenario <- R6Class("Scenario",
                                   length(private$sidToDuplicate) == 1L, !is.na(private$sidToDuplicate),
                                   length(private$sid) == 1L)
                         tableName      <- private$dbSchema$tabName[["_scenAttach"]]
+                        if(!dbExistsTable(private$conn, tableName)){
+                          return(invisible(self))
+                        }
                         colNames       <- private$dbSchema$colNames[["_scenAttach"]]
                         dbExecute(private$conn, 
                                   paste0("INSERT INTO ", dbQuoteIdentifier(private$conn, tableName),
