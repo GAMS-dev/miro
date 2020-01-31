@@ -19,6 +19,9 @@ cd ..
 cd farming
 zip -r farming.conf.unzip farming_files.txt conf_farming data_farming static_farming -x "*.DS_Store"
 cd ..
+cd cpack
+zip -r cpack.conf.unzip cpack_files.txt conf_cpack data_cpack static_cpack -x "*.DS_Store"
+cd ..
 rm -rf miro_lib || true
 mkdir miro_lib
 cp mirolib.glb miro_lib
@@ -34,6 +37,8 @@ mv tsp/tsp.conf.unzip miro_lib
 cp tsp/tsp.gms miro_lib
 mv farming/farming.conf.unzip miro_lib
 cp farming/farming.gms miro_lib
+mv cpack/cpack.conf.unzip miro_lib
+cp cpack/cpack.gms miro_lib
 zip -r miroDemoApps.zip miro_lib -x "*.DS_Store"
 cd ../doc
 mv ../model/miroDemoApps.zip .

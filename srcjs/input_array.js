@@ -203,7 +203,8 @@ class InputArray {
             break;
           case 'optionsStart':
             arrayContent += `${'<div class="form-group" style="min-height:30px;">'
-                + '<h4 class="box-title option-section-header" style="cursor:pointer;font-weight:bold;" onclick="$(this).next().toggle();">'}${
+                + '<h4 class="box-title option-section-header" style="cursor:pointer;font-weight:bold;" '
+                + 'onclick="$(this).next().toggle();$(this).children(\'.fa\').toggleClass(\'fa-plus fa-minus\')">'}${
               v[1]} <i class="fa fa-plus"></i></h4><div class="option-section"${(v[2] === false) ? '' : ' style="display:none;"'}>`;
             break;
           case 'optionsEnd':
