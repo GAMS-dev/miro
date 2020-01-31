@@ -28,7 +28,7 @@
     "tourdetails": {
       "outType": "graph",
       "graph": {
-        "title": "",
+        "title": "tourdetails",
         "tool": "leaflet",
         "layersControl": {
           "options": {
@@ -40,6 +40,11 @@
           "1": {
             "lng": "lnga",
             "lat": "lata",
+            "iconOptions": {
+              "icon": "user-circle",
+              "iconColor": "#f3f709",
+              "markerColor": "blue"
+            },
             "labelOptions": {
               "textsize": "12px",
               "permanent": false
@@ -54,14 +59,13 @@
             "lat0": "lata",
             "lng1": "lngb",
             "lat1": "latb",
-            "flow": "lnga",
-            "color": "#d4263b",
+            "flow": "flow",
+            "color": "#b50c16",
             "minThickness": 5,
             "maxThickness": 5,
-            "time": "_"
+            "layerId": "[ii] - [jj]"
           }
-        },
-        "minicharts": {}
+        }
       },
       "height": 700
     },
@@ -105,12 +109,12 @@
     "usegeocoder": {
       "widgetType": "dropdown",
       "alias": "Input Mode",
-      "choices": ["0", "1"],
-      "selected": "1",
+      "choices": ["1", "0"],
+      "selected": "0",
       "noHcube": false,
       "multiple": false,
       "label": "Select Input Mode",
-      "aliases": ["User provides city location (Input Mode B)", "Use Python geoCode package (Input Mode A)"]
+      "aliases": ["Use Python geoCode package (Input Mode A)", "User provides city location (Input Mode B)"]
     },
     "_scalars": {
       "widgetType": "table",
