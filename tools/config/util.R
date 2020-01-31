@@ -28,8 +28,9 @@ createArray <- function(session, arrayID, label, plotlyChartType = "", autoCreat
 }
 optionSection <- function(title, ..., collapsed = FALSE){
   tags$div(class = "shiny-input-container", style = "min-height:30px;",
-           tags$h4(class = "box-title option-section-header", title, icon("plus"), style = "cursor:pointer;font-weight:bold;", 
-                   onclick = "$(this).next().toggle();"),
+           tags$h4(class = "box-title option-section-header", title, icon("plus"), 
+                   style = "cursor:pointer;font-weight:bold;", 
+                   onclick = "$(this).next().toggle();$(this).children('.fa').toggleClass('fa-plus fa-minus');"),
            tags$div(class = "option-section", ..., style = if(collapsed) "display:none;" else "")
   )
 }
