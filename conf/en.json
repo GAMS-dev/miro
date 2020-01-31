@@ -1312,7 +1312,24 @@
       "removeOrphansDialogTitle": "Remove orphaned database tables",
       "removeOrphansDialogDesc": "Are you sure that you want to delete all orphaned database tables? This can not be undone! You might want to save the database first before proceeding.",
       "removeOrphansDialogCancel": "Cancel",
-      "removeOrphansDialogConfirm": "Remove tables"
+      "removeOrphansDialogConfirm": "Remove tables",
+      "removeInconsistent": "You want to remove all the inconsistent tables?",
+      "removeInconsistentConfirm": "Are you sure that you want to delete all inconsistent database tables?",
+      "cannotBeUndone": "This can not be undone! You might want to save the database first before proceeding.",
+      "removeTitle": "Remove database tables", 
+      "removeConfirm": "Please confirm that you want to remove all database tables that belong to the model.",
+      "removeCheck": "Remove all tables?",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "removeOrphans": "Please confirm that you want to remove all orphaned database tables that belong to the model.",
+      "removeOrphansCheck": "Remove all orphaned tables?",
+      "removeOrphansTitle": "Remove orphaned database tables",
+      "saveMsg": "Database is being saved...",
+      "compressMsg": "Compressing files...",
+      "decompressMsg": "Decompressing files...",
+      "validateMsg": "Validating files...",
+      "uploadMsg": "Uploading files...",
+      "finishedMsg": "Finished..."
     },
     "graphs":{
       "toolCategories": {
