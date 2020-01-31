@@ -478,29 +478,18 @@ lapply(c(names(modelInRaw), names(modelOut)), function(name){
     if(length(input[[paste0("general_overwriteSymAlias_", name)]]) && 
        nchar(input[[paste0("general_overwriteSymAlias_", name)]]) > 0L){
       newAlias <- input[[paste0("general_overwriteSymAlias_", name)]]
-      defaultAlias <- FALSE
-      if(name %in% names(modelOut)){
-        if(identical(newAlias, modelOut[[name]]$alias)){
-          defaultAlias <- TRUE
-        }
-      }else{
-        if(identical(newAlias, modelInRaw[[name]]$alias)){
-          defaultAlias <- TRUE
-        }
-      }
-      if(defaultAlias){
-        rv$generalConfig$overwriteAliases[[name]] <<- NULL
-        configJSON$overwriteAliases[[name]] <<- NULL
-        if(!length(rv$generalConfig$overwriteAliases)){
-          rv$generalConfig$overwriteAliases <<- NULL
-          configJSON$overwriteAliases <<- NULL
-        }
-        return()
-      }
       if(!length(rv$generalConfig$overwriteAliases)){
         rv$generalConfig$overwriteAliases <- list()
       }
       rv$generalConfig$overwriteAliases[[name]] <<- list(newAlias = newAlias)
+    }else{
+      rv$generalConfig$overwriteAliases[[name]] <<- NULL
+      configJSON$overwriteAliases[[name]] <<- NULL
+      if(!length(rv$generalConfig$overwriteAliases)){
+        rv$generalConfig$overwriteAliases <<- NULL
+        configJSON$overwriteAliases <<- NULL
+      }
+      return()
     }
   })
   observeEvent(input[[paste0("general_overwriteSymHeaders_", name)]], {
