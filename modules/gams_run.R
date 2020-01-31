@@ -258,20 +258,20 @@ if(LAUNCHHCUBEMODE){
                  if(identical(modelIn[[i]]$slider$double, TRUE)
                     && !identical(input[["hcubeMode_" %+% i]], TRUE)){
                    # double slider in single run mode
-                   return(paste0(parPrefix, "_lo=", value[1], 
-                                 " ", parPrefix, "_up=", value[2]))
+                   return(paste0(parPrefix, "_lo= ", value[1], 
+                                 " ", parPrefix, "_up= ", value[2]))
                  }
                  
                  stepSize <- input[["hcubeStep_" %+% i]]
                  if(isTRUE(modelIn[[i]]$slider$single)){
-                   return(paste0(parPrefix, "=", seq(value[1], value[2], stepSize)))
+                   return(paste0(parPrefix, "= ", seq(value[1], value[2], stepSize)))
                  }
                  # double slider all combinations
                  value <- getCombinationsSlider(value[1], value[2], stepSize)
-                 return(paste0(parPrefix, "_lo=", value$min, 
-                               " ", parPrefix, "_up=", value$max))
+                 return(paste0(parPrefix, "_lo= ", value$min, 
+                               " ", parPrefix, "_up= ", value$max))
                }else{
-                 return(paste0(parPrefix, "=", value))
+                 return(paste0(parPrefix, "= ", value))
                }
              },
              dropdown = {
@@ -280,7 +280,7 @@ if(LAUNCHHCUBEMODE){
                }else if(!isTRUE(modelIn[[i]]$dropdown$single)){
                  data <- ddToTibble(sort(input[["dropdown_" %+% i]]), modelIn[[i]])
                  staticData$push(names(modelIn)[[i]], data)
-                 return(paste0(parPrefix, "=", digest(data, algo = "md5")))
+                 return(paste0(parPrefix, "= ", digest(data, algo = "md5")))
                }else{
                  convertNumeric <- FALSE
                }
@@ -294,7 +294,7 @@ if(LAUNCHHCUBEMODE){
                if(!names(modelIn)[i] %in% c(DDPar, GMSOpt) && 
                    length(modelIn[[i]]$dropdown$aliases)){
                  text <- paste0(" --HCUBE_SCALART_", names(modelIn)[i], 
-                                "=", escapeGAMSCL(modelIn[[i]]$dropdown$
+                                "= ", escapeGAMSCL(modelIn[[i]]$dropdown$
                                                     aliases[match(value, 
                                                                    modelIn[[i]]$
                                                                      dropdown$choices)]))
@@ -305,22 +305,22 @@ if(LAUNCHHCUBEMODE){
                  text <- ""
                }
                if(convertNumeric){
-                 return(paste0(parPrefix, "=", as.numeric(value), text))
+                 return(paste0(parPrefix, "= ", as.numeric(value), text))
                }
-               return(paste0(parPrefix, "=", escapeGAMSCL(value), text))
+               return(paste0(parPrefix, "= ", escapeGAMSCL(value), text))
              },
              date = {
-               return(paste0(parPrefix, "=", escapeGAMSCL(
+               return(paste0(parPrefix, "= ", escapeGAMSCL(
                  as.character(input[["date_" %+% i]]))))
              },
              daterange = {
                value <- as.character(input[["daterange_" %+% i]])
                
-               return(paste0(parPrefix, "_lo=", escapeGAMSCL(value[1]), 
-                             " ", parPrefix, "_up=", escapeGAMSCL(value[2])))
+               return(paste0(parPrefix, "_lo= ", escapeGAMSCL(value[1]), 
+                             " ", parPrefix, "_up= ", escapeGAMSCL(value[2])))
              },
              checkbox = {
-               return(paste0(parPrefix, "=", input[["cb_" %+% i]]))
+               return(paste0(parPrefix, "= ", input[["cb_" %+% i]]))
              },
              numericinput = {
                valueTmp <- input[["numeric_" %+% i]]
@@ -332,14 +332,14 @@ if(LAUNCHHCUBEMODE){
                    valueTmp <- 0L
                  }
                }
-               return(paste0(parPrefix, "=", valueTmp))
+               return(paste0(parPrefix, "= ", valueTmp))
              },
              textinput = {
                val <- input[["text_" %+% i]]
                if(!length(val) || !nchar(val))
                  return(NA)
                
-               return(paste0(parPrefix, "=", escapeGAMSCL(val)))
+               return(paste0(parPrefix, "= ", escapeGAMSCL(val)))
              },
              dt =,
              hot = ,
@@ -355,10 +355,10 @@ if(LAUNCHHCUBEMODE){
                                     modelInAlias[i])
                })
                if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
-                 return(paste0(parPrefix, "=NA"))
+                 return(paste0(parPrefix, "= NA"))
                }
                staticData$push(names(modelIn)[[i]], data)
-               return(paste0(parPrefix, "=", digest(data, algo = "md5")))
+               return(paste0(parPrefix, "= ", digest(data, algo = "md5")))
              },
              {
                stop(sprintf("Widget type: '%s' not supported", modelIn[[i]]$type), call. = FALSE)
@@ -375,7 +375,7 @@ if(LAUNCHHCUBEMODE){
       if(length(attachmentFilePaths)){
         staticData$addFilePaths(attachmentFilePaths)
         gmsString <- paste(gmsString, paste(vapply(seq_along(attachmentFilePaths), function(i){
-          return(paste0("--HCUBE_STATIC_", i, "=", digest(file = attachmentFilePaths[i], algo = "md5")))
+          return(paste0("--HCUBE_STATIC_", i, "= ", digest(file = attachmentFilePaths[i], algo = "md5")))
         }, character(1L), USE.NAMES = FALSE), collapse = " "))
       }
     }
