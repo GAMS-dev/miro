@@ -12,10 +12,11 @@ $offText
 Set
    i      'canning plants'
    j      'markets'
+   t      'available model types' / lp, mip, minlp /
    locHdr 'location data header'  / lat, lng /;
 
 $onExternalInput
-Singleton Set type 'selected model type' / lp /;
+Singleton Set type(t) 'selected model type' / lp /;
 
 Parameter
    a(i<) 'capacity of plant i in cases'
@@ -104,7 +105,8 @@ Equation
 
 Model transportMINLP / transportMIP - cost + costnlp /;
 
-$if not set type $eval.Set type type.TL
+$eval.Set type type.TL
+$if not set type $set type lp
 
 *some starting point
 x.l(i,j) = 1;

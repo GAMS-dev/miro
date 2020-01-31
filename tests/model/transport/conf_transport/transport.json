@@ -56,51 +56,36 @@
     "schedule": {
       "outType": "graph",
       "graph": {
-        "title": "shipment quantities in cases",
+        "title": "",
         "tool": "leaflet",
         "layersControl": {
           "options": {
             "collapsed": true
           },
-          "position": "topright",
-          "overlayGroups": ["Canning plants", "Markets"]
+          "position": "topright"
         },
         "markers": {
           "1": {
             "lng": "lngp",
             "lat": "latp",
-            "iconOptions": {
-              "icon": "cog",
-              "iconColor": "#000000",
-              "markerColor": "red"
-            },
             "labelOptions": {
-              "textsize": "16px",
-              "permanent": false,
+              "textsize": "12px",
+              "permanent": true,
               "style": {
-                "color": "#ff0000"
+                "color": "#000000",
+                "background-color": "#f58300"
               }
             },
-            "label": "[i] (capacity: [cap])",
-            "group": "Canning plants"
+            "label": "[i] (capacity: [cap])"
           },
           "2": {
             "lng": "lngm",
             "lat": "latm",
-            "iconOptions": {
-              "icon": "user-circle",
-              "iconColor": "#000000",
-              "markerColor": "blue"
-            },
             "labelOptions": {
-              "textsize": "16px",
-              "permanent": false,
-              "style": {
-                "color": "#08629d"
-              }
+              "textsize": "12px",
+              "permanent": true
             },
-            "label": "[j] (demand: [demand])",
-            "group": "Markets"
+            "label": "[j] (demand: [demand])"
           }
         },
         "flows": {
@@ -110,9 +95,9 @@
             "lng1": "lngm",
             "lat1": "latm",
             "flow": "quantities",
-            "color": "#000000",
-            "minThickness": 0,
-            "maxThickness": 10,
+            "color": "#261a1a",
+            "minThickness": 1,
+            "maxThickness": 13,
             "layerId": "From [i] to [j]"
           }
         }
@@ -122,12 +107,7 @@
     "_scalars_out": {
       "outType": "valueBox",
       "options": {
-        "width": 4,
-        "color": "red",
-        "icon": {
-          "name": "dollar-sign",
-          "lib": "font-awesome"
-        }
+        "color": "aqua"
       }
     }
   },
@@ -147,7 +127,7 @@
   },
   "autoGenInputGraphs": true,
   "aggregateWidgets": true,
-  "storeLogFilesDuration": 0,
+  "storeLogFilesDuration": 7,
   "excelIncludeMeta": true,
   "excelIncludeEmptySheets": true,
   "saveTraceFile": true,
@@ -160,44 +140,16 @@
     }
   },
   "overwriteSheetOrder": {
-    "input": ["_widgets", "a", "b", "d", "ilocdata", "jlocdata"],
+    "input": ["a", "b", "d", "ilocdata", "jlocdata", "_widgets"],
     "output": ["schedule", "_scalars_out"]
   },
   "pageTitle": "A transportation problem",
-  "defaultScenName": "default",
-  "overwriteAliases": {
-    "a": {
-      "newAlias": "Capacity"
-    },
-    "b": {
-      "newAlias": "Demand"
-    },
-    "d": {
-      "newAlias": "Distance"
-    },
-    "ilocdata": {
-      "newAlias": "Plant location"
-    },
-    "jlocdata": {
-      "newAlias": "Market location"
-    },
-    "schedule": {
-      "newAlias": "Shipment quantities"
-    },
-    "_scalars_out": {
-      "newAlias": "Cost"
-    }
-  },
   "inputGroups": [
     {
-      "name": "Location information",
+      "name": "location information",
       "members": ["ilocdata", "jlocdata"]
     }
   ],
-  "readme": {
-    "tabTitle": "Readme",
-    "filename": "Readme.md"
-  },
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
