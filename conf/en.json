@@ -167,6 +167,8 @@
     "dialogNewScen":{  
       "title":"New scenario",
       "desc":"Please enter a name for the scenario:",
+      "discardAttach": "Discard attachments?",
+      "discardPerm": "Discard permissions?",
       "tags":"Add tag(s) to your scenario (optional):",
       "newScenName":"New Scenario",
       "badName":"Please choose a valid name for the new scenario.",
@@ -180,6 +182,8 @@
       "title":"New Hypercube job",
       "desc":"Please enter a name for the Hypercube job configuration:",
       "tags":"Add tag(s) to your HC job (optional):",
+      "discardAttach": "Discard attachments?",
+      "discardPerm": "Discard permissions?",
       "newScenName":"New Hypercube job",
       "badName":"Please choose a valid name for the new Hypercube job configuration.",
       "scenExists":"The HC job name you chose does already exist. Do you want to overwrite the existing data?",

@@ -167,6 +167,8 @@
     "dialogNewScen":{  
       "title":"Neues Szenario",
       "desc":"Bitte wählen Sie einen Namen für das Szenario:",
+      "discardAttach": "Anhänge verwerfen?",
+      "discardPerm": "Berechtigungen verwerfen?",
       "tags":"Füge dem Szenario Tag(s) hinzu (optional):",
       "badName":"Bitte wählen Sie eine gültige Bezeichnung für das neue Szenario.",
       "newScenName":"Neues Szenario",
@@ -179,6 +181,8 @@
     "dialogNewHCJob":{  
       "title":"Neue Hypercube-Job-Konfiguration",
       "desc":"Bitte wählen Sie einen Namen für die Hypercube-Job-Konfiguration:",
+      "discardAttach": "Anhänge verwerfen?",
+      "discardPerm": "Berechtigungen verwerfen?",
       "tags":"Füge dem HC-Job Tag(s) hinzu (optional):",
       "badName":"Bitte wählen Sie eine gültige Bezeichnung für die neue HC-Job-Konfiguration.",
       "newScenName":"Neue HC-Job-Konfiguration",

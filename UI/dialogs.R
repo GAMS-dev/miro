@@ -52,7 +52,7 @@ showLoginDialog <- function(cred, forwardOnSuccess = NULL){
 }
 
 showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm", 
-                              scenTags = character(0L)){
+                              scenTags = character(0L), showDiscardButtons = TRUE){
   if(LAUNCHHCUBEMODE){
     modeDescriptor <- "dialogNewHCJob"
   }else{
@@ -67,8 +67,17 @@ showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm",
                             selected = scenTags,
                             multiple = TRUE, options = list(
                               'create' = TRUE,
-                              'persist' = FALSE)
-             )),
+                              'persist' = FALSE)),
+             if(isTRUE(showDiscardButtons))
+               fluidRow(
+                 column(6L,
+                        checkboxInput_MIRO("newScenDiscardAttach", 
+                                           lang$nav[[modeDescriptor]]$discardAttach)),
+                 column(6L,
+                        checkboxInput_MIRO("newScenDiscardPerm", 
+                                           lang$nav[[modeDescriptor]]$discardPerm))
+               )
+    ),
     tags$div(id = "badScenarioName", class = "gmsalert gmsalert-error", 
              lang$nav[[modeDescriptor]]$badName),
     tags$div(id = "scenarioExits", class = "err-msg", style = "display:none;", 

@@ -764,6 +764,16 @@
               "minLength":1,
               "required":true
             },
+            "discardAttach":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "discardPerm":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "tags":{  
               "type":"string",
               "minLength":1,
@@ -822,6 +832,16 @@
               "required":true
             },
             "tags":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "discardAttach":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "discardPerm":{  
               "type":"string",
               "minLength":1,
               "required":true
