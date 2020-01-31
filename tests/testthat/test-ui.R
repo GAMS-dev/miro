@@ -21,7 +21,7 @@ testFiles <- c("excel_upload_test", "excel_upload_overwrite_test",
                "load_from_db_test", "gams_interrupt_test",
                "compare_scen_split_test", "compare_scen_tab_test")
 for(modelToTest in modelsToTest){
-  testModelPath <- file.path(testDir, "..", "model", modelToTest)
+  testModelPath <- file.path(testDir, "model", modelToTest)
   Sys.setenv(MIRO_MODEL_PATH = file.path(testModelPath, 
                                          paste0(modelToTest, ".gms")))
   Sys.setenv(GMSMODELNAME = modelToTest)

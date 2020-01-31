@@ -22,7 +22,7 @@ testFiles <- c("lang_test")
 for(langToTest in langsToTest){
   Sys.setenv(MIRO_LANG = langToTest)
   for(modelToTest in modelsToTest){
-    testModelPath <- file.path(testDir, "..", "model", modelToTest)
+    testModelPath <- file.path(testDir, "model", modelToTest)
     Sys.setenv(MIRO_MODEL_PATH = file.path(testModelPath, 
                                            paste0(modelToTest, ".gms")))
     Sys.setenv(GMSMODELNAME = modelToTest)
