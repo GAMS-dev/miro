@@ -204,6 +204,15 @@ loop((i,j), put i.tl, @12, j.tl, @24, x.l(i,j):8:4 /);
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:350pt;padding-bottom:25pt;" src="assets/images/configuration_mode/transport_log.png" alt="Configure a custom log file in MIRO" />
                                   </div>
+                                  <div class="callout-block callout-warning">
+                                      <div class="icon-holder">
+                                          <i class="fas fa-info-circle"></i>
+                                      </div><!--//icon-holder-->
+                                      <div class="content">
+                                          <b class="callout-title">Note:</b>
+                                          <p>Be careful with logs that are not written with every GAMS run, but only if, for example, a data test in the model fails. MIRO does not know if a log belongs to the current or an earlier run. As soon as specified, MIRO looks into the working directory and includes the specified file after each GAMS run.</p>
+                                      </div><!--//content-->
+                                  </div><!--//callout-block-->   
                                   <h4>Data validation</h4>
                                   <p>The MIRO log is particularly suitable for the validation of input data. Checking the consistency of input data and providing reports when inconsistencies are found is a critical factor in avoiding end-user frustration. </p>
                                   <p>If a certain syntax is followed in the MIRO log, data found to be invalid can be marked directly above the respective input data sheet in MIRO:</p>
