@@ -1279,12 +1279,6 @@
                "default":null,
                "required":false
             },
-            "enableComments":{  
-               "description":"Enable comments in table. Will be ignored when solving the model.",
-               "type":"boolean",
-               "default":true,
-               "required":false
-            },
             "stretchH":{  
                "description":"Specifies whether table is stretched to full box width.",
                "type":"string",

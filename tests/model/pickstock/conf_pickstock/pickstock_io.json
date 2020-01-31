@@ -76,7 +76,7 @@
 			}
 		},
 		"dowvsindex":	{
-			"alias":	"dow jones vs. index fund [MIRO:table]",
+			"alias":	"dow jones vs. index fund",
 			"symtype":	"parameter",
 			"headers":	{
 				"date":	{
@@ -94,7 +94,7 @@
 			}
 		},
 		"abserror":	{
-			"alias":	"absolute error [MIRO:table]",
+			"alias":	"absolute error",
 			"symtype":	"parameter",
 			"headers":	{
 				"date":	{

@@ -481,7 +481,6 @@ observe({
                         highlightCol = hotOptions$highlightCol, 
                         highlightRow = hotOptions$highlightRow,
                         rowHeaderWidth = hotOptions$rowHeaderWidth,
-                        enableComments = TRUE, 
                         stretchH = hotOptions$stretchH,
                         overflow = hotOptions$overflow)
         if(isTRUE(hotOptions$contextMenu$enabled)){
