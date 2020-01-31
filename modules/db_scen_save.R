@@ -58,10 +58,11 @@ observeEvent(virtualActionButton(rv$btSaveAs), {
     tmpScenName <- rv$activeSname
   }
   currentTags <- character(0L)
-  if(length(activeScen) && !length(activeScen$getSid())){
+  if(length(activeScen)){
     currentTags <- activeScen$getStags()
   }
-  showNewScenDialog(tmpScenName, scenTags = currentTags)
+  showNewScenDialog(tmpScenName, scenTags = currentTags, 
+                    showDiscardButtons = length(activeScen$getSid()) > 0L)
 })
 
 observeEvent(input$btNewName, {
@@ -143,7 +144,8 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
     if(saveAsFlag){
       if(!is.null(activeScen)){
         if(length(activeScen$getSid())){
-          duplicatedMetadata <- activeScen$getMetadataInfo()
+          duplicatedMetadata <- activeScen$getMetadataInfo(input$newScenDiscardAttach, 
+                                                           input$newScenDiscardPerm)
           activeScen <<- NULL
           gc()
         }else{

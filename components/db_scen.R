@@ -77,14 +77,19 @@ Scenario <- R6Class("Scenario",
                           private$stime     <- Sys.time()
                           private$suid      <- private$uid
                           private$sname     <- sname
-                          if(length(duplicatedMetadata)){
-                            private$localAttachments <- duplicatedMetadata$localAttachments
-                            private$attachmentsToRemove <- duplicatedMetadata$attachmentsToRemove
-                            private$attachmentsUpdateExec <- duplicatedMetadata$attachmentsUpdateExec
-                            if(length(duplicatedMetadata$sidToDuplicate)){
-                              private$sidToDuplicate <- as.integer(duplicatedMetadata$sidToDuplicate)
+                          if(length(duplicatedMetadata$attach)){
+                            private$localAttachments <- duplicatedMetadata$attach$localAttachments
+                            private$attachmentsToRemove <- duplicatedMetadata$attach$attachmentsToRemove
+                            private$attachmentsUpdateExec <- duplicatedMetadata$attach$attachmentsUpdateExec
+                            if(length(duplicatedMetadata$attach$sidToDuplicate)){
+                              private$sidToDuplicate <- as.integer(duplicatedMetadata$attach$sidToDuplicate)
                               private$duplicateAttachmentsOnNextSave <- TRUE
                             }
+                          }
+                          if(length(duplicatedMetadata$perm)){
+                            private$readPerm  <- duplicatedMetadata$perm$readPerm
+                            private$writePerm <- duplicatedMetadata$perm$writePerm
+                            private$execPerm  <- duplicatedMetadata$perm$execPerm
                           }
                         }else{
                           if(is.null(sid)){
@@ -117,12 +122,23 @@ Scenario <- R6Class("Scenario",
                       getReadPerm = function() csv2Vector(private$readPerm),
                       getWritePerm = function() csv2Vector(private$writePerm),
                       getExecPerm = function() csv2Vector(private$execPerm),
-                      getMetadataInfo = function(){
+                      getMetadataInfo = function(discardAttach = FALSE, discardPerm = FALSE){
                         stopifnot(length(private$sid) > 0L)
-                        return(list(localAttachments = private$localAttachments,
-                                    attachmentsToRemove = private$attachmentsToRemove,
-                                    attachmentsUpdateExec = private$attachmentsUpdateExec,
-                                    sidToDuplicate = private$sid))
+                        attachmentConfig <- list()
+                        permissionConfig <- list()
+                        if(!isTRUE(discardAttach)){
+                          attachmentConfig <- list(localAttachments = private$localAttachments,
+                                                   attachmentsToRemove = private$attachmentsToRemove,
+                                                   attachmentsUpdateExec = private$attachmentsUpdateExec,
+                                                   sidToDuplicate = private$sid)
+                        }
+                        if(!isTRUE(discardPerm)){
+                          permissionConfig <- list(readPerm = private$readPerm,
+                                                   writePerm = private$writePerm,
+                                                   execPerm = private$execPerm)
+                        }
+                        return(list(attach = attachmentConfig,
+                                    perm = permissionConfig))
                       },
                       getMetadata = function(aliases = character(0L), noPermFields = TRUE){
                         # Generates dataframe containing scenario metadata

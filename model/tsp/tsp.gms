@@ -322,7 +322,7 @@ loop(ste$(proceed and ord(ste)<maxCuts),
    );
 );
 
-Set tourHdr 'Tour header' / 'lngA', 'latA', 'lngB', 'latB' /;
+Set tourHdr 'Tour header' / 'lngA', 'latA', 'lngB', 'latB', 'Flow' /;
 
 $onExternalOutput   
 Scalar
@@ -347,4 +347,5 @@ loop(tour(ii,jj),
    tourDetails(ii,jj, 'latA') = iilocData(ii,'lat');
    tourDetails(ii,jj, 'lngB') = iilocData(jj,'lng');
    tourDetails(ii,jj, 'latB') = iilocData(jj,'lat');
+   tourDetails(ii,jj, 'Flow') = 1;
 );

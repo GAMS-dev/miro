@@ -102,6 +102,10 @@
 				"latb":	{
 					"type":	"numeric",
 					"alias":	"latb"
+				},
+				"flow":	{
+					"type":	"numeric",
+					"alias":	"flow"
 				}
 			}
 		}
