@@ -65,7 +65,7 @@ requiredPackages <- c("jsonlite", "zip", "tibble", "readr")
 config <- list()
 gamsSysDir <- Sys.getenv("GAMS_SYS_DIR")
 
-installedPackages <- installed.packages()[, "Package"]
+installedPackages <<- installed.packages()[, "Package"]
 useGdx <<- FALSE
 if("gdxrrwMIRO" %in% installedPackages){
   useGdx <<- TRUE

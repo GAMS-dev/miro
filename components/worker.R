@@ -1118,6 +1118,8 @@ Worker <- R6Class("Worker", public = list(
       tryCatch({
         if(hardKill){
           process$kill_tree()
+        }else if(isWindows && "miro.util" %in% installedPackages){
+          miro.util::windowsInterruptGAMS(process$get_pid())
         }else{
           process$signal(tools::SIGINT)
         }
