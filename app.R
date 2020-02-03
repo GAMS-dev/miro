@@ -910,7 +910,6 @@ if(!is.null(errMsg)){
   
   shinyApp(ui = ui_initError, server = server_initError)
 }else{
-  rm(installedPackages)
   local({
     populateDbOnly <- identical(Sys.getenv("MIRO_POPULATE_DB"), "true")
     if(!isShinyProxy || populateDbOnly){
