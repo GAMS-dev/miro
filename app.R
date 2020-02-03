@@ -1257,9 +1257,9 @@ if(!is.null(errMsg)){
         workDir <- file.path(tmpFileDir, session$token)
         if(!config$activateModules$remoteExecution && length(modelData)){
           tryCatch({
-            if(isWindows() && !identical(substring(modelData, 1L, 1L),
+            if(isWindows() && !identical(substring(workDir, 1L, 1L),
                                          substring(.libPaths()[1L], 1L, 1L))){
-              # workaround as cmdunzip crashed on Windows when on different drive 
+              # workaround as cmdunzip crashed on Windows when on different drive  than exdir
               # see https://github.com/r-lib/zip/issues/45
               unzip(modelData, exdir = workDir)
             }else{
