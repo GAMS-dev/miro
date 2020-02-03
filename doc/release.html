@@ -91,7 +91,7 @@
                                       not affect the data contract between GAMS and MIRO resulting in variable columns.</li>
                                       <li>Full <a href = "./customize.html#dark-mode">dark mode</a> support.</li>
                                       <li>Added <a href = "./customize.html#miro-log">miro log</a> option for custom logs and input validation</li>
-                                      <li>Added support for an individual <a href = "./customize.html#app-readme">README starting page</a> (markdown document) which is displayed in the input section.</li>
+                                      <li>Added support for an individual <a href = "./customize.html#app-readme">README starting page</a> (markdown document) which is displayed in the input section. The Readme file can be added/edited in Configuration mode.</li>
                                       <li>Added support for own <a href = "./customize.html#analysis-scripts">custom scripts</a> for analysis purposes in Base and Hypercube mode.</li>
                                       <li>New widget type: <a href = "./widgets.html#widget-numeric">numeric Input</a>.</li>
                                       <li>One-dimensional sets can now be configured as dropdown menu.</li>
@@ -115,6 +115,7 @@
                                     </ul>
                                     <h3>Minor new features and improvements</h3>
                                     <ul>
+                                      <li>Bug fixes</li>
                                       <li>New MIRO logo (Thank you <a href = "" target = "_blank">Melina Klöckner</a>!)</li>
                                       <li>Full chinese <a href = "./customize.html#language-files">language support</a> (Thank you 
                                       <a href = "https://de.linkedin.com/in/ying-deng-7a3554155?trk=profile-badge-cta" target = "_blank">Ying Deng</a>!)</li>
@@ -127,23 +128,24 @@
                                       <li><i>Stop</i> button in GAMS interaction now with soft kill first, then hard kill.</li>
                                       <li>Scenario comparison: input and output symbol tabs are now displayed in different colors.</li>
                                       <li>Added option to edit scenario access permissions.</li>
+                                      <li>When creating new scenario via <a href = "./start.html#save-as">Save as</a> dialog, attachments of currently active scenario can now be duplicated. This does not apply to <a href = "./start.html#access-permissions">scenario access permissions</a>.</li>
                                       <li>Element text of singleton sets can now be appended with a double pipe ("||") and will be 
                                       aggregated/disaggregated when loaded/stored from GDX.                                      
-                                       The element text of a singleton Set can be used in the 
+                                       The value and/or the element text of a singleton Set can be used in the 
                                        <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset">eval.Set</a> option to 
-                                       evaluate the element text at compile time and place it into a scoped compile-time variable. 
+                                       evaluate the value/text at compile time and place it into a scoped compile-time variable. 
                                        This is useful any information about double-dash parameters and GAMS options configured via 
                                        Configuration mode gets lost when exporting a scenario as a GDX file. Read more 
                                        <a href = "./model.html#display-sinset">here</a>.</li>
-                                      <li>Changed prefix for double-dash parameters and GAMS options from <i>GMSPAR_</i>/<i>GMSOPT_</i> 
-                                      <i>to _gmspar_</i>/<i>_gmsopt_</i>.</li>
+                                      <li>Changed prefix for double-dash parameters and GAMS options from <i>GMSPAR_</i> / <i>GMSOPT_</i> 
+                                      <i>to <a href = "./customize.html#widgets-commandLine">_gmspar_</i></a> / <a href = "./customize.html#widgets-commandLine"><i>_gmsopt_</i></a>.</li>
                                       <li>Double-dash parameters and GAMS options can now have the same name as GAMS symbols.</li> 
                                       <li>Maximum number of symbol tabs visible in Inpupt/Output section set to 5 (rest available via dropdown).</li>
                                       <li>Bootstrap dropdown menus are now right aligned per default. They will be left-aligned when space 
                                       on left is not sufficient.</li>
                                       <li>First two columns (symbol name and symbol text) of scalar input table are now automatically set 
                                       to readonly.</li>
-                                      <li>Import data via spreadsheet: Added possibility to use a sheet dedicated to a single scalar with the sheet name being the name of the scalar and its value being in column A1.</li>
+                                      <li><a href = "./start.html#excel-import-rules">Import data via spreadsheet</a>: Added possibility to use a sheet dedicated to a single scalar with the sheet name being the name of the scalar and its value being in column A1.</li>
                                       <li>Adding/removing rows is now no longer allowed when at least one column is readonly.</li>
                                       <li>Variables and equations can now be exported via GDX.</li>
                                       <li>Numeric NAs are not converted to 0 anymore.</li>
@@ -153,14 +155,24 @@
                                         <li>Added option to <a href = "./customize.html#naming">rename tab titles and symbol headers</a>.</li>
                                         <li>Added option to <a href = "./customize.html#application-title">change the application title</a>.</li>
                                         <li>Added option to <a href = "./customize.html#tab-ordering">reorder symbol tabs</a>.</li>
+                                        <li>Removed option to (de)activate the <i>scenario functionality</i> (e.g. save scenarios in database). Is always activated now.</li>
+                                        <li>Removed comment functionality in input tables.</li>
                                         <li>Input scalars can now be <a href = "./customize.html#hidden-scalars">used in charts</a> as well.</li>
                                         <li>Charts configuration has now access to MIRO database. Previously saved scenario data can now be 
                                         used for the graphics configuration (besides the local file upload).</li>
                                         <li>Added option to display graphic and table in <a href= "./charts.html#table-graph-split-screen">split-screen</a> for pie charts, maps and gantt charts.</li>
+                                        <li>Added option to remove invalid widget/graph configuration in Configuration mode</li>
                                         <li>Added <a href = "./customize.html#custom-renderers">custom renderer</a> option for graphics.</li>
-                                        <li>Added support for heatmaps (input tables).</li>
+                                        <li>Added support for <a href =  "./charts.html#multi-pie-chart">multiple pie charts</a> via subplots</li>
+                                        <li>Added support for <a href = "./customize.html#table-option-heatmap">heatmaps</a> (input tables).</li>
                                         <li>Bar chart, Line chart, Scatter, plot, Bubble chart: Order logic of axis elements can now be adjusted.</li>
-                                        <li>Removed option to (de)activate the <i>scenario functionality</i> (e.g. save scenarios in database). Is always activated now.</li>
+                                        <li>Map: Markers can now be customized (icon, icon color, marker color).</li>
+                                        <li>Added option to set a fixed height and/or width for pie chart, donut chart, bar chart, histogram, scatter plot, line chart, bubble chart.</li>
+                                        <li>Added option to render a static picture instead of an interactive plot for pie chart, donut chart, bar chart, histogram, scatter plot, line chart, bubble chart.</li>
+                                        <li>Added option to set the axis scale ratio for line chart, scatter plot, bubble chart.</li>
+                                        <li>Added option 'area' and 'diameter' for bubble chart size measurement</li>
+                                        <li>Valuebox: Number of boxes in a row can now be customized.</li>
+                                        <li>Added option to configure number of decimal places for numericInput</li>
                                       </ul>
                                     </ul>
                                 </div>
