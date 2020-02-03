@@ -299,7 +299,7 @@ if(LAUNCHHCUBEMODE){
                                                                    modelIn[[i]]$
                                                                      dropdown$choices)]))
                  if(isTRUE(modelIn[[i]]$dropdown$clearValue)){
-                   return(text)
+                   return(substring(text, 2L))
                  }
                }else{
                  text <- ""
