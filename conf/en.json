@@ -710,8 +710,8 @@
       "badOutputData":"The GAMS output dataset: '%s' is not valid. Please check the format of the data you wish to import."
     },
     "gamsExec":{  
-      "title":"Error executing GAMS",
-      "desc":"Some error occurred while executing GAMS."
+      "title":"GAMS could not be run",
+      "desc":"Could not run GAMS. Did you forget to specify the GAMS installation path?"
     },
     "jobRunning": {
       "title": "Active job",

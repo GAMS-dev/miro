@@ -711,7 +711,7 @@
     },
     "gamsExec":{  
       "title":"Fehler beim Ausführen von GAMS",
-      "desc":"Bei der Ausführung von GAMS ist ein Fehler aufgetreten."
+      "desc":"Konnte GAMS nicht ausführen. Haben Sie vergessen, den GAMS-Installationspfad anzugeben?"
     },
     "jobRunning":{
       "title":"Aktiver Job",
