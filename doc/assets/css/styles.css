@@ -1270,6 +1270,59 @@ body{
   border-bottom: 1px solid #dee2e6;
   margin-bottom: 30px;
 }
+.upvote-custom {
+  margin-top: 10px;
+}
+.btn-upvote:hover {
+  background-color: #d9f1d9;
+}
+.confirm-btn {
+    background: #f90;
+    text-shadow: none;
+    border: none;
+    color: #494d55;
+}
+.confirm-btn:hover {
+    background: #e18d0f;
+    color: #494d55;
+}
+.cancel-btn {
+    background: #fff;
+    color: #494d55;
+    border-color: #9a9fa8;
+    cursor: pointer;
+    cursor: pointer;
+}
+.cancel-btn:hover {
+    background: #f6f5f5;
+    color: #494d55;
+    border-color: #9a9fa8;
+}
+.vertical-outer {
+    display:table;
+    height: 100%;
+    width: 100%;
+    pointer-events:none;
+}
+.vertical-inner {
+    display: table-cell;
+    vertical-align: middle;
+    pointer-events:none;
+}
+.modal-content-custom {
+    width:inherit;
+    max-width:inherit; 
+    height:inherit;
+    margin: 0 auto;
+    pointer-events: all;
+}
+input[type=text], select {
+  width: 50%;
+  padding: 12px 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
 @charset "UTF-8";@import url(https://fonts.googleapis.com/css?family=PT+Mono);#gams-scope .fa,#gams-scope .glyphicon,#gams-scope .lg-icon{-moz-osx-font-smoothing:grayscale}#gams-scope .fa-ul,#gams-scope ol.list-unstyled{list-style-type:none}@font-face{font-family:montserratbold;src:url(../../../webfonts/montserrat-bold-webfont.eot);src:url(../../../webfonts/montserrat-bold-webfont.eot?#iefix) format("embedded-opentype"),url(../../../webfonts/montserrat-bold-webfont.woff2) format("woff2"),url(../../../webfonts/montserrat-bold-webfont.woff) format("woff"),url(../../../webfonts/montserrat-bold-webfont.ttf) format("truetype"),url(../../../webfonts/montserrat-bold-webfont.svg#montserratbold) format("svg");font-weight:400;font-style:normal}@font-face{font-family:montserratlight;src:url(../../../webfonts/montserrat-light-webfont.eot);src:url(../../../webfonts/montserrat-light-webfont.eot?#iefix) format("embedded-opentype"),url(../../../webfonts/montserrat-light-webfont.woff2) format("woff2"),url(../../../webfonts/montserrat-light-webfont.woff) format("woff"),url(../../../webfonts/montserrat-light-webfont.ttf) format("truetype"),url(../../../webfonts/montserrat-light-webfont.svg#montserratlight) format("svg");font-weight:400;font-style:normal}@font-face{font-family:montserratregular;src:url(../../../webfonts/montserrat-regular-webfont.eot);src:url(../../../webfonts/montserrat-regular-webfont.eot?#iefix) format("embedded-opentype"),url(../../../webfonts/montserrat-regular-webfont.woff2) format("woff2"),url(../../../webfonts/montserrat-regular-webfont.woff) format("woff"),url(../../../webfonts/montserrat-regular-webfont.ttf) format("truetype"),url(../../../webfonts/montserrat-regular-webfont.svg#montserratregular) format("svg");font-weight:400;font-style:normal}@font-face{font-family:montserratsemi_bold;src:url(../../../webfonts/montserrat-semibold-webfont.eot);src:url(../../../webfonts/montserrat-semibold-webfont.eot?#iefix) format("embedded-opentype"),url(../../../webfonts/montserrat-semibold-webfont.woff2) format("woff2"),url(../../../webfonts/montserrat-semibold-webfont.woff) format("woff"),url(../../../webfonts/montserrat-semibold-webfont.ttf) format("truetype"),url(../../../webfonts/montserrat-semibold-webfont.svg#montserratsemi_bold) format("svg");font-weight:400;font-style:normal}#gams-scope{/*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
   /*! Source: https://github.com/h5bp/html5-boilerplate/blob/master/src/css/main.css */
   /*!
