@@ -132,9 +132,10 @@ def add_app():
     except OSError as e:
         logging.error(f"Problems creating directory: {new_app_dir_name}. Error message: {str(e)}")
         return jsonify({"status": 1, "message": "An unexpected error occurred"}), 200
-
+    
+    miro_app_filepath = os.path.join(new_app_dir_name, secure_filename(miro_app_filename))
     try:
-        miro_app_file.save(os.path.join(new_app_dir_name, secure_filename(miro_app_filename)))
+        miro_app_file.save(miro_app_filepath)
 
         with open(os.path.join(new_app_dir_name, "config.txt"), "w") as config_file:
             config_file.write(f"Id: {model_name}\ntitle: {app_title}\ndesc: ${app_desc}\n\
@@ -144,9 +145,12 @@ author: {author_name}\nemail: {author_mail}")
         return jsonify({"status": 1, "message": "An unexpected error occurred"}), 200
 
     try:
-        mail.send(Message(f"New MIRO app: {model_name} from: {author_mail} uploaded.",
+        msg = Message(f"New MIRO app: {model_name} from: {author_mail} uploaded.",
                   sender="miro@gams.com",
-                  recipients=["miro@gams.com"]))
+                  recipients=["miro@gams.com"])
+        with app.open_resource(miro_app_filepath) as fp:
+            msg.attach(secure_filename(miro_app_filename), "application/zip", fp.read())
+        mail.send(msg)
     except Exception as e:
         logging.error(f"Problems sending confirmation mail of app upload to miro@gams.com. Error message: {str(e)}")
 
