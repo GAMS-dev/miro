@@ -811,7 +811,7 @@ Worker <- R6Class("Worker", public = list(
       requestBody$inex_file <- upload_file(inputData$
                                              addInexFile(workDir, 
                                                          dataFilesToFetch),
-                                           type = 'application/zip')
+                                           type = 'application/json')
       requestBody$data <- upload_file(inputData$
                                         addFilePaths(pfFilePath)$
                                         compress(), 
