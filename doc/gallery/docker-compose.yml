@@ -1,0 +1,18 @@
+version: "3.7"
+services:
+  doc:
+    build: ./
+    environment:
+      - MAIL_USER=${MAIL_USER}
+      - MAIL_PASSWROD=${MAIL_PASSWROD}
+    restart: always
+    ports:
+      - "7654:5000"
+    volumes:
+      - type: bind
+        source: ./data
+        target: /home/mirodoc/data
+      - type: bind
+        source: ./data/logos
+        target: /home/mirodoc/app/static/images/gallery
+
