@@ -96,7 +96,7 @@
                                                  </div>
                                                  <a class="link" href="https://miro.gams.com/gallery/app_direct/{{app.id}}/"><span></span></a>
                                              </div><!--//item-inner-->
-                                             <div><button class="btn btn-upvote" data-id="{{ app.id }}"><i class="fas fa-thumbs-up"></i><span id="{{ app.id }}_noupvotes" class="no-upvotes">({{ app.upvotes }})</span></button></div>
+                                             <div class="upvote-custom"><button class="btn btn-upvote" data-id="{{ app.id }}"><i class="fas fa-thumbs-up"></i><span id="{{ app.id }}_noupvotes" class="no-upvotes">({{ app.upvotes }})</span></button></div>
                                          </div><!--//item-->
                                       {% endfor %}
                                  </div><!--//cards-wrapper-->
@@ -107,8 +107,8 @@
                                         <div class="content">
                                             <b class="callout-title">You want to share your MIRO app with others?</b>
                                             <p>In order to show the different applications of MIRO, we want to permanently expand our gallery. If you have configured a MIRO app and would like to share it with others, you are welcome to do so here!
-                                            <br>
-                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addAppModal">Submit your own app now!</button></p>
+                                            <br><br>
+                                            <button type="button" class="btn confirm-btn" data-toggle="modal" data-target="#addAppModal">Submit your own app now!</button></p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                 </div><!--//section-block-->
@@ -118,9 +118,10 @@
                 </div><!--//doc-body-->
             </div><!--//container-->
         </div><!--//doc-wrapper-->
-        <div class="modal fade" id="addAppModal" tabindex="-1" role="dialog" aria-labelledby="addAppModalLabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
+        <div class="modal fade modal-custom" id="addAppModal" tabindex="-1" role="dialog" aria-labelledby="addAppModalLabel" aria-hidden="true">
+          <div class="vertical-outer">
+          <div class="modal-dialog vertical-inner" role="document">
+            <div class="modal-content modal-content-custom">
               <div class="modal-header">
                 <h5 class="modal-title" id="addAppModalLabel">Submit app</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -151,13 +152,14 @@
                             <label for="app-desc">E-mail</label>
                             <input type="text" id="newAppEmail" name="app-mail" placeholder="Enter E-mail address" required />
                         </div>
-                        <input type="submit" id="btAddNewApp" class="btn btn-success submitBtn" name="submitButton" value="Submit app">
+                        <input type="submit" id="btAddNewApp" class="btn confirm-btn" name="submitButton" value="Submit app">
                  </form>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
               </div>
             </div>
+          </div>
           </div>
         </div>
     <!--TYPO3SEARCH_end-->
