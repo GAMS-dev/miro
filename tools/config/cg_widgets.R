@@ -146,6 +146,12 @@ validateWidgetConfig <- function(widgetJSON){
               isTRUE(input$dd_choice_dep_selector)){
              return(lang$adminMode$widgets$validate$val11)
            }
+           if(isTRUE(widgetJSON$clearValue) && !length(widgetJSON$aliases)){
+             return(lang$adminMode$widgets$validate$val54)
+           }
+           if(isTRUE(widgetJSON$clearValue) && isTRUE(widgetJSON$multiple)){
+             return(lang$adminMode$widgets$validate$val55)
+           }
          },
          textinput = {
            
@@ -816,10 +822,15 @@ observeEvent({input$widget_type
                                    choices = currentConfig$choices,
                                    selected = currentConfig$selected,
                                    noHcube = isTRUE(currentConfig$noHcube),
+                                   clearValue = isTRUE(currentConfig$clearValue),
                                    multiple = isTRUE(currentConfig$multiple))
            rv$widgetConfig$label <- currentConfig$label
            rv$widgetConfig$aliases <- currentConfig$aliases
            dynamicChoices <- getWidgetDependencies("dropdown", rv$widgetConfig$choices)
+           singletonSetId <- NA_integer_
+           if(scalarsFileName %in% names(modelInRaw)){
+             singletonSetId <- match(currentWidgetSymbolName, modelInRaw[[scalarsFileName]]$symnames)[1L]
+           }
            staticChoiceInput <- tagList(
              selectizeInput("dd_choices", lang$adminMode$widgets$dropdown$choices, 
                             if(!length(dynamicChoices)) currentConfig$choices else c(), 
@@ -896,6 +907,17 @@ observeEvent({input$widget_type
                                  checkboxInput_MIRO("widget_multiple", 
                                                     lang$adminMode$widgets$dropdown$multiple,
                                                     rv$widgetConfig$multiple)
+                        )
+                      },
+                      if(!is.na(singletonSetId) && 
+                         identical(modelInRaw[[scalarsFileName]]$symtypes[singletonSetId], "set")){
+                        tags$div(class = "shiny-input-container info-position",
+                                 checkboxInput_MIRO("widget_clearValue", 
+                                                    tags$div(lang$adminMode$widgets$dropdown$clearValue,
+                                                             tags$a("", title = lang$adminMode$widgets$dropdown$clearValueTooltip, 
+                                                                    class="info-wrapper", href="https://gams.com/miro/widgets.html#dropdown-option-clearvalue", 
+                                                                    tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                    rv$widgetConfig$clearValue)
                         )
                       },
                       tags$div(class = "shiny-input-container",
@@ -1287,6 +1309,9 @@ observeEvent(input$widget_label, {
 })
 observeEvent(input$widget_multiple, {
   rv$widgetConfig$multiple <<- input$widget_multiple
+})
+observeEvent(input$widget_clearValue, {
+  rv$widgetConfig$clearValue <<- input$widget_clearValue
 })
 observeEvent(input$widget_hcube, {
   rv$widgetConfig$noHcube <<- !input$widget_hcube

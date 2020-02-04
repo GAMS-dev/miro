@@ -105,6 +105,12 @@ stock_weight(s) = w.l(s);
                                     <div class="section-block" id="pie-variable">
                                         <img class="img-fluid" style= "max-height:175pt;" src="assets/images/configuration_mode/pie_variable.png" alt="Pie chart with variable"/>
                                     </div>
+                                </div>
+                                <div class="section-block">
+                                    <p id = "multi-pie-chart"><b>Multi-pie chart:</b> <br>In a pie chart only one dimension, i.e. one column of a table, can be displayed. However, it is possible to display several pie charts for one symbol at the same time. This makes it possible to easily distribute a multidimensional symbol over several pie charts. This is comparable to e.g. a line chart, where new lines can be displayed by including new table headers.</p>
+                                    <div class="section-block" id="pie-variable">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_multi_pie_config.png" alt="Multi-pie chart"/>
+                                    </div>
                                 </div><!--//section-block-->
                                 <div class="section-block">
                                   <h3 class="block-title">JSON example</h3>
@@ -117,9 +123,16 @@ stock_weight(s) = w.l(s);
         "title": "Portfolio composition",
         "tool": "plotly",
         "type": "pie",
-        "labels": "symbol",
-        "values": "value",
-        "showlegend": true
+        "traces": {
+          "1": {
+            "labels": "symbol",
+            "values": "value",
+            "hole": 0,
+            "name": "weight"
+          }
+        },
+        "showlegend": true,
+        "staticPlot": false
       },
       "height": 700
     }
@@ -151,10 +164,16 @@ stock_weight(s) = w.l(s);
         "title": "Portfolio composition",
         "tool": "plotly",
         "type": "pie",
-        "labels": "symbol",
-        "values": "value",
+        "traces": {
+          "1": {
+            "labels": "symbol",
+            "values": "value",
+            "hole": 0.6,
+            "name": "weight"
+          }
+        },
         "showlegend": true,
-        "hole": 0.6
+        "staticPlot": false
       },
       "height": 700
     }
@@ -1070,6 +1089,15 @@ $offExternalInput
                                         <div class="section-block">
                                             <img class="img-fluid" src="assets/images/configuration_mode/filter-graph.png" alt="Filter graph by domain"/>
                                         </div>
+                                        <div class="callout-block callout-success">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-thumbs-up"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <b class="callout-title">Tip:</b>
+                                                <p>If your filter dimenstion contains data in date format (e.g. <i>2020-05-06</i>), you will see a date range selector insetead of a multi-dropdown menu for selection.</p>
+                                            </div><!--//content-->
+                                        </div><!--//callout-block-->
                                     </div>
                                     <h6 id = "table-graph-split-screen" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Show graphic and data table in split screen</h6>
                                     <div class="expanded">

@@ -1136,7 +1136,9 @@
         "val50": "The script identifier must be unique!",
         "val51": "The title is required.",
         "val52": "The command is required.",
-        "val53": "The output filename is required."
+        "val53": "The output filename is required.",
+        "val54": "You need to define aliases for your choices if only the element text is communicated with GAMS.",
+        "val55": "Only one item can be selectable in the dropdown menu if only the element text is communicated with GAMS."
       },
       "widgetOptions":{
         "slider": "Slider",
@@ -1205,6 +1207,8 @@
         },
         "default": "Default value",
         "multiple": "Should multiple items be selectable?",
+        "clearValue": "Only communicate element text of symbol with GAMS? Requires aliases for choices.",
+        "clearValueTooltip": "Causes element label to be an empty string. This is not supported if no aliases are defined! - Open documentation",
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "checkbox":{

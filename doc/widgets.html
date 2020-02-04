@@ -330,7 +330,7 @@ $offExternalInput
                                     <p>Example: </p>
                                     <p>Dropdown menu for a Singleton Set with model types as choices:<p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_dropdown_config.png" alt="Dropdown menu configuration"/>
+                                        <img class="img-fluid" src="assets/images/configuration_mode/widget_dropdown_config.png" alt="Dropdown menu configuration"/>
                                     </div>
                                     <p>The <i>model type</i> for which the dropdown menu is configurated, is a GAMS Singleton Set (symbol name: <i>typeSelect</i>). The configuration of a GAMS option has been avoided because the information about such a command-line parameter is lost when a scenario is exported as a GDX file or used in Hypercube mode. By using a singleton set instead, this information is saved:</p>
                                     <pre><code class="language-gams">
@@ -485,6 +485,20 @@ $offExternalInput
                                        </li>
                                     </ul>
                                     </div>
+                                    <h6 id="dropdown-option-clearvalue" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Only communicate element text of symbol with GAMS?</h6>
+                                    <div class="expanded"><p></p>
+                                    <p>This options is only available for Sets and singleton sets. Both can have label(s) and an element text(s). When configured as a dropdown menu, label and element text are communicated with GAMS. If this option is activated, the element text of the selected choice is communicated as an empty string (i.e. only the element text is considered). Because of this, the UEL order of the used set is preserved. This is especially recommended if the singleton set is used to define a compile-time variable in the GAMS model. Migrating into such a compile time variable can be done using the <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset">$eval.set</a> method. Since the variable should be filled by the element text of the singleton set, the attribute <i>TE</i> has to be used: <code class = "language-gams">$eval.Set VARNAME SETID.TE</code>.</p> 
+                                    <p>Note that aliases for the dropdown menu choices must be configured to use this option! Furthermore this option is only available for single dropdown menus and not for multi dropdown menus.</p>
+                                    <div class="callout-block callout-success" style="margin-top:10px;">
+                                       <div class="icon-holder">
+                                           <i class="fas fa-thumbs-up"></i>
+                                       </div><!--//icon-holder-->
+                                       <div class="content">
+                                           <b class="callout-title">Tip:</b>
+                                            <p>If a Singleton Set is used to define a compile time variable in the GAMS model, we recommend using this option!</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                    </div>
                                     <h6 id="dropdown-option-expand" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should element be expanded automatically in Hypercube mode?</h6>
                                     <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube mode. 
                                     In Hypercube mode a dropdown menu becomes a multi dropdwon menu. With the option available here, the automatic expansion of a widget can be switched off.</p>
@@ -496,12 +510,16 @@ $offExternalInput
                                     <pre><code class="language-json">
 {
   "inputWidgets": {
-    "_gmsopt_mip": {
-      "alias": "MIP-Solver",
+    "type": {
       "widgetType": "dropdown",
-      "label": "Solver to use",
-      "choices": ["CBC", "CPLEX", "MOSEK", "SCIP", "XPRESS"],
-      "selected": "CPLEX"
+      "alias": "model type",
+      "choices": ["lp", "mip", "minlp"],
+      "aliases": ["LP", "MIP", "MINLP"],
+      "selected": "lp",
+      "noHcube": false,
+      "clearValue": false,
+      "multiple": false,
+      "label": "Select the model type"
     }
   }
 }
@@ -560,7 +578,8 @@ $offExternalInput
                                 </div><!--//section-block-->
                                 <div class="section-block" id = "widget-multidropdown-options">
                                   <h3 class="block-title">Available options</h3>
-                                    <p>The available options of a multidropdown menu are identical to those of a <a href = "./widgets.html#widget-dropdown-options" class = "scrollto">single dropdown menu</a>.</p>
+                                    <p>The available options of a multidropdown menu are identical to those of a <a href = "./widgets.html#widget-dropdown-options" class = "scrollto">single dropdown menu</a>. 
+                                    The only exception is that the option to <a href = "#dropdown-option-clearvalue" class = "scrollto">communicate only the element text of the symbol with GAMS</a> cannot be set for a multi-dropdown menu. </p>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widget-multidropdown-json">
                                   <h3 class="block-title">JSON example</h3>

@@ -486,8 +486,7 @@ observe({
         if(isTRUE(hotOptions$contextMenu$enabled)){
           ht <- hot_context_menu(ht, allowRowEdit = hotOptions$contextMenu$allowRowEdit, 
                                  allowColEdit = hotOptions$contextMenu$allowColEdit, 
-                                 allowReadOnly = hotOptions$contextMenu$allowReadOnly, 
-                                 allowComments = hotOptions$contextMenu$allowComments)
+                                 allowReadOnly = hotOptions$contextMenu$allowReadOnly)
         }
         ht <- hot_cols(ht, columnSorting = hotOptions$columnSorting, 
                        manualColumnMove = hotOptions$manualColumnMove, 

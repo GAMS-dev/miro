@@ -628,7 +628,7 @@ $offExternalInput
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui_readonlycols.png" alt="Heatmap"/>
                                     </div></div>
-                                    <h6 id="table-option-readonlycol" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Turn table into a heatmap?</h6>
+                                    <h6 id="table-option-heatmap" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Turn table into a heatmap?</h6>
                                     <div class="expanded"><p>Turns the table into a heatmap.
                                     </p>
                                     <div class="section-block">
@@ -1219,7 +1219,7 @@ renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path
                                          </div><!--//icon-holder-->
                                          <div class="content">
                                              <b class="callout-title">Note:</b>
-                                             <p>Command line parameters can not be displayed as a table, but only as a slider, dropdown menu, checkbox, date(-range) selector, text input or numeric input.</p>
+                                             <p>Command line parameters can not be displayed as a table, but only as a widget. Both, GAMS options and double-dash parameters can be displayed as a slider, dropdown menu, checkbox, text input or numeric input. For double-dash parameters date(-range) selector and slider range are also available.</p>
                                          </div><!--//content-->
                                      </div><!--//callout-block-->
                                      <p>Let's assume you want MIRO to call your GAMS model with the double dash parameter <kbd>--numberPeriods</kbd>, which can be set to a value between 1 and 14. You also want to be able to select the MIP solver to use.

@@ -5201,6 +5201,16 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
+                },
+                "val54":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val55":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 }
               }
             },
@@ -5532,6 +5542,16 @@
                   "required":true
                 },
                 "multiple":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "clearValue":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "clearValueTooltip":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
