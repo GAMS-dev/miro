@@ -910,106 +910,105 @@ if(!is.null(errMsg)){
   
   shinyApp(ui = ui_initError, server = server_initError)
 }else{
-  rm(installedPackages)
   local({
-    populateDbOnly <- identical(Sys.getenv("MIRO_POPULATE_DB"), "true")
-    if(!isShinyProxy || populateDbOnly){
-      if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
-        setWinProgressBar(pb, 0.6, label= "Importing new data")
-      }
+    if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
+      setWinProgressBar(pb, 0.6, label= "Importing new data")
+    }
+    miroDataDir   <- Sys.getenv("MIRO_DATA_DIR")
+    if(identical(miroDataDir, "")){
       miroDataDir   <- file.path(currentModelDir, paste0(miroDataDirPrefix, modelName))
-      miroDataFiles <- list.files(miroDataDir)
-      dataFileExt   <- tolower(tools::file_ext(miroDataFiles))
-      miroDataFiles <- miroDataFiles[dataFileExt %in% c(if(useGdx) "gdx", "xlsx", "xls", "zip")]
-      newScen <- NULL
-      tryCatch({
-        if(length(miroDataFiles)){
-          tabularDatasetsToFetch <- modelInTabularData
-          tabularIdsToFetchId    <- names(modelIn) %in% tabularDatasetsToFetch
-          metaDataTmp            <- modelIn[tabularIdsToFetchId]
-          namesScenInputData     <- names(modelIn)[tabularIdsToFetchId]
-          modelInTemplateTmp     <- modelInTemplate[tabularIdsToFetchId]
-          if(length(scalarsInMetaData) && !scalarsFileName %in% tabularDatasetsToFetch){
-            tabularDatasetsToFetch <- c(tabularDatasetsToFetch, scalarsFileName)
-            namesScenInputData <- c(namesScenInputData, scalarsFileName)
-            modelInTemplateTmp[[length(metaDataTmp) + 1L]] <- scalarsInTemplate
-            metaDataTmp <- c(metaDataTmp, scalarsInMetaData)
+    }
+    miroDataFiles <- list.files(miroDataDir)
+    dataFileExt   <- tolower(tools::file_ext(miroDataFiles))
+    miroDataFiles <- miroDataFiles[dataFileExt %in% c(if(useGdx) "gdx", "xlsx", "xls", "zip")]
+    newScen <- NULL
+    tryCatch({
+      if(length(miroDataFiles)){
+        tabularDatasetsToFetch <- modelInTabularData
+        tabularIdsToFetchId    <- names(modelIn) %in% tabularDatasetsToFetch
+        metaDataTmp            <- modelIn[tabularIdsToFetchId]
+        namesScenInputData     <- names(modelIn)[tabularIdsToFetchId]
+        modelInTemplateTmp     <- modelInTemplate[tabularIdsToFetchId]
+        if(length(scalarsInMetaData) && !scalarsFileName %in% tabularDatasetsToFetch){
+          tabularDatasetsToFetch <- c(tabularDatasetsToFetch, scalarsFileName)
+          namesScenInputData <- c(namesScenInputData, scalarsFileName)
+          modelInTemplateTmp[[length(metaDataTmp) + 1L]] <- scalarsInTemplate
+          metaDataTmp <- c(metaDataTmp, scalarsInMetaData)
+        }
+        inputIdsTmp        <- match(inputDsNames, names(metaDataTmp))
+        inputIdsTmp        <- inputIdsTmp[!is.na(inputIdsTmp)]
+        metaDataTmp        <- metaDataTmp[inputIdsTmp]
+        modelInTemplateTmp <- modelInTemplateTmp[inputIdsTmp]
+        
+        tmpDirToRemove     <- character(0L)
+        
+        for(i in seq_along(miroDataFiles)){
+          miroDataFile <- miroDataFiles[i]
+          flog.info("New data: '%s' is being stored in the database. Please wait a until the import is finished.", miroDataFile)
+          if(dataFileExt[i] %in% c("xls", "xlsx")){
+            method <- "xls"
+            tmpDir <- miroDataDir
+          }else if(dataFileExt[i] == "zip"){
+            method <- "csv"
+            tmpDir <- tryCatch(
+              getValidCsvFromZip(file.path(miroDataDir, miroDataFile), 
+                                 c(names(modelOut), 
+                                   inputDsNames), uid)$tmpDir
+              , error = function(e){
+                flog.error(conditionMessage(e))
+                return("e")
+              })
+            if(identical(tmpDir, "e")){
+              next
+            }
+            tmpDirToRemove <- tmpDir
+          }else{
+            method <- dataFileExt[i]
+            tmpDir <- miroDataDir
           }
-          inputIdsTmp        <- match(inputDsNames, names(metaDataTmp))
-          inputIdsTmp        <- inputIdsTmp[!is.na(inputIdsTmp)]
-          metaDataTmp        <- metaDataTmp[inputIdsTmp]
-          modelInTemplateTmp <- modelInTemplateTmp[inputIdsTmp]
-          
-          tmpDirToRemove     <- character(0L)
-          
-          for(i in seq_along(miroDataFiles)){
-            miroDataFile <- miroDataFiles[i]
-            flog.info("New data: '%s' is being stored in the database. Please wait a until the import is finished.", miroDataFile)
-            if(dataFileExt[i] %in% c("xls", "xlsx")){
-              method <- "xls"
-              tmpDir <- miroDataDir
-            }else if(dataFileExt[i] == "zip"){
-              method <- "csv"
-              tmpDir <- tryCatch(
-                getValidCsvFromZip(file.path(miroDataDir, miroDataFile), 
-                                   c(names(modelOut), 
-                                     inputDsNames), uid)$tmpDir
-                , error = function(e){
-                  flog.error(conditionMessage(e))
-                  return("e")
-                })
-              if(identical(tmpDir, "e")){
-                next
-              }
-              tmpDirToRemove <- tmpDir
-            }else{
-              method <- dataFileExt[i]
-              tmpDir <- miroDataDir
-            }
-            newScen <- Scenario$new(db = db, sname = gsub("\\.[^\\.]*$", "", miroDataFile), isNewScen = TRUE)
-            dataOut <- loadScenData(scalarsOutName, modelOut, tmpDir, modelName, scalarsFileHeaders,
-                                    modelOutTemplate, method = method, fileName = miroDataFile)$tabular
-            dataIn  <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp, 
-                                    workDir = tmpDir, 
-                                    modelName = modelName, errMsg = lang$errMsg$GAMSInput$badInputData,
-                                    scalarsFileHeaders = scalarsFileHeaders,
-                                    templates = modelInTemplateTmp, method = method,
-                                    fileName = miroDataFile, DDPar = DDPar, GMSOpt = GMSOpt)$tabular
-            if(!scalarsFileName %in% names(metaDataTmp) && length(c(DDPar, GMSOpt))){
-              # additional command line parameters that are not GAMS symbols
-              scalarsTemplate <- tibble(a = character(0L), b = character(0L), c = character(0L))
-              names(scalarsTemplate) <- scalarsFileHeaders
-              newScen$save(c(dataOut, dataIn, list(scalarsTemplate)))
-            }else{
-              newScen$save(c(dataOut, dataIn))
-            }
-            
-            if(!debugMode && !file.remove(file.path(miroDataDir, miroDataFile))){
-              flog.info("Could not remove file: '%s'.", miroDataFile)
-            }
+          newScen <- Scenario$new(db = db, sname = gsub("\\.[^\\.]*$", "", miroDataFile), isNewScen = TRUE)
+          dataOut <- loadScenData(scalarsOutName, modelOut, tmpDir, modelName, scalarsFileHeaders,
+                                  modelOutTemplate, method = method, fileName = miroDataFile)$tabular
+          dataIn  <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp, 
+                                  workDir = tmpDir, 
+                                  modelName = modelName, errMsg = lang$errMsg$GAMSInput$badInputData,
+                                  scalarsFileHeaders = scalarsFileHeaders,
+                                  templates = modelInTemplateTmp, method = method,
+                                  fileName = miroDataFile, DDPar = DDPar, GMSOpt = GMSOpt)$tabular
+          if(!scalarsFileName %in% names(metaDataTmp) && length(c(DDPar, GMSOpt))){
+            # additional command line parameters that are not GAMS symbols
+            scalarsTemplate <- tibble(a = character(0L), b = character(0L), c = character(0L))
+            names(scalarsTemplate) <- scalarsFileHeaders
+            newScen$save(c(dataOut, dataIn, list(scalarsTemplate)))
+          }else{
+            newScen$save(c(dataOut, dataIn))
           }
-          if(length(tmpDirToRemove)){
-            if(identical(unlink(tmpDirToRemove, recursive = TRUE), 0L)){
-              flog.debug("Temporary directory: '%s' removed.", tmpDirToRemove)
-            }else{
-              flog.error("Problems removing temporary directory: '%s'.", tmpDirToRemove)
-            }
+          
+          if(!debugMode && !file.remove(file.path(miroDataDir, miroDataFile))){
+            flog.info("Could not remove file: '%s'.", miroDataFile)
           }
         }
-      }, error = function(e){
-        flog.error("Problems saving MIRO data to database. Error message: '%s'.", e)
-        gc()
-        if(populateDbOnly){
-          if(interactive())
-            stop()
-          quit("no", 1L)
+        if(length(tmpDirToRemove)){
+          if(identical(unlink(tmpDirToRemove, recursive = TRUE), 0L)){
+            flog.debug("Temporary directory: '%s' removed.", tmpDirToRemove)
+          }else{
+            flog.error("Problems removing temporary directory: '%s'.", tmpDirToRemove)
+          }
         }
-      })
-      if(populateDbOnly){
+      }
+    }, error = function(e){
+      flog.error("Problems saving MIRO data to database. Error message: '%s'.", e)
+      gc()
+      if(identical(Sys.getenv("MIRO_POPULATE_DB"), "true")){
         if(interactive())
           stop()
-        quit("no", 0L)
+        quit("no", 1L)
       }
+    })
+    if(identical(Sys.getenv("MIRO_POPULATE_DB"), "true")){
+      if(interactive())
+        stop()
+      quit("no", 0L)
     }
   })
   
@@ -1257,9 +1256,9 @@ if(!is.null(errMsg)){
         workDir <- file.path(tmpFileDir, session$token)
         if(!config$activateModules$remoteExecution && length(modelData)){
           tryCatch({
-            if(isWindows() && !identical(substring(modelData, 1L, 1L),
+            if(isWindows() && !identical(substring(workDir, 1L, 1L),
                                          substring(.libPaths()[1L], 1L, 1L))){
-              # workaround as cmdunzip crashed on Windows when on different drive 
+              # workaround as cmdunzip crashed on Windows when on different drive  than exdir
               # see https://github.com/r-lib/zip/issues/45
               unzip(modelData, exdir = workDir)
             }else{
