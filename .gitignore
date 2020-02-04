@@ -5,6 +5,7 @@ dump.rdb
 *.RData
 .Ruserdata
 packrat/lib*/
+__pycache__
 .Rprofile
 logs
 *.Rproj
@@ -24,6 +25,7 @@ tools/paver/examples
 tools/paver/__pycache__
 tools/paver/results
 packrat/src/
+doc/**/venv/**
 doc/miroDemoApps.zip
 doc/latest.ver
 doc/schema.html
