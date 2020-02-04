@@ -827,6 +827,10 @@ observeEvent({input$widget_type
            rv$widgetConfig$label <- currentConfig$label
            rv$widgetConfig$aliases <- currentConfig$aliases
            dynamicChoices <- getWidgetDependencies("dropdown", rv$widgetConfig$choices)
+           singletonSetId <- NA_integer_
+           if(scalarsFileName %in% names(modelInRaw)){
+             singletonSetId <- match(currentWidgetSymbolName, modelInRaw[[scalarsFileName]]$symnames)[1L]
+           }
            staticChoiceInput <- tagList(
              selectizeInput("dd_choices", lang$adminMode$widgets$dropdown$choices, 
                             if(!length(dynamicChoices)) currentConfig$choices else c(), 
@@ -905,10 +909,8 @@ observeEvent({input$widget_type
                                                     rv$widgetConfig$multiple)
                         )
                       },
-                      if(input$widget_type == "multidropdown" || (length(modelInRaw[[scalarsFileName]]$symtypes[[match(input$widget_symbol, 
-                                                                              modelInRaw[[scalarsFileName]]$symnames)]]) && 
-                         identical(modelInRaw[[scalarsFileName]]$symtypes[[match(input$widget_symbol, 
-                                                                                 modelInRaw[[scalarsFileName]]$symnames)]], "set"))){
+                      if(!is.na(singletonSetId) && 
+                         identical(modelInRaw[[scalarsFileName]]$symtypes[singletonSetId], "set")){
                         tags$div(class = "shiny-input-container info-position",
                                  checkboxInput_MIRO("widget_clearValue", 
                                                     tags$div(lang$adminMode$widgets$dropdown$clearValue,
