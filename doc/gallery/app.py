@@ -7,7 +7,7 @@ import io
 import zipfile
 import shutil
 from app_data import AppData
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 import logging
 
 REQUIRED_API_VERSION = "1"
