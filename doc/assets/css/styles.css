@@ -1234,11 +1234,11 @@ body{
 .docu-general-header {
   margin-top: 15px !important;
 }
-.collapsed {
+.page-wrapper .collapsed {
   display:none;
   margin-left: 12px;
 }
-.expanded {
+.page-wrapper .expanded {
   margin-left: 12px;
   display: none;
 }
