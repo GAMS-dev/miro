@@ -9,8 +9,6 @@ isolate({
   rv$generalConfig$outputGroups <- configJSON$outputGroups
   rv$generalConfig$symbolLinks <- configJSON$symbolLinks
   rv$generalConfig$UILogo <- configJSON$UILogo
-  rv$generalConfig$overwriteAliases <- configJSON$overwriteAliases
-  rv$generalConfig$overwriteHeaderAliases <- configJSON$overwriteHeaderAliases
 })
 scalarSymbols <- setNames(c(names(modelIn), 
                             if(length(modelIn[[scalarsFileName]])) 
