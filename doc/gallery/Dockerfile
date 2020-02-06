@@ -1,6 +1,6 @@
 FROM python:alpine
 
-RUN adduser -D mirodoc
+RUN adduser -D -u 9999 mirodoc
 
 WORKDIR /home/mirodoc
 
