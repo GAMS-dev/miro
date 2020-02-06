@@ -1288,7 +1288,7 @@ renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widgets-dependencies">
                                   <h3 class="block-title">Dependencies among widgets</h3>
-                                  <p>One special feature of GAMS MIRO is that you can define interdependencies between different parameters. Scalars can take two forms of dependencies to other parameters: They can feed their attributes from them; and they can manipulate the content of those parameters. An example for this is the <span class="code">kport</span> model that comes with your MIRO installation (in case you selected to install the example models). Here, we have a set of scenarios that can be selected as well as a singleton set with the currently selected/active scenario. A singleton set is suited to be represented as a dropdown menu, hence we choose that type of widget here. We would like to filter our parameters based on the currently selected scenario so that we only see data that is relevant for this scenario (this type of dependency is also referred to as a <span class="code">backward dependency</span>). This means that in case scenario 1 is selected via our dropdown menu, we only want to display data relevant to scenario 1 to the user. Additionally, we want the choices of our dropdown menu to be the elements of all available scenarios (also referred to as a <span class="code">forward dependency</span>).</p>
+                                  <p>One special feature of GAMS MIRO is that you can define interdependencies between different parameters. Scalars can take two forms of dependencies to other parameters: They can feed their attributes from them; and they can manipulate the content of those parameters. Let's look at an example: we have a set of scenarios that can be selected as well as a singleton set with the currently selected/active scenario. A singleton set is suited to be represented as a dropdown menu, hence we choose that type of widget here. We would like to filter our parameters based on the currently selected scenario so that we only see data that is relevant for this scenario (this type of dependency is also referred to as a <span class="code">backward dependency</span>). This means that in case scenario 1 is selected via our dropdown menu, we only want to display data relevant to scenario 1 to the user. Additionally, we want the choices of our dropdown menu to be the elements of all available scenarios (also referred to as a <span class="code">forward dependency</span>).</p>
                                   <div class="section-block">
                                       <img class="img-fluid gifplayer" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/dd-filter.png" alt="Dropdown menu filters table"/>
                                   </div>
@@ -1309,7 +1309,7 @@ renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path
                                               <td>Dropdown menu</td>
                                               <td><i class="fas fa-check"></i></td>
                                               <td><i class="fas fa-check"></i></td>
-                                              <td><span class="code">kport</span></td>
+                                              <td><span class="code">-</span></td>
                                             </tr>
                                             <tr>
                                               <td>Slider</td>
@@ -1333,7 +1333,7 @@ renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path
                                               <td>Daterange selector</td>
                                               <td><i class="fas fa-times"></i></td>
                                               <td>(<i class="fas fa-check"></i>)</td>
-                                              <td><span class="code">pickstock_live</span></td>
+                                              <td><span class="code">-</span></td>
                                             </tr>
                                         </tbody>
                                     </table>
