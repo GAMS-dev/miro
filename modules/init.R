@@ -880,7 +880,12 @@ if(is.null(errMsg)){
                                                "' has no valid input type defined. Error message: ", e), sep = "\n")
              })
              if(!is.null(errMsg)){
-               return(NULL)
+               if(LAUNCHCONFIGMODE){
+                 errMsg <<- NULL
+                 return(NULL)
+               }else{
+                 return(NULL)
+               }
              }
              
              # check whether dropdown menu uses shared data
