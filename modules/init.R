@@ -563,15 +563,22 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
   if(length(config$overwriteSheetOrder$input) && !LAUNCHCONFIGMODE){
     widgetOverwriteId <- match("_widgets", config$overwriteSheetOrder$input)
     if(!is.na(widgetOverwriteId)){
-      if(any(vapply(modelIn, function(el){
+      isInputWidget <- vapply(modelIn, function(el){
         if(el$type %in% c("hot", "dt", "custom")){
           return(FALSE)
         }
         return(TRUE)
-      }, logical(1L), USE.NAMES = FALSE))){
+      }, logical(1L), USE.NAMES = FALSE)
+      if(any(isInputWidget)){
         widgetIdTmp <- which(is.na(match(names(modelIn), 
                                          names(modelInRaw))))[1]
-        config$overwriteSheetOrder$input[widgetOverwriteId] <- names(modelIn)[widgetIdTmp]
+        if(is.na(widgetIdTmp)){
+          # widget is (non-singleton) set
+          widgetIdTmp <- which(isInputWidget)[1]
+          config$overwriteSheetOrder$input[widgetOverwriteId] <- names(modelIn)[widgetIdTmp]
+        }else{
+          config$overwriteSheetOrder$input[widgetOverwriteId] <- names(modelIn)[widgetIdTmp]
+        }
       }else{
         config$overwriteSheetOrder$input <- config$overwriteSheetOrder$input[-widgetOverwriteId]
       }
@@ -584,7 +591,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
       if(length(config$overwriteSheetOrder$input) != length(modelIn)){
         appendSheetIds <- seq_along(modelIn)[!names(modelIn) %in% config$overwriteSheetOrder$input]
       }
-      inputSheetIdsToDisplay <- c(match(config$overwriteSheetOrder$input, 
+      inputSheetIdsToDisplay <- c(match(unique(config$overwriteSheetOrder$input), 
                                         names(modelIn)), appendSheetIds)
     }
   }else{
