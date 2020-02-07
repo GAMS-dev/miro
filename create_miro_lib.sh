@@ -2,7 +2,7 @@
 
 cd model
 cd transport
-zip transport.conf.unzip transport_files.txt conf_transport -x "*.DS_Store"
+zip -r transport.conf.unzip transport_files.txt conf_transport -x "*.DS_Store"
 cd ..
 cd pickstock
 zip -r pickstock.conf.unzip pickstock_files.txt dowjones2016.csv conf_pickstock scripts_pickstock/hcube_analysis.ipynb static_pickstock -x "*.DS_Store"

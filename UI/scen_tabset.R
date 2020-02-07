@@ -28,9 +28,10 @@ getScenTabData <- function(sheetName){
       tabData$graphConfig$pivottable$aggregatorName <- "Sum"
       tabData$graphConfig$pivottable$vals <- scalarsFileHeaders[3]
     }else{
-      tabData$sheetName     <- modelInAlias[match(inputDsNames[i], names(modelIn))[1]]
-      tabData$graphConfig   <- configGraphsIn[[i]]
-      tabData$headerAliases <- attr(modelInTemplate[[i]], "aliases")
+      modelInId             <- match(inputDsNames[i], names(modelIn))[1]
+      tabData$sheetName     <- modelInAlias[modelInId]
+      tabData$graphConfig   <- configGraphsIn[[modelInId]]
+      tabData$headerAliases <- attr(modelInTemplate[[modelInId]], "aliases")
     }
     tabData$tooltip       <- lang$nav$scen$tooltips$inputSheet
   }
