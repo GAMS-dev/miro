@@ -14,8 +14,6 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
   # Returns:
   #   rendered graph for the provided dataframe
   
-  data <- type_convert(data, cols())
-  
   if(options$tool == 'plotly'){
     pieGrid <- NULL
     return(renderPlotly({
