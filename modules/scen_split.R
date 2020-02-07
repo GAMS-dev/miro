@@ -92,7 +92,7 @@ observeEvent(input$loadActiveScenSplitComp, {
     scenData[[scenIdLongNew]][[idxScalarOut]] <<- scenData[[scenIdLongNew]][[idxScalarOut]][!rowIdsToRemove, ]
   }
   scenIdLong <- scenIdLongNew
-  source("./modules/scen_render.R", local = TRUE)
+  try(source("./modules/scen_render.R", local = TRUE), silent = TRUE)
   # load script results
   if(length(config$scripts$base)){
     scriptOutput$loadResultsBase(scriptOutput$getResults(), 
