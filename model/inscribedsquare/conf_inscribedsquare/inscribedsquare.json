@@ -64,6 +64,10 @@
       }
     }
   },
+  "readme": {
+    "tabTitle": "Readme",
+    "filename": "README.md"
+  },
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
