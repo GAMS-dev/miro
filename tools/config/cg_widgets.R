@@ -831,6 +831,7 @@ observeEvent({input$widget_type
            if(scalarsFileName %in% names(modelInRaw)){
              singletonSetId <- match(currentWidgetSymbolName, modelInRaw[[scalarsFileName]]$symnames)[1L]
            }
+           ddChoicesDynamic <- inputSymMultiDim[!inputSymMultiDim %in% currentWidgetSymbolName]
            staticChoiceInput <- tagList(
              selectizeInput("dd_choices", lang$adminMode$widgets$dropdown$choices, 
                             if(!length(dynamicChoices)) currentConfig$choices else c(), 
@@ -858,7 +859,7 @@ observeEvent({input$widget_type
                                         textInput("widget_label", lang$adminMode$widgets$dropdown$label, value = rv$widgetConfig$label))),
                       tags$div(class = "shiny-input-container conditional highlight-block",
                                tags$div(class = "col-sm-8",
-                                        if(length(inputSymMultiDim)){
+                                        if(length(ddChoicesDynamic)){
                                           if(length(dynamicChoices)){
                                             if(identical(dynamicChoices[[2]], "")){
                                               depHeader <- allInputSymHeaders
@@ -879,7 +880,8 @@ observeEvent({input$widget_type
                                                                       class = "shiny-input-container two-col-wrapper",
                                                                       tags$div(class = "two-col-left",
                                                                                selectInput("dd_choice_dep", NULL, 
-                                                                                           choices = c(langSpecificWidget$depChoices, inputSymMultiDim), 
+                                                                                           choices = c(langSpecificWidget$depChoices, 
+                                                                                                       ddChoicesDynamic), 
                                                                                            selected = dynamicChoices[2])),
                                                                       tags$div(class = "two-col-right",
                                                                                selectInput("dd_choice_dep_header", NULL, 
@@ -893,7 +895,7 @@ observeEvent({input$widget_type
                                         }else{
                                           staticChoiceInput
                                         }),
-                               if(length(inputSymMultiDim)){
+                               if(length(ddChoicesDynamic)){
                                  tags$div(class = "col-sm-4",
                                           checkboxInput_MIRO("dd_choice_dep_selector", 
                                                              lang$adminMode$widgets$dropdown$choiceDep$selector,
