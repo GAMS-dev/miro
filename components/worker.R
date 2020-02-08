@@ -1369,18 +1369,18 @@ Worker <- R6Class("Worker", public = list(
     return(ret)
   },
   testConnection = function(){
-    if(!startsWith(url, "https://") &&
-       !startsWith(url, "http://localhost")){
+    if(!startsWith(private$metadata$url, "https://") &&
+       !startsWith(private$metadata$url, "http://localhost")){
       return(FALSE)
     }
-    ret <- HEAD(url, timeout(4L))$url
-    if(!startsWith(ret, "https://") && 
-       (!identical(ret, "http://localhost") ||
-        !startsWith(ret, "http://localhost:") ||
-        !startsWith(ret, "http://localhost/"))){
-      return(FALSE)
+    ret <- HEAD(private$metadata$url, timeout(4L))$url
+    if(startsWith(ret, "https://") ||
+       identical(ret, "http://localhost") ||
+       startsWith(ret, "http://localhost:") ||
+       startsWith(ret, "http://localhost/")){
+      return(TRUE)
     }
-    return(TRUE)
+    return(FALSE)
   },
   checkAuthenticationStatus = function(){
     return(status_code(HEAD(paste0(private$metadata$url, "/jobs"), 
