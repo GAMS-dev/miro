@@ -1521,6 +1521,7 @@ if(is.null(errMsg)){
     '-500' = "Internal error",
     '-404' = "Host could not be reached",
     '-401' = "Access denied",
+    '-400' = "License expired",
     '-100' = "Model execution timed out",
     '-15' = "Model execution was interrupted",
     '-9' = "Model execution was interrupted",
