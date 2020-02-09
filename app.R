@@ -541,21 +541,25 @@ if(is.null(errMsg)){
     source("./components/install_packages.R", local = TRUE)
     rm(requiredPackagesCR)
   }
-  if(LAUNCHCONFIGMODE){
-    requiredPackages <- c("plotly", "xts", "dygraphs", "leaflet", "leaflet.minicharts", "timevis", "DT")
+  if(config$activateModules$remoteExecution){
+    requiredPackages <- c("future", "httr")
+  }else if(length(externalInputConfig) || length(datasetsRemoteExport)){
+    requiredPackages <- "httr"
   }else{
-    requiredPackages <- c(if(identical(installPackage$plotly, TRUE)) "plotly",
+    requiredPackages <- character(0L)
+  }
+  if(LAUNCHCONFIGMODE){
+    requiredPackages <- c(requiredPackages, "plotly", "xts", "dygraphs", "leaflet",
+                          "leaflet.minicharts", "timevis", "DT")
+  }else{
+    requiredPackages <- c(requiredPackages, 
+                          if(identical(installPackage$plotly, TRUE)) "plotly",
                           if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
                           if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"),
                           if(identical(installPackage$timevis, TRUE)) c("timevis"))
   }
   if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
     requiredPackages <- c(requiredPackages, "DT")
-  }
-  if(config$activateModules$remoteExecution){
-    requiredPackages <- c(requiredPackages, "future", "httr")
-  }else if(length(externalInputConfig) || length(datasetsRemoteExport)){
-    requiredPackages <- c(requiredPackages, "httr")
   }
   source("./components/install_packages.R", local = TRUE)
   options("DT.TOJSON_ARGS" = list(na = "string"))
