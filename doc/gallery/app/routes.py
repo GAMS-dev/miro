@@ -161,12 +161,3 @@ def gallery():
     return render_template("gallery.html.j2", apps=sorted(app_data.get_data(), \
         key=lambda app: app["upvotes"], reverse = True))
 
-
-@app.route("/download/<path:filename>")
-def download_file(filename):
-    with open(os.path.join("data", "downloads.csv"), "a") as f:
-        f.write(f"{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n")
-
-    return send_from_directory(app.config["DOWNLOAD_FOLDER"],
-                               filename, as_attachment=True)
-

@@ -10,9 +10,6 @@ services:
       - "7654:5000"
     volumes:
       - type: bind
-        source: ./download
-        target: /home/mirodoc/download
-      - type: bind
         source: ./data
         target: /home/mirodoc/data
       - type: bind

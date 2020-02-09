@@ -9,8 +9,7 @@ app.config.update(
     MAIL_USE_TLS = False,
     MAIL_USE_SSL=True,
     MAIL_USERNAME = os.environ.get("MAIL_USER"),
-    MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD"),
-    DOWNLOAD_FOLDER = os.path.join(app.root_path, '..', 'download')
+    MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
     )
 
 mail = Mail(app)
