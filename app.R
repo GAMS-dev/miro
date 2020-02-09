@@ -966,7 +966,8 @@ if(!is.null(errMsg)){
             method <- dataFileExt[i]
             tmpDir <- miroDataDir
           }
-          newScen <- Scenario$new(db = db, sname = gsub("\\.[^\\.]*$", "", miroDataFile), isNewScen = TRUE)
+          newScen <- Scenario$new(db = db, sname = gsub("\\.[^\\.]*$", "", miroDataFile), isNewScen = TRUE,
+                                  readPerm = c(uid, ugroups), execPerm = c(uid, ugroups))
           dataOut <- loadScenData(scalarsOutName, modelOut, tmpDir, modelName, scalarsFileHeaders,
                                   modelOutTemplate, method = method, fileName = miroDataFile)$tabular
           dataIn  <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp, 
