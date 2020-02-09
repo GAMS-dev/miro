@@ -139,7 +139,15 @@
                                             </p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
-                                    
+                                    <div  id="skip-model-execution"  class="section-block">
+                                        <b>Skip model execution</b>:</br>
+                                        <p>In the MIRO menu of GAMS Studio there is the entry "Skip model execution". If this option is activated, the model is not executed before MIRO is started, but MIRO is called directly instead. This can be helpful if the model takes a long time to be solved. </p>
+                                        <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                            <img class="img-fluid" style = "max-height:160pt;" src="assets/images/skip_model_execution.png" alt="Skip model execution" />
+                                        </div>
+                                        <p>But: This option should be used with caution!</br> 
+                                        If the model execution is skipped, the GAMS/MIRO data contract is not created or renewed. This means that changes made in the model are not communicated to MIRO. If you have a model that takes a long time to be solved and you don't want to run through it in order to launch MIRO, you can simply set the GAMS option <a href = "https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOaction" target = "_blank"><i>a=c</i></a> (action=compile) instead of the option "Skip model execution". This will only compile the model which is sufficient to update the data contract.</p>
+                                    </div>
                                     <div style="outline: solid 1px black; outline-offset: 5px; margin-top:30px">
                                         <h3 id="start-via-command-line"  class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Advanced: Start MIRO using the command line</h3>
                                         <div class="section-block" style="display:none">
