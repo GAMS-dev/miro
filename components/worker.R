@@ -889,7 +889,7 @@ Worker <- R6Class("Worker", public = list(
     
     if(identical(status_code(ret), 200L)){
       if(saveDisk){
-        entityContent <- content(ret, encoding = "utf-8")$entity_value
+        entityContent <- content(ret, encoding = "utf-8")$entry_value
         if(!length(entityContent)){
           entityContent <- ""
         }
@@ -898,9 +898,9 @@ Worker <- R6Class("Worker", public = list(
         return(200L)
       }
       if(getSize)
-        return(list(content = content(ret, encoding = "utf-8")$entity_value, 
+        return(list(content = content(ret, encoding = "utf-8")$entry_value, 
                     chunkNo = ceiling(teLength/maxSize)))
-      return(content(ret, encoding = "utf-8")$entity_value)
+      return(content(ret, encoding = "utf-8")$entry_value)
     }
     return(status_code(ret))
   },
@@ -1090,7 +1090,7 @@ Worker <- R6Class("Worker", public = list(
       return(-100L)
     }
     for(text_entity in c(paste0(private$metadata$modelName, ".log"), private$metadata$text_entities)){
-      tryCatch(private$readRemoteTextEntity(text_entity, workDir = workDir),
+      tryCatch(private$readRemoteTextEntity(text_entity, jID, workDir = workDir),
                error = function(e){
                  warning(sprintf("Problems fetching text entity: '%s'. Error message: '%s'.", 
                                  text_entity, conditionMessage(e)))
