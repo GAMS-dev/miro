@@ -604,7 +604,6 @@ if(is.null(errMsg)){
                      uidIdentifier = uidIdentifier, 
                      accessIdentifier = accessIdentifier, 
                      accessElIdentifier = accessElIdentifier)
-    db$accessGroups <- auth$getAccessGroups()
     flog.debug("Access Control initialised.")
   }, error = function(e){
     flog.error("Problems initialising authorisation class. Error message: %s", e)

@@ -42,8 +42,9 @@ Auth <- R6Class("Auth",
                     private$uidIdentifier      <- uidIdentifier
                     private$accessIdentifier   <- accessIdentifier
                     private$accessElIdentifier <- accessElIdentifier
-                    private$accessGroups       <- private$fetchAccessGroups(limit = groupLimit)
-                    
+                    #private$accessGroups       <- private$fetchAccessGroups(limit = groupLimit)
+                    private$accessGroups       <- c(private$uid, private$defaultGroup)
+                      
                     # specify column names for read / write permission columns
                     private$accessRIdentifier   <- paste0(accessIdentifier, "r")
                   },
