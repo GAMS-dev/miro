@@ -93,9 +93,15 @@ Scenario <- R6Class("Scenario",
                             }
                           }
                           if(length(duplicatedMetadata$perm)){
-                            private$readPerm  <- duplicatedMetadata$perm$readPerm
-                            private$writePerm <- duplicatedMetadata$perm$writePerm
-                            private$execPerm  <- duplicatedMetadata$perm$execPerm
+                            private$readPerm  <- vector2Csv(
+                              unique(c(private$uid, 
+                                       csv2Vector(duplicatedMetadata$perm$readPerm))))
+                            private$writePerm <- vector2Csv(
+                              unique(c(private$uid, 
+                                       csv2Vector(duplicatedMetadata$perm$writePerm))))
+                            private$execPerm  <- vector2Csv(
+                              unique(c(private$uid, 
+                                       csv2Vector(duplicatedMetadata$perm$execPerm))))
                           }
                         }else{
                           if(is.null(sid)){
