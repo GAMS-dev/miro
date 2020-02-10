@@ -946,6 +946,8 @@ if(!is.null(errMsg)){
         
         tmpDirToRemove     <- character(0L)
         
+        uidAdmin <- Sys.getenv("MIRO_ADMIN_USER", uid)
+        
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
           flog.info("New data: '%s' is being stored in the database. Please wait a until the import is finished.", miroDataFile)
@@ -971,7 +973,8 @@ if(!is.null(errMsg)){
             tmpDir <- miroDataDir
           }
           newScen <- Scenario$new(db = db, sname = gsub("\\.[^\\.]*$", "", miroDataFile), isNewScen = TRUE,
-                                  readPerm = c(uid, ugroups), execPerm = c(uid, ugroups))
+                                  readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
+                                  execPerm = c(uidAdmin, ugroups))
           dataOut <- loadScenData(scalarsOutName, modelOut, tmpDir, modelName, scalarsFileHeaders,
                                   modelOutTemplate, method = method, fileName = miroDataFile)$tabular
           dataIn  <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp, 
