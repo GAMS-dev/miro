@@ -914,6 +914,7 @@ if(!is.null(errMsg)){
   
   shinyApp(ui = ui_initError, server = server_initError)
 }else{
+  uidAdmin <<- Sys.getenv("MIRO_ADMIN_USER", uid)
   local({
     if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
       setWinProgressBar(pb, 0.6, label= "Importing new data")
@@ -946,8 +947,6 @@ if(!is.null(errMsg)){
         
         tmpDirToRemove     <- character(0L)
         
-        uidAdmin <- Sys.getenv("MIRO_ADMIN_USER", uid)
-        
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
           flog.info("New data: '%s' is being stored in the database. Please wait a until the import is finished.", miroDataFile)
@@ -974,7 +973,7 @@ if(!is.null(errMsg)){
           }
           newScen <- Scenario$new(db = db, sname = gsub("\\.[^\\.]*$", "", miroDataFile), isNewScen = TRUE,
                                   readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
-                                  execPerm = c(uidAdmin, ugroups))
+                                  execPerm = c(uidAdmin, ugroups), uid = uidAdmin)
           dataOut <- loadScenData(scalarsOutName, modelOut, tmpDir, modelName, scalarsFileHeaders,
                                   modelOutTemplate, method = method, fileName = miroDataFile)$tabular
           dataIn  <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp, 
@@ -1411,6 +1410,9 @@ if(!is.null(errMsg)){
       tryCatch({
         if(length(config$defaultScenName) && nchar(trimws(config$defaultScenName))){
           defSid <- db$getSid(config$defaultScenName)
+          if(identical(defSid, 0L) && !identical(uid, uidAdmin)){
+            defSid <- db$getSid(config$defaultScenName, uid = uidAdmin)
+          }
           if(!identical(defSid, 0L)){
             sidsToLoad <- list(defSid)
             rv$btOverwriteScen <- isolate(rv$btOverwriteScen) + 1L
