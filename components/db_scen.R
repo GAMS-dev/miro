@@ -5,7 +5,7 @@ Scenario <- R6Class("Scenario",
                       initialize                    = function(db, sid = NULL, sname = NULL,
                                                                readPerm = NULL, writePerm = NULL, execPerm = NULL,
                                                                tags = NULL, overwrite = FALSE, isNewScen = FALSE, 
-                                                               duplicatedMetadata = NULL){
+                                                               duplicatedMetadata = NULL, uid = NULL){
                         # Initialize scenario class
                         #
                         # Args:
@@ -19,11 +19,18 @@ Scenario <- R6Class("Scenario",
                         #   overwrite:         logical that specifies whether data should be overwritten or appended
                         #   isNewScen:         whether the scenario is not yet stored in the database
                         #   duplicatedMetadata: metadata information of to apply
+                        #   uid:               can be used to declare owner of the scenario (default is current user)
                         
                         #BEGIN error checks 
                         stopifnot(is.R6(db), is.logical(isNewScen), length(isNewScen) == 1L)
                         private$conn <- db$getConn()
-                        private$uid  <- db$getUid()
+                        if(length(uid) == 1L && is.character(uid)){
+                          private$uid <- uid
+                          private$userAccessGroups <- uid
+                        }else{
+                          private$uid  <- db$getUid()
+                          private$userAccessGroups    <- db$accessGroups
+                        }
                         if(is.null(sid)){
                           stopifnot(is.character(sname), length(sname) == 1)
                         }else{
@@ -59,7 +66,6 @@ Scenario <- R6Class("Scenario",
                         private$slocktimeLimit      <- db$getSlocktimeLimit
                         private$scenMetaColnames    <- db$getScenMetaColnames()
                         private$slocktimeIdentifier <- db$getSlocktimeIdentifier()
-                        private$userAccessGroups    <- db$accessGroups
                         private$tableNameMetadata   <- db$getTableNameMetadata()
                         private$tableNameScenLocks  <- db$getTableNameScenLocks()
                         private$tableNamesScenario  <- db$getTableNamesScenario()
