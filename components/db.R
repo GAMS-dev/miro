@@ -358,8 +358,12 @@ Db <- R6Class("Db",
                   
                   metadataRow <- self$importDataset(private$tableNameMetadata, tibble(
                     c(private$scenMetaColnames['uid'], 
-                      private$scenMetaColnames['sname']),
-                    c(uid, sname)), limit = 1L)
+                      private$scenMetaColnames['sname'],
+                      private$scenMetaColnames['scode']),
+                    c(uid, sname, if(private$hcubeActive) SCODEMAP[['hcube_jobconfig']] 
+                      else SCODEMAP[['scen']])), 
+                    limit = 1L)
+                  
                   if(nrow(metadataRow)){
                     return(as.integer(metadataRow[[private$scenMetaColnames['sid']]][1]))
                   }else{
