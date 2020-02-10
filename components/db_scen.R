@@ -327,9 +327,6 @@ Scenario <- R6Class("Scenario",
                           stopifnot(is.logical(execPerm), length(filePaths) == length(execPerm))
                         }
                         
-                        if(private$isReadonly()){
-                          stop("roException", call. = FALSE)
-                        }
                         if(length(forbiddenFnames)){
                           stopifnot(is.character(forbiddenFnames), length(forbiddenFnames) >= 1L)
                         }
