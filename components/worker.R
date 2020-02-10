@@ -879,10 +879,9 @@ Worker <- R6Class("Worker", public = list(
     }
     
     ret <- GET(paste0(private$metadata$url, "/jobs/", jID, "/text-entry/", 
-                      URLencode(text_entity)),
-               query = if(!is.null(teLength)) 
-                 list(start_position = startPos, 
-                      length = min(teLength - startPos, maxSize)),
+                      URLencode(text_entity), 
+                      if(!is.null(teLength)) paste0("?start_position=", startPos, 
+                                                    "&length=", min(teLength - startPos, maxSize))),
                add_headers(Authorization = private$authHeader,
                            Timestamp = as.character(Sys.time(), usetz = TRUE)),
                timeout(10L))
