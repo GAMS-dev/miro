@@ -66,7 +66,7 @@ Worker <- R6Class("Worker", public = list(
     ret <- GET(url = paste0(url, "/namespaces/", namespace, "/permissions/me"), 
                 add_headers(Authorization = private$authHeader,
                             Timestamp = as.character(Sys.time(), usetz = TRUE)), 
-                timeout(2L))
+                timeout(10L))
     if(identical(status_code(ret), 401L))
       stop(401L, call. = FALSE)
     
@@ -540,7 +540,7 @@ Worker <- R6Class("Worker", public = list(
                                self$getPid(jID), "/result"), 
                   add_headers(Authorization = private$authHeader,
                               Timestamp = as.character(Sys.time(), usetz = TRUE)), 
-                  timeout(4L))
+                  timeout(10L))
       if(!identical(status_code(ret), 200L)){
         stop(status_code(ret), call. = FALSE)}
         
@@ -860,7 +860,7 @@ Worker <- R6Class("Worker", public = list(
                          URLencode(text_entity)),
                   add_headers(Authorization = private$authHeader,
                               Timestamp = as.character(Sys.time(), usetz = TRUE)),
-                  timeout(4L))
+                  timeout(10L))
       
       if(!identical(status_code(ret), 200L)){
         return(status_code(ret))
@@ -1009,7 +1009,7 @@ Worker <- R6Class("Worker", public = list(
     ret <- DELETE(paste0(private$metadata$url, "/jobs/", private$process, "/unread-logs"), 
                   add_headers(Authorization = private$authHeader,
                               Timestamp = as.character(Sys.time(), usetz = TRUE)),
-                  timeout(2L))
+                  timeout(5L))
     statusCode <- status_code(ret)
     if(identical(statusCode, 200L)){
       responseContent <- tryCatch({
@@ -1178,7 +1178,7 @@ Worker <- R6Class("Worker", public = list(
       body = list(hard_kill = hardKill),
       add_headers(Authorization = private$authHeader,
                   Timestamp = as.character(Sys.time(), usetz = TRUE)),
-      timeout(2L)))
+      timeout(10L)))
     return(0L)
   },
   getHcubeJobProgressLocal = function(jID){
@@ -1207,7 +1207,7 @@ Worker <- R6Class("Worker", public = list(
       GET(url = paste0(private$metadata$url, "/hypercube/", self$getPid(jID), "/status"), 
           add_headers(Authorization = private$authHeader,
                       Timestamp = as.character(Sys.time(), usetz = TRUE)), 
-          timeout(2L)))
+          timeout(10L)))
     return(c(jobProgress$finished, jobProgress$job_count))
   },
   getHcubeJobStatusLocal = function(pID, jID){
@@ -1373,7 +1373,7 @@ Worker <- R6Class("Worker", public = list(
        !startsWith(private$metadata$url, "http://localhost")){
       return(FALSE)
     }
-    ret <- HEAD(private$metadata$url, timeout(4L))$url
+    ret <- HEAD(private$metadata$url, timeout(10L))$url
     if(startsWith(ret, "https://") ||
        identical(ret, "http://localhost") ||
        startsWith(ret, "http://localhost:") ||
@@ -1386,13 +1386,13 @@ Worker <- R6Class("Worker", public = list(
     return(status_code(HEAD(paste0(private$metadata$url, "/jobs"), 
                             add_headers(Authorization = private$authHeader,
                                         Timestamp = as.character(Sys.time(), usetz = TRUE)),
-                            timeout(4L))))
+                            timeout(10L))))
   },
   registerUser = function(){
     private$validateAPIResponse(POST(paste0(private$metadata$url, "/users/?username=", 
                                             private$metadata$username, "&password=", 
                                             private$metadata$password), 
-                                     timeout(4L)))
+                                     timeout(10L)))
     return(invisible(self))
   }
 ))

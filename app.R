@@ -1112,7 +1112,7 @@ if(!is.null(errMsg)){
                                            extraClArgs = config$extraClArgs, 
                                            saveTraceFile = config$saveTraceFile,
                                            modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
-                                           timeout = 8L, serverOS = getOS(), modelData = modelData, hcubeMode = LAUNCHHCUBEMODE,
+                                           timeout = 10L, serverOS = getOS(), modelData = modelData, hcubeMode = LAUNCHHCUBEMODE,
                                            rememberMeFileName = rememberMeFileName), 
                            remote = config$activateModules$remoteExecution,
                            hcube = LAUNCHHCUBEMODE,
