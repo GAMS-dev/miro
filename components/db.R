@@ -49,7 +49,7 @@ Db <- R6Class("Db",
                   
                   private$uid                         <- uid
                   if(length(ugroups) >= 1L && is.character(ugroups)){
-                    private$userAccessGroups <- ugroups
+                    private$userAccessGroups <- c(uid, ugroups)
                   }else{
                     private$userAccessGroups <- uid
                   }
