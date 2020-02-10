@@ -586,7 +586,7 @@ if(is.null(errMsg)){
                    attachmentConfig = if(config$activateModules$attachments) 
                      list(maxSize = attachMaxFileSize, maxNo = attachMaxNo)
                    else NULL,
-                   hcubeActive = LAUNCHHCUBEMODE)
+                   hcubeActive = LAUNCHHCUBEMODE, ugroups = ugroups)
     conn <- db$getConn()
     flog.debug("Database connection established.")
   }, error = function(e){

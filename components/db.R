@@ -3,7 +3,7 @@ Db <- R6Class("Db",
               public = list(
                 initialize        = function(uid, dbConf, dbSchema, slocktimeLimit, modelName,
                                              traceColNames = NULL, attachmentConfig = NULL, 
-                                             hcubeActive = FALSE){
+                                             hcubeActive = FALSE, ugroups = character(0L)){
                   # Initialize database class
                   #
                   # Args:
@@ -15,6 +15,7 @@ Db <- R6Class("Db",
                   #   slocktimeLimit:      maximum duration a lock is allowed to persist 
                   #   attachmentConfig:    attachment module configuration
                   #   hcubeActive:         boolean that specifies whether Hypercube mode is currently active
+                  #   ugroups:             user group(s) (optional)
                   
                   #BEGIN error checks 
                   if(is.null(private$info$isInitialized)){
@@ -47,7 +48,11 @@ Db <- R6Class("Db",
                   #END error checks 
                   
                   private$uid                         <- uid
-                  private$userAccessGroups            <- uid
+                  if(length(ugroups) >= 1L && is.character(ugroups)){
+                    private$userAccessGroups <- ugroups
+                  }else{
+                    private$userAccessGroups <- uid
+                  }
                   private$modelName                   <- modelName
                   private$dbSchema                    <- dbSchema
                   private$scenMetaColnames            <- dbSchema$colNames[['_scenMeta']]
