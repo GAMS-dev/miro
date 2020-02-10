@@ -565,9 +565,7 @@ Scenario <- R6Class("Scenario",
                         #   R6 object (reference to itself)
                         
                         stopifnot(is.character(fileNames), length(fileNames) > 0L)
-                        if(private$isReadonly()){
-                          stop("Attachment could not be removed as scenario is readonly (Scenario.removeAttachments).", call. = FALSE)
-                        }
+                        
                         localFiles <- match(fileNames, basename(private$localAttachments$filePaths))
                         localFilesToRemoveId <- localFiles[!is.na(localFiles)]
                         
