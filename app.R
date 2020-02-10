@@ -313,6 +313,7 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
       lang <- fromJSON(file.path(".", "conf", paste0(overwriteLang, ".json")),
                        simplifyDataFrame = FALSE, 
                        simplifyMatrix = FALSE)
+      config$language <- overwriteLang
     }
   }
 }
