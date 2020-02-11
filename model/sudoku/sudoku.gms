@@ -28,18 +28,23 @@ row8                5         8         2
 row9                3    7
 ;
 $offExternalInput
-initial_state(row,col)$mapVal(initial_state(row,col)) = 0;
+
+parameter initial_state_clean(row,col);
+
+initial_state_clean(row,col) = initial_state(row,col);
+initial_state_clean(row,col)$mapVal(initial_state_clean(row,col)) = 0;
+
 set error01(row,col);
-error01(row,col) = initial_state(row,col) < 0 or initial_state(row,col) > 9 or mod(initial_state(row,col),1) <> 0;
+error01(row,col) = initial_state_clean(row,col) < 0 or initial_state_clean(row,col) > 9 or mod(initial_state_clean(row,col),1) <> 0;
 
 file log / miro.log /;
 put log '------------------------------------'/;
 put log '        Data validation'/;
 put log '------------------------------------'/;
 if(card(error01),
-  put log 'initial_state:: Digits must be integers between 0 and 9!'/;
+  put log 'initial_state_clean:: Digits must be integers between 0 and 9!'/;
   loop(error01(row,col),
-      put log / ' Cell "' row.tl:4 ':' col.tl:4 '" has invalid value of ' initial_state(row,col):0;
+      put log / ' Cell "' row.tl:4 ':' col.tl:4 '" has invalid value of ' initial_state_clean(row,col):0;
     );
   abort "Data errors detected."
 );
@@ -70,7 +75,7 @@ eq_z..
 
 model sudoku /all/;
 
-x.fx(col,row,val)$(initial_state(row,col) = ord(val)) = 1;
+x.fx(col,row,val)$(initial_state_clean(row,col) = ord(val)) = 1;
 sudoku.optFile   = 1;
 putClose fcpx 'solnpool solnpool.gdx' / 'solnpoolintensity 4' / 'solnpoolpop 2';
 
@@ -94,4 +99,4 @@ if(force_unique_sol and card(solnpool) > 1,
 $onExternalOutput
 table results(row,col);
 $offExternalOutput
-results(row,col) = sum(val$x.l(col,row,val), ord(val)) * (1-2$(initial_state(row,col)>0.5));
+results(row,col) = sum(val$x.l(col,row,val), ord(val)) * (1-2$(initial_state_clean(row,col)>0.5));
