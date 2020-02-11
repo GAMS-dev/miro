@@ -687,7 +687,7 @@ parseLabel <- function(label, colNames){
   label <- gsub("\\", "\\\\", label, fixed = TRUE)
   label <- gsub('"', '\\"', label, fixed = TRUE)
   for(colName in colNames){
-    label <- gsub(paste0("[", colName, "]"), paste0('",data$', colName, ',"'), 
+    label <- gsub(paste0("[", colName, "]"), paste0('",data[[\'', colName, '\']],"'), 
                   label, fixed = TRUE)
   }
   return(parse(text = paste0('paste0("', label, '")')))
