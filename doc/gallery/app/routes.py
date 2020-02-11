@@ -121,14 +121,14 @@ def add_app():
         logging.info(f"No valid E-mail specified: {author_mail}.")
         return jsonify({"status": 1, "message":"E-Mail entered is invalid. Please enter a valid E-mail address."}), 200
 
-    new_app_dir_name = secure_filename(author_name.lower() + "_" + model_name)
+    new_app_dir_name = os.path.join("data", "user_apps", secure_filename(author_name.lower() + "_" + model_name))
     try:
         i = 1
         while os.path.isdir(new_app_dir_name):
             new_app_dir_name += str(i)
             i += 1
 
-        os.mkdir(new_app_dir_name)
+        os.makedirs(new_app_dir_name)
     except OSError as e:
         logging.error(f"Problems creating directory: {new_app_dir_name}. Error message: {str(e)}")
         return jsonify({"status": 1, "message": "An unexpected error occurred"}), 200
