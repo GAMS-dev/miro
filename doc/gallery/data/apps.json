@@ -47,6 +47,13 @@
         "author": "GAMS Development Corp", 
         "desc": "Maximal area Inscribed Square Problem", 
         "upvotes": 0
+    },
+    {
+        "id": "simple_mip", 
+        "title": "Simple", 
+        "author": "GAMS Development Corp", 
+        "desc": "Simplified Energy Systems Model", 
+        "upvotes": 0
     }
     ]
 }
