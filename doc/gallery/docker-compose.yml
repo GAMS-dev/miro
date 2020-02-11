@@ -4,7 +4,7 @@ services:
     build: ./
     environment:
       - MAIL_USER=${MAIL_USER}
-      - MAIL_PASSWROD=${MAIL_PASSWROD}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
     restart: always
     ports:
       - "7654:5000"
