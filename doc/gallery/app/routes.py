@@ -145,10 +145,11 @@ author: {author_name}\nemail: {author_mail}")
         return jsonify({"status": 1, "message": "An unexpected error occurred"}), 200
 
     try:
-        msg = Message(f"New MIRO app: {model_name} from: {author_mail} uploaded.",
-                  sender="miro@gams.com",
+        msg = Message(f"New MIRO app",
+                  sender="noreply@gams.com",
                   recipients=["miro@gams.com"])
-        with app.open_resource(miro_app_filepath) as fp:
+        msg.body = f"New MIRO app: {model_name} from: {author_name} ({author_mail}) uploaded. App description: {app_desc}"
+        with app.open_resource(os.path.join("..", miro_app_filepath)) as fp:
             msg.attach(secure_filename(miro_app_filename), "application/zip", fp.read())
         mail.send(msg)
     except Exception as e:

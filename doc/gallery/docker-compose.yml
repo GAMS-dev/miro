@@ -5,6 +5,7 @@ services:
     environment:
       - MAIL_USER=${MAIL_USER}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_SERVER=${MAIL_SERVER}
     restart: always
     ports:
       - "7654:5000"
