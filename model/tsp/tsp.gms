@@ -10,8 +10,8 @@ separate Python packages) one can set the switch to 0. In that case, the cities
 are defined through the table "iilocDataRaw" and the user has to specify lat/lng
 herself. Distances are calculated in GAMS in this case.
 
-Keywords: mixed integer linear programming, traveling salesman problem, Miller-
-          Tucker-Zemlin subtour elimination, iterative subtour elimination
+Keywords: mixed integer linear programming, traveling salesman problem,
+          iterative subtour elimination
 $offText
 
 File log / tspMiro.log /; put log;
@@ -146,24 +146,7 @@ put '------------------------------------------------------'/;
 
 i(ii)$(ord(ii) <= maxCities) = yes;
 
-* Build compact TSP model
-Positive Variable p(ii) 'position in tour';
-
-Equations defMTZ(ii,jj) 'Miller, Tucker and Zemlin subtour elimination';
-
-defMTZ(i,j).. p(i) - p(j) =l= card(j) - card(j)*x(i,j) - 1 + card(j)$(j.pos = 1);
-
-Model MTZ / all /;
-
-p.fx(j)$(j.pos = 1) = 0;
-p.up(j) = card(j) - 1;
-
-option optCr = 0, resLim = 30;
-
-solve MTZ min z using mip;
-
 * Dynamic subtour elimination
-$set cc
 Set
    ste         'possible subtour elimination cuts' / c1*c100000 /
    a(ste)      'active cuts'
@@ -179,12 +162,13 @@ Equation defste(ste) 'subtour elimination cut';
 
 defste(a).. sum((i,j), cc(a,i,j)*x(i,j)) =l= rhs(a);
 
-Model DSE / rowsum, colsum, objective, defste /;
+Model DSE / all /;
 
 a(ste)    = no;
 cc(a,i,j) =  0;
 rhs(a)    =  0;
 
+option optCr = 0, resLim = 30;
 option limRow = 0, limCol = 0, solPrint = silent, solveLink = 5;
 
 loop(ste$(proceed and ord(ste)<maxCuts),

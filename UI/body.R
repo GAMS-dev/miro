@@ -45,35 +45,6 @@ inputTabContent <- lapply(seq_along(inputTabs), function(tabId) {
   content <- lapply(inputTabs[[tabId]], function(i){
     hasDependency <- !is.null(modelInWithDep[[names(modelIn)[[i]]]])
     tabContent <- switch(modelIn[[i]]$type,
-                         hot = ,
-                         dt = {
-                           tagList(
-                             tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                             tags$div(id = paste0("data-in_", i), {
-                               if(modelIn[[i]]$type == "hot"){
-                                 rHandsontableOutput(paste0("in_", i))
-                               }else{
-                                 dataTableOutput(paste0("in_", i))
-                               }
-                             }),
-                             tags$div(id = paste0("graph-in_", i), class = "render-output", 
-                                      style = paste0("padding:1px;display:none;", if(!is.null(configGraphsIn[[i]]$height)) 
-                                        sprintf("min-height: %s;", addCssDim(configGraphsIn[[i]]$height, 5))),
-                                      tryCatch({
-                                        renderDataUI(paste0("in_", i), type = configGraphsIn[[i]]$outType, 
-                                                     graphTool = configGraphsIn[[i]]$graph$tool, 
-                                                     customOptions = configGraphsIn[[i]]$options,
-                                                     filterOptions = configGraphsIn[[i]]$graph$filter,
-                                                     height = configGraphsIn[[i]]$height, 
-                                                     noDataTxt = lang$nav$outputScreen$boxResults$noData,
-                                                     createdDynamically = TRUE)
-                                      }, error = function(e) {
-                                        flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
-                                        errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
-                                        showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
-                                      })
-                             ))
-                         },
                          slider = {
                            if(hasDependency){
                              sliderStepSize <- 1L
@@ -271,22 +242,33 @@ inputTabContent <- lapply(seq_along(inputTabs), function(tabId) {
                            tagList(
                              tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
                              tags$div(id = paste0("data-in_", i), {
-                               tryCatch({
-                                 generateDataUI(paste0("data-in_", i), type = modelIn[[i]]$rendererName,
-                                                customOptions = modelIn[[i]]$options,
-                                                height = modelIn[[i]]$height)
-                               }, error = function(e) {
-                                 flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
-                                 errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
-                                 showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
-                               })
+                               if(modelIn[[i]]$type == "hot"){
+                                 rHandsontableOutput(paste0("in_", i))
+                               }else if(modelIn[[i]]$type == "dt"){
+                                 dataTableOutput(paste0("in_", i))
+                               }else{
+                                 tryCatch({
+                                   generateDataUI(paste0("data-in_", i), type = modelIn[[i]]$rendererName,
+                                                  customOptions = modelIn[[i]]$options,
+                                                  height = modelIn[[i]]$height)
+                                 }, error = function(e) {
+                                   flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
+                                   errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
+                                   showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
+                                 })
+                               }
                              }),
                              tags$div(id = paste0("graph-in_", i), class = "render-output", 
                                       style = paste0("padding:1px;display:none;", if(!is.null(configGraphsIn[[i]]$height)) 
                                         sprintf("min-height: %s;", addCssDim(configGraphsIn[[i]]$height, 5))),
                                       tryCatch({
-                                        renderDataUI(paste0("in_", i), type = "datatable",
-                                                     noDataTxt = lang$nav$outputScreen$boxResults$noData)
+                                        renderDataUI(paste0("in_", i), type = configGraphsIn[[i]]$outType, 
+                                                     graphTool = configGraphsIn[[i]]$graph$tool, 
+                                                     customOptions = configGraphsIn[[i]]$options,
+                                                     filterOptions = configGraphsIn[[i]]$graph$filter,
+                                                     height = configGraphsIn[[i]]$height, 
+                                                     noDataTxt = lang$nav$outputScreen$boxResults$noData,
+                                                     createdDynamically = TRUE)
                                       }, error = function(e) {
                                         flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
                                         errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
