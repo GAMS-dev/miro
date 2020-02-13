@@ -798,7 +798,7 @@ if(is.null(errMsg)){
         }
       }
     }
-    if(identical(modelIn[[i]]$type, "custom")){
+    if(identical(modelIn[[i]]$type, "custom") && !length(configGraphsIn[[i]])){
       # make sure custom inputs have graph button activated (table is displayed there)
       configGraphsIn[[i]] <<- list(outType = "datatable", 
                                    rendererName = modelIn[[i]]$rendererName,
