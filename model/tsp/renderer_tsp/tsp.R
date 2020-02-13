@@ -26,35 +26,56 @@ renderTsp <- function(input, output, session, data, options = NULL, path = NULL)
   })
   
   rv <- reactiveValues(markerPositions = dataTmp)
+  init <- FALSE
   
-  observeEvent(input$tsp_input_marker_click, {
-    markerId <- input$tsp_input_marker_click$id
-    rv$markerPositions[[markerId]] <<- NULL
-    leafletProxy("tsp_input") %>%
-      removeMarker(markerId)
+  observe({
+    input$tsp_input_marker_click
+    if(!init){
+      return()
+    }
+    isolate({
+      markerId <- input$tsp_input_marker_click$id
+      rv$markerPositions[[markerId]] <<- NULL
+      leafletProxy("tsp_input") %>%
+        removeMarker(markerId)
+    })
   })
-  observeEvent(input$tsp_input_marker_dragend, {
-    markerId <- input$tsp_input_marker_dragend$id
-    rv$markerPositions[[markerId]] <<- list(lat = input$tsp_input_marker_dragend$lat,
-                                            lng = input$tsp_input_marker_dragend$lng)
+  observe({
+    input$tsp_input_marker_dragend
+    if(!init){
+      return()
+    }
+    isolate({
+      markerId <- input$tsp_input_marker_dragend$id
+      rv$markerPositions[[markerId]] <<- list(lat = input$tsp_input_marker_dragend$lat,
+                                              lng = input$tsp_input_marker_dragend$lng)
+    })
   })
   
-  observeEvent(input$tsp_input_click, {
-    markerId <- paste0("Location", markerCnt)
-    newMarker <- list(lat = input$tsp_input_click$lat, 
-                      lng = input$tsp_input_click$lng)
-    rv$markerPositions[[markerId]] <<- newMarker
-    markerCnt <<- markerCnt + 1L
-    
-    leafletProxy("tsp_input") %>%
-      addMarkers(lat = newMarker$lat, lng = newMarker$lng, group = "markers",
-                 options = markerOptions(draggable = TRUE), layerId = markerId) 
+  observe({
+    input$tsp_input_click
+    if(!init){
+      init <<- TRUE
+      return()
+    }
+    isolate({
+      markerId <- paste0("Location", markerCnt)
+      newMarker <- list(lat = input$tsp_input_click$lat, 
+                        lng = input$tsp_input_click$lng)
+      rv$markerPositions[[markerId]] <<- newMarker
+      markerCnt <<- markerCnt + 1L
+      
+      leafletProxy("tsp_input") %>%
+        addMarkers(lat = newMarker$lat, lng = newMarker$lng, group = "markers",
+                   options = markerOptions(draggable = TRUE), layerId = markerId) 
+    })
   })
   return(reactive({
     if(!length(rv$markerPositions)){
       return(tibble(u = character(0L), lat= numeric(0L), lng = numeric(0L)))
     }
-    return(tibble(u = names(rv$markerPositions), lat = vapply(rv$markerPositions, "[[", numeric(1L), "lat"),
+    return(tibble(u = names(rv$markerPositions), 
+                  lat = vapply(rv$markerPositions, "[[", numeric(1L), "lat"),
                   lng = vapply(rv$markerPositions, "[[", numeric(1L), "lng")))
   }))
 }
