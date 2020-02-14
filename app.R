@@ -1,5 +1,5 @@
 #version number
-MIROVersion <- "0.9.84"
+MIROVersion <- "0.9.85"
 APIVersion  <- "1"
 MIRORDate   <- "Feb 13 2020"
 #####packages:
@@ -383,7 +383,7 @@ if(is.null(errMsg) && debugMode){
   requiredPackagesCR <<- NULL
   
   if(!LAUNCHCONFIGMODE){
-    for(customRendererConfig in c(configGraphsOut, configGraphsIn)){
+    for(customRendererConfig in c(configGraphsOut, configGraphsIn, config$inputWidgets)){
       # check whether non standard renderers were defined in graph config
       if(!is.null(customRendererConfig$rendererName)){
         customRendererConfig$outType <- customRendererConfig$rendererName
