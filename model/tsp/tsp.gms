@@ -1,14 +1,10 @@
 $onText
 This is based on tsp5 from the GAMS model library.
 
-There is an important "input switch" called "useGeoCoder". If set to 1, the cities
-to connect a read from the table "iii". Lat/Lng data is filled in automatically
-using the Python package "geocoder" (which has to be installed). In this case also
-the distances between the cities are calculated in Python. For this step the packages
-"itertools" and "geopy" are used. Alternatively (e.g. because one cannot install
-separate Python packages) one can set the switch to 0. In that case, the cities
-are defined through the table "iilocDataRaw" and the user has to specify lat/lng
-herself. Distances are calculated in GAMS in this case.
+The shortest round trip is calculated for a set of cities. The distance
+between these cities is calculated as crow flight distance based on the
+latitude and longitude of the cities specified in parameter iiLocData.
+
 
 Keywords: mixed integer linear programming, traveling salesman problem,
           iterative subtour elimination
