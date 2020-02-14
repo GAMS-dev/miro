@@ -1,6 +1,6 @@
 {
   "overwriteSheetOrder": {
-    "input": ["_widgets", "iii", "iilocdataraw", "_scalars"],
+    "input": ["_widgets", "iilocdata", "_scalars"],
     "output": ["tourdetails", "_scalars_out"]
   },
   "pivottable": {
@@ -69,7 +69,7 @@
       },
       "height": 700
     },
-    "iilocdataraw": {
+    "iilocdata": {
       "outType": "dtGraph",
       "graph": {
         "title": "",
@@ -106,15 +106,10 @@
   },
   "defaultScenName": "default",
   "inputWidgets": {
-    "usegeocoder": {
-      "widgetType": "dropdown",
-      "alias": "Input Mode",
-      "choices": ["1", "0"],
-      "selected": "0",
-      "noHcube": false,
-      "multiple": false,
-      "label": "Select Input Mode",
-      "aliases": ["Use Python geoCode package (Input Mode A)", "User provides city location (Input Mode B)"]
+    "iilocdata": {
+      "widgetType": "custom",
+      "rendererName": "tsp",
+      "alias": "City location information"
     },
     "_scalars": {
       "widgetType": "table",
