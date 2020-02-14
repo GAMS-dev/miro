@@ -1341,6 +1341,7 @@
         "general": "General",
         "xaxis": "X axis",
         "yaxis": "Y axis",
+        "ydata": "Y data",
         "filterDomain": "Filter & Domains",
         "filter": "Filter",
         "animation": "Animation",
@@ -1383,6 +1384,8 @@
       "updateToolScalars": ["标量值的值框"],
       "updateToolNoScalars": ["饼图", "柱形图", "散点图", "折线图", "气泡图", "直方图", "时间序列图形工具", "地图工具", "甘特图", "数据透视表", "自定义绘制器"],
       "axisOptions":{
+        "leftAxis": "left axis",
+        "rightAxis": "right axis",
         "title": "轴标签",
         "showgrid": "显示网格",
         "zeroline": "显示零线",
@@ -1692,6 +1695,8 @@
         "addScatterDataEl":{
           "chartYdata": "在y轴上绘制什么？",
           "chartYlabel": "Data label (e.g. for legend)",
+          "yaxis": "Axis position",
+          "yaxisChoices": ["left", "right"],
           "symbol": "选择标记符号",
           "symbolChoices": ["_", "圆圈", "空心圆圈", "方形", "空心方形", "菱形","空心菱形", "加号", "空心加号", "叉号", "空心叉号", "正三角","空心正三角", "反三角", "空心反三角", "五边形", "空心五边形", "六边形", "空心六边形", "八边形", "空心八边形", "五角星", "空心五角星", "六芒星","空心六芒星", "星号", "空心星号", "井号", "空心井号","东西线", "空心东西线", "南北线", "空心南北线"],
           "color": "选择标记颜色",
@@ -1704,6 +1709,8 @@
         "addLineDataEl":{
           "chartYdata": "在y轴上绘制什么？",
           "chartYlabel": "Data label (e.g. for legend)",
+          "yaxis": "Axis position",
+          "yaxisChoices": ["left", "right"],
           "color": "选择线条颜色",
           "width": "选择线条宽度",
           "shape": "选择线条",

@@ -20,6 +20,7 @@ optionsInserted  <- c()
 noOutputData     <- TRUE
 allDataAvailable <- FALSE
 leafletGroups    <- CharArray$new()
+axisOptionsGlobal <- list(y = 1, y2 = 0)
 
 langSpecificGraphs <- list()
 langSpecificGraphs$barmode <- c("group" = "group", "stack" = "stack")
@@ -231,7 +232,38 @@ changeActiveSymbol <- function(id){
   rv$initData <- FALSE
   rv$initData <- TRUE
 }
-
+updateYAxes  <- function(){
+  if(axisOptionsGlobal$y > 0L){
+    rv$graphConfig$graph$yaxis <<- list(title = if(!is.null(input$y_title) && length(input$y_title)) input$y_title else "",
+                                        showgrid = if(!is.null(input$y_showgrid) && length(input$y_showgrid)) input$y_showgrid else FALSE,
+                                        zeroline = if(!is.null(input$y_zeroline) && length(input$y_zeroline)) input$y_zeroline else FALSE,
+                                        showticklabels = if(!is.null(input$y_showticklabels) && length(input$y_showticklabels)) input$y_showticklabels else FALSE,
+                                        categoryorder = if(!is.null(input$y_categoryorder) && length(input$y_categoryorder)) input$y_categoryorder else "trace",
+                                        rangefrom = if(!is.null(input$y_rangefrom) && length(input$y_rangefrom)) input$y_rangefrom else NULL,
+                                        rangeto = if(!is.null(input$y_rangeto) && length(input$y_rangeto)) input$y_rangeto else NULL)
+    showEl(session, "#left_yaxis")
+  }else{
+    rv$graphConfig$graph$yaxis <<- list()
+    rv$graphConfig$graph$yaxis <<- list(title = "",
+                                        showgrid = FALSE,
+                                        zeroline = FALSE,
+                                        showticklabels = FALSE)
+    hideEl(session, "#left_yaxis")
+  }
+  if(axisOptionsGlobal$y2 > 0L){
+    rv$graphConfig$graph$y2axis <<- list(title = if(!is.null(input$y2_title) && length(input$y2_title)) input$y2_title else "",
+                                         showgrid = if(!is.null(input$y2_showgrid) && length(input$y2_showgrid)) input$y2_showgrid else FALSE,
+                                         zeroline = if(!is.null(input$y2_zeroline) && length(input$y2_zeroline)) input$y2_zeroline else FALSE,
+                                         showticklabels = if(!is.null(input$y2_showticklabels) && length(input$y2_showticklabels)) input$y2_showticklabels else FALSE,
+                                         categoryorder = if(!is.null(input$y2_categoryorder) && length(input$y2_categoryorder)) input$y2_categoryorder else "trace",
+                                         rangefrom = if(!is.null(input$y2_rangefrom) && length(input$y2_rangefrom)) input$y2_rangefrom else NULL,
+                                         rangeto = if(!is.null(input$y2_rangeto) && length(input$y2_rangeto)) input$y2_rangeto else NULL)
+    showEl(session, "#right_yaxis")
+  }else{
+    rv$graphConfig$graph$y2axis <<- NULL
+    hideEl(session, "#right_yaxis")
+  }
+}
 
 
 
@@ -845,6 +877,17 @@ observeEvent(input$marker_line_color, {
   else
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_line_color[1])]]]]$marker$line$color <<- NULL
 }, priority = -500)
+observeEvent(input$trace_yaxis, {
+  if(identical(input$trace_yaxis[2], "y2")){
+    axisOptionsGlobal$y <<- axisOptionsGlobal$y-1L
+    axisOptionsGlobal$y2 <<- axisOptionsGlobal$y2+1L
+  }else{
+    axisOptionsGlobal$y <<- axisOptionsGlobal$y+1L
+    axisOptionsGlobal$y2 <<- axisOptionsGlobal$y2-1L
+  }
+  updateYAxes()
+  rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$trace_yaxis[1])]]]]$yaxis <<- input$trace_yaxis[2]
+}, priority = -500)
 observeEvent(input$line_fill, {
   if(nchar(input$line_fill[2]))
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$line_fill[1])]]]]$fill <<- input$line_fill[2]
@@ -874,14 +917,6 @@ observeEvent(input$trace_legend, {
 }, priority = -500)
 observeEvent(input$trace_frame, {
   if(!is.null(input$trace_frame[2]) && (!identical(input$trace_frame[2], "_"))){
-    # rv$graphConfig$graph$animation <- list(easing = "linear",
-    #                                        mode = "immediate",
-    #                                        redraw = TRUE,
-    #                                        frame = 2e-06,
-    #                                        transition = 2e-06,
-    #                                        slider = list(fontcolor = "#000000",
-    #                                                      hide = FALSE))
-    # 
     frameTmp <- if(!is.null(input$animation_frame) && length(input$animation_frame)) {
       1000/input$animation_frame
     }else {
@@ -1302,6 +1337,39 @@ observeEvent(input$y_rangeto, {
   }
   rv$graphConfig$graph$yaxis$rangeto <<- val
 })
+observeEvent(input$y2_title, {
+  rv$graphConfig$graph$y2axis$title <<- input$y2_title
+})
+observeEvent(input$y2_categoryorder, {
+  rv$graphConfig$graph$y2axis$categoryorder <<- input$y2_categoryorder
+})
+observeEvent(input$y2_showgrid, {
+  rv$graphConfig$graph$y2axis$showgrid <<- input$y2_showgrid
+})
+observeEvent(input$y2_zeroline, {
+  rv$graphConfig$graph$y2axis$zeroline <<- input$y2_zeroline
+})
+observeEvent(input$y2_showticklabels, {
+  rv$graphConfig$graph$y2axis$showticklabels <<- input$y2_showticklabels
+})
+observeEvent(input$y2_rangefrom, {
+  val <- NULL
+  if(nchar(input$y2_rangefrom)){
+    val <- suppressWarnings(as.numeric(input$y2_rangefrom))
+    if(is.na(val))
+      val <- input$y2_rangefrom
+  }
+  rv$graphConfig$graph$y2axis$rangefrom <<- val
+})
+observeEvent(input$y2_rangeto, {
+  val <- NULL
+  if(nchar(input$y2_rangeto)){
+    val <- suppressWarnings(as.numeric(input$y2_rangeto))
+    if(is.na(val))
+      val <- input$y2_rangeto
+  }
+  rv$graphConfig$graph$y2axis$rangeto <<- val
+})
 observeEvent(input$hist_label, {
   if(nchar(input$hist_label[[2]]))
     rv$graphConfig$graph$xdata[[idLabelMap$hist_xdata[[as.integer(input$hist_label[1])]]]]$labels <<- input$hist_label[2]
@@ -1414,6 +1482,8 @@ observeEvent(input$add_array_el, {
     label       <- names(activeSymbol$indices)[match(chart_label, activeSymbol$indices)][1]
     if(input$chart_tool %in% plotlyChartTools){
       if(identical(input$chart_tool, "scatter")){
+        axisOptionsGlobal$y <<- axisOptionsGlobal$y + 1L
+        updateYAxes()
         newContent  <- list(label = label, 
                             mode = "markers",
                             fill = "none",
@@ -1422,7 +1492,8 @@ observeEvent(input$add_array_el, {
                               size = 6L,
                               line = list(width = 0L)
                             ),
-                            showlegend = TRUE)
+                            showlegend = TRUE,
+                            yaxis = "y")
       }else if(identical(input$chart_tool, "bubble")){
         newContent  <- list(label = label, 
                             mode = "markers",
@@ -1436,13 +1507,16 @@ observeEvent(input$add_array_el, {
                             ),
                             showlegend = TRUE)
       }else if(identical(input$chart_tool, "line")){
+        axisOptionsGlobal$y <<- axisOptionsGlobal$y + 1L
+        updateYAxes()
         newContent  <- list(label = label, 
                             mode = "lines",
                             line = list(
                               width = 2L,
                               shape = "linear",
                               dash = "solid"),
-                            showlegend = TRUE)
+                            showlegend = TRUE,
+                            yaxis = "y")
       }else{
         newContent <- list(label = label,
                            mode = "lines",
@@ -1520,6 +1594,14 @@ observeEvent(input$remove_array_el, {
     JSON_id     <- "ydata"
   }
   chart_label <- idLabelMap[[array_id]][[el_id]]
+  
+  if(length(rv$graphConfig$graph[[JSON_id]][[chart_label]]$yaxis)){
+    if(identical(rv$graphConfig$graph[[JSON_id]][[chart_label]]$yaxis, "y"))
+      axisOptionsGlobal$y <<- axisOptionsGlobal$y-1L
+    if(identical(rv$graphConfig$graph[[JSON_id]][[chart_label]]$yaxis, "y2"))
+      axisOptionsGlobal$y2 <<- axisOptionsGlobal$y-1L
+    updateYAxes()
+  }
   if(sum(input$remove_array_el[2] == chart_label) < 1.5){
     rv$graphConfig$graph[[JSON_id]][chart_label] <- NULL
   }
@@ -1656,6 +1738,7 @@ observeEvent({
       insertUI(selector = "#tool_options", getBarOptions(), where = "beforeEnd")
       allDataAvailable <<- TRUE
     }else if(identical(chartTool, "scatter")){
+      axisOptionsGlobal <- list(y = 1, y2 = 0)
       rv$resetRE <- rv$resetRE + 1L
       rv$graphConfig$graph$type <<- "scatter"
       showEl(session, ".category-btn-scatter")
@@ -1663,6 +1746,7 @@ observeEvent({
       insertUI(selector = "#tool_options", getScatterOptions(), where = "beforeEnd")
       allDataAvailable <<- TRUE
     }else if(identical(chartTool, "line")){
+      axisOptionsGlobal <- list(y = 1, y2 = 0)
       rv$resetRE <- rv$resetRE + 1L
       rv$graphConfig$graph$type <<- "scatter"
       showEl(session, ".category-btn-line")
@@ -1771,10 +1855,19 @@ getChartOptions <- reactive({
                          choices = indices),
              getAxisOptions("x", names(indices)[1])
     ),
-    tags$div(class="cat-body cat-body-4 cat-body-9 cat-body-14 cat-body-19", style="display:none;",
+    tags$div(class="cat-body cat-body-50 cat-body-51 cat-body-52 cat-body-53", style="display:none;",
              createArray(session, "chart_ydata", lang$adminMode$graphs$chartOptions$ydata, isolate(input$chart_tool), 
-                         class_outer="array-wrapper-outer-graph", hr = FALSE),
-             getAxisOptions("y", names(scalarIndices)[1])
+                         class_outer="array-wrapper-outer-graph", hr = FALSE)
+    ),
+    tags$div(class="cat-body cat-body-4 cat-body-9 cat-body-14 cat-body-19", style="display:none;",
+             #getAxisOptions("y", names(scalarIndices)[1]),
+             tags$div(id = "left_yaxis", class = "shiny-input-container",
+                      optionSection(lang$adminMode$graphs$axisOptions$leftAxis,
+                                    getAxisOptions("y", names(scalarIndices)[1]))),
+             tags$div(id = "right_yaxis", class = "shiny-input-container", 
+                      
+                      style = "display: none;", 
+                      optionSection(lang$adminMode$graphs$axisOptions$rightAxis, getAxisOptions("y2", names(scalarIndices)[1])))
     ),
     tags$div(class="cat-body cat-body-5 cat-body-10 cat-body-15 cat-body-20", style="display:none;",
              getColorPivotOptions(),
@@ -1834,7 +1927,7 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
   tagList(
     textInput(id %+% "_title", lang$adminMode$graphs$axisOptions$title, value = title),
     selectInput(id %+% "_categoryorder", "axis order", choices = langSpecificGraphs$categoryorderChoices),
-    if(!identical(rv$graphConfig$graph$type, "pie") && identical(id, "y")){
+    if(!identical(rv$graphConfig$graph$type, "pie") && (identical(id, "y") || identical(id, "y2"))){
       tags$div(class = "shiny-input-container", style = "display:inline-block;",
                tags$div(
                         tags$div(style = "max-width:400px;",
@@ -1930,7 +2023,8 @@ getScatterOptions  <- reactive({
                                                                   size = 6L,
                                                                   line = list(width = 0L)
                                                                 ),
-                                                                showlegend = TRUE)
+                                                                showlegend = TRUE,
+                                                                yaxis = "y")
       idLabelMap$chart_ydata[[1]] <<- scalarIndices[[1]]
     }else{
       idLabelMap$chart_ydata[[1]] <<- "1"
@@ -1978,7 +2072,8 @@ getLineOptions  <- reactive({
                                                               line = list(width = 2L,
                                                                           shape = "linear",
                                                                           dash = "solid"),
-                                                              showlegend = TRUE)
+                                                              showlegend = TRUE,
+                                                              yaxis = "y")
     idLabelMap$chart_ydata[[1]] <<- scalarIndices[[1]]
     }else{
       idLabelMap$chart_ydata[[1]] <<- "1"
@@ -2572,4 +2667,5 @@ observeEvent(input$deleteGraphConfirm, {
   removeModal()
   showHideEl(session, "#graphUpdateSuccess", 4000L)
   hideEl(session, "#deleteGraph")
+  axisOptionsGlobal <- list(y = 1, y2 = 0)
 })

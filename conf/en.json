@@ -1341,6 +1341,7 @@
         "general": "General",
         "xaxis": "X axis",
         "yaxis": "Y axis",
+        "ydata": "Y data",
         "filterDomain": "Filter & Domains",
         "filter": "Filter",
         "animation": "Animation",
@@ -1383,6 +1384,8 @@
       "updateToolScalars": ["Valuebox for scalar values"],
       "updateToolNoScalars": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram", "Time Series Diagram", "Map chart", "Gantt chart", "Pivot table and pivot charts", "Custom renderer"],
       "axisOptions":{
+        "leftAxis": "left axis",
+        "rightAxis": "right axis",
         "title": "Axis label",
         "showgrid": "Show grid",
         "zeroline": "Show zero line",
@@ -1692,6 +1695,8 @@
         "addScatterDataEl":{
           "chartYdata": "What should be plotted on the y axis?",
           "chartYlabel": "Data label (e.g. for legend)",
+          "yaxis": "Axis position",
+          "yaxisChoices": ["left", "right"],
           "symbol": "Select marker symbol",
           "symbolChoices": ["_", "circle", "circle-open", "square", "square-open","diamond","diamond-open", "cross", "cross-open", "x", "x-open", "triangle-up","triangle-up-open", "triangle-down", "triangle-down-open", "pentagon", "pentagon-open", "hexagon","hexagon-open", "octagon", "octagon-open", "star", "star-open", "hexagram","hexagram-open", "asterisk", "asterisk-open", "hash", "hash-open", "line-ew", "line-ew-open", "line-ns", "line-ns-open"],
           "color": "Select marker color",
@@ -1704,6 +1709,8 @@
         "addLineDataEl":{
           "chartYdata": "What should be plotted on the y axis?",
           "chartYlabel": "Data label (e.g. for legend)",
+          "yaxis": "Axis position",
+          "yaxisChoices": ["left", "right"],
           "color": "Select line color",
           "width": "Select line width",
           "shape": "Select line shape",

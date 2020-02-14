@@ -204,6 +204,8 @@ body_admin <- dashboardBody({
                                                                 #bar 
                                                                 tags$li(id = "categoryBar1", class = "category-btn category-btn-bar", `data-cat`="3",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$xaxis)),
+                                                                tags$li(id = "categoryBar6", class = "category-btn category-btn-bar", `data-cat`="50",
+                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$ydata)),
                                                                 tags$li(id = "categoryBar2", class = "category-btn category-btn-bar", `data-cat`="4",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$yaxis)),
                                                                 tags$li(id = "categoryBar3", class = "category-btn category-btn-bar", `data-cat`="5",
@@ -215,6 +217,8 @@ body_admin <- dashboardBody({
                                                                 #scatter 
                                                                 tags$li(id = "categoryScatter1", class = "category-btn category-btn-scatter", `data-cat`="8",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$xaxis)),
+                                                                tags$li(id = "categoryScatter6", class = "category-btn category-btn-scatter", `data-cat`="51",
+                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$ydata)),
                                                                 tags$li(id = "categoryScatter2", class = "category-btn category-btn-scatter", `data-cat`="9",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$yaxis)),
                                                                 tags$li(id = "categoryScatter3", class = "category-btn category-btn-scatter", `data-cat`="10",
@@ -227,6 +231,8 @@ body_admin <- dashboardBody({
                                                                 #line 
                                                                 tags$li(id = "categoryLine1", class = "category-btn category-btn-line", `data-cat`="13",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$xaxis)),
+                                                                tags$li(id = "categoryLine6", class = "category-btn category-btn-line", `data-cat`="52",
+                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$ydata)),
                                                                 tags$li(id = "categoryLine2", class = "category-btn category-btn-line", `data-cat`="14",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$yaxis)),
                                                                 tags$li(id = "categoryLine3", class = "category-btn category-btn-line", `data-cat`="15",
@@ -239,6 +245,8 @@ body_admin <- dashboardBody({
                                                                 #bubble 
                                                                 tags$li(id = "categoryBubble1", class = "category-btn category-btn-bubble", `data-cat`="18",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$xaxis)),
+                                                                tags$li(id = "categoryBubble6", class = "category-btn category-btn-bubble", `data-cat`="53",
+                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$ydata)),
                                                                 tags$li(id = "categoryBubble2", class = "category-btn category-btn-bubble", `data-cat`="19",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$yaxis)),
                                                                 tags$li(id = "categoryBubble3", class = "category-btn category-btn-bubble", `data-cat`="20",

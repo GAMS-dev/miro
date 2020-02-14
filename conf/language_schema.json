@@ -6201,6 +6201,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "ydata":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "filterDomain":{ 
                   "type":"string",
                   "minLength":1,
@@ -6417,6 +6422,16 @@
               "additionalProperties":false,
               "required":true,
               "properties":{ 
+                "leftAxis":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "rightAxis":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "title":{ 
                   "type":"string",
                   "minLength":1,
@@ -8001,6 +8016,22 @@
                       "minLength":1,
                       "required":true
                     },
+                    "yaxis":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "yaxisChoices":{ 
+                      "type":"array",
+                      "uniqueItems": true,
+                      "minItems":2,
+                      "maxItems":2,
+                      "items": {
+                          "type":"string",
+                          "minLength": 1
+                      },
+                      "required":true
+                    },
                     "symbol":{ 
                       "type":"string",
                       "minLength":1,
@@ -8062,6 +8093,22 @@
                     "chartYlabel":{ 
                       "type":"string",
                       "minLength":1,
+                      "required":true
+                    },
+                    "yaxis":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "yaxisChoices":{ 
+                      "type":"array",
+                      "uniqueItems": true,
+                      "minItems":2,
+                      "maxItems":2,
+                      "items": {
+                          "type":"string",
+                          "minLength": 1
+                      },
                       "required":true
                     },
                     "color":{ 
