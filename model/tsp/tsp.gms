@@ -1,96 +1,29 @@
 $onText
 This is based on tsp5 from the GAMS model library.
 
-There is an important "input switch" called "useGeoCoder". If set to 1, the cities
-to connect a read from the table "iii". Lat/Lng data is filled in automatically
-using the Python package "geocoder" (which has to be installed). In this case also
-the distances between the cities are calculated in Python. For this step the packages
-"itertools" and "geopy" are used. Alternatively (e.g. because one cannot install
-separate Python packages) one can set the switch to 0. In that case, the cities
-are defined through the table "iilocDataRaw" and the user has to specify lat/lng
-herself. Distances are calculated in GAMS in this case.
+The shortest round trip is calculated for a set of cities. The distance
+between these cities is calculated as crow flight distance based on the
+latitude and longitude of the cities specified in parameter iiLocData.
+
 
 Keywords: mixed integer linear programming, traveling salesman problem,
           iterative subtour elimination
 $offText
-
-$onExternalInput
-Scalar useGeoCoder 'If set to 1, the Python geoCode package is used (Input Variant A), otherwise the user has to provide lat/long data (Input Variant B)' / 0 /;
-$offExternalInput
 
 File log / tspMiro.log /; put log;
 put '------------------------------------------------------'/;
 put '                   Options selected'/;
 put '------------------------------------------------------'/;
 
-if(useGeoCoder=1,
-   put '- Using GeoCoder Pyhton package to get city locations'/;
-else
-   put '- Using User provided city locations'/;
-);
-
 
 Set locHdr   Location data header' / lat, lng /
     ii       Cities used in the model
-$onExternalInput
-    iii      Cities - Input Mode A
-             / 'Montgomery, AL'       Alabama
-               'Juneau, AK'           Alaska
-               'Phoenix, AZ'          Arizona
-               'Little Rock, AR'      Arkansas
-               'Denver, CO'           Colorado
-               'Hartford, CT'         Connecticut
-               'Dover, DE'            Delaware
-               'Tallahassee, FL'      Florida
-               'Atlanta, GA'          Georgia
-               'Honolulu, HI'         Hawaii
-               'Boise, ID'            Idaho
-               'Springfield, IL'      Illinois
-               'Indianapolis, IN'     Indiana
-               'Des Moines, IA'       Iowa
-               'Sacramento, CA'       California
-               'Topeka, KS'           Kansas
-               'Frankfort, KY'        Kentucky
-               'Baton Rouge, LA'      Louisiana
-               'Augusta, ME'          Maine
-               'Annapolis, MD'        Maryland
-               'Boston, MA'           Massachusetts
-               'Lansing, MI'          Michigan
-               'Saint Paul, MN'       Minnesota
-               'Jackson, MS'          Mississippi
-               'Jefferson City, MO'   Missouri
-               'Helena, MT'           Montana
-               'Lincoln, NE'          Nebraska
-               'Carson City, NV'      Nevada
-               'Concord, NH'          New Hampshire
-               'Trenton, NJ'          New Jersey
-               'Santa Fe, NM'         New Mexico
-               'Albany, NY'           New York
-               'Raleigh, NC'          North Carolina
-               'Bismarck, ND'         North Dakota
-               'Columbus, OH'         Ohio
-               'Oklahoma City, OK'    Oklahoma
-               'Salem, OR'            Oregon
-               'Harrisburg, PA'       Pennsylvania
-               'Providence, RI'       Rhode Island
-               'Columbia, SC'         South Carolina
-               'Pierre, SD'           South Dakota
-               'Nashville, TN'        Tennessee
-               'Austin, TX'           Texas
-               'Salt Lake City, UT'   Utah
-               'Montpelier, VT'       Vermont
-               'Richmond, VA'         Virginia
-               'Olympia, WA'          Washington
-               'Charleston, WV'       West Virginia
-               'Madison, WI'          Wisconsin
-               'Cheyenne, WY'         Wyoming         /
-$offExternalInput
     i(ii)    Subset of cities;
 
 Alias (ii,jj),(i,j,k),(u,*);
 
 $onExternalInput
-Table     iiLocDataRaw(u,locHdr) City location information - Input Mode B
+Table     iiLocData(ii<,locHdr) City location information
                         lat       lng
 'Montgomery, AL'      32.3670  -86.3006
 'Juneau, AK'          58.3019 -134.4197
@@ -145,41 +78,7 @@ Table     iiLocDataRaw(u,locHdr) City location information - Input Mode B
 ;
 $offExternalInput
 
-Parameter c(ii,jj)              Cost coefficients (distance in 1000 of miles)
-          iilocData(ii<,locHdr) Plant location information;
-
-$ifThenE useGeoCoder == 1
-
-$onEmbeddedCode Python:
-from geocoder import osm
-import itertools
-import geopy.distance
-loc = {}
-def mkLocData(s,s2):
-   LocData = []
-   for i in gams.get(s):
-      g = osm(i)
-      LocData.append((i, 'lat', g.latlng[0]))
-      LocData.append((i, 'lng', g.latlng[1]))
-      loc[i] = g.latlng
-   gams.set(s2, LocData)
-
-mkLocData('iii', 'iiLocData')
-    
-c = []
-for i,j in itertools.product(gams.get("iii"),gams.get("iii")):
-    c.append((i,j,geopy.distance.distance(loc[i],loc[j]).miles/1000))
-gams.set("c", c)
-$offEmbeddedCode iiLocData, c
-
-$else
-
-$onEmbeddedCode Python:
-LocData = []
-for i in gams.get('iilocDataRaw'):
-   LocData.append(i)
-gams.set('iilocData', LocData)
-$offEmbeddedCode iiLocData
+Parameter c(ii,jj)              Cost coefficients (distance in 1000 of miles);
 
 *Calculating "crow - flight - distances" in miles
 Parameter llr(ii,locHdr) Latiutude and longitude of cities (radians)
@@ -194,8 +93,6 @@ helpCD(ii,jj)$(not sameas(ii,jj)) =   sin(llr(ii,'lat'))*sin(llr(jj,'lat'))
 
 c(ii,jj)$(not sameas(ii,jj)) = [pi/2 - arctan(helpcd(ii,jj)
                                 /sqrt(1-helpCD(ii,jj)*helpCD(ii,jj)))]*equRad/1000;
-
-$endIf
 
 put '- The following cities were selected:'/;
 loop(ii,

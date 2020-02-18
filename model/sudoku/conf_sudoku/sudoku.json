@@ -25,6 +25,9 @@
   "dataRendering": {
     "results": {
       "outType": "sudoku"
+    },
+    "initial_state": {
+      "outType": "sudoku"
     }
   },
   "inputWidgets": {

@@ -1,6 +1,6 @@
 sudokuOutput <- function(id, height, options, path){
    ns <- NS(id)
-   rHandsontableOutput(ns('sudoku'))
+   rHandsontableOutput(ns("sudoku"))
 }
 
 renderSudoku <- function(input, output, session, data, options = NULL, path = NULL){
@@ -9,10 +9,11 @@ renderSudoku <- function(input, output, session, data, options = NULL, path = NU
   if(length(data) && nrow(data)){
     dataTmp     <- dataTmp[-1L]
     if(isTRUE(options$isInput)){
-      dataTmp[dataTmp == 0] <- ''
+      dataTmp[dataTmp == 0] <- ""
     }else{
       initialData <- which(dataTmp < 0)
       dataTmp     <- abs(dataTmp)
+      dataTmp[is.na(dataTmp)] <- ""
     }
     dataTmp <- dataTmp %>%
       mutate_if(is.double, as.integer)
