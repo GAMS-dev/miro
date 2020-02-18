@@ -6960,11 +6960,6 @@
                       "minLength":1,
                       "required":true
                     },
-                    "incZero":{ 
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
                     "logscale":{ 
                       "type":"string",
                       "minLength":1,

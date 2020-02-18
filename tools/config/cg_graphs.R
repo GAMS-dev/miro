@@ -1100,9 +1100,6 @@ observeEvent(input$dyrange_height, {
     rv$graphConfig$graph$dyRangeSelector$height <<- input$dyrange_height
   }
 })
-# observeEvent(input$dyopt_incZero, {
-#   rv$graphConfig$graph$dyOptions$includeZero <<- input$dyopt_incZero
-# })
 observeEvent(input$dyopt_logscale, {
   rv$graphConfig$graph$dyOptions$logscale <<- input$dyopt_logscale
 })
@@ -2488,7 +2485,6 @@ getDygraphsOptions <- reactive({
     ),
     tags$div(class="cat-body cat-body-36", style="display:none;",
              textInput("chart_title", lang$adminMode$graphs$ui$chartTitle),
-             checkboxInput_MIRO("dyopt_incZero", lang$adminMode$graphs$dygraphsOptions$generalOpts$incZero),
              checkboxInput_MIRO("dyopt_logscale", lang$adminMode$graphs$dygraphsOptions$generalOpts$logscale),
              checkboxInput_MIRO("dyopt_stepPlot", lang$adminMode$graphs$dygraphsOptions$generalOpts$stepPlot),
              checkboxInput_MIRO("dyopt_stemPlot", lang$adminMode$graphs$dygraphsOptions$generalOpts$stemPlot),

@@ -1485,7 +1485,6 @@
         },
         "generalOpts":{
           "title": "通用选项",
-          "incZero": "y轴从0开始？",
           "logscale": "y轴以对数刻度显示？",
           "drawGrid": "显示网格线吗？",
           "stepPlot": "允许绘制step图吗？",

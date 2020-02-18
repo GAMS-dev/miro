@@ -1485,7 +1485,6 @@
         },
         "generalOpts":{
           "title": "General options",
-          "incZero": "Should y-axis start at 0?",
           "logscale": "Show y-axis in log scale?",
           "drawGrid": "Should grid lines be displayed?",
           "stepPlot": "Do you want a step plot?",

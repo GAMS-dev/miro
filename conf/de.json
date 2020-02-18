@@ -1485,7 +1485,6 @@
         },
         "generalOpts":{
           "title": "Allgemeine Optionen",
-          "incZero": "Soll die y-Achse bei 0 beginnen?",
           "logscale": "Y-Achse in Log-Skala anzeigen?",
           "drawGrid": "Sollen Gitterlinien angezeigt werden?",
           "stepPlot": "Willst du ein Stufendiagramm?",
