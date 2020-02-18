@@ -6437,6 +6437,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "labelOnlyTitle":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "showgrid":{ 
                   "type":"string",
                   "minLength":1,
@@ -6468,6 +6473,11 @@
                   "required":true
                 },
                 "animationDataFormatSelector":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "categoryorder":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -7012,6 +7022,73 @@
                       "required":true
                     }
                   }
+                },
+                "axisOptions":{
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{
+                    "title":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "independentTicks":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "logscale":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "drawGrid":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "gridLineColor":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "gridLineWidth":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "axisLineColor":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "axisLineWidth":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "axisLabelFontSize":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "valueRange":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "valueRangeFrom":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "valueRangeTo":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                  }                  
                 },
                 "highOpts":{  
                   "type":"object",
@@ -8299,6 +8376,22 @@
                     "label":{ 
                       "type":"string",
                       "minLength":1,
+                      "required":true
+                    },
+                    "yaxis":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "yaxisChoices":{ 
+                      "type":"array",
+                      "uniqueItems": true,
+                      "minItems":2,
+                      "maxItems":2,
+                      "items": {
+                          "type":"string",
+                          "minLength": 1
+                      },
                       "required":true
                     },
                     "color":{ 

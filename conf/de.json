@@ -1387,6 +1387,7 @@
         "leftAxis": "linke Achse",
         "rightAxis": "rechte Achse",
         "title": "Achsenbeschriftung",
+        "labelOnlyTitle": "Achsenbeschriftung (%s Achse)",
         "showgrid": "Gitter anzeigen",
         "zeroline": "Nulllinie anzeigen",
         "showticklabels": "Markerbeschriftung anzeigen",
@@ -1394,6 +1395,7 @@
         "rangeFrom": "Bereichsanfang",
         "rangeTo": "Bereichsende",
         "animationDataFormatSelector": "Daten im Datumsformat?",
+        "categoryorder": "axis order",
         "categoryorderChoices": ["trace", "category ascending", "category descending", "total ascending", "total descending", "min ascending", "min descending", "max ascending", "max descending", "sum ascending", "sum descending", "mean ascending", "mean descending", "median ascending", "median descending"],
         "scaleRatioCheck": "Achsen mit festem Verhältnis?",
         "scaleRatio": "Skalierungsverhältnis (y/x)"
@@ -1494,6 +1496,20 @@
           "pointShape": "Welche Form sollen Punkte haben?",
           "pointShapeChoices": ["Punkt", "Dreieck", "Quadrat", "Diamant", "Fünfeck", "Sechseck", "Kreis", "Stern", "Plus", "ex"],
           "pointSize": "Welche Größe sollten die Punkte haben?"
+        },
+        "axisOptions":{
+          "title": "Bezeichnung",
+          "independentTicks": "Unabhängige Markierungen",
+          "logscale": "Y-Achse in Log-Skala anzeigen?",
+          "drawGrid": "Sollen Gitterlinien angezeigt werden?",
+          "gridLineColor": "Gitterlinienfarbe",
+          "gridLineWidth": "Gitterlinienbreite",
+          "axisLineColor": "Achsenlinienfarbe",
+          "axisLineWidth": "Achsenlinienbreite",
+          "axisLabelFontSize": "Schriftgröße der Achsenbeschriftung",
+          "valueRange": "Achsbereich einstellen. Das Format muss dem Datenformat entsprechen. Wenn nicht angegeben, wird ein Standard verwendet.",
+          "valueRangeFrom": "Bereichsanfang",
+          "valueRangeTo": "Bereichsende"
         },
         "highOpts":{
           "title": "Hervorhebungsoptionen",
@@ -1746,6 +1762,8 @@
         "addDyDataEl":{
           "chartYdata": "Welchen Index möchten Sie auf der y-Achse zeichnen?",
           "label": "Welches Label soll verwendet werden?",
+          "yaxis": "Axis position",
+          "yaxisChoices": ["left", "right"],
           "color": "Welche Farbe sollte für diese Serie verwendet werden?",
           "stepPlot": "Willst du die Serie als Stufendiagramm darstellen?",
           "stemPlot": "Willst du die Serie als Stammplot darstellen?",

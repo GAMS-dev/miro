@@ -379,7 +379,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
             p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, 
                           ylab = options$yaxis$title,  periodicity = NULL, group = NULL, elementId = NULL)
             p <<- dySeries(p, name = names(options$ydata)[[1]], label = options$ydata[[1]]$label, 
-                           color = options$ydata[[1]]$color, axis = "y",
+                           color = options$ydata[[1]]$color, axis = options$ydata[[1]]$yaxis,
                            stepPlot = options$ydata[[1]]$stepPlot, stemPlot = options$ydata[[1]]$stemPlot, 
                            fillGraph = options$ydata[[1]]$fillGraph, drawPoints = options$ydata[[1]]$drawPoints,
                            pointSize = options$ydata[[1]]$pointSize, pointShape = options$ydata[[1]]$pointShape,
@@ -390,7 +390,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
           }
           
         }else{
-          p <<- dySeries(p, name = names(options$ydata)[[j]], label = options$ydata[[j]]$label, color = options$ydata[[j]]$color, axis = "y",
+          p <<- dySeries(p, name = names(options$ydata)[[j]], label = options$ydata[[j]]$label, color = options$ydata[[j]]$color, axis = options$ydata[[j]]$yaxis,
                          stepPlot = options$ydata[[j]]$stepPlot, stemPlot = options$ydata[[j]]$stemPlot, fillGraph = options$ydata[[j]]$fillGraph, drawPoints = options$ydata[[j]]$drawPoints,
                          pointSize = options$ydata[[j]]$pointSize, pointShape = options$ydata[[j]]$pointShape, strokeWidth = options$ydata[[j]]$strokeWidth, 
                          strokePattern = options$ydata[[j]]$strokePattern,
@@ -417,8 +417,14 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
       if(!is.null (options$dyCandlestick)){
         p <- do.call(dyCandlestick, c(list(dygraph = p), options$dyCandlestick))
       }
-      if(!is.null (options$dyAxis)){
-        p <- do.call(dyAxis, c(list(dygraph = p), options$dyAxis))
+      if(!is.null (options$xaxis)){
+        p <- do.call(dyAxis, c(list(dygraph = p), options$xaxis))
+      }
+      if(!is.null (options$yaxis)){
+        p <- do.call(dyAxis, c(list(dygraph = p), options$yaxis))
+      }
+      if(!is.null (options$yaxis2)){
+        p <- do.call(dyAxis, c(list(dygraph = p), options$yaxis2))
       }
       # Event lines to note points within a time series. 
       if(!is.null (options$dyEvent)){

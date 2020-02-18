@@ -326,6 +326,7 @@ const arrayTypes = {
     const elements = {
       chart_ydata: ['select', lang.addDyDataEl.chartYdata, scalarIndices, scalarIndexAliases],
       chart_ylabel: ['text', lang.addDyDataEl.label, 'label'],
+      dyser_yaxis: ['select', lang.addDyDataEl.yaxis, ['y', 'y2'], lang.addDyDataEl.yaxisChoices],
       dyser_color: ['color', lang.addDyDataEl.color],
       dyopt_stepPlot: ['checkbox', lang.addDyDataEl.stepPlot],
       dyopt_stemPlot: ['checkbox', lang.addDyDataEl.stemPlot],
