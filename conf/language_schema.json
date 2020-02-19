@@ -4890,6 +4890,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "tableWidget":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "inputSymbol":{ 
                   "type":"string",
                   "minLength":1,
