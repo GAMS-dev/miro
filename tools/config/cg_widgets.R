@@ -34,7 +34,8 @@ langSpecificWidget$widgetOptionsGo <- setNames(c("slider", "dropdown", "checkbox
                                                   lang$adminMode$widgets$widgetOptions$checkbox,
                                                   lang$adminMode$widgets$widgetOptions$text,
                                                   lang$adminMode$widgets$widgetOptions$numericinput))
-langSpecificWidget$widgetOptionsSet <- setNames("multidropdown", lang$adminMode$widgets$widgetOptions$dropdown)
+langSpecificWidget$widgetOptionsSet <- setNames(c("multidropdown", "table"), c(lang$adminMode$widgets$widgetOptions$dropdown,
+                                                                               lang$adminMode$widgets$widgetOptions$table))
 langSpecificWidget$widgetOptionsDate <- setNames("date", lang$adminMode$widgets$widgetOptions$date)
 langSpecificWidget$minDepOp <- c("Minimum" = "min", "Maximum" = "max", "Count" = "card",
                                           "Mean" = "mean", "Median" = "median", "Variance" = "var", 
@@ -466,6 +467,8 @@ observeEvent({input$widget_type
     req(length(input$widget_type) > 0L, length(currentWidgetSymbolName) > 0L, 
         nchar(currentWidgetSymbolName) > 0L)
     removeUI(selector = "#widget_options .shiny-input-container", multiple = TRUE)
+    enableEl(session, "#saveWidget")
+    enableEl(session, "#deleteWidget")
     rv$widgetConfig <- list() 
     currentConfig <- NULL
     if(currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
@@ -1295,6 +1298,17 @@ observeEvent({input$widget_type
                               max = rv$widgetConfig$max,
                               sign = rv$widgetConfig$sign,
                               decimal = rv$widgetConfig$decimal)
+           })
+         },
+         #in case a table was configured for a set
+         table = {
+           insertUI(selector = "#widget_options", 
+                    tags$div(class="shiny-input-container config-no-hide", 
+                             lang$adminMode$widgets$ui$tableWidget),
+                    where = "beforeEnd")
+           disableEl(session, "#saveWidget")
+           disableEl(session, "#deleteWidget")
+           output$widget_preview <- renderUI({
            })
          }
   )

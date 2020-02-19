@@ -1074,6 +1074,7 @@
         "noWidgetConfigMsg": "Derzeit ist kein Widget für dieses Symbol konfiguriert",
         "optionConfigMsg": "Info: Das von Ihnen gewählte Symbol ist eine GAMS-Option: %s",
         "doubledashConfigMsg": "Info: Das von Ihnen gewählte Symbol ist ein Double-Dash-Parameter: %s",
+        "tableWidget": "Tabellen können unter 'Tabellen konfigurieren' angepasst werden!",
         "inputSymbol": "Wählen Sie ein Eingabesymbol",
         "widgetGo": "Name der GAMS Option (z.B.'LP' oder 'OptCR')",
         "widgetDd": "Name des Double-Dash-Parameters (ohne '--')",
