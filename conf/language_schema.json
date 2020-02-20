@@ -4890,6 +4890,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "tableWidget":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "inputSymbol":{ 
                   "type":"string",
                   "minLength":1,
@@ -6201,6 +6206,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "ydata":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "filterDomain":{ 
                   "type":"string",
                   "minLength":1,
@@ -6417,7 +6427,22 @@
               "additionalProperties":false,
               "required":true,
               "properties":{ 
+                "leftAxis":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "rightAxis":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "title":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "labelOnlyTitle":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -6453,6 +6478,11 @@
                   "required":true
                 },
                 "animationDataFormatSelector":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "categoryorder":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -6935,11 +6965,6 @@
                       "minLength":1,
                       "required":true
                     },
-                    "incZero":{ 
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
                     "logscale":{ 
                       "type":"string",
                       "minLength":1,
@@ -6997,6 +7022,73 @@
                       "required":true
                     }
                   }
+                },
+                "axisOptions":{
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{
+                    "title":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "independentTicks":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "logscale":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "drawGrid":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "gridLineColor":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "gridLineWidth":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "axisLineColor":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "axisLineWidth":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "axisLabelFontSize":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "valueRange":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "valueRangeFrom":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "valueRangeTo":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                  }                  
                 },
                 "highOpts":{  
                   "type":"object",
@@ -8001,6 +8093,22 @@
                       "minLength":1,
                       "required":true
                     },
+                    "yaxis":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "yaxisChoices":{ 
+                      "type":"array",
+                      "uniqueItems": true,
+                      "minItems":2,
+                      "maxItems":2,
+                      "items": {
+                          "type":"string",
+                          "minLength": 1
+                      },
+                      "required":true
+                    },
                     "symbol":{ 
                       "type":"string",
                       "minLength":1,
@@ -8062,6 +8170,22 @@
                     "chartYlabel":{ 
                       "type":"string",
                       "minLength":1,
+                      "required":true
+                    },
+                    "yaxis":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "yaxisChoices":{ 
+                      "type":"array",
+                      "uniqueItems": true,
+                      "minItems":2,
+                      "maxItems":2,
+                      "items": {
+                          "type":"string",
+                          "minLength": 1
+                      },
                       "required":true
                     },
                     "color":{ 
@@ -8252,6 +8376,22 @@
                     "label":{ 
                       "type":"string",
                       "minLength":1,
+                      "required":true
+                    },
+                    "yaxis":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "yaxisChoices":{ 
+                      "type":"array",
+                      "uniqueItems": true,
+                      "minItems":2,
+                      "maxItems":2,
+                      "items": {
+                          "type":"string",
+                          "minLength": 1
+                      },
                       "required":true
                     },
                     "color":{ 

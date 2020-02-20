@@ -1074,6 +1074,7 @@
         "noWidgetConfigMsg": "当前没有为此GAMS符号配置小部件",
         "optionConfigMsg": "消息：您选择的符号是GAMS选项：%s",
         "doubledashConfigMsg": "消息： 您选择的符号是一个double-dash parameter：%s",
+        "tableWidget": "Table configuration is done in 'configure tables'!",
         "inputSymbol": "为哪个输入符号创建一个小部件？",
         "widgetGo": "GAMS option",
         "widgetDd": "double-dash parameter",
@@ -1341,6 +1342,7 @@
         "general": "General",
         "xaxis": "X axis",
         "yaxis": "Y axis",
+        "ydata": "Y data",
         "filterDomain": "Filter & Domains",
         "filter": "Filter",
         "animation": "Animation",
@@ -1383,7 +1385,10 @@
       "updateToolScalars": ["标量值的值框"],
       "updateToolNoScalars": ["饼图", "柱形图", "散点图", "折线图", "气泡图", "直方图", "时间序列图形工具", "地图工具", "甘特图", "数据透视表", "自定义绘制器"],
       "axisOptions":{
+        "leftAxis": "left axis",
+        "rightAxis": "right axis",
         "title": "轴标签",
+        "labelOnlyTitle": "Axis label (%s axis)",
         "showgrid": "显示网格",
         "zeroline": "显示零线",
         "showticklabels": "显示刻度标签",
@@ -1391,6 +1396,7 @@
         "rangeFrom": "范围起始值",
         "rangeTo": "范围结束值",
         "animationDataFormatSelector": "是日期格式的数据？",
+        "categoryorder": "axis order",
 		"categoryorderChoices": ["默认顺序", "按字母数字顺序升序", "按字母数字顺序降序", "按数值大小升序", "按数值大小降序", "按最小值升序", "按最小值降序", "按最大值升序", "按最大值降序", "按和的大小升序", "按和的大小降序", "按平均值大小升序", "按平均值大小降序", "按中值大小升序", "按中值大小降序"],
         "scaleRatioCheck": "Fixed-ratio axes?",
         "scaleRatio": "Scale ratio (y/x)"
@@ -1480,7 +1486,6 @@
         },
         "generalOpts":{
           "title": "通用选项",
-          "incZero": "y轴从0开始？",
           "logscale": "y轴以对数刻度显示？",
           "drawGrid": "显示网格线吗？",
           "stepPlot": "允许绘制step图吗？",
@@ -1491,6 +1496,20 @@
           "pointShape": "选中的数据点以哪种标记形状显示？",
           "pointShapeChoices": ["点", "三角形", "方形", "菱形", "五角形", "六边形", "圆圈", "星号", "加号", "叉号"],
           "pointSize": "标记的尺寸？"
+        },
+        "axisOptions":{
+          "title": "Label",
+          "independentTicks": "Independent ticks",
+          "logscale": "y轴以对数刻度显示？",
+          "drawGrid": "显示网格线吗？",
+          "gridLineColor": "Grid line color",
+          "gridLineWidth": "Grid line width",
+          "axisLineColor": "Axis line color",
+          "axisLineWidth": "Axis line width",
+          "axisLabelFontSize": "Axis label font size",
+          "valueRange": "设置轴范围。 格式必须与数据格式匹配。 轴范围未指定时，将使用默认值。",
+          "valueRangeFrom": "范围起始值",
+          "valueRangeTo": "范围结束值"
         },
         "highOpts":{
           "title": "突出显示选项",
@@ -1590,6 +1609,8 @@
         "addDyEvent":{
           "dyDyEvent": "使用哪个GAMS符号？",
           "label": "应使用哪个标签？",
+          "yaxis": "Axis position",
+          "yaxisChoices": ["left", "right"],
           "labelLoc": "选择标记符号",
           "labelLocChoices": ["顶部", "底部"],
           "color": "活动线是颜色？",
@@ -1692,6 +1713,8 @@
         "addScatterDataEl":{
           "chartYdata": "在y轴上绘制什么？",
           "chartYlabel": "Data label (e.g. for legend)",
+          "yaxis": "Axis position",
+          "yaxisChoices": ["left", "right"],
           "symbol": "选择标记符号",
           "symbolChoices": ["_", "圆圈", "空心圆圈", "方形", "空心方形", "菱形","空心菱形", "加号", "空心加号", "叉号", "空心叉号", "正三角","空心正三角", "反三角", "空心反三角", "五边形", "空心五边形", "六边形", "空心六边形", "八边形", "空心八边形", "五角星", "空心五角星", "六芒星","空心六芒星", "星号", "空心星号", "井号", "空心井号","东西线", "空心东西线", "南北线", "空心南北线"],
           "color": "选择标记颜色",
@@ -1704,6 +1727,8 @@
         "addLineDataEl":{
           "chartYdata": "在y轴上绘制什么？",
           "chartYlabel": "Data label (e.g. for legend)",
+          "yaxis": "Axis position",
+          "yaxisChoices": ["left", "right"],
           "color": "选择线条颜色",
           "width": "选择线条宽度",
           "shape": "选择线条",

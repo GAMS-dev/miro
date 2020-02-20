@@ -1074,6 +1074,7 @@
         "noWidgetConfigMsg": "Currently, there is no widget configured for this symbol",
         "optionConfigMsg": "Info: The symbol you selected is a GAMS option: %s",
         "doubledashConfigMsg": "Info: The symbol you selected is a double-dash parameter: %s",
+        "tableWidget": "Table configuration is done in 'configure tables'!",
         "inputSymbol": "Input symbol",
         "widgetGo": "GAMS option",
         "widgetDd": "Double-dash parameter",
@@ -1341,6 +1342,7 @@
         "general": "General",
         "xaxis": "X axis",
         "yaxis": "Y axis",
+        "ydata": "Y data",
         "filterDomain": "Filter & Domains",
         "filter": "Filter",
         "animation": "Animation",
@@ -1383,7 +1385,10 @@
       "updateToolScalars": ["Valuebox for scalar values"],
       "updateToolNoScalars": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram", "Time Series Diagram", "Map chart", "Gantt chart", "Pivot table and pivot charts", "Custom renderer"],
       "axisOptions":{
+        "leftAxis": "left axis",
+        "rightAxis": "right axis",
         "title": "Axis label",
+        "labelOnlyTitle": "Axis label (%s axis)",
         "showgrid": "Show grid",
         "zeroline": "Show zero line",
         "showticklabels": "Show tick labels",
@@ -1391,6 +1396,7 @@
         "rangeFrom": "Range start",
         "rangeTo": "Range end",
         "animationDataFormatSelector": "Data in date format?",
+        "categoryorder": "axis order",
         "categoryorderChoices": ["trace", "category ascending", "category descending", "total ascending", "total descending", "min ascending", "min descending", "max ascending", "max descending", "sum ascending", "sum descending", "mean ascending", "mean descending", "median ascending", "median descending"],
         "scaleRatioCheck": "Fixed-ratio axes?",
         "scaleRatio": "Scale ratio (y/x)"
@@ -1480,7 +1486,6 @@
         },
         "generalOpts":{
           "title": "General options",
-          "incZero": "Should y-axis start at 0?",
           "logscale": "Show y-axis in log scale?",
           "drawGrid": "Should grid lines be displayed?",
           "stepPlot": "Do you want a step plot?",
@@ -1491,6 +1496,20 @@
           "pointShape": "What shape should points have?",
           "pointShapeChoices": ["dot", "triangle", "square", "diamond", "pentagon", "hexagon", "circle", "star", "plus", "ex"],
           "pointSize": "What size should points be?"
+        },
+        "axisOptions":{
+          "title": "Label",
+          "independentTicks": "Independent ticks",
+          "logscale": "Show y-axis in log scale?",
+          "drawGrid": "Should grid lines be displayed?",
+          "gridLineColor": "Grid line color",
+          "gridLineWidth": "Grid line width",
+          "axisLineColor": "Axis line color",
+          "axisLineWidth": "Axis line width",
+          "axisLabelFontSize": "Axis label font size",
+          "valueRange": "Set axis range. The format has to match the data format. When not specified, a default is used.",
+          "valueRangeFrom": "Range start",
+          "valueRangeTo": "Range end"
         },
         "highOpts":{
           "title": "Highlighting options",
@@ -1692,8 +1711,11 @@
         "addScatterDataEl":{
           "chartYdata": "What should be plotted on the y axis?",
           "chartYlabel": "Data label (e.g. for legend)",
+          "yaxis": "Axis position",
+          "yaxisChoices": ["left", "right"],
           "symbol": "Select marker symbol",
           "symbolChoices": ["_", "circle", "circle-open", "square", "square-open","diamond","diamond-open", "cross", "cross-open", "x", "x-open", "triangle-up","triangle-up-open", "triangle-down", "triangle-down-open", "pentagon", "pentagon-open", "hexagon","hexagon-open", "octagon", "octagon-open", "star", "star-open", "hexagram","hexagram-open", "asterisk", "asterisk-open", "hash", "hash-open", "line-ew", "line-ew-open", "line-ns", "line-ns-open"],
+          "color": "Select marker color",
           "color": "Select marker color",
           "size": "Select marker size",
           "lineWidth": "Select marker outline width",
@@ -1704,6 +1726,8 @@
         "addLineDataEl":{
           "chartYdata": "What should be plotted on the y axis?",
           "chartYlabel": "Data label (e.g. for legend)",
+          "yaxis": "Axis position",
+          "yaxisChoices": ["left", "right"],
           "color": "Select line color",
           "width": "Select line width",
           "shape": "Select line shape",
@@ -1739,6 +1763,8 @@
         "addDyDataEl":{
           "chartYdata": "What index do you want to plot on the y-axis?",
           "label": "What label should be used?",
+          "yaxis": "Axis position",
+          "yaxisChoices": ["left", "right"],
           "color": "What color should be used for this series?",
           "stepPlot": "Do you want the series to be a step plot?",
           "stemPlot": "Do you want the series to be a stem plot?",

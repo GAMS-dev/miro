@@ -16,6 +16,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
   
   if(options$tool == 'plotly'){
     pieGrid <- NULL
+    rendery2axis <- FALSE
     return(renderPlotly({
       if(length(filterCol) && length(input$data_filter)){
         if(isTRUE(options$filter$date)){
@@ -85,10 +86,17 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
         # scatter plot
         p <- NULL
         lapply(seq_along(options$ydata), function(j){
+          if(identical(options$ydata[[j]]$yaxis, "y2")){
+            rendery2axis <<- TRUE
+            yaxis <- "y2"
+          }else{
+            yaxis <- "y"
+          }
           if(j==1){
             p <<- plot_ly(data, x = try(data[[options$xdata]]), y = try(data[[names(options$ydata)[[1]]]]), 
                           name = options$ydata[[1]]$label, 
                           mode = options$ydata[[1]]$mode, 
+                          yaxis = yaxis,
                           marker = getMarkerInfo(options$ydata[[1]]$marker),
                           line = list(color = options$ydata[[1]]$line$color,
                                       width = options$ydata[[1]]$line$width,
@@ -106,6 +114,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
             
           }else{
             p <<- add_trace(p, y = try(data[[names(options$ydata)[[j]]]]), name = options$ydata[[j]]$label, 
+                            yaxis = yaxis,
                             mode = options$ydata[[j]]$mode, 
                             marker = getMarkerInfo(options$ydata[[j]]$marker),
                             line = list(color = options$ydata[[j]]$line$color, 
@@ -284,6 +293,14 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                           categoryorder = options$yaxis$categoryorder,
                           scaleanchor = if(!is.null(options$yaxis$scaleanchor)) options$yaxis$scaleanchor,
                           scaleratio = if(!is.null(options$yaxis$scaleratio)) options$yaxis$scaleratio),
+             yaxis2 = if(isTRUE(rendery2axis)) list(title = options$y2axis$title, showgrid = options$y2axis$showgrid, 
+                           zeroline = options$y2axis$zeroline, showticklabels = options$y2axis$showticklabels, 
+                           range = c(options$y2axis$rangefrom, options$y2axis$rangeto),
+                           categoryorder = options$y2axis$categoryorder,
+                           scaleanchor = if(!is.null(options$y2axis$scaleanchor)) options$y2axis$scaleanchor,
+                           scaleratio = if(!is.null(options$y2axis$scaleratio)) options$y2axis$scaleratio,
+                           overlaying = if(isTRUE(rendery2axis)) "y",
+                           side = if(isTRUE(rendery2axis)) "right"),
              paper_bgcolor = if(length(options$paper_bgcolor)) options$paper_bgcolor else "rgba(0,0,0,0)",
              plot_bgcolor = if(length(options$plot_bgcolor)) options$plot_bgcolor else "rgba(0,0,0,0)",
              showlegend = options$showlegend, grid = pieGrid,
@@ -362,7 +379,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
             p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, 
                           ylab = options$yaxis$title,  periodicity = NULL, group = NULL, elementId = NULL)
             p <<- dySeries(p, name = names(options$ydata)[[1]], label = options$ydata[[1]]$label, 
-                           color = options$ydata[[1]]$color, axis = "y",
+                           color = options$ydata[[1]]$color, axis = options$ydata[[1]]$yaxis,
                            stepPlot = options$ydata[[1]]$stepPlot, stemPlot = options$ydata[[1]]$stemPlot, 
                            fillGraph = options$ydata[[1]]$fillGraph, drawPoints = options$ydata[[1]]$drawPoints,
                            pointSize = options$ydata[[1]]$pointSize, pointShape = options$ydata[[1]]$pointShape,
@@ -373,7 +390,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
           }
           
         }else{
-          p <<- dySeries(p, name = names(options$ydata)[[j]], label = options$ydata[[j]]$label, color = options$ydata[[j]]$color, axis = "y",
+          p <<- dySeries(p, name = names(options$ydata)[[j]], label = options$ydata[[j]]$label, color = options$ydata[[j]]$color, axis = options$ydata[[j]]$yaxis,
                          stepPlot = options$ydata[[j]]$stepPlot, stemPlot = options$ydata[[j]]$stemPlot, fillGraph = options$ydata[[j]]$fillGraph, drawPoints = options$ydata[[j]]$drawPoints,
                          pointSize = options$ydata[[j]]$pointSize, pointShape = options$ydata[[j]]$pointShape, strokeWidth = options$ydata[[j]]$strokeWidth, 
                          strokePattern = options$ydata[[j]]$strokePattern,
@@ -400,8 +417,14 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
       if(!is.null (options$dyCandlestick)){
         p <- do.call(dyCandlestick, c(list(dygraph = p), options$dyCandlestick))
       }
-      if(!is.null (options$dyAxis)){
-        p <- do.call(dyAxis, c(list(dygraph = p), options$dyAxis))
+      if(!is.null (options$xaxis)){
+        p <- do.call(dyAxis, c(list(dygraph = p), options$xaxis))
+      }
+      if(!is.null (options$yaxis)){
+        p <- do.call(dyAxis, c(list(dygraph = p), options$yaxis))
+      }
+      if(!is.null (options$yaxis2)){
+        p <- do.call(dyAxis, c(list(dygraph = p), options$yaxis2))
       }
       # Event lines to note points within a time series. 
       if(!is.null (options$dyEvent)){

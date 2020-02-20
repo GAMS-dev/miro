@@ -262,6 +262,7 @@ const arrayTypes = {
     const elements = {
       chart_ydata: ['select', lang.addScatterDataEl.chartYdata, scalarIndices, scalarIndexAliases],
       chart_ylabel: ['text', lang.addScatterDataEl.chartYlabel, 'label'],
+      trace_yaxis: ['select', lang.addLineDataEl.yaxis, ['y', 'y2'], lang.addLineDataEl.yaxisChoices],
       marker_symbol: ['select', lang.addScatterDataEl.symbol, ['_', 'circle', 'circle-open', 'square',
         'square-open', 'diamond', 'diamond-open', 'cross', 'cross-open', 'x', 'x-open', 'triangle-up',
         'triangle-up-open', 'triangle-down', 'triangle-down-open', 'pentagon', 'pentagon-open',
@@ -281,6 +282,7 @@ const arrayTypes = {
     const elements = {
       chart_ydata: ['select', lang.addLineDataEl.chartYdata, scalarIndices, scalarIndexAliases],
       chart_ylabel: ['text', lang.addLineDataEl.chartYlabel, 'label'],
+      trace_yaxis: ['select', lang.addLineDataEl.yaxis, ['y', 'y2'], lang.addLineDataEl.yaxisChoices],
       line_color: ['color', lang.addLineDataEl.color],
       line_width: ['numeric', lang.addLineDataEl.width, 2, 0],
       line_shape: ['select', lang.addLineDataEl.shape, ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'], lang.addLineDataEl.shapeChoices],
@@ -324,6 +326,7 @@ const arrayTypes = {
     const elements = {
       chart_ydata: ['select', lang.addDyDataEl.chartYdata, scalarIndices, scalarIndexAliases],
       chart_ylabel: ['text', lang.addDyDataEl.label, 'label'],
+      dyser_yaxis: ['select', lang.addDyDataEl.yaxis, ['y', 'y2'], lang.addDyDataEl.yaxisChoices],
       dyser_color: ['color', lang.addDyDataEl.color],
       dyopt_stepPlot: ['checkbox', lang.addDyDataEl.stepPlot],
       dyopt_stemPlot: ['checkbox', lang.addDyDataEl.stemPlot],
