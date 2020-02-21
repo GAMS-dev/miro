@@ -235,16 +235,15 @@ changeActiveSymbol <- function(id){
 updateYAxes  <- function(){
   if(input$chart_tool %in% plotlyChartTools){
     if(axisOptionsGlobal$y > 0L){
-      rv$graphConfig$graph$yaxis <<- list(title = if(!is.null(input$y_title) && length(input$y_title)) input$y_title else "",
-                                          showgrid = if(!is.null(input$y_showgrid) && length(input$y_showgrid)) input$y_showgrid else FALSE,
-                                          zeroline = if(!is.null(input$y_zeroline) && length(input$y_zeroline)) input$y_zeroline else FALSE,
-                                          showticklabels = if(!is.null(input$y_showticklabels) && length(input$y_showticklabels)) input$y_showticklabels else FALSE,
-                                          categoryorder = if(!is.null(input$y_categoryorder) && length(input$y_categoryorder)) input$y_categoryorder else "trace",
-                                          rangefrom = if(!is.null(input$y_rangefrom) && length(input$y_rangefrom)) input$y_rangefrom else NULL,
-                                          rangeto = if(!is.null(input$y_rangeto) && length(input$y_rangeto)) input$y_rangeto else NULL)
+      rv$graphConfig$graph$yaxis <<- list(title = if(length(input$y_title)) input$y_title else "",
+                                          showgrid = isTRUE(input$y_showgrid),
+                                          zeroline = isTRUE(input$y_zeroline),
+                                          showticklabels = isTRUE(input$y_showticklabels),
+                                          categoryorder = if(length(input$y_categoryorder)) input$y_categoryorder else "trace",
+                                          rangefrom = if(length(input$y_rangefrom)) input$y_rangefrom else NULL,
+                                          rangeto = if(length(input$y_rangeto)) input$y_rangeto else NULL)
       showEl(session, "#left_yaxis")
     }else{
-      rv$graphConfig$graph$yaxis <<- list()
       rv$graphConfig$graph$yaxis <<- list(title = "",
                                           showgrid = FALSE,
                                           zeroline = FALSE,
@@ -252,13 +251,13 @@ updateYAxes  <- function(){
       hideEl(session, "#left_yaxis")
     }
     if(axisOptionsGlobal$y2 > 0L){
-      rv$graphConfig$graph$y2axis <<- list(title = if(!is.null(input$y2_title) && length(input$y2_title)) input$y2_title else "",
-                                           showgrid = if(!is.null(input$y2_showgrid) && length(input$y2_showgrid)) input$y2_showgrid else FALSE,
-                                           zeroline = if(!is.null(input$y2_zeroline) && length(input$y2_zeroline)) input$y2_zeroline else FALSE,
-                                           showticklabels = if(!is.null(input$y2_showticklabels) && length(input$y2_showticklabels)) input$y2_showticklabels else FALSE,
+      rv$graphConfig$graph$y2axis <<- list(title = if(length(input$y2_title)) input$y2_title else "",
+                                           showgrid = isTRUE(input$y2_showgrid),
+                                           zeroline = isTRUE(input$y2_zeroline),
+                                           showticklabels = isTRUE(input$y2_showticklabels),
                                            categoryorder = if(!is.null(input$y2_categoryorder) && length(input$y2_categoryorder)) input$y2_categoryorder else "trace",
-                                           rangefrom = if(!is.null(input$y2_rangefrom) && length(input$y2_rangefrom)) input$y2_rangefrom else NULL,
-                                           rangeto = if(!is.null(input$y2_rangeto) && length(input$y2_rangeto)) input$y2_rangeto else NULL)
+                                           rangefrom = if(length(input$y2_rangefrom)) input$y2_rangefrom else NULL,
+                                           rangeto = if(length(input$y2_rangeto)) input$y2_rangeto else NULL)
       showEl(session, "#right_yaxis")
     }else{
       rv$graphConfig$graph$y2axis <<- NULL
@@ -267,19 +266,19 @@ updateYAxes  <- function(){
   }else if(identical(input$chart_tool, "dygraphs")){
     if(axisOptionsGlobal$y > 0L){
       rv$graphConfig$graph$yaxis <<- list(name = "y",
-                                           label = if(!is.null(input$dyAxis_label) && length(input$dyAxis_label)) input$dyAxis_label else NULL, 
+                                           label = if(length(input$dyAxis_label)) input$dyAxis_label else NULL, 
                                            valueRange = list(
-                                             if(length(input$dyAxis_valueRangeFrom) && !is.null(input$dyAxis_valueRangeFrom) && nchar(input$dyAxis_valueRangeFrom)) input$dyAxis_valueRangeFrom else NULL, 
-                                             if(length(input$dyAxis_valueRangeTo) && !is.null(input$dyAxis_valueRangeTo) && nchar(input$dyAxis_valueRangeTo)) input$dyAxis_valueRangeTo else NULL
+                                             if(length(input$dyAxis_valueRangeFrom) && nchar(input$dyAxis_valueRangeFrom)) input$dyAxis_valueRangeFrom else NULL, 
+                                             if(length(input$dyAxis_valueRangeTo) && nchar(input$dyAxis_valueRangeTo)) input$dyAxis_valueRangeTo else NULL
                                              ),
-                                           axisLineColor = if(!is.null(input$dyAxis_axisLineColor) && length(input$dyAxis_axisLineColor)) input$dyAxis_axisLineColor else NULL, 
-                                           axisLineWidth = if(!is.null(input$dyAxis_axisLineWidth) && length(input$dyAxis_axisLineWidth)) input$dyAxis_axisLineWidth else 0.3,
-                                           axisLabelFontSize = if(!is.null(input$dyAxis_axisLabelFontSize) && length(input$dyAxis_axisLabelFontSize)) input$dyAxis_axisLabelFontSize else 14L,
-                                           drawGrid = if(!is.null(input$dyAxis_drawGrid) && length(input$dyAxis_drawGrid)) input$dyAxis_drawGrid else NULL, 
-                                           gridLineWidth = if(!is.null(input$dyAxis_gridLineWidth) && length(input$dyAxis_gridLineWidth)) input$dyAxis_gridLineWidth else 0.3,
+                                           axisLineColor = if(length(input$dyAxis_axisLineColor)) input$dyAxis_axisLineColor else NULL, 
+                                           axisLineWidth = if(length(input$dyAxis_axisLineWidth)) input$dyAxis_axisLineWidth else 0.3,
+                                           axisLabelFontSize = if(length(input$dyAxis_axisLabelFontSize)) input$dyAxis_axisLabelFontSize else 14L,
+                                           drawGrid = if(length(input$dyAxis_drawGrid)) input$dyAxis_drawGrid else NULL, 
+                                           gridLineWidth = if(length(input$dyAxis_gridLineWidth)) input$dyAxis_gridLineWidth else 0.3,
                                            #if one axis is removed, the other one should have independet ticks
                                            independentTicks = if(axisOptionsGlobal$y2 > 0L){
-                                             if(!is.null(input$dyAxis_independentTicks) && length(input$dyAxis_independentTicks)) input$dyAxis_independentTicks else TRUE
+                                             isFALSE(input$dyAxis_independentTicks)
                                            }else{
                                              TRUE
                                            })
