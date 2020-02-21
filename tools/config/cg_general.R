@@ -342,7 +342,8 @@ if(length(configJSON$scripts$hcube))
 output$general_logo_preview <- renderImage({
   rv$customLogoChanged
   isolate({
-    if(identical(rv$generalConfig$UILogo, "gams_logo.png") || !length(rv$generalConfig$UILogo)){
+    if(identical(rv$generalConfig$UILogo, "gams_logo.png") || 
+       !length(rv$generalConfig$UILogo) || !file.exists(rv$generalConfig$UILogo)){
       filename <- normalizePath(file.path(getwd(), "www", "gams_logo.png"))
     }else{
       filename <- normalizePath(paste0(currentModelDir, .Platform$file.sep, 
