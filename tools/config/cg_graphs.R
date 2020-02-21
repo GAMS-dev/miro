@@ -278,7 +278,7 @@ updateYAxes  <- function(){
                                            gridLineWidth = if(length(input$dyAxis_gridLineWidth)) input$dyAxis_gridLineWidth else 0.3,
                                            #if one axis is removed, the other one should have independet ticks
                                            independentTicks = if(axisOptionsGlobal$y2 > 0L){
-                                             isFALSE(input$dyAxis_independentTicks)
+                                             !isFALSE(input$dyAxis_independentTicks)
                                            }else{
                                              TRUE
                                            })
@@ -301,16 +301,16 @@ updateYAxes  <- function(){
     }
     if(axisOptionsGlobal$y2 > 0L){
       rv$graphConfig$graph$yaxis2 <<- list(name = "y2",
-                                           label = if(!is.null(input$dyAxis2_label) && length(input$dyAxis2_label)) input$dyAxis2_label else NULL,
+                                           label = if(length(input$dyAxis2_label)) input$dyAxis2_label else NULL,
                                            valueRange = list(
-                                             if(length(input$dyAxis2_valueRangeFrom) && !is.null(input$dyAxis2_valueRangeFrom) && nchar(input$dyAxis2_valueRangeFrom)) input$dyAxis2_valueRangeFrom else NULL, 
-                                             if(length(input$dyAxis2_valueRangeTo) && !is.null(input$dyAxis2_valueRangeTo) && nchar(input$dyAxis2_valueRangeTo)) input$dyAxis2_valueRangeTo else NULL
+                                             if(length(input$dyAxis2_valueRangeFrom) && nchar(input$dyAxis2_valueRangeFrom)) input$dyAxis2_valueRangeFrom else NULL, 
+                                             if(length(input$dyAxis2_valueRangeTo) && nchar(input$dyAxis2_valueRangeTo)) input$dyAxis2_valueRangeTo else NULL
                                              ), 
-                                           axisLineColor = if(!is.null(input$dyAxis2_axisLineColor) && length(input$dyAxis2_axisLineColor)) input$dyAxis2_axisLineColor else NULL, 
-                                           axisLineWidth = if(!is.null(input$dyAxis2_axisLineWidth) && length(input$dyAxis2_axisLineWidth)) input$dyAxis2_axisLineWidth else 0.3,
-                                           axisLabelFontSize = if(!is.null(input$dyAxis2_axisLabelFontSize) && length(input$dyAxis2_axisLabelFontSize)) input$dyAxis2_axisLabelFontSize else 14L,
-                                           drawGrid = if(!is.null(input$dyAxis2_drawGrid) && length(input$dyAxis2_drawGrid)) input$dyAxis2_drawGrid else TRUE, 
-                                           gridLineWidth = if(!is.null(input$dyAxis2_gridLineWidth) && length(input$dyAxis2_gridLineWidth)) input$dyAxis2_gridLineWidth else 0.3,
+                                           axisLineColor = if(length(input$dyAxis2_axisLineColor)) input$dyAxis2_axisLineColor else NULL, 
+                                           axisLineWidth = if(length(input$dyAxis2_axisLineWidth)) input$dyAxis2_axisLineWidth else 0.3,
+                                           axisLabelFontSize = if(length(input$dyAxis2_axisLabelFontSize)) input$dyAxis2_axisLabelFontSize else 14L,
+                                           drawGrid = !isFALSE(input$dyAxis2_drawGrid), 
+                                           gridLineWidth = if(length(input$dyAxis2_gridLineWidth)) input$dyAxis2_gridLineWidth else 0.3,
                                            #if one axis is removed, the other one should have independet ticks
                                            independentTicks = if(axisOptionsGlobal$y > 0L){
                                              if(!is.null(input$dyAxis2_independentTicks) && length(input$dyAxis2_independentTicks)) input$dyAxis2_independentTicks else NULL
