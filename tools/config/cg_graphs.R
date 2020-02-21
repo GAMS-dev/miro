@@ -286,7 +286,6 @@ updateYAxes  <- function(){
         updateCheckboxInput(session, "dyAxis_independentTicks", value = TRUE)
       showEl(session, "#left_dyAxis")
     }else{
-      rv$graphConfig$graph$yaxis <<- list()
       rv$graphConfig$graph$yaxis <<- list(name = "y",
                                            label = "", 
                                            valueRange = list(NULL, NULL),  
@@ -1107,17 +1106,19 @@ observeEvent(input$dyopt_logscale, {
 #   rv$graphConfig$graph$dyOptions$drawGrid <<- input$dyopt_drawGrid
 # })
 observeEvent(input$dyser_yaxis, {
+  req(length(input$dyser_yaxis) >= 2L)
   if(identical(input$dyser_yaxis[2], "y2")){
-    axisOptionsGlobal$y <<- axisOptionsGlobal$y-1L
-    axisOptionsGlobal$y2 <<- axisOptionsGlobal$y2+1L
+    axisOptionsGlobal$y <<- axisOptionsGlobal$y - 1L
+    axisOptionsGlobal$y2 <<- axisOptionsGlobal$y2 + 1L
   }else{
-    axisOptionsGlobal$y <<- axisOptionsGlobal$y+1L
-    axisOptionsGlobal$y2 <<- axisOptionsGlobal$y2-1L
+    axisOptionsGlobal$y <<- axisOptionsGlobal$y + 1L
+    axisOptionsGlobal$y2 <<- axisOptionsGlobal$y2 - 1L
   }
   updateYAxes()
   rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$dyser_yaxis[1])]]]]$yaxis <<- input$dyser_yaxis[2]
 })
 observeEvent(input$dyser_color, {
+  req(length(input$dyser_color) >= 2L)
   if(nchar(input$dyser_color[2]))
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$dyser_color[1])]]]]$color <<- input$dyser_color[2]
   else
@@ -1181,7 +1182,7 @@ observeEvent(input$dxAxis_gridLineWidth, {
     rv$graphConfig$graph$xaxis$gridLineWidth <<- input$dxAxis_gridLineWidth
 })
 observeEvent(input$dxAxis_axisLineColor, {
-  if(nchar(input$dxAxis_axisLineColor))
+  if(length(input$dxAxis_axisLineColor) && nchar(input$dxAxis_axisLineColor))
     rv$graphConfig$graph$xaxis$axisLineColor <<- input$dxAxis_axisLineColor
   else
     rv$graphConfig$graph$xaxis$axisLineColor <<- NULL
@@ -1218,7 +1219,7 @@ observeEvent(input$dyAxis_gridLineWidth, {
     rv$graphConfig$graph$yaxis$gridLineWidth <<- input$dyAxis_gridLineWidth
 })
 observeEvent(input$dyAxis_axisLineColor, {
-  if(nchar(input$dyAxis_axisLineColor))
+  if(length(input$dyAxis_axisLineColor) && nchar(input$dyAxis_axisLineColor))
     rv$graphConfig$graph$yaxis$axisLineColor <<- input$dyAxis_axisLineColor
   else
     rv$graphConfig$graph$yaxis$axisLineColor <<- NULL
@@ -1237,7 +1238,7 @@ observeEvent(input$dyAxis_axisLabelFontSize, {
 })
 observeEvent(input$dyAxis_valueRangeFrom, {
   val <- NULL
-  if(nchar(input$dyAxis_valueRangeFrom)){
+  if(length(input$dyAxis_valueRangeFrom) && nchar(input$dyAxis_valueRangeFrom)){
     val <- suppressWarnings(as.numeric(input$dyAxis_valueRangeFrom))
     if(is.na(val))
       val <- NULL
@@ -1249,7 +1250,7 @@ observeEvent(input$dyAxis_valueRangeFrom, {
 })
 observeEvent(input$dyAxis_valueRangeTo, {
   val <- NULL
-  if(nchar(input$dyAxis_valueRangeTo)){
+  if(length(input$dyAxis_valueRangeTo) && nchar(input$dyAxis_valueRangeTo)){
     val <- suppressWarnings(as.numeric(input$dyAxis_valueRangeTo))
     if(is.na(val))
       val <- NULL
