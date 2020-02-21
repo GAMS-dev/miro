@@ -941,12 +941,13 @@ observeEvent(input$marker_line_color, {
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_line_color[1])]]]]$marker$line$color <<- NULL
 }, priority = -500)
 observeEvent(input$trace_yaxis, {
+  req(length(input$trace_yaxis) >= 2L)
   if(identical(input$trace_yaxis[2], "y2")){
-    axisOptionsGlobal$y <<- axisOptionsGlobal$y-1L
-    axisOptionsGlobal$y2 <<- axisOptionsGlobal$y2+1L
+    axisOptionsGlobal$y <<- axisOptionsGlobal$y - 1L
+    axisOptionsGlobal$y2 <<- axisOptionsGlobal$y2 + 1L
   }else{
-    axisOptionsGlobal$y <<- axisOptionsGlobal$y+1L
-    axisOptionsGlobal$y2 <<- axisOptionsGlobal$y2-1L
+    axisOptionsGlobal$y <<- axisOptionsGlobal$y + 1L
+    axisOptionsGlobal$y2 <<- axisOptionsGlobal$y2 - 1L
   }
   updateYAxes()
   rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$trace_yaxis[1])]]]]$yaxis <<- input$trace_yaxis[2]
@@ -1574,7 +1575,7 @@ observeEvent(input$y2_showticklabels, {
 })
 observeEvent(input$y2_rangefrom, {
   val <- NULL
-  if(nchar(input$y2_rangefrom)){
+  if(length(input$y2_rangefrom) && nchar(input$y2_rangefrom)){
     val <- suppressWarnings(as.numeric(input$y2_rangefrom))
     if(is.na(val))
       val <- input$y2_rangefrom
@@ -1583,7 +1584,7 @@ observeEvent(input$y2_rangefrom, {
 })
 observeEvent(input$y2_rangeto, {
   val <- NULL
-  if(nchar(input$y2_rangeto)){
+  if(length(input$y2_rangeto) && nchar(input$y2_rangeto)){
     val <- suppressWarnings(as.numeric(input$y2_rangeto))
     if(is.na(val))
       val <- input$y2_rangeto
@@ -1820,9 +1821,9 @@ observeEvent(input$remove_array_el, {
   if(length(rv$graphConfig$graph[[JSON_id]][[chart_label]]$yaxis) ||
      length(rv$graphConfig$graph[[JSON_id]][[chart_label]]$axis)){
     if(identical(rv$graphConfig$graph[[JSON_id]][[chart_label]]$yaxis, "y"))
-      axisOptionsGlobal$y <<- axisOptionsGlobal$y-1L
+      axisOptionsGlobal$y <<- axisOptionsGlobal$y - 1L
     if(identical(rv$graphConfig$graph[[JSON_id]][[chart_label]]$yaxis, "y2"))
-      axisOptionsGlobal$y2 <<- axisOptionsGlobal$y2-1L
+      axisOptionsGlobal$y2 <<- axisOptionsGlobal$y2 - 1L
     updateYAxes()
   }
   if(sum(input$remove_array_el[2] == chart_label) < 1.5){
@@ -1961,7 +1962,7 @@ observeEvent({
       insertUI(selector = "#tool_options", getBarOptions(), where = "beforeEnd")
       allDataAvailable <<- TRUE
     }else if(identical(chartTool, "scatter")){
-      axisOptionsGlobal <- list(y = 1, y2 = 0)
+      axisOptionsGlobal <<- list(y = 1, y2 = 0)
       rv$resetRE <- rv$resetRE + 1L
       rv$graphConfig$graph$type <<- "scatter"
       showEl(session, ".category-btn-scatter")
@@ -1969,7 +1970,7 @@ observeEvent({
       insertUI(selector = "#tool_options", getScatterOptions(), where = "beforeEnd")
       allDataAvailable <<- TRUE
     }else if(identical(chartTool, "line")){
-      axisOptionsGlobal <- list(y = 1, y2 = 0)
+      axisOptionsGlobal <<- list(y = 1, y2 = 0)
       rv$resetRE <- rv$resetRE + 1L
       rv$graphConfig$graph$type <<- "scatter"
       showEl(session, ".category-btn-line")
