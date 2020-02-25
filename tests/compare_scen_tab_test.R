@@ -9,6 +9,6 @@ app$setInputs(selLoadScen = paste0(c("1_", "2_"), Sys.info()[["user"]]), wait_ =
 app$setInputs(btLoadScenConfirm = "click")
 Sys.sleep(2)
 app$snapshot(items = list(output = c("title_4", "title_5")), screenshot = TRUE)
-app$setInputs(table_5 = "click")
+app$setInputs(btScenTableView = "click")
 
 app$stop()
