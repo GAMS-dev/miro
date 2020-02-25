@@ -140,6 +140,19 @@ put$(card(ii)>maxCities)  '             Increase the value of "maxCities", if al
 put '- Maximum number of subtour elimiantion cuts: ' maxCuts:0:0 /;
 put '------------------------------------------------------'/;
 
+if(card(ii)<2,
+   put   'Need to have at least two cities to calculate a tour'/;
+   abort 'Need to have at least two cities to calculate a tour';
+);
+if(maxCities<2,
+   put   'MaxCities needs to be at least two to calculate a tour'/;
+   abort 'MaxCities needs to be at least two to calculate a tour';
+);
+if(maxCuts<1,
+   put   'MaxCuts needs to be at least one to run the problem'/;
+   abort 'MaxCuts needs to be at least one to run the problem';
+);
+
 i(ii)$(ord(ii) <= maxCities) = yes;
 
 * Dynamic subtour elimination
