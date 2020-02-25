@@ -205,7 +205,7 @@ onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\
                              ),
                              tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
                                       tags$button(class = "btn btn-default scen-button", 
-                                                  id = "btScenTableView", type = "button", 
+                                                  id = paste0("btScenTableView", scenId), type = "button", 
                                                   onclick = paste0("Shiny.setInputValue('btScenTableView',",
                                                                    scenId, ",{priority:'event'})"),
                                                   tags$i(class = "fa fa-chart-bar"))
@@ -236,7 +236,7 @@ onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\
                       ),
                       tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
                                tags$button(class = "btn btn-default scen-button", 
-                                           id = "btScenTableView", type = "button", 
+                                           id = paste0("btScenTableView", scenId), type = "button", 
                                            onclick = paste0("Shiny.setInputValue('btScenTableView',",
                                                             scenId, ",{priority:'event'})"),
                                            tags$i(class = "fa fa-chart-bar"))
