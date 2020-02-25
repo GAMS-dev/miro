@@ -1031,7 +1031,6 @@ if(!is.null(errMsg)){
     source("./tools/config/ui.R", local = TRUE)
     shinyApp(ui = ui_admin, server = server_admin)
   }else{
-    interruptShutdown <<- FALSE
     
     #______________________________________________________
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -1046,7 +1045,6 @@ if(!is.null(errMsg)){
       btSortNameDescBase <- FALSE
       btSortTimeDescBase <- TRUE
       btSortTimeBase     <- TRUE
-      interruptShutdown  <<- TRUE
       jobImportID        <- NULL
       resetWidgetsOnClose <- TRUE
       # boolean that specifies whether output data should be saved
@@ -1725,34 +1723,19 @@ if(!is.null(errMsg)){
                                       config$storeLogFilesDuration)
         }
         gc()
-        if(!interactive()){
-          if(isShinyProxy){
-            interruptShutdown <<- FALSE
-            promises::then(future(Sys.sleep(SERVER_SHUTDOWN_DELAY)),
-                           function(val) {
-                             if(identical(interruptShutdown, FALSE)){
-                               flog.info("Shutting down container..")
-                               stopApp()
-                             }else{
-                               flog.info("Container shutdown was interrupted.")
-                             }}, function(val){
-                               flog.info("Shutting down container..")
-                               stopApp()
-                             })
-          }else{
-            tryCatch({
-              if(length(unzipModelFilesProcess) && 
-                 !length(unzipModelFilesProcess$get_exit_status())){
-                unzipModelFilesProcess$kill()
-              }
-            }, error = function(e){
-              flog.error("Problems killing process to extract model files. Error message: '%s'.", 
-                         conditionMessage(e))
-            }, finally = {
-              unzipModelFilesProcess <- NULL
-            })
-            stopApp()
-          }
+        if(!interactive() && !isShinyProxy){
+          tryCatch({
+            if(length(unzipModelFilesProcess) && 
+               !length(unzipModelFilesProcess$get_exit_status())){
+              unzipModelFilesProcess$kill()
+            }
+          }, error = function(e){
+            flog.error("Problems killing process to extract model files. Error message: '%s'.", 
+                       conditionMessage(e))
+          }, finally = {
+            unzipModelFilesProcess <- NULL
+          })
+          stopApp()
         }
       })
     }
