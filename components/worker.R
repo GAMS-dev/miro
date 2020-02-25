@@ -1007,11 +1007,17 @@ Worker <- R6Class("Worker", public = list(
       }
       return(private$status)
     }
-    ret <- DELETE(paste0(private$metadata$url, "/jobs/", private$process, "/unread-logs"), 
-                  add_headers(Authorization = private$authHeader,
-                              Timestamp = as.character(Sys.time(), usetz = TRUE)),
-                  timeout(5L))
-    statusCode <- status_code(ret)
+    tryCatch({
+      ret <- DELETE(paste0(private$metadata$url, "/jobs/", private$process, "/unread-logs"), 
+                    add_headers(Authorization = private$authHeader,
+                                Timestamp = as.character(Sys.time(), usetz = TRUE)),
+                    timeout(2L))
+      statusCode <- status_code(ret)
+    }, error = function(e){
+      flog.warn("Problems reading log from remote executor. Error message: %s", conditionMessage(e))
+      statusCode <- 403L
+    })
+    
     if(identical(statusCode, 200L)){
       responseContent <- tryCatch({
         content(ret, type = "application/json", 

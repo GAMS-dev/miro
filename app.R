@@ -1638,17 +1638,10 @@ if(!is.null(errMsg)){
         }
       }
       
+      source("./modules/scen_compare_actions.R", local = TRUE)
+      
       lapply(seq_len(maxNumberScenarios  + 3L), function(i){
         scenIdLong <- paste0("scen_", i, "_")
-        # table view
-        source("./modules/scen_table_view.R", local = TRUE)
-        
-        # close scenario tab
-        source("./modules/scen_close.R", local = TRUE)
-        
-        # export Scenario to Excel spreadsheet
-        source("./modules/scen_export.R", local = TRUE)
-        
         # compare scenarios
         obsCompare[[i]] <<- observe({
           if(is.null(input[[paste0("contentScen_", i)]]) || 
