@@ -204,9 +204,12 @@ generateScenarioTabsetMulti <- function(scenId, noData = vector("logical", lengt
 onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\'})"><i class="fas fa-download"></i></button>'))
                              ),
                              tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
-                                      actionButton(paste0("table_", scenId), icon("chart-bar"), 
-                                                   class="scen-button")
-                             )
+                                      tags$button(class = "btn btn-default scen-button", 
+                                                  id = "btScenTableView", type = "button", 
+                                                  onclick = paste0("Shiny.setInputValue('btScenTableView',",
+                                                                   scenId, ",{priority:'event'})"),
+                                                  tags$i(class = "fa fa-chart-bar"))
+                                      )
                     )
                     
            ),
@@ -232,8 +235,11 @@ generateScenarioTabsetSplit <- function(scenId){
 onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\'})"><i class="fas fa-download"></i></button>'))
                       ),
                       tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
-                               actionButton(paste0("table_", scenId), icon("chart-bar"), 
-                                            class="scen-button")
+                               tags$button(class = "btn btn-default scen-button", 
+                                           id = "btScenTableView", type = "button", 
+                                           onclick = paste0("Shiny.setInputValue('btScenTableView',",
+                                                            scenId, ",{priority:'event'})"),
+                                           tags$i(class = "fa fa-chart-bar"))
                       )
              )
              
