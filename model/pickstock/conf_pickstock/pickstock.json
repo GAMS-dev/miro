@@ -75,11 +75,13 @@
           }
         },
         "xaxis": {
-          "title": "date",
+          "name": "x",
+          "label": "date",
           "showgrid": true
         },
         "yaxis": {
-          "title": "value",
+          "name": "y",
+          "label": "value",
           "showgrid": true
         }
       }
@@ -159,10 +161,12 @@
           }
         },
         "xaxis": {
-          "title": "Date"
+          "name": "x",
+          "label": "Date"
         },
         "yaxis": {
-          "title": "Price"
+          "name": "y",
+          "label": "Price"
         }
       }
     },
@@ -242,11 +246,13 @@
           }
         },
         "xaxis": {
-          "title": "date",
+          "name": "x",
+          "label": "date",
           "showgrid": true
         },
         "yaxis": {
-          "title": "value",
+          "name": "y",
+          "label": "value",
           "showgrid": true
         },
         "dyEvent": {
