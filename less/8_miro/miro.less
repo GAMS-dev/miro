@@ -358,6 +358,14 @@ animation: none !important;
 .choose-input{ 
   min-height: 80px;
 }
+.dropdown-sidebar{
+  .responsiveDark({
+     background-color: @dropdown-sidebar-bg;
+  },
+  {
+     background-color: @dropdown-sidebar-bg-dark;
+  });
+}
 /* gams interaction */
 #logStatus, #listFile, #miroLogFile{
   overflow:auto;
