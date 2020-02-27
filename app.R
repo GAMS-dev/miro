@@ -248,7 +248,7 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
       config$activateModules$remoteExecution <- TRUE
     }
   }
-  if(config$activateModules$remoteExecution){
+  if(isTRUE(config$activateModules$remoteExecution)){
     useTempDir <- TRUE
   }
   if(debugMode){
