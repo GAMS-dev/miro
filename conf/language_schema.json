@@ -4481,18 +4481,6 @@
                 }
               }
             },
-            "remoteExecution":{          
-              "type":"object",
-              "additionalProperties":false,
-              "required":true,
-              "properties":{
-                "label":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                }
-              }
-            },
             "downloadTempFiles":{          
               "type":"object",
               "additionalProperties":false,
