@@ -275,18 +275,6 @@ insertUI(selector = "#module_wrapper1",
 insertUI(selector = "#module_wrapper2",
          tagList(
            tags$h2(lang$adminMode$general$ui$headerComputation, class="option-category"),
-           tags$label(class = "cb-label", "for" = "general_remote_execution", 
-                      tags$div(lang$adminMode$general$remoteExecution$label, 
-                               tags$a("", title = lang$adminMode$general$ui$tooltipDocs, 
-                                      class="info-wrapper", 
-                                      href="https://gams.com/miro/server.html", 
-                                      tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
-           tags$div(
-             tags$label(class = "checkbox-material", 
-                        checkboxInput("general_remote_execution", 
-                                      value = if(length(configJSON$activateModules$remoteExecution)) 
-                                        configJSON$activateModules$remoteExecution else config$activateModules$remoteExecution, label = NULL)
-             )),
            tags$label(class = "cb-label", "for" = "general_downloadTempFiles", 
                       tags$div(lang$adminMode$general$downloadTempFiles$label, 
                                tags$a("", title = lang$adminMode$general$ui$tooltipDocs, 
@@ -523,9 +511,6 @@ lapply(c(names(modelInRaw), names(modelOut)), function(name){
     }
     rv$generalConfig$overwriteHeaderAliases[[name]] <<- list(newHeaders = newHeaders)
   })
-})
-observeEvent(input$general_remote_execution, {
-  rv$generalConfig$activateModules$remoteExecution <<- input$general_remote_execution
 })
 observeEvent(input$general_downloadTempFiles, {
   rv$generalConfig$activateModules$downloadTempFiles <<- input$general_downloadTempFiles

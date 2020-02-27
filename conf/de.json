@@ -988,9 +988,6 @@
         "title": "Blätter können leer sein, z.B. wenn das exportierte Szenario nur Eingabedaten enthält.",
         "label": "Leere Blätter in die Excel-Datei aufnehmen?"
       },
-      "remoteExecution":{
-        "label": "Remote Job-Ausführung (Nur für GAMS MIRO Server verfügbar)"
-      },
       "downloadTempFiles":{
         "label": "Zugriff auf das temporäre Verzeichnis erlauben?"
       },
