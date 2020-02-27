@@ -1030,10 +1030,13 @@
                               "default":"Count"
                            },
                            "vals":{  
-                              "description":"String name of the column in the data.frame to use with aggregatorName. Must be additive (i.e a number).",
-                              "type":"string",
-                              "minLength":1,
-                              "default":null
+                              "description":"String or Array of Strings name(s) of the column(s) in the data.frame to use with aggregatorName. Must be additive (i.e a number).",
+                              "type":["array", "string"],
+                              "items":{  
+                                 "type":"string"
+                              },
+                              "default":null,
+                              "required":false
                            },
                            "rendererName":{  
                               "description":"Name of the renderer selected, e.g. Table, Heatmap, Treemap etc",
