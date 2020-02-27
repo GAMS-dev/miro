@@ -40,6 +40,9 @@ HcubeDataInstance <- R6Class("HcubeDataInstance", public = list(
     write_json(list(jobs = lapply(seq_along(private$jobIDs), function(i){
       parValCombinations <- private$parValCombinations[[i]]
       parValCombinations <- parValCombinations[!startsWith(parValCombinations, "--HCUBE_STATIC_")]
+      parValCombinations <- unlist(strsplit(parValCombinations, '|"""|', fixed = TRUE), 
+                                   use.names = FALSE)
+      
       return(list(id = private$jobIDs[[i]], arguments = parValCombinations))
     }), model_gms_name = private$modelGmsName), filePath, auto_unbox = TRUE)
     return(filePath)

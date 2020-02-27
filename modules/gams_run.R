@@ -259,7 +259,7 @@ if(LAUNCHHCUBEMODE){
                     && !identical(input[["hcubeMode_" %+% i]], TRUE)){
                    # double slider in single run mode
                    return(paste0(parPrefix, "_lo= ", value[1], 
-                                 " ", parPrefix, "_up= ", value[2]))
+                                 '|"""|', parPrefix, "_up= ", value[2]))
                  }
                  
                  stepSize <- input[["hcubeStep_" %+% i]]
@@ -269,7 +269,7 @@ if(LAUNCHHCUBEMODE){
                  # double slider all combinations
                  value <- getCombinationsSlider(value[1], value[2], stepSize)
                  return(paste0(parPrefix, "_lo= ", value$min, 
-                               " ", parPrefix, "_up= ", value$max))
+                               '|"""|', parPrefix, "_up= ", value$max))
                }else{
                  return(paste0(parPrefix, "= ", value))
                }
@@ -293,7 +293,7 @@ if(LAUNCHHCUBEMODE){
                
                if(!names(modelIn)[i] %in% c(DDPar, GMSOpt) && 
                    length(modelIn[[i]]$dropdown$aliases)){
-                 text <- paste0(" --HCUBE_SCALART_", names(modelIn)[i], 
+                 text <- paste0('|"""|--HCUBE_SCALART_', names(modelIn)[i], 
                                 "= ", escapeGAMSCL(modelIn[[i]]$dropdown$
                                                     aliases[match(value, 
                                                                    modelIn[[i]]$
@@ -317,7 +317,7 @@ if(LAUNCHHCUBEMODE){
                value <- as.character(input[["daterange_" %+% i]])
                
                return(paste0(parPrefix, "_lo= ", escapeGAMSCL(value[1]), 
-                             " ", parPrefix, "_up= ", escapeGAMSCL(value[2])))
+                             '|"""|', parPrefix, "_up= ", escapeGAMSCL(value[2])))
              },
              checkbox = {
                return(paste0(parPrefix, "= ", input[["cb_" %+% i]]))
