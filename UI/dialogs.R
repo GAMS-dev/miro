@@ -112,17 +112,6 @@ showRemoveScenDialog <- function(forwardTo){
     ), fade = TRUE, easyClose = FALSE))
 }
 
-showCloseScenDialog <- function(scenId){
-  showModal(modalDialog(
-    title = lang$nav[["dialogCloseScen"]]$title,
-    lang$nav[["dialogCloseScen"]]$desc,
-    footer = tagList(
-      modalButton(lang$nav[["dialogCloseScen"]]$cancelButton),
-      actionButton("btCloseFinal_" %+% scenId, lang$nav[["dialogCloseScen"]]$okButton, 
-                   class = "bt-highlight-1 bt-gms-confirm")),
-    fade=FALSE, easyClose=FALSE))
-}
-
 showDeleteScenDialog <- function(){
   if(LAUNCHHCUBEMODE){
     modeDescriptor <- "dialogDeleteHCJob"
@@ -598,6 +587,9 @@ showScenExportDialog <- function(id, exportTypes){
     tags$div(class = "gmsalert gmsalert-error", id = "exportNoDsSelected", 
              lang$nav$dialogExportScen$noDsSelected),
     selectInput("exportFileType", lang$nav$dialogExportScen$desc, exportTypes),
+    tags$div(style = "display:none;",
+             numericInput("scenExportId", NULL, id)
+             ),
     div(class= "choose-input", 
         column(6,
                tags$label(class = "checkbox-material flex-design", 
@@ -617,9 +609,9 @@ showScenExportDialog <- function(id, exportTypes){
     ),
     footer = tagList(
       modalButton(lang$nav$dialogExportScen$cancelButton),
-      downloadButton(paste0("export_", id), lang$nav$dialogExportScen$okButton,  
+      downloadButton("scenExportHandler", lang$nav$dialogExportScen$okButton,  
                      class = "bt-highlight-1 bt-gms-confirm file-export"),
-      actionButton(paste0("remote_export_", id), lang$nav$dialogExportScen$okButton,  
+      actionButton("scenRemoteExportHandler", lang$nav$dialogExportScen$okButton,  
                    class = "bt-highlight-1 bt-gms-confirm remote-export", 
                    style = "display: none;")
       ), fade = TRUE, easyClose = TRUE

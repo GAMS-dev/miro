@@ -170,7 +170,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       }
       ret$uels <- vector("list", symDim)
       ret$uels <- lapply(seq_len(symDim), function(j){
-        v[, j] <<- as.numeric(df[[j]])
+        v[, j] <<- suppressWarnings(as.numeric(df[[j]]))
         return(levels(df[[j]]))
       })
       if(symType %in% c("variable", "equation")){
@@ -234,7 +234,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
           uels     <- list(c('l', 'm', 'lo', 'up', 's'))
           v        <- data.matrix(df)
         }else if(symType == "parameter"){
-          v       <- as.numeric(symVals[[j]][1])
+          v       <- suppressWarnings(as.numeric(symVals[[j]][1]))
           form    <- "full"
         }else if(symType == "set"){
           # element is singleton set

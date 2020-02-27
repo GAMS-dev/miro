@@ -988,9 +988,6 @@
         "title": "Blätter können leer sein, z.B. wenn das exportierte Szenario nur Eingabedaten enthält.",
         "label": "Leere Blätter in die Excel-Datei aufnehmen?"
       },
-      "remoteExecution":{
-        "label": "Remote Job-Ausführung (Nur für GAMS MIRO Server verfügbar)"
-      },
       "downloadTempFiles":{
         "label": "Zugriff auf das temporäre Verzeichnis erlauben?"
       },
@@ -1074,6 +1071,7 @@
         "noWidgetConfigMsg": "Derzeit ist kein Widget für dieses Symbol konfiguriert",
         "optionConfigMsg": "Info: Das von Ihnen gewählte Symbol ist eine GAMS-Option: %s",
         "doubledashConfigMsg": "Info: Das von Ihnen gewählte Symbol ist ein Double-Dash-Parameter: %s",
+        "tableWidget": "Tabellen können unter 'Tabellen konfigurieren' angepasst werden!",
         "inputSymbol": "Wählen Sie ein Eingabesymbol",
         "widgetGo": "Name der GAMS Option (z.B.'LP' oder 'OptCR')",
         "widgetDd": "Name des Double-Dash-Parameters (ohne '--')",

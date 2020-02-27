@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "0.9.83"
+MIROVersion <- "0.9.88"
 APIVersion  <- "1"
-MIRORDate   <- "Feb 11 2020"
+MIRORDate   <- "Feb 27 2020"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -230,8 +230,11 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
   }
   if(isShinyProxy || identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
     dbConfig <- setDbConfig()
-    if(isShinyProxy)
+    
+    if(isShinyProxy || identical(Sys.getenv("MIRO_REMOTE_EXEC"), "true")){
       config$activateModules$remoteExecution <- TRUE
+    }
+    
     if(length(dbConfig$errMsg)){
       errMsg <- dbConfig$errMsg
     }else{
@@ -241,6 +244,9 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
     dbConfig <- list(type = "sqlite",
                      name = file.path(miroDbDir, 
                                       "miro.sqlite3"))
+    if(identical(Sys.getenv("MIRO_REMOTE_EXEC"), "true")){
+      config$activateModules$remoteExecution <- TRUE
+    }
   }
   if(debugMode){
     if(file.exists(file.path(currentModelDir, paste0(modelName, "_files.txt")))){
@@ -1031,7 +1037,6 @@ if(!is.null(errMsg)){
     source("./tools/config/ui.R", local = TRUE)
     shinyApp(ui = ui_admin, server = server_admin)
   }else{
-    interruptShutdown <<- FALSE
     
     #______________________________________________________
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -1046,7 +1051,6 @@ if(!is.null(errMsg)){
       btSortNameDescBase <- FALSE
       btSortTimeDescBase <- TRUE
       btSortTimeBase     <- TRUE
-      interruptShutdown  <<- TRUE
       jobImportID        <- NULL
       resetWidgetsOnClose <- TRUE
       # boolean that specifies whether output data should be saved
@@ -1638,17 +1642,10 @@ if(!is.null(errMsg)){
         }
       }
       
+      source("./modules/scen_compare_actions.R", local = TRUE)
+      
       lapply(seq_len(maxNumberScenarios  + 3L), function(i){
         scenIdLong <- paste0("scen_", i, "_")
-        # table view
-        source("./modules/scen_table_view.R", local = TRUE)
-        
-        # close scenario tab
-        source("./modules/scen_close.R", local = TRUE)
-        
-        # export Scenario to Excel spreadsheet
-        source("./modules/scen_export.R", local = TRUE)
-        
         # compare scenarios
         obsCompare[[i]] <<- observe({
           if(is.null(input[[paste0("contentScen_", i)]]) || 
@@ -1732,34 +1729,19 @@ if(!is.null(errMsg)){
                                       config$storeLogFilesDuration)
         }
         gc()
-        if(!interactive()){
-          if(isShinyProxy){
-            interruptShutdown <<- FALSE
-            promises::then(future(Sys.sleep(SERVER_SHUTDOWN_DELAY)),
-                           function(val) {
-                             if(identical(interruptShutdown, FALSE)){
-                               flog.info("Shutting down container..")
-                               stopApp()
-                             }else{
-                               flog.info("Container shutdown was interrupted.")
-                             }}, function(val){
-                               flog.info("Shutting down container..")
-                               stopApp()
-                             })
-          }else{
-            tryCatch({
-              if(length(unzipModelFilesProcess) && 
-                 !length(unzipModelFilesProcess$get_exit_status())){
-                unzipModelFilesProcess$kill()
-              }
-            }, error = function(e){
-              flog.error("Problems killing process to extract model files. Error message: '%s'.", 
-                         conditionMessage(e))
-            }, finally = {
-              unzipModelFilesProcess <- NULL
-            })
-            stopApp()
-          }
+        if(!interactive() && !isShinyProxy){
+          tryCatch({
+            if(length(unzipModelFilesProcess) && 
+               !length(unzipModelFilesProcess$get_exit_status())){
+              unzipModelFilesProcess$kill()
+            }
+          }, error = function(e){
+            flog.error("Problems killing process to extract model files. Error message: '%s'.", 
+                       conditionMessage(e))
+          }, finally = {
+            unzipModelFilesProcess <- NULL
+          })
+          stopApp()
         }
       })
     }

@@ -988,9 +988,6 @@
         "title": "表格可以是空的，例如，当导出的场景仅包含输入数据时。",
         "label": "在Excel文件中包含空白表格？"
       },
-      "remoteExecution":{
-        "label": "远程执行作业（仅适用于GAMS MIRO Server）"
-      },
       "downloadTempFiles":{
         "label": "Allow access to the temporary directory?"
       },
@@ -1074,6 +1071,7 @@
         "noWidgetConfigMsg": "当前没有为此GAMS符号配置小部件",
         "optionConfigMsg": "消息：您选择的符号是GAMS选项：%s",
         "doubledashConfigMsg": "消息： 您选择的符号是一个double-dash parameter：%s",
+        "tableWidget": "Table configuration is done in 'configure tables'!",
         "inputSymbol": "为哪个输入符号创建一个小部件？",
         "widgetGo": "GAMS option",
         "widgetDd": "double-dash parameter",

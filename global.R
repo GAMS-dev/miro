@@ -129,8 +129,8 @@ attachMaxNo           <- 5L
 
 TIMEVIS_MAX_EVENTS <- 50L
 
-# delay (in seconds) the server should wait with shutdown after user disconnected
-SERVER_SHUTDOWN_DELAY <- 60L
+# delay (in seconds) the server should wait with shutdown after user disconnectedv (equal to ShinyProxy timeout)
+SERVER_SHUTDOWN_DELAY <- 600L
 
 JOBSTATUSMAP <- c(
   'running' = -1L,

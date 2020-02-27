@@ -988,9 +988,6 @@
         "title": "Sheets can be empty e.g. when the exported scenario only contains input data.",
         "label": "Include empty sheets in the Excel file?"
       },
-      "remoteExecution":{
-        "label": "Remote job execution (GAMS MIRO Server only)"
-      },
       "downloadTempFiles":{
         "label": "Allow access to the temporary directory?"
       },
@@ -1074,6 +1071,7 @@
         "noWidgetConfigMsg": "Currently, there is no widget configured for this symbol",
         "optionConfigMsg": "Info: The symbol you selected is a GAMS option: %s",
         "doubledashConfigMsg": "Info: The symbol you selected is a double-dash parameter: %s",
+        "tableWidget": "Table configuration is done in 'configure tables'!",
         "inputSymbol": "Input symbol",
         "widgetGo": "GAMS option",
         "widgetDd": "Double-dash parameter",

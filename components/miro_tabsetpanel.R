@@ -94,10 +94,10 @@ markTabAsSelected <- function(x) {
   attr(x, "selected") <- TRUE
   x
 }
-MIROinsertTab <- function(inputId, tab, target,
-                      position = c("before", "after"), select = FALSE,
-                      buttonID = NULL, buttonTT = NULL,
-                      session = getDefaultReactiveDomain()) {
+insertScenTab <- function(inputId, tab, target,
+                          position = c("before", "after"), select = FALSE,
+                          scenID = NULL, scenButtonLang = NULL,
+                          session = getDefaultReactiveDomain()) {
   force(target)
   force(select)
   position <- match.arg(position)
@@ -111,7 +111,7 @@ MIROinsertTab <- function(inputId, tab, target,
   # can only know this in the client side, we'll just pass `id` and
   # `tsid` (TabSetID) as dummy values that will be fixed in the JS code.
   item <- MIRObuildTabItem("id", "tsid", TRUE, divTag = tab, 
-                           buttonID = buttonID, buttonTT = buttonTT)
+                           scenID = scenID, scenButtonLang = scenButtonLang)
   
   callback <- function() {
     session$sendInsertTab(
@@ -127,7 +127,7 @@ MIROinsertTab <- function(inputId, tab, target,
 }
 
 MIRObuildTabItem <- function(index, tabsetId, tabs = NULL, 
-                             divTag = NULL, buttonID = NULL, buttonTT = NULL,
+                             divTag = NULL, scenID = NULL, scenButtonLang = NULL,
                              noTabsGrouped = -1L, onclick = NULL) {
   
   divTag <- if (!is.null(divTag)) divTag else tabs[[index]]
@@ -142,12 +142,17 @@ MIRObuildTabItem <- function(index, tabsetId, tabs = NULL,
       `data-toggle` = "tab",
       `data-value` = divTag$attribs$`data-value`,
       divTag$attribs$title,
-      if(!is.null(buttonID))
-        actionButton(inputId = buttonID, title = buttonTT,
-                     style = "margin-bottom:3px;margin-left:10px;",
-                     class = "bt-icon",
-                     icon = icon("times"), 
-                     label = NULL)
+      if(!is.null(scenID))
+        tags$button(class = "btn btn-default bt-icon", type = "button",
+                    title = scenButtonLang[["tooltip"]], style = "margin-bottom:3px;margin-left:10px;",
+                    onclick = paste0("Miro.confirmModalShow('", 
+                                     scenButtonLang[["title"]], "', '", 
+                                     scenButtonLang[["desc"]], "', '", 
+                                     scenButtonLang[["cancelButton"]], "', '", 
+                                     scenButtonLang[["okButton"]], 
+                    "', 'Shiny.setInputValue(\\'btScenClose\\',", scenID, 
+                    ",{priority:\\'event\\'})')"),
+                    tags$i(class = "fa fa-times"))
     )
   )
   # if this tabPanel is selected item, mark it active

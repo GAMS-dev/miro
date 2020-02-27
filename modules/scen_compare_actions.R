@@ -1,6 +1,80 @@
+observeEvent(input[["btScenTableView"]], {
+  req(length(input[["btScenTableView"]]) == 1L)
+  # get sheet ID for current scenario
+  scenId <- suppressWarnings(as.integer(input[["btScenTableView"]]))
+  if(is.na(scenId) || scenId < 1){
+    flog.error("Problems switching table view for table ID: '%s'. This looks like an attempt to tamper with the app!", 
+               input[["btScenTableView"]])
+    return()
+  }
+  j <- suppressWarnings(as.integer(strsplit(isolate(input[[paste0("contentScen_", scenId)]]), 
+                                            "_", fixed = TRUE)[[1L]][[3L]]))
+  if(is.na(j) || j < 1 || j > length(isGroupOfSheets)){
+    return(NULL)
+  }
+  if(isGroupOfSheets[[j]]){
+    j <- groupSheetToTabIdMap[[j]][[as.integer(strsplit(isolate(input[[paste0("contentScen_", scenId, "_", j)]]), 
+                                                        "_", fixed = TRUE)[[1L]][[4L]])]]
+  }else{
+    j <- groupSheetToTabIdMap[[j]][[1L]]
+  }
+  flog.debug("Table view in scenario with id: %s for sheet: %s activated.", scenId, j)
+  if(isInCompareMode){
+    if(isInSplitView){
+      lapply(2:3, function(k){
+        toggleEl(session, paste0("#scenTable_", k, "_", j))
+        toggleEl(session, paste0("#scenGraph_", k, "_", j))
+      })
+    }else{
+      lapply(4:(maxNumberScenarios + 3), function(k){
+        toggleEl(session, paste0("#scenTable_", k, "_", j))
+        toggleEl(session, paste0("#scenGraph_", k, "_", j))
+      })
+    }
+  }else{
+    toggleEl(session, paste0("#scenTable_", scenId, "_", j))
+    toggleEl(session, paste0("#scenGraph_", scenId, "_", j))
+  }
+})
+
+# close scenario tab confirmed
+observeEvent(input[["btScenClose"]],{
+  scenId <- suppressWarnings(as.integer(input[["btScenClose"]]))
+  if(is.na(scenId) || scenId < 1){
+    flog.error("Problems closing scenario with ID: '%s'. This looks like an attempt to tamper with the app!", 
+               input[["btScenClose"]])
+    return()
+  }
+  flog.debug("Close scenario '%d' button clicked", scenId)
+  scenIdLong <- paste0("scen_", scenId, "_")
+  removeModal()
+  
+  removeTab("scenTabset", scenIdLong)
+  scenData[[scenIdLong]]      <<- list(NULL)
+  scalarData[[scenIdLong]]    <<- list(NULL)
+  scenMetaData[[scenIdLong]]  <<- list(NULL)
+  sidsInComp[scenId]          <<- 0
+  numberScenTabs              <<- numberScenTabs - 1
+  occupiedSidSlots[scenId - 3]<<- FALSE
+  rv$scenId                   <<- scenId
+  sidCompOrder                <<- sidCompOrder[-which(sidCompOrder == scenId)]
+  if(!numberScenTabs){
+    showEl(session, "#no-scen")
+  }else if(numberScenTabs == 1){
+    disableEl(session, "#btCompareScen")
+  }
+})
+
 # export scenario data to excel spreadsheet
-output[["export_" %+% i]] <- downloadHandler(
+output[["scenExportHandler"]] <- downloadHandler(
   filename = function() {
+    scenId <- suppressWarnings(as.integer(input[["scenExportId"]]))
+    if(is.na(scenId) || scenId < 1L){
+      flog.error("Problems exporting scenario with ID: '%s'. This looks like an attempt to tamper with the app!", 
+                 input[["scenExportId"]])
+      return()
+    }
+    scenIdLong <- paste0("scen_", scenId, "_")
     isolate({
       fileExt <- exportFileType
       if(identical(fileExt, "csv")){
@@ -11,7 +85,7 @@ output[["export_" %+% i]] <- downloadHandler(
           fileExt <- "zip"
         }
       }
-      if(i == 1){
+      if(scenId == 1){
         # active scenario (editable)
         if(is.null(isolate(rv$activeSname))){
           # as no scenario name could be found, set scenario name to model name
@@ -31,9 +105,18 @@ output[["export_" %+% i]] <- downloadHandler(
     on.exit(suppressWarnings(prog$close()))
     prog$set(message = lang$progressBar$exportScen$title, value = 0.1)
     
-    if(i == 1){
+    scenId <- suppressWarnings(as.integer(input[["scenExportId"]]))
+    if(is.na(scenId) || scenId < 1L){
+      flog.error("Problems exporting scenario with ID: '%s'. This looks like an attempt to tamper with the app!", 
+                 input[["scenExportId"]])
+      return()
+    }
+    scenIdLong <- paste0("scen_", scenId, "_")
+    
+    if(scenId == 1){
       # active scenario (editable)
       saveAsFlag <<- FALSE
+      i <- 1L
       source("./modules/scen_save.R", local = TRUE)
       data <- scenData[[scenIdLong]]
     }else{
@@ -137,7 +220,14 @@ output[["export_" %+% i]] <- downloadHandler(
   contentType = if(identical(exportFileType, "gdx")) "application/octet-stream" else
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
-observeEvent(input[[paste0("remote_export_", i)]], {
+observeEvent(input[["scenRemoteExportHandler"]], {
+  scenId <- suppressWarnings(as.integer(input[["scenExportId"]]))
+  if(is.na(scenId) || scenId < 1L){
+    flog.error("Problems exporting scenario with ID: '%s'. This looks like an attempt to tamper with the app!", 
+               input[["scenExportId"]])
+    return()
+  }
+  scenIdLong <- paste0("scen_", scenId, "_")
   removeModal()
   if(!length(datasetsRemoteExport) || !length(input$exportFileType)){
     flog.error("Remote export button clicked but export file type: '%s' does not exist.", 
@@ -160,9 +250,10 @@ observeEvent(input[[paste0("remote_export_", i)]], {
     prog <- Progress$new()
     on.exit(suppressWarnings(prog$close()))
     prog$set(message = lang$progressBar$exportScen$title, value = 0.2)
-    if(i == 1){
+    if(scenId == 1){
       # active scenario (editable)
       saveAsFlag <<- FALSE
+      i <- 1L
       source("./modules/scen_save.R", local = TRUE)
       data <- scenData[[scenIdLong]]
     }else{
