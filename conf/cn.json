@@ -74,7 +74,7 @@
         "gamsOutputTabset":{
           "logFile":"日志文件",
           "lstFile":"列表文件",
-          "miroLogFile":"MIRO 日志文件",
+          "miroLogFile":"MIRO日志文件",
           "logUpdate": "更新"
         }
       }
@@ -135,7 +135,7 @@
       "title":"分析场景",
       "loadMsg":"正在计算，请等待。",
       "failMsg":"试图运行PAVER时出现错误。",
-      "duplicatesMsg":"PAVER发现了一个重复的实例:'%s'。请确保您没有选择重复项。",
+      "duplicatesMsg":"PAVER发现了一个重复的实例:'%s'。请确保没有选择重复项。",
 	  "btCancel":"取消",
 	  "btNew":"选择场景"
     },
@@ -168,8 +168,8 @@
       "title":"新建场景",
       "desc":"请输入场景的名称:",
       "tags":"请为场景添加标签（可选）:",
-      "discardAttach": "Discard attachments?",
-      "discardPerm": "Discard permissions?",
+      "discardAttach": "舍弃附件？",
+      "discardPerm": "舍弃权限？",
       "newScenName":"新建场景",
       "badName":"请输入正确的名称。",
       "scenExists":"输入的名称已存在，要替换它吗？",
@@ -182,8 +182,8 @@
       "title":"新建Hypercube作业",
       "desc":"请输入Hypercube作业配置的名称:",
       "tags":"请为HC作业添加标签（可选）:",
-      "discardAttach": "Discard attachments?",
-      "discardPerm": "Discard permissions?",
+      "discardAttach": "舍弃附件？",
+      "discardPerm": "舍弃权限？",
       "newScenName":"新建Hypercube作业",
       "badName":"请输入正确的名称。",
       "scenExists":"输入的名称已存在，要替换它吗？",
@@ -209,7 +209,7 @@
       "attachMaxSizeError":"该附件已超过允许的最大附件大小（%s字节）。",
       "attachMaxNoError":"已达最大附件数。请先删除附件,再上传新附件。",
       "attachDuplicateError":"已存在相同名称的附件。请选择其他名称,再重试。",
-      "attachForbiddenFnameError":"您尝试上传的附件使用禁用的文件名。请选择其他文件名,再重试。",
+      "attachForbiddenFnameError":"尝试上传的附件使用了禁用的文件名。请选择其他文件名,再重试。",
       "errMsg":"更新场景元数据中出现错误。如果此问题仍然存在,请与系统管理员联系。",
       "cancelButton": "关闭",
       "okButton":"更新元数据"
@@ -239,19 +239,19 @@
     "dialogRemoteLogin": {
       "title": "请登陆",
       "desc": "请输入登陆信息:",
-      "url": "GAMS远程求解器的URL",
+      "url": "GAMS远程求解器的网址",
       "username": "用户名",
       "password": "密码",
       "namespace": "命名空间",
-      "useRegistered": "您的模型在命名空间中注册了吗？",
+      "useRegistered": "该模型在命名空间中注册了吗？",
       "remember": "记住我",
       "cancelButton":"取消",
       "okButton": "确认",
-      "hostNotFound": "该URL无法访问GAMS远程求解器。",
+      "hostNotFound": "该网址无法访问GAMS远程求解器。",
       "nsNotFound": "找不到该命名空间。",
       "invalidCred": "该密匙无效",
-      "insuffPerm": "您没有足够的权限来执行该模型。",
-      "invalidProtocol": "您指定的协议无效，仅支持HTTPS。"
+      "insuffPerm": "没有足够的权限来执行该模型。",
+      "invalidProtocol": "指定的协议无效，仅支持HTTPS。"
     },
     "dialogRemoteLogout": {
       "title": "退出",
@@ -363,7 +363,7 @@
       "titleDataError":"数据已损坏",
       "descDataError":"场景数据似乎已损坏，加载失败。",
       "maxNoScenExceeded":"已超出可显示场景数的上限，仅显示一个子集。",
-	  "noDsSelected": "指定要导入的数据集的名称.",
+	  "noDsSelected": "指定要导入的数据集的名称",
       "invalidFile": "无法验证上传文件的有效性",																			  
       "sortBy":"排序依据:",
       "btSortNameASC":"名称（ASC）",
@@ -387,7 +387,7 @@
         "stime":"创建时间",
         "stag":"场景标签",
         "readPerm":"读取权限",
-        "writePerm":"保存权限",
+        "writePerm":"写入权限",
         "execPerm": "执行权限"
       },
       "inputPrefix": "",
@@ -397,33 +397,33 @@
     },
     "dialogLockScen":{
       "title":"场景锁定",
-      "desc":"用户'%s'正在访问您要加载的场景，请稍后重试。"
+      "desc":"用户'%s'正在访问要加载的场景，请稍后重试。"
     },
     "dialogReadonly":{
-      "title":"无保存权限",
-      "desc":"没有该场景的保存权限，另存为新场景？",
+      "title":"无写入权限",
+      "desc":"没有该场景的写入权限，另存为新场景？",
       "okButton":"另存为",
       "cancelButton":"取消"
     },
     "dialogReadonlyHC":{
-      "title":"无保存权限",
-      "desc":"没有该Hypercube作业配置的保存权限，另存为新配置？",
+      "title":"无写入权限",
+      "desc":"没有该Hypercube作业配置的写入权限，另存为新配置？",
       "okButton":"另存为",
       "cancelButton":"取消"
     },
     "dialogNoExecPerm":{
       "title": "没有执行权限",
-      "desc": "您没有该场景的执行权限。"
+      "desc": "没有该场景的执行权限。"
     },
     "dialogNoExecPermHC":{
       "title": "没有执行权限",
-      "desc": "您没有该Hypercube作业配置的执行权限。"
+      "desc": "没有该Hypercube作业配置的执行权限。"
     },
     "dialogDownloadTmp":{
       "title":"下载临时文件",
-      "desc":"选择您要下载的文件",
+      "desc":"选择要下载的文件",
       "noFiles":"未找到文件",
-      "downloadZipButton":"全部下载为zip",
+      "downloadZipButton":"全部下载为zip文件",
       "downloadButton":"下载",
       "cancelButton": "取消"
     },
@@ -432,14 +432,14 @@
       "desc": "提交一个要异步解决的新作业。",
       "jobName": "为当前作业指定名称（可选）",
       "descWait": "正在提交作业，请等待",
-      "badName": "请指定一个有效的作业名称。",
+      "badName": "请指定一个有效的作业名称",
       "cancelButton":"取消",
       "okButton": "提交",
-      "successMsg": "您的作业已安排。 您可以在作业完成执行后立即检索结果。"
+      "successMsg": "该作业已安排。 在作业完成执行后可以立即检索结果。"
     },						   	  
     "dialogHcube":{
       "title":"Hypercube配置",
-      "desc":"您选择了%d个场景在Hypercube模式下进行求解。其中, %d个场景已解决。",
+      "desc":"选中%d个场景在Hypercube模式下进行求解。其中, %d个场景已解决。",
       "descSolveAgain":"再次求解所有场景,还是仅解决尚未解出的场景？",
 	  "descJobSubmission": "正在提交作业，请等待",
       "newTags":"为作业分配一个或多个标签:",
@@ -447,7 +447,7 @@
       "cancelButton": "取消",
       "processAllButton":"处理所有",													   
       "processUnsolvedButton":"仅处理未解决的",
-      "successMsg":"Hypercube作业已安排，您可以在作业完成后立即查看结果。",
+      "successMsg":"Hypercube作业已安排，在作业完成后可以立即查看结果。",
       "waitTime":"提交新作业前，请等待几秒钟。",
       "waitDialog":{
         "title":"正在配置Hypercube作业",
@@ -455,7 +455,7 @@
       },
       "exceedMaxNoDialog":{
         "title":"超出最大允许场景数量",
-        "desc":"在Hypercube运行中，您已选择%e个场景，这超出每次运行最大允许量（%d个）。请减少场景数量,再重试。"
+        "desc":"在Hypercube运行中，您已选中%e个场景，该数量已超出每次可运行最大量（%d个）。请减少场景数量,再重试。"
       },
       "noScenSelectedDialog":{
         "title":"未选择任何场景",
@@ -463,7 +463,7 @@
       },
       "badStepSizeDialog":{
         "title":"错误的步长大小",
-        "desc":"您指定了无法处理的步长大小。请选择有效的步长,再重试。"
+        "desc":"无法处理指定的步长大小。请选择有效的步长,再重试。"
       }
     },
     "importJobsDialog":{
@@ -525,30 +525,30 @@
     },
     "hcubeMode":{
       "sliderAllCombinations":"所有组合？",
-      "stepsize": "Step size",
+      "stepsize": "步长",
       "checkboxAliases":["否","是"],
       "hcubeLoadDialog":{
-        "title": "Select action",
-        "selectMethod": "What would you like to do with the selected scenarios?",
-        "selExportType": "Select a file type",
+        "title": "选择操作",
+        "selectMethod": "对选定的场景进行什么操作？",
+        "selExportType": "选择文件类型",
         "maxScenWarning1":"一次最多选择'%d'个场景加载到交互模式。",
         "maxScenWarning2":"减少场景数或使用PAVER模块进行比较。",
         "cancelButton":"取消",
         "paverButton":"分析",
-        "tabScript": "Scripts",
+        "tabScript": "脚本",
         "tabPaver": "PAVER",
         "delTrace":"注意：使用PAVER模块时,当前工作目录中的trace文件将被删除。",
-        "tooManySolvers":"太多场景均有该属性，无法比较（不超过%s个场景），请减少场景数量。",
-        "noTrc":"至少有一个所选方案无法找到trace数据。",
-        "analysisRunScriptRunning": "An analysis is currently underway. Please wait until this analysis is complete or interrupt it.",
+        "tooManySolvers":"多个场景都有该属性，无法进行比较（不超过%s个场景），请减少场景数量。",
+        "noTrc":"至少有一个所选方案找不到trace数据。",
+        "analysisRunScriptRunning": "目前正在进行分析。 请等待该分析过程结束或选择中断它。",
         "removeConfirm":"确定要从数据库中删除选定的%s个场景吗？此操作无法撤消！",
         "removeSuccess":"已删除所选场景。",
-        "selAnalysisScript": "Select the script you want to run",
+        "selAnalysisScript": "选择要运行的脚本",
         "selPaverAttribs":"请选择要比较的属性:",
         "selIgnoreAttribs":"要忽略的属性:",
-        "selClArgs":"指定其他参数来调用PAVER。",
+        "selClArgs":"指定其他参数来调用PAVER",
         "runPaverButton":"启动PAVER",
-        "runScriptButton": "Start script",
+        "runScriptButton": "启动脚本",
         "interactiveButton": "比较",
         "downloadButton":"下载数据",
         "removeButton":"删除场景"
@@ -595,13 +595,13 @@
       "closeButton" :"关闭"
     },
     "scriptOutput": {
-      "runButton": "Run script",
-      "interruptButton": "Interrupt script",
+      "runButton": "运行脚本",
+      "interruptButton": "中断脚本",
       "errMsg": {
-        "noScript": "Script file could not be found.",
-        "noOutput": "Script output file could not found.",
-        "timeout": "Script timed out.",
-        "crash": "Script crashed."
+        "noScript": "找不到脚本文件",
+        "noOutput": "找不到脚本输出文件",
+        "timeout": "脚本超时了",
+        "crash": "脚本崩溃了"
       }
     }
   },
@@ -636,7 +636,7 @@
     },
     "hcubeImport":{
       "title":"正在导入Hypercube作业",
-      "refresh": "refresh",
+      "refresh": "刷新",
       "unzip":"提取zip文件",
       "zipValidation":"验证zip文件",
       "scenValidation":"验证场景数据",
@@ -648,14 +648,14 @@
   },
   "errMsg":{
     "unknownError":"出现意外错误。如果此问题仍然存在,请与系统管理员联系。",
-    "permErr":"操作失败,因为您没有足够的权限。",
+    "permErr":"操作失败,因为没有足够的权限。",
     "fileRead":{
       "title":"读取文件时出错",
       "desc":"读取以下文件时出现错误：'%s'。"
     },
     "invalidFileType":{  
-      "title":"Invalid file type",
-      "desc":"The file you are trying to import can not be read by MIRO. Supported file types are: %s."
+      "title":"无效的文件类型",
+      "desc":"MIRO无法读取要导入的文件。 支持的文件类型为： %s."
     },
     "fileWrite":{
       "title":"保存文件时出错",
@@ -663,7 +663,7 @@
     },
     "initErrors":{
       "title":"发生了一些错误",
-      "desc":"请修正下面提到的错误并重新启动MIRO：",
+      "desc":"请修正以下错误并重新启动MIRO：",
       "okButton":"确认"
     },
     "fetchScenData":{
@@ -718,8 +718,8 @@
       "desc": "正在求解一个GAMS作业。只有停止求解该作业或等待该作业完成后，才能运行其他的作业。"
     },
     "unzipProcessRunning":{
-      "title": "MIRO busy",
-      "desc": "MIRO is still busy extracting the model files in your workspace. Please wait and try again."
+      "title": "MIRO忙",
+      "desc": "MIRO正在工作区中提取模型文件。 请等待，然后重试。"
     },
     "gamsTerm":{
       "title":"终止gams.exe时出错",
@@ -733,7 +733,7 @@
       "title":"读取列表文件时出错",
       "desc":"读取GAMS列表文件时出现错误。",
       "fileSize":"尝试读取的lst文件太大而无法显示,请下载lst文件后再读取。",
-      "fileNotFound": "The listing file could not be found."
+      "fileNotFound": "找不到清单文件。"
     },
     "saveScen":{
       "title":"保存场景时出错",
@@ -771,7 +771,7 @@
       "extract":{
         "title":"提取存档时出错",
         "desc":"提取存档时出现错误，请确保上传有效的zip文件。",
-        "invalidFiles":"要导入的存档包含无效文件，Only trace files, CSV files and GDX files allowed!"
+        "invalidFiles":"要导入的存档包含无效文件，仅支持trace文件、CSV文件和GDX文件"
       },
       "scenRead":{
         "title":"读取文件时出错",
@@ -807,21 +807,21 @@
     },
     "saveGAMSLog":{
        "title":"保存GAMS日志文件或lst文件时出错",
-       "noFileAccess":"无法访问一个或多个GAMS输出文件（.log / .lst）。",
-       "fileSizeExceeded":"一个或多个GAMS输出文件（.log / .lst）超过允许存储的最大文件大小。"
+       "noFileAccess":"无法访问一个或多个GAMS输出文件（.log /.lst）。",
+       "fileSizeExceeded":"一个或多个GAMS输出文件（.log /.lst）超过允许存储的最大文件大小。"
     }
   },
   "adminMode":{
     "invalidSymbolsDialog":{
-      "title": "Invalid configuration",
-      "desc": "Some graphics and/or widgets have been configured for symbols that are no longer part of your GAMS/MIRO data contract. Do you want to remove them from your configuration? Note that this cannot be undone! Graphic configuration for invalid symbol(s): '%s'. Widget configuration for invalid symbol(s): '%s'.",
-      "msgSuccess": "Invalid configuration was successfully removed",
-      "btRemoveWidgets": "Remove invalid widgets",
-      "btRemoveGraphs": "Remove invalid graphs", 
-      "btCancel": "Cancel"
+      "title": "无效的配置",
+      "desc": "用于配置的部分图形和小部件已不再属于GAMS或者MIRO的数据集了。要从配置中删除它们吗？请注意，此操作无法撤消！无效符号的图形配置：'%s'。 无效符号的窗口小部件配置：'%s'。",
+      "msgSuccess": "已删除无效的配置",
+      "btRemoveWidgets": "删除无效的小部件",
+      "btRemoveGraphs": "删除无效的图形", 
+      "btCancel": "取消"
     },
     "uiR":{
-      "adminPanel": "GAMS MIRO 管理面板",
+      "adminPanel": "GAMS MIRO管理面板",
       "general": "通用设置",
       "table": "图表设置",
       "widgets": "配置小部件",
@@ -836,7 +836,7 @@
         "li3b": "此处",
         "description1": "单击'保存'按钮后，下次启动MIRO时，MIRO在文件'%s_custom.R'中寻找自定义的绘制器，如果找不到该文件，MIRO无法启动！ 请确保自定义的绘制器的功能和配置完全正确。 建议您首先开发一个本地的自定义绘制器，获得满意的结果后将其集成到MIRO应用程序中。",
         "description2": "注意：",
-        "description3": "如果该应用程序由于上述原因而无法启动，您可以随时删除该配置过的绘制器。"
+        "description3": "如果该应用程序由于上述原因无法启动，您可以随时删除配置过的绘制器。"
       }																			 
     },
     "general":{
@@ -845,23 +845,23 @@
 		"tabInterface": "界面",
         "tabSymbols": "GAMS符号配置",
         "tabModules": "模块",
-        "tabScripts": "Analysis scripts",
+        "tabScripts": "分析脚本",
         "headerGeneral": "通用",
         "headerLogo": "标志",
         "headerScalars": "标量",
         "headerTabGrouping": "组合选项卡",
-        "headerTabSymlinks": "Use output data as input data",
+        "headerTabSymlinks": "使用输出数据作为输入数据",
         "headerInputGroups": "输入组",
         "headerOutputGroups": "输入组",
         "headerSymbolNaming": "指定名称",
         "headerSymbolGrouping": "组合",
-        "headerBaseScripts": "Base mode",
-        "baseScriptsTooltip": "Run custom analysis scripts which will be displayed in the output section",
-        "headerHcubeScripts": "Hypercube mode",
-        "hcubeScriptsTooltip": "Run custom analysis scripts for multiple scenarios at once",
+        "headerBaseScripts": "基本模式",
+        "baseScriptsTooltip": "运行自定义分析脚本，该脚本将显示在输出中",
+        "headerHcubeScripts": "Hypercube模式",
+        "hcubeScriptsTooltip": "一次运行多个方案的自定义分析脚本",
         "headerScenData": "场景和数据",
         "headerComputation": "计算",
-        "tooltipDocs": "Open documentation"
+        "tooltipDocs": "打开文档"
       },
       "modalDialog":{
         "title": "复制图像时出错", 
@@ -876,15 +876,15 @@
         "choices": ["使用系统或浏览器的设置", "浅色模式", "深色模式"]
       },
       "pageTitle":{
-        "label": "Application title (visible in browser tab)"
+        "label": "应用程序标题（在浏览器选项卡中可见）"
       },
       "scen":{
-        "label": "指定默认的场景比较模式。",
+        "label": "指定默认的场景比较模式",
         "choices": ["分屏视图 （适合比较两个场景）", "标签视图 （适合多于两个的场景之间的比较）"]
       },
       "defaultScenName":{
         "checkbox": "要使用一个在启动时加载的默认场景吗？",
-        "tooltip": "Allows you to pre-populate tables and widgets with data when starting MIRO",
+        "tooltip": "启动MIRO时，可以使用数据预填充表和窗口小部件",
         "label": "默认场景的名称"
       },
       "args":{
@@ -895,15 +895,15 @@
         "output": "将输出GAMS符号分组"
       },
       "symlinks":{
-        "label": "Specify symbol links (results that can be used as input data)"
+        "label": "指定符号链接（即可以用作输入数据的结果）"
       },
       "scripts":{
-        "base": "Specify custom analysis scripts for the Base mode",
-        "hcube": "Specify custom analysis scripts for the Hypercube mode"
+        "base": "指定基本模式的自定义分析脚本",
+        "hcube": "指定Hypercube模式的自定义分析脚本"
       },
 	  "overwriteSheetOrder":{
-        "input": "指定输入符号的制表顺序（拖放）",
-        "output": "指定输出符号的制表顺序（拖放）"
+        "input": "指定输入符号的选项卡顺序（拖放）",
+        "output": "指定输出符号的选项卡顺序（拖放）"
       },
       "overwriteSymbolAliases":{
         "label": "指定符号的别名",
@@ -914,47 +914,47 @@
         "label": "指定列标题"
       },
       "hidden":{
-        "label": "不能用标量图表显示的标量而是使用用其他图形表示。"
+        "label": "对于不能用标量图表显示的标量，使用其他图形表示"
       },
       "pivotcolor":{
-        "label": "指定数据透视表中行和列标题的背景颜色。"
+        "label": "指定数据透视表中行和列标题的背景颜色"
       },
       "mirologfile":{
-        "label": "输入MIRO日志文件的名称（最少3个字符）。如果您没有MIRO日志文件，请将该字段留空。"
+        "label": "输入MIRO日志文件的名称（最少3个字符）。如果没有MIRO日志文件，请将该字段留空。"
       },
       "readme":{
-        "label": "README file",
-        "readmeTooltip": "A README file is displayed in the input section as an individual start page",
-        "useReadme": "Include README file",
-        "tabTitle": "README tab title",
-        "fileName": "README file name",
-        "btEdit": "Edit README",
+        "label": "README文件",
+        "readmeTooltip": "README文件在输入中显示为单独的起始页",
+        "useReadme": "包含README文件",
+        "tabTitle": "README选项卡的标题",
+        "fileName": "README文件名",
+        "btEdit": "编辑README",
         "dialogEdit": {
-          "title": "Readme editor",
-          "reamdeHeader": "Markdown content",
-          "markdownHeader": "Readme preview",
-          "msgErrSave": "Problems writing the README file. Check whether you have sufficient write permissions in your model directory.",
-          "btCancel": "Cancel",
-          "btSave": "Save"
+          "title": "README编辑器",
+          "reamdeHeader": "Markdown内容",
+          "markdownHeader": "README预览",
+          "msgErrSave": "编写README文件时出现错误。 请检查您在模型目录中是否具有足够的写入权限。",
+          "btCancel": "取消",
+          "btSave": "保存"
         }
       },
       "saveDuration":{
         "label": "数据库中保留GAMS日志和lst文件的时长（以天为单位）。"
       },
       "decimal":{
-        "label": "指定输出值的精确小数位数。"
+        "label": "指定输出值的精确小数位数"
       },
       "logo":{
         "header": "预览标志:",
-        "label": "上传该MIRO app的自定义标志： png文件或者jpg文件（最佳格式：4,6：1）",
-        "placeholder": "No file selected"
+        "label": "上传该MIRO应用程序的自定义标志： png文件或者jpg文件（最佳格式：4,6：1）",
+        "placeholder": "无选中的文件"
       }, 
       "actScen":{
         "title" :"保存场景，删除场景和比较场景",
         "label": "激活场景的功能"
       },
       "actStrict":{
-        "label": "确定以严格模式启动app？ 这会导致在遇到可能带有错误的用户条目时直接提示错误消息而不是接受它。"
+        "label": "确定以严格模式启动应用程序？ 这会导致在遇到可能带有错误的用户条目时直接提示错误消息而不是接受它。"
       },
       "actUpload":{
         "title": "允许用户使用本地数据运行GAMS",
@@ -989,7 +989,7 @@
         "label": "在Excel文件中包含空白表格？"
       },
       "downloadTempFiles":{
-        "label": "Allow access to the temporary directory?"
+        "label": "允许访问临时目录？"
       },
       "saveTrace":{
         "title": "对于使用集成分析工具PAVER进行性能分析，需要激活此选项。",
@@ -1004,9 +1004,9 @@
         "title": "通用表格设置",
         "input": "输入表格",
         "output": "输出表格",
-        "symbol": "symbol tables",
-        "resetTable": "Reset",
-        "saveTable": "Save"
+        "symbol": "符号表格",
+        "resetTable": "重启",
+        "saveTable": "保存"
       },
       "hot":{
         "height": "输入表格的高度（以px为单位）",
@@ -1044,16 +1044,16 @@
         },
         "buttons":{
           "label":"添加导出按钮？",
-          "choices": ["copy", "CSV文件", "Excel工作簿", "PDF", "打印"],
+          "choices": ["复制", "CSV文件", "Excel工作簿", "PDF", "打印"],
           "select": "选择要使用的按钮。 注意：所有按钮功能仅对可见的表格页面有效。"
         }
       },
       "symbol":{
         "removeDialog":{
-          "title": "Please confirm",
-          "message": "Are you sure that you want to reset the existing configuration for this symbol? This cannot be undone!",
-          "cancel": "Cancel",
-          "confirm": "Confirm"
+          "title": "请确认",
+          "message": "确定要重置此符号的现有配置吗？ 该操作无法撤消！",
+          "cancel": "取消",
+          "confirm": "确认"
         }
       }
     },
@@ -1061,7 +1061,7 @@
       "ui":{
         "title":"配置输入小部件",
         "widgetUpdateSuccess": "小部件配置已更新",
-        "widgetTableUpdateSuccess": "Table configuration was updated successfully",
+        "widgetTableUpdateSuccess": "表格配置已更新",
         "gams": "GAMS符号",
         "go": "新建GAMS option",
         "dd": "新建double-dash parameter",
@@ -1069,19 +1069,19 @@
         "noSymbolMsg": "没有在MIRO中可使用的GAMS符号",
         "noWidgetMsg": "尚未配置任何小部件",
         "noWidgetConfigMsg": "当前没有为此GAMS符号配置小部件",
-        "optionConfigMsg": "消息：您选择的符号是GAMS选项：%s",
-        "doubledashConfigMsg": "消息： 您选择的符号是一个double-dash parameter：%s",
+        "optionConfigMsg": "消息：该符号是GAMS选项：%s",
+        "doubledashConfigMsg": "消息： 该符号是一个double-dash parameter：%s",
         "tableWidget": "Table configuration is done in 'configure tables'!",
         "inputSymbol": "为哪个输入符号创建一个小部件？",
         "widgetGo": "GAMS option",
         "widgetDd": "double-dash parameter",
         "inputSymbolTooltip": "为哪个输入符号创建一个小部件？",
-        "tableTooltip": "Select the input symbol whose table you want to configure",
+        "tableTooltip": "选择要配置其表的输入符号",
         "widgetGoTooltip": "GAMS option的名称（例如：'LP'或者'OptCR'）",
-        "widgetDdTooltip": "Name of the double-dash parameter (no '--')",
+        "widgetDdTooltip": "double-dash parameter的名称(不要'--')",
         "widgetType": "选择要使用的小部件类型",
         "alias": "输入要在选项卡中显示的元素名称（不支持实时预览）",
-        "pivotColsRestriction": "Note: It is not possible to add or delete columns in the symbol table if it is set to readonly or displayed as a heatmap."
+        "pivotColsRestriction": "注意：如果符号表设置为只读或显示为热图，则无法在符号表中添加或删除列。"
       },
       "validate":{
         "val1": "元素的别名不能为空！",
@@ -1092,7 +1092,7 @@
         "val8": "刻度的标识符必须是布尔值",
         "val9": "步长必须是一个数字！",
         "val10": "下拉菜单的选项数量必须与别名的数量相同，或者根本没有别名！",
-        "val11": "默认值必须是您指定的选项之一！",
+        "val11": "默认值必须是指定的选项之一！",
         "val12": "该值必须是布尔值！",
         "val13": "默认日期无效！",
         "val14": "设置的最早日期无效！",
@@ -1128,15 +1128,15 @@
         "val44": "必须带有分隔符！",
         "val45": "命令行参数的名称必须至少为一个字符长。",
         "val46": "请分别指定命令行的参数和值。",
-        "val47": "Source and target symbol must have the same dimension!",
-        "val48": "The minimum step size must not be less than zero.",
-        "val49": "The script identifier must not be empty and must only contain alphanumeric characters!",
-        "val50": "The script identifier must be unique!",
-        "val51": "The title is required.",
-        "val52": "The command is required.",
-        "val53": "The output filename is required.",
-        "val54": "You need to define aliases for your choices if only the element text is communicated with GAMS.",
-        "val55": "Only one item can be selectable in the dropdown menu if only the element text is communicated with GAMS."
+        "val47": "源符号和目标符号必须具有相同的尺寸！",
+        "val48": "最小步长不得小于零。",
+        "val49": "脚本标识符不能为空，并且只能包含字母数字字符！",
+        "val50": "脚本标识符必须唯一！",
+        "val51": "标题为必填项。",
+        "val52": "命令是为必填项。",
+        "val53": "输出文件名为必填项。",
+        "val54": "如果仅使用符号的元素文本与GAMS通信，则需要为该选择定义别名。",
+        "val55": "如果仅使用符号的元素文本与GAMS通信，则下拉菜单中只能选择一项。"
       },
       "widgetOptions":{
 	    "slider": "滑动条",
@@ -1147,10 +1147,10 @@
         "date": "日期",
         "daterange": "日期范围",
         "text": "文本框",
-        "numericinput": "Numeric input"						  
+        "numericinput": "数值输入"						  
       },
       "table":{
-        "bigData": "Are large amounts of data stored in the table (i.e. more than 20,000 records)?",
+        "bigData": "表中是否存储了大量数据（超过20,000条记录）？",
         "readonly": "设定表格为只读吗？",
         "readonlyCols": "设定表格的某些列为只读",
 		"pivotCols": "选择要旋转的列",
@@ -1171,7 +1171,7 @@
         },
         "depSelector": "静态值？",
         "step": "步长（支持小数）",
-        "minStep": "Minimum step size (only relevant in Hypercube mode). If empty, the step size is used.",
+        "minStep": "最小步长（仅在Hypercube模式下相关）。 如果该值为空，则默认使用步长的值。",
         "ticks": "显示刻度线？",
         "hcube": "是否允许元素在Hypercube模式下自动扩展？"
       },
@@ -1205,8 +1205,8 @@
         },
         "default": "默认值",
         "multiple": "是否允许选择多个条目？",
-        "clearValue": "Only communicate elementtext of symbol with GAMS? Erfordert Aliasnamen für die Auswahl.",
-        "clearValueTooltip": "Causes element label to be an empty string. This is not supported if no aliases are defined! - Open documentation",
+        "clearValue": "仅使用符号的元素文本与GAMS通信？ 需要元素的别名才能选择。",
+        "clearValueTooltip": "元素标签为空字符串。 如果未定义别名，则不支持此功能！更多信息，请查看文档",
         "hcube": "是否允许元素在Hypercube模式下自动扩展？"
       },
       "checkbox":{
@@ -1237,7 +1237,7 @@
           "choices": ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
         },
         "daysDisabled": "指定要禁用的工作日",
-        "autoclose": "选定日期后立即关闭datepicker？",
+        "autoclose": "选定日期后立即关闭日期选择器吗？",
         "hcube": "是否允许元素在Hypercube模式下自动扩展？"
       },
       "daterange":{
@@ -1266,7 +1266,7 @@
           "choices": ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
         },
         "separator": "选择开始和结束日期选择器之间的分隔符",
-        "autoclose": "选定日期范围后立即关闭datepicker吗？",
+        "autoclose": "选定日期范围后立即关闭日期选择器吗？",
         "hcube": "是否允许元素在Hypercube模式下自动扩展？"
       },
       "textinput":{
@@ -1275,16 +1275,16 @@
         "placeholder": "选择占位符"
       },
       "numericinput":{
-        "label": "Choose a label",
-        "value": "Default value (optional)",
-        "min": "Minimum value (optional)",
-        "max": "Maximum value (optional)",
-        "decimal": "Number of decimal places (optional)",
-        "sign": "Currency symbol (optional)"
+        "label": "选择一个标签",
+        "value": "默认值（可选）",
+        "min": "最小值（可选）",
+        "max": "最大值（可选）",
+        "decimal": "小数位数（可选）",
+        "sign": "货币（可选）"
       },
       "removeDialog":{
         "title": "请确认",
-        "message": "您确定要删除此符号的现有配置吗？该操作无法撤消！",
+        "message": "确定要删除此符号的现有配置吗？该操作无法撤消！",
         "cancel": "取消",
         "confirm": "确认"
       }
@@ -1309,52 +1309,52 @@
       "removeDialogDesc": "确定要删除所有数据库表吗？该操作无法撤消！ 在继续该操作之前，请先保存数据库。",
       "removeDialogCancel": "取消",
       "removeDialogConfirm": "删除表格",
-      "removeOrphansWrapper": "You want to remove all the orphaned tables that belong to your model?",
-      "removeOrphansDialogBtn": "Delete all orphaned database tables",
-      "removeOrphansDialogTitle": "Remove orphaned database tables",
-      "removeOrphansDialogDesc": "Are you sure that you want to delete all orphaned database tables? This can not be undone! You might want to save the database first before proceeding.",
+      "removeOrphansWrapper": "要删除所有属于当前模型的孤立表格吗？",
+      "removeOrphansDialogBtn": "删除所有孤立数据库表格",
+      "removeOrphansDialogTitle": "删除孤立的数据库表格",
+      "removeOrphansDialogDesc": "确定要删除所有孤立数据库表格吗？ 该操作无法撤消！请先保存数据库再继续。",
       "removeOrphansDialogCancel": "取消",
       "removeOrphansDialogConfirm": "删除表格",
-      "removeInconsistent": "You want to remove all the inconsistent tables?",
-      "removeInconsistentConfirm": "Are you sure that you want to delete all inconsistent database tables?",
+      "removeInconsistent": "要删除所有不一致的表格吗？",
+      "removeInconsistentConfirm": "确定要删除所有不一致的数据库表格吗？",
       "cannotBeUndone": "该操作无法撤消！ 在继续该操作之前，请先保存数据库。",
-      "removeTitle": "Remove database tables",
-      "removeConfirm": "Please confirm that you want to remove all database tables that belong to the model.",
-      "removeCheck": "Remove all tables?",
+      "removeTitle": "删除数据库表格",
+      "removeConfirm": "请确认要删除该模型的所有数据库表格",
+      "removeCheck": "删除所有表格？",
       "confirm": "确认",
       "cancel": "取消",
-      "removeOrphans": "Please confirm that you want to remove all orphaned database tables that belong to the model.",
-      "removeOrphansCheck": "Remove all orphaned tables?",
-      "removeOrphansTitle": "Remove orphaned database tables",
-      "saveMsg": "Database is being saved...",
-      "compressMsg": "Compressing files...",
-      "decompressMsg": "Decompressing files...",
-      "validateMsg": "Validating files...",
-      "uploadMsg": "Uploading files...",
-      "finishedMsg": "Finished..."
+      "removeOrphans": "请确认要删除该模型所有的孤立数据库表格",
+      "removeOrphansCheck": "删除所有孤立表格？",
+      "removeOrphansTitle": "删除孤立的数据库表格",
+      "saveMsg": "正在保存数据库，请稍等",
+      "compressMsg": "正在压缩文件，请稍等",
+      "decompressMsg": "正在解压文件，请稍等",
+      "validateMsg": "正在验证文件，请稍等",
+      "uploadMsg": "正在上传文件，请稍等",
+      "finishedMsg": "正在完成操作"
     },
     "graphs":{
       "toolCategories": {
-        "main": "Main",
-        "general": "General",
-        "xaxis": "X axis",
-        "yaxis": "Y axis",
-        "filterDomain": "Filter & Domains",
-        "filter": "Filter",
-        "animation": "Animation",
-        "bars": "Bars",
-        "histogram": "Histogram",
-        "event": "Event (x axis)",
-        "limit": "Limit (y axis)",
-        "annotation": "Annotation",
-        "shading": "Shading",
-        "rangeSelector": "Range selector",
-        "highlight": "Highlighting",
-        "markers": "Markers",
-        "flows": "Flows",
-        "minicharts": "Minicharts",
-        "groupsLayers": "Groups & Layers",
-        "data": "Data"
+        "main": "主要",
+        "general": "通用",
+        "xaxis": "X轴",
+        "yaxis": "Y轴",
+        "filterDomain": "过滤和域",
+        "filter": "过滤",
+        "animation": "动画",
+        "bars": "柱形图",
+        "histogram": "直方图",
+        "event": "事件(X轴)",
+        "limit": "限制(Y轴)",
+        "annotation": "注解",
+        "shading": "底纹",
+        "rangeSelector": "范围选择器",
+        "highlight": "突出显示",
+        "markers": "标记",
+        "flows": "流量",
+        "minicharts": "小型图标",
+        "groupsLayers": "组和层",
+        "data": "数据"
       },
       "ui":{
         "title": "配置图表",
@@ -1367,8 +1367,8 @@
         "height": "选择图表的高度（px，不支持实时预览）",
         "tool": "选择要使用的图表工具",
         "choices": ["饼图", "柱形图", "散点图", "折线图", "气泡图", "直方图", "时间序列图形工具", "地图工具", "甘特图", "数据透视表", "标量值的值框", "自定义绘制器"],
-        "deleteGraph": "Delete",
-        "saveGraph": "Save"
+        "deleteGraph": "删除",
+        "saveGraph": "保存"
       },
       "validate":{
         "val1": "无法设置x轴的范围。 请检查数据格式是否正确！",
@@ -1376,7 +1376,7 @@
       },
       "errMsg":{
         "errTitle1": "无有效数据",
-        "errContent1": "找不到有效的数据集。 请上传格式正确的Excel或者包含数据gdx的文件。"
+        "errContent1": "找不到有效的数据集。 请上传格式正确的Excel文件或者包含数据gdx的文件。"
       },
       "updateToolScalars": ["标量值的值框"],
       "updateToolNoScalars": ["饼图", "柱形图", "散点图", "折线图", "气泡图", "直方图", "时间序列图形工具", "地图工具", "甘特图", "数据透视表", "自定义绘制器"],
@@ -1390,24 +1390,24 @@
         "rangeTo": "范围结束值",
         "animationDataFormatSelector": "是日期格式的数据？",
 		"categoryorderChoices": ["默认顺序", "按字母数字顺序升序", "按字母数字顺序降序", "按数值大小升序", "按数值大小降序", "按最小值升序", "按最小值降序", "按最大值升序", "按最大值降序", "按和的大小升序", "按和的大小降序", "按平均值大小升序", "按平均值大小降序", "按中值大小升序", "按中值大小降序"],
-        "scaleRatioCheck": "Fixed-ratio axes?",
-        "scaleRatio": "Scale ratio (y/x)"
+        "scaleRatioCheck": "固定比例轴？",
+        "scaleRatio": "比例（Y / X）"
       },
       "chartOptions":{
         "xdata": "在x轴上绘制什么？",
         "ydata": "添加数据系列",
         "color": "选择用于设置作图颜色的域。 注意：颜色仅在未设置线条或标记颜色时有效！",
-        "symbol": "Select a dimension to map to different symbols. No marker symbol must be set.",
+        "symbol": "选择一个映射到不同符号的域。 无需设置标记符号。",
         "options":{
           "title": "选项",
           "paperBgColor": "设置纸张的背景颜色",
           "plotBgColor": "该图有多少背景颜色？",
           "showlegend": "要显示图例吗？",
-          "staticPlot": "Render a static plot?",
-          "fixedHeightCheck": "Fix chart height?",
-          "fixedHeight": "Height (px)",
-          "fixedWidthCheck": "Fix chart width?",
-          "fixedWidth": "Width (px)",
+          "staticPlot": "绘制静态图？",
+          "fixedHeightCheck": "固定图表高度？",
+          "fixedHeight": "高度（px）",
+          "fixedWidthCheck": "固定图表宽度？",
+          "fixedWidth": "宽度（px）",
           "outType": "要分屏显示图形和数据表吗？ （不支持实时预览）"
         }
       },
@@ -1419,26 +1419,26 @@
         "width": "用于选择不同柱形宽的域"
       },
       "valueboxOptions":{
-        "width": "Maximum number of boxes per row (no preview)",
+        "width": "每行最多的值框数（无预览）",
         "color": "选择值框的颜色",
         "colorChoices": ["红色", "黄色", "水蓝色", "蓝色", "浅蓝色", "绿色", "藏青色", "蓝绿色", "橄榄绿", "鲜绿色", "橙色", "品红", "紫色", "栗色", "黑色"],
         "useIcon": "要对值框使用图标吗？",
         "iconLib": "选择一个图标库",
         "libChoices": ["Font-Awesome", "Glyphicons"],
-        "icon1": "指定值框的图标（可选）。",
+        "icon1": "指定值框的图标（可选）",
         "icon2": "和",
-        "icon3": "获取可能的图标列表。"
+        "icon3": "获取可能的图标列表"
       },
       "animationOptions":{
         "title": "动画选项",
         "frame": "每秒帧数",
-        "transition": "帧之间平滑过渡的持续时间（以毫秒为单位）。",
+        "transition": "帧之间平滑过渡的持续时间（以毫秒为单位）",
         "easing": "指定帧与帧之间的过渡类型",
         "easingChoices": ["linear","quad","cubic","sin","exp","circle","elastic","back","bounce","linear-in", "quad-in","cubic-in","sin-in","exp-in","circle-in","elastic-in","back-in","bounce-in","linear-out","quad-out","cubic-out","sin-out","exp-out", "circle-out","elastic-out","back-out","bounce-out","linear-in-out","quad-in-out","cubic-in-out","sin-in-out","exp-in-out","circle-in-out", "elastic-in-out","back-in-out","bounce-in-out"],
         "redraw": "在转换后立即重新绘图？（尽管这可能会显着影响性能，但更新无法转换的图形元素是必要的。）",
         "mode": "新动画的调用如何与当前运行的动画进行交互？",
         "modeChoices": ["立即开始", "等当前动画结束后", "等所有安排的动画结束后"],
-        "noAnimation": "No domain selected for animation (category: Y axis)."
+        "noAnimation": "没有为动画指定任何域（类别：Y轴）。"
       },
       "animationSliderOptions":{
         "hide": "删除动画滑动条？",
@@ -1452,10 +1452,10 @@
         "normChoices": ["出现次数", "事件发生的百分比", "出现次数/组宽度"],
         "nbins": "组数",
         "barmode": "如何显示柱形图的柱形？",
-        "alpha": "Opacity of bars (only valid if no bar color is set)",
-        "cumulative": "Display the cumulative distribution?",
-        "horizontal": "Orientation of the bars",
-        "orientationChoices": ["vertical", "horizontal"],
+        "alpha": "柱形的不透明度（仅在未设置柱形颜色的情况下有效）",
+        "cumulative": "显示累积分布？",
+        "horizontal": "柱形方向",
+        "orientationChoices": ["纵向", "横向"],
         "barmodeChoices": ["重叠", "堆积", "簇状", "相对"]
       },
       "dygraphsOptions":{
@@ -1492,7 +1492,7 @@
         },
         "highOpts":{
           "title": "突出显示选项",
-          "activate": "Would you like to see highlighting effects?",
+          "activate": "要展示突出显示效果吗？",
           "circleSize": "圆圈的大小设置为多少（以px为单位）？",
           "seriesBackgroundAlpha": "选择背景的不透明度",
           "hideOnMouseOut": "鼠标移出图表时是否隐藏突出显示效果？"
@@ -1500,7 +1500,7 @@
       },
       "leafletOptions":{
         "markers": "添加标记",
-        "flows": "添加流向",
+        "flows": "添加流量",
         "minicharts": "添加图表",
         "hideGroups": "指定在启动时隐藏的组",
         "layer":{
@@ -1531,7 +1531,7 @@
         "aggregator": "指定算子聚合器",
         "aggregatorChoices": ["次数","计数唯一值","列出唯一值", "和","整数和","计算平均值","计算中值","样本方差","样本标准差","最小值","最大值","第一个值","最后一个值","比例","80％上界","80％下界","和作为Total的分数","和作为行的分数","和作为列的分数","次数作为Total的分数","次数作为行的分数","次数作为列的分数"],
         "vals": "要聚合的列的名称",
-        "renderer": "指定绘制器的名称。",
+        "renderer": "指定绘制器的名称",
         "rendererChoices": ["图表","带表格的柱形图","热图","行热图","列热图","树形图","水平条形图","水平堆积条形图","柱形图","堆积柱形图","折线图","面积图"],
         "options":{
           "title": "数据透视表选项",
@@ -1550,11 +1550,11 @@
         "label": "筛选器标签（不支持预览）",
         "placeholder": "按元素筛选",
         "multiple": "是否允许同时选择几个元素作为筛选器？ （不提供单个下拉菜单的实时预览）",
-        "date": "The data in the column to be filtered contain dates (times). No live preview available!"
+        "date": "要过滤列中的数据包含日期（时间）。 不支持实时预览！"
       },					   
       "saveJson":{
         "warnTitle": "数据存在",
-        "warnContent": "该GAMS符号的图形配置已存在：'％s'。 您想覆盖此配置吗？该操作无法撤消！",
+        "warnContent": "该GAMS符号的图形配置已存在：'％s'。 确定要覆盖此配置吗？该操作无法撤消！",
         "cancel": "取消",
         "overwrite": "确定覆盖"
       },
@@ -1566,24 +1566,24 @@
       },
       "js":{
         "addInputGroup":{
-          "symbolInputgroups": "输入组的名称？",
+          "symbolInputgroups": "输入组的名称",
           "groupMemberIn": "选择该组成员"
         },
         "addOutputGroup":{
-          "symbolOutputgroups": "输出组的名称？",
+          "symbolOutputgroups": "输出组的名称",
           "groupMemberOut": "选择该组成员"
         },
         "addSymlink":{
-          "source": "Name of the output symbol",
-          "target": "Name of the input symbol to link to"
+          "source": "输出符号的名称",
+          "target": "链接到的输入符号的名称"
         },
         "addScript":{
-          "id": "Unique identifier (alphanumeric)",
-          "title": "Script alias (displayed in UI)",
-          "cmd": "Command to run",
-          "args": "Arguments to the command",
-          "outFile": "Name of the output file (including file extension)",
-          "timeout": "Timeout (seconds ,-1 for infinite)"
+          "id": "唯一标识符（字母数字）",
+          "title": "脚本别名（显示在用户界面中）",
+          "cmd": "运行命令",
+          "args": "该命令的参数",
+          "outFile": "输出文件的名称（包括文件扩展名）",
+          "timeout": "超时（秒，-1 为无限）"
         },
         "addDyEvent":{
           "dyDyEvent": "使用哪个GAMS符号？",
@@ -1616,10 +1616,10 @@
         },
         "addDyShading":{
           "dyDyShadingCheck": "使用静态下限？",
-          "dyDyShadingTrue": "指定阴影的下限。",
+          "dyDyShadingTrue": "指定阴影的下限",
           "dyDyShadingFalse": "使用哪个GAMS符号作阴影的下限？",
           "dyDyShadingUpCheck": "使用静态上限？",
-          "dyDyShadingUpTrue": "指定阴影的上限。",
+          "dyDyShadingUpTrue": "指定阴影的上限",
           "dyDyShadingUpFalse": "使用哪个GAMS符号作阴影的上限？",
           "axis": "选择应用阴影的轴",
           "axisChoices": ["x轴", "y轴"],
@@ -1630,12 +1630,12 @@
           "lng": "选择包含经度数据的列",
           "groupName": "为这些标记指定一个组名称",
           "label": "选择一个标签",
-          "iconOptions": "Icon options",
-          "icon": "Icon to use",
-          "iconChoices": ["circle", "circle-notch", "dot-circle", "square", "times-circle", "user-circle", "users", "plus-circle", "minus-circle", "exclamation-circle", "question-circle", "play-circle", "check-circle", "home", "cog", "asterisk", "ban", "heart", "leaf", "lightbulb", "smile", "star"],
-          "iconColor": "Icon color",
-          "markerColor": "Marker color",
-          "markerColorChoices": ["red", "darkred", "lightred", "orange", "beige", "green", "darkgreen", "lightgreen", "blue", "darkblue", "lightblue", "purple", "darkpurple", "pink", "cadetblue", "white", "gray", "lightgray", "black"],
+          "iconOptions": "图标选项",
+          "icon": "使用的图标",
+          "iconChoices": ["圆", "圆刻痕", "点圆", "正方形", "倍数圆", "用户圆", "用户", "加号圆", "减号圆", "感叹号圆", "问号圆", "播放键圆", "勾号园", "家", "齿轮", "星号", "禁止符号", "爱心", "树叶", "灯泡", "笑脸", "五角星"],
+          "iconColor": "图标颜色",
+          "markerColor": "标记颜色",
+          "markerColorChoices": ["红色", "深红", "浅红", "橙色", "米色", "绿色", "深绿", "浅绿", "蓝色", "深蓝色", "浅蓝色", "紫色", "深紫色", "粉色", "藏青色", "白色", "灰色", "浅灰色", "黑色"],
           "options": "标签选项",
           "labelPermanent": "仅在鼠标悬停在该处时显示标签？",
           "labelcolor": "选择标签的字体颜色",
@@ -1650,8 +1650,8 @@
           "flow": "选择流量的数据",
           "time": "选择时间的数据",
           "label": "选择一个标签",
-          "labelTooltip": "A suitable configuration for a label is to specify the originator and the recipient for each flow - open documentation",
-          "options": "其他流量选项",
+          "labelTooltip": "标签的正确配置是为每个流指定发起者和接收者。更多信息，请查看文档",
+          "options": "其他流量的选项",
           "color": "选择颜色",
           "minThickness": "选择最小厚度",
           "maxThickness": "选择最大厚度"
@@ -1669,7 +1669,7 @@
           "opacity": "选择图表的不透明度？",
           "showlabels": "是否将值显示在图表元素上方？",
           "transitionTime": "指定更新图表属性的持续时间（以毫秒为单位）",
-          "layerId": "选择图层ID",
+          "layerId": "选择图层的ID",
           "legend": "是否显示图例（数据列名称）？",
           "legendPosition": "图例位置",
           "legendPositionChoices": ["右上方", "左上方", "右下方", "左下方" ]
@@ -1678,18 +1678,18 @@
           "chartValues": "值",
           "chartLabels": "标签",
           "holeSize": "圆环图的大小",
-          "chartName": "Name of element (only relevant if multiple pie charts are displayed)"
+          "chartName": "元素名称（仅当显示多个饼图时才相关）"
         },
         "addBarDataEl":{
           "chartYdatabar": "在y轴上绘制什么？",
-          "chartYlabel": "Data label (e.g. for legend)",
-          "color": "选择柱形颜色 (delete color for automated selection)",
+          "chartYlabel": "数据标签（例如图例）",
+          "color": "选择柱形颜色 （删除颜色以进行自动选择）",
           "lineWidth": "选择柱形轮廓宽度",
           "lineColor": "选择柱形轮廓颜色"
         },
         "addScatterDataEl":{
           "chartYdata": "在y轴上绘制什么？",
-          "chartYlabel": "Data label (e.g. for legend)",
+          "chartYlabel": "数据标签（例如图例）",
           "symbol": "选择标记符号",
           "symbolChoices": ["_", "圆圈", "空心圆圈", "方形", "空心方形", "菱形","空心菱形", "加号", "空心加号", "叉号", "空心叉号", "正三角","空心正三角", "反三角", "空心反三角", "五边形", "空心五边形", "六边形", "空心六边形", "八边形", "空心八边形", "五角星", "空心五角星", "六芒星","空心六芒星", "星号", "空心星号", "井号", "空心井号","东西线", "空心东西线", "南北线", "空心南北线"],
           "color": "选择标记颜色",
@@ -1701,11 +1701,11 @@
         },
         "addLineDataEl":{
           "chartYdata": "在y轴上绘制什么？",
-          "chartYlabel": "Data label (e.g. for legend)",
+          "chartYlabel": "数据标签（例如图例）",
           "color": "选择线条颜色",
           "width": "选择线条宽度",
           "shape": "选择线条",
-          "shapeChoices": ["linear", "spline", "hv", "vh", "hvh", "vhv"],
+          "shapeChoices": ["线性", "曲线", "hv", "vh", "hvh", "vhv"],
           "dash": "选择行短划线类型",
           "dashChoices": ["实线", "点", "短划线", "长划线", "划线-点", "长划线-点"],
           "fill": "填充图表的区域？",
@@ -1715,14 +1715,14 @@
         },
         "addBubbleDataEl":{
           "chartYdata": "在y轴上绘制什么？",
-          "chartYlabel": "Data label (e.g. for legend)",
+          "chartYlabel": "数据标签（例如图例）",
           "symbol": "选择标记符号",
           "colorCheck": "使用静态颜色？",
           "colorCheckTrue": "选择标记颜色",
           "colorCheckFalse": "选择颜色应该依赖的域。",
           "size": "选择标记大小",
-          "sizemode": "How should the size be measured?",
-          "sizemodeChoices": ["area", "diameter"],
+          "sizemode": "如何尺寸测量？",
+          "sizemodeChoices": ["面积", "直径"],
           "maxsize": "选择最大标记尺寸（可选）",
           "lineWidth": "选择标记轮廓宽度",
           "lineColor": "选择标记轮廓颜色",
