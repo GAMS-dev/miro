@@ -988,9 +988,6 @@
         "title": "Sheets can be empty e.g. when the exported scenario only contains input data.",
         "label": "Include empty sheets in the Excel file?"
       },
-      "remoteExecution":{
-        "label": "Remote job execution (GAMS MIRO Server only)"
-      },
       "downloadTempFiles":{
         "label": "Allow access to the temporary directory?"
       },
