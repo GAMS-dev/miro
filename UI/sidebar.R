@@ -47,7 +47,7 @@ if(LAUNCHHCUBEMODE){
                                        style = "margin:6px 0px 6px 0;display:block;",
                                        tags$span(class = "caret"),
                                        tags$span(class = "sr-only", "toggle dropdown")),
-                           tags$ul(class = "dropdown-menu", role = "menu", style = "margin:6px 0px 6px 15px;position:relative;width:85%;",
+                           tags$ul(class = "dropdown-menu dropdown-sidebar", role = "menu", style = "margin:6px 0px 6px 15px;position:relative;width:85%;",
                                    tags$li(tags$a(href = "#", onclick = paste0("Miro.changeDDButtonEvent('", 
                                                                                htmltools::htmlEscape(lang$nav$sidebarButtons$solve), 
                                                                                "', '#btSolve', 'btSolve');"),
