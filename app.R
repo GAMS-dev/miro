@@ -230,8 +230,11 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
   }
   if(isShinyProxy || identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
     dbConfig <- setDbConfig()
-    if(isShinyProxy)
+    
+    if(isShinyProxy || identical(Sys.getenv("MIRO_REMOTE_EXEC"), "true")){
       config$activateModules$remoteExecution <- TRUE
+    }
+    
     if(length(dbConfig$errMsg)){
       errMsg <- dbConfig$errMsg
     }else{
@@ -241,6 +244,9 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
     dbConfig <- list(type = "sqlite",
                      name = file.path(miroDbDir, 
                                       "miro.sqlite3"))
+    if(identical(Sys.getenv("MIRO_REMOTE_EXEC"), "true")){
+      config$activateModules$remoteExecution <- TRUE
+    }
   }
   if(debugMode){
     if(file.exists(file.path(currentModelDir, paste0(modelName, "_files.txt")))){
