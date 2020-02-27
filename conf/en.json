@@ -1713,7 +1713,6 @@
           "symbol": "Select marker symbol",
           "symbolChoices": ["_", "circle", "circle-open", "square", "square-open","diamond","diamond-open", "cross", "cross-open", "x", "x-open", "triangle-up","triangle-up-open", "triangle-down", "triangle-down-open", "pentagon", "pentagon-open", "hexagon","hexagon-open", "octagon", "octagon-open", "star", "star-open", "hexagram","hexagram-open", "asterisk", "asterisk-open", "hash", "hash-open", "line-ew", "line-ew-open", "line-ns", "line-ns-open"],
           "color": "Select marker color",
-          "color": "Select marker color",
           "size": "Select marker size",
           "lineWidth": "Select marker outline width",
           "lineColor": "Select marker outline color",
