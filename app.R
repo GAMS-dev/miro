@@ -248,6 +248,9 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
       config$activateModules$remoteExecution <- TRUE
     }
   }
+  if(config$activateModules$remoteExecution){
+    useTempDir <- TRUE
+  }
   if(debugMode){
     if(file.exists(file.path(currentModelDir, paste0(modelName, "_files.txt")))){
       tryCatch({
@@ -325,9 +328,6 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
 }
 if(is.null(errMsg)){
   modelData <- NULL
-  if(config$activateModules$remoteExecution){
-    useTempDir <- TRUE
-  }
   if(useTempDir && 
      file.exists(file.path(currentModelDir, paste0(modelName, ".zip")))){
     modelData <- file.path(currentModelDir, paste0(modelName, ".zip"))
