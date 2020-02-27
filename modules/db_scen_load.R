@@ -214,6 +214,8 @@ observeEvent(input$btHcubeLoad, {
 observeEvent(virtualActionButton(rv$btOverwriteScen), {
   flog.debug("Loading and rendering scenarios: '%s'.",
              paste(sidsToLoad, collapse = ", "))
+  suppressCloseModalLocal <- suppressCloseModal
+  suppressCloseModal      <<- FALSE
   if(!length(sidsToLoad)){
     return()
   }
@@ -298,7 +300,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     newInputCount <- 0L
     datasetsToFetch <- names(modelIn)
     source("./modules/input_load.R", local = TRUE)
-    if(is.null(errMsg)){
+    if(is.null(errMsg) && isFALSE(suppressCloseModalLocal)){
       removeModal()
     }
     if(length(scalarDataset) && nrow(scalarDataset)){

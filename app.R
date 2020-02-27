@@ -1396,6 +1396,7 @@ if(!is.null(errMsg)){
                            btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
                            btSplitView = 0L, noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
                            jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L)
+      suppressCloseModal <- FALSE
       # list of scenario IDs to load
       sidsToLoad <- list()
       loadIntoSandbox <- FALSE
@@ -1419,6 +1420,7 @@ if(!is.null(errMsg)){
           }
           if(!identical(defSid, 0L)){
             sidsToLoad <- list(defSid)
+            suppressCloseModal <- TRUE
             rv$btOverwriteScen <- isolate(rv$btOverwriteScen) + 1L
           }
         }
