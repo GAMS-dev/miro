@@ -1389,6 +1389,7 @@
         "rangeFrom": "Bereichsanfang",
         "rangeTo": "Bereichsende",
         "animationDataFormatSelector": "Daten im Datumsformat?",
+        "categoryorder": "Achsenreihenfolge",
         "categoryorderChoices": ["trace", "category ascending", "category descending", "total ascending", "total descending", "min ascending", "min descending", "max ascending", "max descending", "sum ascending", "sum descending", "mean ascending", "mean descending", "median ascending", "median descending"],
         "scaleRatioCheck": "Achsen mit festem Verhältnis?",
         "scaleRatio": "Skalierungsverhältnis (y/x)"

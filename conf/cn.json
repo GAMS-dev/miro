@@ -1071,7 +1071,7 @@
         "noWidgetConfigMsg": "当前没有为此GAMS符号配置小部件",
         "optionConfigMsg": "消息：该符号是GAMS选项：%s",
         "doubledashConfigMsg": "消息： 该符号是一个double-dash parameter：%s",
-        "tableWidget": "Table configuration is done in 'configure tables'!",
+        "tableWidget": "表格在“配置表格”中已配置完成！",
         "inputSymbol": "为哪个输入符号创建一个小部件？",
         "widgetGo": "GAMS option",
         "widgetDd": "double-dash parameter",
@@ -1389,6 +1389,7 @@
         "rangeFrom": "范围起始值",
         "rangeTo": "范围结束值",
         "animationDataFormatSelector": "是日期格式的数据？",
+        "categoryorder": "轴序",
 		"categoryorderChoices": ["默认顺序", "按字母数字顺序升序", "按字母数字顺序降序", "按数值大小升序", "按数值大小降序", "按最小值升序", "按最小值降序", "按最大值升序", "按最大值降序", "按和的大小升序", "按和的大小降序", "按平均值大小升序", "按平均值大小降序", "按中值大小升序", "按中值大小降序"],
         "scaleRatioCheck": "固定比例轴？",
         "scaleRatio": "比例（Y / X）"

@@ -1833,7 +1833,7 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
   }
   tagList(
     textInput(id %+% "_title", lang$adminMode$graphs$axisOptions$title, value = title),
-    selectInput(id %+% "_categoryorder", "axis order", choices = langSpecificGraphs$categoryorderChoices),
+    selectInput(id %+% "_categoryorder", lang$adminMode$graphs$axisOptions$categoryorder, choices = langSpecificGraphs$categoryorderChoices),
     if(!identical(rv$graphConfig$graph$type, "pie") && identical(id, "y")){
       tags$div(class = "shiny-input-container", style = "display:inline-block;",
                tags$div(
