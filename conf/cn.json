@@ -1071,7 +1071,7 @@
         "noWidgetConfigMsg": "当前没有为此GAMS符号配置小部件",
         "optionConfigMsg": "消息：该符号是GAMS选项：%s",
         "doubledashConfigMsg": "消息： 该符号是一个double-dash parameter：%s",
-        "tableWidget": "Table configuration is done in 'configure tables'!",
+        "tableWidget": "表格在“配置表格”中已配置完成！",
         "inputSymbol": "为哪个输入符号创建一个小部件？",
         "widgetGo": "GAMS option",
         "widgetDd": "double-dash parameter",
