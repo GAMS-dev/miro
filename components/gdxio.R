@@ -93,7 +93,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
            call. = FALSE)
     }
   },
-  wgdx = function(gdxName, data, squeezeZeros = c('y', 'n', 'e')){
+  wgdx = function(gdxName, data, squeezeZeros = c("n", "y", "e")){
     if(!length(names(data))){
       gdxrrwMIRO::wgdx(gdxName, list())
       return(invisible(self))
