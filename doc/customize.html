@@ -548,9 +548,18 @@ putclose log;
                                     <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Show row numbers?</h6>
                                     <div class="expanded"><p>Determines whether line numbers should be displayed or not. </p>
                                     </div>
-                                    <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Add export buttons?</h6>
-                                    <div class="expanded"><p>The export buttons <i>copy</i>, <i>CSV</i>, <i>Excel</i>, <i>PDF</i> and <i>print</i> are available. 
-                                    Please note that only the currently visible data is exported! It is recommended to use the native export functionality of MIRO instead.</p>
+                                    <h6 id="export-buttons" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Add export buttons?</h6>
+                                    <div class="expanded"><p>The export buttons <i>copy</i>, <i>CSV</i>, <i>Excel</i>, <i>PDF</i> and <i>print</i> are available.</p>
+                                    <div class="callout-block callout-warning">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-info-circle"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <b class="callout-title">Note:</b>
+                                              <p>Please note that only the currently visible data is exported! If a symbol contains multiple table pages, using a button only affects the currently visible table page! It is recommended to use the native export functionality of MIRO instead.</p>
+                                          </div><!--//content-->
+                                      </div><!--//callout-block-->
+                                    
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:200pt;" src="assets/images/configuration_mode/tables_buttons.png" alt="Export buttons" />
                                     </div>

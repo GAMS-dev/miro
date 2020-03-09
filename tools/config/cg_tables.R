@@ -186,7 +186,11 @@ getDtOptions <- reactive({
                ))
     ),
     tags$div(class = "shiny-input-container",
-             tags$label(class = "cb-label", "for" = "dt_buttons", lang$adminMode$tables$dt$buttons$label),
+             tags$label(class = "cb-label info-position", "for" = "dt_buttons", 
+                        tags$div(lang$adminMode$tables$dt$buttons$label, 
+                                 tags$a("", title = paste0(lang$adminMode$tables$dt$buttons$title, " - ",
+                                                           tolower(lang$adminMode$general$ui$tooltipDocs)), class="info-wrapper", href="https://gams.com/miro/customize.html#export-buttons", 
+                                        tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
              tags$div(
                tags$label(class = "checkbox-material", 
                           checkboxInput("dt_buttons", value = "Buttons" %in% configJSON$datatable$extensions, label = NULL)
