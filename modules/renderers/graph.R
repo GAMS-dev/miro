@@ -332,7 +332,10 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
               stop("The column you selected to pivot on contains too many (unique) elements: maximum of 50 elements allowed.", 
                    call. = FALSE)
             }
-            xts_data <- spread(data, key, value)
+            
+            xts_data <- pivot_wider(data, names_from = !!key, 
+                                    values_from = !!value, 
+                                    values_fill = setNames(list(0L), names(options$ydata)[1]))
             
             if(length(options$xdata)){
               xtsIdx  <- match(tolower(options$xdata), tolower(colnames(data)))[[1]]
@@ -340,7 +343,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                 stop(sprintf("Could not find x data column: '%s'.", options$xdata), call. = FALSE)
               xts_idx <- NULL
               tryCatch({
-                xts_idx  <- as.Date(xts_data[[xtsIdx]])
+                xts_idx  <- as.POSIXct(xts_data[[xtsIdx]])
                 xts_data <- xts_data[, -c(xtsIdx)]
                 xts_data <- xts(xts_data, order.by = xts_idx)
               }, error = function(e){
@@ -350,7 +353,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
               xtsIdx   <- seq_along(xts_data)[vapply(xts_data, isDate, logical(1L), USE.NAMES = FALSE)][1]
               if(length(xtsIdx)){
               }else{
-                xts_idx  <- as.Date(xts_data[[xtsIdx]])
+                xts_idx  <- as.POSIXct(xts_data[[xtsIdx]])
                 xts_data <- xts_data[, -c(xtsIdx)]
                 xts_data <- xts(xts_data, order.by = xts_idx)
               }
@@ -398,19 +401,19 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
         }
       })
       # add graph options specified in config.json
-      if(!is.null (options$dyOptions)){
+      if(!is.null(options$dyOptions)){
         p <- do.call(dyOptions, c(list(dygraph = p), options$dyOptions))
       }
       # lenged options
-      if(!is.null (options$dylegend)){
+      if(!is.null(options$dylegend)){
         p <- do.call(dyLegend, c(list(dygraph = p), options$dylegend))
       }
       # highlighting options - highlight hovered series
-      if(!is.null (options$dyHighlight)){
+      if(!is.null(options$dyHighlight)){
         p <- do.call(dyHighlight, c(list(dygraph = p), options$dyHighlight))
       }
       # use a selector for panning and zooming
-      if(!is.null (options$dyRangeSelector)){
+      if(!is.null(options$dyRangeSelector)){
         p <- do.call(dyRangeSelector, c(list(dygraph = p), options$dyRangeSelector))
       }
       # Candlestick charts: use the first four data series to plot, the rest of the data series (if any) are rendered with line plotter.
