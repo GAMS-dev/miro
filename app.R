@@ -427,6 +427,22 @@ if(is.null(errMsg) && debugMode){
   customRendererNames <- listOfCustomRenderers$get()
   rm(listOfCustomRenderers)
 }
+aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
+                          "Release Date: ", MIRORDate, "<br/>", 
+                          "Copyright (c) 2020 GAMS Software GmbH &lt;support@gams.com&gt;<br/>",
+                          "Copyright (c) 2020 GAMS Development Corp. &lt;support@gams.com&gt;<br/><br/>",
+                          "This program is free software: you can redistribute it and/or modify ",
+                          "it under the terms of version 3 of the GNU General Public License as published by ",
+                          "the Free Software Foundation.<br/><br/>",
+                          "This program is distributed in the hope that it will be useful, ", 
+                          "but WITHOUT ANY WARRANTY; without even the implied warranty of ",
+                          "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the ",
+                          "GNU General Public License for more details.<br/><br/>",
+                          "You should have received a copy of the GNU General Public License ",
+                          "along with this program. If not, see ",
+                          "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
+                          "For more information about third-party software included in MIRO, see ",
+                          "<a href=\\'http://www.gams.com/miro/license.html\\' target=\\'_blank\\'>here</a>.")
 if(miroBuildonly){
   if(!is.null(errMsg)){
     warning(errMsg)
@@ -438,6 +454,10 @@ if(miroBuildonly){
       quit("no", status = 1) 
     }
   }
+  source("./UI/scen_tabset.R", local = TRUE)
+  source("./UI/header.R", local = TRUE)
+  source("./UI/sidebar.R", local = TRUE)
+  source("./UI/body.R", local = TRUE)
   save(list = c("customRendererNames", customRendererNames, "modelIn", "modelInRaw", 
                 "modelOut", "config", "lang", "inputDsNames", "inputDsAliases", 
                 "outputTabTitles", "modelInTemplate", "scenDataTemplate", 
@@ -453,8 +473,9 @@ if(miroBuildonly){
                 "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
                 "GAMSReturnCodeMap", "dependentDatasets", "outputTabs", 
                 "installPackage", "dbSchema", "scalarInputSym", "scalarInputSymToVerify",
-                "requiredPackagesCR", "datasetsRemoteExport", "dropdownAliases"), 
+                "requiredPackagesCR", "datasetsRemoteExport", "dropdownAliases", "body"), 
        file = rSaveFilePath)
+  
   if(identical(Sys.getenv("MIRO_COMPILE_ONLY"), "true")){
     quit("no")
   }
@@ -681,23 +702,6 @@ Those tables are: '%s'.\nError message: '%s'.",
     }
   })
 }
-
-aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
-                          "Release Date: ", MIRORDate, "<br/>", 
-                          "Copyright (c) 2020 GAMS Software GmbH &lt;support@gams.com&gt;<br/>",
-                          "Copyright (c) 2020 GAMS Development Corp. &lt;support@gams.com&gt;<br/><br/>",
-                          "This program is free software: you can redistribute it and/or modify ",
-                          "it under the terms of version 3 of the GNU General Public License as published by ",
-                          "the Free Software Foundation.<br/><br/>",
-                          "This program is distributed in the hope that it will be useful, ", 
-                          "but WITHOUT ANY WARRANTY; without even the implied warranty of ",
-                          "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the ",
-                          "GNU General Public License for more details.<br/><br/>",
-                          "You should have received a copy of the GNU General Public License ",
-                          "along with this program. If not, see ",
-                          "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
-                          "For more information about third-party software included in MIRO, see ",
-                          "<a href=\\'http://www.gams.com/miro/license.html\\' target=\\'_blank\\'>here</a>.")
 
 if(is.null(errMsg)){
   tryCatch({
