@@ -97,8 +97,16 @@ observeEvent(rv$uploadHcube, {
   }
   prog$set(detail = lang$progressBar$hcubeImport$zipValidation, value = 1/6)
   # validate here so only valid scenarios will be read
-  invalidScenIds <- hcubeImport$validateScenFiles()
-  flog.trace("Scenario files validated.")
+  tryCatch({
+    invalidScenIds <- hcubeImport$validateScenFiles()
+    flog.trace("Scenario files validated.")
+  }, error = function(e){
+    flog.error("Problems validating results. Error message: %s.", e)
+    errMsg <<- lang$errMsg$hcubeImport$extract$desc
+  })
+  if(is.null(showErrorMsg(lang$errMsg$hcubeImport$extract$title, errMsg))){
+    return(NULL)
+  }
   if(length(hcubeImport$getScenNames()) - length(invalidScenIds) == 0){
     showErrorMsg(lang$errMsg$hcubeImport$invalidJob$title, 
                  lang$errMsg$hcubeImport$invalidJob$desc)
