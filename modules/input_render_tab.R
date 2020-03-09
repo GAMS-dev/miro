@@ -325,7 +325,7 @@ lapply(modelInTabularData, function(sheet){
                           colHeaders = colnames, useTypes = !isPivoted,
                           width = hotOptions$width, search = hotOptions$search, 
                           readOnly = if(isTRUE(modelIn[[i]]$readonly)) TRUE else NULL, 
-                          selectCallback = TRUE)
+                          selectCallback = TRUE, digits = NA)
       ht <- hot_table(ht, contextMenu = hotOptions$contextMenu$enabled, 
                       highlightCol = hotOptions$highlightCol, 
                       highlightRow = hotOptions$highlightRow,
