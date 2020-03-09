@@ -282,31 +282,31 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
       }else{
         stop("The plot type you selected is currently not supported for tool plotly.", call. = FALSE)
       }
-      layout(p, title = options$title, barmode = options$barmode, margin = options$margins,
-             xaxis = list(title = options$xaxis$title, showgrid = options$xaxis$showgrid,
-                          zeroline = options$xaxis$zeroline, showticklabels = options$xaxis$showticklabels, 
-                          range = c(options$xaxis$rangefrom, options$xaxis$rangeto),
-                          categoryorder = options$xaxis$categoryorder),
-             yaxis = list(title = options$yaxis$title, showgrid = options$yaxis$showgrid, 
-                          zeroline = options$yaxis$zeroline, showticklabels = options$yaxis$showticklabels, 
-                          range = c(options$yaxis$rangefrom, options$yaxis$rangeto),
-                          categoryorder = options$yaxis$categoryorder,
-                          scaleanchor = options$yaxis$scaleanchor,
-                          scaleratio = options$yaxis$scaleratio),
-             yaxis2 = if(isTRUE(rendery2axis)) list(title = options$y2axis$title, showgrid = options$y2axis$showgrid, 
-                           zeroline = options$y2axis$zeroline, showticklabels = options$y2axis$showticklabels, 
-                           range = c(options$y2axis$rangefrom, options$y2axis$rangeto),
-                           categoryorder = options$y2axis$categoryorder,
-                           scaleanchor = options$y2axis$scaleanchor,
-                           scaleratio = options$y2axis$scaleratio,
-                           overlaying = if(isTRUE(rendery2axis)) "y",
-                           side = if(isTRUE(rendery2axis)) "right"),
-             paper_bgcolor = if(length(options$paper_bgcolor)) options$paper_bgcolor else "rgba(0,0,0,0)",
-             plot_bgcolor = if(length(options$plot_bgcolor)) options$plot_bgcolor else "rgba(0,0,0,0)",
-             showlegend = options$showlegend, grid = pieGrid,
-             legend = options$legend, bargap = options$bargap, bargroupgap = options$bargroupgap) %>%
+      if(length(p))
+        layout(p, title = options$title, barmode = options$barmode, margin = options$margins,
+               xaxis = list(title = options$xaxis$title, showgrid = options$xaxis$showgrid,
+                            zeroline = options$xaxis$zeroline, showticklabels = options$xaxis$showticklabels, 
+                            range = c(options$xaxis$rangefrom, options$xaxis$rangeto),
+                            categoryorder = options$xaxis$categoryorder),
+               yaxis = list(title = options$yaxis$title, showgrid = options$yaxis$showgrid, 
+                            zeroline = options$yaxis$zeroline, showticklabels = options$yaxis$showticklabels, 
+                            range = c(options$yaxis$rangefrom, options$yaxis$rangeto),
+                            categoryorder = options$yaxis$categoryorder,
+                            scaleanchor = options$yaxis$scaleanchor,
+                            scaleratio = options$yaxis$scaleratio),
+               yaxis2 = if(isTRUE(rendery2axis)) list(title = options$y2axis$title, showgrid = options$y2axis$showgrid, 
+                                                      zeroline = options$y2axis$zeroline, showticklabels = options$y2axis$showticklabels, 
+                                                      range = c(options$y2axis$rangefrom, options$y2axis$rangeto),
+                                                      categoryorder = options$y2axis$categoryorder,
+                                                      scaleanchor = options$y2axis$scaleanchor,
+                                                      scaleratio = options$y2axis$scaleratio,
+                                                      overlaying = if(isTRUE(rendery2axis)) "y",
+                                                      side = if(isTRUE(rendery2axis)) "right"),
+               paper_bgcolor = if(length(options$paper_bgcolor)) options$paper_bgcolor else "rgba(0,0,0,0)",
+               plot_bgcolor = if(length(options$plot_bgcolor)) options$plot_bgcolor else "rgba(0,0,0,0)",
+               showlegend = options$showlegend, grid = pieGrid,
+               legend = options$legend, bargap = options$bargap, bargroupgap = options$bargroupgap) %>%
         config(p, staticPlot = isTRUE(options$staticPlot))}))
-    
   }else if(options$tool == 'dygraphs'){
     return(renderDygraph({
       if(length(filterCol) && length(input$data_filter)){
