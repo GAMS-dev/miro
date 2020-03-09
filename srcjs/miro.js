@@ -283,6 +283,18 @@ $(document).ready(() => {
       dropdown.removeClass('dropdown-menu-right');
     }
   });
+  // change "More" tab dropdown label when tab from dropdown is selected
+  $('.nav-tabs-dropdown a').on('shown.bs.tab', (e) => {
+    const currTab = $(e.target);
+    if (currTab.closest('.dropdown').find('.dropdown-toggle').length) {
+      currTab.closest('.dropdown').find('.dropdown-toggle').html(`${currTab.text()} <i class="fa fa-angle-double-right"></i>`);
+      return;
+    }
+    const prevTab = $(e.relatedTarget).closest('.dropdown').find('.dropdown-toggle');
+    if (prevTab.length) {
+      prevTab.html(` ${prevTab.data('defaultlabel')} <i class="fa fa-angle-double-right"></i>`);
+    }
+  });
   // code snippet taken from SwishWez: https://stackoverflow.com/questions/21582558/disable-remove-on-backspace-or-remove-ibeam-entirely
   if (typeof Selectize !== 'undefined') {
     Selectize.define('no_delete', function () {

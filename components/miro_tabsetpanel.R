@@ -59,6 +59,9 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
   divTagList <- lapply(expandedTabs, "[[", 2)
   
   if(noTabs > maxTabsExpanded){
+    if(length(ulClass)){
+      ulClass <- paste(ulClass, "nav-tabs-dropdown")
+    }
     collapsedTabIds <- seq(from = noExpandedTabs + 1L,
                            to = noTabs)
     ddTabs <- lapply(collapsedTabIds, MIRObuildTabItem,
@@ -69,9 +72,10 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
     divTagList <- c(divTagList, lapply(ddTabs, "[[", 2))
     
     liTagList <- c(liTagList, 
-                   list(tags$li(class = "dropdown",
+                   list(tags$li(class = "dropdown max-tabs-dropdown-label",
                                 tags$a(class = "dropdown-toggle", 
                                        `data-toggle` = "dropdown",
+                                       `data-defaultLabel` = btCollapsedTabs,
                                        role = "button",
                                        `aria-haspopup` = "true",
                                        `aria-expanded` = "false",
