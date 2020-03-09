@@ -350,9 +350,9 @@ HcubeImport <- R6Class("HcubeImport",
                            return(scenData)
                          },
                          verifyScenFiles = function(filePaths){
-                           tableNames    <- tolower(unlist(lapply(tolower(filePaths), function(filePath){
-                             if(endsWith(filePath, ".trc")){
-                               fileName <- basename(filePath)
+                           tableNames    <- tolower(unlist(lapply(filePaths, function(filePath){
+                             if(endsWith(tolower(filePath), ".trc")){
+                               fileName <- tolower(basename(filePath))
                                return(substring(fileName, 1, nchar(fileName) - 4))
                              }
                              gdxSym <- private$gdxio$getSymbols(filePath)
