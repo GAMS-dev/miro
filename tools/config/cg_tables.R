@@ -313,7 +313,8 @@ output$hot_preview <- renderRHandsontable({
   
   ht <- rhandsontable(data = data,
                       colHeaders = headersUnnamed,
-                      readOnly = input$table_readonly)
+                      readOnly = input$table_readonly,
+                      digits = NA)
   if(!pivotTable && length(input$table_readonlyCols) && 
      input$table_readonlyCols %in% headersTmp){
     ht <- hot_col(ht, headersUnnamed[match(input$table_readonlyCols, 
@@ -476,7 +477,8 @@ observe({
         ht <- rhandsontable(data = data, height = hotOptions$height, 
                             colHeaders = letters[1:4],
                             search = hotOptions$search, 
-                            readOnly = hotOptions$readonly, selectCallback = TRUE)
+                            readOnly = hotOptions$readonly, selectCallback = TRUE,
+                            digits = NA)
         ht <- hot_table(ht, contextMenu = hotOptions$contextMenu$enabled, 
                         highlightCol = hotOptions$highlightCol, 
                         highlightRow = hotOptions$highlightRow,
