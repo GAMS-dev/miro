@@ -102,7 +102,7 @@ DataInstance <- R6Class("DataInstance", public = list(
   fileExchange = character(1L),
   csvDelim = character(1L),
   sortedNames = character(0L),
-  writeGDX = function(filePath, idsToWrite, squeezeZeros = c('y', 'n', 'e')){
+  writeGDX = function(filePath, idsToWrite, squeezeZeros = c("n", "y", "e")){
     squeezeZeros <- match.arg(squeezeZeros)
     private$gdxio$wgdx(filePath, private$data[idsToWrite], squeezeZeros)
     private$filePaths <- c(private$filePaths, filePath)
