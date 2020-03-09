@@ -327,6 +327,9 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
           if(!is.null(options$color)){
             key   <- match(tolower(options$color), tolower(colnames(data)))
             value <- match(tolower(names(options$ydata)[1]), tolower(colnames(data)))
+            if(is.na(value)){
+              value <- length(data)
+            }
             # bring data into right matrix format
             if(length(unique(data[[key]])) > 50L){
               stop("The column you selected to pivot on contains too many (unique) elements: maximum of 50 elements allowed.", 
