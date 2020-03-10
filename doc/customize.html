@@ -943,6 +943,15 @@ $offExternalInput
                                              <a class="link" href="./charts.html#valuebox"><span></span></a>
                                          </div><!--//item-inner-->
                                      </div><!--//item-->
+                                     <div class="item col-lg-4 col-6">
+                                         <div class="item-inner" style="padding-bottom: 10px;">
+                                             <div style="height:200px;">
+                                                 <img class="img-fluid" style= "max-height:250pt; display: block; margin:auto;" src="assets/images/configuration_mode/custom_renderer.png" alt="Custom renderer" />
+                                             </div>
+                                             <h3 class="title" style="text-align:left;margin-top:15pt;">Custom renderer</h3>
+                                             <a class="link" href="./charts.html#custom-graphics"><span></span></a>
+                                         </div><!--//item-inner-->
+                                     </div><!--//item-->
                                  </div><!--//graphs-wrapper-->
                                  <div class="callout-block callout-success">
                                      <div class="icon-holder">
@@ -1358,21 +1367,20 @@ renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path
                                   </div><!--//callout-block-->
                                 </div><!--//section-block-->
                                 <div class="section-block" id="custom-renderers">
-                                  <h3 class="block-title">Custom Graphics</h3>                                
-                                  <p>In this section we will show you how to create really sophisticated graphics like the map you find in the demo <i>transport</i> model that comes with your MIRO installation:</p>
+                                  <h3 class="block-title">Custom Graphics</h3>  
+                                  <p>GAMS MIRO allows you to use your own custom renderers for your datasets. In this section we will show you how to create really sophisticated graphics that can not be configured with the build-in Configuration mode of GAMS MIRO.</p>
                                   <div class="callout-block callout-warning">
                                         <div class="icon-holder">
                                             <i class="fas fa-exclamation-triangle"></i>
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <b class="callout-title">Note:</b>
-                                            <p>Basic maps can now be configured in the new <a href="#configurationMode" class="scrollto">Configuration mode</a>. The following example nevertheless shows how to use the R API for customized graphics in general.</p>
+                                            <p>The following example shows how a map can be created via custom renderer. Note, that basic maps can be configured in the <a href="#configurationMode" class="scrollto">Configuration mode</a>. However, the following example shows how to use the R API for customized graphics in general.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:250pt;" src="assets/images/output-data_raw1.png" alt="Result of custom renderer - Map with markers" />
                                   </div>
-                                    <p>GAMS MIRO allows you to use your own custom renderers for your datasets. Currently we only support the visualization of data, not the generation. We may add this feature at a later stage depending on the demand.</p>
                                     <p>In order to visualize a dataset, you will need to write two functions: a placeholder where your graphs etc. will later be rendered as well as the rendering function itself. To learn more about the concepts of this dual component approach, visit the website for the R Shiny framework that GAMS MIRO is based upon: <a href="https://shiny.rstudio.com/">https://shiny.rstudio.com/</a>. In particular, we are using <a href="https://shiny.rstudio.com/articles/modules.html" target="_blank">Shiny Modules</a> to realize the interface between MIRO and your custom renderer functions. The template for the two components of every custom renderer is as follows:</p>
                                     <div class="code-block">
                                         <pre><code class="language-r">

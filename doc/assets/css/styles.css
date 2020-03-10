@@ -1316,6 +1316,13 @@ body{
     margin: 0 auto;
     pointer-events: all;
 }
+.box-grey {
+    background: #f9f9fb;
+    padding: 5px;
+    border: 1px solid grey;
+    margin: 5px;
+    margin-bottom: 15px;
+}
 input[type=text], select {
   width: 50%;
   padding: 12px 20px;
