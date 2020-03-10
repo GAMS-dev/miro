@@ -143,7 +143,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
         domains <- names(df)[seq_len(symDim)]
         df      <- tidyr::pivot_longer(df, -seq_len(symDim - 1L), 
                                        names_to = paste0(symName, "Hdr"), 
-                                       values_to = "value")
+                                       values_to = "value", values_drop_na = TRUE)
       }
       df[seq_len(length(df) - 1L)] <- dplyr::mutate_if(df[seq_len(length(df) - 1L)], 
                                                        function(el){
@@ -230,7 +230,8 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
         if(symType %in% c("variable", "equation")){
           typeCode <- 0L
           df       <- tidyr::gather(df[j, ], key = "field", 
-                                    "value", factor_key = TRUE)
+                                    "value", factor_key = TRUE, 
+                                    na.rm = TRUE)
           uels     <- list(c('l', 'm', 'lo', 'up', 's'))
           v        <- data.matrix(df)
         }else if(symType == "parameter"){
@@ -360,8 +361,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     if(length(pivotHeaders)){
       dfDim     <- length(symDF)
       symDF     <- tidyr::pivot_wider(symDF, names_from = !!length(symDF) - 1L, 
-                                      values_from = !!length(symDF), 
-                                      values_fill = setNames(list(0L), names(symDF)[length(symDF)]))
+                                      values_from = !!length(symDF))
       nonPivotedColNames <- names(symDF)[seq_len(dfDim - 2L)]
       
       # append non pivot column names in case only pivot column names were specified

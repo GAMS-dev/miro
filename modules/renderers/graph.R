@@ -337,8 +337,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
             }
             
             xts_data <- pivot_wider(data, names_from = !!key, 
-                                    values_from = !!value, 
-                                    values_fill = setNames(list(0L), names(options$ydata)[1]))
+                                    values_from = !!value)
             
             if(length(options$xdata)){
               xtsIdx  <- match(tolower(options$xdata), tolower(colnames(data)))[[1]]
