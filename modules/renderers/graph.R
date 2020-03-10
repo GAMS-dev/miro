@@ -282,31 +282,31 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
       }else{
         stop("The plot type you selected is currently not supported for tool plotly.", call. = FALSE)
       }
-      layout(p, title = options$title, barmode = options$barmode, margin = options$margins,
-             xaxis = list(title = options$xaxis$title, showgrid = options$xaxis$showgrid,
-                          zeroline = options$xaxis$zeroline, showticklabels = options$xaxis$showticklabels, 
-                          range = c(options$xaxis$rangefrom, options$xaxis$rangeto),
-                          categoryorder = options$xaxis$categoryorder),
-             yaxis = list(title = options$yaxis$title, showgrid = options$yaxis$showgrid, 
-                          zeroline = options$yaxis$zeroline, showticklabels = options$yaxis$showticklabels, 
-                          range = c(options$yaxis$rangefrom, options$yaxis$rangeto),
-                          categoryorder = options$yaxis$categoryorder,
-                          scaleanchor = options$yaxis$scaleanchor,
-                          scaleratio = options$yaxis$scaleratio),
-             yaxis2 = if(isTRUE(rendery2axis)) list(title = options$y2axis$title, showgrid = options$y2axis$showgrid, 
-                           zeroline = options$y2axis$zeroline, showticklabels = options$y2axis$showticklabels, 
-                           range = c(options$y2axis$rangefrom, options$y2axis$rangeto),
-                           categoryorder = options$y2axis$categoryorder,
-                           scaleanchor = options$y2axis$scaleanchor,
-                           scaleratio = options$y2axis$scaleratio,
-                           overlaying = if(isTRUE(rendery2axis)) "y",
-                           side = if(isTRUE(rendery2axis)) "right"),
-             paper_bgcolor = if(length(options$paper_bgcolor)) options$paper_bgcolor else "rgba(0,0,0,0)",
-             plot_bgcolor = if(length(options$plot_bgcolor)) options$plot_bgcolor else "rgba(0,0,0,0)",
-             showlegend = options$showlegend, grid = pieGrid,
-             legend = options$legend, bargap = options$bargap, bargroupgap = options$bargroupgap) %>%
+      if(length(p))
+        layout(p, title = options$title, barmode = options$barmode, margin = options$margins,
+               xaxis = list(title = options$xaxis$title, showgrid = options$xaxis$showgrid,
+                            zeroline = options$xaxis$zeroline, showticklabels = options$xaxis$showticklabels, 
+                            range = c(options$xaxis$rangefrom, options$xaxis$rangeto),
+                            categoryorder = options$xaxis$categoryorder),
+               yaxis = list(title = options$yaxis$title, showgrid = options$yaxis$showgrid, 
+                            zeroline = options$yaxis$zeroline, showticklabels = options$yaxis$showticklabels, 
+                            range = c(options$yaxis$rangefrom, options$yaxis$rangeto),
+                            categoryorder = options$yaxis$categoryorder,
+                            scaleanchor = options$yaxis$scaleanchor,
+                            scaleratio = options$yaxis$scaleratio),
+               yaxis2 = if(isTRUE(rendery2axis)) list(title = options$y2axis$title, showgrid = options$y2axis$showgrid, 
+                                                      zeroline = options$y2axis$zeroline, showticklabels = options$y2axis$showticklabels, 
+                                                      range = c(options$y2axis$rangefrom, options$y2axis$rangeto),
+                                                      categoryorder = options$y2axis$categoryorder,
+                                                      scaleanchor = options$y2axis$scaleanchor,
+                                                      scaleratio = options$y2axis$scaleratio,
+                                                      overlaying = if(isTRUE(rendery2axis)) "y",
+                                                      side = if(isTRUE(rendery2axis)) "right"),
+               paper_bgcolor = if(length(options$paper_bgcolor)) options$paper_bgcolor else "rgba(0,0,0,0)",
+               plot_bgcolor = if(length(options$plot_bgcolor)) options$plot_bgcolor else "rgba(0,0,0,0)",
+               showlegend = options$showlegend, grid = pieGrid,
+               legend = options$legend, bargap = options$bargap, bargroupgap = options$bargroupgap) %>%
         config(p, staticPlot = isTRUE(options$staticPlot))}))
-    
   }else if(options$tool == 'dygraphs'){
     return(renderDygraph({
       if(length(filterCol) && length(input$data_filter)){
@@ -327,12 +327,18 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
           if(!is.null(options$color)){
             key   <- match(tolower(options$color), tolower(colnames(data)))
             value <- match(tolower(names(options$ydata)[1]), tolower(colnames(data)))
+            if(is.na(value)){
+              value <- length(data)
+            }
             # bring data into right matrix format
             if(length(unique(data[[key]])) > 50L){
               stop("The column you selected to pivot on contains too many (unique) elements: maximum of 50 elements allowed.", 
                    call. = FALSE)
             }
-            xts_data <- spread(data, key, value)
+            
+            xts_data <- pivot_wider(data, names_from = !!key, 
+                                    values_from = !!value, 
+                                    values_fill = setNames(list(0L), names(options$ydata)[1]))
             
             if(length(options$xdata)){
               xtsIdx  <- match(tolower(options$xdata), tolower(colnames(data)))[[1]]
@@ -340,7 +346,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                 stop(sprintf("Could not find x data column: '%s'.", options$xdata), call. = FALSE)
               xts_idx <- NULL
               tryCatch({
-                xts_idx  <- as.Date(xts_data[[xtsIdx]])
+                xts_idx  <- as.POSIXct(xts_data[[xtsIdx]])
                 xts_data <- xts_data[, -c(xtsIdx)]
                 xts_data <- xts(xts_data, order.by = xts_idx)
               }, error = function(e){
@@ -350,7 +356,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
               xtsIdx   <- seq_along(xts_data)[vapply(xts_data, isDate, logical(1L), USE.NAMES = FALSE)][1]
               if(length(xtsIdx)){
               }else{
-                xts_idx  <- as.Date(xts_data[[xtsIdx]])
+                xts_idx  <- as.POSIXct(xts_data[[xtsIdx]])
                 xts_data <- xts_data[, -c(xtsIdx)]
                 xts_data <- xts(xts_data, order.by = xts_idx)
               }
@@ -398,19 +404,19 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
         }
       })
       # add graph options specified in config.json
-      if(!is.null (options$dyOptions)){
+      if(!is.null(options$dyOptions)){
         p <- do.call(dyOptions, c(list(dygraph = p), options$dyOptions))
       }
       # lenged options
-      if(!is.null (options$dylegend)){
+      if(!is.null(options$dylegend)){
         p <- do.call(dyLegend, c(list(dygraph = p), options$dylegend))
       }
       # highlighting options - highlight hovered series
-      if(!is.null (options$dyHighlight)){
+      if(!is.null(options$dyHighlight)){
         p <- do.call(dyHighlight, c(list(dygraph = p), options$dyHighlight))
       }
       # use a selector for panning and zooming
-      if(!is.null (options$dyRangeSelector)){
+      if(!is.null(options$dyRangeSelector)){
         p <- do.call(dyRangeSelector, c(list(dygraph = p), options$dyRangeSelector))
       }
       # Candlestick charts: use the first four data series to plot, the rest of the data series (if any) are rendered with line plotter.
