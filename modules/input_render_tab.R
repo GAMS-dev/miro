@@ -33,11 +33,10 @@ getInputDataset <- function(id, visible = FALSE){
                                             cols = seq(length(modelIn[[id]]$headers) - 1L, 
                                                        length(intermDataTmp)),
                                             names_to = modelIn[[id]]$pivotCols[[1]], 
-                                      values_to = names(modelIn[[id]]$headers)[length(modelIn[[id]]$headers)]) %>%
+                                      values_to = names(modelIn[[id]]$headers)[length(modelIn[[id]]$headers)],
+                                      values_drop_na = TRUE) %>%
                                  select(!!!names(modelIn[[id]]$headers)), 
                                modelIn[[id]]$colTypes) %>%
-    mutate_if(is.numeric , 
-              replace_na, replace = 0) %>% 
     replace(is.na(.), "")
   
   return(intermDataTmp)
@@ -91,8 +90,7 @@ pivotData <- function(i, tabData){
   }
   pivotIdx <- match(modelIn[[i]]$pivotCols[[1]], names(modelIn[[i]]$headers))[[1L]]
   tabData <- pivot_wider(tabData, names_from = !!pivotIdx, 
-                         values_from = !!length(tabData), 
-                         values_fill = setNames(list(0L), names(tabData)[length(tabData)]))
+                         values_from = !!length(tabData))
   attrTmp <- attr(modelInTemplate[[i]], "aliases")[-c(pivotIdx, length(modelInTemplate[[i]]))]
   attrTmp <- c(attrTmp, 
                names(tabData)[seq(length(attrTmp) + 1L, 

@@ -288,8 +288,7 @@ createTableData <- function(symbol, pivotCol){
     pivotIdx <- match(pivotCol, inputSymHeaders[[input$table_symbol]])[[1L]]
     data[length(data)] <- as.integer(data[[length(data)]])
     data <- pivot_wider(data, names_from = !!pivotIdx, 
-                        values_from = !!length(data), 
-                        values_fill = setNames(list(0L), names(data)[length(data)]))
+                        values_from = !!length(data))
     attrTmp <- headersTmp[-c(pivotIdx, length(headersTmp))]
     attrTmp <- c(attrTmp, 
                  names(data)[seq(length(attrTmp) + 1L, 
