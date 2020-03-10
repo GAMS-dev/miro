@@ -372,18 +372,22 @@ putclose log;
                                   </div>
                                   <h6 id = "symbol-links" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Use output data as input data</h6>
                                   <div class="expanded"><p>In some situations you may want to run a model and use the results of the run as input for the next run. 
-                                  Such an iterative process is possible by creating a link between the output and input symbol. By doing so, input data for a symbol 
-                                  can be populated from an output sheet.</p>
+                                  Such an iterative process is possible by creating a link between the output and input symbol. By doing so, input data for a symbol (<i>"target"</i>)
+                                  can be populated from an output sheet (<i>"source"</i>).</p>
                                   <p>Populating an input table from the linked dataset can be initiated by clicking the <img class="img-fluid" src="assets/images/configuration_mode/symlink-btn.png" alt="Symbol link button" width="25" height="25" align="middle"> button.</p>
-                                  <div class="callout-block callout-warning">
-                                      <div class="icon-holder">
-                                          <i class="fas fa-info-circle"></i>
-                                      </div><!--//icon-holder-->
-                                      <div class="content">
-                                          <b class="callout-title">Note:</b>
-                                          <p>Each output dataset can only populate a single input table.</p>
-                                      </div><!--//content-->
-                                  </div><!--//callout-block--> 
+                                  <p>When configuring such symbol links, the following rules need be observed:</p>
+                                  <ul>
+                                    <li>The source symbol needs to be an output symbol</li>
+                                    <li>The dimensionality of the linked symbols, i.e. their number of dimensions, must be identical.</li>
+                                    <li>The header types (string / numeric) of linked symbols need to be identical</li>
+                                    <li>Neither source, nor target may be a table in which scalar values are grouped. This includes the input scalars table, the output scalars table and the table in which scalar variables and equations are summarized. </li>
+                                    <li>An output dataset can only populate a single input table.</li>
+                                    <li>An input table can be populated by different output datasets.
+                                      <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:115pt;" src="assets/images/configuration_mode/rules_symbollinks.png" alt="Rules for symbol links" />
+                                      </div>
+                                    </li>
+                                  </ul>
                                   </div>
                                   <h4 class="docu-general-header">Scenario & data</h4>
                                   <h6 id="local-upload" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Activate local data upload module?</h6>
