@@ -782,7 +782,7 @@ Worker <- R6Class("Worker", public = list(
       dataFilesToFetch <- metadata$modelDataFiles
       
       requestBody <- list(model = metadata$modelName,
-                          pf_file_name = paste0(tolower(metadata$modelName), ".pf"), 
+                          arguments = paste0("pf=", tolower(metadata$modelName), ".pf"), 
                           namespace = metadata$namespace)
       
       gamsArgs <- c(if(length(metadata$extraClArgs)) metadata$extraClArgs, 
