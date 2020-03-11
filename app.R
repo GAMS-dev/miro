@@ -569,7 +569,7 @@ if(is.null(errMsg)){
     requiredPackages <- c(requiredPackages, "DT")
   }
   source("./components/install_packages.R", local = TRUE)
-  options("DT.TOJSON_ARGS" = list(na = "string"))
+  options("DT.TOJSON_ARGS" = list(na = "string", na_as_null = TRUE))
   
   if(config$activateModules$remoteExecution && !LAUNCHCONFIGMODE){
     plan(multiprocess)

@@ -1243,6 +1243,10 @@ if(is.null(errMsg)){
         }
         return(alias)
       }, character(1L), USE.NAMES = FALSE)
+      attr(modelInTemplate[[i]], "isTable") <<- sum(vapply(modelIn[[i]]$headers, function(hdr){
+        identical(hdr$type, "numeric")
+      }, logical(1L), USE.NAMES = FALSE)) > 1L
+        
       if(length(modelIn[[i]]$pivotCols)){
         if(any(!modelIn[[i]]$pivotCols %in% names(modelIn[[i]]$headers))){
           errMsg <<- paste(errMsg, sprintf("Some columns you want to pivot could not be found in the symbol: '%s'.", 
@@ -1309,6 +1313,11 @@ if(is.null(errMsg)){
       }
       return(alias)
     }, character(1L), USE.NAMES = FALSE)
+    
+    attr(modelOutTemplate[[i]], "isTable") <<- sum(vapply(modelOut[[i]]$headers, function(hdr){
+      identical(hdr$type, "numeric")
+    }, logical(1L), USE.NAMES = FALSE)) > 1L
+    
     if(identical(modelOut[[i]]$hidden, TRUE))
       return(FALSE)
     else
