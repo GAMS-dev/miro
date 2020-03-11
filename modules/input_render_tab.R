@@ -319,11 +319,13 @@ lapply(modelInTabularData, function(sheet){
       if(isTRUE(modelIn[[i]]$readonly) || length(colsReadonly) > 0L){
         isRo <- TRUE
       }
+      
       ht <- rhandsontable(tabData, height = hotOptions$height, 
                           colHeaders = colnames, useTypes = !isPivoted,
                           width = hotOptions$width, search = hotOptions$search, 
                           readOnly = if(isTRUE(modelIn[[i]]$readonly)) TRUE else NULL, 
-                          selectCallback = TRUE, digits = NA)
+                          selectCallback = TRUE, digits = NA, 
+                          naAsNull = isPivoted || isTRUE(attr(modelInTemplate[[i]], "isTable")))
       ht <- hot_table(ht, contextMenu = hotOptions$contextMenu$enabled, 
                       highlightCol = hotOptions$highlightCol, 
                       highlightRow = hotOptions$highlightRow,
