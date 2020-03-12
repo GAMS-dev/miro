@@ -256,6 +256,7 @@ body{
   font-weight: 400;
   font-size: 16px;
   line-height: 1.428571429;
+  background-color: #e5e7ee;
 }
 .page-wrapper{
   font-family: montserratregular,'Open Sans',sans-serif;
@@ -318,10 +319,6 @@ body{
 }
 .page-wrapper .btn,
 .page-wrapper a.btn {
-  -webkit-transition: all 0.4s ease-in-out;
-  -moz-transition: all 0.4s ease-in-out;
-  -ms-transition: all 0.4s ease-in-out;
-  -o-transition: all 0.4s ease-in-out;
   font-weight: 600;
   font-size: 14px;
   line-height: 1.5;
@@ -1323,6 +1320,27 @@ body{
     margin: 5px;
     margin-bottom: 15px;
 }
+#win-tab,
+#macos-tab,
+#linux-tab {
+    border: 1px solid #f9f9fb;
+    text-align: center;
+    background-color: #f9f9fb;
+    padding: 15pt 50pt;
+    color: #495057;
+}
+#win-tab:hover,
+#macos-tab:hover,
+#linux-tab:hover {
+    border: 1px solid gray;
+}
+#macos-tab[aria-selected="true"],
+#win-tab[aria-selected="true"],
+#linux-tab[aria-selected="true"]{
+  border: 1px solid gray;
+  color: #000000;
+}
+
 input[type=text], select {
   width: 50%;
   padding: 12px 20px;
