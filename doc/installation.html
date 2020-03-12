@@ -80,6 +80,9 @@
                                   You will also find installation instructions for the GAMS system there.</p>
                               </div><!--//content-->
                           </div><!--//callout-block-->
+                          <div class="section-block">
+                              <p>GAMS MIRO Desktop itself is open source software. In order for GAMS to interact with MIRO, the <a href="https://www.gams.com/fileadmin/standard_price_list.pdf" target="_blank">MIRO connector</a> is required, which is included in the GAMS system <a href="https://www.gams.com/download" target="_blank">from GAMS version 30.2</a>. Without a valid license, the connector has limitations on the number of indexed symbols that can be communicated with MIRO. A maximum of 5 indexed symbols can be included in <a href = "./model.html#model-adjustments">$on/offExternalInput and $on/offExternalOutput</a>.</p>
+                          </div>
                             <section id="installation-section" class="doc-section">
                                 <ul class="nav nav-tabs" id="installOS" role="tablist">
                                   <li class="nav-item">
@@ -95,12 +98,24 @@
                                 <div class="tab-content" id="myTabContent">
                                   <div class="tab-pane fade show active" id="windows" role="tabpanel" aria-labelledby="win-tab">
                                       <div class="section-block">
+                                          <a class="btn btn-primary btn-cta" style="width: 150pt; margin-top:10pt; -webkit-transition:unset;" href="#">Download for Windows</a>
+                                      </div>
+                                      <div class="section-block">
+                                          <p>By downloading this software, you agree to the <a href = "./license.html">License Agreement</a>.</p>
+                                      </div>
+                                      <div class="section-block">
                                         <h3 class="block-title">GAMS MIRO installation</h3>
                                         <p>To install GAMS MIRO and its components, download the latest version and run the setup, which will guide you through the installation process.
                                         </p>
                                     </div><!--//section-block-->
                                   </div>
                                   <div class="tab-pane fade" id="macos" role="tabpanel" aria-labelledby="macos-tab">
+                                      <div class="section-block">
+                                          <a class="btn btn-primary btn-cta" style="width: 150pt; margin-top:10pt; -webkit-transition:unset;" href="#">Download for MacOS</a>
+                                      </div>
+                                      <div class="section-block">
+                                          <p>By downloading this software, you agree to the <a href = "./license.html">License Agreement</a>.</p>
+                                      </div>
                                       <div class="section-block">
                                         <h3 class="block-title">GAMS MIRO installation</h3>
                                         <p>To install GAMS MIRO and its components, download the latest version.<br>
@@ -110,15 +125,21 @@
                                   </div>
                                   <div class="tab-pane fade" id="linux" role="tabpanel" aria-labelledby="linux-tab">
                                       <div class="section-block">
+                                          <a class="btn btn-primary btn-cta" style="width: 150pt; margin-top:10pt; -webkit-transition:unset;" href="#">Download for Linux</a>
+                                      </div>
+                                      <div class="section-block">
+                                          <p>By downloading this software, you agree to the <a href = "./license.html">License Agreement</a>.</p>
+                                      </div>
+                                      <div class="section-block">
                                         <h3 class="block-title">GAMS MIRO installation</h3>
                                         <ol>
                                           <li>
                                             In case a current R version (3.6 or later) is not yet installed on your system, you need to do this first. You can download R <a href="https://cloud.r-project.org/" target="_blank">here</a>.
                                           </li>
                                           <li>
-                                            For MIRO to work, the system libraries V8 and libcurl need to be installed. On Debian / Ubuntu you need libcurl4-gnutls-dev and either libv8-dev or libnode-dev, on Fedora use libcurl-devel and v8-devel.
+                                            For MIRO to work, the system libraries V8 and libcurl need to be installed. On Debian / Ubuntu you need <i>libcurl4-gnutls-dev</i> and either <i>libv8-dev</i> or <i>libnode-dev</i>, on Fedora use <i>libcurl-devel</i> and <i>v8-devel</i>.
                                             For example, to install both libraries on Ubuntu, run:
-                                            <code>sudo apt install libcurl4-gnutls-dev libv8-dev</code>
+                                           <div class = "console-box"><span class="console-content">&gt; sudo apt install libcurl4-gnutls-dev libv8-dev</span></div>
                                           </li>
                                           <li>
                                             The first time you launch the GAMS MIRO AppImage, some R packages need to be installed in your R installation path.
