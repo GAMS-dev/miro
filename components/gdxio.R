@@ -381,7 +381,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       if(length(tableColNames) != length(pivotHeaders)){
         missingCols <- pivotHeaders[is.na(newIdx)]
         # add missing columns (columns with only zeros are squeezed out in gdx)
-        missingCols <- setNames(numeric(length(missingCols)), 
+        missingCols <- setNames(rep.int(NA_real_, length(missingCols)), 
                                 missingCols)
         symDF <- tibble::add_column(symDF, !!!missingCols)
         newIdx <- match(pivotHeaders, 
