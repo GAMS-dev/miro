@@ -79,6 +79,7 @@ getInputDatasetRaw <- function(id){
     data <- isolate(modelInputDataVisible[[id]]())
     if(identical(length(data), length(modelIn[[id]]$headers)) &&
        hasValidHeaderTypes(data, modelIn[[id]]$colTypes)){
+      names(data) <- names(modelInTemplate[[id]])
       return(data)
     }
     stop("No valid input data found.", call. = FALSE)
