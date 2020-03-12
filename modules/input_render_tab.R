@@ -404,8 +404,7 @@ lapply(modelInTabularData, function(sheet){
                                                                    tableContent[[i]][[col]][row]))
       replaceData(proxy[[i]], tableContent[[i]], resetPaging = FALSE, rownames = rownames)
     })
-  }else if(!modelIn[[i]]$type %in% c("slider", "dropdown", "dropdowne", "daterange", 
-                                     "date", "checkbox", "textinput", "numericinput")){
+  }else if(identical(modelIn[[i]]$type, "custom")){
     observe({
       tryCatch({
         modelInputDataVisible[[i]] <<- callModule(generateData, paste0("data-in_", i), 
