@@ -286,6 +286,9 @@ lapply(seq_along(modelIn), function(id){
                    k <- match(dataSheet, names(modelIn))
                    input[["in_" %+% k]]
                    rv[["in_" %+% k]]
+                   if(identical(modelIn[[k]]$type, "custom")){
+                     force(modelInputDataVisible[[k]]())
+                   }
                    tryCatch({
                      dataTmp <- getInputDataset(k)
                    }, error = function(e){
@@ -441,8 +444,13 @@ lapply(seq_along(modelIn), function(id){
                    }
                    if(length(rv[["in_" %+% k]]) && (modelIn[[k]]$type == "hot" && 
                                                          !is.null(input[["in_" %+% k]]) || 
-                                                         (!is.null(tableContent[[i]]) && nrow(tableContent[[i]]))) && !isEmptyInput[k]){
+                                                         (!is.null(tableContent[[k]]) && nrow(tableContent[[k]])) ||
+                                                    identical(modelIn[[k]]$type, "custom") && length(modelInputDataVisible[[k]])) 
+                      && !isEmptyInput[k]){
                      tryCatch({
+                       if(identical(modelIn[[k]]$type, "custom")){
+                         force(modelInputDataVisible[[k]]())
+                       }
                        dataTmp <- unique(getInputDataset(k, visible = TRUE)[[el[[1]][1]]])
                      }, error = function(e){
                        flog.error("Some problem occurred attempting to fetch values for slider: '%s' " %+%
