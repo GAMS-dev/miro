@@ -14,7 +14,7 @@ getInputDataset <- function(id, visible = FALSE){
     }else if(identical(modelIn[[id]]$type, "dt")){
       intermDataTmp <- tableContent[[id]]
     }else{
-      flog.error("Cannot get inoput datatset: '%s': Unsupported type: '%s'.",
+      flog.error("Cannot get input datatset: '%s': Unsupported type: '%s'.",
                  names(modelIn)[id], modelIn[[id]]$type)
       return(modelInTemplate[[id]])
     }
