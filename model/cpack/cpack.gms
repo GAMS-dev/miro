@@ -66,8 +66,8 @@ $onExternalOutput
 table circleData(circle,circleDataHeader) circle data;
 $offExternalOutput
 
-circleData('outerCircle','x')      = 0;
-circleData('outerCircle','y')      = 0;
+circleData('outerCircle','x')      = eps;
+circleData('outerCircle','y')      = eps;
 circleData('outerCircle','radius') = 1;   
 circleData(i,'x')      = x.l(i);
 circleData(i,'y')      = y.l(i);
