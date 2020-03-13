@@ -1340,7 +1340,39 @@ body{
   border: 1px solid gray;
   color: #000000;
 }
-
+.page-wrapper .btn-primary:not(:disabled):not(.disabled).active, 
+.page-wrapper .btn-primary:not(:disabled):not(.disabled):active, 
+.page-wrapper .show>.btn-primary.dropdown-toggle {
+    color: #fff;
+    background-color: #de8807;
+    border-color: #de8807;
+}
+.info-wrapper{
+  color:inherit;
+  position:relative;
+  top:-14px;
+}
+.info-wrapper-small{
+  color:inherit;
+  position:relative;
+  top:-8px;
+}
+.info-label {
+    display: inline-block;
+}
+.info-icon{
+  text-align: right;
+  font-size: 17px;
+  margin-left: 13px;
+  display: inline-block;
+}
+.info-icon-small{
+  text-align: right;
+  font-size: 13px;
+  margin-left: 5px;
+  display: inline-block;
+  color: #494d55
+}
 input[type=text], select {
   width: 50%;
   padding: 12px 20px;
