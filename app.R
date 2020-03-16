@@ -485,7 +485,6 @@ if(miroBuildonly){
   if(!is.null(requiredPackagesCR)){
     requiredPackages <- requiredPackagesCR
     source("./components/install_packages.R", local = TRUE)
-    rm(requiredPackagesCR)
   }
   credConfig <- NULL
   source("./UI/scen_tabset.R", local = TRUE)
