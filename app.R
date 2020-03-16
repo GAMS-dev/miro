@@ -60,8 +60,13 @@ if(identical(Sys.getenv("MIRO_NO_DEBUG"), "true") && !miroDeploy){
 tmpFileDir <- tempdir(check = TRUE)
 # required packages
 suppressMessages(library(R6))
-requiredPackages <- c("jsonlite", "zip", "tibble", "readr")
-
+requiredPackages <- c("jsonlite", "zip", "tibble", "readr",
+                      "shiny", "shinydashboard", "rhandsontable", 
+                      "rpivotTable")
+if(!miroBuildonly){
+  requiredPackages <- c(requiredPackages, "stringi", "processx", 
+                        "dplyr", "readxl", "writexl", "futile.logger", "tidyr")
+}
 config <- list()
 gamsSysDir <- Sys.getenv("GAMS_SYS_DIR")
 
@@ -210,6 +215,29 @@ if(is.null(errMsg)){
       assign(customRendererName, get(customRendererName), envir = .GlobalEnv)
     }
   }
+  
+  if(config$activateModules$remoteExecution){
+    requiredPackages <- c("future", "httr")
+  }else if(length(externalInputConfig) || length(datasetsRemoteExport)){
+    requiredPackages <- "httr"
+  }else{
+    requiredPackages <- character(0L)
+  }
+  if(LAUNCHCONFIGMODE){
+    requiredPackages <- c(requiredPackages, "plotly", "xts", "dygraphs", "leaflet",
+                          "leaflet.minicharts", "timevis", "DT")
+  }else{
+    requiredPackages <- c(requiredPackages, 
+                          if(identical(installPackage$plotly, TRUE)) "plotly",
+                          if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
+                          if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"),
+                          if(identical(installPackage$timevis, TRUE)) c("timevis"))
+  }
+  if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
+    requiredPackages <- c(requiredPackages, "DT")
+  }
+  source("./components/install_packages.R", local = TRUE)
+  
   if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildonly){
     errMsg <- paste(errMsg, 
                     sprintf("Can not use 'gdx' as file exchange with GAMS if gdxrrw library is not installed.\n
@@ -454,6 +482,11 @@ if(miroBuildonly){
       quit("no", status = 1) 
     }
   }
+  if(!is.null(requiredPackagesCR)){
+    requiredPackages <- requiredPackagesCR
+    source("./components/install_packages.R", local = TRUE)
+    rm(requiredPackagesCR)
+  }
   credConfig <- NULL
   source("./UI/scen_tabset.R", local = TRUE)
   source("./UI/header.R", local = TRUE)
@@ -553,10 +586,6 @@ if(is.null(errMsg)){
     })
   }
 }
-requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx", 
-                      "dplyr", "readxl", "writexl", "rhandsontable", 
-                      "rpivotTable", "futile.logger", "tidyr")
-source("./components/install_packages.R", local = TRUE)
 
 if(is.null(errMsg)){
   flog.appender(do.call(if(identical(logToConsole, TRUE)) "appender.tee" else "appender.file", 
@@ -567,32 +596,13 @@ if(is.null(errMsg)){
   flog.threshold(loggingLevel)
   flog.trace("Logging facility initialised.")
   loggerInitialised <- TRUE
+  
   if(!is.null(requiredPackagesCR)){
     requiredPackages <- requiredPackagesCR
     source("./components/install_packages.R", local = TRUE)
     rm(requiredPackagesCR)
   }
-  if(config$activateModules$remoteExecution){
-    requiredPackages <- c("future", "httr")
-  }else if(length(externalInputConfig) || length(datasetsRemoteExport)){
-    requiredPackages <- "httr"
-  }else{
-    requiredPackages <- character(0L)
-  }
-  if(LAUNCHCONFIGMODE){
-    requiredPackages <- c(requiredPackages, "plotly", "xts", "dygraphs", "leaflet",
-                          "leaflet.minicharts", "timevis", "DT")
-  }else{
-    requiredPackages <- c(requiredPackages, 
-                          if(identical(installPackage$plotly, TRUE)) "plotly",
-                          if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
-                          if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"),
-                          if(identical(installPackage$timevis, TRUE)) c("timevis"))
-  }
-  if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
-    requiredPackages <- c(requiredPackages, "DT")
-  }
-  source("./components/install_packages.R", local = TRUE)
+  
   options("DT.TOJSON_ARGS" = list(na = "string", na_as_null = TRUE))
   
   if(config$activateModules$remoteExecution && !LAUNCHCONFIGMODE){
