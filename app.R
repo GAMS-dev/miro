@@ -1,6 +1,6 @@
 #version number
 MIROVersion <- "1.0.99"
-APIVersion  <- "1"
+APIVersion  <- "2"
 MIRORDate   <- "Mar 16 2020"
 #####packages:
 # processx        #MIT
