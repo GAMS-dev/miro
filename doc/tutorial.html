@@ -74,7 +74,7 @@
                                 <h2 class="section-title">Introduction</h2>
                                 <div class="section-block">
                                     <p>In this section we will show you how a typical workflow in the development of a MIRO application can look like - from the plain GAMS model over the initialization and customization of a MIRO application up to its deployment. This tutorial is a quick guide to the most important aspects of MIRO App development. The individual aspects are explained in more detail in corresponding linked chapters (<i class="icon fa fa-external-link-alt"></i>). <p>
-                                    <p>The easiest way to develop a MIRO application from scratch is to use the new <a href="https://www.gams.com/latest/docs/T_STUDIO.html">GAMS Studio</a>. It provides build-in functionality of the most important interactions with MIRO. Learn more about this <a href="./studio.html">here</a>.</p>
+                                    <p>The easiest way to develop a MIRO application from scratch is to use the new <a href="https://www.gams.com/latest/docs/T_STUDIO.html">GAMS Studio</a>. It provides build-in functionality of the most important interactions with MIRO. Learn more about these <a href="./studio.html">here</a>.</p>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
                             <section id="tutorial-model-adjustments" class="doc-section">
@@ -84,7 +84,7 @@
                                         </code> / <code class="language-gams">$offExternalInput
                                         </code> for input data and <code class="language-gams">$onExternalOutput
                                         </code> / <code class="language-gams">$offExternalOutput
-                                        </code> for output data. These tags can be used multiple times within a model. Symbols which are not tagged won’t be visible in the web interface.</p>
+                                        </code> for output data. These tags can be used multiple times within a model. Symbols which are not tagged won’t be visible in MIRO.</p>
                                         
                                         <pre style="max-height: 300px;"><code class="language-gams">Set
    i 'canning plants' / seattle,  san-diego /
@@ -137,6 +137,8 @@ solve transport using lp minimizing z;
 
 display x.l, x.m;
 </code></pre>
+                            </div>
+                            <div class="section-block">
                                 <p>After starting MIRO for the first time, all selected symbols are available in table form. 
                                 With the basic configuration you can load data, modify it from within the interface and start or 
                                 stop a GAMS job. You also have access to the <i>log</i> and <i>listing</i> (<i>lst</i>) files of GAMS as well as 
