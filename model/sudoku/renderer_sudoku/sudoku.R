@@ -9,7 +9,7 @@ renderSudoku <- function(input, output, session, data, options = NULL, path = NU
   if(length(data) && nrow(data)){
     dataTmp     <- dataTmp[-1L]
     if(isTRUE(options$isInput)){
-      dataTmp[dataTmp == 0] <- ""
+      dataTmp[is.na(dataTmp)] <- ""
     }else{
       initialData <- which(dataTmp < 0)
       dataTmp     <- abs(dataTmp)
