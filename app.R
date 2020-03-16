@@ -215,7 +215,11 @@ if(is.null(errMsg)){
       assign(customRendererName, get(customRendererName), envir = .GlobalEnv)
     }
   }
-  
+  if(isShinyProxy || identical(Sys.getenv("MIRO_REMOTE_EXEC"), "true")){
+    config$activateModules$remoteExecution <- TRUE
+  }
+}
+if(is.null(errMsg)){
   if(config$activateModules$remoteExecution){
     requiredPackages <- c("future", "httr")
   }else if(length(externalInputConfig) || length(datasetsRemoteExport)){
@@ -259,10 +263,6 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
   if(isShinyProxy || identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
     dbConfig <- setDbConfig()
     
-    if(isShinyProxy || identical(Sys.getenv("MIRO_REMOTE_EXEC"), "true")){
-      config$activateModules$remoteExecution <- TRUE
-    }
-    
     if(length(dbConfig$errMsg)){
       errMsg <- dbConfig$errMsg
     }else{
@@ -272,9 +272,6 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
     dbConfig <- list(type = "sqlite",
                      name = file.path(miroDbDir, 
                                       "miro.sqlite3"))
-    if(identical(Sys.getenv("MIRO_REMOTE_EXEC"), "true")){
-      config$activateModules$remoteExecution <- TRUE
-    }
   }
   if(isTRUE(config$activateModules$remoteExecution)){
     useTempDir <- TRUE
@@ -491,8 +488,10 @@ if(miroBuildonly){
   source("./UI/header.R", local = TRUE)
   source("./UI/sidebar.R", local = TRUE)
   source("./UI/body.R", local = TRUE)
-  bodyCached <- list()
-  bodyCached[[config$language]][[if(isTRUE(config$activateModules$remoteExecution)) "remote" else "local"]] <- miroBody
+  tabItemListCached <- list()
+  tabItemListCached[[config$language]] <- list(gamsInter = gamsInterTabset,
+                                               output = outputTabContent,
+                                               itemList = tabItemListTmp)
   save(list = c("customRendererNames", customRendererNames, "modelIn", "modelInRaw", 
                 "modelOut", "config", "lang", "inputDsNames", "inputDsAliases", 
                 "outputTabTitles", "modelInTemplate", "scenDataTemplate", 
@@ -508,9 +507,9 @@ if(miroBuildonly){
                 "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
                 "GAMSReturnCodeMap", "dependentDatasets", "outputTabs", 
                 "installPackage", "dbSchema", "scalarInputSym", "scalarInputSymToVerify",
-                "requiredPackagesCR", "datasetsRemoteExport", "dropdownAliases", "bodyCached"), 
+                "requiredPackagesCR", "datasetsRemoteExport", "dropdownAliases", "tabItemListCached"), 
        file = rSaveFilePath)
-  rm(bodyCached)
+  
   if(identical(Sys.getenv("MIRO_COMPILE_ONLY"), "true")){
     quit("no")
   }
@@ -1775,6 +1774,7 @@ if(!is.null(errMsg)){
     source("./UI/header.R", local = TRUE)
     source("./UI/sidebar.R", local = TRUE)
     source("./UI/body.R", local = TRUE)
+    rm(tabItemListTmp, gamsInterTabset, outputTabContent)
     
     ui <- dashboardPage(header, sidebar, miroBody, skin = "black")
     

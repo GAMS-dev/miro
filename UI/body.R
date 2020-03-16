@@ -41,11 +41,105 @@ getJobsTableSkeleton <- function(id = NULL, content = NULL){
            }
   )
 }
-if(exists("bodyCached")){
-  miroBody <- bodyCached[[config$language]][[if(isTRUE(config$activateModules$remoteExecution)) 
-    "remote" else "local"]]
+buildTabItemList <- function(tabItemListTmp, gamsInterTabset, outputTabContent){
+  if(LAUNCHHCUBEMODE)
+    return(tabItemListTmp)
+  
+  return(c(tabItemListTmp, list(
+    tabItem(tabName="gamsinter",
+            if(config$activateModules$remoteExecution){
+              fluidRow(
+                tabBox(width = 12, id = "jobListPanel", 
+                       tabPanel(lang$nav$gams$boxGamsOutput$tabCurrent, value = "current",
+                                gamsInterTabset             
+                       ), 
+                       tabPanel(lang$nav$gams$boxGamsOutput$tabJobList, value = "joblist",
+                                fluidRow(
+                                  box(title = tagList(lang$nav$hcubeImport$title,
+                                                      tags$div(style = "float: right;", 
+                                                               actionButton(inputId = "refreshActiveJobs", 
+                                                                            class = "bt-icon", 
+                                                                            icon = icon("refresh"), label = NULL))),
+                                      status="warning", solidHeader = TRUE, width = 12,
+                                      genSpinner("jImport_load", absolute = FALSE),
+                                      getJobsTableSkeleton(id = "jImport_output"),
+                                      tags$div(class = "col-sm-6",
+                                               actionButton("btShowHistory", 
+                                                            lang$nav$hcubeImport$btShowHistory)
+                                      )
+                                  )
+                                )
+                       ))
+              )
+            }else{
+              gamsInterTabset
+            }
+    ),
+    tabItem(tabName = "outputData",
+            fluidRow(
+              box(title = list(
+                tags$div(id = "dirtyFlagIconO", title = lang$nav$inputScreen$dirtyFlag, class = "inline-el", 
+                         style = "display:none;", icon("exclamation-triangle")),
+                uiOutput("outputDataTitle", inline = TRUE),
+                tags$div(style = "float: right;", 
+                         HTML(paste0('<button type="button" class="btn btn-default bt-icon btRemove" 
+                                   onclick="Miro.confirmModalShow(\'', 
+                                     lang$nav$dialogRemoveScen$title, '\', \'', 
+                                     lang$nav$dialogRemoveScen$desc, '\', \'', 
+                                     lang$nav$dialogRemoveScen$cancelButton, '\', \'', 
+                                     lang$nav$dialogRemoveScen$okButton, 
+                                     '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
+                            <i class="fa fa-times"></i></button>'))
+                )
+              ), status="primary", solidHeader = TRUE, width = 12,
+              tags$div(class="scen-header",
+                       tags$div(class = "out-buttons-wrapper",
+                                if(isTRUE(config$hasSymbolLinks)){
+                                  tags$div(title = lang$nav$scen$tooltips$btSymbolLink, class = "scen-button-tt",
+                                           tags$button(class = "btn btn-default scen-button", id = "btSymbolLink",
+                                                       tags$i(class = "fa fa-share"), 
+                                                       onclick = paste0("Miro.confirmModalShow('",
+                                                                        lang$nav$dialogImport$title, "', '", 
+                                                                        lang$nav$dialogImport$descOverwriteInput, "', '", 
+                                                                        lang$nav$dialogImport$cancelButton, "', '",  
+                                                                        lang$nav$dialogImport$okButton, 
+                                                                        "', 'Shiny.setInputValue(\\'btSymbolLink\\',1",
+                                                                        ",{priority:\\'event\\'})')"))
+                                  )
+                                },
+                                if(isTRUE(config$activateModules$downloadTempFiles)){
+                                  tags$div(title = lang$nav$scen$tooltips$btDownloadTmpFiles, class = "scen-button-tt",
+                                           actionButton("btDownloadTmpFiles", icon("folder-open"), 
+                                                        class="scen-button")
+                                  )
+                                },
+                                tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
+                                         actionButton("outputTableView", icon("chart-bar"), 
+                                                      class="scen-button")
+                                )
+                       )
+              ),
+              tags$div(class="small-space"),
+              MIROtabBox(id = "outputTabset", btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs, 
+                         outputTabContent)
+              )
+            )
+    )
+  )))
 }
-if(!exists("miroBody") || is.null(miroBody)){
+gamsInterTabset  <- NULL
+outputTabContent <- NULL
+
+if(exists("tabItemListCached")){
+  tabItemListTmp <- tabItemListCached[[config$language]]
+  rm(tabItemListCached)
+  if(!is.null(tabItemListTmp)){
+    gamsInterTabset  <- tabItemListTmp[["gamsInter"]]
+    outputTabContent <- tabItemListTmp[["output"]]
+    tabItemListTmp   <- tabItemListTmp[["itemList"]]
+  }
+}
+if(!exists("tabItemListTmp") || is.null(tabItemListTmp)){
   inputTabContent <- lapply(seq_along(inputTabs), function(tabId) {
     content <- lapply(inputTabs[[tabId]], function(i){
       hasDependency <- !is.null(modelInWithDep[[names(modelIn)[[i]]]])
@@ -319,7 +413,7 @@ if(!exists("miroBody") || is.null(miroBody)){
               tags$div(class="small-space"))
     )), inputTabContent)
   }
-  tabItemList <- list(
+  tabItemListTmp <- list(
     tabItem(tabName = "inputData",
             fluidRow(
               box(title = list(
@@ -393,7 +487,7 @@ if(!exists("miroBody") || is.null(miroBody)){
     )
   )
   if(LAUNCHHCUBEMODE){
-    tabItemList <- c(tabItemList, list(
+    tabItemListTmp <- c(tabItemListTmp, list(
       tabItem(tabName = "loadResults",
               fluidRow(
                 box(title = lang$nav$hcubeLoad$title, status="primary", 
@@ -492,7 +586,7 @@ if(!exists("miroBody") || is.null(miroBody)){
       )
     ))
   }else{
-    outputTabset <- tagList(
+    gamsInterTabset <- tagList(
       fluidRow(
         box(title=lang$nav$gams$boxModelStatus$title, status="warning", solidHeader = TRUE, width=12,
             uiOutput("modelStatus"))
@@ -595,125 +689,45 @@ if(!exists("miroBody") || is.null(miroBody)){
                     tags$div(class="small-space"))
           )}))
     }
-    tabItemList <- c(tabItemList, list(
-      tabItem(tabName="gamsinter",
-              if(config$activateModules$remoteExecution){
-                fluidRow(
-                  tabBox(width = 12, id = "jobListPanel", 
-                         tabPanel(lang$nav$gams$boxGamsOutput$tabCurrent, value = "current",
-                                  outputTabset             
-                         ), 
-                         tabPanel(lang$nav$gams$boxGamsOutput$tabJobList, value = "joblist",
-                                  fluidRow(
-                                    box(title = tagList(lang$nav$hcubeImport$title,
-                                                        tags$div(style = "float: right;", 
-                                                                 actionButton(inputId = "refreshActiveJobs", 
-                                                                              class = "bt-icon", 
-                                                                              icon = icon("refresh"), label = NULL))),
-                                        status="warning", solidHeader = TRUE, width = 12,
-                                        genSpinner("jImport_load", absolute = FALSE),
-                                        getJobsTableSkeleton(id = "jImport_output"),
-                                        tags$div(class = "col-sm-6",
-                                                 actionButton("btShowHistory", 
-                                                              lang$nav$hcubeImport$btShowHistory)
-                                        )
-                                    )
-                                  )
-                         ))
-                )
-              }else{
-                outputTabset
-              }
-      ),
-      tabItem(tabName = "outputData",
-              fluidRow(
-                box(title = list(
-                  tags$div(id = "dirtyFlagIconO", title = lang$nav$inputScreen$dirtyFlag, class = "inline-el", 
-                           style = "display:none;", icon("exclamation-triangle")),
-                  uiOutput("outputDataTitle", inline = TRUE),
-                  tags$div(style = "float: right;", 
-                           HTML(paste0('<button type="button" class="btn btn-default bt-icon btRemove" 
-                                   onclick="Miro.confirmModalShow(\'', 
-                                       lang$nav$dialogRemoveScen$title, '\', \'', 
-                                       lang$nav$dialogRemoveScen$desc, '\', \'', 
-                                       lang$nav$dialogRemoveScen$cancelButton, '\', \'', 
-                                       lang$nav$dialogRemoveScen$okButton, 
-                                       '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
-                            <i class="fa fa-times"></i></button>'))
-                  )
-                ), status="primary", solidHeader = TRUE, width = 12,
-                tags$div(class="scen-header",
-                         tags$div(class = "out-buttons-wrapper",
-                                  if(isTRUE(config$hasSymbolLinks)){
-                                    tags$div(title = lang$nav$scen$tooltips$btSymbolLink, class = "scen-button-tt",
-                                             tags$button(class = "btn btn-default scen-button", id = "btSymbolLink",
-                                                         tags$i(class = "fa fa-share"), 
-                                                         onclick = paste0("Miro.confirmModalShow('",
-                                                                          lang$nav$dialogImport$title, "', '", 
-                                                                          lang$nav$dialogImport$descOverwriteInput, "', '", 
-                                                                          lang$nav$dialogImport$cancelButton, "', '",  
-                                                                          lang$nav$dialogImport$okButton, 
-                                                                          "', 'Shiny.setInputValue(\\'btSymbolLink\\',1",
-                                                                          ",{priority:\\'event\\'})')"))
-                                    )
-                                  },
-                                  if(isTRUE(config$activateModules$downloadTempFiles)){
-                                    tags$div(title = lang$nav$scen$tooltips$btDownloadTmpFiles, class = "scen-button-tt",
-                                             actionButton("btDownloadTmpFiles", icon("folder-open"), 
-                                                          class="scen-button")
-                                    )
-                                  },
-                                  tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
-                                           actionButton("outputTableView", icon("chart-bar"), 
-                                                        class="scen-button")
-                                  )
-                         )
-                ),
-                tags$div(class="small-space"),
-                MIROtabBox(id = "outputTabset", btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs, 
-                           outputTabContent)
-                )
-              )
-      )
-    ))
   }
-  miroBody <- dashboardBody({
-    tagList(
-      tags$head(
-        if(LAUNCHHCUBEMODE){
-          tagList(
-            tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML", 
-                        type = "application/javascript"),
-            tags$script(type = "text/x-mathjax-config", {
-              "MathJax.Hub.Config({
+}
+miroBody <- dashboardBody({
+  tagList(
+    tags$head(
+      if(LAUNCHHCUBEMODE){
+        tagList(
+          tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML", 
+                      type = "application/javascript"),
+          tags$script(type = "text/x-mathjax-config", {
+            "MathJax.Hub.Config({
             skipStartupTypeset: true,
             tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
           });"
-            })
-          )
-        },
-        tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
-        tags$script(src = "autoNumeric.min.js", type = "application/javascript"),
-        tags$script(src = "miro.js", type = "application/javascript"),
-        # css sheets that depend on data from config JSON file
-        # Logo ratio should be 4,6 (width/height)
-        tags$style(HTML(
-          paste0('
+          })
+        )
+      },
+      tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
+      tags$script(src = "autoNumeric.min.js", type = "application/javascript"),
+      tags$script(src = "miro.js", type = "application/javascript"),
+      # css sheets that depend on data from config JSON file
+      # Logo ratio should be 4,6 (width/height)
+      tags$style(HTML(
+        paste0('
 .main-header .logo {
   background-image: url("', 
-                 if(!identical(config$UILogo, "gams_logo.png") && 
-                    dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) 
-                   "static_", modelName, "/", config$UILogo, '") ',
-                 if(!identical(config$UILogo, "gams_logo.png") && 
-                    dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) 
-                   '!important;
+               if(!identical(config$UILogo, "gams_logo.png") && 
+                  dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) 
+                 "static_", modelName, "/", config$UILogo, '") ',
+               if(!identical(config$UILogo, "gams_logo.png") && 
+                  dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) 
+                 '!important;
   background-size: contain;
 }
 .pvtRows, .pvtCols { 
   background-color: ', config$pivottable$bgColor, '; 
 }')))),
-      if(LAUNCHHCUBEMODE){
-        HTML('<!-- Creates modal dialog for images generated by paver -->
+    if(LAUNCHHCUBEMODE){
+      HTML('<!-- Creates modal dialog for images generated by paver -->
 <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content" style="width:685px;">
@@ -730,7 +744,7 @@ if(!exists("miroBody") || is.null(miroBody)){
     </div>
 </div>
 </div>')},
-      HTML(paste0('<!-- Creates modal dialog for confirm messages -->
+    HTML(paste0('<!-- Creates modal dialog for confirm messages -->
 <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content" style="width:685px;">
@@ -746,11 +760,10 @@ if(!exists("miroBody") || is.null(miroBody)){
 </div>
 <div id="loading-screen"><div class="lds-ellipsis" style="position:relative;top:50%;left:50%">
        <div></div><div></div><div></div><div></div></div></div><div class="gmsalert gmsalert-error" id="hcubeRunning">', 
-                  lang$errMsg$hcubeLaunch$hcubeRunning, '</div>', '<div class="gmsalert gmsalert-error" id="hcubeLaunchError">', 
-                  lang$errMsg$hcubeLaunch$launchError, '</div>')),
-      do.call(tabItems, tabItemList)
-    )})
-}
+                lang$errMsg$hcubeLaunch$hcubeRunning, '</div>', '<div class="gmsalert gmsalert-error" id="hcubeLaunchError">', 
+                lang$errMsg$hcubeLaunch$launchError, '</div>')),
+    do.call(tabItems, buildTabItemList(tabItemListTmp, gamsInterTabset, outputTabContent))
+  )})
 if(dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))){
   addResourcePath(paste0("static_", modelName), paste0(currentModelDir, .Platform$file.sep, 
                                                        "static_", modelName))
