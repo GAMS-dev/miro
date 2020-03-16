@@ -458,6 +458,8 @@ if(miroBuildonly){
   source("./UI/header.R", local = TRUE)
   source("./UI/sidebar.R", local = TRUE)
   source("./UI/body.R", local = TRUE)
+  bodyCached <- list()
+  bodyCached[[config$language]][[if(isTRUE(config$activateModules$remoteExecution)) "remote" else "local"]] <- miroBody
   save(list = c("customRendererNames", customRendererNames, "modelIn", "modelInRaw", 
                 "modelOut", "config", "lang", "inputDsNames", "inputDsAliases", 
                 "outputTabTitles", "modelInTemplate", "scenDataTemplate", 
@@ -473,9 +475,9 @@ if(miroBuildonly){
                 "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
                 "GAMSReturnCodeMap", "dependentDatasets", "outputTabs", 
                 "installPackage", "dbSchema", "scalarInputSym", "scalarInputSymToVerify",
-                "requiredPackagesCR", "datasetsRemoteExport", "dropdownAliases", "body"), 
+                "requiredPackagesCR", "datasetsRemoteExport", "dropdownAliases", "bodyCached"), 
        file = rSaveFilePath)
-  
+  rm(bodyCached)
   if(identical(Sys.getenv("MIRO_COMPILE_ONLY"), "true")){
     quit("no")
   }
@@ -1764,7 +1766,7 @@ if(!is.null(errMsg)){
     source("./UI/sidebar.R", local = TRUE)
     source("./UI/body.R", local = TRUE)
     
-    ui <- dashboardPage(header, sidebar, body, skin = "black")
+    ui <- dashboardPage(header, sidebar, miroBody, skin = "black")
     
     app <- shinyApp(ui = ui, server = server)
   }

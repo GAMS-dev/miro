@@ -41,7 +41,11 @@ getJobsTableSkeleton <- function(id = NULL, content = NULL){
            }
   )
 }
-if(debugMode){
+if(exists("bodyCached")){
+  miroBody <- bodyCached[[config$language]][[if(isTRUE(config$activateModules$remoteExecution)) 
+    "remote" else "local"]]
+}
+if(!exists("miroBody") || is.null(miroBody)){
   inputTabContent <- lapply(seq_along(inputTabs), function(tabId) {
     content <- lapply(inputTabs[[tabId]], function(i){
       hasDependency <- !is.null(modelInWithDep[[names(modelIn)[[i]]]])
@@ -673,7 +677,7 @@ if(debugMode){
       )
     ))
   }
-  body <- dashboardBody({
+  miroBody <- dashboardBody({
     tagList(
       tags$head(
         if(LAUNCHHCUBEMODE){
