@@ -58,6 +58,16 @@
                     <div class="tagline">
                         <h6>Documentation Center</h6>
                     </div><!--//tagline-->
+                    <div class="container" style="box-shadow:none; padding-top: 15pt;";>
+                      <div class="row">
+                        <div class="col-sm" style="text-align: right;">
+                          <a class="btn btn-primary btn-cta" style="margin-left: 50pt;width: 125pt;padding: 12pt 0pt; -webkit-transition:unset;" href="./introduction.html">Introduction</a>
+                        </div>
+                        <div class="col-sm" style="text-align: left;">
+                          <a class="btn btn-primary btn-cta" style="margin-right: 50pt;width: 125pt;padding: 12pt 0pt; -webkit-transition:unset;" href="./installation.html">Get GAMS MIRO</a>
+                        </div>
+                      </div>
+                    </div>
                 </div>
                 <video playsinline autoplay muted loop id="headerVid" poster="assets/images/header_base_poster.png">
                   <source data-src="assets/images/header_base.mp4" type="video/mp4">
@@ -69,17 +79,7 @@
             <div class="container">
                 <h1 class="title">Welcome!</h1>
                 <div class="intro">
-                    <p>Welcome to the documentation of GAMS MIRO (Model Interface with Rapid Orchestration) for and from GAMS, the General Algebraic Modeling System.
-                    GAMS MIRO is an interactive web application for GAMS models.
-                    It is designed for people working with GAMS looking for an easy and automated way to deploy their models.
-                    Extensive visualization options support you to make decisions based on optimization.</p>
-                    <p>If you encounter any bugs or have suggestions for improvement, please contact <a href="mailto:miro@gams.com" target="_blank">miro@gams.com</a>.<br><br></p>
-                      <!--//
-                      <div class="cta-container">
-                        <a id="dl-miro-default" class="btn btn-primary btn-cta" href="" target="_blank"><i class="fas fa-cloud-download-alt"></i> GAMS MIRO (v. 0.2.3.1) for Windows</a>
-                      </div>//cta-container
-                      <!--//<a id="dl-miro-left" href="" target="_blank">Download for MacOS</a> /
-                      <a id="dl-miro-right" href="" target="_blank">Download for Linux</a>-->
+                    <p>GAMS MIRO is a deployment environment for GAMS models. It allows you to easily turn your GAMS models into fully interactive applications. MIRO is designed for people looking for an easy and automated way to make their GAMS models available to end users. Extensive visualization options support you to make decisions based on optimization. State-of-the-art technology makes it possible to run in highly scalable cloud environments. </p>
                       <div class="callout-block callout-success">
                         <div class="icon-holder" style="top:15px">
                             <i class="fas fa-thumbs-up"></i>
@@ -89,28 +89,51 @@
                           </div><!--//content-->
                       </div><!--//callout-block-->
                 </div><!--//intro-->
+                <div class="intro" style="margin: 115px auto;">
+                    <div class="row">
+                      <div class="col-sm">
+                        <img class="img-fluid" style= "max-height:350pt; display: block; padding:10px;box-shadow: 0px 0px 10px rgba(0,0,0,0.15);" src="assets/images/gallery.png" alt="GAMS MIRO gallery" />
+                      </div>
+                      <div class="col-sm" style="text-align:left;">
+                        <h3 class="block-title">GAMS MIRO gallery</h3>
+                        <p>The gallery gives you an insight into what is possible with MIRO. But also interesting GAMS models / problems to solve shall be addressed here.</p>
+                        <p>Try out the MIRO applications directly in your browser!</p>
+                        <a class="btn btn-primary btn-cta btn-gallery" style="background: #f9f9fb; color: #616670 !important;margin-top: 20px;width: 125pt;padding: 12pt 0pt; -webkit-transition:unset;" href="https://miro.gams.com">Go to gallery <i class="icon fa fa-external-link-alt" style="margin-left:8px;"></i></a>
+                      </div>
+                    </div>
+                </div>    
                 <div id="cards-wrapper" class="cards-wrapper row">
                     <div class="item item-orange col-lg-4 col-6">
                         <div class="item-inner">
                             <div class="icon-holder">
-                                <span aria-hidden="true" class="icon fas fa-chart-area"></span>
+                                <span aria-hidden="true" class="icon fas fa-handshake"></span>
                             </div><!--//icon-holder-->
-                            <h3 class="title">GAMS MIRO gallery</h3>
-                            <p class="intro">Explore MIRO applications in our gallery!</p>
-                            <a class="link" href="https://miro.gams.com"><span></span></a>
+                            <h3 class="title">Introduction</h3>
+                            <p class="intro">Learn what MIRO is all about</p>
+                            <a class="link" href="introduction.html"><span></span></a>
                         </div><!--//item-inner-->
                     </div><!--//item-->
                     <div class="item item-blue col-lg-4 col-6">
                         <div class="item-inner">
                             <div class="icon-holder">
-                                <span aria-hidden="true" class="icon fas fa-arrow-alt-circle-down"></span>
+                                <span aria-hidden="true" class="icon fas fa-glasses"></span>
                             </div><!--//icon-holder-->
-                            <h3 class="title">Installation</h3>
-                            <p class="intro">Install GAMS MIRO on Windows, MacOS or Linux</p>
-                            <a class="link" href="installation.html"><span></span></a>
+                            <h3 class="title">From model to app</h3>
+                            <p class="intro">Short tutorial about the typical workflow</p>
+                            <a class="link" href="tutorial.html"><span></span></a>
                         </div><!--//item-inner-->
                     </div><!--//item-->
                     <div class="item item-orange col-lg-4 col-6">
+                        <div class="item-inner">
+                            <div class="icon-holder">
+                                <span aria-hidden="true" class="icon fas fa-arrow-alt-circle-down"></span>
+                            </div><!--//icon-holder-->
+                            <h3 class="title">Installation</h3>
+                            <p class="intro">Get GAMS MIRO for Windows, MacOS or Linux</p>
+                            <a class="link" href="installation.html"><span></span></a>
+                        </div><!--//item-inner-->
+                    </div><!--//item-->
+                    <div class="item item-blue col-lg-4 col-6">
                         <div class="item-inner">
                             <div class="icon-holder">
                                 <i class="icon fa fa-paper-plane"></i>
@@ -120,7 +143,7 @@
                             <a class="link" href="start.html"><span></span></a>
                         </div><!--//item-inner-->
                     </div><!--//item-->
-                    <div class="item item-blue col-lg-4 col-6">
+                    <div class="item item-orange col-lg-4 col-6">
                         <div class="item-inner">
                             <div class="icon-holder">
                                 <i class="icon fas fa-edit"></i>
@@ -130,7 +153,7 @@
                             <a class="link" href="model.html"><span></span></a>
                         </div><!--//item-inner-->
                     </div><!--//item-->
-                    <div class="item item-orange col-lg-4 col-6">
+                    <div class="item item-blue col-lg-4 col-6">
                         <div class="item-inner">
                             <div class="icon-holder">
                                 <span aria-hidden="true" class="icon icon_tools"></span>
@@ -140,7 +163,7 @@
                             <a class="link" href="customize.html"><span></span></a>
                         </div><!--//item-inner-->
                     </div><!--//item-->
-                    <div class="item item-blue col-lg-4 col-6">
+                    <div class="item item-orange col-lg-4 col-6">
                         <div class="item-inner">
                             <div class="icon-holder">
                                 <span aria-hidden="true" class="icon fas fa-box-open"</span>
@@ -150,7 +173,7 @@
                             <a class="link" href="deployment.html"><span></span></a>
                         </div><!--//item-inner-->
                     </div><!--//item-->
-                    <div class="item item-orange col-lg-4 col-6">
+                    <div class="item item-blue col-lg-4 col-6">
                         <div class="item-inner">
                             <div class="icon-holder">
                                 <span aria-hidden="true" class="icon fas fa-cube"></span>
@@ -160,7 +183,7 @@
                             <a class="link" href="hypercube.html"><span></span></a>
                         </div><!--//item-inner-->
                     </div><!--//item-->
-                    <div class="item item-blue col-lg-4 col-6">
+                    <div class="item item-orange col-lg-4 col-6">
                         <div class="item-inner">
                             <div class="icon-holder">
                                 <span aria-hidden="true" class="icon fas fa-cloud"</span>
@@ -168,6 +191,16 @@
                             <h3 class="title">GAMS MIRO Server</h3>
                             <p class="intro">Full flexibility through the cloud and remote execution</p>
                             <a class="link" href="server.html"><span></span></a>
+                        </div><!--//item-inner-->
+                    </div><!--//item-->
+                    <div class="item item-blue col-lg-4 col-6">
+                        <div class="item-inner">
+                            <div class="icon-holder">
+                                <span aria-hidden="true" class="icon fas fa-file-code"</span>
+                            </div><!--//icon-holder-->
+                            <h3 class="title">GAMS Studio integration</h3>
+                            <p class="intro">The easiest way to develop a MIRO application</p>
+                            <a class="link" href="studio.html"><span></span></a>
                         </div><!--//item-inner-->
                     </div><!--//item-->
                     <div class="item item-orange col-lg-4 col-6">
