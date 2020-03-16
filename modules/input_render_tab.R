@@ -14,7 +14,7 @@ getInputDataset <- function(id, visible = FALSE){
     }else if(identical(modelIn[[id]]$type, "dt")){
       intermDataTmp <- tableContent[[id]]
     }else{
-      flog.error("Cannot get inoput datatset: '%s': Unsupported type: '%s'.",
+      flog.error("Cannot get input datatset: '%s': Unsupported type: '%s'.",
                  names(modelIn)[id], modelIn[[id]]$type)
       return(modelInTemplate[[id]])
     }
@@ -79,6 +79,7 @@ getInputDatasetRaw <- function(id){
     data <- isolate(modelInputDataVisible[[id]]())
     if(identical(length(data), length(modelIn[[id]]$headers)) &&
        hasValidHeaderTypes(data, modelIn[[id]]$colTypes)){
+      names(data) <- names(modelInTemplate[[id]])
       return(data)
     }
     stop("No valid input data found.", call. = FALSE)
@@ -319,11 +320,13 @@ lapply(modelInTabularData, function(sheet){
       if(isTRUE(modelIn[[i]]$readonly) || length(colsReadonly) > 0L){
         isRo <- TRUE
       }
+      
       ht <- rhandsontable(tabData, height = hotOptions$height, 
                           colHeaders = colnames, useTypes = !isPivoted,
                           width = hotOptions$width, search = hotOptions$search, 
                           readOnly = if(isTRUE(modelIn[[i]]$readonly)) TRUE else NULL, 
-                          selectCallback = TRUE, digits = NA)
+                          selectCallback = TRUE, digits = NA, 
+                          naAsNull = isPivoted || isTRUE(attr(modelInTemplate[[i]], "isTable")))
       ht <- hot_table(ht, contextMenu = hotOptions$contextMenu$enabled, 
                       highlightCol = hotOptions$highlightCol, 
                       highlightRow = hotOptions$highlightRow,
@@ -401,8 +404,7 @@ lapply(modelInTabularData, function(sheet){
                                                                    tableContent[[i]][[col]][row]))
       replaceData(proxy[[i]], tableContent[[i]], resetPaging = FALSE, rownames = rownames)
     })
-  }else if(!modelIn[[i]]$type %in% c("slider", "dropdown", "dropdowne", "daterange", 
-                                     "date", "checkbox", "textinput", "numericinput")){
+  }else if(identical(modelIn[[i]]$type, "custom")){
     observe({
       tryCatch({
         modelInputDataVisible[[i]] <<- callModule(generateData, paste0("data-in_", i), 

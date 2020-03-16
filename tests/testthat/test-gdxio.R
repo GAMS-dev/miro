@@ -21,7 +21,7 @@ test_that("Reading of parameter works", {
 test_that("Reading of table with squeezed out column works", {
   expect_identical(gdxio$rgdx(file.path(getwd(), "data/test_gdxio.gdx"), "squeezed_out"), 
                    tibble::tibble('1' = c("seattle", "san-diego"), 'asd' = c(1, 1),
-                                  'def' = c(0, 0)))
+                                  'def' = c(NA_real_, NA_real_)))
   data <- list(tibble::tibble('1' = c("seattle", "san-diego"), 'asd' = c(0, 0),
                               'def' = c(1, 2)))
   names(data) <- "squeezed_out"

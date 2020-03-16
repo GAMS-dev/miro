@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "0.9.93"
+MIROVersion <- "1.0.99"
 APIVersion  <- "1"
-MIRORDate   <- "Mar 09 2020"
+MIRORDate   <- "Mar 16 2020"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -60,8 +60,13 @@ if(identical(Sys.getenv("MIRO_NO_DEBUG"), "true") && !miroDeploy){
 tmpFileDir <- tempdir(check = TRUE)
 # required packages
 suppressMessages(library(R6))
-requiredPackages <- c("jsonlite", "zip", "tibble", "readr")
-
+requiredPackages <- c("jsonlite", "zip", "tibble", "readr",
+                      "shiny", "shinydashboard", "rhandsontable", 
+                      "rpivotTable")
+if(!miroBuildonly){
+  requiredPackages <- c(requiredPackages, "stringi", "processx", 
+                        "dplyr", "readxl", "writexl", "futile.logger", "tidyr")
+}
 config <- list()
 gamsSysDir <- Sys.getenv("GAMS_SYS_DIR")
 
@@ -210,6 +215,29 @@ if(is.null(errMsg)){
       assign(customRendererName, get(customRendererName), envir = .GlobalEnv)
     }
   }
+  
+  if(config$activateModules$remoteExecution){
+    requiredPackages <- c("future", "httr")
+  }else if(length(externalInputConfig) || length(datasetsRemoteExport)){
+    requiredPackages <- "httr"
+  }else{
+    requiredPackages <- character(0L)
+  }
+  if(LAUNCHCONFIGMODE){
+    requiredPackages <- c(requiredPackages, "plotly", "xts", "dygraphs", "leaflet",
+                          "leaflet.minicharts", "timevis", "DT")
+  }else{
+    requiredPackages <- c(requiredPackages, 
+                          if(identical(installPackage$plotly, TRUE)) "plotly",
+                          if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
+                          if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"),
+                          if(identical(installPackage$timevis, TRUE)) c("timevis"))
+  }
+  if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
+    requiredPackages <- c(requiredPackages, "DT")
+  }
+  source("./components/install_packages.R", local = TRUE)
+  
   if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildonly){
     errMsg <- paste(errMsg, 
                     sprintf("Can not use 'gdx' as file exchange with GAMS if gdxrrw library is not installed.\n
@@ -427,6 +455,22 @@ if(is.null(errMsg) && debugMode){
   customRendererNames <- listOfCustomRenderers$get()
   rm(listOfCustomRenderers)
 }
+aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
+                          "Release Date: ", MIRORDate, "<br/>", 
+                          "Copyright (c) 2020 GAMS Software GmbH &lt;support@gams.com&gt;<br/>",
+                          "Copyright (c) 2020 GAMS Development Corp. &lt;support@gams.com&gt;<br/><br/>",
+                          "This program is free software: you can redistribute it and/or modify ",
+                          "it under the terms of version 3 of the GNU General Public License as published by ",
+                          "the Free Software Foundation.<br/><br/>",
+                          "This program is distributed in the hope that it will be useful, ", 
+                          "but WITHOUT ANY WARRANTY; without even the implied warranty of ",
+                          "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the ",
+                          "GNU General Public License for more details.<br/><br/>",
+                          "You should have received a copy of the GNU General Public License ",
+                          "along with this program. If not, see ",
+                          "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
+                          "For more information about third-party software included in MIRO, see ",
+                          "<a href=\\'http://www.gams.com/miro/license.html\\' target=\\'_blank\\'>here</a>.")
 if(miroBuildonly){
   if(!is.null(errMsg)){
     warning(errMsg)
@@ -438,6 +482,18 @@ if(miroBuildonly){
       quit("no", status = 1) 
     }
   }
+  if(!is.null(requiredPackagesCR)){
+    requiredPackages <- requiredPackagesCR
+    source("./components/install_packages.R", local = TRUE)
+    rm(requiredPackagesCR)
+  }
+  credConfig <- NULL
+  source("./UI/scen_tabset.R", local = TRUE)
+  source("./UI/header.R", local = TRUE)
+  source("./UI/sidebar.R", local = TRUE)
+  source("./UI/body.R", local = TRUE)
+  bodyCached <- list()
+  bodyCached[[config$language]][[if(isTRUE(config$activateModules$remoteExecution)) "remote" else "local"]] <- miroBody
   save(list = c("customRendererNames", customRendererNames, "modelIn", "modelInRaw", 
                 "modelOut", "config", "lang", "inputDsNames", "inputDsAliases", 
                 "outputTabTitles", "modelInTemplate", "scenDataTemplate", 
@@ -453,8 +509,9 @@ if(miroBuildonly){
                 "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
                 "GAMSReturnCodeMap", "dependentDatasets", "outputTabs", 
                 "installPackage", "dbSchema", "scalarInputSym", "scalarInputSymToVerify",
-                "requiredPackagesCR", "datasetsRemoteExport", "dropdownAliases"), 
+                "requiredPackagesCR", "datasetsRemoteExport", "dropdownAliases", "bodyCached"), 
        file = rSaveFilePath)
+  rm(bodyCached)
   if(identical(Sys.getenv("MIRO_COMPILE_ONLY"), "true")){
     quit("no")
   }
@@ -529,10 +586,6 @@ if(is.null(errMsg)){
     })
   }
 }
-requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx", 
-                      "dplyr", "readxl", "writexl", "rhandsontable", 
-                      "rpivotTable", "futile.logger", "tidyr")
-source("./components/install_packages.R", local = TRUE)
 
 if(is.null(errMsg)){
   flog.appender(do.call(if(identical(logToConsole, TRUE)) "appender.tee" else "appender.file", 
@@ -543,33 +596,14 @@ if(is.null(errMsg)){
   flog.threshold(loggingLevel)
   flog.trace("Logging facility initialised.")
   loggerInitialised <- TRUE
+  
   if(!is.null(requiredPackagesCR)){
     requiredPackages <- requiredPackagesCR
     source("./components/install_packages.R", local = TRUE)
     rm(requiredPackagesCR)
   }
-  if(config$activateModules$remoteExecution){
-    requiredPackages <- c("future", "httr")
-  }else if(length(externalInputConfig) || length(datasetsRemoteExport)){
-    requiredPackages <- "httr"
-  }else{
-    requiredPackages <- character(0L)
-  }
-  if(LAUNCHCONFIGMODE){
-    requiredPackages <- c(requiredPackages, "plotly", "xts", "dygraphs", "leaflet",
-                          "leaflet.minicharts", "timevis", "DT")
-  }else{
-    requiredPackages <- c(requiredPackages, 
-                          if(identical(installPackage$plotly, TRUE)) "plotly",
-                          if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
-                          if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"),
-                          if(identical(installPackage$timevis, TRUE)) c("timevis"))
-  }
-  if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
-    requiredPackages <- c(requiredPackages, "DT")
-  }
-  source("./components/install_packages.R", local = TRUE)
-  options("DT.TOJSON_ARGS" = list(na = "string"))
+  
+  options("DT.TOJSON_ARGS" = list(na = "string", na_as_null = TRUE))
   
   if(config$activateModules$remoteExecution && !LAUNCHCONFIGMODE){
     plan(multiprocess)
@@ -681,23 +715,6 @@ Those tables are: '%s'.\nError message: '%s'.",
     }
   })
 }
-
-aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
-                          "Release Date: ", MIRORDate, "<br/>", 
-                          "Copyright (c) 2020 GAMS Software GmbH &lt;support@gams.com&gt;<br/>",
-                          "Copyright (c) 2020 GAMS Development Corp. &lt;support@gams.com&gt;<br/><br/>",
-                          "This program is free software: you can redistribute it and/or modify ",
-                          "it under the terms of version 3 of the GNU General Public License as published by ",
-                          "the Free Software Foundation.<br/><br/>",
-                          "This program is distributed in the hope that it will be useful, ", 
-                          "but WITHOUT ANY WARRANTY; without even the implied warranty of ",
-                          "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the ",
-                          "GNU General Public License for more details.<br/><br/>",
-                          "You should have received a copy of the GNU General Public License ",
-                          "along with this program. If not, see ",
-                          "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
-                          "For more information about third-party software included in MIRO, see ",
-                          "<a href=\\'http://www.gams.com/miro/license.html\\' target=\\'_blank\\'>here</a>.")
 
 if(is.null(errMsg)){
   tryCatch({
@@ -1760,7 +1777,7 @@ if(!is.null(errMsg)){
     source("./UI/sidebar.R", local = TRUE)
     source("./UI/body.R", local = TRUE)
     
-    ui <- dashboardPage(header, sidebar, body, skin = "black")
+    ui <- dashboardPage(header, sidebar, miroBody, skin = "black")
     
     app <- shinyApp(ui = ui, server = server)
   }
