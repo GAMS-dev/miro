@@ -454,6 +454,7 @@ if(miroBuildonly){
       quit("no", status = 1) 
     }
   }
+  credConfig <- NULL
   source("./UI/scen_tabset.R", local = TRUE)
   source("./UI/header.R", local = TRUE)
   source("./UI/sidebar.R", local = TRUE)
