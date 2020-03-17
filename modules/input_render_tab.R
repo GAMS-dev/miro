@@ -405,12 +405,19 @@ lapply(modelInTabularData, function(sheet){
       replaceData(proxy[[i]], tableContent[[i]], resetPaging = FALSE, rownames = rownames)
     })
   }else if(identical(modelIn[[i]]$type, "custom")){
+    rendererEnv <- new.env(parent = emptyenv())
     observe({
       tryCatch({
+        for(el in ls(envir = rendererEnv)){
+          if("Observer" %in% class(rendererEnv[[el]])){
+            rendererEnv[[el]]$destroy()
+          }
+        }
         modelInputDataVisible[[i]] <<- callModule(generateData, paste0("data-in_", i), 
                                                   type = modelIn[[i]]$rendererName, 
                                                   data = dataModelIn[[i]](),
-                                                  customOptions = modelIn[[i]]$options)
+                                                  customOptions = modelIn[[i]]$options,
+                                                  rendererEnv = rendererEnv)
       }, error = function(e){
         flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
                    modelInAlias[[i]], e)

@@ -1072,7 +1072,7 @@ $offExternalInput
   ns &#x3C;- NS(id)
 }
 
-render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL){
+render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, ...){
   force(data)
   return(reactive(data))
 }
@@ -1100,7 +1100,7 @@ sudokuOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
   rHandsontableOutput(ns('sudoku'))
 }
 
-renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path = NULL){
+renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, ...){
   force(data)
   output$sudoku &#x3C;- renderRHandsontable(rhandsontable(data, 
                                                      readOnly = !isTRUE(options$isInput), 
@@ -1117,6 +1117,7 @@ renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path
     }
   }</code></pre>
   <p>The full version of the custom renderer described here as well as the corresponding GAMS model <i>Sudoku</i> can be found in the MIRO model library.</p>
+  <p>If you read until this point, you might have noticed that there is a parameter in the renderer function that we did not talk about yet: <kbd>rendererEnv</kbd>. This parameter is a static R environment that is persistent across different calls to the renderer function. Each time the input data of your widget is updated (e.g. due to the user loading a new scenario from the database), your renderer function is called. One case where this can become problematic is when you make use of <a href="https://shiny.rstudio.com/reference/shiny/0.14/observe.html" target="__blank">observers</a> in your renderer functions. Every time your renderer function is called, all observers are re-registered, which leads to duplicated observers. To avoid this problem, you must ensure that observers are cleaned up when they are no longer needed. You do this by assigning them to the <kbd>rendererEnv</kbd> environment. An example where this is extensively used is the model <kbd>tsp</kbd>, which can be found in the MIRO model library.</p>
                                 </div>
                             </section>
                             <section id="jsonfiles" class="doc-section">
@@ -1392,7 +1393,7 @@ renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path
   ns &#x3C;- NS(id)
 }
 
-render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL){
+render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL, ...){
 }
                                         </code></pre>
                                     </div><!--//code-block-->
@@ -1402,7 +1403,7 @@ render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, session, data, op
                                         <pre><code class="language-r">transportMapOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
   ns &#x3C;- NS(id)
 }
-renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL){
+renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, ...){
 }</code></pre>
                                     </div><!--//code-block-->
                                     <div class="callout-block callout-warning">
@@ -1430,7 +1431,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
   ns &#x3C;- NS(id)
   leafletOutput(ns(&#x22;map&#x22;), height = height)
 }
-renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL){
+renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, ...){
   output$map &#x3C;- renderLeaflet(leaflet(data))
 }</code></pre>
                                       </div><!--//code-block-->
@@ -1464,7 +1465,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
     leafletOutput(ns(&#x22;map&#x22;))
   )
 }
-renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL){
+renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, ...){
   output$title &#x3C;- renderText(options$title)
   output$map   &#x3C;- renderLeaflet(leaflet(data) %&#x3E;%
                                   addTiles() %&#x3E;%

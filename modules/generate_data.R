@@ -15,7 +15,7 @@ generateDataUI <- function(id, type, height= NULL, customOptions = NULL){
 }
 
 generateData <- function(input, output, session, data, type, 
-                         configData = NULL, customOptions = NULL){
+                         configData = NULL, customOptions = NULL, rendererEnv = NULL){
   typeCustom <- type
   
   tryCatch({
@@ -27,7 +27,7 @@ generateData <- function(input, output, session, data, type,
   })
   tryCatch({
     return(callModule(customGenerator, "custom", as_tibble(data), options = customOptions, 
-               path = customRendererDirs[[2L]]))
+               path = customRendererDirs[[2L]], rendererEnv = rendererEnv))
   }, error = function(e){
     stop(sprintf("An error occured in the custom generator function: '%s'. Error message: %s.", typeCustom, e), call. = FALSE)
   })

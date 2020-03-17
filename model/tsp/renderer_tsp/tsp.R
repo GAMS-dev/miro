@@ -3,7 +3,7 @@ tspOutput <- function(id, height, options, path){
   leafletOutput(ns("tsp_input"), width = "100%", height = 700)
 }
 
-renderTsp <- function(input, output, session, data, options = NULL, path = NULL){
+renderTsp <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, ...){
   force(data)
   markerCnt <- 1L
   
@@ -28,7 +28,7 @@ renderTsp <- function(input, output, session, data, options = NULL, path = NULL)
   rv <- reactiveValues(markerPositions = dataTmp)
   init <- FALSE
   
-  observe({
+  rendererEnv$markerClick <- observe({
     input$tsp_input_marker_click
     if(!init){
       return()
@@ -40,7 +40,7 @@ renderTsp <- function(input, output, session, data, options = NULL, path = NULL)
         removeMarker(markerId)
     })
   })
-  observe({
+  rendererEnv$markerDragend <- observe({
     input$tsp_input_marker_dragend
     if(!init){
       return()
@@ -52,7 +52,7 @@ renderTsp <- function(input, output, session, data, options = NULL, path = NULL)
     })
   })
   
-  observe({
+  rendererEnv$mapClick <- observe({
     input$tsp_input_click
     if(!init){
       init <<- TRUE
