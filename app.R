@@ -60,11 +60,10 @@ if(identical(Sys.getenv("MIRO_NO_DEBUG"), "true") && !miroDeploy){
 tmpFileDir <- tempdir(check = TRUE)
 # required packages
 suppressMessages(library(R6))
-requiredPackages <- c("jsonlite", "zip", "tibble", "readr",
-                      "shiny", "shinydashboard", "rhandsontable", 
-                      "rpivotTable")
+requiredPackages <- c("jsonlite", "zip", "tibble", "readr")
 if(!miroBuildonly){
-  requiredPackages <- c(requiredPackages, "stringi", "processx", 
+  requiredPackages <- c(requiredPackages, "shiny", "shinydashboard", "rhandsontable", 
+                        "rpivotTable", "stringi", "processx", 
                         "dplyr", "readxl", "writexl", "futile.logger", "tidyr")
 }
 config <- list()
@@ -215,29 +214,11 @@ if(is.null(errMsg)){
       assign(customRendererName, get(customRendererName), envir = .GlobalEnv)
     }
   }
-  
-  if(config$activateModules$remoteExecution){
-    requiredPackages <- c("future", "httr")
-  }else if(length(externalInputConfig) || length(datasetsRemoteExport)){
-    requiredPackages <- "httr"
-  }else{
-    requiredPackages <- character(0L)
+  if(isShinyProxy || identical(Sys.getenv("MIRO_REMOTE_EXEC"), "true")){
+    config$activateModules$remoteExecution <- TRUE
   }
-  if(LAUNCHCONFIGMODE){
-    requiredPackages <- c(requiredPackages, "plotly", "xts", "dygraphs", "leaflet",
-                          "leaflet.minicharts", "timevis", "DT")
-  }else{
-    requiredPackages <- c(requiredPackages, 
-                          if(identical(installPackage$plotly, TRUE)) "plotly",
-                          if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
-                          if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"),
-                          if(identical(installPackage$timevis, TRUE)) c("timevis"))
-  }
-  if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
-    requiredPackages <- c(requiredPackages, "DT")
-  }
-  source("./components/install_packages.R", local = TRUE)
-  
+}
+if(is.null(errMsg)){
   if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildonly){
     errMsg <- paste(errMsg, 
                     sprintf("Can not use 'gdx' as file exchange with GAMS if gdxrrw library is not installed.\n
@@ -259,10 +240,6 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
   if(isShinyProxy || identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
     dbConfig <- setDbConfig()
     
-    if(isShinyProxy || identical(Sys.getenv("MIRO_REMOTE_EXEC"), "true")){
-      config$activateModules$remoteExecution <- TRUE
-    }
-    
     if(length(dbConfig$errMsg)){
       errMsg <- dbConfig$errMsg
     }else{
@@ -272,9 +249,6 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
     dbConfig <- list(type = "sqlite",
                      name = file.path(miroDbDir, 
                                       "miro.sqlite3"))
-    if(identical(Sys.getenv("MIRO_REMOTE_EXEC"), "true")){
-      config$activateModules$remoteExecution <- TRUE
-    }
   }
   if(isTRUE(config$activateModules$remoteExecution)){
     useTempDir <- TRUE
@@ -482,18 +456,7 @@ if(miroBuildonly){
       quit("no", status = 1) 
     }
   }
-  if(!is.null(requiredPackagesCR)){
-    requiredPackages <- requiredPackagesCR
-    source("./components/install_packages.R", local = TRUE)
-    rm(requiredPackagesCR)
-  }
-  credConfig <- NULL
-  source("./UI/scen_tabset.R", local = TRUE)
-  source("./UI/header.R", local = TRUE)
-  source("./UI/sidebar.R", local = TRUE)
-  source("./UI/body.R", local = TRUE)
-  bodyCached <- list()
-  bodyCached[[config$language]][[if(isTRUE(config$activateModules$remoteExecution)) "remote" else "local"]] <- miroBody
+  
   save(list = c("customRendererNames", customRendererNames, "modelIn", "modelInRaw", 
                 "modelOut", "config", "lang", "inputDsNames", "inputDsAliases", 
                 "outputTabTitles", "modelInTemplate", "scenDataTemplate", 
@@ -509,9 +472,9 @@ if(miroBuildonly){
                 "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
                 "GAMSReturnCodeMap", "dependentDatasets", "outputTabs", 
                 "installPackage", "dbSchema", "scalarInputSym", "scalarInputSymToVerify",
-                "requiredPackagesCR", "datasetsRemoteExport", "dropdownAliases", "bodyCached"), 
+                "requiredPackagesCR", "datasetsRemoteExport", "dropdownAliases"), 
        file = rSaveFilePath)
-  rm(bodyCached)
+  
   if(identical(Sys.getenv("MIRO_COMPILE_ONLY"), "true")){
     quit("no")
   }
@@ -597,11 +560,32 @@ if(is.null(errMsg)){
   flog.trace("Logging facility initialised.")
   loggerInitialised <- TRUE
   
+  if(config$activateModules$remoteExecution){
+    requiredPackages <- c("future", "httr")
+  }else if(length(externalInputConfig) || length(datasetsRemoteExport)){
+    requiredPackages <- "httr"
+  }else{
+    requiredPackages <- character(0L)
+  }
+  if(LAUNCHCONFIGMODE){
+    requiredPackages <- c(requiredPackages, "plotly", "xts", "dygraphs", "leaflet",
+                          "leaflet.minicharts", "timevis", "DT")
+  }else{
+    requiredPackages <- c(requiredPackages, 
+                          if(identical(installPackage$plotly, TRUE)) "plotly",
+                          if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
+                          if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"),
+                          if(identical(installPackage$timevis, TRUE)) c("timevis"))
+  }
+  if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
+    requiredPackages <- c(requiredPackages, "DT")
+  }
+  
   if(!is.null(requiredPackagesCR)){
-    requiredPackages <- requiredPackagesCR
-    source("./components/install_packages.R", local = TRUE)
+    requiredPackages <- c(requiredPackages, requiredPackagesCR)
     rm(requiredPackagesCR)
   }
+  source("./components/install_packages.R", local = TRUE)
   
   options("DT.TOJSON_ARGS" = list(na = "string", na_as_null = TRUE))
   

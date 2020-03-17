@@ -360,8 +360,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                 xts_data <- xts(xts_data, order.by = xts_idx)
               }
             }
-            p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, 
-                          ylab = options$yaxis$title,  periodicity = NULL, group = NULL, 
+            p <<- dygraph(xts_data, main = options$title, periodicity = NULL, group = NULL, 
                           elementId = NULL)
           }else{
             idxVector <- match(tolower(names(options$ydata)), tolower(names(data)))

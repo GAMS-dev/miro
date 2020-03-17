@@ -76,13 +76,11 @@
         },
         "xaxis": {
           "name": "x",
-          "label": "date",
-          "showgrid": true
+          "label": "date"
         },
         "yaxis": {
           "name": "y",
-          "label": "value",
-          "showgrid": true
+          "label": "value"
         }
       }
     },
@@ -247,13 +245,11 @@
         },
         "xaxis": {
           "name": "x",
-          "label": "date",
-          "showgrid": true
+          "label": "date"
         },
         "yaxis": {
           "name": "y",
-          "label": "value",
-          "showgrid": true
+          "label": "value"
         },
         "dyEvent": {
           "lastdaytraining": {
