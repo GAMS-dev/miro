@@ -3,7 +3,7 @@ sudokuOutput <- function(id, height, options, path){
    rHandsontableOutput(ns("sudoku"))
 }
 
-renderSudoku <- function(input, output, session, data, options = NULL, path = NULL){
+renderSudoku <- function(input, output, session, data, options = NULL, path = NULL, ...){
   force(data)
   dataTmp <- data
   if(length(data) && nrow(data)){
