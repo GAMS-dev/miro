@@ -1226,6 +1226,9 @@ observeEvent(input$outType, {
 observeEvent(input$x_title, {
   rv$graphConfig$graph$xaxis$title <<- input$x_title
 })
+observeEvent(input$x_label, {
+  rv$graphConfig$graph$xaxis$label <<- input$x_label
+})
 observeEvent(input$x_categoryorder, {
   rv$graphConfig$graph$xaxis$categoryorder <<- input$x_categoryorder
 })
@@ -1271,6 +1274,9 @@ observeEvent(input$x_rangeto, {
 })
 observeEvent(input$y_title, {
   rv$graphConfig$graph$yaxis$title <<- input$y_title
+})
+observeEvent(input$y_label, {
+  rv$graphConfig$graph$yaxis$label <<- input$y_label
 })
 observeEvent(input$y_categoryorder, {
   rv$graphConfig$graph$yaxis$categoryorder <<- input$y_categoryorder
@@ -1814,9 +1820,13 @@ getBarOptions  <- reactive({
                          choices = c("_", scalarIndices))
              ))
 })
-getAxisOptions <- function(id, title, labelOnly = FALSE){
+getAxisOptions <- function(id, title, labelOnly = FALSE, dygraphs = FALSE){
   isolate({
-    rv$graphConfig$graph[[id %+% "axis"]]$title <<- title
+    if(dygraphs){
+      rv$graphConfig$graph[[id %+% "axis"]]$label <<- title
+    }else{
+      rv$graphConfig$graph[[id %+% "axis"]]$title <<- title
+    }
     if(!labelOnly){
       rv$graphConfig$graph[[id %+% "axis"]]$showgrid <<- FALSE
       rv$graphConfig$graph[[id %+% "axis"]]$zeroline <<- FALSE
@@ -1827,6 +1837,11 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
     }
   })
   if(labelOnly){
+    if(dygraphs){
+      return(tagList(
+        textInput(id %+% "_label", sprintf("Axis label (%s axis)", id), value = title)
+      ))
+    }
     return(tagList(
       textInput(id %+% "_title", sprintf("Axis label (%s axis)", id), value = title)
     ))
@@ -2122,11 +2137,11 @@ getDygraphsOptions <- reactive({
     tags$div(class="cat-body cat-body-27",
              selectInput("chart_xdata", lang$adminMode$graphs$dygraphsOptions$xdata,
                          choices = indices),
-             getAxisOptions("x", names(indices)[1], labelOnly = TRUE)),
+             getAxisOptions("x", names(indices)[1], labelOnly = TRUE, dygraphs = TRUE)),
     tags$div(class="cat-body cat-body-28", style="display:none;",
              createArray(session, "dy_ydata", lang$adminMode$graphs$dygraphsOptions$ydata,
                          class_outer="array-wrapper-outer-graph", hr = FALSE),
-             getAxisOptions("y", names(scalarIndices)[1], labelOnly = TRUE)),
+             getAxisOptions("y", names(scalarIndices)[1], labelOnly = TRUE, dygraphs = TRUE)),
     tags$div(class="cat-body cat-body-29", style="display:none;",
              selectInput("chart_color", tags$div(lang$adminMode$graphs$dygraphsOptions$color, tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#group-domain", 
                                                                                             tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),

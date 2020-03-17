@@ -75,12 +75,10 @@
           }
         },
         "xaxis": {
-          "title": "date",
-          "showgrid": true
+          "label": "Date"
         },
         "yaxis": {
-          "title": "value",
-          "showgrid": true
+          "label": "Price"
         }
       }
     },
@@ -159,10 +157,10 @@
           }
         },
         "xaxis": {
-          "title": "Date"
+          "label": "Date"
         },
         "yaxis": {
-          "title": "Price"
+          "label": "Price"
         }
       }
     },
@@ -242,12 +240,10 @@
           }
         },
         "xaxis": {
-          "title": "date",
-          "showgrid": true
+          "label": "Date"
         },
         "yaxis": {
-          "title": "value",
-          "showgrid": true
+          "label": "Price"
         },
         "dyEvent": {
           "lastdaytraining": {

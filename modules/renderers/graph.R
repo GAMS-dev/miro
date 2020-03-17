@@ -344,8 +344,8 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                 xts_data <- xts(xts_data, order.by = xts_idx)
               }
             }
-            p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, 
-                          ylab = options$yaxis$title,  periodicity = NULL, group = NULL, 
+            p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$label, 
+                          ylab = options$yaxis$label,  periodicity = NULL, group = NULL, 
                           elementId = NULL)
           }else{
             idxVector <- match(tolower(names(options$ydata)), tolower(names(data)))
@@ -365,8 +365,8 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
             
             xts_data <- xts(data[, idxVector], order.by = dateCol)
             
-            p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, 
-                          ylab = options$yaxis$title,  periodicity = NULL, group = NULL, elementId = NULL)
+            p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$label, 
+                          ylab = options$yaxis$label,  periodicity = NULL, group = NULL, elementId = NULL)
             p <<- dySeries(p, name = names(options$ydata)[[1]], label = options$ydata[[1]]$label, 
                            color = options$ydata[[1]]$color, axis = "y",
                            stepPlot = options$ydata[[1]]$stepPlot, stemPlot = options$ydata[[1]]$stemPlot, 
