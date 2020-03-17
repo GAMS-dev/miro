@@ -11,7 +11,7 @@ curveOutput <- function(id, height = NULL, options = NULL, path = NULL){
     )
 }
 
-renderCurve <- function(input, output, session, data, options = NULL, path = NULL){ 
+renderCurve <- function(input, output, session, data, options = NULL, path = NULL, ...){ 
     #renderer 
     #output$title <- renderText(paste0(options$title))
 
