@@ -1325,15 +1325,13 @@ if(is.null(errMsg)){
   }, logical(1L), USE.NAMES = FALSE)
   if(length(config$overwriteSheetOrder$output) && !LAUNCHCONFIGMODE){
     namesModelOutToDisplay <- names(modelOut)[modelOutToDisplay]
-    outputSheetIdsToDisplay <- match(config$overwriteSheetOrder$output, 
-                                     namesModelOutToDisplay)
-    outputSheetIdsToDisplay <- outputSheetIdsToDisplay[!is.na(outputSheetIdsToDisplay)]
-    if(length(modelOut) > length(outputSheetIdsToDisplay)){
-      outputSheetIdsToDisplay <- c(outputSheetIdsToDisplay, 
-                                   match(namesModelOutToDisplay[!namesModelOutToDisplay %in% 
-                                                                  config$overwriteSheetOrder$output], 
-                                         namesModelOutToDisplay))
-    }
+    overwriteSheetOrderCleaned <- config$overwriteSheetOrder$output[config$overwriteSheetOrder$output %in% 
+                                                                      namesModelOutToDisplay]
+    outputSheetIdsToDisplay <- c(match(c(overwriteSheetOrderCleaned,
+                                         namesModelOutToDisplay[!namesModelOutToDisplay %in% 
+                                                                  overwriteSheetOrderCleaned]),
+                                       names(modelOut)))
+    rm(overwriteSheetOrderCleaned)
   }else{
     outputSheetIdsToDisplay <- seq_along(modelOut)[modelOutToDisplay]
   }
