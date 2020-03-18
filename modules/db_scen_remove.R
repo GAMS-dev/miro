@@ -155,7 +155,7 @@ observeEvent(input$btDeleteConfirm, {
     showErrorMsg(lang$errMsg$deleteScen$title, errMsg)
     return()
   }
-  activeScen <<- NULL
+  markUnsaved()
 })
 
 # button changes from NULL to 0 when initialised (modalDialog opens)
