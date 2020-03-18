@@ -256,6 +256,7 @@ body{
   font-weight: 400;
   font-size: 16px;
   line-height: 1.428571429;
+  background-color: #e5e7ee;
 }
 .page-wrapper{
   font-family: montserratregular,'Open Sans',sans-serif;
@@ -318,10 +319,6 @@ body{
 }
 .page-wrapper .btn,
 .page-wrapper a.btn {
-  -webkit-transition: all 0.4s ease-in-out;
-  -moz-transition: all 0.4s ease-in-out;
-  -ms-transition: all 0.4s ease-in-out;
-  -o-transition: all 0.4s ease-in-out;
   font-weight: 600;
   font-size: 14px;
   line-height: 1.5;
@@ -1322,6 +1319,59 @@ body{
     border: 1px solid grey;
     margin: 5px;
     margin-bottom: 15px;
+}
+#win-tab,
+#macos-tab,
+#linux-tab {
+    border: 1px solid #f9f9fb;
+    text-align: center;
+    background-color: #f9f9fb;
+    padding: 15pt 50pt;
+    color: #495057;
+}
+#win-tab:hover,
+#macos-tab:hover,
+#linux-tab:hover {
+    border: 1px solid gray;
+}
+#macos-tab[aria-selected="true"],
+#win-tab[aria-selected="true"],
+#linux-tab[aria-selected="true"]{
+  border: 1px solid gray;
+  color: #000000;
+}
+.page-wrapper .btn-primary:not(:disabled):not(.disabled).active, 
+.page-wrapper .btn-primary:not(:disabled):not(.disabled):active, 
+.page-wrapper .show>.btn-primary.dropdown-toggle {
+    color: #fff;
+    background-color: #de8807;
+    border-color: #de8807;
+}
+.info-wrapper{
+  color:inherit;
+  position:relative;
+  top:-14px;
+}
+.info-wrapper-small{
+  color:inherit;
+  position:relative;
+  top:-8px;
+}
+.info-label {
+    display: inline-block;
+}
+.info-icon{
+  text-align: right;
+  font-size: 17px;
+  margin-left: 13px;
+  display: inline-block;
+}
+.info-icon-small{
+  text-align: right;
+  font-size: 13px;
+  margin-left: 5px;
+  display: inline-block;
+  color: #494d55
 }
 input[type=text], select {
   width: 50%;

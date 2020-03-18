@@ -124,7 +124,7 @@
                                     <p>Let's take the famous <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">trnsport</a> example from George Dantzig to guide us through this documentation: We own a bunch of factories and wish to find a least cost shipping schedule that meets the demand at markets we are shipping to. Furthermore, the capacity constraints of our factories must not be violated.
                                     <br>In order to launch the MIRO app for this model from within GAMS Studio, we open the model from the <i>GAMS MIRO model collection</i> and choose <i>Run base mode</i> from the MIRO menu.</p>
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                        <img class="img-fluid" style = "max-height:175pt;" src="assets/images/launch-miro-btn.png" alt="Launch MIRO button" />
+                                        <img class="img-fluid" style = "max-height:175pt;" src="assets/images/studio/launch-miro-btn.png" alt="Launch MIRO button" />
                                     </div>
                                     <div class="callout-block callout-warning">
                                         <div class="icon-holder">
@@ -134,7 +134,7 @@
                                             <b class="callout-title">Note:</b>
                                             <p>If you start MIRO via GAMS Studio, note the group in which your model is located in the project explorer. In a group there is always a main file. Make sure that the model you want to use for MIRO is marked as the main file. If this is not the case, you can change it by right clicking on the file in the project explorer &rarr; <i>set as main file</i>:
                                             <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                                <img class="img-fluid" style = "max-height:200pt;" src="assets/images/studio_main_file.png" alt="Set as main file in Studio" />
+                                                <img class="img-fluid" style = "max-height:200pt;" src="assets/images/studio/studio_main_file.png" alt="Set as main file in Studio" />
                                             </div>
                                             </p>
                                         </div><!--//content-->
@@ -143,7 +143,7 @@
                                         <b>Skip model execution</b>:</br>
                                         <p>In the MIRO menu of GAMS Studio there is the entry "Skip model execution". If this option is activated, the model is not executed before MIRO is started, but MIRO is called directly instead. This can be helpful if the model takes a long time to be solved. </p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                            <img class="img-fluid" style = "max-height:160pt;" src="assets/images/skip_model_execution.png" alt="Skip model execution" />
+                                            <img class="img-fluid" style = "max-height:160pt;" src="assets/images/studio/skip_model_execution.png" alt="Skip model execution" />
                                         </div>
                                         <p>But: This option should be used with caution!</br> 
                                         If the model execution is skipped, the GAMS/MIRO data contract is not created or renewed. This means that changes made in the model are not communicated to MIRO. If you have a model that takes a long time to be solved and you don't want to run through it in order to launch MIRO, you can simply set the GAMS option <a href = "https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOaction" target = "_blank"><i>a=c</i></a> (action=compile) instead of the option "Skip model execution". This will only compile the model which is sufficient to update the data contract. Note that in this case a new default scenario is created, but it contains only input data and no output data.</p>
@@ -592,6 +592,21 @@
                                         <img class="img-fluid" src="assets/images/concept_data.png" alt="GAMS MIRO data concept" />
                                     </div>
                                 </div><!--//section-block-->
+                                <div style="outline: solid 1px black; outline-offset: 5px; margin-top:30px">
+                                    <h3 id="na-zero-eps"  class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Advanced: Working with <i>NAs</i>, <i>zeros</i> and <i>EPS</i></h3>
+                                    <div class="section-block" style="display:none">
+                                        <p>Special attention should be paid to the communication of <i>zeros</i>, <i>NAs</i> and <i>EPS</i> between GAMS and MIRO. The following rules describe how the data is communicated in detail:</p>
+                                        <ul>
+                                          <li><b>0:</b><br>
+                                          The data communication between GAMS and MIRO is done via GDX. <i>Zeros</i> are not stored in GDX files. A value of <i>zero</i> in GAMS is therefore not communicated with MIRO and is not visible there. If a GAMS symbol is displayed as a table in MIRO - i.e. the symbol is pivoted by using the <a href="./model.html#display-tables">table statement</a> or by using the <a href="./customize.html#table-option-pivot">MIRO-side pivoting option</a> - missing values in such a table are filled in with an <i>NA</i>.</li>
+                                          <li><b>EPS:</b><br>
+                                          The use of the special value <i>EPS</i> is required when you want to communicate <i>zeros</i> to a GDX file. In MIRO, a <i>0</i> is displayed for the corresponding entries. If a GAMS model is solved out of MIRO, those <i>zeros</i> are communicated as <i>EPS</i> values with GAMS. In the model these can then be interpreted as <i>zeros</i> by using the GAMS option <a href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARonoffeps" target="_blank">$onEps</a>. If this option is not set, <i>zeros</i> are omitted.                                           
+                                          </li>
+                                          <li><b>NA:</b><br>
+                                          <i>NAs</i> in GAMS become <i>NAs</i> in MIRO and vice versa. But: <i>NAs</i> are only displayed in the default input tables used in MIRO. In output tables (or in input tables where the option to use <a href="./customize.htmltable-option-large">large amounts of data</a> is enabled), <i>NA</i> cells remain empty instead.</li>
+                                        </ul>
+                                    </div><!--//section-block-->
+                                </div>
                             </section>
                             <section id="scenario-concept" class="doc-section">
                                 <h2 class="section-title">Scenario concept</h2>
@@ -633,7 +648,7 @@
                                   You may also trigger your GAMS jobs to be solved in the cloud. For you nothing changes, the interface remains the same. 
                                   GAMS MIRO Server also allows you to run both the GAMS execution engine as well as GAMS MIRO in a highly scalable cloud environment. Your optimization applications can then be accessed from any modern web browser.</p>
                                   <div class="section-block">
-                                      <img class="img-fluid" src="assets/images/remote-execution.png" alt="GAMS MIRO Server" />
+                                      <img class="img-fluid" style= "max-height:400pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/remote-execution.png" alt="GAMS MIRO Server" />
                                   </div>
                                   <p>GAMS MIRO Server adds multi-user and authentication support as well as many enterprise features such as load balancing, rolling updates and much more.
                                   If you are interested in this version, please <a href="mailto:miro@gams.com" target="_blank">contact us</a>!</p>
