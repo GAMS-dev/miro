@@ -447,7 +447,7 @@ body{
 #videoOverlay {
   padding: 20px;
 }
-@media screen and (min-width: 400px) {
+@media screen and (min-width: 768px) {
   .page-wrapper .sub-header .video-container {
     padding-top:40.42%;
     margin:0;
@@ -1372,6 +1372,46 @@ body{
   margin-left: 5px;
   display: inline-block;
   color: #494d55
+}
+.header-btn-left{
+  text-align: right;
+}
+.header-btn-right{
+  text-align: left;
+}
+.center-text-small{
+  text-align:left;  
+}
+.page-wrapper .margin-bottom-lg{
+    margin-top: 80px;
+}
+@media (max-width: 767px) {
+  .page-wrapper .col-sm-12.header-btn{
+      text-align: center;
+  } 
+  .page-wrapper .col-sm-12.header-btn.header-btn-right{
+      margin-top:2px;
+  }
+  .page-wrapper .center-image-small{
+    margin-left: auto;
+    margin-right: auto;
+  } 
+  .page-wrapper .center-text-small{
+    text-align:center;
+  } 
+  .page-wrapper .margin-bottom-small{
+    margin-bottom:20px;
+  }       
+}
+@media (max-width: 991px) {
+  .page-wrapper .center-image-lg{
+    margin-left: auto;
+    margin-right: auto;
+  }  
+  .page-wrapper .margin-bottom-lg{
+    margin-bottom:40px;
+    margin-top:0px;
+  }    
 }
 input[type=text], select {
   width: 50%;
