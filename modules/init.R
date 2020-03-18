@@ -477,9 +477,15 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
             }
             tabs[[j]]      <-  groupMemberIds
             tabSheetMap[groupMemberIds] <- j
-            for(k in seq_along(groupMemberIds)){
-              groupMemberId <- groupMemberIds[k]
-              tabSheetMap[[groupMemberId]] <- c(tabSheetMap[[groupMemberId]], k)
+            if(isTRUE(groups[[groupId]][["sameTab"]])){
+              for(groupMemberId in groupMemberIds){
+                tabSheetMap[[groupMemberId]] <- tabSheetMap[[groupMemberId]]
+              }
+            }else{
+              for(k in seq_along(groupMemberIds)){
+                groupMemberId <- groupMemberIds[k]
+                tabSheetMap[[groupMemberId]] <- c(tabSheetMap[[groupMemberId]], k)
+              }
             }
             groupMemberIdsInWidgets <- match(groupMemberIds, widgetIds)
             
@@ -502,7 +508,11 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
                 }
               }
             }
-            tabTitles[[j]] <-  c(groups[[groupId]]$name, aliases[groupMemberIds])
+            if(isTRUE(groups[[groupId]][["sameTab"]])){
+              tabTitles[[j]] <-  groups[[groupId]]$name
+            }else{
+              tabTitles[[j]] <-  c(groups[[groupId]]$name, aliases[groupMemberIds])
+            }
             isAssigned[groupMemberIds] <- TRUE 
             j <- j + 1L
             next
@@ -1317,8 +1327,7 @@ if(is.null(errMsg)){
     attr(modelOutTemplate[[i]], "isTable") <<- sum(vapply(modelOut[[i]]$headers, function(hdr){
       identical(hdr$type, "numeric")
     }, logical(1L), USE.NAMES = FALSE)) > 1L
-    
-    if(identical(modelOut[[i]]$hidden, TRUE))
+    if(isTRUE(modelOut[[i]]$hidden) || names(modelOut)[i] %in% config[["hiddenSymbols"]])
       return(FALSE)
     else
       return(TRUE)

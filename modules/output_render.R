@@ -6,7 +6,15 @@ renderOutputData <- function(){
   errMsg <- NULL
   lapply(unlist(outputTabs, use.names = FALSE), function(i){
     tryCatch({
-      callModule(renderData, "tab_" %+% i, type = configGraphsOut[[i]]$outType, data = scenData[["scen_1_"]][[i]],
+      if(length(configGraphsOut[[i]]$additionalData)){
+        additionalDataIds <- c(i, match(configGraphsOut[[i]]$additionalData, names(modelOut)))
+        additionalDataIds <- additionalDataIds[!is.na(additionalDataIds)]
+        rendererData <- scenData[["scen_1_"]][additionalDataIds]
+        names(rendererData) <- names(modelOut)[additionalDataIds]
+      }else{
+        rendererData <- scenData[["scen_1_"]][[i]]
+      }
+      callModule(renderData, "tab_" %+% i, type = configGraphsOut[[i]]$outType, data = rendererData,
                  configData = scalarData[["scen_1_"]], dtOptions = config$datatable, graphOptions = configGraphsOut[[i]]$graph, 
                  pivotOptions = configGraphsOut[[i]]$pivottable, customOptions = configGraphsOut[[i]]$options,
                  roundPrecision = roundPrecision, modelDir = modelDir)

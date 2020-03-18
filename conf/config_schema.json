@@ -235,6 +235,17 @@
          "minLength":3,
          "required":false
       },
+      "hiddenSymbols": {
+        "description":"Specify symbol names that will not be displayed in UI but can be used in graphs etc.",
+         "type":["array", "string"],
+         "minLength":1,
+         "uniqueItems":true,
+         "required":false,
+         "items":{
+           "type":"string",
+           "minLength": 1
+         }
+      },
       "hiddenOutputScalars": {
         "description":"Specify symbol names of output scalars that will not be displayed in UI but can be used in graphs etc.",
          "type":["array", "string"],
@@ -1211,6 +1222,17 @@
                         "description":"Additional options",
                         "type":"object",
                         "required":false
+                     },
+                     "additionalData":{
+                       "description":"Specify additional symbols whose data should be handed to renderer. data parameter will be a named list of dataframes with names being symbol names",
+                        "type":["array", "string"],
+                        "minLength":1,
+                        "minItems":1,
+                        "uniqueItems":true,
+                        "items":{  
+                           "type":"string",
+                           "minLength":1
+                        }
                      }
                   },
                   "additionalProperties":false,
@@ -1536,6 +1558,11 @@
                   "type":"string",
                   "minLength":1
                 }
+              },
+              "sameTab":{
+                "description":"Gather grouped symbols on same tab",
+                "type":"boolean",
+                "default":false
               }
            }
          }
@@ -1564,6 +1591,11 @@
                   "type":"string",
                   "minLength":1
                 }
+              },
+              "sameTab":{
+                "description":"Gather grouped symbols on same tab",
+                "type":"boolean",
+                "default":false
               }
            }
          }

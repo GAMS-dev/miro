@@ -85,15 +85,27 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
   }
   if(!length(type))
     type <- "datatable"
-  if(!length(data) || identical(nrow(data), 0L)){
-    showEl(session, "#" %+% session$ns("noData"))
-    hideEl(session, "#" %+% session$ns("data"))
-    return()
+  if(is.list(data)){
+    if(!length(data) || !length(data[[1]]) || identical(nrow(data[[1]]), 0L)){
+      showEl(session, "#" %+% session$ns("noData"))
+      hideEl(session, "#" %+% session$ns("data"))
+      return()
+    }else{
+      showEl(session, "#" %+% session$ns("data"))
+      hideEl(session, "#" %+% session$ns("noData"))
+    }
   }else{
-    showEl(session, "#" %+% session$ns("data"))
-    hideEl(session, "#" %+% session$ns("noData"))
+    if(!length(data) || identical(nrow(data), 0L)){
+      showEl(session, "#" %+% session$ns("noData"))
+      hideEl(session, "#" %+% session$ns("data"))
+      return()
+    }else{
+      showEl(session, "#" %+% session$ns("data"))
+      hideEl(session, "#" %+% session$ns("noData"))
+    }
+    data <- type_convert(data, cols())
   }
-  data <- type_convert(data, cols())
+  
   # make output type case insensitive
   typeCustom <- type
   type <- tolower(type)
@@ -149,7 +161,7 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
                    Please make sure you first define such a function.", typeCustom), call. = FALSE)
     })
     tryCatch({
-      callModule(customRenderer, "custom", as_tibble(data), options = customOptions, 
+      callModule(customRenderer, "custom", data, options = customOptions, 
                  path = customRendererDirs[[2L]])
     }, error = function(e){
       stop(sprintf("An error occured in the custom renderer function: '%s'. Error message: %s.", typeCustom, e), call. = FALSE)
