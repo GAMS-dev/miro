@@ -235,7 +235,7 @@
          "minLength":3,
          "required":false
       },
-      "hiddenSymbols": {
+      "hiddenOutputSymbols": {
         "description":"Specify symbol names that will not be displayed in UI but can be used in graphs etc.",
          "type":["array", "string"],
          "minLength":1,

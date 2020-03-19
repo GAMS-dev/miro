@@ -43,12 +43,14 @@ lapply(scenTableNamesToDisplay, function(sheetName){
     rendererData <- NULL
     if(length(modelOut) >= tabData$scenTableId && 
        length(configGraphsOut[[tabData$scenTableId]]$additionalData)){
-      additionalDataIds <- c(tabData$scenTableId, 
-                             match(configGraphsOut[[tabData$scenTableId]]$additionalData, 
-                                   names(modelOut)))
-      additionalDataIds <- additionalDataIds[!is.na(additionalDataIds)]
+      additionalDataIds <- match(configGraphsOut[[tabData$scenTableId]]$additionalData, 
+                                 names(modelOut))
+      additionalDataIds[is.na(additionalDataIds)] <- c(tabData$scenTableId, 
+                                                       match(configGraphsOut[[tabData$scenTableId]]$
+                                                               additionalData[is.na(additionalDataIds)],
+                                                             inputDsNames) + length(modelOut))
       rendererData <- scenData[[scenIdLong]][additionalDataIds]
-      names(rendererData) <- names(modelOut)[additionalDataIds]
+      names(rendererData) <- c(names(modelOut), inputDsNames)[additionalDataIds]
     }
     dataToRender <- scenData[[scenIdLong]][[tabData$scenTableId]]
     attr(dataToRender, "aliases") <- tabData$headerAliases

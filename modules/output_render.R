@@ -7,10 +7,12 @@ renderOutputData <- function(){
   lapply(unlist(outputTabs, use.names = FALSE), function(i){
     tryCatch({
       if(length(configGraphsOut[[i]]$additionalData)){
-        additionalDataIds <- c(i, match(configGraphsOut[[i]]$additionalData, names(modelOut)))
-        additionalDataIds <- additionalDataIds[!is.na(additionalDataIds)]
+        additionalDataIds <- match(configGraphsOut[[i]]$additionalData, names(modelOut))
+        additionalDataIds[is.na(additionalDataIds)] <- c(i, match(configGraphsOut[[i]]$
+                                                                    additionalData[is.na(additionalDataIds)],
+                                                                  inputDsNames) + length(modelOut))
         rendererData <- scenData[["scen_1_"]][additionalDataIds]
-        names(rendererData) <- names(modelOut)[additionalDataIds]
+        names(rendererData) <- c(names(modelOut), inputDsNames)[additionalDataIds]
       }else{
         rendererData <- scenData[["scen_1_"]][[i]]
       }
