@@ -584,6 +584,43 @@ body_admin <- dashboardBody({
                                                                         autoCreate = FALSE))
                                                  ),
                                                  tags$div(class = "space"),
+                                                 tags$h2(lang$adminMode$general$ui$headerSymbolDisplay, class="option-category"),
+                                                 if(length(modelOut)){
+                                                   tags$div(class="option-wrapper",
+                                                            tags$div(class = "info-position", 
+                                                                     selectInput("general_hiddenOutputSymbols", 
+                                                                                 tags$div(lang$adminMode$general$hiddenOutputSymbols$label, 
+                                                                                          tags$a("", class="info-wrapper", 
+                                                                                                 href="https://gams.com/miro/customize.html#hidden-symbols", 
+                                                                                                 tags$span(class="fas fa-info-circle", class="info-icon"), 
+                                                                                                 target="_blank")),
+                                                                                 choices = outputSymMultiDimChoices, 
+                                                                                 selected = configJSON$hiddenOutputSymbols[configJSON$hiddenOutputSymbols %in% outputSymMultiDimChoices], 
+                                                                                 multiple = TRUE)
+                                                            ))
+                                                 },
+                                                 if(length(modelOut[[scalarsOutName]])){
+                                                   tags$div(class="option-wrapper",
+                                                            tags$div(class = "info-position", 
+                                                                     selectInput("general_hidden", 
+                                                                                 tags$div(lang$adminMode$general$hiddenOutputScalars$label, 
+                                                                                          tags$a("", class="info-wrapper", 
+                                                                                                 href="https://gams.com/miro/customize.html#hidden-scalars", 
+                                                                                                 tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                                                 choices = setNames(modelOut[[scalarsOutName]]$symnames, modelOut[[scalarsOutName]]$symtext), 
+                                                                                 selected = configJSON$hiddenOutputScalars, multiple = TRUE)
+                                                            ))
+                                                 },
+                                                 tags$div(class="option-wrapper", title = lang$adminMode$general$aggregate$title,
+                                                          tags$label(class = "cb-label", "for" = "general_aggregate", lang$adminMode$general$aggregate$label),
+                                                          tags$div(
+                                                            tags$label(class = "checkbox-material", 
+                                                                       checkboxInput("general_aggregate", 
+                                                                                     value = if(length(configJSON$aggregateWidgets)) 
+                                                                                       configJSON$aggregateWidgets else config$aggregateWidgets, label = NULL)
+                                                            ))
+                                                 ),
+                                                 tags$div(class = "space"),
                                                  tags$div(class = "option-wrapper",
                                                           tags$div(class = "info-position",
                                                                    tags$h2(title = lang$adminMode$general$ui$tooltipDocs, lang$adminMode$general$ui$headerTabSymlinks, 

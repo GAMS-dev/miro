@@ -71,6 +71,7 @@ const arrayTypes = {
     const elements = {
       symbol_inputGroups: ['text', lang.addInputGroup.symbolInputgroups, name],
       group_memberIn: ['select', lang.addInputGroup.groupMemberIn, inputSymbols, inputSymbolsAliases, members, true],
+      group_sameTabIn: ['checkbox', lang.addInputGroup.groupSameTabIn],
     };
     return ([elements, { elRequired: false, myopicDefaults: true }, 'general']);
   },
@@ -83,6 +84,7 @@ const arrayTypes = {
     const elements = {
       symbol_outputGroups: ['text', lang.addOutputGroup.symbolOutputgroups, name],
       group_memberOut: ['select', lang.addOutputGroup.groupMemberOut, outputSymbols, outputSymbolsAliases, members, true],
+      group_sameTabOut: ['checkbox', lang.addOutputGroup.groupSameTabOut],
     };
     return ([elements, { elRequired: false, myopicDefaults: true }, 'general']);
   },

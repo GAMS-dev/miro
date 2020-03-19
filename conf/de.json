@@ -814,7 +814,7 @@
   "adminMode":{
     "invalidSymbolsDialog":{
       "title": "Ungültige Konfiguration",
-      "desc": "Einige Grafiken und/oder Widgets wurden für Symbole konfiguriert, die nicht mehr Teil Ihres GAMS/MIRO-Datenvertrags sind. Wollen Sie diese aus Ihrer Konfiguration entfernen? Beachten Sie, dass dies nicht rückgängig gemacht werden kann! Grafische Konfiguration für ungültige(s) Symbol(e): '%s'. Widget-Konfiguration für ungültige(s) Symbol(e): '%s'.",
+      "desc": "Einige Grafiken und/oder Widgets wurden für Symbole konfiguriert, die nicht mehr Teil Ihres GAMS/MIRO-Datenvertrags oder ausgeblendet sind. Wollen Sie diese aus Ihrer Konfiguration entfernen? Beachten Sie, dass dies nicht rückgängig gemacht werden kann! Grafische Konfiguration für ungültige(s) Symbol(e): '%s'. Widget-Konfiguration für ungültige(s) Symbol(e): '%s'.",
       "msgSuccess": "Ungültige Konfiguration wurde erfolgreich entfernt",
       "btRemoveWidgets": "Ungültige Widgets entfernen",
       "btRemoveGraphs": "Ungültige Grafiken entfernen", 
@@ -848,7 +848,7 @@
         "tabScripts": "Analyseskripte",
         "headerGeneral": "Allgemein",
         "headerLogo": "Logo",
-        "headerScalars": "Skalare",
+        "headerSymbolDisplay": "Symboldarstellung",
         "headerTabGrouping": "Tab-Gruppierung",
         "headerTabSymlinks": "Ergebnisse als Eingabedaten verwenden",
         "headerInputGroups": "Eingabegruppen",
@@ -913,7 +913,10 @@
       "overwriteSymbolHeaders":{
         "label": "Spaltenüberschriften festlegen"
       },
-      "hidden":{
+      "hiddenOutputSymbols":{
+        "label": "Symbole, die nicht angezeigt werden sollen, aber in Diagrammen usw. verwendet werden können."
+      },
+      "hiddenOutputScalars":{
         "label": "Skalare, die nicht in der Outputskalartabelle angezeigt werden sollen, aber in Grafiken usw. verwendet werden können."
       },
       "pivotcolor":{
@@ -1586,11 +1589,13 @@
       "js":{
         "addInputGroup":{
           "symbolInputgroups": "Name der Eingabegruppe?",
-          "groupMemberIn": "Gruppenmitglieder auswählen"
+          "groupMemberIn": "Gruppenmitglieder auswählen",
+          "groupSameTabIn": "Alle Symbole nebeneinander in demselben Tab anzeigen?"
         },
         "addOutputGroup":{
           "symbolOutputgroups": "Name der Ausgabegruppe?",
-          "groupMemberOut": "Gruppenmitglieder auswählen"
+          "groupMemberOut": "Gruppenmitglieder auswählen",
+          "groupSameTabOut": "Alle Symbole nebeneinander in demselben Tab anzeigen?"
         },
         "addSymlink":{
           "source": "Name des Ausgabesymbols",

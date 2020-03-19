@@ -109,29 +109,6 @@ insertUI(selector = "#interface_wrapper1",
          where = "beforeEnd")
 insertUI(selector = "#interface_wrapper2",
          tagList(
-           tags$h2(lang$adminMode$general$ui$headerScalars, class="option-category"),
-           if(length(modelOut[[scalarsOutName]])){
-             tags$div(class="option-wrapper",
-                      tags$div(class = "info-position", 
-                               selectInput("general_hidden", 
-                                           tags$div(lang$adminMode$general$hidden$label, 
-                                                    tags$a("", class="info-wrapper", 
-                                                           href="https://gams.com/miro/customize.html#hidden-scalars", 
-                                                           tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
-                                           choices = setNames(modelOut[[scalarsOutName]]$symnames, modelOut[[scalarsOutName]]$symtext), 
-                                           selected = configJSON$hiddenOutputScalars, multiple = TRUE)
-                      ))
-           },
-           tags$div(class="option-wrapper", title = lang$adminMode$general$aggregate$title,
-                    tags$label(class = "cb-label", "for" = "general_aggregate", lang$adminMode$general$aggregate$label),
-                    tags$div(
-                      tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_aggregate", 
-                                               value = if(length(configJSON$aggregateWidgets)) 
-                                                 configJSON$aggregateWidgets else config$aggregateWidgets, label = NULL)
-                      ))
-           ),
-           tags$hr(),
            tags$h2(lang$adminMode$general$ui$headerLogo, class="option-category"),
            tags$div(class = "option-wrapper", style = "margin-bottom: 5px;",
                     fileInput("widget_general_logo_upload", lang$adminMode$general$logo$label,
@@ -525,6 +502,12 @@ observeEvent(input$general_hidden, ignoreNULL = FALSE, {
   }
   rv$generalConfig$hiddenOutputScalars <<- input$general_hidden
 })
+observeEvent(input$general_hiddenOutputSymbols, ignoreNULL = FALSE, {
+  if(!length(input$general_hiddenOutputSymbols)){
+    configJSON$hiddenOutputSymbols <<- NULL
+  }
+  rv$generalConfig$hiddenOutputSymbols <<- input$general_hiddenOutputSymbols
+})
 
 observeEvent(input$general_decimal, {
   rv$generalConfig$roundingDecimals <<- input$general_decimal
@@ -574,7 +557,8 @@ observeEvent(input$add_general, {
              !any(groupTemp[[arrayID]][[arrayIdx]]$members %in% 
                   unlist(lapply(rv$generalConfig[[arrayID]][-arrayIdx], "[[", "members"), use.names = FALSE))){
       rv$generalConfig[[arrayID]][[arrayIdx]] <- list(name = newName, 
-                                                      members = groupTemp[[arrayID]][[arrayIdx]]$members)
+                                                      members = groupTemp[[arrayID]][[arrayIdx]]$members,
+                                                      sameTab = isTRUE(groupTemp[[arrayID]][[arrayIdx]]$sameTab))
     }else{
       showElReplaceTxt(session, paste0("#group_member", 
                                        if(identical(arrayID, "inputGroups")) "In" else "Out", 
@@ -909,7 +893,8 @@ changeAndValidateGroupMembers <- function(arrayID, groupMembers, HTMLarrayID){
     }else if(arrayIdx <= length(groupTemp[[arrayID]]) && 
              length(groupTemp[[arrayID]][[arrayIdx]]$name)){
       rv$generalConfig[[arrayID]][[arrayIdx]] <- list(name = groupTemp[[arrayID]][[arrayIdx]]$name, 
-                                                      members = newMembers)
+                                                      members = newMembers,
+                                                      sameTab = isTRUE(groupTemp[[arrayID]][[arrayIdx]]$sameTab))
     }else{
       showElReplaceTxt(session, paste0("#symbol_", arrayID, input$add_general[1], "_err"), 
                        lang$adminMode$widgets$validate$val36)
@@ -933,12 +918,40 @@ changeAndValidateGroupMembers <- function(arrayID, groupMembers, HTMLarrayID){
   }
 }
 observeEvent(input$group_memberIn, {
-  changeAndValidateGroupMembers('inputGroups', input$group_memberIn, 
+  changeAndValidateGroupMembers("inputGroups", input$group_memberIn, 
                                 "group_memberIn")
 })
 observeEvent(input$group_memberOut, {
-  changeAndValidateGroupMembers('outputGroups', input$group_memberOut, 
+  changeAndValidateGroupMembers("outputGroups", input$group_memberOut, 
                                 "group_memberOut")
+})
+observeEvent(input$group_sameTabIn, {
+  if(length(input$group_sameTabIn) < 2L)
+    return()
+  
+  arrayIdx <- indexMap$push("inputGroups", input$group_sameTabIn[1])
+  
+  if(length(rv$generalConfig[["inputGroups"]][[arrayIdx]])){
+    rv$generalConfig[["inputGroups"]][[arrayIdx]]$sameTab <<- identical(input$group_sameTabIn[2], 1L)
+  }else if(length(groupTemp[["inputGroups"]][[arrayIdx]])){
+    groupTemp[["inputGroups"]][[arrayIdx]]$sameTab <<- identical(input$group_sameTabIn[2], 1L)
+  }else{
+    groupTemp[["inputGroups"]][[arrayIdx]] <<- list(sameTab = identical(input$group_sameTabIn[2], 1L))
+  }
+})
+observeEvent(input$group_sameTabOut, {
+  if(length(input$group_sameTabOut) < 2L)
+    return()
+  
+  arrayIdx <- indexMap$push("inputGroups", input$group_sameTabOut[1])
+  
+  if(length(rv$generalConfig[["outputGroups"]][[arrayIdx]])){
+    rv$generalConfig[["outputGroups"]][[arrayIdx]]$sameTab <<- identical(input$group_sameTabOut[2], 1L)
+  }else if(length(groupTemp[["outputGroups"]][[arrayIdx]])){
+    groupTemp[["outputGroups"]][[arrayIdx]]$sameTab <<- identical(input$group_sameTabOut[2], 1L)
+  }else{
+    groupTemp[["outputGroups"]][[arrayIdx]] <<- list(sameTab = identical(input$group_sameTabOut[2], 1L))
+  }
 })
 observeEvent(input$remove_general, {
   arrayID <- strsplit(input$remove_general[1], "_")[[1]][2]

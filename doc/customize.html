@@ -267,7 +267,9 @@ putclose log;
                                   <div class="expanded"><p>Defines the number of decimal places for numeric symbols in the MIRO application. Note that this only applies to symbols that are treated as numerical values by MIRO. For example, elements of GAMS <i>Sets</i> may contain numbers, but they are not treated as such but as strings. These are therefore not affected by the maximum decimal place set.</p>
                                       <p></p>
                                   </div>
-                                  <h4 class="docu-general-header">Scalars</h4>
+                                  <h4 class="docu-general-header">Symbol display</h4>
+                                  <h6 id="hidden-symbols" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Symbols that should not be displayed but can be used in graphs etc.</h6>
+                                  <div class="expanded"><p>For some charts, it may be desirable to use additional data that should not be displayed in the user interface. Currently, only <a href="#custom-renderers" class="scrollto">custom renderers</a> support using data from more than one symbol (also hidden ones). Note that the data of hidden symbols belongs to a scenario just like visible symbols and is therefore also stored in the database. They are only hidden in the user interface.</p></div>
                                   <h6 id="hidden-scalars" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Scalars that should 
                                   not be displayed in the scalars table but can be used in graphs etc.</h6>
                                   <div class="expanded"><p>For some charts it may be desired to use additional (scalar) information. 
@@ -359,8 +361,8 @@ putclose log;
                                   </div><!--//callout-block-->
                                   </div>
                                   <h6 id="tab-grouping" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Tab grouping</h6>
-                                  <div class="expanded"> <p>Multiple tabs of input symbols (or output symbols) can be grouped together. All symbols in a group are displayed in a separate tab.</p>
-                                  <p>Example:<br>
+                                  <div class="expanded"> <p>Multiple tabs of input symbols (or output symbols) can be grouped together. All symbols in a group are either displayed in a separate tab or side by side on the same tab.</p>
+                                  <p><b>Example:</b><br>
                                   For the input data of the transport model, one might want to group the symbols with geodata together:</p>
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:200pt;" src="assets/images/configuration_mode/general_inputGroups.png" alt="Specify input groups" />
