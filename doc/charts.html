@@ -1050,7 +1050,7 @@ else
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" src="assets/images/configuration_mode/graphs_custom.png" alt="Custom graph configuration" />
                                     </div>
-                                    <p>The configuration mode gives two kinds of assistance with the custom renderer: First, the basic configuration is stored in the JSON file, where all other things are stored as well. This includes the name of the function, which defines the renderer and additional - meaning not yet in MIRO included - R packages, which are necessary to use it. The resulting JSON snipped looks like this:</p>
+                                    <p>The configuration mode gives two kinds of assistance with the custom renderer: First, the basic configuration is stored in the JSON file, where all other things are stored as well. This includes the name of the function, which defines the renderer and additional - meaning not yet in MIRO included - R packages, which are necessary to use it. The resulting JSON snippet looks like this:</p>
                                     <pre><code class="language-json">
 {
    "dataRendering":{
@@ -1061,7 +1061,7 @@ else
    }
 }
                                     </code></pre>
-                                    <p>You can add additional options to this snipped, for example a title or other specifications. These can then be accessed from the custom renderer function.</p>
+                                    <p>You can add additional options to this snippet, for example a title or other specifications. These can then be accessed from the custom renderer function.</p>
                                     <pre><code class="language-json">
 {
    "dataRendering":{
@@ -1075,7 +1075,7 @@ else
    }
 }
                                     </code></pre>
-                                    <p>The second assistance is that the basic framework for the R code is supplied on the right side of the screen. It also explains in detail what to do with the code snipped:</p>
+                                    <p>The second assistance is that the basic framework for the R code is supplied on the right side of the screen. It also explains in detail what to do with the code snippet:</p>
                                     <div class = "box-grey">
                                         <p>Steps:</p>
                                         <ol>
@@ -1083,7 +1083,7 @@ else
                                           <li>Copy the above code and paste it into the <i>transport_custom.R</i> file.</li>
                                           <li>Write your own custom renderer! For a detailed description of how to write such a custom renderer, see <a href = "./customize.html#custom-renderers">here</a>.</li>
                                         </ol>
-                                        <p>The next time the application is started after a click on save MIRO looks for a custom renderer function in the file <i>transport_custom.R</i>. If this is not found, the application does not start! Make sure that you have included the custom renderer function correctly. It is always a good idea to first develop a custom renderer isolated from MIRO and, as soon as you are satisfied with the result, to integrate it into the MIRO application.<p>
+                                        <p>The next time the application is started, MIRO looks for a custom renderer function in the file <i>transport_custom.R</i>. If this is not found, the application does not start! Make sure that you have included the custom renderer function correctly. It is always a good idea to first develop a custom renderer isolated from MIRO and - as soon as you are satisfied with the result - to integrate it into the MIRO application.<p>
                                     </div>
                                     <div class="callout-block callout-success">
                                       <div class="icon-holder">

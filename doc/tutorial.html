@@ -74,14 +74,14 @@
                             <section class="doc-section">
                                 <h2 class="section-title">Introduction</h2>
                                 <div class="section-block">
-                                    <p>In this section we will show you how a typical workflow in the development of a MIRO application can look like - from the plain GAMS model over the initialization and customization of a MIRO application up to its deployment. This tutorial is a quick guide to the most important aspects of MIRO App development. The individual aspects are explained in more detail in corresponding linked chapters (<i class="icon fa fa-external-link-alt"></i>). <p>
-                                    <p>The easiest way to develop a MIRO application from scratch is to use the new <a href="https://www.gams.com/latest/docs/T_STUDIO.html">GAMS Studio</a>. It provides build-in functionality of the most important interactions with MIRO. Learn more about these <a href="./studio.html">here</a>.</p>
+                                    <p>IIn this section we show you how a typical workflow in the development of a MIRO application can look like - from the simple GAMS model to the initialization and customization of a MIRO application up to its deployment. This tutorial is a quick guide to the most important aspects of the MIRO application development. The individual aspects are explained in more detail in corresponding linked chapters (<i class="icon fa fa-external-link-alt"></i>). <p>
+                                    <p>The easiest way to develop a MIRO application from scratch is to use the new <a href="https://www.gams.com/latest/docs/T_STUDIO.html">GAMS Studio</a>. It offers built-in functionality of the most important interactions with MIRO. Learn more about this <a href="./studio.html">here</a>.</p>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
                             <section id="tutorial-model-adjustments" class="doc-section">
                                 <h2 class="section-title info-label">Model adjustments</h2><a title="Go to chapter" class=" info-wrapper" href="./model.html#model-adjustments"><i class="icon fa fa-external-link-alt info-icon"></i></a>
                                 <div class="section-block">
-                                    <p>Ideally, the starting point is an already fully developed GAMS model or a model in which no major changes are made to the symbols that will later be visible in MIRO. In our example we use the classic <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">Trnsport model</a> from the GAMS model library. The only thing we have to do in the model is to tell MIRO which symbols we want to see in the application. We do this by wrapping the corresponding <i>symbol declarations</i> with the tags <code class="language-gams">$onExternalInput
+                                    <p>Ideally, you start off with a fully developed GAMS model or a model in which no major changes are made to the symbols that will later be visible in MIRO (of course, you can also start from scratch and adjust your symbols as you go). In our example we use the classic <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">Trnsport model</a> from the GAMS model library. The only thing we have to do in the model is to tell MIRO which symbols we want to see in the application. We do this by wrapping the corresponding <i>symbol declarations</i> with the tags <code class="language-gams">$onExternalInput
                                         </code> / <code class="language-gams">$offExternalInput
                                         </code> for input data and <code class="language-gams">$onExternalOutput
                                         </code> / <code class="language-gams">$offExternalOutput
@@ -140,7 +140,7 @@ display x.l, x.m;
 </code></pre>
                             </div>
                             <div class="section-block">
-                                <p>After starting MIRO for the first time, all selected symbols are available in table form. 
+                                <p>After starting MIRO for the first time, all the selected symbols are available in tabular form. 
                                 With the basic configuration you can load data, modify it from within the interface and start or 
                                 stop a GAMS job. You also have access to the <i>log</i> and <i>listing</i> (<i>lst</i>) files of GAMS as well as 
                                 all files generated during the run. When the model has finished the execution phase successfully, the results can 
@@ -175,7 +175,7 @@ display x.l, x.m;
                                 <h2 class="section-title info-label">Deployment</h2><a title="Go to chapter" class=" info-wrapper" href="./deployment.html"><i class="icon fa fa-external-link-alt info-icon"></i></a>
                                 <div class="section-block">
                                     <p>When the MIRO app is completely configured, i.e. all graphics have been created, options have been set and adjustments have been made, the app can be deployed. Deploying a MIRO application is the process of exporting and installing your app so that it can be easily shared and used in the daily business of your end users. No further changes to the model or the configuration can be made once it is deployed.</p>
-                                    <p>Deploying MIRO applications can be done directly <a href="./studio#studio-deployment">from within GAMS Studio</a>. We need to do two things: clarify which files belong to the GAMS model and then package all these files together with the app configuration into an app bundle. The result is a single <i>.miroapp</i> file which can be sent to the end user of the application.</p>
+                                    <p>Deploying MIRO applications can be done directly <a href="./studio#studio-deployment">from within GAMS Studio</a>. We need to do two things: clarify which files belong to the GAMS model and then package all these files together with the app configuration into an app bundle. The result is a single <i>.miroapp</i> file which can be sent to the end user(s) of the application.</p>
                                     <div style="display:block; margin:auto;">
                                         <img class="img-fluid" style = "max-height:70pt;" src="assets/images/tutorial/miroapp.png" alt="miroapp file" />
                                     </div>
@@ -185,7 +185,7 @@ display x.l, x.m;
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block">
-                                    <p>So much for what a typical workflow might look like. Besides the local setup shown here, MIRO also offers the possibility to solve GAMS jobs in the cloud or even host the applications there. You can find out more about this <a href="./server.html">here</a>. </p>
+                                    <p>So much for what a typical workflow might look like. Besides the local setup shown here, MIRO also offers the possibility to solve GAMS jobs in the cloud or even host the applications there and collaborate with your colleagues in the cloud. You can find out more about this <a href="./server.html">here</a>. </p>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
                         </div><!--//content-inner-->
