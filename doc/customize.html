@@ -44,6 +44,7 @@
 <body class="body-orange">
     <!--#include virtual="/wbody.html" -->
     <div class="page-wrapper">
+    <!--#include virtual="/mirover.html" -->
 
         <!--TYPO3SEARCH_begin-->
 
@@ -426,10 +427,6 @@ putclose log;
                                   </div><!--//callout-block-->
                                   </div>
                                   <h4 class="docu-general-header">Computation</h4>
-                                  <h6 id="general-remote" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Remote Job execution (GAMS MIRO Server only)</h6>
-                                  <div class="expanded"><p>If enabled, the GAMS jobs can be executed on a server instead of on the local machine. For this purpose, the server information must be specified in the MIRO application. 
-                                  A detailed description of the remote execution and MIRO server in general can be found <a href = "./server.html">here</a>.</p>
-                                  </div>
                                   <h6 id="general-temp-dir" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Allow access to the temporary directory?</h6>
                                   <div class="expanded"><p>This option specifies whether all temporarily created files of the model run (like solution reports or the 
                                   <span class="code">lst</span> and <span class="code">log</span> files) can be accessed by the user. 
