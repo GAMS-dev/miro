@@ -1267,6 +1267,14 @@ body{
   border-bottom: 1px solid #dee2e6;
   margin-bottom: 30px;
 }
+.long-word-wrap{
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
 .upvote-custom {
   margin-top: 10px;
 }
@@ -1385,6 +1393,22 @@ body{
 .page-wrapper .margin-bottom-lg{
     margin-top: 80px;
 }
+@media (max-width: 991px) {
+  .page-wrapper .callout-block .icon-holder{
+    top: -5px;
+    right: 8px;
+    left: unset;
+  }
+  .page-wrapper .callout-block .content{
+    margin-left: 0px;
+  } 
+  .page-wrapper .callout-block .icon-holder.custom-icon-holder{
+    top: -5px !important;
+  }
+  .page-wrapper .callout-block .content.custom-icon-content{
+    margin-top: 10px;
+  }     
+}
 @media (max-width: 767px) {
   .page-wrapper .col-sm-12.header-btn{
       text-align: center;
@@ -1412,6 +1436,9 @@ body{
     margin-bottom:40px;
     margin-top:0px;
   }    
+  .page-wrapper .nav-item.no-margin-sm{
+    margin-bottom: 0px;
+  }  
 }
 input[type=text], select {
   width: 50%;
