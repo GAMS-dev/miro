@@ -375,14 +375,14 @@ putclose log;
                                   Such an iterative process is possible by creating a link between the output and input symbol. By doing so, input data for a symbol (<i>"target"</i>)
                                   can be populated from an output sheet (<i>"source"</i>).</p>
                                   <p>Populating an input table from the linked dataset can be initiated by clicking the <img class="img-fluid" src="assets/images/configuration_mode/symlink-btn.png" alt="Symbol link button" width="25" height="25" align="middle"> button.</p>
-                                  <p>When configuring such symbol links, the following rules need be observed:</p>
+                                  <p>The following rules must be observed when configuring symbol links:</p>
                                   <ul>
                                     <li>The source symbol needs to be an output symbol</li>
-                                    <li>The dimensionality of the linked symbols, i.e. their number of dimensions, must be identical.</li>
+                                    <li>The number of dimensions of "source" and "target" symbol must be identical</li>
                                     <li>The header types (string / numeric) of linked symbols need to be identical</li>
-                                    <li>Neither source, nor target may be a table in which scalar values are grouped. This includes the input scalars table, the output scalars table and the table in which scalar variables and equations are summarized. </li>
-                                    <li>An output dataset can only populate a single input table.</li>
-                                    <li>An input table can be populated by different output datasets.
+                                    <li>Neither "source" nor "target" may be a table in which scalar values are grouped. This includes the input scalars table, the output scalars table and the table in which scalar variables and equations are summarized.</li>
+                                    <li>An output dataset can only link to a single input table</li>
+                                    <li>An input table can be populated by different output datasets
                                       <div class="section-block">
                                         <img class="img-fluid" style= "max-height:115pt;" src="assets/images/configuration_mode/rules_symbollinks.png" alt="Rules for symbol links" />
                                       </div>
@@ -1380,7 +1380,7 @@ renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <b class="callout-title">Note:</b>
-                                            <p>The following example shows how a map can be created via custom renderer. Note, that basic maps can be configured in the <a href="#configurationMode" class="scrollto">Configuration mode</a>. However, the following example shows how to use the R API for customized graphics in general.</p>
+                                            <p>The following example shows how a map can be created via a custom renderer. Note that maps can also be configured in the <a href="#configurationMode" class="scrollto">Configuration mode</a>. However, the following example shows how to use the R API for customized graphics in general.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                   <div class="section-block">

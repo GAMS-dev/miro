@@ -77,13 +77,13 @@
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <b class="callout-title">Note:</b>
-                                            <p>Both <i>GAMS MIRO Desktop - boosted by GAMS MIRO Engine</i> and <i>GAMS MIRO Server</i> are currently under development. This documentation is regularly updated.</p>
+                                            <p>Both <i>GAMS MIRO Desktop - boosted by GAMS MIRO Engine</i> and <i>GAMS MIRO Server</i> are currently under development. This part of the documentation is updated regularly.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                             <section id="server-introduction" class="doc-section">
                                 <h2 class="section-title">Introduction</h2>
                                 <div class="section-block">
-                                    <p>In the most basic setup - GAMS MIRO Desktop - both the MIRO application and GAMS itself are installed on the same computer and run exclusively on this machine. But MIRO is not limited to this setup: With locally running MIRO applications you can also solve GAMS jobs in the cloud. For you nothing changes, the MIRO interface remains the same. We call this setup <i>GAMS MIRO Desktop - boosted by GAMS MIRO Engine</i>. <i>GAMS MIRO Engine</i> is a product based on <a href = "https://www.docker.com/" target = "_blank">docker</a>, that uses state-of-the-art technology to take care of the entire job management and the associated infrastructure in a highly scalable cloud environment. The same technology is used for the last MIRO setup: <i>GAMS MIRO Server</i>. GAMS MIRO Server allows you to run both the GAMS execution engine as well as the MIRO application itself in the cloud. Your optimization applications can then be accessed from any device with a modern web browser like PC, smartphone or tablet.</p>
+                                    <p>In the most basic setup - GAMS MIRO Desktop - both the MIRO application and GAMS itself are installed on the same computer and run exclusively on this machine. But MIRO is not limited to this setup: You can run your MIRO applications locally, but solve the GAMS jobs in the cloud. For you nothing changes, the MIRO interface remains the same. We call this setup <i>GAMS MIRO Desktop - boosted by GAMS MIRO Engine</i>. <i>GAMS MIRO Engine</i> is a product based on <a href = "https://www.docker.com/" target = "_blank">Docker</a>, which uses state-of-the-art technology to handle the entire job management, scheduling and load balancing of your computationally intensive optimization problems. The same technology is also used for the last MIRO setup: <i>GAMS MIRO Server</i>. GAMS MIRO Server allows you to run both the GAMS execution engine as well as the MIRO application itself in the cloud. Your optimization applications can then be accessed from any device with a modern web browser like a PC, smartphone or tablet.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/remote-execution.png" alt="GAMS MIRO Server" />
                                     </div>
@@ -98,37 +98,37 @@
                                     </div><!--//callout-block-->
                                 </div>
                             </section> 
-                            <section id="engine-setup" class="doc-section">
+                            <section id="server-setup" class="doc-section">
                                 <h2 class="section-title">Installation and usage</h2>
                                 <div class="section-block">
-                                    <p>Both GAMS MIRO Server and GAMS MIRO Desktop - boosted by GAMS MIRO Engine - the latter already carries the name - make use of the GAMS MIRO Engine to run GAMS jobs on one or more servers. The following explains how to set up GAMS MIRO Engine.</p>
+                                    <p>Both GAMS MIRO Server and GAMS MIRO Desktop - boosted by GAMS MIRO Engine - the latter already carries the name - make use of the GAMS MIRO Engine to run GAMS jobs on one or more servers. The following section explains how to set up GAMS MIRO Server.</p>
                                     <div class="callout-block callout-warning">
                                         <div class="icon-holder">
                                             <i class="fas fa-info-circle"></i>
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <b class="callout-title">Note:</b>
-                                            <p>The following installation instructions refer exclusively to the installation of MIRO Engine. The corresponding installation steps have to be performed on the server used for this purpose. </p>
+                                            <p>The following installation instructions refer exclusively to the installation of GAMS MIRO Server. The corresponding installation steps have to be performed on the server used for this purpose. </p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                 </div>
-                                <div  id="engine-prerequisites"  class="section-block">
+                                <div  id="server-prerequisites"  class="section-block">
                                     <h3 class="block-title">Prerequisites</h3>
-                                    <p>Since MIRO Engine is based on <a href = "https://www.docker.com/" target = "_blank">docker technology</a>, both docker and docker-compose must be installed on the server first.</p>
+                                    <p>Since GAMS MIRO Server is based on <a href = "https://www.docker.com/" target = "_blank">Docker technology</a>, both Docker and docker-compose must be installed on the server first.</p>
                                     <ul>
                                       <li><a href = "https://docs.docker.com/install/" target = "_blank">Install Docker</a></li>
                                       <li><a href = "https://docs.docker.com/compose/install/" target = "_blank">Install Docker compose</a></li>
                                     </ul>
-                                    <p>The system user must be added to the docker group in order to access docker without root permissions.</p>
+                                    <p>To use the Docker CLI without <i>sudo</i>, you must add your user to the docker group.</p>
                                     <ul>
                                       <li><a href = "https://docs.docker.com/install/linux/linux-postinstall/#manage-docker-as-a-non-root-user" target = "_blank">Manage docker as a non root user</a></li>
                                     </ul>
                                 </div>
-                                <div  id="engine-install"  class="section-block">
-                                    <h3 class="block-title">Install GAMS MIRO Engine</h3>
-                                    <p>If you have purchased GAMS MIRO Engine, GAMS will provide you with a ZIP file that contains everything you need to get started.</p>
+                                <div  id="server-install"  class="section-block">
+                                    <h3 class="block-title">Install GAMS MIRO Server</h3>
+                                    <p>If you have purchased GAMS MIRO Server, GAMS will provide you with a ZIP file that contains everything you need to get started.</p>
                                     <ul>
-                                      <li>Once the <a href = "#engine-prerequisites" class = "scrollto">prerequisites</a> are set up, copy the ZIP file to your server in a directory of your choice and unzip it there.
+                                      <li>Once the <a href = "#server-prerequisites" class = "scrollto">prerequisites</a> are set up, copy the ZIP file to your server in a directory of your choice and unzip it there.
                                       <div class="callout-block callout-success">
                                           <div class="icon-holder">
                                               <i class="fas fa-thumbs-up"></i>
@@ -141,27 +141,27 @@
                                       </li>
                                       <li>Next, login to the GAMS Docker registry. To do so, run <div class = "console-box"><span class="console-content">&gt; docker login hub.gams.com</span></div> with the credentials GAMS provided you with. </li>
                                       <li>Make sure that you have a valid GAMS license file (<i>gamslice.txt</i>) inside the directory where you unzipped your files.</li>
-                                      <li>Afterwards, you are ready to install MIRO Server by running: <div class = "console-box"><span class="console-content">&gt; ./miro-compose install</span></div> During installation you will be asked for a GAMS MIRO Server key (if this was not already set up for you when you received this ). The installation script will inform you whether the installation was successful or not.</li>
+                                      <li>Afterwards, you are ready to install MIRO Server by running: <div class = "console-box"><span class="console-content">&gt; ./miro-compose install</span>.</div> During installation you will be asked for a GAMS MIRO Server key (if this was not already set up for you when you by GAMS). The installation script will inform you whether the installation was successful or not.</li>
                                     </ul>
                                 </div>
-                                <div  id="engine-start"  class="section-block">
+                                <div  id="server-start"  class="section-block">
                                     <h3 class="block-title">Start</h3>    
-                                    <p>Once you have GAMS MIRO Engine installed, you can launch it via <div class = "console-box"><span class="console-content">&gt; ./miro-compose start</span></div>GAMS MIRO Server will now listen on port 8080. Per default, there is a single administrator with username: <i>admin</i> and password <i>admin</i>.</p>
+                                    <p>Once you have GAMS MIRO Server installed, you can launch it via <div class = "console-box"><span class="console-content">&gt; ./miro-compose start</span>.</div>GAMS MIRO Server will now listen on port 8080. After the installation, there is a single administrator with username: <i>admin</i> and password <i>admin</i>.</p>
                                 </div>
-                                <div  id="engine-update"  class="section-block">
+                                <div  id="server-update"  class="section-block">
                                     <h3 class="block-title">Update</h3> 
                                     <p>To update GAMS MIRO Server to the latest version, run <div class = "console-box"><span class="console-content">&gt; ./miro-compose update</span></div>Note that this will pull new images from the GAMS Docker registry and launch them. If you only want to pull new images, run <div class = "console-box"><span class="console-content">&gt; ./miro-compose pull</span></div></p>
                                 </div>
-                                <div  id="engine-stop"  class="section-block">
+                                <div  id="server-stop"  class="section-block">
                                     <h3 class="block-title">Stop</h3> 
                                     <p>To stop a running instance of GAMS MIRO Server, run <div class = "console-box"><span class="console-content">&gt; ./miro-compose stop</span></div></p>
                                 </div>
-                                <div  id="engine-uninstall"  class="section-block">
+                                <div  id="server-uninstall"  class="section-block">
                                     <h3 class="block-title">Uninstall</h3> 
-                                    <p>To remove GAMS MIRO Server including all data associated with it from your server, run <div class = "console-box"><span class="console-content">&gt; ./miro-compose destroy</span></div> 
-                                    Additionally you can remove the directory where you extracted the configuration files of the GAMS MIRO server.</p>
+                                    <p>To remove GAMS MIRO Server including all data associated with it from your server, run <div class = "console-box"><span class="console-content">&gt; ./miro-compose uninstall</span></div> 
+                                    Additionally, you can remove the directory where you extracted the configuration files of the GAMS MIRO Server.</p>
                                 </div>
-                                <div  id="engine-customize"  class="section-block">
+                                <div  id="server-customize"  class="section-block">
                                     <h3 class="block-title">Customize</h3> 
                                     <p>The entire customization in GAMS MIRO Server is done in the file <i>data/application.yml</i>. Here you can add/remove users, change the authentication method or the language of GAMS MIRO.</p>
                                     <div class="callout-block callout-warning">
@@ -174,7 +174,7 @@
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                 </div>
-                                <div  id="engine-nginx"  class="section-block">
+                                <div  id="server-nginx"  class="section-block">
                                     <h3 class="block-title">Nginx example configuration</h3> 
                                     <p>We suggest to run GAMS MIRO Server behind a reverse proxy such as <a href = "https://www.nginx.com/" target = "_blank">nginx</a>. The following configuration will allow you to access GAMS MIRO Server on the root of your server:</p>
                                      <pre><code class="language-">location / {
@@ -208,7 +208,7 @@
                             <section id="miro-desktop-remote" class="doc-section">
                                 <h2 class="section-title">GAMS MIRO Desktop - Boosted by GAMS MIRO Engine</h2>
                                 <div class="section-block">
-                                    <p>With <i>GAMS MIRO Desktop - Boosted by GAMS MIRO Engine</i>, you can solve GAMS jobs in the cloud with your locally running MIRO applications. In order to use the switch - to execute from local solve in the clod - you only have to activate the checkbox "Execution of models on GAMS MIRO Engine" in the settings of GAMS MIRO.</p> 
+                                    <p>With <i>GAMS MIRO Desktop - Boosted by GAMS MIRO Engine</i>, you can solve GAMS jobs in the cloud with your locally running MIRO applications. In order to use switch from executing your optimization jobs on your local machine to solving them in the cloud you only have to activate the checkbox "Execution of models on GAMS MIRO Engine" in the preferences of GAMS MIRO.</p> 
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/remote/remote_enable.png" alt="Enable remote execution" />
                                     </div>
@@ -219,22 +219,21 @@
                                           </div><!--//icon-holder-->
                                           <div class="content">
                                               <b class="callout-title">Tip:</b>
-                                              <p>You can use GAMS MIRO Engine for MIRO applications which are still under development (started via GAMS Studio) and for already deployed apps.</p>
+                                              <p>You can use GAMS MIRO Engine for both MIRO applications that are still under development (started via GAMS Studio) and for already deployed apps.</p>
                                           </div><!--//content-->
                                       </div><!--//callout-block-->
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:150pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/remote/remote_login.png" alt="Login" />
                                     </div>
-                                    <p>If you have installed GAMS MIRO engine correctly, it should listen on the path specified by you, e.g. on <a href="#">https://miro-remote.example.com/namespace-1</a>. Use the credentials provided by GAMS for user name, password and namespace.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/remote/remote_login_form.png" alt="Login" />
                                     </div>
                                     <p>In the login form, there are two additional checkboxes:</p>
                                     <p><b>Is your model registered in the namespace?</b><br>
-                                      If a GAMS job is to be solved in the cloud, the underlying GAMS model must be available on the corresponding server for the correspondig namespace. There are two possibilities:
+                                      If a GAMS job is to be solved in the cloud, the GAMS model must be available on the corresponding server for the namespace you chose. There are two possibilities:
                                       <ul>
                                         <li>The model is sent to the server for each job submission together with the scenario data and deleted after the job is solved.</li>
-                                        <li>The model is "registered" on the server, i.e. permanently stored. Only the scenario data is communicated with the server during a job submit. Learn <a href = "#register-model">here</a> how to register a model.</li>
+                                        <li>The model is registered on the server, i.e. the model data is stored permanetly. Only the scenario data is communicated with the server during a job submission. Learn <a href = "#register-model">here</a> how to register a model.</li>
                                       </ul> 
                                     </p>                                      
                                     <p><b>Remember me</b><br>
@@ -254,16 +253,16 @@
                         <div id="doc-nav" class="doc-nav">
                             <nav id="doc-menu" class="nav doc-menu flex-column sticky">
                                 <a class="nav-link scrollto" href="#server-introduction">Introduction</a>
-                                <a class="nav-link scrollto" href="#engine-setup">Installation and usage</a>
+                                <a class="nav-link scrollto" href="#server-setup">Installation and usage</a>
                                 <nav class="doc-sub-menu nav flex-column">
-                                  <a class="nav-link scrollto" href="#engine-prerequisites">Prerequisites</a>
-                                  <a class="nav-link scrollto" href="#engine-install">Install GAMS MIRO Engine</a>
-                                  <a class="nav-link scrollto" href="#engine-start">Start</a>
-                                  <a class="nav-link scrollto" href="#engine-update">Update</a>
-                                  <a class="nav-link scrollto" href="#engine-stop">Stop</a>
-                                  <a class="nav-link scrollto" href="#engine-uninstall">Uninstall</a>
-                                  <a class="nav-link scrollto" href="#engine-customize">Customize</a>
-                                  <a class="nav-link scrollto" href="#engine-nginx">Nginx example configuration</a>
+                                  <a class="nav-link scrollto" href="#server-prerequisites">Prerequisites</a>
+                                  <a class="nav-link scrollto" href="#server-install">Install GAMS MIRO Engine</a>
+                                  <a class="nav-link scrollto" href="#server-start">Start</a>
+                                  <a class="nav-link scrollto" href="#server-update">Update</a>
+                                  <a class="nav-link scrollto" href="#server-stop">Stop</a>
+                                  <a class="nav-link scrollto" href="#server-uninstall">Uninstall</a>
+                                  <a class="nav-link scrollto" href="#server-customize">Customize</a>
+                                  <a class="nav-link scrollto" href="#server-nginx">Nginx example configuration</a>
                                 </nav><!--//nav-->
                                 <a class="nav-link scrollto" href="#miro-desktop-remote">GAMS MIRO Desktop - Boosted by GAMS MIRO Engine</a>
                                 <a class="nav-link scrollto" href="#miro-server">GAMS MIRO Server</a>
