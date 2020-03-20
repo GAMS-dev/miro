@@ -69,9 +69,9 @@ $offExternalOutput
 circleData('outerCircle','x')      = eps;
 circleData('outerCircle','y')      = eps;
 circleData('outerCircle','radius') = 1;   
-circleData(i,'x')      = x.l(i);
-circleData(i,'y')      = y.l(i);
-circleData(i,'radius') = r.l;
+circleData(i,'x')      = x.l(i) + eps;
+circleData(i,'y')      = y.l(i) + eps;
+circleData(i,'radius') = r.l + eps;
 
 File mlog /cpack_miroLog.dat/;
 
