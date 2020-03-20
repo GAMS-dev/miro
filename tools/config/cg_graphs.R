@@ -1216,13 +1216,6 @@ observe({
   rv$graphConfig$graph$fixedWidth <<- input$fixedWidth
 })
 
-observeEvent(input$outType, {
-  if(identical(input$outType, TRUE))
-    outTypetmp <<- "dtGraph"
-  else
-    outTypetmp <<- "graph"
-  rv$graphConfig$outType <<- outTypetmp
-})
 observeEvent(input$x_title, {
   rv$graphConfig$graph$xaxis$title <<- input$x_title
 })
@@ -1552,9 +1545,8 @@ observeEvent(input$custom_name, {
   rv$graphConfig$outType <<- gsub(" ", "", input$custom_name, fixed = TRUE)
 })
 observeEvent(input$custom_packages, {
-  req(length(input$custom_packages))
   rv$graphConfig$packages <<- input$custom_packages
-})
+}, ignoreNULL = FALSE)
 
 observeEvent(input$filter_dim, {
   if(input$chart_tool %in% plotlyChartTools){
@@ -1638,7 +1630,10 @@ observeEvent({
       rv$graphConfig$graph$layersControl <<- NULL
     if(!identical(chartTool, "valuebox"))
       rv$graphConfig$options <<- NULL
+    if(!identical(chartTool, "custom"))
+      rv$graphConfig$packages <<- NULL
     saveAndReload(isolate(chartTool), "pie")
+    
     hideFilter()
     removeUI(selector = "#tool_options div", multiple = TRUE)
     if(chartTool %in% plotlyChartTools){
@@ -1768,7 +1763,6 @@ getChartOptions <- reactive({
   scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
     rv$graphConfig$graph$xdata      <<- indices[[1]]
-    rv$graphConfig$outType <<- "graph" 
     rv$graphConfig$graph$showlegend <<- TRUE
   })
   tagList(
@@ -2462,7 +2456,7 @@ observe({
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-custom")
     }else if(isolate(rv$graphConfig$graph$tool) == "custom"){
-      nameTmp = rv$graphConfig$outType
+      nameTmp <- rv$graphConfig$outType
       customR <- paste0(nameTmp, "Output <- function(id, height = NULL, options = NULL, path = NULL){
     ns <- NS(id)
  
@@ -2560,6 +2554,7 @@ observeEvent(rv$saveGraphConfirm, {
     if(!identical(rv$graphConfig$graph$tool, "leaflet")){
       configJSON$dataRendering[[activeSymbol$name]]$graph$layersControl <<- NULL
     }
+    configJSON$dataRendering[[activeSymbol$name]]$outType <<- if(isTRUE(input$outType)) "dtGraph" else "graph"
   }
   write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
   removeModal()
