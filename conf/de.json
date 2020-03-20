@@ -1564,7 +1564,8 @@
       },
       "customOptions":{
         "name": "Name der benutzerdefinierten Rendererfunktion (ohne Leerzeichen)",
-        "packages": "Benötigte Pakete für den Renderer"
+        "packages": "Benötigte Pakete für den Renderer",
+        "additionalData": "Zusätzliche Datensätze, die mit dem benutzerdefinierten Renderer kommuniziert werden sollen"
       },
       "filterOptions":{
         "filter": "Soll eine Dimension des Symbols in einem Dropdownmenü filterbar sein??",

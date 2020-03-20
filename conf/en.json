@@ -1564,7 +1564,8 @@
       },
       "customOptions":{
         "name": "Name of the custom renderer function (no space)",
-        "packages": "Packages necessary for the renderer"
+        "packages": "Packages necessary for the renderer",
+        "additionalData": "Additional datasets to communicate with the custom renderer"
       },
       "filterOptions":{
         "filter": "Should one domain of the symbol be selectable via a dropdown menu?",

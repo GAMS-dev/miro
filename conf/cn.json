@@ -1564,7 +1564,8 @@
       },
       "customOptions":{
         "name": "指定代码中自定义绘制器功能的名称（无空格）",
-        "packages": "绘制器所需的软件包"
+        "packages": "绘制器所需的软件包",
+        "additionalData": "Additional datasets to communicate with the custom renderer"
       },
       "filterOptions":{
         "filter": "是否允许通过下拉菜单选择符号的域？",
