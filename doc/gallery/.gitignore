@@ -1,0 +1,5 @@
+.env
+venv
+download
+data/downloads.csv
+

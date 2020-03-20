@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
+<head>
+    <title>GAMS MIRO - Download & installation</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GAMS MIRO documentation">
+    <meta name="author" content="GAMS Development Corp.">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <!-- FontAwesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
+
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+    <!-- Cookie consent by https://cookieconsent.osano.com -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
+    <script>
+    window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#000"
+        },
+        "button": {
+          "background": "#F39619"
+        }
+      }
+    })});
+    </script>
+</head>
+
+<body class="body-orange">
+    <!--#include virtual="/wbody.html" -->
+    <div class="page-wrapper">
+    <!--#include virtual="/mirover.html" -->
+        <!--TYPO3SEARCH_begin-->
+
+        <!-- ******Header****** -->
+        <header id="header" class="sub-header">
+            <div class="container">
+                <div class="branding">
+                    <h1 class="logo">
+                        <a href="index.html">
+                            <img class="img-fluid" style="height:75px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
+                        </a>
+                    </h1>
+                </div><!--//branding-->
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">Download & installation</li>
+                </ol>
+            </div><!--//container-->
+        </header><!--//header-->
+        <div class="doc-wrapper">
+            <div class="container">
+                <div id="doc-header" class="doc-header text-center">
+                    <h1 class="doc-title"><i class="icon fas fa-arrow-alt-circle-down"></i> Download & installation</h1>
+                </div><!--//doc-header-->
+                <div class="doc-body row">
+                    <div class="doc-content col-md-9 col-12 order-1">
+                        <div class="content-inner">
+                          <div class="callout-block callout-warning">
+                              <div class="icon-holder">
+                                  <i class="fas fa-info-circle"></i>
+                              </div><!--//icon-holder-->
+                              <div class="content">
+                                  <b class="callout-title">Note:</b>
+                                  <p>To be able to solve models in GAMS MIRO on your local machine, GAMS version 30.2 or later is required. You can download the latest GAMS version <a href="https://www.gams.com/download/" target="_blank">here</a>.
+                                  You will also find installation instructions for the GAMS system there.</p>
+                              </div><!--//content-->
+                          </div><!--//callout-block-->
+                          <div class="section-block">
+                              <p>GAMS MIRO Desktop itself is open source software. In order for GAMS to interact with MIRO, the <a href="https://www.gams.com/fileadmin/standard_price_list.pdf" target="_blank">MIRO connector</a> is required, which is included in the GAMS system <a href="https://www.gams.com/download" target="_blank">from GAMS version 30.2</a>. Without a valid license, the connector has limitations on the number of indexed symbols that can be communicated with MIRO. A maximum of 5 indexed symbols can be included in <a href = "./model.html#model-adjustments">$on/offExternalInput and $on/offExternalOutput</a>.</p>
+                          </div>
+                            <section id="installation-section" class="doc-section">
+                                <ul class="nav nav-tabs row" style="border:none;" id="installOS" role="tablist">
+                                  <li class="nav-item col-sm-12 col-md-12 col-lg-4 no-margin-sm">
+                                    <a class="nav-link active" id="win-tab" data-toggle="tab" href="#windows" role="tab" aria-controls="windows" aria-selected="true"><i class="fab fa-windows" style="font-size: 40pt;"></i><br>Windows</a>
+                                  </li>
+                                  <li class="nav-item col-sm-12 col-md-12 col-lg-4 no-margin-sm">
+                                    <a class="nav-link" id="macos-tab" data-toggle="tab" href="#macos" role="tab" aria-controls="macos" aria-selected="false"><i class="fab fa-apple" style="font-size: 40pt;"></i><br>MacOS</a>
+                                  </li>
+                                  <li class="nav-item col-sm-12 col-md-12 col-lg-4 no-margin-sm">
+                                    <a class="nav-link" id="linux-tab" data-toggle="tab" href="#linux" role="tab" aria-controls="linux" aria-selected="false"><i class="fab fa-linux" style="font-size: 40pt;"></i><br>Linux</a>
+                                  </li>
+                                </ul>
+                                <div class="tab-content" style="padding-top: 30px;" id="myTabContent">
+                                  <div class="tab-pane fade show active" id="windows" role="tabpanel" aria-labelledby="win-tab">
+                                      <div class="section-block">
+                                          <a class="btn btn-primary btn-cta" style="margin-top:10pt; -webkit-transition:unset;" href="https://miro.gams.com/download/">Download for Windows</a>
+                                      </div>
+                                      <div class="section-block">
+                                          <p>By downloading this software, you agree to the <a href = "./license.html">License Agreement</a>.</p>
+                                      </div>
+                                      <div class="section-block">
+                                        <h3 class="block-title">GAMS MIRO installation</h3>
+                                        <p>To install GAMS MIRO and its components, download the latest version and run the setup, which will guide you through the installation process.
+                                        </p>
+                                    </div><!--//section-block-->
+                                  </div>
+                                  <div class="tab-pane fade" id="macos" role="tabpanel" aria-labelledby="macos-tab">
+                                      <div class="section-block">
+                                          <a class="btn btn-primary btn-cta" style="margin-top:10pt; -webkit-transition:unset;" href="https://miro.gams.com/download/">Download for MacOS</a>
+                                      </div>
+                                      <div class="section-block">
+                                          <p>By downloading this software, you agree to the <a href = "./license.html">License Agreement</a>.</p>
+                                      </div>
+                                      <div class="section-block">
+                                        <h3 class="block-title">GAMS MIRO installation</h3>
+                                        <p>To install GAMS MIRO and its components, download the latest version.<br>
+                                        <br><b>Note:</b> In case a current R version (3.6 or later) is not yet installed on your system, you need to do this first. You can download R <a href="https://cran.r-project.org/bin/macosx/el-capitan/base/" target="_blank">here</a>.
+                                        </p>
+                                    </div><!--//section-block-->
+                                  </div>
+                                  <div class="tab-pane fade" id="linux" role="tabpanel" aria-labelledby="linux-tab">
+                                      <div class="section-block">
+                                          <a class="btn btn-primary btn-cta" style="margin-top:10pt; -webkit-transition:unset;" href="https://miro.gams.com/download/">Download for Linux</a>
+                                      </div>
+                                      <div class="section-block">
+                                          <p>By downloading this software, you agree to the <a href = "./license.html">License Agreement</a>.</p>
+                                      </div>
+                                      <div class="section-block">
+                                        <h3 class="block-title">GAMS MIRO installation</h3>
+                                        <ol>
+                                          <li>
+                                            In case a current R version (3.6 or later) is not yet installed on your system, you need to do this first. You can download R <a href="https://cloud.r-project.org/" target="_blank">here</a>.
+                                          </li>
+                                          <li>
+                                            For MIRO to work, the system libraries V8 and libcurl need to be installed. On Debian / Ubuntu you need <i>libcurl4-gnutls-dev</i> and either <i>libv8-dev</i> or <i>libnode-dev</i>, on Fedora use <i>libcurl-devel</i> and <i>v8-devel</i>.
+                                            For example, to install both libraries on Ubuntu, run:
+                                           <div class = "console-box"><span class="console-content">&gt; sudo apt install libcurl4-gnutls-dev libv8-dev</span></div>
+                                          </li>
+                                          <li>
+                                            The first time you launch the GAMS MIRO AppImage, some R packages need to be installed in your R installation path.
+                                            You will be guided through this installation process.
+                                          </li>
+                                        </ol>
+                                    </div><!--//section-block-->
+                                  </div>
+                                </div>
+                                <div class="section-block">
+                                    <h3 class="block-title">Demo applications</h3>
+                                    <p>There are demo applications that can help you get started with GAMS MIRO and its functionality. Those demo applications can be found in the GAMS data utilities library. You can get them e.g. in GAMS Studio via <i>GAMS</i> -> <i>Model Library Explorer</i> or via Shortcut <i>F6</i>.
+                                    In case you want to download them again, you can find the demo applications <a href="./index.html#demo-download" target="_blank">here</a>. To use them, simply unzip the downloaded file and move the folder into a directory of your choice.
+                                    </p>
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+                        </div><!--//content-inner-->
+                    </div><!--//doc-content-->
+                    <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+                        <div id="doc-nav" class="doc-nav">
+
+	                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                                    <a class="nav-link scrollto" href="#installation-section">Installation</a>
+	                            </nav><!--//doc-menu-->
+
+                        </div>
+                    </div><!--//doc-sidebar-->
+                </div><!--//doc-body-->
+            </div><!--//container-->
+        </div><!--//doc-wrapper-->
+
+    <!--TYPO3SEARCH_end-->
+    </div><!--//page-wrapper--><!--#include virtual="/footer_miro.html" -->
+
+
+    <!-- Main Javascript -->
+    <script type="application/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <script type="application/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script type="application/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
+    <script type="application/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
+    <script type="application/javascript" src="assets/js/main.js"></script>
+    <script type = "application/javascript">
+       if (navigator.appVersion.indexOf("Mac")!==-1){
+         $('#installOS a[href="#macos"]').tab('show')
+       };
+       if (navigator.appVersion.indexOf("Linux")!==-1 || navigator.appVersion.indexOf("X11")!==-1){
+         $('#installOS a[href="#linux"]').tab('show')
+       };
+    </script>
+
+</body>
+</html>

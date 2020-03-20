@@ -1,4 +1,76 @@
-﻿/*
+/* loading spinner (https://loading.io/css/)*/
+#loading-screen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.5);
+    z-index: 10000;
+}
+.lds-ellipsis {
+  display: inline-block;
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+#miro-license {
+  max-height: 800px;
+  max-height: 80vh;
+}
+.lds-ellipsis div {
+  position: absolute;
+  top: 27px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #fff;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.lds-ellipsis div:nth-child(1) {
+  left: 6px;
+  animation: lds-ellipsis1 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(2) {
+  left: 6px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(3) {
+  left: 26px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(4) {
+  left: 45px;
+  animation: lds-ellipsis3 0.6s infinite;
+}
+@keyframes lds-ellipsis1 {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes lds-ellipsis3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes lds-ellipsis2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(19px, 0);
+  }
+}
+/*
 * Gifplayer v0.3.4
 * Customizable jquery plugin to play and stop animated gifs. Similar to 9gag's
 * (c)2014 Rub�n Torres - rubentdlh@gmail.com
@@ -56,6 +128,9 @@
   position: relative;
   overflow: hidden;
   display: inline-block;
+}
+.page-wrapper .form-group input {
+  width: 100%;
 }
 .page-wrapper .upload-btn {
   border: 2px solid gray;
@@ -181,6 +256,7 @@ body{
   font-weight: 400;
   font-size: 16px;
   line-height: 1.428571429;
+  background-color: #e5e7ee;
 }
 .page-wrapper{
   font-family: montserratregular,'Open Sans',sans-serif;
@@ -206,6 +282,12 @@ body{
   vertical-align:middle;
   max-width:100%;
   overflow:auto;
+}
+.page-wrapper .key {
+  border: 1px solid #000;
+  display: inline-block;
+  text-align: center;
+  width: 25px;
 }
 .page-wrapper p {
   line-height: 1.5;
@@ -237,10 +319,6 @@ body{
 }
 .page-wrapper .btn,
 .page-wrapper a.btn {
-  -webkit-transition: all 0.4s ease-in-out;
-  -moz-transition: all 0.4s ease-in-out;
-  -ms-transition: all 0.4s ease-in-out;
-  -o-transition: all 0.4s ease-in-out;
   font-weight: 600;
   font-size: 14px;
   line-height: 1.5;
@@ -362,6 +440,39 @@ body{
   border-bottom: 7px solid #f90;
   margin-left: auto;
   margin-right: auto;
+}
+#headerVid {
+  display:none;
+}
+#videoOverlay {
+  padding: 20px;
+}
+@media screen and (min-width: 768px) {
+  .page-wrapper .sub-header .video-container {
+    padding-top:40.42%;
+    margin:0;
+    max-width:inherit;
+    padding-left:0;
+    padding-right:0;
+  }
+  #headerVid {
+    width:inherit;
+    display:block;
+    margin:auto;
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    bottom: 0; 
+    right: 0; 
+  }
+  #videoOverlay {
+    position: absolute;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    color: #f1f1f1;
+    width: inherit;
+    z-index:2;
+  }
 }
 .page-wrapper #header {
   max-width: 1200px;
@@ -584,6 +695,7 @@ body{
 .page-wrapper .callout-success {
   background: #f9f9fb;
   color: #000;
+  border-left: 5px solid #75c181;
 }
 .page-wrapper .callout-success .icon-holder,
 .page-wrapper .callout-success .callout-title{
@@ -592,6 +704,7 @@ body{
 .page-wrapper .callout-warning {
   background: #f9f9fb;
   color: #000;
+  border-left: 5px solid #f90;
 }
 .page-wrapper .callout-warning .icon-holder,
 .page-wrapper .callout-warning .callout-title{
@@ -800,6 +913,13 @@ body{
   padding-left: 34px;
   background: none;
 }
+.page-wrapper .doc-sub-menu .sub-sub-menu .nav-link {
+  padding-left: 55px;
+  margin-bottom: 5px;
+}
+.page-wrapper .doc-sub-menu .has-sub-sub {
+    margin-bottom: 0;    
+}
 .page-wrapper .doc-sub-menu .nav-link:first-child {
   padding-top: 5px;
 }
@@ -819,6 +939,9 @@ body{
   color: #494d55;
 }
 .body-orange .page-wrapper .doc-sub-menu .nav-link.active {
+  color: #f90;
+}
+.body-orange .page-wrapper .sub-sub-menu .nav-link.active {
   color: #f90;
 }
 .page-wrapper .promo-block {
@@ -1091,21 +1214,245 @@ body{
 .page-wrapper .cards-section .item-orange .icon {
   color: #f90;
 }
+.page-wrapper .cards-section .item-server .item-inner {
+  border-top: 3px solid #7EC0EE;
+}
+.page-wrapper .cards-section .item-server .item-inner:hover .title {
+  color: #71acd6;
+}
+.page-wrapper .cards-section .item-server .icon {
+  color: #7EC0EE;
+}
 @media (max-width: 767.98px) {
   .page-wrapper .cards-section .item-inner {
     padding: 30px 15px;
   }
 }
-
+.docu-general-header {
+  margin-top: 15px !important;
+}
+.page-wrapper .collapsed {
+  display:none;
+  margin-left: 12px;
+}
+.page-wrapper .expanded {
+  margin-left: 12px;
+  display: none;
+}
+.custom-table {
+  margin: 40px;
+  margin-bottom: 10px;
+}
+.custom-table td {
+  padding: 10px;
+  vertical-align: top;
+}
+.custom-table td:nth-child(odd) {
+  text-align:center;
+}
+.console-box {
+  background-color: #000000;
+  width: 100%;
+  height: 100%;
+  padding: 1em;
+}
+.console-content {
+  color: #ffffff;
+  font-family: monospace;
+}
+.tab-console-content {
+  padding: 10px;
+  border-bottom: 1px solid #dee2e6;
+  border-left: 1px solid #dee2e6;
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 30px;
+}
+.long-word-wrap{
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+.upvote-custom {
+  margin-top: 10px;
+}
+.btn-upvote:hover {
+  background-color: #d9f1d9;
+}
+.confirm-btn {
+    background: #f90;
+    text-shadow: none;
+    border: none;
+    color: #494d55;
+}
+.confirm-btn:hover {
+    background: #e18d0f;
+    color: #494d55;
+}
+.cancel-btn {
+    background: #fff;
+    color: #494d55;
+    border-color: #9a9fa8;
+    cursor: pointer;
+    cursor: pointer;
+}
+.cancel-btn:hover {
+    background: #f6f5f5;
+    color: #494d55;
+    border-color: #9a9fa8;
+}
+.vertical-outer {
+    display:table;
+    height: 100%;
+    width: 100%;
+    pointer-events:none;
+}
+.vertical-inner {
+    display: table-cell;
+    vertical-align: middle;
+    pointer-events:none;
+}
+.modal-content-custom {
+    width:inherit;
+    max-width:inherit; 
+    height:inherit;
+    margin: 0 auto;
+    pointer-events: all;
+}
+.box-grey {
+    background: #f9f9fb;
+    padding: 5px;
+    border: 1px solid grey;
+    margin: 5px;
+    margin-bottom: 15px;
+}
+#win-tab,
+#macos-tab,
+#linux-tab {
+    border: 1px solid #f9f9fb;
+    text-align: center;
+    background-color: #f9f9fb;
+    padding: 15pt 50pt;
+    color: #495057;
+}
+#win-tab:hover,
+#macos-tab:hover,
+#linux-tab:hover {
+    border: 1px solid gray;
+}
+#macos-tab[aria-selected="true"],
+#win-tab[aria-selected="true"],
+#linux-tab[aria-selected="true"]{
+  border: 1px solid gray;
+  color: #000000;
+}
+.page-wrapper .btn-primary:not(:disabled):not(.disabled).active, 
+.page-wrapper .btn-primary:not(:disabled):not(.disabled):active, 
+.page-wrapper .show>.btn-primary.dropdown-toggle {
+    color: #fff;
+    background-color: #de8807;
+    border-color: #de8807;
+}
+.info-wrapper{
+  color:inherit;
+  position:relative;
+  top:-14px;
+}
+.info-wrapper-small{
+  color:inherit;
+  position:relative;
+  top:-8px;
+}
+.info-label {
+    display: inline-block;
+}
+.info-icon{
+  text-align: right;
+  font-size: 17px;
+  margin-left: 13px;
+  display: inline-block;
+}
+.info-icon-small{
+  text-align: right;
+  font-size: 13px;
+  margin-left: 5px;
+  display: inline-block;
+  color: #494d55
+}
+.header-btn-left{
+  text-align: right;
+}
+.header-btn-right{
+  text-align: left;
+}
+.center-text-small{
+  text-align:left;  
+}
+.page-wrapper .margin-bottom-lg{
+    margin-top: 80px;
+}
+@media (max-width: 991px) {
+  .page-wrapper .callout-block .icon-holder{
+    top: -5px;
+    right: 8px;
+    left: unset;
+  }
+  .page-wrapper .callout-block .content{
+    margin-left: 0px;
+  } 
+  .page-wrapper .callout-block .icon-holder.custom-icon-holder{
+    top: -5px !important;
+  }
+  .page-wrapper .callout-block .content.custom-icon-content{
+    margin-top: 10px;
+  }     
+}
+@media (max-width: 767px) {
+  .page-wrapper .col-sm-12.header-btn{
+      text-align: center;
+  } 
+  .page-wrapper .col-sm-12.header-btn.header-btn-right{
+      margin-top:2px;
+  }
+  .page-wrapper .center-image-small{
+    margin-left: auto;
+    margin-right: auto;
+  } 
+  .page-wrapper .center-text-small{
+    text-align:center;
+  } 
+  .page-wrapper .margin-bottom-small{
+    margin-bottom:20px;
+  }       
+}
+@media (max-width: 991px) {
+  .page-wrapper .center-image-lg{
+    margin-left: auto;
+    margin-right: auto;
+  }  
+  .page-wrapper .margin-bottom-lg{
+    margin-bottom:40px;
+    margin-top:0px;
+  }    
+  .page-wrapper .nav-item.no-margin-sm{
+    margin-bottom: 0px;
+  }  
+}
+input[type=text], select {
+  width: 50%;
+  padding: 12px 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
 @charset "UTF-8";@import url(https://fonts.googleapis.com/css?family=PT+Mono);#gams-scope .fa,#gams-scope .glyphicon,#gams-scope .lg-icon{-moz-osx-font-smoothing:grayscale}#gams-scope .fa-ul,#gams-scope ol.list-unstyled{list-style-type:none}@font-face{font-family:montserratbold;src:url(../../../webfonts/montserrat-bold-webfont.eot);src:url(../../../webfonts/montserrat-bold-webfont.eot?#iefix) format("embedded-opentype"),url(../../../webfonts/montserrat-bold-webfont.woff2) format("woff2"),url(../../../webfonts/montserrat-bold-webfont.woff) format("woff"),url(../../../webfonts/montserrat-bold-webfont.ttf) format("truetype"),url(../../../webfonts/montserrat-bold-webfont.svg#montserratbold) format("svg");font-weight:400;font-style:normal}@font-face{font-family:montserratlight;src:url(../../../webfonts/montserrat-light-webfont.eot);src:url(../../../webfonts/montserrat-light-webfont.eot?#iefix) format("embedded-opentype"),url(../../../webfonts/montserrat-light-webfont.woff2) format("woff2"),url(../../../webfonts/montserrat-light-webfont.woff) format("woff"),url(../../../webfonts/montserrat-light-webfont.ttf) format("truetype"),url(../../../webfonts/montserrat-light-webfont.svg#montserratlight) format("svg");font-weight:400;font-style:normal}@font-face{font-family:montserratregular;src:url(../../../webfonts/montserrat-regular-webfont.eot);src:url(../../../webfonts/montserrat-regular-webfont.eot?#iefix) format("embedded-opentype"),url(../../../webfonts/montserrat-regular-webfont.woff2) format("woff2"),url(../../../webfonts/montserrat-regular-webfont.woff) format("woff"),url(../../../webfonts/montserrat-regular-webfont.ttf) format("truetype"),url(../../../webfonts/montserrat-regular-webfont.svg#montserratregular) format("svg");font-weight:400;font-style:normal}@font-face{font-family:montserratsemi_bold;src:url(../../../webfonts/montserrat-semibold-webfont.eot);src:url(../../../webfonts/montserrat-semibold-webfont.eot?#iefix) format("embedded-opentype"),url(../../../webfonts/montserrat-semibold-webfont.woff2) format("woff2"),url(../../../webfonts/montserrat-semibold-webfont.woff) format("woff"),url(../../../webfonts/montserrat-semibold-webfont.ttf) format("truetype"),url(../../../webfonts/montserrat-semibold-webfont.svg#montserratsemi_bold) format("svg");font-weight:400;font-style:normal}#gams-scope{/*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
   /*! Source: https://github.com/h5bp/html5-boilerplate/blob/master/src/css/main.css */
   /*!
  *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
  */
-
-
-
 
 
 

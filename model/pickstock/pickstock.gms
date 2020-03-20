@@ -9,15 +9,14 @@ $onExternalInput
 Parameter price(date<,symbol<) 'Price';
 Scalar    maxstock             'maximum number of stocks to select'  /  2 /
           trainingdays         'number of days for training'         / 99 /;
-$offExternalInput
-
 $setNames "%gams.input%" fp fn fe
 $if not set fileName $set fileName %fp%dowjones2016.csv
-$if not exist "%fileName%" $abort CSV file with stock prices missing
-$call csv2gdx "%fileName%" output=stockdata.gdx ValueDim=0 id=price Index="(1,2)" Value=3 UseHeader=y
-$if errorlevel 1 $abort problems reading CSV data
+$call.checkErrorLevel csv2gdx "%fileName%" output=stockdata.gdx ValueDim=0 id=price Index="(1,2)" Value=3 UseHeader=y
 $gdxin stockdata
 $load price
+
+Singleton Set solver / CPLEX /;
+$offExternalInput
 
 Alias (d,date), (s,symbol);
 Parameter
@@ -32,6 +31,26 @@ Parameter
 
 Set td(date)    'training days'
     ntd(date)   'none-training days';
+    
+* input validataion
+set error01(date, symbol);
+
+error01(date, symbol) = price(date, symbol) < 0;
+
+file log / miro.log /;
+put log '------------------------------------'/;
+put log '        Data validation'/;
+put log '------------------------------------'/;
+if(card(error01),
+  put log 'price:: No negative prices allowed!'/;
+  loop(error01(date, symbol),
+      put log / ' Symbol ' symbol.tl:4 ' has negative price at the date: ' date.tl:0;
+    );
+  abort "Data errors detected."
+else
+  put log 'Data OK'/;
+);
+putclose log;
     
 avgprice(s)       = sum(d, price(d,s))/card(d);
 weight(symbol)    = avgprice(symbol)/sum(s, avgprice(s));
@@ -69,6 +88,8 @@ option optCR=0.01;
 td(d) = ord(d)<=trainingdays;
 ntd(d) = not td(d);
 
+$if not set solver $eval.Set solver solver.TL
+option mip = %solver%;
 solve pickStock min obj using mip;
 
 fund(d)  = sum(s, price(d, s)*w.l(s));
@@ -83,8 +104,10 @@ Scalar error_train                     'Absolute error in entire training phase'
        error_ratio                     'Ratio between error test and error train'
 Parameter
        stock_weight(symbol)            'weight'   
-       dowVSindex(date,fHdr)           'dow jones vs. index fund [MIRO:table]'     
-       abserror(date,errHdr)           'absolute error [MIRO:table]'               
+       dowVSindex(date,fHdr)           'dow jones vs. index fund'     
+       abserror(date,errHdr)           'absolute error'
+table dowVSindex;
+table abserror;
 Singleton Set
 firstDayTraining(date)   'first date of training period'
 lastDayTraining(date)    'last date of training period' ;

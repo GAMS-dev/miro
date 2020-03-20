@@ -22,7 +22,7 @@ Simply pull the repository. Some example models that help you getting started ca
 
 ## Getting started
 
-In order to launch GAMS MIRO you need R (v. 3.5.1 or later) with the following packages installed:
+In order to launch GAMS MIRO you need R (v. 3.6.0 or later) with the following packages installed:
 
 * shiny
 * shinydashboard
@@ -44,12 +44,33 @@ In order to launch GAMS MIRO you need R (v. 3.5.1 or later) with the following p
 * RSQLite
 * digest
 
+MIRO will install these packages automatically when you first launch it. When using certain graphs and especially in the MIRO Configuration mode, the following additional packages are required:
+
+* plotly
+* xts
+* dygraphs
+* leaflet
+* leaflet.minicharts
+* timevis
+* DT
+
+MIRO will install these when it detects that they are required.
+
+If you want to use gdx as a file exchange with GAMS (which is the default for all sample models), you will also need to install either the gdxrrwMIO package, which you can find [here](https://github.com/GAMS-dev/gdxrrw-miro).
+
+Some (optional) functions are provided by the package miro.util, which you can find [here](https://github.com/GAMS-dev/miro.util). If you do not have this package installed, fallback functions are used.
+
 To start the application, run the following command from an R console:
 ```
 shiny::runApp(launch.browser=TRUE)
 ```
 
+## Build Javascript/CSS
+We use Node.JS, npm and webpack to lint, bundle and minify Javascript and compile Less to CSS. You can install npm from [here](https://www.npmjs.com/get-npm). 
+To install the required dependencies, run `npm install` from the root of the GAMS MIRO repository. To build CSS and Javascript files from the `srcjs` and `less` directories, run `npm run build`. This creates bundled and minified files inside the `www` directory. MIRO only reads these minified versions and not the source files.
+While you are developing you can run `npm run watch` to rebuild the output whenever you change one of the source files. 
+
 ## License
 
-GAMS MIRO as a whole is distributed under GPL-3 (GNU GENERAL PUBLIC LICENSE version 3), or (at your option) any later version. 
+GAMS MIRO as a whole is distributed under GPL-3 (GNU GENERAL PUBLIC LICENSE version 3). 
 See the [LICENSE](LICENSE) file for more details.

@@ -90,37 +90,16 @@ lapply(seq_along(modelIn), function(id){
                input[["in_" %+% k]]
                rv[["in_" %+% id]]
                
-               if(sharedData[k]){
-                 switch(modelIn[[k]]$type,
-                        dropdown = {
-                          input[["dropdown_" %+% k]]
-                          if(length(sharedInputData_filtered[[k]]) && nrow(sharedInputData_filtered[[k]])){
-                            tryCatch(
-                                value <- filterDf(sharedInputData_filtered[[k]], modelIn[[id]]$checkbox$max)
-                            , error = function(e){
-                              flog.error("Some problem occurred attempting to fetch values for checkbox: '%s' " %+%
-                                           "(forward dependency on dataset: '%s'). Error message: %s.", 
-                                         modelInAlias[id], modelInAlias[k], e)
-                              errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
-                            })
-                          }
-                        },
-                        {
-                          flog.debug("Widgets other than dropdown menus are currently not supported for shared datasets of checkboxes.")
-                          return()
-                        })
-               }else{
-                 tryCatch({
-                   value <- getInputDataset(k)[[modelIn[[id]]$checkbox$max]]
-                 }, error = function(e){
-                   flog.error("Some problem occurred attempting to fetch values for checkbox: '%s' " %+%
-                                "(forward dependency on dataset: '%s'). Error message: %s.", 
-                              modelInAlias[id], modelInAlias[k], e)
-                   errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
-                 })
-                 if(is.null(showErrorMsg(lang$errMsg$dataError$title, errMsg))){
-                   return()
-                 }
+               tryCatch({
+                 value <- getInputDataset(k)[[modelIn[[id]]$checkbox$max]]
+               }, error = function(e){
+                 flog.error("Some problem occurred attempting to fetch values for checkbox: '%s' " %+%
+                              "(forward dependency on dataset: '%s'). Error message: %s.", 
+                            modelInAlias[id], modelInAlias[k], e)
+                 errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
+               })
+               if(is.null(showErrorMsg(lang$errMsg$dataError$title, errMsg))){
+                 return()
                }
                tryCatch({
                  value <- getScalarValue(unlist(value, use.names = FALSE), modelIn[[id]]$checkbox$operator)
@@ -188,6 +167,27 @@ lapply(seq_along(modelIn), function(id){
              if(!is.null(value) && !identical(value, isolate(input[["text_" %+% id]]))){
                noCheck[id] <<- TRUE
                updateTextInput(session, "text_" %+% id, value = value)
+             }
+           })
+         },
+         numericinput = {
+           getSelected[[id]] <<- reactive({
+             if(is.null(rv[["in_" %+% id]])){
+               return(NULL)
+             }
+             if(!length(modelInputData[[id]][[1]])){
+               return(isolate(input[["numeric_" %+% id]]))
+             }else{
+               value <- modelInputData[[id]]
+               modelInputData[[id]] <<- list(NULL)
+               return(value)
+             }
+           })
+           observe({
+             value <- getSelected[[id]]()
+             if(!is.null(value) && !identical(value, isolate(input[["numeric_" %+% id]]))){
+               noCheck[id] <<- TRUE
+               updateNumericInput(session, "numeric_" %+% id, value = value)
              }
            })
          },
@@ -284,75 +284,28 @@ lapply(seq_along(modelIn), function(id){
                  j <- 2
                  for(dataSheet in unique(tolower(names(ddownDep[[name]]$fw)))){
                    k <- match(dataSheet, names(modelIn))
-                   if(sharedData[k] && modelIn[[k]]$type == "dropdown"){
-                     # dependent sheet is a dataset that uses shared data
-                     input[["dropdown_" %+% k]]
-                     rv[["in_" %+% k]]
-                     if(length(sharedInputData_filtered[[k]]) && 
-                        nrow(sharedInputData_filtered[[k]])){
-                       tryCatch(
-                         choices[[j]] <- filterDf(sharedInputData_filtered[[k]], 
-                                                  ddownDep[[name]]$fw[[dataSheet]])
-                         , error = function(e){
-                           flog.error("Some problem occurred attempting to fetch values for dropdown menu: '%s' " %+%
-                                        "(forward dependency on dataset: '%s'). Error message: %s.", 
-                                      modelInAlias[id], modelInAlias[k], e)
-                           errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
-                       })
-                       if(!is.null(ddownDep[[name]]$aliases[[dataSheet]])){
-                         tryCatch(
-                           aliases[[j]] <- filterDf(sharedInputData_filtered[[k]], 
-                                                    ddownDep[[name]]$aliases[[dataSheet]])
-                           , error = function(e){
-                             flog.error("Some problem occurred attempting to fetch values for dropdown menu: '%s' " %+%
-                                          "(forward dependency on dataset: '%s'). Error message: %s.", 
-                                        modelInAlias[id], modelInAlias[k], e)
-                             errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
-                           })
-                       }
-                       if(!is.null(modelIn[[id]]$dropdown$operator)){
-                         # element is checkbox with shared dependency that was transformed to dropdown in Hypercube mode
-                         tryCatch({
-                           value <- getScalarValue(unlist(choices[[j]], use.names = FALSE), 
-                                                   modelIn[[id]]$dropdown$operator)
-                         }, error = function(e){
-                           flog.warn("Input type for checkbox: '%s' is not numeric.", 
-                                     modelInAlias[id])
-                           errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
-                         })
-                         if(!is.null(errMsg)){
-                           next
-                         }
-                         if(value <= 0.5){
-                           choices[[j]] <- c(0L)
-                           aliases[[j]] <- lang$nav$hcubeMode$checkboxAliases[[1]]
-                         }else{
-                           choices[[j]] <- c(0L, 1L)
-                           aliases[[j]] <- lang$nav$hcubeMode$checkboxAliases
-                         }
-                       }
-                     }
-                   }else{
-                     input[["in_" %+% k]]
-                     rv[["in_" %+% k]]
-                     tryCatch({
-                       dataTmp <- getInputDataset(k)
-                     }, error = function(e){
-                       flog.error("Some problem occurred attempting to fetch values for dropdown menu: '%s' " %+%
-                                    "(forward dependency on dataset: '%s'). Error message: %s.", 
-                                  modelInAlias[id], modelInAlias[k], e)
-                       errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
-                     })
-                     if(!is.null(errMsg)){
-                       next
-                     }
-                     choices[[j]] <- dataTmp[[ddownDep[[name]]$fw[[dataSheet]]]]
-                     if(!length(choices[[j]]) || identical(choices[[j]][[1]], "")){
-                       return(NULL)
-                     }
-                     if(!is.null(ddownDep[[name]]$aliases[[dataSheet]])){
-                       aliases[[j]] <- dataTmp[[ddownDep[[name]]$aliases[[dataSheet]]]]
-                     }
+                   input[["in_" %+% k]]
+                   rv[["in_" %+% k]]
+                   if(identical(modelIn[[k]]$type, "custom")){
+                     force(modelInputDataVisible[[k]]())
+                   }
+                   tryCatch({
+                     dataTmp <- getInputDataset(k)
+                   }, error = function(e){
+                     flog.error("Some problem occurred attempting to fetch values for dropdown menu: '%s' " %+%
+                                  "(forward dependency on dataset: '%s'). Error message: %s.", 
+                                modelInAlias[id], modelInAlias[k], e)
+                     errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
+                   })
+                   if(!is.null(errMsg)){
+                     next
+                   }
+                   choices[[j]] <- dataTmp[[ddownDep[[name]]$fw[[dataSheet]]]]
+                   if(!length(choices[[j]]) || identical(choices[[j]][[1]], "")){
+                     return(NULL)
+                   }
+                   if(!is.null(ddownDep[[name]]$aliases[[dataSheet]])){
+                     aliases[[j]] <- dataTmp[[ddownDep[[name]]$aliases[[dataSheet]]]]
                    }
                    j <- j + 1
                  }
@@ -491,28 +444,23 @@ lapply(seq_along(modelIn), function(id){
                    }
                    if(length(rv[["in_" %+% k]]) && (modelIn[[k]]$type == "hot" && 
                                                          !is.null(input[["in_" %+% k]]) || 
-                                                         (!is.null(tableContent[[i]]) && nrow(tableContent[[i]]))) && !isEmptyInput[k]){
-                     if(modelIn[[k]]$type == "hot"){
-                       dataTmp <- unique(hot_to_r(isolate(input[["in_" %+% k]]))[[el[[1]][1]]])
-                     }else{
-                       dataTmp <- unique(tableContent[[i]][[el[[1]][1]]])
-                     } 
+                                                         (!is.null(tableContent[[k]]) && nrow(tableContent[[k]])) ||
+                                                    identical(modelIn[[k]]$type, "custom") && length(modelInputDataVisible[[k]])) 
+                      && !isEmptyInput[k]){
+                     tryCatch({
+                       if(identical(modelIn[[k]]$type, "custom")){
+                         force(modelInputDataVisible[[k]]())
+                       }
+                       dataTmp <- unique(getInputDataset(k, visible = TRUE)[[el[[1]][1]]])
+                     }, error = function(e){
+                       flog.error("Some problem occurred attempting to fetch values for slider: '%s' " %+%
+                                    "(forward dependency on dataset: '%s'). Error message: %s.", 
+                                  modelInAlias[id], modelInAlias[k], e)
+                       errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
+                     })
                    }else if(length(modelInputData[[k]][[1]]) && isEmptyInput[k]){
                      # no input is shown in UI, so get hidden data
                      try(dataTmp <- unique(modelInputData[[k]][[el[[1]][1]]]))
-                   }else if(sharedData[k] && modelIn[[k]]$type == "dropdown"){
-                     # dependent sheet is a dataset that uses shared data
-                     input[["dropdown_" %+% k]]
-                     if(length(sharedInputData_filtered[[k]]) && nrow(sharedInputData_filtered[[k]])){
-                       tryCatch(
-                         dataTmp <- unique(filterDf(sharedInputData_filtered[[k]], el[[1]]))
-                         , error = function(e){
-                           flog.error("Some problem occurred attempting to fetch values for dropdown menu: '%s' " %+%
-                                        "(forward dependency on dataset: '%s'). Error message: %s.", 
-                                      modelInAlias[id], modelInAlias[k], e)
-                           errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
-                         })
-                     }
                    }else{
                      return(NULL)
                    }

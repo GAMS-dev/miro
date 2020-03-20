@@ -1,0 +1,113 @@
+{
+	"modelTitle":	"G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m",
+	"inputSymbols":	{
+		"_scalars":	{
+			"alias":	"Input Scalars",
+			"symnames":	["usegeocoder", "maxcities", "maxcuts"],
+			"symtext":	["If set to 1, the Python geoCode package is used (Input Variant A), otherwise the user has to provide lat/long data (Input Variant B)", "Limit numbers of cities in tour", "Limit number of cuts"],
+			"symtypes":	["parameter", "parameter", "parameter"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		},
+		"iii":	{
+			"alias":	"Cities - Input Mode A",
+			"symtype":	"set",
+			"headers":	{
+				"uni":	{
+					"type":	"string",
+					"alias":	"Universal set"
+				},
+				"text":	{
+					"type":	"string",
+					"alias":	"Set text Cities - Input Mode A"
+				}
+			}
+		},
+		"iilocdataraw":	{
+			"alias":	"City location information - Input Mode B",
+			"symtype":	"parameter",
+			"headers":	{
+				"u":	{
+					"type":	"string",
+					"alias":	"Aliased with *"
+				},
+				"lat":	{
+					"type":	"numeric",
+					"alias":	"lat"
+				},
+				"lng":	{
+					"type":	"numeric",
+					"alias":	"lng"
+				}
+			}
+		}
+	},
+	"outputSymbols":	{
+		"_scalars_out":	{
+			"alias":	"Output Scalars",
+			"symnames":	["total_cost"],
+			"symtext":	["Total Distance (miles)"],
+			"symtypes":	["parameter"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		},
+		"tourdetails":	{
+			"alias":	"tourdetails",
+			"symtype":	"parameter",
+			"headers":	{
+				"ii":	{
+					"type":	"string",
+					"alias":	"Cities used in the model"
+				},
+				"jj":	{
+					"type":	"string",
+					"alias":	"Aliased with ii"
+				},
+				"lnga":	{
+					"type":	"numeric",
+					"alias":	"lnga"
+				},
+				"lata":	{
+					"type":	"numeric",
+					"alias":	"lata"
+				},
+				"lngb":	{
+					"type":	"numeric",
+					"alias":	"lngb"
+				},
+				"latb":	{
+					"type":	"numeric",
+					"alias":	"latb"
+				},
+				"flow":	{
+					"type":	"numeric",
+					"alias":	"flow"
+				}
+			}
+		}
+	}
+}

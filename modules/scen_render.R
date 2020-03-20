@@ -20,7 +20,9 @@ if(isInSplitView){
   }, logical(1L))
   newScenTabPanel <- generateScenarioTabsetMulti(scenId, noData, scenCounter = scenCounter)
   # add new Scenario tab
-  insertTab("scenTabset", newScenTabPanel, "scen_add", "before")
+  insertScenTab("scenTabset", newScenTabPanel, "scen_add", "before", 
+                scenID = scenId, scenButtonLang = c(list(tooltip = lang$nav$scen$tooltips$btClose),
+                                                    lang$nav[["dialogCloseScen"]]))
   numberScenTabs <<- numberScenTabs + 1L
   if(numberScenTabs == 1L){
     hideEl(session, "#no-scen")
@@ -39,13 +41,14 @@ lapply(scenTableNamesToDisplay, function(sheetName){
     tabData      <- getScenTabData(sheetName)
     dataToRender <- scenData[[scenIdLong]][[tabData$scenTableId]]
     attr(dataToRender, "aliases") <- tabData$headerAliases
-    callModule(renderData, "tab_" %+% scenCounter %+% "_" %+% tabData$tabId, type = tabData$graphConfig$outType, 
+    callModule(renderData, paste0("tab_", scenCounter, "_", tabData$tabId), 
+               type = tabData$graphConfig$outType, 
                data = dataToRender, configData = scalarData[[scenIdLong]], 
                dtOptions = config$datatable, graphOptions = tabData$graphConfig$graph, 
                pivotOptions = tabData$graphConfig$pivottable, 
                customOptions = tabData$graphConfig$options,
                roundPrecision = roundPrecision, modelDir = modelDir)
-    callModule(renderData, "table_tab_" %+% scenCounter %+% "_" %+% tabData$tabId, type = "datatable", 
+    callModule(renderData, paste0("table_tab_", scenCounter, "_", tabData$tabId), type = "datatable", 
                data = dataToRender, 
                dtOptions = config$datatable, roundPrecision = roundPrecision)
   }, error = function(e) {

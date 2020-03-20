@@ -4,13 +4,13 @@
 <!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
 <head>
-    <title>MIRO - FAQs</title>
+    <title>GAMS MIRO - FAQs</title>
     <!-- Meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="GAMS MIRO documentation">
+    <meta name="author" content="GAMS Development Corp.">
     <link rel="shortcut icon" href="favicon.ico">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
     <!-- FontAwesome JS -->
@@ -24,12 +24,28 @@
 
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
-
+    <!-- Cookie consent by https://cookieconsent.osano.com -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
+    <script>
+    window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#000"
+        },
+        "button": {
+          "background": "#F39619"
+        }
+      }
+    })});
+    </script>
 </head>
 
 <body class="body-orange">
     <!--#include virtual="/wbody.html" -->
     <div class="page-wrapper">
+    <!--#include virtual="/mirover.html" -->
 
         <!--TYPO3SEARCH_begin-->
 
@@ -60,8 +76,8 @@
                             <section id="general" class="doc-section">
                                 <h2 class="section-title">General</h2>
                                 <div class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i> What GAMS version is required to run MIRO</h3>
-                                    <div class="answer">During the beta phase a special GAMS distribution will be available which contains GAMS MIRO. The regular GAMS distributions are completely independent of this.
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> What GAMS version supports MIRO?</h3>
+                                    <div class="answer">All GAMS versions >= 30.2 support GAMS MIRO.
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block">
@@ -70,7 +86,13 @@
                                 </div><!--//section-block-->
                                 <div class="section-block">
                                     <h3 class="question"><i class="fas fa-question-circle"></i> Does all the data for my model need to come from MIRO?</h3>
-                                    <div class="answer">No. You can read external data from any data source supported by GAMS just as you did before. For example, you can place an Excel file in your model folder and import the data from this file into GAMS using the <a href="https://www.gams.com/latest/docs/T_GDXXRW.html" target="_blank">GDXXRW</a> utility. <br/><b>Note</b> however, that MIRO is running your GAMS model from a temporary working directory. This means that any <code class="language-gams">$call</code> or <code class="language-gams">execute</code> commands need to be executed with absolute paths instead of relative ones. GAMS MIRO is providing you the path to your model via <span class="code"><a href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOinputdir" target="_blank">idir1</a></span>. This means, in order to import e.g. an Excel file <span class="code">test.xlsx</span>, GDXXRW needs to be called like this: <kbd>$call gdxxrw i=%gams.idir1%test.xlsx</kbd>. Alternatively, you can also use absolute paths (e.g. via <code class="language-gams">$setNames "%gams.input%" fp fn fe</code> (see <a href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARsetnames" target="_blank">here</a>).</div>
+                                    <div class="answer">No. You can read external data from any data source supported by GAMS just as you did before. 
+                                    For example, you can place an Excel file in your model folder and import the data from this file into GAMS using 
+                                    the <a href="https://www.gams.com/latest/docs/T_GDXXRW.html" target="_blank">GDXXRW</a> utility. <br/>
+                                    <b>Note</b>: By default, MIRO executes your model in the directory where the model is located. However, there is an option 
+                                    to change this behaviour and run the model in a temporary directory. When this option is enabled, a few things have 
+                                    to be considered. Read mode about this <a href = "./model.html#consider-in-temp-dir">here</a>.
+                                    </div>
                                 </div><!--//section-block-->
                                 <div class="section-block">
                                     <h3 class="question"><i class="fas fa-question-circle"></i> What languages are supported?</h3>
@@ -112,8 +134,8 @@
                                 <div class="section-block">
                                     <h3 class="question"><i class="fas fa-question-circle"></i> How can I customize my MIRO app?</h3>
                                     <div class="answer">
-                                        <p>Graphics, tables as well as other customization options are specified via the <span class="code">&lt;modelname&gt;.json</span> file inside the directory: <span class="code">&lt;modeldirecory&gt;/&lt;modelname&gt;.json</span>.
-                                        In order to generate the <span class="code">&lt;modelname&gt;.json</span> file you can use our <a href="./configgen.html">Configuration Generator</a>.</p>
+                                        <p>The configuration can be done via a <a href ="./customize.html#configurationMode">graphical configuration interface</a>, with which you can create plots and widgets or change certain settings with a few mouse clicks, visually supported by a live preview.
+                                        In addition, the configuration can also be done <a href ="./customize.html#jsonfiles">manually</a> via the <span class="code">&lt;modelname&gt;.json</span> file inside the directory: <span class="code">&lt;modeldirecory&gt;/&lt;modelname&gt;.json</span>.</p>
                                     </div><!--//anwser-->
 
                                     <div class="section-block">
@@ -138,26 +160,29 @@
                                     <div class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> Can I set up GAMS MIRO on a server where multiple users can solve GAMS models?</h3>
                                         <div class="answer">
-                                          Yes. Besides the presented desktop version we also develop an enterprise version, which will run on a server and will offer features like multi-application management, user access management, load balancing, rolling updates, etc.
+                                          Yes. Besides the presented MIRO Desktop version we also develop a <a href="./server.html">MIRO Server version</a>, which will offer features like multi-application management, user access management, load balancing, rolling updates, etc.
                                             </div>
                                     </div><!--//section-block-->
 
                                     <div class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> How can I start the MIRO Hypercube mode?</h3>
                                         <div class="answer">
-                                          How to get to the Hyperube mode:
-                                          <ul>
-                                            <li>When you are in the base mode, you can simply click the “Switch to Hypercube mode” button in the header bar and you will automatically be redirected.</li>
-                                            <li>Alternatively, you can start the Hypercube mode directly via the switch: miromode=1 (in addition to miro=launch) from within GAMS Studio or the command line.</li>
-                                          </ul>
-                                           See also: <a href="https://www.gams.com/miro/hypercube.html#hypercube-overview">here</a>
-                                            </div>
+                                          <p>Just like the Base mode, the Hypercube mode can be started directly from GAMS Studio or the command line. 
+                                          For the latter, the environment variable <span class="code">MIRO_MODE=hcube</span> needs to 
+                                          be set instead of <span class="code">MIRO_MODE=base</span>. The other steps (see <a href = "./start.html#start-via-command-line">here</a>) 
+                                          remain the same. MIRO automatically processes and adjusts your base mode configuration so that it will work in Hypercube mode.</p>
+                                        </div>
                                     </div><!--//section-block-->
 
                                     <div class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What happens when using input data which results in infeasible or unbounded results?</h3>
                                         <div class="answer">
-                                          In GAMS MIRO both the log and the lst file of the current GAMS model run are displayed. Any information about infeasibilities and unboundness is also visible here. Further checks on infeasibilities and unboundness are not performed. If a model is infeasible (or unbounded) this still leads to a normal completion of the GAMS job (unless you check the model status and trigger an abort based on an unexpected model status). A normal completion of GAMS is interpreted by GAMS MIRO as an error-free run. The view switches to the output section and will show the content of your output symbols (even if they are empty or show the infeasible solution provided by some first phase algorithm). If the GAMS model is aborted for any reason, this will also result in an abort in GAMS MIRO. A corresponding message is displayed in GAMS MIRO and no output is displayed.
+                                          In GAMS MIRO both the log and the lst file of the current GAMS model run can be displayed. Any information about infeasibilities and unboundness is also visible here. 
+                                          Further checks on infeasibilities and unboundness are not performed. If a model is infeasible (or unbounded) this still leads to a normal completion of the GAMS job 
+                                          (unless you check the model status and trigger an abort based on an unexpected model status). A normal completion of GAMS is interpreted by GAMS MIRO as an error-free run. 
+                                          The view switches to the output section and will show the content of your output symbols (even if they are empty or show the infeasible solution provided by some first phase algorithm). 
+                                          If the GAMS model is aborted for any reason, this will also result in an abort in GAMS MIRO. A corresponding message is displayed in GAMS MIRO and no output is displayed.
+                                          <br><b>Note</b>: You can write an <a href = "./customize.html#miro-log">own report / log</a> and integrate it into MIRO which is then visible in the GAMS interaction section. In such a custom report you can also deal with infeasibilities and unboundness. 
                                             </div>
                                     </div><!--//section-block-->
                                 </div><!--//section-block-->
@@ -169,18 +194,18 @@
                                 <div id="file-io" class="section-block">
                                     <h3 class="question"><i class="fas fa-question-circle"></i> &lt;modelname&gt;_io.json</h3>
                                     <div class="answer">
-                                        <p>The <i>&lt;modelname&gt;_io.json</i> file, for example <i>transport_io.json</i>, is located in the <i>&lt;modelname&gt;/conf</i> directory. It contains the metadata of all input and output symbols defined between the <code class="language-gams">$onExternalInput
+                                        <p>The <i>&lt;modelname&gt;_io.json</i> file, for example <i>transport_io.json</i>, is located in the <i>&lt;modelname&gt;/conf_&lt;modelname&gt;</i> directory. It contains the metadata of all input and output symbols defined between the <code class="language-gams">$onExternalInput
                                     </code> / <code class="language-gams">$offExternalInput
                                     </code> and <code class="language-gams">$onExternalOutput
                                     </code> / <code class="language-gams">$offExternalOutput
-                                    </code> tags in the corresponding GAMS model. The <i>&lt;modelname&gt;_io.json</i> file is created each time a MIRO app ist started via GAMS Studio or the command line and should not be changed.</p>
+                                    </code> tags in the corresponding GAMS model. The <i>&lt;modelname&gt;_io.json</i> file is created each time a MIRO app ist started via GAMS Studio and should not be changed. If you use the command line, please follow <a href = "./start.html#start-via-command-line">these steps</a>.</p>
                                     </div><!--//anwser-->
                                 </div><!--//section-block-->
                                 <div id="file-config" class="section-block">
                                     <h3 class="question"><i class="fas fa-question-circle"></i> &lt;modelname&gt;.json</h3>
                                     <div class="answer">
-                                        <p>The <i>&lt;modelname&gt;.json</i> file, for example <i>transport.json</i>, is located in the <i>&lt;modelname&gt;/conf</i> directory. It contains the configuration of graphics, input widgets, language and all other model-specific configurations for a MIRO app.
-                                        This file has to be filled manually by the user.
+                                        <p>The <i>&lt;modelname&gt;.json</i> file, for example <i>transport.json</i>, is located in the <i>&lt;modelname&gt;/conf_&lt;modelname&gt;</i> directory. It contains the configuration of graphics, input widgets, language and all other model-specific configurations for a MIRO app.
+                                        This file can be filled manually by the user. However, the easiest way for the configuration is the <a href = "./customize.html#configurationMode">Configuration mode</a>.
                                         <br>Like the <i>&lt;modelname&gt;_io.json</i> file, the structure of this file is based on a <a href="./schema.html" target="_blank">schema</a> with which the file is validated when a MIRO app is started.</p>
                                     </div><!--//anwser-->
                                 </div><!--//section-block-->
@@ -190,12 +215,6 @@
                                         <p>Every time you start a MIRO app via GAMS Studio or the command line (i.e. in development mode), a gdx container is created in the directory <span class="code">data_&lt;modelname&gt;</span>. This file contains data extracted from the GAMS model and will be stored in the MIRO database under the scenario name: <i>default</i> at the next start of your app. </p>
                                     </div><!--//anwser-->
                                 </div><!--//section-block-->
-                                <div id="file-mirogms" class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i> &lt;modelname&gt;_miro.gms</h3>
-                                    <div class="answer">
-                                        <p>This file is generated when starting a MIRO app in development mode. It contains configuration data and should not be changed. </p>
-                                    </div><!--//anwser-->
-                                </div><!--//section-block-->
                                 <div id="file-appR" class="section-block">
                                     <h3 class="question"><i class="fas fa-question-circle"></i> runapp.R</h3>
                                     <div class="answer">
@@ -203,28 +222,21 @@
                                     </div><!--//anwser-->
                                 </div><!--//section-block-->
                                 <div id="file-miroconf" class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i> &lt;modelname&gt;.miroconf / &lt;modelname&gt;_hcube.miroconf</h3>
+                                    <h3 class="question long-word-wrap"><i class="fas fa-question-circle"></i> &lt;modelname&gt;_&lt;version_number&gt;.miroconf / &lt;modelname&gt;_&lt;version_number&gt;_hcube.miroconf</h3>
                                     <div class="answer">
                                         <p>These files are generated when starting a MIRO app in development mode. They contain the configuration and initialization steps of an app and can by used by an <a href="#file-executable" class="scrollto">executable</a> for a fast startup of MIRO. Learn more <a href="./customize.html#development-mode">here</a>.</p>
                                     </div><!--//anwser-->
                                 </div><!--//section-block-->
-                                <div id="file-executable" class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i> &lt;modelname&gt;.cmd / &lt;modelname&gt;.app</h3>
-                                    <div class="answer">
-                                        <p>An app of a GAMS model can be started via command line or via GAMS Studio (e.g. <span class="code">gams transport.gms miro=launch</span>). However, there is the possibility to create an executable file for a GAMS MIRO app.
-                                        By adding the double-dash parameter <span class="code">--mkapp=1</span> to the GAMS call, a <i>cmd</i> file (Windows) / <i>app</i> file (MacOS) is created which can execute the app. Learn more <a href="./model.html#create-app-executable">here</a>.</p>
-                                    </div><!--//anwser-->
-                                </div><!--//section-block-->
                             </section><!--//doc-section-->
-
-
                             <section id="definitions" class="doc-section">
                                 <h2 class="section-title">Definitions</h2>
-                                <div id="def-model" class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i> What is a <b>model</b> in the context of GAMS MIRO?</h3>
-                                    <div class="answer">
-                                        We call any <span class="code">.gms</span> file that you run with the command line option <span class="code">miro</span> a model. Inside this <span class="code">.gms</span> file you may include or call other files or applications, just as you would do with any GAMS program.
-                                    </div><!--//anwser-->
+                                <div class="section-block">
+                                    <div id="def-model" class="section-block">
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> What is a <b>model</b> in the context of GAMS MIRO?</h3>
+                                        <div class="answer">
+                                            We call any <span class="code">.gms</span> file that you run with the command line option <span class="code">miro</span> a model. Inside this <span class="code">.gms</span> file you may include or call other files or applications, just as you would do with any GAMS program.
+                                        </div><!--//anwser-->
+                                    </div><!--//section-block-->
                                     <div id="def-scenario" class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What is a <b>scenario</b> in the context of GAMS MIRO?</h3>
                                         <div class="answer">
@@ -268,11 +280,11 @@
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
 
-                            <section id="pricing" class="doc-section">
-                                <h2 class="section-title">Pricing</h2>
+                            <section id="licensing" class="doc-section">
+                                <h2 class="section-title">Licensing</h2>
                                 <div class="section-block">
                                     <h3 class="question"><i class="fas fa-question-circle"></i> What license is GAMS MIRO released under?</h3>
-                                    <div class="answer">GAMS MIRO is released under the GNU General Public License, either version 2 of the License, or (at your option) any later version. For a copy of this license, see <a href="http://www.gnu.org/licenses/" target="_blank">http://www.gnu.org/licenses/</a></div>
+                                    <div class="answer">GAMS MIRO is released under version 3 of the GNU General Public License. For a copy of this license, see <a href="http://www.gnu.org/licenses/" target="_blank">http://www.gnu.org/licenses/</a>. Full license information, including third-party software included in MIRO, can be found <a href="./license.html">here</a>.</div>
                                 </div><!--//section-block-->
 
                             </section><!--//doc-section-->
@@ -295,7 +307,7 @@
                                 <a class="nav-link scrollto" href="#features">Features</a>
                                 <a class="nav-link scrollto" href="#files">GAMS MIRO related files</a>
                                 <a class="nav-link scrollto" href="#definitions">Definitions</a>
-                                <a class="nav-link scrollto" href="#pricing">Pricing</a>
+                                <a class="nav-link scrollto" href="#licensing">Licensing</a>
                                 <a class="nav-link scrollto" href="#support">Support</a>
                             </nav><!--//doc-menu-->
                         </div>

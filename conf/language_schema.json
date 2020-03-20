@@ -124,6 +124,11 @@
               "minLength":1,
               "required":true
             },
+            "submitJob":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "solveHcube":{  
               "type":"string",
               "minLength":1,
@@ -166,6 +171,23 @@
           "additionalProperties":false,
           "required":true,
           "properties":{  
+            "remoteExec":{
+               "type":"object",
+               "additionalProperties":false,
+               "required":true,
+               "properties":{  
+                 "login":{  
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
+                  },
+                  "logout":{  
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
+                  }
+               }
+            },
              "scenario":{
                "type":"object",
                "additionalProperties":false,
@@ -223,6 +245,11 @@
                     "minLength":1,
                     "required":true
                   },
+                 "forum":{  
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
+                  },
                   "about":{  
                     "type":"string",
                     "minLength":1,
@@ -249,12 +276,22 @@
           "additionalProperties":false,
           "required":true,
           "properties":{  
+            "btCollapsedTabs":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "noDataDep":{  
               "type":"string",
               "minLength":1,
               "required":true
             },
             "widgetTabTitle":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "dirtyFlag":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -288,6 +325,16 @@
                   "minLength":1,
                   "required":true
                 },
+                "tabCurrent":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "tabJobList":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "gamsOutputTabset":{  
                   "type":"object",
                   "additionalProperties":false,
@@ -299,6 +346,11 @@
                       "required":true
                     },
                     "lstFile":{  
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "miroLogFile":{  
                       "type":"string",
                       "minLength":1,
                       "required":true
@@ -364,6 +416,11 @@
                   "required":true
                 },
                 "btTableView":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "btSymbolLink": {  
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -584,7 +641,22 @@
           "additionalProperties":false,
           "required":true,
           "properties":{  
+            "submission":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "queued":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "exec":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "collection":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -633,6 +705,21 @@
               "minLength":1,
               "required":true
             },
+            "selDatasets":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "cbSelectManually":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "noDsSelected":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "cancelButton":{  
               "type":"string",
               "minLength":1,
@@ -677,6 +764,16 @@
               "minLength":1,
               "required":true
             },
+            "discardAttach":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "discardPerm":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "tags":{  
               "type":"string",
               "minLength":1,
@@ -692,7 +789,7 @@
               "minLength":1,
               "required":true
             },
-            "scenExits":{  
+            "scenExists":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -739,6 +836,16 @@
               "minLength":1,
               "required":true
             },
+            "discardAttach":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "discardPerm":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "newScenName":{  
               "type":"string",
               "minLength":1,
@@ -749,7 +856,7 @@
               "minLength":1,
               "required":true
             },
-            "scenExits":{  
+            "scenExists":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -786,6 +893,21 @@
               "minLength":1,
               "required":true
             },
+            "categoryGeneral":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "categoryAttachments":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "categoryAccessPerm":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "newName":{  
               "type":"string",
               "minLength":1,
@@ -801,12 +923,17 @@
               "minLength":1,
               "required":true
             },
-            "scenExits":{  
+            "scenExists":{  
               "type":"string",
               "minLength":1,
               "required":true
             },
-            "attachmentsLabel":{  
+            "emptyPerm":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "incapOwner":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -842,11 +969,6 @@
               "required":true
             },
             "attachForbiddenFnameError":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
-            "success":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -878,6 +1000,21 @@
               "minLength":1,
               "required":true
             },
+            "categoryGeneral":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "categoryAttachments":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "categoryAccessPerm":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "newName":{  
               "type":"string",
               "minLength":1,
@@ -893,12 +1030,17 @@
               "minLength":1,
               "required":true
             },
-            "scenExits":{  
+            "emptyPerm":{  
               "type":"string",
               "minLength":1,
               "required":true
             },
-            "attachmentsLabel":{  
+            "incapOwner":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "scenExists":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -938,11 +1080,6 @@
               "minLength":1,
               "required":true
             },
-            "success":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
             "errMsg":{  
               "type":"string",
               "minLength":1,
@@ -958,6 +1095,115 @@
               "minLength":1,
               "required":true
             }
+          }
+        },
+        "dialogRemoteLogin": {
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "desc":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "url":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "username":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "password":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "namespace":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "useRegistered":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "remember":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "okButton":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "cancelButton":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "hostNotFound":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "nsNotFound":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "invalidCred":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "insuffPerm":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "invalidProtocol":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              }
+          }
+        },
+        "dialogRemoteLogout": {
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+             "title":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "desc":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "cancelButton":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "okButton":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              }
           }
         },
         "dialogRemoveScen":{  
@@ -1213,6 +1459,11 @@
               "minLength":1,
               "required":true
             },
+            "tabExternal":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "tabDatabase":{  
               "type":"string",
               "minLength":1,
@@ -1243,22 +1494,17 @@
               "minLength":1,
               "required":true
             },
+            "selExternalSource":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "descLocal":{  
               "type":"string",
               "minLength":1,
               "required":true
             },
             "newScenName":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
-            "badScenName":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
-            "scenNameExists":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -1289,16 +1535,6 @@
               "required":true
             },
             "cancelButton":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
-            "overwriteButton":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
-            "newNameButton":{
               "type":"string",
               "minLength":1,
               "required":true
@@ -1447,6 +1683,16 @@
               "minLength":1,
               "required":true
             },
+            "noDsSelected": {
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "invalidFile": {
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "sortBy":{  
               "type":"string",
               "minLength":1,
@@ -1555,6 +1801,11 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
+                },
+                "execPerm":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 }
               }
             },
@@ -1651,6 +1902,40 @@
             }
           }
         },
+        "dialogNoExecPerm":{
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
+        "dialogNoExecPermHC":{
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
         "dialogDownloadTmp":{
           "type":"object",
           "additionalProperties":false,
@@ -1688,6 +1973,53 @@
             }
          }
         },
+        "dialogJobSubmission":{
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "jobName":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "descWait":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "badName":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "cancelButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "okButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "successMsg":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
         "dialogHcube":{
           "type":"object",
           "additionalProperties":false,
@@ -1704,6 +2036,11 @@
               "required":true
             },
             "descSolveAgain":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "descJobSubmission":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -1813,12 +2150,281 @@
             }
          }
         },
+        "importJobsDialog":{
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{
+            "title":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "noJobs":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "noJobsHist":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "discardSuccess":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "importSuccess":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "maxDownloads":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "jobNotFound":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "accessDenied":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "histTitle":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "status":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "downloading":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "downloaded":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "running":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "imported":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "completed":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "corrupted":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "discarded":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "ttips":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "importedManual":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "discardedCorrupted":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "discardedActive":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "discardedScheduled":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "discardedCompleted":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "corruptedNoDir":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "corruptedNoProcess":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "corruptedManual":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "header":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "owner":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "date":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "tags":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "name":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "status":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "action":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "buttons":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "import":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "download":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "log":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "progress":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "discard":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "discardConfirm":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "title":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "desc":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "cancelButton":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "confirmButton":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            }
+          }
+        },
+        "newCompletedJobsDialog":{
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "cancelButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "okButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
         "hcubeMode":{
           "type":"object",
           "additionalProperties":false,
           "required":true,
           "properties":{  
             "sliderAllCombinations":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "stepsize":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -1834,7 +2440,7 @@
               },
               "required":true
             },
-            "configPaverDialog":{
+            "hcubeLoadDialog":{
               "type":"object",
               "additionalProperties":false,
               "required":true,
@@ -1845,6 +2451,11 @@
                   "required":true
                 },
                 "selectMethod":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "selExportType": {
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -1869,7 +2480,17 @@
                   "minLength":1,
                   "required":true
                 },
-                "desc":{
+                "selAnalysisScript":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "tabScript":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "tabPaver":{
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -1889,7 +2510,12 @@
                   "minLength":1,
                   "required":true
                 },
-                "selAttribs":{
+                "analysisRunScriptRunning": {
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "selPaverAttribs":{
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -1914,7 +2540,12 @@
                   "minLength":1,
                   "required":true
                 },
-                "runButton":{
+                "runPaverButton":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "runScriptButton": {
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -2000,198 +2631,6 @@
                 }
               }
             },
-            "importJobsDialog":{
-              "type":"object",
-              "additionalProperties":false,
-              "required":true,
-              "properties":{
-                "title":{
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "noJobs":{
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "noJobsHist":{
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "discardSuccess":{
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "importSuccess":{
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "histTitle":{
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "ttips":{
-                  "type":"object",
-                  "additionalProperties":false,
-                  "required":true,
-                  "properties":{
-                    "importedManual":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "discardedCorrupted":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "discardedActive":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "discardedScheduled":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "discardedCompleted":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "corruptedNoDir":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "corruptedNoProcess":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "corruptedManual":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    }
-                  }
-                },
-                "header":{
-                  "type":"object",
-                  "additionalProperties":false,
-                  "required":true,
-                  "properties":{
-                    "owner":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "date":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "tags":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "status":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "action":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    }
-                  }
-                },
-                "buttons":{
-                  "type":"object",
-                  "additionalProperties":false,
-                  "required":true,
-                  "properties":{
-                    "import":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "log":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "discard":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    }
-                  }
-                },
-                "importConfirm":{
-                  "type":"object",
-                  "additionalProperties":false,
-                  "required":true,
-                  "properties":{
-                    "title":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "desc":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "cancelButton":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "confirmButton":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    }
-                  }
-                },
-                "discardConfirm":{
-                  "type":"object",
-                  "additionalProperties":false,
-                  "required":true,
-                  "properties":{
-                    "title":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "desc":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "cancelButton":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "confirmButton":{
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    }
-                  }
-                }
-              }
-            },
             "manualJobImportDialog":{
               "type":"object",
               "additionalProperties":false,
@@ -2243,6 +2682,28 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
+                },
+                "cancelButton":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "showJobProgressDialog":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "title":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "cancelButton":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 }
               }
             },
@@ -2286,6 +2747,50 @@
               "required":true
             }
           }
+        },
+        "scriptOutput": {
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "runButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "interruptButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "errMsg": {
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "noScript":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "noOutput":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "timeout":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "crash":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -2300,7 +2805,7 @@
           "additionalProperties":false,
           "required":true,
           "properties":{  
-            "title":{  
+            "title":{
               "type":"string",
               "minLength":1,
               "required":true
@@ -2334,6 +2839,50 @@
             }
           }
         },
+        "importScen":{  
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "downloadResults":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "renderInput":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "renderOutput":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
+        "exportScen":{  
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "exportDs":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
         "loadScenDb":{  
           "type":"object",
           "additionalProperties":false,
@@ -2361,6 +2910,11 @@
               "minLength":1,
               "required":true
             },
+            "attachments": {  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "progress":{  
               "type":"string",
               "minLength":1,
@@ -2374,6 +2928,11 @@
           "required":true,
           "properties":{  
             "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "refresh":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -2450,6 +3009,23 @@
             }
           }
         },
+        "invalidFileType":{  
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
         "fileWrite":{  
           "type":"object",
           "additionalProperties":false,
@@ -2478,6 +3054,11 @@
               "required":true
             },
             "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "okButton": {  
               "type":"string",
               "minLength":1,
               "required":true
@@ -2689,6 +3270,40 @@
             }
           }
         },
+        "jobRunning":{  
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
+        "unzipProcessRunning":{  
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
         "gamsTerm":{  
           "type":"object",
           "additionalProperties":false,
@@ -2739,6 +3354,11 @@
               "required":true
             },
             "fileSize":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "fileNotFound": {  
               "type":"string",
               "minLength":1,
               "required":true
@@ -3071,6 +3691,43 @@
       "required":true,
       "additionalProperties":false,
       "properties":{
+        "invalidSymbolsDialog":{  
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{
+            "title":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "desc":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "msgSuccess": { 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "btRemoveWidgets":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "btRemoveGraphs":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "btCancel":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
         "uiR":{  
           "type":"object",
           "additionalProperties":false,
@@ -3105,6 +3762,58 @@
               "type":"string",
               "minLength":1,
               "required":true
+            },
+            "custom":{  
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "skeleton":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "steps":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "li1":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "li2":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "li3a":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "li3b":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "description1":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "description2":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "description3":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
             }
           }
         },      
@@ -3119,6 +3828,106 @@
               "required":true,
               "properties":{  
                 "title":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "tabInterface":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "tabSymbols":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "tabModules":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "tabScripts": { 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerGeneral":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerLogo":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerScalars":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerTabGrouping":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerTabSymlinks":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerInputGroups":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerOutputGroups":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerSymbolNaming":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerSymbolGrouping":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerBaseScripts":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "baseScriptsTooltip":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerHcubeScripts":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "hcubeScriptsTooltip":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerScenData":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerComputation":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "tooltipDocs":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -3165,11 +3974,11 @@
                 }
               }
             },
-            "skin":{          
+            "theme":{          
               "type":"object",
               "additionalProperties":false,
               "required":true,
-              "properties":{  
+              "properties":{
                 "label":{ 
                   "type":"string",
                   "minLength":1,
@@ -3178,12 +3987,24 @@
                 "choices":{  
                   "type":"array",
                   "uniqueItems": true,
-                  "minItems":6,
-                  "maxItems":6,
+                  "minItems":3,
+                  "maxItems":3,
                   "items": {
                       "type":"string",
                       "minLength": 1
                   },
+                  "required":true
+                }
+              }
+            },
+            "pageTitle":{          
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "label":{ 
+                  "type":"string",
+                  "minLength":1,
                   "required":true
                 }
               }
@@ -3217,6 +4038,11 @@
               "required":true,
               "properties":{  
                 "checkbox":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "tooltip":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -3257,24 +4083,53 @@
                 }
               }
             },
-            "inputScalars":{          
+            "symlinks":{          
               "type":"object",
               "additionalProperties":false,
               "required":true,
               "properties":{  
                 "label":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "placeholder":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
                 }
               }
             },
-            "outputScalars":{          
+            "scripts":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{  
+                "base":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "hcube":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "overwriteSheetOrder":{          
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{  
+                "input":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "output":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "overwriteSymbolAliases":{          
               "type":"object",
               "additionalProperties":false,
               "required":true,
@@ -3284,7 +4139,24 @@
                   "minLength":1,
                   "required":true
                 },
-                "placeholder":{ 
+                "input":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "output":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "overwriteSymbolHeaders":{          
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{  
+                "label":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -3312,6 +4184,92 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
+                }
+              }
+            },
+            "mirologfile":{          
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "label":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "readme":{          
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "label":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "readmeTooltip":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "useReadme":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "tabTitle":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "fileName":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "btEdit": { 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "dialogEdit": {
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{
+                    "title":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "reamdeHeader":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "markdownHeader":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "msgErrSave":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "btCancel":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "btSave":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    }
+                  }
                 }
               }
             },
@@ -3344,7 +4302,17 @@
               "additionalProperties":false,
               "required":true,
               "properties":{
+                "header":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "label":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "placeholder":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -3513,6 +4481,18 @@
                 }
               }
             },
+            "downloadTempFiles":{          
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "label":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
             "saveTrace":{          
               "type":"object",
               "additionalProperties":false,
@@ -3559,20 +4539,29 @@
                   "minLength":1,
                   "required":true
                 },
-                "tableType":{ 
+                "input":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
                 },
-                "choices":{  
-                  "type":"array",
-                  "uniqueItems": true,
-                  "minItems":2,
-                  "maxItems":2,
-                  "items": {
-                      "type":"string",
-                      "minLength": 1
-                  },
+                "output":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "symbol":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "resetTable":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "saveTable":{ 
+                  "type":"string",
+                  "minLength":1,
                   "required":true
                 }
               }
@@ -3654,11 +4643,6 @@
                   "required":true
                 },
                 "contextReadonly":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "contextComments":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -3781,6 +4765,40 @@
                   }
                 }
               }
+            },
+            "symbol":{  
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{ 
+                "removeDialog":{          
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{  
+                    "title":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "message":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "cancel":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "confirm":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    }
+                  }
+                }
+              }
             }
           }
         },
@@ -3804,7 +4822,22 @@
                   "minLength":1,
                   "required":true
                 },
-                "symbolType":{ 
+                "widgetTableUpdateSuccess":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "gams":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "go":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "dd":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -3820,6 +4853,16 @@
                   },
                   "required":true
                 },
+                "noSymbolMsg":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "noWidgetMsg":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "noWidgetConfigMsg":{ 
                   "type":"string",
                   "minLength":1,
@@ -3831,6 +4874,11 @@
                   "required":true
                 },
                 "doubledashConfigMsg":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "tableWidget":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -3850,7 +4898,37 @@
                   "minLength":1,
                   "required":true
                 },
+                "inputSymbolTooltip":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "tableTooltip":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "widgetGoTooltip":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "widgetDdTooltip":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "widgetType":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "alias":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "pivotColsRestriction":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -3873,16 +4951,6 @@
                   "required":true
                 },
                 "val3":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "val4":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "val5":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4056,6 +5124,86 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
+                },
+                "val40":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val41":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val42":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val43":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val44":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val45":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val46":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val47":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val48":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val49":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val50":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val51":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val52":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val53":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val54":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val55":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 }
               }
             },
@@ -4064,48 +5212,49 @@
               "additionalProperties":false,
               "required":true,
               "properties":{  
-                "input":{  
-                  "type":"array",
-                  "uniqueItems": true,
-                  "minItems":3,
-                  "maxItems":3,
-                  "items": {
-                      "type":"string",
-                      "minLength": 1
-                  },
+                "slider":{ 
+                  "type":"string",
+                  "minLength":1,
                   "required":true
                 },
-                "all":{  
-                  "type":"array",
-                  "uniqueItems": true,
-                  "minItems":7,
-                  "maxItems":7,
-                  "items": {
-                      "type":"string",
-                      "minLength": 1
-                  },
+                "sliderrange":{ 
+                  "type":"string",
+                  "minLength":1,
                   "required":true
                 },
-                "table":{  
-                  "type":"array",
-                  "uniqueItems": true,
-                  "minItems":1,
-                  "maxItems":1,
-                  "items": {
-                      "type":"string",
-                      "minLength": 1
-                  },
+                "checkbox":{ 
+                  "type":"string",
+                  "minLength":1,
                   "required":true
                 },
-                "date":{  
-                  "type":"array",
-                  "uniqueItems": true,
-                  "minItems":1,
-                  "maxItems":1,
-                  "items": {
-                      "type":"string",
-                      "minLength": 1
-                  },
+                "dropdown":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "table":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "date":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "daterange":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "text":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "numericinput":{ 
+                  "type":"string",
+                  "minLength":1,
                   "required":true
                 }
               }
@@ -4114,8 +5263,8 @@
               "type":"object",
               "additionalProperties":false,
               "required":true,
-              "properties":{  
-                "alias":{ 
+              "properties":{
+                "bigData":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4126,6 +5275,11 @@
                   "required":true
                 },
                 "readonlyCols":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "pivotCols":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4141,12 +5295,7 @@
               "type":"object",
               "additionalProperties":false,
               "required":true,
-              "properties":{  
-                "alias":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
+              "properties":{
                 "label":{ 
                   "type":"string",
                   "minLength":1,
@@ -4200,7 +5349,27 @@
                   "minLength":1,
                   "required":true
                 },
+                "minlabel":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "maxlabel":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "defaultlabel":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "step":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "minStep":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4221,13 +5390,18 @@
               "type":"object",
               "additionalProperties":false,
               "required":true,
-              "properties":{  
-                "alias":{ 
+              "properties":{
+                "label":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
                 },
-                "label":{ 
+                "minlabel":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "maxlabel":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4285,6 +5459,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "step":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "ticks":{ 
                   "type":"string",
                   "minLength":1,
@@ -4301,12 +5480,7 @@
               "type":"object",
               "additionalProperties":false,
               "required":true,
-              "properties":{  
-                "alias":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
+              "properties":{
                 "label":{ 
                   "type":"string",
                   "minLength":1,
@@ -4348,17 +5522,6 @@
                       "minLength":1,
                       "required":true
                     },
-                    "typeChoices":{  
-                      "type":"array",
-                      "uniqueItems": true,
-                      "minItems":3,
-                      "maxItems":3,
-                      "items": {
-                          "type":"string",
-                          "minLength": 1
-                      },
-                      "required":true
-                    },
                     "selector":{ 
                       "type":"string",
                       "minLength":1,
@@ -4367,6 +5530,21 @@
                   }
                 },
                 "default":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "multiple":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "clearValue":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "clearValueTooltip":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4382,12 +5560,7 @@
               "type":"object",
               "additionalProperties":false,
               "required":true,
-              "properties":{  
-                "alias":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
+              "properties":{
                 "label":{ 
                   "type":"string",
                   "minLength":1,
@@ -4409,13 +5582,13 @@
               "type":"object",
               "additionalProperties":false,
               "required":true,
-              "properties":{  
-                "alias":{ 
+              "properties":{ 
+                "label":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
                 },
-                "label":{ 
+                "defaultlabel":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4430,12 +5603,22 @@
                   "minLength":1,
                   "required":true
                 },
+                "minlabel":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "min":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
                 },
                 "minOff":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "maxlabel":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4532,12 +5715,7 @@
               "type":"object",
               "additionalProperties":false,
               "required":true,
-              "properties":{  
-                "alias":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
+              "properties":{
                 "label":{ 
                   "type":"string",
                   "minLength":1,
@@ -4574,6 +5752,26 @@
                   "required":true
                 },
                 "max":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "defaultStartlabel":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "defaultEndlabel":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "minlabel":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "maxlabel":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4665,12 +5863,7 @@
               "type":"object",
               "additionalProperties":false,
               "required":true,
-              "properties":{  
-                "alias":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
+              "properties":{
                 "label":{ 
                   "type":"string",
                   "minLength":1,
@@ -4682,6 +5875,43 @@
                   "required":true
                 },
                 "placeholder":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "numericinput":{  
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "label":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "value":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "min":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "max":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "decimal":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "sign":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4816,6 +6046,121 @@
               "type":"string",
               "minLength":1,
               "required":true
+            },
+            "removeOrphansWrapper":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeOrphansDialogBtn":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeOrphansDialogTitle":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeOrphansDialogDesc":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeOrphansDialogCancel":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeOrphansDialogConfirm":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeInconsistent":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeInconsistentConfirm":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "cannotBeUndone":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeTitle":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeConfirm":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeCheck":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "confirm":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "cancel":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeOrphans":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeOrphansCheck":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeOrphansTitle":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "saveMsg":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "compressMsg":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "decompressMsg":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "validateMsg":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "uploadMsg":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "finishedMsg":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
             }
           }
         },
@@ -4823,7 +6168,114 @@
           "type":"object",
           "additionalProperties":false,
           "required":true,
-          "properties":{  
+          "properties":{ 
+            "toolCategories":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{  
+                "main":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "general":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "xaxis":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "yaxis":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "filterDomain":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "filter":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "animation":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "bars":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "histogram":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "event":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "limit":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "annotation":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "shading":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "rangeSelector":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "highlight":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "markers":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "flows":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "minicharts":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "groupsLayers":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "data":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },          
             "ui":{  
               "type":"object",
               "additionalProperties":false,
@@ -4849,6 +6301,16 @@
                   "minLength":1,
                   "required":true
                 },
+                "input":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "output":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "chartTitle":{ 
                   "type":"string",
                   "minLength":1,
@@ -4867,12 +6329,22 @@
                 "choices":{  
                   "type":"array",
                   "uniqueItems": true,
-                  "minItems":6,
-                  "maxItems":6,
+                  "minItems":12,
+                  "maxItems":12,
                   "items": {
                       "type":"string",
                       "minLength": 1
                   },
+                  "required":true
+                },
+                "deleteGraph":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "saveGraph":{ 
+                  "type":"string",
+                  "minLength":1,
                   "required":true
                 }
               }
@@ -4886,7 +6358,12 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
-                }    
+                },
+                "pieValues":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }                
               }
             },
             "errMsg":{  
@@ -4920,63 +6397,13 @@
             "updateToolNoScalars":{
               "type":"array",
               "uniqueItems": true,
-              "minItems":5,
-              "maxItems":5,
+              "minItems":11,
+              "maxItems":11,
               "items": {
                   "type":"string",
                   "minLength": 1
               },
               "required":true
-            },
-            "chartTypePlotly":{  
-              "type":"object",
-              "additionalProperties":false,
-              "required":true,
-              "properties":{ 
-                "title":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "choices":{
-                  "type":"array",
-                  "uniqueItems": true,
-                  "minItems":6,
-                  "maxItems":6,
-                  "items": {
-                      "type":"string",
-                      "minLength": 1
-                  },
-                  "required":true
-                }               
-              }
-            },
-            "pieOptions":{  
-              "type":"object",
-              "additionalProperties":false,
-              "required":true,
-              "properties":{ 
-                "labels":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "values":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "donut":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "donutHole":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                }                 
-              }
             },
             "axisOptions":{  
               "type":"object",
@@ -5022,6 +6449,32 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
+                },
+                "categoryorder":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "categoryorderChoices":{ 
+                  "type":"array",
+                  "uniqueItems": true,
+                  "minItems":15,
+                  "maxItems":15,
+                  "items": {
+                      "type":"string",
+                      "minLength": 1
+                  },
+                  "required":true
+                },
+                "scaleRatioCheck":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "scaleRatio":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 }           
               }
             },
@@ -5041,6 +6494,11 @@
                   "required":true
                 },
                 "color":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "symbol":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -5066,6 +6524,31 @@
                       "required":true
                     },
                     "showlegend":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "fixedHeightCheck":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "fixedHeight":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "fixedWidthCheck":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "fixedWidth":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "staticPlot":{ 
                       "type":"string",
                       "minLength":1,
                       "required":true
@@ -5243,6 +6726,11 @@
                       "minLength": 1
                   },
                   "required":true
+                },
+                "noAnimation":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 }         
               }
             },
@@ -5307,6 +6795,32 @@
                 "barmode":{ 
                   "type":"string",
                   "minLength":1,
+                  "required":true
+                },
+                "alpha":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "cumulative":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "horizontal":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "orientationChoices":{
+                  "type":"array",
+                  "uniqueItems": true,
+                  "minItems":2,
+                  "maxItems":2,
+                  "items": {
+                      "type":"string",
+                      "minLength": 1
+                  },
                   "required":true
                 },
                 "barmodeChoices":{
@@ -5488,6 +7002,11 @@
                   "required":true,
                   "properties":{ 
                     "title":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "activate":{ 
                       "type":"string",
                       "minLength":1,
                       "required":true
@@ -5727,6 +7246,60 @@
                 }
               }
             },
+            "customOptions":{  
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{ 
+                "name":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "packages":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "filterOptions":{  
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{ 
+                "filter":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "dimension":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "label":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "placeholder":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "multiple":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "date":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
             "saveJson":{  
               "type":"object",
               "additionalProperties":false,
@@ -5814,6 +7387,60 @@
                       "required":true
                     },
                     "groupMemberOut":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    }
+                  }
+                },
+                "addSymlink":{  
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{ 
+                    "source":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "target":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    }
+                  }
+                },
+                "addScript":{
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{ 
+                    "id":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "title":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "cmd":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "args":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "outFile":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "timeout":{ 
                       "type":"string",
                       "minLength":1,
                       "required":true
@@ -6063,6 +7690,48 @@
                       "minLength":1,
                       "required":true
                     },
+                    "iconOptions":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "icon":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "iconChoices":{ 
+                      "type":"array",
+                      "uniqueItems": true,
+                      "minItems":22,
+                      "maxItems":22,
+                      "items": {
+                          "type":"string",
+                          "minLength": 1
+                      },
+                      "required":true
+                    },
+                    "iconColor":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "markerColor":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "markerColorChoices":{ 
+                      "type":"array",
+                      "uniqueItems": true,
+                      "minItems":19,
+                      "maxItems":19,
+                      "items": {
+                          "type":"string",
+                          "minLength": 1
+                      },
+                      "required":true
+                    },
                     "options":{ 
                       "type":"string",
                       "minLength":1,
@@ -6126,6 +7795,11 @@
                       "required":true
                     },
                     "label":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "labelTooltip":{ 
                       "type":"string",
                       "minLength":1,
                       "required":true
@@ -6251,6 +7925,33 @@
                     }
                   }
                 },
+                "addPieDataEl":{
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{ 
+                    "chartValues":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "chartLabels":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "holeSize":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "chartName":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    }
+                  }
+                },
                 "addBarDataEl":{
                   "type":"object",
                   "additionalProperties":false,
@@ -6306,8 +8007,8 @@
                     "symbolChoices":{
                       "type":"array",
                       "uniqueItems": true,
-                      "minItems":142,
-                      "maxItems":142,
+                      "minItems":33,
+                      "maxItems":33,
                       "items": {
                           "type":"string",
                           "minLength": 1
@@ -6469,6 +8170,22 @@
                     "size":{ 
                       "type":"string",
                       "minLength":1,
+                      "required":true
+                    },
+                    "sizemode":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "sizemodeChoices":{
+                      "type":"array",
+                      "uniqueItems": true,
+                      "minItems":2,
+                      "maxItems":2,
+                      "items": {
+                          "type":"string",
+                          "minLength": 1
+                      },
                       "required":true
                     },
                     "maxsize":{ 

@@ -714,7 +714,7 @@ class StatisticsGenerator():
         print("<HTML>", file=out);
         print("<HEAD>", file=out);
         print(paver.htmlheader, file=out);
-        print("<STYLE> .block {background:#f0f0f0; padding:10px; border: 1px solid #c2c2c2;} </STYLE>", file=out);
+        print("<STYLE> .block {background:#f0f0f0; padding:10px; border: 1px solid #c2c2c2;} @media (prefers-color-scheme: dark) {.block {background:#444a54;} </STYLE>", file=out);
         
         print("<H3>Statistics for category", category, "</H3>", file=out)
         

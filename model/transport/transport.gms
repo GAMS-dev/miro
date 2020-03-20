@@ -12,9 +12,11 @@ $offText
 Set
    i      'canning plants'
    j      'markets'
-   locHdr 'location data header' / lat, lng /;
+   locHdr 'location data header'  / lat, lng /;
 
 $onExternalInput
+Singleton Set type 'selected model type' / lp /;
+
 Parameter
    a(i<) 'capacity of plant i in cases'
         / Seattle     350
@@ -34,12 +36,12 @@ Scalar f 'freight in dollars per case per thousand miles' / 90 /
        minS 'minimum shipment (MIP- and MINLP-only)' / 100 /
        beta 'beta (MINLP-only)' / 0.95 /;
 
-Table ilocData(i,locHdr) 'Plant location information [MIRO:table]'
+Table ilocData(i,locHdr) 'Plant location information'
                lat           lng     
 Seattle     47.608013  -122.335167
 San-Diego   32.715736  -117.161087;
 
-Table jlocData(j,locHdr) 'Market location information [MIRO:table]'
+Table jlocData(j,locHdr) 'Market location information'
            lat           lng     
 New-York   40.730610  -73.935242
 Chicago    41.881832  -87.623177
@@ -49,6 +51,19 @@ $offExternalInput
 Parameter
 c(i,j) 'transport cost in thousands of dollars per case';
 c(i,j) = f*d(i,j)/1000;
+
+
+* input validataion
+file log / miro.log /;
+put log '------------------------------------'/;
+put log '        Validating data'/;
+put log '------------------------------------'/;
+if(sum(i, a(i)) < sum(j, b(j)),
+  put log 'a:: Capacity insufficient to meet demand'/;
+else
+  put log 'OK'/;
+);
+putclose log;
 
 Variable
    x(i,j) 'shipment quantities in cases'
@@ -89,7 +104,7 @@ Equation
 
 Model transportMINLP / transportMIP - cost + costnlp /;
 
-$if not set type $set type lp
+$if not set type $eval.Set type type.TL
 
 *some starting point
 x.l(i,j) = 1;
@@ -102,12 +117,12 @@ Set scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM', 'latM', 'cap', 'dema
 
 $onExternalOutput
 Parameter
-   schedule(i,j,scheduleHdr) 'shipment quantities in cases [MIRO:table]'
+   schedule(i,j,scheduleHdr) 'shipment quantities in cases'
    total_cost                'total transportation costs in thousands of dollars';
+Table schedule;
 $offExternalOutput
 
 total_cost = z.l;
-
 schedule(i,j, 'lngP')       = iLocData(i,'lng');
 schedule(i,j, 'latP')       = iLocData(i,'lat');
 schedule(i,j, 'lngM')       = jLocData(j,'lng');

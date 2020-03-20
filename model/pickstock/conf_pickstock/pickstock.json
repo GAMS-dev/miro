@@ -1,0 +1,336 @@
+{
+  "UILogo": "pickstock.png",
+  "miroLogFile": "miro.log",
+  "inputWidgets": {
+    "price": {
+      "widgetType": "table",
+      "readonlyCols": "date"
+    },
+    "maxstock": {
+      "label": "select the maximum number of stocks",
+      "widgetType": "slider",
+      "alias": "maximum number of stocks to select",
+      "min": 1,
+      "max": "card(price$symbol)",
+      "default": 3,
+      "step": 1,
+      "ticks": false,
+      "noHcube": false
+    },
+    "trainingdays": {
+      "label": "select the number of days for training",
+      "min": 1,
+      "default": 99,
+      "step": 1,
+      "max": "card(price$date)",
+      "alias": "number of days for training",
+      "widgetType": "slider"
+    },
+    "solver": {
+      "alias": "MIP-Solver",
+      "widgetType": "dropdown",
+      "label": "Solver to use",
+      "choices": ["BARON", "BDMLP", "CBC", "CPLEX", "LINDO", "LINDOGLOBAL", "MOSEK", "SCIP", "XPRESS"],
+      "selected": "CPLEX"
+    }
+  },
+  "dataRendering": {
+    "price": {
+      "outType": "graph",
+      "height": 700,
+      "graph": {
+        "tool": "dygraphs",
+        "title": "Stock prices over time (year: 2016)",
+        "color": "symbol",
+        "dyOptions": {
+          "includeZero": true,
+          "logscale": false,
+          "drawGrid": true,
+          "drawPoints": false,
+          "pointSize": 2,
+          "fillGraph": false,
+          "fillAlpha": 0.15
+        },
+        "dylegend": {
+          "width": 450,
+          "show": "always",
+          "hideOnMouseOut": true
+        },
+        "dyHighlight": {
+          "highlightSeriesOpts": {
+            "strokeWidth": 3,
+            "strokeBorderWidth": 1,
+            "highlightCircleSize": 5
+          },
+          "hideOnMouseOut": true
+        },
+        "dyRangeSelector": {
+          "height": 20,
+          "strokeColor": ""
+        },
+        "xdata": "date",
+        "ydata": {
+          "Price": {
+            "label": "symbol"
+          }
+        },
+        "xaxis": {
+          "label": "Date"
+        },
+        "yaxis": {
+          "label": "Price"
+        }
+      }
+    },
+    "stock_weight": {
+      "outType": "dtGraph",
+      "graph": {
+        "title": "Part of portfolio",
+        "tool": "plotly",
+        "type": "pie",
+        "traces": [
+          {
+            "labels": "symbol",
+            "values": "value",
+            "hole": 0,
+            "name": "weight"
+          }
+        ],
+        "showlegend": true
+      },
+      "height": 700
+    },
+    "dowvsindex": {
+      "outType": "graph",
+      "height": 700,
+      "graph": {
+        "tool": "dygraphs",
+        "title": "Dow Jones vs. Index Fund",
+        "dyOptions": {
+          "includeZero": false,
+          "logscale": false,
+          "drawGrid": true,
+          "drawPoints": false,
+          "pointSize": 2,
+          "fillGraph": false,
+          "fillAlpha": 0.15
+        },
+        "dyHighlight": {
+          "highlightSeriesOpts": {
+            "strokeWidth": 3,
+            "strokeBorderWidth": 1,
+            "highlightCircleSize": 5
+          },
+          "hideOnMouseOut": true
+        },
+        "dylegend": {
+          "width": 450,
+          "show": "always",
+          "hideOnMouseOut": true
+        },
+        "dyRangeSelector": {
+          "height": 20,
+          "strokeColor": ""
+        },
+        "dyEvent": {
+          "lastdaytraining": {
+            "label": "End of training phase",
+            "labelLoc": "bottom",
+            "color": "red"
+          }
+        },
+        "xdata": "date",
+        "ydata": {
+          "dj": {
+            "label": "Dow Jones index",
+            "stepPlot": false,
+            "stemPlot": false,
+            "fillGraph": false,
+            "drawpoints": true
+          },
+          "index fund": {
+            "label": "Index fund",
+            "stepPlot": false,
+            "stemPlot": false,
+            "fillGraph": false,
+            "drawpoints": true
+          }
+        },
+        "xaxis": {
+          "label": "Date"
+        },
+        "yaxis": {
+          "label": "Price"
+        }
+      }
+    },
+    "abserror": {
+      "outType": "dtGraph",
+      "height": 700,
+      "graph": {
+        "tool": "plotly",
+        "type": "hist",
+        "histnorm": "percent",
+        "nbins": 20,
+        "barmode": "overlay",
+        "alpha": 0.6,
+        "title": "Absolute Error: Dow Jones vs. Index Fund",
+        "xdata": {
+          "absolute error train": {
+            "labels": "training",
+            "color": "darkgreen",
+            "alpha": 0.6
+          },
+          "absolute error test": {
+            "labels": "test",
+            "color": "red",
+            "alpha": 0.6
+          }
+        },
+        "xaxis": {
+          "title": "Absolute Error"
+        },
+        "yaxis": {
+          "title": "Frequency"
+        }
+      }
+    },
+    "priceMerge": {
+      "outType": "graph",
+      "height": 700,
+      "graph": {
+        "tool": "dygraphs",
+        "title": "Price (stocks & dow jones)",
+        "color": "uni",
+        "filter": {
+          "col": "uni",
+          "multiple": true,
+          "label": "Select stock symbol"
+        },
+        "dyOptions": {
+          "includeZero": true,
+          "logscale": false,
+          "drawGrid": true,
+          "drawPoints": false,
+          "pointSize": 2,
+          "fillGraph": false,
+          "fillAlpha": 0.15
+        },
+        "dylegend": {
+          "width": 450,
+          "show": "always",
+          "hideOnMouseOut": true
+        },
+        "dyHighlight": {
+          "highlightSeriesOpts": {
+            "strokeWidth": 3,
+            "strokeBorderWidth": 1,
+            "highlightCircleSize": 5
+          },
+          "hideOnMouseOut": true
+        },
+        "dyRangeSelector": {
+          "height": 20,
+          "strokeColor": ""
+        },
+        "xdata": "date",
+        "ydata": {
+          "Price (stocks & dow jones)": {
+            "label": "symbol"
+          }
+        },
+        "xaxis": {
+          "label": "Date"
+        },
+        "yaxis": {
+          "label": "Price"
+        },
+        "dyEvent": {
+          "lastdaytraining": {
+            "label": "End of training phase",
+            "labelLoc": "top",
+            "color": "red"
+          }
+        }
+      }
+    }
+  },
+  "pivottable": {
+    "bgColor": "transparent"
+  },
+  "storeLogFilesDuration": 7,
+  "roundingDecimals": 2,
+  "activateModules": {
+    "loadLocal": true,
+    "logFile": true,
+    "lstFile": true,
+    "attachments": true,
+    "remoteExecution": false,
+    "downloadTempFiles": true
+  },
+  "aggregateWidgets": true,
+  "excelIncludeMeta": true,
+  "excelIncludeEmptySheets": true,
+  "saveTraceFile": true,
+  "autoGenInputGraphs": true,
+  "theme": "browser",
+  "defCompMode": "split",
+  "symbolLinks": [
+    {
+      "source": "pricemerge",
+      "target": "price"
+    }
+  ],
+  "overwriteSheetOrder": {
+    "input": ["_widgets", "price"],
+    "output": ["dowvsindex", "stock_weight", "abserror", "pricemerge", "_scalars_out"]
+  },
+  "pageTitle": "Stock Selection Optimization",
+  "defaultScenName": "default",
+  "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
+  "readme": {
+    "tabTitle": "Readme",
+    "filename": "Readme.md"
+  },
+  "handsontable": {
+    "stretchH": "none",
+    "readonly": false,
+    "highlightCol": true,
+    "highlightRow": true,
+    "columnSorting": true,
+    "manualColumnResize": true,
+    "contextMenu": {
+      "enabled": true,
+      "allowRowEdit": true,
+      "allowColEdit": false,
+      "allowReadOnly": false
+    },
+    "height": 700,
+    "colWidths": 200
+  },
+  "outputGroups": [
+    {
+      "name": "Dow Jones vs. Index Fund ⨠",
+      "members": ["dowvsindex", "abserror"]
+    }
+  ],
+  "scripts": {
+    "hcube": [
+      {
+        "title": "High level scalar analysis",
+        "id": "script1",
+        "command": "jupyter",
+        "args": ["nbconvert", "--to", "html", "--execute", "hcube_analysis.ipynb"],
+        "outputFile": "hcube_analysis.html"
+      }
+    ]
+  },
+  "datatable": {
+    "class": "stripe",
+    "filter": "bottom",
+    "rownames": false,
+    "options": {
+      "pageLength": 15
+    }
+  }
+}

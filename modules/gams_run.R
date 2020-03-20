@@ -1,25 +1,166 @@
 # run GAMS
-
-if(identical(config$activateModules$hcubeMode, TRUE)){
-  idsToSolve <- NULL
-  idxDiff <- NULL
-  scenGmsPar <- NULL
-  getHcubeStaticCSVMd5 <- function(id, data, hcubeStaticFilePath){
-    filePath <- file.path(hcubeStaticFilePath, tolower(names(modelIn)[id]) %+% ".csv")
-    if(!inherits(data, "data.frame"))
-      return(NA)
-    write_csv(data, filePath, na = "", append = FALSE, col_names = TRUE, 
-              quote_escape = "double")
-    flog.debug("Static file: '%s' was written to:'%s'.", names(modelIn)[id], filePath)
-    return(digest(file = filePath, algo = "md5"))
+storeGAMSOutputFiles <- function(workDir){
+  if(config$activateModules$attachments && 
+     config$storeLogFilesDuration > 0L && !is.null(activeScen)){
+    errMsg <- NULL
+    tryCatch({
+      filesToStore <- character(0L)
+      if(any(c(config$activateModules$logFile, config$activateModules$lstFile)))
+        filesToStore  <- c(file.path(workDir, 
+                                     paste0(modelNameRaw, 
+                                            c(if(config$activateModules$logFile) ".log", 
+                                              if(config$activateModules$lstFile) ".lst"))))
+      if(config$activateModules$miroLogFile)
+        filesToStore <- c(filesToStore, file.path(workDir, config$miroLogFile))
+      
+      if(!length(filesToStore))
+        return()
+      
+      filesNoAccess <- file.access(filesToStore) == -1L
+      if(any(filesNoAccess)){
+        if(all(filesNoAccess))
+          stop("fileAccessException", call. = FALSE)
+        flog.info("GAMS output files: '%s' could not be accessed. Check file permissions.", 
+                  paste(filesToStore[filesNoAccess], collapse = "', '"))
+        errMsg <- lang$errMsg$saveGAMSLog$noFileAccess
+      }
+      filesToStore <- filesToStore[!filesNoAccess]
+      filesTooLarge <- file.size(filesToStore) > attachMaxFileSize
+      if(any(filesTooLarge)){
+        if(all(filesTooLarge))
+          stop("fileSizeException", call. = FALSE)
+        flog.info("GAMS output files: '%s' are too large. They will not be saved.", 
+                  paste(filesToStore[filesTooLarge], collapse = "', '"))
+        errMsg <<- paste(errMsg, lang$errMsg$saveGAMSLog$fileSizeExceeded, sep = "\n")
+      }
+      filesToStore <- filesToStore[!filesTooLarge]
+      activeScen$addAttachments(filesToStore, overwrite = TRUE, 
+                                execPerm = rep.int(FALSE, length(filesToStore)))
+    }, error = function(e){
+      switch(conditionMessage(e),
+             fileAccessException = {
+               flog.info("No GAMS output files could not be accessed. Check file permissions.")
+               errMsg <<- lang$errMsg$saveGAMSLog$noFileAccess
+             },
+             fileSizeException = {
+               flog.info("All GAMS output files are too large to be saved.")
+               errMsg <<- lang$errMsg$saveGAMSLog$fileSizeExceeded
+             },
+             {
+               flog.error("Problems while trying to store GAMS output files in the database. Error message: '%s'.", e)
+               errMsg <<- lang$errMsg$unknownError
+             })
+    })
+    showErrorMsg(lang$errMsg$saveGAMSLog$title, errMsg)
   }
+}
+prepareModelRun <- function(async = FALSE){
+  prog <- Progress$new()
+  on.exit(suppressWarnings(prog$close()))
+  prog$set(message = lang$progressBar$prepRun$title, value = 0)
+  
+  prog$inc(amount = 0.5, detail = lang$progressBar$prepRun$sendInput)
+  # save input data 
+  saveInputDb <- FALSE
+  source("./modules/input_save.R", local = TRUE)
+  if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
+    return(NULL)
+  }
+  pfFileContent <- NULL
+  inputData <- DataInstance$new(modelInFileNames, fileExchange = config$fileExchange,
+                                gdxio = gdxio, csvDelim = config$csvDelim)
+  lapply(seq_along(dataTmp), function(i){
+    # write compile time variable file and remove compile time variables from scalar dataset
+    if(identical(tolower(names(dataTmp)[[i]]), scalarsFileName)){
+      # scalars file exists, so remove compile time variables from it
+      DDParIdx           <- dataTmp[[i]][[1]] %in% outer(DDPar, c("", "$lo", "$up"), 
+                                                         FUN = "paste0")
+      GMSOptIdx          <- dataTmp[[i]][[1]] %in% GMSOpt
+      DDParValues        <- dataTmp[[i]][DDParIdx, , drop = FALSE]
+      GMSOptValues       <- dataTmp[[i]][GMSOptIdx, , drop = FALSE]
+      if(nrow(DDParValues) || nrow(GMSOptValues)){
+        pfGMSPar      <- vapply(seq_along(DDParValues[[1]]), 
+                                function(i){
+                                  if(DDParValues[[3]][i] %in% c("_", "system.empty", "")) 
+                                    return(NA_character_)
+                                  symbolTmp <- substring(DDParValues[[1]][i], 
+                                                         nchar(prefixDDPar) + 1L)
+                                  if(endsWith(symbolTmp, "$lo")){
+                                    symbolTmp <- paste0(substring(symbolTmp, 1, nchar(symbolTmp) - 3), "_lo")
+                                  }else if(endsWith(symbolTmp, "$up")){
+                                    symbolTmp <- paste0(substring(symbolTmp, 1, nchar(symbolTmp) - 3), "_up")
+                                  }
+                                  paste0('--', symbolTmp, '=', 
+                                         escapeGAMSCL(DDParValues[[3]][i]))
+                                }, character(1L), USE.NAMES = FALSE)
+        pfGMSPar      <- pfGMSPar[!is.na(pfGMSPar)]
+        # do not write '_' in pf file (no selection)
+        pfGMSOpt      <- vapply(seq_along(GMSOptValues[[1]]), 
+                                function(i){
+                                  if(!GMSOptValues[[3]][i] %in% c("_", "system.empty", "")) 
+                                    paste0(substring(GMSOptValues[[1]][i], nchar(prefixGMSOpt) + 1L), '=', 
+                                           escapeGAMSCL(GMSOptValues[[3]][i]))
+                                  else
+                                    NA_character_
+                                }, character(1L), USE.NAMES = FALSE)
+        pfGMSOpt      <- pfGMSOpt[!is.na(pfGMSOpt)]
+        pfFileContent <<- c(pfGMSPar, pfGMSOpt)
+        # remove those rows from scalars file that are compile time variables
+        csvData <- dataTmp[[i]][!(DDParIdx | GMSOptIdx), ]
+      }else{
+        csvData <- dataTmp[[i]]
+      }
+      rm(GMSOptValues, DDParValues)
+    }else if(identical(modelIn[[names(dataTmp)[[i]]]]$type, "dropdown") &&
+             names(dataTmp)[[i]] %in% modelInTabularDataBase){
+      csvData <- ddToTibble(dataTmp[[i]][[1L]], modelIn[[names(dataTmp)[[i]]]])
+    }else{
+      csvData <- dataTmp[[i]]
+    }
+    
+    inputData$push(names(dataTmp)[[i]], csvData)
+  })
+  if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
+    return(NULL)
+  }
+  tryCatch({
+    if(config$activateModules$attachments && attachAllowExec && !is.null(activeScen)){
+      prog$inc(amount = 0, detail = lang$progressBar$prepRun$downloadAttach)
+      inputData$addFilePaths(activeScen$downloadAttachmentData(workDir, allExecPerm = TRUE))
+    }
+    prog$close()
+  }, error = function(e) {
+    errMsg <<- lang$errMsg$gamsExec$desc
+    flog.error("Attachment data could not be downloaded. Error message: %s.", conditionMessage(e))
+  })
+  if(is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))){
+    return(NULL)
+  }
+  return(list(inputData = inputData, pfFileContent = pfFileContent, dataTmp = if(!async) dataTmp))
+}
+if(LAUNCHHCUBEMODE){
+  idsToSolve <- NULL
+  idsSolved <- NULL
+  scenGmsPar <- NULL
+  attachmentFilePaths <- NULL
+  staticData <- NULL
+  hcubeData <- NULL
+  
   getHcubeParPrefix <- function(id){
     if(names(modelIn)[id] %in% GMSOpt){
-      return("")
+      return(substring(names(modelIn)[id],
+                       nchar(prefixGMSOpt) + 1L))
     }else if(names(modelIn)[id] %in% DDPar){
-      return("--")
+      return(paste0("--", substring(names(modelIn)[id],
+                                    nchar(prefixDDPar) + 1L)))
+    }else if(names(modelIn)[id] %in% inputDsNames){
+      if(isTRUE(modelIn[[id]]$dropdown$single) || 
+         isTRUE(modelIn[[id]]$dropdown$checkbox)){
+        return(paste0("--HCUBE_SCALARV_", names(modelIn)[id]))
+      }
+      return(paste0("--HCUBE_STATIC_", names(modelIn)[id]))
     }else{
-      return("--HCUBE_SCALAR_")
+      return(paste0("--HCUBE_SCALARV_", names(modelIn)[id]))
     }
   }
   noScenToSolve <- reactive({
@@ -36,10 +177,15 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                  
                  stepSize <- input[["hcubeStep_" %+% i]]
                  range <- floor((value[2] - value[1])/stepSize) + 1
-                 if(!is.numeric(stepSize) || stepSize <= 0 
-                    || is.numeric(modelIn[[i]]$slider$step) 
-                    && stepSize < modelIn[[i]]$slider$step){
+                 if(!is.numeric(stepSize) || stepSize <= 0){
                    # non valid step size selected
+                   return(-1L)
+                 }
+                 if(length(modelIn[[i]]$slider$minStep)){
+                   if(stepSize < modelIn[[i]]$slider$minStep){
+                     return(-1L)
+                   }
+                 }else if(stepSize < modelIn[[i]]$slider$step){
                    return(-1L)
                  }
                  if(identical(modelIn[[i]]$slider$single, TRUE)){
@@ -50,11 +196,14 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                }
                return(1L)
              },
-             hot = {
+             dt = ,
+             hot = ,
+             custom = {
                return(1L)
              },
              dropdown = {
-               if(identical(modelIn[[i]]$dropdown$single, TRUE)){
+               if(isTRUE(modelIn[[i]]$dropdown$single) || 
+                  isTRUE(modelIn[[i]]$dropdown$checkbox)){
                  return(length(input[["dropdown_" %+% i]]))
                }
                return(1L)
@@ -69,6 +218,9 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                return(length(input[["cb_" %+% i]]))
              },
              textinput = {
+               return(1L)
+             },
+             numericinput = {
                return(1L)
              })
     }, integer(1L), USE.NAMES = FALSE)
@@ -90,196 +242,215 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     updateProgress <- function(incAmount, detail = NULL) {
       prog$inc(amount = incAmount, detail = detail)
     }
-    hcubeStaticFilePath <- file.path(currentModelDir, hcubeDirName, "static")
-    if(dir.exists(hcubeStaticFilePath) &&
-       unlink(hcubeStaticFilePath, recursive = TRUE, force = TRUE) == 1L){
-      stop("Problems removing existing directory for static Hypercube job files.", 
-           call. = FALSE)
-    }
-    if(!dir.create(hcubeStaticFilePath, showWarnings = TRUE, recursive = TRUE)[1]){
-      stop("Problems creating directory for static Hypercube job files.", 
-           call. = FALSE)
-    }
-    elementValues <- lapply(seq_along(modelIn), function(i){
+    hcubeData <<- HcubeDataInstance$new(modelGmsName)
+    staticData <<- DataInstance$new(fileExchange = config$fileExchange,
+                                    gdxio = gdxio, csvDelim = config$csvDelim,
+                                    sortedNames = names(modelIn))
+    modelInSorted <- sort(names(modelIn))
+    elementValues <- lapply(seq_along(modelIn), function(j){
       updateProgress(incAmount = 1/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
+      i <- match(names(modelIn)[j], modelInSorted)
+      parPrefix <- getHcubeParPrefix(i)
       switch(modelIn[[i]]$type,
              slider = {
                value <- input[["slider_" %+% i]]
                if(length(value) > 1){
-                 parPrefix <- getHcubeParPrefix(i)
-                   
                  if(identical(modelIn[[i]]$slider$double, TRUE)
                     && !identical(input[["hcubeMode_" %+% i]], TRUE)){
                    # double slider in single run mode
-                   return(paste0(parPrefix, names(modelIn)[[i]], "_lo=", value[1], 
-                                 " ", parPrefix, names(modelIn)[[i]], "_up=", value[2]))
+                   return(paste0(parPrefix, "_lo= ", value[1], 
+                                 '|"""|', parPrefix, "_up= ", value[2]))
                  }
                  
                  stepSize <- input[["hcubeStep_" %+% i]]
-                 if(identical(modelIn[[i]]$slider$single, TRUE)){
-                   return(seq(value[1], value[2], stepSize))
+                 if(isTRUE(modelIn[[i]]$slider$single)){
+                   return(paste0(parPrefix, "= ", seq(value[1], value[2], stepSize)))
                  }
                  # double slider all combinations
                  value <- getCombinationsSlider(value[1], value[2], stepSize)
-                 return(paste0(parPrefix, names(modelIn)[[i]], "_lo=", value$min, 
-                               " ", parPrefix, names(modelIn)[[i]], "_up=", value$max))
+                 return(paste0(parPrefix, "_lo= ", value$min, 
+                               '|"""|', parPrefix, "_up= ", value$max))
+               }else{
+                 return(paste0(parPrefix, "= ", value))
                }
              },
              dropdown = {
-               if(identical(modelIn[[i]]$dropdown$single, FALSE)){
-                 data <- tibble(input[["dropdown_" %+% i]])
-                 names(data) <- tolower(names(modelIn))[i]
-                 return(getHcubeStaticCSVMd5(i, data, hcubeStaticFilePath))
+               if(isTRUE(modelIn[[i]]$dropdown$checkbox)){
+                 convertNumeric <- TRUE
+               }else if(!isTRUE(modelIn[[i]]$dropdown$single)){
+                 data <- ddToTibble(sort(input[["dropdown_" %+% i]]), modelIn[[i]])
+                 staticData$push(names(modelIn)[[i]], data)
+                 return(paste0(parPrefix, "= ", digest(data, algo = "md5")))
+               }else{
+                 convertNumeric <- FALSE
                }
-               parPrefix <- getHcubeParPrefix(i)
                value <- input[["dropdown_" %+% i]]
-               if("_" %in% value){
-                 value <- value[value != "_"]
-                 return(c(if(length(value)) paste0(parPrefix, names(modelIn)[[i]], "=", escapeGAMSCL(value)), ""))
+               value <- value[value != "_"]
+               
+               if(!length(value)){
+                 return(NA)
                }
-               return(paste0(parPrefix, names(modelIn)[[i]], "=", escapeGAMSCL(value)))
+               
+               if(!names(modelIn)[i] %in% c(DDPar, GMSOpt) && 
+                   length(modelIn[[i]]$dropdown$aliases)){
+                 text <- paste0('|"""|--HCUBE_SCALART_', names(modelIn)[i], 
+                                "= ", escapeGAMSCL(modelIn[[i]]$dropdown$
+                                                    aliases[match(value, 
+                                                                   modelIn[[i]]$
+                                                                     dropdown$choices)]))
+                 if(isTRUE(modelIn[[i]]$dropdown$clearValue)){
+                   return(substring(text, 2L))
+                 }
+               }else{
+                 text <- ""
+               }
+               if(convertNumeric){
+                 return(paste0(parPrefix, "= ", as.numeric(value), text))
+               }
+               return(paste0(parPrefix, "= ", escapeGAMSCL(value), text))
              },
              date = {
-               return(input[["date_" %+% i]])
+               return(paste0(parPrefix, "= ", escapeGAMSCL(
+                 as.character(input[["date_" %+% i]]))))
              },
              daterange = {
                value <- as.character(input[["daterange_" %+% i]])
-               parPrefix <- getHcubeParPrefix(i)
                
-               return(paste0(parPrefix, names(modelIn)[[i]], "_lo=", escapeGAMSCL(value[1]), 
-                             " ", parPrefix, names(modelIn)[[i]], "_up=", escapeGAMSCL(value[2])))
+               return(paste0(parPrefix, "_lo= ", escapeGAMSCL(value[1]), 
+                             '|"""|', parPrefix, "_up= ", escapeGAMSCL(value[2])))
              },
              checkbox = {
-               return(input[["cb_" %+% i]])
+               return(paste0(parPrefix, "= ", input[["cb_" %+% i]]))
+             },
+             numericinput = {
+               valueTmp <- input[["numeric_" %+% i]]
+               if(length(valueTmp) != 1L){
+                 # user removed input
+                 if(length(modelIn[[i]]$numericinput$value) == 1L){
+                   valueTmp <- modelIn[[i]]$numericinput$value
+                 }else{
+                   valueTmp <- 0L
+                 }
+               }
+               return(paste0(parPrefix, "= ", valueTmp))
              },
              textinput = {
                val <- input[["text_" %+% i]]
                if(!length(val) || !nchar(val))
-                 val <- NA
-               else 
-                 val <- escapeGAMSCL(val)
-               return(val)
+                 return(NA)
+               
+               return(paste0(parPrefix, "= ", escapeGAMSCL(val)))
              },
              dt =,
-             hot = {
+             hot = ,
+             custom = {
                input[['in_' %+% i]]
-               data <- getInputDataset(i)
-               return(getHcubeStaticCSVMd5(i, data, hcubeStaticFilePath))
+               errMsg <- NULL
+               tryCatch({
+                 data <- fixColTypes(getInputDataset(i), modelIn[[i]]$colTypes)
+               }, error = function(e){
+                 flog.error("Dataset: '%s' could not be loaded. Error message: '%s'.", 
+                            modelInAlias[i], e)
+                 errMsg <<- sprintf(lang$errMsg$GAMSInput$noData, 
+                                    modelInAlias[i])
+               })
+               if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
+                 return(paste0(parPrefix, "= NA"))
+               }
+               staticData$push(names(modelIn)[[i]], data)
+               return(paste0(parPrefix, "= ", digest(data, algo = "md5")))
              },
              {
                stop(sprintf("Widget type: '%s' not supported", modelIn[[i]]$type), call. = FALSE)
              })
     })
-    par <- modelInGmsString[!is.na(elementValues)]
     elementValues <- elementValues[!is.na(elementValues)]
-    gmsString <- genGmsString(par = par, val = elementValues, modelName = modelName)
+    gmsString <- hcubeData$genGmsString(val = elementValues, 
+                                        modelName = modelName)
+    attachmentFilePaths <- NULL
     if(config$activateModules$attachments && attachAllowExec && !is.null(activeScen)){
-      filePaths     <- activeScen$downloadAttachmentData(hcubeStaticFilePath, 
-                                                         allExecPerm = TRUE)
-      filePaths     <- filePaths[match(basename(filePaths), sort(basename(filePaths)))]
-      if(length(filePaths)){
-        gmsString <- paste(gmsString, paste(vapply(seq_along(filePaths), function(i){
-          return(paste0("--HCUBE_STATIC_", i, "=", digest(file = filePaths[i], algo = "md5")))
+      attachmentFilePaths <- activeScen$downloadAttachmentData(workDir, allExecPerm = TRUE)
+      attachmentFilePaths <- attachmentFilePaths[match(basename(attachmentFilePaths), 
+                                                       sort(basename(attachmentFilePaths)))]
+      if(length(attachmentFilePaths)){
+        staticData$addFilePaths(attachmentFilePaths)
+        gmsString <- paste(gmsString, paste(vapply(seq_along(attachmentFilePaths), function(i){
+          return(paste0("--HCUBE_STATIC_", i, "= ", digest(file = attachmentFilePaths[i], algo = "md5")))
         }, character(1L), USE.NAMES = FALSE), collapse = " "))
       }
     }
     updateProgress(incAmount = 15/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
-    scenIds <- vapply(gmsString, digest, character(1L), algo = "sha256", 
-                      serialize = FALSE, USE.NAMES = FALSE)
-    updateProgress(incAmount = 3/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
-    gmsString <- paste0(scenIds, ": ", gmsString)
+    scenIds <- hcubeData$pushJobIDs(vapply(gmsString, digest, character(1L), algo = "sha256", 
+                                           serialize = FALSE, USE.NAMES = FALSE))
     
-    return(list(ids = scenIds, gmspar = gmsString))
+    updateProgress(incAmount = 3/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
+    gmsString <- paste0(scenIds, ": gams ", modelName, ".gms ", gmsString)
+    
+    return(list(ids = scenIds, gmspar = gmsString, attachmentFilePaths = attachmentFilePaths))
   })
   
   prevJobSubmitted <- Sys.time()
   
-  genHcubeJobFolder <- function(fromDir, submFileDir, toDir, scenGmsPar){
-    prog <- Progress$new()
-    on.exit(prog$close())
-    prog$set(message = lang$nav$dialogHcube$waitDialog$title, value = 0)
-    updateProgress <- function(incAmount, detail = NULL) {
-      prog$inc(amount = incAmount, detail = detail)
+  runHcubeJob <- function(scenGmsPar, downloadFile = NULL){
+    if(!length(scenGmsPar)){
+      flog.debug("No scenarios selected to be solved in Hypercube mode.")
+      return()
     }
-    
-    if(config$includeParentDir){
-      parentDirName <- basename(dirname(fromDir))
-      scenGmsPar    <- paste0(scenGmsPar, ' idir1="', 
-                              gmsFilePath(file.path("..", "..", parentDirName, basename(fromDir))),
-                              '" idir2="', gmsFilePath(file.path("..", "..", parentDirName, '"')))
-      fromDir <- dirname(fromDir)
-    }else{
-      scenGmsPar <- paste0(scenGmsPar, ' idir1="', gmsFilePath(file.path("..", "..", 
-                                                             basename(fromDir))), '"')
-    }
-    
-    writeLines(scenGmsPar, file.path(toDir, tolower(modelName) %+% ".hcube"))
-    
-    # Copy files that are needed to solve model
-    file.copy(fromDir, toDir, recursive = TRUE)
-    staticFilePath <- file.path(currentModelDir, hcubeDirName, "static")
-    if(dir.exists(staticFilePath))
-    file.copy(staticFilePath, toDir, recursive = TRUE)
-    unlink(staticFilePath, recursive = TRUE, force = TRUE)
-    file.copy(file.path(submFileDir, hcubeSubmissionFile %+% ".gms"), toDir)
-    updateProgress(incAmount = 1, detail = lang$nav$dialogHcube$waitDialog$desc)
-  }
-  executeHcubeJob <- function(scenGmsPar){
-    jID <- as.integer(db$writeMetaHcube(hcubeTags = isolate(input$newHcubeTags)))
-    flog.trace("Metadata for Hypercube job was written to database. Hypercube job ID: '%d' was assigned to job.", jID)
-    hcubeDir <- file.path(currentModelDir, hcubeDirName, jID)
-    if(dir.exists(hcubeDir)){
-      stop(sprintf("Hypercube job directory: '%s' already exists.", hcubeDir), call. = FALSE)
-    }
-    if(!dir.create(hcubeDir, recursive = TRUE, showWarnings = FALSE)){
-      stop(sprintf("Problems creating Hypercube job directory: '%s'.", hcubeDir), call. = FALSE)
-    }
-    staticFiles <- list.files(file.path(currentModelDir, hcubeDirName, "static"), 
-                              full.names = TRUE)
-    if(length(staticFiles)){
-      local({
-        staticDir <- file.path(hcubeDir, "static")
-        if(!dir.create(staticDir) || !all(file.copy(staticFiles, staticDir))){
-          stop(sprintf("Problems copying static Hypercube job files from: '%s' to: '%s'.", 
-                       file.path(currentModelDir, hcubeDirName, "static"), 
-                       file.path(hcubeDir, "static")), call. = FALSE)
-        }
-      })
-    }
-    
-    if(config$includeParentDir){
-      scenGmsPar <- paste0(scenGmsPar, ' idir1="', gmsFilePath(currentModelDir),
-                           '" idir2="', gmsFilePath(dirname(currentModelDir)), '"')
-    }else{
-      scenGmsPar <- paste0(scenGmsPar, ' idir1="', gmsFilePath(currentModelDir), '"')
-    }
-    writeLines(scenGmsPar, file.path(hcubeDir, tolower(modelName) %+% ".hcube"))
-    
-    flog.trace("New folder for Hypercube job was created: '%s'.", hcubeDir)
-    # create daemon to execute Hypercube job
-    hcubeSubmDir <- gmsFilePath(file.path(getwd(), "resources", hcubeSubmissionFile %+% ".gms"))
-    curdir       <- gmsFilePath(hcubeDir)
-    
     tryCatch({
-      writeChar(paste0("Job ID: ", jID, "\n"), file.path(hcubeDir, jID %+% ".log"), 
-                eos = NULL)
+      sid <- NULL
+      if(length(activeScen) && length(activeScen$getSid())){
+        if(!activeScen$hasExecPerm())
+          stop("User attempted to execute a scenario that he/she has no access to! This looks like an attempt to tamper with the app!", 
+               call. = FALSE)
+        sid <- activeScen$getSid()
+      }
+      hideEl(session, "#jobSubmissionWrapper")
+      showEl(session, "#jobSubmissionLoad")
+      prog <- Progress$new()
+      on.exit(prog$close(), add = TRUE)
+      prog$set(message = lang$nav$dialogHcube$waitDialog$title, value = 0)
+      updateProgress <- function(incAmount, detail = NULL) {
+        prog$inc(amount = incAmount, detail = detail)
+      }
+      if(!is.null(downloadFile)){
+        workDirHcube <- file.path(tempdir(), "hcube")
+        on.exit(unlink(workDirHcube, recursive = TRUE, force = TRUE), 
+                add = TRUE)
+        worker$createHcubeWorkDir(workDirHcube, hcubeData, staticData, 
+                                  attachmentFilePaths)
+        removeModal()
+        if(!file.copy(file.path(getwd(), "resources", hcubeSubmissionFile %+% ".gms"), 
+                      workDirHcube)){
+          flog.error("Problems copying Hypercube submission file from: '%s' to: '%s'.",
+                     file.path(getwd(), "resources", hcubeSubmissionFile %+% ".gms"),
+                     workDirHcube)
+        }
+        updateProgress(incAmount = 0.9, detail = lang$nav$dialogHcube$waitDialog$desc)
+        return(zipr(downloadFile, workDirHcube, compression_level = 6))
+      }
+      worker$runHcube(staticData, hcubeData, 
+                      sid, tags = isolate(input$newHcubeTags), 
+                      attachmentFilePaths = attachmentFilePaths)
+      updateProgress(incAmount = 1, detail = lang$nav$dialogHcube$waitDialog$desc)
+      showHideEl(session, "#hcubeSubmitSuccess", 2000)
     }, error = function(e){
-      flog.warn("Log file: '%s' could not be written. Check whether you have sufficient permissions to write files to: '%s'.",
-                 jID %+% ".log", hcubeDir)
+      errMsg <- conditionMessage(e)
+      if(identical(errMsg, '404') || startsWith(errMsg, "Could not") || 
+         startsWith(errMsg, "Timeout"))
+        return(showHideEl(session, "#hcubeSubmitUnknownHost", 6000))
+      
+      if(errMsg %in% c(401L, 403L))
+        return(showHideEl(session, "#hcubeSubmitUnauthorized", 6000))
+      flog.error("Some problem occurred while executing Hypercube job. Error message: '%s'.", errMsg)
+      showHideEl(session, "#hcubeSubmitUnknownError", 6000)
+    }, finally = {
+      hideEl(session, "#jobSubmissionLoad")
+      hideModal(session, 2L)
     })
-    p <- process$new(gamsSysDir %+% "gams", 
-                     args = c(hcubeSubmDir, 'curdir', curdir, "lo=3",
-                              "--jobID=" %+% jID),
-                     cleanup = FALSE, cleanup_tree = FALSE, supervise = FALSE,
-                     windows_hide_window = TRUE)
-    pid <- p$get_pid()
-    p <- NULL
-    flog.trace("Hypercube job submitted successfuly. Hypercube job process ID: '%d'.", pid)
-    db$updateHypercubeJob(jID, pid = pid)
-    flog.trace("Process ID: '%d' added to Hypercube job ID: '%d'.", pid, jID)
-    rv$refreshActiveJobs <- rv$refreshActiveJobs + 1L
   }
+  
   observeEvent(input$btHcubeAll, {
+    disableEl(session, "#btHcubeAll")
     flog.trace("Button to schedule all scenarios for Hypercube submission was clicked.")
     now <- Sys.time()
     if(difftime(now, prevJobSubmitted, units = "secs") < 5L){
@@ -288,22 +459,12 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       return()
     }
     prevJobSubmitted <<- Sys.time()
-    if(!length(scenGmsPar)){
-      flog.debug("No scenarios selected to be solved in Hypercube mode.")
-      return()
-    }
-    tryCatch({
-      executeHcubeJob(scenGmsPar)
-      showHideEl(session, "#hcubeSubmitSuccess", 3000)
-      hideModal(session, 3L)
-    }, error = function(e){
-      flog.error("Some problem occurred while executing Hypercube job. Error message: '%s'.", e)
-      showHideEl(session, "#hcubeSubmitUnknownError", 6000)
-    })
     
+    runHcubeJob(scenGmsPar)
   })
   
   observeEvent(input$btHcubeNew, {
+    disableEl(session, "#btHcubeNew")
     flog.trace("Button to schedule only new scenarios for Hypercube submission was clicked.")
     now <- Sys.time()
     if(difftime(now, prevJobSubmitted, units = "secs") < 5L){
@@ -312,19 +473,9 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       return()
     }
     prevJobSubmitted <<- Sys.time()
-    hcubeScen <- scenGmsPar[idxDiff]
-    if(!length(hcubeScen)){
-      flog.debug("No scenarios selected to be solved in Hypercube mode.")
-      return()
-    }
-    tryCatch({
-      executeHcubeJob(hcubeScen)
-      showHideEl(session, "#hcubeSubmitSuccess", 3000)
-      hideModal(session, 3L)
-    }, error = function(e){
-      flog.error("Some problem occurred while executing Hypercube job. Error message: '%s'.", e)
-      showHideEl(session, "#hcubeSubmitUnknownError", 6000)
-    })
+    
+    hcubeData$subsetJobIDs(idsSolved)
+    runHcubeJob(scenGmsPar[!idsToSolve %in% idsSolved])
   })
   
   
@@ -334,28 +485,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     },
     content = function(file) {
       # solve all scenarios in Hypercube run
-      
-      # BEGIN EPIGRIDS specific
-      workDirHcube <- file.path(tempdir(), "hcube")
-      unlink(workDirHcube, recursive = TRUE, force = TRUE)
-      dir.create(workDirHcube, showWarnings = FALSE, recursive = TRUE)
-      homeDir <- getwd()
-      setwd(workDirHcube)
-      on.exit(setwd(homeDir), add = TRUE)
-      on.exit(unlink(workDirHcube, recursive = TRUE, force = TRUE), add = TRUE)
-      
-      genHcubeJobFolder(fromDir = currentModelDir, 
-                        submFileDir = file.path(homeDir, "resources"),
-                        toDir = workDirHcube, scenGmsPar = scenGmsPar)
-      filesToInclude <- list.files(recursive = TRUE)
-      idsToExclude   <- startsWith(filesToInclude, 
-                                   file.path(basename(currentModelDir), 
-                                             hcubeDirName)) | 
-        endsWith(filesToInclude, ".miroconf")
-      filesToInclude <- filesToInclude[!idsToExclude]
-      removeModal()
-      zip(file, filesToInclude, compression_level = 6)
-      # END EPIGRIDS specific
+      runHcubeJob(scenGmsPar, downloadFile = file)
     },
     contentType = "application/zip")
   
@@ -365,32 +495,114 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     },
     content = function(file) {
       # solve only scenarios that do not yet exist
-      
-      # BEGIN EPIGRIDS specific
-      workDirHcube <- file.path(tempdir(), "hcube")
-      unlink(workDirHcube, recursive = TRUE, force = TRUE)
-      dir.create(workDirHcube, showWarnings = FALSE, recursive = TRUE)
-      homeDir <- getwd()
-      setwd(workDirHcube)
-      on.exit(setwd(homeDir), add = TRUE)
-      on.exit(unlink(workDirHcube, recursive = TRUE, force = TRUE), add = TRUE)
-      
-      genHcubeJobFolder(fromDir = currentModelDir, 
-                        submFileDir = file.path(homeDir, "resources"),
-                        toDir = workDirHcube, scenGmsPar = scenGmsPar[idxDiff])
-      
-      removeModal()
-      zip(file, list.files(recursive = TRUE), compression_level = 6)
-      # END EPIGRIDS specific
+      hcubeData$subsetJobIDs(idsSolved)
+      runHcubeJob(scenGmsPar[!idsToSolve %in% idsSolved], downloadFile = file)
     },
     contentType = "application/zip")
+}else{
+  observeEvent(virtualActionButton(input$btSubmitJob, rv$btSubmitJob), {
+    flog.debug("Submit new asynchronous job button clicked.")
+    jobNameTmp <- character(1L)
+    if(length(activeScen)){
+      if(!activeScen$hasExecPerm()){
+        showErrorMsg(lang$nav$dialogNoExecPerm$title, 
+                     lang$nav$dialogNoExecPerm$desc)
+        flog.info("User has no execute permission for this scenario.")
+        return(NULL)
+      }
+      jobNameTmp <- activeScen$getScenName()
+    }
+    if(identical(worker$validateCredentials(), FALSE)){
+      showLoginDialog(cred = worker$getCredentials(), 
+                      forwardOnSuccess = "btSubmitJob")
+      return(NULL)
+    }
+    showJobSubmissionDialog(jobNameTmp)
+  })
+  observeEvent(virtualActionButton(input$btSubmitAsyncJob, rv$btSubmitAsyncJob), {
+    flog.debug("Confirm new asynchronous job button clicked.")
+    sid <- NULL
+    jobName <- input$jobSubmissionName
+    if(isBadScenName(jobName)){
+      showHideEl(session, "#jobSubmitBadName", 4000L)
+      return()
+    }
+    if(length(activeScen) && length(activeScen$getSid())){
+      if(!activeScen$hasExecPerm()){
+        flog.error("User has no execute permission for this scenario. This looks like an attempt to tamper with the app!")
+        return()
+      }
+      sid <- activeScen$getSid()
+    }
+    if(identical(worker$validateCredentials(), FALSE)){
+      flog.error("User has no valid credentials. This looks like an attempt to tamper with the app!")
+      return(NULL)
+    }
+    dataModelRun <- prepareModelRun(async = TRUE)
+    if(is.null(dataModelRun)){
+      return(NULL)
+    }
+    # submit job
+    tryCatch({
+      hideEl(session, "#jobSubmissionWrapper")
+      showEl(session, "#jobSubmissionLoad")
+      worker$runAsync(dataModelRun$inputData, dataModelRun$pfFileContent, sid, 
+                      name = jobName)
+      showHideEl(session, "#jobSubmitSuccess", 2000)
+    }, error = function(e){
+      errMsg <- conditionMessage(e)
+      flog.error("Some problem occurred while executing Hypercube job. Error message: '%s'.", errMsg)
+      
+      if(identical(errMsg, '404') || startsWith(errMsg, "Could not") || 
+         startsWith(errMsg, "Timeout"))
+        return(showHideEl(session, "#jobSubmitUnknownHost", 6000))
+      
+      if(errMsg %in% c(401L, 403L))
+        return(showHideEl(session, "#jobSubmitUnauthorized", 6000))
+      
+      showHideEl(session, "#jobSubmitUnknownError", 6000)
+    }, finally = {
+      hideEl(session, "#jobSubmissionLoad")
+      hideModal(session, 2L)
+    })
+  })
 }
 
-
-observeEvent(input$btSolve, {
+logObs <- NULL
+observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   flog.debug("Solve button clicked (model: '%s').", modelName)
-  removeModal()
-  if(identical(config$activateModules$hcubeMode, TRUE)){
+  
+  if(length(modelStatus)){
+    showErrorMsg(lang$errMsg$jobRunning$title, 
+                 lang$errMsg$jobRunning$desc)
+    return(NULL)
+  }
+  if(length(unzipModelFilesProcess)){
+    if(length(unzipModelFilesProcess$get_exit_status())){
+      unzipModelFilesProcess <- NULL
+    }else{
+      showErrorMsg(lang$errMsg$unzipProcessRunning$title, 
+                   lang$errMsg$unzipProcessRunning$desc)
+      return(NULL)
+    }
+  }
+  if(length(activeScen) && !activeScen$hasExecPerm()){
+    if(LAUNCHHCUBEMODE){
+      modeDescriptor <- "dialogNoExecPermHC"
+    }else{
+      modeDescriptor <- "dialogNoExecPerm"
+    }
+    showErrorMsg(lang$nav[[modeDescriptor]]$title, 
+                 lang$nav[[modeDescriptor]]$desc)
+    flog.info("User has no execute permission for this scenario.")
+    return()
+  }
+  if(identical(worker$validateCredentials(), FALSE)){
+    showLoginDialog(cred = worker$getCredentials(), 
+                    forwardOnSuccess = "btSolve")
+    return(NULL)
+  }
+  if(LAUNCHHCUBEMODE){
     numberScenarios <- noScenToSolve()
     if(numberScenarios > maxNoHcube){
       showModal(modalDialog(title = lang$nav$dialogHcube$exceedMaxNoDialog$title, 
@@ -411,10 +623,10 @@ observeEvent(input$btSolve, {
     on.exit(suppressWarnings(prog$close()))
     prog$set(message = lang$progressBar$prepRun$title, value = 0)
     
-    idsSolved <- db$importDataset(scenMetadataTable, colNames = snameIdentifier, 
-                                  tibble(scodeIdentifier, 1L, ">="))
+    idsSolved <<- db$importDataset(scenMetadataTable, colNames = snameIdentifier, 
+                                   tibble(scodeIdentifier, SCODEMAP[['scen']], ">"))
     if(length(idsSolved)){
-      idsSolved <- unique(idsSolved[[1L]])
+      idsSolved <<- unique(idsSolved[[1L]])
     }
     errMsg <- NULL
     prog$inc(amount = 0.5, detail = lang$progressBar$prepRun$sendInput)
@@ -428,14 +640,16 @@ observeEvent(input$btSolve, {
       return(NULL)
     }
     
-    idsToSolve <<- scenToSolve$ids
+    idsToSolve          <<- scenToSolve$ids
+    attachmentFilePaths <<- scenToSolve$attachmentFilePaths
+    
     if(length(config$extraClArgs)){
-      scenGmsPar <<- paste(scenToSolve$gmspar, config$MIROSwitch, 
+      scenGmsPar <<- paste(scenToSolve$gmspar, 
                            paste(config$extraClArgs, collapse = " "),
-                           "--HCUBE=1", "execMode=" %+% gamsExecMode, "lo=3")
+                           "lo=3")
     }else{
-      scenGmsPar <<- paste(scenToSolve$gmspar, config$MIROSwitch,
-                           "--HCUBE=1", "execMode=" %+% gamsExecMode, "lo=3")
+      scenGmsPar <<- paste(scenToSolve$gmspar,
+                           "lo=3")
     }
     if(config$saveTraceFile){
       scenGmsPar <<- paste0(scenGmsPar, ' trace="', tableNameTracePrefix, modelName, '.trc"',
@@ -443,7 +657,6 @@ observeEvent(input$btSolve, {
     }
     
     sidsDiff <- setdiff(idsToSolve, idsSolved)
-    idxDiff  <<- match(sidsDiff, idsToSolve)
     prog$close()
     showHcubeSubmitDialog(noIdsToSolve = length(idsToSolve), noIdsExist = length(idsToSolve) - length(sidsDiff))
   
@@ -451,112 +664,18 @@ observeEvent(input$btSolve, {
     
     return(NULL)
   }
-  prog <- Progress$new()
-  on.exit(suppressWarnings(prog$close()))
-  prog$set(message = lang$progressBar$prepRun$title, value = 0)
-  
-  updateTabsetPanel(session, "sidebarMenuId", selected = "gamsinter")
-  
-  prog$inc(amount = 0.5, detail = lang$progressBar$prepRun$sendInput)
-  # save input data 
-  saveInputDb <- FALSE
-  source("./modules/input_save.R", local = TRUE)
-  if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
+  dataModelRun <- prepareModelRun(async = FALSE)
+  if(is.null(dataModelRun)){
     return(NULL)
   }
-  pfFileContent <- NULL
-  lapply(seq_along(dataTmp), function(i){
-    # write compile time variable file and remove compile time variables from scalar dataset
-    if(identical(tolower(names(dataTmp)[[i]]), tolower(scalarsFileName))){
-      # scalars file exists, so remove compile time variables from it
-      DDParIdx           <- grepl(paste("^", DDPar, "(_lo|_up)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
-      GMSOptIdx          <- grepl(paste("^", GMSOpt, "(_lo|_up)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
-      DDParValues        <- dataTmp[[i]][DDParIdx, , drop = FALSE]
-      GMSOptValues       <- dataTmp[[i]][GMSOptIdx, , drop = FALSE]
-      if(nrow(DDParValues) || nrow(GMSOptValues)){
-        pfGMSPar      <- vapply(seq_along(DDParValues[[1]]), 
-                                   function(i){
-                                     if(!DDParValues[[3]][i] %in% c("_", "system.empty", "")) 
-                                       paste0('--', DDParValues[[1]][i], '=', escapeGAMSCL(DDParValues[[3]][i]))
-                                     else
-                                       NA_character_
-                                   }, character(1L), USE.NAMES = FALSE)
-        pfGMSPar      <- pfGMSPar[!is.na(pfGMSPar)]
-        # do not write '_' in pf file (no selection)
-        pfGMSOpt      <- vapply(seq_along(GMSOptValues[[1]]), 
-                                function(i){
-                                  if(!GMSOptValues[[3]][i] %in% c("_", "system.empty", "")) 
-                                    paste0(GMSOptValues[[1]][i], '=', escapeGAMSCL(GMSOptValues[[3]][i]))
-                                  else
-                                    NA_character_
-                                }, character(1L), USE.NAMES = FALSE)
-        pfGMSOpt      <- pfGMSOpt[!is.na(pfGMSOpt)]
-        pfFileContent <<- c(pfGMSPar, pfGMSOpt)
-        # remove those rows from scalars file that are compile time variables
-        csvData <- dataTmp[[i]][!(DDParIdx | GMSOptIdx), ]
-      }else{
-        csvData <- dataTmp[[i]]
-      }
-      rm(GMSOptValues, DDParValues)
-    }else if(identical(modelIn[[names(dataTmp)[[i]]]]$dropdown$multiple, TRUE)){
-      # append alias column
-      choiceIdx         <- match(dataTmp[[i]][[1L]], 
-                                 modelIn[[names(dataTmp)[[i]]]]$dropdown$choices)
-      csvData           <- dataTmp[[i]]
-      if(length(choiceIdx)){
-        if(!is.na(choiceIdx)){
-          aliasCol          <- modelIn[[names(dataTmp)[[i]]]]$dropdown$aliases[choiceIdx]
-          aliasCol[is.na(aliasCol)] <- ""
-          csvData[["text"]] <- aliasCol
-        }else{
-          csvData[["text"]] <- ""
-        }
-      }else{
-        csvData[["text"]] <- character(0L)
-      }
-    }else{
-      csvData <- dataTmp[[i]]
-    }
-    
-    # write csv files used to communicate with GAMS
-    tryCatch({
-      write_delim(csvData, workDir %+% names(dataTmp)[[i]] %+% ".csv", 
-                  delim = config$csvDelim, na = "")
-    }, error = function(e) {
-      fileName <- paste0(names(dataTmp)[[i]], ".csv")
-      flog.error("Error writing csv file: '%s' (model: '%s').", fileName, modelName)
-      errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$writeCsv, fileName), sep = "\n")
-    })
-    
-  })
-  if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
-    return(NULL)
-  }
+  dataTmp <- dataModelRun$dataTmp
   # run GAMS
   tryCatch({
-    gamsArgs <- c(if(length(config$extraClArgs)) config$extraClArgs, 
-                  paste0('idir1="', gmsFilePath(currentModelDir), '"'),
-                  if(config$includeParentDir) paste0('idir2="', gmsFilePath(dirname(currentModelDir)), '"'), 
-                  paste0('curdir="', workDir, '"'), "lo=3", "execMode=" %+% gamsExecMode, 
-                  config$MIROSwitch, "LstTitleLeftAligned=1")
-    if(config$saveTraceFile){
-      gamsArgs <- c(gamsArgs, paste0('trace="', tableNameTracePrefix, modelName, '.trc"'), "traceopt=3")
+    jobSid <- NULL
+    if(length(activeScen) && length(activeScen$getSid())){
+      jobSid <- activeScen$getSid()
     }
-    pfFilePath <- paste0(workDir, tolower(modelName), ".pf")
-    if(isWindows()){
-      gamsArgs <- gsub("/", "\\", gamsArgs, fixed = TRUE)
-      pfFilePath <- gsub("/", "\\", pfFilePath, fixed = TRUE)
-    }
-    writeLines(c(pfFileContent, gamsArgs), pfFilePath)
-    
-    if(config$activateModules$attachments && attachAllowExec && !is.null(activeScen)){
-      prog$inc(amount = 0, detail = lang$progressBar$prepRun$downloadAttach)
-      activeScen$downloadAttachmentData(workDir, allExecPerm = TRUE)
-    }
-    prog$close()
-    gams <<- process$new(gamsSysDir %+% "gams", args = c(modelGmsName, 
-                                                         "pf", pfFilePath), 
-                         stdout = workDir %+% modelName %+% ".log", windows_hide_window = TRUE)
+    worker$run(dataModelRun$inputData, dataModelRun$pfFileContent, jobSid)
   }, error = function(e) {
     errMsg <<- lang$errMsg$gamsExec$desc
     flog.error("GAMS did not execute successfully (model: '%s'). Error message: %s.", modelName, e)
@@ -564,14 +683,18 @@ observeEvent(input$btSolve, {
   if(is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))){
     return(NULL)
   }
+  if(config$activateModules$remoteExecution)
+    updateTabsetPanel(session, "jobListPanel", selected = "current")
+  updateTabsetPanel(session, "logFileTabsset", selected = "log")
   
   #activate Interrupt button as GAMS is running now
+  updateActionButton(session, "btInterrupt", icon = character(0L))
   enableEl(session, "#btInterrupt")
   switchTab(session, "gamsinter")
   # read log file
   if(config$activateModules$logFile){
     tryCatch({
-      logfile <- reactiveFileReader2(300, session, file.path(workDir, modelName %+% ".log"))
+      logfile <- worker$getReactiveLog(session)
       logfileObs <- logfile$obs
       logfile <- logfile$re
     }, error = function(e) {
@@ -580,58 +703,91 @@ observeEvent(input$btSolve, {
     })
     showErrorMsg(lang$errMsg$readLog$title, errMsg)
   }
-  
-  modelStatus <- reactivePoll2(1000, session, checkFunc = function(){
-    gams$get_exit_status()
-  }, valueFunc = function(){
-    gams$get_exit_status()
+  errMsg <- NULL
+  tryCatch({
+    modelStatusRE  <- worker$getReactiveStatus(session)
+    modelStatusObs <- modelStatusRE$obs
+    modelStatus    <<- modelStatusRE$re
+  }, error = function(e) {
+    flog.error("GAMS status could not be retrieved (model: '%s'). Error message: %s.", modelName, e)
+    errMsg <<- lang$errMsg$readLog$desc
   })
-  modelStatusObs <- modelStatus$obs
-  modelStatus <- modelStatus$re
+  showErrorMsg(lang$errMsg$readLog$title, errMsg)
   
+  logFilePath <- NULL
   if(config$activateModules$logFile){
-    output$logStatus <- renderText({
-      # read log file 
+    if(config$activateModules$attachments && 
+       config$storeLogFilesDuration > 0L && !is.null(activeScen)){
+      logFilePath <- file.path(workDir, modelName %+% ".log")
+      if(!identical(unlink(logFilePath, force = TRUE), 0L)){
+        flog.warn("Could not remove log file: '%s'.", logFilePath)
+      }
+    }
+    emptyEl(session, "#logStatus")
+    logObs <<- observe({
       logText    <- logfile()
-      logSize    <- nchar(logText)
-      logText    <- paste0(if(logSize > (3e4 + 1)) "[...]\n", 
-                           substr(logText, logSize - 3e4, logSize))
-      if(!is.null(modelStatus())){
-        return(logText)
+      if(length(logFilePath)){
+        write_file(logText, logFilePath, append = TRUE)
       }
-      if(identical(input$logUpdate, TRUE)){
-        scrollDown(session, "#logStatus")
-      }
-      return(logText)
+      return(appendEl(session, "#logStatus", logText, 
+                      scroll = identical(isolate(input$logUpdate), TRUE)))
     })
   }
   # reset listing file when new solve is started
   output$listFile <- renderText("")
+  emptyEl(session, "#miroLogFile")
+  hideEl(session, ".input-validation-error")
   # print model status
   output$modelStatus <- renderUI({
-    
-    statusText <- lang$nav$gamsModelStatus$exec
-    # model got solved successfully
-    if(!is.null(modelStatus())){
+    currModelStat <- modelStatus()
+    if(is.null(currModelStat)){
+      statusText <- lang$nav$gamsModelStatus$exec
+    }else if(identical(currModelStat, "s")){
+      statusText <- lang$nav$gamsModelStatus$submission
+    }else if(identical(currModelStat, "q")){
+      statusText <- lang$nav$gamsModelStatus$queued
+    }else if(identical(currModelStat, "d")){
+      statusText <- lang$nav$gamsModelStatus$collection
+    }else{
       modelStatusObs$destroy()
-      modelStatus <- NULL
+      modelStatus <<- NULL
       enableEl(session, "#btSolve")
       disableEl(session, "#btInterrupt")
       
       if(config$activateModules$logFile){
         logfileObs$destroy()
+        logfileObs <- NULL
+        logObs$destroy()
         logfile <- NULL
       }
+      
+      if(currModelStat < 0){
+        returnCodeText <- GAMSReturnCodeMap[as.character(currModelStat)]
+        if(is.na(returnCodeText)){
+          returnCodeText <- as.character(currModelStat)
+        }
+        statusText <- lang$nav$gamsModelStatus$error %+% returnCodeText
+        flog.debug("GAMS model was not solved successfully (model: '%s'). Model status: %s.", 
+                   modelName, statusText)
+        return(htmltools::htmlEscape(statusText))
+      }
+      
       if(config$activateModules$lstFile){
         errMsg <- NULL
         tryCatch({
-          fileSize <- file.size(file.path(workDir, modelName %+% ".lst")) 
+          fileSize <- file.size(file.path(workDir, modelNameRaw %+% ".lst"))
           if(is.na(fileSize))
-            stop("Could not access listing file.", call. = FALSE)
+            stop("Could not access listing file", call. = FALSE)
           if(fileSize > maxSizeToRead){
             output$listFile <- renderText(lang$errMsg$readLst$fileSize)
-          }else{
-            output$listFile <- renderText(read_file(workDir %+% modelName %+% ".lst"))
+          }else { 
+            output$listFile <- renderText({
+              if(file.exists(file.path(workDir, modelNameRaw %+% ".lst"))){
+                read_file(file.path(workDir, modelNameRaw %+% ".lst"))
+              }else{
+                lang$errMsg$readLst$fileNotFound
+              }
+            })
           }
         }, error = function(e) {
           errMsg <<- lang$errMsg$readLst$desc
@@ -640,104 +796,109 @@ observeEvent(input$btSolve, {
         })
         showErrorMsg(lang$errMsg$readLst$title, errMsg)
       }
-      
-      if(modelStatus() != 0){
-        returnCodeText <- GAMSReturnCodeMap[as.character(modelStatus())]
+      if(config$activateModules$miroLogFile){
+        miroLogContent <- ""
+        miroLogPath <- file.path(workDir, config$miroLogFile)
+        miroLogAnnotations <- ""
+        tryCatch({
+          if(file.exists(miroLogPath)[1]){
+            inputScalarsTmp <- NULL
+            if(scalarsFileName %in% names(modelIn))
+              inputScalarsTmp  <- modelIn[[scalarsFileName]]$symnames
+            miroLogContent     <- parseMiroLog(session, miroLogPath, 
+                                               names(modelIn), inputScalarsTmp)
+            miroLogAnnotations <- miroLogContent$annotations
+            miroLogContent <- miroLogContent$content
+          }
+        }, error = function(e){
+          flog.warn("MIRO log file could not be read. Error message: '%s'.", e)
+        })
+        output$miroLogFile <- renderUI(HTML(paste(miroLogContent, collapse = "\n")))
+      }
+      if(currModelStat != 0){
+        returnCodeText <- GAMSReturnCodeMap[as.character(currModelStat)]
         if(is.na(returnCodeText)){
-          returnCodeText <- as.character(modelStatus())
+          returnCodeText <- as.character(currModelStat)
         }
         statusText <- lang$nav$gamsModelStatus$error %+% returnCodeText
-        flog.debug("GAMS model was not solved successfully (model: '%s'). Model status: %s.", modelName, statusText)
+        if(config$activateModules$miroLogFile && length(miroLogAnnotations)){
+          session$sendCustomMessage("gms-showValidationErrors", miroLogAnnotations)
+          valIdHead <- match(names(miroLogAnnotations)[[1L]], names(modelIn))
+          if(length(valIdHead) && !is.na(valIdHead)){
+            valTabId <- 0L
+            inputTabId <- tabSheetMap$input[[valIdHead]]
+            updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", inputTabId[1]))
+            if(length(inputTabId) > 1L){
+              updateTabsetPanel(session, paste0("inputTabset", inputTabId[1]), 
+                                paste0("inputTabset", inputTabId[1], "_", 
+                                       inputTabId[2]))
+            }
+          }
+        }
+        flog.debug("GAMS model was not solved successfully (model: '%s'). Model status: %s.", 
+                   modelName, statusText)
+        tryCatch(
+          worker$updateJobStatus(JOBSTATUSMAP['imported']), 
+          error = function(e){
+            flog.warn("Failed to update job status. Error message: '%s'.", 
+                      conditionMessage(e))
+          })
       }else{
         # run terminated successfully
-        # check whether GAMS output files shall be stored
-        if(config$activateModules$attachments && 
-           config$storeLogFilesDuration > 0L && !is.null(activeScen)){
-          tryCatch({
-            filesToStore  <- c(file.path(workDir, paste0(modelName, c(".log", ".lst"))))
-            filesNoAccess <- file.access(filesToStore) == -1L
-            errMsg <- NULL
-            if(any(filesNoAccess)){
-              if(all(filesNoAccess))
-                stop("fileAccessException", call. = FALSE)
-              flog.info("GAMS output files: '%s' could not be accessed. Check file permissions.", 
-                        paste(filesToStore[filesNoAccess], collapse = "', '"))
-              errMsg <<- lang$errMsg$saveGAMSLog$noFileAccess
-            }
-            filesToStore <- filesToStore[!filesNoAccess]
-            filesTooLarge <- file.size(filesToStore) > attachMaxFileSize
-            if(any(filesTooLarge)){
-              if(all(filesTooLarge))
-                stop("fileSizeException", call. = FALSE)
-              flog.info("GAMS output files: '%s' are too large. They will not be saved.", 
-                        paste(filesToStore[filesTooLarge], collapse = "', '"))
-              errMsg <<- paste(errMsg, lang$errMsg$saveGAMSLog$fileSizeExceeded, sep = "\n")
-            }
-            filesToStore <- filesToStore[!filesTooLarge]
-            activeScen$addAttachments(filesToStore, overwrite = TRUE, 
-                                      noSave = TRUE, execPerm = rep.int(FALSE, length(filesToStore)))
-          }, error = function(e){
-            switch(conditionMessage(e),
-                   fileAccessException = {
-                     flog.info("No GAMS output files could not be accessed. Check file permissions.")
-                     errMsg <<- lang$errMsg$saveGAMSLog$noFileAccess
-                   },
-                   fileSizeException = {
-                     flog.info("All GAMS output files are too large to be saved.")
-                     errMsg <<- lang$errMsg$saveGAMSLog$fileSizeExceeded
-                   },
-                   {
-                     flog.error("Problems while trying to store GAMS output files in the database. Error message: '%s'.", e)
-                     errMsg <<- lang$errMsg$unknownError
-                   })
-          })
-          showErrorMsg(lang$errMsg$saveGAMSLog$title, errMsg)
-        }
-        #select first tab in current run tabset
         statusText <- lang$nav$gamsModelStatus$success
-        updateTabsetPanel(session, "sidebarMenuId",
-                          selected = "outputData")
+        
+        storeGAMSOutputFiles(workDir)
+        
+        #select first tab in current run tabset
+        switchTab(session, "output")
         updateTabsetPanel(session, "scenTabset",
                           selected = "results.current")
-        updateTabsetPanel(session, "contentCurrent",
-                          selected = "contentCurrent_1")
         errMsg <- NULL
         tryCatch({
           GAMSResults <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, workDir = workDir, 
                                       modelName = modelName, errMsg = lang$errMsg$GAMSOutput$badOutputData,
-                                      scalarsFileHeaders = scalarsFileHeaders,
-                                      templates = modelOutTemplate, method = "csv", csvDelim = config$csvDelim, 
-                                      hiddenOutputScalars = config$hiddenOutputScalars) 
+                                      scalarsFileHeaders = scalarsFileHeaders, fileName = MIROGdxOutName,
+                                      templates = modelOutTemplate, method = config$fileExchange, 
+                                      csvDelim = config$csvDelim, hiddenOutputScalars = config$hiddenOutputScalars)
         }, error = function(e){
           flog.error("Problems loading output data. Error message: %s.", e)
           errMsg <<- lang$errMsg$readOutput$desc
         })
         if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
-          return()
+          return(htmltools::htmlEscape(statusText))
         }
         if(!is.null(GAMSResults$scalar)){
           scalarData[["scen_1_"]] <<- GAMSResults$scalar
+        }
+        scalarIdTmp <- match(scalarsFileName, tolower(names(dataTmp)))[[1L]]
+        if(!is.na(scalarIdTmp)){
+          scalarData[["scen_1_"]] <<- bind_rows(dataTmp[[scalarIdTmp]], scalarData[["scen_1_"]])
         }
         if(!is.null(GAMSResults$tabular)){
           scenData[["scen_1_"]] <<- GAMSResults$tabular
         }
         if(config$saveTraceFile){
           tryCatch({
-            traceData <<- readTraceData(workDir %+% tableNameTracePrefix %+% modelName %+%".trc", 
+            traceData <<- readTraceData(file.path(workDir, 
+                                                  paste0(tableNameTracePrefix,
+                                                         modelName, ".trc")), 
                                         traceColNames)
           }, error = function(e){
             flog.info("Problems loading trace data. Error message: %s.", e)
           })
         }
+        tryCatch(
+          worker$updateJobStatus(JOBSTATUSMAP['imported']), 
+          error = function(e){
+            flog.warn("Failed to update job status. Error message: '%s'.", 
+                      conditionMessage(e))
+          })
+        
         
         GAMSResults <- NULL
-        # rendering tables and graphs
+        
         renderOutputData()
         
-        # show load button after solve
-        switchTab(session, "output")
-        
-        # mark scenario as unsaved
         markUnsaved()
       }
     }
@@ -747,3 +908,57 @@ observeEvent(input$btSolve, {
   # refresh even when modelStatus message is hidden (i.e. user is on another tab)
   outputOptions(output, "modelStatus", suspendWhenHidden = FALSE)
 })
+if(!isShinyProxy && config$activateModules$remoteExecution){
+  observeEvent(input$btRemoteExecLogin, {
+    showLoginDialog(cred = worker$getCredentials())
+  })
+  observeEvent(input$btSaveCredentials, {
+    tryCatch({
+      worker$login(url = input$remoteCredUrl, 
+                   username = input$remoteCredUser, 
+                   password = input$remoteCredPass, 
+                   namespace = input$remoteCredNs, 
+                   useRegistered = input$remoteCredReg,
+                   rememberMe = input$remoteCredRemember)
+      hideEl(session, "#btRemoteExecLogin")
+      showEl(session, "#remoteExecLogoutDiv")
+      removeModal()
+      if(input$btSaveCredentials %in% names(rv)){
+        rv[[input$btSaveCredentials]] <- rv[[input$btSaveCredentials]] + 1L
+      }
+    }, error = function(e){
+      errMsg <- conditionMessage(e)
+      flog.info("Problems logging in. Return code: %s", errMsg)
+      if(identical(errMsg, '404') || startsWith(errMsg, "Could not") || 
+         startsWith(errMsg, "Timeout"))
+        return(showHideEl(session, "#remoteLoginHostNotFound", 6000))
+      
+      if(identical(errMsg, '400'))
+        return(showHideEl(session, "#remoteLoginNsNotFound", 6000))
+      
+      if(identical(errMsg, '401'))
+        return(showHideEl(session, "#remoteLoginInvalidCred", 6000))
+      
+      if(identical(errMsg, '403'))
+        return(showHideEl(session, "#remoteLoginInsuffPerm", 6000))
+      
+      if(identical(errMsg, '426'))
+        return(showHideEl(session, "#remoteLoginInvalidProt", 6000))
+      
+      return(showErrorMsg(lang$errMsg$fileWrite$title, lang$errMsg$unknownError))
+    })
+  })
+  observeEvent(input$btRemoteExecLogout, {
+    removeModal()
+    tryCatch({
+      worker$logout()
+      showEl(session, "#btRemoteExecLogin")
+      hideEl(session, "#remoteExecLogoutDiv")
+    }, error = function(e){
+      flog.error("Problems setting credentials: %s", e)
+      showErrorMsg(lang$errMsg$fileWrite$title, sprintf(lang$errMsg$fileWrite$desc,
+                                                        rememberMeFileName))
+    })
+  })
+}
+

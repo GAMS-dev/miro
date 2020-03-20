@@ -3,9 +3,10 @@ errMsg <- NULL
 if(!identical(loadMode, "scen")){
   tryCatch({
     tabularDatasetsToFetch <- datasetsToFetch[tolower(datasetsToFetch) %in% modelInTabularData]
-    metaDataTmp            <- modelIn[names(modelIn) %in% tabularDatasetsToFetch]
-    namesScenInputData     <- names(modelIn)[names(modelIn) %in% tabularDatasetsToFetch]
-    modelInTemplateTmp     <- modelInTemplate
+    tabularIdsToFetchId    <- names(modelIn) %in% tabularDatasetsToFetch
+    metaDataTmp            <- modelIn[tabularIdsToFetchId]
+    namesScenInputData     <- names(modelIn)[tabularIdsToFetchId]
+    modelInTemplateTmp     <- modelInTemplate[tabularIdsToFetchId]
     if(length(scalarsInMetaData) && !scalarsFileName %in% tabularDatasetsToFetch){
       tabularDatasetsToFetch <- c(tabularDatasetsToFetch, scalarsFileName)
       namesScenInputData <- c(namesScenInputData, scalarsFileName)
@@ -13,11 +14,11 @@ if(!identical(loadMode, "scen")){
       metaDataTmp <- c(metaDataTmp, scalarsInMetaData)
     }
     scenInputData <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp, 
-                                  workDir = dirname(isolate(input$localInput$datapath)), 
+                                  workDir = loadModeWorkDir, 
                                   modelName = modelName, errMsg = lang$errMsg$GAMSInput$badInputData,
                                   scalarsFileHeaders = scalarsFileHeaders,
                                   templates = modelInTemplateTmp, method = loadMode,
-                                  fileName = basename(isolate(input$localInput$datapath)))$tabular
+                                  fileName = loadModeFileName, DDPar = DDPar, GMSOpt = GMSOpt)$tabular
     if(!length(scenInputData)){
       return()
     }
@@ -41,24 +42,22 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
       # handsontable, multi dropdown, or daterange
       if(tolower(dataset) %in% modelInTabularData){
         dataTmp <- scenInputData[[dataset]]
-        
-        # assign new input data here as assigning it directly inside the tryCatch environment would result in deleting list elements
-        # rather than setting them to NULL
-        if(nrow(dataTmp)){
+        if(length(dataTmp) && nrow(dataTmp)){
           
-          if(identical(names(modelIn)[[i]], tolower(scalarsFileName))){
-            if(verifyScalarInput(dataTmp, modelIn[[i]]$headers, scalarInputSym)){
+          if(identical(names(modelIn)[[i]], scalarsFileName)){
+            if(verifyScalarInput(dataTmp, modelIn[[i]]$headers, 
+                                 c(scalarInputSym, scalarInputSymToVerify))){
               scalarDataset <<- dataTmp 
-              attr(dataTmp, "aliases")  <- scalarsFileHeaders
-              modelInputData[[i]] <<- dataTmp[!(tolower(dataTmp[[1]]) %in% names(modelIn)), , drop = FALSE]
+              attr(dataTmp, "aliases")  <- attr(modelInTemplate[[i]], "aliases")
+              modelInputData[[i]] <<- dataTmp[dataTmp[[1]] %in% modelIn[[i]]$symnames, , drop = FALSE]
               inputVerified <- TRUE
             }
           }else{
             if(verifyInput(dataTmp, modelIn[[i]]$headers)){
-              # GAMS sets are always strings to make sure it is not parsed as a numeric
+              # GAMS sets are always strings so make sure it is not parsed as a numeric
               numericSet <- vapply(seq_along(dataTmp), function(dataColIdx){
                 if(is.numeric(dataTmp[[dataColIdx]]) && 
-                   identical(modelIn[[i]]$headers[[dataColIdx]]$type, "set")){
+                   identical(modelIn[[i]]$headers[[dataColIdx]]$type, "string")){
                   return(TRUE)
                 }else{
                   return(FALSE)
@@ -70,6 +69,7 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
               inputVerified <- TRUE
             }
           }
+          isEmptyInput[[i]] <<- FALSE
         }else{
           # empty dataset
           if(length(modelInTemplate[[i]]))
@@ -101,25 +101,26 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
           if((modelIn[[i]]$type == "slider" && length(modelIn[[i]]$slider$default) > 1) || 
              (modelIn[[i]]$type == "daterange")){
             dataTmp <- scalarDataset[tolower(scalarDataset[[colId]]) %in% 
-                                       paste0(rowName, c("_lo", "_up")), ][[colValue]]
+                                       paste0(rowName, c("$lo", "$up")), ][[colValue]]
             if(identical(modelIn[[i]]$type, "slider")){
               dataTmp <- as.numeric(dataTmp)
             }
             if(!is.null(dataTmp) && length(dataTmp)){
               modelInputData[[i]]      <<- dataTmp
               
-              if(identical(modelIn[[i]]$slider$single, TRUE) ||
-                 identical(modelIn[[i]]$slider$double, TRUE)){
+              if(isTRUE(modelIn[[i]]$slider$single) ||
+                 isTRUE(modelIn[[i]]$slider$double)){
                 modelInputDataHcubeTmp  <- scalarDataset[tolower(scalarDataset[[colId]]) %in% 
-                                                           paste0(rowName, "_step"), ][[colValue]]
-                if(identical(modelIn[[i]]$slider$double, TRUE)){
+                                                           paste0(rowName, "$step"), ][[colValue]]
+                if(isTRUE(modelIn[[i]]$slider$double)){
                   modelInputDataHcubeTmp <- c(modelInputDataHcubeTmp, 
                                               scalarDataset[tolower(scalarDataset[[colId]]) %in% 
-                                                              paste0(rowName, "_mode"), ][[colValue]])
+                                                              paste0(rowName, "$mode"), ][[colValue]])
                 }
                 modelInputDataHcube[[i]] <<- as.numeric(modelInputDataHcubeTmp)
               }
               inputVerified <- TRUE
+              newInputCount <<- newInputCount + 1
             }
           }else{
             dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[colId]]) == rowName, 
@@ -127,6 +128,7 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
             if(length(dataTmp) && length(dataTmp)){
               modelInputData[[i]] <<- dataTmp
               inputVerified <- TRUE
+              newInputCount <<- newInputCount + 1
             }
           }
         }
@@ -135,10 +137,12 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
       
       # check if input data is valid
       if(inputVerified){
-        flog.debug("Dataset: %s loaded successfully (mode: %s, overwrite: %s)", dataset, loadMode, overwriteInput)
-        newInputCount <<- newInputCount + 1
-        # set identifier that data was overwritten 
-        isEmptyInput[i] <<- TRUE
+        if(!isTRUE(isEmptyInput[i])){
+          flog.debug("Dataset: %s loaded successfully (mode: %s, overwrite: %s)", dataset, loadMode, overwriteInput)
+          newInputCount <<- newInputCount + 1
+          # set identifier that data was overwritten 
+          isEmptyInput[i] <<- TRUE
+        }
         if(!identical(loadMode, "scen")){
           # set unsaved flag
           rv$unsavedFlag <<- TRUE
@@ -180,10 +184,6 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
   })
   showErrorMsg(lang$errMsg$GAMSInput$title, errMsg)
   
-  if(!is.null(isolate(rv$activeSname))){
-    enableEl(session, "#btSave")
-  }
-  enableEl(session, "#btSaveAs")
   # set initialisation flags for handsontables to FALSE
   if(any(hotInit)){
     hotInit[]     <<- FALSE

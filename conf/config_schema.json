@@ -16,25 +16,41 @@
          ],
          "required":false
       },
-      "pageSkin":{  
-         "description":"Skin used for shiny dashboard",
+      "pageTitle":{
+        "description":"Name of the page (displayed in browser tab)",
+        "type":"string",
+        "required":false
+      },
+      "theme":{  
+         "description":"Color theme used for MIRO",
          "type":"string",
+         "default":"browser",
          "enum":[  
-            "black",
-            "blue",
-            "purple",
-            "green",
-            "red",
-            "yellow"
+            "browser",
+            "light",
+            "dark"
          ],
-         "default":"black",
          "required":false
       },
-      "includeParentDir":{
-        "description":"Boolean which specifies whether to include the parent directory of the current model folder (e.g. because several models share files)",
-         "type":"boolean",
-         "default":false,
-         "required":false
+      "fileExchange":{  
+        "description":"Method used to exchange files with GAMS",
+        "type":"string",
+        "enum":[  
+          "csv",
+          "gdx"
+        ],
+        "default":"gdx",
+        "required":false
+      },
+      "csvDelim":{  
+        "description":"Column delimiter for csv files",
+        "type":"string",
+        "enum":[  
+          ",",
+          ";"
+        ],
+        "default":",",
+        "required":false
       },
       "excelIncludeMeta":{  
          "description":"Boolean which specifies whether to include a metadata sheet in the Excel file (exporting a scenario)",
@@ -83,6 +99,16 @@
           "minLength":3
         }
       },
+      "modelFilesToIgnore":{
+        "description":"Specify files that are not necessary to run the model and shall be ignored (e.g. when uploading model to remote server)",
+        "type":["array", "string"],
+        "minLength":3,
+        "required":false,
+        "items":{
+          "type":"string",
+          "minLength":3
+        }
+      },
       "defCompMode":{  
          "description":"Specifies the default scenario comparison mode (the one that is loaded on startup).",
          "type":"string",
@@ -98,34 +124,10 @@
          "type":"object",
          "additionalProperties":false,
          "properties":{
-            "scenario":{  
-               "description":"Activate scenario functionality?",
-               "type":"boolean",
-               "default":true,
-               "required":false
-            },
-            "strictmode":{  
-               "description":"Launch App in strict mode? This results in throwing error messages instead of accepting possibly faulty user entries.",
-               "type":"boolean",
-               "default":true,
-               "required":false
-            },
             "loadLocal":{  
                "description":"Activate local data upload module?",
                "type":"boolean",
                "default":true,
-               "required":false
-            },
-            "sharedScenarios":{  
-               "description":"Enable scenario sharing between different users?",
-               "type":"boolean",
-               "default":true,
-               "required":false
-            },
-            "hcubeMode":{  
-               "description":"Solve multiple scenarios in Hypercube mode?",
-               "type":"boolean",
-               "default":false,
                "required":false
             },
             "logFile":{  
@@ -145,6 +147,79 @@
                "type": "boolean",
                "default":true,
                "required":false
+            },
+            "remoteExecution":{
+               "description": "Should model be solved remotely (note that credentials/location needs to be specified via environment variables!)?",
+               "type": "boolean",
+               "default":false,
+               "required":false
+            },
+            "downloadTempFiles":{
+               "description": "Should users be allowed to access the temporary directory out of MIRO?",
+               "type": "boolean",
+               "default":false,
+               "required":false
+            }
+         }
+      },
+      "overwriteAliases":{
+        "description": "Specify new aliases that will overwrite those defined in GAMS as explanatory text",
+         "type": "object",
+         "required":false,
+         "additionalProperties":{  
+           "type":"object",
+           "additionalProperties":false,
+           "required": ["newAlias"],
+           "properties":{
+              "newAlias":{
+                "description":"Specify new alias",
+                "type":"string",
+                "minLength":1
+              }
+           }
+         }
+      },
+      "overwriteHeaderAliases":{
+        "description": "Specify new header aliases that will overwrite those defined in GAMS as explanatory text",
+         "type": "object",
+         "required":false,
+         "additionalProperties":{  
+           "type":"object",
+           "additionalProperties":false,
+           "required": ["newHeaders"],
+           "properties":{
+              "newHeaders":{
+                "description":"Specify new headers (number needs to match dimension of symbol)",
+                "type":"array",
+                "uniqueItems":true,
+                "items":{
+                  "type":"string",
+                  "minLength": 1
+                }
+              }
+           }
+         }
+      },
+      "overwriteSheetOrder":{
+        "description": "Specify new sheet order as it shall be dispayed in UI",
+        "type":"object",
+         "additionalProperties":false,
+         "properties":{  
+            "input":{  
+               "description":"New order of input sheets",
+               "uniqueItems":true,
+                "items":{
+                  "type":"string",
+                  "minLength": 1
+                }
+            },
+            "output":{  
+               "description":"New order of output sheets",
+               "uniqueItems":true,
+                "items":{
+                  "type":"string",
+                  "minLength": 1
+                }
             }
          }
       },
@@ -154,80 +229,11 @@
          "default":true,
          "required":false
       },
-      "inputGroups":{
-         "description": "Specify input tables that shall be aggregated to groups",
-         "type": "array",
-         "required":false,
-         "minItems":1,
-         "items":{  
-           "type":"object",
-           "additionalProperties":false,
-           "required": ["name", "members"],
-           "properties":{  
-              "name":{
-                "description":"Specify the name of the group as it is displayed in the UI",
-                "type":"string",
-                "minLength":1
-              },
-              "members":{
-                "description":"Specify the group members (input tables)",
-                "type":"array",
-                "uniqueItems":true,
-                "minItems":2,
-                "items":{
-                  "type":"string",
-                  "minLength":1
-                }
-              }
-           }
-         }
-      },
-      "outputGroups":{
-         "description": "Specify output tables that shall be aggregated to groups",
-         "type": "array",
-         "required":false,
-         "uniqueItems":true,
-         "minItems":1,
-         "items":{  
-           "type":"object",
-           "additionalProperties":false,
-           "required": ["name", "members"],
-           "properties":{  
-              "name":{
-                "description":"Specify the name of the group as it is displayed in the UI",
-                "type":"string",
-                "minLength":1
-              },
-              "members":{
-                "description":"Specify the group members (output tables)",
-                "type":"array",
-                "uniqueItems":true,
-                "items":{
-                  "type":"string",
-                  "minLength":1
-                }
-              }
-           }
-         }
-      },
-      "scalarAliases":{  
-         "description":"Specify the aliases for the input and output scalar tables",
-         "type":"object",
-         "additionalProperties":false,
-         "properties":{  
-            "inputScalars":{  
-               "description":"Alias for the input scalar table",
-               "type":"string",
-               "minLength":"1",
-               "required":false
-            },
-            "outputScalars":{  
-               "description":"Alias for the output scalar table",
-               "type":"string",
-               "minLength":"1",
-               "required":false
-            }
-         }
+      "miroLogFile": {
+        "description": "Enter the name of the MIRO log file.",
+         "type": "string",
+         "minLength":3,
+         "required":false
       },
       "hiddenOutputScalars": {
         "description":"Specify symbol names of output scalars that will not be displayed in UI but can be used in graphs etc.",
@@ -295,7 +301,6 @@
                    },
                    "default":{  
                      "description":"Default/starting value of inputdata",
-                     "required": true,
                      "type":[  
                        "number",
                        "string",
@@ -309,6 +314,11 @@
                        "string"
                      ]
                    },
+                   "minStep":{
+                     "description":"Specifies the minimum step size that the user is allowed to specify in the Hypercube mode",
+                     "type":"number",
+                     "minimum": 0
+                   },
                    "width":{  
                      "description":"Width of the slider (optional)",
                      "type":"number"
@@ -320,7 +330,7 @@
                    }
                   },
                   "required":[  
-                      "widgetType", "step", "min", "max", "default"
+                      "widgetType", "step", "min", "max"
                    ],
                   "additionalProperties": false
                },
@@ -392,6 +402,10 @@
                         "number",
                         "null"
                       ]
+                    },
+                    "clearValue":{
+                      "description":"Whether to clear the value (set to empty string) when communicating with GAMS. This will not mess up the UEL order. Only relevant for singleton sets!",
+                      "type":"boolean"
                     }
                   },
                    "required":[  
@@ -466,7 +480,7 @@
                    },
                    "daysofweekdisabled":{
                      "description":"disallow certain days of week to be selected",
-                     "type": ["array", "null"],
+                     "type": ["integer", "array", "null"],
                      "uniqueItems":true,
                      "minItems":1,
                      "items":{  
@@ -500,7 +514,7 @@
                    }
                  },
                  "required":[  
-                      "widgetType", "min", "max", "value"
+                      "widgetType"
                    ],
                   "additionalProperties": false
                },
@@ -707,6 +721,57 @@
                      "description":"Style of widget",
                      "type":"string",
                      "enum":[
+                       "numericinput"
+                     ]
+                   },
+                   "alias":{  
+                     "type":"string",
+                     "minLength":1
+                   },
+                   "noImport":{  
+                    "description":"Boolean that specifies whether data should not be imported from external source",
+                    "type":"boolean"
+                   },
+                   "label":{  
+                     "description":"display label for the numericinput",
+                     "type":["string","null"],
+                     "minLength":1
+                   },
+                   "value":{  
+                     "description":"default value",
+                     "type":["number","null"]
+                   },
+                   "min":{  
+                     "description":"minimum value",
+                     "type":["number","null"]
+                   },
+                   "max":{  
+                     "description":"maximum value",
+                     "type":["number","null"],
+                     "minLength":1
+                   },
+                   "decimal":{  
+                     "description":"Number of decimal places",
+                     "type":["number","null"],
+                     "minLength":1
+                   },
+                   "sign":{  
+                     "description":"currency sign",
+                     "type":["string","null"],
+                     "minLength":1
+                   }
+                 },
+                 "required":[  
+                    "widgetType"
+                 ],
+                 "additionalProperties": false
+               },
+               {
+                 "properties":{
+                   "widgetType":{
+                     "description":"Style of widget",
+                     "type":"string",
+                     "enum":[
                        "table"
                      ]
                    },
@@ -714,8 +779,8 @@
                      "type":"string",
                      "minLength":1
                    },
-                   "sharedData":{  
-                     "description":"Choose whether data for this table should come from a shared table (across all scenarios)",
+                   "bigData":{  
+                     "description":"Does the table represent a large dataset (i.e. more than 20.000 records)?",
                      "type":"boolean",
                      "default": false
                    },
@@ -739,10 +804,70 @@
                         "type":"string",
                         "minLength":1
                       }
+                    },
+                    "pivotCols":{
+                      "description":"Array of columns to pivot",
+                      "type":["array", "string"],
+                      "minLength":1,
+                      "items":{
+                        "type":"string",
+                        "minLength":1
+                      }
                     }
                  },
                  "required":[  
                     "widgetType"
+                 ],
+                 "additionalProperties": false
+               },
+               {
+                 "properties":{
+                   "widgetType":{
+                     "description":"Style of widget",
+                     "type":"string",
+                     "enum":[
+                       "custom"
+                     ]
+                   },
+                   "rendererName":{
+                     "description":"Custom widget (name of generator)",
+                     "type":"string",
+                     "minLength": 3
+                   },
+                   "alias":{  
+                     "type":"string",
+                     "minLength":1
+                   },
+                   "height":{  
+                      "description":"Height of the output element.",
+                      "type":"integer",
+                      "minimum":0,
+                      "default":null,
+                      "required":false
+                   },
+                   "packages":{  
+                      "description":"Packages that need to be installed",
+                      "type":["array", "string"],
+                      "minLength":2,
+                      "minItems":1,
+                      "uniqueItems":true,
+                      "items":{  
+                         "type":"string",
+                         "minLength":2
+                      }
+                   },
+                   "options":{
+                      "description":"Additional options",
+                      "type":"object",
+                      "required":false
+                   },
+                   "noImport":{  
+                    "description":"Boolean that specifies whether data should not be imported from external source",
+                    "type":"boolean"
+                   }
+                 },
+                 "required":[  
+                    "widgetType", "rendererName"
                  ],
                  "additionalProperties": false
                }
@@ -768,7 +893,8 @@
                      "height":{  
                         "description":"Height of the output element.",
                         "type":"integer",
-                        "minimum":0
+                        "minimum":0,
+                        "default":null
                      }
                   },
                   "additionalProperties":false,
@@ -904,10 +1030,13 @@
                               "default":"Count"
                            },
                            "vals":{  
-                              "description":"String name of the column in the data.frame to use with aggregatorName. Must be additive (i.e a number).",
-                              "type":"string",
-                              "minLength":1,
-                              "default":null
+                              "description":"String or Array of Strings name(s) of the column(s) in the data.frame to use with aggregatorName. Must be additive (i.e a number).",
+                              "type":["array", "string"],
+                              "items":{  
+                                 "type":"string"
+                              },
+                              "default":null,
+                              "required":false
                            },
                            "rendererName":{  
                               "description":"Name of the renderer selected, e.g. Table, Heatmap, Treemap etc",
@@ -1002,8 +1131,36 @@
                                  "dygraphs",
                                  "leaflet",
                                  "timevis"
-                              ],
-                              "required":true
+                              ]
+                           },
+                           "filter":{  
+                             "type":"object",
+                             "description":"Add an interactive filter above the graph to slice the data",
+                             "additionalProperties":false,
+                             "properties":{  
+                                "col":{  
+                                  "description":"Column to filter on",
+                                   "type":"string",
+                                   "minLength": 1
+                                },
+                                "multiple":{  
+                                   "description":"Allow multiple filter options to be selected",
+                                   "type":"boolean",
+                                   "default":false
+                                },
+                                "date":{  
+                                   "description":"Column to be filtered contains date data",
+                                   "type":"boolean",
+                                   "default":false
+                                },
+                                "label":{  
+                                  "description":"ALabel to be displayed above filter menu",
+                                   "type":"string"
+                                }
+                             },
+                             "required":[
+                               "col"
+                             ]
                            }
                         },
                         "required":[  
@@ -1037,8 +1194,7 @@
                         "description":"Height of the output element.",
                         "type":"integer",
                         "minimum":0,
-                        "default":null,
-                        "required":false
+                        "default":null
                      },
                      "packages":{  
                         "description":"Packages that need to be installed",
@@ -1126,12 +1282,6 @@
                "default":null,
                "required":false
             },
-            "enableComments":{  
-               "description":"Enable comments in table. Will be ignored when solving the model.",
-               "type":"boolean",
-               "default":true,
-               "required":false
-            },
             "stretchH":{  
                "description":"Specifies whether table is stretched to full box width.",
                "type":"string",
@@ -1168,7 +1318,7 @@
                   "integer"
                ],
                "exclusiveMinimum":0,
-               "default":null,
+               "default":300,
                "required":false
             },
             "fixedColumnsLeft":{  
@@ -1417,6 +1567,421 @@
               }
            }
          }
+      },
+      "remoteImport":{  
+        "description": "Import data from a remote service",
+        "type": "array",
+        "uniqueItems":true,
+        "minItems":1,
+        "items":{
+          "type":"object",
+          "additionalProperties":false,
+          "required": ["name", "templates"],
+          "properties":{
+            "name":{
+              "description":"Specify a name for the remote import option",
+              "type":"string",
+              "minLength":1
+             },
+             "templates":{
+               "description":"Export templates",
+               "type": "array",
+               "uniqueItems":true,
+               "minItems":1,
+               "items":{
+                 "type":"object",
+                 "additionalProperties":false,
+                 "required": ["symNames"],
+                 "properties":{
+                   "symNames":{
+                     "description":"Names of the symbols to import",
+                     "type":["array", "string"],
+                     "minLength":1,
+                     "required":false,
+                     "uniqueItems":true,
+                     "items":{
+                       "type":"string",
+                       "minLength":1
+                     }
+                    },
+                    "source":{  
+                      "description":"Source of the data",
+                      "type":"string",
+                      "default": "REST",
+                      "enum":[
+                        "database",
+                        "REST"
+                      ]
+                    },
+                    "url":{
+                      "description":"URL of REST API",
+                      "type":"string",
+                      "minLength": 10
+                    },
+                    "authentication":{
+                      "description":"Basic authentication credentials (note that you must make sure to use HTTPS when using this, or your credentials will be transmitted in plain text!)",
+                      "type":"object",
+                      "additionalProperties":false,
+                      "properties":{
+                         "username": {
+                          "description":"Username used for authentication",
+                          "type":"string",
+                          "minLength":1
+                        },
+                        "password": {
+                          "description":"Password used for authentication",
+                          "type":"string",
+                          "minLength":1
+                        },
+                        "method": {
+                          "description":"Authentication method",
+                          "type":"string",
+                          "enum":["basic"]
+                        }
+                      },
+                      "required": ["username", "password"]
+                    },
+                    "method":{
+                      "description":"HTTP method (of REST request)",
+                      "type":"string",
+                      "default": "GET",
+                      "enum":[
+                        "GET",
+                        "POST",
+                        "PATCH",
+                        "DELETE",
+                        "HEAD",
+                        "PUT"
+                      ]
+                    },
+                    "httpHeaders":{
+                      "description":"Additional parameters to send alongside the request in the HTTP header",
+                      "type": "array",
+                      "required":false,
+                      "minItems":1,
+                      "items":{
+                        "type":"object",
+                        "additionalProperties":false,
+                        "required": ["key", "value"],
+                        "properties":{
+                           "key":{
+                             "description":"Header key",
+                             "type":"string",
+                             "minLength":1
+                           },
+                           "value":{
+                             "description":"Header value",
+                             "type":"string",
+                             "minLength":1
+                           }
+                        }
+                      }
+                    },
+                    "httpBody":{
+                      "description":"Additional parameters to send alongside the request in the HTTP body",
+                      "type": "array",
+                      "required":false,
+                      "minItems":1,
+                      "items":{
+                        "type":"object",
+                        "additionalProperties":false,
+                        "required": ["key", "value"],
+                        "properties":{
+                           "key":{
+                             "description":"Body key",
+                             "type":"string",
+                             "minLength":1
+                           },
+                           "value":{
+                             "description":"Body value",
+                             "type":"string",
+                             "minLength":1
+                           }
+                        }
+                      }
+                    },
+                    "encode":{
+                      "description": "How should data in body be encoded?",
+                      "type": "string",
+                      "required": false,
+                      "enum": [
+                        "multipart", 
+                        "form", 
+                        "json", 
+                        "raw"
+                      ],
+                      "default": "json"
+                    }
+                 }
+               }
+             }
+          }
+         }
+      },
+      "remoteExport":{
+        "description": "Export data to a remote service",
+        "type": "array",
+        "uniqueItems":true,
+        "minItems":1,
+        "items":{
+          "type":"object",
+          "additionalProperties":false,
+          "required": ["name", "templates"],
+          "properties":{
+            "name":{
+              "description":"Specify a name for the remote export option",
+              "type":"string",
+              "minLength":1
+             },
+             "templates":{
+               "description":"Export templates",
+               "type": "array",
+               "uniqueItems":true,
+               "minItems":1,
+               "items":{
+                 "type":"object",
+                 "additionalProperties":false,
+                 "required": ["symNames", "url"],
+                 "properties":{
+                    "symNames":{
+                       "description":"Names of the symbols to export",
+                       "type":["array", "string"],
+                       "minLength":1,
+                       "required":false,
+                       "uniqueItems":true,
+                       "items":{
+                         "type":"string",
+                         "minLength":1
+                       }
+                    },
+                    "url":{
+                       "description":"URL of REST API",
+                       "type":"string",
+                       "minLength": 10
+                     },
+                     "authentication":{
+                        "description":"Basic authentication credentials (note that you must make sure to use HTTPS when using this, or your credentials will be transmitted in plain text!)",
+                        "type":"object",
+                        "additionalProperties":false,
+                        "properties":{
+                           "username": {
+                            "description":"Username used for authentication",
+                            "type":"string",
+                            "minLength":1
+                          },
+                          "password": {
+                            "description":"Password used for authentication",
+                            "type":"string",
+                            "minLength":1
+                          },
+                          "method": {
+                            "description":"Authentication method",
+                            "type":"string",
+                            "enum":["basic"]
+                          }
+                        },
+                        "required": ["username", "password"]
+                      },
+                     "method":{
+                       "description":"HTTP method (of REST request)",
+                       "type":"string",
+                       "default": "POST",
+                       "enum":[
+                         "GET",
+                         "POST",
+                         "PATCH",
+                         "DELETE",
+                         "HEAD",
+                         "PUT"
+                       ]
+                     },
+                     "httpHeaders":{
+                       "description":"Additional parameters to send alongside the request in the HTTP header",
+                       "type": "array",
+                       "required":false,
+                       "minItems":1,
+                       "items":{
+                         "type":"object",
+                         "additionalProperties":false,
+                         "required": ["key", "value"],
+                         "properties":{
+                            "key":{
+                              "description":"Header key",
+                              "type":"string",
+                              "minLength":1
+                            },
+                            "value":{
+                              "description":"Header value",
+                              "type":"string",
+                              "minLength":1
+                            }
+                         }
+                       }
+                     },
+                     "httpBody":{
+                       "description":"Additional parameters to send alongside the request in the HTTP body",
+                       "type": "array",
+                       "required":false,
+                       "minItems":1,
+                       "items":{
+                         "type":"object",
+                         "additionalProperties":false,
+                         "required": ["key", "value"],
+                         "properties":{
+                            "key":{
+                              "description":"Body key",
+                              "type":"string",
+                              "minLength":1
+                            },
+                            "value":{
+                              "description":"Body value",
+                              "type":"string",
+                              "minLength":1
+                            }
+                         }
+                       }
+                     }
+                   }
+               }
+             }
+           }
+        }
+      },
+      "symbolLinks":{
+        "description": "Link output symbols to input symbols so that input data can be populated from output sheets",
+        "type": "array",
+        "uniqueItems":true,
+        "minItems":1,
+        "items":{
+          "type":"object",
+          "additionalProperties":false,
+          "required": ["source", "target"],
+          "properties":{
+            "source":{
+              "description":"Source symbol",
+              "type":"string",
+              "minLength":1
+            },
+            "target":{
+              "description":"Target symbol",
+              "type":"string",
+              "minLength":1
+            }
+          }
+        }
+      },
+      "readme":{
+        "type":"object",
+        "additionalProperties":false,
+        "properties":{
+           "tabTitle": {
+            "description":"README tab title",
+            "type":"string",
+            "minLength":1
+          },
+          "filename": {
+            "description":"README file name",
+            "type":"string",
+            "minLength":4
+          }
+        }
+      },
+      "scripts":{
+        "type":"object",
+        "description": "Specify external scripts that will be executed and the results displayed in MIRO",
+        "additionalProperties":false,
+        "properties":{
+           "base": {
+             "type":"array",
+             "uniqueItems":true,
+             "items":{
+                "type":"object",
+                "description": "Scripts that will be displayed in the output section and feeded with both input and output data",
+                "additionalProperties":false,
+                "properties":{
+                  "tabTitle": {
+                    "description":"Tab title",
+                    "type":"string",
+                    "minLength":2
+                  },
+                  "id": {
+                    "description":"Unique identifier of script",
+                    "type":"string",
+                    "minLength":2
+                  },
+                  "command": {
+                    "description":"Command to be executed",
+                    "type":"string",
+                    "minLength":1
+                  },
+                  "args": {
+                    "description":"Additional arguments to pass to command",
+                    "type": ["array", "string"],
+                    "items":{
+                      "type":"string",
+                      "minLength":1
+                    }
+                  },
+                  "outputFile": {
+                    "description":"Output filename that shall be displayed in MIRO once script is finished. Note that the file must be located inside the scripts folder.",
+                    "type":"string",
+                    "minLength":3
+                  },
+                  "timeout": {
+                    "description":"Timeout (seconds) when process shall be interrupted. -1 for infinity.",
+                    "type":"integer",
+                    "minimum":-1
+                  }
+                },
+                "required": ["tabTitle", "id", "command", "outputFile"]
+             }
+          },
+          "hcube": {
+            "type":"array",
+             "uniqueItems":true,
+             "items":{
+                "type":"object",
+                "description": "Scripts that will be displayed in the analysis section in the Hypercube mode and is feeded with input and output data of all selected scenarios",
+                "additionalProperties":false,
+                "properties":{
+                  "title": {
+                    "description":"Tab title",
+                    "type":"string",
+                    "minLength":2
+                  },
+                  "id": {
+                    "description":"Unique identifier of script",
+                    "type":"string",
+                    "minLength":2
+                  },
+                  "command": {
+                    "description":"Command to be executed",
+                    "type":"string",
+                    "minLength":1
+                  },
+                  "args": {
+                    "description":"Additional arguments to pass to command",
+                    "type": ["array", "string"],
+                    "items":{
+                      "type":"string",
+                      "minLength":1
+                    }
+                  },
+                  "outputFile": {
+                    "description":"Output filename that shall be displayed in MIRO once script is finished",
+                    "type":"string",
+                    "minLength":3
+                  },
+                  "timeout": {
+                    "description":"Timeout (seconds) when process shall be interrupted. -1 for infinity.",
+                    "type":"integer",
+                    "minimum":-1
+                  }
+                },
+                "required": ["title", "id", "command", "outputFile"]
+             }
+          }
+        }
       }
    }
 }

@@ -631,10 +631,10 @@ class SolveDataWriter() :
                 t.rows.append(HTML.TableRow(header1row, header = True));
                 t.rows.append(HTML.TableRow(header2row, header = True));
 
-            if bgcolor == 'White' :
+            if bgcolor == '' :
                 bgcolor = 'LightGrey';
             else :
-                bgcolor = 'White';
+                bgcolor = '';
 
             rowattribs = {'bgcolor' : bgcolor};
 

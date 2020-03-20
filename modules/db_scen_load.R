@@ -1,7 +1,22 @@
 # load scenario from database
-# define which input datasheets to load to interface (default: load all datasets)
-datasetsToFetch <- names(modelIn)
-
+checkIfInputDataExists <- function(){
+  inputDatasetsExist <- vapply(seq_along(modelIn), function(i){
+    if(length(isolate(rv[["in_" %+% i]]))){
+      return(TRUE)
+    }else{
+      return(FALSE)
+    }
+  }, logical(1), USE.NAMES = FALSE)
+  
+  if(any(inputDatasetsExist)){
+    hideEl(session, "#importDataTabset")
+    showEl(session, "#btOverwriteScen")
+    showEl(session, "#importDataOverwrite")
+  }else{
+    overwriteInput <<- FALSE
+    rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
+  }
+}
 observeEvent(input$btLoadScen, {
   flog.debug("Load Scenario button clicked (multiple scenarios view).")
   rv$btLoadScen <<- isolate(rv$btLoadScen + 1L)
@@ -34,9 +49,10 @@ observeEvent(input$selLoadScenTags, {
 observeEvent(virtualActionButton(rv$btLoadScen), {
   # fetch list of saved scenarios
   # only load single scenario as not in comparison mode
+  loadIntoSandbox <<- FALSE
   errMsg <- NULL
   tryCatch({
-    scenMetaDb <<- db$fetchScenList(scode = 0L)
+    scenMetaDb <<- db$fetchScenList(scode = SCODEMAP[['scen']])
   }, error = function(e){
     flog.error("Problems fetching list of scenarios from database. Error message: %s.", e)
     errMsg <<- lang$errMsg$fetchScenData$desc
@@ -52,6 +68,7 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
       scenMetaDb <<- scenMetaDb[!as.character(scenMetaDb[[1]]) %in% sidsInComp, ]
     }
   }
+  maxNoScenExceeded <- FALSE
   if(!is.null(scenMetaDb) && nrow(scenMetaDb)){
     if(length(scenMetaDb) && nrow(scenMetaDb) > maxNoScenToShow){
       scenMetaDbSubset <<- scenMetaDb[order(scenMetaDb[[stimeIdentifier]], 
@@ -79,8 +96,8 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
       names(uiSidList)[1:4] <- db$getScenMetaColnames()[c('sid', 'uid', 'sname', 'stime')]
       uiSidList <- db$formatScenList(uiSidList, stimeIdentifier, desc = TRUE)
     }
-  }else if(any(sidsInSplitComp != 0L) && !isInSplitView && length(dbSidList)){
-    uiSidList <- vapply(sidsInSplitComp, function(i){
+  }else if(!isInSplitView && any(sidsInSplitComp[!is.na(sidsInSplitComp)] != 0L) && length(dbSidList)){
+    uiSidList <- vapply(sidsInSplitComp[!is.na(sidsInSplitComp)], function(i){
       dbSidList[startsWith(dbSidList, paste0(i, "_"))][1]}, character(1L), USE.NAMES = FALSE)
     uiSidList <- uiSidList[!is.na(uiSidList)]
   }else{
@@ -151,106 +168,28 @@ observeEvent(input$btSortTime, {
 })
 
 # load scenario confirmed
-observeEvent(virtualActionButton(input$btLoadScenConfirm, input$loadHcubeHashSid, 
-                                 rv$loadHcubeHashSid), {
-  checkNameTmp <- FALSE
-  scenNameTmp  <- character(0L)
+observeEvent(input$btLoadScenConfirm, {
   flog.debug("Confirm load scenario button clicked.")
-  
-  if(!identical(isolate(input$sidebarMenuId), "scenarios") &&
-     identical(isolate(input$tb_importData), "tb_importData_hcube")){
-    checkNameTmp <- TRUE
-    scenNameTmp  <- isolate(input$hcube_newScenName)
-    if(isBadScenName(scenNameTmp)){
-      flog.debug("Bad scenario name: '%s'.", scenNameTmp)
-      return()
-    }
-    if(identical(length(sidsToLoad), 2L) && identical(sidsToLoad[[1L]], -1L)){
-      sidsToLoad <<- list(scenNameTmp, sidsToLoad[[2L]])
-    }else if(length(isolate(input$loadHcubeHashSid))){
-      sidsToLoad <<- list(scenNameTmp, isolate(input$loadHcubeHashSid))
-    }else{
-      flog.error("An unexptected error occurred. Scenario from Hypercube mode was attempted to be loaded, but no scenario ID could be found.")
-      return()
-    }
+  if(identical(isolate(input$sidebarMenuId), "scenarios") &&
+     identical(isolate(input$tabsetLoadScen), "loadScenUI")){
+    scenSelected <- isolate(input$selLoadScenUI)
   }else{
-    if(identical(isolate(input$sidebarMenuId), "scenarios") &&
-       identical(isolate(input$tabsetLoadScen), "loadScenUI")){
-      scenSelected <- isolate(input$selLoadScenUI)
-    }else if(!identical(isolate(input$sidebarMenuId), "scenarios") &&
-             identical(isolate(input$tb_importData), "tb_importData_base")){
-      scenSelected <- isolate(input[["selLoadScen_base"]])
-      checkNameTmp <- TRUE
-    }else{
-      scenSelected <- isolate(input$selLoadScen)
-    }
-    if(!length(scenSelected)){
-      return()
-    }
-    scenSelected <- regmatches(scenSelected, 
-                               regexpr("_", scenSelected), 
-                               invert = TRUE)
-    sidsToLoad  <<- lapply(scenSelected, '[[', 1)
-    rm(scenSelected)
+    scenSelected <- isolate(input$selLoadScen)
   }
-  if(checkNameTmp){
-    tryCatch({
-      if(!length(scenNameTmp))
-        scenNameTmp <- db$importDataset(tableName = db$getTableNameMetadata(), 
-                                        tibble(sidIdentifier, sidsToLoad[[1]]),
-                                        colNames = snameIdentifier)[[1]]
-      if(db$checkSnameExists(scenNameTmp, uid)){
-        flog.debug("A scenario with the same name already exists. Please first delete this scenario before importing another one with the same name.")
-        if(config$activateModules$hcubeMode){
-          showEl(session, "#loadBase_scenNameExists")
-          hideEl(session, "#loadData_content_base")
-        }else{
-          showHideEl(session, "#importScenSnameExistsErr", 4000L)
-        }
-        return()
-      }
-    }, error = function(e){
-      showHideEl(session, "#importScenError", 4000L)
-      flog.error("Problems fetching scenario metadata. Error message: '%s'.", e)
-      sidsToLoad <<- NULL
-    })
-    if(is.null(sidsToLoad))
-      return()
+  if(!length(scenSelected)){
+    return()
   }
+  loadIntoSandbox <<- FALSE
+  sidsToLoad  <<- lapply(regmatches(scenSelected, 
+                                    regexpr("_", scenSelected), 
+                                    invert = TRUE), '[[', 1)
 
   # if in comparison mode skip input data check
   if(!isInSolveMode){
     rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
     return()
   }
-  # update input sheets
-  # check whether current input datasets are empty
-  if(identical(isolate(input$cbSelectManually), TRUE) && 
-     length(isolate(input$selInputData))){
-    inputDatasetIdxToImport <- match(tolower(isolate(input$selInputData)), names(modelIn))
-    # remove NAs
-    inputDatasetIdxToImport <- inputDatasetIdxToImport[!is.na(inputDatasetIdxToImport)]
-  }else{
-    inputDatasetIdxToImport <- seq_along(modelIn)
-  }
-  datasetsToFetch <<- names(modelIn[inputDatasetIdxToImport])
-  
-  inputDatasetsExist <- vapply(inputDatasetIdxToImport, function(i){
-    if(length(isolate(rv[["in_" %+% i]]))){
-      return(TRUE)
-    }else{
-      return(FALSE)
-    }
-  }, logical(1))
-  
-  if(any(inputDatasetsExist)){
-    hideEl(session, "#importDataTabset")
-    showEl(session, "#btOverwriteScen")
-    showEl(session, "#importDataOverwrite")
-  }else{
-    overwriteInput <<- FALSE
-    rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
-  }
+  checkIfInputDataExists()
 })
 
 observeEvent(input$btOverwriteScen, {
@@ -265,6 +204,7 @@ observeEvent(input$btOverwriteScen, {
 observeEvent(input$btHcubeLoad, {
   flog.debug("Load Hypercube job scenarios to compare mode button clicked.")
   isInSolveMode <<- FALSE
+  loadIntoSandbox <<- FALSE
   if(isInSplitView){
     rv$btSplitView <<- isolate(rv$btSplitView + 1L)
   }
@@ -274,6 +214,8 @@ observeEvent(input$btHcubeLoad, {
 observeEvent(virtualActionButton(rv$btOverwriteScen), {
   flog.debug("Loading and rendering scenarios: '%s'.",
              paste(sidsToLoad, collapse = ", "))
+  suppressCloseModalLocal <- suppressCloseModal
+  suppressCloseModal      <<- FALSE
   if(!length(sidsToLoad)){
     return()
   }
@@ -285,7 +227,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       return()
     }
   }
-  sidsInMem <- c(sidsInComp, sidsInSplitComp)
+  sidsInMem <- c(sidsInComp, sidsInSplitComp[!is.na(sidsInSplitComp)])
   if(!isInSolveMode && all(unlist(sidsToLoad, use.names = FALSE) %in% sidsInMem)){
     allSidsInComp <- TRUE
     scenDataTmp   <- match(unlist(sidsToLoad, use.names = FALSE), sidsInMem)
@@ -293,14 +235,12 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   }else{
     allSidsInComp <- FALSE
     errMsg <- NULL
-    loadAsName <- NULL
     tryCatch({
-      if(is.na(suppressWarnings(as.numeric(sidsToLoad[[1]])))){
-        loadAsName      <- sidsToLoad[[1]]
-        sidsToLoad[[1]] <- NULL
-      }
-      scenDataTmp <- db$loadScenarios(unlist(sidsToLoad, use.names = FALSE), 
+      sidsToLoadVector <- unlist(sidsToLoad, use.names = FALSE)
+      scenDataTmp <- db$loadScenarios(sidsToLoadVector, 
                                       msgProgress = lang$progressBar$loadScenDb)
+      scriptDataTmp <- db$loadScriptResults(sidsToLoadVector,
+                                            msgProgress = lang$progressBar$loadScenDb)
     }, error = function(e){
       flog.error("Some error occurred loading scenarios: '%s' from database. Error message: %s.", 
                  paste(sidsToLoad, collapse = ", "), e)
@@ -311,29 +251,27 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     }
   }
   
-  idxScalarOut <- match(gsub("_", "", modelName, fixed = TRUE) %+% 
-                          "_" %+% scalarsOutName, scenTableNames)[[1]]
+  idxScalarOut <- match(paste0(gsub("_", "", modelName, fixed = TRUE), 
+                               "_", scalarsOutName), scenTableNames)[[1]]
   
   if(isInSolveMode){
     # close currently opened scenario
-    
+    resetWidgetsOnClose <<- FALSE
     if(!closeScenario()){
       return()
     }
-    tryCatch({
-      if(is.null(loadAsName))
+    if(!loadIntoSandbox){
+      tryCatch({
         activeScen <<- Scenario$new(db = db, sid = sidsToLoad[[1]])
-      else
-        activeScen <<- Scenario$new(db = db, sname = loadAsName)
-        }, 
-             error = function(e){
-               flog.error("Error generating new Scenario object. Error message: '%s'.", e)
-               errMsg <<- lang$errMsg$loadScen$desc
-             })
-    if(is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))){
-      return()
+      }, 
+      error = function(e){
+        flog.error("Error generating new Scenario object. Error message: '%s'.", e)
+        errMsg <<- lang$errMsg$loadScen$desc
+      })
+      if(is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))){
+        return()
+      }
     }
-    
     
     # check whether all input datasets were imported
     if(length(modelOut)){
@@ -350,7 +288,6 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       }
     }
     names(scenInputData)         <- inputDsNames
-    newInputCount                <- 0L
     
     if(scalarsFileName %in% inputDsNames){
       scalarDataset <- scenInputData[[length(scenInputData)]]
@@ -360,12 +297,19 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     
     errMsg    <-  NULL
     loadMode  <-  "scen"
+    newInputCount <- 0L
+    datasetsToFetch <- names(modelIn)
     source("./modules/input_load.R", local = TRUE)
-    if(!is.null(errMsg)){
-      return()
+    if(is.null(errMsg) && isFALSE(suppressCloseModalLocal)){
+      removeModal()
     }
-    removeModal()
-    if(!config$activateModules$hcubeMode){
+    if(length(scalarDataset) && nrow(scalarDataset)){
+      scalarData[["scen_1_"]] <<- scalarDataset
+    }
+    
+    if(LAUNCHHCUBEMODE){
+      noOutputData <<- TRUE
+    }else{
       # render output data
       # generate data
       noOutput <- TRUE
@@ -380,12 +324,12 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
           if(identical(i, idxScalarOut)){
             # scalar data exists
             removeRows                 <- tolower(scenData[["scen_1_"]][[i]][[1]]) %in% config$hiddenOutputScalars
-            scalarData[["scen_1_"]]    <<- scenData[["scen_1_"]][[i]]
+            scalarData[["scen_1_"]]    <<- bind_rows(scalarData[["scen_1_"]], scenData[["scen_1_"]][[i]])
             scenData[["scen_1_"]][[i]] <<- scenData[["scen_1_"]][[i]][!removeRows, ]
           }
         }
       })
-      scenMetaData[["scen_1_"]] <<- activeScen$getMetadata(lang$nav$excelExport$metadataSheet)
+      
       if(noOutput){
         noOutputData <<- TRUE
       }else{
@@ -393,16 +337,24 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       }
       # rendering tables and graphs
       renderOutputData()
-    }else{
-      noOutputData <<- TRUE
+      
+      # load script results
+      if(length(config$scripts$base)){
+        scriptOutput$loadResultsBase(scriptDataTmp[[1]])
+      }
     }
     
-    flog.debug("Scenario: '%s' was loaded into UI", activeScen$getSid())
-    
-    # update scenario name
-    rv$activeSname  <<- activeScen$getScenName()
-    if(activeScen$isFromOtherMode())
-      rv$unsavedFlag  <<- TRUE
+    if(loadIntoSandbox){
+      flog.debug("Scenario data from a scenario with id: '%s' was loaded into sandbox.", 
+                 sidsToLoad[[1]])
+      markUnsaved()
+    }else{
+      flog.debug("Scenario: '%s' was loaded into UI", activeScen$getSid())
+      scenMetaData[["scen_1_"]] <<- activeScen$
+        getMetadata(lang$nav$excelExport$metadataSheet)
+      # update scenario name
+      rv$activeSname  <<- activeScen$getScenName()
+    }
     # function ends here in case not in compare mode!
     return()
   }
@@ -411,9 +363,9 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   # in Hypercube mode, sids are vector not list
   if(!is.list(sidsToLoad)){
     rowIds              <- as.integer(rv$fetchedScenarios[[1]]) %in% sidsToLoad
-    metadataFull        <- rv$fetchedScenarios[rowIds, ]
+    metadataFull        <- rv$fetchedScenarios[rowIds, 1:4]
     metDataColNames     <- db$getScenMetaColnames()
-    names(metadataFull) <- metDataColNames[c("sid", "uid", "stime")]
+    names(metadataFull) <- metDataColNames[c("sid", "uid", "stime", "sname")]
     metadataFull[[metDataColNames["sname"]]] <- as.character(seq.int(isolate(rv$scenId) - 3L, 
                                                            isolate(rv$scenId) - 4L + nrow(metadataFull)))
   }else if(!allSidsInComp){
@@ -421,6 +373,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   }
   errMsg <- NULL
   lastImportedSid <- NULL
+  idxScalarIn <- match(paste0(gsub("_", "", modelName, fixed = TRUE), 
+                              "_", scalarsFileName), scenTableNames)[[1]]
   lapply(seq_along(scenDataTmp), function(i){
     tryCatch({
       if(!isInSplitView){
@@ -443,13 +397,16 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         # load scenario data
         scenData[[scenIdLong]]                   <<- scenDataTmp[[i]]
         # load scalar data if available
+        if(!is.na(idxScalarIn) && nrow(scenData[[scenIdLong]][[idxScalarIn]])){
+          scalarData[[scenIdLong]]               <<- scenData[[scenIdLong]][[idxScalarIn]]
+        }else{
+          scalarData[[scenIdLong]]               <<- tibble()
+        }
         if(!is.na(idxScalarOut) && nrow(scenData[[scenIdLong]][[idxScalarOut]])){
           # scalar data exists
           rowIdsToRemove                         <- tolower(scenData[[scenIdLong]][[idxScalarOut]][[1]]) %in% config$hiddenOutputScalars
-          scalarData[[scenIdLong]]               <<- scenData[[scenIdLong]][[idxScalarOut]]
+          scalarData[[scenIdLong]]               <<- bind_rows(scalarData[[scenIdLong]], scenData[[scenIdLong]][[idxScalarOut]])
           scenData[[scenIdLong]][[idxScalarOut]] <<- scenData[[scenIdLong]][[idxScalarOut]][!rowIdsToRemove, ]
-        }else{
-          scalarData[[scenIdLong]]               <<- tibble()
         }
         # add scenario metadata
         scenMetaData[[scenIdLong]]               <<- db$getMetadata(sid = metadata[[sidIdentifier]],
@@ -462,7 +419,10 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       }
       
       source("./modules/scen_render.R", local = TRUE)
-      
+      # load script results
+      if(length(config$scripts$base)){
+        scriptOutput$loadResultsBase(scriptDataTmp[[i]], scenId)
+      }
     }, error = function(e){
       flog.error(e)
       errMsg  <<- lang$errMsg$loadScen$desc
@@ -486,7 +446,6 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   rm(scenDataTmp)
   if(!is.list(sidsToLoad)){
     switchTab(session, "scenComp")
-    updateTabsetPanel(session, "sidebarMenuId", selected = "scenarios")
   }
   if(!isInSplitView){
     switchTab(session, "scenComp")
@@ -501,45 +460,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
              paste(sidsToLoad, collapse = ", "))
   return()
 })
-# import from Hcube via hash module
-observeEvent(input$hcHashLookup, {
-  flog.debug("Look up Hypercube scenario by hash value button clicked.")
-  hashVal <- isolate(input$hcHashLookup)
-  if(!identical(nchar(hashVal), 64L) || 
-     identical(grepl("^[A-Fa-f0-9]{64}$", hashVal)[[1L]], FALSE)){
-    return()
-  }
-  showEl(session, "#hcHashLookup_load")
-  on.exit(hideEl(session, "#hcHashLookup_load"))
-  noErr <- TRUE
-  tryCatch({
-    dbSchemaTmp  <- db$getDbSchema()
-    matchingScen <- db$importDataset(dbSchemaTmp$tabName['_scenMeta'], 
-                                    colNames = dbSchemaTmp$colNames[['_scenMeta']][c('sid', 'stag', 'stime')],
-                                    tibble(c(dbSchemaTmp$colNames[['_scenMeta']][['sname']],
-                                             dbSchemaTmp$colNames[['_scenMeta']][['scode']]), 
-                                           c(hashVal, 1L), c("=", ">=")))
-  }, error = function(e){
-    flog.error("Problems fetching scenario metadata from database. Error message: '%s'.", e)
-    showHideEl(session, "#importScenError")
-    noErr <<- FALSE
-  })
-  if(!noErr)
-    return()
-  if(length(matchingScen)){
-    if(identical(nrow(matchingScen), 0L)){
-      showHideEl(session, "#importScenNoHcubeScen", 4000L)
-      return()
-    }else if(identical(nrow(matchingScen), 1L)){
-      sidsToLoad <<- list(-1L, matchingScen[[1L]][1])
-      rv$loadHcubeHashSid <- isolate(rv$loadHcubeHashSid) + 1L
-      return()
-    }
-  }
-  output$hcHashLookupResults <- renderUI(getHcubeHashLookupTable(matchingScen))
-})
 
-if(config$activateModules$hcubeMode){
+if(LAUNCHHCUBEMODE){
   observeEvent(input$tb_importData, {
     if(!identical(isolate(input$tb_importData), "tb_importData_base") ||
        !identical(isolate(input$selLoadScen_base), "")){
@@ -548,7 +470,7 @@ if(config$activateModules$hcubeMode){
     on.exit(hideEl(session, "#importDataDbSpinner"))
     tryCatch({
       if(!length(scenMetaDbBaseList)){
-        scenMetaDbBase <<- db$fetchScenList(scode = 0L)
+        scenMetaDbBase <<- db$fetchScenList(scode = SCODEMAP[['scen']])
         if(length(scenMetaDbBase) && nrow(scenMetaDbBase)){
           if(nrow(scenMetaDbBase) > maxNoScenToShow){
             scenMetaDbBaseSubset <<- scenMetaDbBase[order(scenMetaDbBase[[stimeIdentifier]], 
@@ -653,19 +575,66 @@ if(config$activateModules$hcubeMode){
       btSortTimeDescBase <<- TRUE
     }
   })
-  observeEvent(input$btCheckSnameBaseConfirm, {
-    flog.debug("Check new scenario name imported from base module button clicked.")
-    scenNameTmp <- isolate(input$base_newScenName)
-    if(isBadScenName(scenNameTmp)){
-      flog.debug("Bad scenario name: '%s'.", scenNameTmp)
+  observeEvent(input$btLoadFromBase, {
+    flog.debug("Button to import scenario from base mode clicked.")
+    loadIntoSandbox <<- TRUE
+    scenSelected <- isolate(input[["selLoadScen_base"]])
+    if(!length(scenSelected)){
       return()
     }
-    if(db$checkSnameExists(scenNameTmp, uid)){
-      flog.debug("A scenario with the same name already exists. Please first delete this scenario before importing another one with the same name.")
-      showHideEl(session, "#importScenSnameExistsErr", 4000L)
+    sidsToLoad  <<- lapply(regmatches(scenSelected, 
+                                      regexpr("_", scenSelected), 
+                                      invert = TRUE), '[[', 1)
+    checkIfInputDataExists()
+  })
+}else{
+  # import from Hcube via hash module
+  observeEvent(input$hcHashLookup, {
+    flog.debug("Look up Hypercube scenario by hash value button clicked.")
+    hashVal <- isolate(input$hcHashLookup)
+    if(!identical(nchar(hashVal), 64L) || 
+       identical(grepl("^[A-Fa-f0-9]{64}$", hashVal)[[1L]], FALSE)){
       return()
     }
-    sidsToLoad         <<- c(scenNameTmp, sidsToLoad)
-    rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
+    showEl(session, "#hcHashLookup_load")
+    on.exit(hideEl(session, "#hcHashLookup_load"))
+    noErr <- TRUE
+    tryCatch({
+      dbSchemaTmp  <- db$getDbSchema()
+      matchingScen <- db$importDataset(dbSchemaTmp$tabName['_scenMeta'], 
+                                       colNames = dbSchemaTmp$colNames[['_scenMeta']][c('sid', 'stag', 'stime')],
+                                       tibble(c(dbSchemaTmp$colNames[['_scenMeta']][['sname']],
+                                                dbSchemaTmp$colNames[['_scenMeta']][['scode']]), 
+                                              c(hashVal, SCODEMAP[['scen']]), c("=", ">")))
+    }, error = function(e){
+      flog.error("Problems fetching scenario metadata from database. Error message: '%s'.", e)
+      showHideEl(session, "#importScenError")
+      noErr <<- FALSE
+    })
+    if(!noErr)
+      return()
+    if(length(matchingScen)){
+      if(identical(nrow(matchingScen), 0L)){
+        showHideEl(session, "#importScenNoHcubeScen", 4000L)
+        return()
+      }else if(identical(nrow(matchingScen), 1L)){
+        sidsToLoad <<- list(matchingScen[[1L]][1])
+        loadIntoSandbox <<- TRUE
+        checkIfInputDataExists()
+        return()
+      }
+    }
+    output$hcHashLookupResults <- renderUI(getHcubeHashLookupTable(matchingScen))
+  })
+  observeEvent(input$loadHcubeHashSid, {
+    sidToLoad <- suppressWarnings(as.integer(input$loadHcubeHashSid))
+    if(!length(sidToLoad) || is.na(sidToLoad)){
+      flog.error("Could not load Hypercube scenario with sid: '%s'. This looks like an attempt to tamper with the app!",
+                 input$loadHcubeHashSid)
+      return()
+    }
+    sidsToLoad <<- list(sidToLoad)
+    loadIntoSandbox <<- TRUE
+    checkIfInputDataExists()
   })
 }

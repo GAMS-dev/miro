@@ -1,0 +1,238 @@
+{
+  "overwriteSheetOrder": {
+    "input": ["cd", "pricecurve", "_widgets"],
+    "output": ["repc", "rep", "repcompare", "s_profit"]
+  },
+  "pivottable": {
+    "bgColor": "rgb(255,128,0)"
+  },
+  "theme": "browser",
+  "defCompMode": "split",
+  "roundingDecimals": 2,
+  "activateModules": {
+    "logFile": true,
+    "lstFile": true,
+    "loadLocal": true,
+    "attachments": false,
+    "remoteExecution": false,
+    "downloadTempFiles": true
+  },
+  "autoGenInputGraphs": true,
+  "aggregateWidgets": true,
+  "storeLogFilesDuration": 7,
+  "excelIncludeMeta": true,
+  "excelIncludeEmptySheets": true,
+  "saveTraceFile": true,
+  "pageTitle": "Crop planting",
+  "miroLogFile": "farming_miro.log",
+  "UILogo": "jack-bain-mEgPe7RSBTc-unsplash-cut.jpg",
+  "defaultScenName": "default",
+  "inputWidgets": {
+    "cd": {
+      "widgetType": "table",
+      "alias": "crop data",
+      "readonly": false,
+      "heatmap": false,
+      "bigData": false
+    },
+    "pricecurve": {
+      "widgetType": "table",
+      "alias": "price curve data",
+      "readonly": false,
+      "heatmap": false,
+      "bigData": false
+    },
+    "yf": {
+      "widgetType": "slider",
+      "alias": "yield factor",
+      "min": 0,
+      "max": 2,
+      "default": 1,
+      "step": 0.5,
+      "ticks": true,
+      "noHcube": false,
+      "label": "Yield factor"
+    },
+    "land": {
+      "widgetType": "slider",
+      "alias": "available land [acre]",
+      "min": 200,
+      "max": 1000,
+      "default": 500,
+      "step": 25,
+      "ticks": true,
+      "noHcube": false,
+      "label": "Available land [acre]"
+    },
+    "_gmsopt_emp": {
+      "widgetType": "dropdown",
+      "alias": "Stochastic solver",
+      "choices": ["DE", "DECIS", "LINDO"],
+      "selected": "DE",
+      "noHcube": false,
+      "multiple": false,
+      "label": "Stochastic solver"
+    },
+    "nums": {
+      "widgetType": "slider",
+      "alias": "number of scenarios",
+      "min": 0,
+      "max": 50,
+      "default": 0,
+      "step": 1,
+      "ticks": true,
+      "noHcube": false,
+      "label": "Number of scenarios"
+    }
+  },
+  "dataRendering": {
+    "repc": {
+      "outType": "graph",
+      "graph": {
+        "title": "crop report",
+        "tool": "plotly",
+        "type": "pie",
+        "traces": {
+          "1": {
+            "labels": "c",
+            "values": "yield",
+            "hole": 0.3,
+            "name": "crop yield [tons]"
+          },
+          "2": {
+            "labels": "c",
+            "values": "planted",
+            "name": "crop planted [acres]",
+            "hole": 0.3
+          },
+          "3": {
+            "labels": "c",
+            "values": "seedcost",
+            "name": "seed cost [$]",
+            "hole": 0.3
+          },
+          "4": {
+            "labels": "c",
+            "values": "sold",
+            "name": "crop sold [tons]",
+            "hole": 0.3
+          },
+          "5": {
+            "labels": "c",
+            "values": "sales",
+            "name": "sales",
+            "hole": 0.3
+          },
+          "6": {
+            "labels": "c",
+            "values": "purchased",
+            "name": "crop purchased [tons]",
+            "hole": 0.3
+          },
+          "7": {
+            "labels": "c",
+            "values": "pcost",
+            "name": "purchase cost [$]",
+            "hole": 0.3
+          }
+        }
+      },
+      "height": 700
+    },
+    "repfinance": {
+      "outType": "graph",
+      "graph": {
+        "title": "financial report by scenario",
+        "tool": "plotly",
+        "type": "hist",
+        "traces": {
+          "1": {
+            "labels": "s",
+            "values": "value",
+            "hole": 0,
+            "name": "financial report by scenario"
+          }
+        },
+        "showlegend": true,
+        "xdata": {
+          "value": {}
+        },
+        "histnorm": "",
+        "nbins": 25,
+        "barmode": "overlay",
+        "alpha": 0.6,
+        "xaxis": {
+          "title": "financial report by scenario"
+        },
+        "cumulative": false,
+        "horizontal": false,
+        "yaxis": {
+          "title": ""
+        },
+        "dragmode": "zoom",
+        "color": "rh",
+        "filter": {
+          "col": "rh",
+          "label": "",
+          "multiple": false
+        }
+      },
+      "height": 700
+    },
+    "repcompare": {
+      "outType": "graph",
+      "graph": {
+        "title": "crop data",
+        "tool": "plotly",
+        "type": "pie",
+        "traces": {
+          "1": {
+            "labels": "c",
+            "values": "planted_d",
+            "hole": 0,
+            "name": "deterministic: crop planted [acres]"
+          },
+          "2": {
+            "labels": "c",
+            "values": "planted_s",
+            "name": "stochastic: crop planted [acres]",
+            "hole": 0
+          }
+        },
+        "showlegend": true
+      },
+      "height": 700
+    }
+  },
+  "datatable": {
+    "class": "stripe",
+    "filter": "top",
+    "options": {
+      "buttons": ["copy", "excel", "pdf"],
+      "dom": "Bfrtip",
+      "pageLength": 15
+    },
+    "extensions": "Buttons",
+    "rownames": false
+  },
+  "readme": {
+    "tabTitle": "Crop plant alloction problem with stochastic crop yield",
+    "filename": "README.md"
+  },
+  "handsontable": {
+    "stretchH": "all",
+    "readonly": false,
+    "highlightCol": true,
+    "highlightRow": true,
+    "columnSorting": true,
+    "manualColumnResize": true,
+    "contextMenu": {
+      "enabled": true,
+      "allowRowEdit": true,
+      "allowColEdit": true,
+      "allowReadOnly": false
+    },
+    "height": 700,
+    "colWidths": 150
+  }
+}

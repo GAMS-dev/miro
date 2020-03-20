@@ -24,6 +24,7 @@
     "sidebarButtons":{  
       "importInput":"Load data",
       "solve":"Solve model",
+      "submitJob": "Submit job",
       "solveHcube":"Submit job",
       "splitView":"Split view",
       "tabView":"Tab view",
@@ -33,6 +34,10 @@
       "interrupt":"Stop"
     },
     "header":{
+      "remoteExec":{
+        "login": "Login",
+        "logout": "Logout"
+      },
       "scenario":{
         "title":"Scenario",
         "titleHC": "HC job",
@@ -45,6 +50,7 @@
       "help":{
         "title": "Help",
         "doc": "Documentation",
+        "forum": "GAMS World Forum",
         "about": "About"
       },
       "tooltips":{
@@ -52,8 +58,10 @@
       }
     },
     "inputScreen":{  
+      "btCollapsedTabs": "More",
       "noDataDep":"Please first import all data this element depends on.",
-      "widgetTabTitle": "Input widgets"
+      "widgetTabTitle": "Input widgets",
+      "dirtyFlag": "The scenario contains output data that may not correspond to the modified input data anymore."
     },
     "gams":{  
       "boxModelStatus":{  
@@ -61,9 +69,12 @@
       },
       "boxGamsOutput":{  
         "title":"GAMS output",
+        "tabCurrent": "Current job",
+        "tabJobList": "Job list",
         "gamsOutputTabset":{  
           "logFile":"Log file",
           "lstFile":"Listing file",
+          "miroLogFile":"MIRO log file",
           "logUpdate":"Update"
         }
       }
@@ -80,12 +91,13 @@
       "tooltips":{  
         "btExport":"export scenario",
         "btTableView":"switch view",
+        "btSymbolLink": "Use as input data",
         "btClose":"close scenario",
         "btDownloadTmpFiles":"temporary files",
         "inputSheet":"model input",
         "outputSheet":"model output",
         "load":"Load saved scenario",
-        "loadActive":"Load active scenario (latest saved state)"
+        "loadActive":"Load active scenario"
       },
       "split":{
         "load":"Load scenario",
@@ -122,13 +134,16 @@
     "hcubeAnalyze":{
       "title":"Analyze Scenarios",
       "loadMsg":"Please wait while the results are calculated. This may take a while.",
-      "failMsg":"Something went wrong while trying to run paver.",
-      "duplicatesMsg": "Paver found a duplicated instance: '%s'. Please make sure that you don't select duplicates.",
+      "failMsg":"Something went wrong while trying to run PAVER.",
+      "duplicatesMsg": "PAVER found a duplicated instance: '%s'. Please make sure that you don't select duplicates.",
 	    "btCancel": "Cancel",
 	    "btNew": "Select scenarios"
     },
     "gamsModelStatus":{  
+      "submission": "Model is being submitted",
+      "queued": "Model queued",
       "exec":"Model execution phase",
+      "collection": "Results are being downloaded",
       "success":"Run successfully terminated.",
       "error":"Run did not terminate successfully: "
     },
@@ -139,6 +154,9 @@
     "dialogExportScen":{
       "title": "Export scenario",
       "desc": "Select a file type",
+      "selDatasets":"Select datasets to export",
+      "noDsSelected": "You did not select any datasets to export.",
+      "cbSelectManually":"Manually choose datasets",
       "cancelButton": "Cancel",
       "okButton": "Export"
     },
@@ -149,10 +167,12 @@
     "dialogNewScen":{  
       "title":"New scenario",
       "desc":"Please enter a name for the scenario:",
+      "discardAttach": "Discard attachments?",
+      "discardPerm": "Discard permissions?",
       "tags":"Add tag(s) to your scenario (optional):",
       "newScenName":"New Scenario",
       "badName":"Please choose a valid name for the new scenario.",
-      "scenExits":"The scenario name you chose does already exist. Do you want to overwrite the existing data?",
+      "scenExists":"The scenario name you chose does already exist. Do you want to overwrite the existing data?",
       "btNewName":"Choose different name",
       "btOverwrite":"Overwrite",
       "cancelButton":"Cancel",
@@ -162,9 +182,11 @@
       "title":"New Hypercube job",
       "desc":"Please enter a name for the Hypercube job configuration:",
       "tags":"Add tag(s) to your HC job (optional):",
+      "discardAttach": "Discard attachments?",
+      "discardPerm": "Discard permissions?",
       "newScenName":"New Hypercube job",
       "badName":"Please choose a valid name for the new Hypercube job configuration.",
-      "scenExits":"The HC job name you chose does already exist. Do you want to overwrite the existing data?",
+      "scenExists":"The HC job name you chose does already exist. Do you want to overwrite the existing data?",
       "btNewName":"Choose different name",
       "btOverwrite":"Overwrite",
       "cancelButton":"Cancel",
@@ -172,12 +194,15 @@
     },
     "dialogEditMeta":{
       "title":"Edit metadata",
-      "success": "Metadata updated successfully.",
+      "categoryGeneral": "General options",
+      "categoryAttachments": "Attachments",
+      "categoryAccessPerm": "Access permissions",
       "newName": "New name",
       "badName": "The name you chose is invalid (either too long or too short). Please choose another name.",
       "newTags":"New tags",
-      "scenExits":"A scenario already exists with the name you selected.",
-      "attachmentsLabel": "Attachments",
+      "scenExists":"A scenario already exists with the name you selected.",
+      "emptyPerm":"Scenario access permissions can not be empty!",
+      "incapOwner": "You cannot revoke the owner's access permissions.",
       "attachmentsAdd": "Add attachments",
       "attachmentsExecPerm": "Allow model to read this file",
       "attachSuccess": "Attachments were updated successfully",
@@ -191,12 +216,15 @@
     },
     "dialogEditMetaHC":{
       "title":"Edit metadata",
-      "success": "Metadata updated successfully.",
+      "categoryGeneral": "General options",
+      "categoryAttachments": "Attachments",
+      "categoryAccessPerm": "Access permissions",
       "newName": "New name",
       "badName": "The name you chose is invalid (either too long or too short). Please choose another name.",
       "newTags":"New tags",
-      "scenExits":"A Hypercube job configuration already exists with the name you selected.",
-      "attachmentsLabel": "Attachments",
+      "emptyPerm":"Job access permissions can not be empty!",
+      "incapOwner": "You cannot revoke the owner's access permissions.",
+      "scenExists":"A Hypercube job configuration already exists with the name you selected.",
       "attachmentsAdd": "Add attachments",
       "attachmentsExecPerm": "Allow model to read this file",
       "attachSuccess": "Attachments were updated successfully",
@@ -207,6 +235,29 @@
       "errMsg": "Prolems updating Hypercube job metadata. If this problem persists, please contact the system administrator.",
       "cancelButton":"Close",
       "okButton":"Update metadata"
+    },
+    "dialogRemoteLogin": {
+      "title": "Login required",
+      "desc": "Please enter your credentials below:",
+      "url": "URL of the GAMS Remote Solver",
+      "username": "Username",
+      "password": "Password",
+      "namespace": "Namespace",
+      "useRegistered": "Is your model registered in the namespace?",
+      "remember": "Remember me",
+      "cancelButton":"Cancel",
+      "okButton": "Ok",
+      "hostNotFound": "GAMS Remote Solver could not be reached under the given URL.",
+      "nsNotFound": "The namespace you entered could not be found.",
+      "invalidCred": "The credentials you entered are invalid.",
+      "insuffPerm": "You don't have sufficient permissions to execute the model.",
+      "invalidProtocol": "The protocol you specified is invalid. Only HTTPS supported."
+    },
+    "dialogRemoteLogout": {
+      "title": "Logout",
+      "desc": "Are you sure you want to log out?",
+      "cancelButton":"Cancel",
+      "okButton": "Logout"
     },
     "dialogDeleteScen":{  
       "title":"Delete scenario",
@@ -234,13 +285,13 @@
     },
     "dialogRemoveScen":{  
       "title":"Close scenario",
-      "desc":"Are you sure you want to close the currently active scenario? Unsaved data might be lost!",
-      "cancelButton":"No",
-      "okButton":"Yes"
+      "desc":"Are you sure you want to close the currently active scenario? Unsaved data will be lost!",
+      "cancelButton":"Cancel",
+      "okButton":"Close"
     },
     "dialogRemoveHCJob":{  
       "title":"Close Hypercube job",
-      "desc":"Are you sure you want to close the currently active Hypercube job configuration? Unsaved data might be lost!",
+      "desc":"Are you sure you want to close the currently active Hypercube job configuration? Unsaved data will be lost!",
       "cancelButton":"No",
       "okButton":"Yes"
     },
@@ -266,24 +317,22 @@
     "dialogImport":{  
       "title":"Load data",
       "tabLocal":"Local",
+      "tabExternal": "External",
       "tabDatabase":"Database",
       "tabHcube":"Hypercube",
       "hcubeHashDesc": "Enter the hash value of the scenario you wish to load from the Hypercube mode. Then simply click on the scenario to load it.",
       "hcubeHashButton": "Search",
       "hcubeHashNoMatch": "No scenarios that match the hash you entered were found.",
       "selInputData":"Select datasets to load",
+      "selExternalSource": "Select external source",
       "descLocal":"Choose file with data to load",
       "newScenName": "Choose a name for the new scenario",
-      "badScenName": "Please specify a valid name",
       "scenNameExistsErr": "The scenario name you chose does already exist.",
-      "scenNameExists":"The scenario name you chose does already exist. Do you want to overwrite the existing data?",
       "descOverwriteInput":"You already have input data loaded. Are you sure you want to overwrite this data?",
       "cbSelectManually":"Manually choose datasets",
       "overwriteWarning":"Already imported datasets might be lost if you did not save them!",
       "cancelButton":"Cancel",
-      "okButton":"Load",
-      "overwriteButton": "Overwrite existing data",
-      "newNameButton": "New name"
+      "okButton":"Load"                        
     },
     "dialogImportHC":{  
       "title":"Import data",
@@ -314,6 +363,8 @@
       "titleDataError":"Data corrupted",
       "descDataError":"The scenario data seems to be corrupted. Loading failed.",
       "maxNoScenExceeded": "The maximum number of scenarios that can be displayed has been exceeded. Only a subset is displayed.",
+      "noDsSelected": "Please select the name of the dataset you want to import.",
+      "invalidFile": "The file you uploaded could not be validated.",
       "sortBy":"Sort by:",
       "btSortNameASC":"Name (ASC)",
       "btSortTimeASC":"Time (ASC)",
@@ -336,7 +387,8 @@
         "stime":"Time created",
         "stag": "Scenario tags",
         "readPerm": "Read permissions",
-        "writePerm": "Write permissions"
+        "writePerm": "Write permissions",
+        "execPerm": "Execute permissions"
       },
       "inputPrefix":"",
       "inputSuffix":" (Input)",
@@ -359,6 +411,14 @@
       "okButton": "Save as",
       "cancelButton": "Cancel"
     },
+    "dialogNoExecPerm":{
+      "title": "No execute permissions",
+      "desc": "You do not have execute permissions for this scenario."
+    },
+    "dialogNoExecPermHC":{
+      "title": "No execute permissions",
+      "desc": "You do not have execute permissions for this Hypercube job configuration."
+    },
     "dialogDownloadTmp":{
       "title": "Download temporary files",
       "desc": "Select the file you wish to download",
@@ -367,10 +427,21 @@
       "downloadButton":"Download file",
       "cancelButton":"Cancel"
     },
+    "dialogJobSubmission":{
+      "title": "Submit job",
+      "desc": "Submit a new job to be solved asynchronously.",
+      "jobName": "Specify a name for your job (optional)",
+      "descWait": "Please wait while the job is being submitted...",
+      "badName": "Please choose a valid name for the new job.",
+      "cancelButton":"Cancel",
+      "okButton": "Submit",
+      "successMsg": "Your job was scheduled successfully. You can retrieve the results as soon as the job finished executing."
+    },
     "dialogHcube":{
       "title": "Hypercube configuration",
       "desc": "You selected %d scenarios to be solved in Hypercube mode. Out of these, %d scenarios have already been solved either by yourself or someone else.",
       "descSolveAgain": "Do you want to solve all scenarios again or only those that have not yet been solved?",
+      "descJobSubmission": "Please wait while the job is being submitted...",
       "newTags": "Assign one or more tags to your job:",
       "manualSwitch": "Process job manually?",
       "cancelButton":"Cancel",
@@ -395,26 +466,89 @@
         "desc": "You specified a step size that could not be processed. Please select a valid step size and try again."
       }
     },
+    "importJobsDialog":{
+      "title": "Currently active jobs",
+      "noJobs": "No jobs are currently active",
+      "noJobsHist": "No discarded or imported jobs could be found",
+      "discardSuccess": "Job was discarded",
+      "importSuccess": "Job was imported successfully",
+      "accessDenied": "Access denied",
+      "maxDownloads": "The maximum number of parallel downloads has been reached.",
+      "jobNotFound": "The job was not found on the GAMS Remote Solver.",
+      "histTitle": "Job history",
+      "status":{
+        "downloading": "Downloading results",
+        "downloaded": "Downloaded",
+        "running": "Running",
+        "imported": "Imported",
+        "completed": "Completed",
+        "corrupted": "Corrupted",
+        "discarded": "Discarded"
+      },
+      "ttips":{
+        "importedManual": "The job was manually imported.",
+        "discardedCorrupted": "The job was corrupted.",
+        "discardedActive": "The job was still active.",
+        "discardedScheduled": "The job was scheduled.",
+        "discardedCompleted": "The job was completed.",
+        "corruptedNoDir": "The working directory of the job could not be located.",
+        "corruptedNoProcess": "The job is terminated, but no results were found.",
+        "corruptedManual": "The manual job import failed."
+      },      
+      "header":{
+        "owner": "Owner",
+        "date": "Submission date",
+        "tags": "Job tags",
+        "name": "Job name",
+        "status": "Status",
+        "action": "Action"
+      },
+      "buttons":{
+        "import": "Import",
+        "download": "Download results",
+        "log": "Show log",
+        "progress": "Show progress",
+        "discard": "Discard"
+      },
+      "discardConfirm":{
+        "title": "Confirm discard",
+        "desc": "Are you sure you want to discard the selected job? Running jobs will be stopped.",
+        "cancelButton": "Cancel",
+        "confirmButton": "Confirm"
+      }
+    },
+    "newCompletedJobsDialog":{
+      "title": "New completed jobs",
+      "desc": "Some of your jobs have been solved and are now ready for import.",
+      "cancelButton": "Cancel",
+      "okButton": "Show jobs"
+    },
     "hcubeMode":{
       "sliderAllCombinations": "All combinations?",
+      "stepsize": "Step size",
       "checkboxAliases":["No", "Yes"],
-      "configPaverDialog":{
-        "title": "Select scenario comparison method",
-        "selectMethod": "Which method would you like to use in order to compare your scenarios?",
+      "hcubeLoadDialog":{
+        "title": "Select action",
+        "selectMethod": "What would you like to do with the selected scenarios?",
+        "selExportType": "Select a file type",
         "maxScenWarning1": "You may only select up to: '%d' scenarios to load into interactive mode at once.", 
-        "maxScenWarning2": " Select less scenarios or use the Paver module to compare.",
+        "maxScenWarning2": " Select less scenarios or use the PAVER module to compare.",
         "cancelButton": "Cancel",
         "paverButton": "Analyze",
-        "desc":"Please select the attributes you want to compare.",
-        "delTrace":"Note: The existing trace files found in the current working directory will be deleted when starting paver.",
+        "selAnalysisScript": "Select the script you want to run",
+        "tabScript": "Scripts",
+        "tabPaver": "PAVER",
+        "delTrace":"Note: The existing trace files found in the current working directory will be deleted when starting PAVER.",
         "tooManySolvers":"The attributes you selected amount to too many scenarios to compare (no more than %s scenarios can be compared). Please reduce the number of scenarios.",
         "noTrc":"No trace data could be found for at least one of the selected scenarios.",
+        "analysisRunScriptRunning": "An analysis is currently underway. Please wait until this analysis is complete or interrupt it.",
         "removeConfirm": "Are you sure that you want to delete the %s selected scenarios from the database? This action can not be undone!",
         "removeSuccess": "The selected scenarios were removed successfully.",
-        "selAttribs":"Attributes to select:",
+        "selPaverAttribs":"Please select the attributes you want to compare:",
         "selIgnoreAttribs": "Select attributes to ignore:",
         "selClArgs": "Specify additional arguments to call PAVER with.",
-        "runButton":"Start Paver",
+        "runPaverButton":"Start PAVER",
+        "runScriptButton": "Start script",
         "interactiveButton":"Compare",
         "downloadButton":"Download data",
         "removeButton": "Delete scenarios"
@@ -433,48 +567,6 @@
         "importNewButton": "Import only new",
         "importAllButton": "Import all"
       },
-      "importJobsDialog":{
-        "title": "Currently active Hypercube jobs",
-        "noJobs": "No Hypercube jobs are currently active",
-        "noJobsHist": "No discarded or imported Hypercube jobs could be found",
-        "discardSuccess": "Job was discarded",
-        "importSuccess": "Job was imported successfully",
-        "histTitle": "Job history",
-        "ttips":{
-          "importedManual": "The job was manually imported.",
-          "discardedCorrupted": "The job was corrupted.",
-          "discardedActive": "The job was still active.",
-          "discardedScheduled": "The job was scheduled.",
-          "discardedCompleted": "The job was completed.",
-          "corruptedNoDir": "The working directory of the job could not be located.",
-          "corruptedNoProcess": "The job is terminated, but no results were found.",
-          "corruptedManual": "The manual job import failed."
-        },      
-        "header":{
-          "owner": "Owner",
-          "date": "Submission date",
-          "tags": "Job tags",
-          "status": "Status",
-          "action": "Action"
-        },
-        "buttons":{
-          "import": "Import",
-          "log": "Show log",
-          "discard": "Discard"
-        },
-        "importConfirm":{
-          "title": "Confirm import",
-          "desc": "Are you sure you want to import the selected Hypercube job?",
-          "cancelButton": "Cancel",
-          "confirmButton": "Confirm"
-        },
-        "discardConfirm":{
-          "title": "Confirm discard",
-          "desc": "Are you sure you want to discard the selected Hypercube job? Running jobs will be stopped.",
-          "cancelButton": "Cancel",
-          "confirmButton": "Confirm"
-        }
-      },
       "manualJobImportDialog":{
         "title": "Manual Hypercube job import",
         "uploadZip":"Upload zip file with results here",
@@ -485,7 +577,12 @@
       "showLogFileDialog":{
         "title": "Hypercube job log file",
         "noContent": "The log file could not be accessed or does not contain any data.",
-        "fileSize": "The log file contains too much data to be displayed."
+        "fileSize": "The log file contains too much data to be displayed.",
+        "cancelButton": "Cancel"
+      },
+      "showJobProgressDialog":{
+        "title": "Job progress",
+        "cancelButton": "Cancel"
       },
       "jobsCompletedDialog":{
         "title": "Completed jobs",
@@ -493,9 +590,19 @@
       }
     },
     "dialogPaverInUse":{
-      "title": "Paver is already in use",
+      "title": "PAVER is already in use",
       "desc": "Please wait until the process is finished.",
       "closeButton": "Close"
+    },
+    "scriptOutput": {
+      "runButton": "Run script",
+      "interruptButton": "Interrupt script",
+      "errMsg": {
+        "noScript": "Script file could not be found.",
+        "noOutput": "Script output file could not found.",
+        "timeout": "Script timed out.",
+        "crash": "Script crashed."
+      }
     }
   },
   "progressBar":{  
@@ -508,16 +615,28 @@
       "sendInput":"Sending input data",
       "downloadAttach": "Downloading attachments"
     },
+    "importScen":{
+      "title": "Importing scenario",
+      "downloadResults": "Downloading result data",
+      "renderInput": "Rendering input data",
+      "renderOutput": "Rendering output data"
+    },
+    "exportScen":{
+      "title": "Exporting scenario",
+      "exportDs": "Exporting dataset %s of %s"
+    },
     "loadScenDb":{  
       "title":"Loading scenario data from database",
       "progress":"Loading dataset "
     },
     "saveScenDb":{  
       "title":"Saving scenario data in database",
+      "attachments": "Saving attachments",
       "progress":"Saving dataset "
     },
     "hcubeImport":{
       "title": "Importing Hypercube job",
+      "refresh": "refresh",
       "unzip": "Extracting zip file",
       "zipValidation": "Validating zip file",
       "scenValidation": "Validating scenario data",
@@ -534,13 +653,18 @@
       "title":"Error reading file",
       "desc":"Some error occurred reading file: '%s'."
     },
+    "invalidFileType":{  
+      "title":"Invalid file type",
+      "desc":"The file you are trying to import can not be read by MIRO. Supported file types are: %s."
+    },
     "fileWrite":{  
       "title":"Error writing file",
       "desc":"Some error occurred writing file: '%s'."
     },
     "initErrors":{  
       "title":"Some errors occurred",
-      "desc":"Please fix the errors mentioned below and restart MIRO:"
+      "desc":"Please fix the errors mentioned below and restart MIRO:",
+      "okButton": "Ok"
     },
     "fetchScenData":{  
       "title":"Error fetching scenario metadata",
@@ -586,8 +710,16 @@
       "badOutputData":"The GAMS output dataset: '%s' is not valid. Please check the format of the data you wish to import."
     },
     "gamsExec":{  
-      "title":"Error executing GAMS",
-      "desc":"Some error occurred while executing GAMS."
+      "title":"GAMS could not be run",
+      "desc":"Could not run GAMS. Did you forget to specify the GAMS installation path?"
+    },
+    "jobRunning": {
+      "title": "Active job",
+      "desc": "A GAMS job is currently running. You must stop or wait for this job to finish before you can run another job."
+    },
+    "unzipProcessRunning":{
+      "title": "MIRO busy",
+      "desc": "MIRO is still busy extracting the model files in your workspace. Please wait and try again."
     },
     "gamsTerm":{  
       "title":"Error terminating gams.exe",
@@ -600,7 +732,8 @@
     "readLst":{  
       "title":"Error reading listing file",
       "desc":"Some error occurred reading the GAMS listing file.",
-      "fileSize":"The lst file you are trying to read is too large to be displayed. Please download the lst file to access it."
+      "fileSize":"The lst file you are trying to read is too large to be displayed. Please download the lst file to access it.",
+      "fileNotFound": "The listing file could not be found."
     },
     "saveScen":{  
       "title":"Error saving scenario",
@@ -638,7 +771,7 @@
       "extract":{
         "title": "Error extracting archive",
         "desc": "Problems extracting the archive. Please make sure you upload a valid zip file.",
-        "invalidFiles": "The archive you are trying to import contains invalid files. Only trace and csv files allowed!"
+        "invalidFiles": "The archive you are trying to import contains invalid files. Only trace files, CSV files and GDX files allowed!"
       },
       "scenRead":{
         "title": "Error reading files",
@@ -679,17 +812,56 @@
     }
   },
   "adminMode":{
+    "invalidSymbolsDialog":{
+      "title": "Invalid configuration",
+      "desc": "Some graphics and/or widgets have been configured for symbols that are no longer part of your GAMS/MIRO data contract. Do you want to remove them from your configuration? Note that this cannot be undone! Graphic configuration for invalid symbol(s): '%s'. Widget configuration for invalid symbol(s): '%s'.",
+      "msgSuccess": "Invalid configuration was successfully removed",
+      "btRemoveWidgets": "Remove invalid widgets",
+      "btRemoveGraphs": "Remove invalid graphs", 
+      "btCancel": "Cancel"
+    },
     "uiR":{
       "adminPanel": "GAMS MIRO admin panel",
       "general": "General settings",
-      "table": "Table settings",
+      "table": "Configure tables",
       "widgets": "Configure widgets",
       "graphs": "Configure graphs",
-      "database": "Database management"
+      "database": "Database management",
+      "custom":{
+        "skeleton": "skeleton:",
+        "steps": "Steps:",
+        "li1": "Create a directory renderer_%s in your model directory with a file %s_custom.R in it.",
+        "li2": "Copy the above code and paste it into the %s_custom.R file.",
+        "li3a": "Write your own custom renderer! For a detailed description of how to write such a custom renderer, see ",
+        "li3b": "here",
+        "description1": "The next time the application is started after a click on save MIRO looks for a custom renderer function in the file %s_custom.R. If this is not found, the application does not start! Make sure that you have included the custom renderer function correctly. It is always a good idea to first develop a custom renderer isolated from MIRO and, as soon as you are satisfied with the result, to integrate it into the MIRO application.",
+        "description2": "Note:",
+        "description3": "If your application doesn't start because of the reason mentioned above, you can always delete the configured renderer here."
+      }
     },
     "general":{
       "ui":{
-        "title":"General settings"
+        "title":"General settings",
+        "tabInterface": "Interface",
+        "tabSymbols": "Symbol configuration",
+        "tabModules": "Modules",
+        "tabScripts": "Analysis scripts",
+        "headerGeneral": "General",
+        "headerLogo": "Logo",
+        "headerScalars": "Scalars",
+        "headerTabGrouping": "Tab grouping",
+        "headerTabSymlinks": "Use output data as input data",
+        "headerInputGroups": "Input groups",
+        "headerOutputGroups": "Output groups",
+        "headerSymbolNaming": "Naming",
+        "headerSymbolGrouping": "Ordering",
+        "headerBaseScripts": "Base mode",
+        "baseScriptsTooltip": "Run custom analysis scripts which will be displayed in the output section",
+        "headerHcubeScripts": "Hypercube mode",
+        "hcubeScriptsTooltip": "Run custom analysis scripts for multiple scenarios at once",
+        "headerScenData": "Scenario & data",
+        "headerComputation": "Computation",
+        "tooltipDocs": "Open documentation"
       },
       "modalDialog":{
         "title": "Error copying image", 
@@ -699,9 +871,12 @@
         "label": "Language",
         "choices": ["English", "German", "Chinese"]
       },
-      "skin":{
-        "label": "Skin to use for dashboard",
-        "choices": ["black", "blue", "purple", "green", "red", "yellow"]
+      "theme":{
+        "label": "Color theme to use",
+        "choices": ["Use system/browser settings", "Light mode", "Dark mode"]
+      },
+      "pageTitle":{
+        "label": "Application title (visible in browser tab)"
       },
       "scen":{
         "label": "Default scenario comparison mode",
@@ -709,22 +884,34 @@
       },
       "defaultScenName":{
         "checkbox": "Use a default scenario that will be loaded on startup?",
+        "tooltip": "Allows you to pre-populate tables and widgets with data when starting MIRO",
         "label": "Name of the default scenario"
       },
       "args":{
-        "label": "Specify extra command line arguments that GAMS will be called with (e.g. limrow=10,threads=4)"
+        "label": "Specify extra command line arguments that GAMS will be called with"
       },
       "groups":{
         "input": "Divide input symbols into groups",
         "output": "Divide output symbols into groups"
       },
-      "inputScalars":{
-        "label": "Alias for the input scalars table",
-        "placeholder": "Input scalars"
+      "symlinks":{
+        "label": "Specify symbol links (results that can be used as input data)"
       },
-      "outputScalars":{
-        "label": "Alias for the output scalars table",
-        "placeholder": "Output scalars"
+      "scripts":{
+        "base": "Specify custom analysis scripts for the Base mode",
+        "hcube": "Specify custom analysis scripts for the Hypercube mode"
+      },
+      "overwriteSheetOrder":{
+        "input": "Specify the tab order of the input symbols (drag & drop)",
+        "output": "Specify the tab order of the output symbols (drag & drop)"
+      },
+      "overwriteSymbolAliases":{
+        "label": "Specify symbol alias",
+        "input": "Input symbols",
+        "output": "Output symbols"
+      },
+      "overwriteSymbolHeaders":{
+        "label": "Specify column headers"
       },
       "hidden":{
         "label": "Scalars that should not be displayed in the scalars table but can be used in graphs etc."
@@ -732,21 +919,42 @@
       "pivotcolor":{
         "label": "Background color of row and column headers in pivot tables."
       },
+      "mirologfile":{
+        "label": "Enter the name of the MIRO log file (if available). Minimum 3 characters."
+      },
+      "readme":{
+        "label": "README file",
+        "readmeTooltip": "A README file is displayed in the input section as an individual start page",
+        "useReadme": "Include README file",
+        "tabTitle": "README tab title",
+        "fileName": "README file name",
+        "btEdit": "Edit README",
+        "dialogEdit": {
+          "title": "Readme editor",
+          "reamdeHeader": "Markdown content",
+          "markdownHeader": "Readme preview",
+          "msgErrSave": "Problems writing the README file. Check whether you have sufficient write permissions in your model directory.",
+          "btCancel": "Cancel",
+          "btSave": "Save"
+        }
+      },
       "saveDuration":{
-        "label": "Duration the GAMS log and lst files are stored in the database (in days). 0 means files are not stored at all, 999 means files are stored indefinitely. This setting is ignored when the attachment module is not active. Note that this is currently only supported in the MIRO base mode."
+        "label": "Duration the GAMS log and lst files are stored in the database (in days)."
       },
       "decimal":{
         "label": "Number of decimal places used for rounding output values."
       },
       "logo":{
-        "label": "Upload a custom logo for your MIRO app: png/jpg file (best format: 4,6:1)"
+        "header": "Logo preview:",
+        "label": "Upload a custom logo for your MIRO app: png/jpg file (best format: 4.6:1 or 230:50px)",
+        "placeholder": "No file selected"
       }, 
       "actScen":{
         "title" :"Save, delete and compare scenarios",
         "label": "Activate scenario functionality"
       },
       "actStrict":{
-        "label": "Launch App in strict mode? This results in throwing error messages instead of accepting possibly faulty user entries."
+        "label": "Launch app in strict mode? This results in throwing error messages instead of accepting possibly faulty user entries."
       },
       "actUpload":{
         "title": "Enables the user to use local data for GAMS runs",
@@ -759,7 +967,7 @@
         "label": "Show log file in UI"
       },
       "actLst":{
-        "label": "Show lst file in UI"
+        "label": "Show listing (lst) file in UI"
       },
       "actAttach":{
         "title": "Can be files of any format. MIRO distinguishes between two types of attachments: attachments that can be seen and read by your GAMS model and files that can not be seen.",
@@ -780,36 +988,41 @@
         "title": "Sheets can be empty e.g. when the exported scenario only contains input data.",
         "label": "Include empty sheets in the Excel file?"
       },
+      "downloadTempFiles":{
+        "label": "Allow access to the temporary directory?"
+      },
       "saveTrace":{
         "title": "For performance analysis with the integrated analysis tool PAVER, this option needs to be activated.",
         "label": "Save trace file with each GAMS run (Hypercube mode)"
       },
       "auto":{
-        "label": "Generate graphs for each input sheet automatically (pivot tool)"
+        "label": "Generate graphs for each input symbol automatically (pivot tool)"
       }
     },
     "tables":{
       "ui":{
-        "title": "General table settings",
-        "tableType": "Which table type would you like to configure?",
-        "choices": ["input table", "output table"]
+        "title": "Table settings",
+        "input": "input tables (global)",
+        "output": "output tables (global)",
+        "symbol": "symbol tables",
+        "resetTable": "Reset",
+        "saveTable": "Save"
       },
       "hot":{
         "height": "Height of input tables (in px)",
         "readonly": "Restrict editing of tables? If activated, tables can not be modified by the user.",
-        "highcol": "Highlight the column of current active cell (no live preview available).",
-        "highrow": "Highlight the row of current active cell (no live preview available).",
+        "highcol": "Highlight the column of current active cell (no live preview).",
+        "highrow": "Highlight the row of current active cell (no live preview).",
         "stretch": "Default column stretching.",
         "stretchChoices": ["No stretch", "Stretch last column", "Stretch all columns"],
         "stretchCustom": "Set custom column width.",
-        "colwidth": "Width of a single (non-streched) column. Set value to 0 to fit column width to its content.",
+        "colwidth": "Width of a single (non-streched) column.",
         "sort": "Enable column sorting in ascending/descending order (by clicking on column name in header row).",
         "resize": "Enable manual column resizing.",
         "enable": "Enable table context menu (accessible via right mouse click).",
         "contextRowedit": "Enable row editing",
         "contextColedit": "Enable column editing",
-        "contextReadonly": "Enable read-only toggle",
-        "contextComments": "Enable comments in table. Will be ignored when solving the model and are not saved in database."
+        "contextReadonly": "Enable readonly toggle"
       },
       "dt":{
         "class":{
@@ -831,8 +1044,16 @@
         },
         "buttons":{
           "label":"Add export buttons?",
-          "choices": ["copy", "csv", "excel", "pdf", "print"],
-          "select": "Select the buttons to use (minimum of 2 buttons required). Note: All button functions only affect the visible table page."
+          "choices": ["copy", "CSV", "Excel", "PDF", "print"],
+          "select": "Select buttons to use. Note: All button functions only affect the visible table page."
+        }
+      },
+      "symbol":{
+        "removeDialog":{
+          "title": "Please confirm",
+          "message": "Are you sure that you want to reset the existing configuration for this symbol? This cannot be undone!",
+          "cancel": "Cancel",
+          "confirm": "Confirm"
         }
       }
     },
@@ -840,23 +1061,33 @@
       "ui":{
         "title":"Configure input widgets",
         "widgetUpdateSuccess": "Widget configuration was updated successfully",
-        "symbolType": "Symbol type to configure",
+        "widgetTableUpdateSuccess": "Table configuration was updated successfully",
+        "gams": "Symbol",
+        "go": "New GAMS option",
+        "dd": "New double-dash parameter",
         "choices": ["Symbol", "New GAMS option", "New double dash parameter"],
+        "noSymbolMsg": "No GAMS symbol has been tagged for use in MIRO",
+        "noWidgetMsg": "No widget has been configured yet",
         "noWidgetConfigMsg": "Currently, there is no widget configured for this symbol",
-        "optionConfigMsg": "Info: The symbol you selected is a GAMS option",
-        "doubledashConfigMsg": "Info: The symbol you selected is a double-dash parameter",
-        "inputSymbol": "Which input symbol would you like to create a widget for?",
-        "widgetGo": "Name of the GAMS option (e.g. 'LP' or 'OptCR')",
-        "widgetDd": "Name of the double-dash parameter (without '--')",
-        "widgetType": "Select the type of widget you want to use"
+        "optionConfigMsg": "Info: The symbol you selected is a GAMS option: %s",
+        "doubledashConfigMsg": "Info: The symbol you selected is a double-dash parameter: %s",
+        "tableWidget": "Table configuration is done in 'configure tables'!",
+        "inputSymbol": "Input symbol",
+        "widgetGo": "GAMS option",
+        "widgetDd": "Double-dash parameter",
+        "inputSymbolTooltip": "Select input symbol to create a widget for",
+        "tableTooltip": "Select the input symbol whose table you want to configure",
+        "widgetGoTooltip": "Name of the GAMS option (e.g. 'LP' or 'OptCR')",
+        "widgetDdTooltip": "Name of the double-dash parameter (no '--')",
+        "widgetType": "Select widget type",
+        "alias": "Name of the widget tab (no live preview)",
+        "pivotColsRestriction": "Note: It is not possible to add or delete columns in the symbol table if it is set to readonly or displayed as a heatmap."
       },
       "validate":{
         "val1": "The alias of the element must not be empty!",
         "val2": "The name of the double-dash parameter must not be empty!",
         "val3": "The name of the GAMS option must not be empty!",
-        "val4": "The name of the double-dash parameter must not be the same as the name of another used GAMS symbol or command line parameter! Please choose another name.",
-        "val5": "The name of the GAMS option must not be the same as the name of another used GAMS symbol or command line parameter!",
-        "val6": "The default value is falsy!",
+        "val6": "The default value is invalid!",
         "val7": "The default value must be a number in the range [min, max]!",
         "val8": "The tick identifier must be boolean!",
         "val9": "The step size must be a number!",
@@ -864,24 +1095,24 @@
         "val11": "The default value must be one of the choices you specified!",
         "val12": "The value must be boolean!",
         "val13": "Default date is invalid!",
-        "val14": "Minimum date is invalid!",
-        "val15": "Maximum date is invalid!",
+        "val14": "Earliest date is invalid!",
+        "val15": "Latest date is invalid!",
         "val16": "The default date must be after the start date!",
         "val17": "The default date must be before the end date!",
-        "val18": "The minimum date must be before the maximum date!",
+        "val18": "The earliest date must be before the latest date!",
         "val19": "Minimum length for custom date format is 1!",
         "val20": "Start date is invalid!",
         "val21": "End date is invalid!",
-        "val22": "Minimum date is invalid!",
-        "val23": "Maximum date is invalid!",
-        "val24": "The start date must be after the minimum date!",
-        "val25": "The end date must be before the maximum date!",
-        "val26": "The start date must be after the minimum date!",
-        "val27": "The end date must be before the maximum date!",
-        "val28": "The minimum date must be before the maximum date!",
+        "val22": "Earliest date is invalid!",
+        "val23": "Latest date is invalid!",
+        "val24": "The start date must be after the earliest date!",
+        "val25": "The end date must be before the latest date!",
+        "val26": "The start date must be after the earliest date!",
+        "val27": "The end date must be before the latest date!",
+        "val28": "The earliest date must be before the latest date!",
         "val29": "Minimum length for custom date format is 1!",
         "val30": "The start date must be before the end date!",
-        "val31": "The minimum date must be before the maximum date!",
+        "val31": "The earliest date must be before the latest date!",
         "val32": "The readonly identifier must be boolean!",
         "val33": "The heatmap identifier must be boolean!",
         "val34": "Some columns you selected to be readonly do not exist in the symbol currently selected!",
@@ -889,26 +1120,50 @@
         "val36": "The group name must be at least 1 character long.",
         "val37": "Each group must have at least 2 members and every element may only appear in a single group!",
         "val38": "At least one choice has to be specified!",
-        "val39": "No space allowed in the name!"
+        "val39": "No space allowed in the name!",
+        "val40": "No minimum slider value found!",
+        "val41": "No maximum slider value found!",
+        "val42": "The minimum value must be lower than the maximum value!",
+        "val43": "For a slider range 2 default values need to be defined!",
+        "val44": "A separator must be provided!",
+        "val45": "The name of the command line parameter must be at least 1 character long.",
+        "val46": "Please specify command line arguments and values separately.",
+        "val47": "Source and target symbol must have the same dimension!",
+        "val48": "The minimum step size must not be less than zero.",
+        "val49": "The script identifier must not be empty and must only contain alphanumeric characters!",
+        "val50": "The script identifier must be unique!",
+        "val51": "The title is required.",
+        "val52": "The command is required.",
+        "val53": "The output filename is required.",
+        "val54": "You need to define aliases for your choices if only the element text is communicated with GAMS.",
+        "val55": "Only one item can be selectable in the dropdown menu if only the element text is communicated with GAMS."
       },
       "widgetOptions":{
-        "input": ["Slider", "Dropdown menu", "Checkbox"],
-        "all": ["Slider", "Slider range", "Dropdown menu", "Checkbox", "Date", "Date range", "Text box"],
-        "table": ["Table"],
-        "date": ["Date"]
+        "slider": "Slider",
+        "sliderrange": "Slider range",
+        "checkbox": "Checkbox",
+        "dropdown": "Dropdown menu",
+        "table": "Table",
+        "date": "Date",
+        "daterange": "Date range",
+        "text": "Text input",
+        "numericinput": "Numeric input"
       },
       "table":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
+        "bigData": "Are large amounts of data stored in the table (i.e. more than 20,000 records)?",
         "readonly": "Should table be readonly?",
-        "readonlyCols": "Select certain columns to be readonly",
+        "readonlyCols": "Select columns to be readonly",
+        "pivotCols": "Select a column to pivot",
         "heatmap": "Turn table into a heatmap?"
       },
       "slider":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
         "label": "Choose a label",
-        "min": "Minimum value",
-        "max": "Maximum value",
-        "default": "Default value",
+        "minlabel": "Minimum value",
+        "maxlabel": "Maximum value",
+        "defaultlabel": "Default value",
+        "min": "Set static minimum value",
+        "max": "Set static maximum value",
+        "default": "Set static default value",
         "dep": "Select symbol and header to depend upon",
         "depOp":{
           "label": "Select operator",
@@ -916,55 +1171,60 @@
         },
         "depSelector": "Static value?",
         "step": "Step size (also decimal places possible)",
+        "minStep": "Minimum step size (only relevant in Hypercube mode). If empty, the step size is used.",
         "ticks": "Show tick marks?",
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "sliderrange":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
         "label": "Choose a label",
-        "min": "Minimum value",
+        "minlabel": "Minimum value",
+        "maxlabel": "Maximum value",
+        "min": "Set static minimum value",
         "dep": "Select symbol and header to depend upon",
         "depOp":{
           "label": "Select operator",
           "choices": ["Minimum", "Maximum", "Count", "Mean", "Median", "Variance", "Standard Deviation"]
         },
         "depSelector": "Static value?",
-        "max": "Maximum value",
+        "max": "Set static maximum value",
         "default1": "Lower default value",
         "default2": "Upper default value",
+        "step": "Step size (also decimal places possible)",
         "ticks": "Show tick marks?",
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "dropdown":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
         "label": "Choose a label",
         "choices": "Choices to select from",
         "choicesAlias": "Aliases for choices (optional)",
         "choiceDep":{
           "label": "Select symbol and header to depend upon",
           "depChoices": ["All"],
-          "type": "Select type of dependency",
-          "typeChoices": ["Forward", "Backward", "Forward and Backward"],
+          "type": "Should this dropdown menu be used for filtering other tables?",
           "selector": "Static choices?"
         },
         "default": "Default value",
+        "multiple": "Should multiple items be selectable?",
+        "clearValue": "Only communicate element text of symbol with GAMS? Requires aliases for choices.",
+        "clearValueTooltip": "Causes element label to be an empty string. This is not supported if no aliases are defined! - Open documentation",
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "checkbox":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
         "label": "Choose a label",
         "default": "Default value",
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "date":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
         "label": "Choose a label",
+        "defaultlabel": "Default date",
         "default": "Choose the default date",
         "defOff": "Use current date",
-        "min": "Choose the minimum allowed date",
-        "minOff": "No minimum?",
-        "max": "Choose the maximum allowed date",
-        "maxOff": "No maximum?",
+        "minlabel": "Earliest date",
+        "min": "Choose the earliest available date",
+        "minOff": "No earliest?",
+        "maxlabel": "Latest date",
+        "max": "Choose the latest available date",
+        "maxOff": "No latest?",
         "format": "Choose how you want the date to be formatted.",
         "formatCustom": "Enter a custom date format",
         "formatCustomSelector": "Custom date format?",
@@ -981,16 +1241,19 @@
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "daterange":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
         "label": "Choose a label",
         "defaultStart": "Choose the default start date",
         "startOff": "Use current date",
         "defaultEnd": "Choose the default end date",
         "endOff": "Use current date",
-        "min": "Choose the minimum allowed date",
-        "minOff": "No minimum?",
-        "max": "Choose the maximum allowed date",
-        "maxOff": "No maximum?",
+        "min": "Choose the earliest available date",
+        "minOff": "No earliest?",
+        "max": "Choose the latest available date",
+        "defaultStartlabel": "Default start date",
+        "defaultEndlabel": "Default end date",
+        "minlabel": "Earliest date",
+        "maxlabel": "Latest date",
+        "maxOff": "No latest?",
         "format": "Choose how you want the date to be formatted.",
         "formatCustom": "Enter a custom date format",
         "formatCustomSelector": "Custom date format?",
@@ -1007,10 +1270,17 @@
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "textinput":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
         "label": "Choose a label",
         "value": "Choose the default value",
         "placeholder": "Choose a placeholder"
+      },
+      "numericinput":{
+        "label": "Choose a label",
+        "value": "Default value (optional)",
+        "min": "Minimum value (optional)",
+        "max": "Maximum value (optional)",
+        "decimal": "Number of decimal places (optional)",
+        "sign": "Currency symbol (optional)"
       },
       "removeDialog":{
         "title": "Please confirm",
@@ -1038,58 +1308,108 @@
       "removeDialogTitle": "Remove database tables",
       "removeDialogDesc": "Are you sure that you want to delete all database tables? This can not be undone! You might want to save the database first before proceeding.",
       "removeDialogCancel": "Cancel",
-      "removeDialogConfirm": "Remove tables"
+      "removeDialogConfirm": "Remove tables",
+      "removeOrphansWrapper": "You want to remove all the orphaned tables that belong to your model?",
+      "removeOrphansDialogBtn": "Delete all orphaned database tables",
+      "removeOrphansDialogTitle": "Remove orphaned database tables",
+      "removeOrphansDialogDesc": "Are you sure that you want to delete all orphaned database tables? This can not be undone! You might want to save the database first before proceeding.",
+      "removeOrphansDialogCancel": "Cancel",
+      "removeOrphansDialogConfirm": "Remove tables",
+      "removeInconsistent": "You want to remove all the inconsistent tables?",
+      "removeInconsistentConfirm": "Are you sure that you want to delete all inconsistent database tables?",
+      "cannotBeUndone": "This can not be undone! You might want to save the database first before proceeding.",
+      "removeTitle": "Remove database tables", 
+      "removeConfirm": "Please confirm that you want to remove all database tables that belong to the model.",
+      "removeCheck": "Remove all tables?",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "removeOrphans": "Please confirm that you want to remove all orphaned database tables that belong to the model.",
+      "removeOrphansCheck": "Remove all orphaned tables?",
+      "removeOrphansTitle": "Remove orphaned database tables",
+      "saveMsg": "Database is being saved...",
+      "compressMsg": "Compressing files...",
+      "decompressMsg": "Decompressing files...",
+      "validateMsg": "Validating files...",
+      "uploadMsg": "Uploading files...",
+      "finishedMsg": "Finished..."
     },
     "graphs":{
+      "toolCategories": {
+        "main": "Main",
+        "general": "General",
+        "xaxis": "X axis",
+        "yaxis": "Y axis",
+        "filterDomain": "Filter & Domains",
+        "filter": "Filter",
+        "animation": "Animation",
+        "bars": "Bars",
+        "histogram": "Histogram",
+        "event": "Event (x axis)",
+        "limit": "Limit (y axis)",
+        "annotation": "Annotation",
+        "shading": "Shading",
+        "rangeSelector": "Range selector",
+        "highlight": "Highlighting",
+        "markers": "Markers",
+        "flows": "Flows",
+        "minicharts": "Minicharts",
+        "groupsLayers": "Groups & Layers",
+        "data": "Data"
+      },
       "ui":{
         "title": "Configure graphs",
         "graphUpdateSuccess": "Graph configuration was updated successfully",
         "localInput": "Upload a GDX file or an Excel spreadsheet with data that will be used for preview purposes",
-        "gamsSymbols": "Select which GAMS symbol to plot",
+        "gamsSymbols": "GAMS symbol",
+        "input": "Input symbols",
+        "output": "Output symbols",
         "chartTitle": "Choose a title for your chart",
-        "height": "Choose a height for your chart (px)",
-        "tool": "Select the charting tool you want to use",
-        "choices": ["Diagram Tool", "Time Series Diagram Tool", "Map chart", "Gantt chart", "Pivot table", "Valuebox for scalar values"]
+        "height": "Choose a height for your chart (px) (no live preview)",
+        "tool": "Charting type",
+        "choices": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram", "Time Series Diagram", "Map chart", "Gantt chart", "Pivot table and pivot charts", "Valuebox for scalar values", "Custom renderer"],
+        "deleteGraph": "Delete",
+        "saveGraph": "Save"
       },
       "validate":{
-        "val1": "Could not set range for x axis. Check for correct data format!"
+        "val1": "Could not set range for x axis. Check for correct data format!",
+        "pieValues": "The selected symbol has too many values to be displayed as a pie chart. The maximum number of values that can be displayed in a pie chart is 100."
       },
       "errMsg":{
         "errTitle1": "No valid data",
         "errContent1": "No valid datasets were found. Please upload a properly formatted Excel or gdx file with data."
       },
       "updateToolScalars": ["Valuebox for scalar values"],
-      "updateToolNoScalars": ["Diagram Tool", "Time Series Diagram Tool", "Map chart", "Gantt chart", "Pivot table"],
-      "chartTypePlotly":{
-        "title": "Select the chart type you want to use",
-        "choices": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram"]
-      },
-      "pieOptions":{
-        "labels": "Labels",
-        "values": "Values",
-        "donut": "Donut chart?",
-        "donutHole": "Size of donut hole"
-      },
+      "updateToolNoScalars": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram", "Time Series Diagram", "Map chart", "Gantt chart", "Pivot table and pivot charts", "Custom renderer"],
       "axisOptions":{
-        "title": "Axis label (%s axis)",
-        "showgrid": "Show grid (%s axis)?",
-        "zeroline": "Show zero line (%s axis)?",
-        "showticklabels": "Show tick labels (%s axis)?",
+        "title": "Axis label",
+        "showgrid": "Show grid",
+        "zeroline": "Show zero line",
+        "showticklabels": "Show tick labels",
         "range": "Set axis range. The format has to match the data format. When not specified, a default is used.",
-        "rangeFrom": "Range start (%s axis).",
-        "rangeTo": "Range end (%s axis).",
-        "animationDataFormatSelector": "Data in date format?"
+        "rangeFrom": "Range start",
+        "rangeTo": "Range end",
+        "animationDataFormatSelector": "Data in date format?",
+        "categoryorder": "axis order",
+        "categoryorderChoices": ["trace", "category ascending", "category descending", "total ascending", "total descending", "min ascending", "min descending", "max ascending", "max descending", "sum ascending", "sum descending", "mean ascending", "mean descending", "median ascending", "median descending"],
+        "scaleRatioCheck": "Fixed-ratio axes?",
+        "scaleRatio": "Scale ratio (y/x)"
       },
       "chartOptions":{
         "xdata": "What should be plotted on the x axis?",
         "ydata": "Add data series",
-        "color": "Symbol that is used to select different colors. Note: The color is only valid, when no line or marker colors are set!",
+        "color": "Select the domain to be grouped for plotting. Colors are only valid, when no line or marker colors are set",
+        "symbol": "Select a dimension to map to different symbols. No marker symbol must be set.",
         "options":{
           "title": "Options",
           "paperBgColor": "What background color shall the paper have?",
           "plotBgColor": "What background color shall the plot have?",
           "showlegend": "Show legend?",
-          "outType": "Show graphic and data table in split screen? (no live preview available)"
+          "staticPlot": "Render a static plot?",
+          "fixedHeightCheck": "Fix chart height?",
+          "fixedHeight": "Height (px)",
+          "fixedWidthCheck": "Fix chart width?",
+          "fixedWidth": "Width (px)",
+          "outType": "Show graphic and data table in split screen? (no live preview)"
         }
       },
       "barOptions":{
@@ -1097,10 +1417,10 @@
         "choicesMode": ["group", "stack"],
         "orientation": "Orientation",
         "choicesOrientation": ["vertical", "horizontal"],
-        "width": "Symbol that is used to select different bar widths"
+        "width": "Domain that is used to select different bar widths"
       },
       "valueboxOptions":{
-        "width": "Select width of the valuebox",
+        "width": "Maximum number of boxes per row (no preview)",
         "color": "Select color of the valuebox",
         "colorChoices": ["red", "yellow", "aqua", "blue", "light-blue", "green", "navy", "teal", "olive", "lime", "orange", "fuchsia", "purple", "maroon", "black"],
         "useIcon": "Use an icon for the valuebox?",
@@ -1118,7 +1438,8 @@
         "easingChoices": ["linear","quad","cubic","sin","exp","circle","elastic","back","bounce","linear-in", "quad-in","cubic-in","sin-in","exp-in","circle-in","elastic-in","back-in","bounce-in","linear-out","quad-out","cubic-out","sin-out","exp-out", "circle-out","elastic-out","back-out","bounce-out","linear-in-out","quad-in-out","cubic-in-out","sin-in-out","exp-in-out","circle-in-out", "elastic-in-out","back-in-out","bounce-in-out"],
         "redraw": "Trigger a redraw of the plot at completion of the transition? (this may significantly impact performance, but may be necessary to update graphical elements that can't be transitioned.)",
         "mode": "How shall new animate calls interact with currently-running animations?",
-        "modeChoices": ["immediate", "next", "afterall"]
+        "modeChoices": ["immediate", "next", "afterall"],
+        "noAnimation": "No domain selected for animation (category: Y axis)."
       },
       "animationSliderOptions":{
         "hide": "remove the animation slider?",
@@ -1132,13 +1453,17 @@
         "normChoices": ["Number of occurances", "Percentage of occurances", "Number of occurances/ Bin interval size"],
         "nbins": "Number of bins",
         "barmode": "How do you want the bars to be displayed?",
+        "alpha": "Opacity of bars (only valid if no bar color is set)",
+        "cumulative": "Display the cumulative distribution?",
+        "horizontal": "Orientation of the bars",
+        "orientationChoices": ["vertical", "horizontal"],
         "barmodeChoices": ["overlay", "stack", "group", "relative"]
       },
       "dygraphsOptions":{
         "previewError": "No scalar indices found in your data.",
         "xdata": "What index do you want to plot on the x-axis?",
         "ydata": "Add data series",
-        "color": "What symbol do you want to use to plot different chart lines?",
+        "color": "Select the domain to be grouped for plotting.",
         "dyEvent": "Add event line",
         "dyLimit": "Add limit line",
         "dyAnnotation": "Add annotation",
@@ -1168,6 +1493,7 @@
         },
         "highOpts":{
           "title": "Highlighting options",
+          "activate": "Would you like to see highlighting effects?",
           "circleSize": "What shall the circle size be (in px)?",
           "seriesBackgroundAlpha": "Choose the opacity of the background",
           "hideOnMouseOut": "Hide highlighting effects when mouse is moved out of chart?"
@@ -1215,6 +1541,18 @@
           "subtotals": "Should subtotal plugin be used? For examples, see: "
         }
       },
+      "customOptions":{
+        "name": "Name of the custom renderer function (no space)",
+        "packages": "Packages necessary for the renderer"
+      },
+      "filterOptions":{
+        "filter": "Should one domain of the symbol be selectable via a dropdown menu?",
+        "dimension": "Which dimension should be filterable?",
+        "label": "Label of the filter (no live preview)",
+        "placeholder": "Filter by element",
+        "multiple": "Should several elements be selectable as filter at the same time? (No live preview for single dropdown menu available)",
+        "date": "The data in the column to be filtered contain dates (times). No live preview available!"
+      },
       "saveJson":{
         "warnTitle": "Data exists",
         "warnContent": "A graph configuration already exists for symbol: '%s'. Do you want to overwrite this configuration? This cannot be undone!",
@@ -1236,6 +1574,18 @@
           "symbolOutputgroups": "Name of the output group?",
           "groupMemberOut": "Select group members"
         },
+        "addSymlink":{
+          "source": "Name of the output symbol",
+          "target": "Name of the input symbol to link to"
+        },
+        "addScript":{
+          "id": "Unique identifier (alphanumeric)",
+          "title": "Script alias (displayed in UI)",
+          "cmd": "Command to run",
+          "args": "Arguments to the command",
+          "outFile": "Name of the output file (including file extension)",
+          "timeout": "Timeout (seconds, -1 for infinite)"
+        },
         "addDyEvent":{
           "dyDyEvent": "Which symbol shall be used?",
           "label": "What label should be used?",
@@ -1246,7 +1596,7 @@
           "strokePatternChoices": ["dashed", "dotted", "dotdash", "solid"]
         },
         "addDyLimit":{
-          "dyDyLimitCheck": "Use static limit?",
+          "dyDyLimitCheck": "Static limit?",
           "dyDyLimitTrue": "Set a numeric value for the limit",
           "dyDyLimitFalse": "Which symbol shall be used?",
           "limit": "Set a numeric value for the limit",
@@ -1266,26 +1616,32 @@
           "attachAtBottom": "Should annotation be attached to x axis?"
         },
         "addDyShading":{
-          "dyDyShadingCheck": "Use static lower bound?",
-          "dyDyShadingTrue": "Specify the lower bound for shading.",
-          "dyDyShadingFalse": "Which symbol shall be used as lower bound for shading?",
-          "dyDyShadingUpCheck": "Use static upper bound?",
-          "dyDyShadingUpTrue": "Specify the upper bound for shading.",
-          "dyDyShadingUpFalse": "Which symbol shall be used as upper bound for shading?",
-          "axis": "Select axis where shading shall be applied to",
+          "dyDyShadingCheck": "Static value?",
+          "dyDyShadingTrue": "Static lower bound",
+          "dyDyShadingFalse": "Symbol for lower bound",
+          "dyDyShadingUpCheck": "Static value?",
+          "dyDyShadingUpTrue": "Static upper bound",
+          "dyDyShadingUpFalse": "Symbol for upper bound",
+          "axis": "Axis where shading shall be applied to",
           "axisChoices": ["x axis", "y axis"],
-          "color": "What color should the shading have?"
+          "color": "Shading color"
         },
         "addLeafletMarkers":{
           "leafletMarkers": "Select column with latitude data",
           "lng": "Select column with longitude data",
           "groupName": "Choose a group name for these markers",
           "label": "Choose a label",
+          "iconOptions": "Icon options",
+          "icon": "Icon to use",
+          "iconChoices": ["circle", "circle-notch", "dot-circle", "square", "times-circle", "user-circle", "users", "plus-circle", "minus-circle", "exclamation-circle", "question-circle", "play-circle", "check-circle", "home", "cog", "asterisk", "ban", "heart", "leaf", "lightbulb", "smile", "star"],
+          "iconColor": "Icon color",
+          "markerColor": "Marker color",
+          "markerColorChoices": ["red", "darkred", "lightred", "orange", "beige", "green", "darkgreen", "lightgreen", "blue", "darkblue", "lightblue", "purple", "darkpurple", "pink", "cadetblue", "white", "gray", "lightgray", "black"],
           "options": "Label options",
           "labelPermanent": "Display labels only on hover?",
           "labelcolor": "Choose a font color for the label",
           "labelbgcolor": "Choose a background color for the label",
-          "labelsize": "Choose a font size for the label [in px]"
+          "labelsize": "Choose a font size for the label (in px)"
         },
         "addLeafletFlows":{
           "leafletFlows": "Select latitude data where flow originates",
@@ -1294,7 +1650,8 @@
           "lng1": "Select longitude data where flow ends",
           "flow": "Select flow data",
           "time": "Select time data",
-          "label": "Choose a label",
+          "label": "Choose a unique label for each flow (optional)",
+          "labelTooltip": "A suitable configuration for a label is to specify the originator and the recipient for each flow - open documentation",
           "options": "Additional flow options",
           "color": "Choose a color",
           "minThickness": "Choose the minimum thickness",
@@ -1318,18 +1675,24 @@
           "legendPosition": "Legend position",
           "legendPositionChoices": ["topright", "topleft", "bottomright", "bottomleft"]
         },
+        "addPieDataEl":{
+          "chartValues": "Values",
+          "chartLabels": "Labels",
+          "holeSize": "Size of donut hole",
+          "chartName": "Name of element (only relevant if multiple pie charts are displayed)"
+        },
         "addBarDataEl":{
           "chartYdatabar": "What should be plotted on the y axis?",
-          "chartYlabel": "What label should be used?",
-          "color": "Select bar color",
+          "chartYlabel": "Data label (e.g. for legend)",
+          "color": "Select bar color (delete color for automated selection)",
           "lineWidth": "Select bar outline width",
           "lineColor": "Select bar outline color"
         },
         "addScatterDataEl":{
           "chartYdata": "What should be plotted on the y axis?",
-          "chartYlabel": "What label should be used?",
+          "chartYlabel": "Data label (e.g. for legend)",
           "symbol": "Select marker symbol",
-          "symbolChoices": ["circle", "circle-open", "circle-dot", "circle-open-dot", "square", "square-open","square-dot", "square-open-dot", "diamond","diamond-open", "diamond-dot", "diamond-open-dot","cross", "cross-open", "cross-dot", "cross-open-dot","x", "x-open", "x-dot", "x-open-dot", "triangle-up","triangle-up-open", "triangle-up-dot", "triangle-up-open-dot","triangle-down", "triangle-down-open", "triangle-down-dot","triangle-down-open-dot", "triangle-left", "triangle-left-open", "triangle-left-dot", "triangle-left-open-dot", "triangle-right","triangle-right-open", "triangle-right-dot", "triangle-right-open-dot","triangle-ne", "triangle-ne-open", "triangle-ne-dot", "triangle-ne-open-dot","triangle-se", "triangle-se-open", "triangle-se-dot", "triangle-se-open-dot","triangle-sw", "triangle-sw-open", "triangle-sw-dot", "triangle-sw-open-dot","triangle-nw", "triangle-nw-open", "triangle-nw-dot", "triangle-nw-open-dot","pentagon", "pentagon-open", "pentagon-dot", "pentagon-open-dot", "hexagon","hexagon-open", "hexagon-dot", "hexagon-open-dot", "hexagon2", "hexagon2-open", "hexagon2-dot", "hexagon2-open-dot", "octagon", "octagon-open", "octagon-dot","octagon-open-dot", "star", "star-open", "star-dot", "star-open-dot", "hexagram","hexagram-open", "hexagram-dot", "hexagram-open-dot", "star-triangle-up","star-triangle-up-open", "star-triangle-up-dot", "star-triangle-up-open-dot","star-triangle-down", "star-triangle-down-open", "star-triangle-down-dot", "star-triangle-down-open-dot","star-square", "star-square-open", "star-square-dot", "star-square-open-dot", "star-diamond", "star-diamond-open", "star-diamond-dot", "star-diamond-open-dot", "diamond-tall","diamond-tall-open", "diamond-tall-dot", "diamond-tall-open-dot", "diamond-wide","diamond-wide-open", "diamond-wide-dot", "diamond-wide-open-dot", "hourglass","hourglass-open", "bowtie", "bowtie-open", "circle-cross", "circle-cross-open", "circle-x", "circle-x-open", "square-cross", "square-cross-open", "square-x", "square-x-open","diamond-cross", "diamond-cross-open", "diamond-x", "diamond-x-open", "cross-thin","cross-thin-open", "x-thin", "x-thin-open", "asterisk", "asterisk-open", "hash", "hash-open","hash-dot", "hash-open-dot", "y-up", "y-up-open", "y-down", "y-down-open", "y-left", "y-left-open", "y-right", "y-right-open", "line-ew", "line-ew-open", "line-ns", "line-ns-open", "line-ne", "line-ne-open", "line-nw", "line-nw-open"],
+          "symbolChoices": ["_", "circle", "circle-open", "square", "square-open","diamond","diamond-open", "cross", "cross-open", "x", "x-open", "triangle-up","triangle-up-open", "triangle-down", "triangle-down-open", "pentagon", "pentagon-open", "hexagon","hexagon-open", "octagon", "octagon-open", "star", "star-open", "hexagram","hexagram-open", "asterisk", "asterisk-open", "hash", "hash-open", "line-ew", "line-ew-open", "line-ns", "line-ns-open"],
           "color": "Select marker color",
           "size": "Select marker size",
           "lineWidth": "Select marker outline width",
@@ -1339,7 +1702,7 @@
         },
         "addLineDataEl":{
           "chartYdata": "What should be plotted on the y axis?",
-          "chartYlabel": "What label should be used?",
+          "chartYlabel": "Data label (e.g. for legend)",
           "color": "Select line color",
           "width": "Select line width",
           "shape": "Select line shape",
@@ -1353,12 +1716,14 @@
         },
         "addBubbleDataEl":{
           "chartYdata": "What should be plotted on the y axis?",
-          "chartYlabel": "What label should be used?",
+          "chartYlabel": "Data label (e.g. for legend)",
           "symbol": "Select marker symbol",
           "colorCheck": "Use static color?",
           "colorCheckTrue": "Select marker color",
-          "colorCheckFalse": "Select a Symbol on which the color should depend on.",
+          "colorCheckFalse": "Select a domain on which the color should depend on.",
           "size": "Select marker size",
+          "sizemode": "How should the size be measured?",
+          "sizemodeChoices": ["area", "diameter"],
           "maxsize": "Select maximum marker size (optional)",
           "lineWidth": "Select marker outline width",
           "lineColor": "Select marker outline color",

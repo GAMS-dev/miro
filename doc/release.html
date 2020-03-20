@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
+<head>
+    <title>GAMS MIRO - Release notes</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GAMS MIRO documentation">
+    <meta name="author" content="GAMS Development Corp.">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <!-- FontAwesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
+    <link rel="stylesheet" href="assets/plugins/lightbox/dist/ekko-lightbox.css">
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+    <!-- Cookie consent by https://cookieconsent.osano.com -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
+    <script>
+    window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#000"
+        },
+        "button": {
+          "background": "#F39619"
+        }
+      }
+    })});
+    </script>
+</head>
+
+<body class="body-orange">
+    <!--#include virtual="/wbody.html" -->
+    <div class="page-wrapper">
+    <!--#include virtual="/mirover.html" -->
+
+        <!--TYPO3SEARCH_begin-->
+
+        <!-- ******Header****** -->
+        <header id="header" class="sub-header">
+            <div class="container">
+                <div class="branding">
+                    <h1 class="logo">
+                        <a href="index.html">
+                          <img class="img-fluid" style="height:75px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
+                        </a>
+                    </h1>
+                </div><!--//branding-->
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">Release notes</li>
+                </ol>
+            </div><!--//container-->
+        </header><!--//header-->
+        <div class="doc-wrapper">
+            <div class="container">
+                <div id="doc-header" class="doc-header text-center">
+                    <h1 class="doc-title"><span aria-hidden="true" class="icon fas fa-code-branch"></span> Release notes</h1>
+                </div><!--//doc-header-->
+                <div class="doc-body row">
+                    <div class="doc-content col-md-9 col-12 order-1">
+                        <div class="content-inner">
+                            <section id="v10" class="doc-section">
+                                <h2 class="section-title">GAMS MIRO 1.0</h2>
+                                <div class="section-block">
+                                    <h3>New features</h3>
+                                    <ul>
+                                      <li>New deployment environment for configured MIRO applications. You can find more information about this 
+                                      <a href = "./deployment.html">here</a>. The <span style="white-space: nowrap;"><code class="language-gams">--mkapp=1</code></span> option (shortcut creation) is no longer supported.</li>
+                                      <li>MIRO now comes as an independent installer on the platforms Windows, MacOS and Linux. 
+                                      The installation is independent from the GAMS system. All GAMS versions 30.2 or later support GAMS MIRO.</li>
+                                      <li><span class = "code">[MIRO:table]</span> syntax for pivoting a table column in MIRO is no longer supported. 
+                                      Instead, a symbol can now simply be declared as a table. Read more <a href = "./model.html#display-tables">here</a>.</li>
+                                      <li>Added ability to <a href = "./customize.html#table-option-pivot">pivot tables</a> in MIRO via the Configuration mode. 
+                                      Unlike the <a href = "./model.html#display-tables">table statement</a> in the GAMS model itself, this option does 
+                                      not affect the data contract between GAMS and MIRO resulting in variable columns.</li>
+                                      <li>Full <a href = "./customize.html#dark-mode">dark mode</a> support.</li>
+                                      <li>Added <a href = "./customize.html#miro-log">miro log</a> option for custom logs and input validation</li>
+                                      <li>Added support for an individual <a href = "./customize.html#app-readme">README starting page</a> (markdown document) which is displayed in the input section. The Readme file can be added/edited in Configuration mode.</li>
+                                      <li>Added support for own <a href = "./customize.html#analysis-scripts">custom scripts</a> for analysis purposes in Base and Hypercube mode.</li>
+                                      <li>New widget type: <a href = "./widgets.html#widget-numeric">numeric Input</a>.</li>
+                                      <li>One-dimensional sets can now be configured as dropdown menu.</li>
+                                      <li>New widget type: <a href = "./widgets.html#widget-multidropdown">Multi-dropdown menu</a> for one-dimensional, 
+                                      dynamic sets.</li>
+                                      <li>Added support for <a href = "./customize.html#custom-input-widgets">custom input widgets</a>.</li>
+                                      <li>Added support for <a href = "./customize.html#remote-import-export">remote data import and export</a>: 
+                                      users can import/export data from/to external sources via REST API.</li>
+                                      <li><a href = "./customize.html#symbol-links">Symbol links</a>: Data of output symbols can now be used to populate tables of input symbols.</li>
+                                      <li><a href = "./start.html#scenario-concept">Sandbox scenarios</a>: 
+                                      <ul>
+                                        <li>The MIRO user interface can be seen as a sandbox. Data that is loaded into the interface is therefore 
+                                        located in this sandbox as a sandbox scenario. The data of the sandbox scenario can be come from the MIRO database, external databases, GDX containers, excel files, or can be entered manually.</li>
+                                        <li>File attachments are part of a scenario. If attachments are added to a sandbox scenario, 
+                                        they are included when saving this scenario.</li>
+                                        <li>Sandbox scenarios can be loaded in scenario comparison via <i>load active</i> button.</li>
+                                      </ul>
+                                      <li>Added filter option for graphs: One dimension of a symbol visualized as a graphic can be configured as a 
+                                      filter dimension. Its elements can then be selected via a (multi-)drop-down menu. Only the data 
+                                      belonging to this selection is displayed in the graphic.</li>
+                                    </ul>
+                                    <h3>Minor new features and improvements</h3>
+                                    <ul>
+                                      <li>Bug fixes</li>
+                                      <li>New MIRO logo (Thank you <a href = "" target = "_blank">Melina Klöckner</a>!)</li>
+                                      <li>Full chinese <a href = "./customize.html#language-files">language support</a> (Thank you 
+                                      <a href = "https://de.linkedin.com/in/ying-deng-7a3554155?trk=profile-badge-cta" target = "_blank">Ying Deng</a>!)</li>
+                                      <li>Completely restructured Hypercube mode. This includes the change from CSV to GDX file format for scenario input and output data. This is espacially relevant for the <a href = "./hypercube.html#manual-jobsubmit">manual job submission</a>.</li>
+                                      <li>Changed directory name for custom renderers from <i>customRenderer</i> to 
+                                      <i>renderer_&lt;modelname&gt;</i></li>
+                                      <li>Changed directory name for configuration files from <i>conf</i> to 
+                                      <i>conf_&lt;modelname&gt;</i></li>
+                                      <li>Added Link to <a href = "https://forum.gamsworld.org/">GAMS World Forum</a> in help section.</li>
+                                      <li><i>Stop</i> button in GAMS interaction now with soft kill first, then hard kill.</li>
+                                      <li>Scenario comparison: input and output symbol tabs are now displayed in different colors.</li>
+                                      <li>Added option to edit scenario access permissions.</li>
+                                      <li>When creating new scenario via <a href = "./start.html#save-as">Save as</a> dialog, attachments of currently active scenario can now be duplicated. This does not apply to <a href = "./start.html#access-permissions">scenario access permissions</a>.</li>
+                                      <li>Element text of singleton sets can now be appended with a double pipe ("||") and will be 
+                                      aggregated/disaggregated when loaded/stored from GDX.                                      
+                                       The value and/or the element text of a singleton Set can be used in the 
+                                       <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset">eval.Set</a> option to 
+                                       evaluate the value/text at compile time and place it into a scoped compile-time variable. 
+                                       This is useful any information about double-dash parameters and GAMS options configured via 
+                                       Configuration mode gets lost when exporting a scenario as a GDX file. Read more 
+                                       <a href = "./model.html#display-sinset">here</a>.</li>
+                                      <li>Changed prefix for double-dash parameters and GAMS options from <i>GMSPAR_</i> / <i>GMSOPT_</i> 
+                                      <i>to <a href = "./customize.html#widgets-commandLine">_gmspar_</i></a> / <a href = "./customize.html#widgets-commandLine"><i>_gmsopt_</i></a>.</li>
+                                      <li>Double-dash parameters and GAMS options can now have the same name as GAMS symbols.</li> 
+                                      <li>Maximum number of symbol tabs visible in Inpupt/Output section set to 5 (rest available via dropdown).</li>
+                                      <li>Bootstrap dropdown menus are now right aligned per default. They will be left-aligned when space 
+                                      on left is not sufficient.</li>
+                                      <li>First two columns (symbol name and symbol text) of scalar input table are now automatically set 
+                                      to readonly.</li>
+                                      <li><a href = "./start.html#excel-import-rules">Import data via spreadsheet</a>: Added possibility to use a sheet dedicated to a single scalar with the sheet name being the name of the scalar and its value being in column A1.</li>
+                                      <li>Adding/removing rows is now no longer allowed when at least one column is readonly.</li>
+                                      <li>Variables and equations can now be exported via GDX.</li>
+                                      <li>Numeric NAs are not converted to 0 anymore.</li>
+                                      <li>Configuration mode:</li>
+                                      <ul>
+                                        <li>New structure and design.</li>
+                                        <li>Added option to <a href = "./customize.html#naming">rename tab titles and symbol headers</a>.</li>
+                                        <li>Added option to <a href = "./customize.html#application-title">change the application title</a>.</li>
+                                        <li>Added option to <a href = "./customize.html#tab-ordering">reorder symbol tabs</a>.</li>
+                                        <li>Removed option to (de)activate the <i>scenario functionality</i> (e.g. save scenarios in database). Is always activated now.</li>
+                                        <li>Removed comment functionality in input tables.</li>
+                                        <li>Input scalars can now be <a href = "./customize.html#hidden-scalars">used in charts</a> as well.</li>
+                                        <li>Charts configuration has now access to MIRO database. Previously saved scenario data can now be 
+                                        used for the graphics configuration (besides the local file upload).</li>
+                                        <li>Added option to display graphic and table in <a href= "./charts.html#table-graph-split-screen">split-screen</a> for pie charts, maps and gantt charts.</li>
+                                        <li>Added option to remove invalid widget/graph configuration in Configuration mode</li>
+                                        <li>Added <a href = "./customize.html#custom-renderers">custom renderer</a> option for graphics.</li>
+                                        <li>Added support for <a href =  "./charts.html#multi-pie-chart">multiple pie charts</a> via subplots</li>
+                                        <li>Added support for <a href = "./customize.html#table-option-heatmap">heatmaps</a> (input tables).</li>
+                                        <li>Bar chart, Line chart, Scatter, plot, Bubble chart: Order logic of axis elements can now be adjusted.</li>
+                                        <li>Map: Markers can now be customized (icon, icon color, marker color).</li>
+                                        <li>Added option to set a fixed height and/or width for pie chart, donut chart, bar chart, histogram, scatter plot, line chart, bubble chart.</li>
+                                        <li>Added option to render a static picture instead of an interactive plot for pie chart, donut chart, bar chart, histogram, scatter plot, line chart, bubble chart.</li>
+                                        <li>Added option to set the axis scale ratio for line chart, scatter plot, bubble chart.</li>
+                                        <li>Added option 'area' and 'diameter' for bubble chart size measurement</li>
+                                        <li>Valuebox: Number of boxes in a row can now be customized.</li>
+                                        <li>Added option to configure number of decimal places for numericInput</li>
+                                      </ul>
+                                    </ul>
+                                </div>
+                            </section> 
+                            <section id="v06" class="doc-section">
+                                <h2 class="section-title">GAMS MIRO 0.6</h2>
+                                <div class="section-block">
+                                    <ul>
+                                      <li>MIRO Configuration mode: The GAMS MIRO Configuration mode can be used to change the settings of your 
+                                      MIRO app as well as to generate new widgets and charts. When configuring your widgets and charts, you 
+                                      get a live preview so that you immediately see the results of your configuration. You don't need to 
+                                      touch JSON code anymore.</li>
+                                      <li>New data import mechanism: Instead of creating an Excel file that the user then has to upload in 
+                                      order to get the first data into MIRO, data relevant to MIRO is automatically extracted from your 
+                                      model and stored in the MIRO database.</li>
+                                      <li>Tab grouping: Group multiple input tabs and output tabs together.</li>
+                                      <li>Automated loading of data on startup: Automatically load data when your MIRO app launches, 
+                                      so tables won’t start out empty.</li>
+                                      <li>Automated scenario import into DB: GDX files that you place in the data_&lt;modelname&gt; folder 
+                                      of your MIRO app will be automatically imported into the MIRO database the next time you launch your app.</li>
+                                      <li>Improved UTF-8 support: You can now use non-ASCII characters throughout MIRO</li>
+                                      <li>Chinese language support (note that the MIRO Configuration mode is not yet translated, though).</li>
+                                      <li>Import and export of GDX files: Besides Excel spreadsheets you can now also import and export 
+                                      GDX containers.</li>
+                                      <li>GAMS Studio toolbar to launch MIRO.</li>
+                                      <li>Experimental support for Gantt charts.</li>
+                                      <li>Bug fixes and performance improvements.</li>
+                                    </ul>
+                                </div>
+                            </section> 
+                            <section id="v04" class="doc-section">
+                                <h2 class="section-title">GAMS MIRO 0.4</h2>
+                                <div class="section-block">
+                                    <p>Initial release</p>
+                                </div>
+                            </section> 
+                        </div><!--//content-inner-->
+                    </div><!--//doc-content-->
+                    <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+                        <div id="doc-nav" class="doc-nav">
+                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                                <a class="nav-link scrollto" href="#v10">GAMS MIRO 1.0</a>
+                                <a class="nav-link scrollto" href="#v06">GAMS MIRO 0.6 (BETA)</a>
+                                <a class="nav-link scrollto" href="#v04">GAMS MIRO 0.4 (BETA)</a>
+                            </nav><!--//doc-menu-->
+                        </div>
+                    </div><!--//doc-sidebar-->
+                </div><!--//doc-body-->
+            </div><!--//container-->
+        </div><!--//doc-wrapper-->
+
+    <!--TYPO3SEARCH_end-->
+    </div><!--//page-wrapper--><!--#include virtual="/footer_miro.html" -->
+
+    <!-- Main Javascript -->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
+
+    <script type="text/javascript" src="assets/js/main.js"></script>
+    <!-- dependencies (jquery, handlebars and bootstrap) -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+
+</body>
+</html>

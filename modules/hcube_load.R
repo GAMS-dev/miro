@@ -24,23 +24,26 @@ appendInputTypeList <- function(scalarsTabName){
 k <- 1L
 for(j in seq_along(modelIn)){
   i <- match(modelInSorted[[j]], names(modelIn))
+  if(identical(modelIn[[i]]$symtype, "set")){
+    next
+  }
   if(!is.null(modelIn[[i]]$daterange)){
-    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]] %+% "_lo", type = "string", alias = modelInAlias[[i]] %+% " (lower)")
-    scalarKeyTypeList[[scalarsTabNameIn]][[k + 1L]] <- list(key = names(modelIn)[[i]] %+% "_up", type = "string", alias = modelInAlias[[i]] %+% " (upper)")
+    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]] %+% "$lo", type = "string", alias = modelInAlias[[i]] %+% " (lower)")
+    scalarKeyTypeList[[scalarsTabNameIn]][[k + 1L]] <- list(key = names(modelIn)[[i]] %+% "$up", type = "string", alias = modelInAlias[[i]] %+% " (upper)")
     k <- k + 2L
   }else if(!is.null(modelIn[[i]]$slider) && identical(modelIn[[i]]$slider$double, TRUE)){
-    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]] %+% "_lo", type = "number", alias = modelInAlias[[i]] %+% " (lower)")
-    scalarKeyTypeList[[scalarsTabNameIn]][[k + 1L]] <- list(key = names(modelIn)[[i]] %+% "_up", type = "number", alias = modelInAlias[[i]] %+% " (upper)")
+    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]] %+% "$lo", type = "number", alias = modelInAlias[[i]] %+% " (lower)")
+    scalarKeyTypeList[[scalarsTabNameIn]][[k + 1L]] <- list(key = names(modelIn)[[i]] %+% "$up", type = "number", alias = modelInAlias[[i]] %+% " (upper)")
     k <- k + 2L
   }else if(!is.null(modelIn[[i]]$daterange)){
-    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]] %+% "_lo", type = "string", alias = modelInAlias[[i]] %+% " (lower)")
-    scalarKeyTypeList[[scalarsTabNameIn]][[k + 1L]] <- list(key = names(modelIn)[[i]] %+% "_up", type = "string", alias = modelInAlias[[i]] %+% " (upper)")
+    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]] %+% "$lo", type = "string", alias = modelInAlias[[i]] %+% " (lower)")
+    scalarKeyTypeList[[scalarsTabNameIn]][[k + 1L]] <- list(key = names(modelIn)[[i]] %+% "$up", type = "string", alias = modelInAlias[[i]] %+% " (upper)")
     k <- k + 2L
-  }else if(modelIn[[i]]$type %in% c("slider", "checkbox") || identical(modelIn[[i]]$dropdown$checkbox, TRUE)){
+  }else if(modelIn[[i]]$type %in% c("slider", "checkbox", "numericinput") || identical(modelIn[[i]]$dropdown$checkbox, TRUE)){
     scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]], type = "number", alias = modelInAlias[[i]])
     k <- k + 1L
   }else if(modelIn[[i]]$type %in% c("dropdown", "dropdowne", "date", "textinput") && 
-           !identical(modelIn[[i]]$dropdown$single, FALSE)){
+           !isFALSE(modelIn[[i]]$dropdown$single)){
     scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]], type = "string", alias = modelInAlias[[i]])
     k <- k + 1L
   }
@@ -81,7 +84,8 @@ if(length(modelOut[[scalarsOutName]])){
   scalarTables <- c(scalarTables, scalarsTabNameOut)
 }
 
-hcubeLoad <- HcubeLoad$new(db, scalarsFileHeaders[c(1, 3)],
+hcubeLoad <- HcubeLoad$new(db, scalarsFileHeaders[c(1, 3)], modelName,
+                           inputDsNamesNotToDisplay,
                            scalarTables, scalarKeyTypeList)
 metaCols <- db$getScenMetaColnames()
 fields <- c("", scenMetadataTable %+% "." %+% metaCols[c("uid", "stime", "stag")])
@@ -273,12 +277,16 @@ observeEvent(input$btSendQuery, {
   hideEl(session, "#hyperQueryLoad")
   enableEl(session, "#btSendQuery")
 })
+
 if("DT" %in% (.packages())){
   output$hcubeLoadResults <- renderDataTable(
     if(length(rv$fetchedScenarios) && nrow(rv$fetchedScenarios)){
+      data <- rv$fetchedScenarios[, -1]
       datatable(
-        rv$fetchedScenarios[, -1], filter = "bottom", colnames = names(fields)[-1], rownames = FALSE) %>%
-      formatDate(2L,  method = "toLocaleString")
+        data, filter = "bottom", colnames = names(fields)[-1], rownames = FALSE) %>%
+      formatDate(2L,  method = "toLocaleString") %>%
+        formatRound(seq(4, length(data))[vapply(data[, seq(4, length(data))], is.numeric, logical(1L), USE.NAMES = FALSE)], 
+                    digits = roundPrecision)
     }
   )
 }else{
@@ -299,7 +307,7 @@ observeEvent(input$btShowHash, {
   noErr <- TRUE
   tryCatch(
     hashValue <- db$importDataset(db$getDbSchema()$tabName[['_scenMeta']], colNames = snameIdentifier, 
-                                  tibble(scodeIdentifier, 1, ">="),
+                                  tibble(scodeIdentifier, SCODEMAP[['scen']], ">"),
                                   subsetSids = rv$fetchedScenarios[[1]][selectedRows])[[1]]
   , error = function(e){
     flog.error("Problems fetching hash value from database. Error message: '%s'.", e)
@@ -324,7 +332,8 @@ observeEvent(input$hcubeLoadSelected, {
   hcubeRemoveConfirmed <<- FALSE
   sidsToLoad <<- as.integer(rv$fetchedScenarios[[1]][input$hcubeLoadResults_rows_selected])
   showHcubeLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad,
-                            hasRemovePerm = TRUE, exclAttribChoices = exclAttribChoices)
+                            hasRemovePerm = TRUE, exclAttribChoices = exclAttribChoices,
+                            customScripts = config$scripts$hcube)
 })
 observeEvent(input$hcubeLoadCurrent, {
   flog.debug("Button to load current page of scenarios (Hypercube load) clicked.")
@@ -334,7 +343,8 @@ observeEvent(input$hcubeLoadCurrent, {
   hcubeRemoveConfirmed <<- FALSE
   sidsToLoad <<- as.integer(rv$fetchedScenarios[[1]][input$hcubeLoadResults_rows_current])
   showHcubeLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad,
-                            hasRemovePerm = TRUE, exclAttribChoices = exclAttribChoices)
+                            hasRemovePerm = TRUE, exclAttribChoices = exclAttribChoices,
+                            customScripts = config$scripts$hcube)
 })
 observeEvent(input$hcubeLoadAll, {
   flog.debug("Button to load all scenarios (Hypercube load) clicked.")
@@ -344,10 +354,11 @@ observeEvent(input$hcubeLoadAll, {
   hcubeRemoveConfirmed <<- FALSE
   sidsToLoad     <<- as.integer(rv$fetchedScenarios[[1]])
   showHcubeLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad, 
-                            hasRemovePerm = TRUE, exclAttribChoices = exclAttribChoices)
+                            hasRemovePerm = TRUE, exclAttribChoices = exclAttribChoices,
+                            customScripts = config$scripts$hcube)
 })
 
-output$btHcubeDownload <- downloadHandler(
+output$btHcubeDownloadConfirm <- downloadHandler(
   filename = function() {
     tolower(modelName) %+% "_data.zip"
   },
@@ -366,7 +377,6 @@ output$btHcubeDownload <- downloadHandler(
     on.exit(unlink(tmpDir, recursive = TRUE, force = TRUE), add = TRUE)
     if(dir.exists(tmpDir)){
       unlink(tmpDir, recursive = TRUE, force = TRUE)
-      Sys.sleep(0.5)
     }
     if(!dir.create(tmpDir)){
       flog.error("Temporary folder could not be created")
@@ -380,8 +390,13 @@ output$btHcubeDownload <- downloadHandler(
       prog$inc(amount = incAmount, detail = detail)
     }
     tryCatch({
-      hcubeLoad$genCsvFiles(sidsToLoad, tmpDir, prog)
-      return(zipr(file, list.files(tmpDir, full.names = TRUE), compression_level = 6))
+      if(identical(isolate(input$selExportFiletype), "csv")){
+        hcubeLoad$genCsvFiles(sidsToLoad, tmpDir, prog)
+      }else{
+        hcubeLoad$genGdxFiles(sidsToLoad, tmpDir, gdxio, prog)
+      }
+      return(zipr(file, list.files(tmpDir, full.names = TRUE), 
+                  compression_level = 6))
     }, error = function(e){
       flog.error(e)
     })
@@ -418,11 +433,13 @@ observeEvent(input$btHcubeRemove, {
       return(NULL)
     }
     showHideEl(session, "#hcubeRemoveSuccess", 2000L)
+    rv$fetchedScenarios <- tibble()
+    hideEl(session, "#hcubeLoadButtons")
     hideModal(session, 2L)
   }else{
     hideEl(session, "#btHcubeLoad")
     hideEl(session, "#hcubeLoadMethod")
-    hideEl(session, "#btPaverConfig")
+    hideEl(session, "#btAnalysisConfig")
     hideEl(session, "#btHcubeDownload")
     showEl(session, "#hcubeRemoveConfirm")
     hcubeRemoveConfirmed <<- TRUE

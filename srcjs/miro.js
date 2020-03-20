@@ -1,8 +1,89 @@
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
-/* global $:false Shiny: false HTMLWidgets:false MathJax:false */
+/* global $:false Shiny: false HTMLWidgets:false Selectize:false */
 
 const spinnerActive = {};
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function changeActiveButtons(tabId) {
+  switch (tabId) {
+    case 'inputData':
+      $('#btImport').show();
+      $('.btSolve').show();
+      $('#btInterrupt').hide();
+      $('#btSplitView').hide();
+      $('#btCompareScen').hide();
+      break;
+
+    case 'outputData':
+      $('#btImport').hide();
+      $('.btSolve').hide();
+      $('#btInterrupt').hide();
+      $('#btSplitView').hide();
+      $('#btCompareScen').hide();
+      break;
+
+    case 'gamsinter':
+      $('#btImport').hide();
+      $('.btSolve').hide();
+      $('#btInterrupt').show();
+      $('#btSplitView').hide();
+      $('#btCompareScen').hide();
+      break;
+
+    case 'scenarios':
+      $('#btImport').hide();
+      $('.btSolve').hide();
+      $('#btInterrupt').hide();
+      $('#btSplitView').show();
+      $('#btCompareScen').show();
+      break;
+
+    default:
+      $('#btImport').hide();
+      $('.btSolve').hide();
+      $('#btInterrupt').hide();
+      $('#btSplitView').hide();
+      $('#btCompareScen').hide();
+  }
+}
+
+function switchTab(el) {
+  switch (el) {
+    case 'input':
+      changeActiveButtons('inputData');
+      $('[href="#shiny-tab-inputData"]').tab('show');
+      break;
+
+    case 'output':
+      changeActiveButtons('outputData');
+      $('[href="#shiny-tab-outputData"]').tab('show');
+      break;
+
+    case 'gamsinter':
+      changeActiveButtons('gamsinter');
+      $('[href="#shiny-tab-gamsinter"]').tab('show');
+      break;
+
+    case 'importData':
+      changeActiveButtons('importData');
+      $('[href="#shiny-tab-importData"]').tab('show');
+      break;
+
+    case 'hcubeAna':
+      changeActiveButtons('default');
+      $('[href="#shiny-tab-hcubeAnalyze"]').tab('show');
+      break;
+
+    case 'scenComp':
+      changeActiveButtons('scenarios');
+      $('[href="#shiny-tab-scenarios"]').tab('show');
+      break;
+    default:
+      break;
+  }
+}
 
 export function showSpinnerIcon(el, delay = 3000) {
   if (spinnerActive[$(el).prop('id')]) {
@@ -26,11 +107,28 @@ export function changeTab(object, idActive, idRefer) {
   tabPane.find(`.tab-content div:nth-child(${idRefer})`).addClass('active');
 }
 
-export function showNewNameBaseDialog() {
-  $('#base-overwrite-container').hide();
-  $('#loadBase_snameExistsMsg').hide();
-  $('#loadBase_newName').show();
-  $('#btCheckSnameBase').show();
+function switchTabInTabset(tabsetID, tabValue) {
+  const tabset = $(`#${tabsetID}`);
+  tabset.find(`a[data-value='${tabValue}']`).tab('show');
+}
+
+function removeModal() {
+  $('#shiny-modal-wrapper').find('.modal').modal('hide');
+}
+
+export function slideToggleEl(data) {
+  if (data.toggleIconDiv !== undefined) {
+    if ($(data.id).is(':visible')) {
+      $(data.toggleIconDiv).html('<i class="fa fa-plus"></i>');
+    } else {
+      $(data.toggleIconDiv).html('<i class="fa fa-minus"></i>');
+    }
+  }
+  let duration = 400;
+  if (data.duration === undefined) {
+    ({ duration } = data);
+  }
+  $(data.id).slideToggle(duration);
 }
 
 export function confirmModalShow(title, desc, cancelTxt, confirmTxt = null, confirmCall = null) {
@@ -55,27 +153,34 @@ export function removeAttachment(elId) {
     priority: 'event',
   });
 }
-
-export function showHypercubeLog(jID) {
-  Shiny.setInputValue('showHypercubeLog', jID, {
+export function downloadAttachment(elId) {
+  Shiny.setInputValue('downloadAttachment', elId, {
     priority: 'event',
   });
+  setTimeout(() => {
+    $('#downloadAttachmentData')[0].click();
+  }, 200);
 }
 
-export function importHypercubeJob(jID) {
-  Shiny.setInputValue('importHypercubeJob', jID, {
-    priority: 'event',
-  });
+export function changeDDButtonEvent(elText, DDBtnID, actionID) {
+  $(DDBtnID).attr('onclick',
+    `Shiny.setInputValue('${actionID}',1,{priority: 'event'});`);
+  $(DDBtnID).text(elText);
+  if ($(DDBtnID).is(':enabled')) {
+    Shiny.setInputValue(actionID, 1, {
+      priority: 'event',
+    });
+  }
 }
 
-export function discardHypercubeJob(jID) {
-  Shiny.setInputValue('discardHypercubeJob', jID, {
-    priority: 'event',
-  });
-}
-
-export function renderMathJax() {
-  MathJax.Hub.Queue(['Typeset', MathJax.Hub, 'wrapper-documentation']);
+export function showJobsDialog(hcubeMode) {
+  removeModal();
+  if (hcubeMode) {
+    switchTab('importData');
+    return;
+  }
+  switchTab('gamsinter');
+  switchTabInTabset('jobListPanel', 'joblist');
 }
 
 export function validateSname(el, inputID = 'btCheckSnameLocalConfirm') {
@@ -97,9 +202,6 @@ export function validateHcubeHash() {
   const hashVal = $('#hcHashLookup').val();
 
   if (/^[a-f0-9]{64}$/i.test(hashVal) === true) {
-    if (!validateSname('#hcube_newScenName', 'internal')) {
-      return;
-    }
     $('#hcHashLookup').removeClass('invalidInput');
     Shiny.setInputValue('hcHashLookup', hashVal, {
       priority: 'event',
@@ -110,13 +212,17 @@ export function validateHcubeHash() {
   $('#hcHashLookup').addClass('invalidInput');
 }
 
-export function hcHashImport(sid) {
-  if (!validateSname('#hcube_newScenName', 'internal')) {
-    return;
+export async function jumpToLogMark(id) {
+  switchTab('gamsinter');
+  $('#logFileTabsset [data-value="mirolog"]').tab('show');
+  await sleep(200);
+  const el = $(`#mlogMark_${id}`);
+  if (el !== undefined) {
+    el[0].scrollIntoView();
+    el.animate({ backgroundColor: 'yellow' }, 400)
+      .delay(1000)
+      .animate({ backgroundColor: 'transparent' }, 400);
   }
-  Shiny.setInputValue('loadHcubeHashSid', sid, {
-    priority: 'event',
-  });
 }
 
 function isInputEl(id) {
@@ -135,13 +241,12 @@ function rerenderDygraph(delay = 100) {
   }
 }
 function rerenderHot(delay = 100) {
-  try {
-    setTimeout(() => {
-      HTMLWidgets.getInstance($('.rhandsontable:visible').get(0)).hot.render();
-    }, delay);
-  } catch (e) {
-    // continue regardless of error
-  }
+  setTimeout(() => {
+    const el = $('.rhandsontable:visible').get(0);
+    if (el !== undefined) {
+      HTMLWidgets.getInstance(el).hot.render();
+    }
+  }, delay);
 }
 
 function showHideEl(el, delay, msg = null) {
@@ -151,54 +256,65 @@ function showHideEl(el, delay, msg = null) {
   $(el).show().delay(delay).fadeOut();
 }
 
-function changeActiveButtons(tabId) {
-  switch (tabId) {
-    case 'inputData':
-      $('#btImport').show();
-      $('#btSolve').show();
-      $('#btInterrupt').hide();
-      $('#btSplitView').hide();
-      $('#btCompareScen').hide();
-      break;
-
-    case 'outputData':
-      $('#btImport').hide();
-      $('#btSolve').hide();
-      $('#btInterrupt').hide();
-      $('#btSplitView').hide();
-      $('#btCompareScen').hide();
-      break;
-
-    case 'gamsinter':
-      $('#btImport').hide();
-      $('#btSolve').hide();
-      $('#btInterrupt').show();
-      $('#btSplitView').hide();
-      $('#btCompareScen').hide();
-      break;
-
-    case 'scenarios':
-      $('#btImport').hide();
-      $('#btSolve').hide();
-      $('#btInterrupt').hide();
-      $('#btSplitView').show();
-      $('#btCompareScen').show();
-      break;
-
-    default:
-      $('#btImport').hide();
-      $('#btSolve').hide();
-      $('#btInterrupt').hide();
-      $('#btSplitView').hide();
-      $('#btCompareScen').hide();
-  }
+function scrollDown(id, delay = 500) {
+  setTimeout(() => {
+    $(id).animate({
+      scrollTop: $(id)[0].scrollHeight - $(id)[0].clientHeight,
+    }, 300);
+  }, delay);
 }
 
 $(document).ready(() => {
+  $('#toolCategories').on('click', '.category-btn', function () {
+    const catId = this.dataset.cat;
+    const catBody = $(`.cat-body-${catId}`);
+    $('.cat-body:visible').hide();
+    $('.category-btn').removeClass('category-btn-active');
+    $(this).addClass('category-btn-active');
+    catBody.show();
+  });
+  $('.dropdown').on('show.bs.dropdown', (e) => {
+    const ddButton = $(e.target);
+    const dropdown = ddButton.children('.dropdown-menu').first();
+    if (dropdown.width() <= ddButton.width()
+      + ddButton.offset().left - ddButton.parent().offset().left) {
+      dropdown.addClass('dropdown-menu-right');
+    } else {
+      dropdown.removeClass('dropdown-menu-right');
+    }
+  });
+  // change "More" tab dropdown label when tab from dropdown is selected
+  $('.nav-tabs-dropdown a').on('shown.bs.tab', (e) => {
+    const currTab = $(e.target);
+    if (currTab.closest('.dropdown').find('.dropdown-toggle').length) {
+      currTab.closest('.dropdown').find('.dropdown-toggle').html(`${currTab.text()} <i class="fa fa-angle-double-right"></i>`);
+      return;
+    }
+    const prevTab = $(e.relatedTarget).closest('.dropdown').find('.dropdown-toggle');
+    if (prevTab.length) {
+      prevTab.html(` ${prevTab.data('defaultlabel')} <i class="fa fa-angle-double-right"></i>`);
+    }
+  });
+  // code snippet taken from SwishWez: https://stackoverflow.com/questions/21582558/disable-remove-on-backspace-or-remove-ibeam-entirely
+  if (typeof Selectize !== 'undefined') {
+    Selectize.define('no_delete', function () {
+      const self = this;
+      this.deleteSelection = (function () {
+        const original = self.deleteSelection;
+        return function (e, ...args) {
+          if (!e || (e.keyCode !== 8 && e.keyCode !== 46)) {
+            return original.apply(this, args);
+          }
+          return false;
+        };
+      }());
+    });
+  }
+
   $('body').addClass('fixed'); // besides these updates, gms-switchTab (see below) has always has to be considered as well
 
   $('#btImport').show();
-  $('#btSolve').show();
+  $('.btSolve').show();
   $('#btInterrupt').hide();
   $('#btSplitView').hide();
   $('#btCompareScen').hide();
@@ -207,6 +323,7 @@ $(document).ready(() => {
     changeActiveButtons('inputData');
     rerenderHot();
   });
+
   $('a[data-value="outputData"]').click(() => {
     changeActiveButtons('outputData');
   });
@@ -230,32 +347,13 @@ $(document).ready(() => {
     + '<i class="far fa-plus-square" style="font-size:13pt;"></i></a></li>'); // show/hide buttons after (R triggered) tab switch.
 
   Shiny.addCustomMessageHandler('gms-switchTab', (el) => {
-    switch (el) {
-      case 'input':
-        changeActiveButtons('inputData');
-        break;
-
-      case 'output':
-        changeActiveButtons('outputData');
-        break;
-
-      case 'gamsinter':
-        changeActiveButtons('gamsinter');
-        break;
-
-      case 'hcubeAna':
-        changeActiveButtons('default');
-        break;
-
-      case 'scenComp':
-        changeActiveButtons('scenarios');
-        break;
-      default:
-        break;
-    }
+    switchTab(el);
   });
   $('body').on('click', '.bt-highlight-1, .bt-highlight-2, .bt-highlight-3', function () {
     const btn = $(this);
+    if (btn.hasClass('dropdown-toggle')) {
+      return;
+    }
     btn.prop('disabled', true);
     setTimeout(() => {
       btn.prop('disabled', false);
@@ -285,8 +383,69 @@ $(document).ready(() => {
       $(id).show();
     }
   });
+  Shiny.addCustomMessageHandler('gms-scriptExecuted', (data) => {
+    let scriptOutputContainer;
+    if (data.hcube === true) {
+      scriptOutputContainer = $('#scriptOutput_hcube');
+      scriptOutputContainer.show();
+      scriptOutputContainer = scriptOutputContainer.children('.script-output');
+    } else if (data.sid == null) {
+      scriptOutputContainer = $(`#scriptOutput_${data.id} .script-output`);
+      Shiny.setInputValue('outputGenerated', 1,
+        {
+          priority: 'event',
+        });
+      $(`#scriptOutput_${data.id} .script-spinner`).hide();
+    } else {
+      scriptOutputContainer = $(`#scenScript_${data.sid}_${data.id}`);
+    }
+    const scriptOutputContainerIframe = scriptOutputContainer[0].contentWindow.document;
+    scriptOutputContainerIframe.open();
+    scriptOutputContainerIframe.write(data.isError === true ? `<div style='margin:5px;color:#F39619;font-weight:bold;font-size:15pt;text-align:center;'>\
+${data.data}</div>` : data.data);
+    scriptOutputContainerIframe.close();
+    scriptOutputContainer.show();
+  });
   Shiny.addCustomMessageHandler('gms-showElReplaceTxt', (data) => {
     $(data.id).text(data.txt).show();
+  });
+  Shiny.addCustomMessageHandler('gms-showLogContent', (data) => {
+    $(data.id).text(data.content);
+    if (data.chunkCount <= 1) {
+      return;
+    }
+
+    const { noChunks } = data;
+    if (noChunks === undefined || noChunks <= 1) {
+      return;
+    }
+    let counter = 1;
+    let isLoading = false;
+    $(data.id).on('scroll', () => {
+      if ($(data.id)[0].scrollHeight - $(data.id).scrollTop()
+           < $(data.id).outerHeight() + 200
+          && isLoading === false) {
+        isLoading = true;
+        Shiny.setInputValue('loadTextEntityChunk',
+          {
+            jID: data.jID,
+            chunkCount: counter,
+            type: data.type,
+          }, {
+            priority: 'event',
+          });
+        counter += 1;
+
+        if (counter === noChunks) {
+          $(data.id).off('scroll');
+        }
+      }
+    });
+    $(data.id).on('change', () => {
+      setTimeout(() => {
+        isLoading = false;
+      }, 1000);
+    });
   });
   Shiny.addCustomMessageHandler('gms-hideEl', (id) => {
     if (isInputEl(id)) {
@@ -313,18 +472,67 @@ $(document).ready(() => {
       $(id).trigger('hidden');
     }
   });
+  Shiny.addCustomMessageHandler('gms-slideToggleEl', (data) => {
+    slideToggleEl(data);
+  });
   Shiny.addCustomMessageHandler('gms-addClassEl', (el) => {
     $(el.id).addClass(el.newclass);
   });
   Shiny.addCustomMessageHandler('gms-removeClassEl', (el) => {
     $(el.id).removeClass(el.oldclass);
   });
+  Shiny.addCustomMessageHandler('gms-emptyEl', (id) => {
+    $(id).empty();
+  });
+  Shiny.addCustomMessageHandler('gms-appendEl', (data) => {
+    let { content } = data;
+    if (data.text) {
+      content = document.createTextNode(content);
+    }
+    $(data.id).append(content);
+
+    if (data.triggerChange) {
+      $(data.id).trigger('change');
+    }
+
+    if (data.scroll) {
+      scrollDown(data.id, 50);
+    }
+  });
   Shiny.addCustomMessageHandler('gms-scrollDown', (id) => {
-    setTimeout(() => {
-      $(id).animate({
-        scrollTop: $(id)[0].scrollHeight - $(id)[0].clientHeight,
-      }, 300);
-    }, 500);
+    scrollDown(id);
+  });
+  Shiny.addCustomMessageHandler('gms-startUpdateJobProgress', (data) => {
+    const interval = setInterval(() => {
+      if ($(data.id).attr('aria-valuenow') === '100'
+        || !$(data.id).is(':visible')) {
+        clearInterval(interval);
+      }
+      Shiny.setInputValue('updateJobProgress', data.jID, {
+        priority: 'event',
+      });
+    }, 5000);
+  });
+  Shiny.addCustomMessageHandler('gms-updateJobProgress', (data) => {
+    if (!$(data.id).is(':visible')) {
+      return;
+    }
+    const percentCompleted = Math.round(parseInt(data.progress.noCompleted, 10)
+          / parseInt(data.progress.noTotal, 10) * 100);
+    $(data.id)
+      .css('width', `${percentCompleted}%`)
+      .attr('aria-valuenow', percentCompleted)
+      .text(`${data.progress.noCompleted}/${data.progress.noTotal}`);
+  });
+  Shiny.addCustomMessageHandler('gms-markJobDownloadComplete', (data) => {
+    if (data.triggerImport === true
+      && $(`#jobImportDlProgressWrapper_${data.id}`).is(':visible')) {
+      Shiny.setInputValue('importJob', data.id, { priority: 'event' });
+    }
+    $(`#jobImportDlProgressWrapper_${data.id}`).siblings('div:first').text(data.text);
+    $(`#jobImportDlProgressWrapper_${data.id}`).hide();
+    $(`#btDownloadJob_${data.id}`).hide();
+    $(`#btImportJob_${data.id}`).show();
   });
   Shiny.addCustomMessageHandler('gms-hideModal', (delay) => {
     setTimeout(() => {
@@ -332,8 +540,8 @@ $(document).ready(() => {
     }, delay * 1000);
   });
   Shiny.addCustomMessageHandler('gms-updateAttachList', (el) => {
-    const { id } = $.makeArray(el.id);
-    const { name } = $.makeArray(el.name);
+    const id = $.makeArray(el.id);
+    const name = $.makeArray(el.name);
 
     for (let i = 0; i < id.length; i += 1) {
       let checkBoxHTML = '';
@@ -341,7 +549,7 @@ $(document).ready(() => {
         checkBoxHTML = `<div class="col-sm-6"><div class="form-group shiny-input-container"><div class="checkbox"><label><input type="checkbox" onchange="Shiny.setInputValue('execPermAttachment_${id[i]}', $(this).is(':checked'));" checked="checked"><span>${el.labelCb}</span></label></div></div></div>`;
       }
 
-      $(`<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_${id[i]}" type="button" onclick="Miro.removeAttachment(${id[i]})"><i class="fa fa-times-circle"></i></button> ${name[i]}</div>${checkBoxHTML}</div>`).insertBefore('#endAttachList');
+      $(`<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_${id[i]}" type="button" onclick="Miro.removeAttachment(${id[i]})"><i class="fa fa-times-circle"></i></button><a href="#" onclick="Miro.downloadAttachment(${id[i]})"> ${name[i]}</a></div>${checkBoxHTML}</div>`).insertBefore('#endAttachList');
     }
   });
   Shiny.addCustomMessageHandler('gms-fitTitleInBox', (id) => {
@@ -357,6 +565,56 @@ $(document).ready(() => {
       }
     }, 500);
   });
+  Shiny.addCustomMessageHandler('gms-showValidationErrors', (content) => {
+    const inSyms = Object.keys(content);
+    $('.input-validation-error').empty();
+    inSyms.forEach((key) => {
+      if (Array.isArray(content[key])) {
+        content[key].forEach((item) => {
+          $(`#valErr_${key}`).append(item);
+        });
+      } else {
+        $(`#valErr_${key}`).append(content[key]);
+      }
+    });
+    $('.input-validation-error').show();
+    switchTab('input');
+  });
+  const autoNumericBinding = new Shiny.InputBinding();
+  $.extend(autoNumericBinding, {
+    find(scope) {
+      return $(scope).find('.miro-auto-numeric');
+    },
+    getValue(el) {
+      return parseFloat($(el).autoNumeric('get'));
+    },
+    setValue(el, value) {
+      $(el).autoNumeric('set', value);
+    },
+    receiveMessage(el, data) {
+      if (Object.prototype.hasOwnProperty.call(data, 'value')) {
+        $(el).autoNumeric('set', data.value);
+      }
+    },
+    subscribe(el, callback) {
+      $(el).on('change.autoNumericBinding', () => {
+        callback(true);
+      });
+    },
+    getRatePolicy() {
+      return {
+        policy: 'debounce',
+        delay: 250,
+      };
+    },
+    initialize(el) {
+      $(el).autoNumeric('init');
+    },
+    unsubscribe(el) {
+      $(el).autoNumeric('destroy');
+    },
+  });
+  Shiny.inputBindings.register(autoNumericBinding);
 });
 
 // counter

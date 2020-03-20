@@ -1,9 +1,27 @@
 const path = require('path');
-module.exports = {
+const TerserJSPlugin = require('terser-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const RemovePlugin = require('remove-files-webpack-plugin');
+const plugins = [
+   new MiniCssExtractPlugin({
+    // Options similar to the same options in webpackOptions.output
+    // all options are optional
+    filename: '[name].css',
+    chunkFilename: '[id].css',
+    ignoreOrder: false, // Enable to remove warnings about conflicting order
+  })]
+module.exports = (env, argv) => ({
     mode: 'development',
     entry: {
-      miro: './srcjs/miro.js',
-      miro_admin: './srcjs/miro_admin.js'
+      skin_browser: './less/skins/browser.js',
+      skin_light: './less/skins/light.js',
+      skin_dark: './less/skins/dark.js',
+      miro: [ 'babel-polyfill', './srcjs/miro.js' ],
+      miro_admin: [ 'babel-polyfill', './srcjs/miro_admin.js' ]
+    },
+    optimization: {
+      minimizer: [new TerserJSPlugin({sourceMap: true,}), new OptimizeCSSAssetsPlugin({})],
     },
     devtool: 'source-map',
     output: {
@@ -14,6 +32,19 @@ module.exports = {
     externals: {
       jquery: 'jQuery'
     },
+    plugins: argv.mode === 'production'? [
+      ...plugins,
+      new RemovePlugin({
+          after: {
+            test: [{
+              folder: path.resolve(__dirname, "www"),
+              method: (filePath) => {
+                  return new RegExp(/skin_.+\.js(\.map)?$/, 'm').test(filePath);
+              }
+            }]
+          }
+      })
+    ]: [...plugins],
     module: {
         rules: [
           {
@@ -37,12 +68,41 @@ module.exports = {
                 presets: [[
                     '@babel/preset-env',
                     {
-                        "useBuiltIns": "entry"
+                        "useBuiltIns": "entry",
+                        "corejs": "3"
                     }
                 ]]
               }
             }
+          },
+          {
+            test: /\.less$/,
+            exclude: /node_modules/,
+            use: [
+              {
+                loader: MiniCssExtractPlugin.loader,
+              },
+              {
+                loader: 'css-loader',
+              },
+              {
+                loader: 'less-loader',
+                options: {
+                  sourceMap: true,
+                },
+              },
+            ]
+          },
+          {
+            test: /\.(png|jp(e*)g|svg)$/,  
+            use: [{
+                loader: 'url-loader',
+                options: { 
+                    limit: 8000, // Convert images < 8kb to base64 strings
+                    name: 'images/[hash]-[name].[ext]'
+                } 
+            }]
           }
         ]
     }
-};
+});

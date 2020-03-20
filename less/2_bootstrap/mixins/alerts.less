@@ -1,0 +1,50 @@
+// Alerts
+.responsiveDark({
+     .alert-variant(@background; @border; @text-color) {
+       background-color: @background;
+       border-color: @border;
+       .responsiveDark({
+          color: @text-color;
+       },
+       {
+          color: @text-color-dark;
+       });
+     
+       hr {
+         border-top-color: darken(@border, 5%);
+       }
+       .alert-link {
+         .responsiveDark({
+            color: darken(@text-color, 10%);
+         },
+         {
+            color: darken(@text-color-dark, 10%);
+         });
+       }
+     }
+  },
+  {
+     .alert-variant(@background; @border; @text-color-dark) {
+       background-color: @background;
+       border-color: @border;
+       .responsiveDark({
+          color: @text-color;
+       },
+       {
+          color: @text-color-dark;
+       });
+     
+       hr {
+         border-top-color: darken(@border, 5%);
+       }
+       .alert-link {
+         .responsiveDark({
+            color: darken(@text-color, 10%);
+         },
+         {
+            color: darken(@text-color-dark, 10%);
+         });
+       }
+     }
+  });
+

@@ -42,23 +42,6 @@ addScalarVal <- function(scalar, description, value){
 lapply(seq_along(modelIn), function(i){
   noErr <- TRUE
   switch(modelIn[[i]]$type,
-         dt = ,
-         hot = {
-           if(names(modelIn)[[i]] != scalarsFileName){
-             tryCatch({
-               dataTmp[[j]] <<- getInputDataset(i)
-             }, error = function(e){
-               flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
-               errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, 
-                                                modelInAlias[i]), sep = "\n")
-               noErr <<- FALSE
-             })
-             if(!noErr){
-               return()
-             }
-             j <<- j + 1
-           }
-         },
          slider = {
            if(!is.null(isolate(input[[paste0("slider_", i)]]))){
              value <- isolate(input[[paste0("slider_", i)]])
@@ -73,11 +56,11 @@ lapply(seq_along(modelIn), function(i){
            # add name and description fields
            if(length(value) > 1){
              # double slider (two values)
-             scalar      <- paste0(tolower(names(modelIn))[[i]], c("_lo", "_up"))
+             scalar      <- paste0(tolower(names(modelIn))[[i]], c("$lo", "$up"))
              description <- paste0(modelInAlias[i], c(" (min)", " (max)"))
              if(identical(modelIn[[i]]$slider$double, TRUE)){
                scalar      <- c(scalar, paste0(tolower(names(modelIn))[[i]], 
-                                                c("_step", "_mode")))
+                                                c("$step", "$mode")))
                description <- c(description, paste0(modelInAlias[i], 
                                                     c(" (step size)", " (mode)")))
                value       <- c(value, isolate(input[["hcubeStep_" %+% i]]),
@@ -85,7 +68,7 @@ lapply(seq_along(modelIn), function(i){
              }
              if(identical(modelIn[[i]]$slider$single, TRUE)){
                scalar      <- c(scalar, paste0(tolower(names(modelIn))[[i]], 
-                                                "_step"))
+                                                "$step"))
                description <- c(description, paste0(modelInAlias[i], 
                                                     " (step size)"))
                value       <- c(value, isolate(input[["hcubeStep_" %+% i]]))
@@ -124,7 +107,7 @@ lapply(seq_along(modelIn), function(i){
              return(NULL)
            }
            # add name and description fields
-           scalar      <- paste0(names(modelIn)[[i]], c("_lo", "_up"))
+           scalar      <- paste0(names(modelIn)[[i]], c("$lo", "$up"))
            description <- paste0(modelInAlias[i], c(" (lower)", " (upper)"))
            addScalarVal(scalar, description, value)
          },
@@ -143,12 +126,25 @@ lapply(seq_along(modelIn), function(i){
            description <- modelInAlias[i]
            addScalarVal(scalar, description, value)
          },
+         numericinput = {
+           if(!is.null(isolate(input[[paste0("numeric_", i)]]))){
+             value <- isolate(input[[paste0("numeric_", i)]])
+           }else if(!is.null(modelIn[[i]]$numericinput$value)){
+             value <- modelIn[[i]]$numericinput$value
+           }else{
+             value <- 0L
+           }
+           # add name and description fields
+           scalar      <- names(modelIn)[[i]]
+           description <- modelInAlias[i]
+           addScalarVal(scalar, description, value)
+         },
          dropdown = {
            if(!is.null(isolate(input[[paste0("dropdown_", i)]]))){
              value <- isolate(input[[paste0("dropdown_", i)]])
            }else if(!is.null(modelIn[[i]]$dropdown$selected)){
              value <- modelIn[[i]]$dropdown$selected
-           }else if(identical(modelIn[[i]]$dropdown$multiple, TRUE)){
+           }else if(names(modelIn)[[i]] %in% modelInTabularDataBase){
              value <- character(0L)
            }else{
              flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
@@ -157,10 +153,9 @@ lapply(seq_along(modelIn), function(i){
              return(NULL)
            }
            value <- value[value != "_"]
-           if(identical(modelIn[[i]]$dropdown$multiple, TRUE)){
+           if(names(modelIn)[[i]] %in% modelInTabularDataBase){
              # generate data frame (multi dropdown menu)
-             dataTmp[[j]]        <<- tibble(value)
-             names(dataTmp[[j]]) <<- tolower(names(modelIn))[[i]]
+             dataTmp[[j]] <<- ddToTibble(value, modelIn[[i]])
              j <<- j + 1L
            }else{
              # standard dropdown menu (one value)
@@ -183,6 +178,22 @@ lapply(seq_along(modelIn), function(i){
            scalar      <- names(modelIn)[[i]]
            description <- modelInAlias[i]
            addScalarVal(scalar, description, value)
+         },
+         {
+           if(names(modelIn)[[i]] != scalarsFileName){
+             tryCatch({
+               dataTmp[[j]] <<- fixColTypes(getInputDataset(i), modelIn[[i]]$colTypes)
+             }, error = function(e){
+               flog.error("Dataset: '%s' could not be loaded. Error message: '%s'.", modelInAlias[i], e)
+               errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, 
+                                                modelInAlias[i]), sep = "\n")
+               noErr <<- FALSE
+             })
+             if(!noErr){
+               return()
+             }
+             j <<- j + 1
+           }
          }
   )
   flog.trace("Dataset: %s saved in dataTmp.", modelIn[[i]])

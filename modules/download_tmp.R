@@ -5,7 +5,8 @@ observeEvent(input$btDownloadTmpFiles, {
   showModal(modalDialog(
     title = lang$nav$dialogDownloadTmp$title,
     if(length(fileNames)){
-      selectInput("selectDownloadTmp", label = lang$nav$dialogDownloadTmp$desc, choices = fileNames)
+      selectInput("selectDownloadTmp", label = lang$nav$dialogDownloadTmp$desc,
+                  choices = fileNames)
     }else{
       lang$nav$dialogDownloadTmp$noFiles
     },
@@ -13,8 +14,10 @@ observeEvent(input$btDownloadTmpFiles, {
       modalButton(lang$nav$dialogDownloadTmp$cancelButton),
       if(length(fileNames)){
         tagList(
-          downloadButton("btDownloadTmpZip", label = lang$nav$dialogDownloadTmp$downloadZipButton),
-          downloadButton("btDownloadTmpConfirm", label = lang$nav$dialogDownloadTmp$downloadButton, 
+          downloadButton("btDownloadTmpZip", 
+                         label = lang$nav$dialogDownloadTmp$downloadZipButton),
+          downloadButton("btDownloadTmpConfirm", 
+                         label = lang$nav$dialogDownloadTmp$downloadButton, 
                          class = "bt-highlight-1 bt-gms-confirm")
         )
       }
@@ -27,24 +30,20 @@ output$btDownloadTmpConfirm <- downloadHandler(
   },content = function(file) {
     fileName <- isolate(input$selectDownloadTmp)
     flog.debug("Download of file: '%s' confirmed.", fileName)
-    file.copy(paste0(workDir, fileName), file)
+    file.copy(file.path(workDir, fileName), file)
   }
 )
 output$btDownloadTmpZip <- downloadHandler(
   filename = function(){
     if(is.null(isolate(rv$activeSname))){
-      if(is.null(activeSnameTmp)){
-        # as no scenario name could be found set, scenario name to model name
-        return(paste0(modelName, ".zip"))
-      }else{
-        return(paste0(modelName, "_", activeSnameTmp, ".zip"))
-      }
+      return(paste0(modelName, ".zip"))
     }else{
       return(paste0(modelName, "_", isolate(rv$activeSname), ".zip"))
     }
   },
   content = function(file) {
-    zipr(file, list.files(path = workDir, pattern = ".+\\..+$", full.names = TRUE), compression_level = 6)
+    zipr(file, list.files(path = workDir, pattern = ".+\\..+$", 
+                          full.names = TRUE), compression_level = 6)
   },
   contentType = "application/zip"
 )

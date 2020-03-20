@@ -1,0 +1,105 @@
+/*
+ * Skin: Black
+ * -----------
+ */
+//@import "../../bootstrap-less/mixins.less";
+//@import "../../bootstrap-less/variables.less";
+//@import "../variables.less";
+//@import "../mixins.less";
+
+/* skin-black navbar */
+.skin-black {
+  //Navbar & Logo
+  .main-header {
+    .box-shadow(0px 1px 1px rgba(0, 0, 0, 0.05));
+    .navbar-toggle {
+      .responsiveDark({
+         color: @text-color;
+      },
+      {
+         color: @text-color-dark;
+      });
+    }
+    .navbar-brand {
+      .responsiveDark({
+         color: @text-color;
+      },
+      {
+         color: @text-color-dark;
+      });
+      border-right: 1px solid #eee;
+    }
+    .navbar {
+      .responsiveDark({
+         .navbar-variant(@navbar-main; @navbar-icons; @navbar-hover; @navbar-main);
+      },
+      {
+         .navbar-variant(@navbar-main-dark; @navbar-icons-dark; @navbar-hover-dark; @navbar-main-dark);
+      });
+      > .sidebar-toggle {
+        .responsiveDark({
+           color: @navbar-icons;
+        },
+        {
+           color: @navbar-icons-dark;
+        });
+        border-right: 1px solid #eee;
+      }
+      .navbar-nav {
+        > li > a {
+          .responsiveDark({
+             border-right: 1px solid @text-color;
+          },
+          {
+             border-right: 1px solid @text-color-dark;
+          });
+        }
+      }
+      .navbar-custom-menu .navbar-nav,
+      .navbar-right {
+        > li {
+          > a {
+            border-left: 1px solid #eee;
+            border-right-width: 0;
+          }
+        }
+      }
+    }
+    > .logo {
+      .responsiveDark({
+         .logo-variant(#fff; #333);
+      },
+      {
+         .logo-variant(@sidebar-dark-bg; #333);
+      });
+      border-right: 1px solid #eee;
+      @media (max-width: @screen-header-collapse) {
+        .logo-variant(#222; #fff);
+        border-right: none;
+        display: none;
+      }
+    }
+
+    li.user-header {
+      background-color: #222;
+    }
+  }
+
+  //Content Header
+  .content-header {
+    background: transparent;
+    box-shadow: none;
+  }
+  //Create the sidebar skin
+  .skin-dark-sidebar(#fff);
+
+  .pace {
+    .pace-progress {
+      background: #222;
+    }
+    .pace-activity {
+      border-top-color: #222;
+      border-left-color: #222;
+    }
+  }
+}

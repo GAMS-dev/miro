@@ -1,11 +1,17 @@
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
 import InputArrayFactory from './input_array';
 
-export { confirmModalShow } from './miro';
+export { confirmModalShow, slideToggleEl } from './miro';
 
-/* global $:false Shiny:false */
+/* global $:false Shiny:false showdown:false */
 
+
+const converter = new showdown.Converter({
+  tables: true,
+  tasklists: true,
+  strikethrough: true,
+  noHeaderId: true,
+  openLinksInNewWindow: true,
+});
 let lang = {};
 let indices = [];
 let indexAliases = [];
@@ -80,6 +86,62 @@ const arrayTypes = {
     };
     return ([elements, { elRequired: false, myopicDefaults: true }, 'general']);
   },
+  symbol_links(defaults) {
+    let source;
+    let target;
+
+    if (defaults !== undefined) {
+      ({ source, target } = defaults);
+    }
+    const scalarOutputSym = outputSymbols.map(sym => ['_scalars_out', '_scalarsve_out'].find(sSym => sym === sSym));
+    const scalarInputSym = inputSymbols.map(sym => ['_scalars', '_scalarsve'].find(sSym => sym === sSym));
+
+    const elements = {
+      symbol_links: ['select', lang.addSymlink.source,
+        outputSymbols.filter((sym, id) => scalarOutputSym[id] === undefined),
+        outputSymbolsAliases.filter((sym, id) => scalarOutputSym[id] === undefined), source],
+      symlink_target: ['select', lang.addSymlink.target,
+        inputSymbols.filter((sym, id) => scalarInputSym[id] === undefined),
+        inputSymbolsAliases.filter((sym, id) => scalarInputSym[id] === undefined), target],
+    };
+    return ([elements, { myopicDefaults: true, uniqueItems: true }, 'symlink']);
+  },
+  scripts_base(defaults) {
+    let id; let tabTitle; let command; let args; let outputFile; let
+      timeout;
+    if (defaults !== undefined) {
+      ({
+        id, tabTitle, command, args, outputFile, timeout,
+      } = defaults);
+    }
+    const elements = {
+      scripts_base: ['text', lang.addScript.id, id],
+      scriptsB_title: ['text', lang.addScript.title, tabTitle],
+      scriptsB_cmd: ['text', lang.addScript.cmd, command],
+      scriptsB_args: ['select', lang.addScript.args, args, args, args, true, true],
+      scriptsB_outFile: ['text', lang.addScript.outFile, outputFile],
+      scriptsB_timeout: ['numeric', lang.addScript.timeout, timeout, -1, Infinity, 1],
+    };
+    return ([elements, { elRequired: false, myopicDefaults: true, noEventOnDefault: true }, 'script']);
+  },
+  scripts_hcube(defaults) {
+    let id; let title; let command; let args; let outputFile; let
+      timeout;
+    if (defaults !== undefined) {
+      ({
+        id, title, command, args, outputFile, timeout,
+      } = defaults);
+    }
+    const elements = {
+      scripts_hcube: ['text', lang.addScript.id, id],
+      scriptsH_title: ['text', lang.addScript.title, title],
+      scriptsH_cmd: ['text', lang.addScript.cmd, command],
+      scriptsH_args: ['select', lang.addScript.args, args, args, args, true, true],
+      scriptsH_outFile: ['text', lang.addScript.outFile, outputFile],
+      scriptsH_timeout: ['numeric', lang.addScript.timeout, timeout, -1, Infinity, 1],
+    };
+    return ([elements, { elRequired: false, myopicDefaults: true, noEventOnDefault: true }, 'script']);
+  },
   dy_dyEvent() {
     const elements = {
       dy_dyEvent: ['select', lang.addDyEvent.dyDyEvent, outputScalars, outputScalarAliases],
@@ -126,6 +188,11 @@ const arrayTypes = {
       leafMark_lng: ['select', lang.addLeafletMarkers.lng, scalarIndices, scalarIndexAliases],
       leafMark_groupName: ['text', lang.addLeafletMarkers.groupName],
       leafMark_label: ['text', lang.addLeafletMarkers.label],
+      iconOptionsStart: ['optionsStart', lang.addLeafletMarkers.iconOptions],
+      leafMark_icon: ['select', lang.addLeafletMarkers.icon, lang.addLeafletMarkers.iconChoices],
+      leafMark_iconColor: ['color', lang.addLeafletMarkers.iconColor, '#000000'],
+      leafMark_markerColor: ['select', lang.addLeafletMarkers.markerColor, lang.addLeafletMarkers.markerColorChoices, lang.addLeafletMarkers.markerColorChoices, 'blue'],
+      iconOptionsEnd: ['optionsEnd'],
       optionsStart: ['optionsStart', lang.addLeafletMarkers.options],
       leafMark_labelPermanent: ['checkbox', lang.addLeafletMarkers.labelPermanent, true],
       leafMark_labelcolor: ['color', lang.addLeafletMarkers.labelcolor],
@@ -143,7 +210,7 @@ const arrayTypes = {
       leafFlow_lng1: ['select', lang.addLeafletFlows.lng1, scalarIndices, scalarIndexAliases],
       leafFlow_flow: ['select', lang.addLeafletFlows.flow, scalarIndices, scalarIndexAliases],
       leafFlow_time: ['select', lang.addLeafletFlows.time, ['_'].concat(nonScalarIndices), ['_'].concat(nonScalarIndexAliases)],
-      leafFlow_label: ['text', lang.addLeafletFlows.label],
+      leafFlow_label: ['text', `${lang.addLeafletFlows.label}<a title="${lang.addLeafletFlows.labelTooltip}" class="info-wrapper" href="https://gams.com/miro/charts.html#unique-flow-label" target="_blank"><span class="fas fa-info-circle info-icon"></span></a>`],
       optionsStart: ['optionsStart', lang.addLeafletFlows.options],
       leafFlow_color: ['color', lang.addLeafletFlows.color, '#0000ff'],
       leafFlow_minThickness: ['numeric', lang.addLeafletFlows.minThickness, 1, 0],
@@ -172,6 +239,15 @@ const arrayTypes = {
     };
     return ([elements, { elRequired: false }]);
   },
+  chart_piedata() {
+    const elements = {
+      chart_piedata: ['select', lang.addPieDataEl.chartValues, scalarIndices, scalarIndexAliases],
+      chart_pielabel: ['select', lang.addPieDataEl.chartLabels, nonScalarIndices, nonScalarIndexAliases],
+      chart_piehole: ['numeric', lang.addPieDataEl.holeSize, 0, 0, 1, 0.1],
+      chart_piename: ['text', lang.addPieDataEl.chartName, 'label'],
+    };
+    return ([elements, { elRequired: true }, 'piedata']);
+  },
   chart_ydatabar() {
     const elements = {
       chart_ydata: ['select', lang.addBarDataEl.chartYdatabar, indices, indexAliases],
@@ -186,45 +262,17 @@ const arrayTypes = {
     const elements = {
       chart_ydata: ['select', lang.addScatterDataEl.chartYdata, scalarIndices, scalarIndexAliases],
       chart_ylabel: ['text', lang.addScatterDataEl.chartYlabel, 'label'],
-      marker_symbol: ['select', lang.addScatterDataEl.symbol, ['circle', 'circle-open', 'circle-dot',
-        'circle-open-dot', 'square', 'square-open',
-        'square-dot', 'square-open-dot', 'diamond',
-        'diamond-open', 'diamond-dot', 'diamond-open-dot',
-        'cross', 'cross-open', 'cross-dot', 'cross-open-dot',
-        'x', 'x-open', 'x-dot', 'x-open-dot', 'triangle-up',
-        'triangle-up-open', 'triangle-up-dot', 'triangle-up-open-dot',
-        'triangle-down', 'triangle-down-open', 'triangle-down-dot',
-        'triangle-down-open-dot', 'triangle-left', 'triangle-left-open',
-        'triangle-left-dot', 'triangle-left-open-dot', 'triangle-right',
-        'triangle-right-open', 'triangle-right-dot', 'triangle-right-open-dot',
-        'triangle-ne', 'triangle-ne-open', 'triangle-ne-dot', 'triangle-ne-open-dot',
-        'triangle-se', 'triangle-se-open', 'triangle-se-dot', 'triangle-se-open-dot',
-        'triangle-sw', 'triangle-sw-open', 'triangle-sw-dot', 'triangle-sw-open-dot',
-        'triangle-nw', 'triangle-nw-open', 'triangle-nw-dot', 'triangle-nw-open-dot',
-        'pentagon', 'pentagon-open', 'pentagon-dot', 'pentagon-open-dot', 'hexagon',
-        'hexagon-open', 'hexagon-dot', 'hexagon-open-dot', 'hexagon2', 'hexagon2-open',
-        'hexagon2-dot', 'hexagon2-open-dot', 'octagon', 'octagon-open', 'octagon-dot',
-        'octagon-open-dot', 'star', 'star-open', 'star-dot', 'star-open-dot', 'hexagram',
-        'hexagram-open', 'hexagram-dot', 'hexagram-open-dot', 'star-triangle-up',
-        'star-triangle-up-open', 'star-triangle-up-dot', 'star-triangle-up-open-dot',
-        'star-triangle-down', 'star-triangle-down-open', 'star-triangle-down-dot',
-        'star-triangle-down-open-dot',
-        'star-square', 'star-square-open', 'star-square-dot', 'star-square-open-dot', 'star-diamond',
-        'star-diamond-open', 'star-diamond-dot', 'star-diamond-open-dot', 'diamond-tall',
-        'diamond-tall-open', 'diamond-tall-dot', 'diamond-tall-open-dot', 'diamond-wide',
-        'diamond-wide-open', 'diamond-wide-dot', 'diamond-wide-open-dot', 'hourglass',
-        'hourglass-open', 'bowtie', 'bowtie-open', 'circle-cross', 'circle-cross-open',
-        'circle-x', 'circle-x-open', 'square-cross', 'square-cross-open', 'square-x', 'square-x-open',
-        'diamond-cross', 'diamond-cross-open', 'diamond-x', 'diamond-x-open', 'cross-thin',
-        'cross-thin-open', 'x-thin', 'x-thin-open', 'asterisk', 'asterisk-open', 'hash', 'hash-open',
-        'hash-dot', 'hash-open-dot', 'y-up', 'y-up-open', 'y-down', 'y-down-open', 'y-left',
-        'y-left-open', 'y-right', 'y-right-open', 'line-ew', 'line-ew-open', 'line-ns',
-        'line-ns-open', 'line-ne', 'line-ne-open', 'line-nw', 'line-nw-open'], lang.addScatterDataEl.symbolChoices],
+      marker_symbol: ['select', lang.addScatterDataEl.symbol, ['_', 'circle', 'circle-open', 'square',
+        'square-open', 'diamond', 'diamond-open', 'cross', 'cross-open', 'x', 'x-open', 'triangle-up',
+        'triangle-up-open', 'triangle-down', 'triangle-down-open', 'pentagon', 'pentagon-open',
+        'hexagon', 'hexagon-open', 'octagon', 'octagon-open', 'star', 'star-open', 'hexagram',
+        'hexagram-open', 'asterisk', 'asterisk-open', 'hash', 'hash-open', 'line-ew', 'line-ew-open',
+        'line-ns', 'line-ns-open'], lang.addScatterDataEl.symbolChoices],
       marker_color: ['color', lang.addScatterDataEl.color],
       marker_size: ['numeric', lang.addScatterDataEl.size, 6, 0],
       marker_line_width: ['numeric', lang.addScatterDataEl.lineWidth, 0, 0],
       marker_line_color: ['color', lang.addScatterDataEl.lineColor],
-      trace_legend: ['checkbox', lang.addScatterDataEl.legend],
+      trace_legend: ['checkbox', lang.addScatterDataEl.legend, true],
       trace_frame: ['select', lang.addScatterDataEl.frame, ['_'].concat(indices), ['_'].concat(indexAliases)],
     };
     return ([elements]);
@@ -238,7 +286,7 @@ const arrayTypes = {
       line_shape: ['select', lang.addLineDataEl.shape, ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'], lang.addLineDataEl.shapeChoices],
       line_dash: ['select', lang.addLineDataEl.dash, ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'], lang.addLineDataEl.dashChoices],
       line_fill: ['select', lang.addLineDataEl.fill, ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx', 'toself', 'tonext'], lang.addLineDataEl.fillChoices],
-      trace_legend: ['checkbox', lang.addLineDataEl.legend],
+      trace_legend: ['checkbox', lang.addLineDataEl.legend, true],
       trace_frame: ['select', lang.addLineDataEl.frame, ['_'].concat(indices), ['_'].concat(indexAliases)],
     };
     return ([elements]);
@@ -247,46 +295,19 @@ const arrayTypes = {
     const elements = {
       chart_ydata: ['select', lang.addBubbleDataEl.chartYdata, scalarIndices, scalarIndexAliases],
       chart_ylabel: ['text', lang.addBubbleDataEl.chartYlabel, 'label'],
-      marker_symbol: ['select', lang.addBubbleDataEl.symbol, ['circle', 'circle-open', 'circle-dot',
-        'circle-open-dot', 'square', 'square-open',
-        'square-dot', 'square-open-dot', 'diamond',
-        'diamond-open', 'diamond-dot', 'diamond-open-dot',
-        'cross', 'cross-open', 'cross-dot', 'cross-open-dot',
-        'x', 'x-open', 'x-dot', 'x-open-dot', 'triangle-up',
-        'triangle-up-open', 'triangle-up-dot', 'triangle-up-open-dot',
-        'triangle-down', 'triangle-down-open', 'triangle-down-dot',
-        'triangle-down-open-dot', 'triangle-left', 'triangle-left-open',
-        'triangle-left-dot', 'triangle-left-open-dot', 'triangle-right',
-        'triangle-right-open', 'triangle-right-dot', 'triangle-right-open-dot',
-        'triangle-ne', 'triangle-ne-open', 'triangle-ne-dot', 'triangle-ne-open-dot',
-        'triangle-se', 'triangle-se-open', 'triangle-se-dot', 'triangle-se-open-dot',
-        'triangle-sw', 'triangle-sw-open', 'triangle-sw-dot', 'triangle-sw-open-dot',
-        'triangle-nw', 'triangle-nw-open', 'triangle-nw-dot', 'triangle-nw-open-dot',
-        'pentagon', 'pentagon-open', 'pentagon-dot', 'pentagon-open-dot', 'hexagon',
-        'hexagon-open', 'hexagon-dot', 'hexagon-open-dot', 'hexagon2', 'hexagon2-open',
-        'hexagon2-dot', 'hexagon2-open-dot', 'octagon', 'octagon-open', 'octagon-dot',
-        'octagon-open-dot', 'star', 'star-open', 'star-dot', 'star-open-dot', 'hexagram',
-        'hexagram-open', 'hexagram-dot', 'hexagram-open-dot', 'star-triangle-up',
-        'star-triangle-up-open', 'star-triangle-up-dot', 'star-triangle-up-open-dot',
-        'star-triangle-down', 'star-triangle-down-open', 'star-triangle-down-dot',
-        'star-triangle-down-open-dot',
-        'star-square', 'star-square-open', 'star-square-dot', 'star-square-open-dot', 'star-diamond',
-        'star-diamond-open', 'star-diamond-dot', 'star-diamond-open-dot', 'diamond-tall',
-        'diamond-tall-open', 'diamond-tall-dot', 'diamond-tall-open-dot', 'diamond-wide',
-        'diamond-wide-open', 'diamond-wide-dot', 'diamond-wide-open-dot', 'hourglass',
-        'hourglass-open', 'bowtie', 'bowtie-open', 'circle-cross', 'circle-cross-open',
-        'circle-x', 'circle-x-open', 'square-cross', 'square-cross-open', 'square-x', 'square-x-open',
-        'diamond-cross', 'diamond-cross-open', 'diamond-x', 'diamond-x-open', 'cross-thin',
-        'cross-thin-open', 'x-thin', 'x-thin-open', 'asterisk', 'asterisk-open', 'hash', 'hash-open',
-        'hash-dot', 'hash-open-dot', 'y-up', 'y-up-open', 'y-down', 'y-down-open', 'y-left',
-        'y-left-open', 'y-right', 'y-right-open', 'line-ew', 'line-ew-open', 'line-ns',
-        'line-ns-open', 'line-ne', 'line-ne-open', 'line-nw', 'line-nw-open'], lang.addScatterDataEl.symbolChoices],
+      marker_symbol: ['select', lang.addBubbleDataEl.symbol, ['_', 'circle', 'circle-open', 'square',
+        'square-open', 'diamond', 'diamond-open', 'cross', 'cross-open', 'x', 'x-open', 'triangle-up',
+        'triangle-up-open', 'triangle-down', 'triangle-down-open', 'pentagon', 'pentagon-open',
+        'hexagon', 'hexagon-open', 'octagon', 'octagon-open', 'star', 'star-open', 'hexagram',
+        'hexagram-open', 'asterisk', 'asterisk-open', 'hash', 'hash-open', 'line-ew', 'line-ew-open',
+        'line-ns', 'line-ns-open'], lang.addScatterDataEl.symbolChoices],
       marker_colorDep: ['selectDep', [lang.addBubbleDataEl.colorCheck, 'color', lang.addBubbleDataEl.colorCheckTrue], lang.addBubbleDataEl.colorCheckFalse, scalarIndices, scalarIndexAliases, '.index'],
       marker_size: ['select', lang.addBubbleDataEl.size, scalarIndices, scalarIndexAliases, '.index'],
       marker_maxsize: ['numeric', lang.addBubbleDataEl.maxsize, 0, 0],
+      marker_sizemode: ['select', lang.addBubbleDataEl.sizemode, ['area', 'diameter'], lang.addBubbleDataEl.sizemodeChoices],
       marker_line_width: ['numeric', lang.addBubbleDataEl.lineWidth, 0, 0],
       marker_line_color: ['color', lang.addBubbleDataEl.lineColor],
-      trace_legend: ['checkbox', lang.addBubbleDataEl.legend],
+      trace_legend: ['checkbox', lang.addBubbleDataEl.legend, true],
       trace_frame: ['select', lang.addBubbleDataEl.frame, ['_'].concat(indices), ['_'].concat(indexAliases)],
     };
     return ([elements]);
@@ -333,8 +354,16 @@ const arrayTypes = {
     return ([elements, { elRequired: false }]);
   },
 };
+export function mdToHTML(mdContent, destId) {
+  $(destId).html(converter.makeHtml(mdContent));
+}
 
-export function addArrayDataEl(arrayID, defaultsRaw, reinitialize = false) {
+export function mdSave(mdContentId) {
+  Shiny.setInputValue('btMdSave', $(mdContentId).val(),
+    { priority: 'event' });
+}
+
+export function addArrayDataEl(arrayID, defaultsRaw) {
   if ($(`#${arrayID}_wrapper .btn-add-array-el`).is(':disabled')) {
     return;
   }
@@ -347,14 +376,20 @@ export function addArrayDataEl(arrayID, defaultsRaw, reinitialize = false) {
       throw new ReferenceError(`Array ID: ${arrayID} not defined.`);
     }
     const [elements, options, rObserveID] = arrayTypes[arrayID](def);
-    inputArrayFactory.add(arrayID, elements, options, rObserveID, reinitialize);
+    inputArrayFactory.add(arrayID, elements, options, rObserveID);
   });
 }
-function addArrayDataElWrapper(arrayID, defaults, cnt = 1) {
-  if ($(`#${arrayID}_wrapper`).is(':visible')) {
-    addArrayDataEl(arrayID, defaults, true);
-  } else if (cnt <= 6) {
-    setTimeout(addArrayDataElWrapper, 200, arrayID, defaults, cnt + 1);
+function addArrayDataElWrapper(arrayID, defaults, symbol, cnt = 1) {
+  let arrayWrapper;
+  if (symbol) {
+    arrayWrapper = $(`#${arrayID}_wrapper[data-symbol="${symbol}"]`);
+  } else {
+    arrayWrapper = $(`#${arrayID}_wrapper`);
+  }
+  if (arrayWrapper.is(':visible') || cnt === 8) {
+    addArrayDataEl(arrayID, defaults);
+  } else if (cnt <= 8) {
+    setTimeout(addArrayDataElWrapper, 200, arrayID, defaults, symbol, cnt + 1);
   }
 }
 
@@ -403,7 +438,15 @@ $(document).ready(() => {
     } = symData);
   });
   Shiny.addCustomMessageHandler('gms-addArrayEl', (data) => {
-    setTimeout(addArrayDataElWrapper, 200, data.arrayID, data.defaults);
+    if (data.destroy === true && data.arrayID) {
+      inputArrayFactory.destroy(data.arrayID);
+    }
+    setTimeout(addArrayDataElWrapper, 300, data.arrayID, data.defaults, data.symbol);
+  });
+  Shiny.addCustomMessageHandler('gms-destroyArray', (arrayID) => {
+    if (arrayID) {
+      inputArrayFactory.destroy(arrayID);
+    }
   });
   const colorPickerBinding = new Shiny.InputBinding();
   $.extend(colorPickerBinding, {

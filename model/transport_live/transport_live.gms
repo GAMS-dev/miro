@@ -115,8 +115,9 @@ Set scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM', 'latM', 'cap', 'dema
 
 $onExternalOutput
 Parameter
-   schedule(i,j,scheduleHdr) 'shipment quantities in cases [MIRO:table]'
+   schedule(i,j,scheduleHdr) 'shipment quantities in cases'
    total_cost                'total transportation costs in thousands of dollars';
+Table schedule;
 $offExternalOutput
 
 $ifthen set type

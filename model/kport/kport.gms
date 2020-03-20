@@ -52,13 +52,13 @@ $if not set scenario $set scenario s1
 $onExternalInput
 Singleton set actScen(s) 'Active scenario' / %scenario% /;   
 
-Table RData(rR,s,rhdr) 'Reactor data 😀⻩ [MIRO:table]'
+Table RData(rR,s,rhdr) 'Reactor data 😀⻩'
         s1.VMIN  s1.VMAX  s2.VMIN  s2.VMAX
    R1    102.14      250     20         50
    R2    176.07      250     52.5      250
    R3                      151.25      250;
 
-Table PData(pP,s,phdr) 'Product data [MIRO:table]'
+Table PData(pP,s,phdr) 'Product data'
          s1.Demand  s1.'Production Time'  s2.Demand  s2.'Production Time'
    L1         2600                    6        2600                    6
    L2         2300                    6        2300                    6
@@ -267,9 +267,12 @@ Set
 $onExternalOutput
 Parameter
    Cost(CHdr)                     'Cost report'
-   Surplus(pP,SHdr)               'Demand/Surplus report [MIRO:table]'
-   ProductionTime(rR,PTHdr)       'Production time report [MIRO:table]'
-   RPreport(rR,pP,RPHdr)          'Reactor/Product report [MIRO:table]';
+   Surplus(pP,SHdr)               'Demand/Surplus report'
+   ProductionTime(rR,PTHdr)       'Production time report'
+   RPreport(rR,pP,RPHdr)          'Reactor/Product report';
+Table Surplus;
+Table ProductionTime;
+Table RPreport;
 $offExternalOutput
 
 Cost('Fixed Cost')      = cFixed.l;

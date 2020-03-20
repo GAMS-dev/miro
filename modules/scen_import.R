@@ -1,66 +1,22 @@
 # load input data from excel sheet
-observeEvent(input$btOverwriteLocal, {
-  scenName <- isolate(input$local_newScenName)
-  flog.debug("Overwrite existing scenario (name: '%s') button clicked.", scenName)
-  errMsg <- NULL
-  tryCatch({
-    activeScen <<- Scenario$new(db = db, sname = scenName, overwrite = TRUE)
-  }, error = function(e){
-    flog.error("Problems creating scenario. Error message: '%s'.", e)
-    errMsg <<- lang$errMsg$saveScen$desc
-  })
-  if(is.null(showErrorMsg(lang$errMsg$saveScen$title, errMsg))){
-    return(NULL)
-  }
-  rv$activeSname <- scenName
-  rv$btLoadLocal <- isolate(rv$btLoadLocal + 1L)
-})
-observeEvent(input$btCheckSnameLocalConfirm, {
-  if(length(isolate(rv$activeSname))){
-    rv$btLoadLocal <- isolate(rv$btLoadLocal + 1L)
-  }
-  scenNameTmp <- isolate(input$local_newScenName)
-  flog.debug("Button to upload local dataset clicked. Validating if scenario name: '%s' is valid and does not yet exist.", 
-             scenNameTmp)
-  if(is.null(isolate(rv$activeSname))){
-    scenNameTmp <- isolate(input$local_newScenName)
-    if(isBadScenName(scenNameTmp)){
-      flog.debug("Scenario name is not valid.")
-      showHideEl(session, "#local_badScenName", 4000L)
-      return()
-    }else{
-      if(identical(config$activateModules$scenario, TRUE)){
-        if(db$checkSnameExists(scenNameTmp)){
-          flog.debug("Scenario name is valid, but already exists.")
-          showEl(session, "#loadLocal_scenNameExists")
-          hideEl(session, "#loadLocal_content")
-          return()
-        }
-        activeScen <<- Scenario$new(db = db, sname = scenNameTmp)
-      }
-      rv$activeSname <- scenNameTmp
-      rv$btLoadLocal <- isolate(rv$btLoadLocal + 1L)
-    }
-  }
-})
-observeEvent(virtualActionButton(rv$btLoadLocal),{
-  flog.debug("Load local data button clicked.")
-  
+observeEvent(input$btImportLocal, {
   if(identical(config$activateModules$loadLocal, FALSE)){
+    flog.error("Try to load local data even though the loadLocal module is disabled! This is most likely because the user is trying to tamper with the app!")
     return()
   }
+  flog.debug("Load local data button clicked.")
+  errMsg <- NULL
   
   # check whether current input datasets are empty
-  if(isolate(input$cbSelectManuallyLoc) && length(isolate(input$selInputDataLoc))){
-    idsToFetch <- match(tolower(isolate(input$selInputDataLoc)), tolower(names(modelIn)))
+  if(input$cbSelectManuallyLoc && length(input$selInputDataLoc)){
+    idsToFetch <- match(tolower(input$selInputDataLoc), names(modelIn))
     # remove NAs
     idsToFetch <- idsToFetch[!is.na(idsToFetch)]
   }else{
     idsToFetch <- seq_along(modelIn)
   }
   datasetsImported <- vapply(idsToFetch, function(i){
-    if(length(isolate(rv[[paste0("in_", i)]])) || 
-       isolate(rv$datasetsModified[i])){
+    if(length(isolate(rv[[paste0("in_", i)]]))){
       return(TRUE)
     }else{
       return(FALSE)
@@ -73,13 +29,13 @@ observeEvent(virtualActionButton(rv$btLoadLocal),{
     showEl(session, "#importDataOverwrite")
   }else{
     overwriteInput <<- FALSE
-    rv$btOverwriteInput <<- isolate(rv$btOverwriteInput + 1L)
-}
+    rv$btOverwriteInput <<- rv$btOverwriteInput + 1L
+  }
 })
 
 observeEvent(input$btOverwriteInput, {
   overwriteInput <<- TRUE
-  rv$btOverwriteInput <<- isolate(rv$btOverwriteInput + 1L)
+  rv$btOverwriteInput <<- rv$btOverwriteInput + 1L
 })
 
 observeEvent(virtualActionButton(rv$btOverwriteInput),{
@@ -87,16 +43,78 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     flog.error("Load Excel event was triggered but no datapath specified. This should not happen!")
     return(NULL)
   }
+  if(identical(config$activateModules$loadLocal, FALSE)){
+    flog.error("Try to load local data even though the loadLocal module is disabled! This is most likely because the user is trying to tamper with the app!")
+    return()
+  }
   
   # initialize new imported sheets counter
   newInputCount <- 0L
   errMsg <- NULL
   scalarDataset <- NULL
   
-  fileType <- tolower(tools::file_ext(isolate(input$localInput$datapath)))
-  if(identical(fileType, "gdx")){
+  loadModeFileName <- basename(input$localInput$datapath)
+  loadModeWorkDir  <- dirname(input$localInput$datapath)
+  fileType <- tolower(tools::file_ext(loadModeFileName))
+  
+  prog <- Progress$new()
+  on.exit(suppressWarnings(prog$close()))
+  prog$set(message = lang$progressBar$importScen$title, value = 0.1)
+  
+  if(identical(fileType, "gdx") && useGdx){
     loadMode <- "gdx"
-    datasetsToFetch <- c(modelInTabularData, scalarsFileName)
+    datasetsToFetch <- names(modelIn)
+  }else if(identical(fileType, "zip")){
+    loadMode <- "csv"
+    csvFiles <- tryCatch(
+      getValidCsvFromZip(input$localInput$datapath, 
+                         c(names(modelOut), 
+                           inputDsNames), uid)
+      , error = function(e){
+        errMsg <- conditionMessage(e)
+        if(startsWith(errMsg, "e:")){
+          showHideEl(session, "#importScenError", 4000L)
+          flog.error(errMsg)
+        }else{
+          flog.info(errMsg)
+          showHideEl(session, "#importScenInvalidFile", 4000L)
+        }
+        return("e")
+      })
+    if(identical(csvFiles,"e")){
+      return()
+    }
+    on.exit({
+      if(identical(unlink(csvFiles$tmpDir, recursive = TRUE), 0L)){
+        flog.debug("Temporary directory: '%s' removed.", csvFiles$tmpDir)
+      }else{
+        flog.error("Problems removing temporary directory: '%s'.", csvFiles$tmpDir)
+      }}, add = TRUE)
+    datasetsToFetch <- substr(csvFiles$validFileNames, 1L, 
+                              nchar(csvFiles$validFileNames) - 4L)
+    loadModeWorkDir <- csvFiles$tmpDir
+  }else if(identical(fileType, "csv")){
+    loadMode <- "csv"
+    if(length(loadModeFileName) && loadModeFileName %in% c(modelInTabularData, scalarsFileName)){
+      datasetsToFetch <- loadModeFileName
+    }else if(!isTRUE(input$cbSelectManuallyLoc) || length(input$selInputDataLoc) != 1L){
+      flog.debug("Local file import stopped as no datasheet was specified (must be specified when uploading csv files).")
+      showHideEl(session, "#importScenNoDsSelected", 4000L)
+      return()
+    }else{
+      if(!input$selInputDataLoc %in% names(modelInToImport)){
+        flog.error("Selected input dataset is not in list of model data to import. This looks like an attempt to tamper with the app!")
+        showHideEl(session, "#importScenNoDsSelected", 4000L)
+        return()
+      }
+      datasetsToFetch <- input$selInputDataLoc
+      if(!file.rename(input$localInput$datapath, 
+                      paste0(loadModeWorkDir, .Platform$file.sep, 
+                             datasetsToFetch, ".csv"))){
+        showHideEl(session, "#importScenError", 4000L)
+        return()
+      }
+    }
   }else if(fileType %in% c("xls", "xlsx")){
     loadMode <- "xls"
     # read Excel file
@@ -106,16 +124,26 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
       flog.error("Some error occurred reading the file: '%s'. Error message: %s.", as.character(isolate(input$localInput$name)), e)
       errMsg <<- sprintf(lang$errMsg$GAMSInput$excelRead, as.character(isolate(input$localInput$name)))
     })
-    xlsWbNames <- vapply(strsplit(xlsWbNames, " ", fixed = TRUE), "[[", character(1L), 1L)
     if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
       return()
     }
+    xlsWbNames <- vapply(strsplit(xlsWbNames, " ", fixed = TRUE), "[[", character(1L), 1L)
     # extract only sheets which are also in list of input parameters
-    datasetsToFetch <- xlsWbNames[tolower(xlsWbNames) %in% c(modelInTabularData, scalarsFileName)]
+    datasetsToFetch <- xlsWbNames[tolower(xlsWbNames) %in% 
+                                    c(modelInTabularData, scalarsFileName, 
+                                      scalarInputSym)]
   }else{
-    showErrorMsg(lang$errMsg$readOutput$title, lang$errMsg$readOutput$desc)
+    removeModal()
+    showErrorMsg(lang$errMsg$invalidFileType$title, 
+                 sprintf(lang$errMsg$invalidFileType$desc, paste0(c("xls", "xlsx", "csv", if(useGdx) "gdx"),
+                                                                  collapse = ",")))
+    flog.info("Invalid file type: '%s' attempted to be imported. Import interrupted.", fileType)
     return()
   }
+  removeModal()
+  datasetsToFetch <- datasetsToFetch[datasetsToFetch %in% c(names(modelInToImport), 
+                                                            scalarsFileName)]
+  
   # extract scalar sheets
   if(length(modelIn) > length(modelInTabularData)){
     # atleast one scalar input element that is not in tabular form
@@ -134,29 +162,35 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   }
   
   # find out which datasets to import from Excel sheet
-  if(isolate(input$cbSelectManuallyLoc) && length(isolate(input$selInputDataLoc))){
-    datasetsToFetch <- datasetsToFetch[tolower(datasetsToFetch) %in% tolower(isolate(input$selInputDataLoc))]
+  if(input$cbSelectManuallyLoc && length(input$selInputDataLoc)){
+    datasetsToFetch <- datasetsToFetch[tolower(datasetsToFetch) %in% 
+                                         tolower(isolate(input$selInputDataLoc))]
   }
-  removeModal()
+  prog$set(detail = lang$progressBar$importScen$renderInput, value = 0.4)
   
   source("./modules/input_load.R", local = TRUE)
+  markUnsaved()
   if(!is.null(errMsg)){
     return(NULL)
   }
-  if(!config$activateModules$hcubeMode){
+  if(LAUNCHHCUBEMODE){
+    noOutputData <<- TRUE
+  }else{
+    prog$set(detail = lang$progressBar$importScen$renderOutput, value = 0.8)
     tryCatch({
       outputData <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, 
-                                 workDir = dirname(isolate(input$localInput$datapath)), 
+                                 workDir = loadModeWorkDir, 
                                  modelName = modelName, errMsg = lang$errMsg$GAMSOutput$badOutputData,
                                  scalarsFileHeaders = scalarsFileHeaders,
                                  templates = modelOutTemplate, method = loadMode,
                                  hiddenOutputScalars = config$hiddenOutputScalars, 
-                                 fileName = basename(isolate(input$localInput$datapath))) 
+                                 fileName = loadModeFileName) 
     }, error = function(e){
-      flog.error("Problems loading output data. Error message: %s.", e)
-      errMsg <<- lang$errMsg$readOutput$desc
+      flog.info("Problems loading output data. Error message: %s.", 
+                conditionMessage(e))
+      errMsg <<- lang$errMsg$badOutputData$badOutputData
     })
-    if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
+    if(is.null(showErrorMsg(lang$errMsg$GAMSOutput$title, errMsg))){
       return()
     }
     if(any(vapply(outputData$tabular, function(el){length(el) > 0L}, logical(1L), USE.NAMES = FALSE))){
@@ -169,9 +203,11 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     }else{
       noOutputData <<- TRUE
     }
+    scalarIdTmp <- match(scalarsFileName, tolower(names(scenInputData)))[[1L]]
+    if(!is.na(scalarIdTmp)){
+      scalarData[["scen_1_"]] <<- bind_rows(scenInputData[[scalarIdTmp]], scalarData[["scen_1_"]])
+    }
     outputData <- NULL
-  }else{
-    noOutputData <<- TRUE
   }
   
   if(newInputCount){

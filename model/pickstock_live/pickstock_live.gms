@@ -16,7 +16,7 @@ $onExternalOutput
 Parameter price(date<,symbol<) 'stock price' / /;
 $offExternalOutput
 
-$iftheni %gams.miro%==RUN
+$iftheni "x%gams.IDCGDXInput%"!="x"
 $onmulti
 $if not set TW_lo $set TW_lo "2017-01-01"
 $if not set TW_up $set TW_up "2017-01-15"
@@ -101,9 +101,6 @@ option optCR=0.01;
 td(d) = ord(d)<=trainingdays;
 ntd(d) = not td(d);
 
-abort$(card(date)=0)   "Set date is empty. Please select valid data.";
-abort$(card(symbol)=0) "Set symbol is empty. Please select valid data.";
-abort$(card(price)=0)  "Set price is empty. Please select valid data.";
 solve pickStock min obj using mip;
 
 fund(d) = sum(s, price(d, s)*w.l(s));
@@ -115,9 +112,11 @@ Set fHdr      'fund header'            / dj 'dow jones','index fund'  /
 $onExternalOutput
 Parameter
     partOfPortfolio(symbol)            'what part of the portfolio'   
-    dowVSindex(date,fHdr)              'dow jones vs. index fund [MIRO:table]'     
-    abserror(date,errHdr)              'absolute error [MIRO:table]'               
-Singleton Set lastDayTraining(date)    'last date of training period [MIRO:hidden]' ;
+    dowVSindex(date,fHdr)              'dow jones vs. index fund'     
+    abserror(date,errHdr)              'absolute error'               
+Singleton Set lastDayTraining(date)    'last date of training period' ;
+Table dowVSindex;
+Table abserror;
 $offExternalOutput
 
 partOfPortfolio(s)                   = w.l(s);
