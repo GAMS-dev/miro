@@ -913,7 +913,6 @@ Worker <- R6Class("Worker", public = list(
 
     if(length(exitStatus)){
       private$gamsRet <- exitStatus
-      private$status  <- exitStatus
     }
     return(private$status)
   },
@@ -928,6 +927,9 @@ Worker <- R6Class("Worker", public = list(
       })
     if(!identical(private$log, "")){
       private$updateLog <- private$updateLog + 1L
+    }
+    if(length(private$gamsRet)){
+      private$status  <- private$gamsRet
     }
     return(private$updateLog)
   },
