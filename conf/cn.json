@@ -1047,7 +1047,7 @@
         },
         "buttons":{
           "label":"添加导出按钮？",
-          "title": "If a symbol contains multiple table pages, using an export button only affects the currently visible table page!",
+          "title": "如果一个符号包含多个表格页面，使用导出按钮仅会对当前可见的表格页面有效。",
           "choices": ["复制", "CSV文件", "Excel工作簿", "PDF", "打印"],
           "select": "选择要使用的按钮。 注意：所有按钮功能仅对可见的表格页面有效。"
         }

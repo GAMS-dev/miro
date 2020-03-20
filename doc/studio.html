@@ -44,6 +44,7 @@
 <body class="body-orange">
     <!--#include virtual="/wbody.html" -->
     <div class="page-wrapper">
+    <!--#include virtual="/mirover.html" -->
         <!--TYPO3SEARCH_begin-->
 
         <!-- ******Header****** -->
@@ -73,7 +74,7 @@
                             <section id="studio-introduction" class="doc-section">
                                 <h2 class="section-title">Introduction</h2>
                                 <div class="section-block">
-                                    <p>In this section we show you how to use <a href="https://www.gams.com/latest/docs/T_STUDIO.html">GAMS Studio</a> for the development of your MIRO apps. The new integrated development environment for GAMS has build-in functionality of the most important interactions with MIRO. In this section we only give an overview of the different functionalities available in Studio. If available, the individual aspects are explained in more detail in corresponding linked chapters.</p>
+                                    <p>In this section we show you how to use <a href="https://www.gams.com/latest/docs/T_STUDIO.html">GAMS Studio</a> for the development of your MIRO apps. The new integrated development environment for GAMS has built-in functionality of the most important interactions with MIRO. In this section we only give an overview of these. Different aspects are explained in more detail in corresponding linked chapters.</p>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
                             <section id="studio-general" class="doc-section">
@@ -127,12 +128,12 @@
                                     <div class="section-block" style="display:block; margin:auto;">
                                         <img class="img-fluid" style="max-height: 160pt;" src="assets/images/studio/hcube_studio.png" alt="Launch MIRO Hypercube mode" />
                                     </div>
-                                    <p>This option starts the MIRO Hypercube mode. In this mode, you can automatically solve scenarios with several different parameterizations.
+                                    <p>This option starts the MIRO Hypercube mode. In this mode, you can automatically solve scenarios with several different parameterizations at once.
                                     </p>
                                     <div class="section-block" style="display:block; margin:auto;">
                                         <img class="img-fluid" style="margin-bottom:15px;" src="assets/images/batch_img/hcube_workflow.png" alt="Hypercube mode workflow" />
                                     </div>
-                                    <p>Before using the Hypercube mode, MIRO has to know which files belong to the GAMS model. Read more on how you can tell MIRO which files belong to your GAMS model via the <a href="#studio-create-assembly" class="scrollto">model assembly file</a>.</p>
+                                    <p>Before using the Hypercube mode, MIRO has to know which files belong to the GAMS model. Read more on how you can tell MIRO which files belong to your model via the <a href="#studio-create-assembly" class="scrollto">model assembly file</a>.</p>
                                 </div>
                             </section><!--//doc-section-->
                             <section id="studio-configuration-mode" class="doc-section">
@@ -156,13 +157,13 @@
                                         <img class="img-fluid" style = "max-height:160pt;" src="assets/images/studio/skip_model_execution.png" alt="Skip model execution" />
                                     </div>
                                     <p>But: This option should be used with caution!</br> 
-                                    If the model execution is skipped, the GAMS/MIRO <a href="./start.html#data-concept">data contract</a> is not created or renewed. This means that changes made in the model are not communicated to MIRO. If you have a model that takes a long time to be solved and you don't want to run through it in order to launch MIRO, you can simply set the GAMS option <a href = "https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOaction" target = "_blank"><i>a=c</i></a> (action=compile) instead of the option "Skip model execution". This will only compile the model which is sufficient to update the data contract. Note that in this case a new default scenario is created, but it contains only input data and no output data.</p>
+                                    If the model execution is skipped, the GAMS/MIRO <a href="./start.html#data-concept">data contract</a> is not created or refreshed. This means that changes made in the model are not communicated to MIRO. If you have a model that takes a long time to be solved and you don't want to run through it in order to launch MIRO, you can simply set the GAMS option <a href = "https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOaction" target = "_blank"><i>a=c</i></a> (action=compile) instead of the option "Skip model execution". This will only compile the model which is sufficient to update the data contract. Note that in this case a new default scenario is created, but it contains only the data that is available after the compilation phase (most of the time only input data).</p>
                                 </div>
                             </section><!--//doc-section-->
                             <section id="studio-create-assembly" class="doc-section">
                                 <h2 class="section-title">Create model assembly<a title="Go to chapter" class=" info-wrapper" href="./deployment.html#sbs-create-app"><i class="icon fa fa-external-link-alt info-icon"></i></a></h2>
                                 <div class="section-block">
-                                    <p>If you use the Hypercube mode or want to deploy a fully configured app, MIRO needs to know about the files that belong to your model. This is primarily the main model file, but also all files necessary to calculate all inputs and outputs, e.g. files that are included in the model. To tell MIRO about these files, go to <i>create model assembly</i> and select those folders and files which are needed. If you select a folder, all files in it will be included. If you want to use only single files of a folder, you have to expand the folder and select the corresponding file(s). In the dialog, click on <i>create</i> to finish the creation.</p>
+                                    <p>If you use the Hypercube mode or want to deploy a fully configured app, MIRO needs to know about the files that belong to your model. This is primarily the main model file, but also all files necessary to calculate all inputs and outputs, e.g. files that are included in the model. To tell MIRO about these files, go to <i>create model assembly</i> and select those folders and files which are needed. If you select a folder, all files in it will be included. If you want to use only single files of a folder, you have to expand the folder and select the corresponding file(s). When you are finished, click on <i>create</i>.</p>
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" style="max-height:315pt" src="assets/images/deployment/model-assembly.png" alt="create model assembly file" />
                                     </div>
