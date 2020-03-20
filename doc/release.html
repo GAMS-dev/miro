@@ -121,6 +121,7 @@
                                       <i>renderer_&lt;modelname&gt;</i></li>
                                       <li>Changed directory name for configuration files from <i>conf</i> to 
                                       <i>conf_&lt;modelname&gt;</i></li>
+                                      <li>Improved performance on startup of MIRO Base/Hypercube mode</li>
                                       <li>Added Link to <a href = "https://forum.gamsworld.org/">GAMS World Forum</a> in help section.</li>
                                       <li><i>Stop</i> button in GAMS interaction now with soft kill first, then hard kill.</li>
                                       <li>Scenario comparison: input and output symbol tabs are now displayed in different colors.</li>
@@ -140,12 +141,16 @@
                                       <li>Maximum number of symbol tabs visible in Inpupt/Output section set to 5 (rest available via dropdown).</li>
                                       <li>Bootstrap dropdown menus are now right aligned per default. They will be left-aligned when space 
                                       on left is not sufficient.</li>
+                                      <li>"More" dropdown menu (visible when more than 5 input or output tabs are shown in MIRO) will now show currently active tab.</li>
                                       <li>First two columns (symbol name and symbol text) of scalar input table are now automatically set 
                                       to readonly.</li>
                                       <li><a href = "./start.html#excel-import-rules">Import data via spreadsheet</a>: Added possibility to use a sheet dedicated to a single scalar with the sheet name being the name of the scalar and its value being in column A1.</li>
+                                      <li>When importing scenarios from data_&lt;modelname&gt; folder, these scenarios can now be read and executed by all users within the same user group as the user importing them. Before, only the user importing them could read and execute them.</li>
                                       <li>Adding/removing rows is now no longer allowed when at least one column is readonly.</li>
                                       <li>Variables and equations can now be exported via GDX.</li>
-                                      <li>Numeric NAs are not converted to 0 anymore.</li>
+                                      <li>Changed <a href = "./start.html#na-zero-eps">handling of NAs, zeros and EPS</a>. Numeric NAs are not converted to 0 anymore; Zeros are now written to GDX as 0 instead of being squeezed out.</li>
+                                      <li>Increased precision of numeric values input tables to maximum precision.</li>
+                                      <li>Custom renderer functions are now extended with ellipsis arguments to make sure they are compatible with future MIRO versions.</li>
                                       <li>Configuration mode:</li>
                                       <ul>
                                         <li>New structure and design.</li>
@@ -170,6 +175,7 @@
                                         <li>Added option 'area' and 'diameter' for bubble chart size measurement</li>
                                         <li>Valuebox: Number of boxes in a row can now be customized.</li>
                                         <li>Added option to configure number of decimal places for numericInput</li>
+                                        <li>Removed remote Execution setting from configuration mode. Moved to <a href="./deployment.html#sbs-customize-app">preferences</a> that are accessible via the MIRO library.</li>
                                       </ul>
                                     </ul>
                                 </div>
