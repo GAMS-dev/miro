@@ -71,6 +71,9 @@ prepareModelRun <- function(async = FALSE){
                                 gdxio = gdxio, csvDelim = config$csvDelim)
   lapply(seq_along(dataTmp), function(i){
     # write compile time variable file and remove compile time variables from scalar dataset
+    if(is.null(dataTmp[[i]])){
+      return()
+    }
     if(identical(tolower(names(dataTmp)[[i]]), scalarsFileName)){
       # scalars file exists, so remove compile time variables from it
       DDParIdx           <- dataTmp[[i]][[1]] %in% outer(DDPar, c("", "$lo", "$up"), 
