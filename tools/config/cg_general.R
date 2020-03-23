@@ -931,9 +931,11 @@ observeEvent(input$group_sameTabIn, {
   
   arrayIdx <- indexMap$push("inputGroups", input$group_sameTabIn[1])
   
-  if(length(rv$generalConfig[["inputGroups"]][[arrayIdx]])){
+  if(arrayIdx <= length(rv$generalConfig[["inputGroups"]]) &&
+     length(rv$generalConfig[["inputGroups"]][[arrayIdx]])){
     rv$generalConfig[["inputGroups"]][[arrayIdx]]$sameTab <<- identical(input$group_sameTabIn[2], 1L)
-  }else if(length(groupTemp[["inputGroups"]][[arrayIdx]])){
+  }else if(arrayIdx <= length(groupTemp[["inputGroups"]]) &&
+           length(groupTemp[["inputGroups"]][[arrayIdx]])){
     groupTemp[["inputGroups"]][[arrayIdx]]$sameTab <<- identical(input$group_sameTabIn[2], 1L)
   }else{
     groupTemp[["inputGroups"]][[arrayIdx]] <<- list(sameTab = identical(input$group_sameTabIn[2], 1L))
@@ -943,11 +945,13 @@ observeEvent(input$group_sameTabOut, {
   if(length(input$group_sameTabOut) < 2L)
     return()
   
-  arrayIdx <- indexMap$push("inputGroups", input$group_sameTabOut[1])
+  arrayIdx <- indexMap$push("outputGroups", input$group_sameTabOut[1])
   
-  if(length(rv$generalConfig[["outputGroups"]][[arrayIdx]])){
+  if(arrayIdx <= length(rv$generalConfig[["outputGroups"]]) && 
+     length(rv$generalConfig[["outputGroups"]][[arrayIdx]])){
     rv$generalConfig[["outputGroups"]][[arrayIdx]]$sameTab <<- identical(input$group_sameTabOut[2], 1L)
-  }else if(length(groupTemp[["outputGroups"]][[arrayIdx]])){
+  }else if(arrayIdx <= length(groupTemp[["outputGroups"]]) &&
+           length(groupTemp[["outputGroups"]][[arrayIdx]])){
     groupTemp[["outputGroups"]][[arrayIdx]]$sameTab <<- identical(input$group_sameTabOut[2], 1L)
   }else{
     groupTemp[["outputGroups"]][[arrayIdx]] <<- list(sameTab = identical(input$group_sameTabOut[2], 1L))
