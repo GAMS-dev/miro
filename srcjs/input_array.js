@@ -33,9 +33,8 @@ class InputArray {
 
     isNewElement = true;
 
-    constructor(arrayID, elements, options = {}, rObserveID = 'array_el') {
+    constructor(arrayID, options = {}, rObserveID = 'array_el') {
       this.arrayID = arrayID;
-      this.elements = elements;
       this.rObserveID = rObserveID;
       this.options = options;
 
@@ -53,7 +52,11 @@ class InputArray {
       return (this.options.myopicDefaults === true && this.isNewElement === false);
     }
 
-    createEl() {
+    createEl(elements) {
+      if (elements != null) {
+        this.isNewElement = true;
+        this.elements = elements;
+      }
       if (this.isDisabled) {
         console.warn('Array is disabled. Will not create new element.');
         return;
@@ -528,11 +531,11 @@ export default class InputArrayFactory {
   add(arrayID, elements, options, rObserveID, reinitialize = false) {
     if (reinitialize === false
       && Object.prototype.hasOwnProperty.call(this.inputArrays, arrayID)) {
-      this.inputArrays[arrayID].createEl();
+      this.inputArrays[arrayID].createEl(elements);
       return;
     }
-    this.inputArrays[arrayID] = new InputArray(arrayID, elements, options, rObserveID);
-    this.inputArrays[arrayID].createEl();
+    this.inputArrays[arrayID] = new InputArray(arrayID, options, rObserveID);
+    this.inputArrays[arrayID].createEl(elements);
   }
 
   destroy(arrayID) {
