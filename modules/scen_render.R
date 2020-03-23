@@ -45,10 +45,10 @@ lapply(scenTableNamesToDisplay, function(sheetName){
        length(configGraphsOut[[tabData$scenTableId]]$additionalData)){
       additionalDataIds <- match(configGraphsOut[[tabData$scenTableId]]$additionalData, 
                                  names(modelOut))
-      additionalDataIds[is.na(additionalDataIds)] <- c(tabData$scenTableId, 
-                                                       match(configGraphsOut[[tabData$scenTableId]]$
-                                                               additionalData[is.na(additionalDataIds)],
-                                                             inputDsNames) + length(modelOut))
+      additionalDataIds[is.na(additionalDataIds)] <- match(configGraphsOut[[tabData$scenTableId]]$
+                                                             additionalData[is.na(additionalDataIds)],
+                                                           inputDsNames) + length(modelOut)
+      additionalDataIds <- c(tabData$scenTableId, additionalDataIds)
       rendererData <- scenData[[scenIdLong]][additionalDataIds]
       names(rendererData) <- c(names(modelOut), inputDsNames)[additionalDataIds]
     }

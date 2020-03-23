@@ -106,19 +106,19 @@ prepareModelRun <- function(async = FALSE){
         pfGMSOpt      <- pfGMSOpt[!is.na(pfGMSOpt)]
         pfFileContent <<- c(pfGMSPar, pfGMSOpt)
         # remove those rows from scalars file that are compile time variables
-        csvData <- dataTmp[[i]][!(DDParIdx | GMSOptIdx), ]
+        modelInputData[[i]] <<- dataTmp[[i]][!(DDParIdx | GMSOptIdx), ]
       }else{
-        csvData <- dataTmp[[i]]
+        modelInputData[[i]] <<- dataTmp[[i]]
       }
       rm(GMSOptValues, DDParValues)
     }else if(identical(modelIn[[names(dataTmp)[[i]]]]$type, "dropdown") &&
              names(dataTmp)[[i]] %in% modelInTabularDataBase){
-      csvData <- ddToTibble(dataTmp[[i]][[1L]], modelIn[[names(dataTmp)[[i]]]])
+      modelInputData[[i]] <<- ddToTibble(dataTmp[[i]][[1L]], modelIn[[names(dataTmp)[[i]]]])
     }else{
-      csvData <- dataTmp[[i]]
+      modelInputData[[i]] <<- dataTmp[[i]]
     }
     
-    inputData$push(names(dataTmp)[[i]], csvData)
+    inputData$push(names(dataTmp)[[i]], modelInputData[[i]])
   })
   if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
     return(NULL)
