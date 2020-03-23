@@ -55,7 +55,8 @@
   "dataRendering": {
     "schedule": {
       "outType": "trnsport1",
-      "additionalData": ["ilocdata", "jlocdata"]
+      "additionalData": ["ilocdata", "jlocdata"],
+      "packages": ["leaflet", "leaflet.minicharts"]
     },
     "_scalars_out": {
       "outType": "valueBox",
@@ -133,6 +134,14 @@
       "sameTab": false
     }
   ],
+  "outputGroups": [
+    {
+      "name": "Schedule",
+      "members": ["schedule", "_scalars_out"],
+      "sameTab": false
+    }
+  ],
+  "hiddenOutputSymbols": ["_scalars_out"],
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
