@@ -569,15 +569,16 @@ screen and (-ms-high-contrast:active) {
     font-size: inherit;
     .responsiveDark({
        box-shadow: inset 0 0 0 2px @box-shadow-color;
-       background-color: @textinput;
+       background-color: @textinput-bg;
+       color: @textinput;
     },
     {
        box-shadow: inset 0 0 0 2px @box-shadow-color-dark;
-       background-color: @textinput-dark;
+       background-color: @textinput-bg-dark;
+       color: @textinput-dark;
     });
     resize: none;
     display: block;
-    color: #000;
     border-radius: 0;
 }
 
