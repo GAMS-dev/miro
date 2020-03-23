@@ -467,6 +467,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
               warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
             }
             groupMemberIds      <- match(groups[[groupId]]$members, names)
+            groupMemberIds      <- groupMemberIds[groupMemberIds %in% idsToDisplay]
             if(any(is.na(groupMemberIds))){
               warningMsgTmp <- sprintf("The table(s): '%s' that you specified in group: '%s' do not exist. Thus, they were ignored.", 
                                        paste(groups[[groupId]]$members[is.na(groupMemberIds)], collapse = "', '"),
