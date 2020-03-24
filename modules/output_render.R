@@ -6,7 +6,27 @@ renderOutputData <- function(){
   errMsg <- NULL
   lapply(unlist(outputTabs, use.names = FALSE), function(i){
     tryCatch({
-      callModule(renderData, "tab_" %+% i, type = configGraphsOut[[i]]$outType, data = scenData[["scen_1_"]][[i]],
+      if(length(configGraphsOut[[i]]$additionalData)){
+        additionalOutputIds <- match(configGraphsOut[[i]]$additionalData, names(modelOut))
+        additionalOutputIdsNA <- is.na(additionalOutputIds)
+        if(any(additionalOutputIdsNA)){
+          additionalInputIds <- match(configGraphsOut[[i]]$
+                                        additionalData[additionalOutputIdsNA],
+                                      names(modelIn))
+          additionalOutputIds <- c(i, additionalOutputIds[!additionalOutputIdsNA])
+          rendererData <- c(scenData[["scen_1_"]][additionalOutputIds], 
+                            modelInputData[additionalInputIds])
+          names(rendererData) <- c(names(modelOut)[additionalOutputIds], 
+                                   names(modelIn)[additionalInputIds])
+        }else{
+          additionalOutputIds <- c(i, additionalOutputIds)
+          rendererData <- scenData[["scen_1_"]][additionalOutputIds]
+          names(rendererData) <- names(modelOut)[additionalOutputIds]
+        }
+      }else{
+        rendererData <- scenData[["scen_1_"]][[i]]
+      }
+      callModule(renderData, "tab_" %+% i, type = configGraphsOut[[i]]$outType, data = rendererData,
                  configData = scalarData[["scen_1_"]], dtOptions = config$datatable, graphOptions = configGraphsOut[[i]]$graph, 
                  pivotOptions = configGraphsOut[[i]]$pivottable, customOptions = configGraphsOut[[i]]$options,
                  roundPrecision = roundPrecision, modelDir = modelDir)
