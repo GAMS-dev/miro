@@ -6,8 +6,10 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
     private$errorMsg <- errorMsg
     private$workDir <- workDir
     private$scriptEnv <- Sys.getenv()
-    private$scriptEnv[["PATH"]] <- paste0(gamsSysDir, .Platform$path.sep, 
-                                          private$scriptEnv[["PATH"]])
+    if(length(gamsSysDir) && nchar(gamsSysDir) > 0L){
+      private$scriptEnv[["PATH"]] <- paste0(gamsSysDir, .Platform$path.sep, 
+                                            private$scriptEnv[["PATH"]])
+    }
   },
   isRunning = function(id = NULL){
     if(is.null(id)){
