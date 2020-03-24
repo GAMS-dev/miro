@@ -1,10 +1,18 @@
 ScriptOutput <- R6Class("ScriptOutput", public = list(
-  initialize = function(session, workDir, config, errorMsg){
+  initialize = function(session, workDir, config, errorMsg, gamsSysDir){
     private$session <- session
     private$config <- config$base
     private$hcConfig <- config$hcube
     private$errorMsg <- errorMsg
     private$workDir <- workDir
+    if(!identical(.Platform$OS.type, "windows") && 
+       length(gamsSysDir) && nchar(gamsSysDir) > 0L){
+      # on Windows setting environment for local processes does not seem to work.
+      # We have to rely on GAMS being in the PATH here.
+      private$scriptEnv <- Sys.getenv()
+      private$scriptEnv[["PATH"]] <- paste0(gamsSysDir, .Platform$path.sep, 
+                                            private$scriptEnv[["PATH"]])
+    }
   },
   isRunning = function(id = NULL){
     if(is.null(id)){
@@ -110,7 +118,8 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
     private$activeScripts[[scriptId]] <- process$new(configLocal$command, 
                                                      configLocal$args,
                                                stdout = "|", stderr = "2>&1",
-                                               wd = private$workDir)
+                                               wd = private$workDir,
+                                               env = private$scriptEnv)
     
     private$activeScriptsTo[[scriptId]] <- if(length(configLocal$timeout)) 
       configLocal$timeout else -1L
@@ -173,6 +182,7 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
   hcConfig = NULL,
   scriptResults = list(),
   workDir = character(0L),
+  scriptEnv = NULL,
   activeScripts = list(),
   activeScriptsObs = list(),
   activeScriptsTo = list(),
