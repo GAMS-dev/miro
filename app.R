@@ -66,8 +66,8 @@ config <- list()
 gamsSysDir <- Sys.getenv("GAMS_SYS_DIR")
 
 if(length(gamsSysDir) && nchar(gamsSysDir) > 0L){
-  Sys.setenv(paste0(gamsSysDir, .Platform$path.sep, 
-                    Sys.getenv("PATH")))
+  Sys.setenv(PATH = paste0(gamsSysDir, .Platform$path.sep, 
+                           Sys.getenv("PATH")))
 }
 
 installedPackages <<- installed.packages()[, "Package"]
