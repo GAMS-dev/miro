@@ -851,7 +851,8 @@ $('#hcAnaButtonWrapper').show();$('#btHcubeLoad').hide();$('#hcubeLoadMethod').h
                             class = "bt-highlight-1 bt-gms-confirm", 
                             style = if(length(customScripts)) "display:none;"),
                actionButton("btRunHcubeScript", lang$nav$hcubeMode$hcubeLoadDialog$runScriptButton, 
-                            class = "bt-highlight-1 bt-gms-confirm", style = "display:none;")),
+                            class = "bt-highlight-1 bt-gms-confirm", 
+                            style = if(!length(customScripts)) "display:none;")),
       if(length(sidsToLoad) <= maxConcurentLoad)
         actionButton("btHcubeLoad", lang$nav$hcubeMode$hcubeLoadDialog$interactiveButton, 
                      style = "margin-left: 5px;")
