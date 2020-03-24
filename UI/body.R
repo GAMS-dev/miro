@@ -767,7 +767,7 @@ if(buildUI){
       do.call(tabItems, tabItemList)
     )})
   if(!debugMode){
-    cacheTestDir <- attr(dygraphOutput("test"), "html_dependencies")[[1]]$src$file
+    cacheTestDir <- attr(rHandsontableOutput("test"), "html_dependencies")[[1]]$src$file
     if(!dir.exists(dirname(miroCacheFile))){
       dir.create(dirname(miroCacheFile), recursive = TRUE, mode = "0700")
     }
