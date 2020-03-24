@@ -3862,7 +3862,7 @@
                   "minLength":1,
                   "required":true
                 },
-                "headerScalars":{ 
+                "headerSymbolDisplay":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4163,7 +4163,19 @@
                 }
               }
             },
-            "hidden":{          
+            "hiddenOutputSymbols":{          
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "label":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "hiddenOutputScalars":{          
               "type":"object",
               "additionalProperties":false,
               "required":true,
@@ -7347,6 +7359,11 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
+                },
+                "additionalData":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 }
               }
             },
@@ -7460,6 +7477,11 @@
                       "type":"string",
                       "minLength":1,
                       "required":true
+                    },
+                    "groupSameTabIn":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
                     }
                   }
                 },
@@ -7474,6 +7496,11 @@
                       "required":true
                     },
                     "groupMemberOut":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "groupSameTabOut":{ 
                       "type":"string",
                       "minLength":1,
                       "required":true

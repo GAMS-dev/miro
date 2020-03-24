@@ -814,7 +814,7 @@
   "adminMode":{
     "invalidSymbolsDialog":{
       "title": "Invalid configuration",
-      "desc": "Some graphics and/or widgets have been configured for symbols that are no longer part of your GAMS/MIRO data contract. Do you want to remove them from your configuration? Note that this cannot be undone! Graphic configuration for invalid symbol(s): '%s'. Widget configuration for invalid symbol(s): '%s'.",
+      "desc": "Some graphics and/or widgets have been configured for symbols that are no longer part of your GAMS/MIRO data contract or are hidden. Do you want to remove them from your configuration? Note that this cannot be undone! Graphic configuration for invalid symbol(s): '%s'. Widget configuration for invalid symbol(s): '%s'.",
       "msgSuccess": "Invalid configuration was successfully removed",
       "btRemoveWidgets": "Remove invalid widgets",
       "btRemoveGraphs": "Remove invalid graphs", 
@@ -848,7 +848,7 @@
         "tabScripts": "Analysis scripts",
         "headerGeneral": "General",
         "headerLogo": "Logo",
-        "headerScalars": "Scalars",
+        "headerSymbolDisplay": "Symbol display",
         "headerTabGrouping": "Tab grouping",
         "headerTabSymlinks": "Use output data as input data",
         "headerInputGroups": "Input groups",
@@ -913,7 +913,10 @@
       "overwriteSymbolHeaders":{
         "label": "Specify column headers"
       },
-      "hidden":{
+      "hiddenOutputSymbols":{
+        "label": "Symbols that should not be displayed but can be used in graphs etc."
+      },
+      "hiddenOutputScalars":{
         "label": "Scalars that should not be displayed in the scalars table but can be used in graphs etc."
       },
       "pivotcolor":{
@@ -1561,7 +1564,8 @@
       },
       "customOptions":{
         "name": "Name of the custom renderer function (no space)",
-        "packages": "Packages necessary for the renderer"
+        "packages": "Packages necessary for the renderer",
+        "additionalData": "Additional datasets to communicate with the custom renderer"
       },
       "filterOptions":{
         "filter": "Should one domain of the symbol be selectable via a dropdown menu?",
@@ -1586,11 +1590,13 @@
       "js":{
         "addInputGroup":{
           "symbolInputgroups": "Name of the input group?",
-          "groupMemberIn": "Select group members"
+          "groupMemberIn": "Select group members",
+          "groupSameTabIn": "Show all symbols side by side on the same tab?"
         },
         "addOutputGroup":{
           "symbolOutputgroups": "Name of the output group?",
-          "groupMemberOut": "Select group members"
+          "groupMemberOut": "Select group members",
+          "groupSameTabOut": "Show all symbols side by side on the same tab?"
         },
         "addSymlink":{
           "source": "Name of the output symbol",

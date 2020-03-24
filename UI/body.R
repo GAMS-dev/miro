@@ -287,6 +287,9 @@ inputTabContent <- lapply(seq_along(inputTabs), function(tabId) {
         tags$div(class="small-space")
       ))
     }
+    if(length(inputTabs[[tabId]]) > 1L){
+      return(column(width = 6L, tabContent))
+    }
     return(tabContent)
   })
   
@@ -297,7 +300,11 @@ inputTabContent <- lapply(seq_along(inputTabs), function(tabId) {
       do.call(tabsetPanel, c(id = paste0("inputTabset", tabId), content))
     }else{
       tagList(tags$div(class="small-space"), 
-              content,
+              if(length(inputTabs[[tabId]]) > 1L){
+                fluidRow(content)
+              }else{
+                content
+              },
               tags$div(class="small-space"))
     }
   ))
@@ -557,6 +564,9 @@ if(LAUNCHHCUBEMODE){
           tags$div(class="small-space")
         ))
       }
+      if(length(outputTabs[[tabId]]) > 1L){
+        return(column(width = 6, tabContent))
+      }
       return(tabContent)
     })
     return(tabPanel(
@@ -566,7 +576,11 @@ if(LAUNCHHCUBEMODE){
         do.call(tabsetPanel, c(id = paste0("outputTabset", tabId), content))
       }else{
         tagList(tags$div(class="small-space"), 
-                content,
+                if(length(outputTabs[[tabId]]) > 1L){
+                  fluidRow(content)
+                }else{
+                  content
+                },
                 tags$div(class="small-space"))
       }
     ))

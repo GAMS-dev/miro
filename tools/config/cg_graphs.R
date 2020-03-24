@@ -1848,6 +1848,13 @@ observeEvent(input$custom_name, {
 observeEvent(input$custom_packages, {
   rv$graphConfig$packages <<- input$custom_packages
 }, ignoreNULL = FALSE)
+observeEvent(input$custom_additionalData, {
+  if(activeSymbol$id > length(modelIn)){
+    rv$graphConfig$additionalData <<- input$custom_additionalData
+  }else{
+    rv$graphConfig$additionalData <<- NULL
+  }
+}, ignoreNULL = FALSE)
 
 observeEvent(input$filter_dim, {
   if(input$chart_tool %in% plotlyChartTools){
@@ -1931,10 +1938,12 @@ observeEvent({
       rv$graphConfig$graph$layersControl <<- NULL
     if(!identical(chartTool, "valuebox"))
       rv$graphConfig$options <<- NULL
-    if(!identical(chartTool, "custom"))
+    if(!identical(chartTool, "custom")){
+      rv$graphConfig$additionalData <<- NULL
       rv$graphConfig$packages <<- NULL
-    saveAndReload(isolate(chartTool), "pie")
+    }
     
+    saveAndReload(isolate(chartTool), "pie")
     hideFilter()
     removeUI(selector = "#tool_options div", multiple = TRUE)
     if(chartTool %in% plotlyChartTools){
@@ -2692,7 +2701,16 @@ getCustomOptions <- reactive({
                                                         tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#custom-renderers", 
                                                                tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
                             choices = c(), 
-                            multiple = TRUE, options = list('create' = TRUE,'persist' = FALSE))
+                            multiple = TRUE, options = list('create' = TRUE,'persist' = FALSE)),
+             if(activeSymbol$id > length(modelIn)){
+               # active symbol is an output symbol
+               selectizeInput("custom_additionalData", lang$adminMode$graphs$customOptions$additionalData,
+                              choices = setNames(list(c(inputSymMultiDimChoices), 
+                                                      c(outputSymMultiDimChoices)), 
+                                                 c(lang$adminMode$graphs$ui$input, 
+                                                   lang$adminMode$graphs$ui$output)),
+                              multiple = TRUE, options = list('dropdownParent' = "body"))
+             }
     )
     
   )

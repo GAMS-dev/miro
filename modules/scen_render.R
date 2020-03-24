@@ -39,11 +39,25 @@ lapply(scenTableNamesToDisplay, function(sheetName){
   tryCatch({
     # get sheet configuration information
     tabData      <- getScenTabData(sheetName)
+    
+    rendererData <- NULL
+    if(length(modelOut) >= tabData$scenTableId && 
+       length(configGraphsOut[[tabData$scenTableId]]$additionalData)){
+      additionalDataIds <- match(configGraphsOut[[tabData$scenTableId]]$additionalData, 
+                                 names(modelOut))
+      additionalDataIds[is.na(additionalDataIds)] <- match(configGraphsOut[[tabData$scenTableId]]$
+                                                             additionalData[is.na(additionalDataIds)],
+                                                           inputDsNames) + length(modelOut)
+      additionalDataIds <- c(tabData$scenTableId, additionalDataIds)
+      rendererData <- scenData[[scenIdLong]][additionalDataIds]
+      names(rendererData) <- c(names(modelOut), inputDsNames)[additionalDataIds]
+    }
     dataToRender <- scenData[[scenIdLong]][[tabData$scenTableId]]
     attr(dataToRender, "aliases") <- tabData$headerAliases
     callModule(renderData, paste0("tab_", scenCounter, "_", tabData$tabId), 
                type = tabData$graphConfig$outType, 
-               data = dataToRender, configData = scalarData[[scenIdLong]], 
+               data = if(length(rendererData)) rendererData else dataToRender, 
+               configData = scalarData[[scenIdLong]], 
                dtOptions = config$datatable, graphOptions = tabData$graphConfig$graph, 
                pivotOptions = tabData$graphConfig$pivottable, 
                customOptions = tabData$graphConfig$options,

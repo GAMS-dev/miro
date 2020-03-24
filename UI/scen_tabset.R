@@ -15,6 +15,7 @@ getScenTabData <- function(sheetName){
       tabData$graphConfig   <- configGraphsOut[[i]]
       tabData$headerAliases <- attr(modelOutTemplate[[i]], "aliases")
     }
+    tabData$scenTableId <- i
   }else{
     # sheet is input sheet
     if(identical(inputDsNames[[i]], scalarsFileName) && 
@@ -34,10 +35,8 @@ getScenTabData <- function(sheetName){
       tabData$headerAliases <- attr(modelInTemplate[[modelInId]], "aliases")
     }
     tabData$tooltip       <- lang$nav$scen$tooltips$inputSheet
+    tabData$scenTableId   <- length(modelOut) + i
   }
-  # get data index
-  tabData$scenTableId <- match(tolower(paste0(gsub("_", "", modelName, fixed = TRUE),
-                                              "_", sheetName)), tolower(scenTableNames))
   if(is.na(tabData$scenTableId)){
     stop(sprintf("Data for sheet: '%s' could not be found. If this problem persists, please contact the system administrator.", 
                  sheetName), call. = FALSE)
@@ -139,6 +138,10 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                    tags$div(class="space")
                                  ))
                                }
+                               if(length(tabSheetIds) > 1L){
+                                 return(column(width = 6L,
+                                               tabContent))
+                               }
                                return(tabContent)
                              })
                              
@@ -154,7 +157,11 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                                    length(tabTitles) else 0L)
                                }else{
                                  tagList(tags$div(class="space"), 
-                                         content,
+                                         if(length(tabSheetIds) > 1L){
+                                           fluidRow(content)
+                                         }else{
+                                           content
+                                         },
                                          tags$div(class="space"))
                                }
                              ))

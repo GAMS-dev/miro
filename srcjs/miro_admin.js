@@ -65,24 +65,34 @@ const arrayTypes = {
   symbol_inputGroups(defaults) {
     let name;
     let members;
+    let sameTab = false;
     if (defaults !== undefined) {
+      if (defaults.sameTab !== undefined) {
+        ({ sameTab } = defaults);
+      }
       ({ name, members } = defaults);
     }
     const elements = {
       symbol_inputGroups: ['text', lang.addInputGroup.symbolInputgroups, name],
       group_memberIn: ['select', lang.addInputGroup.groupMemberIn, inputSymbols, inputSymbolsAliases, members, true],
+      group_sameTabIn: ['checkbox', lang.addInputGroup.groupSameTabIn, sameTab],
     };
     return ([elements, { elRequired: false, myopicDefaults: true }, 'general']);
   },
   symbol_outputGroups(defaults) {
     let name;
     let members;
+    let sameTab = false;
     if (defaults !== undefined) {
+      if (defaults.sameTab !== undefined) {
+        ({ sameTab } = defaults);
+      }
       ({ name, members } = defaults);
     }
     const elements = {
       symbol_outputGroups: ['text', lang.addOutputGroup.symbolOutputgroups, name],
       group_memberOut: ['select', lang.addOutputGroup.groupMemberOut, outputSymbols, outputSymbolsAliases, members, true],
+      group_sameTabOut: ['checkbox', lang.addOutputGroup.groupSameTabOut, sameTab],
     };
     return ([elements, { elRequired: false, myopicDefaults: true }, 'general']);
   },

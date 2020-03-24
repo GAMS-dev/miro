@@ -16,24 +16,31 @@ observeEvent(input[["btScenTableView"]], {
     j <- groupSheetToTabIdMap[[j]][[as.integer(strsplit(isolate(input[[paste0("contentScen_", scenId, "_", j)]]), 
                                                         "_", fixed = TRUE)[[1L]][[4L]])]]
   }else{
-    j <- groupSheetToTabIdMap[[j]][[1L]]
+    j <- unlist(groupSheetToTabIdMap[[j]], use.names = FALSE)
   }
-  flog.debug("Table view in scenario with id: %s for sheet: %s activated.", scenId, j)
+  flog.debug("Table view in scenario with id: %s for sheet: %s activated.", scenId, 
+             paste0(j, collapse = ", "))
   if(isInCompareMode){
     if(isInSplitView){
-      lapply(2:3, function(k){
-        toggleEl(session, paste0("#scenTable_", k, "_", j))
-        toggleEl(session, paste0("#scenGraph_", k, "_", j))
-      })
+      for(k in 2:3){
+        for(jId in j){
+          toggleEl(session, paste0("#scenTable_", k, "_", jId))
+          toggleEl(session, paste0("#scenGraph_", k, "_", jId))
+        }
+      }
     }else{
-      lapply(4:(maxNumberScenarios + 3), function(k){
-        toggleEl(session, paste0("#scenTable_", k, "_", j))
-        toggleEl(session, paste0("#scenGraph_", k, "_", j))
-      })
+      for(k in 4:(maxNumberScenarios + 3)){
+        for(jId in j){
+          toggleEl(session, paste0("#scenTable_", k, "_", jId))
+          toggleEl(session, paste0("#scenGraph_", k, "_", jId))
+        }
+      }
     }
   }else{
-    toggleEl(session, paste0("#scenTable_", scenId, "_", j))
-    toggleEl(session, paste0("#scenGraph_", scenId, "_", j))
+    for(jId in j){
+      toggleEl(session, paste0("#scenTable_", scenId, "_", jId))
+      toggleEl(session, paste0("#scenGraph_", scenId, "_", jId))
+    }
   }
 })
 
