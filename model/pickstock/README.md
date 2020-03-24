@@ -167,3 +167,14 @@ if(error_train > 0,
 else
    error_ratio = inf;);
 ```
+### Hypercube analysis script: 
+The Hypercube analysis script allows your to analyse a large number of scenarios to answer high-level questions like `How many stock should I pick?` or `How many training days should I choose?`.
+
+This analysis script relies on [Python](https://www.python.org) to be installed on your machine. In addition, the [GAMS Python API](https://www.gams.com/latest/docs/API_PY_TUTORIAL.html#PY_GETTING_STARTED) is required as well as the following Python packages:
+
+1. notebook
+1. pandas
+1. matplotlib
+
+The latter can be installed via `pip install notebook , pandas, matplotlib`.
+ 
