@@ -1294,12 +1294,14 @@ if(!is.null(errMsg)){
       if(LAUNCHHCUBEMODE){
         if(length(config$scripts)){
           scriptOutput <- ScriptOutput$new(session, file.path(workDir, paste0("scripts_", modelName)), 
-                                           config$scripts, lang$nav$scriptOutput$errMsg)
+                                           config$scripts, lang$nav$scriptOutput$errMsg,
+                                           gamsSysDir)
         }
       }else{
         if(length(config$scripts$base)){
           scriptOutput <- ScriptOutput$new(session, file.path(workDir, paste0("scripts_", modelName)),
-                                           config$scripts, lang$nav$scriptOutput$errMsg)
+                                           config$scripts, lang$nav$scriptOutput$errMsg,
+                                           gamsSysDir)
           observeEvent(input$runScript, {
             scriptId <- suppressWarnings(as.integer(input$runScript))
             if(is.na(scriptId) || scriptId < 1 || 
