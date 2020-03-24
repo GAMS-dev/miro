@@ -176,5 +176,5 @@ This analysis script relies on [Python](https://www.python.org) to be installed 
 1. pandas
 1. matplotlib
 
-The latter can be installed via `pip install notebook , pandas, matplotlib`.
+The latter can be installed via `pip install notebook pandas matplotlib`.
  
