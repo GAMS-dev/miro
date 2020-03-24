@@ -308,6 +308,9 @@ if(buildUI){
           tags$div(class="small-space")
         ))
       }
+      if(length(inputTabs[[tabId]]) > 1L){
+        return(column(width = 6L, tabContent))
+      }
       return(tabContent)
     })
     
@@ -318,7 +321,11 @@ if(buildUI){
         do.call(tabsetPanel, c(id = paste0("inputTabset", tabId), content))
       }else{
         tagList(tags$div(class="small-space"), 
-                content,
+                if(length(inputTabs[[tabId]]) > 1L){
+                  fluidRow(content)
+                }else{
+                  content
+                },
                 tags$div(class="small-space"))
       }
     ))
@@ -344,13 +351,13 @@ if(buildUI){
                 uiOutput("inputDataTitle", inline = TRUE),
                 tags$div(style = "float: right;", 
                          HTML(paste0('<button type="button" class="btn btn-default bt-icon btRemove" id="btRemove1"
-                                     onclick="Miro.confirmModalShow(\'', 
+                                   onclick="Miro.confirmModalShow(\'', 
                                      lang$nav$dialogRemoveScen$title, '\', \'', 
                                      lang$nav$dialogRemoveScen$desc, '\', \'', 
                                      lang$nav$dialogRemoveScen$cancelButton, '\', \'', 
                                      lang$nav$dialogRemoveScen$okButton, 
                                      '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
-                              <i class="fa fa-times"></i></button>'))
+                            <i class="fa fa-times"></i></button>'))
                 )
               ), status="primary", solidHeader = TRUE, width = 12L,
               tags$div(class="scen-header",
@@ -578,6 +585,9 @@ if(buildUI){
             tags$div(class="small-space")
           ))
         }
+        if(length(outputTabs[[tabId]]) > 1L){
+          return(column(width = 6, tabContent))
+        }
         return(tabContent)
       })
       return(tabPanel(
@@ -587,7 +597,11 @@ if(buildUI){
           do.call(tabsetPanel, c(id = paste0("outputTabset", tabId), content))
         }else{
           tagList(tags$div(class="small-space"), 
-                  content,
+                  if(length(outputTabs[[tabId]]) > 1L){
+                    fluidRow(content)
+                  }else{
+                    content
+                  },
                   tags$div(class="small-space"))
         }
       ))
@@ -649,13 +663,13 @@ if(buildUI){
                   uiOutput("outputDataTitle", inline = TRUE),
                   tags$div(style = "float: right;", 
                            HTML(paste0('<button type="button" class="btn btn-default bt-icon btRemove" 
-                                     onclick="Miro.confirmModalShow(\'', 
+                                   onclick="Miro.confirmModalShow(\'', 
                                        lang$nav$dialogRemoveScen$title, '\', \'', 
                                        lang$nav$dialogRemoveScen$desc, '\', \'', 
                                        lang$nav$dialogRemoveScen$cancelButton, '\', \'', 
                                        lang$nav$dialogRemoveScen$okButton, 
                                        '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
-                              <i class="fa fa-times"></i></button>'))
+                            <i class="fa fa-times"></i></button>'))
                   )
                 ), status="primary", solidHeader = TRUE, width = 12,
                 tags$div(class="scen-header",
@@ -702,9 +716,9 @@ if(buildUI){
                         type = "application/javascript"),
             tags$script(type = "text/x-mathjax-config", {
               "MathJax.Hub.Config({
-              skipStartupTypeset: true,
-              tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
-            });"
+            skipStartupTypeset: true,
+            tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+          });"
             })
           )
         },
@@ -715,53 +729,53 @@ if(buildUI){
         # Logo ratio should be 4,6 (width/height)
         tags$style(HTML(
           paste0('
-  .main-header .logo {
-    background-image: url("', 
+.main-header .logo {
+  background-image: url("', 
                  if(!identical(config$UILogo, "gams_logo.png") && 
                     dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) 
                    "static_", modelName, "/", config$UILogo, '") ',
                  if(!identical(config$UILogo, "gams_logo.png") && 
                     dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) 
                    '!important;
-    background-size: contain;
-  }
-  .pvtRows, .pvtCols { 
-    background-color: ', config$pivottable$bgColor, '; 
-  }')))),
+  background-size: contain;
+}
+.pvtRows, .pvtCols { 
+  background-color: ', config$pivottable$bgColor, '; 
+}')))),
       if(LAUNCHHCUBEMODE){
         HTML('<!-- Creates modal dialog for images generated by paver -->
-  <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content" style="width:685px;">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-          <h4 class="modal-title" id="myModalLabel"></h4>
-        </div>
-        <div class="modal-body">
-          <img src="" id="imagepreview" >
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
+<div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="width:685px;">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel"></h4>
       </div>
-  </div>
-  </div>')},
+      <div class="modal-body">
+        <img src="" id="imagepreview" >
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+</div>
+</div>')},
       HTML(paste0('<!-- Creates modal dialog for confirm messages -->
-  <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content" style="width:685px;">
-        <div class="modal-header">
-          <h4 class="modal-title"></h4>
-        </div>
-        <div class="modal-body">
-        </div>
-        <div class="modal-footer">
-        </div>
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="width:685px;">
+      <div class="modal-header">
+        <h4 class="modal-title"></h4>
       </div>
-  </div>
-  </div>
-  <div id="loading-screen"><div class="lds-ellipsis" style="position:relative;top:50%;left:50%">
-         <div></div><div></div><div></div><div></div></div></div><div class="gmsalert gmsalert-error" id="hcubeRunning">', 
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+</div>
+</div>
+<div id="loading-screen"><div class="lds-ellipsis" style="position:relative;top:50%;left:50%">
+       <div></div><div></div><div></div><div></div></div></div><div class="gmsalert gmsalert-error" id="hcubeRunning">', 
                   lang$errMsg$hcubeLaunch$hcubeRunning, '</div>', '<div class="gmsalert gmsalert-error" id="hcubeLaunchError">', 
                   lang$errMsg$hcubeLaunch$launchError, '</div>')),
       do.call(tabItems, tabItemList)

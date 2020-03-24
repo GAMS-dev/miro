@@ -1050,24 +1050,27 @@ else
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" src="assets/images/configuration_mode/graphs_custom.png" alt="Custom graph configuration" />
                                     </div>
-                                    <p>The configuration mode gives two kinds of assistance with the custom renderer: First, the basic configuration is stored in the JSON file, where all other things are stored as well. This includes the name of the function, which defines the renderer and additional - meaning not yet in MIRO included - R packages, which are necessary to use it. The resulting JSON snippet looks like this:</p>
+                                    <p>The configuration mode gives two kinds of assistance with the custom renderer: First, the basic configuration is stored in the JSON file, where all other things are stored as well. This includes the name of the function, which defines the renderer, additional - meaning not yet in MIRO included - R packages, which are necessary to use it as well as additional datasets you want to communicate with your custom renderer. Note that additional datasets are only available when you configure a custom renderer for an output symbol! The resulting JSON snippet looks like this:</p>
                                     <pre><code class="language-json">
 {
    "dataRendering":{
       "schedule": {
          "outType": "transportMap",
-         "packages": "leaflet"
+         "packages": "leaflet",
+         "additionalData": ["ilocdata", "jlocdata"]
     }
    }
 }
                                     </code></pre>
-                                    <p>You can add additional options to this snippet, for example a title or other specifications. These can then be accessed from the custom renderer function.</p>
+                                    <p>Additional datasets allow you to use multiple GAMS symbols in the same renderer function. In this example, the latitude/longitude data of plants and markets are communicated with the renderer alongside the <i>schedule</i> data.</p>
+                                    <p>Furthermore, you can add options to this snippet, for example a title or other specifications. These can then be accessed from the custom renderer function.</p>
                                     <pre><code class="language-json">
 {
    "dataRendering":{
       "schedule": {
          "outType": "transportMap",
-         "packages": "leaflet"
+         "packages": "leaflet",
+         "additionalData": ["ilocdata", "jlocdata"],
          "options":{
             "title":"Optimal transportation schedule"
          }

@@ -1,10 +1,13 @@
 ScriptOutput <- R6Class("ScriptOutput", public = list(
-  initialize = function(session, workDir, config, errorMsg){
+  initialize = function(session, workDir, config, errorMsg, gamsSysDir){
     private$session <- session
     private$config <- config$base
     private$hcConfig <- config$hcube
     private$errorMsg <- errorMsg
     private$workDir <- workDir
+    private$scriptEnv <- Sys.getenv()
+    private$scriptEnv[["PATH"]] <- paste0(gamsSysDir, .Platform$path.sep, 
+                                          private$scriptEnv[["PATH"]])
   },
   isRunning = function(id = NULL){
     if(is.null(id)){
@@ -110,7 +113,8 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
     private$activeScripts[[scriptId]] <- process$new(configLocal$command, 
                                                      configLocal$args,
                                                stdout = "|", stderr = "2>&1",
-                                               wd = private$workDir)
+                                               wd = private$workDir,
+                                               env = private$scriptEnv)
     
     private$activeScriptsTo[[scriptId]] <- if(length(configLocal$timeout)) 
       configLocal$timeout else -1L
@@ -177,6 +181,7 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
   activeScriptsObs = list(),
   activeScriptsTo = list(),
   errorMsg = character(1L),
+  scriptEnv = character(0L),
   clearProcess = function(scriptId){
     private$activeScripts[[scriptId]] <- NULL
     private$activeScriptsTo[[scriptId]] <- NULL

@@ -848,7 +848,7 @@
         "tabScripts": "分析脚本",
         "headerGeneral": "通用",
         "headerLogo": "标志",
-        "headerScalars": "标量",
+        "headerSymbolDisplay": "Symbol display",
         "headerTabGrouping": "组合选项卡",
         "headerTabSymlinks": "使用输出数据作为输入数据",
         "headerInputGroups": "输入组",
@@ -913,7 +913,10 @@
       "overwriteSymbolHeaders":{
         "label": "指定列标题"
       },
-      "hidden":{
+      "hiddenOutputSymbols":{
+        "label": "Symbols that should not be displayed but can be used in graphs etc."
+      },
+      "hiddenOutputScalars":{
         "label": "对于不能用标量图表显示的标量，使用其他图形表示"
       },
       "pivotcolor":{
@@ -1561,7 +1564,8 @@
       },
       "customOptions":{
         "name": "指定代码中自定义绘制器功能的名称（无空格）",
-        "packages": "绘制器所需的软件包"
+        "packages": "绘制器所需的软件包",
+        "additionalData": "Additional datasets to communicate with the custom renderer"
       },
       "filterOptions":{
         "filter": "是否允许通过下拉菜单选择符号的域？",
@@ -1586,11 +1590,13 @@
       "js":{
         "addInputGroup":{
           "symbolInputgroups": "输入组的名称",
-          "groupMemberIn": "选择该组成员"
+          "groupMemberIn": "选择该组成员",
+          "groupSameTabIn": "Show all symbols side by side on the same tab?"
         },
         "addOutputGroup":{
           "symbolOutputgroups": "输出组的名称",
-          "groupMemberOut": "选择该组成员"
+          "groupMemberOut": "选择该组成员",
+          "groupSameTabOut": "Show all symbols side by side on the same tab?"
         },
         "addSymlink":{
           "source": "输出符号的名称",
