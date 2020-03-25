@@ -913,6 +913,9 @@ Worker <- R6Class("Worker", public = list(
 
     if(length(exitStatus)){
       private$gamsRet <- exitStatus
+      if(private$metadata$hiddenLogFile){
+        private$status  <- exitStatus
+      }
     }
     return(private$status)
   },
