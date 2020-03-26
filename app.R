@@ -1,7 +1,7 @@
 #version number
 MIROVersion <- "1.0.99"
 APIVersion  <- "1"
-MIRORDate   <- "Mar 16 2020"
+MIRORDate   <- "Mar 25 2020"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -1118,7 +1118,8 @@ if(!is.null(errMsg)){
                                            saveTraceFile = config$saveTraceFile,
                                            modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
                                            timeout = 10L, serverOS = getOS(), modelData = modelData, hcubeMode = LAUNCHHCUBEMODE,
-                                           rememberMeFileName = rememberMeFileName), 
+                                           rememberMeFileName = rememberMeFileName,
+                                           hiddenLogFile = !config$activateModules$logFile), 
                            remote = config$activateModules$remoteExecution,
                            hcube = LAUNCHHCUBEMODE,
                            db = db)
