@@ -1613,10 +1613,10 @@
         "addDyEvent":{
           "dyDyEvent": "使用哪个GAMS符号？",
           "label": "应使用哪个标签？",
-          "labelLoc": "选择标记符号",
+          "labelLoc": "标签的位置",
           "labelLocChoices": ["顶部", "底部"],
           "color": "活动线是颜色？",
-          "strokePattern": "选择标记符号",
+          "strokePattern": "冲程模式类型",
           "strokePatternChoices": ["虚线", "点", "点-划线", "实线"]
         },
         "addDyLimit":{
@@ -1625,10 +1625,10 @@
           "dyDyLimitFalse": "使用哪个GAMS符号？",
           "limit": "设置限制的数值",
           "label": "使用什么标签？",
-          "labelLoc": "选择标记符号",
+          "labelLoc": "标签的位置",
           "labelLocChoices": ["左侧", "右侧"],
           "color": "限制线是什么颜色？",
-          "strokePattern": "选择标记符号",
+          "strokePattern": "冲程模式类型",
           "strokePatternChoices": ["短划线", "点", "点-划线", "实线"]
         },
         "addDyAnnotation":{
