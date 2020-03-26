@@ -596,6 +596,14 @@ Worker <- R6Class("Worker", public = list(
     if(inherits(private$process, "process")){
       return(private$pingLocalLog())
     }
+    if(private$metadata$hiddenLogFile && 
+       !(identical(private$status, "s") || identical(private$status, "q"))){
+      private$log <- private$readStreamEntity(private$process, 
+                                              private$metadata$miroLogFile)
+      if(!identical(private$log, "")){
+        private$updateLog <- private$updateLog + 1L
+      }
+    }
     return(private$updateLog)
   },
   pingProcess = function(){
@@ -608,6 +616,12 @@ Worker <- R6Class("Worker", public = list(
     return(private$pingRemoteProcess())
   },
   getReactiveLog = function(session){
+    if(private$metadata$hiddenLogFile && 
+       inherits(private$process, "process")){
+      return(reactiveFileReaderAppend(500, session, 
+                                      file.path(private$workDir, 
+                                                private$metadata$miroLogFile)))
+    }
     return(reactivePoll2(500, session, checkFunc = function(){
       self$pingLog()
     }, valueFunc = function(){
@@ -803,6 +817,9 @@ Worker <- R6Class("Worker", public = list(
         gamsArgs <- c(gamsArgs, paste0('IDCGDXInput="', metadata$MIROGdxInName, '"'))
         textEntities <- URLencode(paste0("?text_entries=", paste(metadata$text_entities, 
                                                                   collapse = "&text_entries=")))
+        if(metadata$hiddenLogFile){
+          requestBody$stream_entries <- metadata$miroLogFile
+        }
         requestBody$stdout_filename <- paste0(metadata$modelName, ".log")
       }
       pfFilePath <- gmsFilePath(file.path(workDir, paste0(tolower(metadata$modelName), ".pf")))
@@ -936,6 +953,18 @@ Worker <- R6Class("Worker", public = list(
     }
     return(private$updateLog)
   },
+  readStreamEntity = function(jID, name){
+    tryCatch({
+      return(private$validateAPIResponse(DELETE(paste0(private$metadata$url, "/jobs/", jID, "/stream-entry/",
+                                                       name), 
+                                                add_headers(Authorization = private$authHeader,
+                                                            Timestamp = as.character(Sys.time(), usetz = TRUE)),
+                                                timeout(2L)))$entry_value)
+    }, error = function(e){
+      flog.warn("Problems fetching stream entry. Return code: '%s'.", conditionMessage(e))
+      return("")
+    })
+  },
   pingRemoteProcess = function(){
     if(private$wait > 0L){
       private$wait <- private$wait - 1L
@@ -1023,7 +1052,7 @@ Worker <- R6Class("Worker", public = list(
       statusCode <- status_code(ret)
     }, error = function(e){
       flog.warn("Problems reading log from remote executor. Error message: %s", conditionMessage(e))
-      statusCode <- 403L
+      statusCode <<- 403L
     })
     
     if(identical(statusCode, 200L)){
@@ -1038,7 +1067,6 @@ Worker <- R6Class("Worker", public = list(
         return(private$status)
       }
       if(identical(responseContent$queue_finished, TRUE)){
-        private$log     <- responseContent$message
         private$gamsRet <- responseContent$gams_return_code
         private$wait    <- 0L
         private$waitCnt <- 0L
@@ -1050,9 +1078,11 @@ Worker <- R6Class("Worker", public = list(
       }else{
         private$status <- NULL
       }
-      private$log <- responseContent$message
-      if(!identical(private$log, "")){
-        private$updateLog <- private$updateLog + 1L
+      if(!private$metadata$hiddenLogFile){
+        private$log <- responseContent$message
+        if(!identical(private$log, "")){
+          private$updateLog <- private$updateLog + 1L
+        }
       }
       return(private$status)
     }else if(identical(statusCode, 308L)){
