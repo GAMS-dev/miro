@@ -54,11 +54,40 @@ for(modelToTest in modelsToTest){
                                 compareImages = FALSE)))
 }
 testModelPath <- file.path(testDir, "model", "transport_custom_map")
-Sys.setenv(MIRO_MODEL_PATH = file.path(testModelPath, 
+Sys.setenv(MIRO_MODEL_PATH = file.path(testModelPath,
                                        "transport_custom_map.gms"))
 Sys.setenv(GMSMODELNAME = "transport_custom_map")
 Sys.setenv(MIRO_MODE="base")
 
 test_that("Custom renderers with multiple (hidden) datasets work",
-          expect_pass(testApp(file.path(testDir, ".."), "multiple_symbol_renderer", 
+          expect_pass(testApp(file.path(testDir, ".."), "multiple_symbol_renderer",
                               compareImages = FALSE)))
+
+for(modelToTest in c("pickstock", "transport", "sudoku", "farming", "inscribedsquare", "tsp", "cpack")){
+  Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "..", "model", modelToTest,
+                                         paste0(modelToTest, ".gms")))
+  Sys.setenv(GMSMODELNAME = modelToTest)
+  if(modelToTest == "sudoku"){
+    file.copy(file.path(testDir, "data", "sudoku_noES6.R"),
+              file.path(getwd(), "..", "..", "model", modelToTest, "renderer_sudoku",
+                        "z.R"), overwrite = TRUE)
+  }
+  for(testFile in c("solve_model_test")){
+    file.copy(paste0(testDir, .Platform$file.sep, testFile, ".R"),
+              paste0(testDir, .Platform$file.sep, testFile, "_", modelToTest, ".R"), overwrite = TRUE)
+
+  }
+  test_that(sprintf("Example app: '%s' solves: ", modelToTest),
+            expect_pass(testApp(file.path(testDir, ".."), paste0("solve_model_test_", modelToTest),
+                                compareImages = FALSE)))
+  if(modelToTest == "sudoku"){
+    unlink(file.path(getwd(), "..", "..", "model", modelToTest, "renderer_sudoku",
+                     "z.R"))
+  }
+}
+Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "..", "model", "pickstock",
+                                       "pickstock.gms"))
+test_that("Interupting model run works.",
+          expect_pass(testApp(file.path(testDir, ".."), "interrupt_model_test",
+                              compareImages = FALSE)))
+Sys.unsetenv(c("MIRO_MODEL_PATH", "GMSMODELNAME", "MIRO_DB_PATH", "MIRO_MODE"))
