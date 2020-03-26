@@ -1589,10 +1589,10 @@
         "addDyEvent":{
           "dyDyEvent": "Which symbol shall be used?",
           "label": "What label should be used?",
-          "labelLoc": "Select marker symbol",
+          "labelLoc": "Position of the label",
           "labelLocChoices": ["top", "bottom"],
           "color": "What color should the event line have?",
-          "strokePattern": "Select marker symbol",
+          "strokePattern": "Stroke pattern type",
           "strokePatternChoices": ["dashed", "dotted", "dotdash", "solid"]
         },
         "addDyLimit":{
@@ -1601,10 +1601,10 @@
           "dyDyLimitFalse": "Which symbol shall be used?",
           "limit": "Set a numeric value for the limit",
           "label": "What label should be used?",
-          "labelLoc": "Select marker symbol",
+          "labelLoc": "Position of the label",
           "labelLocChoices": ["left", "right"],
           "color": "What color should the limit line have?",
-          "strokePattern": "Select marker symbol",
+          "strokePattern": "Stroke pattern type",
           "strokePatternChoices": ["dashed", "dotted", "dotdash", "solid"]
         },
         "addDyAnnotation":{
