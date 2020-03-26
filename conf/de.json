@@ -1589,10 +1589,10 @@
         "addDyEvent":{
           "dyDyEvent": "Welches Symbol soll verwendet werden?",
           "label": "Welche Bezeichnung soll verwendet werden?",
-          "labelLoc": "Markersymbol auswählen",
+          "labelLoc": "Position für die Bezeichnung",
           "labelLocChoices": ["oben", "unten"],
           "color": "Welche Farbe sollte die Ereignislinie haben?",
-          "strokePattern": "Markersymbol auswählen",
+          "strokePattern": "Art des Strichmusters",
           "strokePatternChoices": ["gestrichelt", "gepunktet", "gestrichpunktet", "durchgezogen"]
         },
         "addDyLimit":{
@@ -1601,10 +1601,10 @@
           "dyDyLimitFalse": "Welches Symbol soll verwendet werden?",
           "limit": "Legen Sie den numerischen Grenzwert fest",
           "label": "Welche Bezeichnung soll verwendet werden?",
-          "labelLoc": "Markersymbol auswählen",
+          "labelLoc": "Position für die Bezeichnung",
           "labelLocChoices": ["links", "rechts"],
           "color": "Welche Farbe sollte die Grenzwertlinie haben?",
-          "strokePattern": "Markersymbol auswählen",
+          "strokePattern": "Art des Strichmusters",
           "strokePatternChoices": ["gestrichelt", "gepunktet", "gestrichpunktet", "durchgezogen"]
         },
         "addDyAnnotation":{
