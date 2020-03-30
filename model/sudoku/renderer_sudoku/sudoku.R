@@ -9,14 +9,14 @@ renderSudoku <- function(input, output, session, data, options = NULL, path = NU
   if(length(data) && nrow(data)){
     dataTmp     <- dataTmp[-1L]
     if(isTRUE(options$isInput)){
+      dataTmp <- dataTmp %>% mutate_if(is.numeric, as.character)
       dataTmp[is.na(dataTmp)] <- ""
     }else{
       initialData <- which(dataTmp < 0)
       dataTmp     <- abs(dataTmp)
+      dataTmp <- dataTmp %>% mutate_if(is.numeric, as.character)
       dataTmp[is.na(dataTmp)] <- ""
     }
-    dataTmp <- dataTmp %>%
-      mutate_if(is.double, as.integer)
   }else{
     dataTmp <- as_tibble(vapply(paste0("col", 1:9), function(el){character(9L)}, character(9L)))
   }
