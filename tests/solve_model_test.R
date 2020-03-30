@@ -1,6 +1,6 @@
 app <- ShinyDriver$new("../", loadTimeout = 10000)
 app$snapshotInit(paste0("solve_model_test_", Sys.getenv("GMSMODELNAME")))
-if(Sys.getenv("GMSMODELNAME") %in% c("inscribedsquare", "sudoku")){
+if(Sys.getenv("GMSMODELNAME") %in% c("sudoku")){
   app$setInputs(btImport = "click")
   Sys.sleep(1)
   app$setInputs(btLoadScenConfirm = "click")
