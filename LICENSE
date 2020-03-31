@@ -627,7 +627,7 @@ Section 8 -- Interpretation.
         - handsontable, Copyright (c) 2012-2014 Marcin Warpechowski, Copyright (c) 2015 Handsoncode sp. z o.o. <hello@handsoncode.net>
         - R6, Copyright (c) 2015 RStudio
         - processx, Copyright (c) 2016-2018 Mango Solutions, RStudio, Gábor Csárdi
-        - dplyr, Copyright (c) 2013-2015 RStudio
+        - dplyr, Copyright (c) 2013-2020 Hadley Wickham [aut, cre], Romain François [aut], Lionel Henry [aut], Kirill Müller [aut], RStudio [cph, fnd]
         - rhandsontable , Copyright (c) 2015-2018 Marcin Warpechowski, Handsoncode sp. z o.o., 
           Gregor Aisch, Tim Wood, Iskren Chernev, Moment.js contributors, David Bushell, 
           jQuery Foundation, Splunk Inc, Jon Rohan, James M. Greeneand, Företagsplatsen, 
@@ -639,7 +639,7 @@ Section 8 -- Interpretation.
         - jsonvalidate, Copyright (c) 2016 Rich FitzJohn
         - rpivotTable, Copyright (c) 2015 Enzo Martoglio
         - dygraphs, Copyright (c) 2015-2016 Dan Vanderkam; RStudio, Inc.
-        - tidyr, Copyright (c) 2014 Hadley Wickham and RStudio
+        - tidyr, Copyright (c) 2020 Hadley Wickham [aut, cre], Lionel Henry [aut], RStudio [cph]
         - plogr, Copyright (c) 2016 Kirill Müller [aut, cre], 
           Sergey Podobry [cph] (Author of the bundled plog library)
         - sourcetools, Copyright (c) 2015-2017 Kevin Ushey 
