@@ -66,7 +66,6 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
   message("GAMS_SYS_DIR environment variable not set. Skipping GAMS tests.")
 }else{
   additionalGamsClArgs <- character(0L)
-  extraClArgs <- character(0L)
   if(!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")){
     additionalGamsClArgs <- paste0('license="', Sys.getenv("MIRO_TEST_GAMS_LICE"), '"')
   }
@@ -76,6 +75,8 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
     Sys.setenv(GMSMODELNAME = modelToTest)
     if(modelToTest %in% c("pickstock")){
       extraClArgs <- "MIP=CBC"
+    }else{
+      extraClArgs <- character(0L)
     }
     if(length(additionalGamsClArgs)){
       configJSONFileName <- file.path(miroModelDir, paste0("conf_", modelToTest), paste0(modelToTest, ".json"))
