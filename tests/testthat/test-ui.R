@@ -66,6 +66,7 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
   message("GAMS_SYS_DIR environment variable not set. Skipping GAMS tests.")
 }else{
   additionalGamsClArgs <- character(0L)
+  extraClArgs <- character(0L)
   if(!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")){
     additionalGamsClArgs <- paste0('license="', Sys.getenv("MIRO_TEST_GAMS_LICE"), '"')
   }
@@ -74,7 +75,7 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
     Sys.setenv(MIRO_MODEL_PATH = file.path(miroModelDir,  paste0(modelToTest, ".gms")))
     Sys.setenv(GMSMODELNAME = modelToTest)
     if(modelToTest %in% c("pickstock")){
-      additionalGamsClArgs <- c(additionalGamsClArgs, "MIP=CBC")
+      extraClArgs <- "MIP=CBC"
     }
     if(length(additionalGamsClArgs)){
       configJSONFileName <- file.path(miroModelDir, paste0("conf_", modelToTest), paste0(modelToTest, ".json"))
@@ -83,7 +84,7 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
       configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, 
                                                         simplifyDataFrame = FALSE, 
                                                         simplifyMatrix = FALSE))
-      configJSON$extraClArgs <- c(configJSON$extraClArgs, additionalGamsClArgs)
+      configJSON$extraClArgs <- c(configJSON$extraClArgs, c(additionalGamsClArgs, extraClArgs))
       jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
     }
     for(testFile in c("solve_model_test")){
