@@ -67,9 +67,7 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
 }else{
   additionalGamsClArgs <- character(0L)
   if(!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")){
-    gamsLicePath <- file.path(getwd(), "gamslice.txt")
-    writeLines(Sys.getenv("MIRO_TEST_GAMS_LICE"), gamsLicePath)
-    additionalGamsClArgs <- paste0('license="', gamsLicePath, '"')
+    additionalGamsClArgs <- paste0('license="', Sys.getenv("MIRO_TEST_GAMS_LICE"), '"')
   }
   for(modelToTest in c("pickstock", "transport", "sudoku", "farming", "inscribedsquare", "tsp", "cpack")){
     miroModelDir <- file.path(getwd(), "..", "..", "model", modelToTest)
@@ -109,7 +107,4 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
   file.rename(file.path(miroModelDir, paste0("conf_", modelToTest), paste0(modelToTest, "_tmp.json")),
               file.path(miroModelDir, paste0("conf_", modelToTest), paste0(modelToTest, ".json")))
   Sys.unsetenv(c("MIRO_MODEL_PATH", "GMSMODELNAME", "MIRO_DB_PATH", "MIRO_MODE"))
-  if(!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")){
-    unlink(gamsLicePath, force = TRUE)
-  }
 }
