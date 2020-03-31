@@ -106,7 +106,7 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
   test_that("Interupting model run works.",
             expect_pass(testApp(file.path(testDir, ".."), "interrupt_model_test",
                                 compareImages = FALSE)))
-  file.rename(file.path(miroModelDir, paste0("conf_", modelToTest), paste0(modelToTest, "_tmp.json")),
-              file.path(miroModelDir, paste0("conf_", modelToTest), paste0(modelToTest, ".json")))
+  file.rename(file.path(miroModelDir, "conf_pickstock", "pickstock_tmp.json"),
+              file.path(miroModelDir, "conf_pickstock", "pickstock.json"))
   Sys.unsetenv(c("MIRO_MODEL_PATH", "GMSMODELNAME", "MIRO_DB_PATH", "MIRO_MODE"))
 }
