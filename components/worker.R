@@ -50,8 +50,8 @@ Worker <- R6Class("Worker", public = list(
                    rememberMeFlag = FALSE, 
                    useRegistered = FALSE){
     stopifnot(isFALSE(private$metadata$noNeedCred))
-    url <- trimws(url, "right", whitespace = "/")
-    private$metadata$url       <- url
+    
+    private$metadata$url <- private$resolveRemoteURL(url)
     
     if(!private$testConnection()){
       stop(426, call. = FALSE)
@@ -1409,5 +1409,20 @@ Worker <- R6Class("Worker", public = list(
                                             private$metadata$password), 
                                      timeout(10L)))
     return(invisible(self))
+  },
+  resolveRemoteURL = function(url){
+    url <- trimws(url, "right", whitespace = "/")
+    if(startsWith(url, "https://")){
+      return(url)
+    }
+    if(grepl("(http://)?localhost([:/].*)?$", url)){
+      if(startsWith(url, "http://")){
+        return(url)
+      }
+      return(paste0("http://", url))
+    }else if(grepl("://", url, fixed = TRUE)){
+      stop(426, call. = FALSE)
+    }
+    return(paste0("https://", url))
   }
 ))
