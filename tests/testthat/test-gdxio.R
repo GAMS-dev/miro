@@ -1,4 +1,4 @@
-context("gdxio read")
+context("gdxio class")
 
 load(file.path(getwd(), "data/test_gdxio.miroconf"), .GlobalEnv)
 source("../../global.R")
