@@ -736,6 +736,40 @@ reactiveFileReader2 <- function(intervalMillis, session, filePath) {
     }
   )
 }
+reactiveFileReaderAppend <- function(intervalMillis, session, filePath) {
+  checkFunc <- function() {
+    info <- file.info(filePath)
+    return(paste(filePath, info$mtime, info$size))
+  }
+  valueFunc <- function(skip) {
+    read_lines(filePath, skip = skip)
+  }
+  rv <- reactiveValues(cookie = isolate(checkFunc()))
+  cursorPos <- 0L
+  
+  obs <- observe({
+    rv$cookie <- checkFunc()
+    invalidateLater(intervalMillis, session)
+  })
+  
+  re <- reactive({
+    rv$cookie
+    fileContent <- valueFunc(cursorPos)
+    
+    if(!length(fileContent)){
+      return("")
+    }
+    if(identical(cursorPos, 0L)){
+      cursorPos <<- length(fileContent)
+    }else{
+      cursorPos <<- cursorPos + length(fileContent)
+      fileContent <- c("", fileContent)
+    }
+    return(paste(fileContent, collapse = "\n"))
+  })
+  
+  return(list("re" = re, "obs" = obs))
+}
 prepopPivot <- function(symbol){
   pivotConf <- list(rows = c(), vals = character(1L), aggregatorName = "Sum")
   setEl     <- vector("character", length(symbol$headers))
