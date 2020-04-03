@@ -1113,6 +1113,7 @@ if(!is.null(errMsg)){
                                            clArgs = GAMSClArgs, 
                                            text_entities = c(paste0(modelName, ".lst"), 
                                                              if(config$activateModules$miroLogFile) config$miroLogFile),
+                                           miroLogFile = config$miroLogFile,
                                            extraClArgs = config$extraClArgs, 
                                            saveTraceFile = config$saveTraceFile,
                                            modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,

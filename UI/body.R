@@ -531,16 +531,16 @@ if(buildUI){
                                                       label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
                                                       value = TRUE))
         }
-        if(config$activateModules$lstFile){
-          logTabsetList$lst <- tabPanel(title = tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile),
-                                        value = "listfile",
-                                        verbatimTextOutput("listFile"))
-        }
         if(config$activateModules$miroLogFile){
           logTabsetList$miroLog <- tabPanel(title = tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$miroLogFile),
                                             value = "mirolog",
                                             tagAppendAttributes(class = "shiny-text-output noplaceholder pre-style-div",
                                                                 uiOutput("miroLogFile")))
+        }
+        if(config$activateModules$lstFile){
+          logTabsetList$lst <- tabPanel(title = tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile),
+                                        value = "listfile",
+                                        verbatimTextOutput("listFile"))
         }
         logTabsetList <- unname(logTabsetList)
         logTabsetList$id <- "logFileTabsset"

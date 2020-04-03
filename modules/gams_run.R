@@ -695,7 +695,8 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   enableEl(session, "#btInterrupt")
   switchTab(session, "gamsinter")
   # read log file
-  if(config$activateModules$logFile){
+  if(any(config$activateModules$logFile,
+         config$activateModules$miroLogFile)){
     tryCatch({
       logfile <- worker$getReactiveLog(session)
       logfileObs <- logfile$obs
@@ -718,21 +719,35 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   showErrorMsg(lang$errMsg$readLog$title, errMsg)
   
   logFilePath <- NULL
-  if(config$activateModules$logFile){
+  if(any(config$activateModules$logFile,
+         config$activateModules$miroLogFile)){
+    if(config$activateModules$logFile){
+      logFilePath <- file.path(workDir, modelName %+% ".log")
+      logContainerId <- "#logStatus"
+    }else{
+      logFilePath <- file.path(workDir, config$miroLogFile)
+      logContainerId <- "#miroLogFile"
+    }
     if(config$activateModules$attachments && 
        config$storeLogFilesDuration > 0L && !is.null(activeScen)){
-      logFilePath <- file.path(workDir, modelName %+% ".log")
       if(!identical(unlink(logFilePath, force = TRUE), 0L)){
         flog.warn("Could not remove log file: '%s'.", logFilePath)
       }
+      if(!config$activateModules$logFile){
+        logFilePath <- NULL
+      }
+    }else{
+      logFilePath <- NULL
     }
-    emptyEl(session, "#logStatus")
+    emptyEl(session, logContainerId)
     logObs <<- observe({
-      logText    <- logfile()
-      if(length(logFilePath)){
+      logText    <- NULL
+      try(logText <- logfile(), silent = TRUE)
+      if(!length(logText)) return()
+      if(!is.null(logFilePath)){
         write_file(logText, logFilePath, append = TRUE)
       }
-      return(appendEl(session, "#logStatus", logText, 
+      return(appendEl(session, logContainerId, logText, 
                       scroll = identical(isolate(input$logUpdate), TRUE)))
     })
   }
@@ -757,7 +772,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
       enableEl(session, "#btSolve")
       disableEl(session, "#btInterrupt")
       
-      if(config$activateModules$logFile){
+      if(any(config$activateModules$logFile, config$activateModules$miroLogFile)){
         logfileObs$destroy()
         logfileObs <- NULL
         logObs$destroy()
