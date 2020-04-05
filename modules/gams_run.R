@@ -867,10 +867,6 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
         
         storeGAMSOutputFiles(workDir)
         
-        #select first tab in current run tabset
-        switchTab(session, "output")
-        updateTabsetPanel(session, "scenTabset",
-                          selected = "results.current")
         errMsg <- NULL
         tryCatch({
           GAMSResults <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, workDir = workDir, 
@@ -914,7 +910,10 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
         
         
         GAMSResults <- NULL
-        
+        #select first tab in current run tabset
+        switchTab(session, "output")
+        updateTabsetPanel(session, "scenTabset",
+                          selected = "results.current")
         renderOutputData()
         
         markUnsaved()
