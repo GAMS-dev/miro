@@ -223,7 +223,9 @@ lapply(modelInTabularData, function(sheet){
       
       if(identical(modelIn[[i]]$type, "hot")){
         if(!nrow(data)){
-          data[1, ] <- ""
+          data[1, ] <- NA
+          data <- mutate_if(data, is.character, 
+                            replace_na, replace = "")
           if(!is.null(configGraphsIn[[i]])){
             disableEl(session, "#btGraphIn")
           }
@@ -263,7 +265,9 @@ lapply(modelInTabularData, function(sheet){
           }
           isEmptyInput[i] <<- FALSE
         }else{
-          modelInputData[[i]][1, ] <<- ""
+          modelInputData[[i]][1, ] <<- NA
+          modelInputData[[i]] <- mutate_if(modelInputData[[i]], is.character, 
+                                           replace_na, replace = "")
           if(!is.null(configGraphsIn[[i]])){
             disableEl(session, "#btGraphIn")
           }
