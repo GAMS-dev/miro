@@ -1343,7 +1343,7 @@
         "general": "Allgemein",
         "xaxis": "X Achse",
         "yaxis": "Y Achse",
-        "ydata": "Y data",
+        "ydata": "Y Daten",
         "filterDomain": "Filter & Domäne",
         "filter": "Filter",
         "animation": "Animation",
@@ -1447,7 +1447,7 @@
         "redraw": "Triggern eines Neuzeichnung der Diagramms nach Abschluss des Übergangs? (Dies kann die Leistung erheblich beeinträchtigen, kann aber notwendig sein, um grafische Elemente zu aktualisieren, die nicht animiert werden können.)",
         "mode": "Wie sollen neue animierte Aufrufe mit aktuell laufenden Animationen interagieren?",
         "modeChoices": ["sofort", "als nächstes", "nach allem"],
-        "noAnimation": "Keine Domäne für eine Animation ausgewählt (Kategorie: Y-Achse)."
+        "noAnimation": "Keine Domäne für eine Animation ausgewählt (Kategorie: Y Daten)."
       },
       "animationSliderOptions":{
         "hide": "Entfernen des Animationsschiebereglers?",

@@ -269,7 +269,7 @@ body{
   margin: 0px;
   min-height: 100%;
   /* equal to footer height */
-  margin-bottom: -131px;
+  /* margin-bottom: -131px; */
 }
 .page-wrapper:after {
   content: "";

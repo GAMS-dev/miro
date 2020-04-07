@@ -1447,7 +1447,7 @@
         "redraw": "Trigger a redraw of the plot at completion of the transition? (this may significantly impact performance, but may be necessary to update graphical elements that can't be transitioned.)",
         "mode": "How shall new animate calls interact with currently-running animations?",
         "modeChoices": ["immediate", "next", "afterall"],
-        "noAnimation": "No domain selected for animation (category: Y axis)."
+        "noAnimation": "No domain selected for animation (category: Y data)."
       },
       "animationSliderOptions":{
         "hide": "remove the animation slider?",
