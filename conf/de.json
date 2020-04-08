@@ -1075,7 +1075,7 @@
         "noWidgetConfigMsg": "Derzeit ist kein Widget für dieses Symbol konfiguriert",
         "optionConfigMsg": "Info: Das von Ihnen gewählte Symbol ist eine GAMS-Option: %s",
         "doubledashConfigMsg": "Info: Das von Ihnen gewählte Symbol ist ein Double-Dash-Parameter: %s",
-        "tableWidget": "Tabellen können unter 'Tabellen konfigurieren' angepasst werden!",
+        "tableWidget": "Tabellen können angepasst werden unter '",
         "inputSymbol": "Wählen Sie ein Eingabesymbol",
         "widgetGo": "Name der GAMS Option (z.B.'LP' oder 'OptCR')",
         "widgetDd": "Name des Double-Dash-Parameters (ohne '--')",
@@ -1381,7 +1381,8 @@
       },
       "errMsg":{
         "errTitle1": "Keine gültigen Daten",
-        "errContent1": "Es wurden keine gültigen Datensätze gefunden. Bitte laden Sie eine korrekt formatierte Excel- oder gdx-Datei mit Daten hoch."
+        "errContent1": "Es wurden keine gültigen Datensätze gefunden. Bitte laden Sie eine korrekt formatierte Excel- oder gdx-Datei mit Daten hoch.",
+        "scalarConfig": "Eigabeskalare können in folgender Kategorie konfiguriert werden: '"
       },
       "updateToolScalars": ["Wertebox für skalare Werte"],
       "updateToolNoScalars": ["Kreisdiagramm", "Balkendiagramm", "Streudiagramm", "Liniendiagramm", "Blasendiagramm", "Histogramm", "Zeitreihen-Diagramm", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle und Pivot-Charts", "Eigener Renderer"],
@@ -1413,10 +1414,8 @@
           "plotBgColor": "Welche Hintergrundfarbe soll das Diagramm haben?",
           "showlegend": "Legende zeigen?",
           "staticPlot": "Einen statischen Plot rendern?",
-          "fixedHeightCheck": "Charthöhe fixieren?",
-          "fixedHeight": "Höhe (px)",
-          "fixedWidthCheck": "Chartbreite fixieren?",
-          "fixedWidth": "Breite (px)",
+          "fixedHeight": "Charthöhe fixieren (px) - leer lassen oder 0 für Standardhöhe",
+          "fixedWidth": "Chartbreite fixieren (px) - leer lassen oder 0 für Standardbreite",
           "outType": "Grafik- und Datentabelle im geteilten Bildschirm anzeigen? (keine Live-Vorschau)"
         }
       },
@@ -1431,12 +1430,9 @@
         "width": "Maximale Anzahl an Boxen je Reihe (keine Vorschau)",
         "color": "Wählen Sie die Farbe der Wertebox aus",
         "colorChoices": ["rot", "gelb", "aqua", "blau", "hellblau", "grün", "marineblau", "blaugrün", "oliv", "limette", "orange", "fuchsia", "lila", "kastanienbraun", "schwarz"],
-        "useIcon": "Soll ein Icon angezeigt werden?",
-        "iconLib": "Wählen Sie eine Symbolbibliothek aus",
-        "libChoices": ["Font-Awesome", "Glyphicons"],
-        "icon1": "Geben Sie ein Symbol für die Wertebox an.",
-        "icon2": "und",
-        "icon3": "für eine Liste der möglichen Symbole."
+        "icon": "Geben Sie ein Symbol für die Wertebox an.",
+        "valueboxIconChoices": ["_", "Münzen", "Brieftasche", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupie", "Rubel", "Pfund", "Lira", "Benutzer", "Mehrere Benutzer", "Plus", "Minus", "Ausrufezeichen", "Fragezeichen", "Abspielen", "Haken", "Haus", "Zahnrad", "Stern", "Verbot", "Herz", "Blatt", "Glühbirne", "Smile", "Stern", "Weitere..."],
+        "otherIcon": "Use other icon from here: "
       },
       "animationOptions":{
         "title": "Animationsoptionen",
@@ -1517,6 +1513,9 @@
           "activate": "Möchten Sie Hervorhebungseffekte sehen?",
           "circleSize": "Wie groß soll der Kreis sein (in px)?",
           "seriesBackgroundAlpha": "Wählen Sie die Deckkraft des Hintergrunds",
+          "strokeWidth": "Breite der hervorgehobenen Linien",
+          "strokeBorderWidth": "Einen Rahmen um hervorgehobene Linien zeichnen",
+          "strokeBorderColor": "Rahmenfarbe der hervorgehobenen Linien",
           "hideOnMouseOut": "Hervorhebungseffekte ausblenden, wenn die Maus aus dem Diagramm bewegt wird?"
         }
       },
@@ -1657,7 +1656,7 @@
           "label": "Wählen Sie ein Label",
           "iconOptions": "Icon options",
           "icon": "Icon to use",
-          "iconChoices": ["circle", "circle-notch", "dot-circle", "square", "times-circle", "user-circle", "users", "plus-circle", "minus-circle", "exclamation-circle", "question-circle", "play-circle", "check-circle", "home", "cog", "asterisk", "ban", "heart", "leaf", "lightbulb", "smile", "star"],
+          "iconChoices": ["Kreis", "Offener Kreis", "Kreispunkt", "Quadrat", "X", "Benutzer", "Mehrere Benutzer", "Plus", "Minus", "Ausrufezeichen", "Fragezeichen", "Abspielen", "Haken", "Haus", "Zahnrad", "Stern", "Verbot", "Herz", "Blatt", "Glühbirne", "Smile", "Stern"],
           "iconColor": "Icon color",
           "markerColor": "Marker color",
           "markerColorChoices": ["red", "darkred", "lightred", "orange", "beige", "green", "darkgreen", "lightgreen", "blue", "darkblue", "lightblue", "purple", "darkpurple", "pink", "cadetblue", "white", "gray", "lightgray", "black"],

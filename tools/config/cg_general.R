@@ -992,7 +992,7 @@ observeEvent(input$btEditReadme, {
   
   showModal(modalDialog(
     title = lang$adminMode$general$readme$dialogEdit$title,
-    tags$div(class = "gmsalert gmsalert-error", id = "mdSaveError", 
+    tags$div(class = "gmsalert gmsalert-error center-alert", id = "mdSaveError", 
              lang$adminMode$general$readme$dialogEdit$msgErrSave),
     fluidRow(
       column(6L,
