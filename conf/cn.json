@@ -1381,7 +1381,8 @@
       },
       "errMsg":{
         "errTitle1": "无有效数据",
-        "errContent1": "找不到有效的数据集。 请上传格式正确的Excel文件或者包含数据gdx的文件。"
+        "errContent1": "找不到有效的数据集。 请上传格式正确的Excel文件或者包含数据GDX的文件。",
+        "scalarConfig": "输入标量的配置是在 '"
       },
       "updateToolScalars": ["标量值的值框"],
       "updateToolNoScalars": ["饼图", "柱形图", "散点图", "折线图", "气泡图", "直方图", "时间序列图形工具", "地图工具", "甘特图", "数据透视表", "自定义绘制器"],
@@ -1413,10 +1414,8 @@
           "plotBgColor": "该图有多少背景颜色？",
           "showlegend": "要显示图例吗？",
           "staticPlot": "绘制静态图？",
-          "fixedHeightCheck": "固定图表高度？",
-          "fixedHeight": "高度（px）",
-          "fixedWidthCheck": "固定图表宽度？",
-          "fixedWidth": "宽度（px）",
+          "fixedHeight": "固定图表高度（像素）--留空或默认为0",
+          "fixedWidth": "固定图表w(像素)--默认为空或为0。",
           "outType": "要分屏显示图形和数据表吗？ （不支持实时预览）"
         }
       },
@@ -1431,12 +1430,9 @@
         "width": "每行最多的值框数（无预览）",
         "color": "选择值框的颜色",
         "colorChoices": ["红色", "黄色", "水蓝色", "蓝色", "浅蓝色", "绿色", "藏青色", "蓝绿色", "橄榄绿", "鲜绿色", "橙色", "品红", "紫色", "栗色", "黑色"],
-        "useIcon": "要对值框使用图标吗？",
-        "iconLib": "选择一个图标库",
-        "libChoices": ["Font-Awesome", "Glyphicons"],
-        "icon1": "指定值框的图标（可选）",
-        "icon2": "和",
-        "icon3": "获取可能的图标列表"
+        "icon": "指定值框的图标（可选）。",
+        "valueboxIconChoices": ["_", "coins", "wallet", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupee", "Ruble", "Pound", "Lira", "User", "Users", "Plus", "Minus", "Exclamation mark", "Question mark", "Play", "Check", "Home", "Cog", "Asterisk", "Ban", "Heart", "Leaf", "Lightbulb", "Smile", "Star", "Other..."],
+        "otherIcon": "Use other icon from here: "
       },
       "animationOptions":{
         "title": "动画选项",
@@ -1517,6 +1513,9 @@
           "activate": "要展示突出显示效果吗？",
           "circleSize": "圆圈的大小设置为多少（以px为单位）？",
           "seriesBackgroundAlpha": "选择背景的不透明度",
+          "strokeWidth": "Width of highlighted lines",
+          "strokeBorderWidth": "Draw a border around highlighted lines",
+          "strokeBorderColor": "Border color of highlighted lines",
           "hideOnMouseOut": "鼠标移出图表时是否隐藏突出显示效果？"
         }
       },

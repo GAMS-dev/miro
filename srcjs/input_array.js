@@ -15,8 +15,6 @@
 class InputArray {
     arrayID;
 
-    elements;
-
     rObserveID;
 
     options;
@@ -30,8 +28,6 @@ class InputArray {
     elInArray = [];
 
     freeElIDs = [];
-
-    isNewElement = true;
 
     constructor(arrayID, options = {}, rObserveID = 'array_el') {
       this.arrayID = arrayID;
@@ -48,15 +44,7 @@ class InputArray {
       }
     }
 
-    resetDefault() {
-      return (this.options.myopicDefaults === true && this.isNewElement === false);
-    }
-
-    createEl(elements) {
-      if (elements != null) {
-        this.isNewElement = true;
-        this.elements = elements;
-      }
+    createEl(elements, newEl = true) {
       if (this.isDisabled) {
         console.warn('Array is disabled. Will not create new element.');
         return;
@@ -70,7 +58,7 @@ class InputArray {
       let label = '';
       let labelID;
 
-      $.each(this.elements, (k, v) => {
+      $.each(elements, (k, v) => {
         let selected;
         let value;
         let choices = [];
@@ -95,7 +83,7 @@ class InputArray {
                     }
                   }
                 }
-                if (this.resetDefault() || typeof v[4] === 'undefined') {
+                if (typeof v[4] === 'undefined') {
                   [selected] = choices;
                 } else {
                   [,,,, selected] = v;
@@ -111,15 +99,16 @@ class InputArray {
                 }
                 this.addLabelEl(elID, selected);
               } else {
-                [,, choices, aliases] = v;
-                [selected] = choices;
+                [,, choices, aliases, selected] = v;
+                if (selected == null) {
+                  [selected] = choices;
+                }
                 [label] = aliases;
               }
               // tell R that new element was addded to array: (ID, label of element)
-              Shiny.setInputValue(rAddID, [elID, selected, k], { priority: 'event' });
-            } else if (this.resetDefault()) {
-              selected = '';
-              [,, choices, aliases] = v;
+              if (newEl) {
+                Shiny.setInputValue(rAddID, [elID, selected, k], { priority: 'event' });
+              }
             } else {
               [,, choices, aliases, selected] = v;
               if (selected === '.index') {
@@ -128,7 +117,7 @@ class InputArray {
             }
 
             arrayContent += InputArray.createSelectInput(k, elID, v[1],
-              choices, aliases, selected, v[5], v[6]);
+              choices, aliases, selected, v[5], newEl);
             break;
           case 'selectDep':
             [,,, [selected]] = v;
@@ -136,73 +125,65 @@ class InputArray {
             if (v[5] !== undefined) {
               [,,,,, selected] = v;
             }
-            if (this.resetDefault()) {
-              selected = '';
-            } else if (selected === '.index') {
+            if (selected === '.index') {
               selected = labelID;
             }
             if (idx === 0) {
               // tell R that new element was addded to array: (ID)
-              Shiny.setInputValue(rAddID, [elID, selected, k], { priority: 'event' });
+              if (newEl) {
+                Shiny.setInputValue(rAddID, [elID, selected, k], { priority: 'event' });
+              }
             }
             arrayContent += InputArray.createSelectDepInput(k, elID,
               (idx !== 0 ? '' : rAddID),
               v[1], v[2], v[3], v[4],
-              selected, v[6]);
+              selected, v[6], newEl);
             break;
           case 'text':
-            if (this.resetDefault()) {
-              value = '';
-            } else {
-              value = (v[2] !== undefined ? v[2] : '');
-            }
+            value = (v[2] !== undefined ? v[2] : '');
             if (idx === 0 && this.options.elRequired === false
               && !(this.options.noEventOnDefault === true && value)) {
               // tell R that new element was addded to array: (ID)
-              Shiny.setInputValue(rAddID, [elID, value, k], { priority: 'event' });
+              if (newEl) {
+                Shiny.setInputValue(rAddID, [elID, value, k], { priority: 'event' });
+              }
             }
             if (value === 'label') {
               value = label;
               this.options.updateTxtWithLabel.push(`#${k}${elID}`);
             }
 
-            arrayContent += InputArray.createTextInput(k, elID, v[1], value, v[3]);
+            arrayContent += InputArray.createTextInput(k, elID, v[1], value, v[3],
+              newEl);
             break;
           case 'numeric':
 
-            if (this.resetDefault()) {
-              value = '';
-            } else {
-              [,, value] = v;
-            }
+            [,, value] = v;
 
             if (idx === 0 && this.options.elRequired === false) {
               // tell R that new element was addded to array: (ID)
-              Shiny.setInputValue(rAddID, [elID, value, k], { priority: 'event' });
+              if (newEl) {
+                Shiny.setInputValue(rAddID, [elID, value, k], { priority: 'event' });
+              }
             }
-            arrayContent += InputArray.createNumericInput(k, elID, v[1], value, v[3], v[4], v[5]);
+            arrayContent += InputArray.createNumericInput(k, elID, v[1], value, v[3],
+              v[4], v[5], newEl);
             break;
           case 'checkbox':
 
-            if (this.resetDefault()) {
-              value = false;
-            } else {
-              [,, value] = v;
-            }
+            [,, value] = v;
 
             if (idx === 0 && this.options.elRequired === false) {
               // tell R that new element was addded to array: (ID)
-              Shiny.setInputValue(rAddID, [elID, value, k], { priority: 'event' });
+              if (newEl) {
+                Shiny.setInputValue(rAddID, [elID, value, k], { priority: 'event' });
+              }
             }
-            arrayContent += InputArray.createCheckboxInput(k, elID, v[1], value);
+            arrayContent += InputArray.createCheckboxInput(k, elID, v[1], value, newEl);
             break;
           case 'color':
-            if (this.resetDefault()) {
-              value = '';
-            } else {
-              [,, value] = v;
-            }
-            arrayContent += InputArray.createColorPickerInput(k, elID, v[1], value);
+            [,, value] = v;
+            arrayContent += InputArray.createColorPickerInput(k, elID, v[1], value, newEl);
             break;
           case 'optionsStart':
             arrayContent += `${'<div class="form-group" style="min-height:30px;">'
@@ -222,8 +203,7 @@ class InputArray {
         ? `<button type="button" onclick="Miro.removeArrayEl('${this.arrayID}','${elID}\
 ')" class="btn btn-default bt-icon"><i class="far fa-minus-square"></i></button>\n` : ''}<hr></div>`;
       $(`#${this.arrayID}_wrapper .array-wrapper`).append(arrayContent);
-      this.registerChangeHandlers(this.elements, rAddID, elID, this.options);
-      this.isNewElement = false;
+      this.registerChangeHandlers(elements, rAddID, elID, this.options);
       this.elCount += 1;
     }
 
@@ -427,10 +407,12 @@ ${create === true ? `<script type="application/json" data-for="${id}">{"create":
 \n</div>\n</div>`);
     }
 
-    static createTextInput(arrayID, elID, label, value = '', placeholder = null) {
+    static createTextInput(arrayID, elID, label, value = '', placeholder = null, newEl = true) {
       const id = arrayID + elID;
 
-      Shiny.setInputValue(arrayID, [elID, value], { priority: 'event' });
+      if (newEl) {
+        Shiny.setInputValue(arrayID, [elID, value], { priority: 'event' });
+      }
 
       return (`<div class="config-array-err" id="${id}_err" style="display:none;"></div>\n`
   + '<div class="form-group">\n'
@@ -439,10 +421,13 @@ ${create === true ? `<script type="application/json" data-for="${id}">{"create":
 + '</div>');
     }
 
-    static createNumericInput(arrayID, elID, label, value, min = null, max = null, step = null) {
+    static createNumericInput(arrayID, elID, label, value, min = null, max = null,
+      step = null, newEl = true) {
       const id = arrayID + elID;
 
-      Shiny.setInputValue(arrayID, [elID, value], { priority: 'event' });
+      if (newEl) {
+        Shiny.setInputValue(arrayID, [elID, value], { priority: 'event' });
+      }
 
       return (`${'<div class="form-group">\n'
   + '<label for="'}${id}">${label}</label>\n`
@@ -452,10 +437,12 @@ ${create === true ? `<script type="application/json" data-for="${id}">{"create":
 + '</div>');
     }
 
-    static createCheckboxInput(arrayID, elID, label, value = false) {
+    static createCheckboxInput(arrayID, elID, label, value = false, newEl = true) {
       const id = arrayID + elID;
 
-      Shiny.setInputValue(arrayID, [elID, value], { priority: 'event' });
+      if (newEl) {
+        Shiny.setInputValue(arrayID, [elID, value], { priority: 'event' });
+      }
 
       return (`${'<div class="form-group">\n'
   + '<label class="cb-label" for="'}${id}">${label}</label>\n`
@@ -468,10 +455,12 @@ ${create === true ? `<script type="application/json" data-for="${id}">{"create":
 + '</div>\n</label>\n</div>');
     }
 
-    static createColorPickerInput(arrayID, elID, label, value = '') {
+    static createColorPickerInput(arrayID, elID, label, value = '', newEl = true) {
       const id = arrayID + elID;
 
-      Shiny.setInputValue(arrayID, [elID, value], { priority: 'event' });
+      if (newEl) {
+        Shiny.setInputValue(arrayID, [elID, value], { priority: 'event' });
+      }
 
       return (`${'<div class="form-group shiny-input-container">\n'
   + '<label for="'}${id}">${label}</label>\n`
@@ -479,31 +468,32 @@ ${create === true ? `<script type="application/json" data-for="${id}">{"create":
 + '</div>');
     }
 
-    static createSelectDepInput(arrayID, elID, rAddID, altEl, label, choices, aliases = choices, selected = '') {
+    static createSelectDepInput(arrayID, elID, rAddID, altEl, label, choices, aliases = choices,
+      selected = '', isChecked = false, newEl = true) {
       const firstInput = InputArray.createSelectInput(arrayID, elID, label,
-        choices, aliases, selected);
+        choices, aliases, selected, undefined, newEl);
       let secondInput;
 
       switch (altEl[1]) {
         case 'select':
           secondInput = InputArray.createSelectInput(`${arrayID}_alt`, elID, altEl[2],
-            altEl[3], altEl[4], altEl[5]);
+            altEl[3], altEl[4], altEl[5], altEl[6], newEl);
           break;
         case 'text':
           secondInput = InputArray.createTextInput(`${arrayID}_alt`, elID, altEl[2],
-            altEl[3]);
+            altEl[3], altEl[4], newEl);
           break;
         case 'numeric':
           secondInput = InputArray.createNumericInput(`${arrayID}_alt`, elID, altEl[2],
-            altEl[3], altEl[4], altEl[5]);
+            altEl[3], altEl[4], altEl[5], altEl[6], newEl);
           break;
         case 'checkbox':
           secondInput = InputArray.createCheckboxInput(`${arrayID}_alt`, elID, altEl[2],
-            altEl[3]);
+            altEl[3], newEl);
           break;
         case 'color':
           secondInput = InputArray.createColorPickerInput(`${arrayID}_alt`, elID, altEl[2],
-            altEl[3]);
+            altEl[3], newEl);
           break;
         default:
           throw new TypeError(`Unknown element type: ${altEl[1]}`);
@@ -512,15 +502,15 @@ ${create === true ? `<script type="application/json" data-for="${id}">{"create":
   + '<label class="cb-label" for="depCb_'}${arrayID}${elID}">${altEl[0]}</label>\n`
   + `<div>\n<label class="checkbox-material" for="depCb_${arrayID}${elID
   }">\n<div class="checkbox">\n<label>\n`
-      + `<input id="depCb_${arrayID}${elID}" type="checkbox" onclick="Miro.toggleDepContainer(this, '${
+      + `<input id="depCb_${arrayID}${elID}" type="checkbox"${isChecked === true ? ' checked="checked"' : ''} onclick="Miro.toggleDepContainer(this, '${
         arrayID}', '${elID}', '${rAddID}');"/>\n`
       + '<span></span>\n'
     + '</label>\n'
   + '</div>\n'
 + '</div>\n</label>\n</div>';
 
-      return (`<div class="form-group dep-group" style="width:100%;display:inline-block;">\n<div class="dep-el col-sm-8">\n${
-        firstInput}\n</div>\n<div class="dep-el col-sm-8" style="display:none">\n${secondInput
+      return (`<div class="form-group dep-group" style="width:100%;display:inline-block;">\n<div class="dep-el col-sm-8"${isChecked === true ? ' style="display:none"' : ''}>\n${
+        firstInput}\n</div>\n<div class="dep-el col-sm-8"${isChecked === true ? '' : ' style="display:none"'}>\n${secondInput
       }\n</div>\n<div>\n${checkboxInput}\n</div>\n</div>`);
     }
 }
@@ -528,14 +518,14 @@ ${create === true ? `<script type="application/json" data-for="${id}">{"create":
 export default class InputArrayFactory {
   inputArrays = {};
 
-  add(arrayID, elements, options, rObserveID, reinitialize = false) {
+  add(arrayID, elements, options, rObserveID, reinitialize = false, newEl = true) {
     if (reinitialize === false
       && Object.prototype.hasOwnProperty.call(this.inputArrays, arrayID)) {
-      this.inputArrays[arrayID].createEl(elements);
+      this.inputArrays[arrayID].createEl(elements, newEl);
       return;
     }
     this.inputArrays[arrayID] = new InputArray(arrayID, options, rObserveID);
-    this.inputArrays[arrayID].createEl(elements);
+    this.inputArrays[arrayID].createEl(elements, newEl);
   }
 
   destroy(arrayID) {

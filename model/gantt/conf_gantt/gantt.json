@@ -22,6 +22,50 @@
     "input": "_widgets"
   },
   "theme": "browser",
+  "overwriteAliases": {
+    "gantt": {
+      "newAlias": "asdasd"
+    }
+  },
+  "dataRendering": {
+    "gantt": {
+      "outType": "graph",
+      "graph": {
+        "title": "asdasd",
+        "tool": "timevis",
+        "showZoom": true,
+        "fit": false,
+        "zoomFactor": 0.2,
+        "editable": true,
+        "multiselect": true,
+        "showCurrentTime": true,
+        "series": {
+          "1": {
+            "content": "id",
+            "start": "id",
+            "type": "box"
+          }
+        },
+        "filter": {
+          "col": "group",
+          "label": "asdasd",
+          "multiple": true,
+          "date": false
+        },
+        "showlegend": true,
+        "staticPlot": false,
+        "traces": {
+          "1": {
+            "labels": "id",
+            "values": "value",
+            "name": "asdasd",
+            "hole": 0
+          }
+        }
+      },
+      "height": 700
+    }
+  },
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
@@ -33,8 +77,7 @@
       "enabled": true,
       "allowRowEdit": true,
       "allowColEdit": true,
-      "allowReadOnly": false,
-      "allowComments": true
+      "allowReadOnly": false
     },
     "height": 700,
     "colWidths": 150

@@ -1,7 +1,10 @@
 activeSymbol <- list(id = integer(1L), name = character(1L), 
                      alias = character(1L), indices = c())
+activeSymbolName <- character(0L)
 
 newChartTool     <- character(0L)
+isInJSON         <- FALSE
+configuredWithThisTool <- FALSE
 plotlyChartTools <- c("pie", "bar", "scatter", "line", "bubble", "hist")
 modelInputData   <- vector("list", length(modelIn))
 modelOutputData  <- vector("list", length(modelOut))
@@ -11,7 +14,7 @@ isEmptyInput     <- vector(mode = "logical", length = length(modelIn))
 isEmptyOutput    <- vector(mode = "logical", length = length(modelOut))
 isEmptyOutput[]  <- TRUE
 inputInitialized <- vector(mode = "logical", length = length(modelInWithDep))
-currentSelection <- list("plotly", "pie")
+currentSelection <- "pie"
 idLabelMap       <- list(chart_ydata = list(), animation_options = list(), hist_xdata = list(), dy_dyEvent = list(), 
                          dy_dyLimit = list(), leaflet_markers = list(), leaflet_flows = list(), leaflet_minicharts = list(), 
                          timevis_series = list(), timevis_custom = list())
@@ -21,19 +24,34 @@ noOutputData     <- TRUE
 allDataAvailable <- FALSE
 leafletGroups    <- CharArray$new()
 axisOptionsGlobal <- list(y = 1, y2 = 0)
+noDygraphHighlight <- list(hideOnMouseOut = TRUE,
+                           highlightCircleSize = 0L, 
+                           highlightSeriesBackgroundAlpha = 1L,
+                           highlightSeriesOpts = list(
+                             strokeWidth = 0L
+                           ))
 
 langSpecificGraphs <- list()
 langSpecificGraphs$barmode <- c("group" = "group", "stack" = "stack")
 names(langSpecificGraphs$barmode) <- lang$adminMode$graphs$barOptions$choicesMode
-langSpecificGraphs$barOrientation <- c("vertical" = "vertical", "horizontal" = "horizontal")
+langSpecificGraphs$barOrientation <- c("vertical" = "v", "horizontal" = "h")
 names(langSpecificGraphs$barOrientation) <- lang$adminMode$graphs$barOptions$choicesOrientation
 langSpecificGraphs$valueboxColor <- c("red" ="red", "yellow" = "yellow", "aqua" = "aqua", "blue" = "blue", 
                                       "light-blue" = "light-blue", "green" = "green", "navy" = "navy", "teal" = "teal", 
                                       "olive" = "olive", "lime" = "lime", "orange" = "orange", "fuchsia" = "fuchsia", 
                                       "purple" = "purple", "maroon" = "maroon", "black" = "black")
 names(langSpecificGraphs$valueboxColor) <- lang$adminMode$graphs$valueboxOptions$colorChoices
-langSpecificGraphs$libChoices <- c("Font-Awesome" = "font-awesome", "Glyphicons" = "glyphicon")
-names(langSpecificGraphs$libChoices) <- lang$adminMode$graphs$valueboxOptions$libChoices
+langSpecificGraphs$valueboxIconChoices <- c("_" = "_", "Coins" = "coins", "Wallet" = "wallet","Dollar" = "dollar-sign", 
+                                            "Euro" = "euro-sign", "Yen" = "yen-sign", "Won" = "won-sign", 
+                                            "Shekel" = "shekel-sign","Rupee" = "rupee-sign", 
+                                            "Ruble" = "ruble-sign", "Pound" = "pound-sign", "Lira" = "lira-sign", 
+                                            "User" = "user-circle", "Users" = "users", "Plus" = "plus-circle", 
+                                            "Minus" = "minus-circle", "Exclamation mark" = "exclamation-circle", 
+                                            "Question mark" = "question-circle", "Play" = "play-circle", 
+                                            "Check" = "check-circle", "Home" = "home", "Cog" = "cog", "Asterisk" = "asterisk", 
+                                            "Ban" = "ban", "Heart" = "heart", "Leaf" = "leaf", "Lightbulb" = "lightbulb", 
+                                            "Smile" = "smile", "Star" = "star", "Other..." = "other")
+names(langSpecificGraphs$valueboxIconChoices) <- lang$adminMode$graphs$valueboxOptions$valueboxIconChoices
 langSpecificGraphs$easingChoices <- c("linear" = "linear","quad" = "quad","cubic" = "cubic","sin" = "sin",
                                       "exp" = "exp","circle" = "circle","elastic" = "elastic","back" = "back","bounce" = "bounce",
                                       "linear-in" = "linear-in", "quad-in" = "quad-in","cubic-in" = "cubic-in",
@@ -133,11 +151,15 @@ updatePreviewData <- function(tabularInputWithData, tabularOutputWithData, confi
     return()
   }
   showEl(session, "#preview_wrapper")
+  gamsSymbolsTmp <- setNames(list(c(tabularInputWithData), 
+                                  c(tabularOutputWithData)), 
+                             c(lang$adminMode$graphs$ui$input, 
+                               lang$adminMode$graphs$ui$output))
   updateSelectInput(session, "gams_symbols", 
-                    choices = setNames(list(c(tabularInputWithData), 
-                                            c(tabularOutputWithData)), 
-                                       c(lang$adminMode$graphs$ui$input, 
-                                         lang$adminMode$graphs$ui$output)))
+                    choices = gamsSymbolsTmp)
+  if(identical(gamsSymbolsTmp[[1]], scalarsOutName)){
+    currentSelection <<- "valuebox"
+  }
   if(identical(length(configScalars), 3L) && nrow(configScalars)){
     session$sendCustomMessage("gms-setScalarOutputs", 
                               list(indices = configScalars[[1]], 
@@ -157,37 +179,18 @@ validateGraphConfig <- function(graphJSON){
   return("")
 }
 
-saveAndReload <- function(...){
-  selected    <- list(...)
-  subsetIdx   <- 3L
-  if(currentSelection[[1]] %in% oneLayerEl){
-    subsetIdx <- 1L
-  }else if(currentSelection[[2]] %in% twoLayerEl){
-    subsetIdx <- 2L
-  }
-  currentConfig[[paste(currentSelection[seq_len(subsetIdx)], collapse = "")]] <<- isolate(rv$graphConfig$graph)
-  subsetIdx   <- 3L
-  if(selected[[1]] %in% oneLayerEl){
-    subsetIdx <- 1L
-  }else if(selected[[2]] %in% twoLayerEl){
-    subsetIdx <- 2L
-  }
-  currentSelection <<- selected[seq_len(subsetIdx)]
-  current <- paste(currentSelection, collapse = "")
-  if(length(currentConfig[[current]])){
+saveAndReload <- function(selected){
+  currentConfig[[currentSelection]] <<- isolate(rv$graphConfig$graph)
+  currentSelection <<- selected
+  if(length(currentConfig[[currentSelection]])){
     isolate({
-      rv$graphConfig$graph <- currentConfig[[current]]
+      rv$graphConfig$graph <- currentConfig[[currentSelection]]
       rv$graphConfig$graph$title <- activeSymbol$alias
     })
     allDataAvailable <<- TRUE
-  }else if(subsetIdx == 1L){
-    isolate({
-      rv$graphConfig$graph <- list()
-    })
   }else{
     isolate({
-      rv$graphConfig$graph <- list(title = activeSymbol$alias, 
-                                   tool = rv$graphConfig$graph$tool)
+      rv$graphConfig$graph <- list()
     })
   }
 }
@@ -224,17 +227,19 @@ changeActiveSymbol <- function(id){
                                                      scalarIndices = unname(scalarIndices),
                                                      scalarAliases = names(scalarIndices)))
   }
+  activeSymbolName <<- activeSymbol$name
   indices       <- activeSymbol$indices
-  rv$graphConfig$graph$title <- activeSymbol$alias
-  if(isFALSE(rv$initData) || identical(input$chart_tool, "pie")){
-    rv$refreshOptions <- rv$refreshOptions + 1L
-  }
+  #rv$graphConfig$graph$title <- activeSymbol$alias
+  # if(isFALSE(rv$initData) || identical(input$chart_tool, "pie")){
+  #   rv$refreshOptions <- rv$refreshOptions + 1L
+  # }
+  getCurrentGraphConfig()
   rv$initData <- FALSE
   rv$initData <- TRUE
 }
-updateYAxes  <- function(){
+updateYAxes  <- function(dyReset = NULL){
   if(input$chart_tool %in% plotlyChartTools){
-    if(axisOptionsGlobal$y > 0L){
+    if(axisOptionsGlobal[["y"]] > 0L){
       rv$graphConfig$graph$yaxis <<- list(title = if(length(input$y_title)) input$y_title else "",
                                           showgrid = isTRUE(input$y_showgrid),
                                           zeroline = isTRUE(input$y_zeroline),
@@ -250,7 +255,7 @@ updateYAxes  <- function(){
                                           showticklabels = FALSE)
       hideEl(session, "#left_yaxis")
     }
-    if(axisOptionsGlobal$y2 > 0L){
+    if(axisOptionsGlobal[["y2"]] > 0L){
       rv$graphConfig$graph$y2axis <<- list(title = if(length(input$y2_title)) input$y2_title else "",
                                            showgrid = isTRUE(input$y2_showgrid),
                                            zeroline = isTRUE(input$y2_zeroline),
@@ -264,25 +269,33 @@ updateYAxes  <- function(){
       hideEl(session, "#right_yaxis")
     }
   }else if(identical(input$chart_tool, "dygraphs")){
-    if(axisOptionsGlobal$y > 0L){
+    if(axisOptionsGlobal[["y"]] > 0L){
       rv$graphConfig$graph$yaxis <<- list(name = "y",
-                                           label = if(length(input$dyAxis_label)) input$dyAxis_label else NULL, 
-                                           valueRange = list(
-                                             if(length(input$dyAxis_valueRangeFrom) && nchar(input$dyAxis_valueRangeFrom)) input$dyAxis_valueRangeFrom else NULL, 
-                                             if(length(input$dyAxis_valueRangeTo) && nchar(input$dyAxis_valueRangeTo)) input$dyAxis_valueRangeTo else NULL
-                                             ),
-                                           axisLineColor = if(length(input$dyAxis_axisLineColor)) input$dyAxis_axisLineColor else NULL, 
-                                           axisLineWidth = if(length(input$dyAxis_axisLineWidth)) input$dyAxis_axisLineWidth else 0.3,
-                                           axisLabelFontSize = if(length(input$dyAxis_axisLabelFontSize)) input$dyAxis_axisLabelFontSize else 14L,
-                                           drawGrid = if(length(input$dyAxis_drawGrid)) input$dyAxis_drawGrid else NULL, 
-                                           gridLineWidth = if(length(input$dyAxis_gridLineWidth)) input$dyAxis_gridLineWidth else 0.3,
-                                           #if one axis is removed, the other one should have independet ticks
-                                           independentTicks = if(axisOptionsGlobal$y2 > 0L){
-                                             !isFALSE(input$dyAxis_independentTicks)
-                                           }else{
-                                             TRUE
-                                           })
-      if(!(axisOptionsGlobal$y2 > 0L))
+                                          label = if(length(input$dyAxis_label)) input$dyAxis_label else NULL, 
+                                          valueRange = list(
+                                            if(length(input$dyAxis_valueRangeFrom) && nchar(input$dyAxis_valueRangeFrom)) input$dyAxis_valueRangeFrom else NULL, 
+                                            if(length(input$dyAxis_valueRangeTo) && nchar(input$dyAxis_valueRangeTo)) input$dyAxis_valueRangeTo else NULL
+                                          ),
+                                          axisLineColor = if(length(input$dyAxis_axisLineColor)) input$dyAxis_axisLineColor else NULL, 
+                                          axisLineWidth = if(length(input$dyAxis_axisLineWidth)) input$dyAxis_axisLineWidth else 0.3,
+                                          axisLabelFontSize = if(!isTRUE(dyReset) && length(input$dyAxis_axisLabelFontSize)) input$dyAxis_axisLabelFontSize else 14L,
+                                          drawGrid = if(!isTRUE(dyReset) && length(input$dyAxis_drawGrid)) input$dyAxis_drawGrid else TRUE, 
+                                          gridLineWidth = if(length(input$dyAxis_gridLineWidth)) input$dyAxis_gridLineWidth else 0.3,
+                                          #if one axis is removed, the other one should have independet ticks
+                                          independentTicks = if(axisOptionsGlobal[["y2"]] > 0L){
+                                            !isFALSE(input$dyAxis_independentTicks)
+                                          }else{
+                                            TRUE
+                                          })
+      if(isTRUE(dyReset)){
+        #this is necessary because when axisOptionsGlobal[["y"]] = 0L, special 
+        #options are set for y axis in order to be invisible.
+        #These options should not be reloaded when axisOptionsGlobal[["y"]] > 0L
+        rv$graphConfig$graph$yaxis$gridLineColor <<- "gray"
+        updateCheckboxInput(session, "dyAxis_drawGrid", value = TRUE)
+        updateNumericInput(session, "dyAxis_axisLabelFontSize", value = 14L)
+      }
+      if(!(axisOptionsGlobal[["y2"]] > 0L))
         updateCheckboxInput(session, "dyAxis_independentTicks", value = TRUE)
       showEl(session, "#left_dyAxis")
     }else{
@@ -293,12 +306,12 @@ updateYAxes  <- function(){
                                            axisLineWidth = NULL,
                                            axisLabelFontSize = 0L,
                                            drawGrid = TRUE, 
-                                           gridLineColor = '#00000000', 
+                                           gridLineColor = "#00000000", 
                                            gridLineWidth = NULL,
                                            independentTicks = TRUE)
       hideEl(session, "#left_dyAxis")
     }
-    if(axisOptionsGlobal$y2 > 0L){
+    if(axisOptionsGlobal[["y2"]] > 0L){
       rv$graphConfig$graph$yaxis2 <<- list(name = "y2",
                                            label = if(length(input$dyAxis2_label)) input$dyAxis2_label else NULL,
                                            valueRange = list(
@@ -311,12 +324,12 @@ updateYAxes  <- function(){
                                            drawGrid = !isFALSE(input$dyAxis2_drawGrid), 
                                            gridLineWidth = if(length(input$dyAxis2_gridLineWidth)) input$dyAxis2_gridLineWidth else 0.3,
                                            #if one axis is removed, the other one should have independet ticks
-                                           independentTicks = if(axisOptionsGlobal$y > 0L){
+                                           independentTicks = if(axisOptionsGlobal[["y"]] > 0L){
                                              if(!is.null(input$dyAxis2_independentTicks) && length(input$dyAxis2_independentTicks)) input$dyAxis2_independentTicks else NULL
                                              }else{
                                                TRUE
                                              })
-      if(!(axisOptionsGlobal$y > 0L))
+      if(!(axisOptionsGlobal[["y"]] > 0L))
         updateCheckboxInput(session, "dyAxis2_independentTicks", value = TRUE)
       showEl(session, "#right_dyAxis")
     }else{
@@ -652,9 +665,16 @@ observeEvent(input$leafMark_labelPermanent, {
   rv$graphConfig$graph$markers[[idLabelMap$leaflet_markers[[as.integer(input$leafMark_labelPermanent[1])]]]]$labelOptions$permanent <<- identical(input$leafMark_labelPermanent[2], 0L)
 })
 observeEvent(rv$updateLeafletGroups, {
-  updateSelectInput(session, "leaflc_baseGroups", choices = leafletGroups$get())
-  updateSelectInput(session, "leaflc_overlayGroups", choices = leafletGroups$get())
-  updateSelectInput(session, "leaflet_hideGroups", choices = leafletGroups$get())
+  choicesTmp       <- leafletGroups$get()
+  updateSelectInput(session, "leaflc_baseGroups", 
+                    choices = if(!is.null(choicesTmp)) choicesTmp else character(0), 
+                    selected = intersect(rv$graphConfig$graph$layersControl$baseGroups, choicesTmp))
+  updateSelectInput(session, "leaflc_overlayGroups", 
+                    choices = if(!is.null(choicesTmp)) choicesTmp else character(0), 
+                    selected = intersect(rv$graphConfig$graph$layersControl$overlayGroups, choicesTmp))
+  updateSelectInput(session, "leaflet_hideGroups", 
+                    choices = if(!is.null(choicesTmp)) choicesTmp else character(0), 
+                    selected = intersect(rv$graphConfig$graph$hideGroups, choicesTmp))
 })
 observe(rv$graphConfig$graph$hideGroups <<- input$leaflet_hideGroups)
 observe(rv$graphConfig$graph$layersControl$baseGroups <<- input$leaflc_baseGroups)
@@ -781,19 +801,22 @@ observeEvent(input$valuebox_width, {
 observeEvent(input$valuebox_color, {
   rv$graphConfig$options$color <<- input$valuebox_color
 })
-observeEvent(c(input$valuebox_use_icon, input$valuebox_icon), {
-  if(!identical(input$valuebox_icon, "") && identical(input$valuebox_use_icon, TRUE)){
-    rv$graphConfig$options$icon$name <<- input$valuebox_icon
-    rv$graphConfig$options$icon$lib <<- input$valuebox_icon_lib
-  }else{
+observeEvent(input$valuebox_icon, {
+  if(identical(input$valuebox_icon, "other"))
+    updateTextInput(session, "valuebox_other_icon", value = "")
+}, priority = -1)
+observeEvent(c(input$valuebox_icon, input$valuebox_other_icon), {
+  if(identical(input$valuebox_icon, "_") ||
+     identical(input$valuebox_icon, "other") && identical(input$valuebox_other_icon, "")){
     rv$graphConfig$options$icon <<- NULL
+    return()
+  }else if(identical(input$valuebox_icon, "other") && !identical(input$valuebox_other_icon, "")){
+    rv$graphConfig$options$icon$name <<- input$valuebox_other_icon
+    rv$graphConfig$options$icon$lib <<- "font-awesome"
+    return()
   }
-})
-observeEvent(c(input$valuebox_use_icon, input$valuebox_icon_lib), {
-  if(!is.null(input$valuebox_icon_lib) && identical(input$valuebox_use_icon, TRUE))
-    rv$graphConfig$options$icon$lib <<- input$valuebox_icon_lib
-  else
-    rv$graphConfig$options$icon <<- NULL
+  rv$graphConfig$options$icon$name <<- input$valuebox_icon
+  rv$graphConfig$options$icon$lib <<- "font-awesome"
 })
 
 observeEvent(input$hist_norm, {
@@ -914,7 +937,7 @@ observeEvent(input$marker_colorDep, {
 }, priority = -500)
 observeEvent(input$marker_size, {
   if(nchar(input$marker_size[2]))
-    rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_size[1])]]]]$marker$size <<- input$marker_size[2]
+    rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_size[1])]]]]$marker$size <<- as.numeric(input$marker_size[2])
   else
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_size[1])]]]]$marker$size <<- NULL
 }, priority = -500)
@@ -929,7 +952,7 @@ observeEvent(input$marker_maxsize, {
 }, priority = -500)
 observeEvent(input$marker_line_width, {
   if(nchar(input$marker_line_width[2]))
-    rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_line_width[1])]]]]$marker$line$width <<- input$marker_line_width[2]
+    rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_line_width[1])]]]]$marker$line$width <<- as.numeric(input$marker_line_width[2])
   else
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_line_width[1])]]]]$marker$line$width <<- NULL
 }, priority = -500)
@@ -942,11 +965,11 @@ observeEvent(input$marker_line_color, {
 observeEvent(input$trace_yaxis, {
   req(length(input$trace_yaxis) >= 2L)
   if(identical(input$trace_yaxis[2], "y2")){
-    axisOptionsGlobal$y <<- axisOptionsGlobal$y - 1L
-    axisOptionsGlobal$y2 <<- axisOptionsGlobal$y2 + 1L
+    axisOptionsGlobal[["y"]] <<- axisOptionsGlobal[["y"]] - 1L
+    axisOptionsGlobal[["y2"]] <<- axisOptionsGlobal[["y2"]] + 1L
   }else{
-    axisOptionsGlobal$y <<- axisOptionsGlobal$y + 1L
-    axisOptionsGlobal$y2 <<- axisOptionsGlobal$y2 - 1L
+    axisOptionsGlobal[["y"]] <<- axisOptionsGlobal[["y"]] + 1L
+    axisOptionsGlobal[["y2"]] <<- axisOptionsGlobal[["y2"]] - 1L
   }
   updateYAxes()
   rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$trace_yaxis[1])]]]]$yaxis <<- input$trace_yaxis[2]
@@ -965,7 +988,7 @@ observeEvent(input$line_color, {
 }, priority = -500)
 observeEvent(input$line_width, {
   if(nchar(input$line_width[2]))
-    rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$line_width[1])]]]]$line$width <<- input$line_width[2]
+    rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$line_width[1])]]]]$line$width <<- as.numeric(input$line_width[2])
   else
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$line_width[1])]]]]$line$width <<- NULL
 }, priority = -500)
@@ -1107,14 +1130,21 @@ observeEvent(input$dyopt_logscale, {
 # })
 observeEvent(input$dyser_yaxis, {
   req(length(input$dyser_yaxis) >= 2L)
+  yTmp <- axisOptionsGlobal[["y"]]
+  y2Tmp <- axisOptionsGlobal[["y2"]]
   if(identical(input$dyser_yaxis[2], "y2")){
-    axisOptionsGlobal$y <<- axisOptionsGlobal$y - 1L
-    axisOptionsGlobal$y2 <<- axisOptionsGlobal$y2 + 1L
+    axisOptionsGlobal[["y"]] <<- axisOptionsGlobal[["y"]] - 1L
+    axisOptionsGlobal[["y2"]] <<- axisOptionsGlobal[["y2"]] + 1L
   }else{
-    axisOptionsGlobal$y <<- axisOptionsGlobal$y + 1L
-    axisOptionsGlobal$y2 <<- axisOptionsGlobal$y2 - 1L
+    axisOptionsGlobal[["y"]] <<- axisOptionsGlobal[["y"]] + 1L
+    axisOptionsGlobal[["y2"]] <<- axisOptionsGlobal[["y2"]] - 1L
   }
-  updateYAxes()
+  if(identical(y2Tmp, 1L) && identical(axisOptionsGlobal[["y2"]], 0L) && 
+     identical(yTmp, 0L) && identical(axisOptionsGlobal[["y"]], 1L)){
+    updateYAxes(dyReset = TRUE)
+  }else{
+    updateYAxes()
+  }
   rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$dyser_yaxis[1])]]]]$yaxis <<- input$dyser_yaxis[2]
 })
 observeEvent(input$dyser_color, {
@@ -1164,7 +1194,7 @@ observeEvent(input$dyopt_pointShape, {
 })
 observeEvent(input$dyopt_pointSize, {
   if(length(input$dyopt_pointSize) > 1){
-    rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$dyopt_pointSize[1])]]]]$pointSize <<- input$dyopt_pointSize[2]
+    rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$dyopt_pointSize[1])]]]]$pointSize <<- as.numeric(input$dyopt_pointSize[2])
   }else{
     rv$graphConfig$graph$dyOptions$pointSize <<- input$dyopt_pointSize
   }
@@ -1208,9 +1238,9 @@ observeEvent(input$dyAxis_independentTicks, {
 observeEvent(input$dyAxis_drawGrid, {
   #when a second yaxis is used, its grid can only be drawn if drawGrid for first yaxis is also set to TRUE. Setting y1 grid color to 'transparent' therefore.
   if(isFALSE(input$dyAxis_drawGrid))
-    rv$graphConfig$graph$yaxis$gridLineColor <<- 'transparent'
+    rv$graphConfig$graph$yaxis$gridLineColor <<- "transparent"
   else
-    rv$graphConfig$graph$yaxis$gridLineColor <<- 'gray'
+    rv$graphConfig$graph$yaxis$gridLineColor <<- "gray"
 })
 observeEvent(input$dyAxis_gridLineWidth, {
   if(!is.numeric(input$dyAxis_gridLineWidth))
@@ -1237,26 +1267,22 @@ observeEvent(input$dyAxis_axisLabelFontSize, {
     rv$graphConfig$graph$yaxis$axisLabelFontSize <<- input$dyAxis_axisLabelFontSize
 })
 observeEvent(input$dyAxis_valueRangeFrom, {
-  val <- NULL
-  if(length(input$dyAxis_valueRangeFrom) && nchar(input$dyAxis_valueRangeFrom)){
-    val <- suppressWarnings(as.numeric(input$dyAxis_valueRangeFrom))
-    if(is.na(val))
-      val <- NULL
-  }
+  req(length(input$dyAxis_valueRangeFrom) == 1L)
+  val <- suppressWarnings(as.numeric(input$dyAxis_valueRangeFrom))
+  if(is.na(val))
+    val <- NULL
   val2 <- NULL
-  if(length(rv$graphConfig$graph$yaxis$valueRange[[2]]) && nchar(rv$graphConfig$graph$yaxis$valueRange[[2]]))
+  if(length(rv$graphConfig$graph$yaxis$valueRange[[2]]) && !is.na(rv$graphConfig$graph$yaxis$valueRange[[2]]))
     val2 <- rv$graphConfig$graph$yaxis$valueRange[[2]]
   rv$graphConfig$graph$yaxis$valueRange <<- list(val, val2)
 })
 observeEvent(input$dyAxis_valueRangeTo, {
-  val <- NULL
-  if(length(input$dyAxis_valueRangeTo) && nchar(input$dyAxis_valueRangeTo)){
-    val <- suppressWarnings(as.numeric(input$dyAxis_valueRangeTo))
-    if(is.na(val))
-      val <- NULL
-  }
+  req(length(input$dyAxis_valueRangeTo) == 1L)
+  val <- suppressWarnings(as.numeric(input$dyAxis_valueRangeTo))
+  if(is.na(val))
+    val <- NULL
   val2 <- NULL
-  if(length(rv$graphConfig$graph$yaxis$valueRange[[1]]) && nchar(rv$graphConfig$graph$yaxis$valueRange[[1]]))
+  if(length(rv$graphConfig$graph$yaxis$valueRange[[1]]) && !is.na(rv$graphConfig$graph$yaxis$valueRange[[1]]))
     val2 <- rv$graphConfig$graph$yaxis$valueRange[[1]]
   rv$graphConfig$graph$yaxis$valueRange <<- list(val2, val)
 })
@@ -1295,26 +1321,22 @@ observeEvent(input$dyAxis2_axisLabelFontSize, {
     rv$graphConfig$graph$yaxis2$axisLabelFontSize <<- input$dyAxis2_axisLabelFontSize
 })
 observeEvent(input$dyAxis2_valueRangeFrom, {
-  val <- NULL
-  if(nchar(input$dyAxis2_valueRangeFrom)){
-    val <- suppressWarnings(as.numeric(input$dyAxis2_valueRangeFrom))
-    if(is.na(val))
-      val <- NULL
-  }
+  req(length(input$dyAxis2_valueRangeFrom) == 1L)
+  val <- suppressWarnings(as.numeric(input$dyAxis2_valueRangeFrom))
+  if(is.na(val))
+    val <- NULL
   val2 <- NULL
-  if(length(rv$graphConfig$graph$yaxis2$valueRange[[2]]) && nchar(rv$graphConfig$graph$yaxis2$valueRange[[2]]))
+  if(length(rv$graphConfig$graph$yaxis2$valueRange[[2]]) && !is.na(rv$graphConfig$graph$yaxis2$valueRange[[2]]))
     val2 <- rv$graphConfig$graph$yaxis2$valueRange[[2]]
   rv$graphConfig$graph$yaxis2$valueRange <<- list(val, val2)
 })
 observeEvent(input$dyAxis2_valueRangeTo, {
-  val <- NULL
-  if(nchar(input$dyAxis2_valueRangeTo)){
-    val <- suppressWarnings(as.numeric(input$dyAxis2_valueRangeTo))
-    if(is.na(val))
-      val <- NULL
-  }
+  req(length(input$dyAxis2_valueRangeTo) == 1L)
+  val <- suppressWarnings(as.numeric(input$dyAxis2_valueRangeTo))
+  if(is.na(val))
+    val <- NULL
   val2 <- NULL
-  if(length(rv$graphConfig$graph$yaxis2$valueRange[[1]]) && nchar(rv$graphConfig$graph$yaxis2$valueRange[[1]]))
+  if(length(rv$graphConfig$graph$yaxis2$valueRange[[1]]) && !is.na(rv$graphConfig$graph$yaxis2$valueRange[[1]]))
     val2 <- rv$graphConfig$graph$yaxis2$valueRange[[1]]
   rv$graphConfig$graph$yaxis2$valueRange <<- list(val2, val)
 })
@@ -1322,11 +1344,14 @@ observeEvent(input$dyhighlight_activate, {
   if(isTRUE(input$dyhighlight_activate)){
     rv$graphConfig$graph$dyHighlight <<- list(highlightCircleSize = input$dyhigh_circleSize, 
                                               highlightSeriesBackgroundAlpha = input$dyhigh_seriesBackgroundAlpha,
-                                              hideOnMouseOut = input$dyhigh_hideOnMouseOut)
+                                              hideOnMouseOut = input$dyhigh_hideOnMouseOut,
+                                              highlightSeriesOpts = list(
+                                                strokeWidth = input$dyhigh_strokeWidth,
+                                                strokeBorderWidth = input$dyhigh_strokeBorderWidth,
+                                                strokeBorderColor = input$dyhigh_strokeBorderColor
+                                              ))
   }else{
-    rv$graphConfig$graph$dyHighlight <<- list(highlightCircleSize = 0L, 
-                                              highlightSeriesBackgroundAlpha = 1L,
-                                              hideOnMouseOut = TRUE)
+    rv$graphConfig$graph$dyHighlight <<- noDygraphHighlight
   }
 })
 observeEvent(input$dyhigh_circleSize, {
@@ -1340,6 +1365,21 @@ observeEvent(input$dyhigh_seriesBackgroundAlpha, {
 observeEvent(input$dyhigh_hideOnMouseOut, {
   if(isTRUE(input$dyhighlight_activate))
     rv$graphConfig$graph$dyHighlight$hideOnMouseOut <<- input$dyhigh_hideOnMouseOut
+})
+observeEvent(input$dyhigh_strokeWidth, {
+  if(isTRUE(input$dyhighlight_activate))
+    rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeWidth <<- input$dyhigh_strokeWidth
+})
+observeEvent(input$dyhigh_strokeBorderWidth, {
+  if(isTRUE(input$dyhighlight_activate))
+    rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeBorderWidth <<- input$dyhigh_strokeBorderWidth
+})
+observeEvent(input$dyhigh_strokeBorderColor, {
+  if(isTRUE(input$dyhighlight_activate))
+    if(nchar(input$dyhigh_strokeBorderColor))
+      rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeBorderColor <<- input$dyhigh_strokeBorderColor
+    else
+      rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeBorderColor <<- "#ffffff"
 })
 
 observeEvent(input$dyEvent_label, {
@@ -1399,14 +1439,14 @@ observeEvent(input$dyAnnotation_width, {
   if(input$dyAnnotation_width[2] == 0L){
     rv$graphConfig$graph$dyAnnotation[[idLabelMap$dy_dyAnnotation[[as.integer(input$dyAnnotation_width[1])]]]]$width <<- NULL
   }else{
-    rv$graphConfig$graph$dyAnnotation[[idLabelMap$dy_dyAnnotation[[as.integer(input$dyAnnotation_width[1])]]]]$width <<- input$dyAnnotation_width[2]
+    rv$graphConfig$graph$dyAnnotation[[idLabelMap$dy_dyAnnotation[[as.integer(input$dyAnnotation_width[1])]]]]$width <<- as.numeric(input$dyAnnotation_width[2])
   }
 })
 observeEvent(input$dyAnnotation_height, {
   if(input$dyAnnotation_width[2] == 0L){
     rv$graphConfig$graph$dyAnnotation[[idLabelMap$dy_dyAnnotation[[as.integer(input$dyAnnotation_height[1])]]]]$height <<- NULL
   }else{
-    rv$graphConfig$graph$dyAnnotation[[idLabelMap$dy_dyAnnotation[[as.integer(input$dyAnnotation_height[1])]]]]$height <<- input$dyAnnotation_height[2]
+    rv$graphConfig$graph$dyAnnotation[[idLabelMap$dy_dyAnnotation[[as.integer(input$dyAnnotation_height[1])]]]]$height <<- as.numeric(input$dyAnnotation_height[2])
   }
 })
 observeEvent(input$dyAnnotation_attachAtBottom, {
@@ -1422,7 +1462,10 @@ observeEvent(input$dyShading_color, {
   chart_id <- as.integer(input$dyShading_color[1])
   if(is.na(chart_id))
     return()
-  rv$graphConfig$graph$dyShading[[idLabelMap$dy_dyShading[[chart_id]]]]$color <<- input$dyShading_color[2]
+  if(nchar(input$dyShading_color[2]))
+    rv$graphConfig$graph$dyShading[[idLabelMap$dy_dyShading[[chart_id]]]]$color <<- input$dyShading_color[2]
+  else
+    rv$graphConfig$graph$dyShading[[idLabelMap$dy_dyShading[[chart_id]]]]$color <<- NULL
 })
 observeEvent(input$dyShading_axis, {
   chart_id <- as.integer(input$dyShading_axis[1])
@@ -1452,27 +1495,20 @@ observeEvent(input$plot_bgcolor, {
 observeEvent(input$showlegend, {
   rv$graphConfig$graph$showlegend <<- input$showlegend
 })
-observe({
-  req(input$chart_tool %in% plotlyChartTools)
-  if(isFALSE(input$fixedHeightCheck) ||
-     !is.numeric(input$fixedHeight) ||
-     input$fixedHeight < 0){
+observeEvent(input$fixedHeight, {
+  if(!is.numeric(input$fixedHeight) || identical(input$fixedHeight, 0L)){
     rv$graphConfig$graph$fixedHeight <<- NULL
     return()
   }
   rv$graphConfig$graph$fixedHeight <<- input$fixedHeight
 })
-observe({
-  req(input$chart_tool %in% plotlyChartTools)
-  if(isFALSE(input$fixedWidthCheck) ||
-     !is.numeric(input$fixedWidth) ||
-     input$fixedWidth < 0){
+observeEvent(input$fixedWidth, {
+  if(!is.numeric(input$fixedWidth) || identical(input$fixedWidth, 0L)){
     rv$graphConfig$graph$fixedWidth <<- NULL
     return()
   }
   rv$graphConfig$graph$fixedWidth <<- input$fixedWidth
 })
-
 observeEvent(input$x_title, {
   rv$graphConfig$graph$xaxis$title <<- input$x_title
 })
@@ -1619,7 +1655,7 @@ observeEvent(input$bar_width, {
     rv$graphConfig$graph$width <<- input$bar_width
 })
 observeEvent(input$bar_orientation, {
-  if(identical(input$bar_orientation, "horizontal"))
+  if(identical(input$bar_orientation, "h"))
     rv$graphConfig$graph$orientation <<- "h"
   else
     rv$graphConfig$graph$orientation <<- NULL
@@ -1692,12 +1728,11 @@ observeEvent(input$add_array_el, {
     rv$graphConfig$graph[[JSON_id]][[chart_label]] <<- currentContent
     return()
   }
-  
   if(identical(el_id, "chart_ydata")){
     label       <- names(activeSymbol$indices)[match(chart_label, activeSymbol$indices)][1]
     if(input$chart_tool %in% plotlyChartTools){
       if(identical(input$chart_tool, "scatter")){
-        axisOptionsGlobal$y <<- axisOptionsGlobal$y + 1L
+        axisOptionsGlobal[["y"]] <<- axisOptionsGlobal[["y"]] + 1L
         updateYAxes()
         newContent  <- list(label = label, 
                             mode = "markers",
@@ -1722,7 +1757,7 @@ observeEvent(input$add_array_el, {
                             ),
                             showlegend = TRUE)
       }else if(identical(input$chart_tool, "line")){
-        axisOptionsGlobal$y <<- axisOptionsGlobal$y + 1L
+        axisOptionsGlobal[["y"]] <<- axisOptionsGlobal[["y"]] + 1L
         updateYAxes()
         newContent  <- list(label = label, 
                             mode = "lines",
@@ -1738,7 +1773,7 @@ observeEvent(input$add_array_el, {
                            marker = list(line = list(width = 0L)))
       }
     }else{
-      axisOptionsGlobal$y <<- axisOptionsGlobal$y + 1L
+      axisOptionsGlobal[["y"]] <<- axisOptionsGlobal[["y"]] + 1L
       updateYAxes()
       newContent  <- list(label = label, 
                           stemPlot = FALSE, stepPlot = FALSE, 
@@ -1815,10 +1850,14 @@ observeEvent(input$remove_array_el, {
   if(length(rv$graphConfig$graph[[JSON_id]][[chart_label]]$yaxis) ||
      length(rv$graphConfig$graph[[JSON_id]][[chart_label]]$axis)){
     if(identical(rv$graphConfig$graph[[JSON_id]][[chart_label]]$yaxis, "y"))
-      axisOptionsGlobal$y <<- axisOptionsGlobal$y - 1L
+      axisOptionsGlobal[["y"]] <<- axisOptionsGlobal[["y"]] - 1L
     if(identical(rv$graphConfig$graph[[JSON_id]][[chart_label]]$yaxis, "y2"))
-      axisOptionsGlobal$y2 <<- axisOptionsGlobal$y2 - 1L
+      axisOptionsGlobal[["y2"]] <<- axisOptionsGlobal[["y2"]] - 1L
     updateYAxes()
+  }
+  if(identical(array_id, "leaflet_markers") && length(rv$graphConfig$graph[[JSON_id]][[chart_label]]$group)){
+    leafletGroups$update(old = rv$graphConfig$graph[[JSON_id]][[chart_label]]$group, new = NULL)
+    rv$updateLeafletGroups <- rv$updateLeafletGroups + 1L
   }
   if(sum(input$remove_array_el[2] == chart_label) < 1.5){
     rv$graphConfig$graph[[JSON_id]][chart_label] <- NULL
@@ -1898,6 +1937,27 @@ observeEvent(input$filter_date, {
   rv$graphConfig$graph$filter$date <<- input$filter_date
 })
 
+getCurrentGraphConfig <- function(){
+  currentGraphConfig <<- NULL
+  if(identical(input$gams_symbols, scalarsOutName)){
+    currentGraphConfig <<- configJSON$dataRendering[[match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1]]][["options"]]
+  }else{
+    if(!is.na(match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1])){
+      if(length(configJSON$dataRendering[[match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1]]][["pivottable"]])){
+        currentGraphConfig <<- configJSON$dataRendering[[match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1]]][["pivottable"]]
+      }else if(length(configJSON$dataRendering[[match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1]]][["graph"]])){
+        currentGraphConfig <<- configJSON$dataRendering[[match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1]]][["graph"]]
+      }else{
+        currentGraphConfig <<- configJSON$dataRendering[[match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1]]]
+      }
+    }
+  }
+  if(length(currentGraphConfig)){
+    isInJSON <<- TRUE
+  }else{
+    isInJSON <<- FALSE
+  }
+}
 observeEvent(input$gams_symbols, {
   req(input$gams_symbols)
   symbolID <- match(isolate(input$gams_symbols), names(modelIn))
@@ -1905,15 +1965,66 @@ observeEvent(input$gams_symbols, {
     symbolID <- match(isolate(input$gams_symbols), names(modelOut)) + length(modelIn)
   }
   changeActiveSymbol(symbolID)
-  
+  newChartTool <<- character(0L)
+  if(identical(input$gams_symbols, scalarsFileName)){
+    removeUI(selector = "#tool_options div", multiple = TRUE)
+    hideEl(session, "#preview-outer-wrapper")
+    insertUI(selector = "#tool_options", tags$div(class="config-no-hide", 
+                                                  paste0("The configuration for input scalars is done in '", lang$adminMode$uiR$widgets, "'!"))
+             , where = "afterBegin")
+    
+    disableEl(session, "#saveGraph")
+    disableEl(session, "#deleteGraph")
+    return()
+  }else{
+    showEl(session, "#preview-outer-wrapper")
+    enableEl(session, "#saveGraph")
+    enableEl(session, "#deleteGraph")
+  }
   if(identical(input$gams_symbols, scalarsOutName)){
     updateSelectInput(session, "chart_tool", choices = setNames(c("valuebox"),
                                                                 lang$adminMode$graphs$updateToolScalars))
     newChartTool <<- "valuebox"
   }else{
-    updateSelectInput(session, "chart_tool", choices = setNames(c("pie", "bar", "scatter", "line", "bubble", "hist", "dygraphs", "leaflet", "timevis", "pivot", "custom"),
-                                                                lang$adminMode$graphs$updateToolNoScalars))
-    newChartTool <<- "pie"
+    graphType <- NULL
+    if(!is.na(match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1])){
+      if(length(configJSON$dataRendering[[match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1]]][["pivottable"]])){
+        graphType <- "pivot"
+      }else if(!length(configJSON$dataRendering[[match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1]]][["graph"]])){
+        graphType <- "custom"
+      }
+    }
+    indices       <- activeSymbol$indices
+    scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
+    #distinguish between plotly chart or other
+    if(length(currentGraphConfig[["type"]])){
+      if(identical(currentGraphConfig[["type"]], "scatter")){
+        #distinguish between line chart and scatter plot
+        if(length(currentGraphConfig$ydata[[scalarIndices[[1]]]][["mode"]]) && 
+           identical(currentGraphConfig$ydata[[scalarIndices[[1]]]][["mode"]], "lines")){
+          newChartTool <<- "line"
+        }
+        if(length(currentGraphConfig$ydata[[scalarIndices[[1]]]][["mode"]]) &&
+           identical(currentGraphConfig$ydata[[scalarIndices[[1]]]][["mode"]], "markers"))
+          newChartTool <<- "scatter"
+      }else{
+        newChartTool <<- currentGraphConfig[["type"]] 
+      }
+    }else if(length(currentGraphConfig[["tool"]])){
+      newChartTool <<- currentGraphConfig[["tool"]]
+    }else if(identical(graphType, "pivot")){
+      newChartTool <<- "pivot"
+    }else if(identical(graphType, "custom")){
+      newChartTool <<- "custom"
+    }else{
+      newChartTool <<- "pie"
+    }
+    if(identical(newChartTool, input$chart_tool))
+      rv$refreshOptions <- rv$refreshOptions + 1L
+    else
+      updateSelectInput(session, "chart_tool", choices = setNames(c("pie", "bar", "scatter", "line", "bubble", "hist", "dygraphs", "leaflet", "timevis", "pivot", "custom"),
+                                                                  lang$adminMode$graphs$updateToolNoScalars),
+                        selected = newChartTool)
   }
   if(tolower(activeSymbol$name) %in% tolower(names(configJSON$dataRendering))){
     showEl(session, "#deleteGraph")
@@ -1926,12 +2037,13 @@ observeEvent({
   rv$refreshOptions}, {
     req(rv$initData)
     allDataAvailable <<- FALSE
-    if(length(newChartTool)){
-      chartTool <- newChartTool
-      newChartTool <<- character(0L)
-    }else{
-      chartTool <- input$chart_tool
-    }
+    chartTool <- input$chart_tool
+    #check whether symbol is already configured (in JSON file). Check for identical(newChartTool, chartTool) 
+    #not sufficient since newChartTool = pie is the default for non-configured symbols
+    if(isTRUE(isInJSON) && identical(newChartTool, chartTool))
+      configuredWithThisTool <<- TRUE
+    else
+      configuredWithThisTool <<- FALSE
     if(!identical(chartTool, "pivot"))
       rv$graphConfig$pivottable <<- NULL
     if(!identical(chartTool, "leaflet"))
@@ -1942,8 +2054,7 @@ observeEvent({
       rv$graphConfig$additionalData <<- NULL
       rv$graphConfig$packages <<- NULL
     }
-    
-    saveAndReload(isolate(chartTool), "pie")
+    saveAndReload(chartTool)
     hideFilter()
     removeUI(selector = "#tool_options div", multiple = TRUE)
     if(chartTool %in% plotlyChartTools){
@@ -1953,86 +2064,301 @@ observeEvent({
     }
     removeClassEl(session, ".category-btn", "category-btn-active")
     hideEl(session, ".category-btn")
+    ydataTmp <- currentGraphConfig[["ydata"]]
+    axisOptionsGlobal <<- list(y = 1, y2 = 0)
     if(identical(chartTool, "pie")){
       rv$graphConfig$graph$type <<- "pie"
       showEl(session, ".category-btn-pie")
       addClassEl(session, id = "#categoryPie1", "category-btn-active")
+      if(!isTRUE(configuredWithThisTool)){
+        idLabelMap[["chart_piedata"]] <<- list()
+      }
       insertUI(selector = "#tool_options", getPieOptions(), where = "beforeEnd")
+      #check whether symbol is configured as pie (in JSON)
+      tracesTmp <- currentGraphConfig[["traces"]]
+      if(isTRUE(configuredWithThisTool) && length(tracesTmp)){
+        if(is.null(names(tracesTmp))){
+          names(tracesTmp) <- seq_along(tracesTmp)
+        }
+        addArrayEl(session, "chart_piedata",
+                   defaults = tracesTmp)
+        idLabelMap[["chart_piedata"]] <<- as.list(names(tracesTmp))
+        rv$graphConfig$graph$traces <- tracesTmp
+      }
       allDataAvailable <<- TRUE
     }else if(identical(chartTool, "bar")){
       rv$resetRE <- rv$resetRE + 1L
       rv$graphConfig$graph$type <<- "bar"
       showEl(session, ".category-btn-bar")
       addClassEl(session, id = "#categoryBar1", "category-btn-active")
+      if(!isTRUE(configuredWithThisTool)){
+        idLabelMap[["chart_ydata"]] <<- list()
+      }
       insertUI(selector = "#tool_options", getBarOptions(), where = "beforeEnd")
+      #check whether symbol is configured as bar chart (in JSON)
+      if(isTRUE(configuredWithThisTool) && length(ydataTmp)){
+          addArrayEl(session, "chart_ydatabar",
+                     defaults = ydataTmp)
+          idLabelMap[["chart_ydata"]] <<- as.list(names(ydataTmp))
+          rv$graphConfig$graph$ydata <<- ydataTmp
+      }
       allDataAvailable <<- TRUE
     }else if(identical(chartTool, "scatter")){
-      axisOptionsGlobal <<- list(y = 1, y2 = 0)
       rv$resetRE <- rv$resetRE + 1L
       rv$graphConfig$graph$type <<- "scatter"
       showEl(session, ".category-btn-scatter")
       addClassEl(session, id = "#categoryScatter1", "category-btn-active")
+      #check whether symbol is configured as scatter plot (in JSON) and if so count y & y2 axes
+      indices       <- activeSymbol$indices
+      scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
+      if(isTRUE(configuredWithThisTool) && length(ydataTmp)){
+        noY2axis <- vapply(ydataTmp, function(el){
+          identical(el$yaxis, "y2")
+        }, logical(1L), USE.NAMES = FALSE)
+        noY2axis <- sum(noY2axis)
+        noYaxis <- length(ydataTmp) - noY2axis
+        axisOptionsGlobal <<- list(y = noYaxis, y2 = noY2axis)
+      }else{
+        idLabelMap[["chart_ydata"]] <<- list()
+      }
       insertUI(selector = "#tool_options", getScatterOptions(), where = "beforeEnd")
+      #set configured defaults
+      if(isTRUE(configuredWithThisTool) && length(ydataTmp)){
+        addArrayEl(session, "chart_ydatascatter",
+                   defaults = ydataTmp)
+        idLabelMap[["chart_ydata"]] <<- as.list(names(ydataTmp))
+        rv$graphConfig$graph$ydata <<- ydataTmp
+      }
       allDataAvailable <<- TRUE
     }else if(identical(chartTool, "line")){
-      axisOptionsGlobal <<- list(y = 1, y2 = 0)
       rv$resetRE <- rv$resetRE + 1L
       rv$graphConfig$graph$type <<- "scatter"
       showEl(session, ".category-btn-line")
       addClassEl(session, id = "#categoryLine1", "category-btn-active")
+      #check whether symbol is configured as scatter plot (in JSON) and if so count y & y2 axes
+      indices       <- activeSymbol$indices
+      scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
+      if(isTRUE(configuredWithThisTool) && length(ydataTmp)){
+        noY2axis <- vapply(ydataTmp, function(el){
+          identical(el$yaxis, "y2")
+        }, logical(1L), USE.NAMES = FALSE)
+        noY2axis <- sum(noY2axis)
+        noYaxis <- length(ydataTmp) - noY2axis
+        axisOptionsGlobal <<- list(y = noYaxis, y2 = noY2axis)
+      }else{
+        idLabelMap[["chart_ydata"]] <<- list()
+      }
       insertUI(selector = "#tool_options", getLineOptions(), where = "beforeEnd")
+      #set configured defaults
+      if(isTRUE(configuredWithThisTool) && length(ydataTmp)){
+        addArrayEl(session, "chart_ydataline",
+                   defaults = ydataTmp)
+        idLabelMap[["chart_ydata"]] <<- as.list(names(ydataTmp))
+        rv$graphConfig$graph$ydata <<- ydataTmp
+      }
       allDataAvailable <<- TRUE
     }else if(identical(chartTool, "bubble")){
       rv$resetRE <- rv$resetRE + 1L
       rv$graphConfig$graph$type <<- "bubble"
       showEl(session, ".category-btn-bubble")
       addClassEl(session, id = "#categoryBubble1", "category-btn-active")
+      if(!isTRUE(configuredWithThisTool)){
+        idLabelMap[["chart_ydata"]] <<- list()
+      }
       insertUI(selector = "#tool_options", getBubbleOptions(), where = "beforeEnd")
+      #set configured defaults
+      indices       <- activeSymbol$indices
+      scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
+      if(isTRUE(configuredWithThisTool) && length(ydataTmp)){
+        #in JSON, element 'color' is used both for dynamic and static values 
+        if(length(configScalars)){
+          ydataJS <- lapply(ydataTmp, function(ydataEl){
+            ydataEl$staticColor <- !tolower(ydataEl$marker$color) %in% tolower(scalarIndices)
+            return(ydataEl)
+          })
+        }else{
+          ydataJS <- ydataTmp
+        }
+        addArrayEl(session, "chart_ydatabubble",
+                   defaults = ydataJS)
+        idLabelMap[["chart_ydata"]] <<- as.list(names(ydataTmp))
+        rv$graphConfig$graph$ydata <<- ydataTmp
+      }
       allDataAvailable <<- TRUE
     }else if(identical(chartTool, "hist")){
       rv$graphConfig$graph$type <<- "hist"
       showEl(session, ".category-btn-hist")
       addClassEl(session, id = "#categoryHist1", "category-btn-active")
+      if(!isTRUE(configuredWithThisTool)){
+        idLabelMap[["hist_xdata"]] <<- list()
+      }
       insertUI(selector = "#tool_options", getHistOptions(), where = "beforeEnd")
+      #set configured defaults
+      xdataTmp <- currentGraphConfig[["xdata"]]
+      if(isTRUE(configuredWithThisTool) && length(xdataTmp)){
+        addArrayEl(session, "hist_xdata",
+                   defaults = xdataTmp)
+        idLabelMap[["hist_xdata"]] <<- as.list(names(xdataTmp))
+        rv$graphConfig$graph$xdata <<- xdataTmp
+      }
       allDataAvailable <<- TRUE
     }else if(identical(chartTool, "dygraphs")){
-      axisOptionsGlobal <- list(y = 1, y2 = 0)
-      currentSelection$noLayers <<- 1L
       showEl(session, ".category-btn-dygraphs")
       addClassEl(session, id = "#categoryDygraphs1", "category-btn-active")
+      if(isTRUE(configuredWithThisTool) && length(ydataTmp)){
+        noY2axis <- vapply(ydataTmp, function(el){
+          identical(el$yaxis, "y2")
+        }, logical(1L), USE.NAMES = FALSE)
+        noY2axis <- sum(noY2axis)
+        noYaxis <- length(ydataTmp) - noY2axis
+        axisOptionsGlobal <<- list(y = noYaxis, y2 = noY2axis)
+      }else{
+        idLabelMap[["chart_ydata"]]     <<- list()
+        idLabelMap[["dy_dyEvent"]]      <<- list()
+        idLabelMap[["dy_dyLimit"]]      <<- list()
+        idLabelMap[["dy_dyAnnotation"]] <<- list()
+        idLabelMap[["dy_dyShading"]]    <<- list()
+      }
       insertUI(selector = "#tool_options",
                tags$div(id = "dygraph_options", getDygraphsOptions()), where = "beforeEnd")
+      if(isTRUE(configuredWithThisTool)){
+        dyEventTmp      <- currentGraphConfig[["dyEvent"]]
+        dyLimitTmp      <- currentGraphConfig[["dyLimit"]]
+        dyAnnotationTmp <- currentGraphConfig[["dyAnnotation"]]
+        dyShadingTmp    <- currentGraphConfig[["dyShading"]]
+        if(length(ydataTmp)){
+          addArrayEl(session, "dy_ydata",
+                     defaults = ydataTmp)
+          idLabelMap[["chart_ydata"]] <<- as.list(names(ydataTmp))
+          rv$graphConfig$graph$ydata <<- ydataTmp
+        }
+        if(length(dyEventTmp)){
+          addArrayEl(session, "dy_dyEvent", 
+                     defaults = dyEventTmp)
+          idLabelMap[["dy_dyEvent"]] <<- as.list(names(dyEventTmp))
+          rv$graphConfig$graph$dyEvent <- dyEventTmp
+        }
+        if(length(dyLimitTmp)){
+          #in JSON, element 'limit' is used both for dynamic (gams scalar) and static (textinput) values 
+          if(length(configScalars)){
+            dyLimitJS <- lapply(dyLimitTmp, function(limitEl){
+              limitEl$staticLimit <- !tolower(limitEl$limit) %in% tolower(configScalars[[1]])
+              return(limitEl)
+            })
+          }else{
+            dyLimitJS <- dyLimitTmp
+          }
+          addArrayEl(session, "dy_dyLimit", 
+                     defaults = dyLimitJS)
+          idLabelMap[["dy_dyLimit"]] <<- as.list(names(dyLimitTmp))
+          rv$graphConfig$graph$dyLimit <- dyLimitTmp
+          
+        }
+        if(length(dyAnnotationTmp)){
+          addArrayEl(session, "dy_dyAnnotation", 
+                     defaults = dyAnnotationTmp)
+          idLabelMap[["dy_dyAnnotation"]] <<- as.list(names(dyAnnotationTmp))
+          rv$graphConfig$graph$dyAnnotation <- dyAnnotationTmp
+        }
+        if(length(dyShadingTmp)){
+          #in JSON, elements 'from' and 'to' are used both for dynamic (gams scalar) and static (textinput) values 
+          if(length(configScalars)){
+            dyShadingJS <- lapply(dyShadingTmp, function(shadingEl){
+              shadingEl$staticFrom <- !tolower(shadingEl$from) %in% tolower(configScalars[[1]])
+              shadingEl$staticTo <- !tolower(shadingEl$to) %in% tolower(configScalars[[1]])
+              return(shadingEl)
+            })
+          }else{
+            dyShadingJS <- dyShadingTmp
+          }
+          addArrayEl(session, "dy_dyShading", 
+                     defaults = dyShadingJS)
+          idLabelMap[["dy_dyShading"]] <<- as.list(names(dyShadingTmp))
+          rv$graphConfig$graph$dyShading <- dyShadingTmp
+          
+        }
+      }
       allDataAvailable <<- TRUE
     }else if(identical(chartTool, "leaflet")){
-      currentSelection$noLayers <<- 1L
+      leafletGroups$reset()
       showEl(session, ".category-btn-leaflet")
       addClassEl(session, id = "#categoryLeaflet1", "category-btn-active")
+      if(isTRUE(configuredWithThisTool)){
+        markersTmp <- currentGraphConfig[["markers"]]
+        if(length(markersTmp)){
+          groupsTmp <- vapply(markersTmp, function(el){
+            if(length(el$group)){
+              leafletGroups$update(old = NULL, new = el$group)
+            }
+            el$group
+          }, character(1L), USE.NAMES = FALSE)
+          rv$updateLeafletGroups <- rv$updateLeafletGroups + 1L
+        }
+      }else{
+        idLabelMap[["leaflet_markers"]]    <<- list()
+        idLabelMap[["leaflet_flows"]]      <<- list()
+        idLabelMap[["leaflet_minicharts"]] <<- list()
+      }
       insertUI(selector = "#tool_options",
                tags$div(id = "leaflet_options", getLeafletOptions()), where = "beforeEnd")
+      if(isTRUE(configuredWithThisTool)){
+        markersTmp <- currentGraphConfig[["markers"]]
+        flowsTmp <- currentGraphConfig[["flows"]]
+        minichartsTmp <- currentGraphConfig[["minicharts"]]
+        if(length(markersTmp)){
+          addArrayEl(session, "leaflet_markers", defaults = markersTmp)
+          idLabelMap[["leaflet_markers"]] <<- as.list(names(markersTmp))
+          rv$graphConfig$graph$markers <- markersTmp
+        }
+        if(length(flowsTmp)){
+          addArrayEl(session, "leaflet_flows", defaults = flowsTmp)
+          idLabelMap[["leaflet_flows"]] <<- as.list(names(flowsTmp))
+          rv$graphConfig$graph$flows <- flowsTmp
+        }
+        if(length(minichartsTmp)){
+          addArrayEl(session, "leaflet_minicharts", defaults = minichartsTmp)
+          idLabelMap[["leaflet_minicharts"]] <<- as.list(names(minichartsTmp))
+          rv$graphConfig$graph$minicharts <- minichartsTmp
+        }
+      }
       allDataAvailable <<- TRUE
     }else if(identical(chartTool, "timevis")){
-      currentSelection$noLayers <<- 1L
       showEl(session, ".category-btn-timevis")
       addClassEl(session, id = "#categoryTimevis1", "category-btn-active")
+      if(!isTRUE(configuredWithThisTool)){
+        idLabelMap[["timevis_series"]] <<- list()
+        idLabelMap[["timevis_custom"]] <<- list()
+      }
       insertUI(selector = "#tool_options",
                tags$div(id = "timevis_options", getTimevisOptions()), where = "beforeEnd")
+      if(isTRUE(configuredWithThisTool)){
+        seriesDataTmp        <- currentGraphConfig[["series"]]
+        customTmp <- currentGraphConfig[["custom"]]
+        if(length(seriesDataTmp)){
+          addArrayEl(session, "timevis_series", defaults = seriesDataTmp)
+          idLabelMap[["timevis_series"]] <<- as.list(names(seriesDataTmp))
+          rv$graphConfig$graph$series <- seriesDataTmp
+        }
+        if(length(customTmp)){
+          addArrayEl(session, "timevis_custom", defaults = customTmp)
+          idLabelMap[["timevis_custom"]] <<- as.list(names(customTmp))
+          rv$graphConfig$graph$custom <- customTmp
+        }
+      }
       allDataAvailable <<- TRUE
     }else if(identical(chartTool, "pivot")){
-      currentSelection$noLayers <<- 1L
       showEl(session, ".category-btn-pivot")
       addClassEl(session, id = "#categoryPivot1", "category-btn-active")
       insertUI(selector = "#tool_options",
                tags$div(id = "pivot_options", getPivotOptions()), where = "beforeEnd")
       allDataAvailable <<- TRUE
     }else if(identical(chartTool, "custom")){
-      currentSelection$noLayers <<- 1L
       showEl(session, ".category-btn-custom")
       addClassEl(session, id = "#categoryCustom1", "category-btn-active")
       insertUI(selector = "#tool_options",
                tags$div(id = "custom_options", getCustomOptions()), where = "beforeEnd")
       allDataAvailable <<- TRUE
     }else if(identical(chartTool, "valuebox")){
-      currentSelection$noLayers <<- 1L
       showEl(session, ".category-btn-valuebox")
       addClassEl(session, id = "#categoryValuebox1", "category-btn-active")
       insertUI(selector = "#tool_options",
@@ -2043,19 +2369,15 @@ observeEvent({
   })
 getPieOptions <- reactive({
   req(rv$initData)
-  if(rv$refreshContent == 0){
-    return()
-  }
   indices       <- activeSymbol$indices
   scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
     valuesTmp <- if(length(scalarIndices)) scalarIndices[[1]] else ""
     rv$graphConfig$graph$traces <<- list()
-    rv$graphConfig$graph$showlegend <<- TRUE
-    rv$graphConfig$graph$traces[['1']] <<- list(labels = indices[[1]],
-                                              values = valuesTmp,
-                                              hole = 0,
-                                              name = valuesTmp)
+    rv$graphConfig$graph$traces[["1"]] <<- list(labels = indices[[1]],
+                                                values = valuesTmp,
+                                                hole = 0,
+                                                name = valuesTmp)
   })
   # We have to provide the symbol name with create array el, because else Javascript 
   # will insert the new array element inside the wrapper of the previous selected symbol 
@@ -2064,6 +2386,7 @@ getPieOptions <- reactive({
     tags$div(class="cat-body cat-body-1",
              createArray(session, "chart_piedata", lang$adminMode$graphs$chartOptions$ydata, 
                          class_outer="array-wrapper-outer-graph", hr = FALSE, 
+                         autoCreate = !isTRUE(configuredWithThisTool),
                          symbolName = activeSymbol$name)),
     tags$div(class="cat-body cat-body-2", style="display:none;",
              getOptionSection()
@@ -2075,26 +2398,32 @@ getChartOptions <- reactive({
   indices       <- activeSymbol$indices
   scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
-    rv$graphConfig$graph$xdata      <<- indices[[1]]
-    rv$graphConfig$graph$showlegend <<- TRUE
+    rv$graphConfig$graph$xdata      <<- checkLength(configuredWithThisTool, currentGraphConfig[["xdata"]], indices[[1]])
   })
   tagList(
     tags$div(class="cat-body cat-body-3 cat-body-8 cat-body-13 cat-body-18", 
              selectInput("chart_xdata", lang$adminMode$graphs$chartOptions$xdata,
-                         choices = indices),
+                         choices = indices,
+                         selected = rv$graphConfig$graph$xdata),
              getAxisOptions("x", names(indices)[1])
     ),
     tags$div(class="cat-body cat-body-50 cat-body-51 cat-body-52 cat-body-53", style="display:none;",
              createArray(session, "chart_ydata", lang$adminMode$graphs$chartOptions$ydata, isolate(input$chart_tool), 
+                         autoCreate = !isTRUE(configuredWithThisTool),
                          class_outer="array-wrapper-outer-graph", hr = FALSE)
     ),
     tags$div(class="cat-body cat-body-4 cat-body-9 cat-body-14 cat-body-19", style="display:none;",
              tags$div(id = "left_yaxis", class = "shiny-input-container",
+                      style = if(!axisOptionsGlobal[["y"]] > 0L)
+                        "display: none;", 
                       optionSection(lang$adminMode$graphs$axisOptions$leftAxis,
                                     getAxisOptions("y", names(scalarIndices)[1]))),
-             tags$div(id = "right_yaxis", class = "shiny-input-container", 
-                      style = "display: none;", 
-                      optionSection(lang$adminMode$graphs$axisOptions$rightAxis, getAxisOptions("y2", names(scalarIndices)[1])))
+             if(!identical(rv$graphConfig$graph$type, "bar")){
+               tags$div(id = "right_yaxis", class = "shiny-input-container", 
+                        style = if(!axisOptionsGlobal[["y2"]] > 0L)
+                          "display: none;", 
+                        optionSection(lang$adminMode$graphs$axisOptions$rightAxis, getAxisOptions("y2", names(scalarIndices)[1])))
+             }
     ),
     tags$div(class="cat-body cat-body-5 cat-body-10 cat-body-15 cat-body-20", style="display:none;",
              getColorPivotOptions(),
@@ -2115,74 +2444,90 @@ getBarOptions  <- reactive({
   indices       <- activeSymbol$indices
   scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
-    rv$graphConfig$graph$barmode <<- "group"
-    rv$graphConfig$graph$ydata   <<- list()
+    rv$graphConfig$graph$barmode               <<- checkLength(configuredWithThisTool, currentGraphConfig[["barmode"]], "group")
+    rv$graphConfig$graph$orientation           <<- checkLength(configuredWithThisTool, currentGraphConfig[["orientation"]], NULL)
+    rv$graphConfig$graph$width                 <<- checkLength(configuredWithThisTool, currentGraphConfig[["width"]], NULL)
+    rv$graphConfig$graph$ydata                 <<- list()
     rv$graphConfig$graph$ydata[[indices[[1]]]] <<- list(label = names(indices)[1],
                                                         mode = "lines",
                                                         marker = list(line = list(width = 0L)))
-    idLabelMap$chart_ydata[[1]] <<- indices[[1]]
+    idLabelMap$chart_ydata[[1]]                <<- indices[[1]]
   })
   tagList(
     tags$div(class="cat-body cat-body-7", style="display:none;",
-             selectInput("bar_mode", lang$adminMode$graphs$barOptions$mode, choices = langSpecificGraphs$barmode),
+             selectInput("bar_mode", lang$adminMode$graphs$barOptions$mode, choices = langSpecificGraphs$barmode,
+                         selected = rv$graphConfig$graph$barmode),
              selectInput("bar_orientation", lang$adminMode$graphs$barOptions$orientation,
-                         choices = langSpecificGraphs$barOrientation)
-             ),
-    getChartOptions(),
-    tags$div(class="cat-body cat-body-5", style="display:none;",
+                         choices = langSpecificGraphs$barOrientation,
+                         selected = rv$graphConfig$graph$orientation),
              selectInput("bar_width", lang$adminMode$graphs$barOptions$width,
-                         choices = c("_", scalarIndices))
-             ))
+                         choices = c("_", scalarIndices),
+                         selected = rv$graphConfig$graph$width)
+             ),
+    getChartOptions())
 })
 getAxisOptions <- function(id, title, labelOnly = FALSE){
   isolate({
-    rv$graphConfig$graph[[id %+% "axis"]]$title <<- title
+    rv$graphConfig$graph[[id %+% "axis"]]$title            <<- checkLength(configuredWithThisTool, currentGraphConfig[[id %+% "axis"]]$title, title) 
     if(!labelOnly){
-      rv$graphConfig$graph[[id %+% "axis"]]$showgrid <<- FALSE
-      rv$graphConfig$graph[[id %+% "axis"]]$zeroline <<- FALSE
-      rv$graphConfig$graph[[id %+% "axis"]]$showticklabels <<- TRUE
-      rv$graphConfig$graph[[id %+% "axis"]]$categoryorder <<- "trace"
-      rv$graphConfig$graph[[id %+% "axis"]]$rangefrom <<- NULL
-      rv$graphConfig$graph[[id %+% "axis"]]$rangeto <<- NULL
+      rv$graphConfig$graph[[id %+% "axis"]]$showgrid       <<- checkTRUE(configuredWithThisTool, currentGraphConfig[[id %+% "axis"]]$showgrid)
+      rv$graphConfig$graph[[id %+% "axis"]]$zeroline       <<- checkTRUE(configuredWithThisTool, currentGraphConfig[[id %+% "axis"]]$zeroline)
+      rv$graphConfig$graph[[id %+% "axis"]]$showticklabels <<- checkLength(configuredWithThisTool, currentGraphConfig[[id %+% "axis"]]$showticklabels, TRUE)
+      rv$graphConfig$graph[[id %+% "axis"]]$categoryorder  <<- checkLength(configuredWithThisTool, currentGraphConfig[[id %+% "axis"]]$categoryorder, "trace")
+      rv$graphConfig$graph[[id %+% "axis"]]$rangefrom      <<- checkLength(configuredWithThisTool, currentGraphConfig[[id %+% "axis"]]$rangefrom, NULL)
+      rv$graphConfig$graph[[id %+% "axis"]]$rangeto        <<- checkLength(configuredWithThisTool, currentGraphConfig[[id %+% "axis"]]$rangeto, NULL)
+    }
+    if(!identical(rv$graphConfig$graph$type, "pie") && (identical(id, "y") || identical(id, "y2"))){
+      rv$graphConfig$graph[[id %+% "axis"]]$scaleratio     <<- checkLength(configuredWithThisTool, currentGraphConfig[[id %+% "axis"]]$scaleratio, NULL)
+      rv$graphConfig$graph[[id %+% "axis"]]$scaleanchor    <<- checkLength(configuredWithThisTool, currentGraphConfig[[id %+% "axis"]]$scaleanchor, NULL)
     }
   })
   if(labelOnly){
     return(tagList(
-      textInput(id %+% "_title", sprintf(lang$adminMode$graphs$axisOptions$labelOnlyTitle, id), value = title)
+      textInput(id %+% "_title", sprintf(lang$adminMode$graphs$axisOptions$labelOnlyTitle, id), 
+                value = rv$graphConfig$graph[[id %+% "axis"]]$title)
     ))
   }
   tagList(
-    textInput(id %+% "_title", lang$adminMode$graphs$axisOptions$title, value = title),
-    selectInput(id %+% "_categoryorder", lang$adminMode$graphs$axisOptions$categoryorder, choices = langSpecificGraphs$categoryorderChoices),
+    textInput(id %+% "_title", lang$adminMode$graphs$axisOptions$title, 
+              value = rv$graphConfig$graph[[id %+% "axis"]]$title),
+    selectInput(id %+% "_categoryorder", lang$adminMode$graphs$axisOptions$categoryorder, 
+                choices = langSpecificGraphs$categoryorderChoices,
+                selected = rv$graphConfig$graph[[id %+% "axis"]]$categoryorder),
     if(!identical(rv$graphConfig$graph$type, "pie") && (identical(id, "y") || identical(id, "y2"))){
       tags$div(class = "shiny-input-container", style = "display:inline-block;",
                tags$div(
-                        tags$div(style = "max-width:400px;",
-                                 tags$div(style="display:inline-block", 
-                                          checkboxInput_MIRO("scaleratio_check", 
-                                                             lang$adminMode$graphs$axisOptions$scaleRatioCheck, 
-                                                             value = FALSE)),
-                                 conditionalPanel(condition = 'input.scaleratio_check===true', 
-                                                  style="display:inline-block;padding-left:35px;", 
-                                                  tags$div(
-                                                    numericInput("scaleratio", 
-                                                                 lang$adminMode$graphs$axisOptions$scaleRatio, 
-                                                                 min = 0.1, value = 1L, step = 0.1))
-                                 ))
+                 tags$div(style = "max-width:400px;",
+                          tags$div(style="display:inline-block", 
+                                   checkboxInput_MIRO("scaleratio_check", 
+                                                      lang$adminMode$graphs$axisOptions$scaleRatioCheck, 
+                                                      value = isTRUE(length(rv$graphConfig$graph[[id %+% "axis"]]$scaleratio) > 0L))),
+                          conditionalPanel(condition = 'input.scaleratio_check===true', 
+                                           style="display:inline-block;padding-left:35px;", 
+                                           tags$div(
+                                             numericInput("scaleratio", 
+                                                          lang$adminMode$graphs$axisOptions$scaleRatio, 
+                                                          min = 0.1, value = 
+                                                            if(length(rv$graphConfig$graph[[id %+% "axis"]]$scaleratio)) 
+                                                              rv$graphConfig$graph[[id %+% "axis"]]$scaleratio 
+                                                          else 1L, step = 0.1))
+                          ))
                )
       )
     },
-    checkboxInput_MIRO(id %+% "_showgrid", lang$adminMode$graphs$axisOptions$showgrid),
-    checkboxInput_MIRO(id %+% "_zeroline", lang$adminMode$graphs$axisOptions$zeroline),
-    checkboxInput_MIRO(id %+% "_showticklabels", lang$adminMode$graphs$axisOptions$showticklabels, TRUE),
+    checkboxInput_MIRO(id %+% "_showgrid", lang$adminMode$graphs$axisOptions$showgrid, rv$graphConfig$graph[[id %+% "axis"]]$showgrid),
+    checkboxInput_MIRO(id %+% "_zeroline", lang$adminMode$graphs$axisOptions$zeroline, rv$graphConfig$graph[[id %+% "axis"]]$zeroline),
+    checkboxInput_MIRO(id %+% "_showticklabels", lang$adminMode$graphs$axisOptions$showticklabels, rv$graphConfig$graph[[id %+% "axis"]]$showticklabels),
     if(identical(input$chart_tool, "scatter") || identical(input$chart_tool, "line") || identical(input$chart_tool, "bubble")){
       tags$div(class = "shiny-input-container", style = "display:inline-block;",
                tags$label(class = "cb-label shiny-input-container", "for" = "range-wrapper", lang$adminMode$graphs$axisOptions$range),
                tags$div(style = "padding-top: 10px;",
                  tags$div(id = "range-wrapper",
                           tags$div(style = "max-width:400px;",
-                                   tags$div(style="display:inline-block", textInput(id %+% "_rangefrom", lang$adminMode$graphs$axisOptions$rangeFrom, value = NULL)),
-                                   tags$div(style="display:inline-block", textInput(id %+% "_rangeto", lang$adminMode$graphs$axisOptions$rangeTo, value = NULL)))
+                                   tags$div(style="display:inline-block", textInput(id %+% "_rangefrom", lang$adminMode$graphs$axisOptions$rangeFrom, 
+                                                                                    value = rv$graphConfig$graph[[id %+% "axis"]]$rangefrom)),
+                                   tags$div(style="display:inline-block", textInput(id %+% "_rangeto", lang$adminMode$graphs$axisOptions$rangeTo, 
+                                                                                    value = rv$graphConfig$graph[[id %+% "axis"]]$rangeto)))
                  ))
       )
     }
@@ -2191,55 +2536,46 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
 getOptionSection <- reactive({
   req(rv$initData)
   isolate({
-    rv$graphConfig$graph$showlegend <<- TRUE
+    rv$graphConfig$graph$title         <<- checkLength(configuredWithThisTool, currentGraphConfig[["title"]], activeSymbol$alias)
+    rv$graphConfig$graph$showlegend    <<- checkLength(configuredWithThisTool, currentGraphConfig[["showlegend"]], TRUE)
+    rv$graphConfig$graph$fixedHeight   <<- checkLength(configuredWithThisTool, currentGraphConfig[["fixedHeight"]], NULL)
+    rv$graphConfig$graph$fixedWidth    <<- checkLength(configuredWithThisTool, currentGraphConfig[["fixedWidth"]], NULL)
+    rv$graphConfig$graph$paper_bgcolor <<- checkLength(configuredWithThisTool, currentGraphConfig[["paper_bgcolor"]], NULL)
+    rv$graphConfig$graph$plot_bgcolor  <<- checkLength(configuredWithThisTool, currentGraphConfig[["plot_bgcolor"]], NULL)
+    rv$graphConfig$graph$staticPlot    <<- checkTRUE(configuredWithThisTool, currentGraphConfig[["staticPlot"]])
   })
   tagList(
-    textInput("chart_title", lang$adminMode$graphs$ui$chartTitle, value = activeSymbol$alias),
+    textInput("chart_title", lang$adminMode$graphs$ui$chartTitle, value = rv$graphConfig$graph$title),
     checkboxInput_MIRO("showlegend", lang$adminMode$graphs$chartOptions$options$showlegend, value = TRUE),
-      #tagList(
-        tags$div(class = "shiny-input-container", 
-                   tags$div(style = "max-width:400px;",
-                            tags$div(style="display:inline-block", 
-                                     checkboxInput_MIRO("fixedHeightCheck", 
-                                                        lang$adminMode$graphs$chartOptions$options$fixedHeightCheck, 
-                                                        value = FALSE)),
-                            conditionalPanel(condition = 'input.fixedHeightCheck===true', 
-                                             style="display:inline-block; padding-left:35px;", 
-                                             numericInput("fixedHeight", 
-                                                          lang$adminMode$graphs$chartOptions$options$fixedHeight, 
-                                                          min = 1L, value = 700L, step = 1L)
-                            ))
-        ),
-        tags$div(class = "shiny-input-container", 
-                 tags$div(style = "max-width:400px;",
-                          tags$div(style="display:inline-block", 
-                                   checkboxInput_MIRO("fixedWidthCheck", 
-                                                      lang$adminMode$graphs$chartOptions$options$fixedWidthCheck, 
-                                                      value = FALSE)),
-                          conditionalPanel(condition = 'input.fixedWidthCheck===true', 
-                                           style="display:inline-block; padding-left:35px;",
-                                           numericInput("fixedWidth", 
-                                                        lang$adminMode$graphs$chartOptions$options$fixedWidth, 
-                                                        min = 1L, value = 1335L, step = 1L)
-                          ))
-        ),
-      #)
-    colorPickerInput("paper_bgcolor", lang$adminMode$graphs$chartOptions$options$paperBgColor, value = NULL),
-    colorPickerInput("plot_bgcolor", lang$adminMode$graphs$chartOptions$options$plotBgColor, value = NULL),
-    checkboxInput_MIRO("staticPlot", lang$adminMode$graphs$chartOptions$options$staticPlot, value = FALSE),
+    numericInput("fixedHeight", 
+                 lang$adminMode$graphs$chartOptions$options$fixedHeight, 
+                 min = 0L, value = rv$graphConfig$graph$fixedHeight, step = 1L),
+    numericInput("fixedWidth", 
+                 lang$adminMode$graphs$chartOptions$options$fixedWidth, 
+                 min = 0L, value = rv$graphConfig$graph$fixedWidth, step = 1L),
+    colorPickerInput("paper_bgcolor", lang$adminMode$graphs$chartOptions$options$paperBgColor, value = rv$graphConfig$graph$paper_bgcolor),
+    colorPickerInput("plot_bgcolor", lang$adminMode$graphs$chartOptions$options$plotBgColor, value = rv$graphConfig$graph$plot_bgcolor),
+    checkboxInput_MIRO("staticPlot", lang$adminMode$graphs$chartOptions$options$staticPlot, value = rv$graphConfig$graph$staticPlot),
     getOuttype()
   )
 })
 getOuttype <- reactive({
+  isolate({
+    rv$graphConfig$outType <<- checkLength(configuredWithThisTool, configJSON$dataRendering[[activeSymbolName]][["outType"]], "graph")
+  })
   tagList(
-    checkboxInput_MIRO("outType", tags$div(lang$adminMode$graphs$chartOptions$options$outType, tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#table-graph-split-screen", 
-                                                                                                      tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")), value = FALSE)
+    checkboxInput_MIRO("outType", tags$div(lang$adminMode$graphs$chartOptions$options$outType, 
+                                           tags$a("", class="info-wrapper", 
+                                                  href="https://gams.com/miro/charts.html#table-graph-split-screen",
+                                                  tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")), 
+                       value = identical(rv$graphConfig$outType, "dtGraph"))
   )
 })
 getScatterOptions  <- reactive({
   indices       <- activeSymbol$indices
   scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
+    rv$graphConfig$graph$symbol <<- checkLength(configuredWithThisTool, currentGraphConfig[["symbol"]], NULL)
     rv$graphConfig$graph$ydata <- list()
     if(length(scalarIndices)){
       rv$graphConfig$graph$ydata[[scalarIndices[[1]]]] <<- list(label = names(scalarIndices)[1], 
@@ -2261,7 +2597,7 @@ getScatterOptions  <- reactive({
     getChartOptions(),
     tags$div(class="cat-body cat-body-10", style="display:none;",
              selectInput("chart_symbol", lang$adminMode$graphs$chartOptions$symbol,
-                         choices = c("_", indices))
+                         choices = c("_", indices), selected = rv$graphConfig$graph$symbol)
     ))
 })
 getBubbleOptions  <- reactive({
@@ -2308,70 +2644,69 @@ getLineOptions  <- reactive({
   })
   getChartOptions()
 })
-getValueboxOptions  <- reactive({
-  rv$initData
-  rv$refreshContent
-  indices       <- activeSymbol$indices
-  scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
-  #isolate({
-  #  rv$graphConfig$options$width <<- 4L
-  #  rv$graphConfig$options$color <<- "aqua"
-  #})
-  tagList(
-    tags$div(class="cat-body cat-body-49",
-             selectInput("valuebox_width", lang$adminMode$graphs$valueboxOptions$width,
-                         choices = c("1" = 12, "2" = 6, "3" = 4, "4" = 3), 
-                         selected = 4),
-             selectInput("valuebox_color", lang$adminMode$graphs$valueboxOptions$color,
-                         choices = langSpecificGraphs$valueboxColor, 
-                         selected = "aqua"),
-             checkboxInput_MIRO("valuebox_use_icon", lang$adminMode$graphs$valueboxOptions$useIcon),
-             conditionalPanel(condition = 'input.valuebox_use_icon===true',
-                              tags$div(class = "shiny-input-container", style = "padding-left: 20px;",
-                                       selectInput("valuebox_icon_lib", lang$adminMode$graphs$valueboxOptions$iconLib,
-                                                   choices = langSpecificGraphs$libChoices,
-                                                   selected = "font-awesome"),
-                                       textInput("valuebox_icon", span(HTML(htmltools::htmlEscape(lang$adminMode$graphs$valueboxOptions$icon1)), tags$br(), 
-                                                                       tags$a(href="http://fontawesome.io/icons/", target = "_blank", "http://fontawesome.io/icons/"), 
-                                                                       htmltools::htmlEscape(lang$adminMode$graphs$valueboxOptions$icon2), tags$a(href="http://getbootstrap.com/components/#glyphicons", 
-                                                                                                                                                  target = "_blank", "http://getbootstrap.com/components/#glyphicons"), 
-                                                                       htmltools::htmlEscape(lang$adminMode$graphs$valueboxOptions$icon3)),
-                                                 value = "", placeholder = "dollar-sign")))
-    )
-  )
-})
 getAnimationOptions  <- reactive({
+  isolate({
+    if(isTRUE(configuredWithThisTool) && length(currentGraphConfig[["animation"]])){
+      rv$graphConfig$graph$animation$easing     <<- checkLength(configuredWithThisTool, currentGraphConfig[["animation"]][["easing"]], "linear")
+      rv$graphConfig$graph$animation$mode       <<- checkLength(configuredWithThisTool, currentGraphConfig[["animation"]][["mode"]], "immediate")
+      rv$graphConfig$graph$animation$redraw     <<- checkLength(configuredWithThisTool, currentGraphConfig[["animation"]][["redraw"]], TRUE)
+      rv$graphConfig$graph$animation$frame      <<- checkLength(configuredWithThisTool, currentGraphConfig[["animation"]][["frame"]], 1000L)
+      rv$graphConfig$graph$animation$transition <<- checkLength(configuredWithThisTool, currentGraphConfig[["animation"]][["transition"]], 500L)
+    }
+    else{
+      rv$graphConfig$graph$animation <- NULL
+    }
+  })
   tagList(
-    numericInput("animation_frame", lang$adminMode$graphs$animationOptions$frame, min = 0L, value = 1L), 
-    numericInput("animation_transition", lang$adminMode$graphs$animationOptions$transition, min = 0L, value = 500L),
-    selectInput("animation_easing", lang$adminMode$graphs$animationOptions$easing, choices = langSpecificGraphs$easingChoices),
-    checkboxInput_MIRO("animation_redraw", lang$adminMode$graphs$animationOptions$redraw, value = TRUE),
-    selectInput("animation_mode", lang$adminMode$graphs$animationOptions$mode, choices = langSpecificGraphs$modeChoices),
+    numericInput("animation_frame", lang$adminMode$graphs$animationOptions$frame, min = 0L, 
+                 value = 1000L/rv$graphConfig$graph$animation$frame), 
+    numericInput("animation_transition", lang$adminMode$graphs$animationOptions$transition, min = 0L, 
+                 value = rv$graphConfig$graph$animation$transition),
+    selectInput("animation_easing", lang$adminMode$graphs$animationOptions$easing, choices = langSpecificGraphs$easingChoices,
+                selected = rv$graphConfig$graph$animation$easing),
+    checkboxInput_MIRO("animation_redraw", lang$adminMode$graphs$animationOptions$redraw, 
+                       value = rv$graphConfig$graph$animation$redraw),
+    selectInput("animation_mode", lang$adminMode$graphs$animationOptions$mode, choices = langSpecificGraphs$modeChoices,
+                selected = rv$graphConfig$graph$animation$mode),
     getAnimationSliderOptions()
   )
 })
 getAnimationSliderOptions  <- reactive({
-  tagList(checkboxInput_MIRO("animation_slider_hide", lang$adminMode$graphs$animationSliderOptions$hide), 
-          textInput("animation_slider_label", lang$adminMode$graphs$animationSliderOptions$label),
-          textInput("animation_slider_prefix", lang$adminMode$graphs$animationSliderOptions$prefix),
-          colorPickerInput("animation_slider_font_color", lang$adminMode$graphs$animationSliderOptions$fontColor, "#000000"))
+  isolate({
+    if(length(currentGraphConfig[["animation"]][["slider"]])){
+      rv$graphConfig$graph$animation$slider$hide      <<- checkTRUE(configuredWithThisTool, currentGraphConfig[["animation"]][["slider"]][["hide"]])
+      rv$graphConfig$graph$animation$slider$label     <<- checkLength(configuredWithThisTool, currentGraphConfig[["animation"]][["slider"]][["label"]], "")
+      rv$graphConfig$graph$animation$slider$prefix    <<- checkLength(configuredWithThisTool, currentGraphConfig[["animation"]][["slider"]][["prefix"]], "")
+      rv$graphConfig$graph$animation$slider$fontcolor <<- checkLength(configuredWithThisTool, currentGraphConfig[["animation"]][["slider"]][["fontcolor"]], "#000000")
+    }
+    else{
+      rv$graphConfig$graph$animation$slider <- NULL
+    }
+  })
+  tagList(checkboxInput_MIRO("animation_slider_hide", lang$adminMode$graphs$animationSliderOptions$hide,
+                             value = rv$graphConfig$graph$animation$slider$hide), 
+          textInput("animation_slider_label", lang$adminMode$graphs$animationSliderOptions$label,
+                    value = rv$graphConfig$graph$animation$slider$label),
+          textInput("animation_slider_prefix", lang$adminMode$graphs$animationSliderOptions$prefix,
+                    value = rv$graphConfig$graph$animation$slider$prefix),
+          colorPickerInput("animation_slider_font_color", lang$adminMode$graphs$animationSliderOptions$fontColor, 
+                           value = rv$graphConfig$graph$animation$slider$fontcolor))
 })
 getHistOptions <- reactive({
   scalarIndices <- activeSymbol$indices[activeSymbol$indexTypes == "numeric"]
   isolate({
-    label <- names(activeSymbol$indices)[match(scalarIndices[1], 
-                                               activeSymbol$indices)][1]
+    label <- if(isTRUE(configuredWithThisTool) && length(currentGraphConfig$xaxis[["title"]])) 
+      currentGraphConfig$xaxis[["title"]] 
+    else
+      names(activeSymbol$indices)[match(scalarIndices[1], activeSymbol$indices)][1]
     rv$graphConfig$graph$xdata <<- list()
-    rv$graphConfig$graph$xdata[[scalarIndices[1]]] <<- list(labels = label, 
-                                                            color = "#000000")
-    rv$graphConfig$graph$histnorm    <<- ""
-    rv$graphConfig$graph$nbins       <<- 2L
-    rv$graphConfig$graph$barmode     <<- "overlay"
-    rv$graphConfig$graph$alpha       <<- 0.6
-    rv$graphConfig$graph$xaxis$title <<- label
-    rv$graphConfig$graph$cumulative  <<- FALSE
-    rv$graphConfig$graph$horizontal  <<- FALSE
-    rv$graphConfig$graph$showlegend  <<- TRUE
+    rv$graphConfig$graph$xdata[[scalarIndices[1]]] <<- list(labels = label, color = "#000000")
+    rv$graphConfig$graph$histnorm      <<- checkLength(configuredWithThisTool, currentGraphConfig[["histnorm"]], "")
+    rv$graphConfig$graph$nbins         <<- checkLength(configuredWithThisTool, currentGraphConfig[["nbins"]], 2L)
+    rv$graphConfig$graph$barmode       <<- checkLength(configuredWithThisTool, currentGraphConfig[["barmode"]], "overlay")
+    rv$graphConfig$graph$alpha         <<- checkLength(configuredWithThisTool, currentGraphConfig[["alpha"]], 0.6)
+    rv$graphConfig$graph$cumulative    <<- checkTRUE(configuredWithThisTool, currentGraphConfig[["cumulative"]])
+    rv$graphConfig$graph$horizontal    <<- checkTRUE(configuredWithThisTool, currentGraphConfig[["horizontal"]])
     if(length(scalarIndices)){
       idLabelMap$hist_xdata[[1]]       <<- scalarIndices[[1]]
     }else{
@@ -2381,27 +2716,67 @@ getHistOptions <- reactive({
   tagList(
     tags$div(class="cat-body cat-body-23",
              createArray(session, "hist_xdata", lang$adminMode$graphs$histOptions$xdata,
+                         autoCreate = !isTRUE(configuredWithThisTool),
                          class_outer="array-wrapper-outer-graph", hr = FALSE)),
     tags$div(class="cat-body cat-body-24", style="display:none;",
              getAxisOptions("x", label, labelOnly = TRUE),
              getAxisOptions("y", "", labelOnly = TRUE),
              selectInput("hist_norm", lang$adminMode$graphs$histOptions$norm,
-                         choices = langSpecificGraphs$normChoices),
+                         choices = langSpecificGraphs$normChoices,
+                         selected = rv$graphConfig$graph$histnorm),
              numericInput("hist_nbins", lang$adminMode$graphs$histOptions$nbins,
-                          min = 0L, value = 2L),
+                          min = 0L, value = rv$graphConfig$graph$nbins),
              selectInput("hist_barmode", lang$adminMode$graphs$histOptions$barmode,
-                         choices = langSpecificGraphs$barmodeChoices),
+                         choices = langSpecificGraphs$barmodeChoices,
+                         selected = rv$graphConfig$graph$barmode),
              numericInput("hist_alpha", lang$adminMode$graphs$histOptions$alpha,
-                          min = 0L, max = 1L, step = 0.1, value = 0.6),
+                          min = 0L, max = 1L, step = 0.1, value = rv$graphConfig$graph$alpha),
              checkboxInput_MIRO("hist_cumulative", lang$adminMode$graphs$histOptions$cumulative,
-                                value = FALSE),
+                                value = rv$graphConfig$graph$cumulative),
              selectInput("hist_horizontal", lang$adminMode$graphs$histOptions$horizontal,
-                         choices = langSpecificGraphs$orientationChoices)),
+                         choices = langSpecificGraphs$orientationChoices,
+                         selected = if(isTRUE(rv$graphConfig$graph$horizontal))
+                           "horizontal"
+                         else
+                           "vertical")),
     tags$div(class="cat-body cat-body-25", style="display:none;",
              getColorPivotOptions(),
              getFilterOptions()),
     tags$div(class="cat-body cat-body-26", style="display:none;",
              getOptionSection()
+    )
+  )
+})
+getValueboxOptions  <- reactive({
+  rv$initData
+  rv$refreshContent
+  indices       <- activeSymbol$indices
+  scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
+  isolate({
+   rv$graphConfig$options$width     <<- checkLength(configuredWithThisTool, currentGraphConfig[["width"]], 4L)
+   rv$graphConfig$options$color     <<- checkLength(configuredWithThisTool, currentGraphConfig[["color"]], "aqua")
+   rv$graphConfig$options$icon$name <<- checkLength(configuredWithThisTool, currentGraphConfig[["icon"]][["name"]], NULL)
+  })
+  tagList(
+    tags$div(class="cat-body cat-body-49",
+             selectInput("valuebox_width", lang$adminMode$graphs$valueboxOptions$width,
+                         choices = c("1" = 12, "2" = 6, "3" = 4, "4" = 3), 
+                         selected = rv$graphConfig$options$width),
+             selectInput("valuebox_color", lang$adminMode$graphs$valueboxOptions$color,
+                         choices = langSpecificGraphs$valueboxColor, 
+                         selected = rv$graphConfig$options$color),
+             selectInput("valuebox_icon", lang$adminMode$graphs$valueboxOptions$icon,
+                         choices = langSpecificGraphs$valueboxIconChoices,
+                         selected = if(is.null(rv$graphConfig$options$icon$name)) "_"
+                         else if(!(rv$graphConfig$options$icon$name %in% langSpecificGraphs$valueboxIconChoices))
+                           "other"
+                         else
+                           rv$graphConfig$options$icon$name),
+             conditionalPanel(condition = "input.valuebox_icon=== 'other'",
+                              tags$div(class = "shiny-input-container", style = "padding-left: 20px;",
+                                       textInput("valuebox_other_icon", span(HTML(htmltools::htmlEscape(lang$adminMode$graphs$valueboxOptions$otherIcon)), tags$br(), 
+                                                                       tags$a(href="http://fontawesome.io/icons/", target = "_blank", "http://fontawesome.io/icons/")),
+                                                 value = rv$graphConfig$options$icon$name, placeholder = "dollar-sign")))
     )
   )
 })
@@ -2415,7 +2790,7 @@ getDygraphsOptions <- reactive({
     return()
   }
   isolate({
-    rv$graphConfig$graph$xdata <<- unname(indices[1])
+    rv$graphConfig$graph$xdata <<- checkLength(configuredWithThisTool, currentGraphConfig[["xdata"]], unname(indices[1]))
     rv$graphConfig$graph$ydata <<- NULL
     rv$graphConfig$graph$ydata[[scalarIndices[1]]] <<- list(label = names(scalarIndices)[[1]], 
                                                             stemPlot = FALSE, stepPlot = FALSE, 
@@ -2423,18 +2798,39 @@ getDygraphsOptions <- reactive({
                                                             pointShape = "dot",
                                                             pointSize = 2L,
                                                             yaxis = "y")
-    rv$graphConfig$graph$dyEvent <<- NULL
-    rv$graphConfig$graph$dyLimit <<- NULL
+    
+    rv$graphConfig$graph$dyEvent      <<- NULL
+    rv$graphConfig$graph$dyLimit      <<- NULL
     rv$graphConfig$graph$dyAnnotation <<- NULL
-    rv$graphConfig$graph$dyShading <<- NULL
-    rv$graphConfig$graph$dyOptions <<- list(logscale = FALSE,
-                                            stepPlot = FALSE, stemPlot = FALSE, fillGraph = FALSE,
-                                            fillAlpha = 0.15, drawPoints = FALSE, pointShape = "dot",
-                                            pointSize = 2L)
-    rv$graphConfig$graph$dyHighlight <<- list(highlightSeriesBackgroundAlpha = 0.5,
-                                              hideOnMouseOut = TRUE, 
-                                              highlightCircleSize = 3L)
-    rv$graphConfig$graph$color <<- NULL
+    rv$graphConfig$graph$dyShading    <<- NULL
+    
+    
+    rv$graphConfig$graph$title                <<- checkLength(configuredWithThisTool, currentGraphConfig[["title"]], activeSymbol$alias)
+    rv$graphConfig$graph$dyOptions$logscale   <<- checkTRUE(configuredWithThisTool, currentGraphConfig[["dyOptions"]][["logscale"]])
+    rv$graphConfig$graph$dyOptions$stepPlot   <<- checkTRUE(configuredWithThisTool, currentGraphConfig[["dyOptions"]][["stepPlot"]])
+    rv$graphConfig$graph$dyOptions$stemPlot   <<- checkTRUE(configuredWithThisTool, currentGraphConfig[["dyOptions"]][["stemPlot"]])
+    rv$graphConfig$graph$dyOptions$fillGraph  <<- checkTRUE(configuredWithThisTool, currentGraphConfig[["dyOptions"]][["fillGraph"]])
+    rv$graphConfig$graph$dyOptions$fillAlpha  <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyOptions"]][["fillAlpha"]], 0.15)
+    rv$graphConfig$graph$dyOptions$drawPoints <<- checkTRUE(configuredWithThisTool, currentGraphConfig[["dyOptions"]][["drawPoints"]])
+    rv$graphConfig$graph$dyOptions$pointShape <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyOptions"]][["pointShape"]], "dot")
+    rv$graphConfig$graph$dyOptions$pointSize  <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyOptions"]][["pointSize"]], 2L)
+    
+    rv$graphConfig$graph$dyHighlight <<- NULL
+    rv$graphConfig$graph$dyHighlight$highlightSeriesBackgroundAlpha        <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyHighlight"]][["highlightSeriesBackgroundAlpha"]], NULL)
+    rv$graphConfig$graph$dyHighlight$hideOnMouseOut                        <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyHighlight"]][["hideOnMouseOut"]], NULL)
+    rv$graphConfig$graph$dyHighlight$highlightCircleSize                   <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyHighlight"]][["highlightCircleSize"]], NULL)
+    rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeWidth       <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyHighlight"]][["highlightSeriesOpts"]][["strokeWidth"]], NULL)
+    rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeBorderWidth <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyHighlight"]][["highlightSeriesOpts"]][["strokeBorderWidth"]], NULL)
+    rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeBorderColor <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyHighlight"]][["highlightSeriesOpts"]][["strokeBorderColor"]], NULL)
+
+    rv$graphConfig$graph$dyRangeSelector <<- NULL
+    rv$graphConfig$graph$dyRangeSelector$height           <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyRangeSelector"]][["height"]], NULL)
+    rv$graphConfig$graph$dyRangeSelector$strokeColor      <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyRangeSelector"]][["strokeColor"]], NULL)
+    rv$graphConfig$graph$dyRangeSelector$fillColor        <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyRangeSelector"]][["fillColor"]], NULL)
+    rv$graphConfig$graph$dyRangeSelector$retainDateWindow <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyRangeSelector"]][["retainDateWindow"]], NULL)
+    rv$graphConfig$graph$dyRangeSelector$keepMouseZoom    <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyRangeSelector"]][["keepMouseZoom"]], NULL)
+    
+    rv$graphConfig$graph$color <<- checkLength(configuredWithThisTool, currentGraphConfig[["color"]], NULL)
     if(length(scalarIndices)){
       idLabelMap$chart_ydata[[1]] <<- scalarIndices[[1]]
     }else{
@@ -2444,23 +2840,28 @@ getDygraphsOptions <- reactive({
   tagList(
     tags$div(class="cat-body cat-body-27",
              selectInput("chart_xdata", lang$adminMode$graphs$dygraphsOptions$xdata,
-                         choices = indices),
+                         choices = indices,
+                         selected = rv$graphConfig$graph$xdata),
              getDyaxisOptions("dxAxis", names(indices[1]))),
     tags$div(class="cat-body cat-body-28", style="display:none;",
              createArray(session, "dy_ydata", lang$adminMode$graphs$dygraphsOptions$ydata,
+                         autoCreate = !isTRUE(configuredWithThisTool),
                          class_outer="array-wrapper-outer-graph", hr = FALSE)),
     tags$div(class="cat-body cat-body-54", style="display:none;",
              tags$div(id = "left_dyAxis", class = "shiny-input-container",
+                      style = if(!axisOptionsGlobal[["y"]] > 0L)
+                        "display: none;", 
                       optionSection(lang$adminMode$graphs$axisOptions$leftAxis,
                                     getDyaxisOptions("dyAxis", names(scalarIndices)[1]))),
              tags$div(id = "right_dyAxis", class = "shiny-input-container", 
-                      style = "display: none;", 
+                      style = if(!axisOptionsGlobal[["y2"]] > 0L)
+                        "display: none;", 
                       optionSection(lang$adminMode$graphs$axisOptions$rightAxis, 
                                     getDyaxisOptions("dyAxis2", names(scalarIndices)[1])))),
     tags$div(class="cat-body cat-body-29", style="display:none;",
              selectInput("chart_color", tags$div(lang$adminMode$graphs$dygraphsOptions$color, tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#group-domain", 
                                                                                             tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
-                         choices = c("_", indices)),
+                         choices = c("_", indices), selected = rv$graphConfig$graph$color),
              getFilterOptions()),
     if(length(configScalars) && nrow(configScalars)){
       tagList(
@@ -2480,32 +2881,65 @@ getDygraphsOptions <- reactive({
     },
     tags$div(class="cat-body cat-body-34", style="display:none;",
              title = lang$adminMode$graphs$dygraphsOptions$rngSelOpts$title, collapsed = TRUE,
-             checkboxInput_MIRO("dyrange_activate", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$activate),
-             numericInput("dyrange_height", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$height, min = 0L, value = 40L),
-             checkboxInput_MIRO("dyrange_retainDateWindow", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$retainDateWindow, FALSE),
-             checkboxInput_MIRO("dyrange_keepMouseZoom", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$keepMouseZoom, TRUE),
-             colorPickerInput("dyrange_fillColor", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$fillColor, "#A7B1C4"),
-             colorPickerInput("dyrange_strokeColor", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$strokeColor, "#808FAB")
+             checkboxInput_MIRO("dyrange_activate", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$activate,
+                                value = if(length(rv$graphConfig$graph$dyRangeSelector)) TRUE else FALSE),
+             conditionalPanel(
+               condition = "input.dyrange_activate == true",
+               numericInput("dyrange_height", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$height, min = 0L, 
+                            value = checkLength(configuredWithThisTool, rv$graphConfig$graph$dyRangeSelector$height, 40L)),
+               checkboxInput_MIRO("dyrange_retainDateWindow", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$retainDateWindow, 
+                                  value = checkLength(configuredWithThisTool, rv$graphConfig$graph$dyRangeSelector$retainDateWindow, FALSE)),
+               checkboxInput_MIRO("dyrange_keepMouseZoom", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$keepMouseZoom, 
+                                  value = checkLength(configuredWithThisTool, rv$graphConfig$graph$dyRangeSelector$keepMouseZoom, TRUE)),
+               colorPickerInput("dyrange_fillColor", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$fillColor, 
+                                value = checkLength(configuredWithThisTool, rv$graphConfig$graph$dyRangeSelector$fillColor, "#A7B1C4")),
+               colorPickerInput("dyrange_strokeColor", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$strokeColor, 
+                                value = checkLength(configuredWithThisTool, rv$graphConfig$graph$dyRangeSelector$strokeColor, "#808FAB")))
     ),
     tags$div(class="cat-body cat-body-36", style="display:none;",
-             textInput("chart_title", lang$adminMode$graphs$ui$chartTitle),
-             checkboxInput_MIRO("dyopt_logscale", lang$adminMode$graphs$dygraphsOptions$generalOpts$logscale),
-             checkboxInput_MIRO("dyopt_stepPlot", lang$adminMode$graphs$dygraphsOptions$generalOpts$stepPlot),
-             checkboxInput_MIRO("dyopt_stemPlot", lang$adminMode$graphs$dygraphsOptions$generalOpts$stemPlot),
-             checkboxInput_MIRO("dyopt_fillGraph", lang$adminMode$graphs$dygraphsOptions$generalOpts$fillGraph),
-             numericInput("dyopt_fillAlpha", lang$adminMode$graphs$dygraphsOptions$generalOpts$fillAlpha, min = 0L, max = 1L, value = 0.15),
-             checkboxInput_MIRO("dyopt_drawPoints", lang$adminMode$graphs$dygraphsOptions$generalOpts$drawPoints),
+             textInput("chart_title", lang$adminMode$graphs$ui$chartTitle,
+                       value = rv$graphConfig$graph$title),
+             checkboxInput_MIRO("dyopt_logscale", lang$adminMode$graphs$dygraphsOptions$generalOpts$logscale,
+                                value = rv$graphConfig$graph$dyOptions$logscale),
+             checkboxInput_MIRO("dyopt_stepPlot", lang$adminMode$graphs$dygraphsOptions$generalOpts$stepPlot,
+                                value = rv$graphConfig$graph$dyOptions$stepPlot),
+             checkboxInput_MIRO("dyopt_stemPlot", lang$adminMode$graphs$dygraphsOptions$generalOpts$stemPlot,
+                                value = rv$graphConfig$graph$dyOptions$stemPlot),
+             checkboxInput_MIRO("dyopt_fillGraph", lang$adminMode$graphs$dygraphsOptions$generalOpts$fillGraph,
+                                value = rv$graphConfig$graph$dyOptions$fillGraph),
+             numericInput("dyopt_fillAlpha", lang$adminMode$graphs$dygraphsOptions$generalOpts$fillAlpha, min = 0L, 
+                          max = 1L, step = 0.1, value = rv$graphConfig$graph$dyOptions$fillAlpha),
+             checkboxInput_MIRO("dyopt_drawPoints", lang$adminMode$graphs$dygraphsOptions$generalOpts$drawPoints, 
+                                value = rv$graphConfig$graph$dyOptions$drawPoints),
              selectInput("dyopt_pointShape", lang$adminMode$graphs$dygraphsOptions$generalOpts$pointShape, 
-                         choices = langSpecificGraphs$pointShapeChoices),
-             numericInput("dyopt_pointSize", lang$adminMode$graphs$dygraphsOptions$generalOpts$pointSize, min = 0L, value = 2L),
+                         choices = langSpecificGraphs$pointShapeChoices,
+                         selected = rv$graphConfig$graph$dyOptions$pointShape),
+             numericInput("dyopt_pointSize", lang$adminMode$graphs$dygraphsOptions$generalOpts$pointSize, min = 0L, 
+                          value = rv$graphConfig$graph$dyOptions$pointSize),
              getOuttype()
     ),
     tags$div(class="cat-body cat-body-35", style="display:none;",
-             checkboxInput_MIRO("dyhighlight_activate", lang$adminMode$graphs$dygraphsOptions$highOpts$activate, value = TRUE),
-             numericInput("dyhigh_circleSize", lang$adminMode$graphs$dygraphsOptions$highOpts$circleSize, min = 0L, value = 3L),
-             sliderInput("dyhigh_seriesBackgroundAlpha", lang$adminMode$graphs$dygraphsOptions$highOpts$seriesBackgroundAlpha, 
-                         min = 0L, max = 1L, step = 0.1, value = 0.5),
-             checkboxInput_MIRO("dyhigh_hideOnMouseOut", lang$adminMode$graphs$dygraphsOptions$highOpts$hideOnMouseOut, TRUE)
+             checkboxInput_MIRO("dyhighlight_activate", lang$adminMode$graphs$dygraphsOptions$highOpts$activate, 
+                                #check if highlighting is configured. A check for length(dyHighlight) is not sufficient 
+                                #since 'no highlight' also sets highlighting options (noDygraphHighlight)   
+                                value = if(!length(rv$graphConfig$graph[["dyHighlight"]]) ||
+                                           identical(rv$graphConfig$graph[["dyHighlight"]][order(names(rv$graphConfig$graph[["dyHighlight"]]))], 
+                                                     noDygraphHighlight)) FALSE else TRUE),
+             conditionalPanel(
+               condition = "input.dyhighlight_activate == true",
+               numericInput("dyhigh_circleSize", lang$adminMode$graphs$dygraphsOptions$highOpts$circleSize, min = 0L, 
+                            value = checkLength(configuredWithThisTool, rv$graphConfig$graph$dyHighlight$highlightCircleSize, 3L)),
+               sliderInput("dyhigh_seriesBackgroundAlpha", lang$adminMode$graphs$dygraphsOptions$highOpts$seriesBackgroundAlpha, 
+                           min = 0L, max = 1L, step = 0.1, 
+                           value = checkLength(configuredWithThisTool, rv$graphConfig$graph$dyHighlight$highlightSeriesBackgroundAlpha, 0.5)),
+               numericInput("dyhigh_strokeWidth", lang$adminMode$graphs$dygraphsOptions$highOpts$strokeWidth, min = 0L, 
+                            value = checkLength(configuredWithThisTool, rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeWidth, 1L)),
+               numericInput("dyhigh_strokeBorderWidth", lang$adminMode$graphs$dygraphsOptions$highOpts$strokeBorderWidth, min = 0L, 
+                            step = 0.1, value = rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeBorderWidth),
+               colorPickerInput("dyhigh_strokeBorderColor", lang$adminMode$graphs$dygraphsOptions$highOpts$strokeBorderColor, 
+                                value = checkLength(configuredWithThisTool, rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeBorderColor, "#ffffff")),
+               checkboxInput_MIRO("dyhigh_hideOnMouseOut", lang$adminMode$graphs$dygraphsOptions$highOpts$hideOnMouseOut, 
+                                  value = checkLength(configuredWithThisTool, rv$graphConfig$graph$dyHighlight$hideOnMouseOut, TRUE)))
     )
   )
 })
@@ -2516,49 +2950,69 @@ getDyaxisOptions <- function(id, title, labelOnly = FALSE){
     idJSON <- "yaxis"
   else 
     idJSON <- "xaxis"
-  isolate({    
-    if(!identical(id, "dxAxis")){
-      rv$graphConfig$graph[[idJSON]] <<- list(name = if(identical(id, "dyAxis2")) "y2" 
-                                              else if(identical(id, "dyAxis")) "y"
-                                              else "x", 
-                                              label = title, 
-                                              valueRange = list(NULL, NULL),
-                                              axisLineColor = NULL, 
-                                              axisLineWidth = NULL,
-                                              axisLabelFontSize = NULL,
-                                              drawGrid = TRUE, 
-                                              gridLineWidth = NULL,
-                                              independentTicks = TRUE)
+  isolate({
+    rv$graphConfig$graph[[idJSON]]$name               <<- if(identical(id, "dyAxis2")) "y2" else if(identical(id, "dyAxis")) "y" else "x"
+    rv$graphConfig$graph[[idJSON]]$label              <<- checkLength(configuredWithThisTool, currentGraphConfig[[idJSON]][["label"]], title)
+    rv$graphConfig$graph[[idJSON]]$axisLineColor      <<- checkLength(configuredWithThisTool, currentGraphConfig[[idJSON]][["axisLineColor"]], NULL)
+    rv$graphConfig$graph[[idJSON]]$axisLineWidth      <<- checkLength(configuredWithThisTool, currentGraphConfig[[idJSON]][["axisLineWidth"]], 0.3)
+    rv$graphConfig$graph[[idJSON]]$axisLabelFontSize  <<- checkLength(configuredWithThisTool, currentGraphConfig[[idJSON]][["axisLabelFontSize"]], 14L)
+    rv$graphConfig$graph[[idJSON]]$gridLineWidth      <<- checkLength(configuredWithThisTool, currentGraphConfig[[idJSON]][["gridLineWidth"]], 0.3)
+    #when a second yaxis is used, its grid can only be drawn if drawGrid for first yaxis is also set to TRUE. Using gridinecolor for y1 axis therefore ('transparent', 'gray') therefore.
+    if(identical(id, "dyAxis")){
+      rv$graphConfig$graph[[idJSON]]$gridLineColor    <<- checkLength(configuredWithThisTool, currentGraphConfig[[idJSON]][["gridLineColor"]], "gray") 
     }else{
-      rv$graphConfig$graph[[idJSON]] <<- list(name = if(identical(id, "dyAxis2")) "y2" 
-                                              else if(identical(id, "dyAxis")) "y"
-                                              else "x", 
-                                              label = title, 
-                                              axisLineColor = NULL, 
-                                              axisLineWidth = NULL,
-                                              axisLabelFontSize = NULL,
-                                              drawGrid = TRUE, 
-                                              gridLineWidth = NULL)
+      rv$graphConfig$graph[[idJSON]]$drawGrid         <<- checkNotFALSE(configuredWithThisTool, currentGraphConfig[[idJSON]][["drawGrid"]])
+    }
+    if(!identical(id, "dxAxis")){
+      valFrom <- if(length(currentGraphConfig[[idJSON]][["valueRange"]][[1]]) &&
+                    !is.na(currentGraphConfig[[idJSON]][["valueRange"]][[1]]))
+        currentGraphConfig[[idJSON]][["valueRange"]][[1]] else NULL
+      valTo <- if(length(currentGraphConfig[[idJSON]][["valueRange"]][[2]]) &&
+                  !is.na(currentGraphConfig[[idJSON]][["valueRange"]][[2]]))
+        currentGraphConfig[[idJSON]][["valueRange"]][[2]] else NULL
+      rv$graphConfig$graph[[idJSON]]$valueRange       <<- list(valFrom, valTo)
+      rv$graphConfig$graph[[idJSON]]$independentTicks <<- checkNotFALSE(configuredWithThisTool, currentGraphConfig[[idJSON]][["independentTicks"]])
     }
   })
   tagList(
-    textInput(id %+% "_label", lang$adminMode$graphs$dygraphsOptions$axisOptions$title, value = title),
+    textInput(id %+% "_label", lang$adminMode$graphs$dygraphsOptions$axisOptions$title, 
+              value = rv$graphConfig$graph[[idJSON]]$label),
     if(!identical(id, "dxAxis")){
-      checkboxInput_MIRO(id %+% "_independentTicks", lang$adminMode$graphs$dygraphsOptions$axisOptions$independentTicks, TRUE)
+      checkboxInput_MIRO(id %+% "_independentTicks", lang$adminMode$graphs$dygraphsOptions$axisOptions$independentTicks, 
+                         rv$graphConfig$graph[[idJSON]]$independentTicks)
     },
-    checkboxInput_MIRO(id %+% "_drawGrid", lang$adminMode$graphs$dygraphsOptions$axisOptions$drawGrid, TRUE),
-    numericInput(id %+% "_gridLineWidth", lang$adminMode$graphs$dygraphsOptions$axisOptions$gridLineWidth, min = 0.1, value = 0.3, step = 0.1),
-    colorPickerInput(id %+% "_axisLineColor", lang$adminMode$graphs$dygraphsOptions$axisOptions$axisLineColor, value = NULL),
-    numericInput(id %+% "_axisLineWidth", lang$adminMode$graphs$dygraphsOptions$axisOptions$axisLineWidth, min = 0.1, value = 0.3, step = 0.1),
-    numericInput(id %+% "_axisLabelFontSize", lang$adminMode$graphs$dygraphsOptions$axisOptions$axisLabelFontSize, min = 0L, value = 14L),
+    if(identical(id, "dyAxis")){
+      checkboxInput_MIRO(id %+% "_drawGrid", lang$adminMode$graphs$dygraphsOptions$axisOptions$drawGrid, 
+                         if(identical(rv$graphConfig$graph[[idJSON]]$gridLineColor, "gray")) TRUE else FALSE)
+    }else{
+      checkboxInput_MIRO(id %+% "_drawGrid", lang$adminMode$graphs$dygraphsOptions$axisOptions$drawGrid, rv$graphConfig$graph[[idJSON]]$drawGrid)  
+    },
+    conditionalPanel(condition = "input."%+%id%+%"_drawGrid===true", 
+                     style="display:inline-block;padding-left:35px;", 
+                     tags$div(
+                       numericInput(id %+% "_gridLineWidth", lang$adminMode$graphs$dygraphsOptions$axisOptions$gridLineWidth, min = 0.1, 
+                                    value = rv$graphConfig$graph[[idJSON]]$gridLineWidth, step = 0.1))
+    ),
+    colorPickerInput(id %+% "_axisLineColor", lang$adminMode$graphs$dygraphsOptions$axisOptions$axisLineColor, 
+                     value = rv$graphConfig$graph[[idJSON]]$axisLineColor),
+    numericInput(id %+% "_axisLineWidth", lang$adminMode$graphs$dygraphsOptions$axisOptions$axisLineWidth, min = 0.1, 
+                 value = rv$graphConfig$graph[[idJSON]]$axisLineWidth, step = 0.1),
+    numericInput(id %+% "_axisLabelFontSize", lang$adminMode$graphs$dygraphsOptions$axisOptions$axisLabelFontSize, min = 0L, 
+                 value = rv$graphConfig$graph[[idJSON]]$axisLabelFontSize),
     if(!identical(id, "dxAxis")){
       tags$div(class = "shiny-input-container", style = "display:inline-block;",
                tags$label(class = "cb-label shiny-input-container", "for" = "valueRangeWrapper", lang$adminMode$graphs$dygraphsOptions$axisOptions$valueRange),
                tags$div(style = "padding-top: 10px;",
                         tags$div(id = "valueRangeWrapper",
                                  tags$div(style = "max-width:400px;",
-                                          tags$div(style="display:inline-block", textInput(id %+% "_valueRangeFrom", lang$adminMode$graphs$dygraphsOptions$axisOptions$valueRangeFrom, value = NULL)),
-                                          tags$div(style="display:inline-block", textInput(id %+% "_valueRangeTo", lang$adminMode$graphs$dygraphsOptions$axisOptions$valueRangeTo, value = NULL)))
+                                          tags$div(style="display:inline-block", 
+                                                   textInput(id %+% "_valueRangeFrom", 
+                                                             lang$adminMode$graphs$dygraphsOptions$axisOptions$valueRangeFrom, 
+                                                             value = rv$graphConfig$graph[[idJSON]]$valueRange[[1]])),
+                                          tags$div(style="display:inline-block", 
+                                                   textInput(id %+% "_valueRangeTo", 
+                                                             lang$adminMode$graphs$dygraphsOptions$axisOptions$valueRangeTo, 
+                                                             value = rv$graphConfig$graph[[idJSON]]$valueRange[[2]])))
                         ))
       )
     }
@@ -2569,13 +3023,15 @@ getLeafletOptions <- reactive({
   rv$refreshContent
   indices       <- activeSymbol$indices
   scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
-  leafletGroups$reset()
   isolate({
-    rv$graphConfig$graph$markers <<- NULL
-    rv$graphConfig$graph$flows <<- NULL
+    rv$graphConfig$graph$markers    <<- NULL
+    rv$graphConfig$graph$flows      <<- NULL
     rv$graphConfig$graph$minicharts <<- NULL
-    rv$graphConfig$graph$layersControl$position <<- "topright"
-    rv$graphConfig$graph$layersControl$options$collapsed <<- TRUE
+    rv$graphConfig$graph$hideGroups                      <<- checkLength(configuredWithThisTool, currentGraphConfig[["hideGroups"]], NULL)
+    rv$graphConfig$graph$layersControl$baseGroups        <<- checkLength(configuredWithThisTool, currentGraphConfig[["layersControl"]][["baseGroups"]], NULL)
+    rv$graphConfig$graph$layersControl$overlayGroups     <<- checkLength(configuredWithThisTool, currentGraphConfig[["layersControl"]][["overlayGroups"]], NULL)
+    rv$graphConfig$graph$layersControl$position          <<- checkLength(configuredWithThisTool, currentGraphConfig[["layersControl"]][["position"]], "topright")
+    rv$graphConfig$graph$layersControl$options$collapsed <<- checkNotFALSE(configuredWithThisTool, currentGraphConfig[["layersControl"]][["options"]][["collapsed"]])
   })
   tagList(
     tagList(
@@ -2589,15 +3045,23 @@ getLeafletOptions <- reactive({
                createArray(session, "leaflet_minicharts", lang$adminMode$graphs$leafletOptions$minicharts, autoCreate = FALSE,
                            class_outer="array-wrapper-outer-graph", hr = FALSE)),
       tags$div(class="cat-body cat-body-40", style="display:none;",
-               selectInput("leaflet_hideGroups", lang$adminMode$graphs$leafletOptions$hideGroups, choices = c(),
+               selectInput("leaflet_hideGroups", lang$adminMode$graphs$leafletOptions$hideGroups, 
+                           choices = leafletGroups$get(),
+                           selected = rv$graphConfig$graph$hideGroups,
                            multiple = TRUE),
-               selectInput("leaflc_baseGroups", lang$adminMode$graphs$leafletOptions$layer$baseGroups, choices = c(),
+               selectInput("leaflc_baseGroups", lang$adminMode$graphs$leafletOptions$layer$baseGroups, 
+                           choices = leafletGroups$get(),
+                           selected = rv$graphConfig$graph$layersControl$baseGroups,
                            multiple = TRUE),
                selectInput("leaflc_overlayGroups", lang$adminMode$graphs$leafletOptions$layer$overlayGroups, 
-                           choices = c(), multiple = TRUE),
+                           choices = leafletGroups$get(), 
+                           selected = rv$graphConfig$graph$layersControl$overlayGroups,
+                           multiple = TRUE),
                selectInput("leaflc_position", lang$adminMode$graphs$leafletOptions$layer$position, 
-                           choices = langSpecificGraphs$positionChoices),
-               checkboxInput_MIRO("leaflc_collapsed", lang$adminMode$graphs$leafletOptions$layer$collapsed, value = TRUE)
+                           choices = langSpecificGraphs$positionChoices,
+                           selected = rv$graphConfig$graph$layersControl$position),
+               checkboxInput_MIRO("leaflc_collapsed", lang$adminMode$graphs$leafletOptions$layer$collapsed, 
+                                  value = rv$graphConfig$graph$layersControl$options$collapsed)
       ),
       tags$div(class="cat-body cat-body-41", style="display:none;",
                getFilterOptions()),
@@ -2612,14 +3076,14 @@ getTimevisOptions<- reactive({
   indices       <- activeSymbol$indices
   scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
-    rv$graphConfig$graph$showZoom <<- TRUE
-    rv$graphConfig$graph$fit <<- TRUE
-    rv$graphConfig$graph$zoomFactor <<- 0.5
-    rv$graphConfig$graph$series <- list()
-    rv$graphConfig$graph$editable <- FALSE
-    rv$graphConfig$graph$multiselect <- FALSE
-    rv$graphConfig$graph$showCurrentTime <- FALSE
-    rv$graphConfig$graph$series[["1"]] <<- list(content = indices[[1]], 
+    rv$graphConfig$graph$showZoom         <<- checkNotFALSE(configuredWithThisTool, currentGraphConfig[["showZoom"]])
+    rv$graphConfig$graph$fit              <<- checkNotFALSE(configuredWithThisTool, currentGraphConfig[["fit"]])
+    rv$graphConfig$graph$zoomFactor       <<- checkLength(configuredWithThisTool, currentGraphConfig[["zoomFactor"]], 0.5)
+    rv$graphConfig$graph$editable         <<- checkTRUE(configuredWithThisTool, currentGraphConfig[["editable"]])
+    rv$graphConfig$graph$multiselect      <<- checkTRUE(configuredWithThisTool, currentGraphConfig[["multiselect"]])
+    rv$graphConfig$graph$showCurrentTime  <<- checkTRUE(configuredWithThisTool, currentGraphConfig[["showCurrentTime"]])
+    rv$graphConfig$graph$series           <<- list()
+    rv$graphConfig$graph$series[["1"]]    <<- list(content = indices[[1]], 
                                                 start = indices[[1]],
                                                 type = "box")
   })
@@ -2627,60 +3091,85 @@ getTimevisOptions<- reactive({
     tagList(
       tags$div(class="cat-body cat-body-43",
                createArray(session, "timevis_series", lang$adminMode$graphs$timevisOptions$series,
+                           autoCreate = !isTRUE(configuredWithThisTool),
                            class_outer="array-wrapper-outer-graph", hr = FALSE),
-               createArray(session, "timevis_custom", lang$adminMode$graphs$timevisOptions$custom, autoCreate = FALSE,
+               createArray(session, "timevis_custom", lang$adminMode$graphs$timevisOptions$custom, 
+                           autoCreate = FALSE,
                            class_outer="array-wrapper-outer-graph", hr = FALSE)),
       tags$div(class="cat-body cat-body-44", style="display:none;",
                getFilterOptions()),
       tags$div(class="cat-body cat-body-45", style="display:none;",
-               checkboxInput_MIRO("timevis_showZoom", lang$adminMode$graphs$timevisOptions$options$showZoom, TRUE),
-               numericInput("timevis_zoomFactor", lang$adminMode$graphs$timevisOptions$options$zoomFactor, min = 0, max = 1, value = 0.5, step = 0.1),
-               checkboxInput_MIRO("timevis_fit", lang$adminMode$graphs$timevisOptions$options$fit, TRUE),
-               checkboxInput_MIRO("timevis_editable", lang$adminMode$graphs$timevisOptions$options$editable),
-               checkboxInput_MIRO("timevis_multiselect", lang$adminMode$graphs$timevisOptions$options$multiselect),
-               checkboxInput_MIRO("timevis_showCurrentTime", lang$adminMode$graphs$timevisOptions$options$showCurrentTime),
+               checkboxInput_MIRO("timevis_showZoom", lang$adminMode$graphs$timevisOptions$options$showZoom, 
+                                  rv$graphConfig$graph$showZoom),
+               numericInput("timevis_zoomFactor", lang$adminMode$graphs$timevisOptions$options$zoomFactor, min = 0, max = 1, 
+                            value = rv$graphConfig$graph$zoomFactor, step = 0.1),
+               checkboxInput_MIRO("timevis_fit", lang$adminMode$graphs$timevisOptions$options$fit, 
+                                  rv$graphConfig$graph$fit),
+               checkboxInput_MIRO("timevis_editable", lang$adminMode$graphs$timevisOptions$options$editable,
+                                  rv$graphConfig$graph$editable),
+               checkboxInput_MIRO("timevis_multiselect", lang$adminMode$graphs$timevisOptions$options$multiselect,
+                                  rv$graphConfig$graph$multiselect),
+               checkboxInput_MIRO("timevis_showCurrentTime", lang$adminMode$graphs$timevisOptions$options$showCurrentTime,
+                                  rv$graphConfig$graph$showCurrentTime),
                getOuttype())
     )
   )
 })
 getPivotOptions <- reactive({
-  #TODO: refresh rv's when switching back to pivot as graphing tool (currently the defauts are not loaded then)
   rv$initData
   rv$refreshContent
   indices       <- activeSymbol$indices
   scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
     rv$graphConfig$pivottable <<- NULL
-    rv$graphConfig$pivottable$rows <<- NULL
-    rv$graphConfig$pivottable$cols <<- NULL
-    rv$graphConfig$pivottable$aggregatorName <<- "Count"
-    rv$graphConfig$pivottable$vals <<- "_"
-    rv$graphConfig$pivottable$rendererName <<- "Table"
-    rv$graphConfig$pivottable$locale <<- "en"
-    rv$graphConfig$pivottable$subtotals <<- FALSE
+    rv$graphConfig$pivottable$rows           <<- checkLength(configuredWithThisTool, currentGraphConfig[["rows"]], NULL)
+    rv$graphConfig$pivottable$cols           <<- checkLength(configuredWithThisTool, currentGraphConfig[["cols"]], NULL)
+    rv$graphConfig$pivottable$aggregatorName <<- checkLength(configuredWithThisTool, currentGraphConfig[["aggregatorName"]], "Sum")
+
+    valOne <- if(isTRUE(configuredWithThisTool) &&
+                 length(currentGraphConfig[["vals"]][1]) &&
+                 !is.na(currentGraphConfig[["vals"]][1]))
+      currentGraphConfig[["vals"]][1] 
+    #allows to configure empty values that would otherwise not be loaded empty at the next startup
+    else if(!length(currentGraphConfig) && length(scalarIndices)) scalarIndices[[1]] else "_"
+    valTwo <- if(isTRUE(configuredWithThisTool) &&
+                 length(currentGraphConfig[["vals"]][2]) &&
+                 !is.na(currentGraphConfig[["vals"]][2]))
+      currentGraphConfig[["vals"]][[2]] else NULL
+    if(identical(valTwo, NULL))
+      rv$graphConfig$pivottable$vals <<- valOne
+    else
+      rv$graphConfig$pivottable$vals           <<- list(valOne, valTwo)
+    rv$graphConfig$pivottable$rendererName   <<- checkLength(configuredWithThisTool, currentGraphConfig[["rendererName"]], "Table")
+    rv$graphConfig$pivottable$locale         <<- checkLength(configuredWithThisTool, currentGraphConfig[["locale"]], "en")
+    rv$graphConfig$pivottable$subtotals      <<- checkTRUE(configuredWithThisTool, currentGraphConfig[["subtotals"]])
   })
   tagList(
     tags$div(class="cat-body cat-body-46",
-             selectInput("pivot_rows", lang$adminMode$graphs$pivotOptions$rows, choices = indices, multiple = TRUE, selected = NULL),
-             selectInput("pivot_cols", lang$adminMode$graphs$pivotOptions$cols, choices = indices, multiple = TRUE, selected = NULL),
+             selectInput("pivot_rows", lang$adminMode$graphs$pivotOptions$rows, choices = indices, multiple = TRUE, 
+                         selected = rv$graphConfig$pivottable$rows),
+             selectInput("pivot_cols", lang$adminMode$graphs$pivotOptions$cols, choices = indices, multiple = TRUE, 
+                         selected = rv$graphConfig$pivottable$cols),
              selectInput("pivot_aggregatorName", lang$adminMode$graphs$pivotOptions$aggregator, choices = langSpecificGraphs$aggregatorChoices,
-                         selected = "Sum"),
+                         selected = rv$graphConfig$pivottable$aggregatorName),
              tags$div(class = "shiny-input-container",
                       style = "max-height:800px;max-height: 80vh;padding-right:30px;padding-left:40px;",
                       conditionalPanel(condition = "input.pivot_aggregatorName && !input.pivot_aggregatorName.startsWith('Count')",
                                        selectInput("pivot_vals", lang$adminMode$graphs$pivotOptions$vals, choices = c("_", indices),
-                                                   selected = if(length(scalarIndices)) scalarIndices[[1]])
+                                                   selected = rv$graphConfig$pivottable$vals[1])
                       ),  
                       conditionalPanel(condition = "input.pivot_aggregatorName === 'Sum over Sum' || input.pivot_aggregatorName === '80% Upper Bound' || 
                      input.pivot_aggregatorName === '80% Lower Bound'",
-                                       selectInput("pivot_vals2", lang$adminMode$graphs$pivotOptions$vals, choices = c("_", indices))
+                                       selectInput("pivot_vals2", lang$adminMode$graphs$pivotOptions$vals, choices = c("_", indices),
+                                                   selected = rv$graphConfig$pivottable$vals[2])
                       )),  
-             selectInput("pivot_rendererName", lang$adminMode$graphs$pivotOptions$renderer, choices = langSpecificGraphs$rendererChoices, selected = "Table")),
+             selectInput("pivot_rendererName", lang$adminMode$graphs$pivotOptions$renderer, choices = langSpecificGraphs$rendererChoices, 
+                         selected = rv$graphConfig$pivottable$rendererName)),
     tags$div(class="cat-body cat-body-47", style="display:none;",
              selectInput("pivot_locale", lang$adminMode$graphs$pivotOptions$options$locale, choices = langSpecificGraphs$localeChoices, 
-                         selected = "en"),
+                         selected = rv$graphConfig$pivottable$locale),
              checkboxInput_MIRO("pivot_subtotals", span(lang$adminMode$graphs$pivotOptions$options$subtotals, tags$a(href="http://nagarajanchinnasamy.com/subtotal/", target = "_blank", "http://nagarajanchinnasamy.com/subtotal/")), 
-                                value = FALSE)
+                                value = rv$graphConfig$pivottable$subtotals)
     )
     
   )
@@ -2691,17 +3180,19 @@ getCustomOptions <- reactive({
   indices       <- activeSymbol$indices
   scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
-    rv$graphConfig$packages <- NULL
-    rv$graphConfig$name <- NULL
+    rv$graphConfig$outType  <<- checkLength(configuredWithThisTool, currentGraphConfig[["outType"]], NULL) 
+    rv$graphConfig$packages <<- checkLength(configuredWithThisTool, currentGraphConfig[["packages"]], NULL)
+    rv$graphConfig$additionalData <<- checkLength(configuredWithThisTool, currentGraphConfig[["additionalData"]], NULL)
   })
   tagList(
     tags$div(class="cat-body cat-body-48",
-             textInput("custom_name", lang$adminMode$graphs$customOptions$name),
+             textInput("custom_name", lang$adminMode$graphs$customOptions$name, value = rv$graphConfig$outType),
              selectizeInput("custom_packages", tags$div(lang$adminMode$graphs$customOptions$packages, 
-                                                        tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#custom-renderers", 
+                                                        tags$a("", title = lang$adminMode$general$ui$tooltipDocs, class="info-wrapper", href="https://gams.com/miro/customize.html#custom-renderers", 
                                                                tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
-                            choices = c(), 
-                            multiple = TRUE, options = list('create' = TRUE,'persist' = FALSE)),
+                            choices = if(length(rv$graphConfig$packages)) rv$graphConfig$packages else c(), 
+                            selected = rv$graphConfig$packages,
+                            multiple = TRUE, options = list("create" = TRUE,"persist" = FALSE)),
              if(activeSymbol$id > length(modelIn)){
                # active symbol is an output symbol
                selectizeInput("custom_additionalData", lang$adminMode$graphs$customOptions$additionalData,
@@ -2709,6 +3200,7 @@ getCustomOptions <- reactive({
                                                       c(outputSymMultiDimChoices)), 
                                                  c(lang$adminMode$graphs$ui$input, 
                                                    lang$adminMode$graphs$ui$output)),
+                              selected = rv$graphConfig$additionalData,
                               multiple = TRUE, options = list('dropdownParent' = "body"))
              }
     )
@@ -2719,11 +3211,15 @@ getColorPivotOptions <- reactive({
   rv$initData
   rv$refreshContent
   indices    <- activeSymbol$indices
+  isolate({
+    rv$graphConfig$graph$color <<- checkLength(configuredWithThisTool, currentGraphConfig[["color"]], NULL) 
+  })
   tagList(
   selectInput("chart_color", tags$div(lang$adminMode$graphs$chartOptions$color, 
               tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#group-domain", 
                      tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
-              choices = c("_", indices)))
+              choices = c("_", indices),
+              selected = rv$graphConfig$graph$color))
 })
 getFilterOptions <- reactive({
   rv$initData
@@ -2731,7 +3227,15 @@ getFilterOptions <- reactive({
   indices    <- activeSymbol$indices
   setIndices <- indices[activeSymbol$indexTypes == "string"]
   isolate({
-    rv$graphConfig$graph$filter <- NULL
+    if(isTRUE(configuredWithThisTool) && length(currentGraphConfig[["filter"]][["col"]])){
+      rv$graphConfig$graph$filter$col      <<- checkLength(configuredWithThisTool, currentGraphConfig[["filter"]][["col"]], setIndices[[1]])
+      rv$graphConfig$graph$filter$label    <<- checkLength(configuredWithThisTool, currentGraphConfig[["filter"]][["label"]], "")
+      rv$graphConfig$graph$filter$multiple <<- checkTRUE(configuredWithThisTool, currentGraphConfig[["filter"]][["multiple"]])
+      rv$graphConfig$graph$filter$date     <<- checkTRUE(configuredWithThisTool, currentGraphConfig[["filter"]][["date"]])
+    }
+    else{
+      rv$graphConfig$graph$filter <- NULL
+    }
   })
   tagList(
     tags$label(class = "cb-label info-position", "for" = "filter_dim", 
@@ -2739,18 +3243,21 @@ getFilterOptions <- reactive({
                                                                                                         tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
     tags$div(
       tags$label(class = "checkbox-material", 
-                 checkboxInput("filter_dim", value = FALSE, label = NULL)
+                 checkboxInput("filter_dim", value = isTRUE(length(rv$graphConfig$graph$filter$col) > 0L), label = NULL)
       )),
     tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;padding-left:40px;",
              conditionalPanel(
                condition = "input.filter_dim == true",
                selectInput("filter_col", lang$adminMode$graphs$filterOptions$dimension,
-                           choices = setIndices),
-               textInput("filter_label", lang$adminMode$graphs$filterOptions$label, placeholder = lang$adminMode$graphs$filterOptions$placeholder),
+                           choices = setIndices,
+                           selected = rv$graphConfig$graph$filter$col),
+               textInput("filter_label", lang$adminMode$graphs$filterOptions$label, 
+                         placeholder = lang$adminMode$graphs$filterOptions$placeholder,
+                         value = rv$graphConfig$graph$filter$label),
                checkboxInput_MIRO("filter_multiple", lang$adminMode$graphs$filterOptions$multiple, 
-                                  value = FALSE),
+                                  value = rv$graphConfig$graph$filter$multiple),
                checkboxInput_MIRO("filter_date", lang$adminMode$graphs$filterOptions$date, 
-                                  value = FALSE)
+                                  value = rv$graphConfig$graph$filter$date)
              ))
   )
 }) 
@@ -2915,6 +3422,8 @@ observeEvent(input$saveGraph, {
 observeEvent(input$saveGraphConfirm, rv$saveGraphConfirm <- rv$saveGraphConfirm + 1L)
 observeEvent(rv$saveGraphConfirm, {
   req(rv$saveGraphConfirm > 0L)
+  #remove all symbols with same name to avoid case sensitivity issues 
+  configJSON$dataRendering[activeSymbol$name == tolower(names(configJSON$dataRendering))] <<- NULL
   configJSON$dataRendering[[activeSymbol$name]] <<- rv$graphConfig
   configJSON$dataRendering[[activeSymbol$name]]$height <<- 700
   if(rv$graphConfig$graph$tool == "pivot"){
@@ -2943,6 +3452,9 @@ observeEvent(rv$saveGraphConfirm, {
   removeModal()
   showHideEl(session, "#graphUpdateSuccess", 4000L)
   showEl(session, "#deleteGraph")
+  getCurrentGraphConfig()
+  # necessary for setting configuredWithThisTool correctly
+  newChartTool <<- input$chart_tool
 })
 
 observeEvent(input$deleteGraph, {
@@ -2965,5 +3477,10 @@ observeEvent(input$deleteGraphConfirm, {
   removeModal()
   showHideEl(session, "#graphUpdateSuccess", 4000L)
   hideEl(session, "#deleteGraph")
-  axisOptionsGlobal <- list(y = 1, y2 = 0)
+  #reset to default settings and refresh rv's
+  axisOptionsGlobal <<- list(y = 1, y2 = 0)
+  currentGraphConfig <<- NULL
+  isInJSON <<- FALSE
+  newChartTool <<- "pie"
+  rv$refreshOptions <- rv$refreshOptions + 1L
 })

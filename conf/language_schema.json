@@ -6402,6 +6402,11 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
+                },
+                "scalarConfig":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 }                
               }
             },
@@ -6565,17 +6570,7 @@
                       "minLength":1,
                       "required":true
                     },
-                    "fixedHeightCheck":{ 
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
                     "fixedHeight":{ 
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "fixedWidthCheck":{ 
                       "type":"string",
                       "minLength":1,
                       "required":true
@@ -6669,38 +6664,23 @@
                   },
                   "required":true
                 },
-                "useIcon":{ 
+                "icon":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
                 },
-                "iconLib":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "libChoices":{
+                "valueboxIconChoices":{ 
                   "type":"array",
                   "uniqueItems": true,
-                  "minItems":2,
-                  "maxItems":2,
+                  "minItems":30,
+                  "maxItems":30,
                   "items": {
                       "type":"string",
                       "minLength": 1
                   },
                   "required":true
                 },
-                "icon1":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "icon2":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "icon3":{ 
+                "otherIcon":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -7116,6 +7096,21 @@
                       "required":true
                     },
                     "seriesBackgroundAlpha":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "strokeWidth":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "strokeBorderWidth":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "strokeBorderColor":{ 
                       "type":"string",
                       "minLength":1,
                       "required":true
