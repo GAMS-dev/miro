@@ -26,7 +26,7 @@ renderTrnsport1 <- function(input, output, session, data, options = NULL, path =
         labelOptions = labelOptions(closeButton = F, noHide = T, textsize = "22px", style= list("color" = "rgb(243, 150, 25)"))) %>%
     
          addFlows(lng0 = data[["lng.x"]], lat0 = data[["lat.x"]], lng1 = data[["lng.y"]], lat1 = data[["lat.y"]], 
-                  color = "indianred", flow = data$quantities, opacity = 1, minThickness = 0, 
+                  color = "indianred", flow = coalesce(data$quantities, 0), opacity = 1, minThickness = 0, 
                   maxThickness = 12, 
                   layerId = paste0("From ", data$i, " to ", data$j), popup = popupArgs())
   output$trnsport <- leaflet::renderLeaflet(map)
