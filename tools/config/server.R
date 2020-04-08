@@ -1,8 +1,6 @@
 source(file.path("tools", "config", "util.R"))
 
 appDisconnected <- FALSE
-oneLayerEl <- c("dygraphs")
-twoLayerEl <- c("pie", "hist")
 configJSONFileName <- paste0(currentModelDir, .Platform$file.sep, "conf_", modelName, 
                              .Platform$file.sep, modelName, ".json")
 dateFormatChoices <- c("1910-06-22" = "yyyy-mm-dd", "22.06.1910" = "dd.mm.yyyy")
@@ -127,7 +125,7 @@ server_admin <- function(input, output, session){
   if(length(invalidWidgetsToRender) || length(invalidGraphsToRender)){
     showModal(modalDialog(
       title = lang$adminMode$invalidSymbolsDialog$title,
-      tags$div(class = "gmsalert gmsalert-success", id = "invalidSymbolsDialogSuccess", 
+      tags$div(class = "gmsalert gmsalert-success center-alert", id = "invalidSymbolsDialogSuccess", 
                lang$adminMode$invalidSymbolsDialog$msgSuccess),
       sprintf(lang$adminMode$invalidSymbolsDialog$desc, 
               paste0(invalidGraphsToRender, collapse = ", "),

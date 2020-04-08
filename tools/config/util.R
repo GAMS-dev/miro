@@ -5,12 +5,12 @@ addArrayEl <- function(session, arrayID, plotlyChartType = "", defaults = NULL, 
 }
 createArray <- function(session, arrayID, label, plotlyChartType = "", autoCreate = TRUE, 
                         class_outer = "array-wrapper-outer-default", hr = TRUE, symbolName = NULL){
-  if(autoCreate){
+  if(isTRUE(autoCreate)){
     addArrayEl(session, arrayID, plotlyChartType, destroy = TRUE, 
                symbolName = symbolName)
   }else if(length(session)){
     # destroy existing array elements
-    session$sendCustomMessage("gms-destroyArray", arrayID)
+    session$sendCustomMessage("gms-destroyArray", paste0(arrayID, plotlyChartType))
   }
   
   arrayID <- paste0(arrayID, plotlyChartType)
@@ -26,6 +26,25 @@ createArray <- function(session, arrayID, label, plotlyChartType = "", autoCreat
   </div>
 </div>'))
 }
+checkLength <- function(configuredWithThisTool = FALSE, el = NULL, alt = NULL){
+    if(isTRUE(configuredWithThisTool) && length(el))
+      return(el)
+    else
+      return(alt)
+}
+checkTRUE <- function(configuredWithThisTool = FALSE, el = NULL){
+  if(isTRUE(configuredWithThisTool))
+    return(isTRUE(el))
+  else
+    return(FALSE)
+}
+checkNotFALSE <- function(configuredWithThisTool = FALSE, el = NULL){
+  if(isTRUE(configuredWithThisTool))
+    return(!isFALSE(el))
+  else
+    return(TRUE)
+}
+
 optionSection <- function(title, ..., collapsed = FALSE){
   tags$div(class = "shiny-input-container", style = "min-height:30px;",
            tags$h4(class = "box-title option-section-header", title, if(isFALSE(collapsed)) icon("minus") else icon("plus"), 

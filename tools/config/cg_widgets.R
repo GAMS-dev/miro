@@ -1304,7 +1304,7 @@ observeEvent({input$widget_type
          table = {
            insertUI(selector = "#widget_options", 
                     tags$div(class="shiny-input-container config-no-hide", 
-                             lang$adminMode$widgets$ui$tableWidget),
+                             paste0(lang$adminMode$widgets$ui$tableWidget, lang$adminMode$uiR$table, "'!")),
                     where = "beforeEnd")
            disableEl(session, "#saveWidget")
            disableEl(session, "#deleteWidget")
