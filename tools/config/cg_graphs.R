@@ -6,6 +6,7 @@ newChartTool     <- character(0L)
 isInJSON         <- FALSE
 configuredWithThisTool <- FALSE
 plotlyChartTools <- c("pie", "bar", "scatter", "line", "bubble", "hist")
+noTitle          <- c("leaflet", "timevis", "pivot", "valuebox")
 modelInputData   <- vector("list", length(modelIn))
 modelOutputData  <- vector("list", length(modelOut))
 configScalars <- tibble()
@@ -185,7 +186,9 @@ saveAndReload <- function(selected){
   if(length(currentConfig[[currentSelection]])){
     isolate({
       rv$graphConfig$graph <- currentConfig[[currentSelection]]
-      rv$graphConfig$graph$title <- activeSymbol$alias
+      if(!selected %in% noTitle){
+        rv$graphConfig$graph$title <- activeSymbol$alias
+      }
     })
     allDataAvailable <<- TRUE
   }else{
