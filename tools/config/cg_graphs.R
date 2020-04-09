@@ -3240,6 +3240,16 @@ getFilterOptions <- reactive({
       rv$graphConfig$graph$filter <- NULL
     }
   })
+  if(input$chart_tool %in% plotlyChartTools){
+    chartToolTmp <- "plotly"
+  }else{
+    chartToolTmp <- input$chart_tool
+  }
+  if(isFALSE(input$filter_dim)){
+    hideEl(session, paste0("#preview_output_", chartToolTmp, "-data_filter"))
+  }else{
+    showEl(session, paste0("#preview_output_", chartToolTmp, "-data_filter"))
+  }
   tagList(
     tags$label(class = "cb-label info-position", "for" = "filter_dim", 
                tags$div(lang$adminMode$graphs$filterOptions$filter, tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#filter-option", 
