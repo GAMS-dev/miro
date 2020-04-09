@@ -31,35 +31,31 @@
     "gantt": {
       "outType": "graph",
       "graph": {
-        "title": "asdasd",
         "tool": "timevis",
         "showZoom": true,
-        "fit": false,
-        "zoomFactor": 0.2,
-        "editable": true,
-        "multiselect": true,
-        "showCurrentTime": true,
+        "fit": true,
+        "zoomFactor": 0.5,
+        "editable": false,
+        "multiselect": false,
+        "showCurrentTime": false,
         "series": {
           "1": {
-            "content": "id",
-            "start": "id",
-            "type": "box"
+            "content": "content",
+            "start": "start",
+            "type": "range",
+            "end": "end",
+            "title": "id",
+            "group": "group"
           }
         },
         "filter": {
           "col": "group",
-          "label": "asdasd",
-          "multiple": true,
+          "multiple": false,
           "date": false
         },
-        "showlegend": true,
-        "staticPlot": false,
-        "traces": {
+        "custom": {
           "1": {
-            "labels": "id",
-            "values": "value",
-            "name": "asdasd",
-            "hole": 0
+            "time": "2016-05-27"
           }
         }
       },
