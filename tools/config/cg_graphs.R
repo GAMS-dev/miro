@@ -1864,6 +1864,9 @@ observeEvent(input$remove_array_el, {
   }
   if(sum(input$remove_array_el[2] == chart_label) < 1.5){
     rv$graphConfig$graph[[JSON_id]][chart_label] <- NULL
+    if(!length(rv$graphConfig$graph[[JSON_id]])){
+      rv$graphConfig$graph[[JSON_id]] <- NULL
+    }
   }
   idLabelMap[[array_id]][el_id] <<- "_NULL"
 })
