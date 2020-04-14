@@ -279,7 +279,7 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
         if(LAUNCHHCUBEMODE){
           errMsg <- paste(errMsg, "Hypercube mode requires to be executed in temporary directory. Set the environment variable MIRO_BUILD_ARCHIVE to 'true'!", 
                           sep = "\n")
-        }else if(config$activateModules$remoteExecution){
+        }else if(isTRUE(config$activateModules$remoteExecution)){
           errMsg <- paste(errMsg, "Remote execution mode requires to be executed in temporary directory. Set the environment variable MIRO_BUILD_ARCHIVE to 'true'!", 
                           sep = "\n")
         }
