@@ -1680,7 +1680,7 @@ observeEvent(input$add_array_el, {
   }
   chart_id    <- as.integer(chart_id)
   JSON_id     <- gsub("^[^_]*_", "", el_id)
-  if(is.na(chart_id))
+  if(is.na(chart_id) || !nchar(chart_label))
     return()
   # label didnt change
   if(length(idLabelMap[[el_id]]) >= chart_id && 
@@ -1724,9 +1724,7 @@ observeEvent(input$add_array_el, {
       rv$graphConfig$graph[[JSON_id]][labelID] <<- NULL
     }
   }
-  
   idLabelMap[[el_id]][[chart_id]] <<- chart_label
-  
   if(length(currentContent)){
     rv$graphConfig$graph[[JSON_id]][[chart_label]] <<- currentContent
     return()
@@ -2239,8 +2237,17 @@ observeEvent({
           rv$graphConfig$graph$ydata <<- ydataTmp
         }
         if(length(dyEventTmp)){
+          #in JSON, object key for event is used both for dynamic (gams scalar) and static (textinput) values 
+          if(length(configScalars)){
+            dyEventJS <- dyEventTmp
+            lapply(seq_along(dyEventTmp), function(eventEl){
+              dyEventJS[[eventEl]]$staticEvent <<- !tolower(names(dyEventTmp)[[eventEl]]) %in% tolower(configScalars[[1]])
+            })
+          }else{
+            dyEventJS <- dyLimitTmp
+          }
           addArrayEl(session, "dy_dyEvent", 
-                     defaults = dyEventTmp)
+                     defaults = dyEventJS)
           idLabelMap[["dy_dyEvent"]] <<- as.list(names(dyEventTmp))
           rv$graphConfig$graph$dyEvent <- dyEventTmp
         }

@@ -178,15 +178,16 @@ const arrayTypes = {
     return ([elements]);
   },
   dy_dyEvent(defaults) {
-    let key; let label; let labelLoc; let
-      color; let strokePattern;
+    let key; let staticEvent = false; let label; let
+      labelLoc; let color; let strokePattern;
     if (defaults != null) {
       [key, {
-        label, labelLoc, color, strokePattern,
+        staticEvent, label, labelLoc, color, strokePattern,
       }] = defaults;
+      staticEvent = staticEvent === true;
     }
     const elements = {
-      dy_dyEvent: ['select', lang.addDyEvent.dyDyEvent, outputScalars, outputScalarAliases, key],
+      dy_dyEvent: ['selectDep', [lang.addDyEvent.dyDyEventCheck, 'text', lang.addDyEvent.dyDyEventTrue, staticEvent ? key : undefined], lang.addDyEvent.dyDyEventFalse, outputScalars, outputScalarAliases, staticEvent ? undefined : key, staticEvent],
       dyEvent_label: ['text', lang.addDyEvent.label, label == null ? '' : label],
       dyEvent_labelLoc: ['select', lang.addDyEvent.labelLoc, ['top', 'bottom'], lang.addDyEvent.labelLocChoices, labelLoc],
       dyEvent_color: ['color', lang.addDyEvent.color, color == null ? '' : color],
