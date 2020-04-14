@@ -78,6 +78,17 @@
                                     <p>In this as well as the subsequent sections we will mainly deal with the GAMS MIRO base mode. In the base mode, you can supply your models with input data, generate, display and save the results of your optimization as well as compare different scenarios with each other, everything visually supported by various plotting tools.
                                     The Hypercube mode will be the subject of an extra section, see <a href="./hypercube.html">here</a>.</p>
                                 </div><!--//section-block-->
+                                <h3 class="block-title">GAMS connection</h3>
+                                <div id="gams-connection"  class="section-block">
+                                    <p>First of all you should make sure that GAMS and MIRO know about each other. If you work with GAMS Studio, then go to <i>File</i> &rarr; <i>Settings</i> &rarr; <i>MIRO</i> and check whether the MIRO installation location is correct, e.g.:</p>
+                                    <div class="section-block" style="display:block; margin:auto;">
+                                        <img class="img-fluid" style="max-height: 330pt;" src="assets/images/studio/miro_path.png" alt="MIRO installation location" />
+                                    </div>
+                                    <p>On the MIRO side, open MIRO and go to <i>Preferences</i> &rarr; <i>Paths</i>. Ensure that the location of the correct GAMS version is specified, e.g.:</p>
+                                    <div class="section-block" style="display:block; margin:auto;">
+                                        <img class="img-fluid" style="max-height: 370pt;" src="assets/images/gams_path.png" alt="GAMS installation location" />
+                                    </div>
+                                </div><!--//section-block-->
                                 <div  id="demo-applications"  class="section-block">
                                     <h3 class="block-title">Demo Applications</h3>
                                     <p>To get a feeling for the use of GAMS MIRO, we recommend to have a look at the demo applications first which you can download <a href = "./index.html#demo-section">here</a>. To use the demo applications, unzip the archive and put the extracted folder <i>miro_lib</i> into the user model library directory. Via GAMS Studio you can find this location by clicking on <i>File</i> &rarr; <i>Settings</i> &rarr; <i>Misc.</i> &rarr; <i>user model library</i>:</p>
@@ -666,6 +677,7 @@
 	                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
                                     <a class="nav-link scrollto" href="#introduction-section">Introduction</a>
                                       <nav class="doc-sub-menu nav flex-column">
+                                        <a class="nav-link scrollto" href="#gams-connection">GAMS connection</a>
                                         <a class="nav-link scrollto" href="#demo-applications">Demo applications</a>
 	                                    <a class="nav-link scrollto" href="#start-miro">Start GAMS MIRO</a>
                                         <a class="nav-link scrollto" href="#miro-structure">Structure of GAMS MIRO</a>
