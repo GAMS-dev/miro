@@ -383,6 +383,15 @@ $(document).ready(() => {
       $(id).show();
     }
   });
+  Shiny.addCustomMessageHandler('gms-changeHeightEl', (data) => {
+    if (data.delay != null) {
+      setTimeout(() => {
+        $(data.id).height(data.height);
+      }, data.delay);
+    } else {
+      $(data.id).height(data.height);
+    }
+  });
   Shiny.addCustomMessageHandler('gms-scriptExecuted', (data) => {
     let scriptOutputContainer;
     if (data.hcube === true) {

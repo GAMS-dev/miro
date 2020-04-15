@@ -647,6 +647,9 @@ showElReplaceTxt <- function(session, id, txt){
 hideEl <- function(session, id){
   session$sendCustomMessage("gms-hideEl", id)
 }
+changeHeightEl <- function(session, id, height, delay = NULL){
+  session$sendCustomMessage("gms-changeHeightEl", list(id = id, height = height, delay = delay))
+}
 showHideEl <- function(session, id, delay = 2000, msg = NULL){
   session$sendCustomMessage("gms-showHideEl", list(id = id, delay = delay, msg = msg))
 }
