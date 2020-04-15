@@ -8,6 +8,7 @@ isolate({
   rv$generalConfig$inputGroups <- configJSON$inputGroups
   rv$generalConfig$outputGroups <- configJSON$outputGroups
   rv$generalConfig$symbolLinks <- configJSON$symbolLinks
+  rv$generalConfig$scripts <- configJSON$scripts
   rv$generalConfig$UILogo <- configJSON$UILogo
 })
 scalarSymbols <- setNames(c(names(modelIn), 
