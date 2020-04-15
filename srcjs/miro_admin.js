@@ -132,7 +132,7 @@ const arrayTypes = {
       scriptsB_outFile: ['text', lang.addScript.outFile, outputFile],
       scriptsB_timeout: ['numeric', lang.addScript.timeout, timeout, -1, Infinity, 1],
     };
-    return ([elements, { elRequired: false, noEventOnDefault: true }, 'script']);
+    return ([elements, { elRequired: false }, 'script']);
   },
   scripts_hcube(defaults) {
     let id; let title; let command; let args; let outputFile; let
@@ -150,7 +150,7 @@ const arrayTypes = {
       scriptsH_outFile: ['text', lang.addScript.outFile, outputFile],
       scriptsH_timeout: ['numeric', lang.addScript.timeout, timeout, -1, Infinity, 1],
     };
-    return ([elements, { elRequired: false, noEventOnDefault: true }, 'script']);
+    return ([elements, { elRequired: false }, 'script']);
   },
   dy_ydata(defaults) {
     let key; let label; let yaxis; let color;

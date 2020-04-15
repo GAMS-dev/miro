@@ -141,8 +141,7 @@ class InputArray {
             break;
           case 'text':
             value = (v[2] !== undefined ? v[2] : '');
-            if (idx === 0 && this.options.elRequired === false
-              && !(this.options.noEventOnDefault === true && value)) {
+            if (idx === 0 && this.options.elRequired === false) {
               // tell R that new element was addded to array: (ID)
               if (newEl) {
                 Shiny.setInputValue(rAddID, [elID, value, k], { priority: 'event' });
