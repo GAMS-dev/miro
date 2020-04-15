@@ -1,6 +1,17 @@
 {
   "UILogo": "pickstock.png",
   "miroLogFile": "miro.log",
+  "scripts": {
+    "hcube": [
+      {
+        "title": "High level scalar analysis",
+        "id": "script1",
+        "command": "jupyter",
+        "args": ["nbconvert", "--to", "html", "--execute", "hcube_analysis.ipynb"],
+        "outputFile": "hcube_analysis.html"
+      }
+    ]
+  },
   "inputWidgets": {
     "price": {
       "widgetType": "table",
@@ -350,10 +361,6 @@
   "pageTitle": "Stock Selection Optimization",
   "defaultScenName": "default",
   "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
-  "readme": {
-    "tabTitle": "Readme",
-    "filename": "Readme.md"
-  },
   "datatable": {
     "class": "stripe",
     "filter": "bottom",
@@ -381,6 +388,10 @@
     "pricemerge": {
       "newAlias": "Price (stocks & dow jones)"
     }
+  },
+  "readme": {
+    "tabTitle": "Readme",
+    "filename": "Readme.md"
   },
   "outputGroups": [
     {
