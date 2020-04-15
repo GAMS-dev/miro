@@ -349,11 +349,6 @@
   },
   "pageTitle": "Stock Selection Optimization",
   "defaultScenName": "default",
-  "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
-  "readme": {
-    "tabTitle": "Readme",
-    "filename": "Readme.md"
-  },
   "datatable": {
     "class": "stripe",
     "filter": "bottom",
@@ -382,12 +377,28 @@
       "newAlias": "Price (stocks & dow jones)"
     }
   },
+  "scripts": {
+    "hcube": [
+      {
+        "title": "High level scalar analysis",
+        "id": "script1",
+        "command": "jupyter",
+        "args": ["nbconvert", "--to", "html", "--execute", "hcube_analysis.ipynb"],
+        "outputFile": "hcube_analysis.html"
+      }
+    ]
+  },
   "outputGroups": [
     {
       "name": "Dow Jones vs. Index Fund ⨠",
       "members": ["dowvsindex", "abserror"]
     }
   ],
+  "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
+  "readme": {
+    "tabTitle": "Readme",
+    "filename": "Readme.md"
+  },
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
