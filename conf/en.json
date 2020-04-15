@@ -1610,7 +1610,9 @@
           "timeout": "Timeout (seconds, -1 for infinite)"
         },
         "addDyEvent":{
-          "dyDyEvent": "Which symbol shall be used?",
+          "dyDyEventCheck": "Static event?",
+          "dyDyEventTrue": "Set a date for the event (yyyy-mm-dd)",
+          "dyDyEventFalse": "Which symbol shall be used?",
           "label": "What label should be used?",
           "labelLoc": "Position of the label",
           "labelLocChoices": ["top", "bottom"],

@@ -7561,7 +7561,17 @@
                   "additionalProperties":false,
                   "required":true,
                   "properties":{ 
-                    "dyDyEvent":{ 
+                    "dyDyEventCheck":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "dyDyEventTrue":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "dyDyEventFalse":{ 
                       "type":"string",
                       "minLength":1,
                       "required":true

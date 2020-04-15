@@ -6,6 +6,7 @@ newChartTool     <- character(0L)
 isInJSON         <- FALSE
 configuredWithThisTool <- FALSE
 plotlyChartTools <- c("pie", "bar", "scatter", "line", "bubble", "hist")
+noTitle          <- c("leaflet", "timevis", "pivot", "valuebox")
 modelInputData   <- vector("list", length(modelIn))
 modelOutputData  <- vector("list", length(modelOut))
 configScalars <- tibble()
@@ -185,7 +186,9 @@ saveAndReload <- function(selected){
   if(length(currentConfig[[currentSelection]])){
     isolate({
       rv$graphConfig$graph <- currentConfig[[currentSelection]]
-      rv$graphConfig$graph$title <- activeSymbol$alias
+      if(!selected %in% noTitle){
+        rv$graphConfig$graph$title <- activeSymbol$alias
+      }
     })
     allDataAvailable <<- TRUE
   }else{
@@ -1677,7 +1680,7 @@ observeEvent(input$add_array_el, {
   }
   chart_id    <- as.integer(chart_id)
   JSON_id     <- gsub("^[^_]*_", "", el_id)
-  if(is.na(chart_id))
+  if(is.na(chart_id) || !nchar(chart_label))
     return()
   # label didnt change
   if(length(idLabelMap[[el_id]]) >= chart_id && 
@@ -1721,9 +1724,7 @@ observeEvent(input$add_array_el, {
       rv$graphConfig$graph[[JSON_id]][labelID] <<- NULL
     }
   }
-  
   idLabelMap[[el_id]][[chart_id]] <<- chart_label
-  
   if(length(currentContent)){
     rv$graphConfig$graph[[JSON_id]][[chart_label]] <<- currentContent
     return()
@@ -1861,6 +1862,9 @@ observeEvent(input$remove_array_el, {
   }
   if(sum(input$remove_array_el[2] == chart_label) < 1.5){
     rv$graphConfig$graph[[JSON_id]][chart_label] <- NULL
+    if(!length(rv$graphConfig$graph[[JSON_id]])){
+      rv$graphConfig$graph[[JSON_id]] <- NULL
+    }
   }
   idLabelMap[[array_id]][el_id] <<- "_NULL"
 })
@@ -2233,8 +2237,17 @@ observeEvent({
           rv$graphConfig$graph$ydata <<- ydataTmp
         }
         if(length(dyEventTmp)){
+          #in JSON, object key for event is used both for dynamic (gams scalar) and static (textinput) values 
+          if(length(configScalars)){
+            dyEventJS <- dyEventTmp
+            lapply(seq_along(dyEventTmp), function(eventEl){
+              dyEventJS[[eventEl]]$staticEvent <<- !tolower(names(dyEventTmp)[[eventEl]]) %in% tolower(configScalars[[1]])
+            })
+          }else{
+            dyEventJS <- dyLimitTmp
+          }
           addArrayEl(session, "dy_dyEvent", 
-                     defaults = dyEventTmp)
+                     defaults = dyEventJS)
           idLabelMap[["dy_dyEvent"]] <<- as.list(names(dyEventTmp))
           rv$graphConfig$graph$dyEvent <- dyEventTmp
         }
@@ -3237,6 +3250,16 @@ getFilterOptions <- reactive({
       rv$graphConfig$graph$filter <- NULL
     }
   })
+  if(input$chart_tool %in% plotlyChartTools){
+    chartToolTmp <- "plotly"
+  }else{
+    chartToolTmp <- input$chart_tool
+  }
+  if(isFALSE(input$filter_dim)){
+    hideEl(session, paste0("#preview_output_", chartToolTmp, "-data_filter"))
+  }else{
+    showEl(session, paste0("#preview_output_", chartToolTmp, "-data_filter"))
+  }
   tagList(
     tags$label(class = "cb-label info-position", "for" = "filter_dim", 
                tags$div(lang$adminMode$graphs$filterOptions$filter, tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#filter-option", 

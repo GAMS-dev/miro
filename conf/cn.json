@@ -1610,7 +1610,9 @@
           "timeout": "超时（秒，-1 为无限）"
         },
         "addDyEvent":{
-          "dyDyEvent": "使用哪个GAMS符号？",
+          "dyDyEventCheck": "静态事件？",
+          "dyDyEventTrue": "设置活动日期（yyyy-mm-dd）。",
+          "dyDyEventFalse": "使用哪个GAMS符号？",
           "label": "应使用哪个标签？",
           "labelLoc": "标签的位置",
           "labelLocChoices": ["顶部", "底部"],

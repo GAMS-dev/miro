@@ -35,55 +35,6 @@
     }
   },
   "dataRendering": {
-    "price": {
-      "outType": "graph",
-      "height": 700,
-      "graph": {
-        "tool": "dygraphs",
-        "title": "Stock prices over time (year: 2016)",
-        "color": "symbol",
-        "dyOptions": {
-          "includeZero": true,
-          "logscale": false,
-          "drawGrid": true,
-          "drawPoints": false,
-          "pointSize": 2,
-          "fillGraph": false,
-          "fillAlpha": 0.15
-        },
-        "dylegend": {
-          "width": 450,
-          "show": "always",
-          "hideOnMouseOut": true
-        },
-        "dyHighlight": {
-          "highlightSeriesOpts": {
-            "strokeWidth": 3,
-            "strokeBorderWidth": 1,
-            "highlightCircleSize": 5
-          },
-          "hideOnMouseOut": true
-        },
-        "dyRangeSelector": {
-          "height": 20,
-          "strokeColor": ""
-        },
-        "xdata": "date",
-        "ydata": {
-          "Price": {
-            "label": "symbol"
-          }
-        },
-        "xaxis": {
-          "name": "x",
-          "label": "date"
-        },
-        "yaxis": {
-          "name": "y",
-          "label": "value"
-        }
-      }
-    },
     "stock_weight": {
       "outType": "dtGraph",
       "graph": {
@@ -199,66 +150,171 @@
         }
       }
     },
-    "priceMerge": {
+    "pricemerge": {
       "outType": "graph",
-      "height": 700,
       "graph": {
         "tool": "dygraphs",
-        "title": "Price (stocks & dow jones)",
-        "color": "uni",
-        "filter": {
-          "col": "uni",
-          "multiple": true,
-          "label": "Select stock symbol"
-        },
-        "dyOptions": {
-          "includeZero": true,
-          "logscale": false,
-          "drawGrid": true,
-          "drawPoints": false,
-          "pointSize": 2,
-          "fillGraph": false,
-          "fillAlpha": 0.15
-        },
-        "dylegend": {
-          "width": 450,
-          "show": "always",
-          "hideOnMouseOut": true
-        },
-        "dyHighlight": {
-          "highlightSeriesOpts": {
-            "strokeWidth": 3,
-            "strokeBorderWidth": 1,
-            "highlightCircleSize": 5
-          },
-          "hideOnMouseOut": true
-        },
-        "dyRangeSelector": {
-          "height": 20,
-          "strokeColor": ""
-        },
         "xdata": "date",
-        "ydata": {
-          "Price (stocks & dow jones)": {
-            "label": "symbol"
-          }
+        "title": "Price (stocks & dow jones)",
+        "dyOptions": {
+          "logscale": false,
+          "stepPlot": false,
+          "stemPlot": false,
+          "fillGraph": false,
+          "fillAlpha": 0.15,
+          "drawPoints": false,
+          "pointShape": "dot",
+          "pointSize": 2
         },
         "xaxis": {
           "name": "x",
-          "label": "date"
+          "label": "Date",
+          "axisLineWidth": 0.3,
+          "axisLabelFontSize": 14,
+          "gridLineWidth": 0.3,
+          "drawGrid": true
         },
         "yaxis": {
           "name": "y",
-          "label": "value"
+          "label": "Price",
+          "axisLineWidth": 0.3,
+          "axisLabelFontSize": 14,
+          "gridLineWidth": 0.3,
+          "gridLineColor": "gray",
+          "valueRange": [null, null],
+          "independentTicks": true
+        },
+        "yaxis2": {
+          "name": "y2",
+          "label": "Price (stocks & dow jones)",
+          "axisLineWidth": 0.3,
+          "axisLabelFontSize": 14,
+          "gridLineWidth": 0.3,
+          "drawGrid": true,
+          "valueRange": [null, null],
+          "independentTicks": true
+        },
+        "ydata": {
+          "value": {
+            "label": "Price (stocks & dow jones)",
+            "stemPlot": false,
+            "stepPlot": false,
+            "fillGraph": false,
+            "drawPoints": false,
+            "pointShape": "dot",
+            "pointSize": 2,
+            "yaxis": "y"
+          }
+        },
+        "dyHighlight": {
+          "hideOnMouseOut": true,
+          "highlightCircleSize": 0,
+          "highlightSeriesBackgroundAlpha": 1,
+          "highlightSeriesOpts": {
+            "strokeWidth": 0
+          }
+        },
+        "color": "uni",
+        "filter": {
+          "col": "uni",
+          "label": "Select stock symbol",
+          "multiple": true,
+          "date": false
         },
         "dyEvent": {
           "lastdaytraining": {
-            "label": "End of training phase",
             "labelLoc": "top",
-            "color": "red"
+            "strokePattern": "dashed",
+            "label": "End of training phase",
+            "color": "#ff0000"
           }
+        },
+        "dyRangeSelector": {
+          "height": 25,
+          "strokeColor": "#808fab",
+          "fillColor": "#a7b1c4",
+          "retainDateWindow": false,
+          "keepMouseZoom": true
         }
-      }
+      },
+      "height": 700
+    },
+    "price": {
+      "outType": "graph",
+      "graph": {
+        "tool": "dygraphs",
+        "xdata": "date",
+        "ydata": {
+          "value": {
+            "label": "Price",
+            "stemPlot": false,
+            "stepPlot": false,
+            "fillGraph": false,
+            "drawPoints": false,
+            "pointShape": "dot",
+            "pointSize": 2,
+            "yaxis": "y"
+          }
+        },
+        "title": "Stock prices over time (year: 2016)",
+        "dyOptions": {
+          "logscale": false,
+          "stepPlot": false,
+          "stemPlot": false,
+          "fillGraph": false,
+          "fillAlpha": 0.15,
+          "drawPoints": false,
+          "pointShape": "dot",
+          "pointSize": 2
+        },
+        "dyHighlight": {
+          "highlightCircleSize": 3,
+          "highlightSeriesBackgroundAlpha": 0.8,
+          "hideOnMouseOut": true,
+          "highlightSeriesOpts": {
+            "strokeWidth": 3,
+            "strokeBorderWidth": null,
+            "strokeBorderColor": "#ffffff"
+          }
+        },
+        "dyRangeSelector": {
+          "height": 25,
+          "strokeColor": "#808fab",
+          "fillColor": "#a7b1c4",
+          "retainDateWindow": false,
+          "keepMouseZoom": true
+        },
+        "color": "symbol",
+        "xaxis": {
+          "name": "x",
+          "label": "Date",
+          "axisLineWidth": 0.3,
+          "axisLabelFontSize": 14,
+          "gridLineWidth": 0.3,
+          "drawGrid": true
+        },
+        "yaxis": {
+          "name": "y",
+          "label": "Price",
+          "axisLineWidth": 0.3,
+          "axisLabelFontSize": 14,
+          "gridLineWidth": 0.3,
+          "gridLineColor": "gray",
+          "valueRange": [null, null],
+          "independentTicks": true
+        },
+        "yaxis2": {
+          "name": "y2",
+          "label": "Price",
+          "axisLineWidth": 0.3,
+          "axisLabelFontSize": 14,
+          "gridLineWidth": 0.3,
+          "drawGrid": true,
+          "valueRange": [null, null],
+          "independentTicks": true
+        }
+      },
+      "height": 700
     }
   },
   "pivottable": {
@@ -298,6 +354,40 @@
     "tabTitle": "Readme",
     "filename": "Readme.md"
   },
+  "datatable": {
+    "class": "stripe",
+    "filter": "bottom",
+    "rownames": false,
+    "options": {
+      "pageLength": 15
+    }
+  },
+  "overwriteAliases": {
+    "price": {
+      "newAlias": "Price"
+    },
+    "_scalars_out": {
+      "newAlias": "Output Scalars"
+    },
+    "stock_weight": {
+      "newAlias": "weight"
+    },
+    "dowvsindex": {
+      "newAlias": "dow jones vs. index fund"
+    },
+    "abserror": {
+      "newAlias": "absolute error"
+    },
+    "pricemerge": {
+      "newAlias": "Price (stocks & dow jones)"
+    }
+  },
+  "outputGroups": [
+    {
+      "name": "Dow Jones vs. Index Fund ⨠",
+      "members": ["dowvsindex", "abserror"]
+    }
+  ],
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
@@ -313,30 +403,5 @@
     },
     "height": 700,
     "colWidths": 200
-  },
-  "outputGroups": [
-    {
-      "name": "Dow Jones vs. Index Fund ⨠",
-      "members": ["dowvsindex", "abserror"]
-    }
-  ],
-  "scripts": {
-    "hcube": [
-      {
-        "title": "High level scalar analysis",
-        "id": "script1",
-        "command": "jupyter",
-        "args": ["nbconvert", "--to", "html", "--execute", "hcube_analysis.ipynb"],
-        "outputFile": "hcube_analysis.html"
-      }
-    ]
-  },
-  "datatable": {
-    "class": "stripe",
-    "filter": "bottom",
-    "rownames": false,
-    "options": {
-      "pageLength": 15
-    }
   }
 }

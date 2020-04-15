@@ -1610,7 +1610,9 @@
           "timeout": "Timeout (Sekunden, -1 für unendlich)"
         },
         "addDyEvent":{
-          "dyDyEvent": "Welches Symbol soll verwendet werden?",
+          "dyDyEventCheck": "Statisches Ereignis?",
+          "dyDyEventTrue": "Legen Sie ein Datum für das Ereignis fest (jjjjj-mm-tt)",
+          "dyDyEventFalse": "Welches Symbol soll verwendet werden?",
           "label": "Welche Bezeichnung soll verwendet werden?",
           "labelLoc": "Position für die Bezeichnung",
           "labelLocChoices": ["oben", "unten"],
