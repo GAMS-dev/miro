@@ -309,7 +309,9 @@ output$general_logo_preview <- renderImage({
   rv$customLogoChanged
   isolate({
     if(identical(rv$generalConfig$UILogo, "gams_logo.png") || 
-       !length(rv$generalConfig$UILogo) || !file.exists(rv$generalConfig$UILogo)){
+       !length(rv$generalConfig$UILogo) || !file.exists(paste0(currentModelDir, .Platform$file.sep, 
+                                                               "static_", modelName, .Platform$file.sep, 
+                                                               rv$generalConfig$UILogo))){
       filename <- normalizePath(file.path(getwd(), "www", "gams_logo.png"))
     }else{
       filename <- normalizePath(paste0(currentModelDir, .Platform$file.sep, 
@@ -320,10 +322,6 @@ output$general_logo_preview <- renderImage({
   list(src = filename, height = "50px", alt = "custom logo")
 }, deleteFile = FALSE)
 
-
-observeEvent(input$general_language, {
-  rv$generalConfig$language <<- input$general_language
-})
 observeEvent(input$general_pageTitle, {
   if(length(input$general_pageTitle) && nchar(input$general_pageTitle)){
     rv$generalConfig$pageTitle <<- input$general_pageTitle
