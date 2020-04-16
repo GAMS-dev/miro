@@ -5,6 +5,12 @@ names(langSpecificUI$tableType) <- lang$adminMode$tables$ui$choices
 langSpecificUI$symbolType <- c("Symbol" = "gams", "New GAMS option" = "go", 
                                "New double dash parameter" = "dd")
 names(langSpecificUI$symbolType) <- lang$adminMode$widgets$ui$choices
+langSpecificUI$theme <- c("Use system/browser settings" = "browser", 
+                        "Light mode" = "light", "Dark mode" = "dark")
+names(langSpecificUI$theme) <- lang$adminMode$general$theme$choices
+langSpecificUI$scen <- c("Split screen (suited for 2 scenarios to compare)" = "split", "Tab view 
+                        (suited for > 2 scenarios to compare)" = "tab")
+names(langSpecificUI$scen) <- lang$adminMode$general$scen$choices
 inputTabs <- c(inputSymMultiDim, 
                setNames("_widgets", 
                         lang$nav$inputScreen$widgetTabTitle))
@@ -464,13 +470,124 @@ body_admin <- dashboardBody({
                       tabPanel(lang$adminMode$general$ui$tabInterface, 
                                tags$div(class = "col-sm-6", style = "padding-top: 20px;",
                                         tags$div(class="main-tab",
-                                                 tags$div(id = "interface_wrapper1"),
+                                                 tags$div(tagList(
+                                                   tags$h2(lang$adminMode$general$ui$headerGeneral, class="option-category"),
+                                                   tags$div(class = "option-wrapper",
+                                                            textInput("general_pageTitle", lang$adminMode$general$pageTitle$label,
+                                                                      value = if(!is.null(configJSON$pageTitle ) && nchar(configJSON$pageTitle )) configJSON$pageTitle  else configJSON$modelTitle
+                                                            )),
+                                                   tags$div(
+                                                     radioButtons("general_theme", lang$adminMode$general$theme$label, 
+                                                                  choices = langSpecificUI$theme,
+                                                                  selected = if(length(configJSON$theme)) configJSON$theme else config$theme
+                                                     )),
+                                                   tags$label(class = "cb-label", "for" = "general_act_log", lang$adminMode$general$actLog$label),
+                                                   tags$div(
+                                                     tags$label(class = "checkbox-material", 
+                                                                checkboxInput("general_act_log", 
+                                                                              value = if(length(configJSON$activateModules$logFile)) 
+                                                                                configJSON$activateModules$logFile else config$activateModules$logFile, 
+                                                                              label = NULL)
+                                                     )),
+                                                   tags$label(class = "cb-label", "for" = "general_act_lst", lang$adminMode$general$actLst$label),
+                                                   tags$div(
+                                                     tags$label(class = "checkbox-material", 
+                                                                checkboxInput("general_act_lst", 
+                                                                              value = if(length(configJSON$activateModules$lstFile)) 
+                                                                                configJSON$activateModules$lstFile else config$activateModules$lstFile, 
+                                                                              label = NULL)
+                                                     )),
+                                                   tags$div(class = "option-wrapper info-position",
+                                                            textInput("general_mirologfile", 
+                                                                      tags$div(lang$adminMode$general$mirologfile$label, 
+                                                                               tags$a("", title = lang$adminMode$general$ui$tooltipDocs, class="info-wrapper",
+                                                                                      href="https://gams.com/miro/customize.html#miro-log", 
+                                                                                      tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                                      value = if(!is.null(configJSON$miroLogFile) && nchar(configJSON$miroLogFile)) 
+                                                                        configJSON$miroLogFile else ""
+                                                            )),
+                                                   tags$div(class = "option-wrapper info-position",
+                                                            selectInput("general_scen", tags$div(lang$adminMode$general$scen$label, 
+                                                                                                 tags$a("", title = lang$adminMode$general$ui$tooltipDocs, class="info-wrapper", href="https://gams.com/miro/start.html#scenario-comparison", 
+                                                                                                        tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")), 
+                                                                        choices = langSpecificUI$scen,
+                                                                        selected = if(length(configJSON$defCompMode)) configJSON$defCompMode else config$defCompMode
+                                                            )),
+                                                   tags$div(class = "option-wrapper",
+                                                            tags$label(class = "cb-label", "for" = "general_auto",
+                                                                       lang$adminMode$general$auto$label),
+                                                            tags$div(
+                                                              tags$label(class = "checkbox-material", 
+                                                                         checkboxInput("general_auto", 
+                                                                                       value = if(length(configJSON$autoGenInputGraphs)) 
+                                                                                         configJSON$autoGenInputGraphs else config$autoGenInputGraphs, 
+                                                                                       label = NULL)
+                                                              ))),
+                                                   tags$div(class="option-wrapper",
+                                                            colorPickerInput("general_pivotcolor", label = lang$adminMode$general$pivotcolor$label,
+                                                                             value = if(length(configJSON$pivottable$bgColor)) configJSON$pivottable$bgColor else "#00000000"
+                                                            )),
+                                                   tags$div(class="option-wrapper",
+                                                            sliderInput("general_decimal", label = lang$adminMode$general$decimal$label,
+                                                                        min = 0, max = 6, step = 1, value = if(length(configJSON$roundingDecimals)) 
+                                                                          configJSON$roundingDecimals else config$roundingDecimals
+                                                            ))
+                                                 )),
                                                  tags$div(class = "space")
                                         )
                                ),
                                tags$div(class = "col-sm-6", style = "padding-top: 20px;",
                                         tags$div(class="main-tab",
-                                                 tags$div(id = "interface_wrapper2"),
+                                                 tags$div(tagList(
+                                                   tags$h2(lang$adminMode$general$ui$headerLogo, class="option-category"),
+                                                   tags$div(class = "option-wrapper", style = "margin-bottom: 5px;",
+                                                            fileInput("widget_general_logo_upload", lang$adminMode$general$logo$label,
+                                                                      width = "100%",
+                                                                      multiple = FALSE,
+                                                                      accept = c(".png", ".PNG", ".jpg", ".JPG"),
+                                                                      placeholder = lang$adminMode$general$logo$placeholder)),
+                                                   tags$label(class = "cb-label", "for" = "general_logo_preview", style = "padding-left: 25px;", lang$adminMode$general$logo$header,
+                                                              tags$div(class="logo-wrapper",
+                                                                       imageOutput("general_logo_preview", height = "50px")
+                                                              )),
+                                                   tags$hr(),
+                                                   tags$h2(lang$adminMode$general$readme$label, 
+                                                           tags$a("", title = paste0(lang$adminMode$general$readme$readmeTooltip, " - ", 
+                                                                                     tolower(lang$adminMode$general$ui$tooltipDocs)), class="info-header", 
+                                                                  href="https://gams.com/miro/customize.html#app-readme", 
+                                                                  tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"), 
+                                                           class="option-category info-position"),
+                                                   tags$label(class = "cb-label", "for" = "general_useReadme", lang$adminMode$general$readme$useReadme),
+                                                   tags$div(
+                                                     tags$label(class = "checkbox-material", 
+                                                                checkboxInput("general_useReadme", 
+                                                                              value = length(configJSON$readme$filename) > 0L, 
+                                                                              label = NULL)
+                                                     )),
+                                                   conditionalPanel(
+                                                     condition = "input.general_useReadme===true",
+                                                     tags$div(class = "option-wrapper option-wrapper-indented", style = "padding-left:40px;",
+                                                              textInput("general_readmeTabtitle", lang$adminMode$general$readme$tabTitle,
+                                                                        value = if(!is.null(configJSON$readme$tabTitle) && nchar(configJSON$readme$tabTitle)) 
+                                                                          configJSON$readme$tabTitle 
+                                                                        else "")
+                                                     ),
+                                                     tags$div(class = "option-wrapper info-position option-wrapper-indented", style = "padding-left:40px;",
+                                                              textInput("general_readmeFileName", lang$adminMode$general$readme$fileName,
+                                                                        value = if(!is.null(configJSON$readme$filename) && nchar(configJSON$readme$filename)) 
+                                                                          configJSON$readme$filename 
+                                                                        else "")
+                                                     ),
+                                                     tags$div(class = "option-wrapper info-position option-wrapper-indented", style = "padding-left:40px;",{
+                                                       editButtonArgs <- list(inputId = "btEditReadme",
+                                                                              label = lang$adminMode$general$readme$btEdit)
+                                                       if(!length(configJSON$readme$filename) || 
+                                                          !nchar(trimws(configJSON$readme$filename))){
+                                                         editButtonArgs$disabled <- ""
+                                                       }
+                                                       do.call("actionButton", editButtonArgs)
+                                                     }))
+                                                 )),
                                                  tags$div(class = "space")
                                         )
                                )),
@@ -637,13 +754,141 @@ body_admin <- dashboardBody({
                       tabPanel(lang$adminMode$general$ui$tabModules, 
                                tags$div(class = "col-sm-6", style = "padding-top: 20px;",
                                         tags$div(class="main-tab",
-                                                 tags$div(id = "module_wrapper1"),
+                                                 tags$div(tagList(
+                                                   tags$h2(lang$adminMode$general$ui$headerScenData, class="option-category"),
+                                                   tags$div(
+                                                     tags$label(class = "cb-label info-position", "for" = "general_act_upload", 
+                                                                tags$div(lang$adminMode$general$actUpload$label, 
+                                                                         tags$a("", title = paste0(lang$adminMode$general$actUpload$title, " - ",
+                                                                                                   tolower(lang$adminMode$general$ui$tooltipDocs)), class="info-wrapper", href="https://gams.com/miro/customize.html#local-upload", 
+                                                                                tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
+                                                     tags$div(
+                                                       tags$label(class = "checkbox-material", 
+                                                                  checkboxInput("general_act_upload", 
+                                                                                value = if(length(configJSON$activateModules$loadLocal)) 
+                                                                                  configJSON$activateModules$loadLocal else config$activateModules$loadLocal, 
+                                                                                label = NULL)
+                                                       ))
+                                                   ),
+                                                   tags$div(class = "shiny-input-container",
+                                                            tags$label(class = "cb-label info-position", "for" = "default_scen_check",
+                                                                       tags$div(lang$adminMode$general$defaultScenName$checkbox, tags$a("", title = paste0(lang$adminMode$general$defaultScenName$tooltip, " - ", 
+                                                                                                                                                           tolower(lang$adminMode$general$ui$tooltipDocs)), 
+                                                                                                                                        class="info-wrapper", 
+                                                                                                                                        href="https://gams.com/miro/customize.html#default-scenario", 
+                                                                                                                                        tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
+                                                            tags$div(
+                                                              tags$label(class = "checkbox-material", 
+                                                                         checkboxInput("default_scen_check", label = NULL, 
+                                                                                       value = if(length(configJSON$defaultScenName) && 
+                                                                                                  nchar(configJSON$defaultScenName)) TRUE else FALSE)
+                                                              ))
+                                                   ),
+                                                   conditionalPanel(
+                                                     condition = "input.default_scen_check===true",
+                                                     tags$div(class = "option-wrapper", style = "padding-right:30px;padding-left:40px;",
+                                                              textInput("general_default_scen_name", lang$adminMode$general$defaultScenName$label,
+                                                                        value = if(length(configJSON$defaultScenName)) configJSON$defaultScenName else NULL))),
+                                                   tags$div(
+                                                     tags$label(class = "cb-label", "for" = "general_meta",
+                                                                lang$adminMode$general$meta$label, tags$a("", title = paste0(lang$adminMode$general$meta$title, " - ", tolower(lang$adminMode$general$ui$tooltipDocs)), 
+                                                                                                          class="info-wrapper", 
+                                                                                                          href="https://gams.com/miro/customize.html#include-metadata", 
+                                                                                                          tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                     tags$div(
+                                                       tags$label(class = "checkbox-material", 
+                                                                  checkboxInput("general_meta", 
+                                                                                value = if(length(configJSON$excelIncludeMeta)) 
+                                                                                  configJSON$excelIncludeMeta else config$excelIncludeMeta, 
+                                                                                label = NULL)
+                                                       ))
+                                                   ),
+                                                   tags$div(
+                                                     tags$label(class = "cb-label", "for" = "general_empty",
+                                                                lang$adminMode$general$empty$label, tags$a("", title = paste0(lang$adminMode$general$empty$title, " - ", tolower(lang$adminMode$general$ui$tooltipDocs)), 
+                                                                                                           class="info-wrapper", 
+                                                                                                           href="https://gams.com/miro/customize.html#include-empty", 
+                                                                                                           tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                     tags$div(
+                                                       tags$label(class = "checkbox-material", 
+                                                                  checkboxInput("general_empty", 
+                                                                                value = if(identical(configJSON$excelIncludeEmptySheets, FALSE)) 
+                                                                                  FALSE else TRUE, label = NULL)
+                                                       ))
+                                                   ),
+                                                   tags$div(
+                                                     tags$label(class = "cb-label info-position", "for" = "general_act_attach", 
+                                                                tags$div(lang$adminMode$general$actAttach$label, 
+                                                                         tags$a("", title = paste0(lang$adminMode$general$actAttach$title, " - ", 
+                                                                                                   tolower(lang$adminMode$general$ui$tooltipDocs)), 
+                                                                                class="info-wrapper", 
+                                                                                href="https://gams.com/miro/start.html#file-attachment", 
+                                                                                tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
+                                                     tags$div(
+                                                       tags$label(class = "checkbox-material", 
+                                                                  checkboxInput("general_act_attach", 
+                                                                                value = if(length(configJSON$activateModules$attachments)) 
+                                                                                  configJSON$activateModules$attachments else config$activateModules$attachments, label = NULL)
+                                                       ))
+                                                   ),
+                                                   tags$div(class="option-wrapper",
+                                                            sliderInput("general_save_duration", 
+                                                                        tags$div(lang$adminMode$general$saveDuration$label, 
+                                                                                 tags$a("", title = lang$adminMode$general$ui$tooltipDocs, 
+                                                                                        class="info-wrapper",
+                                                                                        href="https://gams.com/miro/customize.html#general-duration", 
+                                                                                        tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                                        min = 0, max = 999, step = 1, 
+                                                                        value = if(length(configJSON$storeLogFilesDuration)) 
+                                                                          configJSON$storeLogFilesDuration else config$storeLogFilesDuration
+                                                            ))
+                                                 )),
                                                  tags$div(class = "space")
                                         )      
                                ),
                                tags$div(class = "col-sm-6", style = "padding-top: 20px;",
                                         tags$div(class="main-tab",
-                                                 tags$div(id = "module_wrapper2"),
+                                                 tags$div(tagList(
+                                                   tags$h2(lang$adminMode$general$ui$headerComputation, class="option-category"),
+                                                   tags$label(class = "cb-label", "for" = "general_downloadTempFiles", 
+                                                              tags$div(lang$adminMode$general$downloadTempFiles$label, 
+                                                                       tags$a("", title = lang$adminMode$general$ui$tooltipDocs, 
+                                                                              class="info-wrapper", 
+                                                                              href="https://gams.com/miro/customize.html#allow-temp-files", 
+                                                                              tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
+                                                   tags$div(
+                                                     tags$label(class = "checkbox-material", 
+                                                                checkboxInput("general_downloadTempFiles", 
+                                                                              value = if(length(configJSON$activateModules$downloadTempFiles)) 
+                                                                                configJSON$activateModules$downloadTempFiles else config$activateModules$downloadTempFiles, 
+                                                                              label = NULL)
+                                                     )),
+                                                   tags$div(
+                                                     tags$label(class = "cb-label", "for" = "general_save_trace", 
+                                                                lang$adminMode$general$saveTrace$label, 
+                                                                tags$a("", title = paste0(lang$adminMode$general$saveTrace$title, " - ", 
+                                                                                          tolower(lang$adminMode$general$ui$tooltipDocs)), 
+                                                                       class="info-wrapper", 
+                                                                       href="https://gams.com/miro/start.html#save-trace-file", 
+                                                                       tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                     tags$div(
+                                                       tags$label(class = "checkbox-material", 
+                                                                  checkboxInput("general_save_trace", 
+                                                                                value = if(length(configJSON$saveTraceFile)) 
+                                                                                  configJSON$saveTraceFile else config$saveTraceFile, 
+                                                                                label = NULL)
+                                                       ))
+                                                   ),
+                                                   tags$div(class="option-wrapper",
+                                                            selectizeInput("general_args", 
+                                                                           tags$div(lang$adminMode$general$args$label, 
+                                                                                    tags$a("", title = lang$adminMode$general$ui$tooltipDocs, 
+                                                                                           class="info-wrapper", 
+                                                                                           href="https://gams.com/miro/customize.html#command-line-args", 
+                                                                                           tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                                           choices = configJSON$extraClArgs, selected = configJSON$extraClArgs, 
+                                                                           multiple = TRUE, options = list('create' = TRUE,'persist' = FALSE)))
+                                                 )),
                                                  tags$div(class = "space")
                                         )      
                                )),
