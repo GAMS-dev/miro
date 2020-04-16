@@ -1175,7 +1175,8 @@
         },
         "depSelector": "Statischer Wert?",
         "step": "Schrittweite (auch Dezimalstellen möglich)",
-        "minStep": "Minimale Schrittweite (nur relevant im Hypercube-Modus). Wenn leer, wird die Schrittweite genommen.",
+        "minStep": "Minimale Schrittweite",
+        "minStepTooltip": "Nur relevant im Hypercube-Modus. Wenn leer, wird die Schrittweite genommen. - Dokumentation öffnen",
         "ticks": "Markierungen Anzeigen?",
         "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
       },

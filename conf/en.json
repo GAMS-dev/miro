@@ -1175,7 +1175,8 @@
         },
         "depSelector": "Static value?",
         "step": "Step size (also decimal places possible)",
-        "minStep": "Minimum step size (only relevant in Hypercube mode). If empty, the step size is used.",
+        "minStep": "Minimum step size",
+        "minStepTooltip": "Only relevant in Hypercube mode. If empty, the step size is used. - Open documentation",
         "ticks": "Show tick marks?",
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },

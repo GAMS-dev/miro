@@ -5391,6 +5391,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "minStepTooltip":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "ticks":{ 
                   "type":"string",
                   "minLength":1,
