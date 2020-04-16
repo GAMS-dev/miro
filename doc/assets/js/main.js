@@ -38,14 +38,6 @@ $(document).ready(function() {
         e.preventDefault();
         $(this).ekkoLightbox();
     });    
-
-    function hashHandler() {
-        if(window.location.hash && $(window.location.hash).length){
-            $(window.location.hash).next().show();
-        }
-    }
-    hashHandler()
-    window.addEventListener('hashchange', hashHandler, false);
 });
 (function ($) {
     /**
@@ -456,4 +448,12 @@ $(document).ready(function() {
             }
         );
     });
+    function hashHandler() {
+        if(window.location.hash && $(window.location.hash).length){
+            $(window.location.hash).next().show();
+            $(window.location.hash).find('.slide-toggle').removeClass( 'fa-plus' ).addClass( 'fa-minus' );
+        }
+    }
+    hashHandler();
+    window.addEventListener('hashchange', hashHandler, false);
 })(jQuery);

@@ -1440,6 +1440,9 @@ body{
     margin-bottom: 0px;
   }  
 }
+.slide-toggle {
+  font-size: 10px;
+}
 input[type=text], select {
   width: 50%;
   padding: 12px 20px;
