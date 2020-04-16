@@ -472,7 +472,9 @@ if(miroBuildonly){
                 "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
                 "GAMSReturnCodeMap", "dependentDatasets", "outputTabs", 
                 "installPackage", "dbSchema", "scalarInputSym", "scalarInputSymToVerify",
-                "requiredPackagesCR", "datasetsRemoteExport", "dropdownAliases"), 
+                "requiredPackagesCR", "datasetsRemoteExport", "dropdownAliases", 
+                #TODO: Update API version when dataContract is used elsewhere than in Configuration mode
+                "dataContract"), 
        file = rSaveFilePath)
   
   if(identical(Sys.getenv("MIRO_COMPILE_ONLY"), "true")){
