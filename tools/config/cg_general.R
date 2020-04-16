@@ -875,11 +875,20 @@ observeEvent(input$remove_script, {
     rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
       removeEl(arrayID)$
       getValidData()
-    return()
+    if(!length(rv$generalConfig$scripts$hcube)){
+      rv$generalConfig$scripts$hcube <- NULL
+    }
+  }else if(identical(input$remove_script[1], "scripts_base")){
+    rv$generalConfig$scripts$base <- baseScriptValidator$
+      removeEl(arrayID)$
+      getValidData()
+    if(!length(rv$generalConfig$scripts$base)){
+      rv$generalConfig$scripts$base <- NULL
+    }
   }
-  rv$generalConfig$scripts$base <- baseScriptValidator$
-    removeEl(arrayID)$
-    getValidData()
+  if(!length(rv$generalConfig$scripts)){
+    rv$generalConfig$scripts <- NULL
+  }
 })
 changeAndValidateGroupMembers <- function(arrayID, groupMembers, HTMLarrayID){
   arrayIdx <- indexMap$push(arrayID, groupMembers[1])
