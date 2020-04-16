@@ -1432,7 +1432,7 @@
         "color": "Wählen Sie die Farbe der Wertebox aus",
         "colorChoices": ["rot", "gelb", "aqua", "blau", "hellblau", "grün", "marineblau", "blaugrün", "oliv", "limette", "orange", "fuchsia", "lila", "kastanienbraun", "schwarz"],
         "icon": "Geben Sie ein Symbol für die Wertebox an.",
-        "valueboxIconChoices": ["_", "Münzen", "Brieftasche", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupie", "Rubel", "Pfund", "Lira", "Benutzer", "Mehrere Benutzer", "Plus", "Minus", "Ausrufezeichen", "Fragezeichen", "Abspielen", "Haken", "Haus", "Zahnrad", "Stern", "Verbot", "Herz", "Blatt", "Glühbirne", "Smile", "Stern", "Weitere..."],
+        "valueboxIconChoices": ["_", "Münzen", "Brieftasche", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupie", "Rubel", "Pfund", "Lira", "Benutzer", "Mehrere Benutzer", "Plus", "Minus", "Ausrufezeichen", "Fragezeichen", "Abspielen", "Haken", "Haus", "Zahnrad", "Asterisk", "Verbot", "Herz", "Blatt", "Glühbirne", "Smile", "Stern", "Weitere..."],
         "otherIcon": "Use other icon from here: "
       },
       "animationOptions":{
@@ -1659,7 +1659,7 @@
           "label": "Wählen Sie ein Label",
           "iconOptions": "Icon options",
           "icon": "Icon to use",
-          "iconChoices": ["Kreis", "Offener Kreis", "Kreispunkt", "Quadrat", "X", "Benutzer", "Mehrere Benutzer", "Plus", "Minus", "Ausrufezeichen", "Fragezeichen", "Abspielen", "Haken", "Haus", "Zahnrad", "Stern", "Verbot", "Herz", "Blatt", "Glühbirne", "Smile", "Stern"],
+          "iconChoices": ["Kreis", "Offener Kreis", "Kreispunkt", "Quadrat", "X", "Benutzer", "Mehrere Benutzer", "Plus", "Minus", "Ausrufezeichen", "Fragezeichen", "Abspielen", "Haken", "Haus", "Zahnrad", "Asterisk", "Verbot", "Herz", "Blatt", "Glühbirne", "Smile", "Stern"],
           "iconColor": "Icon color",
           "markerColor": "Marker color",
           "markerColorChoices": ["red", "darkred", "lightred", "orange", "beige", "green", "darkgreen", "lightgreen", "blue", "darkblue", "lightblue", "purple", "darkpurple", "pink", "cadetblue", "white", "gray", "lightgray", "black"],
