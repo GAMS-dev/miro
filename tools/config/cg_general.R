@@ -478,19 +478,19 @@ lapply(c(names(modelInRaw), names(modelOut)), function(name){
       return()
     }
   })
-  observeEvent(input[[paste0("general_overwriteSymHeaders_", name)]], {
+  observeEvent(input[[paste0("general_overwriteSymHeaders_", name)]], ignoreNULL = FALSE, {
     newHeaders <- input[[paste0("general_overwriteSymHeaders_", name)]]
     defaultAlias <- FALSE
     if(name %in% names(modelOut)){
-      if(length(newHeaders) != length(modelOut[[name]]$headers) ||
-         identical(newHeaders, vapply(modelOut[[name]]$headers, "[[", 
+      if(length(newHeaders) != length(dataContract$outputSymbols[[name]]$headers) ||
+         identical(newHeaders, vapply(dataContract$outputSymbols[[name]]$headers, "[[", 
                                       character(1L), "alias",
                                       USE.NAMES = FALSE))){
         defaultAlias <- TRUE
       }
     }else{
-      if(length(newHeaders) != length(modelInRaw[[name]]$headers) ||
-         identical(newHeaders, vapply(modelInRaw[[name]]$headers, "[[", 
+      if(length(newHeaders) != length(dataContract$inputSymbols[[name]]$headers) ||
+         identical(newHeaders, vapply(dataContract$inputSymbols[[name]]$headers, "[[", 
                                       character(1L), "alias",
                                       USE.NAMES = FALSE))){
         defaultAlias <- TRUE

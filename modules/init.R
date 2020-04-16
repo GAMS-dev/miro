@@ -107,6 +107,10 @@ if(is.null(errMsg)){
   modelOut          <- config[["outputSymbols"]]
   names(modelOut)   <- tolower(names(modelOut))
   
+  #TODO: Update API version when dataContract is used elsewhere than in Configuration mode
+  dataContract      <- list(inputSymbols = config[["inputSymbols"]],
+                            outputSymbols = config[["outputSymbols"]])
+  
   config[["inputSymbols"]]  <- NULL
   config[["outputSymbols"]] <- NULL
   
