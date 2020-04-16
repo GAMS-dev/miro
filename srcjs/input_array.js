@@ -404,12 +404,19 @@ class InputArray {
       this.elInArray[elID] = newLabel;
     }
 
-    static createSelectInput(arrayID, elID, label, choices, aliases = choices, selectedRaw = '',
+    static createSelectInput(arrayID, elID, label, choicesRaw, aliasesRaw = choicesRaw, selectedRaw = '',
       multiple = false, create = false) {
       const id = arrayID + elID;
+      let choices = choicesRaw;
+      let aliases = aliasesRaw;
       let selected = selectedRaw;
       let optionsHTML = '';
-
+      if (!$.isArray(choices)) {
+        choices = [choices];
+      }
+      if (!$.isArray(aliases)) {
+        aliases = [aliases];
+      }
       if (!$.isArray(selected)) {
         selected = [selected];
       }
