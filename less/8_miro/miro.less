@@ -142,6 +142,72 @@ textarea.readme-preview-markdown:focus {
     border-right: 5px solid transparent;
     border-left: 5px solid transparent;
 }
+::selection {
+  .responsiveDark({
+     color: #fff;
+     background: @light-blue;
+  },
+  {
+     background: @light-blue-dark;
+  })
+}
+::-moz-selection {
+  .responsiveDark({
+     color: #fff;
+     background: @light-blue;
+  },
+  {
+     background: @light-blue-dark;
+  })
+}
+.box-header ::selection {
+  .responsiveDark({
+     background: @dropdown-sidebar-bg;
+  },
+  {
+     background: @dropdown-sidebar-bg-dark;
+  })
+}
+.box-header ::-moz-selection {
+  .responsiveDark({ 
+    background: @dropdown-sidebar-bg;
+  },
+  {
+    background: @dropdown-sidebar-bg-dark;
+  })
+}
+#shiny-tab-gamsinter {
+  .box-header ::selection {
+    .responsiveDark({
+       background: @dropdown-sidebar-bg;
+    },
+    {
+       background: @dropdown-sidebar-bg-dark;
+    })
+  }
+  .box-header ::-moz-selection {
+    .responsiveDark({
+       background: @dropdown-sidebar-bg;
+    },
+    {
+       background: @dropdown-sidebar-bg-dark;
+    })
+  }
+  .box-body ::selection {
+    .responsiveDark({
+    },
+    {
+       background: @log-color-dark;
+    })
+  }
+  .box-body ::-moz-selection {
+    .responsiveDark({
+    },
+    {
+       background: @log-color-dark;
+    })
+  }
+}
 /* custom alerts */
 .gmsalert{
   position:absolute;
