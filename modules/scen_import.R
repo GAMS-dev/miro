@@ -95,25 +95,30 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     loadModeWorkDir <- csvFiles$tmpDir
   }else if(identical(fileType, "csv")){
     loadMode <- "csv"
-    if(length(loadModeFileName) && loadModeFileName %in% c(modelInTabularData, scalarsFileName)){
-      datasetsToFetch <- loadModeFileName
-    }else if(!isTRUE(input$cbSelectManuallyLoc) || length(input$selInputDataLoc) != 1L){
-      flog.debug("Local file import stopped as no datasheet was specified (must be specified when uploading csv files).")
-      showHideEl(session, "#importScenNoDsSelected", 4000L)
-      return()
-    }else{
+    fileNameRaw <- character(0L)
+    if(is.character(input$localInput$name) && 
+       length(input$localInput$name) == 1L) {
+      fileNameRaw <- tolower(tools::file_path_sans_ext(input$localInput$name))
+    }
+    if(isTRUE(input$cbSelectManuallyLoc) && length(input$selInputDataLoc) == 1L){
       if(!input$selInputDataLoc %in% names(modelInToImport)){
         flog.error("Selected input dataset is not in list of model data to import. This looks like an attempt to tamper with the app!")
         showHideEl(session, "#importScenNoDsSelected", 4000L)
         return()
       }
       datasetsToFetch <- input$selInputDataLoc
-      if(!file.rename(input$localInput$datapath, 
-                      paste0(loadModeWorkDir, .Platform$file.sep, 
-                             datasetsToFetch, ".csv"))){
-        showHideEl(session, "#importScenError", 4000L)
-        return()
-      }
+    }else if(length(fileNameRaw) && fileNameRaw %in% c(modelInTabularData, scalarsFileName)){
+      datasetsToFetch <- fileNameRaw
+    }else{
+      flog.debug("Local file import stopped as no datasheet was specified (must be specified when uploading csv files).")
+      showHideEl(session, "#importScenNoDsSelected", 4000L)
+      return()
+    }
+    if(!file.rename(input$localInput$datapath, 
+                    paste0(loadModeWorkDir, .Platform$file.sep, 
+                           datasetsToFetch, ".csv"))){
+      showHideEl(session, "#importScenError", 4000L)
+      return()
     }
   }else if(fileType %in% c("xls", "xlsx")){
     loadMode <- "xls"
