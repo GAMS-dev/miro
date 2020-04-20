@@ -1356,6 +1356,7 @@
         "shading": "Schattierung",
         "rangeSelector": "Bereichswähler",
         "highlight": "Highlighting",
+        "legend": "Legende",
         "markers": "Markierungen",
         "flows": "Flüsse",
         "minicharts": "Minicharts",
@@ -1518,6 +1519,16 @@
           "strokeBorderWidth": "Einen Rahmen um hervorgehobene Linien zeichnen",
           "strokeBorderColor": "Rahmenfarbe der hervorgehobenen Linien",
           "hideOnMouseOut": "Hervorhebungseffekte ausblenden, wenn die Maus aus dem Diagramm bewegt wird?"
+        },
+        "legend":{
+          "title": "Legendenoptionen",
+          "activate": "Soll eine Legende angezeigt werden?",
+          "show": "Wie soll die Legende angezeigt werden?",
+          "showChoices": ["automatisch", "immer", "beim Überfahren mit der Maus", "folgen"],
+          "width": "Breite der Legende (in px)",
+          "showZeroValues": "Nullwerte in der Legende anzeigen",
+          "labelsSeparateLines": "Einträge in getrennten Zeilen anzeigen?",
+          "hideOnMouseOut": "Legende ausblenden, wenn die Maus aus dem Diagramm bewegt wird?"
         }
       },
       "leafletOptions":{

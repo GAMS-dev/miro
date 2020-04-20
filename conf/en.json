@@ -1356,6 +1356,7 @@
         "shading": "Shading",
         "rangeSelector": "Range selector",
         "highlight": "Highlighting",
+        "legend": "Legend",
         "markers": "Markers",
         "flows": "Flows",
         "minicharts": "Minicharts",
@@ -1518,6 +1519,16 @@
           "strokeBorderWidth": "Draw a border around highlighted lines",
           "strokeBorderColor": "Border color of highlighted lines",
           "hideOnMouseOut": "Hide highlighting effects when mouse is moved out of chart?"
+        },
+        "legend":{
+          "title": "Legend options",
+          "activate": "Should a legend be displayed?",
+          "show": "How should the legend be displayed?",
+          "showChoices": ["auto", "always", "on mouseover", "follow"],
+          "width": "Width of the legend (in px)",
+          "showZeroValues": "Show zero value labels in the legend",
+          "labelsSeparateLines": "Show labels in separate lines?",
+          "hideOnMouseOut": "Hide legend when mouse is moved out of chart?"
         }
       },
       "leafletOptions":{

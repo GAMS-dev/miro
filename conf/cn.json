@@ -1356,6 +1356,7 @@
         "shading": "底纹",
         "rangeSelector": "范围选择器",
         "highlight": "突出显示",
+        "legend": "Legend",
         "markers": "标记",
         "flows": "流量",
         "minicharts": "小型图标",
@@ -1518,6 +1519,16 @@
           "strokeBorderWidth": "Draw a border around highlighted lines",
           "strokeBorderColor": "Border color of highlighted lines",
           "hideOnMouseOut": "鼠标移出图表时是否隐藏突出显示效果？"
+        },
+        "legend":{
+          "title": "Legend options",
+          "activate": "Should a legend be displayed?",
+          "show": "How should the legend be displayed?",
+          "showChoices": ["auto", "always", "on mouseover", "follow"],
+          "width": "Width of the legend (in px)",
+          "showZeroValues": "Show zero value labels in the legend",
+          "labelsSeparateLines": "Show labels in separate lines?",
+          "hideOnMouseOut": "Hide legend when mouse is moved out of chart?"
         }
       },
       "leafletOptions":{

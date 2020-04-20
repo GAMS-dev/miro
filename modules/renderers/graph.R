@@ -405,8 +405,8 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
         p <- do.call(dyOptions, c(list(dygraph = p), options$dyOptions))
       }
       # lenged options
-      if(!is.null(options$dylegend)){
-        p <- do.call(dyLegend, c(list(dygraph = p), options$dylegend))
+      if(!is.null(options$dyLegend)){
+        p <- do.call(dyLegend, c(list(dygraph = p), options$dyLegend))
       }
       # highlighting options - highlight hovered series
       if(!is.null(options$dyHighlight)){
