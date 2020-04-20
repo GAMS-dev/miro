@@ -390,7 +390,7 @@ lapply(seq_along(modelIn), function(id){
                value <- isolate(input[[paste0("slider_", id)]])
                modelInputData[[id]] <<- list(NULL, value, FALSE)
              }else{
-               value <- suppressWarnings(as.numeric(modelInputData[[id]]))
+               value <- suppressWarnings(as.numeric(modelInputData[[id]][[1]]))
                if(any(is.na(value))){
                  return(NULL)
                }
