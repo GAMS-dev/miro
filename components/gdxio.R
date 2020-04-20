@@ -102,7 +102,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     # tabular data
     scalarIdList <- NULL
     wgdxDotList <- lapply(seq_along(data), function(i){
-      if(!length(data[[i]]) || !nrow(data[[i]])){
+      if(!length(data[[i]])){
         return(NA)
       }
       symName   <- names(data)[i]
