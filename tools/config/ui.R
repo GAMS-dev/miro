@@ -292,6 +292,8 @@ body_admin <- dashboardBody({
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$rangeSelector)),
                                                                 tags$li(id = "categoryDygraphs10", class = "category-btn category-btn-dygraphs", `data-cat`="35",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$highlight)),
+                                                                tags$li(id = "categoryDygraphs12", class = "category-btn category-btn-dygraphs", `data-cat`="55",
+                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$legend)),
                                                                 tags$li(id = "categoryDygraphs11", class = "category-btn category-btn-dygraphs", `data-cat`="36",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$general)),
                                                                 #leaflet 

@@ -87,7 +87,7 @@
           },
           "hideOnMouseOut": true
         },
-        "dylegend": {
+        "dyLegend": {
           "width": 450,
           "show": "always",
           "hideOnMouseOut": true
@@ -287,6 +287,12 @@
             "strokeBorderWidth": null,
             "strokeBorderColor": "#ffffff"
           }
+        },
+        "dyLegend": {
+          "show": "auto",
+          "width": 250,
+          "showZeroValues": false,
+          "labelsSeparateLines": false
         },
         "dyRangeSelector": {
           "height": 25,

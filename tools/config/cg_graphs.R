@@ -114,6 +114,8 @@ langSpecificGraphs$categoryorderChoices <- c("trace" = "trace", "category ascend
                                       "mean ascending" = "mean ascending", "mean descending" = "mean descending", "median ascending" = "median ascending", 
                                       "median descending" = "median descending")
 names(langSpecificGraphs$categoryorderChoices) <- lang$adminMode$graphs$axisOptions$categoryorderChoices
+langSpecificGraphs$dyLegendOptions <- c("auto" = "auto", "always" = "always", "onmouseover" = "onmouseover", "follow" = "follow")
+names(langSpecificGraphs$dyLegendOptions) <- lang$adminMode$graphs$dygraphsOptions$legend$showChoices
 
 hideFilter <- function(){
   hideEl(session, "#preview_output_plotly-data_filter")
@@ -1383,6 +1385,32 @@ observeEvent(input$dyhigh_strokeBorderColor, {
       rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeBorderColor <<- input$dyhigh_strokeBorderColor
     else
       rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeBorderColor <<- "#ffffff"
+})
+observeEvent(input$dyLegend_activate, {
+  if(isTRUE(input$dyLegend_activate)){
+    rv$graphConfig$graph$dyLegend <<- list(show = input$dyLegend_show, 
+                                           width = input$dyLegend_width,
+                                           showZeroValues = input$dyLegend_showZeroValues,
+                                           labelsSeparateLines = input$dyLegend_labelsSeparateLines)
+  }else{
+    rv$graphConfig$graph$dyLegend <<- list(show = "never")
+  }
+})
+observeEvent(input$dyLegend_show, {
+  if(isTRUE(input$dyLegend_activate))
+    rv$graphConfig$graph$dyLegend$show <<- input$dyLegend_show
+})
+observeEvent(input$dyLegend_width, {
+  if(isTRUE(input$dyLegend_activate))
+    rv$graphConfig$graph$dyLegend$width <<- input$dyLegend_width
+})
+observeEvent(input$dyLegend_showZeroValues, {
+  if(isTRUE(input$dyLegend_activate))
+    rv$graphConfig$graph$dyLegend$showZeroValues <<- input$dyLegend_showZeroValues
+})
+observeEvent(input$dyLegend_labelsSeparateLines, {
+  if(isTRUE(input$dyLegend_activate))
+    rv$graphConfig$graph$dyLegend$labelsSeparateLines <<- input$dyLegend_labelsSeparateLines
 })
 
 observeEvent(input$dyEvent_label, {
@@ -2836,6 +2864,11 @@ getDygraphsOptions <- reactive({
     rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeBorderWidth <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyHighlight"]][["highlightSeriesOpts"]][["strokeBorderWidth"]], NULL)
     rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeBorderColor <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyHighlight"]][["highlightSeriesOpts"]][["strokeBorderColor"]], NULL)
 
+    rv$graphConfig$graph$dyLegend$show                <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyLegend"]][["show"]], "auto")
+    rv$graphConfig$graph$dyLegend$width               <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyLegend"]][["width"]], 250L)
+    rv$graphConfig$graph$dyLegend$showZeroValues      <<- checkTRUE(configuredWithThisTool, currentGraphConfig[["dyLegend"]][["showZeroValues"]])
+    rv$graphConfig$graph$dyLegend$labelsSeparateLines <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyLegend"]][["labelsSeparateLines"]], FALSE)
+    
     rv$graphConfig$graph$dyRangeSelector <<- NULL
     rv$graphConfig$graph$dyRangeSelector$height           <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyRangeSelector"]][["height"]], NULL)
     rv$graphConfig$graph$dyRangeSelector$strokeColor      <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyRangeSelector"]][["strokeColor"]], NULL)
@@ -2953,6 +2986,22 @@ getDygraphsOptions <- reactive({
                                 value = checkLength(configuredWithThisTool, rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeBorderColor, "#ffffff")),
                checkboxInput_MIRO("dyhigh_hideOnMouseOut", lang$adminMode$graphs$dygraphsOptions$highOpts$hideOnMouseOut, 
                                   value = checkLength(configuredWithThisTool, rv$graphConfig$graph$dyHighlight$hideOnMouseOut, TRUE)))
+    ),
+    tags$div(class="cat-body cat-body-55", style="display:none;",
+             checkboxInput_MIRO("dyLegend_activate", lang$adminMode$graphs$dygraphsOptions$legend$activate, 
+                                value = if(!length(rv$graphConfig$graph[["dyLegend"]]) ||
+                                           identical(rv$graphConfig$graph[["dyLegend"]][["show"]], "never")) FALSE else TRUE),
+             conditionalPanel(
+               condition = "input.dyLegend_activate == true",
+               selectInput("dyLegend_show", lang$adminMode$graphs$dygraphsOptions$legend$show, 
+                           choices = langSpecificGraphs$dyLegendOptions,
+                           selected = rv$graphConfig$graph$dyLegend$show),
+               numericInput("dyLegend_width", lang$adminMode$graphs$dygraphsOptions$legend$width, 
+                            min = 1L, step = 1, value =rv$graphConfig$graph$dyLegend$width),
+               checkboxInput_MIRO("dyLegend_showZeroValues", lang$adminMode$graphs$dygraphsOptions$legend$showZeroValues, 
+                                  value = rv$graphConfig$graph$dyLegend$showZeroValues),
+               checkboxInput_MIRO("dyLegend_labelsSeparateLines", lang$adminMode$graphs$dygraphsOptions$legend$labelsSeparateLines, 
+                                  value = rv$graphConfig$graph$dyLegend$labelsSeparateLines))
     )
   )
 })

@@ -6276,6 +6276,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "legend":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "markers":{ 
                   "type":"string",
                   "minLength":1,
@@ -7116,6 +7121,59 @@
                       "required":true
                     },
                     "strokeBorderColor":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "hideOnMouseOut":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    }
+                  }
+                },
+                "legend":{  
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{ 
+                    "title":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "activate":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "show":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "showChoices":{
+                      "type":"array",
+                      "uniqueItems": true,
+                      "minItems":4,
+                      "maxItems":4,
+                      "items": {
+                          "type":"string",
+                          "minLength": 1
+                      },
+                      "required":true
+                    },
+                    "width":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "showZeroValues":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "labelsSeparateLines":{ 
                       "type":"string",
                       "minLength":1,
                       "required":true
