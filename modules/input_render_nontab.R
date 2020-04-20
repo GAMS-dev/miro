@@ -336,16 +336,19 @@ lapply(seq_along(modelIn), function(id){
                  if(length(choices)){
                    selectedEl <- modelIn[[id]]$dropdown$selected[[1]]
                    if((!length(selectedEl) && (!identical(modelIn[[id]]$dropdown$multiple, TRUE) || 
-                       identical(modelIn[[id]]$dropdown$single, TRUE))) || 
+                                               identical(modelIn[[id]]$dropdown$single, TRUE))) || 
                       (length(selectedEl) && !selectedEl %in% choices)){
                      selectedEl <- choices[[1]]
                    }
                    if(!identical(selectedEl, isolate(input[["dropdown_" %+% id]]))){
                      noCheck[id] <<- TRUE
                    }
+                   if(is.null(selectedEl)){
+                     selectedEl <- character(0L)
+                   }
                    selectedDepEl[[id]] <<- selectedEl
                    updateSelectInput(session, paste0("dropdown_", id), choices = choices, 
-                                              selected = selectedEl)
+                                     selected = selectedEl)
                    inputInitialized[i] <<- TRUE
                    showEl(session, paste0("#dropdown_", id))
                    hideEl(session, paste0("#no_data_dep_", id))
@@ -358,7 +361,11 @@ lapply(seq_along(modelIn), function(id){
                    }
                  }
                }else{
-                 selectedDepEl[[id]] <<- isolate(input[[paste0("dropdown_", id)]])
+                 selectedEl <- isolate(input[[paste0("dropdown_", id)]])
+                 if(is.null(selectedEl)){
+                   selectedEl <- character(0L)
+                 }
+                 selectedDepEl[[id]] <<- selectedEl
                  updateSelectInput(session, paste0("dropdown_", id), choices = getData[[i]](), 
                                    selected = selectedDepEl[[id]])
                }
@@ -383,7 +390,7 @@ lapply(seq_along(modelIn), function(id){
                value <- isolate(input[[paste0("slider_", id)]])
                modelInputData[[id]] <<- list(NULL, value, FALSE)
              }else{
-               value <- suppressWarnings(as.numeric(modelInputData[[id]]))
+               value <- suppressWarnings(as.numeric(modelInputData[[id]][[1]]))
                if(any(is.na(value))){
                  return(NULL)
                }
@@ -443,8 +450,8 @@ lapply(seq_along(modelIn), function(id){
                      return(NULL)
                    }
                    if(length(rv[["in_" %+% k]]) && (modelIn[[k]]$type == "hot" && 
-                                                         !is.null(input[["in_" %+% k]]) || 
-                                                         (!is.null(tableContent[[k]]) && nrow(tableContent[[k]])) ||
+                                                    !is.null(input[["in_" %+% k]]) || 
+                                                    (!is.null(tableContent[[k]]) && nrow(tableContent[[k]])) ||
                                                     identical(modelIn[[k]]$type, "custom") && length(modelInputDataVisible[[k]])) 
                       && !isEmptyInput[k]){
                      tryCatch({
@@ -493,11 +500,11 @@ lapply(seq_along(modelIn), function(id){
                  value <- isolate(input[[paste0("slider_", id)]])
                }
                #if(!is.null(value) && !identical(value, as.numeric(isolate(input[["slider_" %+% id]])))){
-                 noCheck[id] <<- TRUE
+               noCheck[id] <<- TRUE
                #}
                newDefaultValue[[i]] <<- value
                updateSliderInput(session, inputId = paste0("slider_", id), value = value, min = getData[[i]]()$min, 
-                                        max = getData[[i]]()$max, step = getData[[i]]()$step)
+                                 max = getData[[i]]()$max, step = getData[[i]]()$step)
                if(!inputInitialized[i]){
                  if(!is.null(isolate(getData[[i]]()$min)) && !is.null(isolate(getData[[i]]()$max))){
                    inputInitialized[i] <<- TRUE

@@ -142,10 +142,10 @@ lapply(seq_along(modelIn), function(i){
          dropdown = {
            if(!is.null(isolate(input[[paste0("dropdown_", i)]]))){
              value <- isolate(input[[paste0("dropdown_", i)]])
-           }else if(!is.null(modelIn[[i]]$dropdown$selected)){
-             value <- modelIn[[i]]$dropdown$selected
            }else if(names(modelIn)[[i]] %in% modelInTabularDataBase){
              value <- character(0L)
+           }else if(!is.null(modelIn[[i]]$dropdown$selected)){
+             value <- modelIn[[i]]$dropdown$selected
            }else{
              flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
              errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, 
