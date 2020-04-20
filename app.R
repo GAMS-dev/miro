@@ -1467,7 +1467,6 @@ if(!is.null(errMsg)){
               noCheck[i] <<- FALSE
             }
           })
-          return()
         }
         observe({
           switch(modelIn[[i]]$type,
