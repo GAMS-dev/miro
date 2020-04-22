@@ -146,8 +146,8 @@ if(buildUI){
                                  tagAppendAttributes(selectInput(paste0("dropdown_", i),
                                                                  label = modelIn[[i]]$dropdown$label, 
                                                                  choices = character(0), selected = character(0),
-                                                                 multiple = if(identical(modelIn[[i]]$dropdown$multiple, 
-                                                                                         TRUE)) TRUE else FALSE), style = "display:none;"),
+                                                                 multiple = isTRUE(modelIn[[i]]$dropdown$multiple)), 
+                                                     style = "display:none;"),
                                  tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep", 
                                           lang$nav$inputScreen$noDataDep)
                                )

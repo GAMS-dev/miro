@@ -335,8 +335,8 @@ lapply(seq_along(modelIn), function(id){
                  choices <- getData[[i]]()
                  if(length(choices)){
                    selectedEl <- modelIn[[id]]$dropdown$selected[[1]]
-                   if((!length(selectedEl) && (!identical(modelIn[[id]]$dropdown$multiple, TRUE) || 
-                                               identical(modelIn[[id]]$dropdown$single, TRUE))) || 
+                   if((!length(selectedEl) && (!isTRUE(modelIn[[id]]$dropdown$multiple) || 
+                                               isTRUE(modelIn[[id]]$dropdown$single))) || 
                       (length(selectedEl) && !selectedEl %in% choices)){
                      selectedEl <- choices[[1]]
                    }
