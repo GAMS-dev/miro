@@ -615,6 +615,15 @@ $offExternalInput
                                             <h6>PAVER:</h6>
                                             <p><a href="https://github.com/coin-or/Paver" target="_blank">PAVER</a> is an Open Source Environment for Automated Performance Analysis of Benchmarking Data. This tool is designed to simplify the task of comparing and visualizing solver performance data (solution times, return codes etc.) by providing a variety of performance measurement tools with practical and simple visualization capabilities. This way you can get some performance summaries over multiple runs or detect inconsistencies. [Bussieck, Michael R., Steven P. Dirkse, and Stefan Vigerske. "PAVER 2.0: an open source environment for automated performance analysis of benchmarking data." Journal of Global Optimization 59.2-3 (2014): 259-275, <a href="http://www.gamsworld.org/performance/paver2/paver2_paper.pdf" target="_blank">link</a>].</p>
                                             <p><br>PAVER bases its analysis entirely on the GAMS <a href = "https://www.gams.com/latest/docs/UG_SolverUsage.html#UG_SolverUsage_TraceFile" target = "_blank">trace files</a> that were generated during your model runs. Since PAVER was originally designed to compare multiple solvers based on a number of model instances (e.g. the <a href="http://miplib.zib.de/" target="_blank">MIPLIB</a>), we keep this vocabulary but use it in a more abstract way: A "solver" in terms of MIRO is a set of attributes that you would like to compare. These attributs can be any criterion you could also use to filter your database: the input and output scalars defined in your model as well as some metadata such as the job tags you assigned. Based on these attributes, the scenarios you selected will be split into groups. The remaining attributes define a "model".</p>
+                                            <div class="callout-block callout-warning">
+                                                <div class="icon-holder">
+                                                    <i class="fas fa-info-circle"></i>
+                                                </div><!--//icon-holder-->
+                                                <div class="content">
+                                                    <b class="callout-title">Note:</b>
+                                                    <p>PAVER requires Python to be installed. For this purpose, it searches for a corresponding entry in the PATH. Make sure that Python is in there. The following Python packages must also be installed: <a href="https://pypi.org/project/matplotlib/" target="_blank">matplotlib</a>, <a href="https://pandas.pydata.org/pandas-docs/stable/index.html" target="_blank">pandas</a>, <a href="https://numpy.org/" target="_blank">numpy</a>.</p>
+                                                </div><!--//content-->
+                                            </div><!--//callout-block-->
                                             <p>Let's assume you want to compare how sensitive your GAMS model is with regard to computation power: You therefore generate a Hypercube job with multiple scenarios and solve it once on your local machine and then again on a High-Performance Computing Cluster. You assign the tag "HPC" to the job solved on the cluster and the tag "Local" to the one that was solved on your local machine. When you start PAVER, you will be asked to select the attributes that define your "solver". Since we want to compare the performance statistics of the job executed on our local machine with the HPC, we select <i>Job Tags</i> as the attribute for comparison:</p>
                                             <div class="section-block" style="text-align:center;">
                                              <img class="img-fluid" style="display:block; margin:auto; max-height:300px;" src="assets/images/batch_img/paver-select-attr.png" alt="Select PAVER attributes screen" />
@@ -639,15 +648,6 @@ $offExternalInput
                                             <div class="section-block" style="text-align:center;">
                                                   <img class="img-fluid" src="assets/images/batch_img/batch_paver.png" alt="Scenario analysis results" />
                                             </div>
-                                            <div class="callout-block callout-warning">
-                                                <div class="icon-holder">
-                                                    <i class="fas fa-info-circle"></i>
-                                                </div><!--//icon-holder-->
-                                                <div class="content">
-                                                    <b class="callout-title">Note:</b>
-                                                    <p>PAVER requires Python to be installed. For this purpose, it searches for a corresponding entry in the PATH. Make sure that Python is in there. The following Python packages must also be installed: <a href="https://pypi.org/project/matplotlib/" target="_blank">matplotlib</a>, <a href="https://pandas.pydata.org/pandas-docs/stable/index.html" target="_blank">pandas</a>, <a href="https://numpy.org/" target="_blank">numpy</a>.</p>
-                                                </div><!--//content-->
-                                            </div><!--//callout-block-->
                                         </div>
                                     </div><!--//section-block-->
                                     <div  id="external-analysis"  class="section-block">
