@@ -1425,7 +1425,12 @@ body{
   } 
   .page-wrapper .margin-bottom-small{
     margin-bottom:20px;
-  }       
+  }    
+  .doc-wrapper>.container,
+  .index-page>.container{
+    padding-left: 15px;
+    padding-right: 15px;
+  }   
 }
 @media (max-width: 991px) {
   .page-wrapper .center-image-lg{
