@@ -31,8 +31,8 @@ MIRORDate   <- "Apr 08 2020"
 # RSQLite(Scenario mode) #LGPL >=2
 # digest (Hypercube mode) #GPL >=2
 
-# specify CRAN mirror (for list of mirrors, see: https://cran.r-project.org/mirrors.html)
-CRANMirror <- "http://cran.us.r-project.org"
+# specify CRAN mirror
+CRANMirror <- "https://cloud.r-project.org/"
 errMsg <- NULL
 warningMsg <- NULL
 loggerInitialised <- FALSE
