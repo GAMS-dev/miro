@@ -264,8 +264,9 @@ putclose log;
                                       <p></p>
                                   </div>
                                   <h6 id="decimal-places" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Number of decimal 
-                                  places used for rounding output values</h6>
-                                  <div class="expanded"><p>Defines the number of decimal places for numeric symbols in the MIRO application. Note that this only applies to symbols that are treated as numerical values by MIRO. For example, elements of GAMS <i>Sets</i> may contain numbers, but they are not treated as such but as strings. These are therefore not affected by the maximum decimal place set.</p>
+                                  places used for rounding numerical values</h6>
+                                  <div class="expanded"><p>Defines the number of decimal places for numeric symbols in the MIRO application. This is a global setting and has an effect on all <a href="./customize.html#output-tables" class="scrollto">output tables</a>, <a href="./customize.html#table-option-large" class="scrollto">big data input tables</a> and the table for <a href="./hypercube.html#scenario-selection">loading scenarios in Hypercube mode</a>.</p>
+                                  <p>Note that this only applies to symbols that are treated as numerical values by MIRO. For example, elements of GAMS <i>Sets</i> may contain numbers, but they are not treated as such but as strings. These are therefore not affected by the maximum decimal place set.</p>
                                       <p></p>
                                   </div>
                                   <h4 class="docu-general-header">Symbol display</h4>
@@ -521,7 +522,7 @@ putclose log;
                                         <img class="img-fluid" style= "max-height:200pt;" src="assets/images/configuration_mode/tables_context_menu.png" alt="Context menu" />
                                     </div>
                                     </div>
-                                    <h4 class="docu-general-header">Output tables (global settings)</h4>
+                                    <h4 id="output-tables" class="docu-general-header">Output tables (global settings)</h4>
                                     <h6 class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Table style</h6>
                                     <div class="expanded"><p>Output tables can be changed regarding their design. Different designs are available. Example:</p>
                                     <div class="row">

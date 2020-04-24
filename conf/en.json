@@ -945,7 +945,8 @@
         "label": "Duration the GAMS log and lst files are stored in the database (in days)."
       },
       "decimal":{
-        "label": "Number of decimal places used for rounding output values."
+        "label": "Number of decimal places used for rounding numerical values (global setting).",
+        "tooltip": "Has an effect on all output tables, big data input tables and the table for loading scenarios in Hypercube mode. - Open documentation."
       },
       "logo":{
         "header": "Logo preview:",

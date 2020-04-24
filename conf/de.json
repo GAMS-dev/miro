@@ -945,7 +945,8 @@
         "label": "Speicherdauer für GAMS Log und lst Dateien in der Datenbank (in Tagen)."
       },
       "decimal":{
-        "label": "Anzahl der Dezimalstellen für das Runden von Ausgabewerten."
+        "label": "Anzahl der Dezimalstellen für das Runden von numerischen Werten (globale Option).",
+        "tooltip": "Wirkt sich auf alle Ausgabetabellen, Eingabetabellen mit großen Datenmengen und die Tabelle für Laden von Szenarien im Hypercube-Modus aus. - Dokumentation öffnen."
       },
       "logo":{
         "header": "Logo Vorschau:",

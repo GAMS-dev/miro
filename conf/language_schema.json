@@ -4306,6 +4306,11 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
+                },
+                "tooltip":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 }
               }
             },
