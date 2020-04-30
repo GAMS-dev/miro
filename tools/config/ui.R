@@ -530,7 +530,11 @@ body_admin <- dashboardBody({
                                                                              value = if(length(configJSON$pivottable$bgColor)) configJSON$pivottable$bgColor else "#00000000"
                                                             )),
                                                    tags$div(class="option-wrapper",
-                                                            sliderInput("general_decimal", label = lang$adminMode$general$decimal$label,
+                                                            sliderInput("general_decimal", 
+                                                                        tags$div(lang$adminMode$general$decimal$label, 
+                                                                                 tags$a("", title = lang$adminMode$general$decimal$tooltip, class="info-wrapper",
+                                                                                        href="https://www.gams.com/miro/customize.html#decimal-places", 
+                                                                                        tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
                                                                         min = 0, max = 6, step = 1, value = if(length(configJSON$roundingDecimals)) 
                                                                           configJSON$roundingDecimals else config$roundingDecimals
                                                             ))
