@@ -447,6 +447,73 @@ $(document).ready(function() {
                 $('.dropdown-menu', this).not('.in .dropdown-menu').stop(true, true).fadeOut('fast');
             }
         );
+        var queryToMark = new URL(window.location.href).searchParams.get("search");
+        if (queryToMark) {
+            var bodyToMark = $(".doc-body");
+            if (!$(".doc-body").length) {
+                bodyToMark = $(".index-page");
+            }
+            bodyToMark.mark(queryToMark, {
+                accuracy: "exactly",
+                done: function() {
+                $("body").scrollTo("mark");
+            }});
+        }
+        // credits to: bjornd: https://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
+
+          function escapeHtml(unsafe) {
+            return unsafe
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+          }
+          var searchRequest;
+          var $searchResultsBox = $("#miroSearchResults");
+          $("#miroSearch").on("keyup", $.debounce( 250, function(e) {
+            if (searchRequest) {
+                searchRequest.abort();
+            }
+            var searchTerm = e.target.value;
+            if (searchTerm.length > 0) {
+                $searchResultsBox.html('<li class="list-group-item"><i>Searching...</i></li>');
+                var encodedSearchTerm = encodeURIComponent(searchTerm);
+                searchRequest = $.getJSON( "https://search.gams.com/miro/select?q="+ 
+                    encodedSearchTerm + "&df=content&rows=5&hl=true&hl.snippets=2&fl=url,title", 
+                    function( data ) {
+                        if (data.response.docs.length) {
+                            $searchResultsBox.empty();
+                            for (var i=0; i < data.response.docs.length; i++) {
+                                var resultUrl = data.response.docs[i].url;
+                                var content = data.highlighting[resultUrl].content;
+                                $searchResultsBox.append('<a class="list-group-item list-group-item-action" href="' +
+                                    resultUrl + '?search=' + encodedSearchTerm + '"><b>'+ 
+                                    escapeHtml(data.response.docs[i].title) + '</b><br>' + content + '</a>');
+                            }
+                        } else {
+                            $searchResultsBox.html('<li class="list-group-item"><i>No results</i></li>');
+                        }
+                        $searchResultsBox.show();
+                })
+                .fail(function(jqxhr, textStatus, error) {
+                    console.log( "Request Failed: " + textStatus + ", " + error );
+                    $searchResultsBox.html('<li class="list-group-item text-danger"><b>A problem has occurred. Please try again later.</b></li>');
+                })
+            } else {
+                $searchResultsBox.empty();
+            }
+          }));
+          $("#miroSearch").on("focus", function(e) {
+            $("#miroSearch").animate({width: 300}, 200);
+          });
+          $("#miroSearch").on("blur", function(e) {
+            setTimeout(function() {
+                $searchResultsBox.fadeOut(100);
+                $("#miroSearch").animate({width: 30}, 200);
+                $("#miroSearch").val("");
+            }, 100);
+          });
     });
     function hashHandler() {
         if(window.location.hash && $(window.location.hash).length){

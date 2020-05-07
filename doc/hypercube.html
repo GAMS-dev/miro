@@ -66,6 +66,13 @@
         </header><!--//header-->
         <div class="doc-wrapper">
             <div class="container">
+                <div class="row justify-content-end search-box-wrapper">
+                    <div class="float-right">
+                        <input class="form-control search-box" id="miroSearch" type="text" placeholder="Search" aria-label="Search">
+                        <ul id="miroSearchResults" class="list-group">
+                        </ul>
+                    </div>
+                </div>
                 <div id="doc-header" class="doc-header text-center">
                     <h1 class="doc-title"><i class="icon fas fa-cube"></i> Hypercube mode</h1>
                 </div><!--//doc-header-->
@@ -711,6 +718,8 @@ $offExternalInput
     <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
     <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
     <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/markjs/jquery.mark.min.js"></script>
     <script type="text/javascript" src="assets/js/main.js"></script>
 
 </body>
