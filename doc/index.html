@@ -76,6 +76,13 @@
 
         <section class="cards-section text-center index-page">
             <div class="container">
+                <div class="row justify-content-end search-box-wrapper">
+                    <div class="float-right">
+                        <input class="form-control search-box" id="miroSearch" type="text" placeholder="Search" aria-label="Search">
+                        <ul id="miroSearchResults" class="list-group">
+                        </ul>
+                    </div>
+                </div>
                 <div class="intro">
                 <h3 class="block-title">Welcome!</h3>
                     <p>GAMS MIRO is a deployment environment which allows you to easily turn your <a href="https://www.gams.com/">GAMS</a> models into fully interactive applications. MIRO is designed for people looking for an easy and automated way to make their GAMS models available to end users. Extensive visualization options support you to make decisions based on optimization. State-of-the-art technology makes it possible to run in highly scalable cloud environments. </p>
@@ -294,6 +301,8 @@
 
     <!-- Main Javascript -->
     <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/markjs/jquery.mark.min.js"></script>
     <script type="text/javascript" src="assets/js/main.js"></script>
     <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
