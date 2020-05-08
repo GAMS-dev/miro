@@ -510,6 +510,7 @@ $(document).ready(function() {
                 .fail(function(jqxhr, textStatus, error) {
                     console.log( "Request Failed: " + textStatus + ", " + error );
                     $searchResultsBox.html('<li class="list-group-item text-danger"><b>A problem has occurred. Please try again later.</b></li>');
+                    $searchResultsBox.show();
                 })
             } else {
                 $searchResultsBox.empty();
