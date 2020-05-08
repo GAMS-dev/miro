@@ -487,6 +487,9 @@ $(document).ready(function() {
                             for (var i=0; i < data.response.docs.length; i++) {
                                 var resultUrl = data.response.docs[i].url;
                                 var content = data.highlighting[resultUrl].content;
+                                if (content == null) {
+                                    content = "";
+                                }
                                 $searchResultsBox.append('<a class="list-group-item list-group-item-action" href="' +
                                     resultUrl + '?search=' + encodedSearchTerm + '"><b>'+ 
                                     escapeHtml(data.response.docs[i].title) + '</b><br>' + content + '</a>');
