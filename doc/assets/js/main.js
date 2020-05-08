@@ -487,8 +487,8 @@ $(document).ready(function() {
             if (searchTerm.length > 0) {
                 $searchResultsBox.html('<li class="list-group-item"><i>Searching...</i></li>');
                 var encodedSearchTerm = encodeURIComponent(searchTerm);
-                searchRequest = $.getJSON( "https://search.gams.com/miro/select?q=*"+ 
-                    encodedSearchTerm + "*&df=content&rows=5&hl=true&hl.snippets=2&fl=url,title", 
+                searchRequest = $.getJSON( "https://search.gams.com/miro/select?q="+ 
+                    encodedSearchTerm + "&df=content&rows=5&hl=true&hl.snippets=2&fl=url,title", 
                     function( data ) {
                         if (data.response.docs.length) {
                             $searchResultsBox.empty();
