@@ -103,7 +103,6 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
       showEl(session, "#" %+% session$ns("data"))
       hideEl(session, "#" %+% session$ns("noData"))
     }
-    data <- type_convert(data, cols())
   }
   
   # make output type case insensitive
