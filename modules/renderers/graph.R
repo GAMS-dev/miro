@@ -13,7 +13,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
   #
   # Returns:
   #   rendered graph for the provided dataframe
-  if(!is.list(data)){
+  if(inherits(data, "data.frame")){
     data <- type_convert(data, cols())
   }
   if(options$tool == 'plotly'){

@@ -85,8 +85,8 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
   }
   if(!length(type))
     type <- "datatable"
-  if(is.list(data)){
-    if(!length(data) || !length(data[[1]]) || identical(nrow(data[[1]]), 0L)){
+  if(inherits(data, "data.frame")){
+    if(!length(data) || identical(nrow(data), 0L)){
       showEl(session, "#" %+% session$ns("noData"))
       hideEl(session, "#" %+% session$ns("data"))
       return()
@@ -95,7 +95,7 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
       hideEl(session, "#" %+% session$ns("noData"))
     }
   }else{
-    if(!length(data) || identical(nrow(data), 0L)){
+    if(!length(data) || !length(data[[1]]) || identical(nrow(data[[1]]), 0L)){
       showEl(session, "#" %+% session$ns("noData"))
       hideEl(session, "#" %+% session$ns("data"))
       return()
