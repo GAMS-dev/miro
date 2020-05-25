@@ -807,6 +807,10 @@
                         "description":"Turn table into a heatmap?",
                         "type":"boolean"
                     },
+                    "hideIndexCol":{
+                        "description":"Hide indexing column?",
+                        "type":"boolean"
+                    },
                     "readonlyCols":{
                       "description":"Either true or false for certain columns of table to be readonly",
                       "type":["array", "string", "null"],

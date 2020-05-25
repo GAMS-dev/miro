@@ -326,6 +326,7 @@ lapply(modelInTabularData, function(sheet){
       }
       
       ht <- rhandsontable(tabData, height = hotOptions$height, 
+                          rowHeaders = if(isTRUE(modelIn[[i]]$hideIndexCol)) NULL else rownames(tabData),
                           colHeaders = colnames, useTypes = !isPivoted,
                           width = hotOptions$width, search = hotOptions$search, 
                           readOnly = if(isTRUE(modelIn[[i]]$readonly)) TRUE else NULL, 

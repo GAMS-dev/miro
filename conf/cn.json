@@ -1156,6 +1156,7 @@
       },
       "table":{
         "bigData": "表中是否存储了大量数据（超过20,000条记录）？",
+        "hideIndexCol": "隐藏索引列？",
         "readonly": "设定表格为只读吗？",
         "readonlyCols": "设定表格的某些列为只读",
 		"pivotCols": "选择要旋转的列",

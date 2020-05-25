@@ -318,6 +318,10 @@ if(is.null(errMsg)){
         modelIn[[i]][[widgetType]] <- widgetConfig
         next
       }
+      if(!is.null(widgetConfig[["hideIndexCol"]])){
+        modelIn[[i]]$hideIndexCol  <- widgetConfig[["hideIndexCol"]]
+        widgetConfig$hideIndexCol  <- NULL
+      }
       if(!is.null(widgetConfig[["readonly"]])){
         modelIn[[i]]$readonly <- widgetConfig[["readonly"]]
         widgetConfig$readonly  <- NULL

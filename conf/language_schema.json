@@ -5291,6 +5291,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "hideIndexCol":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "readonly":{ 
                   "type":"string",
                   "minLength":1,
