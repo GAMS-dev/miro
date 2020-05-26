@@ -1054,7 +1054,7 @@ Library.
         - mgcv, Copyright (c) Simon Wood
         - MASS, Copyright (c) Brian Ripley [aut, cre, cph], Bill Venables [ctb], Douglas M. Bates [ctb], Kurt Hornik [trl] (partial port ca 1998), Albrecht Gebhardt [trl] (partial port ca 1998), David Firth [ctb]
         - gridExtra, Copyright (c)  Baptiste Auguie [aut, cre], Anton Antonov [ctb]
-        - lattice, Copyright (c)  Deepayan Sarkar
+        - lattice, Copyright (c)  Deepayan Sarkar [aut, cre], Felix Andrews [ctb], Kevin Wright [ctb] (documentation), Neil Klepeis [ctb], Paul Murrell [ctb]
         - RGraphics, Copyright (c) 	Paul Murrell
         - lifecycle, Copyright (c) 	Lionel Henry [aut, cre], RStudio [cph]
         - backports, Copyright (c)  Michel Lang [cre, aut], R Core Team [aut]
@@ -1743,7 +1743,7 @@ Public License instead of this License.  But first, please read
 -----------------------------------------------------------------------------
             The “2-Clause BSD License” (BSD-2-Clause)
         applies to: 
-        - writexl, Copyright (c) 2017 Jeroen Ooms
+        - writexl, Copyright (c) 2017 Jeroen Ooms [aut, cre], John McNamara [cph] (Author of libxlsxwriter), Gilles Vollant, Mathias Svensson (authors of minizip), Niels Provos (author of tree.h)
         - leaflet.providers, Copyright (c) 2019 Leslie Huang [aut, cre], Leaflet Providers contributors [ctb, cph] (Leaflet Providers plugin), RStudio [cph, fnd]
 -----------------------------------------------------------------------------
 
