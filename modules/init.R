@@ -1414,6 +1414,9 @@ if(is.null(errMsg)){
           next
         }else{
           configGraphsOut[[i]] <- config$dataRendering[[el]]
+          configGraphsOut[[i]]$options <- c(configGraphsOut[[i]]$options, 
+                                            list("_metadata_" = list(headers = modelOut[[i]]$headers,
+                                                                     symtype = modelOut[[i]]$symtype)))
         }
       }else if(LAUNCHCONFIGMODE){
         invalidGraphsToRender <- c(invalidGraphsToRender, el)
@@ -1441,6 +1444,9 @@ if(is.null(errMsg)){
       isOutputGraph <- TRUE
     }else{
       configGraphsIn[[i]] <- config$dataRendering[[el]]
+      configGraphsIn[[i]]$options <- c(configGraphsIn[[i]]$options, 
+                                       list("_metadata_" = list(headers = modelIn[[i]]$headers,
+                                                                symtype = modelIn[[i]]$symtype)))
     }
     if(length(config$dataRendering[[el]]$graph$filter)){
       if(isOutputGraph){
