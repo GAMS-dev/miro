@@ -14,9 +14,13 @@ renderDTable <- function(data, options, roundPrecision = 2, render = TRUE){
   }
   
   if("DT" %in% (.packages())){
-    dt <- do.call(datatable, c(list(data), options)) %>%
-      formatRound(seq_along(data)[vapply(data, is.numeric, logical(1L), USE.NAMES = FALSE)], 
-                  digits = roundPrecision)
+    dt <- do.call(datatable, c(list(data), options))
+    
+    isNumericCol <- vapply(data, is.numeric, logical(1L), USE.NAMES = FALSE)
+    if(any(isNumericCol)){
+      dt <- formatRound(dt, seq_along(data)[isNumericCol], 
+                        digits = roundPrecision)
+    }
     if(render)
       return(renderDT(dt))
     return(dt)
