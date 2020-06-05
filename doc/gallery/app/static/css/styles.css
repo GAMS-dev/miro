@@ -129,6 +129,35 @@
   overflow: hidden;
   display: inline-block;
 }
+.page-wrapper .search-box-wrapper {
+  margin-top:-20px;
+  position:relative;
+}
+.page-wrapper .search-box {
+  background: url(static/plugins/elegant_font/images/SVG/icon_search2.svg) no-repeat scroll 7px 7px;
+  padding-left:30px;
+  background-size:20px;
+  border-color: #000!important;
+  width: 30px;
+}
+.page-wrapper #miroSearchResults {
+  position: absolute;
+  max-width:500px;
+  z-index: 999;
+  right:0;
+  display: none;
+}
+@media (min-width: 992px) { 
+  .page-wrapper #miroSearchResults {
+    width:500px;
+  }
+}
+.page-wrapper #miroSearchResults em {
+  background-color: #f0ad4e;
+}
+.page-wrapper #miroSearchResults a {
+  color: #495057;
+}
 .page-wrapper .form-group input {
   width: 100%;
 }
