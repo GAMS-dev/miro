@@ -1298,14 +1298,14 @@ body{
   background-color: #d9f1d9;
 }
 .confirm-btn {
-    background: #f90;
+    background: #f90!important;
     text-shadow: none;
     border: none;
-    color: #494d55;
+    color: #494d55!important;
 }
 .confirm-btn:hover {
-    background: #e18d0f;
-    color: #494d55;
+    background: #e18d0f!important;
+    color: #494d55!important;
 }
 .cancel-btn {
     background: #fff;
