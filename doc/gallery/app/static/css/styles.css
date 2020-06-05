@@ -134,7 +134,7 @@
   position:relative;
 }
 .page-wrapper .search-box {
-  background: url(static/plugins/elegant_font/images/SVG/icon_search2.svg) no-repeat scroll 7px 7px;
+  background: url(../plugins/elegant_font/images/SVG/icon_search2.svg) no-repeat scroll 7px 7px;
   padding-left:30px;
   background-size:20px;
   border-color: #000!important;
