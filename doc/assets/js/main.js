@@ -430,23 +430,6 @@ $(document).ready(function() {
     });
 
     $( document ).ready(function($) {
-        $('button.navbar-toggle').click(function () {
-            if ($(window).width() < 1075) {
-                $(this).toggleClass('collapsed');
-                $('#navbar-collapse-gams').toggleClass('collapse');
-            }
-        });
-        $('#gams-scope .matchHeight').matchHeight();
-
-        $('.dropdown').hover(
-            function () {
-                $('.dropdown-menu', this).not('.in .dropdown-menu').stop(true, true).fadeIn('fast');
-            },
-
-            function () {
-                $('.dropdown-menu', this).not('.in .dropdown-menu').stop(true, true).fadeOut('fast');
-            }
-        );
         var queryToMark = new URL(window.location.href).searchParams.get("search");
         if (queryToMark) {
             var bodyToMark = $(".doc-body");

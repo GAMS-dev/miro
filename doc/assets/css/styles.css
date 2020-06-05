@@ -299,8 +299,6 @@ body{
   height: 100%;
   margin: 0px;
   min-height: 100%;
-  /* equal to footer height */
-  /* margin-bottom: -131px; */
 }
 .page-wrapper .code {
   font-family: Courier New, Courier, Lucida Sans Typewriter, Lucida Typewriter, monospace;

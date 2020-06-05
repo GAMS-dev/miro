@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	
+    
     /* ===== Stickyfill ===== */
     /* Ref: https://github.com/wilddeer/stickyfill */
     // Add browser support to position: sticky
@@ -16,14 +16,14 @@ $(document).ready(function() {
     $('body').scrollspy({target: '#doc-menu', offset: 100});
     
     /* Smooth scrolling */
-	$('a.scrollto').on('click', function(e){
+    $('a.scrollto').on('click', function(e){
         //store hash
         var target = this.hash;    
         e.preventDefault();
-		$('body').scrollTo(target, 800, {offset: 0, 'axis':'y'});
-		
-	});
-	
+        $('body').scrollTo(target, 800, {offset: 0, 'axis':'y'});
+        
+    });
+    
     
     /* ======= jQuery Responsive equal heights plugin ======= */
     /* Ref: https://github.com/liabru/jquery-match-height */
@@ -38,14 +38,6 @@ $(document).ready(function() {
         e.preventDefault();
         $(this).ekkoLightbox();
     });    
-
-    function hashHandler() {
-        if(window.location.hash && $(window.location.hash).length){
-            $(window.location.hash).next().show();
-        }
-    }
-    hashHandler()
-    window.addEventListener('hashchange', hashHandler, false);
 });
 (function ($) {
     /**
@@ -438,22 +430,76 @@ $(document).ready(function() {
     });
 
     $( document ).ready(function($) {
-        $('button.navbar-toggle').click(function () {
-            if ($(window).width() < 1075) {
-                $(this).toggleClass('collapsed');
-                $('#navbar-collapse-gams').toggleClass('collapse');
+        var queryToMark = new URL(window.location.href).searchParams.get("search");
+        if (queryToMark) {
+            var bodyToMark = $(".doc-body");
+            if (!$(".doc-body").length) {
+                bodyToMark = $(".index-page");
             }
-        });
-        $('#gams-scope .matchHeight').matchHeight();
+            bodyToMark.mark(queryToMark, {
+                accuracy: "exactly",
+                done: function() {
+                $("body").scrollTo("mark");
+            }});
+        }
+        // credits to: bjornd: https://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
 
-        $('.dropdown').hover(
-            function () {
-                $('.dropdown-menu', this).not('.in .dropdown-menu').stop(true, true).fadeIn('fast');
-            },
-
-            function () {
-                $('.dropdown-menu', this).not('.in .dropdown-menu').stop(true, true).fadeOut('fast');
+          function escapeHtml(unsafe) {
+            return unsafe
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+          }
+          var searchRequest;
+          var $searchResultsBox = $("#miroSearchResults");
+          $("#miroSearch").on("keyup", $.debounce( 250, function(e) {
+            if (searchRequest) {
+                searchRequest.abort();
             }
-        );
+            var searchTerm = e.target.value;
+            if (searchTerm.length > 0) {
+                $searchResultsBox.html('<li class="list-group-item"><i>Searching...</i></li>');
+                var encodedSearchTerm = encodeURIComponent(searchTerm);
+                searchRequest = $.getJSON( "https://search.gams.com/miro/select?q="+ 
+                    encodedSearchTerm + "&df=content&rows=5&hl=true&hl.snippets=2&hl.fl=content&hl.fragsize=200&hl.q=" + encodedSearchTerm + "&fl=url,title&q.op=AND&indent=on&defType=edismax",
+                    function( data ) {
+                        if (data.response.docs.length) {
+                            $searchResultsBox.empty();
+                            for (var i=0; i < data.response.docs.length; i++) {
+                                var resultUrl = data.response.docs[i].url;
+                                var content = data.highlighting[resultUrl].content;
+                                if (content == null) {
+                                    content = "";
+                                }
+                                $searchResultsBox.append('<a class="list-group-item list-group-item-action" href="' +
+                                    resultUrl + '?search=' + encodedSearchTerm + '"><b>'+ 
+                                    escapeHtml(data.response.docs[i].title) + '</b><br>' + content + '</a>');
+                            }
+                        } else {
+                            $searchResultsBox.html('<li class="list-group-item"><i>No results</i></li>');
+                        }
+                        $searchResultsBox.show();
+                })
+                .fail(function(jqxhr, textStatus, error) {
+                    console.log( "Request Failed: " + textStatus + ", " + error );
+                    $searchResultsBox.html('<li class="list-group-item text-danger"><b>A problem has occurred. Please try again later.</b></li>');
+                    $searchResultsBox.show();
+                })
+            } else {
+                $searchResultsBox.empty();
+            }
+          }));
+          $("#miroSearch").on("focus", function(e) {
+            $("#miroSearch").animate({width: 300}, 200);
+          });
+          $("#miroSearch").on("blur", function(e) {
+            setTimeout(function() {
+                $searchResultsBox.fadeOut(100);
+                $("#miroSearch").animate({width: 30}, 200);
+                $("#miroSearch").val("");
+            }, 100);
+          });
     });
 })(jQuery);
