@@ -20,6 +20,7 @@
 #miro-license {
   max-height: 800px;
   max-height: 80vh;
+  overflow: auto;
 }
 .lds-ellipsis div {
   position: absolute;

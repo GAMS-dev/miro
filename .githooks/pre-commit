@@ -1,0 +1,9 @@
+#!/bin/sh
+
+./create_miro_lib.sh
+MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R|cut -f3 -d" "|xargs) 
+echo $MIRO_VERSION | sed 's/\./,/g'> ./doc/latest.ver
+sed -e '/<code class="language-json">/r./conf/config_schema.json' ./doc/schema_template.html >./doc/schema.html
+sed -e '/<pre id="miro-license">/r./LICENSE' ./doc/license_template.html >./doc/license.html
+sed -i -e "s/\.\/download\.html\">Get GAMS MIRO .*<\/a>/\.\/download\.html\">Get GAMS MIRO $MIRO_VERSION<\/a>/g" ./doc/index.html
+
