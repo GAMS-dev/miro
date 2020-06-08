@@ -1,5 +1,11 @@
 #!/bin/sh
 
+BRANCH=`git rev-parse --abbrev-ref HEAD`
+
+if [[ "$BRANCH" != "master" ]]; then
+    exit 0
+fi
+
 ./create_miro_lib.sh > /dev/null
 MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R|cut -f3 -d" "|xargs) 
 echo $MIRO_VERSION | sed 's/\./,/g'> ./doc/latest.ver
