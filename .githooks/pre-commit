@@ -6,4 +6,4 @@ echo $MIRO_VERSION | sed 's/\./,/g'> ./doc/latest.ver
 sed -e '/<code class="language-json">/r./conf/config_schema.json' ./doc/schema_template.html >./doc/schema.html
 sed -e '/<pre id="miro-license">/r./LICENSE' ./doc/license_template.html >./doc/license.html
 sed -i -e "s/\.\/download\.html\">Get GAMS MIRO .*<\/a>/\.\/download\.html\">Get GAMS MIRO $MIRO_VERSION<\/a>/g" ./doc/index.html
-
+git add ./doc/schema.html ./doc/license.html ./doc/index.html ./doc/latest.ver ./doc/miroDemoApps.zip

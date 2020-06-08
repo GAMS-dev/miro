@@ -25,9 +25,6 @@ tools/paver/examples
 tools/paver/__pycache__
 tools/paver/results
 packrat/src/
-doc/miroDemoApps.zip
-doc/latest.ver
-doc/schema.html
 model/**/*.ipynb_checkpoints
 model/**/*.xlsx
 model/**/*.miroconf
