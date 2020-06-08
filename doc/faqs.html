@@ -255,8 +255,8 @@
                                     <div id="def-development-mode" class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What is meant by <b>development mode</b>?</h3>
                                         <div class="answer">
-                                            <p>You are in <i>development mode</i> when you start a MIRO app from GAMS Studio or via command line. In both cases current model-specific configuration files are written in binary format at startup.
-                                            An <a href="./model.html#create-app-executable">app executable</a> created with --mkapp=1 can access these files, so that the start up of this (non-development mode) approach is much faster.</p>
+                                            <p>You are in <i>development mode</i> when you start a MIRO app from GAMS Studio (or via the command line with the environment variable <kbd>MIRO_DEV_MODE</kbd> set to <kbd>true</kbd>). Every time you launch MIRO in development mode, your app resources (configuration, README file, data files etc.) are loaded and validated, so your application is always in sync with your current GAMS source.
+                                            Once you want to share your application with other people you can <a href="./deployment.html">deploy</a> it. Deployed apps work with a compiled version of your resources, so they tend to launch faster. However, this also means that you can no longer change your app without deploying a new version.</p>
                                             </div>
                                     </div><!--//section-block-->
 
