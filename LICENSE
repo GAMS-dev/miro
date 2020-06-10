@@ -89,6 +89,7 @@ these components are included below):
 - clipr https://github.com/mdlincoln/clipr or https://cran.r-project.org/web/packages/clipr/index.html
 - cellranger https://github.com/rsheets/cellranger or https://cran.r-project.org/web/packages/cellranger/index.html
 - scales https://github.com/r-lib/scales or https://cran.r-project.org/web/packages/scales/index.html
+- farver https://cran.r-project.org/web/packages/farver/index.html or https://github.com/thomasp85/farver
 - httr https://github.com/r-lib/httr or https://cran.r-project.org/web/packages/httr/index.html
 - future https://github.com/HenrikBengtsson/future or https://cran.r-project.org/web/packages/future/index.html
 - globals https://github.com/HenrikBengtsson/globals or https://cran.r-project.org/web/packages/globals/index.html
@@ -656,6 +657,7 @@ Section 8 -- Interpretation.
         - tibble, Copyright (c) 2013-2017 RStudio
         - cellranger, Copyright (c) 2018 RStudio
         - scales, Copyright (c) 2010-2016 Hadley Wickham
+        - farver, Copyright (c) 2018 Thomas Lin Pedersen [cre, aut], Berendea Nicolae [aut] (Author of the ColorSpace C++ library), Romain François ORCID iD [aut]
         - httr, Copyright (c) 2014 Hadley Wickham; RStudio
         - viridisLite, Copyright (c) 2015 Simon Garnier
         - memoise, Copyright (c) 2010-2017 Hadley Wickham
