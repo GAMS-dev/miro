@@ -3,7 +3,7 @@
 const spinnerActive = {};
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function changeActiveButtons(tabId) {
@@ -526,8 +526,8 @@ ${data.data}</div>` : data.data);
     if (!$(data.id).is(':visible')) {
       return;
     }
-    const percentCompleted = Math.round(parseInt(data.progress.noCompleted, 10)
-          / parseInt(data.progress.noTotal, 10) * 100);
+    const percentCompleted = Math.round((parseInt(data.progress.noCompleted, 10)
+          / parseInt(data.progress.noTotal, 10)) * 100);
     $(data.id)
       .css('width', `${percentCompleted}%`)
       .attr('aria-valuenow', percentCompleted)

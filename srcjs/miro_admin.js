@@ -103,8 +103,8 @@ const arrayTypes = {
     if (defaults !== undefined) {
       ({ source, target } = defaults);
     }
-    const scalarOutputSym = outputSymbols.map(sym => ['_scalars_out', '_scalarsve_out'].find(sSym => sym === sSym));
-    const scalarInputSym = inputSymbols.map(sym => ['_scalars', '_scalarsve'].find(sSym => sym === sSym));
+    const scalarOutputSym = outputSymbols.map((sym) => ['_scalars_out', '_scalarsve_out'].find((sSym) => sym === sSym));
+    const scalarInputSym = inputSymbols.map((sym) => ['_scalars', '_scalarsve'].find((sSym) => sym === sSym));
 
     const elements = {
       symbol_links: ['select', lang.addSymlink.source,
@@ -592,8 +592,9 @@ $(document).ready(() => {
       indices, aliases: indexAliases, scalarIndices, scalarAliases: scalarIndexAliases,
     } = indicesFromR);
 
-    nonScalarIndices = indices.filter(index => scalarIndices.indexOf(index) === -1);
-    nonScalarIndexAliases = indexAliases.filter(index => scalarIndexAliases.indexOf(index) === -1);
+    nonScalarIndices = indices.filter((index) => scalarIndices.indexOf(index) === -1);
+    nonScalarIndexAliases = indexAliases.filter((index) => scalarIndexAliases
+      .indexOf(index) === -1);
   });
   Shiny.addCustomMessageHandler('gms-setGAMSSymbols', (data) => {
     const symData = data.gamsSymbols;
