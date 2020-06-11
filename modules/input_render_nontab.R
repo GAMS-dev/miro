@@ -300,12 +300,12 @@ lapply(seq_along(modelIn), function(id){
                    if(!is.null(errMsg)){
                      next
                    }
-                   choices[[j]] <- dataTmp[[ddownDep[[name]]$fw[[dataSheet]]]]
+                   choices[[j]] <- dataTmp[[ddownDep[[name]]$fw[[dataSheet]][[1]]]]
                    if(!length(choices[[j]]) || identical(choices[[j]][[1]], "")){
                      return(NULL)
                    }
                    if(!is.null(ddownDep[[name]]$aliases[[dataSheet]])){
-                     aliases[[j]] <- dataTmp[[ddownDep[[name]]$aliases[[dataSheet]]]]
+                     aliases[[j]] <- dataTmp[[ddownDep[[name]]$aliases[[dataSheet]][[1]]]]
                    }
                    j <- j + 1
                  }
