@@ -1212,6 +1212,11 @@
       "handsontable":{  
          "description":"Parameters used to customize handsontables (spreadsheet like js-editor used to modify input data).",
          "type":"object",
+         "default": {"height": 700, "search": true, "highlightCol": true, "default": true, "stretchH": "none",
+           "columnSorting": true, "manualColumnMove": false, "manualColumnResize": true, "colWidths": 200,
+           "contextMenu": {"enabled": true, "allowRowEdit": true, "allowColEdit": true, "allowReadOnly": false,
+           "allowComments": true}
+         },
          "properties":{  
             "height":{  
                "description":"Height of handsontable.",
@@ -1283,7 +1288,7 @@
                   "integer"
                ],
                "exclusiveMinimum":0,
-               "default":300
+               "default":200
             },
             "fixedColumnsLeft":{  
                "description":"Number of columns fixed on the left.",
@@ -1339,6 +1344,7 @@
       "datatable":{  
          "description":"Parameters used to customize datatable (used to render output data).",
          "type":"object",
+         "default": {"class": "display", "filter": "bottom", "rownames": false, "autoHideNavigation": true},
          "additionalProperties":false,
          "properties":{  
             "class":{  
