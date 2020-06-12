@@ -20,7 +20,7 @@ JSONValidator <- R6Class(
         private$ct$assign("data", readr::read_file(jsonFileLocation))
         private$ct$eval("data=JSON.parse(data);")
       }, error = function(e) {
-        stop(paste0("Error reading'", jsonSchemaLocation,
+        stop(paste0("Error reading'", jsonFileLocation,
                     "'. Check for valid JSON syntax and make sure file is accessible.\nError message: ", 
                     conditionMessage(e)), 
              call. = FALSE)
