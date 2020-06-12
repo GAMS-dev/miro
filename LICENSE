@@ -16,6 +16,7 @@ these components are included below):
 - Font Awesome, https://github.com/FortAwesome/Font-Awesome
 - selectize.js, https://github.com/selectize/selectize.js
 - es5-shim, https://github.com/es-shims/es5-shim
+- ajv, https://github.com/ajv-validator/ajv or https://ajv.js.org
 - ion.rangeSlider, https://github.com/IonDen/ion.rangeSlider
 - strftime for Javascript, https://github.com/samsonjs/strftime
 - DataTables, https://github.com/DataTables/DataTables
@@ -45,7 +46,6 @@ these components are included below):
 - DT https://github.com/rstudio/DT or https://cran.r-project.org/web/packages/DT/index.html
 - V8 https://github.com/jeroen/V8 or https://cran.r-project.org/web/packages/V8/index.html      
 - jsonlite https://github.com/jeroen/jsonlite or https://cran.r-project.org/web/packages/jsonlite/index.html
-- jsonvalidate https://github.com/ropensci/jsonvalidate or https://cran.r-project.org/web/packages/jsonvalidate/index.html
 - rpivotTable https://github.com/smartinsightsfromdata/rpivotTable or https://cran.r-project.org/web/packages/rpivotTable/index.html
 - futile.logger https://github.com/zatonovo/futile.logger or https://cran.r-project.org/web/packages/futile.logger/index.html
 - zip https://github.com/r-lib/zip or https://cran.r-project.org/web/packages/zip/index.html    
@@ -620,6 +620,7 @@ Section 8 -- Interpretation.
                         The MIT License (MIT)
         applies to: 
         - AdminLTE, Copyright (c) 2014-2017 Abdullah Almsaeed
+        - ajv, Copyright (c) 2015-2017 Evgeny Poberezkin
         - polyfill.io, Copyright (c) 2016 Financial Times
         - subtotal, Copyright (c) 2016 Nagarajan Chinnasamy, Mindtree and other contributors
         - numbro.languages, Copyright © 2017-2019 Benjamin Van Ryseghem, Copyright © 2015-2017 Företagsplatsen AB, Copyright © 2014 Adam Draper
@@ -637,7 +638,6 @@ Section 8 -- Interpretation.
         - plotly, Copyright (c) 2017 Plotly, Inc.
         - V8, Copyright (c) 2017 Jeroen Ooms
         - jsonlite, Copyright (c) 2017 Jeroen Ooms
-        - jsonvalidate, Copyright (c) 2016 Rich FitzJohn
         - rpivotTable, Copyright (c) 2015 Enzo Martoglio
         - dygraphs, Copyright (c) 2015-2016 Dan Vanderkam; RStudio, Inc.
         - tidyr, Copyright (c) 2020 Hadley Wickham [aut, cre], Lionel Henry [aut], RStudio [cph]

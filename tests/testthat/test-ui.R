@@ -108,5 +108,10 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
                                 compareImages = FALSE)))
   file.rename(file.path(miroModelDir, "conf_pickstock", "pickstock_tmp.json"),
               file.path(miroModelDir, "conf_pickstock", "pickstock.json"))
+  Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "model", "transport_miropivot",
+                                         "transport_miropivot.gms"))
+  test_that("MIRO Pivot renderer works.",
+            expect_pass(testApp(file.path(testDir, ".."), "miropivot_test",
+                                compareImages = FALSE)))
   Sys.unsetenv(c("MIRO_MODEL_PATH", "GMSMODELNAME", "MIRO_DB_PATH", "MIRO_MODE"))
 }

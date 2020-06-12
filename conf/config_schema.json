@@ -13,13 +13,11 @@
             "de",
             "en",
             "cn"
-         ],
-         "required":false
+         ]
       },
       "pageTitle":{
         "description":"Name of the page (displayed in browser tab)",
-        "type":"string",
-        "required":false
+        "type":"string"
       },
       "theme":{  
          "description":"Color theme used for MIRO",
@@ -29,8 +27,7 @@
             "browser",
             "light",
             "dark"
-         ],
-         "required":false
+         ]
       },
       "fileExchange":{  
         "description":"Method used to exchange files with GAMS",
@@ -39,8 +36,7 @@
           "csv",
           "gdx"
         ],
-        "default":"gdx",
-        "required":false
+        "default":"gdx"
       },
       "csvDelim":{  
         "description":"Column delimiter for csv files",
@@ -49,38 +45,32 @@
           ",",
           ";"
         ],
-        "default":",",
-        "required":false
+        "default":","
       },
       "excelIncludeMeta":{  
          "description":"Boolean which specifies whether to include a metadata sheet in the Excel file (exporting a scenario)",
          "type":"boolean",
-         "default":true,
-         "required":false
+         "default":true
       },
       "excelIncludeEmptySheets":{  
          "description":"Boolean which specifies whether to include empty sheets in the Excel file",
          "type":"boolean",
-         "default":true,
-         "required":false
+         "default":true
       },
       "defaultScenName":{
         "description":"Name of the default scenario that will be loaded on startup (leave empty, if you dont want a default scenario)",
-         "type":"string",
-         "required":false
+         "type":"string"
       },
       "UILogo":{  
          "description":"String that specifies the name of the logo to use",
          "type":"string",
          "minLength":1,
-         "default":"gams_logo.png",
-         "required":false
+         "default":"gams_logo.png"
       },
       "autoGenInputGraphs":{  
          "description":"Boolean which specifies whether to generate graphs for each input sheet automatically",
          "type":"boolean",
-         "default":true,
-         "required":false
+         "default":true
       },
       "storeLogFilesDuration":{
         "description":"duration the GAMS log and lst files are stored in the database (in days). 0 means files are not stored at all, 999 means files are stored indefinitely. This setting is ignored when attachment module is not active. Not that this is currently only supported in the base mode.",
@@ -93,7 +83,6 @@
         "description":"Specify extra command line arguments that GAMS will be called with",
         "type":["array", "string"],
         "minLength":3,
-        "required":false,
         "items":{
           "type":"string",
           "minLength":3
@@ -103,7 +92,6 @@
         "description":"Specify files that are not necessary to run the model and shall be ignored (e.g. when uploading model to remote server)",
         "type":["array", "string"],
         "minLength":3,
-        "required":false,
         "items":{
           "type":"string",
           "minLength":3
@@ -116,8 +104,7 @@
             "split",
             "tab"
          ],
-         "default":"split",
-         "required":false
+         "default":"split"
       },
       "activateModules":{  
          "description":"Activate/deactivate certain modules",
@@ -127,45 +114,38 @@
             "loadLocal":{  
                "description":"Activate local data upload module?",
                "type":"boolean",
-               "default":true,
-               "required":false
+               "default":true
             },
             "logFile":{  
                "description":"Show log file in UI?",
                "type":"boolean",
-               "default":true,
-               "required":false
+               "default":true
             },
             "lstFile":{  
                "description":"Show lst file in UI?",
                "type":"boolean",
-               "default":true,
-               "required":false
+               "default":true
             },
             "attachments":{
                "description": "Should users be allowed to add attachments to scenarios?",
                "type": "boolean",
-               "default":true,
-               "required":false
+               "default":true
             },
             "remoteExecution":{
                "description": "Should model be solved remotely (note that credentials/location needs to be specified via environment variables!)?",
                "type": "boolean",
-               "default":false,
-               "required":false
+               "default":false
             },
             "downloadTempFiles":{
                "description": "Should users be allowed to access the temporary directory out of MIRO?",
                "type": "boolean",
-               "default":false,
-               "required":false
+               "default":false
             }
          }
       },
       "overwriteAliases":{
         "description": "Specify new aliases that will overwrite those defined in GAMS as explanatory text",
          "type": "object",
-         "required":false,
          "additionalProperties":{  
            "type":"object",
            "additionalProperties":false,
@@ -182,7 +162,6 @@
       "overwriteHeaderAliases":{
         "description": "Specify new header aliases that will overwrite those defined in GAMS as explanatory text",
          "type": "object",
-         "required":false,
          "additionalProperties":{  
            "type":"object",
            "additionalProperties":false,
@@ -226,21 +205,18 @@
       "aggregateWidgets":{
          "description": "Whether to aggregate all input widgets on a single tab",
          "type": "boolean",
-         "default":true,
-         "required":false
+         "default":true
       },
       "miroLogFile": {
         "description": "Enter the name of the MIRO log file.",
          "type": "string",
-         "minLength":3,
-         "required":false
+         "minLength":3
       },
       "hiddenOutputSymbols": {
         "description":"Specify symbol names that will not be displayed in UI but can be used in graphs etc.",
          "type":["array", "string"],
          "minLength":1,
          "uniqueItems":true,
-         "required":false,
          "items":{
            "type":"string",
            "minLength": 1
@@ -251,7 +227,6 @@
          "type":["array", "string"],
          "minLength":1,
          "uniqueItems":true,
-         "required":false,
          "items":{
            "type":"string",
            "minLength": 1
@@ -260,8 +235,7 @@
       "saveTraceFile":{  
          "description":"Boolean which specifies whether trace file should be saved",
          "type":"boolean",
-         "default":true,
-         "required":false
+         "default":true
       },
       "inputWidgets":{
         "description":"Format in which input or output data is to be displayed in MIRO.",
@@ -336,8 +310,7 @@
                    },
                    "ticks":{  
                      "description":"Boolean that specifies whether to hide or show tick marks (optional)",
-                     "type":"boolean",
-                     "required":false
+                     "type":"boolean"
                    }
                   },
                   "required":[  
@@ -380,7 +353,6 @@
                       ],
                       "uniqueItems":true,
                       "minItems":1,
-                      "required":true,
                       "items":{  
                         "type":[  
                           "string",
@@ -401,7 +373,6 @@
                       "minLength":1,
                       "uniqueItems":true,
                       "minItems":1,
-                      "required":false,
                       "items":{  
                         "type":"string"
                       }
@@ -420,7 +391,8 @@
                     }
                   },
                    "required":[  
-                      "widgetType"
+                      "widgetType",
+                      "choices"
                    ],
                   "additionalProperties": false
                },
@@ -548,8 +520,7 @@
                    },
                    "noImport":{  
                     "description":"Boolean that specifies whether data should not be imported from external source",
-                    "type":"boolean",
-                    "required":false
+                    "type":"boolean"
                    },
                    "label":{  
                      "description":"display label for the daterange selector",
@@ -856,9 +827,7 @@
                    "height":{  
                       "description":"Height of the output element.",
                       "type":"integer",
-                      "minimum":0,
-                      "default":null,
-                      "required":false
+                      "minimum":0
                    },
                    "packages":{  
                       "description":"Packages that need to be installed",
@@ -873,8 +842,7 @@
                    },
                    "options":{
                       "description":"Additional options",
-                      "type":"object",
-                      "required":false
+                      "type":"object"
                    },
                    "noImport":{  
                     "description":"Boolean that specifies whether data should not be imported from external source",
@@ -908,8 +876,7 @@
                      "height":{  
                         "description":"Height of the output element.",
                         "type":"integer",
-                        "minimum":0,
-                        "default":null
+                        "minimum":0
                      }
                   },
                   "additionalProperties":false,
@@ -949,8 +916,7 @@
                               "name":{  
                                  "type":"string",
                                  "description":"Name of icon. Icons are drawn from the Font Awesome and Glyphicons libraries.",
-                                 "minLength":0,
-                                 "default":null
+                                 "minLength":0
                               },
                               "lib":{  
                                  "type":"string",
@@ -983,8 +949,7 @@
                      "height":{  
                         "description":"Height of the output element.",
                         "type":"integer",
-                        "minimum":0,
-                        "default":null
+                        "minimum":0
                      },
                      "pivottable":{  
                         "description":"Parameters used to customize pivottable (used to render input or output data).",
@@ -999,8 +964,7 @@
                               "items":{  
                                  "type":"string",
                                  "minLength":1
-                              },
-                              "default":null
+                              }
                            },
                            "cols":{  
                               "description":"Array of the names of columns in the data.frame to prepopulate the columns of the pivot table.",
@@ -1011,8 +975,7 @@
                               "items":{  
                                  "type":"string",
                                  "minLength":1
-                              },
-                              "default":null
+                              }
                            },
                            "aggregatorName":{  
                               "description":"Aggregator to use (see enum for list of possible aggregators)",
@@ -1035,7 +998,6 @@
                                  "80% Upper Bound",
                                  "80% Lower Bound",
                                  "Sum as Fraction of Total",
-                                 "Sum as Fraction of Total",
                                  "Sum as Fraction of Rows",
                                  "Sum as Fraction of Columns",
                                  "Count as Fraction of Total",
@@ -1049,9 +1011,7 @@
                               "type":["array", "string"],
                               "items":{  
                                  "type":"string"
-                              },
-                              "default":null,
-                              "required":false
+                              }
                            },
                            "rendererName":{  
                               "description":"Name of the renderer selected, e.g. Table, Heatmap, Treemap etc",
@@ -1102,14 +1062,12 @@
                            "width":{  
                               "description":"width of pivottable",
                               "type":"integer",
-                              "minimum":1,
-                              "default":null
+                              "minimum":1
                            },
                            "height":{  
                               "description":"height of pivottable",
                               "type":"integer",
-                              "minimum":1,
-                              "default":null
+                              "minimum":1
                            }
                         }
                      }
@@ -1132,8 +1090,7 @@
                      "height":{  
                         "description":"Height of the output element.",
                         "type":"integer",
-                        "minimum":0,
-                        "default":null
+                        "minimum":0
                      },
                      "graph":{  
                         "type":"object",
@@ -1208,8 +1165,7 @@
                      "height":{  
                         "description":"Height of the output element.",
                         "type":"integer",
-                        "minimum":0,
-                        "default":null
+                        "minimum":0
                      },
                      "packages":{  
                         "description":"Packages that need to be installed",
@@ -1224,8 +1180,7 @@
                      },
                      "options":{
                         "description":"Additional options",
-                        "type":"object",
-                        "required":false
+                        "type":"object"
                      },
                      "additionalData":{
                        "description":"Specify additional symbols whose data should be handed to renderer. data parameter will be a named list of dataframes with names being symbol names",
@@ -1252,61 +1207,49 @@
          "type":"integer",
          "minimum":0,
          "maximum":6,
-         "default":2,
-         "required":false
+         "default":2
       },
       "handsontable":{  
          "description":"Parameters used to customize handsontables (spreadsheet like js-editor used to modify input data).",
          "type":"object",
-         "required":false,
          "properties":{  
             "height":{  
                "description":"Height of handsontable.",
                "type":"integer",
                "exclusiveMinimum":0,
-               "default":700,
-               "required":false
+               "default":700
             },
             "width":{  
                "description":"Width of handsontable.",
                "type":"integer",
-               "exclusiveMinimum":0,
-               "default":null,
-               "required":false
+               "exclusiveMinimum":0
             },
             "readonly":{  
                "description":"Defines whether handsontable can not be modified.",
                "type":[  
                   "boolean",
                   "null"
-               ],
-               "default":null,
-               "required":false
+               ]
             },
             "search":{  
                "description":"Defines whether handsontable can be accessed via search in browser.",
                "type":"boolean",
-               "default":true,
-               "required":false
+               "default":true
             },
             "highlightCol":{  
                "description":"Defines whether column of current active cell is highlighted.",
                "type":"boolean",
-               "default":true,
-               "required":false
+               "default":true
             },
             "highlightRow":{  
                "description":"Defines whether row of current active cell is highlighted.",
                "type":"boolean",
-               "default":true,
-               "required":false
+               "default":true
             },
             "rowHeaderWidth":{  
                "description":"Width of the row number/row header column.",
                "type":"integer",
-               "exclusiveMinimum":0,
-               "default":null,
-               "required":false
+               "exclusiveMinimum":0
             },
             "stretchH":{  
                "description":"Specifies whether table is stretched to full box width.",
@@ -1316,26 +1259,22 @@
                   "last",
                   "all"
                ],
-               "default":"none",
-               "required":false
+               "default":"none"
             },
             "columnSorting":{  
                "description":"Defines whether columns can be sorted in ascending/descending order (by clicking on column name in header row).",
                "type":"boolean",
-               "default":true,
-               "required":false
+               "default":true
             },
             "manualColumnMove":{  
                "description":"Defines whether columns can be manually moved (changed position).",
                "type":"boolean",
-               "default":false,
-               "required":false
+               "default":false
             },
             "manualColumnResize":{  
                "description":"Defines whether columns can be manually resized.",
                "type":"boolean",
-               "default":true,
-               "required":false
+               "default":true
             },
             "colWidths":{  
                "description":"Width of columns.",
@@ -1344,27 +1283,22 @@
                   "integer"
                ],
                "exclusiveMinimum":0,
-               "default":300,
-               "required":false
+               "default":300
             },
             "fixedColumnsLeft":{  
                "description":"Number of columns fixed on the left.",
                "type":"integer",
-               "exclusiveMinimum":0,
-               "default":null,
-               "required":false
+               "exclusiveMinimum":0
             },
             "contextMenu":{  
                "description":"Options for customizing the handsontable context menu (accessible via right mouse click)",
                "type":"object",
                "additionalProperties":false,
-               "required":"false",
                "properties":{  
                   "enabled":{  
                      "description":"Defines whether context menu is activated (using right mouse click).",
                      "type":"boolean",
-                     "default":true,
-                     "required":false
+                     "default":true
                   },
                   "allowRowEdit":{  
                      "description":"logical enabling row editing",
@@ -1398,7 +1332,6 @@
             "bgColor":{  
                "description":"Background color (of row and column headers)",
                "type":"string",
-               "required":false,
                "default":"#ffffff"
             }
          }
@@ -1415,8 +1348,7 @@
                   "string"
                ],
                "minItems":1,
-               "default":"display",
-               "required":false
+               "default":"display"
             },
             "filter":{  
                "description":"Whether and where to include column filters",
@@ -1426,26 +1358,22 @@
                   "bottom",
                   "top"
                ],
-               "default":"bottom",
-               "required":false
+               "default":"bottom"
             },
             "rownames":{  
                "description":"Boolean that specifies whether to show row names",
                "type":"boolean",
-               "required":false,
                "default":false
             },
             "autoHideNavigation":{  
                "description":"Boolean that specifies whether to automatically hide navigation elements when number of total records is less than page size",
                "type":"boolean",
-               "required":false,
                "default":true
             },
             "extensions":{  
                "description":"For a list of supported extensions see: https://rstudio.github.io/DT/extensions.html",
                "type":["array", "string"],
                "uniqueItems":true,
-               "required":false,
                "items":{  
                   "type":"string",
                   "enum":[  
@@ -1466,13 +1394,11 @@
             "options":{  
                "description":"Additional options (e.g. column specific).",
                "type":"object",
-               "required":false,
                "properties":{  
                   "dom":{  
                      "description":"Defines where the table control elements appear (position) and in what order",
                      "type":"string",
-                     "minLength":1,
-                     "required":false
+                     "minLength":1
                   },
                   "buttons":{  
                      "description":"Buttons or groups of buttons to insert",
@@ -1481,15 +1407,13 @@
                      "items":{
                          "type": "string",
                          "enum":["copy", "csv", "excel", "pdf", "print"]
-                     },
-                     "required":false
+                     }
                   },
                   "pageLength":{  
                      "description":"Number of items to display per page",
                      "type":"integer",
                      "minimum":1,
-                     "default":15,
-                     "required":false
+                     "default":15
                   },
                   "columnDefs":{  
                      "description":"Column specific options.",
@@ -1497,9 +1421,9 @@
                      "uniqueItems":true,
                      "items":{  
                         "type":"object",
+                        "required": ["targets"],
                         "properties":{  
                            "targets":{  
-                              "required":true,
                               "anyOf":[  
                                  {  
                                     "description":"Column numbers to refer to.",
@@ -1519,16 +1443,13 @@
                               ]
                            },
                            "className":{  
-                              "required":false,
                               "type":"string",
                               "minLength":1
                            },
                            "visible":{  
-                              "required":false,
                               "type":"boolean"
                            },
                            "searchable":{  
-                              "required":false,
                               "type":"boolean"
                            }
                         }
@@ -1541,7 +1462,6 @@
       "inputGroups":{
          "description": "Specify input tables that shall be aggregated to groups",
          "type": "array",
-         "required":false,
          "minItems":1,
          "items":{
            "type":"object",
@@ -1574,7 +1494,6 @@
       "outputGroups":{
          "description": "Specify output tables that shall be aggregated to groups",
          "type": "array",
-         "required":false,
          "uniqueItems":true,
          "minItems":1,
          "items":{
@@ -1633,7 +1552,6 @@
                      "description":"Names of the symbols to import",
                      "type":["array", "string"],
                      "minLength":1,
-                     "required":false,
                      "uniqueItems":true,
                      "items":{
                        "type":"string",
@@ -1693,7 +1611,6 @@
                     "httpHeaders":{
                       "description":"Additional parameters to send alongside the request in the HTTP header",
                       "type": "array",
-                      "required":false,
                       "minItems":1,
                       "items":{
                         "type":"object",
@@ -1716,7 +1633,6 @@
                     "httpBody":{
                       "description":"Additional parameters to send alongside the request in the HTTP body",
                       "type": "array",
-                      "required":false,
                       "minItems":1,
                       "items":{
                         "type":"object",
@@ -1739,7 +1655,6 @@
                     "encode":{
                       "description": "How should data in body be encoded?",
                       "type": "string",
-                      "required": false,
                       "enum": [
                         "multipart", 
                         "form", 
@@ -1783,7 +1698,6 @@
                        "description":"Names of the symbols to export",
                        "type":["array", "string"],
                        "minLength":1,
-                       "required":false,
                        "uniqueItems":true,
                        "items":{
                          "type":"string",
@@ -1834,7 +1748,6 @@
                      "httpHeaders":{
                        "description":"Additional parameters to send alongside the request in the HTTP header",
                        "type": "array",
-                       "required":false,
                        "minItems":1,
                        "items":{
                          "type":"object",
@@ -1857,7 +1770,6 @@
                      "httpBody":{
                        "description":"Additional parameters to send alongside the request in the HTTP body",
                        "type": "array",
-                       "required":false,
                        "minItems":1,
                        "items":{
                          "type":"object",

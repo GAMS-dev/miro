@@ -9,7 +9,6 @@ MIRORDate   <- "Apr 08 2020"
 # plotly          #MIT
 # V8              #MIT
 # jsonlite        #MIT
-# jsonvalidate    #MIT
 # rpivotTable     #MIT
 # R6              #MIT
 # dygraphs        #MIT
@@ -851,7 +850,6 @@ if(!is.null(errMsg)){
                  )
                )
              },
-             tableOutput("JSONErrorMessages"),
              tags$div(style = "text-align:center;margin-top:20px;", 
                       actionButton("btCloseInitErrWindow", if(!exists("lang") || is.null(lang$errMsg$initErrors$okButton))
                         "Ok" else lang$errMsg$initErrors$okButton))
@@ -905,9 +903,6 @@ if(!is.null(errMsg)){
     }
     output$errorMessages <- renderText(
       errMsg
-    )
-    output$JSONErrorMessages <- renderTable(
-      if(exists("jsonErrors")) jsonErrors, bordered = TRUE
     )
     observeEvent(input$btCloseInitErrWindow, {
       if(!interactive()){

@@ -1,4 +1,4 @@
-requiredPackages <- c("jsonvalidate", "V8")
+requiredPackages <- c("V8")
 source("./components/install_packages.R", local = TRUE)
 # check whether there exists a config file and if not create an empty one
 if(is.null(errMsg)){
@@ -40,32 +40,33 @@ Note that GAMS will not create the directories 'conf_", modelName, "' and 'data_
 
 # validate json files
 config <- NULL
-jsonErrors <- NULL
 if(is.null(errMsg)){
   config <- NULL
+  jsonValidator <- JSONValidator$new()
   lapply(seq_along(jsonSchemaMap), function(i){
-    error <- tryCatch({
-      eval <- validateJson(jsonSchemaMap[[i]][1], jsonSchemaMap[[i]][2])
+    tryCatch({
+      valid <- jsonValidator$validate(jsonSchemaMap[[i]][1], 
+                                     jsonSchemaMap[[i]][2])
     }, error = function(e){
       errMsg <<- paste(errMsg, paste0("Some error occurred validating JSON file: '", 
-                                      basename(jsonFilesWithSchema[i]), "'. Error message: ", e), sep = "\n")
-      e
+                                      basename(jsonFilesWithSchema[i]), "'. Error message: ", 
+                                      conditionMessage(e)), sep = "\n")
     })
-    if(inherits(error, "error")){
-      return(NULL)
+    if(!is.null(errMsg)){
+      return()
     }
     
-    if(names(jsonSchemaMap)[[i]] == "config" && is.null(eval[[2]])){
-      config <<- c(config, eval[[1]])
-    }else if (names(jsonSchemaMap)[[i]] == "io_config" && is.null(eval[[2]])){
-      config <<- c(config, eval[[1]])
-    }else if(!is.null(eval[[2]])){
-      errMsgTmp  <- paste0("Some error occurred parsing JSON file: '", 
-                           basename(jsonFilesWithSchema[i]), 
-                           "'. See below for more detailed information.")
-      errMsg     <<- paste(errMsg, errMsgTmp, sep = "\n")
-      jsonErrors <<- rbind(jsonErrors, 
-                           cbind(file_name = basename(jsonFilesWithSchema[i]), eval[[2]]))
+    if(is.null(valid$errors)){
+      if(identical(names(jsonSchemaMap)[[i]], "config")){
+        config <<- valid$data
+      }else if(identical(names(jsonSchemaMap)[[i]], "io_config")){
+        config <<- c(config, valid$data)
+      }
+    }else{
+      errMsg <<- paste(errMsg, 
+                       paste0("Some error occurred parsing JSON file: '", 
+                              basename(jsonFilesWithSchema[i]), 
+                              "'. Error message: ", valid$errors), sep = "\n")
     }
   })
 }
@@ -77,21 +78,23 @@ if(is.null(errMsg)){
     errMsg <- paste0("The JSON language file: '", config$language,
                      ".json' could not be located. Please make sure file is available and accessible.")
   }else{
-    eval <- list(character(), character())
     tryCatch({
-      eval <- validateJson(file.path(getwd(), "conf", config$language %+% ".json"), 
-                           file.path(getwd(), "conf", languageSchemaName), addDefaults = FALSE)
+      valid <- jsonValidator$validate(file.path("conf", config$language %+% ".json"), 
+                                      file.path("conf", languageSchemaName))
     }, error = function(e){
       errMsg <<- paste0("Some error occurred validating language file: '",
-                        config$language, ".json'. Error message: ", e)
+                        config$language, ".json'. \n Error message: ", conditionMessage(e))
     })
-    if(is.null(eval[[2]])){
-      lang <- eval[[1]]
+    if(!is.null(errMsg)){
+      return()
+    }
+    if(is.null(valid$errors)){
+      lang <- valid$data
     }else{
-      errMsgTmp <- paste0("Some error occurred parsing JSON language file: '",
-                          config$language, ".json'. See below for more detailed information.")
-      errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
-      jsonErrors <- rbind(jsonErrors, cbind(file_name = paste0(config$language, ".json"), eval[[2]]))
+      errMsg <- paste(errMsg, 
+                      paste0("Some error occurred parsing JSON language file: '",
+                             config$language, ".json'. \nError message: ", 
+                             valid$errors), sep = "\n")
     }
   }
 }
