@@ -777,6 +777,10 @@ if(!is.null(errMsg)){
   }
   if(isShinyProxy){
     stop('An error occured. Check log for more information!', call. = FALSE)
+  }else if(identical(Sys.getenv("MIRO_POPULATE_DB"), "true")){
+    if(interactive())
+      stop()
+    quit("no", 1L)
   }
   if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
     setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
