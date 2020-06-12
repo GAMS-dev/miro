@@ -57,12 +57,12 @@ test_that("Reading of (single) singleton set works", {
 })
 test_that("Reading of input scalars works", {
   expect_equal(gdxio$rgdx(file.path(getwd(), "data/test_gdxio.gdx"), scalarsFileName), 
-                   tibble::tibble(`scalarSymbols$symnames` = c('mins', 'beta', 'sub_i', 'f'),
-                                  `scalarSymbols$symtext` = c('minimum shipment (MIP- and MINLP-only)',
-                                                              'beta (MINLP-only)',
-                                                              'sub_i',
-                                                              'freight in dollars per case per thousand miles'),
-                                  `vapply(...)` = c(NA_character_, NA_character_, 'seattle||test', 90)))
+                   tibble::tibble(`scalarSymbols$symnames` = c('sub_i', 'f', 'mins', 'beta'),
+                                  `scalarSymbols$symtext` = c('sub_i',
+                                                              'freight in dollars per case per thousand miles',
+                                                              'minimum shipment (MIP- and MINLP-only)',
+                                                              'beta (MINLP-only)'),
+                                  `vapply(...)` = c('seattle||test', 90, NA_character_, NA_character_)))
 })
 test_that("Reading of output scalars works", {
   expect_identical(gdxio$rgdx(file.path(getwd(), "data/test_gdxio.gdx"), scalarsOutName), 
@@ -103,12 +103,12 @@ test_that("Reading of variables works", {
 })
 
 test_that("Writing of scalars works", {
-  scalarData <- tibble::tibble(`scalarSymbols$symnames` = c('mins', 'beta', 'sub_i', 'f'),
-                               `scalarSymbols$symtext` = c('minimum shipment (MIP- and MINLP-only)',
-                                                           'beta (MINLP-only)',
-                                                           'sub_i',
-                                                           'freight in dollars per case per thousand miles'),
-                               `vapply(...)` = c(NA_character_, NA_character_, 'seattle||test', 60))
+  scalarData <- tibble::tibble(`scalarSymbols$symnames` = c('sub_i', 'f', 'mins', 'beta'),
+                               `scalarSymbols$symtext` = c('sub_i',
+                                                           'freight in dollars per case per thousand miles',
+                                                           'minimum shipment (MIP- and MINLP-only)',
+                                                           'beta (MINLP-only)'),
+                               `vapply(...)` = c('seattle||test', 60, NA_character_, NA_character_))
   data <- list(scalarData)
   names(data) <- scalarsFileName
   filePath <- file.path(getwd(), "data/tests_gdxio.gdx")
