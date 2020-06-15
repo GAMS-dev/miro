@@ -65,7 +65,7 @@ if out_script == "gams":
       linestmp += "$if errorlevel 1 $abort problems mkdir " + tmpdir + "\n"
          
       # gams call
-      linestmp += "$call cd " + zipname + "/" + tmpdir + " && gams \"" + os.path.join(bfdir, model_gms_name) + "\" " + " ".join(hcjob_args) + use_pf_arg + "\n"      
+      linestmp += "$call cd " + zipname + "/" + tmpdir + " && gams \"" + model_gms_name + "\" " + " ".join(hcjob_args) + " idir1=\"" + bfdir + "\"" + use_pf_arg + "\n"      
       linestmp += "$if dexist " + dirname + " $call rm -r " + dirname + "\n"
       linestmp += "$call cd " + zipname + " && " + "mv " + tmpdir + " " + dirname + "\n\n"
       linestmp += "$onecho > \"%jobID%.log\"\n"

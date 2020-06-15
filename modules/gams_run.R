@@ -280,7 +280,7 @@ if(LAUNCHHCUBEMODE){
              dropdown = {
                if(isTRUE(modelIn[[i]]$dropdown$checkbox)){
                  convertNumeric <- TRUE
-               }else if(!isTRUE(modelIn[[i]]$dropdown$single)){
+               }else if(!isTRUE(modelIn[[i]]$dropdown$single) && isTRUE(modelIn[[i]]$dropdown$multiple)){
                  data <- ddToTibble(sort(input[["dropdown_" %+% i]]), modelIn[[i]])
                  staticData$push(names(modelIn)[[i]], data)
                  return(paste0(parPrefix, "= ", digest(data, algo = "md5")))
@@ -392,7 +392,7 @@ if(LAUNCHHCUBEMODE){
     return(list(ids = scenIds, gmspar = gmsString, attachmentFilePaths = attachmentFilePaths))
   })
   
-  prevJobSubmitted <- Sys.time()
+  prevJobSubmitted <- Sys.time() - 5L
   
   runHcubeJob <- function(scenGmsPar, downloadFile = NULL){
     if(!length(scenGmsPar)){
