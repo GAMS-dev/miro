@@ -213,3 +213,14 @@ test_that("Writing of singleton set with data from dropdown and clearValue=TRUE 
                               `vapply(...)` = c('||test', NA_character_, NA_character_,
                                                 NA_character_)))
 })
+
+test_that("Reading/writing unicode characters work", {
+  setData <- tibble::tibble('1' = c("seattle䤉䤉", "😀😀😀😀😀😀😀"), '2' = c("😈", "ધધધધ"))
+  data <- list(setData)
+  names(data) <- "i"
+  filePath <- file.path(getwd(), "data/tests_gdxiouni.gdx")
+  on.exit(unlink(filePath), add = TRUE)
+  gdxio$wgdx(filePath, data)
+  expect_identical(gdxio$rgdx(file.path(getwd(), "data/tests_gdxiouni.gdx"), "i"), 
+                   setData)
+})
