@@ -110,6 +110,10 @@
          "description":"Activate/deactivate certain modules",
          "type":"object",
          "additionalProperties":false,
+         "default":{"loadLocal": true, "logFile": true, 
+           "lstFile": true, "attachments": true, "remoteExecution": false,
+           "downloadTempFiles": false
+         },
          "properties":{
             "loadLocal":{  
                "description":"Activate local data upload module?",
