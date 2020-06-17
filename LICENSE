@@ -59,6 +59,8 @@ these components are included below):
 - ellipsis https://github.com/r-lib/ellipsis or https://ellipsis.r-lib.org or https://cran.r-project.org/web/packages/ellipsis/index.html
 - withr http://withr.r-lib.org or http://github.com/r-lib/withr or https://cran.r-project.org/web/packages/withr/index.html
 - DBI https://github.com/r-dbi/DBI or https://cran.r-project.org/web/packages/DBI/index.html
+- askpass https://github.com/jeroen/askpass or https://cran.r-project.org/web/packages/askpass/index.html 
+- timevis https://github.com/daattali/timevis or https://cran.r-project.org/web/packages/timevis/index.html
 - readr https://github.com/tidyverse/readr or https://cran.r-project.org/web/packages/readr/index.html
 - blob https://github.com/tidyverse/blob or https://cran.r-project.org/web/packages/blob/index.html
 - hms https://github.com/tidyverse/hms or https://cran.r-project.org/web/packages/hms/index.html
@@ -629,6 +631,8 @@ Section 8 -- Interpretation.
         - handsontable, Copyright (c) 2012-2014 Marcin Warpechowski, Copyright (c) 2015 Handsoncode sp. z o.o. <hello@handsoncode.net>
         - R6, Copyright (c) 2015 RStudio
         - processx, Copyright (c) 2016-2018 Mango Solutions, RStudio, Gábor Csárdi
+        - askpass, Copyright (c) 2018 Jeroen Ooms
+        - timevis, Copyright (c) 2016 Dean Attali [aut, cre] (R interface), Almende B.V. [aut, cph] (vis.js library, http://visjs.org, http://www.almende.com/home)
         - dplyr, Copyright (c) 2013-2020 Hadley Wickham [aut, cre], Romain François [aut], Lionel Henry [aut], Kirill Müller [aut], RStudio [cph, fnd]
         - rhandsontable , Copyright (c) 2015-2018 Marcin Warpechowski, Handsoncode sp. z o.o., 
           Gregor Aisch, Tim Wood, Iskren Chernev, Moment.js contributors, David Bushell, 
