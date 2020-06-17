@@ -492,12 +492,12 @@ $(document).ready(function() {
             }
           }));
           $("#miroSearch").on("focus", function(e) {
-            $("#miroSearch").animate({width: 300}, 200);
+            $("#miroSearch").animate({width: 300, paddingRight: ''}, 200);
           });
           $("#miroSearch").on("blur", function(e) {
             setTimeout(function() {
                 $searchResultsBox.fadeOut(100);
-                $("#miroSearch").animate({width: 30}, 200);
+                $("#miroSearch").animate({width: 30, paddingRight: 0}, 200);
                 $("#miroSearch").val("");
             }, 100);
           });
