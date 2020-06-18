@@ -21,6 +21,8 @@
     <link rel="stylesheet" href="assets/plugins/prism/prism.css">
     <link rel="stylesheet" href="assets/plugins/lightbox/dist/ekko-lightbox.css">
     <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="assets/plugins/katex/katex.min.css">
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
 </head>
@@ -293,12 +295,18 @@ putclose log;
                                   </div>
                                   <p><b>Usage:</b><br>
                                   The readme file must be a <a href = "https://guides.github.com/features/mastering-markdown/" target = "_blank">markdown</a> or HTML
-                                  document which is located in the model directory. The README option must be activated in the Configuration mode. Two options are available: 
+                                  document which is located in the model directory. The README option must be activated in the Configuration Mode. Three options are available: 
                                   <ul>
                                     <li><b>README tab title</b> (mandatory)<br>
                                     With this option you can customize the title of the README tab in the input section. Default: <i>README</i></li>
                                     <li><b>README file name</b> (mandatory)<br>
                                     With this option you specify the name of the readme file that you want to display (minimum 4 characters).</li>
+                                    <li><b>Enable mathematical typesetting?</b> (optional)<br>
+                                    In case you want to use mathematical notation in your README file, activate this checkbox. You can use inline math by wrapping your equations between <kbd>$</kbd> signs. To render the equation centered on its own line, use two dollar signs: <kbd>$$</kbd>.
+                                    <p>
+                                    <b>Example:</b><br>
+                                    <kbd>This integral $\def\f#1{f(#1)} \f{x} = \int_{-\infty}^\infty\hat \f\xi\,e^{2 \pi i \xi x}\,d\xi$ is rendered inline.</kbd> is rendered as: <kbd class="katex">This integral $\def\f#1{f(#1)} \f{x} = \int_{-\infty}^\infty\hat \f\xi\,e^{2 \pi i \xi x}\,d\xi$ is rendered inline.</kbd></p>
+                                    A list of all TeX functions supported by MIRO can be found <a href="https://katex.org/docs/supported.html">here</a>.</li>
                                   </ul>
                                   <p>The readme file can be created or edited directly in configuration mode:</p>
                                   <div class="section-block">
@@ -1547,5 +1555,9 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
     <script>
     	$('.gifplayer').gifplayer();
     </script>
+    <!-- KaTeX -->
+    <script type="text/javascript" defer src="assets/plugins/katex/katex.min.js"></script>
+    <script type="text/javascript" defer src="assets/plugins/katex/auto-render.min.js"
+    onload="renderMathInElement(document.getElementsByClassName('katex')[0],{delimiters:[{left:'$$',right:'$$',display:true},{left: '$',right:'$',display:false}]});"></script>
 </body>
 </html>

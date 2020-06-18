@@ -64,7 +64,10 @@
                             <section id="v11" class="doc-section">
                               <h2 class="section-title">GAMS MIRO 1.1</h2>
                                  <div class="section-block">
-                                    <!--<h3>New features</h3>-->
+                                    <h3>New features</h3>
+                                    <ul>
+                                      <li>Added option to include TeX notation in README files via the <i>enableMath</i> switch. Wrap your TeX formulas in <kbd>$</kbd> tags for inline rendering or between <kbd>$$</kbd> for rendering as a formula block. Find more information about this feature <a href="./customize.html#app-readme">here</a>.</li>
+                                    </ul>
                                     <h3>Minor new features and improvements</h3>
                                     <ul>
                                       <li>Symbol metadata (symtype and headers) are now passed to the custom renderer/custom widget via the options list. The nested list can be accessed via the key <code class="language-r">options[["_metadata_"]]</code>.</li>

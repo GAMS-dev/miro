@@ -931,6 +931,7 @@
         "useReadme": "README-Datei einbinden",
         "tabTitle": "README Reitertitel",
         "fileName": "README-Dateiname",
+        "enableMath": "Mathematischen Schriftsatz aktivieren?",
         "btEdit": "README bearbeiten",
         "dialogEdit": {
           "title": "README Editor",

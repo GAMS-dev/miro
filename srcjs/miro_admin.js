@@ -2,7 +2,7 @@ import InputArrayFactory from './input_array';
 
 export { confirmModalShow, slideToggleEl } from './miro';
 
-/* global $:false Shiny:false showdown:false */
+/* global $:false Shiny:false showdown:false renderMathInElement:false */
 
 
 const converter = new showdown.Converter({
@@ -11,6 +11,14 @@ const converter = new showdown.Converter({
   strikethrough: true,
   noHeaderId: true,
   openLinksInNewWindow: true,
+});
+const converterMath = new showdown.Converter({
+  tables: true,
+  tasklists: true,
+  strikethrough: true,
+  noHeaderId: true,
+  openLinksInNewWindow: true,
+  extensions: ['mathjax'],
 });
 let lang = {};
 let indices = [];
@@ -524,8 +532,20 @@ const arrayTypes = {
     return ([elements, { elRequired: false }]);
   },
 };
-export function mdToHTML(mdContent, destId) {
-  $(destId).html(converter.makeHtml(mdContent));
+export function mdToHTML(mdContent, destId, useKatex) {
+  if (useKatex === true) {
+    $(destId).html(converterMath.makeHtml(mdContent));
+    renderMathInElement($(destId)[0], {
+      throwOnError: false,
+      delimiters: [{
+        left: '$$',
+        right: '$$',
+        display: true,
+      }, { left: '$', right: '$', display: false }],
+    });
+  } else {
+    $(destId).html(converter.makeHtml(mdContent));
+  }
 }
 
 export function mdSave(mdContentId) {

@@ -1841,6 +1841,10 @@
             "description":"README file name",
             "type":"string",
             "minLength":4
+          },
+          "enableMath": {
+            "description":"Enable rendering of mathematical notation wrapped either between $ (inline) or $$ (block style)",
+            "type":"boolean"
           }
         }
       },

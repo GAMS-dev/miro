@@ -49,6 +49,7 @@ these components are included below):
 - jsonlite https://github.com/jeroen/jsonlite or https://cran.r-project.org/web/packages/jsonlite/index.html
 - rpivotTable https://github.com/smartinsightsfromdata/rpivotTable or https://cran.r-project.org/web/packages/rpivotTable/index.html
 - futile.logger https://github.com/zatonovo/futile.logger or https://cran.r-project.org/web/packages/futile.logger/index.html
+- KaTeX https://github.com/KaTeX/KaTeX or https://katex.org
 - zip https://github.com/r-lib/zip or https://cran.r-project.org/web/packages/zip/index.html    
 - stringi https://github.com/gagolews/stringi or https://cran.r-project.org/web/packages/stringi/index.html
 - dygraphs https://github.com/rstudio/dygraphs or https://cran.r-project.org/web/packages/dygraphs/index.html
@@ -672,6 +673,7 @@ Section 8 -- Interpretation.
         - rematch, Copyright (c) 2016 Mango Solutions
         - prettyunits, Copyright (c) 2014 Gabor Csardi
         - viridis, Copyright (c) 2015 Simon Garnier
+        - KaTeX, Copyright (c) 2013-2019 Khan Academy and other contributors
         - labeling, Copyright (c) 2014 Justin Talbot
         - munsell, Copyright (c) 2016 Charlotte Wickham
         - reshape2, Copyright (c) 2008-2016 Hadley Wickham

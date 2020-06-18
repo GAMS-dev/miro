@@ -113,6 +113,7 @@ observeEvent(input$widget_general_logo_upload, {
   rv$customLogoChanged <<- rv$customLogoChanged + 1L
 })
 observe({
+  input$general_readmeEnableMath
   if(isFALSE(input$general_useReadme) ||
      !length(input$general_readmeTabtitle) ||
      !nchar(trimws(input$general_readmeTabtitle)) ||
@@ -125,7 +126,8 @@ observe({
   }
   isolate(rv$generalConfig$readme <<- list(
     tabTitle = input$general_readmeTabtitle,
-    filename = input$general_readmeFileName))
+    filename = input$general_readmeFileName,
+    enableMath = input$general_readmeEnableMath))
   enableEl(session, "#btEditReadme")
 })
 observeEvent(input$general_auto, {
@@ -743,15 +745,17 @@ observeEvent(input$btEditReadme, {
       column(6L,
              tags$div(class = "readme-preview-header", lang$adminMode$general$readme$dialogEdit$reamdeHeader),
              tags$textarea(id = "mdContent", class = "readme-wrapper readme-preview-markdown",
-                           oninput="Miro.mdToHTML(this.value, '#mdConvertedContent')",
-                           onload = "Miro.mdToHTML(this.value, '#mdConvertedContent')",
+                           oninput = paste0("Miro.mdToHTML(this.value,'#mdConvertedContent',",
+                                            if(isTRUE(input$general_readmeEnableMath)) "true" else "false", ")"),
                            readmeContent)
       ),
       column(6L, 
              tags$div(class = "readme-preview-header", lang$adminMode$general$readme$dialogEdit$markdownHeader),
              tags$div(id = "mdConvertedContent", 
                       class = "readme-wrapper readme-preview-output", readmeContentParsed)
-      )
+      ),
+      tags$script(paste0("setTimeout(function(){Miro.mdToHTML(this.value,'#mdConvertedContent',",
+                         if(isTRUE(input$general_readmeEnableMath)) "true" else "false", ")},500)"))
     ),
     footer = tagList(
       modalButton(lang$adminMode$general$readme$dialogEdit$btCancel),
