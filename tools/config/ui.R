@@ -16,20 +16,20 @@ inputTabs <- c(inputSymMultiDim,
                         lang$nav$inputScreen$widgetTabTitle))
 if(length(configJSON$overwriteSheetOrder$input)){
   tabIdsTmp <- match(configJSON$overwriteSheetOrder$input, inputTabs)
-  if(any(is.na(tabIdsTmp))){
-    flog.info("Invalid input symbol(s) in 'overwriteSheetOrder' found. Resetting to original sheet order.")
+  if(all(is.na(tabIdsTmp))){
+    flog.info("No valid input symbols in 'overwriteSheetOrder' found. Resetting to original sheet order.")
   }else{
-    inputTabsTmp <- inputTabs[tabIdsTmp]
+    inputTabsTmp <- inputTabs[tabIdsTmp[!is.na(tabIdsTmp)]]
     inputTabs <- c(inputTabsTmp, inputTabs[!inputTabs %in% inputTabsTmp])
   }
 }
 outputTabs <- setNames(names(modelOut), modelOutAlias)
 if(length(configJSON$overwriteSheetOrder$output)){
   tabIdsTmp <- match(configJSON$overwriteSheetOrder$output, outputTabs)
-  if(any(is.na(tabIdsTmp))){
-    flog.info("Invalid output symbol(s) in 'overwriteSheetOrder' found. Resetting to original sheet order.")
+  if(all(is.na(tabIdsTmp))){
+    flog.info("No valid output symbols in 'overwriteSheetOrder' found. Resetting to original sheet order.")
   }else{
-    outputTabsTmp <- outputTabs[tabIdsTmp]
+    outputTabsTmp <- outputTabs[tabIdsTmp[!is.na(tabIdsTmp)]]
     outputTabs <- c(outputTabsTmp, outputTabs[!outputTabs %in% outputTabsTmp])
   }
 }
