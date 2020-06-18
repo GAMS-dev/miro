@@ -72,8 +72,12 @@ body_admin <- dashboardBody({
       tags$link(type = "text/css", rel = "stylesheet", href = "bootstrap-colorpicker.min.css"),
       tags$script(src = "autoNumeric.min.js", type = "application/javascript"),
       tags$script(src = "showdown.min.js", type = "application/javascript"),
+      tags$script(src = "mathjax-extension.js", type = "application/javascript"),
       tags$script(src = "bootstrap-colorpicker.min.js", type = "application/javascript"),
       tags$script(src = "miro_admin.js", type = "application/javascript"),
+      tags$link(type = "text/css", rel="stylesheet", href="katex.min.css"),
+      tags$script(type = "application/javascript", `defer src`="katex.min.js"),
+      tags$script(type = "application/javascript", `defer src`="auto-render.min.js"),
       tags$style(HTML(paste0('
 .main-header .logo {
                              background-image: url("gams_logo.png");
@@ -583,6 +587,10 @@ body_admin <- dashboardBody({
                                                                         value = if(!is.null(configJSON$readme$filename) && nchar(configJSON$readme$filename)) 
                                                                           configJSON$readme$filename 
                                                                         else "")
+                                                     ),
+                                                     tags$div(class = "option-wrapper info-position option-wrapper-indented", style = "padding-left:40px;",
+                                                              checkboxInput_MIRO("general_readmeEnableMath", lang$adminMode$general$readme$enableMath,
+                                                                                 isTRUE(configJSON$readme$enableMath))
                                                      ),
                                                      tags$div(class = "option-wrapper info-position option-wrapper-indented", style = "padding-left:40px;",{
                                                        editButtonArgs <- list(inputId = "btEditReadme",

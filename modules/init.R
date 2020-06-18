@@ -1665,7 +1665,8 @@ if(is.null(errMsg)){
         config$readmeFile <- read_file(readmeFilePath)
       }else if(file.exists(readmeFilePath)){
         source(file.path("components", "md_parser.R"), local = TRUE)
-        markdownParser <- MarkdownParser$new()
+        markdownParser <- MarkdownParser$new(!LAUNCHCONFIGMODE && 
+                                               isTRUE(config$readme$enableMath))
         config$readmeFile <- markdownParser$parseFile(readmeFilePath)
       }
     }, error = function(e){

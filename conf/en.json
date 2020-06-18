@@ -931,6 +931,7 @@
         "useReadme": "Include README file",
         "tabTitle": "README tab title",
         "fileName": "README file name",
+        "enableMath": "Enable mathematical typesetting?",
         "btEdit": "Edit README",
         "dialogEdit": {
           "title": "Readme editor",

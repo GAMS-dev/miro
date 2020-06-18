@@ -931,6 +931,7 @@
         "useReadme": "包含README文件",
         "tabTitle": "README选项卡的标题",
         "fileName": "README文件名",
+        "enableMath": "启用数学排版？",
         "btEdit": "编辑README",
         "dialogEdit": {
           "title": "README编辑器",

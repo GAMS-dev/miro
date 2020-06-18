@@ -710,16 +710,14 @@ if(buildUI){
   miroBody <- dashboardBody({
     tagList(
       tags$head(
-        if(LAUNCHHCUBEMODE){
+        if(LAUNCHHCUBEMODE || isTRUE(config$readme$enableMath)){
           tagList(
-            tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML", 
-                        type = "application/javascript"),
-            tags$script(type = "text/x-mathjax-config", {
-              "MathJax.Hub.Config({
-            skipStartupTypeset: true,
-            tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
-          });"
-            })
+            tags$link(type = "text/css", rel="stylesheet", href="katex.min.css"),
+            tags$script(type = "application/javascript", `defer src`="katex.min.js"),
+            tags$script(type = "application/javascript", `defer src`="auto-render.min.js",
+                        onload = if(isTRUE(config$readme$enableMath))
+                        "renderMathInElement(document.getElementsByClassName('readme-wrapper')[0],
+{throwOnError:false,delimiters:[{left:'$$',right:'$$',display:true},{left: '$',right:'$',display:false}]});")
           )
         },
         tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
