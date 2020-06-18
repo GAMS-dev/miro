@@ -316,7 +316,7 @@ if(config$activateModules$attachments){
     observeEvent(input[["btRemoveAttachment_" %+% i]], {
       req(nchar(attachmentList[["name"]][[i]]) > 0L, activeScen)
       activeScen$removeAttachments(attachmentList[["name"]][[i]])
-      attachmentList[i, ] <<- c(NA_character_, FALSE)
+      attachmentList[i, ] <<- list(NA_character_, FALSE)
       markUnsaved()
       showHideEl(session, "#attachSuccess")
     })

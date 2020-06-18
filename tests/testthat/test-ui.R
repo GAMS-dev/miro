@@ -108,6 +108,14 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
                                 compareImages = FALSE)))
   file.rename(file.path(miroModelDir, "conf_pickstock", "pickstock_tmp.json"),
               file.path(miroModelDir, "conf_pickstock", "pickstock.json"))
+  Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "model", "transport_outputAttach",
+                                         "transport.gms"))
+  test_that("Output attachments work (part 1)",
+            expect_pass(testApp(file.path(testDir, ".."), "output_attach_test",
+                                compareImages = FALSE)))
+  test_that("Output attachments work (part2)",
+            expect_pass(testApp(file.path(testDir, ".."), "output_attach_test_2",
+                                compareImages = FALSE)))
   Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "model", "transport_miropivot",
                                          "transport_miropivot.gms"))
   test_that("MIRO Pivot renderer works.",

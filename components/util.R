@@ -1348,3 +1348,9 @@ getValidCsvFromZip <- function(zipFileName, dsToVerify, uid){
   }
   return(list(tmpDir = tmpDir, validFileNames = validFileNames))
 }
+sanitizeFn <- function(filename) {
+  # DO NOT USE THIS TO GET REALLY SECURE FILENAMES!
+  # IT IS NOT MEANT TO CATCH ALL EDGE CASES AND CAN BE BYPASSED EASILY!
+  filename <- gsub("[/\\\\\\?%*:|\"<>]", "", filename)
+  return(stringi::stri_trim_left(filename, pattern = "[^\\.]"))
+}

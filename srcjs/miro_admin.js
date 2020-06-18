@@ -160,6 +160,20 @@ const arrayTypes = {
     };
     return ([elements, { elRequired: false }, 'script']);
   },
+  general_output_attach(defaults) {
+    let filename; let execPerm; let throwError;
+    if (defaults !== undefined) {
+      ({
+        filename, execPerm, throwError,
+      } = defaults);
+    }
+    const elements = {
+      general_output_attach: ['text', lang.addOutAttach.file, filename],
+      outAttach_exec: ['checkbox', lang.addOutAttach.exec, execPerm === true],
+      outAttach_error: ['checkbox', lang.addOutAttach.error, throwError !== false],
+    };
+    return ([elements, { elRequired: false }, 'attach']);
+  },
   dy_ydata(defaults) {
     let key; let label; let yaxis; let color;
     let stepPlot; let stemPlot; let fillGraph;
