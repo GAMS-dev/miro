@@ -809,6 +809,11 @@
       "title": "Fehler beim Speichern von GAMS log/lst-Dateien",
       "noFileAccess": "Auf eine oder mehrere GAMS-Ausgabedateien (.log/.lst) konnte nicht zugegriffen werden.",
       "fileSizeExceeded": "Eine oder mehrere GAMS-Ausgabedateien (.log/.lst) überschreiten die maximal zulässige Dateigröße."
+    },
+    "saveAttachments": {
+      "title": "Probleme beim Speichern von Anhängen",
+      "noFileAccess": "Die Anhänge: '%s' konnten nicht gespeichert werden, da die Dateien nicht zugänglich sind.",
+      "fileSizeExceeded": "Die Anhänge: '%s' konnten nicht gespeichert werden, da sie die maximal zulässige Größe überschreiten."
     }
   },
   "adminMode":{
@@ -856,6 +861,7 @@
         "headerSymbolNaming": "Benennung",
         "headerSymbolGrouping": "Reihenfolge",
         "headerBaseScripts": "Basismodus",
+        "headerOutputAttach": "Ergebnis-Anhänge",
         "baseScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte aus, die im Ausgabeabschnitt angezeigt werden",
         "headerHcubeScripts": "Hypercube-Modus",
         "hcubeScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte für mehrere Szenarien auf einmal aus",
@@ -900,6 +906,9 @@
       "scripts":{
         "base": "Spezifizieren Sie individuelle Analyseskripte für den Basismodus.",
         "hcube": "Spezifizieren Sie individuelle Analyseskripte für den Hypercube-Modus."
+      },
+      "outputAttach": {
+        "label": "Neue Anlage hinzufügen"
       },
       "overwriteSheetOrder":{
         "input": "Legen Sie die Reihenfolge fest, in welcher die Eingabesymbole angezeigt werden sollen (Drag & Drop).",
@@ -1142,7 +1151,9 @@
         "val52": "Der Befehl ist erforderlich.",
         "val53": "Der Name der Ausgabedatei ist erforderlich.",
         "val54": "Sie müssen Aliase für Ihre Auswahl definieren, wenn nur der Elementtext des Symbols mit GAMS kommuniziert wird.",
-        "val55": "Es darf nur ein Element im Dropdownmenü auswählbar sein, wenn nur der Elementtext mit GAMS kommuniziert wird."
+        "val55": "Es darf nur ein Element im Dropdownmenü auswählbar sein, wenn nur der Elementtext mit GAMS kommuniziert wird.",
+        "val56": "Ein Anhang mit diesem Dateinamen existiert bereits!",
+        "val57": "Der Dateiname enthält ungültige Zeichen. Anhänge in Unterverzeichnissen werden nicht unterstützt!"
       },
       "widgetOptions":{
         "slider": "Schieberegler",
@@ -1623,6 +1634,11 @@
           "args": "Argumente für den Befehl",
           "outFile": "Name der Ausgabedatei (inklusive Dateiendung)",
           "timeout": "Timeout (Sekunden, -1 für unendlich)"
+        },
+        "addOutAttach":{
+          "file": "Name der anzuhängenden Datei",
+          "exec": "Modell erlauben, diese Datei zu lesen?",
+          "error": "Soll ein Fehler angezeigt werden, wenn die Datei nicht gefunden wird?"
         },
         "addDyEvent":{
           "dyDyEventCheck": "Statisches Ereignis?",

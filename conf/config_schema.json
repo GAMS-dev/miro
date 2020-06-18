@@ -226,6 +226,32 @@
            "minLength": 1
          }
       },
+      "outputAttachments": {
+        "description":"Specify files that should be added to the scenario as attachments after a successful GAMS run.",
+        "type":"array",
+        "uniqueItems":true,
+        "items":{
+          "type":"object",
+          "description": "Scripts that will be displayed in the output section and feeded with both input and output data",
+          "additionalProperties":false,
+          "required": ["filename"],
+          "properties":{
+            "filename": {
+              "description":"Filename of the attachment including extension",
+              "type":"string",
+              "minLength":1
+            },
+            "execPerm": {
+              "description":"Should GAMS be allowed to read this attachment?",
+              "type":"boolean"
+            },
+            "throwError": {
+              "description":"Should MIRO throw an error when the file was not found after a successful GAMS run?",
+              "type":"boolean"
+            }
+          }
+        }
+      },
       "hiddenOutputScalars": {
         "description":"Specify symbol names of output scalars that will not be displayed in UI but can be used in graphs etc.",
          "type":["array", "string"],

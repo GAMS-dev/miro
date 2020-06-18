@@ -1532,6 +1532,12 @@ if(is.null(errMsg)){
     }
   })
   
+  #sanitize file names of output attachments
+  config$outputAttachments <- lapply(config$outputAttachments, function(el){
+    el$filename <- sanitizeFn(el$filename)
+    return(el)
+  })
+  
   installPackage    <- list()
   installPackage$DT <- any(vapply(seq_along(modelIn), function(i){if(identical(modelIn[[i]]$type, "dt")) TRUE else FALSE}, 
                                   logical(1L), USE.NAMES = FALSE))

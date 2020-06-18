@@ -809,6 +809,11 @@
       "title": "Error saving GAMS log/lst files",
       "noFileAccess": "One or more GAMS output files (.log/.lst) could not be accessed.",
       "fileSizeExceeded": "One or more GAMS output files (.log/.lst) exceed the maximum file size allowed to be stored."
+    },
+    "saveAttachments": {
+      "title": "Problems saving attachments",
+      "noFileAccess": "The attachments: '%s' could not be saved because the files are not accessible.",
+      "fileSizeExceeded": "The attachments: '%s' could not be saved because they exceed the maximum allowed size."
     }
   },
   "adminMode":{
@@ -856,6 +861,7 @@
         "headerSymbolNaming": "Naming",
         "headerSymbolGrouping": "Ordering",
         "headerBaseScripts": "Base mode",
+        "headerOutputAttach": "Output attachments",
         "baseScriptsTooltip": "Run custom analysis scripts which will be displayed in the output section",
         "headerHcubeScripts": "Hypercube mode",
         "hcubeScriptsTooltip": "Run custom analysis scripts for multiple scenarios at once",
@@ -900,6 +906,9 @@
       "scripts":{
         "base": "Specify custom analysis scripts for the Base mode",
         "hcube": "Specify custom analysis scripts for the Hypercube mode"
+      },
+      "outputAttach": {
+        "label": "Add new attachment"
       },
       "overwriteSheetOrder":{
         "input": "Specify the tab order of the input symbols (drag & drop)",
@@ -1142,7 +1151,9 @@
         "val52": "The command is required.",
         "val53": "The output filename is required.",
         "val54": "You need to define aliases for your choices if only the element text is communicated with GAMS.",
-        "val55": "Only one item can be selectable in the dropdown menu if only the element text is communicated with GAMS."
+        "val55": "Only one item can be selectable in the dropdown menu if only the element text is communicated with GAMS.",
+        "val56": "An attachment with this file name already exists!",
+        "val57": "The file name contains invalid characters. Attachments in subdirectories are not supported!"
       },
       "widgetOptions":{
         "slider": "Slider",
@@ -1623,6 +1634,11 @@
           "args": "Arguments to the command",
           "outFile": "Name of the output file (including file extension)",
           "timeout": "Timeout (seconds, -1 for infinite)"
+        },
+        "addOutAttach":{
+          "file": "Name of the file to attach",
+          "exec": "Allow model to read this file?",
+          "error": "Should an error be displayed if the file is not found?"
         },
         "addDyEvent":{
           "dyDyEventCheck": "Static event?",
