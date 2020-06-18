@@ -1,7 +1,8 @@
 # run GAMS
 storeGAMSOutputFiles <- function(workDir){
   if(config$activateModules$attachments && 
-     config$storeLogFilesDuration > 0L && !is.null(activeScen)){
+     !is.null(activeScen) && 
+     (config$storeLogFilesDuration > 0L || length(config$outputAttachments))){
     errMsg <- NULL
     tryCatch({
       filesToStore <- character(0L)
@@ -13,45 +14,65 @@ storeGAMSOutputFiles <- function(workDir){
       if(config$activateModules$miroLogFile)
         filesToStore <- c(filesToStore, file.path(workDir, config$miroLogFile))
       
+      enforceFileAccess <- rep.int(TRUE, length(filesToStore))
+      fileAccessPerm    <- rep.int(FALSE, length(filesToStore))
+      
+      if(length(config$outputAttachments)){
+        filesToStore <- c(filesToStore, file.path(workDir, vapply(config$outputAttachments, "[[", character(1L),
+                                                                  "filename", USE.NAMES = FALSE)))
+        enforceFileAccess <- c(enforceFileAccess, vapply(config$outputAttachments, function(el) {
+          return(!isFALSE(el[["throwError"]]))}, logical(1L), USE.NAMES = FALSE))
+        fileAccessPerm <- c(fileAccessPerm, vapply(config$outputAttachments, function(el) {
+          return(isTRUE(el[["execPerm"]]))}, logical(1L), USE.NAMES = FALSE))
+      }
+      
       if(!length(filesToStore))
         return()
       
       filesNoAccess <- file.access(filesToStore) == -1L
-      if(any(filesNoAccess)){
-        if(all(filesNoAccess))
+      if(any(filesNoAccess[enforceFileAccess])){
+        if(all(filesNoAccess[enforceFileAccess]))
           stop("fileAccessException", call. = FALSE)
         flog.info("GAMS output files: '%s' could not be accessed. Check file permissions.", 
-                  paste(filesToStore[filesNoAccess], collapse = "', '"))
-        errMsg <- lang$errMsg$saveGAMSLog$noFileAccess
+                  paste(filesToStore[filesNoAccess & enforceFileAccess], collapse = "', '"))
+        errMsg <- sprintf(lang$errMsg$saveAttachments$noFileAccess, 
+                          paste(basename(filesToStore[filesNoAccess & enforceFileAccess]), collapse = "', '"))
+      }
+      if(any(filesNoAccess)){
+        flog.debug("File(s): '%s' were not added as attachment as they could not be accessed.",
+                   paste(filesNoAccess, collapse = "', '"))
       }
       filesToStore <- filesToStore[!filesNoAccess]
+      fileAccessPerm <- fileAccessPerm[!filesNoAccess]
       filesTooLarge <- file.size(filesToStore) > attachMaxFileSize
       if(any(filesTooLarge)){
         if(all(filesTooLarge))
           stop("fileSizeException", call. = FALSE)
         flog.info("GAMS output files: '%s' are too large. They will not be saved.", 
                   paste(filesToStore[filesTooLarge], collapse = "', '"))
-        errMsg <<- paste(errMsg, lang$errMsg$saveGAMSLog$fileSizeExceeded, sep = "\n")
+        errMsg <<- paste(errMsg, sprintf(lang$errMsg$saveAttachments$fileSizeExceeded, 
+                                         paste(basename(filesToStore[filesTooLarge]), collapse = "', '")), sep = "\n")
       }
-      filesToStore <- filesToStore[!filesTooLarge]
-      activeScen$addAttachments(filesToStore, overwrite = TRUE, 
-                                execPerm = rep.int(FALSE, length(filesToStore)))
+      activeScen$addAttachments(filesToStore[!filesTooLarge], overwrite = TRUE, 
+                                execPerm = fileAccessPerm[!filesTooLarge])
     }, error = function(e){
       switch(conditionMessage(e),
              fileAccessException = {
                flog.info("No GAMS output files could not be accessed. Check file permissions.")
-               errMsg <<- lang$errMsg$saveGAMSLog$noFileAccess
+               errMsg <<- sprintf(lang$errMsg$saveAttachments$noFileAccess, 
+                                  paste(basename(filesToStore), collapse = "', '"))
              },
              fileSizeException = {
                flog.info("All GAMS output files are too large to be saved.")
-               errMsg <<- lang$errMsg$saveGAMSLog$fileSizeExceeded
+               errMsg <<- sprintf(lang$errMsg$saveAttachments$fileSizeExceeded, 
+                                  paste(basename(filesToStore), collapse = "', '"))
              },
              {
                flog.error("Problems while trying to store GAMS output files in the database. Error message: '%s'.", e)
                errMsg <<- lang$errMsg$unknownError
              })
     })
-    showErrorMsg(lang$errMsg$saveGAMSLog$title, errMsg)
+    showErrorMsg(lang$errMsg$saveAttachments$title, errMsg)
   }
 }
 prepareModelRun <- function(async = FALSE){

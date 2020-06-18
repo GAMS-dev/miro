@@ -416,6 +416,18 @@ putclose log;
                                   <h6 id="general-duration" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Duration the GAMS log and lst files are stored in the database (in days)</h6>
                                   <div class="expanded"><p>If you want to save the log and lst files of individual GAMS jobs, you can use this option to specify how long the files should be saved. 
                                   0 means files are not stored at all, 999 means files are stored indefinitely. This setting is ignored when the attachment module is not active. Note that this is currently only supported in the MIRO base mode. </p>
+								  </div>
+                                  <h6 id="general-output-attach" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Output attachments</h6>
+                                  <div class="expanded"><p>Output attachments allow you to automatically attach files after a GAMS run has been successfully completed. This lets you store additional results alongside the ones displayed in the UI. In addition, MIRO gives you the option to choose what should happen when an attachment is not found after a successful GAMS run. Should the user be informed of this by an error message or should it be silently ignored. You can also choose to automatically extract the attachment to the working directory when you start another GAMS run with this scenario. This function adds a state to your scenarios. Per default, scenarios in MIRO are stateless. This means that running two consecutive GAMS runs with the same input data will result in the same output data. By adding an attachment to the scenario that GAMS is allowed to read on consecutive executions, the results may no longer be the same.</p>
+								  <p>Let's have a look at a simple (toy) example:</p>
+                                  <pre><code class="language-gams">$if exist report.put $abort "Report was found"
+
+File report;
+put report;
+put "This is a report."
+putclose;
+</pre></code>
+                                  <p>When you run this GAMS model for the first time, it creates a file <kbd>report.put</kbd>. When running it a second time, it aborts with a compilation error: "Report was found". If you add the file <kbd>report.put</kbd> as an output attachment and select to extract it into the working directory whenever you run this scenario again, your scenario will carry a state. This gives you the possibility to implement processes of any complexity in your MIRO application.</p>
                                   <div class="callout-block callout-warning">
                                       <div class="icon-holder">
                                           <i class="fas fa-info-circle"></i>

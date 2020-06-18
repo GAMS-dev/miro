@@ -3125,9 +3125,28 @@
             }
           },
           "minProperties": 3
+        },
+        "saveAttachments": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "noFileAccess": {
+              "type": "string",
+              "minLength": 1
+            },
+            "fileSizeExceeded": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 3
         }
       },
-      "minProperties": 35
+      "minProperties": 36
     },
     "adminMode": {
       "description": "language specific objects of the MIRO admin mode",
@@ -3307,6 +3326,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "headerOutputAttach": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "baseScriptsTooltip": {
                   "type": "string",
                   "minLength": 1
@@ -3332,7 +3355,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 21
+              "minProperties": 22
             },
             "modalDialog": {
               "type": "object",
@@ -3493,6 +3516,17 @@
                 }
               },
               "minProperties": 2
+            },
+            "outputAttach": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 1
             },
             "overwriteSheetOrder": {
               "type": "object",
@@ -3877,7 +3911,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 36
+          "minProperties": 37
         },
         "tables": {
           "type": "object",
@@ -4451,9 +4485,17 @@
                 "val55": {
                   "type": "string",
                   "minLength": 1
+                },
+                "val56": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "val57": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 53
+              "minProperties": 55
             },
             "widgetOptions": {
               "type": "object",
@@ -6479,6 +6521,25 @@
                   },
                   "minProperties": 6
                 },
+                "addOutAttach": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "file": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "exec": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "error": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "minProperties": 3
+                },
                 "addDyEvent": {
                   "type": "object",
                   "additionalProperties": false,
@@ -7318,7 +7379,7 @@
                   "minProperties": 2
                 }
               },
-              "minProperties": 20
+              "minProperties": 21
             }
           },
           "minProperties": 22

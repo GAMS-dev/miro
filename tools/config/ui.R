@@ -855,7 +855,16 @@ body_admin <- dashboardBody({
                                                                         min = 0, max = 999, step = 1, 
                                                                         value = if(length(configJSON$storeLogFilesDuration)) 
                                                                           configJSON$storeLogFilesDuration else config$storeLogFilesDuration
-                                                            ))
+                                                            )),
+                                                   tags$div(class="option-wrapper",
+                                                            tags$h4(lang$adminMode$general$ui$headerOutputAttach,
+                                                                    tags$a("", title = lang$adminMode$general$ui$tooltipDocs, 
+                                                                           class="info-wrapper",
+                                                                           href="https://gams.com/miro/customize.html#general-output-attach", 
+                                                                           tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                            createArray(NULL, "general_output_attach", 
+                                                                        lang$adminMode$general$outputAttach$label, 
+                                                                        autoCreate = FALSE))
                                                  )),
                                                  tags$div(class = "space")
                                         )      

@@ -2,11 +2,13 @@ rowtmp <- list()
 isolate({
   indexMap <- IdIdxMap$new(list(inputGroups = seq_along(configJSON$inputGroups),
                                 outputGroups = seq_along(configJSON$outputGroups),
-                                symlink = seq_along(configJSON$symbolLinks)))
+                                symlink = seq_along(configJSON$symbolLinks),
+                                outputAttachments = seq_along(configJSON$outputAttachments)))
   
   groupTemp <- list(inputGroups = list(), outputGroups = list())
   rv$generalConfig$inputGroups <- configJSON$inputGroups
   rv$generalConfig$outputGroups <- configJSON$outputGroups
+  rv$generalConfig$outputAttachments <- configJSON$outputAttachments
   rv$generalConfig$symbolLinks <- configJSON$symbolLinks
   rv$generalConfig$scripts <- configJSON$scripts
   rv$generalConfig$UILogo <- configJSON$UILogo
@@ -29,6 +31,9 @@ hcubeScriptValidator <- Validator$new(c("id", "title", "command",
                                       configJSON$scripts$hcube,
                                       requiredKeys = c("id", "title", 
                                                        "command", "outputFile"))
+outputAttachmentsValidator <- Validator$new(c("filename", "execPerm", "throwError"),
+                                      configJSON$outputAttachments,
+                                      requiredKeys = c("filename"))
 
 # set default values for array elements
 if(length(configJSON$inputGroups))
@@ -41,6 +46,8 @@ if(length(configJSON$scripts$base))
   addArrayEl(session, "scripts_base", defaults = configJSON$scripts$base)
 if(length(configJSON$scripts$hcube))
   addArrayEl(session, "scripts_hcube", defaults = configJSON$scripts$hcube)
+if(length(configJSON$outputAttachments))
+  addArrayEl(session, "general_output_attach", defaults = configJSON$outputAttachments)
 
 output$general_logo_preview <- renderImage({
   rv$customLogoChanged
@@ -381,12 +388,21 @@ observeEvent(input$add_script, {
   if(is.na(arrayID)){
     return()
   }
+  isHcubeScript <- identical(input$add_script[3], "scripts_hcube")
   if(!grepl("^[[:alnum:]]+$", input$add_script[2])){
     showElReplaceTxt(session, paste0("#", input$add_script[3], arrayID, "_err"), 
                      lang$adminMode$widgets$validate$val49)
+    if(isHcubeScript){
+      rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
+        removeKey(arrayID, "id")$
+        getValidData()
+    }else{
+      rv$generalConfig$scripts$base <- baseScriptValidator$
+        removeKey(arrayID, "id")$
+        getValidData()
+    }
     return()
   }
-  isHcubeScript <- identical(input$add_script[3], "scripts_hcube")
   if(isHcubeScript){
     validScriptIds <- hcubeScriptValidator$getValid("id")
   }else{
@@ -395,6 +411,15 @@ observeEvent(input$add_script, {
   if(input$add_script[2] %in% validScriptIds){
     showElReplaceTxt(session, paste0("#", input$add_script[3], arrayID, "_err"), 
                      lang$adminMode$widgets$validate$val50)
+    if(isHcubeScript){
+      rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
+        removeKey(arrayID, "id")$
+        getValidData()
+    }else{
+      rv$generalConfig$scripts$base <- baseScriptValidator$
+        removeKey(arrayID, "id")$
+        getValidData()
+    }
     return()
   }
   hideEl(session, paste0("#", input$add_script[3], arrayID, "_err"))
@@ -629,6 +654,87 @@ observeEvent(input$remove_script, {
     rv$generalConfig$scripts <- NULL
   }
 })
+observeEvent(input$add_attach, {
+  arrayID <- as.integer(input$add_attach[1])
+  if(is.na(arrayID)){
+    return()
+  }
+  if(!identical(sanitizeFn(input$add_attach[2]), input$add_attach[2])){
+    showElReplaceTxt(session, paste0("#", input$add_attach[3], arrayID, "_err"), 
+                     lang$adminMode$widgets$validate$val57)
+    rv$generalConfig$outputAttachments <- outputAttachmentsValidator$
+      removeKey(arrayID, "filename")$
+      getValidData()
+    return()
+  }
+  if(input$add_attach[2] %in% outputAttachmentsValidator$getValid("filename")){
+    showElReplaceTxt(session, paste0("#", input$add_attach[3], arrayID, "_err"), 
+                     lang$adminMode$widgets$validate$val56)
+    rv$generalConfig$outputAttachments <- outputAttachmentsValidator$
+      removeKey(arrayID, "filename")$
+      getValidData()
+    return()
+  }
+  hideEl(session, paste0("#", input$add_attach[3], arrayID, "_err"))
+  if(length(input$add_attach) > 1 && nchar(input$add_attach[2]) > 0L) {
+    rv$generalConfig$outputAttachments <- outputAttachmentsValidator$
+      setVal(arrayID, "filename", input$add_attach[2])$
+      getValidData()
+  }
+})
+observeEvent(input$outAttach_exec, {
+  if(length(input$outAttach_exec) < 2L){
+    return()
+  }
+  arrayID <- as.integer(input$outAttach_exec[1])
+  if(is.na(arrayID)){
+    return()
+  }
+  val <- identical(input$outAttach_exec[2], 1L)
+  if(!length(val)){
+    rv$generalConfig$outputAttachments <- outputAttachmentsValidator$
+      removeKey(arrayID, "execPerm")$
+      getValidData()
+    return()
+  }
+  rv$generalConfig$outputAttachments <- outputAttachmentsValidator$
+    setVal(arrayID, "execPerm", val)$
+    getValidData()
+})
+observeEvent(input$outAttach_error, {
+  if(length(input$outAttach_error) < 2L){
+    return()
+  }
+  arrayID <- as.integer(input$outAttach_error[1])
+  if(is.na(arrayID)){
+    return()
+  }
+  val <- !identical(input$outAttach_error[2], 0L)
+  if(!length(val)){
+    rv$generalConfig$outputAttachments <- outputAttachmentsValidator$
+      removeKey(arrayID, "throwError")$
+      getValidData()
+    return()
+  }
+  rv$generalConfig$outputAttachments <- outputAttachmentsValidator$
+    setVal(arrayID, "throwError", val)$
+    getValidData()
+})
+observeEvent(input$remove_attach, {
+  if(length(input$remove_attach) < 3L){
+    return()
+  }
+  arrayID <- as.integer(input$remove_attach[3])
+  if(is.na(arrayID)){
+    return()
+  }
+  rv$generalConfig$outputAttachments <- outputAttachmentsValidator$
+    removeEl(arrayID)$
+    getValidData()
+  if(!length(rv$generalConfig$outputAttachments)){
+    rv$generalConfig$outputAttachments <- NULL
+  }
+})
 changeAndValidateGroupMembers <- function(arrayID, groupMembers, HTMLarrayID){
   arrayIdx <- indexMap$push(arrayID, groupMembers[1])
   
@@ -793,5 +899,6 @@ observeEvent(rv$generalConfig, {
   }
   configJSON$symbolLinks <<- rv$generalConfig$symbolLinks
   configJSON$scripts <<- rv$generalConfig$scripts
+  configJSON$outputAttachments <<- rv$generalConfig$outputAttachments
   write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
 })

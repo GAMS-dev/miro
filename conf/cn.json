@@ -809,6 +809,11 @@
        "title":"保存GAMS日志文件或lst文件时出错",
        "noFileAccess":"无法访问一个或多个GAMS输出文件（.log /.lst）。",
        "fileSizeExceeded":"一个或多个GAMS输出文件（.log /.lst）超过允许存储的最大文件大小。"
+    },
+    "saveAttachments": {
+      "title": "保存附件的问题",
+      "noFileAccess": "附件。'%s'无法保存，因为文件无法访问。",
+      "fileSizeExceeded": "附件。'%s'无法保存，因为它们超过了允许的最大尺寸。"
     }
   },
   "adminMode":{
@@ -856,6 +861,7 @@
         "headerSymbolNaming": "指定名称",
         "headerSymbolGrouping": "组合",
         "headerBaseScripts": "基本模式",
+        "headerOutputAttach": "附件",
         "baseScriptsTooltip": "运行自定义分析脚本，该脚本将显示在输出中",
         "headerHcubeScripts": "Hypercube模式",
         "hcubeScriptsTooltip": "一次运行多个方案的自定义分析脚本",
@@ -900,6 +906,9 @@
       "scripts":{
         "base": "指定基本模式的自定义分析脚本",
         "hcube": "指定Hypercube模式的自定义分析脚本"
+      },
+      "outputAttach": {
+        "label": "添加新的附件"
       },
 	  "overwriteSheetOrder":{
         "input": "指定输入符号的选项卡顺序（拖放）",
@@ -1142,7 +1151,9 @@
         "val52": "命令是为必填项。",
         "val53": "输出文件名为必填项。",
         "val54": "如果仅使用符号的元素文本与GAMS通信，则需要为该选择定义别名。",
-        "val55": "如果仅使用符号的元素文本与GAMS通信，则下拉菜单中只能选择一项。"
+        "val55": "如果仅使用符号的元素文本与GAMS通信，则下拉菜单中只能选择一项。",
+        "val56": "这个文件名的附件已经存在!",
+        "val57": "文件名包含无效字符。不支持子目录中的附件!"
       },
       "widgetOptions":{
 	    "slider": "滑动条",
@@ -1623,6 +1634,11 @@
           "args": "该命令的参数",
           "outFile": "输出文件的名称（包括文件扩展名）",
           "timeout": "超时（秒，-1 为无限）"
+        },
+        "addOutAttach":{
+          "file": "要附加的文件名称",
+          "exec": "允许模型读取此文件？",
+          "error": "如果找不到文件，是否应该显示错误？"
         },
         "addDyEvent":{
           "dyDyEventCheck": "静态事件？",
