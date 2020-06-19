@@ -40,7 +40,7 @@ storeGAMSOutputFiles <- function(workDir){
       }
       if(any(filesNoAccess)){
         flog.debug("File(s): '%s' were not added as attachment as they could not be accessed.",
-                   paste(filesNoAccess, collapse = "', '"))
+                   paste(filesToStore[filesNoAccess], collapse = "', '"))
       }
       filesToStore <- filesToStore[!filesNoAccess]
       fileAccessPerm <- fileAccessPerm[!filesNoAccess]

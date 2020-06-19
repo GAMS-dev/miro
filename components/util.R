@@ -583,12 +583,12 @@ virtualActionButton <- function(...){
   invisible(o)
 }
 showErrorMsg <- function(title, errMsg){
-  stopifnot(is.character(title), length(title) == 1)
   if(!is.null(errMsg)){
     stopifnot(is.character(errMsg), length(errMsg) == 1)
   }
   
   if(!is.null(errMsg)){
+    stopifnot(is.character(title), length(title) == 1)
     showModal(modalDialog(
       title = title, HTML(addHtmlLineBreaks(errMsg))
     ))

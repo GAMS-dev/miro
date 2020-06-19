@@ -17,7 +17,8 @@ Sys.setenv(MIRO_DB_PATH = testDir)
 # END setup
 
 errMsg <- NULL
-testFiles <- c("excel_upload_test", "excel_upload_overwrite_test", 
+testFiles <- c("gdx_upload_test", "csv_upload_test",
+               "excel_upload_test", "excel_upload_overwrite_test", 
                "load_from_db_test", "gams_interrupt_test",
                "compare_scen_split_test", "compare_scen_tab_test")
 for(modelToTest in modelsToTest){
@@ -37,6 +38,12 @@ for(modelToTest in modelsToTest){
             recursive = TRUE, force = TRUE) != 0L){
     warning(sprintf("Couldn't remove data dir of model: '%s'", modelToTest))
   }
+  test_that(paste0("Uploading CSV file works for model: ", modelToTest),
+            expect_pass(testApp(file.path(testDir, ".."), paste0("csv_upload_test_", modelToTest),
+                                compareImages = FALSE)))
+  test_that(paste0("Uploading GDX file works for model: ", modelToTest),
+            expect_pass(testApp(file.path(testDir, ".."), paste0("gdx_upload_test_", modelToTest),
+                                compareImages = FALSE)))
   test_that(paste0("Uploading Excel file works for model: ", modelToTest),
     expect_pass(testApp(file.path(testDir, ".."), paste0("excel_upload_test_", modelToTest),
                         compareImages = FALSE)))
@@ -110,6 +117,11 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
               file.path(miroModelDir, "conf_pickstock", "pickstock.json"))
   Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "model", "transport_outputAttach",
                                          "transport.gms"))
+  if(file.exists(file.path(getwd(), "..", "model", "transport_outputAttach",
+               "report.put"))){
+    unlink(file.path(getwd(), "..", "model", "transport_outputAttach",
+                     "report.put"), force = TRUE)
+  }
   test_that("Output attachments work (part 1)",
             expect_pass(testApp(file.path(testDir, ".."), "output_attach_test",
                                 compareImages = FALSE)))
