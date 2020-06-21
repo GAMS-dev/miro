@@ -50,8 +50,8 @@ storeGAMSOutputFiles <- function(workDir){
           stop("fileSizeException", call. = FALSE)
         flog.info("GAMS output files: '%s' are too large. They will not be saved.", 
                   paste(filesToStore[filesTooLarge], collapse = "', '"))
-        errMsg <<- paste(errMsg, sprintf(lang$errMsg$saveAttachments$fileSizeExceeded, 
-                                         paste(basename(filesToStore[filesTooLarge]), collapse = "', '")), sep = "\n")
+        errMsg <- paste(errMsg, sprintf(lang$errMsg$saveAttachments$fileSizeExceeded, 
+                                        paste(basename(filesToStore[filesTooLarge]), collapse = "', '")), sep = "\n")
       }
       activeScen$addAttachments(filesToStore[!filesTooLarge], overwrite = TRUE, 
                                 execPerm = fileAccessPerm[!filesTooLarge])
