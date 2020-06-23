@@ -1274,8 +1274,8 @@ zipMiro <- function(zipfile, files, baseDir, ...){
 getHcubeScalars <- function(modelIn){
   return(names(modelIn)[vapply(seq_along(modelIn), 
                                function(i) 
-                                 identical(modelIn[[i]]$type, "dropdown") ||
-                                 identical(modelIn[[i]]$type, "checkbox"), 
+                                 isTRUE(modelIn[[i]]$dropdown$single) ||
+                                 isTRUE(modelIn[[i]]$dropdown$checkbox), 
                                logical(1L), USE.NAMES = FALSE)])
 }
 loadPfFileContent <- function(content, GMSOpt = character(0L), DDPar = character(0L)){

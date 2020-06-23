@@ -100,6 +100,7 @@ Db <- R6Class("Db",
                 getTableNamesScenario = function() private$tableNamesScenario,
                 getAttachmentConfig   = function() private$attachmentConfig,
                 getHcubeActive        = function() private$hcubeActive,
+                getModelNameDb        = function() private$modelNameDb,
                 getOrphanedTables     = function(hcubeScalars = NULL){
                   # find orphaned database tables 
                   #

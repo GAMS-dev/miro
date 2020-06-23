@@ -86,7 +86,8 @@ if(length(modelOut[[scalarsOutName]])){
 
 hcubeLoad <- HcubeLoad$new(db, scalarsFileHeaders[c(1, 3)], modelName,
                            inputDsNamesNotToDisplay,
-                           scalarTables, scalarKeyTypeList)
+                           scalarTables, scalarKeyTypeList, 
+                           hcubeScalars = getHcubeScalars(modelIn))
 metaCols <- db$getScenMetaColnames()
 fields <- c("", scenMetadataTable %+% "." %+% metaCols[c("uid", "stime", "stag")])
 names(fields) <- c("", lang$nav$hcubeLoad$metaColAliases$uid, 

@@ -2,7 +2,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                      public = list(
                        initialize        = function(db, scalarColNames, modelName, inputDsNamesNotToDisplay, 
                                                     scalarTables = NULL, scalarKeyTypeList = NULL, 
-                                                    tableFieldSep = "."){
+                                                    tableFieldSep = ".", hcubeScalars = character(0L)){
                          # R6 class to import scenarios in hcube mode
                          #
                          # Args:      
@@ -15,6 +15,8 @@ HcubeLoad <- R6Class("HcubeLoad",
                          #   scalarTables:            table names of scalar tables where 
                          #                            field/value paris should be fetched from (optional)
                          #   tableFieldSep:           seperator between table and field name
+                         #   hcubeScalars:            name of scalars that are transferred to 
+                         #                            tables in Hypercube mode
                          #
                          
                          # BEGIN error checks
@@ -41,6 +43,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                          private$tableNameTrace     <- private$dbSchema$tabName[["_scenTrc"]]
                          private$traceColNames      <- private$dbSchema$colNames[["_scenTrc"]]
                          private$inputDsNamesNotToDisplay <- inputDsNamesNotToDisplay
+                         private$hcubeScalarTables  <- paste0(db$getModelNameDb(), "_", hcubeScalars)
                          
                          if(inherits(private$conn, "PqConnection")){
                            dbExecute(private$conn, "CREATE EXTENSION IF NOT EXISTS tablefunc")
@@ -211,12 +214,12 @@ HcubeLoad <- R6Class("HcubeLoad",
                          stopifnot(length(scenIds) >= 1L, is.character(tmpDir), 
                                    length(tmpDir) == 1L)
                          
-                         scenTableNames <- private$db$getTableNamesScenario()
+                         scenTableNames <- private$getTableNamesScenario()
                          if(!length(scenTableNames)){
                            return(invisible(self))
                          }
                          names(scenTableNames) <- substring(scenTableNames, 
-                                                            nchar(private$modelName) + 2L)
+                                                            nchar(private$db$getModelNameDb()) + 2L)
                          scenTableNames <- scenTableNames[!names(scenTableNames) %in% private$
                                                             inputDsNamesNotToDisplay]
                          noScenTables   <- length(scenTableNames)
@@ -292,7 +295,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                          stopifnot(is.character(tmpDir), length(tmpDir) == 1L)
                          
                          scenTableNames <- c(private$db$getTableNameMetadata(), 
-                                             private$db$getTableNamesScenario(), 
+                                             private$getTableNamesScenario(), 
                                              private$tableNameTrace)
                          noScenTables   <- length(scenTableNames)
                          colScenName <- private$db$getScenMetaColnames()['sname']
@@ -303,7 +306,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                            noProgressSteps <- (noScenTables * 2L + 1L)
                          }
                          sameNameCounter   <- list()
-                         startCharTableName <- nchar(private$modelName) + 2L
+                         startCharTableName <- nchar(private$db$getModelNameDb()) + 2L
                          for(tabId in seq_along(scenTableNames)){
                            if(identical(tabId, 1L)){
                              tableName <- "_metadata_"
@@ -388,6 +391,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                        traceColNames           = character(0L),
                        inputDsNamesNotToDisplay = character(0L),
                        tableFieldSep           = character(0L),
+                       hcubeScalarTables       = character(0L),
                        keyTypeList             = NULL,
                        values                  = list(),
                        groupedData             = list(),
@@ -540,6 +544,10 @@ HcubeLoad <- R6Class("HcubeLoad",
                              }
                          }, character(1L), USE.NAMES = FALSE)
                          paste(keyTypeList, collapse = ", ")
+                       },
+                       getTableNamesScenario = function(){
+                        scenTableNames <- private$db$getTableNamesScenario()
+                        return(scenTableNames[!scenTableNames %in% private$hcubeScalarTables])
                        }
                      )
 )
