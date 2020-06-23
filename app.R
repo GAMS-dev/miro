@@ -44,6 +44,7 @@ isShinyProxy <<- !identical(Sys.getenv("SHINYPROXY_USERNAME"), "")
 debugMode <- TRUE
 RLibPath <- NULL
 miroBuildonly <- identical(Sys.getenv("MIRO_BUILD"), "true")
+miroStoreDataOnly <- identical(Sys.getenv("MIRO_POPULATE_DB"), "true")
 miroDeploy <- miroBuildonly
 if(identical(Sys.getenv("MIRO_TEST_DEPLOY"), "true")){
   miroDeploy <- TRUE
@@ -660,7 +661,7 @@ if(is.null(errMsg)){
   }
 }
 inconsistentTableNames <- NULL
-if(is.null(errMsg) && debugMode){
+if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
   # checking database inconsistencies
   local({
     orphanedTables <- NULL
@@ -683,6 +684,9 @@ Note that you can remove orphaned database tables using the configuration mode (
       inconsistentTables <- db$getInconsistentTables()
     }, error = function(e){
       flog.error("Problems fetching database tables (for inconsistency checks).\nDetails: '%s'.", e)
+      if(miroStoreDataOnly){
+        write("merr:::500", stderr())
+      }
       errMsg <<- paste(errMsg, sprintf("Problems fetching database tables (for inconsistency checks). Error message: '%s'.", 
                                        conditionMessage(e)), sep = '\n')
     })
@@ -697,6 +701,12 @@ Those tables are: '%s'.\nError message: '%s'.",
                                    paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg),
                    collapse = "\n")
       errMsg <<- paste(errMsg, msg, sep = "\n")
+      if(miroStoreDataOnly){
+        write(paste0("merr:::409:::", paste(vapply(inconsistentTables$names, 
+                                                   function(el) base64_enc(charToRaw(el)), 
+                                                   character(1L), USE.NAMES = FALSE), 
+                                            collapse = ",")), stderr())
+      }
     }
   })
 }
@@ -777,7 +787,7 @@ if(!is.null(errMsg)){
   }
   if(isShinyProxy){
     stop('An error occured. Check log for more information!', call. = FALSE)
-  }else if(identical(Sys.getenv("MIRO_POPULATE_DB"), "true")){
+  }else if(miroStoreDataOnly){
     if(interactive())
       stop()
     quit("no", 1L)
@@ -1002,6 +1012,10 @@ if(!is.null(errMsg)){
           if(!debugMode && !file.remove(file.path(miroDataDir, miroDataFile))){
             flog.info("Could not remove file: '%s'.", miroDataFile)
           }
+          if(miroStoreDataOnly){
+            write(paste0("mprog:::", round(i/length(miroDataFiles) * 100)), 
+                  stderr())
+          }
         }
         if(length(tmpDirToRemove)){
           if(identical(unlink(tmpDirToRemove, recursive = TRUE), 0L)){
@@ -1014,13 +1028,14 @@ if(!is.null(errMsg)){
     }, error = function(e){
       flog.error("Problems saving MIRO data to database. Error message: '%s'.", e)
       gc()
-      if(identical(Sys.getenv("MIRO_POPULATE_DB"), "true")){
+      if(miroStoreDataOnly){
+        write("merr:::500", stderr())
         if(interactive())
           stop()
         quit("no", 1L)
       }
     })
-    if(identical(Sys.getenv("MIRO_POPULATE_DB"), "true")){
+    if(miroStoreDataOnly){
       if(interactive())
         stop()
       quit("no", 0L)
