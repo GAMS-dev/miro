@@ -73,12 +73,19 @@
                                     <h3>Minor new features and improvements</h3>
                                     <ul>
                                       <li>Symbol metadata (symtype and headers) are now passed to the custom renderer/custom widget via the options list. The nested list can be accessed via the key <code class="language-r">options[["_metadata_"]]</code>.</li>
+                                      <li>R is now bundled with MIRO on macOS.</li>
+                                      <li>Data is now imported when a new MIRO application is added to the library instead of when the application is first started.</li>
+                                      <li>When a new MIRO application is added to the library, the database tables are now checked for consistency.</li>
                                     </ul>
                                     <h3>Bug fixes</h3>
                                     <ul>
                                       <li>Configuration Mode: Fixed a bug that caused adding a script with an already existing id not to be validated properly in certain situations</li>
                                       <li>Orphaned tables were not found when model name includes underscores.</li>
                                       <li>An error that should only occur if the list/log file exceeds a certain file size was incorrectly displayed when starting a new GAMS run.</li>
+                                      <li>Model names that included an underscore "_" caused MIRO to throw an exception when downloading scenario data in Hyperube Mode.</li>
+                                      <li>Did not properly set idir when running Hypercube jobs locally (currently, model has to be adjusted to work with idir).</li>
+                                      <li>Fix bug that caused Hypercube to crash when configuring dropdown menu that is not expanded in Hypercube Mode.</li>
+                                      <li>Fix bug that caused Hypercube job to fail when a multi dropdown menu was empty.</li>
                                     </ul>
                                   </div>
                             </section>
