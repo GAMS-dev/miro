@@ -265,8 +265,8 @@
       "cancelButton":"Abbrechen",
       "okButton":"Ja",
       "removeFromUI":{  
-        "title":"Szenario aus Editor entfernen",
-        "desc":"Möchten Sie das Szenario aus dem Editor entfernen? Ungespeicherte Daten gehen dadurch verloren!",
+        "title":"Szenario aus Sandbox entfernen",
+        "desc":"Möchten Sie das Szenario aus der Sandbox entfernen? Ungespeicherte Daten gehen dadurch verloren!",
         "cancelButton": "Abbrechen",
         "okButton":"Szenario schließen"
       }
@@ -277,8 +277,8 @@
       "cancelButton":"Abbrechen",
       "okButton":"Ja",
       "removeFromUI":{  
-        "title":"Hypercube-Job aus Editor entfernen",
-        "desc":"Möchten Sie die Hypercube-Job-Konfiguration aus dem Editor entfernen? Ungespeicherte Daten gehen dadurch verloren!",
+        "title":"Hypercube-Job aus Sandbox entfernen",
+        "desc":"Möchten Sie die Hypercube-Job-Konfiguration aus der Sandbox entfernen? Ungespeicherte Daten gehen dadurch verloren!",
         "cancelButton": "Abbrechen",
         "okButton":"Szenario schließen"
       }

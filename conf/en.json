@@ -265,10 +265,10 @@
       "cancelButton":"Cancel",
       "okButton":"Yes",
       "removeFromUI":{
-        "title":"Remove scenario from editor",
-        "desc":"Do you want to remove the scenario from the editor? Unsaved data will be lost!",
+        "title":"Remove scenario from sandbox",
+        "desc":"Do you want to remove the scenario from the sandbox? Unsaved data will be lost!",
         "cancelButton":"Cancel",
-        "okButton":"Remove from editor"
+        "okButton":"Remove from sandbox"
       }
     },
     "dialogDeleteHCJob":{  
@@ -277,10 +277,10 @@
       "cancelButton":"Cancel",
       "okButton":"Yes",
       "removeFromUI":{
-        "title":"Remove Hypercube job from editor",
-        "desc":"Do you want to remove the Hypercube job configuration from the editor? Unsaved data will be lost!",
+        "title":"Remove Hypercube job from sandbox",
+        "desc":"Do you want to remove the Hypercube job configuration from the sandbox? Unsaved data will be lost!",
         "cancelButton":"Cancel",
-        "okButton":"Remove from editor"
+        "okButton":"Remove from sandbox"
       }
     },
     "dialogRemoveScen":{  
