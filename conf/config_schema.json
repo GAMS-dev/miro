@@ -771,6 +771,15 @@
                      "description":"currency sign",
                      "type":["string","null"],
                      "minLength":1
+                   },
+                   "decimalCharacter":{  
+                     "description":"decimal separator to use",
+                     "type":["string","null"],
+                     "minLength":1
+                   },
+                   "digitGroupSeparator":{  
+                     "description":"thousand grouping separator to use",
+                     "type":["string","null"]
                    }
                  },
                  "required":[  

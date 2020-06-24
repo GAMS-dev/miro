@@ -822,7 +822,6 @@ $offExternalInput
                                   <h3 class="block-title">Configuration</h3>
                                     <p>Returns a number.</p>
                                     <p>Example: </p>
-                                    <p>Numeric input for Scalar <i>maxstock</i> (<i>maximum numer of stocks to select</i>):<p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_numeric_config.png" alt="Numeric input configuration"/>
                                     </div>
@@ -845,6 +844,15 @@ $offExternalInput
                                     </div>
                                     <h6 id="numeric-option-maximum" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Maximum value</h6>
                                     <div class="expanded"><p>Specifies the maximum valid value for the widget. This is optional. </p>
+                                    </div>
+                                    <h6 id="numeric-option-decimal-places" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Number of decimal places</h6>
+                                    <div class="expanded"><p>Defines the default number of decimal places to show on the formatted value, and keep for the precision</p>
+                                    </div>
+                                    <h6 id="numeric-option-decimal-separator" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Decimal separator to use</h6>
+                                    <div class="expanded"><p>Defines the decimal separator character to be used. Default: "." (dot).</p>
+                                    </div>
+                                    <h6 id="numeric-option-thousand-separator" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Thousand grouping separator to use</h6>
+                                    <div class="expanded"><p>Defines the thousand grouping separator character to be used. Default: "," (comma).</p>
                                     </div>
                                     <h6 id="numeric-option-sign" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Currency symbol</h6>
                                     <div class="expanded"><p>Places a symbol in front of the entered value, e.g. a dollar sign. This option is used exclusively for visual support. 

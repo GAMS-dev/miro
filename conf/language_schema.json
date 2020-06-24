@@ -4266,9 +4266,13 @@
                 "pivotColsRestriction": {
                   "type": "string",
                   "minLength": 1
+                },
+                "notConfigurable": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 23
+              "minProperties": 24
             },
             "validate": {
               "type": "object",
@@ -4493,9 +4497,13 @@
                 "val57": {
                   "type": "string",
                   "minLength": 1
+                },
+                "val58": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 55
+              "minProperties": 56
             },
             "widgetOptions": {
               "type": "object",
@@ -5102,9 +5110,37 @@
                 "sign": {
                   "type": "string",
                   "minLength": 1
+                },
+                "decimalCharacter": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "decimalCharacterChoices": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "minItems": 5,
+                  "maxItems": 5,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "digitGroupSeparator": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "digitGroupSeparatorChoices": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "minItems": 7,
+                  "maxItems": 7,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
                 }
               },
-              "minProperties": 6
+              "minProperties": 10
             },
             "removeDialog": {
               "type": "object",

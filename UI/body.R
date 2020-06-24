@@ -255,8 +255,10 @@ if(buildUI){
                                                 value = modelIn[[i]]$numericinput$value,
                                                 min = modelIn[[i]]$numericinput$min,
                                                 max = modelIn[[i]]$numericinput$max,
-                                                decimal = modelIn[[i]]$numericinput$decimal,
-                                                sign = modelIn[[i]]$numericinput$sign)
+                                                decimal = modelIn[[i]]$numericinput[["decimal"]],
+                                                sign = modelIn[[i]]$numericinput$sign,
+                                                decimalCharacter = modelIn[[i]]$numericinput[["decimalCharacter"]],
+                                                digitGroupSeparator = modelIn[[i]]$numericinput$digitGroupSeparator)
                              )
                            },
                            {
