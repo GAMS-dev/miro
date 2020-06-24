@@ -1303,9 +1303,9 @@
         "decimal": "Anzahl Dezimalstellen (optional)",
         "sign": "Soll ein Währungssymbol angezeigt werden (optional)?",
         "decimalCharacter": "Zu verwendendes Dezimaltrennzeichen)",
-		"decimalCharacterChoices": [", (Komma)", ". (Punkt)", "\\U000B7; (Mittelpunkt)", "\\U66B; (Arabischer Dezimaltrenner)", "\\U2396; (Dezimaltrennzeichen-Schlüsselsymbol)"],
+		"decimalCharacterChoices": [", (Komma)", ". (Punkt)", "· (Mittelpunkt)", "٫ (Arabischer Dezimaltrenner)", "⎖ (Dezimaltrennzeichen-Schlüsselsymbol)"],
         "digitGroupSeparator": "Zu verwendendes Tausender-Trennzeichen",
-		"digitGroupSeparatorChoices": [", (Komma)", ". (Punkt)", " (Leerzeichen)", "(Kein Trennzeichen)", "' (Apostroph)","\\U1644; (Arabischer Tausendertrenner)", "\\U729; (Punkt oben)"]
+		"digitGroupSeparatorChoices": [", (Komma)", ". (Punkt)", " (Leerzeichen)", "(Kein Trennzeichen)", "' (Apostroph)","٬ (Arabischer Tausendertrenner)", "˙ (Punkt oben)"]
       },
       "removeDialog":{
         "title": "Bitte bestätigen",

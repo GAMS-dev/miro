@@ -1303,9 +1303,9 @@
         "decimal": "Number of decimal places (optional)",
         "sign": "Currency symbol (optional)",
         "decimalCharacter": "Decimal separator to use",
-		"decimalCharacterChoices": [", (comma)", ". (dot)", "\\U000B7; (middle dot)", "\\U66B; (arabic decimal separator)", "\\U2396; (decimal separator key symbol)"],
+		"decimalCharacterChoices": [", (comma)", ". (dot)", "· (middle dot)", "٫ (arabic decimal separator)", "⎖ (decimal separator key symbol)"],
         "digitGroupSeparator": "Thousand grouping separator to use",
-		"digitGroupSeparatorChoices": [", (comma)", ". (dot)", " (space)", "(no separator)", "' (apostrophe)","\\U1644; (arabic thousands separator)", "\\U729; (dot above)"]
+		"digitGroupSeparatorChoices": [", (comma)", ". (dot)", " (space)", "(no separator)", "' (apostrophe)","٬ (arabic thousands separator)", "˙ (dot above)"]
       },
       "removeDialog":{
         "title": "Please confirm",

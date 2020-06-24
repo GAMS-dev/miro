@@ -1303,9 +1303,9 @@
         "decimal": "小数位数（可选）",
         "sign": "货币（可选）",
         "decimalCharacter": "要使用的小数点分隔符",
-		"decimalCharacterChoices": [", (逗号)", ". (点子)", "\\U000B7; (中点)", "\\U66B; (阿拉伯小数点分隔符)", "\\U2396; (小数点分隔符)"],
+		"decimalCharacterChoices": [", (逗号)", ". (点子)", "· (中点)", "٫ (阿拉伯小数点分隔符)", "⎖ (小数点分隔符)"],
         "digitGroupSeparator": "千人组的分离器",
-		"digitGroupSeparatorChoices": [", (逗号)", ". (点子)", " (空间)", "(无隔板)", "' (撇号)","\\U1644; (阿拉伯式千选机)", "\\U729; (顶点)"]
+		"digitGroupSeparatorChoices": [", (逗号)", ". (点子)", " (空间)", "(无隔板)", "' (撇号)","٬ (阿拉伯式千选机)", "˙ (顶点)"]
       },
       "removeDialog":{
         "title": "请确认",
