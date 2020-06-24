@@ -69,10 +69,12 @@
                                       <li>Added option to specify files that should be attached after a GAMS run executes successfully. This allows you to add additional data to the data displayed in the user interface and add states to your scenarios to implement processes. You can find further information 
                                       <a href = "./customize.html#general-output-attach">here</a>.</li>
                                       <li>Added option to include TeX notation in README files via the <i>enableMath</i> switch. Wrap your TeX formulas in <kbd>$</kbd> tags for inline rendering or between <kbd>$$</kbd> for rendering as a formula block. Find more information about this feature <a href="./customize.html#app-readme">here</a>.</li>
+									  <li>The <a href="./widgets.html#widget-textbox">text input widget</a> can now be configured for Singleton Sets.</li>
                                     </ul>
                                     <h3>Minor new features and improvements</h3>
                                     <ul>
                                       <li>Symbol metadata (symtype and headers) are now passed to the custom renderer/custom widget via the options list. The nested list can be accessed via the key <code class="language-r">options[["_metadata_"]]</code>.</li>
+									  <li>Added option to define the decimal separator character and the thousand groups separator character for <a href="./widgets.html#widget-numeric">numeric inputs</a></li>
                                       <li>R is now bundled with MIRO on macOS.</li>
                                       <li>Data is now imported when a new MIRO application is added to the library instead of when the application is first started.</li>
                                       <li>When a new MIRO application is added to the library, the database tables are now checked for consistency.</li>
@@ -80,6 +82,7 @@
                                     <h3>Bug fixes</h3>
                                     <ul>
                                       <li>Configuration Mode: Fixed a bug that caused adding a script with an already existing id not to be validated properly in certain situations</li>
+                                      <li>Configuration Mode: Fixed a bug where an incorrect widget configuration was displayed for symbols with a JSON configuration that is not (yet) supported by Configuration mode.</li>
                                       <li>Orphaned tables were not found when model name includes underscores.</li>
                                       <li>An error that should only occur if the list/log file exceeds a certain file size was incorrectly displayed when starting a new GAMS run.</li>
                                       <li>Model names that included an underscore "_" caused MIRO to throw an exception when downloading scenario data in Hyperube Mode.</li>

@@ -1096,7 +1096,8 @@
         "widgetDdTooltip": "Name of the double-dash parameter (no '--')",
         "widgetType": "Select widget type",
         "alias": "Name of the widget tab (no live preview)",
-        "pivotColsRestriction": "Note: It is not possible to add or delete columns in the symbol table if it is set to readonly or displayed as a heatmap."
+        "pivotColsRestriction": "Note: It is not possible to add or delete columns in the symbol table if it is set to readonly or displayed as a heatmap.",
+		"notConfigurable": "The widget configuration found in your JSON file is currently not supported for the selected symbol type in Configuration mode! This does not imply that the configuration is invalid. Symbol: '%s'; Configured widget type: '%s'"
       },
       "validate":{
         "val1": "The alias of the element must not be empty!",
@@ -1153,7 +1154,8 @@
         "val54": "You need to define aliases for your choices if only the element text is communicated with GAMS.",
         "val55": "Only one item can be selectable in the dropdown menu if only the element text is communicated with GAMS.",
         "val56": "An attachment with this file name already exists!",
-        "val57": "The file name contains invalid characters. Attachments in subdirectories are not supported!"
+        "val57": "The file name contains invalid characters. Attachments in subdirectories are not supported!",
+        "val58": "The decimal separator and the thousand grouping separator must not be identical!"
       },
       "widgetOptions":{
         "slider": "Slider",
@@ -1299,7 +1301,11 @@
         "min": "Minimum value (optional)",
         "max": "Maximum value (optional)",
         "decimal": "Number of decimal places (optional)",
-        "sign": "Currency symbol (optional)"
+        "sign": "Currency symbol (optional)",
+        "decimalCharacter": "Decimal separator to use",
+		"decimalCharacterChoices": [", (comma)", ". (dot)", "\\U000B7; (middle dot)", "\\U66B; (arabic decimal separator)", "\\U2396; (decimal separator key symbol)"],
+        "digitGroupSeparator": "Thousand grouping separator to use",
+		"digitGroupSeparatorChoices": [", (comma)", ". (dot)", " (space)", "(no separator)", "' (apostrophe)","\\U1644; (arabic thousands separator)", "\\U729; (dot above)"]
       },
       "removeDialog":{
         "title": "Please confirm",

@@ -1096,7 +1096,8 @@
         "widgetDdTooltip": "Name des Double-Dash-Parameters (ohne '--')",
         "widgetType": "Wählen Sie ein Widget",
         "alias": "Beschriftung für den Reiter des Elements (keine Live-Vorschau)",
-        "pivotColsRestriction": "Hinweis: Es ist nicht möglich, Spalten in der Symboltabelle hinzuzufügen oder zu löschen, wenn sie schreibgeschützt ist oder als Heatmap dargestellt wird."
+        "pivotColsRestriction": "Hinweis: Es ist nicht möglich, Spalten in der Symboltabelle hinzuzufügen oder zu löschen, wenn sie schreibgeschützt ist oder als Heatmap dargestellt wird.",
+		"notConfigurable": "Die in Ihrer JSON-Datei gefundene Widgetkonfiguration wird derzeit für den ausgewählten Symboltyp im Konfigurationsmodus nicht unterstützt! Dies bedeutet nicht, dass die Konfiguration ungültig ist. Symbol: '%s'; Konfiguriertes Widget: '%s'"
       },
       "validate":{
         "val1": "Der Alias des Elements darf nicht leer sein!",
@@ -1153,7 +1154,8 @@
         "val54": "Sie müssen Aliase für Ihre Auswahl definieren, wenn nur der Elementtext des Symbols mit GAMS kommuniziert wird.",
         "val55": "Es darf nur ein Element im Dropdownmenü auswählbar sein, wenn nur der Elementtext mit GAMS kommuniziert wird.",
         "val56": "Ein Anhang mit diesem Dateinamen existiert bereits!",
-        "val57": "Der Dateiname enthält ungültige Zeichen. Anhänge in Unterverzeichnissen werden nicht unterstützt!"
+        "val57": "Der Dateiname enthält ungültige Zeichen. Anhänge in Unterverzeichnissen werden nicht unterstützt!",
+        "val58": "Das Dezimaltrennzeichen und das Tausender-Trennzeichen dürfen nicht identisch sein!"
       },
       "widgetOptions":{
         "slider": "Schieberegler",
@@ -1299,7 +1301,11 @@
         "min": "Minimalwert (optional)",
         "max": "Maximalwert (optional)",
         "decimal": "Anzahl Dezimalstellen (optional)",
-        "sign": "Soll ein Währungssymbol angezeigt werden (optional)?"
+        "sign": "Soll ein Währungssymbol angezeigt werden (optional)?",
+        "decimalCharacter": "Zu verwendendes Dezimaltrennzeichen)",
+		"decimalCharacterChoices": [", (Komma)", ". (Punkt)", "\\U000B7; (Mittelpunkt)", "\\U66B; (Arabischer Dezimaltrenner)", "\\U2396; (Dezimaltrennzeichen-Schlüsselsymbol)"],
+        "digitGroupSeparator": "Zu verwendendes Tausender-Trennzeichen",
+		"digitGroupSeparatorChoices": [", (Komma)", ". (Punkt)", " (Leerzeichen)", "(Kein Trennzeichen)", "' (Apostroph)","\\U1644; (Arabischer Tausendertrenner)", "\\U729; (Punkt oben)"]
       },
       "removeDialog":{
         "title": "Bitte bestätigen",
