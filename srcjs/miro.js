@@ -382,6 +382,7 @@ $(document).ready(() => {
     } else {
       $(id).show();
     }
+    $(id).trigger('shown');
   });
   Shiny.addCustomMessageHandler('gms-changeHeightEl', (data) => {
     if (data.delay != null) {
@@ -462,6 +463,7 @@ ${data.data}</div>` : data.data);
     } else {
       $(id).hide();
     }
+    $(id).trigger('hidden');
   });
   Shiny.addCustomMessageHandler('gms-showHideEl', (data) => {
     showHideEl(data.id, data.delay, data.msg);
@@ -573,6 +575,13 @@ ${data.data}</div>` : data.data);
         el.css('font-size', `${currSize}px`);
       }
     }, 500);
+  });
+  Shiny.addCustomMessageHandler('gms-updateSortable', (data) => {
+    $(`#${data.id}`).html(data.children);
+    Shiny.setInputValue(`${data.id}:sortablejs.rank_list`,
+      $.map(document.getElementById(data.id).children,
+        (child) => $(child).attr('data-rank-id') || $.trim(child.innerText)),
+      { priority: 'event' });
   });
   Shiny.addCustomMessageHandler('gms-showValidationErrors', (content) => {
     const inSyms = Object.keys(content);

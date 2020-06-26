@@ -173,6 +173,12 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   }
   prog$set(detail = lang$progressBar$importScen$renderInput, value = 0.4)
   
+  # reset input data
+  lapply(seq_along(modelIn)[names(modelIn) %in% datasetsToFetch], function(i){
+    hideEl(session, "#graph-in_" %+% i)
+    showEl(session, "#data-in_" %+% i)
+  })
+  
   source("./modules/input_load.R", local = TRUE)
   markUnsaved()
   if(!is.null(errMsg)){
@@ -203,7 +209,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
       if(!is.null(outputData$scalar)){
         scalarData[["scen_1_"]] <<- outputData$scalar
       }
-      renderOutputData()
+      renderOutputData(rendererEnv)
       noOutputData <<- FALSE
     }else{
       noOutputData <<- TRUE

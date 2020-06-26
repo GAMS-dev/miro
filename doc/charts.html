@@ -853,15 +853,13 @@ dowVSindex(d,'index fund')     = fund(d);
                             <section id="pivot-chart" class="doc-section">
                                 <h2 class="section-title">Pivot table</h2>
                                 <div class="section-block">
-                                  <p>MIRO uses <a href = "https://cran.r-project.org/web/packages/rpivotTable/vignettes/rpivotTableIntroduction.html" target = "_blank">rpivottable</a> to render pivot tables.</p>
+                                  <p>MIRO comes with a powerful pivot table renderer that allows you to filter, aggregate and pivot data. In addition to a table, the MIRO pivot table renderer also supports the visualization of data in the form of charts (line chart, bar chart etc.). Each slice, or "view" of data can be exported as a CSV file.</p>
                                   <h3 class="block-title">Configuration</h3>
-                                    <p>The live preview of the pivot table already allows you to move and change the elements directly in the graphic. 
-                                    This can lead to confusion, because the actual configuration of the graphic has to be done on the left side as with all other graphics. 
-                                    Only the options set there are saved.</p>
+                                    <p>You can specify the default view as well as the default renderer (table/chart) of the pivot table renderer in the Configuration Mode. Note that unlike other charting tools, you configure the MIRO pivot table directly in the preview on the right. Drag and drop the domains where you want them to be and click on "Save". The symbol is loaded in MIRO with the same view that you have set up in the Configuration Mode.</p>
                                     <p>Example: Model <i>Transport</i>, parameter <i>shipment quantities in cases</i></p>
                                     <p>For an example in GAMS, see the <a href="#map-chart" class="scrollto">map example</a>.</p>
                                     <div class="section-block">
-                                        <img class="img-fluid" src="assets/images/configuration_mode/graphs_pivot_config.png" alt="Pivottable configuration"/>
+                                        <img class="img-fluid" src="assets/images/configuration_mode/graphs_miropivot_config.png" alt="Pivottable configuration"/>
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block">
@@ -870,15 +868,14 @@ dowVSindex(d,'index fund')     = fund(d);
 {
   "dataRendering": {
     "schedule": {
-      "outType": "pivot",
-      "pivottable": {
-        "aggregatorName": "Sum",
-        "rendererName": "Heatmap",
-        "locale": "en",
-        "subtotals": false,
+      "outType": "miroPivot",
+      "options": {
         "rows": "i",
         "cols": "j",
-        "vals": "quantities"
+        "filter": {
+          "Hdr": "quantities"
+        },
+        "renderer": "bar"
       },
       "height": 700
     }

@@ -1,12 +1,13 @@
 activeSymbol <- list(id = integer(1L), name = character(1L), 
                      alias = character(1L), indices = c())
 activeSymbolName <- character(0L)
+miroPivotRendererEnv <- new.env(parent = emptyenv())
 
 newChartTool     <- character(0L)
 isInJSON         <- FALSE
 configuredWithThisTool <- FALSE
 plotlyChartTools <- c("pie", "bar", "scatter", "line", "bubble", "hist")
-noTitle          <- c("leaflet", "timevis", "pivot", "valuebox")
+noTitle          <- c("leaflet", "timevis", "miropivot", "valuebox")
 modelInputData   <- vector("list", length(modelIn))
 modelOutputData  <- vector("list", length(modelOut))
 configScalars <- tibble()
@@ -2019,10 +2020,13 @@ observeEvent(input$gams_symbols, {
     newChartTool <<- "valuebox"
   }else{
     graphType <- NULL
-    if(!is.na(match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1])){
-      if(length(configJSON$dataRendering[[match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1]]][["pivottable"]])){
+    chartId <- match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1]
+    if(!is.na(chartId)){
+      if(length(configJSON$dataRendering[[chartId]][["pivottable"]])){
         graphType <- "pivot"
-      }else if(!length(configJSON$dataRendering[[match(activeSymbolName, tolower(names(configJSON$dataRendering)))[1]]][["graph"]])){
+      }else if(identical(configJSON$dataRendering[[chartId]]$outType, "miroPivot")){
+        graphType <- "miropivot"
+      }else if(!length(configJSON$dataRendering[[chartId]][["graph"]])){
         graphType <- "custom"
       }
     }
@@ -2044,6 +2048,8 @@ observeEvent(input$gams_symbols, {
       }
     }else if(length(currentGraphConfig[["tool"]])){
       newChartTool <<- currentGraphConfig[["tool"]]
+    }else if(identical(graphType, "miropivot")){
+      newChartTool <<- "miropivot"
     }else if(identical(graphType, "pivot")){
       newChartTool <<- "pivot"
     }else if(identical(graphType, "custom")){
@@ -2054,7 +2060,7 @@ observeEvent(input$gams_symbols, {
     if(identical(newChartTool, input$chart_tool))
       rv$refreshOptions <- rv$refreshOptions + 1L
     else
-      updateSelectInput(session, "chart_tool", choices = setNames(c("pie", "bar", "scatter", "line", "bubble", "hist", "dygraphs", "leaflet", "timevis", "pivot", "custom"),
+      updateSelectInput(session, "chart_tool", choices = setNames(c("pie", "bar", "scatter", "line", "bubble", "hist", "dygraphs", "leaflet", "timevis", "miropivot", "custom"),
                                                                   lang$adminMode$graphs$updateToolNoScalars),
                         selected = newChartTool)
   }
@@ -2392,6 +2398,15 @@ observeEvent({
       addClassEl(session, id = "#categoryPivot1", "category-btn-active")
       insertUI(selector = "#tool_options",
                tags$div(id = "pivot_options", getPivotOptions()), where = "beforeEnd")
+      allDataAvailable <<- TRUE
+    }else if(identical(chartTool, "miropivot")){
+      # make sure pivot table is refreshed when changing symbol
+      insertUI(selector = "#tool_options", 
+               tags$div(id = "miroPivotInfoMsg", class="config-message", 
+                        style = "display:block;",
+                        lang$adminMode$graphs$miroPivotOptions$infoMsg),
+               where = "beforeEnd")
+      rv$graphConfig$graph$symname <- activeSymbol$name
       allDataAvailable <<- TRUE
     }else if(identical(chartTool, "custom")){
       showEl(session, ".category-btn-custom")
@@ -3338,9 +3353,15 @@ observe({
   if(identical(rv$graphConfig$graph$tool, "plotly") && identical(length(rv$graphConfig$graph$type), 0L))
     return()
   if(activeSymbol$id > length(modelIn)){
-    data <- modelOutputData[[activeSymbol$id - length(modelIn)]]
+    symId <- activeSymbol$id - length(modelIn)
+    metadata <- list(headers = modelOut[[symId]]$headers,
+                     symtype = modelOut[[symId]]$symtype)
+    data <- modelOutputData[[symId]]
   }else{
-    data <- modelInputData[[activeSymbol$id]]
+    symId <- activeSymbol$id
+    metadata <- list(headers = modelIn[[symId]]$headers,
+                     symtype = modelIn[[symId]]$symtype)
+    data <- modelInputData[[symId]]
   }
   tryCatch({
     if(isolate(rv$graphConfig$graph$tool) == "plotly"){
@@ -3359,6 +3380,7 @@ observe({
       hideEl(session, "#preview-content-dygraphs")
       hideEl(session, "#preview-content-leaflet")
       hideEl(session, "#preview-content-pivot")
+      hideEl(session, "#preview-content-miropivot")
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-valuebox")
       hideEl(session, "#preview-content-custom")
@@ -3372,16 +3394,47 @@ observe({
       hideEl(session, "#pieValues")
       hideEl(session, "#preview-content-leaflet")
       hideEl(session, "#preview-content-pivot")
+      hideEl(session, "#preview-content-miropivot")
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-valuebox")
       hideEl(session, "#preview-content-custom")
     }else if(isolate(rv$graphConfig$graph$tool) == "pivot"){
-      pivotOptions <- rv$graphConfig$pivottable
       callModule(renderData, "preview_output_pivot", type = "pivot", 
                  data = data, configData = configScalars, 
-                 pivotOptions = pivotOptions,
+                 pivotOptions = rv$graphConfig$pivottable,
                  roundPrecision = 2, modelDir = modelDir)
       showEl(session, "#preview-content-pivot")
+      hideEl(session, "#preview-content-miropivot")
+      hideEl(session, "#preview-content-dygraphs")
+      hideEl(session, "#preview-content-plotly")
+      hideEl(session, "#pieValues")
+      hideEl(session, "#preview-content-leaflet")
+      hideEl(session, "#preview-content-timevis")
+      hideEl(session, "#preview-content-valuebox")
+      hideEl(session, "#preview-content-custom")
+    }else if(isolate(rv$graphConfig$graph$tool) == "miropivot"){
+      for(el in ls(envir = miroPivotRendererEnv)){
+        if("Observer" %in% class(miroPivotRendererEnv[[el]])){
+          miroPivotRendererEnv[[el]]$destroy()
+        }
+      }
+      callModule(renderData, "preview_output_miropivot", type = "miropivot", 
+                 data = data, rendererEnv = miroPivotRendererEnv,
+                 customOptions = c(list("_metadata_" = metadata, 
+                                      resetOnInit = TRUE,
+                                      lang = lang$renderers$miroPivot), 
+                                   currentGraphConfig$options),
+                 roundPrecision = 2, modelDir = modelDir)
+      Sys.sleep(1L)
+      callModule(renderData, "preview_output_miropivot", type = "miropivot", 
+                 data = data,
+                 customOptions = c(list("_metadata_" = metadata, 
+                                        resetOnInit = TRUE,
+                                        lang = lang$renderers$miroPivot), 
+                                   currentGraphConfig$options),
+                 roundPrecision = 2, modelDir = modelDir)
+      showEl(session, "#preview-content-miropivot")
+      hideEl(session, "#preview-content-pivot")
       hideEl(session, "#preview-content-dygraphs")
       hideEl(session, "#preview-content-plotly")
       hideEl(session, "#pieValues")
@@ -3399,6 +3452,7 @@ observe({
       hideEl(session, "#pieValues")
       hideEl(session, "#preview-content-leaflet")
       hideEl(session, "#preview-content-pivot")
+      hideEl(session, "#preview-content-miropivot")
       hideEl(session, "#preview-content-dygraphs")
       hideEl(session, "#preview-content-valuebox")
       hideEl(session, "#preview-content-custom")
@@ -3411,6 +3465,7 @@ observe({
                  modelDir = modelDir)
       showEl(session, "#preview-content-valuebox")
       hideEl(session, "#preview-content-pivot")
+      hideEl(session, "#preview-content-miropivot")
       hideEl(session, "#preview-content-dygraphs")
       hideEl(session, "#preview-content-plotly")
       hideEl(session, "#pieValues")
@@ -3439,6 +3494,7 @@ observe({
       output[["preview_output_custom"]] <- renderText(customR)
       showEl(session, "#preview-content-custom")
       hideEl(session, "#preview-content-pivot")
+      hideEl(session, "#preview-content-miropivot")
       hideEl(session, "#preview-content-dygraphs")
       hideEl(session, "#preview-content-plotly")
       hideEl(session, "#pieValues")
@@ -3455,6 +3511,7 @@ observe({
       hideEl(session, "#pieValues")
       hideEl(session, "#preview-content-dygraphs")
       hideEl(session, "#preview-content-pivot")
+      hideEl(session, "#preview-content-miropivot")
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-valuebox")
       hideEl(session, "#preview-content-custom")
@@ -3466,6 +3523,7 @@ observe({
     hideEl(session, "#pieValues")
     hideEl(session, "#preview-content-leaflet")
     hideEl(session, "#preview-content-pivot")
+    hideEl(session, "#preview-content-miropivot")
     hideEl(session, "#preview-content-timevis")
     hideEl(session, "#preview-content-valuebox")
     hideEl(session, "#preview-content-custom")
@@ -3498,7 +3556,37 @@ observeEvent(rv$saveGraphConfirm, {
   configJSON$dataRendering[activeSymbol$name == tolower(names(configJSON$dataRendering))] <<- NULL
   configJSON$dataRendering[[activeSymbol$name]] <<- rv$graphConfig
   configJSON$dataRendering[[activeSymbol$name]]$height <<- 700
-  if(rv$graphConfig$graph$tool == "pivot"){
+  if(rv$graphConfig$graph$tool == "miropivot"){
+    configJSON$dataRendering[[activeSymbol$name]]$graph <<- NULL
+    configJSON$dataRendering[[activeSymbol$name]]$pivottable <<- NULL
+    configJSON$dataRendering[[activeSymbol$name]]$options <<- list(
+      aggregationFunction = input[["preview_output_miropivot-miroPivot-aggregationFunction"]],
+      pivotRenderer =input[["preview_output_miropivot-miroPivot-pivotRenderer"]]
+    )
+    for(indexEl in list(c("rows", "rowIndexList"))){
+      indexVal <- input[[paste0("preview_output_miropivot-miroPivot-", indexEl[[2]])]]
+      if(length(indexVal)){
+        configJSON$dataRendering[[activeSymbol$name]]$options[[indexEl[[1]]]] <<- indexVal
+      }
+    }
+    for(indexEl in list(c("aggregations", "aggregationIndexList"), 
+                        c("filter", "filterIndexList"),
+                        c("cols", "colIndexList"))){
+      indexVal <- input[[paste0("preview_output_miropivot-miroPivot-", indexEl[[2]])]]
+      if(length(indexVal)){
+        filterElList <- lapply(indexVal, function(el){
+          # filter for columns currently not implemented! Change this as soon as it is implemented!
+          if(identical(indexEl[[1]], "cols")){
+            return("")
+          }
+          return(input[[paste0("preview_output_miropivot-miroPivot-filter_", el)]])
+        })
+        names(filterElList) <- indexVal
+        configJSON$dataRendering[[activeSymbol$name]]$options[[indexEl[[1]]]] <<- filterElList
+      }
+    }
+    configJSON$dataRendering[[activeSymbol$name]]$outType <<- "miroPivot"
+  }else if(rv$graphConfig$graph$tool == "pivot"){
     configJSON$dataRendering[[activeSymbol$name]]$graph <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$options <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$outType <<- "pivot"

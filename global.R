@@ -57,9 +57,9 @@ maxNoScenToShow <- 2e2
 # local user ID (single user)
 uid <- Sys.info()[["user"]]
 # define the default type for output format
-defOutType <- "datatable"
+defOutType <- "miroPivot"
 # define the default format for input sheets
-defInType <- "pivot"
+defInType <- "miroPivot"
 # default height of pivot table
 pivotDefaultHeight <- 800
 # name and headers of the csv file that scalars will be saved in

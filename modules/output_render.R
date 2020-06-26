@@ -1,9 +1,14 @@
 # rendering output tables and graphs
-renderOutputData <- function(){
+renderOutputData <- function(rendererEnv){
   progress <- Progress$new()
   on.exit(progress$close())
   progress$set(message = lang$progressBar$renderOutput$title, value = 0)
   errMsg <- NULL
+  for(el in ls(envir = rendererEnv$output)){
+    if("Observer" %in% class(rendererEnv$output[[el]])){
+      rendererEnv$output[[el]]$destroy()
+    }
+  }
   lapply(unlist(outputTabs, use.names = FALSE), function(i){
     tryCatch({
       if(length(configGraphsOut[[i]]$additionalData)){
@@ -29,7 +34,7 @@ renderOutputData <- function(){
       callModule(renderData, "tab_" %+% i, type = configGraphsOut[[i]]$outType, data = rendererData,
                  configData = scalarData[["scen_1_"]], dtOptions = config$datatable, graphOptions = configGraphsOut[[i]]$graph, 
                  pivotOptions = configGraphsOut[[i]]$pivottable, customOptions = configGraphsOut[[i]]$options,
-                 roundPrecision = roundPrecision, modelDir = modelDir)
+                 roundPrecision = roundPrecision, modelDir = modelDir, rendererEnv = rendererEnv$output)
       callModule(renderData, "table-out_" %+% i, type = "datatable", data = scenData[["scen_1_"]][[i]],
                  dtOptions = config$datatable, roundPrecision = roundPrecision)
     }, error = function(e) {

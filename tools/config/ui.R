@@ -79,6 +79,12 @@ body_admin <- dashboardBody({
       tags$script(type = "application/javascript", `defer src`="katex.min.js"),
       tags$script(type = "application/javascript", `defer src`="auto-render.min.js"),
       tags$style(HTML(paste0('
+.filter-index-list::after {
+    content: "', lang$renderers$miroPivot$filterLabel, '";
+}
+.aggregation-index-list::after {
+    content: "', lang$renderers$miroPivot$aggregateLabel, '";
+}
 .main-header .logo {
                              background-image: url("gams_logo.png");
 }')))),
@@ -165,7 +171,7 @@ body_admin <- dashboardBody({
                     tags$div(id = "graphUpdateSuccess", class = "gmsalert gmsalert-success center-alert", lang$adminMode$graphs$ui$graphUpdateSuccess),
                     tags$div(id = "graphValidationErr", class = "gmsalert gmsalert-error center-alert"),
                     tags$div(id = "unknownErrorGraphs", class = "gmsalert gmsalert-error center-alert",
-                             lang$errMsg$unknownError),
+                             lang$adminMode$graphs$ui$gamsSymbols),
                     tags$div(class = "col-sm-6",
                                       tags$h4(id = "previewDataInputToggle", class = "box-title", 
                                               icon("minus"), style = "cursor:pointer;font-weight:bold;", 
@@ -198,7 +204,7 @@ body_admin <- dashboardBody({
                                                                     choices = NULL)),
                                                tags$div(class = "two-col-right",
                                                         selectInput("chart_tool", lang$adminMode$graphs$ui$tool, 
-                                                                    setNames(c("pie", "bar", "scatter", "line", "bubble", "hist", "dygraphs", "leaflet", "timevis", "pivot", "valuebox", "custom"), 
+                                                                    setNames(c("pie", "bar", "scatter", "line", "bubble", "hist", "dygraphs", "leaflet", "timevis", "miropivot", "valuebox", "custom"), 
                                                                              lang$adminMode$graphs$ui$choices)))
                                       ),
                                       tags$hr(),
@@ -370,6 +376,11 @@ body_admin <- dashboardBody({
                                                                         multiple = TRUE, 
                                                                         col = "a"), 
                                                    height = 400, 
+                                                   noDataTxt = lang$nav$outputScreen$boxResults$noData)),
+                             tags$div(id = "preview-content-miropivot", style = "display:none; overflow:auto;text-align:left;",
+                                      renderDataUI("preview_output_miropivot", type = "miropivot",
+                                                   height = 400, 
+                                                   customOptions = list(lang = lang$renderers$miroPivot),
                                                    noDataTxt = lang$nav$outputScreen$boxResults$noData)),
                              tags$div(id = "preview-content-pivot", style = "display:none; overflow:auto;",
                                       renderDataUI("preview_output_pivot", type = "pivot",

@@ -61,6 +61,8 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
       valueBoxOutput(ns("valBox" %+% i),
                      width = if(is.null(customOptions$width)) 4 else customOptions$width)
     })
+  }else if(type == "miropivot"){
+    data <- miroPivotOutput(ns("miroPivot"), height = height, options = customOptions)
   }else{
     tryCatch({
       customOutput <- match.fun(typeCustom %+% "Output")
@@ -79,7 +81,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
 
 renderData <- function(input, output, session, data, type, configData = NULL, dtOptions = NULL, 
                        graphOptions = NULL, pivotOptions = NULL, customOptions = NULL, 
-                       roundPrecision = 2, modelDir = NULL){
+                       roundPrecision = 2, modelDir = NULL, rendererEnv = NULL){
   if(!is.null(graphOptions)){
     graphTool <- graphOptions$tool
   }
@@ -151,6 +153,10 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
         )
       })
     })
+  }else if(type == "miropivot"){
+    callModule(renderMiroPivot, "miroPivot", data, options = customOptions, 
+               roundPrecision = roundPrecision, 
+               rendererEnv = rendererEnv)
   }else{
     tryCatch({
       customRenderer <- match.fun(paste0("render", toupper(substr(typeCustom, 1, 1)),
@@ -161,7 +167,7 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
     })
     tryCatch({
       callModule(customRenderer, "custom", data, options = customOptions, 
-                 path = customRendererDirs[[2L]])
+                 path = customRendererDirs[[2L]], rendererEnv = rendererEnv)
     }, error = function(e){
       stop(sprintf("An error occured in the custom renderer function: '%s'. Error message: %s.", typeCustom, e), call. = FALSE)
     })
