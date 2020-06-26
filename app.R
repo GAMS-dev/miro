@@ -570,14 +570,15 @@ if(is.null(errMsg)){
     requiredPackages <- character(0L)
   }
   if(LAUNCHCONFIGMODE){
-    requiredPackages <- c(requiredPackages, "plotly", "xts", "dygraphs", "leaflet",
+    requiredPackages <- c(requiredPackages, "plotly", "xts", "dygraphs", "leaflet", "chartjs", "sortable",
                           "leaflet.minicharts", "timevis", "DT")
   }else{
     requiredPackages <- c(requiredPackages, 
                           if(identical(installPackage$plotly, TRUE)) "plotly",
                           if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
                           if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"),
-                          if(identical(installPackage$timevis, TRUE)) c("timevis"))
+                          if(identical(installPackage$timevis, TRUE)) c("timevis"),
+                          if(identical(installPackage$miroPivot, TRUE)) c("DT", "sortable", "chartjs"))
   }
   if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
     requiredPackages <- c(requiredPackages, "DT")
@@ -587,6 +588,7 @@ if(is.null(errMsg)){
     requiredPackages <- c(requiredPackages, requiredPackagesCR)
     rm(requiredPackagesCR)
   }
+  requiredPackages <- unique(requiredPackages)
   source("./components/install_packages.R", local = TRUE)
   
   options("DT.TOJSON_ARGS" = list(na = "string", na_as_null = TRUE))
@@ -661,7 +663,7 @@ if(is.null(errMsg)){
   }
 }
 inconsistentTableNames <- NULL
-if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
+if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
   # checking database inconsistencies
   local({
     orphanedTables <- NULL
@@ -962,9 +964,9 @@ if(!is.null(errMsg)){
         inputIdsTmp        <- inputIdsTmp[!is.na(inputIdsTmp)]
         metaDataTmp        <- metaDataTmp[inputIdsTmp]
         modelInTemplateTmp <- modelInTemplateTmp[inputIdsTmp]
-        
+
         tmpDirToRemove     <- character(0L)
-        
+
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
           flog.info("New data: '%s' is being stored in the database. Please wait a until the import is finished.", miroDataFile)
@@ -974,8 +976,8 @@ if(!is.null(errMsg)){
           }else if(dataFileExt[i] == "zip"){
             method <- "csv"
             tmpDir <- tryCatch(
-              getValidCsvFromZip(file.path(miroDataDir, miroDataFile), 
-                                 c(names(modelOut), 
+              getValidCsvFromZip(file.path(miroDataDir, miroDataFile),
+                                 c(names(modelOut),
                                    inputDsNames), uid)$tmpDir
               , error = function(e){
                 flog.error(conditionMessage(e))
@@ -994,8 +996,8 @@ if(!is.null(errMsg)){
                                   execPerm = c(uidAdmin, ugroups), uid = uidAdmin)
           dataOut <- loadScenData(scalarsOutName, modelOut, tmpDir, modelName, scalarsFileHeaders,
                                   modelOutTemplate, method = method, fileName = miroDataFile)$tabular
-          dataIn  <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp, 
-                                  workDir = tmpDir, 
+          dataIn  <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp,
+                                  workDir = tmpDir,
                                   modelName = modelName, errMsg = lang$errMsg$GAMSInput$badInputData,
                                   scalarsFileHeaders = scalarsFileHeaders,
                                   templates = modelInTemplateTmp, method = method,
@@ -1008,7 +1010,7 @@ if(!is.null(errMsg)){
           }else{
             newScen$save(c(dataOut, dataIn))
           }
-          
+
           if(!debugMode && !file.remove(file.path(miroDataDir, miroDataFile))){
             flog.info("Could not remove file: '%s'.", miroDataFile)
           }
@@ -1143,6 +1145,8 @@ if(!is.null(errMsg)){
       if(length(credConfig)){
         do.call(worker$setCredentials, credConfig)
       }
+      rendererEnv        <- new.env(parent = emptyenv())
+      rendererEnv$output <- new.env(parent = emptyenv())
       
       scenMetaData     <- list()
       # scenario metadata of scenario saved in database

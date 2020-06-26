@@ -187,7 +187,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   }
   if(!saveOutput){
     # remove output from UI
-    renderOutputData()
+    renderOutputData(rendererEnv)
   }
   
   # reset dirty flag and unsaved status

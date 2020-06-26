@@ -646,6 +646,38 @@
       "success": "Import erfolgreich"
     }
   },
+  "renderers":{
+    "miroPivot":{
+      "btDownloadCsv": "CSV herunterladen",
+      "btLoadView": "View laden",
+      "btNewView": "View hinzufügen",
+      "aggregateLabel": "aggregieren",
+      "filterLabel": "filtern",
+      "allPlaceholder": "Alle",
+      "colTruncationWarning": "Die Daten wurden auf die ersten %s Spalten gekürzt.",
+      "rowTruncationWarning": "Die Daten wurden auf die ersten %s Zeilen gekürzt.",
+      "newViewTitle": "Neuer view",
+      "newViewLabel": "Bitte wählen Sie einen Namen für den View.",
+      "newViewBtCancel": "Abbrechen",
+      "newViewBtSave": "Speichern",
+      "errUniqueViewName": "Der von Ihnen eingegebene Viewname existiert bereits. Bitte wählen Sie einen anderen Namen.",
+      "aggregationFunctions":{
+        "sum": "Summe",
+        "count": "Anzahl",
+        "median": "Median",
+        "mean": "Durchschnitt",
+        "min": "Min",
+        "max": "Max"
+      },
+      "renderer":{
+        "table": "Tabelle", 
+        "bar": "Balkendiagramm",
+        "stackedbar": "Gestapeltes Balkendiagramm",
+        "radar": "Radardiagramm",
+        "line": "Liniendiagramm"
+      }
+    }
+  },
   "errMsg":{  
     "unknownError": "Ein unerwarteter Fehler ist aufgetreten. Wenn dieses Problem weiterhin besteht, wenden Sie sich an einen Systemadministrator.",
     "permErr": "Die Operation ist fehlgeschlagen, weil Sie nicht über ausreichende Berechtigungen verfügen.",
@@ -1577,6 +1609,9 @@
           "multiselect": "Mehrfachauswahl von Elementen aktivieren (Strg+Klick, Umschalt+Klick)?",
           "showCurrentTime": "Einen vertikalen Balken zur aktuellen Zeit anzeigen?"
         }
+      },
+      "miroPivotOptions":{
+         "infoMsg": "Bitte benutzen Sie direkt die Vorschau auf der rechten Seite, um die Standardansicht zu konfigurieren."
       },
       "pivotOptions":{
         "rows": "Zeilen der Pivot-Tabelle vorab füllen",

@@ -646,6 +646,38 @@
       "success":"导入成功"
     }
   },
+  "renderers":{
+    "miroPivot":{
+      "btDownloadCsv": "下载CSV",
+      "btLoadView": "加载视图",
+      "btNewView": "添加视图",
+      "aggregateLabel": "汇总",
+      "filterLabel": "过滤",
+      "allPlaceholder": "全部",
+      "colTruncationWarning": "数据被截断到前%s列。",
+      "rowTruncationWarning": "数据被截断到前%s行。",
+      "newViewTitle": "新增检视",
+      "newViewLabel": "请为该视图选择一个名称。",
+      "newViewBtCancel": "取消",
+      "newViewBtSave": "保存",
+      "errUniqueViewName": "您输入的视图名称已经存在。请选择其他名称。",
+      "aggregationFunctions":{
+        "sum": "总额",
+        "count": "计数",
+        "median": "中位数",
+        "mean": "中位数",
+        "min": "最低值",
+        "max": "最大值"
+      },
+      "renderer":{
+        "table": "表格", 
+        "bar": "柱形图",
+        "stackedbar": "堆积柱形图",
+        "radar": "雷达图",
+        "line": "折线图"
+      }
+    }
+  },
   "errMsg":{
     "unknownError":"出现意外错误。如果此问题仍然存在,请与系统管理员联系。",
     "permErr":"操作失败,因为没有足够的权限。",
@@ -1577,6 +1609,9 @@
           "multiselect": "允许多项选项（CTRL + Click，SHIFT + Click）？",
           "showCurrentTime": "在当前时间显示垂直的柱形？"
         }
+      },
+      "miroPivotOptions":{
+        "infoMsg": "请直接使用右侧的预览来配置默认视图。"
       },
       "pivotOptions":{
         "rows": "预先填充数据透视表的行",

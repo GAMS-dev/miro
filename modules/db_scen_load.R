@@ -336,7 +336,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         noOutputData <<- FALSE
       }
       # rendering tables and graphs
-      renderOutputData()
+      renderOutputData(rendererEnv)
       
       # load script results
       if(length(config$scripts$base)){

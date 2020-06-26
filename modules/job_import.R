@@ -273,7 +273,7 @@ observeEvent(virtualActionButton(
     
     jobResults <- NULL
     # rendering tables and graphs
-    renderOutputData()
+    renderOutputData(rendererEnv)
     
     tryCatch({
       worker$updateJobStatus(JOBSTATUSMAP[['imported']], 

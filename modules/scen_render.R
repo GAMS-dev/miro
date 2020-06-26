@@ -34,6 +34,16 @@ if(isInSplitView){
 output[[paste0("title_", scenId)]] <- renderUI(htmltools::htmlEscape(scenMetaData[[scenIdLong]][[3]][1]))
 output[[paste0("date_", scenId)]] <- renderText(as.character(scenMetaData[[scenIdLong]][[4]][1]))
 eMsg <- NULL
+
+if(is.null(rendererEnv[[scenIdLong]])){
+  rendererEnv[[scenIdLong]] <- new.env(parent = emptyenv())
+}else{
+  for(el in ls(envir = rendererEnv[[scenIdLong]])){
+    if("Observer" %in% class(rendererEnv[[scenIdLong]][[el]])){
+      rendererEnv[[scenIdLong]][[el]]$destroy()
+    }
+  }
+}
 lapply(scenTableNamesToDisplay, function(sheetName){
   # call render functions
   tryCatch({
@@ -61,7 +71,8 @@ lapply(scenTableNamesToDisplay, function(sheetName){
                dtOptions = config$datatable, graphOptions = tabData$graphConfig$graph, 
                pivotOptions = tabData$graphConfig$pivottable, 
                customOptions = tabData$graphConfig$options,
-               roundPrecision = roundPrecision, modelDir = modelDir)
+               roundPrecision = roundPrecision, modelDir = modelDir,
+               rendererEnv = rendererEnv[[scenIdLong]])
     callModule(renderData, paste0("table_tab_", scenCounter, "_", tabData$tabId), type = "datatable", 
                data = dataToRender, 
                dtOptions = config$datatable, roundPrecision = roundPrecision)

@@ -43,8 +43,7 @@ getInputDataset <- function(id, visible = FALSE){
 }
 getInputDatasetRaw <- function(id){
   if(modelIn[[id]]$type %in% c("dt", "hot")){
-    if((!is.null(isolate(input[["in_" %+% id]])) && hotInit[[id]]) ||
-       length(tableContent[[id]])){
+    if(!is.null(isolate(input[["in_" %+% id]])) && hotInit[[id]]){
       if(length(colsWithDep[[id]])){
         if(!isEmptyInput[id]){
           if(modelIn[[id]]$type == "hot"){
@@ -160,6 +159,15 @@ observeEvent(input$btGraphIn, {
   
   errMsg <- NULL
   tryCatch({
+    if(is.null(rendererEnv[[paste0("in_", i)]])){
+      rendererEnv[[paste0("in_", i)]] <- new.env(parent = emptyenv())
+    }else{
+      for(el in ls(envir = rendererEnv[[paste0("in_", i)]])){
+        if("Observer" %in% class(rendererEnv[[paste0("in_", i)]][[el]])){
+          rendererEnv[[paste0("in_", i)]][[el]]$destroy()
+        }
+      }
+    }
     callModule(renderData, "in_" %+% i, 
                type = configGraphsIn[[i]]$outType, 
                data = data,
@@ -167,7 +175,8 @@ observeEvent(input$btGraphIn, {
                graphOptions = configGraphsIn[[i]]$graph, 
                pivotOptions = configGraphsIn[[i]]$pivottable, 
                customOptions = configGraphsIn[[i]]$options,
-               roundPrecision = roundPrecision, modelDir = modelDir)
+               roundPrecision = roundPrecision, modelDir = modelDir,
+               rendererEnv = rendererEnv[[paste0("in_", i)]])
   }, error = function(e) {
     flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", 
                modelInAlias[i], e)
@@ -410,19 +419,19 @@ lapply(modelInTabularData, function(sheet){
       replaceData(proxy[[i]], tableContent[[i]], resetPaging = FALSE, rownames = rownames)
     })
   }else if(identical(modelIn[[i]]$type, "custom")){
-    rendererEnv <- new.env(parent = emptyenv())
+    rendererEnv[[paste0("input_", i)]] <- new.env(parent = emptyenv())
     observe({
       tryCatch({
-        for(el in ls(envir = rendererEnv)){
-          if("Observer" %in% class(rendererEnv[[el]])){
-            rendererEnv[[el]]$destroy()
+        for(el in ls(envir = rendererEnv[[paste0("input_", i)]])){
+          if("Observer" %in% class(rendererEnv[[paste0("input_", i)]][[el]])){
+            rendererEnv[[paste0("input_", i)]][[el]]$destroy()
           }
         }
         modelInputDataVisible[[i]] <<- callModule(generateData, paste0("data-in_", i), 
                                                   type = modelIn[[i]]$rendererName, 
                                                   data = dataModelIn[[i]](),
                                                   customOptions = modelIn[[i]]$options,
-                                                  rendererEnv = rendererEnv)
+                                                  rendererEnv = rendererEnv[[paste0("input_", i)]])
       }, error = function(e){
         flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
                    modelInAlias[[i]], e)

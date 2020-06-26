@@ -605,6 +605,38 @@
       }
     }
   },
+  "renderers":{
+    "miroPivot":{
+      "btDownloadCsv": "Download CSV",
+      "btLoadView": "Load view",
+      "btNewView": "Add view",
+      "aggregateLabel": "aggregate",
+      "filterLabel": "filter",
+      "allPlaceholder": "All",
+      "colTruncationWarning": "Data was truncated to the first %s columns.",
+      "rowTruncationWarning": "Data was truncated to the first %s rows.",
+      "newViewTitle": "New view",
+      "newViewLabel": "Please choose a name for the view.",
+      "newViewBtCancel": "Cancel",
+      "newViewBtSave": "Save",
+      "errUniqueViewName": "The view name you entered already exists. Please choose another name.",
+      "aggregationFunctions":{
+        "sum": "Sum",
+        "count": "Count",
+        "median": "Median",
+        "mean": "Mean",
+        "min": "Min",
+        "max": "Max"
+      },
+      "renderer":{
+        "table": "Table", 
+        "bar": "Bar chart",
+        "stackedbar": "Stacked bar chart",
+        "radar": "Radar chart",
+        "line": "Line chart"
+      }
+    }
+  },
   "progressBar":{  
     "renderOutput":{  
       "title":"Rendering output graphs",
@@ -1577,6 +1609,9 @@
           "multiselect": "Enable multiselect of items (ctrl+click, shift+click)?",
           "showCurrentTime": "Show a vertical bar at the current time?"
         }
+      },
+      "miroPivotOptions":{
+        "infoMsg": "Please use directly the preview on the right side to configure the default view."
       },
       "pivotOptions":{
         "rows": "Prepopulate rows of the pivot table",

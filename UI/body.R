@@ -376,7 +376,7 @@ if(buildUI){
               tags$div(class="small-space"),
               MIROtabBox(id = "inputTabset", 
                          btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs, 
-                         inputTabContent)
+                         inputTabContent, hideTabs = identical(length(inputTabContent), 1L))
               )
             )
     ),
@@ -703,7 +703,7 @@ if(buildUI){
                 ),
                 tags$div(class="small-space"),
                 MIROtabBox(id = "outputTabset", btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs, 
-                           outputTabContent)
+                           outputTabContent, hideTabs = identical(length(outputTabContent), 1L))
                 )
               )
       )
@@ -729,6 +729,12 @@ if(buildUI){
         # Logo ratio should be 4,6 (width/height)
         tags$style(HTML(
           paste0('
+.filter-index-list::after {
+    content: "', lang$renderers$miroPivot$filterLabel, '";
+}
+.aggregation-index-list::after {
+    content: "', lang$renderers$miroPivot$aggregateLabel, '";
+}
 .main-header .logo {
   background-image: url("', 
                  if(!identical(config$UILogo, "gams_logo.png") && 

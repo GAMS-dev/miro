@@ -1396,7 +1396,97 @@ if(is.null(errMsg)){
   configGraphsIn    <- vector(mode = "list", length = length(modelIn))
   configGraphsOut   <- vector(mode = "list", length = length(modelOut))
   
+  validateGraphConfig <- function(graphConfig){
+    if(!identical(graphConfig$outType, "miroPivot")){
+      return(TRUE)
+    }
+    # TODO: remove this warning when persistent views are fully supported
+    if(isTRUE(graphConfig$options$enablePersistentViews)){
+      warning("Persistent views in the MIRO Pivot renderer is an experimental feature. 
+              Do not use this feature in deployed applications, as they may break in future MIRO versions without warning!")
+    }
+    if(length(graphConfig$options$aggregationFunction) &&
+       !identical(graphConfig$options$aggregationFunction, "count") &&
+       identical(graphConfig$options[["_metadata_"]]$symtype, "set")){
+      return("Sets can only have 'count' as aggregation function.")
+    }
+    noNumericHeaders <- sum(vapply(graphConfig$options[["_metadata_"]]$headers, 
+                                   function(header){
+                                     identical(header$type, "numeric")
+                                   }, logical(1L), USE.NAMES = FALSE))
+    validHeaders <- names(graphConfig$options[["_metadata_"]]$headers)
+    if(noNumericHeaders > 1L){
+      validHeaders <- c(validHeaders[seq_len(length(validHeaders) - noNumericHeaders)],
+                        "Hdr")
+    }else{
+      validHeaders <- validHeaders[-length(validHeaders)]
+    }
+    for(id in c("rows", "cols", "aggregations", "filter", "domainFilter")){
+      if(length(graphConfig$options[[id]])){
+        if(identical(id, "rows")){
+          indices <- graphConfig$options[[id]]
+        }else if(identical(id, "domainFilter")){
+          indices <- graphConfig$options$domainFilter$domains
+        }else{
+          indices <- names(graphConfig$options$filter)
+        }
+        invalidIndices <- !indices %in% validHeaders
+        if(any(invalidIndices)){
+          return(paste0("Invalid ", id, ": ", paste(indices[invalidIndices], 
+                                                    collapse = ", ")))
+        }
+      }
+    }
+    if(length(graphConfig$options$domainFilter$default) && 
+       !graphConfig$options$domainFilter$default %in% graphConfig$options$domainFilter$domains){
+      return(paste0("Default domain filter: ", graphConfig$options$domainFilter$default, 
+                    " must be among the list of domains."))
+    }
+    return(TRUE)
+  }
+  
   invalidGraphsToRender <- character(0L)
+  
+  # assign default output format to output data that was not set in config
+  for(i in seq_along(modelOut)[!names(modelOut) %in% names(config$dataRendering)]){
+    elName <- names(modelOut)[[i]]
+    if(identical(elName, scalarsOutName)){
+      visibleOutputScalars <- !(modelOut[[i]]$symnames %in% config$hiddenOutputScalars)
+      if(sum(visibleOutputScalars) <= maxScalarsValBox && 
+         all(modelOut[[i]]$symtypes[visibleOutputScalars] == "parameter")){
+        config$dataRendering[[elName]]$outType <- "valuebox"
+        config$dataRendering[[elName]]$options$count <- modelOut[[i]]$count - length(config$hiddenOutputScalars)
+      }else{
+        config$dataRendering[[elName]]$outType <- defOutType
+        if(identical(defOutType, "pivot")){
+          config$dataRendering[[elName]]$pivottable <- prepopPivot(modelOut[[i]])
+        }
+      }
+    }else{
+      config$dataRendering[[elName]]$outType <- defOutType
+      if(identical(defOutType, "pivot")){
+        config$dataRendering[[elName]]$pivottable <- prepopPivot(modelOut[[i]])
+      }
+    }
+  }
+  # assign default output format for input sheets that were not set in config
+  for(i in seq_along(modelIn)[!names(modelIn) %in% names(config$dataRendering)]){
+    elName <- names(modelIn)[[i]]
+    if(identical(modelIn[[i]]$type, "custom")){
+      # make sure custom inputs have graph button activated (table is displayed there)
+      config$dataRendering[[elName]] <- list(outType = "datatable", 
+                                             rendererName = modelIn[[i]]$rendererName,
+                                             packages = customPackages[[i]])
+    }else if(config$autoGenInputGraphs){
+      # Create graphs only for tabular input sheets 
+      if(!is.null(modelIn[[i]]$headers)){
+        config$dataRendering[[elName]]$outType <- defInType
+        if(identical(defInType, "pivot")){
+          config$dataRendering[[elName]]$pivottable <- prepopPivot(modelIn[[i]])
+        }
+      }
+    }
+  }
   
   for(el in names(config$dataRendering)){
     i <- match(tolower(el), names(modelIn))[[1]]
@@ -1418,8 +1508,28 @@ if(is.null(errMsg)){
         }else{
           configGraphsOut[[i]] <- config$dataRendering[[el]]
           configGraphsOut[[i]]$options <- c(configGraphsOut[[i]]$options, 
-                                            list("_metadata_" = list(headers = modelOut[[i]]$headers,
-                                                                     symtype = modelOut[[i]]$symtype)))
+                                            list("_metadata_" = list(
+                                              symname = names(modelOut)[i],
+                                              headers = modelOut[[i]]$headers,
+                                              symtype = modelOut[[i]]$symtype)))
+          if(identical(configGraphsOut[[i]]$outType, "miroPivot")){
+            validGraphConfig <- validateGraphConfig(configGraphsOut[[i]])
+            if(!identical(validGraphConfig, TRUE)){
+              errMsg <- paste(errMsg, paste0("Invalid graph config for symbol '", names(modelOut)[i], 
+                                             "': ", validGraphConfig), sep = "\n")
+              next
+            }
+            configGraphsOut[[i]]$options <- c(configGraphsOut[[i]]$options, 
+                                              list(lang = lang$renderers$miroPivot))
+          }else if(identical(configGraphsOut[[i]]$outType, "valueBox")){
+            if(identical(names(modelOut)[[i]], scalarsOutName)){
+              configGraphsOut[[i]]$options$count <- modelOut[[i]]$count - length(config$hiddenOutputScalars)
+            }else{
+              errMsg <<- paste(errMsg, 
+                               sprintf("Output type: 'valueBox' is only valid for scalar tables. Please choose another output type for your dataset : '%s'.", 
+                                       modelOutAlias[i]), sep = "\n")
+            }
+          }
         }
       }else if(LAUNCHCONFIGMODE){
         invalidGraphsToRender <- c(invalidGraphsToRender, el)
@@ -1448,8 +1558,29 @@ if(is.null(errMsg)){
     }else{
       configGraphsIn[[i]] <- config$dataRendering[[el]]
       configGraphsIn[[i]]$options <- c(configGraphsIn[[i]]$options, 
-                                       list("_metadata_" = list(headers = modelIn[[i]]$headers,
-                                                                symtype = modelIn[[i]]$symtype)))
+                                       list("_metadata_" = list(
+                                         symname = names(modelIn)[i],
+                                         headers = modelIn[[i]]$headers,
+                                         symtype = modelIn[[i]]$symtype)))
+      
+      if(identical(configGraphsIn[[i]]$outType, "miroPivot")){
+        validGraphConfig <- validateGraphConfig(configGraphsIn[[i]])
+        if(!identical(validGraphConfig, TRUE)){
+          errMsg <- paste(errMsg, paste0("Invalid graph config for symbol '", names(modelIn)[i], 
+                                         "': ", validGraphConfig), sep = "\n")
+          next
+        }
+        configGraphsIn[[i]]$options <- c(configGraphsIn[[i]]$options, 
+                                         list(lang = lang$renderers$miroPivot))
+      }else if(identical(configGraphsIn[[i]]$outType, "valueBox")){
+        if(identical(names(modelIn)[[i]], scalarsFileName)){
+          configGraphsIn[[i]]$options$count <- modelIn[[i]]$count
+        }else{
+          errMsg <<- paste(errMsg, 
+                           sprintf("Output type: 'valueBox' is only valid for scalar tables. Please choose another output type for your dataset : '%s'.", 
+                                   modelInAlias[i]), sep = "\n")
+        }
+      }
     }
     if(length(config$dataRendering[[el]]$graph$filter)){
       if(isOutputGraph){
@@ -1469,68 +1600,6 @@ if(is.null(errMsg)){
       }
     }
   }
-  
-  # assign default output format to output data that was not set in config
-  lapply(seq_along(modelOut), function(i){
-    if(identical(tolower(configGraphsOut[[i]]$outType), "valuebox")){
-      if(identical(names(modelOut)[[i]], scalarsOutName)){
-        configGraphsOut[[i]]$options$count <<- modelOut[[i]]$count - length(config$hiddenOutputScalars)
-      }else{
-        errMsg <<- paste(errMsg, 
-                         sprintf("Output type: 'valueBox' is only valid for scalar tables. Please choose another output type for your dataset : '%s'.", 
-                                 modelOutAlias[i]), sep = "\n")
-      }
-    }
-    if(is.null(configGraphsOut[[i]])){
-      if(identical(names(modelOut)[[i]], scalarsOutName)){
-        visibleOutputScalars <- !(modelOut[[i]]$symnames %in% config$hiddenOutputScalars)
-        if(sum(visibleOutputScalars) <= maxScalarsValBox && 
-           all(modelOut[[i]]$symtypes[visibleOutputScalars] == "parameter")){
-          configGraphsOut[[i]]$outType <<- "valuebox"
-          configGraphsOut[[i]]$options$count <<- modelOut[[i]]$count - length(config$hiddenOutputScalars)
-        }else{
-          configGraphsOut[[i]]$outType <<- defOutType
-          if(identical(defOutType, "pivot")){
-            configGraphsOut[[i]]$pivottable <<- prepopPivot(modelOut[[i]])
-          }
-        }
-      }else{
-        configGraphsOut[[i]]$outType <<- defOutType
-        if(identical(defOutType, "pivot")){
-          configGraphsOut[[i]]$pivottable <<- prepopPivot(modelOut[[i]])
-        }
-      }
-    }
-  })
-  # assign default output format for input sheets that were not set in config
-  lapply(seq_along(modelIn), function(i){
-    if(identical(tolower(configGraphsIn[[i]]$outType), "valuebox")){
-      if(identical(names(modelIn)[[i]], scalarsFileName)){
-        configGraphsIn[[i]]$options$count <<- modelIn[[i]]$count
-      }else{
-        errMsg <<- paste(errMsg, 
-                         sprintf("Output type: 'valueBox' is only valid for scalar tables. Please choose another output type for your dataset : '%s'.", 
-                                 modelInAlias[i]), sep = "\n")
-      }
-    }
-    if(config$autoGenInputGraphs){
-      # Create graphs only for tabular input sheets 
-      if(!is.null(modelIn[[i]]$headers)){
-        if(is.null(configGraphsIn[[i]])){
-          configGraphsIn[[i]]$outType <<- defInType
-          if(identical(defInType, "pivot")){
-            configGraphsIn[[i]]$pivottable <<- prepopPivot(modelIn[[i]])
-          }
-        }
-      }
-    }
-    if(identical(modelIn[[i]]$type, "custom") && !length(configGraphsIn[[i]])){
-      # make sure custom inputs have graph button activated (table is displayed there)
-      configGraphsIn[[i]] <<- list(outType = "datatable", 
-                                   rendererName = modelIn[[i]]$rendererName,
-                                   packages = customPackages[[i]])
-    }
-  })
   
   #sanitize file names of output attachments
   config$outputAttachments <- lapply(config$outputAttachments, function(el){
@@ -1553,6 +1622,9 @@ if(is.null(errMsg)){
   installPackage$timevis <- LAUNCHCONFIGMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
                                                           function(conf){if(identical(conf$graph$tool, "timevis")) TRUE else FALSE}, 
                                                           logical(1L), USE.NAMES = FALSE))
+  installPackage$miroPivot <- LAUNCHCONFIGMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
+                                                             function(conf){if(identical(conf$outType, "miroPivot")) TRUE else FALSE}, 
+                                                             logical(1L), USE.NAMES = FALSE))
   
   dbSchema <- list(tabName = c('_scenMeta' = scenMetadataTablePrefix %+% modelName, 
                                '_scenLock' = scenLockTablePrefix %+% modelName,

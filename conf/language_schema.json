@@ -2350,6 +2350,131 @@
       },
       "minProperties": 46
     },
+    "renderers": {
+      "description": "language specific objects of renderers",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "miroPivot": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "btDownloadCsv": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btLoadView": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btNewView": {
+              "type": "string",
+              "minLength": 1
+            },
+            "aggregateLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "filterLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "allPlaceholder": {
+              "type": "string",
+              "minLength": 1
+            },
+            "colTruncationWarning": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rowTruncationWarning": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewTitle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewBtCancel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewBtSave": {
+              "type": "string",
+              "minLength": 1
+            },
+            "errUniqueViewName": {
+              "type": "string",
+              "minLength": 1
+            },
+            "aggregationFunctions": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "sum": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "count": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "median": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "mean": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "min": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "max": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 6
+            },
+            "renderer": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "table": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "bar": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "stackedbar": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "line": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "radar": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 5
+            }
+          },
+          "minProperties": 15
+        }
+      },
+      "minProperties": 1
+    },
     "progressBar": {
       "description": "language specific objects of progressbars of the UI",
       "type": "object",
@@ -6297,6 +6422,17 @@
               },
               "minProperties": 3
             },
+            "miroPivotOptions": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "infoMsg": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 1
+            },
             "pivotOptions": {
               "type": "object",
               "additionalProperties": false,
@@ -7418,11 +7554,11 @@
               "minProperties": 21
             }
           },
-          "minProperties": 22
+          "minProperties": 23
         }
       },
       "minProperties": 7
     }
   },
-  "minProperties": 4
+  "minProperties": 5
 }
