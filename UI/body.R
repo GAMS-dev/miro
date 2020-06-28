@@ -780,8 +780,9 @@ if(buildUI){
     </div>
 </div>
 </div>
-<div id="loading-screen"><div class="lds-ellipsis" style="position:relative;top:50%;left:50%">
-       <div></div><div></div><div></div><div></div></div></div><div class="gmsalert gmsalert-error" id="hcubeRunning">', 
+<div id="loading-screen"><noscript><div class="miro-noscript">Please enable Javascript to use GAMS MIRO</div></noscript>
+<div class="lds-ellipsis" style="position:relative;top:50%;left:50%"><div></div><div></div><div></div><div></div>
+       </div></div><div class="gmsalert gmsalert-error" id="hcubeRunning">', 
                   lang$errMsg$hcubeLaunch$hcubeRunning, '</div>', '<div class="gmsalert gmsalert-error" id="hcubeLaunchError">', 
                   lang$errMsg$hcubeLaunch$launchError, '</div>')),
       do.call(tabItems, tabItemList)
