@@ -117,3 +117,16 @@ test_that("getDependenciesSlider works", {
                                      modelIn = modelIn1, 
                                      listOfOperators = listOfOperators))
 })
+
+test_that("getWidgetDependencies works", {
+  expect_identical(getWidgetDependencies("dropdown", "$date"),c("0", "", "date"))
+  expect_identical(getWidgetDependencies("dropdown", "$price$date"),c("0", "price", "date"))
+  expect_identical(getWidgetDependencies("dropdown", "date$"),c("1", "", "date"))
+  expect_identical(getWidgetDependencies("dropdown", "price$date$"),c("1", "price", "date"))
+  expect_identical(getWidgetDependencies("dropdown", "$date$"),c("2", "", "date"))
+  expect_identical(getWidgetDependencies("dropdown", "$price$date$"),c("2", "price", "date"))
+  
+  expect_identical(getWidgetDependencies("slider", "card(price$date)"),c("card", "price", "date"))
+  
+  expect_identical(getWidgetDependencies("dropdown", c("1", "2")),character(0))
+})

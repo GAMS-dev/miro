@@ -1450,7 +1450,25 @@ observe({
   }
 })
 observeEvent(input$dd_default, {
+  if(!nchar(input$dd_default)){
+    rv$widgetConfig$selected <<- NULL
+    return()
+  }
   rv$widgetConfig$selected <<- input$dd_default
+})
+observeEvent(input$dd_choice_dep_selector, {
+  if(isTRUE(input$dd_choice_dep_selector)){
+    rv$widgetConfig$choices <<- input$dd_choices
+    rv$widgetConfig$aliases <<- input$dd_aliases
+    rv$widgetConfig$selected <<- input$dd_default
+  }else{
+    rv$widgetConfig$choices <<- paste0("$", input$dd_choice_dep, 
+                                       if(nchar(input$dd_choice_dep)){"$"},
+                                       input$dd_choice_dep_header, 
+                                       if(isTRUE(input$dd_choice_dep_type)){"$"})
+    rv$widgetConfig$aliases <<- NULL
+    rv$widgetConfig$selected <<- NULL
+  }
 })
 observeEvent(input$widget_value, {
   rv$widgetConfig$value <<- input$widget_value
