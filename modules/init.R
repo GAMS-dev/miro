@@ -1449,6 +1449,9 @@ if(is.null(errMsg)){
   
   # assign default output format to output data that was not set in config
   for(i in seq_along(modelOut)[!names(modelOut) %in% names(config$dataRendering)]){
+    if(isTRUE(modelOut[[i]]$hidden)){
+      next
+    }
     elName <- names(modelOut)[[i]]
     if(identical(elName, scalarsOutName)){
       visibleOutputScalars <- !(modelOut[[i]]$symnames %in% config$hiddenOutputScalars)
