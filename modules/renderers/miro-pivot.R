@@ -409,6 +409,9 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
                                         })
   rendererEnv[[ns("filterDropdowns")]] <- observe({
     filterElements <- filteredData()$filterElements
+    if(isTRUE(filteredData()$uninitialized)){
+      return()
+    }
     initData <- initFilter
     if(initFilter && isTRUE(options$resetOnInit)){
       filterIndexList <- unname(indices[["filter"]])
@@ -484,6 +487,10 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
     filterIndexList <- input$filterIndexList
     aggFilterIndexList <- input$aggregationIndexList
     colFilterIndexList <- input$colIndexList
+    if(is.null(filterIndexList) || is.null(aggFilterIndexList) || is.null(colFilterIndexList)){
+      # UI not initialised
+      return(list(data = data, filterElements = list(), uninitialized = TRUE))
+    }
     if(initFilter && isTRUE(options$resetOnInit)){
       filterIndexList <- unname(indices[["filter"]])
       aggFilterIndexList <- unname(indices[["aggregations"]])
