@@ -583,6 +583,28 @@ ${data.data}</div>` : data.data);
         (child) => $(child).attr('data-rank-id') || $.trim(child.innerText)),
       { priority: 'event' });
   });
+  Shiny.addCustomMessageHandler('gms-populateMiroPivotFilters', (data) => {
+    const { ns } = data;
+    const idContainerMap = [{ id: 'filter', container: 'filterDropdowns' },
+      { id: 'aggregations', container: 'aggregateDropdowns' },
+      { id: 'cols', container: 'colDropdowns' }];
+    idContainerMap.forEach((filterEl) => {
+      $(`#${ns + filterEl.container} .shiny-input-container`).each((i, el) => {
+        Shiny.unbindAll(el, true);
+        $(el).remove();
+        return true;
+      });
+    });
+    idContainerMap.forEach((filterEl) => {
+      const content = data[filterEl.id];
+      if (content) {
+        const dropdownContainer = document.getElementById(ns + filterEl.container);
+        Shiny.renderContent(dropdownContainer,
+          content, 'beforeEnd');
+        Shiny.bindAll(dropdownContainer);
+      }
+    });
+  });
   Shiny.addCustomMessageHandler('gms-showValidationErrors', (content) => {
     const inSyms = Object.keys(content);
     $('.input-validation-error').empty();
