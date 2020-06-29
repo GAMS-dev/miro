@@ -126,6 +126,9 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
             dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[colId]]) == rowName, 
                                             colValue, drop = FALSE], use.names = FALSE)
             if(length(dataTmp) && length(dataTmp)){
+              if(identical(modelIn[[i]]$type, "dropdown")){
+                dataTmp <- strsplit(dataTmp, "||", fixed = TRUE)[[1]][1]
+              }
               modelInputData[[i]] <<- dataTmp
               inputVerified <- TRUE
               newInputCount <<- newInputCount + 1
