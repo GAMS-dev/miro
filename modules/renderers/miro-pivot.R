@@ -437,6 +437,8 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
       }else{
         if(allowEmpty){
           selectedFilterVal <- ""
+          if(is.null(isolate(input[[paste0("filter_", filterIndex)]])))
+            noUpdateFilterEl[[filterIndex]] <<- TRUE
         }else{
           selectedFilterVal <- filterElements[[filterIndex]][1]
           if(identical(isolate(input[[paste0("filter_", filterIndex)]]), selectedFilterVal)){
@@ -464,6 +466,29 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
                                lapply(colIndexList, getFilterDropdowns, optionId = "cols"))))
   })
   
+  if(initFilter && isTRUE(options$resetOnInit)){
+    currentFilters <- reactiveVal(list(filter = unname(indices[["filter"]]),
+                                       aggregations = unname(indices[["aggregations"]]),
+                                       cols = unname(indices[["cols"]])))
+  }else{
+    currentFilters <- reactiveVal(list(filter = isolate(input$filterIndexList),
+                                       aggregations = isolate(input$aggregationIndexList),
+                                       cols = isolate(input$colIndexList)))
+  }
+  rendererEnv[[ns("updateFilters")]] <- observe({
+    newFilters <- list(filter = input$filterIndexList,
+                       aggregations = input$aggregationIndexList,
+                       cols = input$colIndexList)
+    if(length(newFilters$filter) + length(newFilters$aggregations) + 
+       length(newFilters$cols) + length(isolate(input$rowIndexList)) != length(setIndices)){
+      # UI not initialised
+      return()
+    }
+    isolate({
+      currentFilters(newFilters)
+    })
+  })
+  
   lapply(setIndices, function(filterIndex){
     rendererEnv[[ns(paste0("filter_", filterIndex))]] <- observe({
       if(is.null(input[[paste0("filter_", filterIndex)]]) || initData){
@@ -484,18 +509,10 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
   
   filteredData <- reactive({
     updateFilter()
-    filterIndexList <- input$filterIndexList
-    aggFilterIndexList <- input$aggregationIndexList
-    colFilterIndexList <- input$colIndexList
-    if(is.null(filterIndexList) || is.null(aggFilterIndexList) || is.null(colFilterIndexList)){
-      # UI not initialised
-      return(list(data = data, filterElements = list(), uninitialized = TRUE))
-    }
-    if(initFilter && isTRUE(options$resetOnInit)){
-      filterIndexList <- unname(indices[["filter"]])
-      aggFilterIndexList <- unname(indices[["aggregations"]])
-      colFilterIndexList <- unname(indices[["cols"]])
-    }
+    filterIndexList <- currentFilters()$filter
+    aggFilterIndexList <- currentFilters()$aggregations
+    colFilterIndexList <- currentFilters()$cols
+    
     filterIndexList <- c(filterIndexList, aggFilterIndexList, colFilterIndexList)
     if(length(options$domainFilter$domains) && length(input$domainFilter)){
       dataTmp <- data %>% filter(.data[[input$domainFilter]] != if(length(options$domainFilter$filterVal)) 
