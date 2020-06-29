@@ -436,7 +436,11 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
           selectedFilterVal <- ""
         }else{
           selectedFilterVal <- filterElements[[filterIndex]][1]
-          noUpdateFilterEl[[filterIndex]] <<- TRUE
+          if(identical(isolate(input[[paste0("filter_", filterIndex)]]), selectedFilterVal)){
+            noUpdateFilterEl[[filterIndex]] <<- FALSE
+          }else{
+            noUpdateFilterEl[[filterIndex]] <<- TRUE
+          }
         }
       }
       selectizeInput(ns(paste0("filter_", filterIndex)), setIndexAliases[[filterIndex]], 
