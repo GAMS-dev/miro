@@ -1320,22 +1320,27 @@ DTbuildColHeaderContainer <- function(colNames, noRowHeaders, rowHeaders){
         colSpan <- 1L
         headerRowHTML <- vector("list", length(colNameHeaders))
         currDimColNames <- colNameList[[i]]
-        for(j in seq(2L, noCols)){
-          if(j %in% colGroupBorders || !identical(currDimColNames[[j]], currDimColNames[[j - 1L]])){
-            headerRowHTML[[k]] <- tags$th(colspan = colSpan, class = "pivot-hdr-col", currDimColNames[[j - 1L]])
-            k <- k + 1L
-            colSpan <- 1L
-            if(!j %in% colGroupBorders){
-              colGroupBorders <<- c(colGroupBorders, j)
+        if(identical(noCols, 1L)){
+          headerRowHTML[[k]] <- tags$th(colspan = 2L, class = "pivot-hdr-col",
+                                        currDimColNames[[1]])
+        }else{
+          for(j in seq(2L, noCols)){
+            if(j %in% colGroupBorders || !identical(currDimColNames[[j]], currDimColNames[[j - 1L]])){
+              headerRowHTML[[k]] <- tags$th(colspan = colSpan, class = "pivot-hdr-col", currDimColNames[[j - 1L]])
+              k <- k + 1L
+              colSpan <- 1L
+              if(!j %in% colGroupBorders){
+                colGroupBorders <<- c(colGroupBorders, j)
+              }
+              if(identical(j, noCols)){
+                headerRowHTML[[k]] <- tags$th(colspan = 1L, class = "pivot-hdr-col", currDimColNames[[j]])
+              }
+            }else if(identical(j, noCols)){
+              headerRowHTML[[k]] <- tags$th(colspan = colSpan + 1L, class = "pivot-hdr-col",
+                                            currDimColNames[[j]])
+            }else{
+              colSpan <- colSpan + 1L
             }
-            if(identical(j, noCols)){
-              headerRowHTML[[k]] <- tags$th(colspan = 1L, class = "pivot-hdr-col", currDimColNames[[j]])
-            }
-          }else if(identical(j, noCols)){
-            headerRowHTML[[k]] <- tags$th(colspan = colSpan + 1L, class = "pivot-hdr-col",
-                                          currDimColNames[[j]])
-          }else{
-            colSpan <- colSpan + 1L
           }
         }
         if(i == 1L){

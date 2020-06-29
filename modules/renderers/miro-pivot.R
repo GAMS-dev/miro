@@ -107,11 +107,11 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                            }else{
                              downloadButton(ns("downloadCsv"), label = options$lang$btDownloadCsv)
                            }
-                           ),
+                    ),
                     column(width = 4L, style = "padding: 1em;", 
-                           uiOutput(ns("filterDropdowns"), class = "miro-pivot-filter")),
+                           tags$div(id = ns("filterDropdowns"), class = "miro-pivot-filter")),
                     column(width = 4L, style = "padding: 1em;", 
-                           uiOutput(ns("aggregateDropdowns"), class = "miro-pivot-filter")),
+                           tags$div(id = ns("aggregateDropdowns"), class = "miro-pivot-filter")),
                     column(width = 2L, style = "padding: 1em;",
                            tags$ul(id = ns("aggregationIndexList"), class="drop-index-list aggregation-index-list",
                                    genIndexList(indices$aggregations)),
@@ -130,9 +130,11 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                                                   options$lang$renderer$radar)),
                                        selected = if(length(options$pivotRenderer))
                                          options$pivotRenderer else "table")),
-                    column(width = 10L, style = "padding: 1em;",
+                    column(width = 6L, style = "padding: 1em;",
                            tags$ul(id = ns("colIndexList"), class="drop-index-list vertical-index-list",
-                                   genIndexList(indices$cols)))),
+                                   genIndexList(indices$cols))),
+                    column(width = 4L, style = "padding: 1em;", 
+                           tags$div(id = ns("colDropdowns"), class = "miro-pivot-filter"))),
            fluidRow(style = "margin:0", column(width = 2L, style = "padding: 1em;", 
                                                tags$ul(id = ns("rowIndexList"), class="drop-index-list",
                                                        genIndexList(indices$rows))),
@@ -405,18 +407,20 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
                                         content = function(file) {
                                           write_csv(dataToRender(), file, na = "")
                                         })
-  filterDropdowns <- reactive({
+  rendererEnv[[ns("filterDropdowns")]] <- observe({
     filterElements <- filteredData()$filterElements
     initData <- initFilter
     if(initFilter && isTRUE(options$resetOnInit)){
       filterIndexList <- unname(indices[["filter"]])
       aggregationIndexList <- unname(indices[["aggregations"]])
+      colIndexList <- unname(indices[["cols"]])
     }else{
       filterIndexList <- isolate(input$filterIndexList)
       aggregationIndexList <- isolate(input$aggregationIndexList)
+      colIndexList <- isolate(input$colIndexList)
     }
-    getFilterDropdowns <- function(filterIndex, aggregations = FALSE){
-      optionId <- if(aggregations) "aggregations" else "filter"
+    getFilterDropdowns <- function(filterIndex, optionId = "filter"){
+      allowEmpty <- optionId %in% c("aggregations", "cols")
       if(initData && length(currentView[[optionId]][[filterIndex]])){
         currentFilterVal <- currentView[[optionId]][[filterIndex]]
         if(!identical(isolate(input[[paste0("filter_", filterIndex)]]), currentFilterVal))
@@ -428,7 +432,7 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
       if(any(availableFilterVal)) {
         selectedFilterVal <- currentFilterVal[availableFilterVal]
       }else{
-        if(aggregations){
+        if(allowEmpty){
           selectedFilterVal <- ""
         }else{
           selectedFilterVal <- filterElements[[filterIndex]][1]
@@ -436,27 +440,27 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
         }
       }
       selectizeInput(ns(paste0("filter_", filterIndex)), setIndexAliases[[filterIndex]], 
-                     choices = if(aggregations) c(allPlaceholder, filterElements[[filterIndex]])
+                     choices = if(allowEmpty) c(allPlaceholder, filterElements[[filterIndex]])
                      else filterElements[[filterIndex]], 
                      selected = selectedFilterVal, multiple = TRUE,
                      options = list('plugins' = list('remove_button')))
     }
     initFilter <<- FALSE
-    return(list(filter = lapply(filterIndexList, getFilterDropdowns),
-                aggregations = lapply(aggregationIndexList, getFilterDropdowns, aggregations = TRUE)))
-  })
-  output$filterDropdowns <- renderUI({
-    filterDropdowns()$filter
-  })
-  
-  output$aggregateDropdowns <- renderUI({
-    filterDropdowns()$aggregations
+    session$
+      sendCustomMessage("gms-populateMiroPivotFilters", 
+                        list(ns = ns(""),
+                             filter = htmltools::doRenderTags(
+                               lapply(filterIndexList, getFilterDropdowns)),
+                             aggregations = htmltools::doRenderTags(
+                               lapply(aggregationIndexList, getFilterDropdowns, optionId = "aggregations")),
+                             cols = htmltools::doRenderTags(
+                               lapply(colIndexList, getFilterDropdowns, optionId = "cols"))))
   })
   
   lapply(setIndices, function(filterIndex){
     rendererEnv[[ns(paste0("filter_", filterIndex))]] <- observe({
       if(is.null(input[[paste0("filter_", filterIndex)]]) || initData){
-        if(!filterIndex %in% isolate(input$aggregationIndexList)){
+        if(!filterIndex %in% isolate(c(input$aggregationIndexList, input$colIndexList))){
           return()
         }
       }
@@ -475,11 +479,13 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
     updateFilter()
     filterIndexList <- input$filterIndexList
     aggFilterIndexList <- input$aggregationIndexList
+    colFilterIndexList <- input$colIndexList
     if(initFilter && isTRUE(options$resetOnInit)){
       filterIndexList <- unname(indices[["filter"]])
       aggFilterIndexList <- unname(indices[["aggregations"]])
+      colFilterIndexList <- unname(indices[["cols"]])
     }
-    filterIndexList <- c(filterIndexList, aggFilterIndexList)
+    filterIndexList <- c(filterIndexList, aggFilterIndexList, colFilterIndexList)
     if(length(options$domainFilter$domains) && length(input$domainFilter)){
       dataTmp <- data %>% filter(.data[[input$domainFilter]] != if(length(options$domainFilter$filterVal)) 
         options$domainFilter$filterVal else "\U00A0")
@@ -499,15 +505,20 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
     
     for(filterIndex in filterIndexList){
       filterElements[[filterIndex]] <- sort(unique(dataTmp[[filterIndex]]))
-      optionId <- if(filterIndex %in% aggFilterIndexList) "aggregations" else "filter" 
+      optionId <- "filter"
+      if(filterIndex %in% aggFilterIndexList){
+        optionId <- "aggregations"
+      }else if(filterIndex %in% colFilterIndexList){
+        optionId <- "cols"
+      }
       if(initFilter && length(currentView[[optionId]][[filterIndex]])){
         filterVal <- currentView[[optionId]][[filterIndex]]
       }else{
         filterVal <- isolate(input[[paste0("filter_", filterIndex)]])
       }
       if(!any(filterVal %in% filterElements[[filterIndex]])){
-        if(filterIndex %in% aggFilterIndexList) {
-          # nothing selected = no filter for aggregations
+        if(filterIndex %in% c(aggFilterIndexList, colFilterIndexList)){
+          # nothing selected = no filter for aggregations/cols
           next
         }
         filterVal <- filterElements[[filterIndex]][[1]]
@@ -556,12 +567,11 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
       }
       initData <<- FALSE
     }
-    if(length(rowIndexList) + length(colIndexList) + 
-       length(filteredData()$filterElements) != length(setIndices)){
+    if(length(rowIndexList) + length(filteredData()$filterElements) != length(setIndices)){
       return()
     }
     rowIndexList <- c(rowIndexList, 
-                      multiFilterIndices[!multiFilterIndices %in% aggIndexList])
+                      multiFilterIndices[!multiFilterIndices %in% c(aggIndexList, colIndexList)])
     if(length(aggIndexList)){
       if(identical(options[["_metadata_"]]$symtype, "parameter")){
         aggregationFunctionTmp <- input$aggregationFunction
