@@ -24,10 +24,12 @@ getScenTabData <- function(sheetName){
       tabData$headerAliases <- c(lang$nav$scalarAliases$cols$name,
                                  lang$nav$scalarAliases$cols$desc,
                                  lang$nav$scalarAliases$cols$value)
-      tabData$graphConfig$outType <- "pivot"
-      tabData$graphConfig$pivottable$rows <- scalarsFileHeaders[1]
-      tabData$graphConfig$pivottable$aggregatorName <- "Sum"
-      tabData$graphConfig$pivottable$vals <- scalarsFileHeaders[3]
+      if(scalarsFileName %in% names(modelInRaw)){
+        tabData$graphConfig$outType <- "valuebox"
+        tabData$graphConfig$options$count <- length(modelInRaw[[scalarsFileName]]$symnames)
+      }else{
+        tabData$graphConfig$outType <- "datatable"
+      }
     }else{
       modelInId             <- match(inputDsNames[i], names(modelIn))[1]
       tabData$sheetName     <- modelInAlias[modelInId]

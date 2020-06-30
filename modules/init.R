@@ -1460,10 +1460,7 @@ if(is.null(errMsg)){
         config$dataRendering[[elName]]$outType <- "valuebox"
         config$dataRendering[[elName]]$options$count <- modelOut[[i]]$count - length(config$hiddenOutputScalars)
       }else{
-        config$dataRendering[[elName]]$outType <- defOutType
-        if(identical(defOutType, "pivot")){
-          config$dataRendering[[elName]]$pivottable <- prepopPivot(modelOut[[i]])
-        }
+        config$dataRendering[[elName]]$outType <- "datatable"
       }
     }else{
       config$dataRendering[[elName]]$outType <- defOutType
@@ -1483,9 +1480,13 @@ if(is.null(errMsg)){
     }else if(config$autoGenInputGraphs){
       # Create graphs only for tabular input sheets 
       if(!is.null(modelIn[[i]]$headers)){
-        config$dataRendering[[elName]]$outType <- defInType
-        if(identical(defInType, "pivot")){
-          config$dataRendering[[elName]]$pivottable <- prepopPivot(modelIn[[i]])
+        if(identical(names(modelIn)[[i]], scalarsFileName)){
+          config$dataRendering[[elName]]$outType <- "datatable"
+        }else{
+          config$dataRendering[[elName]]$outType <- defInType
+          if(identical(defInType, "pivot")){
+            config$dataRendering[[elName]]$pivottable <- prepopPivot(modelIn[[i]])
+          }
         }
       }
     }
