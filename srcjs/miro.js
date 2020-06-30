@@ -580,8 +580,7 @@ ${data.data}</div>` : data.data);
     $(`#${data.id}`).html(data.children);
     Shiny.setInputValue(`${data.id}:sortablejs.rank_list`,
       $.map(document.getElementById(data.id).children,
-        (child) => $(child).attr('data-rank-id') || $.trim(child.innerText)),
-      { priority: 'event' });
+        (child) => $(child).attr('data-rank-id') || $.trim(child.innerText)));
   });
   Shiny.addCustomMessageHandler('gms-populateMiroPivotFilters', (data) => {
     const { ns } = data;
