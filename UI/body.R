@@ -49,7 +49,7 @@ if(!debugMode){
                           config[["language"]], 
                           if(config$activateModules$remoteExecution) "_1" else "_0")
   if(isShinyProxy){
-    miroCacheFile <- file.path(miroDataDir, "cache", miroCacheFile)
+    miroCacheFile <- file.path(Sys.getenv("MIRO_DATA_DIR"), "cache", miroCacheFile)
   }else{
     miroCacheFile <- file.path(miroWorkspace, "cache", miroCacheFile)
   }
