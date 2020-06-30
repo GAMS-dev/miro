@@ -174,6 +174,7 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
   initFilter <- TRUE
   initData <- TRUE
   initRenderer <- TRUE
+  initInterface <- TRUE
   numericCols <- vapply(data, class, character(1L), USE.NAMES = FALSE) %in% c("numeric", "integer")
   if(sum(numericCols) > 1L){
     # data is already pivoted
@@ -256,16 +257,21 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
     }else{
       updateSelectInput(session, "pivotRenderer", selected = "table")
     }
+    newView <- list(filter = unname(indices$filter),
+                    aggregations = unname(indices$aggregations),
+                    cols = unname(indices$cols))
     if(length(domainFilterDomains)){
       if(length(options[["domainFilter"]][["default"]])){
         updateTabsetPanel(session, "domainFilter", 
                           selected = options[["domainFilter"]][["default"]])
+        newView$domainFilter <- options[["domainFilter"]][["default"]]
       }else{
         updateTabsetPanel(session, "domainFilter", 
                           selected = domainFilterDomains[[1]])
+        newView$domainFilter <- domainFilterDomains[[1]]
       }
     }
-    if(initData){
+    if(initInterface){
       # we need to update aggregation functions in case the symbol type is not available when rendering the UI
       # (e.g. in Configuration Mode)
       if(length(options[["aggregationFunction"]])){
@@ -288,6 +294,12 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
       initRenderer <<- TRUE
       options$resetOnInit <<- TRUE
       noUpdateFilterEl[] <<- FALSE
+      isolate({
+        if(identical(currentFilters(), newView)){
+          newVal <- updateFilter() + 1L
+          updateFilter(newVal)
+        }
+      })
     }
   }
   
@@ -424,7 +436,7 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
     }
     getFilterDropdowns <- function(filterIndex, optionId = "filter"){
       allowEmpty <- optionId %in% c("aggregations", "cols")
-      if(initData && length(currentView[[optionId]][[filterIndex]])){
+      if(initData && (allowEmpty || length(currentView[[optionId]][[filterIndex]]))){
         currentFilterVal <- currentView[[optionId]][[filterIndex]]
         if(!identical(isolate(input[[paste0("filter_", filterIndex)]]), currentFilterVal))
           noUpdateFilterEl[[filterIndex]] <<- TRUE
@@ -437,6 +449,8 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
       }else{
         if(allowEmpty){
           selectedFilterVal <- ""
+          if(!is.null(isolate(input[[paste0("filter_", filterIndex)]])))
+            noUpdateFilterEl[[filterIndex]] <<- TRUE
         }else{
           selectedFilterVal <- filterElements[[filterIndex]][1]
           if(identical(isolate(input[[paste0("filter_", filterIndex)]]), selectedFilterVal)){
@@ -464,6 +478,38 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
                                lapply(colIndexList, getFilterDropdowns, optionId = "cols"))))
   })
   
+  
+  currentFilters <- reactiveVal(list(filter = NULL,
+                                     aggregations = NULL,
+                                     cols = NULL))
+  rendererEnv[[ns("currentFilters")]] <- observe({
+    newFilters <- list(filter = input$filterIndexList,
+                       aggregations = input$aggregationIndexList,
+                       cols = input$colIndexList)
+    if(sum(vapply(newFilters, length, integer(1L), USE.NAMES = FALSE)) +
+       length(input$rowIndexList) != length(setIndices) ||
+       any(vapply(newFilters, is.null, logical(1L), USE.NAMES = FALSE))){
+      # UI not initialised
+      return()
+    }
+    if(initFilter && isTRUE(options$resetOnInit)){
+      newFilters <- list(filter = unname(indices[["filter"]]),
+                         aggregations = unname(indices[["aggregations"]]),
+                         cols = unname(indices[["cols"]]))
+    }
+    if(length(options$domainFilter$domains)){
+      newFilters$domainFilter <- input$domainFilter
+      if(initFilter && length(currentView$domainFilter[["default"]]) &&
+         !identical(input$domainFilter, currentView$domainFilter[["default"]])){
+        return()
+      }
+    }
+    
+    isolate({
+      currentFilters(newFilters)
+    })
+  })
+  
   lapply(setIndices, function(filterIndex){
     rendererEnv[[ns(paste0("filter_", filterIndex))]] <- observe({
       if(is.null(input[[paste0("filter_", filterIndex)]]) || initData){
@@ -484,21 +530,16 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
   
   filteredData <- reactive({
     updateFilter()
-    filterIndexList <- input$filterIndexList
-    aggFilterIndexList <- input$aggregationIndexList
-    colFilterIndexList <- input$colIndexList
-    if(is.null(filterIndexList) || is.null(aggFilterIndexList) || is.null(colFilterIndexList)){
-      # UI not initialised
-      return(list(data = data, filterElements = list(), uninitialized = TRUE))
+    if(!length(currentFilters())){
+      return()
     }
-    if(initFilter && isTRUE(options$resetOnInit)){
-      filterIndexList <- unname(indices[["filter"]])
-      aggFilterIndexList <- unname(indices[["aggregations"]])
-      colFilterIndexList <- unname(indices[["cols"]])
-    }
+    filterIndexList <- currentFilters()$filter
+    aggFilterIndexList <- currentFilters()$aggregations
+    colFilterIndexList <- currentFilters()$cols
+    domainFilter <- currentFilters()$domainFilter
     filterIndexList <- c(filterIndexList, aggFilterIndexList, colFilterIndexList)
-    if(length(options$domainFilter$domains) && length(input$domainFilter)){
-      dataTmp <- data %>% filter(.data[[input$domainFilter]] != if(length(options$domainFilter$filterVal)) 
+    if(length(domainFilter)){
+      dataTmp <- data %>% filter(.data[[domainFilter]] != if(length(options$domainFilter$filterVal)) 
         options$domainFilter$filterVal else "\U00A0")
       if(!length(filterIndexList)){
         return(list(data = dataTmp, filterElements = list()))
@@ -522,7 +563,8 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
       }else if(filterIndex %in% colFilterIndexList){
         optionId <- "cols"
       }
-      if(initFilter && length(currentView[[optionId]][[filterIndex]])){
+      if(initFilter && (optionId %in% c("aggregations", "cols") || 
+                        length(currentView[[optionId]][[filterIndex]]))){
         filterVal <- currentView[[optionId]][[filterIndex]]
       }else{
         filterVal <- isolate(input[[paste0("filter_", filterIndex)]])
@@ -559,24 +601,18 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
   dataToRender <- reactive({
     dataTmp <- filteredData()$data
     rowIndexList <- input$rowIndexList
-    colIndexList <- input$colIndexList
-    aggIndexList <- isolate(input$aggregationIndexList)
+    initData   <<- FALSE
+    initInterface <<- FALSE
+    if(!length(dataTmp)){
+      return()
+    }
+    colIndexList <- isolate(currentFilters()$cols)
+    aggIndexList <- isolate(currentFilters()$aggregations)
     multiFilterIndices <- filteredData()$multiFilterIndices
     aggregationFunction <- NULL
     
     if(is.null(rowIndexList)){
       rowIndexList <- setIndices
-    }
-    if(initData){
-      if(isTRUE(options$resetOnInit)){
-        rowIndexList <- unname(indices[["rows"]])
-        colIndexList <- unname(indices[["cols"]])
-        aggIndexList <- unname(indices[["aggregations"]])
-        if(length(currentView[["aggregationFunction"]])){
-          aggregationFunction <- currentView[["aggregationFunction"]]
-        }
-      }
-      initData <<- FALSE
     }
     if(length(rowIndexList) + length(filteredData()$filterElements) != length(setIndices)){
       return()

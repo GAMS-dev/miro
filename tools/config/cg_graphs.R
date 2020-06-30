@@ -3425,14 +3425,6 @@ observe({
                                       lang = lang$renderers$miroPivot), 
                                    currentGraphConfig$options),
                  roundPrecision = 2, modelDir = modelDir)
-      Sys.sleep(1L)
-      callModule(renderData, "preview_output_miropivot", type = "miropivot", 
-                 data = data,
-                 customOptions = c(list("_metadata_" = metadata, 
-                                        resetOnInit = TRUE,
-                                        lang = lang$renderers$miroPivot), 
-                                   currentGraphConfig$options),
-                 roundPrecision = 2, modelDir = modelDir)
       showEl(session, "#preview-content-miropivot")
       hideEl(session, "#preview-content-pivot")
       hideEl(session, "#preview-content-dygraphs")
