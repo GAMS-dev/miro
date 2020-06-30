@@ -121,12 +121,8 @@ getWidgetDependencies <- function(widgetType, depString){
              depID <- 0L
            }
            depString <- strsplit(depString, "$", fixed = TRUE)[[1]]
-           if(identical(depString, "")){
-             if(length(depString) == 3L)
-               depString <- depString[-1]
-             else
-               depString[1] <- "_"
-           }
+           if(length(depString) == 1L)
+             depString <- c("", depString)
            return(c(depID, depString))
          },
          {
