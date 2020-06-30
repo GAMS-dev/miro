@@ -860,7 +860,7 @@ observeEvent(input$btEditReadme, {
              tags$div(id = "mdConvertedContent", 
                       class = "readme-wrapper readme-preview-output", readmeContentParsed)
       ),
-      tags$script(paste0("setTimeout(function(){Miro.mdToHTML(this.value,'#mdConvertedContent',",
+      tags$script(paste0("setTimeout(function(){Miro.mdToHTML(document.getElementById('mdContent').value,'#mdConvertedContent',",
                          if(isTRUE(input$general_readmeEnableMath)) "true" else "false", ")},500)"))
     ),
     footer = tagList(
