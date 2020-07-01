@@ -693,6 +693,22 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     return(NULL)
   }
   dataTmp <- dataModelRun$dataTmp
+  if(any(config$activateModules$logFile,
+         config$activateModules$miroLogFile)){
+    if(config$activateModules$logFile){
+      logFilePath <- file.path(workDir, modelName %+% ".log")
+      logContainerId <- "#logStatus"
+    }else{
+      logFilePath <- file.path(workDir, config$miroLogFile)
+      logContainerId <- "#miroLogFile"
+    }
+    if(config$activateModules$attachments && 
+       config$storeLogFilesDuration > 0L && !is.null(activeScen)){
+      if(!identical(unlink(logFilePath, force = TRUE), 0L)){
+        flog.warn("Could not remove log file: '%s'.", logFilePath)
+      }
+    }
+  }
   # run GAMS
   tryCatch({
     jobSid <- NULL
@@ -739,21 +755,10 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   })
   showErrorMsg(lang$errMsg$readLog$title, errMsg)
   
-  logFilePath <- NULL
   if(any(config$activateModules$logFile,
          config$activateModules$miroLogFile)){
-    if(config$activateModules$logFile){
-      logFilePath <- file.path(workDir, modelName %+% ".log")
-      logContainerId <- "#logStatus"
-    }else{
-      logFilePath <- file.path(workDir, config$miroLogFile)
-      logContainerId <- "#miroLogFile"
-    }
     if(config$activateModules$attachments && 
        config$storeLogFilesDuration > 0L && !is.null(activeScen)){
-      if(!identical(unlink(logFilePath, force = TRUE), 0L)){
-        flog.warn("Could not remove log file: '%s'.", logFilePath)
-      }
       if(!config$activateModules$logFile){
         logFilePath <- NULL
       }
