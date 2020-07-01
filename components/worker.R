@@ -756,7 +756,8 @@ Worker <- R6Class("Worker", public = list(
     
     private$process <- process$new(file.path(private$metadata$gamsSysDir, "gams"), 
                                    args = c(private$metadata$modelGmsName, "pf", pfFilePath), 
-                                   stdout = "|", windows_hide_window = TRUE)
+                                   stdout = "|", windows_hide_window = TRUE, 
+                                   env = private$getProcEnv())
     return(self)
   },
   runHcubeLocal = function(dynamicPar, staticData = NULL, attachmentFilePaths = NULL){
@@ -777,7 +778,8 @@ Worker <- R6Class("Worker", public = list(
                                    args = c(hcubeSubmDir, 'curdir', curdir, "lo=3",
                                             paste0("--jobID=", private$jID)),
                                    cleanup = FALSE, cleanup_tree = FALSE, supervise = FALSE,
-                                   windows_hide_window = TRUE)
+                                   windows_hide_window = TRUE,
+                                   env = private$getProcEnv())
     return(invisible(self))
   },
   runRemote = function(inputData, hcubeData = NULL){
@@ -1454,5 +1456,17 @@ Worker <- R6Class("Worker", public = list(
       stop(426, call. = FALSE)
     }
     return(paste0("https://", url))
+  },
+  getProcEnv = function(){
+    # workaround since GAMS31 has a bug on Linux that causes an infinite loop in case
+    # XDG_DATA_DIRS or XDG_CONFIG_DIRS has more than 8 entries
+    procEnv <- NULL
+    if(identical(Sys.info()[["sysname"]], "Linux")){
+      procEnv <- Sys.getenv()
+      XDG_DATA_DIRS <- strsplit(Sys.getenv("XDG_DATA_DIRS"), ":", fixed = TRUE)[[1L]]
+      procEnv[["XDG_DATA_DIRS"]] <- paste(XDG_DATA_DIRS[seq_len(min(length(XDG_DATA_DIRS), 8L))],
+                                          collapse = ":")
+    }
+    return(procEnv)
   }
 ))
