@@ -3567,10 +3567,6 @@ observeEvent(rv$saveGraphConfirm, {
       indexVal <- input[[paste0("preview_output_miropivot-miroPivot-", indexEl[[2]])]]
       if(length(indexVal)){
         filterElList <- lapply(indexVal, function(el){
-          # filter for columns currently not implemented! Change this as soon as it is implemented!
-          if(identical(indexEl[[1]], "cols")){
-            return("")
-          }
           return(input[[paste0("preview_output_miropivot-miroPivot-filter_", el)]])
         })
         names(filterElList) <- indexVal

@@ -1207,7 +1207,7 @@
                         "properties":{  
                            "rows":{  
                               "description":"Columns in the symbol to prepopulate the rows of the pivot table.",
-                              "type":["array", "string"],
+                              "type":["array", "string", "null"],
                               "minLength":1,
                               "uniqueItems":true,
                               "minItems":0,
@@ -1221,7 +1221,7 @@
                               "description":"Columns in the symbol to prepopulate the columns of the pivot table.",
                               "type":"object",
                               "additionalProperties":{
-                                 "type":["array", "string"],
+                                 "type":["array", "string", "null"],
                                  "uniqueItems":true
                               }
                            },
@@ -1229,7 +1229,7 @@
                               "description":"Columns in the symbol to prepopulate the aggregations of the pivot table.",
                               "type":"object",
                               "additionalProperties":{
-                                 "type":["array", "string"],
+                                 "type":["array", "string", "null"],
                                  "uniqueItems":true
                               }
                            },
