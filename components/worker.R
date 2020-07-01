@@ -1464,7 +1464,7 @@ Worker <- R6Class("Worker", public = list(
     if(identical(Sys.info()[["sysname"]], "Linux")){
       procEnv <- Sys.getenv()
       XDG_DATA_DIRS <- strsplit(Sys.getenv("XDG_DATA_DIRS"), ":", fixed = TRUE)[[1L]]
-      procEnv[["XDG_DATA_DIRS"]] <- paste(XDG_DATA_DIRS[seq_len(min(length(XDG_DATA_DIRS), 8L))],
+      procEnv[["XDG_DATA_DIRS"]] <- paste(XDG_DATA_DIRS[seq_len(min(length(XDG_DATA_DIRS), 7L))],
                                           collapse = ":")
     }
     return(procEnv)
