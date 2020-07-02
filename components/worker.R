@@ -942,10 +942,10 @@ Worker <- R6Class("Worker", public = list(
     if(!length(private$process)){
       return(private$updateLog)
     }
-    tryCatch(
-      private$log <- private$process$read_output(),
+    private$log <- tryCatch(
+      paste0(private$log, private$process$read_output()),
       error = function(e){
-        private$log <- ""
+        return(private$log)
       })
     if(!identical(private$log, "")){
       private$updateLog <- private$updateLog + 1L
