@@ -38,7 +38,7 @@
         "id": "farming", 
         "title": "Farming model", 
         "author": "GAMS Development Corp", 
-        "desc": "Crop plant alloction problem with stochastic crop yield", 
+        "desc": "Crop plant allocation problem with stochastic crop yield", 
         "upvotes": 0
     },
     {
@@ -53,6 +53,13 @@
         "title": "Simple", 
         "author": "GAMS Development Corp", 
         "desc": "Simplified Energy Systems Model", 
+        "upvotes": 0
+    },
+    {
+        "id": "times_miro", 
+        "title": "TIMES", 
+        "author": "Frederik Fiand, Evangelos Panos, Gary Goldstein", 
+        "desc": "Open source app for IEA-ETSAP TIMES", 
         "upvotes": 0
     }
     ]
