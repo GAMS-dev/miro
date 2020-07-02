@@ -79,7 +79,7 @@
                                     For example, you can place an Excel file in your model folder and import the data from this file into GAMS using 
                                     the <a href="https://www.gams.com/latest/docs/T_GDXXRW.html" target="_blank">GDXXRW</a> utility. <br/>
                                     <b>Note</b>: By default, MIRO executes your model in the directory where the model is located. However, there is an option 
-                                    to change this behaviour and run the model in a temporary directory. When this option is enabled, a few things have 
+                                    to change this behavior and run the model in a temporary directory. When this option is enabled, a few things have 
                                     to be considered. Read mode about this <a href = "./model.html#consider-in-temp-dir">here</a>.
                                     </div>
                                 </div><!--//section-block-->
@@ -136,7 +136,7 @@
 
                                     <div class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> Can I also write my own custom functions to generate input data?</h3>
-                                        <div class="answer">yes. MIRO has an API that allows you to use e.g. charts to produce input data. We call this feature <i>custom input widgets</i>. These are not available in configuration mode, but must be implemented manually. You can find more information <a href="./customize.html#custom-input-widgets">here</a>.</div>
+                                        <div class="answer">yes. MIRO has an API that allows you to use e.g. charts to produce input data. We call this feature <i>custom input widgets</i>. These are not available in Configuration Mode, but must be implemented manually. You can find more information <a href="./customize.html#custom-input-widgets">here</a>.</div>
                                     </div><!--//section-block-->
 
                                     <div class="section-block">
@@ -154,12 +154,12 @@
                                     </div><!--//section-block-->
 
                                     <div class="section-block">
-                                        <h3 class="question"><i class="fas fa-question-circle"></i> How can I start the MIRO Hypercube mode?</h3>
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> How can I start the MIRO Hypercube Mode?</h3>
                                         <div class="answer">
-                                          <p>Just like the Base mode, the Hypercube mode can be started directly from GAMS Studio or the command line. 
+                                          <p>Just like the Base Mode, the Hypercube Mode can be started directly from GAMS Studio or the command line. 
                                           For the latter, the environment variable <span class="code">MIRO_MODE=hcube</span> needs to 
                                           be set instead of <span class="code">MIRO_MODE=base</span>. The other steps (see <a href = "./start.html#start-via-command-line">here</a>) 
-                                          remain the same. MIRO automatically processes and adjusts your base mode configuration so that it will work in Hypercube mode.</p>
+                                          remain the same. MIRO automatically processes and adjusts your Base Mode configuration so that it will work in Hypercube Mode.</p>
                                         </div>
                                     </div><!--//section-block-->
 
@@ -194,7 +194,7 @@
                                     <h3 class="question"><i class="fas fa-question-circle"></i> &lt;modelname&gt;.json</h3>
                                     <div class="answer">
                                         <p>The <i>&lt;modelname&gt;.json</i> file, for example <i>transport.json</i>, is located in the <i>&lt;modelname&gt;/conf_&lt;modelname&gt;</i> directory. It contains the configuration of graphics, input widgets, language and all other model-specific configurations for a MIRO app.
-                                        This file can be filled manually by the user. However, the easiest way for the configuration is the <a href = "./customize.html#configurationMode">Configuration mode</a>.
+                                        This file can be filled manually by the user. However, the easiest way for the configuration is the <a href = "./customize.html#configurationMode">Configuration Mode</a>.
                                         <br>Like the <i>&lt;modelname&gt;_io.json</i> file, the structure of this file is based on a <a href="./schema.html" target="_blank">schema</a> with which the file is validated when a MIRO app is started.</p>
                                     </div><!--//anwser-->
                                 </div><!--//section-block-->
@@ -235,13 +235,13 @@
                                     <div id="def-hypercube" class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What does <b>Hypercube</b> mean in the context of GAMS MIRO?</h3>
                                         <div class="answer">
-                                            <p><i>Hypercube</i> mode is a mode in GAMS MIRO that automatically generates scenarios. Input widgets you defined for your scalars in the base mode are automatically expanded in the Hypercube mode (e.g. a slider is expanded to a slider range and a single-dropdown menu is expanded to a multi-dropdown menu etc.). This now lets you configure multiple scenarios at once. MIRO will now automatically compute the cartesian product (or, as we call it, the Hypercube) over scalars you expanded. The results can then be filtered, analyzed, downloaded etc. For more information see the section about the MIRO <a href="./hypercube.html#hcube-example">Hypercube mode</a>.
+                                            <p><i>Hypercube</i> mode is a mode in GAMS MIRO that automatically generates scenarios. Input widgets you defined for your scalars in the Base Mode are automatically expanded in the Hypercube Mode (e.g. a slider is expanded to a slider range and a single-dropdown menu is expanded to a multi-dropdown menu etc.). This now lets you configure multiple scenarios at once. MIRO will now automatically compute the cartesian product (or, as we call it, the Hypercube) over scalars you expanded. The results can then be filtered, analyzed, downloaded etc. For more information see the section about the MIRO <a href="./hypercube.html#hcube-example">Hypercube Mode</a>.
                                             </div>
                                     </div><!--//section-block-->
                                     <div id="def-hypercube-job" class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What does <b>Hypercube Job</b> mean in the context of GAMS MIRO?</h3>
                                         <div class="answer">
-                                            <p>A <i>Hypercube Job</i> describes a set of scenarios for a particular model which MIRO generated automatically by expanding the cartesian product over all selected scalars. For more information see the section about the MIRO <a href="./hypercube.html#hcube-example">Hypercube mode</a>.</p>
+                                            <p>A <i>Hypercube Job</i> describes a set of scenarios for a particular model which MIRO generated automatically by expanding the cartesian product over all selected scalars. For more information see the section about the MIRO <a href="./hypercube.html#hcube-example">Hypercube Mode</a>.</p>
                                             </div>
                                     </div><!--//section-block-->
                                     <div id="def-job-tag" class="section-block">

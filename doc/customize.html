@@ -76,20 +76,20 @@
                                 </div>
                             </section>       
                             <section id="configurationMode" class="doc-section">
-                                <h2 class="section-title">The Configuration mode</h2>
+                                <h2 class="section-title">The Configuration Mode</h2>
                                 <div class="section-block">
                                     This chapter shows how to configure MIRO using the graphical interface. 
                                     For those who feel more comfortable writing JSON, section <a href ="#jsonfiles" class="scrollto">Configuration via JSON</a> shows 
-                                    how to configure a MIRO app without using the graphical interface. However, we strongly recommend to use the Configuration mode, especially when you just started using GAMS MIRO.</p>
-                                    <p>The <i>Configuration mode</i> is directly accessible via GAMS Studio: </p> 
+                                    how to configure a MIRO app without using the graphical interface. However, we strongly recommend to use the Configuration Mode, especially when you just started using GAMS MIRO.</p>
+                                    <p>The <i>Configuration Mode</i> is directly accessible via GAMS Studio: </p> 
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/studio/start_studio.png" alt="start the Configuration mode" />
+                                        <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/studio/start_studio.png" alt="start the Configuration Mode" />
                                     </div>
-                                    <p>In order to launch the Configuration mode via the command line, the environment variable <span class="code">MIRO_MODE=config</span> needs to 
+                                    <p>In order to launch the Configuration Mode via the command line, the environment variable <span class="code">MIRO_MODE=config</span> needs to 
                                     be set instead of <span class="code">MIRO_MODE=base</span>. The other steps (see <a href = "./start.html#start-via-command-line">here</a>) remain the same.</p>
                                     <p>After starting, the following screen appears:</p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/configuration_mode.png" alt="start the Configuration mode" />
+                                        <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/configuration_mode.png" alt="start the Configuration Mode" />
                                     </div>
                                     Visually, this mode is very similar to a classic MIRO app. The tabs on the left side lead to the following categories:</p>
                                     <ul>
@@ -184,7 +184,7 @@ loop(j, put @3, j.tl, @15, b(j)/);
 put  / / 'Transportation Model Results' / / ;
 loop((i,j), put i.tl, @12, j.tl, @24, x.l(i,j):8:4 /);
 </pre></code>
-                                  <p>Now we want to integrate it into MIRO. In the Configuration mode we specify the name of the report file in the general settings:</p>
+                                  <p>Now we want to integrate it into MIRO. In the Configuration Mode we specify the name of the report file in the general settings:</p>
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:125pt;" src="assets/images/configuration_mode/transport_log_config.png" alt="Configure a custom log file in MIRO" />
                                   </div>
@@ -256,7 +256,7 @@ putclose log;
                                   </div>
                                   <h6 id="decimal-places" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Number of decimal 
                                   places used for rounding numerical values</h6>
-                                  <div class="expanded"><p>Defines the number of decimal places for numeric symbols in the MIRO application. This is a global setting and has an effect on all <a href="./customize.html#output-tables" class="scrollto">output tables</a>, <a href="./customize.html#table-option-large" class="scrollto">big data input tables</a> and the table for <a href="./hypercube.html#scenario-selection">loading scenarios in Hypercube mode</a>.</p>
+                                  <div class="expanded"><p>Defines the number of decimal places for numeric symbols in the MIRO application. This is a global setting and has an effect on all <a href="./customize.html#output-tables" class="scrollto">output tables</a>, <a href="./customize.html#table-option-large" class="scrollto">big data input tables</a> and the table for <a href="./hypercube.html#scenario-selection">loading scenarios in Hypercube Mode</a>.</p>
                                   <p>Note that this only applies to symbols that are treated as numerical values by MIRO. For example, elements of GAMS <i>Sets</i> may contain numbers, but they are not treated as such but as strings. These are therefore not affected by the maximum decimal place set.</p>
                                       <p></p>
                                   </div>
@@ -308,7 +308,7 @@ putclose log;
                                     <kbd>This integral $\def\f#1{f(#1)} \f{x} = \int_{-\infty}^\infty\hat \f\xi\,e^{2 \pi i \xi x}\,d\xi$ is rendered inline.</kbd> is rendered as: <kbd class="katex">This integral $\def\f#1{f(#1)} \f{x} = \int_{-\infty}^\infty\hat \f\xi\,e^{2 \pi i \xi x}\,d\xi$ is rendered inline.</kbd></p>
                                     A list of all TeX functions supported by MIRO can be found <a href="https://katex.org/docs/supported.html">here</a>.</li>
                                   </ul>
-                                  <p>The readme file can be created or edited directly in configuration mode:</p>
+                                  <p>The readme file can be created or edited directly in Configuration Mode:</p>
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:300pt;" src="assets/images/configuration_mode/readme_editor.png" alt="Readme editor" />
                                   </div>
@@ -415,7 +415,7 @@ putclose log;
                                   <p class="expanded">Enables to save file attachments for scenarios. Read more about this in the <i>File attachments</i> section <a href="./start.html#file-attachments">here</a>.</p>
                                   <h6 id="general-duration" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Duration the GAMS log and lst files are stored in the database (in days)</h6>
                                   <div class="expanded"><p>If you want to save the log and lst files of individual GAMS jobs, you can use this option to specify how long the files should be saved. 
-                                  0 means files are not stored at all, 999 means files are stored indefinitely. This setting is ignored when the attachment module is not active. Note that this is currently only supported in the MIRO base mode. </p>
+                                  0 means files are not stored at all, 999 means files are stored indefinitely. This setting is ignored when the attachment module is not active. Note that this is currently only supported in the MIRO Base Mode. </p>
 								  </div>
                                   <h6 id="general-output-attach" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Output attachments</h6>
                                   <div class="expanded"><p>Output attachments allow you to automatically attach files after a GAMS run has been successfully completed. This lets you store additional results alongside the ones displayed in the UI. In addition, MIRO gives you the option to choose what should happen when an attachment is not found after a successful GAMS run. Should the user be informed of this by an error message or should it be silently ignored. You can also choose to automatically extract the attachment to the working directory when you start another GAMS run with this scenario. This function adds a state to your scenarios. Per default, scenarios in MIRO are stateless. This means that running two consecutive GAMS runs with the same input data will result in the same output data. By adding an attachment to the scenario that GAMS is allowed to read on consecutive executions, the results may no longer be the same.</p>
@@ -448,20 +448,20 @@ putclose;
                                              <img class="img-fluid" style="max-height:325pt;" src="assets/images/advanced-options.png" alt="Output data screen - scalars" />
                                         </div>
                                   </div>
-                                  <h6 id = "save-trace-file" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Save trace file with each GAMS run (Hypercube mode)</h6>
-                                  <p class="expanded">The trace file gives performance information about a GAMS run. For performance analysis with the analysis tool PAVER - which is integrated into the MIRO Hypercube mode - this option needs to be activated. More on the trace file in general can be found <a href = "https://www.gams.com/latest/docs/UG_SolverUsage.html#UG_SolverUsage_TraceFile" target = "_blank">here</a>.</p>
+                                  <h6 id = "save-trace-file" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Save trace file with each GAMS run (Hypercube Mode)</h6>
+                                  <p class="expanded">The trace file gives performance information about a GAMS run. For performance analysis with the analysis tool PAVER - which is integrated into the MIRO Hypercube Mode - this option needs to be activated. More on the trace file in general can be found <a href = "https://www.gams.com/latest/docs/UG_SolverUsage.html#UG_SolverUsage_TraceFile" target = "_blank">here</a>.</p>
                                   <h6 id="command-line-args" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Specify extra command line arguments that GAMS will be called with</h6>
                                   <p class="expanded">With this option, command line arguments can be specified that are set for each GAMS run that is started from MIRO.
                                   This can be GAMS options like <span class="code">limrow=10</span> or <span class="code">threads=4</span> but also custom double-dash parameters. 
                                   Note, that the these command line arguments are static; they can not be changed by the user from MIRO.
                                   <br>For more information about command line parameters that can be set from MIRO using widgets like sliders, dropdown menus, checkboxes etc. click <a href="./model.html#command-line">here</a>.</p>
                                   <h4 id="analysis-scripts" class="docu-general-header">Analysis scripts</h4>
-                                  <p>MIRO allows you to run custom analysis scripts in both Base and Hypercube mode. These scripts have to generate HTML output which will be displayed in the interface once the script finished. Scripts need to be placed in a folder called <span class="code">scripts_&lt;modelname&gt;</span>; this is also where MIRO executes them (important when you use relative paths in your script).</p>
-                                  <h6 onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Base mode</h6>
-                                  <p class="expanded">In the Base mode, your analysis scripts will appear as a new tab in the output data section. When the user runs your script, MIRO saves the data of the current scenario in a gdx file called <span class="code">data.gdx</span> in: <span class="code">scripts_&lt;modelname&gt;</span>. Your script can then read and analyse this data and produce output in the form of a single HTML file. This file will be loaded and displayed in MIRO once your script finished. Script results are stored in the database as part of a scenario. This means that when you load a scenario (either to compare it with other scenarios or to modify it), the script results are loaded as well.</p>
-                                  <h6 id="hcube-analysis-scripts" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Hypercube mode</h6>
+                                  <p>MIRO allows you to run custom analysis scripts in both Base and Hypercube Mode. These scripts have to generate HTML output which will be displayed in the interface once the script finished. Scripts need to be placed in a folder called <span class="code">scripts_&lt;modelname&gt;</span>; this is also where MIRO executes them (important when you use relative paths in your script).</p>
+                                  <h6 onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Base Mode</h6>
+                                  <p class="expanded">In the Base Mode, your analysis scripts will appear as a new tab in the output data section. When the user runs your script, MIRO saves the data of the current scenario in a gdx file called <span class="code">data.gdx</span> in: <span class="code">scripts_&lt;modelname&gt;</span>. Your script can then read and analyse this data and produce output in the form of a single HTML file. This file will be loaded and displayed in MIRO once your script finished. Script results are stored in the database as part of a scenario. This means that when you load a scenario (either to compare it with other scenarios or to modify it), the script results are loaded as well.</p>
+                                  <h6 id="hcube-analysis-scripts" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Hypercube Mode</h6>
                                   <div class="expanded">
-                                    <p>In the Hypercube mode, custom scripts can be used to run analyses on multiple scenarios at once. Let's consider the example that comes with the <i>pickstock</i> model: a <a href="https://jupyter.org" target="_blank">Jupyter Notebook</a> that tries to answer high-level questions like "How many training days should I use" and "How many stocks should I choose". You can find this script in <span class="code">scripts_pickstock/hcube_analysis.ipynb</span>. First, we have to tell MIRO that we want to use a custom analysis script. The Configuration mode allows us to set everything up:</p>
+                                    <p>In the Hypercube Mode, custom scripts can be used to run analyses on multiple scenarios at once. Let's consider the example that comes with the <i>pickstock</i> model: a <a href="https://jupyter.org" target="_blank">Jupyter Notebook</a> that tries to answer high-level questions like "How many training days should I use" and "How many stocks should I choose". You can find this script in <span class="code">scripts_pickstock/hcube_analysis.ipynb</span>. First, we have to tell MIRO that we want to use a custom analysis script. The Configuration Mode allows us to set everything up:</p>
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" style="max-height:300pt" src="assets/images/configuration_mode/hcube_script_example.png" alt="Hypercube analysis script configuration" />
                                     </div>
@@ -661,7 +661,7 @@ $offExternalInput
                                 <div class="section-block" id="configure-widgets">
                                   <h3 class="block-title">Configure widgets</h3>
                                   <p><i>Input widgets</i> can be used instead of tables to enter scalar input data. Examples of such widgets include: sliders, dropdown menus, date selectors or checkboxes. 
-                                  In the <i>configure widgets</i> section of the Configuration mode you can configure widgets for:</p>
+                                  In the <i>configure widgets</i> section of the Configuration Mode you can configure widgets for:</p>
                                   <ul>
                                     <li><a href="https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Scalars" target="_blank">Scalars</a></li>
                                     <li><a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_Subsets" target="_blank">Simple (1-dimensional) Subsets</a></li>
@@ -838,15 +838,15 @@ $offExternalInput
                                   <p>What if we had a fourth domain, e.g. another categorical dimension? A scatter plot allows us to visualize a forth dimension in the form of the marker type (e.g. cirle, square, triangle etc.).</p>
                                   <p>The more dimensions we try to plot in one chart, the harder it is to understand what is actually going on. Instead of trying to plot as many dimensions as possible in a single chart, we should think about reducing the number of dimensions. One way to do this is to <a href = "./charts.html#animation">animate our chart</a> (e.g. to show how our data changes over time). Another way is to use a <a href = "./charts.html#filter-option">filter</a> that allows us to select a particular slice of our data. Both of these options are supported by MIRO!</p>
                                   <p>The following section shows some examples for different chart types you can use in MIRO. It is not useful to describe all possible options MIRO supports. Instead, you should just explore it yourself! 
-                                  Start the Configuration mode and play around with the data until you get a satisfactory result. </p>
+                                  Start the Configuration Mode and play around with the data until you get a satisfactory result. </p>
                                   <div class="callout-block callout-warning">
                                         <div class="icon-holder">
                                             <i class="fas fa-info-circle"></i>
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <b class="callout-title">Note:</b>
-                                            <p>Currently already configured graphics are not preloaded at the start of the Configuration mode. 
-                                            This means that if you want to make changes to an existing graphic after restarting the Configuration mode, you must reconfigure it from the beginning.</p>
+                                            <p>Currently already configured graphics are not preloaded at the start of the Configuration Mode. 
+                                            This means that if you want to make changes to an existing graphic after restarting the Configuration Mode, you must reconfigure it from the beginning.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                   <div id="graphs-wrapper" class="cards-section text-center cards-wrapper row" style="background:white;">
@@ -999,10 +999,10 @@ $offExternalInput
                                 </div>
                             </section>   
                             <section id="not-in-configuration-mode" class="doc-section">
-                                <h2 class="section-title">Options not available in Configuration mode</h2>
+                                <h2 class="section-title">Options not available in Configuration Mode</h2>
                                 <div class="section-block">
-                                    <p>With the <a href = "#configurationMode" class="scrollto">Configuration mode</a> we pursue the goal that a user can completely configure a MIRO application 
-                                    without having to write any JSON code. However, there are a few advanced options that are not yet available in the Configuration mode and will have to be configured manually when desired. The following section describes these options.</p>
+                                    <p>With the <a href = "#configurationMode" class="scrollto">Configuration Mode</a> we pursue the goal that a user can completely configure a MIRO application 
+                                    without having to write any JSON code. However, there are a few advanced options that are not yet available in the Configuration Mode and will have to be configured manually when desired. The following section describes these options.</p>
                                     <h6 id = "remote-import-export" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Remote data import and export</h6>
                                     <div class="expanded"><p>A MIRO application can be supplied with data from various sources:</p>
                                     <ul>
@@ -1299,7 +1299,7 @@ renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path
                                      </div><!--//icon-holder-->
                                      <div class="content">
                                          <b class="callout-title">Tip:</b>
-                                          <p>In the MIRO Base mode, widgets with ranges are only available for double-dash parameters!</p>
+                                          <p>In the MIRO Base Mode, widgets with ranges are only available for double-dash parameters!</p>
                                       </div><!--//content-->
                                   </div><!--//callout-block-->
                                    <p>We covered the basics of how to use widgets for your scalar inputs as well as command line parameters. Let's now take a look at how widgets that return two scalars instead of one are treated. Those widgets include a slider with two handles (also referred to as a slider range) and a date range selector:</p>
@@ -1386,14 +1386,14 @@ renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path
                                 </div><!--//section-block-->
                                 <div class="section-block" id="custom-renderers">
                                   <h3 class="block-title">Custom Graphics</h3>  
-                                  <p>GAMS MIRO allows you to use your own custom renderers for your datasets. In this section we will show you how to create really sophisticated graphics that can not be configured with the Configuration mode of GAMS MIRO.</p>
+                                  <p>GAMS MIRO allows you to use your own custom renderers for your datasets. In this section we will show you how to create really sophisticated graphics that can not be configured with the Configuration Mode of GAMS MIRO.</p>
                                   <div class="callout-block callout-warning">
                                         <div class="icon-holder">
                                             <i class="fas fa-exclamation-triangle"></i>
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <b class="callout-title">Note:</b>
-                                            <p>The following example shows how a map can be created via a custom renderer. Note that maps can also be configured in the <a href="#configurationMode" class="scrollto">Configuration mode</a>. However, the following example shows how to use the R API for customized graphics in general.</p>
+                                            <p>The following example shows how a map can be created via a custom renderer. Note that maps can also be configured in the <a href="#configurationMode" class="scrollto">Configuration Mode</a>. However, the following example shows how to use the R API for customized graphics in general.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                   <div class="section-block">
@@ -1524,7 +1524,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                         <div id="doc-nav" class="doc-nav">
                             <nav id="doc-menu" class="nav doc-menu flex-column sticky">
                                 <a class="nav-link scrollto" href="#intro">Introduction</a>
-                                <a class="nav-link scrollto" href="#configurationMode">The Configuration mode</a>
+                                <a class="nav-link scrollto" href="#configurationMode">The Configuration Mode</a>
                                 <nav class="doc-sub-menu nav flex-column">
                                     <a class="nav-link scrollto" href="#general-settings">General settings</a>
                                     <a class="nav-link scrollto" href="#table-settings">Configure tables</a>
@@ -1532,7 +1532,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                     <a class="nav-link scrollto" href="#configure-graphs">Configure graphs</a>
                                     <a class="nav-link scrollto" href="#database-management">Database management</a>
                                 </nav>
-                                <a class="nav-link scrollto" href="#not-in-configuration-mode">Options not available in Configuration mode</a>
+                                <a class="nav-link scrollto" href="#not-in-configuration-mode">Options not available in Configuration Mode</a>
                                 <a class="nav-link scrollto" href="#jsonfiles">Configuration via JSON files</a>
                                 <nav class="doc-sub-menu nav flex-column">
                                     <a class="nav-link scrollto" href="#widgets-tables">Example: tables</a>
