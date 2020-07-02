@@ -498,7 +498,7 @@ Scenario <- R6Class("Scenario",
                         
                         data <- super$importDataset(private$dbSchema$tabName[["_scenAttach"]],
                                                     if(allExecPerm) 
-                                                      tibble("execPerm", TRUE) 
+                                                      tibble("execPerm", if(inherits(private$conn, "PqConnection")) TRUE else 1) 
                                                     else 
                                                       tibble(rep.int("fileName", length(fileNames)), fileNames),
                                                     colNames = c("fileName", "fileContent"), innerSepAND = FALSE,

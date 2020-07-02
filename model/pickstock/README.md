@@ -37,7 +37,14 @@ Since the objective function minimizes the absolute deviation between the DJ ind
 Select a subset (≤ maxstock) of Dow Jones stocks, along with weights, so that this portfolio behaves similarly to the overall index (in the training phase).
 The model is based on a linear regression over the time series, but it minimizes the loss using the L1-norm (absolute value), and allows only a fixed number of weights to take nonzero variable.
 
-![Pickstock model](static_pickstock/model.png =500x217)
+<br/>
+$$\text{minimize} \qquad  \text{obj}:= \sum_{ds} \text{slpos}_{ds} + \text{slneg}_{ds} $$
+$$\text{subject to}  \qquad  \sum_{s}  \text{price}_{ds, s} \cdot w_{s} =  \text{index}_{ds} +  \text{slpos}_{ds} -  \text{slneg}_{ds} \quad (\forall{ds})$$
+$$w_{s} \leq p_{s} \quad (\forall{s}) $$
+$$\sum_{s}{p_{s}} \leq \text{maxstock}$$
+$$w_{s}\geq 0, \qquad p_{s}\in \{0,1\} \quad (\forall s)$$
+$$\text{slpos}_{d}\geq 0, \qquad  \text{slneg}_{d}\geq 0 \quad (\forall d) $$
+<br/>
 
 Important Sets and Parameters:
 ```

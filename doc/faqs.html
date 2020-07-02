@@ -11,7 +11,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="GAMS MIRO documentation">
     <meta name="author" content="GAMS Development Corp.">
-    <link rel="shortcut icon" href="favicon.ico">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
     <!-- FontAwesome JS -->
     <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
@@ -24,30 +23,13 @@
 
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
-    <!-- Cookie consent by https://cookieconsent.osano.com -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
-    <script>
-    window.addEventListener("load", function(){
-    window.cookieconsent.initialise({
-      "palette": {
-        "popup": {
-          "background": "#000"
-        },
-        "button": {
-          "background": "#F39619"
-        }
-      }
-    })});
-    </script>
+    <!--#include virtual="/wheader.html" -->
 </head>
 
 <body class="body-orange">
     <!--#include virtual="/wbody.html" -->
     <div class="page-wrapper">
     <!--#include virtual="/mirover.html" -->
-
-        <!--TYPO3SEARCH_begin-->
 
         <!-- ******Header****** -->
         <header id="header" class="sub-header">
@@ -89,7 +71,7 @@
                                 </div><!--//section-block-->
                                 <div class="section-block">
                                     <h3 class="question"><i class="fas fa-question-circle"></i> Which operating systems are supported?</h3>
-                                    <div class="answer">The local version of MIRO runs on Windows, MacOS as well as Linux.</div>
+                                    <div class="answer">The local version of MIRO runs on Windows, macOS as well as Linux.</div>
                                 </div><!--//section-block-->
                                 <div class="section-block">
                                     <h3 class="question"><i class="fas fa-question-circle"></i> Does all the data for my model need to come from MIRO?</h3>
@@ -97,7 +79,7 @@
                                     For example, you can place an Excel file in your model folder and import the data from this file into GAMS using 
                                     the <a href="https://www.gams.com/latest/docs/T_GDXXRW.html" target="_blank">GDXXRW</a> utility. <br/>
                                     <b>Note</b>: By default, MIRO executes your model in the directory where the model is located. However, there is an option 
-                                    to change this behaviour and run the model in a temporary directory. When this option is enabled, a few things have 
+                                    to change this behavior and run the model in a temporary directory. When this option is enabled, a few things have 
                                     to be considered. Read mode about this <a href = "./model.html#consider-in-temp-dir">here</a>.
                                     </div>
                                 </div><!--//section-block-->
@@ -154,7 +136,7 @@
 
                                     <div class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> Can I also write my own custom functions to generate input data?</h3>
-                                        <div class="answer">yes. MIRO has an API that allows you to use e.g. charts to produce input data. We call this feature <i>custom input widgets</i>. These are not available in configuration mode, but must be implemented manually. You can find more information <a href="./customize.html#custom-input-widgets">here</a>.</div>
+                                        <div class="answer">yes. MIRO has an API that allows you to use e.g. charts to produce input data. We call this feature <i>custom input widgets</i>. These are not available in Configuration Mode, but must be implemented manually. You can find more information <a href="./customize.html#custom-input-widgets">here</a>.</div>
                                     </div><!--//section-block-->
 
                                     <div class="section-block">
@@ -172,12 +154,12 @@
                                     </div><!--//section-block-->
 
                                     <div class="section-block">
-                                        <h3 class="question"><i class="fas fa-question-circle"></i> How can I start the MIRO Hypercube mode?</h3>
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> How can I start the MIRO Hypercube Mode?</h3>
                                         <div class="answer">
-                                          <p>Just like the Base mode, the Hypercube mode can be started directly from GAMS Studio or the command line. 
+                                          <p>Just like the Base Mode, the Hypercube Mode can be started directly from GAMS Studio or the command line. 
                                           For the latter, the environment variable <span class="code">MIRO_MODE=hcube</span> needs to 
                                           be set instead of <span class="code">MIRO_MODE=base</span>. The other steps (see <a href = "./start.html#start-via-command-line">here</a>) 
-                                          remain the same. MIRO automatically processes and adjusts your base mode configuration so that it will work in Hypercube mode.</p>
+                                          remain the same. MIRO automatically processes and adjusts your Base Mode configuration so that it will work in Hypercube Mode.</p>
                                         </div>
                                     </div><!--//section-block-->
 
@@ -212,7 +194,7 @@
                                     <h3 class="question"><i class="fas fa-question-circle"></i> &lt;modelname&gt;.json</h3>
                                     <div class="answer">
                                         <p>The <i>&lt;modelname&gt;.json</i> file, for example <i>transport.json</i>, is located in the <i>&lt;modelname&gt;/conf_&lt;modelname&gt;</i> directory. It contains the configuration of graphics, input widgets, language and all other model-specific configurations for a MIRO app.
-                                        This file can be filled manually by the user. However, the easiest way for the configuration is the <a href = "./customize.html#configurationMode">Configuration mode</a>.
+                                        This file can be filled manually by the user. However, the easiest way for the configuration is the <a href = "./customize.html#configurationMode">Configuration Mode</a>.
                                         <br>Like the <i>&lt;modelname&gt;_io.json</i> file, the structure of this file is based on a <a href="./schema.html" target="_blank">schema</a> with which the file is validated when a MIRO app is started.</p>
                                     </div><!--//anwser-->
                                 </div><!--//section-block-->
@@ -253,13 +235,13 @@
                                     <div id="def-hypercube" class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What does <b>Hypercube</b> mean in the context of GAMS MIRO?</h3>
                                         <div class="answer">
-                                            <p><i>Hypercube</i> mode is a mode in GAMS MIRO that automatically generates scenarios. Input widgets you defined for your scalars in the base mode are automatically expanded in the Hypercube mode (e.g. a slider is expanded to a slider range and a single-dropdown menu is expanded to a multi-dropdown menu etc.). This now lets you configure multiple scenarios at once. MIRO will now automatically compute the cartesian product (or, as we call it, the Hypercube) over scalars you expanded. The results can then be filtered, analyzed, downloaded etc. For more information see the section about the MIRO <a href="./hypercube.html#hcube-example">Hypercube mode</a>.
+                                            <p><i>Hypercube</i> mode is a mode in GAMS MIRO that automatically generates scenarios. Input widgets you defined for your scalars in the Base Mode are automatically expanded in the Hypercube Mode (e.g. a slider is expanded to a slider range and a single-dropdown menu is expanded to a multi-dropdown menu etc.). This now lets you configure multiple scenarios at once. MIRO will now automatically compute the cartesian product (or, as we call it, the Hypercube) over scalars you expanded. The results can then be filtered, analyzed, downloaded etc. For more information see the section about the MIRO <a href="./hypercube.html#hcube-example">Hypercube Mode</a>.
                                             </div>
                                     </div><!--//section-block-->
                                     <div id="def-hypercube-job" class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What does <b>Hypercube Job</b> mean in the context of GAMS MIRO?</h3>
                                         <div class="answer">
-                                            <p>A <i>Hypercube Job</i> describes a set of scenarios for a particular model which MIRO generated automatically by expanding the cartesian product over all selected scalars. For more information see the section about the MIRO <a href="./hypercube.html#hcube-example">Hypercube mode</a>.</p>
+                                            <p>A <i>Hypercube Job</i> describes a set of scenarios for a particular model which MIRO generated automatically by expanding the cartesian product over all selected scalars. For more information see the section about the MIRO <a href="./hypercube.html#hcube-example">Hypercube Mode</a>.</p>
                                             </div>
                                     </div><!--//section-block-->
                                     <div id="def-job-tag" class="section-block">
@@ -273,8 +255,8 @@
                                     <div id="def-development-mode" class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What is meant by <b>development mode</b>?</h3>
                                         <div class="answer">
-                                            <p>You are in <i>development mode</i> when you start a MIRO app from GAMS Studio or via command line. In both cases current model-specific configuration files are written in binary format at startup.
-                                            An <a href="./model.html#create-app-executable">app executable</a> created with --mkapp=1 can access these files, so that the start up of this (non-development mode) approach is much faster.</p>
+                                            <p>You are in <i>development mode</i> when you start a MIRO app from GAMS Studio (or via the command line with the environment variable <kbd>MIRO_DEV_MODE</kbd> set to <kbd>true</kbd>). Every time you launch MIRO in development mode, your app resources (configuration, README file, data files etc.) are loaded and validated, so your application is always in sync with your current GAMS source.
+                                            Once you want to share your application with other people you can <a href="./deployment.html">deploy</a> it. Deployed apps work with a compiled version of your resources, so they tend to launch faster. However, this also means that you can no longer change your app without deploying a new version.</p>
                                             </div>
                                     </div><!--//section-block-->
 
@@ -316,13 +298,11 @@
                 </div><!--//doc-body-->
             </div><!--//container-->
         </div><!--//doc-wrapper-->
-
-    <!--TYPO3SEARCH_end-->
-    </div><!--//page-wrapper--><!--#include virtual="/footer_miro.html" -->
+    </div><!--//page-wrapper-->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <!--#include virtual="/footer.html" -->
 
     <!-- Main Javascript -->
-    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>
     <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
     <script type="text/javascript" src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"></script>

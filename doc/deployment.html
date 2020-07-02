@@ -11,7 +11,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="GAMS MIRO documentation">
     <meta name="author" content="GAMS Development Corp.">
-    <link rel="shortcut icon" href="favicon.ico">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
     <!-- FontAwesome JS -->
     <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
@@ -23,30 +22,13 @@
 
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
-    <!-- Cookie consent by https://cookieconsent.osano.com -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
-    <script>
-    window.addEventListener("load", function(){
-    window.cookieconsent.initialise({
-      "palette": {
-        "popup": {
-          "background": "#000"
-        },
-        "button": {
-          "background": "#F39619"
-        }
-      }
-    })});
-    </script>
+    <!--#include virtual="/wheader.html" -->
 </head>
 
 <body class="body-orange">
     <!--#include virtual="/wbody.html" -->
     <div class="page-wrapper">
     <!--#include virtual="/mirover.html" -->
-
-        <!--TYPO3SEARCH_begin-->
 
         <!-- ******Header****** -->
         <header id="header" class="sub-header">
@@ -119,7 +101,7 @@ inc/inc2.inc
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" style="max-height:350pt" src="assets/images/deployment/deploy.png" alt="Deploy MIRO model" />
                                     </div>
-                                    <p>In GAMS Studio, select <i>Deploy</i> and specify which MIRO modes you want to support in your MIRO app (Base mode/Hypercube mode or both). If the Base mode is selected, you also need to decide how your model shall be executed (<i>execution environment</i>). There are three options:</p>
+                                    <p>In GAMS Studio, select <i>Deploy</i> and specify which MIRO modes you want to support in your MIRO app (Base Mode/Hypercube Mode or both). If the Base Mode is selected, you also need to decide how your model shall be executed (<i>execution environment</i>). There are three options:</p>
                                         <ol>
                                             <li> Multi-user: This option allows your app to be used by multiple users simultaneously. Your model files are extracted at a random location, which is different for each user, and your model is executed from there.</li>
                                             <li> Single-user: Your model is executed inside the model directory. No extraction of your model files is required, but this means that you can NOT have multiple users accessing your MIRO app at the same time.</li>
@@ -132,7 +114,7 @@ inc/inc2.inc
                                           </div><!--//icon-holder-->
                                           <div class="content">
                                               <b class="callout-title">Advice</b>
-                                              <p>We advise you to test your MIRO app before distributing it. GAMS Studio offers an option <i>test deployment</i>. This simulates how your end users will experience the MIRO app (e.g. for the <i>Base mode</i> MIRO is launched in the specified execution environment). In particular, you should check whether you forgot to include important files in the model assembly <span class="code">&lt;modelname&gt;_files.txt</span>.</p>
+                                              <p>We advise you to test your MIRO app before distributing it. GAMS Studio offers an option <i>test deployment</i>. This simulates how your end users will experience the MIRO app (e.g. for the <i>Base Mode</i> MIRO is launched in the specified execution environment). In particular, you should check whether you forgot to include important files in the model assembly <span class="code">&lt;modelname&gt;_files.txt</span>.</p>
                                           </div><!--//content-->
                                       </div><!--//callout-block-->
                                     <h6>Bundling data with your app</h6>
@@ -142,10 +124,10 @@ inc/inc2.inc
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" style="max-height:250pt" src="assets/images/deployment/custom_logo.png" alt="Custom Logo for MIRO library" />
                                     </div>
-                                    <p><b>Note</b>: The <span class="code">&lt;modelname&gt;_logo</span> logo described here is located in the same folder, but is independent of the logo <a href = "./customize.html#app-logo">set in the Configuration mode</a>.</p>
+                                    <p><b>Note</b>: The <span class="code">&lt;modelname&gt;_logo</span> logo described here is located in the same folder, but is independent of the logo <a href = "./customize.html#app-logo">set in the Configuration Mode</a>.</p>
                                     <p>If everything is set, click on <i>Deploy</i>. That's it! A new file <span class="code">&lt;modelname&gt;.miroapp</span> is created in your model directory. You can now distribute this MIRO app directly to your end users!</p>
                                     <div style="outline: solid 1px black; outline-offset: 5px; margin-top:30px">
-                                        <h3 id="export-cl"  class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Advanced: Export MIRO app using the command line</h3>
+                                        <h3 id="export-cl"  class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Advanced: Export MIRO app using the command line</h3>
                                         <div class="section-block" style="display:none">
                                             <p>In case you want to use the command line instead of GAMS Studio to export your MIRO app, you should proceed as follows: First, set the environment variable <span class="code">MIRO_BUILD</span> to <span class="code">true</span> and <span class="code">MIRO_MODEL_PATH</span> to the absolute path of your main <span class="code">.gms</span> file (see <a href="./start.html#start-miro">here</a> for more information on how to set these environment variables on your operating system). The environment variables used to control what execution mode to choose and what MIRO modes to export are listed in the following tables:</p> 
                                             <div class="table-responsive">
@@ -182,15 +164,15 @@ inc/inc2.inc
                                                     </thead>
                                                     <tbody>
                                                         <tr>
-                                                          <td>Base mode</td>
+                                                          <td>Base Mode</td>
                                                           <td><span class="code">MIRO_MODE=base</span></td>
                                                         </tr>
                                                         <tr>
-                                                          <td>Hypercube mode</td>
+                                                          <td>Hypercube Mode</td>
                                                           <td><span class="code">MIRO_MODE=hcube</span></td>
                                                         </tr>
                                                         <tr>
-                                                          <td>Base mode and Hypercube mode</td>
+                                                          <td>Base Mode and Hypercube Mode</td>
                                                           <td><span class="code">MIRO_MODE=full</span></td>
                                                         </tr>
                                                     </tbody>
@@ -214,7 +196,7 @@ inc/inc2.inc
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" src="assets/images/deployment/gallery.png" alt="MIRO gallery example" />
                                     </div>
-                                    <p>To add a new app to the library, either double click the app in your file browser (only on Windows/MacOS) or click on "Edit" (<span class="key">Ctrl</span> + <span class="key">E</span> or <span class="key">⌘</span> + <span class="key">E</span> on MacOS) and drag&drop the app onto the "+" button. Alternatively, you can click on the "+" button and browse to the location of the new app manually.</p>
+                                    <p>To add a new app to the library, either double click the app in your file browser (only on Windows/macOS) or click on "Edit" (<span class="key">Ctrl</span> + <span class="key">E</span> or <span class="key">⌘</span> + <span class="key">E</span> on macOS) and drag&drop the app onto the "+" button. Alternatively, you can click on the "+" button and browse to the location of the new app manually.</p>
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" style="max-height:350pt" src="assets/images/deployment/add-app.png" alt="Add new app" />
                                     </div>
@@ -222,9 +204,9 @@ inc/inc2.inc
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" style="max-height:350pt" src="assets/images/deployment/edit-app.png" alt="Edit MIRO app" />
                                     </div>
-                                    <p>Once you are happy with the setup, click on <i>Add app</i>. Your app is now installed in your library and you can launch it by clicking the <i>Launch</i> button. In case your app supports both the Base mode and the Hypercube mode, the <i>Launch</i> button turns into a dropdown menu that lets you select which mode to launch.</p>
+                                    <p>Once you are happy with the setup, click on <i>Add app</i>. Your app is now installed in your library and you can launch it by clicking the <i>Launch</i> button. In case your app supports both the Base Mode and the Hypercube Mode, the <i>Launch</i> button turns into a dropdown menu that lets you select which mode to launch.</p>
                                     <div class="section-block" style="text-align:center;">
-                                        <img class="img-fluid" style="max-height:100pt" src="assets/images/deployment/launch-mode.png" alt="Launch Base or Hypercube mode" />
+                                        <img class="img-fluid" style="max-height:100pt" src="assets/images/deployment/launch-mode.png" alt="Launch Base or Hypercube Mode" />
                                     </div>
                                     <div class="callout-block callout-warning">
                                         <div class="icon-holder">
@@ -238,7 +220,7 @@ inc/inc2.inc
                                 </div><!--//section-block-->
                                 <div class="section-block" id="sbs-customize-app">
                                     <h3>Customize your installed MIRO apps</h3>
-                                    <p>The MIRO Desktop interface offers several ways to control the behaviour of your MIRO apps. To access these settings click on <span style="white-space: nowrap;"><i>File</i> &rarr; <i>Preferences</i></span> (or <span style="white-space: nowrap;"><i>GAMS MIRO</i> &rarr; <i>Preferences</i></span> if you are on MacOS). Alternatively, press <span class="key">F7</span> (or <span class="key">⌘</span> + <span class="key">,</span> on MacOS). You will notice that there are two categories of settings: <i>General</i> settings and settings related to <i>Paths</i>. In the <i>General</i> category you can specify whether you want to launch your MIRO apps in a new window of the MIRO Launcher or in your default browser. You can set the language, specify the level of detail of information to be logged as well as the number of days you want your log files to be stored for (-1 being no limit)</p>
+                                    <p>The MIRO Desktop interface offers several ways to control the behavior of your MIRO apps. To access these settings click on <span style="white-space: nowrap;"><i>File</i> &rarr; <i>Preferences</i></span> (or <span style="white-space: nowrap;"><i>GAMS MIRO</i> &rarr; <i>Preferences</i></span> if you are on macOS). Alternatively, press <span class="key">F7</span> (or <span class="key">⌘</span> + <span class="key">,</span> on macOS). You will notice that there are two categories of settings: <i>General</i> settings and settings related to <i>Paths</i>. In the <i>General</i> category you can specify whether you want to launch your MIRO apps in a new window of the MIRO Launcher or in your default browser. You can set the language, specify the level of detail of information to be logged as well as the number of days you want your log files to be stored for (-1 being no limit)</p>
                                     <p>Furthermore, in the <i>Paths</i> section, you can control the location where your MIRO apps are stored/loaded from and the location where log files are kept. Additionally, in case you want to use a specific GAMS or R version or the MIRO Launcher was unable to locate GAMS (or R) automatically, you can set the path to GAMS (or R) here.</p>
                                     <div class="table-responsive">
                                         <table class="table table-striped" style="margin: 0px auto; margin-bottom:15px;">
@@ -307,7 +289,7 @@ inc/inc2.inc
                                 <div class="section-block" id="collaboration-apps">
                                     <h3>Share MIRO apps</h3>
                                     <p>This section covers the options you have when you want to share MIRO apps and/or scenarios between multiple users.</p>
-                                    <p>First, you need to specify a location in your file system where your MIRO apps are stored. To change the directory where MIRO apps are stored, go to <i>Preferences</i> &rarr; <i>Paths</i> and change the "MIRO app path" to a directory where all collaborating users have at least read access. Users that are allowed to add/edit/remove apps need write access as well. Note that this only handles the location of where the MIRO apps are stored and loaded from, not the location of the MIRO database that the apps use. If you want your users to share the same database (in order to collaborate), you can specify its location by clicking on <i>Edit</i> (<span class="key">Ctrl</span> + <span class="key">E</span> or <span class="key">⌘</span> + <span class="key">E</span> on MacOS).</p>
+                                    <p>First, you need to specify a location in your file system where your MIRO apps are stored. To change the directory where MIRO apps are stored, go to <i>Preferences</i> &rarr; <i>Paths</i> and change the "MIRO app path" to a directory where all collaborating users have at least read access. Users that are allowed to add/edit/remove apps need write access as well. Note that this only handles the location of where the MIRO apps are stored and loaded from, not the location of the MIRO database that the apps use. If you want your users to share the same database (in order to collaborate), you can specify its location by clicking on <i>Edit</i> (<span class="key">Ctrl</span> + <span class="key">E</span> or <span class="key">⌘</span> + <span class="key">E</span> on macOS).</p>
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" style="max-height:350pt" src="assets/images/deployment/edit-database-location.png" alt="Edit database location" />
                                     </div>
@@ -407,13 +389,11 @@ inc/inc2.inc
                 </div><!--//doc-body-->
             </div><!--//container-->
         </div><!--//doc-wrapper-->
-
-    <!--TYPO3SEARCH_end-->
-    </div><!--//page-wrapper--><!--#include virtual="/footer_miro.html" -->
+    </div><!--//page-wrapper-->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <!--#include virtual="/footer.html" -->
 
     <!-- Main Javascript -->
-    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
     <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
     <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>

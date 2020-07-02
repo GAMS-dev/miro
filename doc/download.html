@@ -23,29 +23,13 @@
 
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
-    <!-- Cookie consent by https://cookieconsent.osano.com -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
-    <script>
-    window.addEventListener("load", function(){
-    window.cookieconsent.initialise({
-      "palette": {
-        "popup": {
-          "background": "#000"
-        },
-        "button": {
-          "background": "#F39619"
-        }
-      }
-    })});
-    </script>
+    <!--#include virtual="/wheader.html" -->
 </head>
 
 <body class="body-orange">
     <!--#include virtual="/wbody.html" -->
     <div class="page-wrapper">
     <!--#include virtual="/mirover.html" -->
-        <!--TYPO3SEARCH_begin-->
 
         <!-- ******Header****** -->
         <header id="header" class="sub-header">
@@ -90,6 +74,7 @@
                           </div><!--//callout-block-->
                           <div class="section-block">
                               <p>GAMS MIRO Desktop itself is open source software. In order for GAMS to interact with MIRO, the <a href="https://www.gams.com/fileadmin/standard_price_list.pdf" target="_blank">MIRO connector</a> is required, which is included in the GAMS system <a href="https://www.gams.com/download" target="_blank">from GAMS version 30.2</a>. Without a valid license, the connector has limitations on the number of indexed symbols that can be communicated with MIRO. A maximum of 5 indexed symbols can be included in <a href = "./model.html#model-adjustments">$on/offExternalInput and $on/offExternalOutput</a>.</p>
+							  <p>Please check the <a href="./release.html">release notes</a>.</p>
                           </div>
                             <section id="installation-section" class="doc-section">
                                 <ul class="nav nav-tabs row" style="border:none;" id="installOS" role="tablist">
@@ -97,7 +82,7 @@
                                     <a class="nav-link active" id="win-tab" data-toggle="tab" href="#windows" role="tab" aria-controls="windows" aria-selected="true"><i class="fab fa-windows" style="font-size: 40pt;"></i><br>Windows</a>
                                   </li>
                                   <li class="nav-item col-sm-12 col-md-12 col-lg-4 no-margin-sm">
-                                    <a class="nav-link" id="macos-tab" data-toggle="tab" href="#macos" role="tab" aria-controls="macos" aria-selected="false"><i class="fab fa-apple" style="font-size: 40pt;"></i><br>MacOS</a>
+                                    <a class="nav-link" id="macos-tab" data-toggle="tab" href="#macos" role="tab" aria-controls="macos" aria-selected="false"><i class="fab fa-apple" style="font-size: 40pt;"></i><br>macOS</a>
                                   </li>
                                   <li class="nav-item col-sm-12 col-md-12 col-lg-4 no-margin-sm">
                                     <a class="nav-link" id="linux-tab" data-toggle="tab" href="#linux" role="tab" aria-controls="linux" aria-selected="false"><i class="fab fa-linux" style="font-size: 40pt;"></i><br>Linux</a>
@@ -119,15 +104,14 @@
                                   </div>
                                   <div class="tab-pane fade" id="macos" role="tabpanel" aria-labelledby="macos-tab">
                                       <div class="section-block">
-                                          <a class="btn btn-primary btn-cta" style="margin-top:10pt; -webkit-transition:unset;" href="https://d37drm4t2jghv5.cloudfront.net/miro/1.0/macosx/GAMS-MIRO-1.0.3.dmg">Download for MacOS</a>
+                                          <a class="btn btn-primary btn-cta" style="margin-top:10pt; -webkit-transition:unset;" href="https://d37drm4t2jghv5.cloudfront.net/miro/1.0/macosx/GAMS-MIRO-1.0.3.dmg">Download for macOS</a>
                                       </div>
                                       <div class="section-block">
                                           <p>By downloading this software, you agree to the <a href = "./license.html">License Agreement</a>.</p>
                                       </div>
                                       <div class="section-block">
                                         <h3 class="block-title">GAMS MIRO installation</h3>
-                                        <p>To install GAMS MIRO and its components, download the latest version.<br>
-                                        <br><b>Note:</b> In case R version 3.6 is not yet installed on your system, you need to do this first. You can download R <a href="https://d37drm4t2jghv5.cloudfront.net/miro/1.0/R-3.6.3.pkg">here</a>.
+                                        <p>To install GAMS MIRO and its components, download the latest version.
                                         </p>
                                     </div><!--//section-block-->
                                   </div>
@@ -180,14 +164,12 @@
                 </div><!--//doc-body-->
             </div><!--//container-->
         </div><!--//doc-wrapper-->
-
-    <!--TYPO3SEARCH_end-->
-    </div><!--//page-wrapper--><!--#include virtual="/footer_miro.html" -->
+    </div><!--//page-wrapper-->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <!--#include virtual="/footer.html" -->
 
 
     <!-- Main Javascript -->
-    <script type="application/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
-    <script type="application/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script type="application/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
     <script type="application/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
     <script type="text/javascript" src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"></script>

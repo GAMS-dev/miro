@@ -2,6 +2,14 @@
 body{
   font-family: "Helvetica", Times, "Times New Roman", serif;
 }
+.miro-noscript{
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: 40%;
+  font-weight: bold;
+  font-size: 14pt;
+}
 .btn-default{
   border: 2px solid #ADADAD;
   background-color: #FFF;
@@ -11,6 +19,7 @@ body{
 .readme-wrapper {
   max-height:65vh;
   overflow:auto;
+  position:relative;
 }
 .readme-wrapper table{
   margin: 10px 0;
@@ -142,6 +151,72 @@ textarea.readme-preview-markdown:focus {
     border-right: 5px solid transparent;
     border-left: 5px solid transparent;
 }
+::selection {
+  .responsiveDark({
+     color: #fff;
+     background: @light-blue;
+  },
+  {
+     background: @light-blue-dark;
+  })
+}
+::-moz-selection {
+  .responsiveDark({
+     color: #fff;
+     background: @light-blue;
+  },
+  {
+     background: @light-blue-dark;
+  })
+}
+.box-header ::selection {
+  .responsiveDark({
+     background: @dropdown-sidebar-bg;
+  },
+  {
+     background: @dropdown-sidebar-bg-dark;
+  })
+}
+.box-header ::-moz-selection {
+  .responsiveDark({ 
+    background: @dropdown-sidebar-bg;
+  },
+  {
+    background: @dropdown-sidebar-bg-dark;
+  })
+}
+#shiny-tab-gamsinter {
+  .box-header ::selection {
+    .responsiveDark({
+       background: @dropdown-sidebar-bg;
+    },
+    {
+       background: @dropdown-sidebar-bg-dark;
+    })
+  }
+  .box-header ::-moz-selection {
+    .responsiveDark({
+       background: @dropdown-sidebar-bg;
+    },
+    {
+       background: @dropdown-sidebar-bg-dark;
+    })
+  }
+  .box-body ::selection {
+    .responsiveDark({
+    },
+    {
+       background: @log-color-dark;
+    })
+  }
+  .box-body ::-moz-selection {
+    .responsiveDark({
+    },
+    {
+       background: @log-color-dark;
+    })
+  }
+}
 /* custom alerts */
 .gmsalert{
   position:absolute;
@@ -170,6 +245,13 @@ textarea.readme-preview-markdown:focus {
 }
 .gmsalert-error{
   background-color: #F39619;
+}
+.center-alert{
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  right: unset;
+  transform: translate(-50%, -50%);
 }
 .invalidInput{
   border: 2px solid #F39619;
@@ -980,7 +1062,7 @@ animation: none !important;
   margin-left: 2px;
 }
 .option-wrapper{
-  max-width:45%;
+  max-width:350px;
 }
 .option-wrapper-indented{
   max-width:440px;
@@ -1260,4 +1342,105 @@ animation: none !important;
 }
 .no-padding-left {
     padding-left:0px;
+}
+.shiny-notification {
+  .responsiveDark({
+  },
+  {
+    background-color: @shiny-notification-dark;
+    color: @text-color-dark;
+    border-color: @text-color-dark;
+  });
+}
+
+// MIRO pivot table styles
+.vertical-index-list .drop-index-item {
+}
+.miro-pivot-filter .form-group {
+  margin-bottom: 0;
+}
+.miro-pivot-filter .form-group label {
+  margin-bottom: 0;
+}
+.filter-index-list::after,
+.aggregation-index-list::after {
+    .responsiveDark({
+       background-color: @modal-bg;
+    },
+    {
+       background-color: @modal-bg-dark;
+    });
+}
+.dropdown-menu .miro-pivot-delete-view-button {
+  width: 20px;
+  padding-left: 10px;
+}
+.dropdown-menu .miro-pivot-delete-view-button:hover {
+  color: #F39619;
+  background-color: unset;
+}
+.drop-index-list::after {
+    margin: 5px;
+    position:absolute;
+    right: 0;
+    bottom: 0;
+    font-size: 10pt;
+}
+.drop-index-list {
+  position: relative;
+  width: 100%;
+  .responsiveDark({
+     border: 1px dashed black;
+  },
+  {
+     border: 1px dashed white;
+  });
+  min-height:50px;
+  padding: 5px;
+  list-style-type: none;
+}
+.pivot-hdr-col {
+  .responsiveDark({
+     border-right: 1px solid black;
+  },
+  {
+     border-right: 1px solid white;
+     border-bottom: 1px solid white!important;
+  });
+}
+.drop-index-item {
+  min-width: 48px;
+  line-height: 30px;
+  text-align: center;
+  .responsiveDark({
+     border: 1px solid black;
+  },
+  {
+     border: 1px solid white;
+  });
+  border-radius: 20px;
+  padding: 5px;
+  margin: 3px;
+  cursor: pointer;
+  display: block;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+   -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+      user-select: none;
+}
+.drop-index-item:hover {
+  color: #000;
+  background-color: #e7e7e7;
+  border-color: #adadad;
+  transition: all .5s ease;
+}
+.tableScrollCell {
+    .responsiveDark({
+       background: darken(@dt-row-odd,3%)!important;
+    },
+    {
+       background: darken(@dt-row-odd-dark,3%)!important;
+    });
 }

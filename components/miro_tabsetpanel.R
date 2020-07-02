@@ -2,11 +2,11 @@
 # to add more flexibility in MIRO
 MIROtabBox <- function(tabs, id = NULL, selected = NULL, 
                        maxTabsExpanded = 5L, btCollapsedTabs = "",
-                       noTabsGrouped = -1L)
+                       noTabsGrouped = -1L, hideTabs = FALSE)
 {
   content <- MIROtabsetPanel(tabs, id, selected, 
                              maxTabsExpanded, btCollapsedTabs,
-                             noTabsGrouped)
+                             noTabsGrouped, hideTabs = hideTabs)
   
   content$attribs$class <- "nav-tabs-custom"
   
@@ -14,7 +14,7 @@ MIROtabBox <- function(tabs, id = NULL, selected = NULL,
 }
 MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL, 
                             maxTabsExpanded = 5L, btCollapsedTabs = "",
-                            noTabsGrouped = -1L, onclick = NULL)
+                            noTabsGrouped = -1L, onclick = NULL, hideTabs = FALSE)
 {
   foundSelected <- FALSE
   tabs <- lapply(tabs, function(div) {
@@ -85,7 +85,7 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
                                         ddLiTagList))))
   }
   
-  tabNavList <- tags$ul(class = ulClass, id = id,
+  tabNavList <- tags$ul(class = ulClass, id = id, style = if(hideTabs) "display:none",
                         `data-tabsetid` = tabsetId, liTagList)
   
   tabContent <- tags$div(class = "tab-content",

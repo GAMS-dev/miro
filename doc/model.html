@@ -11,7 +11,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="GAMS MIRO documentation">
     <meta name="author" content="GAMS Development Corp.">
-    <link rel="shortcut icon" href="favicon.ico">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
     <!-- FontAwesome JS -->
     <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
@@ -23,30 +22,13 @@
 
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
-    <!-- Cookie consent by https://cookieconsent.osano.com -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
-    <script>
-    window.addEventListener("load", function(){
-    window.cookieconsent.initialise({
-      "palette": {
-        "popup": {
-          "background": "#000"
-        },
-        "button": {
-          "background": "#F39619"
-        }
-      }
-    })});
-    </script>
+    <!--#include virtual="/wheader.html" -->
 </head>
 
 <body class="body-orange">
     <!--#include virtual="/wbody.html" -->
     <div class="page-wrapper">
     <!--#include virtual="/mirover.html" -->
-
-        <!--TYPO3SEARCH_begin-->
 
         <!-- ******Header****** -->
         <header id="header" class="sub-header">
@@ -86,6 +68,15 @@
                                     <p>The model <i>transport</i> is one of the demo applications that come with your GAMS MIRO installation.
                                         However, for illustration purposes we now take the original <i>trnsport.gms</i> model from the GAMS <a href="https://www.gams.com/latest/gamslib_ml/libhtml/" target="_blank">Model Library</a>.
                                         </p><p>If you want to join us in going step by step from the "raw" model to our first MIRO app, download the corresponding file from the Model Library and put it in a directory of your choice.</p>
+										<div class="callout-block callout-warning">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-info-circle"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <b class="callout-title">Case sensitivity:</b>
+                                              <p>For file systems that are case sensitive, the name of the main .gms file must be written in lower case. This is relevant, for example, if a MIRO application is to run on a Linux server.</p>
+                                          </div><!--//content-->
+                                        </div><!--//callout-block-->
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
                             <section id="creating-section" class="doc-section">
@@ -227,7 +218,7 @@ Positive Variable x;
                                     </div><!--//section-block-->
                                     <div id="launch-miro" class="section-block">
                                         <h3 class="block-title">Launch MIRO</h3>
-                                        <p>To launch MIRO from within GAMS Studio, simply click on <i>Run base mode</i>.</p>
+                                        <p>To launch MIRO from within GAMS Studio, simply click on <i>Run Base Mode</i>.</p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                             <img class="img-fluid" style = "max-height:175pt;" src="assets/images/studio/launch-miro-btn.png" alt="Launch MIRO button" />
                                         </div>
@@ -410,7 +401,7 @@ $offExternalInput
                                             </div><!--//icon-holder-->
                                             <div class="content">
                                                 <b class="callout-title">Tip:</b>
-                                                <p>Unlike using the GAMS table method, the <a href="./customize.html#table-option-pivot">pivot option</a> set in the MIRO Configuration mode, does NOT affect the structure of the data contract. The number of columns are therefore variable. 
+                                                <p>Unlike using the GAMS table method, the <a href="./customize.html#table-option-pivot">pivot option</a> set in the MIRO Configuration Mode, does NOT affect the structure of the data contract. The number of columns are therefore variable. 
                                                 If you just want to display all elements of a set side by side in a separate column you should use this option instead. </p>
                                             </div><!--//content-->
                                         </div><!--//callout-block-->
@@ -429,7 +420,7 @@ $onExternalOutput
 Parameter schedule(i,j,scheduleHdr) 'shipment quantities in cases';
 $offExternalOutput
 </pre></code>                             <p>We want to use this symbol to display a <a href = "./charts.html#map-chart">map</a> in MIRO. On this map, markers are to be set based on the geodata available in the symbol. If the symbol is used as a normal parameter, columns 
-                                       <span class="code">i</span>, <span class="code">j</span> and <span class="code">scheduleHdr</span> are communicated with MIRO. The geoinformation is now only available as elements of the last dimension. In the <a href = "./customize.html#configurationMode">Configuration mode</a> we now see only the one value column <span class="code">scheduleHdr</span> for selection:</p> 
+                                       <span class="code">i</span>, <span class="code">j</span> and <span class="code">scheduleHdr</span> are communicated with MIRO. The geoinformation is now only available as elements of the last dimension. In the <a href = "./customize.html#configurationMode">Configuration Mode</a> we now see only the one value column <span class="code">scheduleHdr</span> for selection:</p> 
                                        <div class="section-block" style="text-align:center;">
                                            <img class="img-fluid" style="max-height:225pt;" src="assets/images/no-multi-col-map.png" alt="Map configuration without Table statement" />
                                        </div>
@@ -580,7 +571,7 @@ $offExternalInput
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <b class="callout-title">Tip:</b>
-                                            <p>In the scenario selection module of the <a href="./hypercube.html#scenario-selection">Hypercube mode</a> you can search for scalar data of a scenario, making it easy to find scenarios.</p>
+                                            <p>In the scenario selection module of the <a href="./hypercube.html#scenario-selection">Hypercube Mode</a> you can search for scalar data of a scenario, making it easy to find scenarios.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                     </div><!--//section-block-->
@@ -600,7 +591,7 @@ $offExternalInput
                                     <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style="max-height:150pt;" src="assets/images/singleton-multi-table.png" alt="Visualization of multidimensional singleton sets in a table" />
                                     </div>
-                                    <p>What singleton sets and scalar values have in common is a symbol name and an 
+                                    <p id="singleton-set-separator">What singleton sets and scalar values have in common is a symbol name and an 
                                     explanatory text. However, the value is different. Unlike scalars (a numeric value), singleton sets 
                                     can have a label and an element text. To be able to display both in the scalars table in MIRO, label 
                                     and element text are shown in the value column and separated with a double pipe ('||'). </p>
@@ -624,7 +615,7 @@ $offExternalInput
                                           <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset" target = "__blank">eval.Set</a>, 
                                           <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalglobalset" target = "__blank">evalGlobal.Set</a>, 
                                           and <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevallocalset" target = "__blank">evalLocal.Set</a>. We recommend this approach instead of double-dash parameters 
-                                           and GAMS options configured via the Configuration mode. For more information see <a href = "#command-line" class="scrollto">here</a>.</p>
+                                           and GAMS options configured via the Configuration Mode. For more information see <a href = "#command-line" class="scrollto">here</a>.</p>
                                       </div><!--//content-->
                                     </div><!--//callout-block--> 
                                 </div><!--//section-block-->
@@ -682,8 +673,8 @@ $offExternalInput
                                       <li><b>Command line:</b><br>
                                       While sets, parameters, scalars etc. are declared directly in the GAMS code and can therefore be tagged with <code class="language-gams">$onExternalInput
                                      </code> / <code class="language-gams">$offExternalInput
-                                     </code> (i.e. be part of the GAMS/MIRO data contract), command line parameters lack such a formal declaration. To be able to set them from MIRO, you can specify them in the <a href="./customize.html#configure-widgets">Configuration mode</a> (or in the <a href="./customize.html#widgets-commandLine"><i>&lt;modelname&gt;.json</i></a> file). If a GAMS option or a double dash parameter is set via MIRO, your GAMS model will automatically be called with these command line parameters.</p>
-                                     <p><b>Note:</b><br>GAMS options and double-dash parameters associated with a scenario are stored in MIRO's internal database. However, the information about them is lost when a scenario is exported as a GDX file. This is also relevant in Hypercube mode, because the data exchange there is done via GDX files. Double-dash parameters and GAMS options can only be communicated in Hypercube mode using the (recommended) second approach:</p></li>
+                                     </code> (i.e. be part of the GAMS/MIRO data contract), command line parameters lack such a formal declaration. To be able to set them from MIRO, you can specify them in the <a href="./customize.html#configure-widgets">Configuration Mode</a> (or in the <a href="./customize.html#widgets-commandLine"><i>&lt;modelname&gt;.json</i></a> file). If a GAMS option or a double dash parameter is set via MIRO, your GAMS model will automatically be called with these command line parameters.</p>
+                                     <p><b>Note:</b><br>GAMS options and double-dash parameters associated with a scenario are stored in MIRO's internal database. However, the information about them is lost when a scenario is exported as a GDX file. This is also relevant in Hypercube Mode, because the data exchange there is done via GDX files. Double-dash parameters and GAMS options can only be communicated in Hypercube Mode using the (recommended) second approach:</p></li>
                                       <li id = "singleton-compile"><b>Singleton Sets:</b><br>
                                       Both the element label and the element text of a set can be migrated to compile time variables using the Dollar Control Options 
                                       <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset" target = "__blank">eval.Set</a>, 
@@ -739,7 +730,7 @@ $log What you see here is the %fn%
                                     <p>The first time you save a scenario in the database, the schema of your GAMS input and output symbols is analyzed and the database schema derived from that. This has important implications: 
                                     in case you change the underlying model, the database schema changes as well. If the two schemas are incompatible (e.g. because you added another index to a parameter), MIRO will issue an error as it won't just overwrite existing data.
                                     To resolve this, the database tables of your model must be recreated, resulting in the loss of all previously stored data. To avoid this, you can save your database tables before removing them; manually adjust the saved records to your new schema (e.g. add/remove columns) and then use the result to restore your database. 
-                                    You do so by using the <a href="./customize.html#database-management">Configuration mode</i></a> built into MIRO.</p>
+                                    You do so by using the <a href="./customize.html#database-management">Configuration Mode</i></a> built into MIRO.</p>
                                     <div class="callout-block callout-warning">
                                        <div class="icon-holder">
                                            <i class="fas fa-info-circle"></i>
@@ -827,13 +818,11 @@ $log What you see here is the %fn%
                 </div><!--//doc-body-->
             </div><!--//container-->
         </div><!--//doc-wrapper-->
-
-    <!--TYPO3SEARCH_end-->
-    </div><!--//page-wrapper--><!--#include virtual="/footer_miro.html" -->
+    </div><!--//page-wrapper-->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <!--#include virtual="/footer.html" -->
 
     <!-- Main Javascript -->
-    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
     <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
     <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>

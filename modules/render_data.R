@@ -61,6 +61,8 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
       valueBoxOutput(ns("valBox" %+% i),
                      width = if(is.null(customOptions$width)) 4 else customOptions$width)
     })
+  }else if(type == "miropivot"){
+    data <- miroPivotOutput(ns("miroPivot"), height = height, options = customOptions)
   }else{
     tryCatch({
       customOutput <- match.fun(typeCustom %+% "Output")
@@ -79,21 +81,32 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
 
 renderData <- function(input, output, session, data, type, configData = NULL, dtOptions = NULL, 
                        graphOptions = NULL, pivotOptions = NULL, customOptions = NULL, 
-                       roundPrecision = 2, modelDir = NULL){
+                       roundPrecision = 2, modelDir = NULL, rendererEnv = NULL){
   if(!is.null(graphOptions)){
     graphTool <- graphOptions$tool
   }
   if(!length(type))
     type <- "datatable"
-  if(!length(data) || identical(nrow(data), 0L)){
-    showEl(session, "#" %+% session$ns("noData"))
-    hideEl(session, "#" %+% session$ns("data"))
-    return()
+  if(inherits(data, "data.frame")){
+    if(!length(data) || identical(nrow(data), 0L)){
+      showEl(session, "#" %+% session$ns("noData"))
+      hideEl(session, "#" %+% session$ns("data"))
+      return()
+    }else{
+      showEl(session, "#" %+% session$ns("data"))
+      hideEl(session, "#" %+% session$ns("noData"))
+    }
   }else{
-    showEl(session, "#" %+% session$ns("data"))
-    hideEl(session, "#" %+% session$ns("noData"))
+    if(!length(data) || !length(data[[1]]) || identical(nrow(data[[1]]), 0L)){
+      showEl(session, "#" %+% session$ns("noData"))
+      hideEl(session, "#" %+% session$ns("data"))
+      return()
+    }else{
+      showEl(session, "#" %+% session$ns("data"))
+      hideEl(session, "#" %+% session$ns("noData"))
+    }
   }
-  data <- type_convert(data, cols())
+  
   # make output type case insensitive
   typeCustom <- type
   type <- tolower(type)
@@ -140,6 +153,10 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
         )
       })
     })
+  }else if(type == "miropivot"){
+    callModule(renderMiroPivot, "miroPivot", data, options = customOptions, 
+               roundPrecision = roundPrecision, 
+               rendererEnv = rendererEnv)
   }else{
     tryCatch({
       customRenderer <- match.fun(paste0("render", toupper(substr(typeCustom, 1, 1)),
@@ -149,8 +166,8 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
                    Please make sure you first define such a function.", typeCustom), call. = FALSE)
     })
     tryCatch({
-      callModule(customRenderer, "custom", as_tibble(data), options = customOptions, 
-                 path = customRendererDirs[[2L]])
+      callModule(customRenderer, "custom", data, options = customOptions, 
+                 path = customRendererDirs[[2L]], rendererEnv = rendererEnv)
     }, error = function(e){
       stop(sprintf("An error occured in the custom renderer function: '%s'. Error message: %s.", typeCustom, e), call. = FALSE)
     })

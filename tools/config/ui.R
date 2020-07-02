@@ -5,25 +5,31 @@ names(langSpecificUI$tableType) <- lang$adminMode$tables$ui$choices
 langSpecificUI$symbolType <- c("Symbol" = "gams", "New GAMS option" = "go", 
                                "New double dash parameter" = "dd")
 names(langSpecificUI$symbolType) <- lang$adminMode$widgets$ui$choices
+langSpecificUI$theme <- c("Use system/browser settings" = "browser", 
+                        "Light mode" = "light", "Dark mode" = "dark")
+names(langSpecificUI$theme) <- lang$adminMode$general$theme$choices
+langSpecificUI$scen <- c("Split screen (suited for 2 scenarios to compare)" = "split", "Tab view 
+                        (suited for > 2 scenarios to compare)" = "tab")
+names(langSpecificUI$scen) <- lang$adminMode$general$scen$choices
 inputTabs <- c(inputSymMultiDim, 
                setNames("_widgets", 
                         lang$nav$inputScreen$widgetTabTitle))
 if(length(configJSON$overwriteSheetOrder$input)){
   tabIdsTmp <- match(configJSON$overwriteSheetOrder$input, inputTabs)
-  if(any(is.na(tabIdsTmp))){
-    flog.info("Invalid input symbol(s) in 'overwriteSheetOrder' found. Resetting to original sheet order.")
+  if(all(is.na(tabIdsTmp))){
+    flog.info("No valid input symbols in 'overwriteSheetOrder' found. Resetting to original sheet order.")
   }else{
-    inputTabsTmp <- inputTabs[tabIdsTmp]
+    inputTabsTmp <- inputTabs[tabIdsTmp[!is.na(tabIdsTmp)]]
     inputTabs <- c(inputTabsTmp, inputTabs[!inputTabs %in% inputTabsTmp])
   }
 }
 outputTabs <- setNames(names(modelOut), modelOutAlias)
 if(length(configJSON$overwriteSheetOrder$output)){
   tabIdsTmp <- match(configJSON$overwriteSheetOrder$output, outputTabs)
-  if(any(is.na(tabIdsTmp))){
-    flog.info("Invalid output symbol(s) in 'overwriteSheetOrder' found. Resetting to original sheet order.")
+  if(all(is.na(tabIdsTmp))){
+    flog.info("No valid output symbols in 'overwriteSheetOrder' found. Resetting to original sheet order.")
   }else{
-    outputTabsTmp <- outputTabs[tabIdsTmp]
+    outputTabsTmp <- outputTabs[tabIdsTmp[!is.na(tabIdsTmp)]]
     outputTabs <- c(outputTabsTmp, outputTabs[!outputTabs %in% outputTabsTmp])
   }
 }
@@ -66,9 +72,19 @@ body_admin <- dashboardBody({
       tags$link(type = "text/css", rel = "stylesheet", href = "bootstrap-colorpicker.min.css"),
       tags$script(src = "autoNumeric.min.js", type = "application/javascript"),
       tags$script(src = "showdown.min.js", type = "application/javascript"),
+      tags$script(src = "mathjax-extension.js", type = "application/javascript"),
       tags$script(src = "bootstrap-colorpicker.min.js", type = "application/javascript"),
       tags$script(src = "miro_admin.js", type = "application/javascript"),
+      tags$link(type = "text/css", rel="stylesheet", href="katex.min.css"),
+      tags$script(type = "application/javascript", `defer src`="katex.min.js"),
+      tags$script(type = "application/javascript", `defer src`="auto-render.min.js"),
       tags$style(HTML(paste0('
+.filter-index-list::after {
+    content: "', lang$renderers$miroPivot$filterLabel, '";
+}
+.aggregation-index-list::after {
+    content: "', lang$renderers$miroPivot$aggregateLabel, '";
+}
 .main-header .logo {
                              background-image: url("gams_logo.png");
 }')))),
@@ -92,17 +108,17 @@ body_admin <- dashboardBody({
       tabItem(tabName = "db_management",
               fluidRow(
                 box(title = lang$adminMode$database$title, status="primary", solidHeader = TRUE, width = 12,
-                    tags$div(id = "removeSuccess", class = "gmsalert gmsalert-success",
+                    tags$div(id = "removeSuccess", class = "gmsalert gmsalert-success center-alert",
                              lang$adminMode$database$removeSuccess),
-                    tags$div(id = "restoreSuccess", class = "gmsalert gmsalert-success",
+                    tags$div(id = "restoreSuccess", class = "gmsalert gmsalert-success center-alert",
                              lang$adminMode$database$restoreSuccess),
-                    tags$div(id = "restoreNoData", class = "gmsalert gmsalert-error",
+                    tags$div(id = "restoreNoData", class = "gmsalert gmsalert-error center-alert",
                              lang$adminMode$database$restoreNoData),
-                    tags$div(id = "restoreInvalidData", class = "gmsalert gmsalert-error",
+                    tags$div(id = "restoreInvalidData", class = "gmsalert gmsalert-error center-alert",
                              lang$adminMode$database$restoreInvalidData),
-                    tags$div(id = "maxRowError", class = "gmsalert gmsalert-error",
+                    tags$div(id = "maxRowError", class = "gmsalert gmsalert-error center-alert",
                              lang$adminMode$database$maxRowError),
-                    tags$div(id = "unknownError", class = "gmsalert gmsalert-error",
+                    tags$div(id = "unknownError", class = "gmsalert gmsalert-error center-alert",
                              lang$errMsg$unknownError),
                     tags$div(class = "space"),
                     tags$label("for" = "db_backup_wrapper", lang$adminMode$database$backup),
@@ -152,10 +168,10 @@ body_admin <- dashboardBody({
       tabItem(tabName = "new_graph",
               fluidRow(
                 box(title = lang$adminMode$graphs$ui$title, status="primary", solidHeader = TRUE, width = 12,
-                    tags$div(id = "graphUpdateSuccess", class = "gmsalert gmsalert-success", lang$adminMode$graphs$ui$graphUpdateSuccess),
-                    tags$div(id = "graphValidationErr", class = "gmsalert gmsalert-error"),
-                    tags$div(id = "unknownErrorGraphs", class = "gmsalert gmsalert-error",
-                             lang$errMsg$unknownError),
+                    tags$div(id = "graphUpdateSuccess", class = "gmsalert gmsalert-success center-alert", lang$adminMode$graphs$ui$graphUpdateSuccess),
+                    tags$div(id = "graphValidationErr", class = "gmsalert gmsalert-error center-alert"),
+                    tags$div(id = "unknownErrorGraphs", class = "gmsalert gmsalert-error center-alert",
+                             lang$adminMode$graphs$ui$gamsSymbols),
                     tags$div(class = "col-sm-6",
                                       tags$h4(id = "previewDataInputToggle", class = "box-title", 
                                               icon("minus"), style = "cursor:pointer;font-weight:bold;", 
@@ -188,7 +204,7 @@ body_admin <- dashboardBody({
                                                                     choices = NULL)),
                                                tags$div(class = "two-col-right",
                                                         selectInput("chart_tool", lang$adminMode$graphs$ui$tool, 
-                                                                    setNames(c("pie", "bar", "scatter", "line", "bubble", "hist", "dygraphs", "leaflet", "timevis", "pivot", "valuebox", "custom"), 
+                                                                    setNames(c("pie", "bar", "scatter", "line", "bubble", "hist", "dygraphs", "leaflet", "timevis", "miropivot", "valuebox", "custom"), 
                                                                              lang$adminMode$graphs$ui$choices)))
                                       ),
                                       tags$hr(),
@@ -204,17 +220,21 @@ body_admin <- dashboardBody({
                                                                 #bar 
                                                                 tags$li(id = "categoryBar1", class = "category-btn category-btn-bar", `data-cat`="3",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$xaxis)),
+                                                                tags$li(id = "categoryBar6", class = "category-btn category-btn-bar", `data-cat`="50",
+                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$ydata)),
                                                                 tags$li(id = "categoryBar2", class = "category-btn category-btn-bar", `data-cat`="4",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$yaxis)),
-                                                                tags$li(id = "categoryBar3", class = "category-btn category-btn-bar", `data-cat`="5",
-                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$filterDomain)),
                                                                 tags$li(id = "categoryBar5", class = "category-btn category-btn-bar", `data-cat`="7",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$bars)),
+                                                                tags$li(id = "categoryBar3", class = "category-btn category-btn-bar", `data-cat`="5",
+                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$filterDomain)),
                                                                 tags$li(id = "categoryBar4", class = "category-btn category-btn-bar", `data-cat`="6",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$general)),
                                                                 #scatter 
                                                                 tags$li(id = "categoryScatter1", class = "category-btn category-btn-scatter", `data-cat`="8",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$xaxis)),
+                                                                tags$li(id = "categoryScatter6", class = "category-btn category-btn-scatter", `data-cat`="51",
+                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$ydata)),
                                                                 tags$li(id = "categoryScatter2", class = "category-btn category-btn-scatter", `data-cat`="9",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$yaxis)),
                                                                 tags$li(id = "categoryScatter3", class = "category-btn category-btn-scatter", `data-cat`="10",
@@ -227,6 +247,8 @@ body_admin <- dashboardBody({
                                                                 #line 
                                                                 tags$li(id = "categoryLine1", class = "category-btn category-btn-line", `data-cat`="13",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$xaxis)),
+                                                                tags$li(id = "categoryLine6", class = "category-btn category-btn-line", `data-cat`="52",
+                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$ydata)),
                                                                 tags$li(id = "categoryLine2", class = "category-btn category-btn-line", `data-cat`="14",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$yaxis)),
                                                                 tags$li(id = "categoryLine3", class = "category-btn category-btn-line", `data-cat`="15",
@@ -239,6 +261,8 @@ body_admin <- dashboardBody({
                                                                 #bubble 
                                                                 tags$li(id = "categoryBubble1", class = "category-btn category-btn-bubble", `data-cat`="18",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$xaxis)),
+                                                                tags$li(id = "categoryBubble6", class = "category-btn category-btn-bubble", `data-cat`="53",
+                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$ydata)),
                                                                 tags$li(id = "categoryBubble2", class = "category-btn category-btn-bubble", `data-cat`="19",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$yaxis)),
                                                                 tags$li(id = "categoryBubble3", class = "category-btn category-btn-bubble", `data-cat`="20",
@@ -250,7 +274,7 @@ body_admin <- dashboardBody({
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$general)),
                                                                 #hist 
                                                                 tags$li(id = "categoryHist1", class = "category-btn category-btn-hist", `data-cat`="23",
-                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$xaxis)),
+                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$data)),
                                                                 tags$li(id = "categoryHist2", class = "category-btn category-btn-hist", `data-cat`="24",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$histogram)),
                                                                 tags$li(id = "categoryHist2", class = "category-btn category-btn-hist", `data-cat`="25",
@@ -260,23 +284,27 @@ body_admin <- dashboardBody({
                                                                 #dygraphs 
                                                                 tags$li(id = "categoryDygraphs1", class = "category-btn category-btn-dygraphs", `data-cat`="27",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$xaxis)),
-                                                                tags$li(id = "categoryDygraphs1", class = "category-btn category-btn-dygraphs", `data-cat`="28",
+                                                                tags$li(id = "categoryDygraphs2", class = "category-btn category-btn-dygraphs", `data-cat`="28",
+                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$ydata)),
+                                                                tags$li(id = "categoryDygraphs3", class = "category-btn category-btn-dygraphs", `data-cat`="54",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$yaxis)),
-                                                                tags$li(id = "categoryDygraphs1", class = "category-btn category-btn-dygraphs", `data-cat`="29",
+                                                                tags$li(id = "categoryDygraphs4", class = "category-btn category-btn-dygraphs", `data-cat`="29",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$filterDomain)),
-                                                                tags$li(id = "categoryDygraphs1", class = "category-btn category-btn-dygraphs", `data-cat`="30",
+                                                                tags$li(id = "categoryDygraphs5", class = "category-btn category-btn-dygraphs", `data-cat`="30",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$event)),
-                                                                tags$li(id = "categoryDygraphs1", class = "category-btn category-btn-dygraphs", `data-cat`="31",
+                                                                tags$li(id = "categoryDygraphs6", class = "category-btn category-btn-dygraphs", `data-cat`="31",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$limit)),
-                                                                tags$li(id = "categoryDygraphs1", class = "category-btn category-btn-dygraphs", `data-cat`="32",
+                                                                tags$li(id = "categoryDygraphs7", class = "category-btn category-btn-dygraphs", `data-cat`="32",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$annotation)),
-                                                                tags$li(id = "categoryDygraphs1", class = "category-btn category-btn-dygraphs", `data-cat`="33",
+                                                                tags$li(id = "categoryDygraphs8", class = "category-btn category-btn-dygraphs", `data-cat`="33",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$shading)),
-                                                                tags$li(id = "categoryDygraphs1", class = "category-btn category-btn-dygraphs", `data-cat`="34",
+                                                                tags$li(id = "categoryDygraphs9", class = "category-btn category-btn-dygraphs", `data-cat`="34",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$rangeSelector)),
-                                                                tags$li(id = "categoryDygraphs1", class = "category-btn category-btn-dygraphs", `data-cat`="35",
+                                                                tags$li(id = "categoryDygraphs10", class = "category-btn category-btn-dygraphs", `data-cat`="35",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$highlight)),
-                                                                tags$li(id = "categoryDygraphs1", class = "category-btn category-btn-dygraphs", `data-cat`="36",
+                                                                tags$li(id = "categoryDygraphs12", class = "category-btn category-btn-dygraphs", `data-cat`="55",
+                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$legend)),
+                                                                tags$li(id = "categoryDygraphs11", class = "category-btn category-btn-dygraphs", `data-cat`="36",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$general)),
                                                                 #leaflet 
                                                                 tags$li(id = "categoryLeaflet1", class = "category-btn category-btn-leaflet", `data-cat`="37",
@@ -349,6 +377,11 @@ body_admin <- dashboardBody({
                                                                         col = "a"), 
                                                    height = 400, 
                                                    noDataTxt = lang$nav$outputScreen$boxResults$noData)),
+                             tags$div(id = "preview-content-miropivot", style = "display:none; overflow:auto;text-align:left;",
+                                      renderDataUI("preview_output_miropivot", type = "miropivot",
+                                                   height = 400, 
+                                                   customOptions = list(lang = lang$renderers$miroPivot),
+                                                   noDataTxt = lang$nav$outputScreen$boxResults$noData)),
                              tags$div(id = "preview-content-pivot", style = "display:none; overflow:auto;",
                                       renderDataUI("preview_output_pivot", type = "pivot",
                                                    height = 400, 
@@ -388,9 +421,9 @@ body_admin <- dashboardBody({
       tabItem(tabName = "new_widget",
               fluidRow(
                 box(title = lang$adminMode$widgets$ui$title, status="primary", solidHeader = TRUE, width = 12,
-                    tags$div(id = "widgetUpdateSuccess", class = "gmsalert gmsalert-success", lang$adminMode$widgets$ui$widgetUpdateSuccess),
-                    tags$div(id = "widgetValidationErr", class = "gmsalert gmsalert-error"),
-                    tags$div(id = "unknownErrorWidgets", class = "gmsalert gmsalert-error",
+                    tags$div(id = "widgetUpdateSuccess", class = "gmsalert gmsalert-success center-alert", lang$adminMode$widgets$ui$widgetUpdateSuccess),
+                    tags$div(id = "widgetValidationErr", class = "gmsalert gmsalert-error center-alert"),
+                    tags$div(id = "unknownErrorWidgets", class = "gmsalert gmsalert-error center-alert",
                              lang$errMsg$unknownError),
                     tags$div(class = "space"),
                     tags$div(class="main-tab", 
@@ -454,13 +487,132 @@ body_admin <- dashboardBody({
                       tabPanel(lang$adminMode$general$ui$tabInterface, 
                                tags$div(class = "col-sm-6", style = "padding-top: 20px;",
                                         tags$div(class="main-tab",
-                                                 tags$div(id = "interface_wrapper1"),
+                                                 tags$div(tagList(
+                                                   tags$h2(lang$adminMode$general$ui$headerGeneral, class="option-category"),
+                                                   tags$div(class = "option-wrapper",
+                                                            textInput("general_pageTitle", lang$adminMode$general$pageTitle$label,
+                                                                      value = if(!is.null(configJSON$pageTitle ) && nchar(configJSON$pageTitle )) configJSON$pageTitle  else configJSON$modelTitle
+                                                            )),
+                                                   tags$div(
+                                                     radioButtons("general_theme", lang$adminMode$general$theme$label, 
+                                                                  choices = langSpecificUI$theme,
+                                                                  selected = if(length(configJSON$theme)) configJSON$theme else config$theme
+                                                     )),
+                                                   tags$label(class = "cb-label", "for" = "general_act_log", lang$adminMode$general$actLog$label),
+                                                   tags$div(
+                                                     tags$label(class = "checkbox-material", 
+                                                                checkboxInput("general_act_log", 
+                                                                              value = if(length(configJSON$activateModules$logFile)) 
+                                                                                configJSON$activateModules$logFile else config$activateModules$logFile, 
+                                                                              label = NULL)
+                                                     )),
+                                                   tags$label(class = "cb-label", "for" = "general_act_lst", lang$adminMode$general$actLst$label),
+                                                   tags$div(
+                                                     tags$label(class = "checkbox-material", 
+                                                                checkboxInput("general_act_lst", 
+                                                                              value = if(length(configJSON$activateModules$lstFile)) 
+                                                                                configJSON$activateModules$lstFile else config$activateModules$lstFile, 
+                                                                              label = NULL)
+                                                     )),
+                                                   tags$div(class = "option-wrapper info-position",
+                                                            textInput("general_mirologfile", 
+                                                                      tags$div(lang$adminMode$general$mirologfile$label, 
+                                                                               tags$a("", title = lang$adminMode$general$ui$tooltipDocs, class="info-wrapper",
+                                                                                      href="https://gams.com/miro/customize.html#miro-log", 
+                                                                                      tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                                      value = if(!is.null(configJSON$miroLogFile) && nchar(configJSON$miroLogFile)) 
+                                                                        configJSON$miroLogFile else ""
+                                                            )),
+                                                   tags$div(class = "option-wrapper info-position",
+                                                            selectInput("general_scen", tags$div(lang$adminMode$general$scen$label, 
+                                                                                                 tags$a("", title = lang$adminMode$general$ui$tooltipDocs, class="info-wrapper", href="https://gams.com/miro/start.html#scenario-comparison", 
+                                                                                                        tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")), 
+                                                                        choices = langSpecificUI$scen,
+                                                                        selected = if(length(configJSON$defCompMode)) configJSON$defCompMode else config$defCompMode
+                                                            )),
+                                                   tags$div(class = "option-wrapper",
+                                                            tags$label(class = "cb-label", "for" = "general_auto",
+                                                                       lang$adminMode$general$auto$label),
+                                                            tags$div(
+                                                              tags$label(class = "checkbox-material", 
+                                                                         checkboxInput("general_auto", 
+                                                                                       value = if(length(configJSON$autoGenInputGraphs)) 
+                                                                                         configJSON$autoGenInputGraphs else config$autoGenInputGraphs, 
+                                                                                       label = NULL)
+                                                              ))),
+                                                   tags$div(class="option-wrapper",
+                                                            colorPickerInput("general_pivotcolor", label = lang$adminMode$general$pivotcolor$label,
+                                                                             value = if(length(configJSON$pivottable$bgColor)) configJSON$pivottable$bgColor else "#00000000"
+                                                            )),
+                                                   tags$div(class="option-wrapper",
+                                                            sliderInput("general_decimal", 
+                                                                        tags$div(lang$adminMode$general$decimal$label, 
+                                                                                 tags$a("", title = lang$adminMode$general$decimal$tooltip, class="info-wrapper",
+                                                                                        href="https://www.gams.com/miro/customize.html#decimal-places", 
+                                                                                        tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                                        min = 0, max = 6, step = 1, value = if(length(configJSON$roundingDecimals)) 
+                                                                          configJSON$roundingDecimals else config$roundingDecimals
+                                                            ))
+                                                 )),
                                                  tags$div(class = "space")
                                         )
                                ),
                                tags$div(class = "col-sm-6", style = "padding-top: 20px;",
                                         tags$div(class="main-tab",
-                                                 tags$div(id = "interface_wrapper2"),
+                                                 tags$div(tagList(
+                                                   tags$h2(lang$adminMode$general$ui$headerLogo, class="option-category"),
+                                                   tags$div(class = "option-wrapper", style = "margin-bottom: 5px;",
+                                                            fileInput("widget_general_logo_upload", lang$adminMode$general$logo$label,
+                                                                      width = "100%",
+                                                                      multiple = FALSE,
+                                                                      accept = c(".png", ".PNG", ".jpg", ".JPG"),
+                                                                      placeholder = lang$adminMode$general$logo$placeholder)),
+                                                   tags$label(class = "cb-label", "for" = "general_logo_preview", style = "padding-left: 25px;", lang$adminMode$general$logo$header,
+                                                              tags$div(class="logo-wrapper",
+                                                                       imageOutput("general_logo_preview", height = "50px")
+                                                              )),
+                                                   tags$hr(),
+                                                   tags$h2(lang$adminMode$general$readme$label, 
+                                                           tags$a("", title = paste0(lang$adminMode$general$readme$readmeTooltip, " - ", 
+                                                                                     tolower(lang$adminMode$general$ui$tooltipDocs)), class="info-header", 
+                                                                  href="https://gams.com/miro/customize.html#app-readme", 
+                                                                  tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"), 
+                                                           class="option-category info-position"),
+                                                   tags$label(class = "cb-label", "for" = "general_useReadme", lang$adminMode$general$readme$useReadme),
+                                                   tags$div(
+                                                     tags$label(class = "checkbox-material", 
+                                                                checkboxInput("general_useReadme", 
+                                                                              value = length(configJSON$readme$filename) > 0L, 
+                                                                              label = NULL)
+                                                     )),
+                                                   conditionalPanel(
+                                                     condition = "input.general_useReadme===true",
+                                                     tags$div(class = "option-wrapper option-wrapper-indented", style = "padding-left:40px;",
+                                                              textInput("general_readmeTabtitle", lang$adminMode$general$readme$tabTitle,
+                                                                        value = if(!is.null(configJSON$readme$tabTitle) && nchar(configJSON$readme$tabTitle)) 
+                                                                          configJSON$readme$tabTitle 
+                                                                        else "")
+                                                     ),
+                                                     tags$div(class = "option-wrapper info-position option-wrapper-indented", style = "padding-left:40px;",
+                                                              textInput("general_readmeFileName", lang$adminMode$general$readme$fileName,
+                                                                        value = if(!is.null(configJSON$readme$filename) && nchar(configJSON$readme$filename)) 
+                                                                          configJSON$readme$filename 
+                                                                        else "")
+                                                     ),
+                                                     tags$div(class = "option-wrapper info-position option-wrapper-indented", style = "padding-left:40px;",
+                                                              checkboxInput_MIRO("general_readmeEnableMath", lang$adminMode$general$readme$enableMath,
+                                                                                 isTRUE(configJSON$readme$enableMath))
+                                                     ),
+                                                     tags$div(class = "option-wrapper info-position option-wrapper-indented", style = "padding-left:40px;",{
+                                                       editButtonArgs <- list(inputId = "btEditReadme",
+                                                                              label = lang$adminMode$general$readme$btEdit)
+                                                       if(!length(configJSON$readme$filename) || 
+                                                          !nchar(trimws(configJSON$readme$filename))){
+                                                         editButtonArgs$disabled <- ""
+                                                       }
+                                                       do.call("actionButton", editButtonArgs)
+                                                     }))
+                                                 )),
                                                  tags$div(class = "space")
                                         )
                                )),
@@ -574,6 +726,43 @@ body_admin <- dashboardBody({
                                                                         autoCreate = FALSE))
                                                  ),
                                                  tags$div(class = "space"),
+                                                 tags$h2(lang$adminMode$general$ui$headerSymbolDisplay, class="option-category"),
+                                                 if(length(modelOut)){
+                                                   tags$div(class="option-wrapper",
+                                                            tags$div(class = "info-position", 
+                                                                     selectInput("general_hiddenOutputSymbols", 
+                                                                                 tags$div(lang$adminMode$general$hiddenOutputSymbols$label, 
+                                                                                          tags$a("", class="info-wrapper", 
+                                                                                                 href="https://gams.com/miro/customize.html#hidden-symbols", 
+                                                                                                 tags$span(class="fas fa-info-circle", class="info-icon"), 
+                                                                                                 target="_blank")),
+                                                                                 choices = outputSymMultiDimChoices, 
+                                                                                 selected = configJSON$hiddenOutputSymbols[configJSON$hiddenOutputSymbols %in% outputSymMultiDimChoices], 
+                                                                                 multiple = TRUE)
+                                                            ))
+                                                 },
+                                                 if(length(modelOut[[scalarsOutName]])){
+                                                   tags$div(class="option-wrapper",
+                                                            tags$div(class = "info-position", 
+                                                                     selectInput("general_hidden", 
+                                                                                 tags$div(lang$adminMode$general$hiddenOutputScalars$label, 
+                                                                                          tags$a("", class="info-wrapper", 
+                                                                                                 href="https://gams.com/miro/customize.html#hidden-scalars", 
+                                                                                                 tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                                                 choices = setNames(modelOut[[scalarsOutName]]$symnames, modelOut[[scalarsOutName]]$symtext), 
+                                                                                 selected = configJSON$hiddenOutputScalars, multiple = TRUE)
+                                                            ))
+                                                 },
+                                                 tags$div(class="option-wrapper", title = lang$adminMode$general$aggregate$title,
+                                                          tags$label(class = "cb-label", "for" = "general_aggregate", lang$adminMode$general$aggregate$label),
+                                                          tags$div(
+                                                            tags$label(class = "checkbox-material", 
+                                                                       checkboxInput("general_aggregate", 
+                                                                                     value = if(length(configJSON$aggregateWidgets)) 
+                                                                                       configJSON$aggregateWidgets else config$aggregateWidgets, label = NULL)
+                                                            ))
+                                                 ),
+                                                 tags$div(class = "space"),
                                                  tags$div(class = "option-wrapper",
                                                           tags$div(class = "info-position",
                                                                    tags$h2(title = lang$adminMode$general$ui$tooltipDocs, lang$adminMode$general$ui$headerTabSymlinks, 
@@ -590,13 +779,150 @@ body_admin <- dashboardBody({
                       tabPanel(lang$adminMode$general$ui$tabModules, 
                                tags$div(class = "col-sm-6", style = "padding-top: 20px;",
                                         tags$div(class="main-tab",
-                                                 tags$div(id = "module_wrapper1"),
+                                                 tags$div(tagList(
+                                                   tags$h2(lang$adminMode$general$ui$headerScenData, class="option-category"),
+                                                   tags$div(
+                                                     tags$label(class = "cb-label info-position", "for" = "general_act_upload", 
+                                                                tags$div(lang$adminMode$general$actUpload$label, 
+                                                                         tags$a("", title = paste0(lang$adminMode$general$actUpload$title, " - ",
+                                                                                                   tolower(lang$adminMode$general$ui$tooltipDocs)), class="info-wrapper", href="https://gams.com/miro/customize.html#local-upload", 
+                                                                                tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
+                                                     tags$div(
+                                                       tags$label(class = "checkbox-material", 
+                                                                  checkboxInput("general_act_upload", 
+                                                                                value = if(length(configJSON$activateModules$loadLocal)) 
+                                                                                  configJSON$activateModules$loadLocal else config$activateModules$loadLocal, 
+                                                                                label = NULL)
+                                                       ))
+                                                   ),
+                                                   tags$div(class = "shiny-input-container",
+                                                            tags$label(class = "cb-label info-position", "for" = "default_scen_check",
+                                                                       tags$div(lang$adminMode$general$defaultScenName$checkbox, tags$a("", title = paste0(lang$adminMode$general$defaultScenName$tooltip, " - ", 
+                                                                                                                                                           tolower(lang$adminMode$general$ui$tooltipDocs)), 
+                                                                                                                                        class="info-wrapper", 
+                                                                                                                                        href="https://gams.com/miro/customize.html#default-scenario", 
+                                                                                                                                        tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
+                                                            tags$div(
+                                                              tags$label(class = "checkbox-material", 
+                                                                         checkboxInput("default_scen_check", label = NULL, 
+                                                                                       value = if(length(configJSON$defaultScenName) && 
+                                                                                                  nchar(configJSON$defaultScenName)) TRUE else FALSE)
+                                                              ))
+                                                   ),
+                                                   conditionalPanel(
+                                                     condition = "input.default_scen_check===true",
+                                                     tags$div(class = "option-wrapper", style = "padding-right:30px;padding-left:40px;",
+                                                              textInput("general_default_scen_name", lang$adminMode$general$defaultScenName$label,
+                                                                        value = if(length(configJSON$defaultScenName)) configJSON$defaultScenName else NULL))),
+                                                   tags$div(
+                                                     tags$label(class = "cb-label", "for" = "general_meta",
+                                                                lang$adminMode$general$meta$label, tags$a("", title = paste0(lang$adminMode$general$meta$title, " - ", tolower(lang$adminMode$general$ui$tooltipDocs)), 
+                                                                                                          class="info-wrapper", 
+                                                                                                          href="https://gams.com/miro/customize.html#include-metadata", 
+                                                                                                          tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                     tags$div(
+                                                       tags$label(class = "checkbox-material", 
+                                                                  checkboxInput("general_meta", 
+                                                                                value = if(length(configJSON$excelIncludeMeta)) 
+                                                                                  configJSON$excelIncludeMeta else config$excelIncludeMeta, 
+                                                                                label = NULL)
+                                                       ))
+                                                   ),
+                                                   tags$div(
+                                                     tags$label(class = "cb-label", "for" = "general_empty",
+                                                                lang$adminMode$general$empty$label, tags$a("", title = paste0(lang$adminMode$general$empty$title, " - ", tolower(lang$adminMode$general$ui$tooltipDocs)), 
+                                                                                                           class="info-wrapper", 
+                                                                                                           href="https://gams.com/miro/customize.html#include-empty", 
+                                                                                                           tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                     tags$div(
+                                                       tags$label(class = "checkbox-material", 
+                                                                  checkboxInput("general_empty", 
+                                                                                value = if(identical(configJSON$excelIncludeEmptySheets, FALSE)) 
+                                                                                  FALSE else TRUE, label = NULL)
+                                                       ))
+                                                   ),
+                                                   tags$div(
+                                                     tags$label(class = "cb-label info-position", "for" = "general_act_attach", 
+                                                                tags$div(lang$adminMode$general$actAttach$label, 
+                                                                         tags$a("", title = paste0(lang$adminMode$general$actAttach$title, " - ", 
+                                                                                                   tolower(lang$adminMode$general$ui$tooltipDocs)), 
+                                                                                class="info-wrapper", 
+                                                                                href="https://gams.com/miro/start.html#file-attachment", 
+                                                                                tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
+                                                     tags$div(
+                                                       tags$label(class = "checkbox-material", 
+                                                                  checkboxInput("general_act_attach", 
+                                                                                value = if(length(configJSON$activateModules$attachments)) 
+                                                                                  configJSON$activateModules$attachments else config$activateModules$attachments, label = NULL)
+                                                       ))
+                                                   ),
+                                                   tags$div(class="option-wrapper",
+                                                            sliderInput("general_save_duration", 
+                                                                        tags$div(lang$adminMode$general$saveDuration$label, 
+                                                                                 tags$a("", title = lang$adminMode$general$ui$tooltipDocs, 
+                                                                                        class="info-wrapper",
+                                                                                        href="https://gams.com/miro/customize.html#general-duration", 
+                                                                                        tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                                        min = 0, max = 999, step = 1, 
+                                                                        value = if(length(configJSON$storeLogFilesDuration)) 
+                                                                          configJSON$storeLogFilesDuration else config$storeLogFilesDuration
+                                                            )),
+                                                   tags$div(class="option-wrapper",
+                                                            tags$h4(lang$adminMode$general$ui$headerOutputAttach,
+                                                                    tags$a("", title = lang$adminMode$general$ui$tooltipDocs, 
+                                                                           class="info-wrapper",
+                                                                           href="https://gams.com/miro/customize.html#general-output-attach", 
+                                                                           tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                            createArray(NULL, "general_output_attach", 
+                                                                        lang$adminMode$general$outputAttach$label, 
+                                                                        autoCreate = FALSE))
+                                                 )),
                                                  tags$div(class = "space")
                                         )      
                                ),
                                tags$div(class = "col-sm-6", style = "padding-top: 20px;",
                                         tags$div(class="main-tab",
-                                                 tags$div(id = "module_wrapper2"),
+                                                 tags$div(tagList(
+                                                   tags$h2(lang$adminMode$general$ui$headerComputation, class="option-category"),
+                                                   tags$label(class = "cb-label", "for" = "general_downloadTempFiles", 
+                                                              tags$div(lang$adminMode$general$downloadTempFiles$label, 
+                                                                       tags$a("", title = lang$adminMode$general$ui$tooltipDocs, 
+                                                                              class="info-wrapper", 
+                                                                              href="https://gams.com/miro/customize.html#allow-temp-files", 
+                                                                              tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
+                                                   tags$div(
+                                                     tags$label(class = "checkbox-material", 
+                                                                checkboxInput("general_downloadTempFiles", 
+                                                                              value = if(length(configJSON$activateModules$downloadTempFiles)) 
+                                                                                configJSON$activateModules$downloadTempFiles else config$activateModules$downloadTempFiles, 
+                                                                              label = NULL)
+                                                     )),
+                                                   tags$div(
+                                                     tags$label(class = "cb-label", "for" = "general_save_trace", 
+                                                                lang$adminMode$general$saveTrace$label, 
+                                                                tags$a("", title = paste0(lang$adminMode$general$saveTrace$title, " - ", 
+                                                                                          tolower(lang$adminMode$general$ui$tooltipDocs)), 
+                                                                       class="info-wrapper", 
+                                                                       href="https://gams.com/miro/start.html#save-trace-file", 
+                                                                       tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                     tags$div(
+                                                       tags$label(class = "checkbox-material", 
+                                                                  checkboxInput("general_save_trace", 
+                                                                                value = if(length(configJSON$saveTraceFile)) 
+                                                                                  configJSON$saveTraceFile else config$saveTraceFile, 
+                                                                                label = NULL)
+                                                       ))
+                                                   ),
+                                                   tags$div(class="option-wrapper",
+                                                            selectizeInput("general_args", 
+                                                                           tags$div(lang$adminMode$general$args$label, 
+                                                                                    tags$a("", title = lang$adminMode$general$ui$tooltipDocs, 
+                                                                                           class="info-wrapper", 
+                                                                                           href="https://gams.com/miro/customize.html#command-line-args", 
+                                                                                           tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                                           choices = configJSON$extraClArgs, selected = configJSON$extraClArgs, 
+                                                                           multiple = TRUE, options = list('create' = TRUE,'persist' = FALSE)))
+                                                 )),
                                                  tags$div(class = "space")
                                         )      
                                )),
@@ -638,9 +964,9 @@ body_admin <- dashboardBody({
       tabItem(tabName = "tables_gen",
               fluidRow(
                 box(title = lang$adminMode$tables$ui$title, status="primary", solidHeader = TRUE, width = 12,
-                    tags$div(id = "tableWidgetUpdateSuccess", class = "gmsalert gmsalert-success", lang$adminMode$widgets$ui$widgetTableUpdateSuccess),
-                     tags$div(id = "tableValidationErr", class = "gmsalert gmsalert-error"),
-                    # tags$div(id = "unknownErrorTables", class = "gmsalert gmsalert-error",
+                    tags$div(id = "tableWidgetUpdateSuccess", class = "gmsalert gmsalert-success center-alert", lang$adminMode$widgets$ui$widgetTableUpdateSuccess),
+                     tags$div(id = "tableValidationErr", class = "gmsalert gmsalert-error center-alert"),
+                    # tags$div(id = "unknownErrorTables", class = "gmsalert gmsalert-error center-alert",
                     #          lang$errMsg$unknownError),
                     tags$div(class = "space"),
                     tags$div(style = "padding-bottom: 20px;",

@@ -186,7 +186,11 @@ getDtOptions <- reactive({
                ))
     ),
     tags$div(class = "shiny-input-container",
-             tags$label(class = "cb-label", "for" = "dt_buttons", lang$adminMode$tables$dt$buttons$label),
+             tags$label(class = "cb-label info-position", "for" = "dt_buttons", 
+                        tags$div(lang$adminMode$tables$dt$buttons$label, 
+                                 tags$a("", title = paste0(lang$adminMode$tables$dt$buttons$title, " - ",
+                                                           tolower(lang$adminMode$general$ui$tooltipDocs)), class="info-wrapper", href="https://gams.com/miro/customize.html#export-buttons", 
+                                        tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
              tags$div(
                tags$label(class = "checkbox-material", 
                           checkboxInput("dt_buttons", value = "Buttons" %in% configJSON$datatable$extensions, label = NULL)
@@ -238,6 +242,7 @@ observeEvent({input$table_symbol
                                  alias = tableAlias,
                                  readonly = isTRUE(currentConfig$readonly),
                                  readonlyCols = currentConfig$readonlyCols,
+                                 hideIndexCol = isTRUE(currentConfig$hideIndexCol),
                                  heatmap = isTRUE(currentConfig$heatmap),
                                  bigData = isTRUE(currentConfig$bigData))
     if(length(currentConfig$pivotCols)){
@@ -264,6 +269,9 @@ observeEvent({input$table_symbol
                ),
                conditionalPanel(condition = "input.table_bigdata===false",
                                 tags$div(class="option-wrapper",
+                                         checkboxInput_MIRO("table_hideIndexCol", 
+                                                            lang$adminMode$widgets$table$hideIndexCol, 
+                                                            value = rv$tableWidgetConfig$hideIndexCol),
                                          checkboxInput_MIRO("table_heatmap", 
                                                             lang$adminMode$widgets$table$heatmap, 
                                                             value = rv$tableWidgetConfig$heatmap))
@@ -311,6 +319,7 @@ output$hot_preview <- renderRHandsontable({
   data <- data$data
   
   ht <- rhandsontable(data = data,
+                      rowHeaders = if(isTRUE(input$table_hideIndexCol)) NULL else rownames(data),
                       colHeaders = headersUnnamed,
                       readOnly = input$table_readonly,
                       digits = NA)
@@ -526,6 +535,9 @@ observeEvent(input$table_bigdata, {
     rv$tableWidgetConfig$bigData <<- FALSE
     rv$tableWidgetConfig$heatmap <<- input$table_heatmap
   }
+})
+observeEvent(input$table_hideIndexCol, {
+  rv$tableWidgetConfig$hideIndexCol <<- input$table_hideIndexCol
 })
 observeEvent(input$table_readonly, {
   rv$tableWidgetConfig$readonly <<- input$table_readonly

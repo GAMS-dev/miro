@@ -239,7 +239,7 @@
     "dialogRemoteLogin": {
       "title": "Login erforderlich",
       "desc": "Bitte geben Sie Ihre Zugangsdaten unten ein:",
-      "url": "URL des GAMS Remote Solvers",
+      "url": "GAMS MIRO Engine URL",
       "username": "Benutzername",
       "password": "Passwort",
       "namespace": "Namensraum",
@@ -247,7 +247,7 @@
       "useRegistered": "Ist Ihr Modell im Namensraum registriert?",
       "remember": "Login speichern",
       "okButton": "Ok",
-      "hostNotFound": "GAMS Remote Solver konnte unter der angegebenen URL nicht erreicht werden.",
+      "hostNotFound": "GAMS MIRO Engine konnte unter der angegebenen URL nicht erreicht werden.",
       "nsNotFound": "Der von Ihnen angegebene Namensraum konnte nicht gefunden werden.",
       "invalidCred": "Die von Ihnen eingegebenen Zugangsdaten sind ungültig.",
       "insuffPerm": "Sie haben nicht genügend Berechtigungen, um das Modell auszuführen.",
@@ -265,8 +265,8 @@
       "cancelButton":"Abbrechen",
       "okButton":"Ja",
       "removeFromUI":{  
-        "title":"Szenario aus Editor entfernen",
-        "desc":"Möchten Sie das Szenario aus dem Editor entfernen? Ungespeicherte Daten gehen dadurch verloren!",
+        "title":"Szenario aus Sandbox entfernen",
+        "desc":"Möchten Sie das Szenario aus der Sandbox entfernen? Ungespeicherte Daten gehen dadurch verloren!",
         "cancelButton": "Abbrechen",
         "okButton":"Szenario schließen"
       }
@@ -277,8 +277,8 @@
       "cancelButton":"Abbrechen",
       "okButton":"Ja",
       "removeFromUI":{  
-        "title":"Hypercube-Job aus Editor entfernen",
-        "desc":"Möchten Sie die Hypercube-Job-Konfiguration aus dem Editor entfernen? Ungespeicherte Daten gehen dadurch verloren!",
+        "title":"Hypercube-Job aus Sandbox entfernen",
+        "desc":"Möchten Sie die Hypercube-Job-Konfiguration aus der Sandbox entfernen? Ungespeicherte Daten gehen dadurch verloren!",
         "cancelButton": "Abbrechen",
         "okButton":"Szenario schließen"
       }
@@ -473,7 +473,7 @@
       "discardSuccess": "Job wurde verworfen",
       "importSuccess": "Job wurde erfolgreich importiert",
       "maxDownloads": "Die maximale Anzahl paralleler Downloads ist erreicht.",
-      "jobNotFound": "Der Job wurde auf dem GAMS Remote Solver nicht gefunden.",
+      "jobNotFound": "Der Job wurde auf GAMS MIRO Engine nicht gefunden.",
       "accessDenied": "Zugriff verweigert",
       "histTitle": "Jobverlauf",
       "status":{
@@ -646,6 +646,38 @@
       "success": "Import erfolgreich"
     }
   },
+  "renderers":{
+    "miroPivot":{
+      "btDownloadCsv": "CSV herunterladen",
+      "btLoadView": "View laden",
+      "btNewView": "View hinzufügen",
+      "aggregateLabel": "aggregieren",
+      "filterLabel": "filtern",
+      "allPlaceholder": "Alle",
+      "colTruncationWarning": "Die Daten wurden auf die ersten %s Spalten gekürzt.",
+      "rowTruncationWarning": "Die Daten wurden auf die ersten %s Zeilen gekürzt.",
+      "newViewTitle": "Neuer view",
+      "newViewLabel": "Bitte wählen Sie einen Namen für den View.",
+      "newViewBtCancel": "Abbrechen",
+      "newViewBtSave": "Speichern",
+      "errUniqueViewName": "Der von Ihnen eingegebene Viewname existiert bereits. Bitte wählen Sie einen anderen Namen.",
+      "aggregationFunctions":{
+        "sum": "Summe",
+        "count": "Anzahl",
+        "median": "Median",
+        "mean": "Durchschnitt",
+        "min": "Min",
+        "max": "Max"
+      },
+      "renderer":{
+        "table": "Tabelle", 
+        "bar": "Balkendiagramm",
+        "stackedbar": "Gestapeltes Balkendiagramm",
+        "radar": "Radardiagramm",
+        "line": "Liniendiagramm"
+      }
+    }
+  },
   "errMsg":{  
     "unknownError": "Ein unerwarteter Fehler ist aufgetreten. Wenn dieses Problem weiterhin besteht, wenden Sie sich an einen Systemadministrator.",
     "permErr": "Die Operation ist fehlgeschlagen, weil Sie nicht über ausreichende Berechtigungen verfügen.",
@@ -809,12 +841,17 @@
       "title": "Fehler beim Speichern von GAMS log/lst-Dateien",
       "noFileAccess": "Auf eine oder mehrere GAMS-Ausgabedateien (.log/.lst) konnte nicht zugegriffen werden.",
       "fileSizeExceeded": "Eine oder mehrere GAMS-Ausgabedateien (.log/.lst) überschreiten die maximal zulässige Dateigröße."
+    },
+    "saveAttachments": {
+      "title": "Probleme beim Speichern von Anhängen",
+      "noFileAccess": "Die Anhänge: '%s' konnten nicht gespeichert werden, da die Dateien nicht zugänglich sind.",
+      "fileSizeExceeded": "Die Anhänge: '%s' konnten nicht gespeichert werden, da sie die maximal zulässige Größe überschreiten."
     }
   },
   "adminMode":{
     "invalidSymbolsDialog":{
       "title": "Ungültige Konfiguration",
-      "desc": "Einige Grafiken und/oder Widgets wurden für Symbole konfiguriert, die nicht mehr Teil Ihres GAMS/MIRO-Datenvertrags sind. Wollen Sie diese aus Ihrer Konfiguration entfernen? Beachten Sie, dass dies nicht rückgängig gemacht werden kann! Grafische Konfiguration für ungültige(s) Symbol(e): '%s'. Widget-Konfiguration für ungültige(s) Symbol(e): '%s'.",
+      "desc": "Einige Grafiken und/oder Widgets wurden für Symbole konfiguriert, die nicht mehr Teil Ihres GAMS/MIRO-Datenvertrags oder ausgeblendet sind. Wollen Sie diese aus Ihrer Konfiguration entfernen? Beachten Sie, dass dies nicht rückgängig gemacht werden kann! Grafische Konfiguration für ungültige(s) Symbol(e): '%s'. Widget-Konfiguration für ungültige(s) Symbol(e): '%s'.",
       "msgSuccess": "Ungültige Konfiguration wurde erfolgreich entfernt",
       "btRemoveWidgets": "Ungültige Widgets entfernen",
       "btRemoveGraphs": "Ungültige Grafiken entfernen", 
@@ -848,7 +885,7 @@
         "tabScripts": "Analyseskripte",
         "headerGeneral": "Allgemein",
         "headerLogo": "Logo",
-        "headerScalars": "Skalare",
+        "headerSymbolDisplay": "Symboldarstellung",
         "headerTabGrouping": "Tab-Gruppierung",
         "headerTabSymlinks": "Ergebnisse als Eingabedaten verwenden",
         "headerInputGroups": "Eingabegruppen",
@@ -856,6 +893,7 @@
         "headerSymbolNaming": "Benennung",
         "headerSymbolGrouping": "Reihenfolge",
         "headerBaseScripts": "Basismodus",
+        "headerOutputAttach": "Ergebnis-Anhänge",
         "baseScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte aus, die im Ausgabeabschnitt angezeigt werden",
         "headerHcubeScripts": "Hypercube-Modus",
         "hcubeScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte für mehrere Szenarien auf einmal aus",
@@ -901,6 +939,9 @@
         "base": "Spezifizieren Sie individuelle Analyseskripte für den Basismodus.",
         "hcube": "Spezifizieren Sie individuelle Analyseskripte für den Hypercube-Modus."
       },
+      "outputAttach": {
+        "label": "Neue Anlage hinzufügen"
+      },
       "overwriteSheetOrder":{
         "input": "Legen Sie die Reihenfolge fest, in welcher die Eingabesymbole angezeigt werden sollen (Drag & Drop).",
         "output": "Legen Sie die Reihenfolge fest, in welcher die Ausgabesymbole angezeigt werden sollen (Drag & Drop)."
@@ -913,7 +954,10 @@
       "overwriteSymbolHeaders":{
         "label": "Spaltenüberschriften festlegen"
       },
-      "hidden":{
+      "hiddenOutputSymbols":{
+        "label": "Symbole, die nicht angezeigt werden sollen, aber in Diagrammen usw. verwendet werden können."
+      },
+      "hiddenOutputScalars":{
         "label": "Skalare, die nicht in der Outputskalartabelle angezeigt werden sollen, aber in Grafiken usw. verwendet werden können."
       },
       "pivotcolor":{
@@ -928,6 +972,7 @@
         "useReadme": "README-Datei einbinden",
         "tabTitle": "README Reitertitel",
         "fileName": "README-Dateiname",
+        "enableMath": "Mathematischen Schriftsatz aktivieren?",
         "btEdit": "README bearbeiten",
         "dialogEdit": {
           "title": "README Editor",
@@ -942,7 +987,8 @@
         "label": "Speicherdauer für GAMS Log und lst Dateien in der Datenbank (in Tagen)."
       },
       "decimal":{
-        "label": "Anzahl der Dezimalstellen für das Runden von Ausgabewerten."
+        "label": "Anzahl der Dezimalstellen für das Runden von numerischen Werten (globale Option).",
+        "tooltip": "Wirkt sich auf alle Ausgabetabellen, Eingabetabellen mit großen Datenmengen und die Tabelle für Laden von Szenarien im Hypercube-Modus aus. - Dokumentation öffnen."
       },
       "logo":{
         "header": "Logo Vorschau:",
@@ -1044,6 +1090,7 @@
         },
         "buttons":{
           "label":"Export-Buttons hinzufügen?",
+          "title": "Wenn ein Symbol mehrere Tabellenseiten enthält, wirkt sich die Verwendung eines Export-Buttons nur auf die aktuell sichtbare Tabellenseite aus!",
           "choices": ["Zwischenablage", "csv", "Excel", "pdf", "Druck"],
           "select": "Wählen Sie zu verwendende Buttons aus. Hinweis: Eine Buttonfunktion wirkt sich stets nur auf die sichtbare Tabellenseite aus."
         }
@@ -1071,7 +1118,7 @@
         "noWidgetConfigMsg": "Derzeit ist kein Widget für dieses Symbol konfiguriert",
         "optionConfigMsg": "Info: Das von Ihnen gewählte Symbol ist eine GAMS-Option: %s",
         "doubledashConfigMsg": "Info: Das von Ihnen gewählte Symbol ist ein Double-Dash-Parameter: %s",
-        "tableWidget": "Tabellen können unter 'Tabellen konfigurieren' angepasst werden!",
+        "tableWidget": "Tabellen können angepasst werden unter '",
         "inputSymbol": "Wählen Sie ein Eingabesymbol",
         "widgetGo": "Name der GAMS Option (z.B.'LP' oder 'OptCR')",
         "widgetDd": "Name des Double-Dash-Parameters (ohne '--')",
@@ -1081,7 +1128,8 @@
         "widgetDdTooltip": "Name des Double-Dash-Parameters (ohne '--')",
         "widgetType": "Wählen Sie ein Widget",
         "alias": "Beschriftung für den Reiter des Elements (keine Live-Vorschau)",
-        "pivotColsRestriction": "Hinweis: Es ist nicht möglich, Spalten in der Symboltabelle hinzuzufügen oder zu löschen, wenn sie schreibgeschützt ist oder als Heatmap dargestellt wird."
+        "pivotColsRestriction": "Hinweis: Es ist nicht möglich, Spalten in der Symboltabelle hinzuzufügen oder zu löschen, wenn sie schreibgeschützt ist oder als Heatmap dargestellt wird.",
+		"notConfigurable": "Die in Ihrer JSON-Datei gefundene Widgetkonfiguration wird derzeit für den ausgewählten Symboltyp im Konfigurationsmodus nicht unterstützt! Dies bedeutet nicht, dass die Konfiguration ungültig ist. Symbol: '%s'; Konfiguriertes Widget: '%s'"
       },
       "validate":{
         "val1": "Der Alias des Elements darf nicht leer sein!",
@@ -1136,7 +1184,10 @@
         "val52": "Der Befehl ist erforderlich.",
         "val53": "Der Name der Ausgabedatei ist erforderlich.",
         "val54": "Sie müssen Aliase für Ihre Auswahl definieren, wenn nur der Elementtext des Symbols mit GAMS kommuniziert wird.",
-        "val55": "Es darf nur ein Element im Dropdownmenü auswählbar sein, wenn nur der Elementtext mit GAMS kommuniziert wird."
+        "val55": "Es darf nur ein Element im Dropdownmenü auswählbar sein, wenn nur der Elementtext mit GAMS kommuniziert wird.",
+        "val56": "Ein Anhang mit diesem Dateinamen existiert bereits!",
+        "val57": "Der Dateiname enthält ungültige Zeichen. Anhänge in Unterverzeichnissen werden nicht unterstützt!",
+        "val58": "Das Dezimaltrennzeichen und das Tausender-Trennzeichen dürfen nicht identisch sein!"
       },
       "widgetOptions":{
         "slider": "Schieberegler",
@@ -1151,6 +1202,7 @@
       },
       "table":{
         "bigData": "Werden große Datenmengen in der Tabelle gespeichert (d.h. mehr als 20.000 Zeilen)?",
+        "hideIndexCol": "Indexierungsspalte ausblenden?",
         "readonly": "Soll die Tabelle schreibgeschützt sein?",
         "readonlyCols": "Wählen Sie Spalten aus, die schreibgeschützt sein sollen",
         "pivotCols": "Wählen Sie eine Spalte, die pivotiert werden soll",
@@ -1171,7 +1223,8 @@
         },
         "depSelector": "Statischer Wert?",
         "step": "Schrittweite (auch Dezimalstellen möglich)",
-        "minStep": "Minimale Schrittweite (nur relevant im Hypercube-Modus). Wenn leer, wird die Schrittweite genommen.",
+        "minStep": "Minimale Schrittweite",
+        "minStepTooltip": "Nur relevant im Hypercube-Modus. Wenn leer, wird die Schrittweite genommen. - Dokumentation öffnen",
         "ticks": "Markierungen Anzeigen?",
         "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
       },
@@ -1280,7 +1333,11 @@
         "min": "Minimalwert (optional)",
         "max": "Maximalwert (optional)",
         "decimal": "Anzahl Dezimalstellen (optional)",
-        "sign": "Soll ein Währungssymbol angezeigt werden (optional)?"
+        "sign": "Soll ein Währungssymbol angezeigt werden (optional)?",
+        "decimalCharacter": "Zu verwendendes Dezimaltrennzeichen)",
+		"decimalCharacterChoices": [", (Komma)", ". (Punkt)", "· (Mittelpunkt)", "٫ (Arabischer Dezimaltrenner)", "⎖ (Dezimaltrennzeichen-Schlüsselsymbol)"],
+        "digitGroupSeparator": "Zu verwendendes Tausender-Trennzeichen",
+		"digitGroupSeparatorChoices": [", (Komma)", ". (Punkt)", " (Leerzeichen)", "(Kein Trennzeichen)", "' (Apostroph)","٬ (Arabischer Tausendertrenner)", "˙ (Punkt oben)"]
       },
       "removeDialog":{
         "title": "Bitte bestätigen",
@@ -1339,6 +1396,7 @@
         "general": "Allgemein",
         "xaxis": "X Achse",
         "yaxis": "Y Achse",
+        "ydata": "Y Daten",
         "filterDomain": "Filter & Domäne",
         "filter": "Filter",
         "animation": "Animation",
@@ -1350,6 +1408,7 @@
         "shading": "Schattierung",
         "rangeSelector": "Bereichswähler",
         "highlight": "Highlighting",
+        "legend": "Legende",
         "markers": "Markierungen",
         "flows": "Flüsse",
         "minicharts": "Minicharts",
@@ -1376,12 +1435,16 @@
       },
       "errMsg":{
         "errTitle1": "Keine gültigen Daten",
-        "errContent1": "Es wurden keine gültigen Datensätze gefunden. Bitte laden Sie eine korrekt formatierte Excel- oder gdx-Datei mit Daten hoch."
+        "errContent1": "Es wurden keine gültigen Datensätze gefunden. Bitte laden Sie eine korrekt formatierte Excel- oder gdx-Datei mit Daten hoch.",
+        "scalarConfig": "Eigabeskalare können in folgender Kategorie konfiguriert werden: '"
       },
       "updateToolScalars": ["Wertebox für skalare Werte"],
       "updateToolNoScalars": ["Kreisdiagramm", "Balkendiagramm", "Streudiagramm", "Liniendiagramm", "Blasendiagramm", "Histogramm", "Zeitreihen-Diagramm", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle und Pivot-Charts", "Eigener Renderer"],
       "axisOptions":{
+        "leftAxis": "linke Achse",
+        "rightAxis": "rechte Achse",
         "title": "Achsenbeschriftung",
+        "labelOnlyTitle": "Achsenbeschriftung (%s Achse)",
         "showgrid": "Gitter anzeigen",
         "zeroline": "Nulllinie anzeigen",
         "showticklabels": "Markerbeschriftung anzeigen",
@@ -1405,10 +1468,8 @@
           "plotBgColor": "Welche Hintergrundfarbe soll das Diagramm haben?",
           "showlegend": "Legende zeigen?",
           "staticPlot": "Einen statischen Plot rendern?",
-          "fixedHeightCheck": "Charthöhe fixieren?",
-          "fixedHeight": "Höhe (px)",
-          "fixedWidthCheck": "Chartbreite fixieren?",
-          "fixedWidth": "Breite (px)",
+          "fixedHeight": "Charthöhe fixieren (px) - leer lassen oder 0 für Standardhöhe",
+          "fixedWidth": "Chartbreite fixieren (px) - leer lassen oder 0 für Standardbreite",
           "outType": "Grafik- und Datentabelle im geteilten Bildschirm anzeigen? (keine Live-Vorschau)"
         }
       },
@@ -1423,12 +1484,9 @@
         "width": "Maximale Anzahl an Boxen je Reihe (keine Vorschau)",
         "color": "Wählen Sie die Farbe der Wertebox aus",
         "colorChoices": ["rot", "gelb", "aqua", "blau", "hellblau", "grün", "marineblau", "blaugrün", "oliv", "limette", "orange", "fuchsia", "lila", "kastanienbraun", "schwarz"],
-        "useIcon": "Soll ein Icon angezeigt werden?",
-        "iconLib": "Wählen Sie eine Symbolbibliothek aus",
-        "libChoices": ["Font-Awesome", "Glyphicons"],
-        "icon1": "Geben Sie ein Symbol für die Wertebox an.",
-        "icon2": "und",
-        "icon3": "für eine Liste der möglichen Symbole."
+        "icon": "Geben Sie ein Symbol für die Wertebox an.",
+        "valueboxIconChoices": ["_", "Münzen", "Brieftasche", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupie", "Rubel", "Pfund", "Lira", "Benutzer", "Mehrere Benutzer", "Plus", "Minus", "Ausrufezeichen", "Fragezeichen", "Abspielen", "Haken", "Haus", "Zahnrad", "Asterisk", "Verbot", "Herz", "Blatt", "Glühbirne", "Smile", "Stern", "Weitere..."],
+        "otherIcon": "Use other icon from here: "
       },
       "animationOptions":{
         "title": "Animationsoptionen",
@@ -1439,7 +1497,7 @@
         "redraw": "Triggern eines Neuzeichnung der Diagramms nach Abschluss des Übergangs? (Dies kann die Leistung erheblich beeinträchtigen, kann aber notwendig sein, um grafische Elemente zu aktualisieren, die nicht animiert werden können.)",
         "mode": "Wie sollen neue animierte Aufrufe mit aktuell laufenden Animationen interagieren?",
         "modeChoices": ["sofort", "als nächstes", "nach allem"],
-        "noAnimation": "Keine Domäne für eine Animation ausgewählt (Kategorie: Y-Achse)."
+        "noAnimation": "Keine Domäne für eine Animation ausgewählt (Kategorie: Y Daten)."
       },
       "animationSliderOptions":{
         "hide": "Entfernen des Animationsschiebereglers?",
@@ -1479,7 +1537,6 @@
         },
         "generalOpts":{
           "title": "Allgemeine Optionen",
-          "incZero": "Soll die y-Achse bei 0 beginnen?",
           "logscale": "Y-Achse in Log-Skala anzeigen?",
           "drawGrid": "Sollen Gitterlinien angezeigt werden?",
           "stepPlot": "Willst du ein Stufendiagramm?",
@@ -1491,12 +1548,39 @@
           "pointShapeChoices": ["Punkt", "Dreieck", "Quadrat", "Diamant", "Fünfeck", "Sechseck", "Kreis", "Stern", "Plus", "ex"],
           "pointSize": "Welche Größe sollten die Punkte haben?"
         },
+        "axisOptions":{
+          "title": "Bezeichnung",
+          "independentTicks": "Unabhängige Markierungen",
+          "logscale": "Y-Achse in Log-Skala anzeigen?",
+          "drawGrid": "Sollen Gitterlinien angezeigt werden?",
+          "gridLineColor": "Gitterlinienfarbe",
+          "gridLineWidth": "Gitterlinienbreite",
+          "axisLineColor": "Achsenlinienfarbe",
+          "axisLineWidth": "Achsenlinienbreite",
+          "axisLabelFontSize": "Schriftgröße der Achsenbeschriftung",
+          "valueRange": "Achsbereich einstellen. Das Format muss dem Datenformat entsprechen. Wenn nicht angegeben, wird ein Standard verwendet.",
+          "valueRangeFrom": "Bereichsanfang",
+          "valueRangeTo": "Bereichsende"
+        },
         "highOpts":{
           "title": "Hervorhebungsoptionen",
           "activate": "Möchten Sie Hervorhebungseffekte sehen?",
           "circleSize": "Wie groß soll der Kreis sein (in px)?",
           "seriesBackgroundAlpha": "Wählen Sie die Deckkraft des Hintergrunds",
+          "strokeWidth": "Breite der hervorgehobenen Linien",
+          "strokeBorderWidth": "Einen Rahmen um hervorgehobene Linien zeichnen",
+          "strokeBorderColor": "Rahmenfarbe der hervorgehobenen Linien",
           "hideOnMouseOut": "Hervorhebungseffekte ausblenden, wenn die Maus aus dem Diagramm bewegt wird?"
+        },
+        "legend":{
+          "title": "Legendenoptionen",
+          "activate": "Soll eine Legende angezeigt werden?",
+          "show": "Wie soll die Legende angezeigt werden?",
+          "showChoices": ["automatisch", "immer", "beim Überfahren mit der Maus", "folgen"],
+          "width": "Breite der Legende (in px)",
+          "showZeroValues": "Nullwerte in der Legende anzeigen",
+          "labelsSeparateLines": "Einträge in getrennten Zeilen anzeigen?",
+          "hideOnMouseOut": "Legende ausblenden, wenn die Maus aus dem Diagramm bewegt wird?"
         }
       },
       "leafletOptions":{
@@ -1526,6 +1610,9 @@
           "showCurrentTime": "Einen vertikalen Balken zur aktuellen Zeit anzeigen?"
         }
       },
+      "miroPivotOptions":{
+         "infoMsg": "Bitte benutzen Sie direkt die Vorschau auf der rechten Seite, um die Standardansicht zu konfigurieren."
+      },
       "pivotOptions":{
         "rows": "Zeilen der Pivot-Tabelle vorab füllen",
         "cols": "Spalten der Pivot-Tabelle vorab füllen",
@@ -1543,7 +1630,8 @@
       },
       "customOptions":{
         "name": "Name der benutzerdefinierten Rendererfunktion (ohne Leerzeichen)",
-        "packages": "Benötigte Pakete für den Renderer"
+        "packages": "Benötigte Pakete für den Renderer",
+        "additionalData": "Zusätzliche Datensätze, die mit dem benutzerdefinierten Renderer kommuniziert werden sollen"
       },
       "filterOptions":{
         "filter": "Soll eine Dimension des Symbols in einem Dropdownmenü filterbar sein??",
@@ -1568,11 +1656,13 @@
       "js":{
         "addInputGroup":{
           "symbolInputgroups": "Name der Eingabegruppe?",
-          "groupMemberIn": "Gruppenmitglieder auswählen"
+          "groupMemberIn": "Gruppenmitglieder auswählen",
+          "groupSameTabIn": "Alle Symbole nebeneinander in demselben Tab anzeigen?"
         },
         "addOutputGroup":{
           "symbolOutputgroups": "Name der Ausgabegruppe?",
-          "groupMemberOut": "Gruppenmitglieder auswählen"
+          "groupMemberOut": "Gruppenmitglieder auswählen",
+          "groupSameTabOut": "Alle Symbole nebeneinander in demselben Tab anzeigen?"
         },
         "addSymlink":{
           "source": "Name des Ausgabesymbols",
@@ -1586,8 +1676,15 @@
           "outFile": "Name der Ausgabedatei (inklusive Dateiendung)",
           "timeout": "Timeout (Sekunden, -1 für unendlich)"
         },
+        "addOutAttach":{
+          "file": "Name der anzuhängenden Datei",
+          "exec": "Modell erlauben, diese Datei zu lesen?",
+          "error": "Soll ein Fehler angezeigt werden, wenn die Datei nicht gefunden wird?"
+        },
         "addDyEvent":{
-          "dyDyEvent": "Welches Symbol soll verwendet werden?",
+          "dyDyEventCheck": "Statisches Ereignis?",
+          "dyDyEventTrue": "Legen Sie ein Datum für das Ereignis fest (jjjjj-mm-tt)",
+          "dyDyEventFalse": "Welches Symbol soll verwendet werden?",
           "label": "Welche Bezeichnung soll verwendet werden?",
           "labelLoc": "Position für die Bezeichnung",
           "labelLocChoices": ["oben", "unten"],
@@ -1633,7 +1730,7 @@
           "label": "Wählen Sie ein Label",
           "iconOptions": "Icon options",
           "icon": "Icon to use",
-          "iconChoices": ["circle", "circle-notch", "dot-circle", "square", "times-circle", "user-circle", "users", "plus-circle", "minus-circle", "exclamation-circle", "question-circle", "play-circle", "check-circle", "home", "cog", "asterisk", "ban", "heart", "leaf", "lightbulb", "smile", "star"],
+          "iconChoices": ["Kreis", "Offener Kreis", "Kreispunkt", "Quadrat", "X", "Benutzer", "Mehrere Benutzer", "Plus", "Minus", "Ausrufezeichen", "Fragezeichen", "Abspielen", "Haken", "Haus", "Zahnrad", "Asterisk", "Verbot", "Herz", "Blatt", "Glühbirne", "Smile", "Stern"],
           "iconColor": "Icon color",
           "markerColor": "Marker color",
           "markerColorChoices": ["red", "darkred", "lightred", "orange", "beige", "green", "darkgreen", "lightgreen", "blue", "darkblue", "lightblue", "purple", "darkpurple", "pink", "cadetblue", "white", "gray", "lightgray", "black"],
@@ -1691,6 +1788,8 @@
         "addScatterDataEl":{
           "chartYdata": "Was soll auf der y-Achse dargestellt werden?",
           "chartYlabel": "Datenlabel (z.B. für Legende)",
+          "yaxis": "Achsenposition",
+          "yaxisChoices": ["links", "rechts"],
           "symbol": "Markersymbol auswählen",
           "symbolChoices": ["_", "Kreis", "Kreis ungefüllt", "Quadrat", "Quadrat ungefüllt", "Diamant","Diamant ungefüllt", "Kreuz", "Kreuz ungefüllt","x", "x ungefüllt", "Dreieck-oben","Dreieck-oben ungefüllt","Dreieck-unten", "Dreieck-unten ungefüllt","Pentagon", "Pentagon ungefüllt", "Hexagon","Hexagon ungefüllt", "Octagon", "Octagon ungefüllt", "Stern", "Stern ungefüllt", "Hexagram","Hexagram ungefüllt", "asterisk", "asterisk ungefüllt", "hash", "hash ungefüllt", "line horizontal", "line horizontal ungefüllt", "line vertikal", "line vertikal ungefüllt"],
           "color": "Markerfarbe auswählen",
@@ -1703,6 +1802,8 @@
         "addLineDataEl":{
           "chartYdata": "Was soll auf der y-Achse dargestellt werden?",
           "chartYlabel": "Datenlabel (z.B. für Legende)",
+          "yaxis": "Axis position",
+          "yaxisChoices": ["left", "right"],
           "color": "Linienfarbe wählen",
           "width": "Linienbreite wählen",
           "shape": "Linienform wählen",
@@ -1738,6 +1839,8 @@
         "addDyDataEl":{
           "chartYdata": "Welchen Index möchten Sie auf der y-Achse zeichnen?",
           "label": "Welches Label soll verwendet werden?",
+          "yaxis": "Axis position",
+          "yaxisChoices": ["left", "right"],
           "color": "Welche Farbe sollte für diese Serie verwendet werden?",
           "stepPlot": "Willst du die Serie als Stufendiagramm darstellen?",
           "stemPlot": "Willst du die Serie als Stammplot darstellen?",

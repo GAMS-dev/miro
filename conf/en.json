@@ -239,7 +239,7 @@
     "dialogRemoteLogin": {
       "title": "Login required",
       "desc": "Please enter your credentials below:",
-      "url": "URL of the GAMS Remote Solver",
+      "url": "URL of GAMS MIRO Engine",
       "username": "Username",
       "password": "Password",
       "namespace": "Namespace",
@@ -247,7 +247,7 @@
       "remember": "Remember me",
       "cancelButton":"Cancel",
       "okButton": "Ok",
-      "hostNotFound": "GAMS Remote Solver could not be reached under the given URL.",
+      "hostNotFound": "GAMS MIRO Engine could not be reached under the given URL.",
       "nsNotFound": "The namespace you entered could not be found.",
       "invalidCred": "The credentials you entered are invalid.",
       "insuffPerm": "You don't have sufficient permissions to execute the model.",
@@ -265,10 +265,10 @@
       "cancelButton":"Cancel",
       "okButton":"Yes",
       "removeFromUI":{
-        "title":"Remove scenario from editor",
-        "desc":"Do you want to remove the scenario from the editor? Unsaved data will be lost!",
+        "title":"Remove scenario from sandbox",
+        "desc":"Do you want to remove the scenario from the sandbox? Unsaved data will be lost!",
         "cancelButton":"Cancel",
-        "okButton":"Remove from editor"
+        "okButton":"Remove from sandbox"
       }
     },
     "dialogDeleteHCJob":{  
@@ -277,10 +277,10 @@
       "cancelButton":"Cancel",
       "okButton":"Yes",
       "removeFromUI":{
-        "title":"Remove Hypercube job from editor",
-        "desc":"Do you want to remove the Hypercube job configuration from the editor? Unsaved data will be lost!",
+        "title":"Remove Hypercube job from sandbox",
+        "desc":"Do you want to remove the Hypercube job configuration from the sandbox? Unsaved data will be lost!",
         "cancelButton":"Cancel",
-        "okButton":"Remove from editor"
+        "okButton":"Remove from sandbox"
       }
     },
     "dialogRemoveScen":{  
@@ -474,7 +474,7 @@
       "importSuccess": "Job was imported successfully",
       "accessDenied": "Access denied",
       "maxDownloads": "The maximum number of parallel downloads has been reached.",
-      "jobNotFound": "The job was not found on the GAMS Remote Solver.",
+      "jobNotFound": "The job was not found on GAMS MIRO Engine.",
       "histTitle": "Job history",
       "status":{
         "downloading": "Downloading results",
@@ -602,6 +602,38 @@
         "noOutput": "Script output file could not found.",
         "timeout": "Script timed out.",
         "crash": "Script crashed."
+      }
+    }
+  },
+  "renderers":{
+    "miroPivot":{
+      "btDownloadCsv": "Download CSV",
+      "btLoadView": "Load view",
+      "btNewView": "Add view",
+      "aggregateLabel": "aggregate",
+      "filterLabel": "filter",
+      "allPlaceholder": "All",
+      "colTruncationWarning": "Data was truncated to the first %s columns.",
+      "rowTruncationWarning": "Data was truncated to the first %s rows.",
+      "newViewTitle": "New view",
+      "newViewLabel": "Please choose a name for the view.",
+      "newViewBtCancel": "Cancel",
+      "newViewBtSave": "Save",
+      "errUniqueViewName": "The view name you entered already exists. Please choose another name.",
+      "aggregationFunctions":{
+        "sum": "Sum",
+        "count": "Count",
+        "median": "Median",
+        "mean": "Mean",
+        "min": "Min",
+        "max": "Max"
+      },
+      "renderer":{
+        "table": "Table", 
+        "bar": "Bar chart",
+        "stackedbar": "Stacked bar chart",
+        "radar": "Radar chart",
+        "line": "Line chart"
       }
     }
   },
@@ -809,12 +841,17 @@
       "title": "Error saving GAMS log/lst files",
       "noFileAccess": "One or more GAMS output files (.log/.lst) could not be accessed.",
       "fileSizeExceeded": "One or more GAMS output files (.log/.lst) exceed the maximum file size allowed to be stored."
+    },
+    "saveAttachments": {
+      "title": "Problems saving attachments",
+      "noFileAccess": "The attachments: '%s' could not be saved because the files are not accessible.",
+      "fileSizeExceeded": "The attachments: '%s' could not be saved because they exceed the maximum allowed size."
     }
   },
   "adminMode":{
     "invalidSymbolsDialog":{
       "title": "Invalid configuration",
-      "desc": "Some graphics and/or widgets have been configured for symbols that are no longer part of your GAMS/MIRO data contract. Do you want to remove them from your configuration? Note that this cannot be undone! Graphic configuration for invalid symbol(s): '%s'. Widget configuration for invalid symbol(s): '%s'.",
+      "desc": "Some graphics and/or widgets have been configured for symbols that are no longer part of your GAMS/MIRO data contract or are hidden. Do you want to remove them from your configuration? Note that this cannot be undone! Graphic configuration for invalid symbol(s): '%s'. Widget configuration for invalid symbol(s): '%s'.",
       "msgSuccess": "Invalid configuration was successfully removed",
       "btRemoveWidgets": "Remove invalid widgets",
       "btRemoveGraphs": "Remove invalid graphs", 
@@ -848,7 +885,7 @@
         "tabScripts": "Analysis scripts",
         "headerGeneral": "General",
         "headerLogo": "Logo",
-        "headerScalars": "Scalars",
+        "headerSymbolDisplay": "Symbol display",
         "headerTabGrouping": "Tab grouping",
         "headerTabSymlinks": "Use output data as input data",
         "headerInputGroups": "Input groups",
@@ -856,6 +893,7 @@
         "headerSymbolNaming": "Naming",
         "headerSymbolGrouping": "Ordering",
         "headerBaseScripts": "Base mode",
+        "headerOutputAttach": "Output attachments",
         "baseScriptsTooltip": "Run custom analysis scripts which will be displayed in the output section",
         "headerHcubeScripts": "Hypercube mode",
         "hcubeScriptsTooltip": "Run custom analysis scripts for multiple scenarios at once",
@@ -901,6 +939,9 @@
         "base": "Specify custom analysis scripts for the Base mode",
         "hcube": "Specify custom analysis scripts for the Hypercube mode"
       },
+      "outputAttach": {
+        "label": "Add new attachment"
+      },
       "overwriteSheetOrder":{
         "input": "Specify the tab order of the input symbols (drag & drop)",
         "output": "Specify the tab order of the output symbols (drag & drop)"
@@ -913,7 +954,10 @@
       "overwriteSymbolHeaders":{
         "label": "Specify column headers"
       },
-      "hidden":{
+      "hiddenOutputSymbols":{
+        "label": "Symbols that should not be displayed but can be used in graphs etc."
+      },
+      "hiddenOutputScalars":{
         "label": "Scalars that should not be displayed in the scalars table but can be used in graphs etc."
       },
       "pivotcolor":{
@@ -928,6 +972,7 @@
         "useReadme": "Include README file",
         "tabTitle": "README tab title",
         "fileName": "README file name",
+        "enableMath": "Enable mathematical typesetting?",
         "btEdit": "Edit README",
         "dialogEdit": {
           "title": "Readme editor",
@@ -942,7 +987,8 @@
         "label": "Duration the GAMS log and lst files are stored in the database (in days)."
       },
       "decimal":{
-        "label": "Number of decimal places used for rounding output values."
+        "label": "Number of decimal places used for rounding numerical values (global setting).",
+        "tooltip": "Has an effect on all output tables, big data input tables and the table for loading scenarios in Hypercube mode. - Open documentation."
       },
       "logo":{
         "header": "Logo preview:",
@@ -1044,6 +1090,7 @@
         },
         "buttons":{
           "label":"Add export buttons?",
+          "title": "If a symbol contains multiple table pages, using an export button only affects the currently visible table page!",
           "choices": ["copy", "CSV", "Excel", "PDF", "print"],
           "select": "Select buttons to use. Note: All button functions only affect the visible table page."
         }
@@ -1071,7 +1118,7 @@
         "noWidgetConfigMsg": "Currently, there is no widget configured for this symbol",
         "optionConfigMsg": "Info: The symbol you selected is a GAMS option: %s",
         "doubledashConfigMsg": "Info: The symbol you selected is a double-dash parameter: %s",
-        "tableWidget": "Table configuration is done in 'configure tables'!",
+        "tableWidget": "Table configuration is done in '",
         "inputSymbol": "Input symbol",
         "widgetGo": "GAMS option",
         "widgetDd": "Double-dash parameter",
@@ -1081,7 +1128,8 @@
         "widgetDdTooltip": "Name of the double-dash parameter (no '--')",
         "widgetType": "Select widget type",
         "alias": "Name of the widget tab (no live preview)",
-        "pivotColsRestriction": "Note: It is not possible to add or delete columns in the symbol table if it is set to readonly or displayed as a heatmap."
+        "pivotColsRestriction": "Note: It is not possible to add or delete columns in the symbol table if it is set to readonly or displayed as a heatmap.",
+		"notConfigurable": "The widget configuration found in your JSON file is currently not supported for the selected symbol type in Configuration mode! This does not imply that the configuration is invalid. Symbol: '%s'; Configured widget type: '%s'"
       },
       "validate":{
         "val1": "The alias of the element must not be empty!",
@@ -1136,7 +1184,10 @@
         "val52": "The command is required.",
         "val53": "The output filename is required.",
         "val54": "You need to define aliases for your choices if only the element text is communicated with GAMS.",
-        "val55": "Only one item can be selectable in the dropdown menu if only the element text is communicated with GAMS."
+        "val55": "Only one item can be selectable in the dropdown menu if only the element text is communicated with GAMS.",
+        "val56": "An attachment with this file name already exists!",
+        "val57": "The file name contains invalid characters. Attachments in subdirectories are not supported!",
+        "val58": "The decimal separator and the thousand grouping separator must not be identical!"
       },
       "widgetOptions":{
         "slider": "Slider",
@@ -1151,6 +1202,7 @@
       },
       "table":{
         "bigData": "Are large amounts of data stored in the table (i.e. more than 20,000 records)?",
+        "hideIndexCol": "Hide indexing column?",
         "readonly": "Should table be readonly?",
         "readonlyCols": "Select columns to be readonly",
         "pivotCols": "Select a column to pivot",
@@ -1171,7 +1223,8 @@
         },
         "depSelector": "Static value?",
         "step": "Step size (also decimal places possible)",
-        "minStep": "Minimum step size (only relevant in Hypercube mode). If empty, the step size is used.",
+        "minStep": "Minimum step size",
+        "minStepTooltip": "Only relevant in Hypercube mode. If empty, the step size is used. - Open documentation",
         "ticks": "Show tick marks?",
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
@@ -1280,7 +1333,11 @@
         "min": "Minimum value (optional)",
         "max": "Maximum value (optional)",
         "decimal": "Number of decimal places (optional)",
-        "sign": "Currency symbol (optional)"
+        "sign": "Currency symbol (optional)",
+        "decimalCharacter": "Decimal separator to use",
+		"decimalCharacterChoices": [", (comma)", ". (dot)", "· (middle dot)", "٫ (arabic decimal separator)", "⎖ (decimal separator key symbol)"],
+        "digitGroupSeparator": "Thousand grouping separator to use",
+		"digitGroupSeparatorChoices": [", (comma)", ". (dot)", " (space)", "(no separator)", "' (apostrophe)","٬ (arabic thousands separator)", "˙ (dot above)"]
       },
       "removeDialog":{
         "title": "Please confirm",
@@ -1339,6 +1396,7 @@
         "general": "General",
         "xaxis": "X axis",
         "yaxis": "Y axis",
+        "ydata": "Y data",
         "filterDomain": "Filter & Domains",
         "filter": "Filter",
         "animation": "Animation",
@@ -1350,6 +1408,7 @@
         "shading": "Shading",
         "rangeSelector": "Range selector",
         "highlight": "Highlighting",
+        "legend": "Legend",
         "markers": "Markers",
         "flows": "Flows",
         "minicharts": "Minicharts",
@@ -1376,12 +1435,16 @@
       },
       "errMsg":{
         "errTitle1": "No valid data",
-        "errContent1": "No valid datasets were found. Please upload a properly formatted Excel or gdx file with data."
+        "errContent1": "No valid datasets were found. Please upload a properly formatted Excel or gdx file with data.",
+        "scalarConfig": "The configuration for input scalars is done in '"
       },
       "updateToolScalars": ["Valuebox for scalar values"],
       "updateToolNoScalars": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram", "Time Series Diagram", "Map chart", "Gantt chart", "Pivot table and pivot charts", "Custom renderer"],
       "axisOptions":{
+        "leftAxis": "left axis",
+        "rightAxis": "right axis",
         "title": "Axis label",
+        "labelOnlyTitle": "Axis label (%s axis)",
         "showgrid": "Show grid",
         "zeroline": "Show zero line",
         "showticklabels": "Show tick labels",
@@ -1405,10 +1468,8 @@
           "plotBgColor": "What background color shall the plot have?",
           "showlegend": "Show legend?",
           "staticPlot": "Render a static plot?",
-          "fixedHeightCheck": "Fix chart height?",
-          "fixedHeight": "Height (px)",
-          "fixedWidthCheck": "Fix chart width?",
-          "fixedWidth": "Width (px)",
+          "fixedHeight": "Fix chart height (px) - Leave empty or 0 for default",
+          "fixedWidth": "Fix chart width (px) - Leave empty or 0 for default",
           "outType": "Show graphic and data table in split screen? (no live preview)"
         }
       },
@@ -1423,12 +1484,9 @@
         "width": "Maximum number of boxes per row (no preview)",
         "color": "Select color of the valuebox",
         "colorChoices": ["red", "yellow", "aqua", "blue", "light-blue", "green", "navy", "teal", "olive", "lime", "orange", "fuchsia", "purple", "maroon", "black"],
-        "useIcon": "Use an icon for the valuebox?",
-        "iconLib": "Select an icon library",
-        "libChoices": ["Font-Awesome", "Glyphicons"],
-        "icon1": "Specify an icon for the valuebox (optional).",
-        "icon2": "and",
-        "icon3": "for a list of possible icons."
+        "icon": "Specify an icon for the valuebox (optional).",
+        "valueboxIconChoices": ["_", "coins", "wallet", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupee", "Ruble", "Pound", "Lira", "User", "Users", "Plus", "Minus", "Exclamation mark", "Question mark", "Play", "Check", "Home", "Cog", "Asterisk", "Ban", "Heart", "Leaf", "Lightbulb", "Smile", "Star", "Other..."],
+        "otherIcon": "Use other icon from here: "
       },
       "animationOptions":{
         "title": "Animation options",
@@ -1439,7 +1497,7 @@
         "redraw": "Trigger a redraw of the plot at completion of the transition? (this may significantly impact performance, but may be necessary to update graphical elements that can't be transitioned.)",
         "mode": "How shall new animate calls interact with currently-running animations?",
         "modeChoices": ["immediate", "next", "afterall"],
-        "noAnimation": "No domain selected for animation (category: Y axis)."
+        "noAnimation": "No domain selected for animation (category: Y data)."
       },
       "animationSliderOptions":{
         "hide": "remove the animation slider?",
@@ -1479,7 +1537,6 @@
         },
         "generalOpts":{
           "title": "General options",
-          "incZero": "Should y-axis start at 0?",
           "logscale": "Show y-axis in log scale?",
           "drawGrid": "Should grid lines be displayed?",
           "stepPlot": "Do you want a step plot?",
@@ -1491,12 +1548,39 @@
           "pointShapeChoices": ["dot", "triangle", "square", "diamond", "pentagon", "hexagon", "circle", "star", "plus", "ex"],
           "pointSize": "What size should points be?"
         },
+        "axisOptions":{
+          "title": "Label",
+          "independentTicks": "Independent ticks",
+          "logscale": "Show y-axis in log scale?",
+          "drawGrid": "Should grid lines be displayed?",
+          "gridLineColor": "Grid line color",
+          "gridLineWidth": "Grid line width",
+          "axisLineColor": "Axis line color",
+          "axisLineWidth": "Axis line width",
+          "axisLabelFontSize": "Axis label font size",
+          "valueRange": "Set axis range. The format has to match the data format. When not specified, a default is used.",
+          "valueRangeFrom": "Range start",
+          "valueRangeTo": "Range end"
+        },
         "highOpts":{
           "title": "Highlighting options",
           "activate": "Would you like to see highlighting effects?",
           "circleSize": "What shall the circle size be (in px)?",
           "seriesBackgroundAlpha": "Choose the opacity of the background",
+          "strokeWidth": "Width of highlighted lines",
+          "strokeBorderWidth": "Draw a border around highlighted lines",
+          "strokeBorderColor": "Border color of highlighted lines",
           "hideOnMouseOut": "Hide highlighting effects when mouse is moved out of chart?"
+        },
+        "legend":{
+          "title": "Legend options",
+          "activate": "Should a legend be displayed?",
+          "show": "How should the legend be displayed?",
+          "showChoices": ["auto", "always", "on mouseover", "follow"],
+          "width": "Width of the legend (in px)",
+          "showZeroValues": "Show zero value labels in the legend",
+          "labelsSeparateLines": "Show labels in separate lines?",
+          "hideOnMouseOut": "Hide legend when mouse is moved out of chart?"
         }
       },
       "leafletOptions":{
@@ -1526,6 +1610,9 @@
           "showCurrentTime": "Show a vertical bar at the current time?"
         }
       },
+      "miroPivotOptions":{
+        "infoMsg": "Please use directly the preview on the right side to configure the default view."
+      },
       "pivotOptions":{
         "rows": "Prepopulate rows of the pivot table",
         "cols": "Prepopulate columns of the pivot table",
@@ -1543,7 +1630,8 @@
       },
       "customOptions":{
         "name": "Name of the custom renderer function (no space)",
-        "packages": "Packages necessary for the renderer"
+        "packages": "Packages necessary for the renderer",
+        "additionalData": "Additional datasets to communicate with the custom renderer"
       },
       "filterOptions":{
         "filter": "Should one domain of the symbol be selectable via a dropdown menu?",
@@ -1568,11 +1656,13 @@
       "js":{
         "addInputGroup":{
           "symbolInputgroups": "Name of the input group?",
-          "groupMemberIn": "Select group members"
+          "groupMemberIn": "Select group members",
+          "groupSameTabIn": "Show all symbols side by side on the same tab?"
         },
         "addOutputGroup":{
           "symbolOutputgroups": "Name of the output group?",
-          "groupMemberOut": "Select group members"
+          "groupMemberOut": "Select group members",
+          "groupSameTabOut": "Show all symbols side by side on the same tab?"
         },
         "addSymlink":{
           "source": "Name of the output symbol",
@@ -1586,8 +1676,15 @@
           "outFile": "Name of the output file (including file extension)",
           "timeout": "Timeout (seconds, -1 for infinite)"
         },
+        "addOutAttach":{
+          "file": "Name of the file to attach",
+          "exec": "Allow model to read this file?",
+          "error": "Should an error be displayed if the file is not found?"
+        },
         "addDyEvent":{
-          "dyDyEvent": "Which symbol shall be used?",
+          "dyDyEventCheck": "Static event?",
+          "dyDyEventTrue": "Set a date for the event (yyyy-mm-dd)",
+          "dyDyEventFalse": "Which symbol shall be used?",
           "label": "What label should be used?",
           "labelLoc": "Position of the label",
           "labelLocChoices": ["top", "bottom"],
@@ -1633,7 +1730,7 @@
           "label": "Choose a label",
           "iconOptions": "Icon options",
           "icon": "Icon to use",
-          "iconChoices": ["circle", "circle-notch", "dot-circle", "square", "times-circle", "user-circle", "users", "plus-circle", "minus-circle", "exclamation-circle", "question-circle", "play-circle", "check-circle", "home", "cog", "asterisk", "ban", "heart", "leaf", "lightbulb", "smile", "star"],
+          "iconChoices": ["Circle", "Circle-notch", "Dot-circle", "Square", "Times", "User", "Users", "Plus", "Minus", "Exclamation mark", "Question mark", "Play", "Check", "Home", "Cog", "Asterisk", "Ban", "Heart", "Leaf", "Lightbulb", "Smile", "Star"],
           "iconColor": "Icon color",
           "markerColor": "Marker color",
           "markerColorChoices": ["red", "darkred", "lightred", "orange", "beige", "green", "darkgreen", "lightgreen", "blue", "darkblue", "lightblue", "purple", "darkpurple", "pink", "cadetblue", "white", "gray", "lightgray", "black"],
@@ -1691,6 +1788,8 @@
         "addScatterDataEl":{
           "chartYdata": "What should be plotted on the y axis?",
           "chartYlabel": "Data label (e.g. for legend)",
+          "yaxis": "Axis position",
+          "yaxisChoices": ["left", "right"],
           "symbol": "Select marker symbol",
           "symbolChoices": ["_", "circle", "circle-open", "square", "square-open","diamond","diamond-open", "cross", "cross-open", "x", "x-open", "triangle-up","triangle-up-open", "triangle-down", "triangle-down-open", "pentagon", "pentagon-open", "hexagon","hexagon-open", "octagon", "octagon-open", "star", "star-open", "hexagram","hexagram-open", "asterisk", "asterisk-open", "hash", "hash-open", "line-ew", "line-ew-open", "line-ns", "line-ns-open"],
           "color": "Select marker color",
@@ -1703,6 +1802,8 @@
         "addLineDataEl":{
           "chartYdata": "What should be plotted on the y axis?",
           "chartYlabel": "Data label (e.g. for legend)",
+          "yaxis": "Axis position",
+          "yaxisChoices": ["left", "right"],
           "color": "Select line color",
           "width": "Select line width",
           "shape": "Select line shape",
@@ -1738,6 +1839,8 @@
         "addDyDataEl":{
           "chartYdata": "What index do you want to plot on the y-axis?",
           "label": "What label should be used?",
+          "yaxis": "Axis position",
+          "yaxisChoices": ["left", "right"],
           "color": "What color should be used for this series?",
           "stepPlot": "Do you want the series to be a step plot?",
           "stemPlot": "Do you want the series to be a stem plot?",

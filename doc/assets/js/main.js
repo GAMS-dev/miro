@@ -38,14 +38,6 @@ $(document).ready(function() {
         e.preventDefault();
         $(this).ekkoLightbox();
     });    
-
-    function hashHandler() {
-        if(window.location.hash && $(window.location.hash).length){
-            $(window.location.hash).next().show();
-        }
-    }
-    hashHandler()
-    window.addEventListener('hashchange', hashHandler, false);
 });
 (function ($) {
     /**
@@ -438,23 +430,6 @@ $(document).ready(function() {
     });
 
     $( document ).ready(function($) {
-        $('button.navbar-toggle').click(function () {
-            if ($(window).width() < 1075) {
-                $(this).toggleClass('collapsed');
-                $('#navbar-collapse-gams').toggleClass('collapse');
-            }
-        });
-        $('#gams-scope .matchHeight').matchHeight();
-
-        $('.dropdown').hover(
-            function () {
-                $('.dropdown-menu', this).not('.in .dropdown-menu').stop(true, true).fadeIn('fast');
-            },
-
-            function () {
-                $('.dropdown-menu', this).not('.in .dropdown-menu').stop(true, true).fadeOut('fast');
-            }
-        );
         var queryToMark = new URL(window.location.href).searchParams.get("search");
         if (queryToMark) {
             var bodyToMark = $(".doc-body");
@@ -517,14 +492,22 @@ $(document).ready(function() {
             }
           }));
           $("#miroSearch").on("focus", function(e) {
-            $("#miroSearch").animate({width: 300}, 200);
+            $("#miroSearch").animate({width: 300, paddingRight: ''}, 200);
           });
           $("#miroSearch").on("blur", function(e) {
             setTimeout(function() {
                 $searchResultsBox.fadeOut(100);
-                $("#miroSearch").animate({width: 30}, 200);
+                $("#miroSearch").animate({width: 30, paddingRight: 0}, 200);
                 $("#miroSearch").val("");
             }, 100);
           });
     });
+    function hashHandler() {
+        if(window.location.hash && $(window.location.hash).length){
+            $(window.location.hash).next().show();
+            $(window.location.hash).find('.slide-toggle').removeClass( 'fa-plus' ).addClass( 'fa-minus' );
+        }
+    }
+    hashHandler();
+    window.addEventListener('hashchange', hashHandler, false);
 })(jQuery);

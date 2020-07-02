@@ -1,4 +1,4 @@
-requiredPackages <- c("jsonvalidate", "V8")
+requiredPackages <- c("V8")
 source("./components/install_packages.R", local = TRUE)
 # check whether there exists a config file and if not create an empty one
 if(is.null(errMsg)){
@@ -40,32 +40,33 @@ Note that GAMS will not create the directories 'conf_", modelName, "' and 'data_
 
 # validate json files
 config <- NULL
-jsonErrors <- NULL
 if(is.null(errMsg)){
   config <- NULL
+  jsonValidator <- JSONValidator$new()
   lapply(seq_along(jsonSchemaMap), function(i){
-    error <- tryCatch({
-      eval <- validateJson(jsonSchemaMap[[i]][1], jsonSchemaMap[[i]][2])
+    tryCatch({
+      valid <- jsonValidator$validate(jsonSchemaMap[[i]][1], 
+                                     jsonSchemaMap[[i]][2])
     }, error = function(e){
       errMsg <<- paste(errMsg, paste0("Some error occurred validating JSON file: '", 
-                                      basename(jsonFilesWithSchema[i]), "'. Error message: ", e), sep = "\n")
-      e
+                                      basename(jsonFilesWithSchema[i]), "'. Error message: ", 
+                                      conditionMessage(e)), sep = "\n")
     })
-    if(inherits(error, "error")){
-      return(NULL)
+    if(!is.null(errMsg)){
+      return()
     }
     
-    if(names(jsonSchemaMap)[[i]] == "config" && is.null(eval[[2]])){
-      config <<- c(config, eval[[1]])
-    }else if (names(jsonSchemaMap)[[i]] == "io_config" && is.null(eval[[2]])){
-      config <<- c(config, eval[[1]])
-    }else if(!is.null(eval[[2]])){
-      errMsgTmp  <- paste0("Some error occurred parsing JSON file: '", 
-                           basename(jsonFilesWithSchema[i]), 
-                           "'. See below for more detailed information.")
-      errMsg     <<- paste(errMsg, errMsgTmp, sep = "\n")
-      jsonErrors <<- rbind(jsonErrors, 
-                           cbind(file_name = basename(jsonFilesWithSchema[i]), eval[[2]]))
+    if(is.null(valid$errors)){
+      if(identical(names(jsonSchemaMap)[[i]], "config")){
+        config <<- valid$data
+      }else if(identical(names(jsonSchemaMap)[[i]], "io_config")){
+        config <<- c(config, valid$data)
+      }
+    }else{
+      errMsg <<- paste(errMsg, 
+                       paste0("Some error occurred parsing JSON file: '", 
+                              basename(jsonFilesWithSchema[i]), 
+                              "'. Error message: ", valid$errors), sep = "\n")
     }
   })
 }
@@ -77,21 +78,23 @@ if(is.null(errMsg)){
     errMsg <- paste0("The JSON language file: '", config$language,
                      ".json' could not be located. Please make sure file is available and accessible.")
   }else{
-    eval <- list(character(), character())
     tryCatch({
-      eval <- validateJson(file.path(getwd(), "conf", config$language %+% ".json"), 
-                           file.path(getwd(), "conf", languageSchemaName), addDefaults = FALSE)
+      valid <- jsonValidator$validate(file.path("conf", config$language %+% ".json"), 
+                                      file.path("conf", languageSchemaName))
     }, error = function(e){
       errMsg <<- paste0("Some error occurred validating language file: '",
-                        config$language, ".json'. Error message: ", e)
+                        config$language, ".json'. \n Error message: ", conditionMessage(e))
     })
-    if(is.null(eval[[2]])){
-      lang <- eval[[1]]
+    if(!is.null(errMsg)){
+      return()
+    }
+    if(is.null(valid$errors)){
+      lang <- valid$data
     }else{
-      errMsgTmp <- paste0("Some error occurred parsing JSON language file: '",
-                          config$language, ".json'. See below for more detailed information.")
-      errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
-      jsonErrors <- rbind(jsonErrors, cbind(file_name = paste0(config$language, ".json"), eval[[2]]))
+      errMsg <- paste(errMsg, 
+                      paste0("Some error occurred parsing JSON language file: '",
+                             config$language, ".json'. \nError message: ", 
+                             valid$errors), sep = "\n")
     }
   }
 }
@@ -318,6 +321,10 @@ if(is.null(errMsg)){
         modelIn[[i]][[widgetType]] <- widgetConfig
         next
       }
+      if(!is.null(widgetConfig[["hideIndexCol"]])){
+        modelIn[[i]]$hideIndexCol  <- widgetConfig[["hideIndexCol"]]
+        widgetConfig$hideIndexCol  <- NULL
+      }
       if(!is.null(widgetConfig[["readonly"]])){
         modelIn[[i]]$readonly <- widgetConfig[["readonly"]]
         widgetConfig$readonly  <- NULL
@@ -471,6 +478,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
               warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
             }
             groupMemberIds      <- match(groups[[groupId]]$members, names)
+            groupMemberIds      <- groupMemberIds[groupMemberIds %in% idsToDisplay]
             if(any(is.na(groupMemberIds))){
               warningMsgTmp <- sprintf("The table(s): '%s' that you specified in group: '%s' do not exist. Thus, they were ignored.", 
                                        paste(groups[[groupId]]$members[is.na(groupMemberIds)], collapse = "', '"),
@@ -481,9 +489,15 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
             }
             tabs[[j]]      <-  groupMemberIds
             tabSheetMap[groupMemberIds] <- j
-            for(k in seq_along(groupMemberIds)){
-              groupMemberId <- groupMemberIds[k]
-              tabSheetMap[[groupMemberId]] <- c(tabSheetMap[[groupMemberId]], k)
+            if(isTRUE(groups[[groupId]][["sameTab"]])){
+              for(groupMemberId in groupMemberIds){
+                tabSheetMap[[groupMemberId]] <- tabSheetMap[[groupMemberId]]
+              }
+            }else{
+              for(k in seq_along(groupMemberIds)){
+                groupMemberId <- groupMemberIds[k]
+                tabSheetMap[[groupMemberId]] <- c(tabSheetMap[[groupMemberId]], k)
+              }
             }
             groupMemberIdsInWidgets <- match(groupMemberIds, widgetIds)
             
@@ -506,7 +520,11 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
                 }
               }
             }
-            tabTitles[[j]] <-  c(groups[[groupId]]$name, aliases[groupMemberIds])
+            if(isTRUE(groups[[groupId]][["sameTab"]])){
+              tabTitles[[j]] <-  groups[[groupId]]$name
+            }else{
+              tabTitles[[j]] <-  c(groups[[groupId]]$name, aliases[groupMemberIds])
+            }
             isAssigned[groupMemberIds] <- TRUE 
             j <- j + 1L
             next
@@ -705,110 +723,6 @@ if(is.null(errMsg)){
   # read graph data for input and output sheets
   config$activateModules$miroLogFile <- length(config$miroLogFile) > 0L && 
     nchar(config$miroLogFile) > 2L
-  configGraphsIn    <- vector(mode = "list", length = length(modelIn))
-  configGraphsOut   <- vector(mode = "list", length = length(modelOut))
-  
-  invalidGraphsToRender <- character(0L)
-  
-  for(el in names(config$dataRendering)){
-    i <- match(tolower(el), names(modelIn))[[1]]
-    isOutputGraph <- FALSE
-    # data rendering object was found in list of model input sheets
-    if(is.na(i)){
-      i <- match(tolower(el), names(modelOut))[[1]]
-      # data rendering object was found in list of model output sheets
-      if(!is.na(i)){
-        configGraphsOut[[i]] <- config$dataRendering[[el]]
-      }else if(LAUNCHCONFIGMODE){
-        invalidGraphsToRender <- c(invalidGraphsToRender, el)
-      }else{
-        errMsgTmp <- paste0("'", el, "' was defined to be an object to render, but was not found in either the list of model input or the list of model output sheets.")
-        errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
-      }
-      isOutputGraph <- TRUE
-    }else{
-      configGraphsIn[[i]] <- config$dataRendering[[el]]
-    }
-    if(length(config$dataRendering[[el]]$graph$filter)){
-      if(isOutputGraph){
-        categoricalHeaders <- modelOut[[i]]$headers
-      }else{
-        categoricalHeaders <- modelIn[[i]]$headers
-      }
-      categoricalHeaders <- unlist(lapply(seq_along(categoricalHeaders), function(hdrId){
-        if(identical(categoricalHeaders[[hdrId]]$type, "string"))
-          return(names(categoricalHeaders)[[hdrId]])
-        return(NULL)
-      }), use.names = FALSE)
-      if(!length(config$dataRendering[[el]]$graph$filter$col) || 
-         !config$dataRendering[[el]]$graph$filter$col %in% categoricalHeaders){
-        errMsg <- paste(errMsg, sprintf("The column: '%s' was defined as a dynamic filter for the chart of element: '%s'. This column could not be found among the categorical columns of this symbol: '%s'.",
-                                        config$dataRendering[[el]]$graph$filter$col, el, paste(categoricalHeaders, collapse = "', '")), setp = "\n")
-      }
-    }
-  }
-  
-  # assign default output format to output data that was not set in config
-  lapply(seq_along(modelOut), function(i){
-    if(identical(tolower(configGraphsOut[[i]]$outType), "valuebox")){
-      if(identical(names(modelOut)[[i]], scalarsOutName)){
-        configGraphsOut[[i]]$options$count <<- modelOut[[i]]$count - length(config$hiddenOutputScalars)
-      }else{
-        errMsg <<- paste(errMsg, 
-                         sprintf("Output type: 'valueBox' is only valid for scalar tables. Please choose another output type for your dataset : '%s'.", 
-                                 modelOutAlias[i]), sep = "\n")
-      }
-    }
-    if(is.null(configGraphsOut[[i]])){
-      if(identical(names(modelOut)[[i]], scalarsOutName)){
-        visibleOutputScalars <- !(modelOut[[i]]$symnames %in% config$hiddenOutputScalars)
-        if(sum(visibleOutputScalars) <= maxScalarsValBox && 
-           all(modelOut[[i]]$symtypes[visibleOutputScalars] == "parameter")){
-          configGraphsOut[[i]]$outType <<- "valuebox"
-          configGraphsOut[[i]]$options$count <<- modelOut[[i]]$count - length(config$hiddenOutputScalars)
-        }else{
-          configGraphsOut[[i]]$outType <<- defOutType
-          if(identical(defOutType, "pivot")){
-            configGraphsOut[[i]]$pivottable <<- prepopPivot(modelOut[[i]])
-          }
-        }
-      }else{
-        configGraphsOut[[i]]$outType <<- defOutType
-        if(identical(defOutType, "pivot")){
-          configGraphsOut[[i]]$pivottable <<- prepopPivot(modelOut[[i]])
-        }
-      }
-    }
-  })
-  # assign default output format for input sheets that were not set in config
-  lapply(seq_along(modelIn), function(i){
-    if(identical(tolower(configGraphsIn[[i]]$outType), "valuebox")){
-      if(identical(names(modelIn)[[i]], scalarsFileName)){
-        configGraphsIn[[i]]$options$count <<- modelIn[[i]]$count
-      }else{
-        errMsg <<- paste(errMsg, 
-                         sprintf("Output type: 'valueBox' is only valid for scalar tables. Please choose another output type for your dataset : '%s'.", 
-                                 modelInAlias[i]), sep = "\n")
-      }
-    }
-    if(config$autoGenInputGraphs){
-      # Create graphs only for tabular input sheets 
-      if(!is.null(modelIn[[i]]$headers)){
-        if(is.null(configGraphsIn[[i]])){
-          configGraphsIn[[i]]$outType <<- defInType
-          if(identical(defInType, "pivot")){
-            configGraphsIn[[i]]$pivottable <<- prepopPivot(modelIn[[i]])
-          }
-        }
-      }
-    }
-    if(identical(modelIn[[i]]$type, "custom")){
-      # make sure custom inputs have graph button activated (table is displayed there)
-      configGraphsIn[[i]] <<- list(outType = "datatable", 
-                                   rendererName = modelIn[[i]]$rendererName,
-                                   packages = customPackages[[i]])
-    }
-  })
   # get remote import/export options
   externalDataConfig <- list(remoteImport = NULL, remoteExport = NULL)
   
@@ -1281,6 +1195,14 @@ if(is.null(errMsg)){
   })
   modelOutTemplate <- vector(mode = "list", length = length(modelOut))
   # declare set of output sheets that should be displayed in webUI
+  if(!LAUNCHCONFIGMODE && length(config[["hiddenOutputSymbols"]])){
+    invalidHiddenOutputSymbols <- match(config[["hiddenOutputSymbols"]], names(modelOut))
+    if(any(is.na(invalidHiddenOutputSymbols))){
+      errMsg <- paste(errMsg, sprintf("The output symbols: '%s' you want to be hidden do not exist!",
+                                      paste0(config[["hiddenOutputSymbols"]][is.na(invalidHiddenOutputSymbols)], 
+                                             collapse = ", ")), sep = "\n")
+    }
+  }
   modelOutToDisplay <- vapply(seq_along(modelOut), function(i){
     headers   <- vector(mode = "numeric", length = length(modelOut[[i]]$headers))
     headers   <- lapply(modelOut[[i]]$headers, function(header){
@@ -1322,7 +1244,11 @@ if(is.null(errMsg)){
       identical(hdr$type, "numeric")
     }, logical(1L), USE.NAMES = FALSE)) > 1L
     
-    if(identical(modelOut[[i]]$hidden, TRUE))
+    if(names(modelOut)[i] %in% config[["hiddenOutputSymbols"]]){
+      modelOut[[i]]$hidden <<- TRUE
+      return(FALSE)
+    }
+    if(isTRUE(modelOut[[i]]$hidden))
       return(FALSE)
     else
       return(TRUE)
@@ -1466,7 +1392,225 @@ if(is.null(errMsg)){
       return(match(names(modelOut)[[sheetId]], scenTableNamesToDisplay))
     }))
   })
-  # get the operating system that shiny is running on
+  
+  configGraphsIn    <- vector(mode = "list", length = length(modelIn))
+  configGraphsOut   <- vector(mode = "list", length = length(modelOut))
+  
+  validateGraphConfig <- function(graphConfig){
+    if(!identical(graphConfig$outType, "miroPivot")){
+      return(TRUE)
+    }
+    # TODO: remove this warning when persistent views are fully supported
+    if(isTRUE(graphConfig$options$enablePersistentViews)){
+      warning("Persistent views in the MIRO Pivot renderer is an experimental feature. 
+              Do not use this feature in deployed applications, as they may break in future MIRO versions without warning!")
+    }
+    if(length(graphConfig$options$aggregationFunction) &&
+       !identical(graphConfig$options$aggregationFunction, "count") &&
+       identical(graphConfig$options[["_metadata_"]]$symtype, "set")){
+      return("Sets can only have 'count' as aggregation function.")
+    }
+    noNumericHeaders <- sum(vapply(graphConfig$options[["_metadata_"]]$headers, 
+                                   function(header){
+                                     identical(header$type, "numeric")
+                                   }, logical(1L), USE.NAMES = FALSE))
+    validHeaders <- names(graphConfig$options[["_metadata_"]]$headers)
+    if(noNumericHeaders > 1L){
+      validHeaders <- c(validHeaders[seq_len(length(validHeaders) - noNumericHeaders)],
+                        "Hdr")
+    }else{
+      validHeaders <- validHeaders[-length(validHeaders)]
+    }
+    for(id in c("rows", "cols", "aggregations", "filter", "domainFilter")){
+      if(length(graphConfig$options[[id]])){
+        if(identical(id, "rows")){
+          indices <- graphConfig$options[[id]]
+        }else if(identical(id, "domainFilter")){
+          indices <- graphConfig$options$domainFilter$domains
+        }else{
+          indices <- names(graphConfig$options$filter)
+        }
+        invalidIndices <- !indices %in% validHeaders
+        if(any(invalidIndices)){
+          return(paste0("Invalid ", id, ": ", paste(indices[invalidIndices], 
+                                                    collapse = ", ")))
+        }
+      }
+    }
+    if(length(graphConfig$options$domainFilter$default) && 
+       !graphConfig$options$domainFilter$default %in% graphConfig$options$domainFilter$domains){
+      return(paste0("Default domain filter: ", graphConfig$options$domainFilter$default, 
+                    " must be among the list of domains."))
+    }
+    return(TRUE)
+  }
+  
+  invalidGraphsToRender <- character(0L)
+  
+  # assign default output format to output data that was not set in config
+  for(i in seq_along(modelOut)[!names(modelOut) %in% names(config$dataRendering)]){
+    if(isTRUE(modelOut[[i]]$hidden)){
+      next
+    }
+    elName <- names(modelOut)[[i]]
+    if(identical(elName, scalarsOutName)){
+      visibleOutputScalars <- !(modelOut[[i]]$symnames %in% config$hiddenOutputScalars)
+      if(sum(visibleOutputScalars) <= maxScalarsValBox && 
+         all(modelOut[[i]]$symtypes[visibleOutputScalars] == "parameter")){
+        config$dataRendering[[elName]]$outType <- "valuebox"
+        config$dataRendering[[elName]]$options$count <- modelOut[[i]]$count - length(config$hiddenOutputScalars)
+      }else{
+        config$dataRendering[[elName]]$outType <- "datatable"
+      }
+    }else{
+      config$dataRendering[[elName]]$outType <- defOutType
+      if(identical(defOutType, "pivot")){
+        config$dataRendering[[elName]]$pivottable <- prepopPivot(modelOut[[i]])
+      }
+    }
+  }
+  # assign default output format for input sheets that were not set in config
+  for(i in seq_along(modelIn)[!names(modelIn) %in% names(config$dataRendering)]){
+    elName <- names(modelIn)[[i]]
+    if(identical(modelIn[[i]]$type, "custom")){
+      # make sure custom inputs have graph button activated (table is displayed there)
+      config$dataRendering[[elName]] <- list(outType = "datatable", 
+                                             rendererName = modelIn[[i]]$rendererName,
+                                             packages = customPackages[[i]])
+    }else if(config$autoGenInputGraphs){
+      # Create graphs only for tabular input sheets 
+      if(!is.null(modelIn[[i]]$headers)){
+        if(identical(names(modelIn)[[i]], scalarsFileName)){
+          config$dataRendering[[elName]]$outType <- "datatable"
+        }else{
+          config$dataRendering[[elName]]$outType <- defInType
+          if(identical(defInType, "pivot")){
+            config$dataRendering[[elName]]$pivottable <- prepopPivot(modelIn[[i]])
+          }
+        }
+      }
+    }
+  }
+  
+  for(el in names(config$dataRendering)){
+    i <- match(tolower(el), names(modelIn))[[1]]
+    isOutputGraph <- FALSE
+    # data rendering object was found in list of model input sheets
+    if(is.na(i)){
+      i <- match(tolower(el), names(modelOut))[[1]]
+      # data rendering object was found in list of model output sheets
+      if(!is.na(i)){
+        if(isTRUE(modelOut[[i]]$hidden)){
+          warningMsgTmp <- sprintf("You specified chart options for the output symbol: %s. These options will be ignored as the symbol is hidden.",
+                                   names(modelOut)[i])
+          warning(warningMsgTmp)
+          warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
+          if(LAUNCHCONFIGMODE){
+            invalidGraphsToRender <- c(invalidGraphsToRender, el)
+          }
+          next
+        }else{
+          configGraphsOut[[i]] <- config$dataRendering[[el]]
+          configGraphsOut[[i]]$options <- c(configGraphsOut[[i]]$options, 
+                                            list("_metadata_" = list(
+                                              symname = names(modelOut)[i],
+                                              headers = modelOut[[i]]$headers,
+                                              symtype = modelOut[[i]]$symtype)))
+          if(identical(configGraphsOut[[i]]$outType, "miroPivot")){
+            validGraphConfig <- validateGraphConfig(configGraphsOut[[i]])
+            if(!identical(validGraphConfig, TRUE)){
+              errMsg <- paste(errMsg, paste0("Invalid graph config for symbol '", names(modelOut)[i], 
+                                             "': ", validGraphConfig), sep = "\n")
+              next
+            }
+            configGraphsOut[[i]]$options <- c(configGraphsOut[[i]]$options, 
+                                              list(lang = lang$renderers$miroPivot))
+          }else if(identical(configGraphsOut[[i]]$outType, "valueBox")){
+            if(identical(names(modelOut)[[i]], scalarsOutName)){
+              configGraphsOut[[i]]$options$count <- modelOut[[i]]$count - length(config$hiddenOutputScalars)
+            }else{
+              errMsg <<- paste(errMsg, 
+                               sprintf("Output type: 'valueBox' is only valid for scalar tables. Please choose another output type for your dataset : '%s'.", 
+                                       modelOutAlias[i]), sep = "\n")
+            }
+          }
+        }
+      }else if(LAUNCHCONFIGMODE){
+        invalidGraphsToRender <- c(invalidGraphsToRender, el)
+        next
+      }else{
+        errMsgTmp <- paste0("'", el, "' was defined to be an object to render, but was not found in either the list of model input or the list of model output sheets.")
+        errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
+        next
+      }
+      if(length(configGraphsOut[[i]]$additionalData)){
+        badAdditionalDataSheetNames <- !configGraphsOut[[i]]$additionalData %in% c(names(modelOut), 
+                                                                                   inputDsNames)
+        if(any(badAdditionalDataSheetNames)){
+          warningMsgTmp <- paste0("The symbols: ", 
+                                  paste0(configGraphsOut[[i]]$additionalData[badAdditionalDataSheetNames],
+                                         collapse = ", "),
+                                  " are configured to be additional data for the renderer of symbol: ",
+                                  names(modelOut)[i], 
+                                  ". These symbols could not be found among the list of either input or output symbols!")
+          warning(warningMsgTmp)
+          warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
+        }
+        configGraphsOut[[i]]$additionalData <- configGraphsOut[[i]]$additionalData[!badAdditionalDataSheetNames]
+      }
+      isOutputGraph <- TRUE
+    }else{
+      configGraphsIn[[i]] <- config$dataRendering[[el]]
+      configGraphsIn[[i]]$options <- c(configGraphsIn[[i]]$options, 
+                                       list("_metadata_" = list(
+                                         symname = names(modelIn)[i],
+                                         headers = modelIn[[i]]$headers,
+                                         symtype = modelIn[[i]]$symtype)))
+      
+      if(identical(configGraphsIn[[i]]$outType, "miroPivot")){
+        validGraphConfig <- validateGraphConfig(configGraphsIn[[i]])
+        if(!identical(validGraphConfig, TRUE)){
+          errMsg <- paste(errMsg, paste0("Invalid graph config for symbol '", names(modelIn)[i], 
+                                         "': ", validGraphConfig), sep = "\n")
+          next
+        }
+        configGraphsIn[[i]]$options <- c(configGraphsIn[[i]]$options, 
+                                         list(lang = lang$renderers$miroPivot))
+      }else if(identical(configGraphsIn[[i]]$outType, "valueBox")){
+        if(identical(names(modelIn)[[i]], scalarsFileName)){
+          configGraphsIn[[i]]$options$count <- modelIn[[i]]$count
+        }else{
+          errMsg <<- paste(errMsg, 
+                           sprintf("Output type: 'valueBox' is only valid for scalar tables. Please choose another output type for your dataset : '%s'.", 
+                                   modelInAlias[i]), sep = "\n")
+        }
+      }
+    }
+    if(length(config$dataRendering[[el]]$graph$filter)){
+      if(isOutputGraph){
+        categoricalHeaders <- modelOut[[i]]$headers
+      }else{
+        categoricalHeaders <- modelIn[[i]]$headers
+      }
+      categoricalHeaders <- unlist(lapply(seq_along(categoricalHeaders), function(hdrId){
+        if(identical(categoricalHeaders[[hdrId]]$type, "string"))
+          return(names(categoricalHeaders)[[hdrId]])
+        return(NULL)
+      }), use.names = FALSE)
+      if(!length(config$dataRendering[[el]]$graph$filter$col) || 
+         !config$dataRendering[[el]]$graph$filter$col %in% categoricalHeaders){
+        errMsg <- paste(errMsg, sprintf("The column: '%s' was defined as a dynamic filter for the chart of element: '%s'. This column could not be found among the categorical columns of this symbol: '%s'.",
+                                        config$dataRendering[[el]]$graph$filter$col, el, paste(categoricalHeaders, collapse = "', '")), setp = "\n")
+      }
+    }
+  }
+  
+  #sanitize file names of output attachments
+  config$outputAttachments <- lapply(config$outputAttachments, function(el){
+    el$filename <- sanitizeFn(el$filename)
+    return(el)
+  })
+  
   installPackage    <- list()
   installPackage$DT <- any(vapply(seq_along(modelIn), function(i){if(identical(modelIn[[i]]$type, "dt")) TRUE else FALSE}, 
                                   logical(1L), USE.NAMES = FALSE))
@@ -1482,6 +1626,9 @@ if(is.null(errMsg)){
   installPackage$timevis <- LAUNCHCONFIGMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
                                                           function(conf){if(identical(conf$graph$tool, "timevis")) TRUE else FALSE}, 
                                                           logical(1L), USE.NAMES = FALSE))
+  installPackage$miroPivot <- LAUNCHCONFIGMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
+                                                             function(conf){if(identical(conf$outType, "miroPivot")) TRUE else FALSE}, 
+                                                             logical(1L), USE.NAMES = FALSE))
   
   dbSchema <- list(tabName = c('_scenMeta' = scenMetadataTablePrefix %+% modelName, 
                                '_scenLock' = scenLockTablePrefix %+% modelName,
@@ -1600,7 +1747,8 @@ if(is.null(errMsg)){
         config$readmeFile <- read_file(readmeFilePath)
       }else if(file.exists(readmeFilePath)){
         source(file.path("components", "md_parser.R"), local = TRUE)
-        markdownParser <- MarkdownParser$new()
+        markdownParser <- MarkdownParser$new(!LAUNCHCONFIGMODE && 
+                                               isTRUE(config$readme$enableMath))
         config$readmeFile <- markdownParser$parseFile(readmeFilePath)
       }
     }, error = function(e){

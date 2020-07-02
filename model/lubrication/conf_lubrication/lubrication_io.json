@@ -1,0 +1,69 @@
+{
+	"modelTitle":	"Elasto-hydrodynamic lubrication",
+	"inputSymbols":	{
+		"_scalars":	{
+			"alias":	"Input Scalars",
+			"symnames":	["npoints", "load", "speed"],
+			"symtext":	["npoints", "load on cylinder in lbs", "cylinder RPM"],
+			"symtypes":	["parameter", "parameter", "parameter"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		}
+	},
+	"outputSymbols":	{
+		"pressurethickness":	{
+			"alias":	"pressurethickness",
+			"symtype":	"parameter",
+			"headers":	{
+				"j0":	{
+					"type":	"string",
+					"alias":	"j0"
+				},
+				"x":	{
+					"type":	"numeric",
+					"alias":	"x"
+				},
+				"pressure":	{
+					"type":	"numeric",
+					"alias":	"pressure"
+				},
+				"thickness":	{
+					"type":	"numeric",
+					"alias":	"thickness"
+				}
+			}
+		},
+		"_scalars_out":	{
+			"alias":	"Output Scalars",
+			"symnames":	["alpha", "lambda"],
+			"symtext":	["pressure viscosity coefficient", "model parameter used in Reynolds equation"],
+			"symtypes":	["parameter", "parameter"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		}
+	}
+}

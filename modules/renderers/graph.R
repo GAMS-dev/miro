@@ -13,9 +13,12 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
   #
   # Returns:
   #   rendered graph for the provided dataframe
-  
+  if(inherits(data, "data.frame")){
+    data <- type_convert(data, cols())
+  }
   if(options$tool == 'plotly'){
     pieGrid <- NULL
+    rendery2axis <- FALSE
     return(renderPlotly({
       if(length(filterCol) && length(input$data_filter)){
         if(isTRUE(options$filter$date)){
@@ -38,7 +41,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
           if(j==1){
             p <<- plot_ly( 
               height = if(!is.null(options$fixedHeight)) options$fixedHeight else height, 
-              width = if(!is.null(options$fixedWidth)) options$fixedWidth) %>%
+              width = options$fixedWidth) %>%
               add_pie(p, data = data, labels = try(data[[options$traces[[1]]$labels]]), 
                       values = try(data[[options$traces[[1]]$values]]), 
                       hole = options$traces[[1]]$hole,
@@ -66,7 +69,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
           if(j==1){
             p <<- plot_ly(data, 
                           height = if(!is.null(options$fixedHeight)) options$fixedHeight else height, 
-                          width = if(!is.null(options$fixedWidth)) options$fixedWidth) %>% 
+                          width = options$fixedWidth) %>% 
               add_trace(x = try(data[[options$xdata]]), type = "bar",
                         y = try(data[[names(options$ydata)[1]]]), 
                         name = yData$label, 
@@ -85,10 +88,17 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
         # scatter plot
         p <- NULL
         lapply(seq_along(options$ydata), function(j){
+          if(identical(options$ydata[[j]]$yaxis, "y2")){
+            rendery2axis <<- TRUE
+            yaxis <- "y2"
+          }else{
+            yaxis <- "y"
+          }
           if(j==1){
             p <<- plot_ly(data, x = try(data[[options$xdata]]), y = try(data[[names(options$ydata)[[1]]]]), 
                           name = options$ydata[[1]]$label, 
                           mode = options$ydata[[1]]$mode, 
+                          yaxis = yaxis,
                           marker = getMarkerInfo(options$ydata[[1]]$marker),
                           line = list(color = options$ydata[[1]]$line$color,
                                       width = options$ydata[[1]]$line$width,
@@ -101,11 +111,12 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                           colors = options$colors, symbols = options$symbols, 
                           size = options$ydata[[1]]$size, type = 'scatter', 
                           height = if(!is.null(options$fixedHeight)) options$fixedHeight else height, 
-                          width = if(!is.null(options$fixedWidth)) options$fixedWidth,
+                          width = options$fixedWidth,
                           frame = if(!is.null(options$ydata[[1]]$frame)){try(data[[options$ydata[[1]]$frame]])}) 
             
           }else{
             p <<- add_trace(p, y = try(data[[names(options$ydata)[[j]]]]), name = options$ydata[[j]]$label, 
+                            yaxis = yaxis,
                             mode = options$ydata[[j]]$mode, 
                             marker = getMarkerInfo(options$ydata[[j]]$marker),
                             line = list(color = options$ydata[[j]]$line$color, 
@@ -122,11 +133,11 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
           }
         })
         if(!is.null(options$animation)){
-          p <- animation_opts(p, frame = if(!is.null(options$animation$frame)){options$animation$frame},
-                              transition = if(!is.null(options$animation$transition)){options$animation$transition},
-                              easing = if(!is.null(options$animation$easing)){options$animation$easing},
-                              redraw = if(!is.null(options$animation$redraw)){options$animation$redraw},
-                              mode = if(!is.null(options$animation$mode)){options$animation$mode})
+          p <- animation_opts(p, frame = options$animation$frame,
+                              transition = options$animation$transition,
+                              easing = options$animation$easing,
+                              redraw = options$animation$redraw,
+                              mode = options$animation$mode)
         } 
         if(!is.null(options$animation$slider)){
           p <- animation_slider(p, hide = if(!is.null(options$animation$slider$hide)){try(options$animation$slider$hide)},
@@ -156,7 +167,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                           marker = list(symbol = options$ydata[[1]]$marker$symbol,
                                         opacity = options$ydata[[1]]$marker$opacity,
                                         size = if(!is.null(options$ydata[[1]]$marker$size)){try(data[[options$ydata[[1]]$marker$size]])}, 
-                                        sizemode = if(!is.null(maxsize)){options$ydata[[1]]$marker$sizemode}, sizeref = sizeref,
+                                        sizemode = options$ydata[[1]]$marker$sizemode, sizeref = sizeref,
                                         color = if(!is.null(options$ydata[[1]]$marker$color)){
                                           if(isColor(options$ydata[[1]]$marker$color) || 
                                              startsWith(options$ydata[[1]]$marker$color, "rgba("))
@@ -177,7 +188,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                           colors = options$colors, symbols = options$symbols, 
                           size = options$ydata[[1]]$size, type = 'scatter',
                           height = if(!is.null(options$fixedHeight)) options$fixedHeight else height, 
-                          width = if(!is.null(options$fixedWidth)) options$fixedWidth,
+                          width = options$fixedWidth,
                           frame = if(!is.null(options$ydata[[1]]$frame)){try(data[[options$ydata[[1]]$frame]])}) 
             
           }else{
@@ -186,7 +197,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                             marker = list(symbol = options$ydata[[j]]$marker$symbol,
                                           opacity = options$ydata[[j]]$marker$opacity,
                                           size = if(!is.null(options$ydata[[j]]$marker$size)){try(data[[options$ydata[[j]]$marker$size]])}, 
-                                          sizemode = if(!is.null(maxsize)){options$ydata[[1]]$marker$sizemode}, 
+                                          sizemode = options$ydata[[1]]$marker$sizemode, 
                                           sizeref = sizeref,
                                           color = if(!is.null(options$ydata[[j]]$marker$color)){try(data[[options$ydata[[j]]$marker$color]])},
                                           #color = options$ydata[[1]]$marker$colorDep,
@@ -205,11 +216,11 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
           }
         })
         if(!is.null(options$animation)){
-          p <- animation_opts(p, frame = if(!is.null(options$animation$frame)){options$animation$frame},
-                              transition = if(!is.null(options$animation$transition)){options$animation$transition},
-                              easing = if(!is.null(options$animation$easing)){options$animation$easing},
-                              redraw = if(!is.null(options$animation$redraw)){options$animation$redraw},
-                              mode = if(!is.null(options$animation$mode)){options$animation$mode})
+          p <- animation_opts(p, frame = options$animation$frame,
+                              transition = options$animation$transition,
+                              easing = options$animation$easing,
+                              redraw = options$animation$redraw,
+                              mode = options$animation$mode)
         } 
         if(!is.null(options$animation$slider)){
           p <- animation_slider(p, hide = if(!is.null(options$animation$slider$hide)){try(options$animation$slider$hide)},
@@ -230,10 +241,10 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
             if(j==1){
               p <<- plot_ly(data, type = 'histogram', histnorm = options$histnorm, 
                             height = if(!is.null(options$fixedHeight)) options$fixedHeight else height, 
-                            width = if(!is.null(options$fixedWidth)) options$fixedWidth,
+                            width = options$fixedWidth,
                             nbinsy = options$nbins,  
                             color = if(!is.null(options$color)){try(data[[options$color]])}, 
-                            alpha = if(!is.null(options$alpha)){options$alpha},
+                            alpha = options$alpha,
                             cumulative = list(enabled = identical(options$cumulative, TRUE))) %>%
                 add_histogram(y = try(data[[names(options$xdata)[[j]]]]), 
                               name = options$xdata[[j]]$labels, 
@@ -255,10 +266,10 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
             if(j==1){
               p <<- plot_ly(data, type = 'histogram', histnorm = options$histnorm,
                             height = if(!is.null(options$fixedHeight)) options$fixedHeight else height, 
-                            width = if(!is.null(options$fixedWidth)) options$fixedWidth,
+                            width = options$fixedWidth,
                             nbinsx = options$nbins,
                             color = if(!is.null(options$color)){try(data[[options$color]])}, 
-                            alpha = if(!is.null(options$alpha)){options$alpha},
+                            alpha = options$alpha,
                             cumulative = list(enabled = identical(options$cumulative, TRUE))) %>%
                 add_histogram(x = try(data[[names(options$xdata)[[j]]]]), 
                               name = options$xdata[[j]]$labels, 
@@ -283,14 +294,21 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                             zeroline = options$yaxis$zeroline, showticklabels = options$yaxis$showticklabels, 
                             range = c(options$yaxis$rangefrom, options$yaxis$rangeto),
                             categoryorder = options$yaxis$categoryorder,
-                            scaleanchor = if(!is.null(options$yaxis$scaleanchor)) options$yaxis$scaleanchor,
-                            scaleratio = if(!is.null(options$yaxis$scaleratio)) options$yaxis$scaleratio),
+                            scaleanchor = options$yaxis$scaleanchor,
+                            scaleratio = options$yaxis$scaleratio),
+               yaxis2 = if(isTRUE(rendery2axis)) list(title = options$y2axis$title, showgrid = options$y2axis$showgrid, 
+                                                      zeroline = options$y2axis$zeroline, showticklabels = options$y2axis$showticklabels, 
+                                                      range = c(options$y2axis$rangefrom, options$y2axis$rangeto),
+                                                      categoryorder = options$y2axis$categoryorder,
+                                                      scaleanchor = options$y2axis$scaleanchor,
+                                                      scaleratio = options$y2axis$scaleratio,
+                                                      overlaying = if(isTRUE(rendery2axis)) "y",
+                                                      side = if(isTRUE(rendery2axis)) "right"),
                paper_bgcolor = if(length(options$paper_bgcolor)) options$paper_bgcolor else "rgba(0,0,0,0)",
                plot_bgcolor = if(length(options$plot_bgcolor)) options$plot_bgcolor else "rgba(0,0,0,0)",
                showlegend = options$showlegend, grid = pieGrid,
                legend = options$legend, bargap = options$bargap, bargroupgap = options$bargroupgap) %>%
-          config(p, staticPlot = isTRUE(options$staticPlot))}))
-    
+        config(p, staticPlot = isTRUE(options$staticPlot))}))
   }else if(options$tool == 'dygraphs'){
     return(renderDygraph({
       if(length(filterCol) && length(input$data_filter)){
@@ -344,8 +362,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                 xts_data <- xts(xts_data, order.by = xts_idx)
               }
             }
-            p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$label, 
-                          ylab = options$yaxis$label,  periodicity = NULL, group = NULL, 
+            p <<- dygraph(xts_data, main = options$title, periodicity = NULL, group = NULL, 
                           elementId = NULL)
           }else{
             idxVector <- match(tolower(names(options$ydata)), tolower(names(data)))
@@ -365,10 +382,9 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
             
             xts_data <- xts(data[, idxVector], order.by = dateCol)
             
-            p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$label, 
-                          ylab = options$yaxis$label,  periodicity = NULL, group = NULL, elementId = NULL)
+            p <<- dygraph(xts_data, main = options$title, periodicity = NULL, group = NULL, elementId = NULL)
             p <<- dySeries(p, name = names(options$ydata)[[1]], label = options$ydata[[1]]$label, 
-                           color = options$ydata[[1]]$color, axis = "y",
+                           color = options$ydata[[1]]$color, axis = options$ydata[[1]]$yaxis,
                            stepPlot = options$ydata[[1]]$stepPlot, stemPlot = options$ydata[[1]]$stemPlot, 
                            fillGraph = options$ydata[[1]]$fillGraph, drawPoints = options$ydata[[1]]$drawPoints,
                            pointSize = options$ydata[[1]]$pointSize, pointShape = options$ydata[[1]]$pointShape,
@@ -379,7 +395,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
           }
           
         }else{
-          p <<- dySeries(p, name = names(options$ydata)[[j]], label = options$ydata[[j]]$label, color = options$ydata[[j]]$color, axis = "y",
+          p <<- dySeries(p, name = names(options$ydata)[[j]], label = options$ydata[[j]]$label, color = options$ydata[[j]]$color, axis = options$ydata[[j]]$yaxis,
                          stepPlot = options$ydata[[j]]$stepPlot, stemPlot = options$ydata[[j]]$stemPlot, fillGraph = options$ydata[[j]]$fillGraph, drawPoints = options$ydata[[j]]$drawPoints,
                          pointSize = options$ydata[[j]]$pointSize, pointShape = options$ydata[[j]]$pointShape, strokeWidth = options$ydata[[j]]$strokeWidth, 
                          strokePattern = options$ydata[[j]]$strokePattern,
@@ -391,8 +407,8 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
         p <- do.call(dyOptions, c(list(dygraph = p), options$dyOptions))
       }
       # lenged options
-      if(!is.null(options$dylegend)){
-        p <- do.call(dyLegend, c(list(dygraph = p), options$dylegend))
+      if(!is.null(options$dyLegend)){
+        p <- do.call(dyLegend, c(list(dygraph = p), options$dyLegend))
       }
       # highlighting options - highlight hovered series
       if(!is.null(options$dyHighlight)){
@@ -406,8 +422,14 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
       if(!is.null (options$dyCandlestick)){
         p <- do.call(dyCandlestick, c(list(dygraph = p), options$dyCandlestick))
       }
-      if(!is.null (options$dyAxis)){
-        p <- do.call(dyAxis, c(list(dygraph = p), options$dyAxis))
+      if(!is.null (options$xaxis)){
+        p <- do.call(dyAxis, c(list(dygraph = p), options$xaxis))
+      }
+      if(!is.null (options$yaxis)){
+        p <- do.call(dyAxis, c(list(dygraph = p), options$yaxis))
+      }
+      if(!is.null (options$yaxis2)){
+        p <- do.call(dyAxis, c(list(dygraph = p), options$yaxis2))
       }
       # Event lines to note points within a time series. 
       if(!is.null (options$dyEvent)){

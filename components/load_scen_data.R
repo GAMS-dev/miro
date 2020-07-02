@@ -172,6 +172,11 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                      ret$tabular[[i]] <<- ddToTibble(ret$tabular[[i]], metaData[[i]])
                    }
                  }, error = function(e){
+                   if(grepl("Compression library not found", 
+                            conditionMessage(e), 
+                            fixed = TRUE)){
+                     stop("Compressed GDX is not supported. Please remove the GDXCOMPRESS environment variable.")
+                   }
                    ret$tabular[[i]] <<- templates[[i]]
                  })
                  if(!length(ret$tabular[[i]])){
