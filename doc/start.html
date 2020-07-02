@@ -65,8 +65,8 @@
                                 <h2 class="section-title">Introduction</h2>
                                 <div id="step1"  class="section-block">
                                     <p>This chapter guides you through the first steps of using GAMS MIRO and shows you how to deploy your own GAMS models.</p>
-                                    <p>In this as well as the subsequent sections we will mainly deal with the GAMS MIRO base mode. In the base mode, you can supply your models with input data, generate, display and save the results of your optimization as well as compare different scenarios with each other, everything visually supported by various plotting tools.
-                                    The Hypercube mode will be the subject of an extra section, see <a href="./hypercube.html">here</a>.</p>
+                                    <p>In this as well as the subsequent sections we will mainly deal with the GAMS MIRO Base Mode. In the Base Mode, you can supply your models with input data, generate, display and save the results of your optimization as well as compare different scenarios with each other, everything visually supported by various plotting tools.
+                                    The Hypercube Mode will be the subject of an extra section, see <a href="./hypercube.html">here</a>.</p>
                                 </div><!--//section-block-->
                                 <h3 class="block-title">GAMS connection</h3>
                                 <div id="gams-connection"  class="section-block">
@@ -124,7 +124,7 @@
                                 <div  id="start-miro"  class="section-block">
                                     <h3 class="block-title">Start GAMS MIRO</h3>
                                     <p>Let's take the famous <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">trnsport</a> example from George Dantzig to guide us through this documentation: We own a bunch of factories and wish to find a least cost shipping schedule that meets the demand at markets we are shipping to. Furthermore, the capacity constraints of our factories must not be violated.
-                                    <br>In order to launch the MIRO app for this model from within GAMS Studio, we open the model from the <i>GAMS MIRO model collection</i> and choose <i>Run base mode</i> from the MIRO menu.</p>
+                                    <br>In order to launch the MIRO app for this model from within GAMS Studio, we open the model from the <i>GAMS MIRO model collection</i> and choose <i>Run Base Mode</i> from the MIRO menu.</p>
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                         <img class="img-fluid" style = "max-height:175pt;" src="assets/images/studio/launch-miro-btn.png" alt="Launch MIRO button" />
                                     </div>
@@ -259,7 +259,7 @@
                                     <p>In addition, the buttons for loading input data and for starting a GAMS run are located here:</p>
                                     <ol class="fa-ul">
                                       <li><span class="fa-li"><i class="fas fa-square"></i></span><b>Load data:</b><br/>
-                                        Load input data for a model run. This can be a local file, existing data from the database or scenarios coming from the <a href="./hypercube.html">Hypercube mode</a>.
+                                        Load input data for a model run. This can be a local file, existing data from the database or scenarios coming from the <a href="./hypercube.html">Hypercube Mode</a>.
                                       </li>
                                       <li><span style="color: #F39619;" class="fa-li"><i class="fas fa-square"></i></span><b>Solve model:</b><br/>
                                         Solve the GAMS model with the current set of input data. This will run your GAMS model and collect the results when it finished executing.
@@ -374,14 +374,14 @@
                                             </div>
                                         </div>
                                         <p>Instead of importing all the datasets for your model, you can also select the symbols to import manually. To do so, click on <i>Manually choose datasets</i> and choose those symbols to be imported from the uploaded spreadsheet. This will cause MIRO to ignore other datasets.</p>
-                                        <p>Besides the local and the database import there is a third option: <i>Hypercube</i>. This tab allows you to import scenarios that have been generated and saved in the <a href="./hypercube.html">Hypercube mode</a>.
-                                        Such a scenario that is generated in Hypercube mode corresponds to a scenario from the base mode, except that the former additionally contains a <a href = "https://www.gams.com/latest/docs/UG_SolverUsage.html#UG_SolverUsage_TraceFile" target = "_blank">trace file</a>. 
-                                        Since those scenarios are identified by their hash value (read more about this <a href="./hypercube.html">here</a>) and not by a user-defined name like in base mode, you need to import them differently.
+                                        <p>Besides the local and the database import there is a third option: <i>Hypercube</i>. This tab allows you to import scenarios that have been generated and saved in the <a href="./hypercube.html">Hypercube Mode</a>.
+                                        Such a scenario that is generated in Hypercube Mode corresponds to a scenario from the Base Mode, except that the former additionally contains a <a href = "https://www.gams.com/latest/docs/UG_SolverUsage.html#UG_SolverUsage_TraceFile" target = "_blank">trace file</a>. 
+                                        Since those scenarios are identified by their hash value (read more about this <a href="./hypercube.html">here</a>) and not by a user-defined name like in Base Mode, you need to import them differently.
                                         </p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                             <img class="img-fluid" style="max-height:225pt;" src="assets/images/import-hypercube.png" alt="Import scenario via hash value" />
                                         </div>
-                                        <p>Please refer to the chapter about <a href="./hypercube.html#scenario-selection">scenario selection</a> in Hypercube mode to learn how to retrieve the hash value of a Hypercube scenario.</p>
+                                        <p>Please refer to the chapter about <a href="./hypercube.html#scenario-selection">scenario selection</a> in Hypercube Mode to learn how to retrieve the hash value of a Hypercube scenario.</p>
                                         <p id = "startup-import"><b>Import multiple scenarios on startup</b>
                                         <br>In addition to the options mentioned above, which can be accessed directly from MIRO, (multiple) scenarios 
                                         can also be imported automatically when starting an application. To do this, the scenarios to be imported 
@@ -640,8 +640,8 @@
                                 <h2 class="section-title">Additional Features </h2>
                                 <div id="multiple-scenarios" class="section-block">
                                   <h6>Manage multiple scenarios</h6>
-                                  <p>The mode of GAMS MIRO that you learned about in this chapter is designed to configure and solve one scenario at a time. But what if we want to solve a multitude of such scenarios with different parameterizations one after the other? To avoid having to configure and solve each scenario individually, there is another mode built into MIRO that we call the <a href="./hypercube.html"><i>Hypercube mode</i></a>. In this mode, you can automatically solve scenarios with several different parameterizations.</p>
-                                  <p>We developed this mode to efficiently generate, store and analyze a multitude of scenarios. Look at the chapter about the <a href="./hypercube.html">Hypercube mode</a> to learn more.
+                                  <p>The mode of GAMS MIRO that you learned about in this chapter is designed to configure and solve one scenario at a time. But what if we want to solve a multitude of such scenarios with different parameterizations one after the other? To avoid having to configure and solve each scenario individually, there is another mode built into MIRO that we call the <a href="./hypercube.html"><i>Hypercube Mode</i></a>. In this mode, you can automatically solve scenarios with several different parameterizations.</p>
+                                  <p>We developed this mode to efficiently generate, store and analyze a multitude of scenarios. Look at the chapter about the <a href="./hypercube.html">Hypercube Mode</a> to learn more.
 
                                 </div>
                                 <div id="miro-server" class="section-block">

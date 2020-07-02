@@ -68,7 +68,7 @@
                                     <ul>
                                       <li>New <a href = "./charts.html#pivot-chart">pivot table renderer</a>: An all new pivot table renderer can now be selected for input and/or output charts. This renderer is designed for large datasets (> 1 million elements) and will replace the old pivot table renderer. The old renderer is still going to work, but you can not configure it via the Configuration Mode any longer. In a future release, we might deprecate this old pivot table renderer, so please migrate to the new one!
                                       This new renderer is the default renderer for input and output symbols. This will make the default configuration of MIRO even more powerful!</li>
-									  <li>Configuration mode: Graphics configuration now loaded at next start.</li>
+									  <li>Configuration Mode: Graphics configuration now loaded at next start.</li>
 									  <li>Two GAMS symbols can now be grouped on the same tab (side by side).</li>
                                       <li>Add option to specify files that should be attached to a scenario after a GAMS run executes successfully. This allows you to add additional data to the data displayed in the user interface and add states to your scenarios to implement processes. You can find further information 
                                       <a href = "./customize.html#general-output-attach">here</a>.</li>
@@ -84,11 +84,11 @@
 									  <li>Add option to define the decimal separator character and the thousand groups separator character for <a href="./widgets.html#widget-numeric">numeric inputs</a>.</li>
 									  <li>Add legend configuration options to <a href="./charts.html#timeseries-chart">time series diagrams</a>.</li>
 									  <li>Add option for static event lines to <a href="./charts.html#timeseries-chart">time series diagrams</a>.</li>
-									  <li>Add option for dropdown menus that causes <a href="./widgets.html#dropdown-option-clearvalue">element text to be the empty string</a>. This is only supported if aliases are defined. Also note that this is currently not supported in Hypercube mode.</li>
+									  <li>Add option for dropdown menus that causes <a href="./widgets.html#dropdown-option-clearvalue">element text to be the empty string</a>. This is only supported if aliases are defined. Also note that this is currently not supported in Hypercube Mode.</li>
 									  <li>Add option to <a href="./customize.html#table-option-hide-indexing-column">hide indexing column</a> in input tables. Only available for default input tables and not for <a href="./customize.html#table-option-large">big data tables</a>.</li>
 									  <li>Minor UI adjustments in input widgets tab</li>
 									  <li>Add caching for deployed apps which drastically increases their startup performance.</li>
-									  <li>Increase startup performance for the Configuration mode.</li>
+									  <li>Increase startup performance for the Configuration Mode.</li>
                                       <li>R is now bundled with MIRO on MacOS.</li>
                                       <li>Data is now imported when a new MIRO application is added to the library instead of at the first start of the application.</li>
                                       <li>When a new MIRO application is added to the library, the database tables are now checked for consistency.</li>
@@ -98,7 +98,7 @@
                                     <ul>
 									  <li>Fix issue with validating GAMS on Linux.</li>
                                       <li>Configuration Mode: Fixed a bug that caused adding a script with an already existing id not to be validated properly in certain situations.</li>
-                                      <li>Configuration Mode: Fixed a bug where an incorrect widget configuration was displayed for symbols with a JSON configuration that is not (yet) supported by Configuration mode.</li>
+                                      <li>Configuration Mode: Fixed a bug where an incorrect widget configuration was displayed for symbols with a JSON configuration that is not (yet) supported by Configuration Mode.</li>
                                       <li>Orphaned tables were not found when model name includes underscores.</li>
                                       <li>An error that should only occur if the list/log file exceeds a certain file size was incorrectly displayed when starting a new GAMS run.</li>
                                       <li>Model names that included an underscore "_" caused MIRO to throw an exception when downloading scenario data in Hyperube Mode.</li>
@@ -128,8 +128,8 @@
                                     <h5 style="display:inline-block">GAMS MIRO 1.0.2</h5> 
 								<div style="display:inline-block; padding-left:15px;"> (2020-04-16)</div>
                                     <ul>
-                                      <li>Fixed bug in Configuration mode that caused custom table headers to be reverted to their defaults the next time configuration mode was started.</li>
-                                      <li>Fixed a bug in configuration mode that caused custom scripts arguments not to be displayed correctly at the next start.</li>
+                                      <li>Fixed bug in Configuration Mode that caused custom table headers to be reverted to their defaults the next time Configuration Mode was started.</li>
+                                      <li>Fixed a bug in Configuration Mode that caused custom scripts arguments not to be displayed correctly at the next start.</li>
                                     </ul>
                                 </div>
                                 <div class="section-block">
@@ -148,13 +148,13 @@
                                       The installation is independent from the GAMS system. All GAMS versions 30.2 or later support GAMS MIRO.</li>
                                       <li><span class = "code">[MIRO:table]</span> syntax for pivoting a table column in MIRO is no longer supported. 
                                       Instead, a symbol can now simply be declared as a table. Read more <a href = "./model.html#display-tables">here</a>.</li>
-                                      <li>Added ability to <a href = "./customize.html#table-option-pivot">pivot tables</a> in MIRO via the Configuration mode. 
+                                      <li>Added ability to <a href = "./customize.html#table-option-pivot">pivot tables</a> in MIRO via the Configuration Mode. 
                                       Unlike the <a href = "./model.html#display-tables">table statement</a> in the GAMS model itself, this option does 
                                       not affect the data contract between GAMS and MIRO resulting in variable columns.</li>
                                       <li>Full <a href = "./customize.html#dark-mode">dark mode</a> support.</li>
                                       <li>Added <a href = "./customize.html#miro-log">miro log</a> option for custom logs and input validation</li>
-                                      <li>Added support for an individual <a href = "./customize.html#app-readme">README starting page</a> (markdown document) which is displayed in the input section. The Readme file can be added/edited in Configuration mode.</li>
-                                      <li>Added support for own <a href = "./customize.html#analysis-scripts">custom scripts</a> for analysis purposes in Base and Hypercube mode.</li>
+                                      <li>Added support for an individual <a href = "./customize.html#app-readme">README starting page</a> (markdown document) which is displayed in the input section. The Readme file can be added/edited in Configuration Mode.</li>
+                                      <li>Added support for own <a href = "./customize.html#analysis-scripts">custom scripts</a> for analysis purposes in Base and Hypercube Mode.</li>
                                       <li>New widget type: <a href = "./widgets.html#widget-numeric">numeric Input</a>.</li>
                                       <li>One-dimensional sets can now be configured as dropdown menu.</li>
                                       <li>New widget type: <a href = "./widgets.html#widget-multidropdown">Multi-dropdown menu</a> for one-dimensional, 
@@ -179,14 +179,14 @@
                                     <ul>
                                       <li>Bug fixes</li>
                                       <li>New MIRO logo (Thank you <a href = "https://www.xing.com/profile/Melina_Kloeckner" target = "_blank">Melina Klöckner</a>!)</li>
-                                      <li>Full chinese <a href = "./customize.html#language-files">language support</a> (Thank you 
+                                      <li>Full Chinese <a href = "./customize.html#language-files">language support</a> (Thank you 
                                       <a href = "https://de.linkedin.com/in/ying-deng-7a3554155?trk=profile-badge-cta" target = "_blank">Ying Deng</a>!)</li>
-                                      <li>Completely restructured Hypercube mode. This includes the change from CSV to GDX file format for scenario input and output data. This is espacially relevant for the <a href = "./hypercube.html#manual-jobsubmit">manual job submission</a>.</li>
+                                      <li>Completely restructured Hypercube Mode. This includes the change from CSV to GDX file format for scenario input and output data. This is especially relevant for the <a href = "./hypercube.html#manual-jobsubmit">manual job submission</a>.</li>
                                       <li>Changed directory name for custom renderers from <i>customRenderer</i> to 
                                       <i>renderer_&lt;modelname&gt;</i></li>
                                       <li>Changed directory name for configuration files from <i>conf</i> to 
                                       <i>conf_&lt;modelname&gt;</i></li>
-                                      <li>Improved performance on startup of MIRO Base/Hypercube mode</li>
+                                      <li>Improved performance on startup of MIRO Base/Hypercube Mode</li>
                                       <li>Added Link to <a href = "https://forum.gamsworld.org/">GAMS World Forum</a> in help section.</li>
                                       <li><i>Stop</i> button in GAMS interaction now with soft kill first, then hard kill.</li>
                                       <li>Scenario comparison: input and output symbol tabs are now displayed in different colors.</li>
@@ -198,7 +198,7 @@
                                        <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset">eval.Set</a> option to 
                                        evaluate the value/text at compile time and place it into a scoped compile-time variable. 
                                        This is useful any information about double-dash parameters and GAMS options configured via 
-                                       Configuration mode gets lost when exporting a scenario as a GDX file. Read more 
+                                       Configuration Mode gets lost when exporting a scenario as a GDX file. Read more 
                                        <a href = "./model.html#display-sinset">here</a>.</li>
                                       <li>Changed prefix for double-dash parameters and GAMS options from <i>GMSPAR_</i> / <i>GMSOPT_</i> 
                                       <i>to <a href = "./customize.html#widgets-commandLine">_gmspar_</i></a> / <a href = "./customize.html#widgets-commandLine"><i>_gmsopt_</i></a>.</li>
@@ -216,7 +216,7 @@
                                       <li>Changed <a href = "./start.html#na-zero-eps">handling of NAs, zeros and EPS</a>. Numeric NAs are not converted to 0 anymore; Zeros are now written to GDX as 0 instead of being squeezed out.</li>
                                       <li>Increased precision of numeric values input tables to maximum precision.</li>
                                       <li>Custom renderer functions are now extended with ellipsis arguments to make sure they are compatible with future MIRO versions.</li>
-                                      <li>Configuration mode:</li>
+                                      <li>Configuration Mode:</li>
                                       <ul>
                                         <li>New structure and design.</li>
                                         <li>Added option to <a href = "./customize.html#naming">rename tab titles and symbol headers</a>.</li>
@@ -228,7 +228,7 @@
                                         <li>Charts configuration has now access to MIRO database. Previously saved scenario data can now be 
                                         used for the graphics configuration (besides the local file upload).</li>
                                         <li>Added option to display graphic and table in <a href= "./charts.html#table-graph-split-screen">split-screen</a> for pie charts, maps and gantt charts.</li>
-                                        <li>Added option to remove invalid widget/graph configuration in Configuration mode</li>
+                                        <li>Added option to remove invalid widget/graph configuration in Configuration Mode</li>
                                         <li>Added <a href = "./customize.html#custom-renderers">custom renderer</a> option for graphics.</li>
                                         <li>Added support for <a href =  "./charts.html#multi-pie-chart">multiple pie charts</a> via subplots</li>
                                         <li>Added support for <a href = "./customize.html#table-option-heatmap">heatmaps</a> (input tables).</li>
@@ -240,7 +240,7 @@
                                         <li>Added option 'area' and 'diameter' for bubble chart size measurement</li>
                                         <li>Valuebox: Number of boxes in a row can now be customized.</li>
                                         <li>Added option to configure number of decimal places for numericInput</li>
-                                        <li>Removed remote Execution setting from configuration mode. Moved to <a href="./deployment.html#sbs-customize-app">preferences</a> that are accessible via the MIRO library.</li>
+                                        <li>Removed remote Execution setting from Configuration Mode. Moved to <a href="./deployment.html#sbs-customize-app">preferences</a> that are accessible via the MIRO library.</li>
                                       </ul>
                                     </ul>
                                 </div>
@@ -250,7 +250,7 @@
 								<div style="display:inline-block; padding-left:15px;"> (2019-06-18)</div>
                                 <div class="section-block">
                                     <ul>
-                                      <li>MIRO Configuration mode: The GAMS MIRO Configuration mode can be used to change the settings of your 
+                                      <li>MIRO Configuration Mode: The GAMS MIRO Configuration Mode can be used to change the settings of your 
                                       MIRO app as well as to generate new widgets and charts. When configuring your widgets and charts, you 
                                       get a live preview so that you immediately see the results of your configuration. You don't need to 
                                       touch JSON code anymore.</li>
@@ -263,7 +263,7 @@
                                       <li>Automated scenario import into DB: GDX files that you place in the data_&lt;modelname&gt; folder 
                                       of your MIRO app will be automatically imported into the MIRO database the next time you launch your app.</li>
                                       <li>Improved UTF-8 support: You can now use non-ASCII characters throughout MIRO</li>
-                                      <li>Chinese language support (note that the MIRO Configuration mode is not yet translated, though).</li>
+                                      <li>Chinese language support (note that the MIRO Configuration Mode is not yet translated, though).</li>
                                       <li>Import and export of GDX files: Besides Excel spreadsheets you can now also import and export 
                                       GDX containers.</li>
                                       <li>GAMS Studio toolbar to launch MIRO.</li>
