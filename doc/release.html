@@ -62,7 +62,7 @@
                     <div class="doc-content col-md-9 col-12 order-1">
                         <div class="content-inner">
                             <section id="v11" class="doc-section">
-                              <h2 class="section-title">GAMS MIRO 1.1</h2>
+                              <h2 class="section-title" style="display:inline-block">GAMS MIRO 1.1</h2> <div style="display:inline-block; padding-left:15px;">(2020-07-02)</div>
                                  <div class="section-block">
                                     <h3>New features</h3>
                                     <ul>
@@ -135,6 +135,26 @@
                                 <div class="section-block">
                                     <h5 style="display:inline-block">GAMS MIRO 1.0.1</h5> 
 								<div style="display:inline-block; padding-left:15px;"> (2020-04-14)</div>
+                                    <ul>
+                                      <li>Fixed bug that caused MIRO apps with same version as currently installed to be falsely rejected by library.</li>
+                                    </ul>
+                                </div>
+                                <div class="section-block">
+                                    <h5>GAMS MIRO 1.0.3</h5>
+                                    <ul>
+                                      <li>MacOS: Fixed a bug that caused GAMS versions >= 31.x to be rejected.</li>
+                                      <li>Fixed a bug that caused csv files with filename equal to the dataset name not being imported. The dataset had to be selected manually.</li>
+                                    </ul>
+                                </div>
+                                <div class="section-block">
+                                    <h5>GAMS MIRO 1.0.2</h5>
+                                    <ul>
+                                      <li>Fixed bug in Configuration mode that caused custom table headers to be reverted to their defaults the next time configuration mode was started.</li>
+                                      <li>Fixed a bug in configuration mode that caused custom scripts arguments not to be displayed correctly at the next start.</li>
+                                    </ul>
+                                </div>
+                                <div class="section-block">
+                                    <h5>GAMS MIRO 1.0.1</h5>
                                     <ul>
                                       <li>Fixed bug that caused MIRO apps with same version as currently installed to be falsely rejected by library.</li>
                                     </ul>

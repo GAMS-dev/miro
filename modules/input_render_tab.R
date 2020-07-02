@@ -43,7 +43,7 @@ getInputDataset <- function(id, visible = FALSE){
 }
 getInputDatasetRaw <- function(id){
   if(modelIn[[id]]$type %in% c("dt", "hot")){
-    if(!is.null(isolate(input[["in_" %+% id]])) && hotInit[[id]]){
+    if((!is.null(isolate(input[["in_" %+% id]])) && hotInit[[id]]) || length(tableContent[[id]])){
       if(length(colsWithDep[[id]])){
         if(!isEmptyInput[id]){
           if(modelIn[[id]]$type == "hot"){
