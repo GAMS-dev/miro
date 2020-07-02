@@ -43,7 +43,7 @@ getInputDataset <- function(id, visible = FALSE){
 }
 getInputDatasetRaw <- function(id){
   if(modelIn[[id]]$type %in% c("dt", "hot")){
-    if(!is.null(isolate(input[["in_" %+% id]])) && hotInit[[id]]){
+    if((!is.null(isolate(input[["in_" %+% id]])) || length(tableContent[[id]])) && hotInit[[id]]){
       if(length(colsWithDep[[id]])){
         if(!isEmptyInput[id]){
           if(modelIn[[id]]$type == "hot"){
@@ -414,6 +414,7 @@ lapply(modelInTabularData, function(sheet){
         col <- info$col + 1L
       }
       val <- info$value
+      hotInit[[i]] <<- TRUE
       tableContent[[i]][row, col] <<- suppressWarnings(coerceValue(val, 
                                                                    tableContent[[i]][[col]][row]))
       replaceData(proxy[[i]], tableContent[[i]], resetPaging = FALSE, rownames = rownames)

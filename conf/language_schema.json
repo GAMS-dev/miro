@@ -67,7 +67,7 @@
               "minLength": 1
             },
             "hcube": {
-              "description": "Hypercube mode specific configuration",
+              "description": "Hypercube Mode specific configuration",
               "type": "object",
               "additionalProperties": false,
               "properties": {
