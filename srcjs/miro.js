@@ -642,7 +642,7 @@ ${data.data}</div>` : data.data);
     },
     getRatePolicy() {
       return {
-        policy: 'debounce',
+        policy: 'throttle',
         delay: 250,
       };
     },
