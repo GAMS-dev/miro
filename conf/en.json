@@ -54,7 +54,7 @@
         "about": "About"
       },
       "tooltips":{
-        "switchToHcube": "Switch to Hypercube mode"
+        "switchToHcube": "Switch to Hypercube Mode"
       }
     },
     "inputScreen":{  
@@ -114,7 +114,7 @@
       "noData":"No data was returned by your query",
       "showHashButton": "Show hash",
       "msgOnlyOneHash": "Please select only one scenario.",
-      "msgNoHashFound": "No hash was found for the selected scenario. Apparently the scenario was not solved in Hypercube mode.",
+      "msgNoHashFound": "No hash was found for the selected scenario. Apparently the scenario was not solved in Hypercube Mode.",
       "chooseSelectedButton":"Choose selected scenarios",
       "chooseCurrentButton":"Choose current page",
       "chooseAllButton":"Choose all",
@@ -123,7 +123,7 @@
       "queryButton": "Fetch results",
       "showHashDialog":{
         "title": "Scenario hash",
-        "desc": "The selected scenario has the following hash. You may use this to import it in the base mode."
+        "desc": "The selected scenario has the following hash. You may use this to import it in the Base Mode."
       },
       "metaColAliases":{
         "uid":"Owner",
@@ -320,7 +320,7 @@
       "tabExternal": "External",
       "tabDatabase":"Database",
       "tabHcube":"Hypercube",
-      "hcubeHashDesc": "Enter the hash value of the scenario you wish to load from the Hypercube mode. Then simply click on the scenario to load it.",
+      "hcubeHashDesc": "Enter the hash value of the scenario you wish to load from the Hypercube Mode. Then simply click on the scenario to load it.",
       "hcubeHashButton": "Search",
       "hcubeHashNoMatch": "No scenarios that match the hash you entered were found.",
       "selInputData":"Select datasets to load",
@@ -338,7 +338,7 @@
       "title":"Import data",
       "tabLocal":"Local",
       "tabDatabase":"Hypercube",
-      "tabBase": "Base mode",
+      "tabBase": "Base Mode",
       "selInputData":"Select datasets to import",
       "descLocal":"Choose file with data to import",
       "newScenName": "Choose a name for the new Hypercube job configuration",
@@ -439,7 +439,7 @@
     },
     "dialogHcube":{
       "title": "Hypercube configuration",
-      "desc": "You selected %d scenarios to be solved in Hypercube mode. Out of these, %d scenarios have already been solved either by yourself or someone else.",
+      "desc": "You selected %d scenarios to be solved in Hypercube Mode. Out of these, %d scenarios have already been solved either by yourself or someone else.",
       "descSolveAgain": "Do you want to solve all scenarios again or only those that have not yet been solved?",
       "descJobSubmission": "Please wait while the job is being submitted...",
       "newTags": "Assign one or more tags to your job:",
@@ -823,8 +823,8 @@
       }
     },
     "hcubeLaunch":{
-      "hcubeRunning": "Hypercube mode is already running.",
-      "launchError": "An error occurred while trying to launch the Hypercube mode. If this problem persists, please contact the system administrator."
+      "hcubeRunning": "Hypercube Mode is already running.",
+      "launchError": "An error occurred while trying to launch the Hypercube Mode. If this problem persists, please contact the system administrator."
     },
     "paverFileLoad":{  
       "desc":"Data could not be loaded for this category."
@@ -892,10 +892,10 @@
         "headerOutputGroups": "Output groups",
         "headerSymbolNaming": "Naming",
         "headerSymbolGrouping": "Ordering",
-        "headerBaseScripts": "Base mode",
+        "headerBaseScripts": "Base Mode",
         "headerOutputAttach": "Output attachments",
         "baseScriptsTooltip": "Run custom analysis scripts which will be displayed in the output section",
-        "headerHcubeScripts": "Hypercube mode",
+        "headerHcubeScripts": "Hypercube Mode",
         "hcubeScriptsTooltip": "Run custom analysis scripts for multiple scenarios at once",
         "headerScenData": "Scenario & data",
         "headerComputation": "Computation",
@@ -936,8 +936,8 @@
         "label": "Specify symbol links (results that can be used as input data)"
       },
       "scripts":{
-        "base": "Specify custom analysis scripts for the Base mode",
-        "hcube": "Specify custom analysis scripts for the Hypercube mode"
+        "base": "Specify custom analysis scripts for the Base Mode",
+        "hcube": "Specify custom analysis scripts for the Hypercube Mode"
       },
       "outputAttach": {
         "label": "Add new attachment"
@@ -988,7 +988,7 @@
       },
       "decimal":{
         "label": "Number of decimal places used for rounding numerical values (global setting).",
-        "tooltip": "Has an effect on all output tables, big data input tables and the table for loading scenarios in Hypercube mode. - Open documentation."
+        "tooltip": "Has an effect on all output tables, big data input tables and the table for loading scenarios in Hypercube Mode. - Open documentation."
       },
       "logo":{
         "header": "Logo preview:",
@@ -1039,7 +1039,7 @@
       },
       "saveTrace":{
         "title": "For performance analysis with the integrated analysis tool PAVER, this option needs to be activated.",
-        "label": "Save trace file with each GAMS run (Hypercube mode)"
+        "label": "Save trace file with each GAMS run (Hypercube Mode)"
       },
       "auto":{
         "label": "Generate graphs for each input symbol automatically (pivot tool)"
@@ -1129,7 +1129,7 @@
         "widgetType": "Select widget type",
         "alias": "Name of the widget tab (no live preview)",
         "pivotColsRestriction": "Note: It is not possible to add or delete columns in the symbol table if it is set to readonly or displayed as a heatmap.",
-		"notConfigurable": "The widget configuration found in your JSON file is currently not supported for the selected symbol type in Configuration mode! This does not imply that the configuration is invalid. Symbol: '%s'; Configured widget type: '%s'"
+		"notConfigurable": "The widget configuration found in your JSON file is currently not supported for the selected symbol type in Configuration Mode! This does not imply that the configuration is invalid. Symbol: '%s'; Configured widget type: '%s'"
       },
       "validate":{
         "val1": "The alias of the element must not be empty!",
@@ -1224,9 +1224,9 @@
         "depSelector": "Static value?",
         "step": "Step size (also decimal places possible)",
         "minStep": "Minimum step size",
-        "minStepTooltip": "Only relevant in Hypercube mode. If empty, the step size is used. - Open documentation",
+        "minStepTooltip": "Only relevant in Hypercube Mode. If empty, the step size is used. - Open documentation",
         "ticks": "Show tick marks?",
-        "hcube": "Should element be expanded automatically in Hypercube mode?"
+        "hcube": "Should element be expanded automatically in Hypercube Mode?"
       },
       "sliderrange":{
         "label": "Choose a label",
@@ -1244,7 +1244,7 @@
         "default2": "Upper default value",
         "step": "Step size (also decimal places possible)",
         "ticks": "Show tick marks?",
-        "hcube": "Should element be expanded automatically in Hypercube mode?"
+        "hcube": "Should element be expanded automatically in Hypercube Mode?"
       },
       "dropdown":{
         "label": "Choose a label",
@@ -1260,12 +1260,12 @@
         "multiple": "Should multiple items be selectable?",
         "clearValue": "Only communicate element text of symbol with GAMS? Requires aliases for choices.",
         "clearValueTooltip": "Causes element label to be an empty string. This is not supported if no aliases are defined! - Open documentation",
-        "hcube": "Should element be expanded automatically in Hypercube mode?"
+        "hcube": "Should element be expanded automatically in Hypercube Mode?"
       },
       "checkbox":{
         "label": "Choose a label",
         "default": "Default value",
-        "hcube": "Should element be expanded automatically in Hypercube mode?"
+        "hcube": "Should element be expanded automatically in Hypercube Mode?"
       },
       "date":{
         "label": "Choose a label",
@@ -1291,7 +1291,7 @@
         },
         "daysDisabled": "Select weekdays that you want to disable",
         "autoclose": "Should datepicker be closed immediately when a date is selected?",
-        "hcube": "Should element be expanded automatically in Hypercube mode?"
+        "hcube": "Should element be expanded automatically in Hypercube Mode?"
       },
       "daterange":{
         "label": "Choose a label",
@@ -1320,7 +1320,7 @@
         },
         "separator": "Select the separator between start and end date selector",
         "autoclose": "Should datepicker be closed immediately when a date range is selected?",
-        "hcube": "Should element be expanded automatically in Hypercube mode?"
+        "hcube": "Should element be expanded automatically in Hypercube Mode?"
       },
       "textinput":{
         "label": "Choose a label",
