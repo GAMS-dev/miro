@@ -640,7 +640,7 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
     }
     if(length(rowIndexList)){
       dataTmp <- dataTmp %>% select(!!!c(rowIndexList, colIndexList, valueColName)) %>% 
-        arrange(!!!rlang::syms(rowIndexList))
+        arrange(!!!match(rowIndexList, names(dataTmp)))
     }else{
       dataTmp <- dataTmp %>% select(!!!c(colIndexList, valueColName))
     }
