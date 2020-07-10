@@ -541,10 +541,6 @@ body_admin <- dashboardBody({
                                                                                        label = NULL)
                                                               ))),
                                                    tags$div(class="option-wrapper",
-                                                            colorPickerInput("general_pivotcolor", label = lang$adminMode$general$pivotcolor$label,
-                                                                             value = if(length(configJSON$pivottable$bgColor)) configJSON$pivottable$bgColor else "#00000000"
-                                                            )),
-                                                   tags$div(class="option-wrapper",
                                                             sliderInput("general_decimal", 
                                                                         tags$div(lang$adminMode$general$decimal$label, 
                                                                                  tags$a("", title = lang$adminMode$general$decimal$tooltip, class="info-wrapper",
