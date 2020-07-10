@@ -361,7 +361,7 @@
     }
   ],
   "overwriteSheetOrder": {
-    "input": ["_widgets", "price"],
+    "input": ["_widgets", "price", "_widgets1"],
     "output": ["dowvsindex", "stock_weight", "abserror", "pricemerge", "_scalars_out"]
   },
   "pageTitle": "Stock Selection Optimization",
@@ -400,6 +400,12 @@
     "filename": "Readme.md",
     "enableMath": true
   },
+  "inputWidgetGroups": [
+    {
+      "name": "Advanced options",
+      "members": "solver"
+    }
+  ],
   "outputGroups": [
     {
       "name": "Dow Jones vs. Index Fund ⨠",

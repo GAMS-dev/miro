@@ -1356,3 +1356,135 @@ sanitizeFn <- function(filename) {
   filename <- gsub("[/\\\\\\?%*:|\"<>]", "", filename)
   return(stringi::stri_trim_left(filename, pattern = "[^\\.]"))
 }
+genWidgetGroups <- function(widgetNames, widgetGroups, widgetTabName, aggregateWidgets = FALSE){
+  newWidgetGroups <- NULL
+  if(length(widgetGroups)){
+    newWidgetGroups <- lapply(widgetGroups, function(widgetGroup){
+      groupMemberIds <- match(widgetGroup$members, widgetNames)
+      if(any(is.na(groupMemberIds))){
+        stop(sprintf("The members: '%s' of the widget group: '%s' are not in the list of input widgets. Please fix the configuration and try again!",
+                     paste(groupMemberIds[is.na(groupMemberIds)], collapse = "', '"), widgetGroup),
+             call. = FALSE)
+      }
+      widgetNames <<- widgetNames[-groupMemberIds]
+      return(widgetGroup)
+    })
+  }
+  if(length(widgetNames)){
+    return(c(list(list(name = widgetTabName, members = widgetNames, sameTab = aggregateWidgets)), 
+             newWidgetGroups))
+  }
+  return(newWidgetGroups)
+}
+getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NULL, 
+                    scalarsTabName = "Scalars", mergeScalars = FALSE, widgetIdsMultiDim = integer(0L)){
+  j              <- 1L
+  tabs     <- vector("list", length(names))
+  tabTitles<- vector("list", length(names))
+  tabSheetMap <- vector("list", length(names))
+  isAssigned     <- vector("logical", length(names))
+  scalarAssigned <- FALSE
+  widgetId     <- NULL
+  if(is.null(idsToDisplay)){
+    idsToDisplay <- seq_along(names)
+  }
+  for(i in idsToDisplay){
+    if(isAssigned[i]){
+      next
+    }
+    if(mergeScalars && i %in% widgetIds){
+      if(i %in% widgetIdsMultiDim){
+        tabTitles[[j]]   <-  aliases[i]
+        tabSheetMap[[i]] <- j
+        tabs[[j]]        <-  i
+        j <- j + 1L
+      }
+      if(!scalarAssigned){
+        scalarAssigned <- TRUE
+        tabTitles[[j]] <-  scalarsTabName
+        tabs[[j]]      <-  0L
+        j <- j + 1L
+      }
+      next
+    }
+    if(length(groups)){
+      groupId <- vapply(seq_along(groups), 
+                        function(gId){ 
+                          if(names[i] %in% groups[[gId]]$members)
+                            return(gId)
+                          else
+                            return(NA_integer_)}, integer(1L), USE.NAMES = FALSE)
+      if(any(!is.na(groupId))){
+        groupId <- groupId[!is.na(groupId)]
+        if(length(groupId) > 1L){
+          warningMsgTmp <- sprintf("Dataset: '%s' appears in more than one group. Only the first group will be used.", 
+                                   aliases[i])
+          warning(warningMsgTmp)
+          warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
+        }
+        groupMemberIds      <- match(groups[[groupId]]$members, names)
+        groupMemberIds      <- groupMemberIds[groupMemberIds %in% idsToDisplay]
+        if(any(is.na(groupMemberIds))){
+          warningMsgTmp <- sprintf("The table(s): '%s' that you specified in group: '%s' do not exist. Thus, they were ignored.", 
+                                   paste(groups[[groupId]]$members[is.na(groupMemberIds)], collapse = "', '"),
+                                   groups[[groupId]]$name)
+          warning(warningMsgTmp)
+          warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
+          groupMemberIds <- groupMemberIds[!is.na(groupMemberIds)]
+        }
+        tabs[[j]]      <-  groupMemberIds
+        tabSheetMap[groupMemberIds] <- j
+        if(isTRUE(groups[[groupId]][["sameTab"]])){
+          for(groupMemberId in groupMemberIds){
+            tabSheetMap[[groupMemberId]] <- tabSheetMap[[groupMemberId]]
+          }
+        }else{
+          for(k in seq_along(groupMemberIds)){
+            groupMemberId <- groupMemberIds[k]
+            tabSheetMap[[groupMemberId]] <- c(tabSheetMap[[groupMemberId]], k)
+          }
+        }
+        if(mergeScalars){
+          groupScalarId <- match(scalarsFileName, names[groupMemberIds])
+          if(!is.na(groupScalarId)){
+            if(scalarAssigned){
+              if(length(groupMemberIds) <= 1L){
+                next
+              }
+              groupMemberIds <- groupMemberIds[-groupScalarId]
+            }else{
+              groupMemberIds[groupScalarId] <- 0L
+              scalarAssigned <- TRUE
+            }
+          }
+        }
+        if(isTRUE(groups[[groupId]][["sameTab"]])){
+          tabTitles[[j]] <-  groups[[groupId]]$name
+        }else{
+          tabTitles[[j]] <-  c(groups[[groupId]]$name, aliases[groupMemberIds])
+        }
+        isAssigned[groupMemberIds] <- TRUE 
+        j <- j + 1L
+        next
+      }
+    }
+    sheetId <- i
+    tabSheetMap[[sheetId]] <- j
+    if(mergeScalars && identical(names[i], scalarsFileName)){
+      if(scalarAssigned){
+        next
+      }
+      sheetId <- 0L
+      scalarAssigned <- TRUE
+    }
+    tabs[[j]]      <-  sheetId
+    
+    tabTitles[[j]] <-  aliases[[i]]
+    tabSheetMap[sheetId] <- j
+    j <- j + 1L
+    next
+  }
+  return(list(tabs = tabs[!vapply(tabs, is.null, logical(1L), USE.NAMES = FALSE)],
+              tabTitles = tabTitles[!vapply(tabTitles, is.null, logical(1L), USE.NAMES = FALSE)],
+              tabSheetMap = tabSheetMap))
+}

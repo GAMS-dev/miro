@@ -96,11 +96,26 @@ server_admin <- function(input, output, session){
                        saveWidgetConfirm = 0L, updateLeafletGroups = 0L, 
                        saveTableConfirm = 0L, widgetTableConfig = list(), table_symbol = 0L,
                        reset_table_input = 0L, refreshOptions = 0L)
-  session$sendCustomMessage("gms-setGAMSSymbols", list(gamsSymbols = list(inSym = unname(inputSymMultiDim), 
-                                                                          inAlias = names(inputSymMultiDim),
-                                                                          outSym = names(modelOut),
-                                                                          outAlias = modelOutAlias),
-                                                       lang = lang$adminMode$graphs$js))
+  inputWidgets <- names(modelIn)[vapply(modelIn, function(el){
+    if(el$type %in% c("hot", "dt", "custom")){
+      return(FALSE)
+    }
+    return(TRUE)
+  }, logical(1L), USE.NAMES = FALSE)]
+  session$sendCustomMessage("gms-setGAMSSymbols", 
+                            list(gamsSymbols = list(inSym = unname(inputSymMultiDim), 
+                                                    inAlias = names(inputSymMultiDim),
+                                                    inWid = inputWidgets,
+                                                    inWidAlias = vapply(seq_along(configJSON$inputWidgets)[names(configJSON$inputWidgets) %in% inputWidgets], 
+                                                                        function(widgetId){
+                                                                          if(length(configJSON$inputWidgets[[widgetId]]$alias)){
+                                                                            return(configJSON$inputWidgets[[widgetId]]$alias)
+                                                                          }
+                                                                          return(names(configJSON$inputWidgets)[widgetId])
+                                                                        }, character(1L), USE.NAMES = FALSE),
+                                                    outSym = names(modelOut),
+                                                    outAlias = modelOutAlias),
+                                 lang = lang$adminMode$graphs$js))
   # ------------------------------------------------------
   #     General settings
   # ------------------------------------------------------

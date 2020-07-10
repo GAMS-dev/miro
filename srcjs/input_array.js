@@ -117,7 +117,7 @@ class InputArray {
             }
 
             arrayContent += InputArray.createSelectInput(k, elID, v[1],
-              choices, aliases, selected, v[5], newEl);
+              choices, aliases, selected, v[5], newEl, v[6]);
             break;
           case 'selectDep':
             [,,, [selected]] = v;
@@ -384,12 +384,14 @@ class InputArray {
     }
 
     static createSelectInput(arrayID, elID, label, choicesRaw, aliasesRaw = choicesRaw, selectedRaw = '',
-      multiple = false, create = false) {
+      multiple = false, create = false, options = {}) {
       const id = arrayID + elID;
       let choices = choicesRaw;
       let aliases = aliasesRaw;
       let selected = selectedRaw;
       let optionsHTML = '';
+      let optionsJSON = create === true ? { create: true, persist: false, openOnFocus: false } : {};
+      optionsJSON = JSON.stringify({ ...optionsJSON, ...options });
       if (!$.isArray(choices)) {
         choices = [choices];
       }
@@ -409,7 +411,7 @@ class InputArray {
 <div class="form-group">\n\
 <label class="control-label" for="${id}">${label}</label>\n\
 <div><select id="${id}"${multiple === true ? ' multiple="multiple"' : ''}>${optionsHTML}</select>\
-${create === true ? `<script type="application/json" data-for="${id}">{"create":true,"persist":false,"openOnFocus":false}</script>` : ''}\
+${optionsJSON !== '{}' ? `<script type="application/json" data-for="${id}">${optionsJSON}</script>` : ''}\
 \n</div>\n</div>`);
     }
 

@@ -889,6 +889,7 @@
         "headerTabGrouping": "Tab grouping",
         "headerTabSymlinks": "Use output data as input data",
         "headerInputGroups": "Input groups",
+        "headerInputWidgetGroups": "Widget groups",
         "headerOutputGroups": "Output groups",
         "headerSymbolNaming": "Naming",
         "headerSymbolGrouping": "Ordering",
@@ -930,6 +931,7 @@
       },
       "groups":{
         "input": "Divide input symbols into groups",
+        "widgets": "Divide input widgets into groups",
         "output": "Divide output symbols into groups"
       },
       "symlinks":{
@@ -1655,9 +1657,12 @@
       },
       "js":{
         "addInputGroup":{
-          "symbolInputgroups": "Name of the input group?",
+          "symbolInputgroups": "Name of the input group",
+          "symbolWidgetgroups": "Name of the widget group",
           "groupMemberIn": "Select group members",
-          "groupSameTabIn": "Show all symbols side by side on the same tab?"
+          "groupMemberWidget": "Select group members",
+          "groupSameTabIn": "Show all symbols side by side on the same tab?",
+          "groupSameTabWidget": "Show all widgets side by side on the same tab?"
         },
         "addOutputGroup":{
           "symbolOutputgroups": "Name of the output group?",

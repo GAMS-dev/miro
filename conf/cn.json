@@ -889,6 +889,7 @@
         "headerTabGrouping": "组合选项卡",
         "headerTabSymlinks": "使用输出数据作为输入数据",
         "headerInputGroups": "输入组",
+        "headerInputWidgetGroups": "小工具组",
         "headerOutputGroups": "输入组",
         "headerSymbolNaming": "指定名称",
         "headerSymbolGrouping": "组合",
@@ -930,6 +931,7 @@
       },
       "groups":{
         "input": "将输入GAMS符号分组",
+        "widgets": "将输入部件划分为一组",
         "output": "将输出GAMS符号分组"
       },
       "symlinks":{
@@ -1656,8 +1658,11 @@
       "js":{
         "addInputGroup":{
           "symbolInputgroups": "输入组的名称",
+          "symbolWidgetgroups": "小组件组的名称",
           "groupMemberIn": "选择该组成员",
-          "groupSameTabIn": "Show all symbols side by side on the same tab?"
+          "groupMemberWidget": "选择该组成员",
+          "groupSameTabIn": "在同一标签上并排显示所有符号？",
+          "groupSameTabWidget": "在同一个标签页上并排显示所有小部件？"
         },
         "addOutputGroup":{
           "symbolOutputgroups": "输出组的名称",

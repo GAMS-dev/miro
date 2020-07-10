@@ -443,148 +443,10 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
     }
     rm(outScalarTmp, isValidScalar)
   }
-  # declare input sheets as they will be displayed in UI
-  getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NULL, 
-                      isOutput = FALSE, mergeScalars = FALSE, widgetIdsMultiDim = integer(0L)){
-    j              <- 1L
-    tabs     <- vector("list", length(names))
-    tabTitles<- vector("list", length(names))
-    tabSheetMap <- vector("list", length(names))
-    isAssigned     <- vector("logical", length(names))
-    scalarAssigned <- FALSE
-    widgetId     <- NULL
-    if(is.null(idsToDisplay)){
-      idsToDisplay <- seq_along(names)
-    }
-    for(i in idsToDisplay){
-      if(identical(isOutput, TRUE) || 
-         modelIn[[i]]$type %in% c("hot", "dt", "custom")){
-        if(isAssigned[i]){
-          next
-        }
-        if(length(groups)){
-          groupId <- vapply(seq_along(groups), 
-                            function(gId){ 
-                              if(names[i] %in% groups[[gId]]$members)
-                                return(gId)
-                              else
-                                return(NA_integer_)}, integer(1L), USE.NAMES = FALSE)
-          if(any(!is.na(groupId))){
-            groupId <- groupId[!is.na(groupId)]
-            if(length(groupId) > 1L){
-              warningMsgTmp <- sprintf("Dataset: '%s' appears in more than one group. Only the first group will be used.", 
-                                       aliases[i])
-              warning(warningMsgTmp)
-              warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
-            }
-            groupMemberIds      <- match(groups[[groupId]]$members, names)
-            groupMemberIds      <- groupMemberIds[groupMemberIds %in% idsToDisplay]
-            if(any(is.na(groupMemberIds))){
-              warningMsgTmp <- sprintf("The table(s): '%s' that you specified in group: '%s' do not exist. Thus, they were ignored.", 
-                                       paste(groups[[groupId]]$members[is.na(groupMemberIds)], collapse = "', '"),
-                                       groups[[groupId]]$name)
-              warning(warningMsgTmp)
-              warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
-              groupMemberIds <- groupMemberIds[!is.na(groupMemberIds)]
-            }
-            tabs[[j]]      <-  groupMemberIds
-            tabSheetMap[groupMemberIds] <- j
-            if(isTRUE(groups[[groupId]][["sameTab"]])){
-              for(groupMemberId in groupMemberIds){
-                tabSheetMap[[groupMemberId]] <- tabSheetMap[[groupMemberId]]
-              }
-            }else{
-              for(k in seq_along(groupMemberIds)){
-                groupMemberId <- groupMemberIds[k]
-                tabSheetMap[[groupMemberId]] <- c(tabSheetMap[[groupMemberId]], k)
-              }
-            }
-            groupMemberIdsInWidgets <- match(groupMemberIds, widgetIds)
-            
-            if(any(!is.na(groupMemberIdsInWidgets))){
-              #groupMemberIdsInWidgets <- groupMemberIdsInWidgets[!is.na(groupMemberIdsInWidgets)]
-              #widgetIds <- widgetIds[-groupMemberIdsInWidgets]
-              errMsg <<- paste(errMsg, "It is currently not possible to specify widgets and tables in the same group!", sep = "\n")
-            }
-            if(mergeScalars){
-              groupScalarId <- match(scalarsFileName, names[groupMemberIds])
-              if(!is.na(groupScalarId)){
-                if(scalarAssigned){
-                  if(length(groupMemberIds) <= 1L){
-                    next
-                  }
-                  groupMemberIds <- groupMemberIds[-groupScalarId]
-                }else{
-                  groupMemberIds[groupScalarId] <- 0L
-                  scalarAssigned <- TRUE
-                }
-              }
-            }
-            if(isTRUE(groups[[groupId]][["sameTab"]])){
-              tabTitles[[j]] <-  groups[[groupId]]$name
-            }else{
-              tabTitles[[j]] <-  c(groups[[groupId]]$name, aliases[groupMemberIds])
-            }
-            isAssigned[groupMemberIds] <- TRUE 
-            j <- j + 1L
-            next
-          }
-        }
-        sheetId <- i
-        tabSheetMap[[sheetId]] <- j
-        if(mergeScalars && identical(names(modelIn)[i], scalarsFileName)){
-          if(scalarAssigned){
-            next
-          }
-          sheetId <- 0L
-          scalarAssigned <- TRUE
-        }
-        tabs[[j]]      <-  sheetId
-        
-        tabTitles[[j]] <-  aliases[[i]]
-        tabSheetMap[sheetId] <- j
-        j <- j + 1L
-        next
-      }else if(!length(widgetId) && length(widgetIds)){
-        if(mergeScalars){
-          if(scalarAssigned){
-            if(!length(widgetIdsMultiDim)){
-              next
-            }
-            widgetIds <- widgetIdsMultiDim
-          }else if(!identical(length(widgetIds), length(widgetIdsMultiDim))){
-            scalarAssigned <- TRUE
-            tabTitles[[j]] <-  lang$nav$scalarAliases$scalars
-            tabs[[j]]      <-  0L
-            j <- j + 1L
-            next
-          }
-        }
-        widgetId     <- j
-        if(identical(length(widgetIds), 1L)){
-          tabs[[j]]      <-  widgetIds
-          tabTitles[[j]] <-  aliases[[widgetIds[[1]]]]
-          tabSheetMap[widgetIds] <- j
-        }else if(identical(config$aggregateWidgets, TRUE)){
-          tabTitles[[j]] <-  lang$nav$inputScreen$widgetTabTitle
-          tabs[[j]]      <-  widgetIds
-          tabSheetMap[widgetIds] <- j
-        }else{
-          tabTitles[[j]] <-  c(lang$nav$inputScreen$widgetTabTitle, aliases[widgetIds])
-          tabs[[j]] <-  widgetIds
-          tabSheetMap[widgetIds] <- j
-        }
-        j <- j + 1L
-      }
-    }
-    return(list(tabs = tabs[!vapply(tabs, is.null, logical(1L), USE.NAMES = FALSE)],
-           tabTitles = tabTitles[!vapply(tabTitles, is.null, logical(1L), USE.NAMES = FALSE)],
-           tabSheetMap = tabSheetMap))
-  }
   
   if(length(config$overwriteSheetOrder$input) && !LAUNCHCONFIGMODE){
-    widgetOverwriteId <- match("_widgets", config$overwriteSheetOrder$input)
-    if(!is.na(widgetOverwriteId)){
+    isWidgetGroup <- startsWith(config$overwriteSheetOrder$input, "_widgets")
+    if(any(isWidgetGroup)){
       isInputWidget <- vapply(modelIn, function(el){
         if(el$type %in% c("hot", "dt", "custom")){
           return(FALSE)
@@ -592,17 +454,33 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
         return(TRUE)
       }, logical(1L), USE.NAMES = FALSE)
       if(any(isInputWidget)){
-        widgetIdTmp <- which(is.na(match(names(modelIn), 
-                                         names(modelInRaw))))[1]
-        if(is.na(widgetIdTmp)){
-          # widget is (non-singleton) set
-          widgetIdTmp <- which(isInputWidget)[1]
-          config$overwriteSheetOrder$input[widgetOverwriteId] <- names(modelIn)[widgetIdTmp]
-        }else{
-          config$overwriteSheetOrder$input[widgetOverwriteId] <- names(modelIn)[widgetIdTmp]
+        for(widgetGroupId in which(isWidgetGroup)){
+          i <- suppressWarnings(as.integer(substring(config$overwriteSheetOrder$input[widgetGroupId], 9L)))
+          if(is.na(i) || i > length(config$inputWidgetGroups)){
+            if(sum(isWidgetGroup) <= length(config$inputWidgetGroups)){
+              config$overwriteSheetOrder$input[widgetGroupId] <- names(modelIn)[which(isInputWidget)[1L]]
+            }else{
+              config$overwriteSheetOrder$input[widgetGroupId] <- NA
+            }
+            next
+          }
+          widgetIdTmp <- match(config$inputWidgetGroups[[i]]$members[1], names(modelIn))
+          if(is.na(widgetIdTmp)){
+            errMsg <- paste(errMsg, sprintf("The widget: '%s' of the input widget group: '%s' does not exist.",
+                                            config$inputWidgetGroups[[i]]$members[1], config$inputWidgetGroups[[i]]$name),
+                            sep = "\n")
+            break
+          }
+          # remove sets that are members of this group from overwriteSheetOrder
+          # in order to not mess up the order
+          config$overwriteSheetOrder$input[config$overwriteSheetOrder$input %in% 
+                                             config$inputWidgetGroups[[i]]$members] <- NA
+          config$overwriteSheetOrder$input[widgetGroupId] <- names(modelIn)[widgetIdTmp]
+          i <- i + 1L
         }
+        config$overwriteSheetOrder$input <- config$overwriteSheetOrder$input[!is.na(config$overwriteSheetOrder$input)]
       }else{
-        config$overwriteSheetOrder$input <- config$overwriteSheetOrder$input[-widgetOverwriteId]
+        config$overwriteSheetOrder$input <- config$overwriteSheetOrder$input[-which(isWidgetGroup)]
       }
     }
     if(any(is.na(match(config$overwriteSheetOrder$input, names(modelIn))))){
@@ -695,6 +573,11 @@ if(is.null(errMsg)){
   widgetIds    <- unlist(widgetIds[!vapply(widgetIds, is.null,
                                            numeric(1L), USE.NAMES = FALSE)], 
                          use.names = FALSE)
+  config$inputGroups <- c(config$inputGroups, 
+                          genWidgetGroups(names(modelIn)[widgetIds], 
+                                          config$inputWidgetGroups, 
+                                          lang$nav$inputScreen$widgetTabTitle, 
+                                          aggregateWidgets = isTRUE(config$aggregateWidgets)))
   inputTabs    <- getTabs(names(modelIn), modelInAlias, config$inputGroups,
                           idsToDisplay = inputSheetIdsToDisplay, widgetIds = widgetIds)
   inputTabTitles <- inputTabs$tabTitles
@@ -702,21 +585,17 @@ if(is.null(errMsg)){
   tabSheetMap$input <- inputTabs$tabSheetMap
   inputTabs    <- inputTabs$tabs
   # get input tabs where scalars are merged to single table (scenario comparison mode)
-  widgetIdsMultiDim <- vapply(inputSheetIdsToDisplay, function(i){
-    if(identical(modelIn[[i]]$symtype, "set") && 
-       length(modelIn[[i]]$dropdown) ||
-       isTRUE(modelIn[[i]]$dropdown$multiple) &&
-       !isTRUE(modelIn[[i]]$dropdown$checkbox) && 
-       !isTRUE(modelIn[[i]]$dropdown$single)){
-      return(i)
-    }
-    return(NA_integer_)
-  }, integer(1L), USE.NAMES = FALSE)
-  widgetIdsMultiDim <- widgetIdsMultiDim[!is.na(widgetIdsMultiDim)]
   scenInputTabs    <- getTabs(names(modelIn), modelInAlias, config$inputGroups,
                               idsToDisplay = inputSheetIdsToDisplay, 
-                              widgetIds = widgetIds, mergeScalars = TRUE, 
-                              widgetIdsMultiDim = widgetIdsMultiDim)
+                              widgetIds = widgetIds, scalarsTabName = lang$nav$scalarAliases$scalars,
+                              mergeScalars = TRUE,
+                              widgetIdsMultiDim = vapply(widgetIds, function(widgetId){
+                                if(names(modelIn)[widgetId] %in% names(modelInRaw)){
+                                  return(widgetId)
+                                }else{
+                                  return(0L)
+                                }
+                              }, integer(1L), USE.NAMES = FALSE))
   scenInputTabTitles <- scenInputTabs$tabTitles
   scenInputTabs    <- scenInputTabs$tabs
   
@@ -1269,7 +1148,7 @@ if(is.null(errMsg)){
 if(is.null(errMsg)){
   # declare output sheets as they will be displayed in UI
   outputTabs <- getTabs(names(modelOut), modelOutAlias, config$outputGroups,
-                        idsToDisplay = outputSheetIdsToDisplay, isOutput = TRUE)
+                        idsToDisplay = outputSheetIdsToDisplay)
   outputTabTitles <- outputTabs$tabTitles
   tabSheetMap$output <- outputTabs$tabSheetMap
   outputTabs <- outputTabs$tabs

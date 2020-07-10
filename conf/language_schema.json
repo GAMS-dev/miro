@@ -3435,6 +3435,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "headerInputWidgetGroups": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "headerOutputGroups": {
                   "type": "string",
                   "minLength": 1
@@ -3480,7 +3484,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 22
+              "minProperties": 23
             },
             "modalDialog": {
               "type": "object",
@@ -3609,12 +3613,16 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "widgets": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "output": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 2
+              "minProperties": 3
             },
             "symlinks": {
               "type": "object",
@@ -6617,16 +6625,28 @@
                       "type": "string",
                       "minLength": 1
                     },
+                    "symbolWidgetgroups": {
+                      "type": "string",
+                      "minLength": 1
+                    },
                     "groupMemberIn": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "groupMemberWidget": {
                       "type": "string",
                       "minLength": 1
                     },
                     "groupSameTabIn": {
                       "type": "string",
                       "minLength": 1
+                    },
+                    "groupSameTabWidget": {
+                      "type": "string",
+                      "minLength": 1
                     }
                   },
-                  "minProperties": 3
+                  "minProperties": 6
                 },
                 "addOutputGroup": {
                   "type": "object",
