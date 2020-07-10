@@ -14,6 +14,13 @@ names(langSpecificUI$scen) <- lang$adminMode$general$scen$choices
 inputTabs <- c(inputSymMultiDim, 
                setNames("_widgets", 
                         lang$nav$inputScreen$widgetTabTitle))
+if(length(configJSON$inputWidgetGroups)){
+  inputTabs <- c(inputTabs, 
+                 setNames(paste0("_widgets", seq_along(configJSON$inputWidgetGroups)), 
+                          vapply(configJSON$inputWidgetGroups,
+                                 "[[", character(1L),
+                                 "name", USE.NAMES = FALSE)))
+}
 if(length(configJSON$overwriteSheetOrder$input)){
   tabIdsTmp <- match(configJSON$overwriteSheetOrder$input, inputTabs)
   if(all(is.na(tabIdsTmp))){
@@ -714,6 +721,11 @@ body_admin <- dashboardBody({
                                                    tags$div(class="option-wrapper-indented",
                                                             createArray(NULL, "symbol_inputGroups", 
                                                                         lang$adminMode$general$groups$input, 
+                                                                        autoCreate = FALSE)),
+                                                   tags$h4(lang$adminMode$general$ui$headerInputWidgetGroups),
+                                                   tags$div(class="option-wrapper-indented",
+                                                            createArray(NULL, "symbol_inputWidgetGroups", 
+                                                                        lang$adminMode$general$groups$widgets, 
                                                                         autoCreate = FALSE)),
                                                    tags$h4(lang$adminMode$general$ui$headerOutputGroups),
                                                    tags$div(class="option-wrapper-indented",

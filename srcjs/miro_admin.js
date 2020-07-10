@@ -31,6 +31,8 @@ let outputScalars = [];
 let outputScalarAliases = [];
 let inputSymbols = [];
 let inputSymbolsAliases = [];
+let inputWidgets = [];
+let inputWidgetAliases = [];
 let outputSymbols = [];
 let outputSymbolsAliases = [];
 
@@ -84,6 +86,24 @@ const arrayTypes = {
       symbol_inputGroups: ['text', lang.addInputGroup.symbolInputgroups, name],
       group_memberIn: ['select', lang.addInputGroup.groupMemberIn, inputSymbols, inputSymbolsAliases, members, true],
       group_sameTabIn: ['checkbox', lang.addInputGroup.groupSameTabIn, sameTab],
+    };
+    return ([elements, { elRequired: false }, 'general']);
+  },
+  symbol_inputWidgetGroups(defaults) {
+    let name;
+    let members;
+    let sameTab = true;
+    if (defaults !== undefined) {
+      if (defaults.sameTab !== undefined) {
+        ({ sameTab } = defaults);
+      }
+      ({ name, members } = defaults);
+    }
+    const elements = {
+      symbol_inputWidgetGroups: ['text', lang.addInputGroup.symbolWidgetgroups, name],
+      group_memberWidget: ['select', lang.addInputGroup.groupMemberWidget, inputWidgets,
+        inputWidgetAliases, members, true, { create: false, openOnFocus: true, plugins: ['drag_drop'] }],
+      group_sameTabWidget: ['checkbox', lang.addInputGroup.groupSameTabWidget, sameTab],
     };
     return ([elements, { elRequired: false }, 'general']);
   },
@@ -642,6 +662,8 @@ $(document).ready(() => {
     ({
       inSym: inputSymbols,
       inAlias: inputSymbolsAliases,
+      inWid: inputWidgets,
+      inWidAlias: inputWidgetAliases,
       outSym: outputSymbols,
       outAlias: outputSymbolsAliases,
     } = symData);

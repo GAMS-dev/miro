@@ -130,3 +130,43 @@ test_that("getWidgetDependencies works", {
   
   expect_identical(getWidgetDependencies("dropdown", c("1", "2")),character(0))
 })
+test_that("genWidgetGroups works", {
+  expect_identical(genWidgetGroups(c("a","c","e","f"), list(list(name = "Widgets 1", members = c("a", "c"), sameTab = TRUE)), 
+                                   widgetTabName = "Widgets", aggregateWidgets = TRUE),
+                   list(list(name = "Widgets", members = c("e", "f"), sameTab = TRUE),
+                        list(name = "Widgets 1", members = c("a", "c"), sameTab = TRUE)))
+  expect_identical(genWidgetGroups(c("a","c","e","f"), list(list(name = "Widgets 1", members = c("a", "c"))), 
+                                   widgetTabName = "Widgets", aggregateWidgets = TRUE),
+                   list(list(name = "Widgets", members = c("e", "f"), sameTab = TRUE),
+                        list(name = "Widgets 1", members = c("a", "c"))))
+  expect_identical(genWidgetGroups(c("a","c","e","f"), list(list(name = "Widgets 1", members = c("a", "c"))), 
+                                   widgetTabName = "Widgets", aggregateWidgets = FALSE),
+                   list(list(name = "Widgets", members = c("e", "f"), sameTab = FALSE),
+                        list(name = "Widgets 1", members = c("a", "c"))))
+})
+test_that("getTabs works", {
+  expect_identical(getTabs(c("a", "b", "c", "d"), c("A", "B", "C", "D"), 
+                           list(list(name = "Group 1", members = c("b", "d"))), 
+                           idsToDisplay = NULL, widgetIds = NULL,
+                           mergeScalars = FALSE, widgetIdsMultiDim = integer(0L)),
+                   list(tabs = list(1L, c(2L, 4L), 3L), tabTitles = list("A", c("Group 1", "B", "D"), "C"), 
+                        tabSheetMap = list(1L, 2:1, 3L, c(2L, 2L))))
+  expect_identical(getTabs(c("a", "b", "c", "d"), c("A", "B", "C", "D"), 
+                           list(list(name = "Group 1", members = c("a", "b"))), 
+                           idsToDisplay = 1:3, widgetIds = NULL,
+                           mergeScalars = FALSE, widgetIdsMultiDim = integer(0L)),
+                   list(tabs = list(1:2, 3L), tabTitles = list(c("Group 1", "A", "B"), "C"), 
+                        tabSheetMap = list(c(1L, 1L), 1:2, 2L, NULL)))
+  expect_identical(getTabs(c("a", "b", "c", "d"), c("A", "B", "C", "D"), 
+                           list(list(name = "Group 1", members = c("a", "b"))), 
+                           idsToDisplay = 1:3, widgetIds = NULL,
+                           mergeScalars = FALSE, widgetIdsMultiDim = integer(0L)),
+                   list(tabs = list(1:2, 3L), tabTitles = list(c("Group 1", "A", "B"), "C"), 
+                        tabSheetMap = list(c(1L, 1L), 1:2, 2L, NULL)))
+  expect_identical(getTabs(c("a", "b", "c", "d"), c("A", "B", "C", "D"), 
+                           list(list(name = "Group 1", members = c("a", "b"))), 
+                           idsToDisplay = NULL, widgetIds = 3:4, scalarsTabName = "Scalars",
+                           mergeScalars = TRUE, widgetIdsMultiDim = integer(0L)),
+                   list(tabs = list(1:2, 0L), tabTitles = list(c("Group 1", "A", "B"), "Scalars"), 
+                        tabSheetMap = list(c(1L, 1L), 1:2, NULL, NULL)))
+})

@@ -889,6 +889,7 @@
         "headerTabGrouping": "Tab-Gruppierung",
         "headerTabSymlinks": "Ergebnisse als Eingabedaten verwenden",
         "headerInputGroups": "Eingabegruppen",
+        "headerInputWidgetGroups": "Widget-Gruppen",
         "headerOutputGroups": "Ausgabegruppen",
         "headerSymbolNaming": "Benennung",
         "headerSymbolGrouping": "Reihenfolge",
@@ -930,6 +931,7 @@
       },
       "groups":{
         "input": "Eingabesymbole in Gruppen einteilen",
+        "widgets": "Eingabe-Widgets in Gruppen einteilen",
         "output": "Ausgabesymbole in Gruppen einteilen"
       },
       "symlinks":{
@@ -1655,9 +1657,12 @@
       },
       "js":{
         "addInputGroup":{
-          "symbolInputgroups": "Name der Eingabegruppe?",
+          "symbolInputgroups": "Name der Eingabegruppe",
+          "symbolWidgetgroups": "Name der Eingabe-Widget-Gruppe",
           "groupMemberIn": "Gruppenmitglieder auswählen",
-          "groupSameTabIn": "Alle Symbole nebeneinander in demselben Tab anzeigen?"
+          "groupMemberWidget": "Gruppenmitglieder auswählen",
+          "groupSameTabIn": "Alle Symbole nebeneinander in demselben Tab anzeigen?",
+          "groupSameTabWidget": "Alle Widgets nebeneinander in demselben Tab anzeigen?"
         },
         "addOutputGroup":{
           "symbolOutputgroups": "Name der Ausgabegruppe?",
