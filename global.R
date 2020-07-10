@@ -32,7 +32,7 @@ SCODEMAP <- c(
 )
 
 # maximum upload size [MB] for data files
-maxUploadSize <- 100L
+maxUploadSize <- 500L
 
 # maximum number of scalars to represent as value box
 maxScalarsValBox <- 20L

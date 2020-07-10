@@ -187,6 +187,7 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
     names(data) <- c(names(data)[-length(data)], "value")
     valueColName <- "value"
   }
+  data <- mutate_if(data, is.character, as.factor)
   noColDim <- 1L
   setIndices <- names(data)[-length(data)]
   
@@ -640,7 +641,7 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
     }
     if(length(rowIndexList)){
       dataTmp <- dataTmp %>% select(!!!c(rowIndexList, colIndexList, valueColName)) %>% 
-        arrange(!!!match(rowIndexList, names(dataTmp)))
+        arrange(!!!rlang::syms(rowIndexList))
     }else{
       dataTmp <- dataTmp %>% select(!!!c(colIndexList, valueColName))
     }
