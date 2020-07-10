@@ -257,14 +257,6 @@ observeEvent(input$general_hiddenOutputSymbols, ignoreNULL = FALSE, {
 observeEvent(input$general_decimal, {
   rv$generalConfig$roundingDecimals <<- input$general_decimal
 })
-observeEvent(input$general_pivotcolor, {
-  if(!nchar(input$general_pivotcolor))
-    configJSON$pivottable$bgColor <<- "#00000000"
-  if(nchar(input$general_pivotcolor))
-    rv$generalConfig$pivottable$bgColor <<- input$general_pivotcolor
-  else
-    rv$generalConfig$pivottable$bgColor <<- NULL
-})
 observeEvent(input$general_mirologfile, {
   if(!nchar(input$general_mirologfile))
     configJSON$miroLogFile <<- NULL
