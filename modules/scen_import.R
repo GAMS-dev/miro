@@ -40,7 +40,6 @@ observeEvent(input$btOverwriteInput, {
 
 observeEvent(virtualActionButton(rv$btOverwriteInput),{
   if(is.null(input$localInput$datapath)){
-    flog.error("Load Excel event was triggered but no datapath specified. This should not happen!")
     return(NULL)
   }
   if(identical(config$activateModules$loadLocal, FALSE)){
