@@ -14,6 +14,8 @@ $if not set fileName $set fileName %fp%dowjones2016.csv
 $call.checkErrorLevel csv2gdx "%fileName%" output=stockdata.gdx ValueDim=0 id=price Index="(1,2)" Value=3 UseHeader=y
 $gdxin stockdata
 $load price
+
+Singleton Set solver / CPLEX /;
 $offExternalInput
 
 Alias (d,date), (s,symbol);

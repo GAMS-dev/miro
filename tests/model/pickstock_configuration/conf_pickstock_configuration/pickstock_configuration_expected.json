@@ -28,6 +28,15 @@
       "ticks": false,
       "noHcube": false
     },
+    "trainingdays": {
+      "label": "select the number of days for training",
+      "min": 1,
+      "default": 99,
+      "step": 1,
+      "max": "card(price$date)",
+      "alias": "number of days for training",
+      "widgetType": "slider"
+    },
     "solver": {
       "alias": "MIP-Solver",
       "widgetType": "dropdown",
@@ -381,9 +390,6 @@
     },
     "pricemerge": {
       "newAlias": "Price (stocks & dow jones)"
-    },
-    "_scalars": {
-      "newAlias": "Scalars"
     }
   },
   "overwriteHeaderAliases": {
@@ -428,7 +434,7 @@
     "contextMenu": {
       "enabled": true,
       "allowRowEdit": true,
-      "allowColEdit": true,
+      "allowColEdit": false,
       "allowReadOnly": false
     },
     "height": 700,

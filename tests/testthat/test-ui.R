@@ -133,5 +133,11 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
   test_that("MIRO Pivot renderer works.",
             expect_pass(testApp(file.path(testDir, ".."), "miropivot_test",
                                 compareImages = FALSE)))
+  Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "model", "pickstock_configuration",
+                                         "pickstock_configuration.gms"))
+  Sys.setenv(MIRO_MODE = "config")
+  test_that("Configuration mode - general settings works.",
+            expect_pass(testApp(file.path(testDir, ".."), "config_mode_general_test",
+                                compareImages = FALSE)))
   Sys.unsetenv(c("MIRO_MODEL_PATH", "GMSMODELNAME", "MIRO_DB_PATH", "MIRO_MODE"))
 }
