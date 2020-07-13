@@ -3,8 +3,6 @@ app$snapshotInit("config_mode_general_test")
 Sys.sleep(2)
 app$snapshot(screenshot = TRUE)
 
-
-
 jsonPath <- file.path(getwd(), "model", "pickstock_configuration", "conf_pickstock_configuration")
 configRaw <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration_expected.json"), 
                                                   simplifyDataFrame = FALSE, 
@@ -76,9 +74,6 @@ expect_identical(configRaw$scripts$hcube[[1]]$id, configNew$scripts$hcube[[1]]$i
 expect_identical(configRaw$scripts$hcube[[1]]$command, configNew$scripts$hcube[[1]]$command)
 expect_identical(configRaw$scripts$hcube[[1]]$args, configNew$scripts$hcube[[1]]$args)
 expect_identical(configRaw$scripts$hcube[[1]]$outputFile, configNew$scripts$hcube[[1]]$outputFile)
-
-
-
 
 
 

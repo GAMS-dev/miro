@@ -355,14 +355,6 @@
   "pageTitle": "Test title",
   "defaultScenName": "defaultTest",
   "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
-  "datatable": {
-    "class": "stripe",
-    "filter": "bottom",
-    "rownames": false,
-    "options": {
-      "pageLength": 15
-    }
-  },
   "overwriteAliases": {
     "price": {
       "newAlias": "Symbol alias for price"
@@ -412,6 +404,17 @@
     }
   ],
   "extraClArgs": "--test=true",
+  "datatable": {
+    "class": "stripe",
+    "filter": "top",
+    "rownames": true,
+    "options": {
+      "pageLength": 5,
+      "buttons": ["copy", "csv", "pdf"],
+      "dom": "Bfrtip"
+    },
+    "extensions": "Buttons"
+  },
   "outputGroups": [
     {
       "name": "Dow Jones vs. Index Fund ⨠",
@@ -421,17 +424,17 @@
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
-    "highlightCol": true,
-    "highlightRow": true,
-    "columnSorting": true,
-    "manualColumnResize": true,
+    "highlightCol": false,
+    "highlightRow": false,
+    "columnSorting": false,
+    "manualColumnResize": false,
     "contextMenu": {
       "enabled": true,
-      "allowRowEdit": true,
-      "allowColEdit": true,
-      "allowReadOnly": false
+      "allowRowEdit": false,
+      "allowColEdit": false,
+      "allowReadOnly": true
     },
-    "height": 700,
+    "height": 250,
     "colWidths": 200
   }
 }
