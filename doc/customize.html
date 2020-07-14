@@ -454,6 +454,15 @@ putclose;
                                   <br>For more information about command line parameters that can be set from MIRO using widgets like sliders, dropdown menus, checkboxes etc. click <a href="./model.html#command-line">here</a>.</p>
                                   <h4 id="analysis-scripts" class="docu-general-header">Analysis scripts</h4>
                                   <p>MIRO allows you to run custom analysis scripts in both Base and Hypercube Mode. These scripts have to generate HTML output which will be displayed in the interface once the script finished. Scripts need to be placed in a folder called <span class="code">scripts_&lt;modelname&gt;</span>; this is also where MIRO executes them (important when you use relative paths in your script).</p>
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Note:</b>
+                                            <p>All software needed to run the script must be installed on the client's machine and added to the PATH, as it is not part of a MIRO application.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
                                   <h6 onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Base Mode</h6>
                                   <p class="expanded">In the Base Mode, your analysis scripts will appear as a new tab in the output data section. When the user runs your script, MIRO saves the data of the current scenario in a gdx file called <span class="code">data.gdx</span> in: <span class="code">scripts_&lt;modelname&gt;</span>. Your script can then read and analyze this data and produce output in the form of a single HTML file. This file will be loaded and displayed in MIRO once your script finished. Script results are stored in the database as part of a scenario. This means that when you load a scenario (either to compare it with other scenarios or to modify it), the script results are loaded as well.</p>
                                   <h6 id="hcube-analysis-scripts" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Hypercube Mode</h6>
@@ -476,7 +485,7 @@ putclose;
                                 <div class="section-block" id="table-settings">
                                   <h3 class="block-title">Configure tables</h3>
                                     <p>In this section you can customize the general configuration of input and output tables (global settings) 
-                                    as well as the individual settings of multi-dimensional input symbol tables.
+                                    as well as the individual settings of multi-dimensional symbol tables.
                                     <h4 class="docu-general-header">Input tables (global settings)</h4>
                                     <h6 class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Height of input tables (in px)</h6>
                                     <div class="expanded"><p>Sets the height of the table. If the table content is higher than the configured height, a scroll bar is displayed. </p>
@@ -574,29 +583,16 @@ putclose;
                                         <img class="img-fluid" style= "max-height:200pt;" src="assets/images/configuration_mode/tables_buttons.png" alt="Export buttons" />
                                     </div>
                                     </div>
-                                    <h4 id="symbol-table" class="docu-general-header">Symbol tables</h4>
-                                    <p>Example: Model <i>Pickstock</i>, parameter <i>price</i></p>
-                                    <p>By default, every cell in the table is editable and rows can be inserted and removed. 
-                                    If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter:</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_config.png" alt="Input table configuration"/>
-                                    </div>
-                                    <p>In the above configuration, we have specified for the parameter <i>Price</i> that not the entire table, but only the two columns <i>Date</i> and <i>Symbol</i> should be read-only. 
-                                    In addition, the values in the table should be displayed as a heat map to visually illustrate strong price differences. 
-                                    </p>
-                                    <h5 class="block-title">Available Options</h5>
-                                    <p>The following options are available for a symbol table:</p>
-                                    <h6 id="table-option-name" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Name of the widget tab</h6>
-                                    <div class="expanded"><p>With this option the tab name of the symbol is defined, see screenshot below. 
-                                    The default value of the element name is the explanatory text of the symbol.</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui_name.png" alt="Element name"/>
-                                    </div>
-                                    </div>
+                                    <h4 id="symbol-table" class="docu-general-header">Symbol tables (symbol specific settings)</h4>
+                                    <p>By default, every cell in an input table is editable and rows can be inserted and removed. 
+                                    If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter.</p>
+                                    <p>Also global table settings for <a href = "#output-tables" class="scrollto">output symbols</a> can be overwritten for each individual symbol. The available options are almost identical. The only additional settings are the number of decimal places to display and an option to disable graphics for the symbol.</p>
+									<p>Note that in contrast to the global settings, a symbol-specific configuration needs to be applied by clicking on the corresponding save-button!</p>
+									<p><b>Available options for an input symbol table:</b></p>
                                     <h6 id="table-option-large" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Are large amounts of data stored in the table (i.e. more than 20,000 records)?</h6>
                                     <div class="expanded"><p>This option is intended for situations in which large amounts of data are to be displayed within a table. 
                                     If this option is set, a multi-page table is displayed instead of a long, 1-page table. Only the data currently visible on the client side is loaded in this table. <br>
-                                    This type of tabular representation corresponds to that of output data.</p>
+                                    This type of tabular representation corresponds to that of output data. When this option is activated, the only other configuration items are <a href="#table-option-readonly" class="scrollto"><i>Should table be readonly?</i></a> and <a href="#table-option-pivot" class="scrollto"><i>Select a column to pivot</i></a>. </p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui_big.png" alt="Big data table"/>
                                     </div>
@@ -654,6 +650,14 @@ $offExternalInput
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui.png" alt="Heatmap"/>
                                     </div>
                                     </div>
+									<p style="margin-top:1rem;"><b>Available Options for an output symbol table:</b></p>
+                                    <h6 id="output-table-option-decimals" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Number of decimal places to display</h6>
+                                    <div class="expanded"><p>Adjusts the number of decimal places to display for table columns with numeric values.</p>
+                                    </div>
+									<h6 id="output-table-option-no-graphic" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Only display the table and no graphic for this symbol</h6>
+                                    <div class="expanded"><p>If no specific graphic is configured for an output symbol, a <a href="./charts.html#pivot-chart">pivot table</a> is always displayed alongside the table per default. With this option, you can prevent the display of any graphics, so that the symbol is only visualized as a table.</p>
+                                    </div>
+									<p>For all other options please consult the section for <a href = "#output-tables" class="scrollto">global table settings</a>.</p>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="configure-widgets">
                                   <h3 class="block-title">Configure widgets</h3>

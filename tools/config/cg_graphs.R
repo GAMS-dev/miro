@@ -6,6 +6,7 @@ miroPivotRendererEnv <- new.env(parent = emptyenv())
 newChartTool     <- character(0L)
 isInJSON         <- FALSE
 configuredWithThisTool <- FALSE
+tableSymbol      <- FALSE
 plotlyChartTools <- c("pie", "bar", "scatter", "line", "bubble", "hist")
 noTitle          <- c("leaflet", "timevis", "miropivot", "valuebox")
 modelInputData   <- vector("list", length(modelIn))
@@ -2003,7 +2004,8 @@ observeEvent(input$gams_symbols, {
     removeUI(selector = "#tool_options div", multiple = TRUE)
     hideEl(session, "#preview-outer-wrapper")
     insertUI(selector = "#tool_options", tags$div(class="config-no-hide", 
-                                                  paste0("The configuration for input scalars is done in '", lang$adminMode$uiR$widgets, "'!"))
+                                                  paste0(lang$adminMode$graphs$errMsg$scalarConfig, 
+                                                         lang$adminMode$uiR$widgets, "'!"))
              , where = "afterBegin")
     
     disableEl(session, "#saveGraph")
@@ -2026,6 +2028,8 @@ observeEvent(input$gams_symbols, {
         graphType <- "pivot"
       }else if(identical(configJSON$dataRendering[[chartId]]$outType, "miroPivot")){
         graphType <- "miropivot"
+      }else if(identical(configJSON$dataRendering[[chartId]]$outType, "datatable")){
+        graphType <- "datatable"
       }else if(!length(configJSON$dataRendering[[chartId]][["graph"]])){
         graphType <- "custom"
       }
@@ -2054,15 +2058,29 @@ observeEvent(input$gams_symbols, {
       newChartTool <<- "pivot"
     }else if(identical(graphType, "custom")){
       newChartTool <<- "custom"
+    }else if(identical(graphType, "datatable")){
+      newChartTool <<- "datatable"
     }else{
       newChartTool <<- "pie"
     }
-    if(identical(newChartTool, input$chart_tool))
+    if(identical(newChartTool, input$chart_tool)){
       rv$refreshOptions <- rv$refreshOptions + 1L
-    else
+    }else{
       updateSelectInput(session, "chart_tool", choices = setNames(c("pie", "bar", "scatter", "line", "bubble", "hist", "dygraphs", "leaflet", "timevis", "miropivot", "custom"),
                                                                   lang$adminMode$graphs$updateToolNoScalars),
                         selected = newChartTool)
+      if(identical(newChartTool, "datatable")){
+        #tableSymbol identifier needed when configuration is deleted
+        tableSymbol <<- TRUE
+        #manual refresh options since updateSelectinput will not trigger an event when selecting (not available choice) 'datatable'
+        rv$refreshOptions <- rv$refreshOptions + 1L
+        disableEl(session, "#saveGraph")
+        showEl(session, "#deleteGraph")
+        return()
+      }else{
+        tableSymbol <<- FALSE
+      }
+    }
   }
   if(tolower(activeSymbol$name) %in% tolower(names(configJSON$dataRendering))){
     showEl(session, "#deleteGraph")
@@ -2075,7 +2093,13 @@ observeEvent({
   rv$refreshOptions}, {
     req(rv$initData)
     allDataAvailable <<- FALSE
-    chartTool <- input$chart_tool
+    if(identical(newChartTool, "datatable")){
+      chartTool <- "datatable"
+      newChartTool <<- character(0L)
+    }else{
+      chartTool <- input$chart_tool
+      enableEl(session, "#saveGraph")
+    }
     #check whether symbol is already configured (in JSON file). Check for identical(newChartTool, chartTool) 
     #not sufficient since newChartTool = pie is the default for non-configured symbols
     if(isTRUE(isInJSON) && identical(newChartTool, chartTool))
@@ -2413,6 +2437,15 @@ observeEvent({
       addClassEl(session, id = "#categoryCustom1", "category-btn-active")
       insertUI(selector = "#tool_options",
                tags$div(id = "custom_options", getCustomOptions()), where = "beforeEnd")
+      allDataAvailable <<- TRUE
+    }else if(identical(chartTool, "datatable")){
+      # only show info message for datatable configuration
+      insertUI(selector = "#tool_options", 
+               tags$div(id = "datatableInfoMsg", class="config-message", 
+                        style = "display:block;",
+                        paste0(lang$adminMode$graphs$datatableOptions$infoMsg, lang$adminMode$uiR$table, "'!")),
+               where = "beforeEnd")
+      rv$graphConfig$graph$symname <- activeSymbol$name
       allDataAvailable <<- TRUE
     }else if(identical(chartTool, "valuebox")){
       showEl(session, ".category-btn-valuebox")
@@ -3630,5 +3663,11 @@ observeEvent(input$deleteGraphConfirm, {
   currentGraphConfig <<- NULL
   isInJSON <<- FALSE
   newChartTool <<- "pie"
+  if(isTRUE(tableSymbol)){
+    tableSymbol <<- FALSE
+    updateSelectInput(session, "chart_tool", selected = newChartTool)
+    if(identical(tolower(input$table_symbol), tolower(activeSymbol$name)))
+      updateCheckboxInput(session, "outputTable_noGraph", value = FALSE)
+  }
   rv$refreshOptions <- rv$refreshOptions + 1L
 })

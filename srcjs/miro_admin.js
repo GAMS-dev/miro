@@ -102,7 +102,7 @@ const arrayTypes = {
     const elements = {
       symbol_inputWidgetGroups: ['text', lang.addInputGroup.symbolWidgetgroups, name],
       group_memberWidget: ['select', lang.addInputGroup.groupMemberWidget, inputWidgets,
-        inputWidgetAliases, members, true, { create: false, openOnFocus: true, plugins: ['drag_drop'] }],
+        inputWidgetAliases, members, true, false, { create: false, openOnFocus: true, plugins: ['drag_drop'] }],
       group_sameTabWidget: ['checkbox', lang.addInputGroup.groupSameTabWidget, sameTab],
     };
     return ([elements, { elRequired: false }, 'general']);

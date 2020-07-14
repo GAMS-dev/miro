@@ -1054,7 +1054,9 @@
         "output": "输出表格",
         "symbol": "符号表格",
         "resetTable": "重启",
-        "saveTable": "保存"
+        "saveTable": "保存",
+		"inputSymbols": "输入的GAMS符号",
+        "outputSymbols": "输出的GAMS符号"
       },
       "hot":{
         "height": "输入表格的高度（以px为单位）",
@@ -1084,6 +1086,9 @@
         "pagelength":{
           "label":"每页显示信息的条目"
         },
+        "decimals":{
+          "label":"显示的小数点位数"
+        },
         "rownames":{
           "label":"显示行号？"
         },
@@ -1103,6 +1108,13 @@
           "message": "确定要重置此符号的现有配置吗？ 该操作无法撤消！",
           "cancel": "取消",
           "confirm": "确认"
+        },
+		"noGraph": "不要显示图形。 只显示表格。",					   
+        "saveJson":{
+          "warnTitle": "数据存在",
+          "warnContent": "根据配置，不应显示该符号的图形：'％s'。 该GAMS符号的图形配置已存在。 确定要覆盖此配置吗？该操作无法撤消！",
+          "cancel": "取消",
+          "overwrite": "确定覆盖"
         }
       }
     },
@@ -1120,7 +1132,7 @@
         "noWidgetConfigMsg": "当前没有为此GAMS符号配置小部件",
         "optionConfigMsg": "消息：该符号是GAMS选项：%s",
         "doubledashConfigMsg": "消息： 该符号是一个double-dash parameter：%s",
-        "tableWidget": "表格在“配置表格”中已配置完成！",
+        "tableWidget": "可以在以下部分中调整表格：'",
         "inputSymbol": "为哪个输入符号创建一个小部件？",
         "widgetGo": "GAMS option",
         "widgetDd": "double-dash parameter",
@@ -1614,6 +1626,9 @@
       },
       "miroPivotOptions":{
         "infoMsg": "请直接使用右侧的预览来配置默认视图。"
+      },
+      "datatableOptions":{
+        "infoMsg": "可以在以下部分中调整表格：'"
       },
       "pivotOptions":{
         "rows": "预先填充数据透视表的行",

@@ -19,13 +19,14 @@ renderDTable <- function(data, options, roundPrecision = 2, render = TRUE){
     isNumericCol <- vapply(data, is.numeric, logical(1L), USE.NAMES = FALSE)
     if(any(isNumericCol)){
       dt <- formatRound(dt, seq_along(data)[isNumericCol], 
-                        digits = roundPrecision)
+                        digits = if(length(options$options$decimals)) options$options$decimals else roundPrecision)
     }
     if(render)
       return(renderDT(dt))
     return(dt)
   }
   data <- roundDf(data, roundPrecision)
+  
   if(render)
     return(renderDataTable(data, options = options))
   return(datatable(data, options = options))

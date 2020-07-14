@@ -1483,6 +1483,20 @@ if(is.null(errMsg)){
       }
     }
   }
+  for(i in seq_along(modelOut)){
+    el <- names(modelOut)[i]
+    if(el %in% tolower(names(config$outputTables))){
+      configGraphsOut[[i]]$datatable <- modifyList(config$datatable, config$outputTables[[tolower(el)]])
+    }else{
+      configGraphsOut[[i]]$datatable <- config$datatable
+    }
+  }
+  invalidSymbolConfig <- match(tolower(names(config$outputTables)), names(modelOut))
+  invalidSymbolConfig <- invalidSymbolConfig[is.na(invalidSymbolConfig)]
+  if(length(invalidSymbolConfig)){
+    warning(sprintf("You specified an output table for the symbol(s): '%s'. This/these symbol(s) is/are not part of the data contract between GAMS and MIRO", 
+                    paste(invalidSymbolConfig, collapse = "','")))
+  }
   
   #sanitize file names of output attachments
   config$outputAttachments <- lapply(config$outputAttachments, function(el){
