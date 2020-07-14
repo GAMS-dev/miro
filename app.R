@@ -686,6 +686,7 @@ Note that you can remove orphaned database tables using the configuration mode (
     }, error = function(e){
       flog.error("Problems fetching database tables (for inconsistency checks).\nDetails: '%s'.", e)
       if(miroStoreDataOnly){
+        write("\n", stderr())
         write("merr:::500", stderr())
       }
       errMsg <<- paste(errMsg, sprintf("Problems fetching database tables (for inconsistency checks). Error message: '%s'.", 
@@ -703,6 +704,7 @@ Those tables are: '%s'.\nError message: '%s'.",
                    collapse = "\n")
       errMsg <<- paste(errMsg, msg, sep = "\n")
       if(miroStoreDataOnly){
+        write("\n", stderr())
         write(paste0("merr:::409:::", paste(vapply(inconsistentTables$names, 
                                                    function(el) base64_enc(charToRaw(el)), 
                                                    character(1L), USE.NAMES = FALSE), 
@@ -1014,6 +1016,7 @@ if(!is.null(errMsg)){
             flog.info("Could not remove file: '%s'.", miroDataFile)
           }
           if(miroStoreDataOnly){
+            write("\n", stderr())
             write(paste0("mprog:::", round(i/length(miroDataFiles) * 100)), 
                   stderr())
           }
@@ -1030,6 +1033,7 @@ if(!is.null(errMsg)){
       flog.error("Problems saving MIRO data to database. Error message: '%s'.", e)
       gc()
       if(miroStoreDataOnly){
+        write("\n", stderr())
         write("merr:::500", stderr())
         if(interactive())
           stop()
