@@ -1054,7 +1054,9 @@
         "output": "Ausgabetabellen",
         "symbol": "Symboltabellen",
         "resetTable": "Zurücksetzen",
-        "saveTable": "Speichern"
+        "saveTable": "Speichern",
+		"inputSymbols": "Eingabesymbole",
+        "outputSymbols": "Ausgabesymbole"
       },
       "hot":{
         "height": "Höhe der Eingabetabellen (in px)",
@@ -1084,6 +1086,9 @@
         "pagelength":{
           "label":"Anzahl der anzuzeigenden Zeilen pro Seite"
         },
+        "decimals":{
+          "label":"Anzahl der anzuzeigenden Dezimalstellen"
+        },
         "rownames":{
           "label":"Zeilennummern anzeigen?"
         },
@@ -1103,6 +1108,13 @@
           "message": "Sind Sie sicher, dass Sie die bestehende Konfiguration für dieses Symbol zurücksetzen wollen? Dies kann nicht rückgängig gemacht werden!",
           "cancel": "Abbrechen",
           "confirm": "Bestätigen"
+        },
+		"noGraph": "Zeige nur die Tabelle und keine Grafik für dieses Symbol",
+        "saveJson":{
+          "warnTitle": "Daten existieren",
+          "warnContent": "Für das Symbol '%s' soll laut Konfiguration keine Grafik angezeigt werden. Es existiert bereits eine Grafikkonfiguration für dieses Symbol. Möchten Sie diese Konfiguration überschreiben? Das kann nicht rückgängig gemacht werden!",
+          "cancel": "Abbrechen",
+          "overwrite": "Überschreiben"
         }
       }
     },
@@ -1614,6 +1626,9 @@
       },
       "miroPivotOptions":{
          "infoMsg": "Bitte benutzen Sie direkt die Vorschau auf der rechten Seite, um die Standardansicht zu konfigurieren."
+      },
+      "datatableOptions":{
+        "infoMsg": "Tabellen können angepasst werden unter '"
       },
       "pivotOptions":{
         "rows": "Zeilen der Pivot-Tabelle vorab füllen",

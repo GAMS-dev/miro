@@ -1015,6 +1015,7 @@ body_admin <- dashboardBody({
                                                             style = "width:100px;"),
                                                actionButton("saveTableWidget", lang$adminMode$tables$ui$saveTable, icon("save"), class = "save-delete-save-btn",
                                                             style = "width:100px;")),
+                                      DTOutput("outputTable_preview"),
                                       DTOutput("dt_preview"),
                                       rHandsontableOutput("hot_preview"))
                     )

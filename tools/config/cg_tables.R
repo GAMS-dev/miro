@@ -1,23 +1,27 @@
-tableSymbols <- inputSymMultiDimChoices
+tableSymbols <- setNames(list(c(inputSymMultiDimChoices), 
+                              c(outputSymMultiDimChoices)), 
+                         c(lang$adminMode$tables$ui$inputSymbols, 
+                           lang$adminMode$tables$ui$outputSymbols))
 if(length(tableSymbols)){
   updateSelectInput(session, "table_symbol", choices = tableSymbols)
   noTableSymbols <- FALSE
 }
-
+configuredTable <- FALSE
 
 data <- tibble("Column 1" = 1:10, "Column 2" = 11:20, "Column 3" = letters[1:10], "Column 4" = letters[11:20])
 attr(data, "aliases") <- c("Column 1", "Column 2", "Column 3", "Column 4")
 dtExtensions <- Set$new()
+outputTableExtensions <- Set$new()
 
 langSpecificTable <- list()
 langSpecificTable$stretch <- c("No stretch" = "none", "Stretch last column" = "last", "Stretch all columns" = "all")
 names(langSpecificTable$stretch) <- lang$adminMode$tables$hot$stretchChoices
 langSpecificTable$class <- c("display" = "display", "cell-border" = "cell-border", "compact" = "compact", 
-                               "hover" = "hover", "nowrap" = "nowrap", "order-column" = "order-column", 
-                               "row-border" = "row-border", "stripe" = "stripe")
+                             "hover" = "hover", "nowrap" = "nowrap", "order-column" = "order-column", 
+                             "row-border" = "row-border", "stripe" = "stripe")
 names(langSpecificTable$class) <- lang$adminMode$tables$dt$class$choices
 langSpecificTable$filter <- c("No column filters" = "none", "Position: bottom" = "bottom", 
-                             "Position: top" = "top")
+                              "Position: top" = "top")
 names(langSpecificTable$filter) <- lang$adminMode$tables$dt$filter$choices
 langSpecificTable$buttons <- c("copy" = "copy", "CSV" = "csv", "Excel" = "excel", "PDF" = "pdf", "print" = "print")
 names(langSpecificTable$buttons) <- lang$adminMode$tables$dt$buttons$choices
@@ -48,35 +52,25 @@ observeEvent(input$table_type, {
 })
 
 getHotOptions <- reactive({
+  input$table_type
   tagList(
     tags$div(style = "max-width:400px;",
-      numericInput("hot_height", lang$adminMode$tables$hot$height, min = 0L,
-                 value = if(length(configJSON$handsontable$height)) configJSON$handsontable$height else config$handsontable$height)),
+             numericInput("hot_height", lang$adminMode$tables$hot$height, min = 0L,
+                          value = if(length(configJSON$handsontable$height)) configJSON$handsontable$height else config$handsontable$height)),
     tags$div(class = "shiny-input-container",
-             tags$label(class = "cb-label", "for" = "hot_readonly",
-                        lang$adminMode$tables$hot$readonly),
-             tags$div(
-               tags$label(class = "checkbox-material", 
-                          checkboxInput("hot_readonly", value = if(length(configJSON$handsontable$readonly)) configJSON$handsontable$readonly 
-                                        else config$handsontable$readonly, label = NULL)
-               ))
+             checkboxInput_MIRO("hot_readonly", lang$adminMode$tables$hot$readonly, 
+                                value = if(length(configJSON$handsontable$readonly)) configJSON$handsontable$readonly 
+                                else config$handsontable$readonly)
     ),
     tags$div(class = "shiny-input-container",
-             tags$label(class = "cb-label", lang$adminMode$tables$hot$highcol),
-             tags$div(
-               tags$label(class = "checkbox-material", 
-                          checkboxInput("hot_highcol", value = if(length(configJSON$handsontable$highlightCol)) configJSON$handsontable$highlightCol 
-                                        else config$handsontable$highlightCol, label = NULL)
-               ))
+             checkboxInput_MIRO("hot_highcol", lang$adminMode$tables$hot$highcol, 
+                                value = if(length(configJSON$handsontable$highlightCol)) configJSON$handsontable$highlightCol 
+                                else config$handsontable$highlightCol)
     ),
     tags$div(class = "shiny-input-container",
-             tags$label(class = "cb-label", "for" = "hot_highrow",
-                        lang$adminMode$tables$hot$highrow),
-             tags$div(
-               tags$label(class = "checkbox-material", 
-                          checkboxInput("hot_highrow", value = if(length(configJSON$handsontable$highlightRow)) configJSON$handsontable$highlightRow 
-                                        else config$handsontable$highlightRow, label = NULL)
-               ))
+             checkboxInput_MIRO("hot_highrow", lang$adminMode$tables$hot$highrow, 
+                                value = if(length(configJSON$handsontable$highlightRow)) configJSON$handsontable$highlightRow 
+                                else config$handsontable$highlightRow)
     ),
     tags$div(style = "max-width:400px;",
              selectInput("hot_stretch", lang$adminMode$tables$hot$stretch, 
@@ -86,12 +80,8 @@ getHotOptions <- reactive({
     conditionalPanel(
       condition = "input.hot_stretch !== 'all'",
       tags$div(class = "shiny-input-container",
-               tags$label(class = "cb-label", "for" = "hot_customWidth",
-                          lang$adminMode$tables$hot$stretchCustom),
-               tags$div(
-                 tags$label(class = "checkbox-material", 
-                            checkboxInput("hot_customWidth", label = NULL, value = if(length(configJSON$handsontable$colWidths)) TRUE else FALSE)
-                 ))
+               checkboxInput_MIRO("hot_customWidth", lang$adminMode$tables$hot$stretchCustom, 
+                                  value = if(length(configJSON$handsontable$colWidths)) TRUE else FALSE)
       )),
     conditionalPanel(
       condition = "input.hot_customWidth===true && input.hot_stretch !== 'all'",
@@ -99,70 +89,40 @@ getHotOptions <- reactive({
                numericInput("hot_colwidth", lang$adminMode$tables$hot$colwidth, min = 0L, 
                             value = if(length(configJSON$handsontable$colWidths)) configJSON$handsontable$colWidths else 150L))),
     tags$div(class = "shiny-input-container",
-             tags$label(class = "cb-label", "for" = "hot_sort",
-                        lang$adminMode$tables$hot$sort),
-             tags$div(
-               tags$label(class = "checkbox-material", 
-                          checkboxInput("hot_sort", value = if(length(configJSON$handsontable$columnSorting)) configJSON$handsontable$columnSorting 
-                                        else config$handsontable$columnSorting, label = NULL)
-               ))
+             checkboxInput_MIRO("hot_sort", lang$adminMode$tables$hot$sort, 
+                                value = if(length(configJSON$handsontable$columnSorting)) configJSON$handsontable$columnSorting 
+                                else config$handsontable$columnSorting)
     ),
     tags$div(class = "shiny-input-container",
-             tags$label(class = "cb-label", "for" = "hot_resize",
-                        lang$adminMode$tables$hot$resize),
-             tags$div(
-               tags$label(class = "checkbox-material", 
-                          checkboxInput("hot_resize", value = if(length(configJSON$handsontable$manualColumnResize)) configJSON$handsontable$manualColumnResize 
-                                        else config$handsontable$manualColumnResize, label = NULL)
-               ))
+             checkboxInput_MIRO("hot_resize", lang$adminMode$tables$hot$resize, 
+                                value = if(length(configJSON$handsontable$manualColumnResize)) configJSON$handsontable$manualColumnResize 
+                                else config$handsontable$manualColumnResize)
     ),
     tags$div(class = "shiny-input-container",
-             tags$label(class = "cb-label", "for" = "hot_context_enable",
-                        lang$adminMode$tables$hot$enable),
-             tags$div(
-               tags$label(class = "checkbox-material", 
-                          checkboxInput("hot_context_enable", 
-                                        value = if(length(configJSON$handsontable$contextMenu$enabled)) configJSON$handsontable$contextMenu$enabled 
-                                        else config$handsontable$contextMenu$enabled, label = NULL)
-               ))
+             checkboxInput_MIRO("hot_context_enable", lang$adminMode$tables$hot$enable, 
+                                value = if(length(configJSON$handsontable$contextMenu$enabled)) configJSON$handsontable$contextMenu$enabled 
+                                else config$handsontable$contextMenu$enabled)
     ),
     tags$div(class = "shiny-input-container",
              style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;padding-left:40px;",
              conditionalPanel(
                condition = "input.hot_context_enable == true",
-               tags$div(tags$label(class = "cb-label", "for" = "hot_context_rowedit",
-                                   lang$adminMode$tables$hot$contextRowedit),
-                        tags$div(
-                          tags$label(class = "checkbox-material",
-                                     checkboxInput("hot_context_rowedit", 
-                                                   value = if(length(configJSON$handsontable$contextMenu$allowRowEdit)) configJSON$handsontable$contextMenu$allowRowEdit 
-                                                   else config$handsontable$contextMenu$allowRowEdit, label = NULL)
-                          ))
-               ),
-               tags$div(tags$label(class = "cb-label", "for" = "hot_context_coledit",
-                                   lang$adminMode$tables$hot$contextColedit),
-                        tags$div(
-                          tags$label(class = "checkbox-material", 
-                                     checkboxInput("hot_context_coledit", 
-                                                   value = if(length(configJSON$handsontable$contextMenu$allowColEdit)) configJSON$handsontable$contextMenu$allowColEdit 
-                                                   else config$handsontable$contextMenu$allowColEdit, label = NULL)
-                          ))
-               ),
-               tags$div(tags$label(class = "cb-label", "for" = "hot_context_readonly",
-                                   lang$adminMode$tables$hot$contextReadonly),
-                        tags$div(
-                          tags$label(class = "checkbox-material", 
-                                     checkboxInput("hot_context_readonly", 
-                                                   value = if(length(configJSON$handsontable$contextMenu$allowReadOnly)) configJSON$handsontable$contextMenu$allowReadOnly 
-                                                   else config$handsontable$contextMenu$allowReadOnly, label = NULL)
-                          ))
-               )
+               checkboxInput_MIRO("hot_context_rowedit", lang$adminMode$tables$hot$contextRowedit, 
+                                  value = if(length(configJSON$handsontable$contextMenu$allowRowEdit)) configJSON$handsontable$contextMenu$allowRowEdit 
+                                  else config$handsontable$contextMenu$allowRowEdit),
+               checkboxInput_MIRO("hot_context_coledit", lang$adminMode$tables$hot$contextColedit, 
+                                  value = if(length(configJSON$handsontable$contextMenu$allowColEdit)) configJSON$handsontable$contextMenu$allowColEdit 
+                                  else config$handsontable$contextMenu$allowColEdit),
+               checkboxInput_MIRO("hot_context_readonly", lang$adminMode$tables$hot$contextReadonly, 
+                                  value = if(length(configJSON$handsontable$contextMenu$allowReadOnly)) configJSON$handsontable$contextMenu$allowReadOnly 
+                                  else config$handsontable$contextMenu$allowReadOnly)
              )
     )
   )
 })
 
 getDtOptions <- reactive({
+  input$table_type
   tagList(
     tags$div(style = "max-width:400px;",
              selectInput("dt_class", lang$adminMode$tables$dt$class$label, 
@@ -171,40 +131,27 @@ getDtOptions <- reactive({
     tags$div(style = "max-width:400px;",
              selectInput("dt_filter", lang$adminMode$tables$dt$filter$label, 
                          choices = langSpecificTable$filter,
-                         selected = if(length(configJSON$datatable$filter)) configJSON$datatable$filter else configJSON$datatable$filter
+                         selected = if(length(configJSON$datatable$filter)) configJSON$datatable$filter else config$datatable$filter
              )),
     tags$div(style = "max-width:400px;",
              numericInput("dt_pagelength", lang$adminMode$tables$dt$pagelength$label, 
                           value = if(length(configJSON$datatable$options$pageLength)) configJSON$datatable$options$pageLength 
                           else config$datatable$options$pageLength)),
     tags$div(class = "shiny-input-container",
-             tags$label(class = "cb-label", "for" = "dt_rownames", lang$adminMode$tables$dt$rownames$label),
-             tags$div(
-               tags$label(class = "checkbox-material", 
-                          checkboxInput("dt_rownames", value = if(length(configJSON$datatable$rownames)) configJSON$datatable$rownames 
-                                        else config$datatable$rownames, label = NULL)
-               ))
+             checkboxInput_MIRO("dt_rownames", lang$adminMode$tables$dt$rownames$label, 
+                                value = if(length(configJSON$datatable$rownames)) configJSON$datatable$rownames 
+                                else config$datatable$rownames)
+             
     ),
-    tags$div(class = "shiny-input-container",
-             tags$label(class = "cb-label info-position", "for" = "dt_buttons", 
-                        tags$div(lang$adminMode$tables$dt$buttons$label, 
-                                 tags$a("", title = paste0(lang$adminMode$tables$dt$buttons$title, " - ",
-                                                           tolower(lang$adminMode$general$ui$tooltipDocs)), class="info-wrapper", href="https://gams.com/miro/customize.html#export-buttons", 
-                                        tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
-             tags$div(
-               tags$label(class = "checkbox-material", 
-                          checkboxInput("dt_buttons", value = "Buttons" %in% configJSON$datatable$extensions, label = NULL)
-               ))
-    ),
-    tags$div(class = "shiny-input-container",
-             style = "max-height:800px;max-height: 80vh;padding-right:30px;padding-left:40px;",
-             conditionalPanel(
-               condition = "input.dt_buttons == true",
-               selectInput("dt_buttons_select", 
-                           choices = langSpecificTable$buttons, 
-                           selected = configJSON$datatable$options$buttons,
-                           multiple = TRUE, label = lang$adminMode$tables$dt$buttons$select)
-             )
+    tags$div(style = "max-width:400px;",
+             selectInput("dt_buttons", 
+                         labelTooltip(label = lang$adminMode$tables$dt$buttons$select, 
+                                      tooltip = paste0(lang$adminMode$tables$dt$buttons$title, " - ",
+                                                       tolower(lang$adminMode$general$ui$tooltipDocs)),
+                                      href = "https://gams.com/miro/customize.html#export-buttons"),
+                         choices = langSpecificTable$buttons, 
+                         selected = configJSON$datatable$options$buttons,
+                         multiple = TRUE)
     )
   )
 })
@@ -214,87 +161,205 @@ observeEvent({input$table_symbol
   rv$reset_table_input}, {
     req(identical(input$table_type, "symbol"), length(input$table_symbol) > 0L, nchar(input$table_symbol) > 0L)
     currentTableSymbolName <<- input$table_symbol
-    pivotCols <- NULL
-    if(length(inputSymHeaders[[input$table_symbol]]) > 2L){
-      numericHeaders <- vapply(modelIn[[input$table_symbol]]$headers, 
-                               function(header) identical(header$type, "numeric"), 
-                               logical(1L), USE.NAMES = FALSE)
-      if(sum(numericHeaders) <= 1L){
-        pivotCols <- inputSymHeaders[[input$table_symbol]][!numericHeaders]
-      }
-    }
     rv$tableWidgetConfig <- list() 
     currentConfig <- NULL
-    if(currentTableSymbolName %in% names(configJSON$inputWidgets)){
-      currentConfig <- configJSON$inputWidgets[[currentTableSymbolName]]
-    }
-    tableAlias <- ''
-    if(length(currentConfig$alias) && nchar(currentConfig$alias)){
-      tableAlias <- currentConfig$alias
-    }else{
-      tablesymbolID <- match(isolate(input$table_symbol), tableSymbols)
-      if(!is.na(tablesymbolID)){
-        tableAlias <- names(inputSymMultiDim)[[tablesymbolID]]
-      }
-    }
-    
-    rv$tableWidgetConfig <- list(widgetType = "table",
-                                 alias = tableAlias,
-                                 readonly = isTRUE(currentConfig$readonly),
-                                 readonlyCols = currentConfig$readonlyCols,
-                                 hideIndexCol = isTRUE(currentConfig$hideIndexCol),
-                                 heatmap = isTRUE(currentConfig$heatmap),
-                                 bigData = isTRUE(currentConfig$bigData))
-    if(length(currentConfig$pivotCols)){
-      rv$tableWidgetConfig$pivotCols <- currentConfig$pivotCols
-    }
     removeUI(selector = "#table_wrapper .shiny-input-container", multiple = TRUE)
-    insertUI(selector = "#table_wrapper",
-             tagList(
-               tags$div(class="option-wrapper",
-                        textInput("table_alias", lang$adminMode$widgets$ui$alias, value = rv$tableWidgetConfig$alias)),
-               checkboxInput_MIRO("table_bigdata", lang$adminMode$widgets$table$bigData, value = isTRUE(rv$tableWidgetConfig$bigData)),
-               checkboxInput_MIRO("table_readonly", lang$adminMode$widgets$table$readonly, value = rv$tableWidgetConfig$readonly),
-               if(length(pivotCols)){
-                 tags$div(class="option-wrapper",
-                          selectInput("table_pivotCols", lang$adminMode$widgets$table$pivotCols, 
-                                      choices = c(`_` = "_", pivotCols), 
-                                      selected = if(length(rv$tableWidgetConfig$pivotCols)) rv$tableWidgetConfig$pivotCols else "_"))
-               },
-               conditionalPanel(condition = "input.table_bigdata===false && input.table_pivotCols === '_'",
-                                tags$div(class="option-wrapper",
-                                         selectInput("table_readonlyCols", lang$adminMode$widgets$table$readonlyCols, 
-                                                     choices = inputSymHeaders[[input$table_symbol]], 
-                                                     selected = rv$tableWidgetConfig$readonlyCols, multiple = TRUE))
-               ),
-               conditionalPanel(condition = "input.table_bigdata===false",
-                                tags$div(class="option-wrapper",
-                                         checkboxInput_MIRO("table_hideIndexCol", 
-                                                            lang$adminMode$widgets$table$hideIndexCol, 
-                                                            value = rv$tableWidgetConfig$hideIndexCol),
-                                         checkboxInput_MIRO("table_heatmap", 
-                                                            lang$adminMode$widgets$table$heatmap, 
-                                                            value = rv$tableWidgetConfig$heatmap))
-               )), 
-             where = "beforeEnd")
-    if(isTRUE(rv$tableWidgetConfig$bigData)){
-      #hideEl(session, "#hot_preview")
-    }else{
-      showEl(session, "#hot_preview")
+    
+    if(currentTableSymbolName %in% inputSymMultiDimChoices){
+      if(currentTableSymbolName %in% names(configJSON$inputWidgets)){
+        currentConfig <- configJSON$inputWidgets[[currentTableSymbolName]]
+        configuredTable <<- TRUE
+      }else{
+        configuredTable <<- FALSE
+      }
+      pivotCols <<- NULL
+      if(length(inputSymHeaders[[input$table_symbol]]) > 2L){
+        numericHeaders <- vapply(modelIn[[input$table_symbol]]$headers, 
+                                 function(header) identical(header$type, "numeric"), 
+                                 logical(1L), USE.NAMES = FALSE)
+        if(sum(numericHeaders) <= 1L){
+          pivotCols <<- inputSymHeaders[[input$table_symbol]][!numericHeaders]
+        }
+      }
+      
+      # tableAlias <- ''
+      # if(length(currentConfig$alias) && nchar(currentConfig$alias)){
+      #   tableAlias <- currentConfig$alias
+      # }else{
+      #   #TODO: check
+      #   tablesymbolID <- match(currentTableSymbolName, tableSymbols[[names(tableSymbols)[[1]]]])
+      #   
+      #   if(!is.na(tablesymbolID)){
+      #     tableAlias <- names(inputSymMultiDim)[[tablesymbolID]]
+      #   }
+      # }
+      rv$tableWidgetConfig$widgetType       <<- "table"
+      if(isTRUE(currentConfig$bigData)){
+        rv$tableWidgetConfig$bigData          <<- checkLength(configuredTable, currentConfig$bigData, FALSE)
+        rv$tableWidgetConfig$readonly         <<- checkLength(configuredTable, currentConfig[["readonly"]], FALSE)
+        rv$tableWidgetConfig$pivotCols        <<- checkLength(configuredTable, currentConfig$pivotCols, "_")
+      }else{
+        # rv$tableWidgetConfig$alias            <<- tableAlias,
+        rv$tableWidgetConfig$bigData          <<- checkLength(configuredTable, currentConfig$bigData, FALSE)
+        rv$tableWidgetConfig$readonly         <<- checkLength(configuredTable, currentConfig[["readonly"]], FALSE)
+        rv$tableWidgetConfig$readonlyCols     <<- checkLength(configuredTable, currentConfig[["readonlyCols"]], NULL)
+        rv$tableWidgetConfig$hideIndexCol     <<- checkLength(configuredTable, currentConfig$hideIndexCol, FALSE)
+        rv$tableWidgetConfig$heatmap          <<- checkLength(configuredTable, currentConfig$heatmap, FALSE)
+        rv$tableWidgetConfig$pivotCols        <<- checkLength(configuredTable, currentConfig$pivotCols, "_")
+      }
+      
+      insertUI(selector = "#table_wrapper", getSymbolHotOptions(), where = "beforeEnd")
+      hideEl(session, "#outputTable_preview")
+      if(isTRUE(rv$tableWidgetConfig$bigData)){
+        #hideEl(session, "#hot_preview")
+      }else{
+        showEl(session, "#hot_preview")
+      }
+      if(!identical(rv$tableWidgetConfig$pivotCols, "_") && 
+         (isTRUE(rv$tableWidgetConfig$readonly) || isTRUE(rv$tableWidgetConfig$heatmap))){
+        showEl(session, "#pivotColsRestriction")
+      }else{
+        hideEl(session, "#pivotColsRestriction")
+      }
+    }else if(currentTableSymbolName %in% outputSymMultiDimChoices){
+      if(currentTableSymbolName %in% names(configJSON$outputTables)){
+        currentConfig <- configJSON$outputTables[[currentTableSymbolName]]
+        configuredTable <<- TRUE
+      }else{
+        configuredTable <<- FALSE
+      }
+      rv$tableWidgetConfig$class              <<- checkLength(configuredTable, currentConfig$class,              "display")
+      rv$tableWidgetConfig$filter             <<- checkLength(configuredTable, currentConfig$filter,             "bottom")
+      rv$tableWidgetConfig$options$pageLength <<- checkLength(configuredTable, currentConfig$options$pageLength, 15L)
+      rv$tableWidgetConfig$options$decimals   <<- checkLength(configuredTable, currentConfig$options$decimals,   3L)
+      rv$tableWidgetConfig$rownames           <<- checkLength(configuredTable, currentConfig$rownames,           FALSE)
+      rv$tableWidgetConfig$options$buttons    <<- checkLength(configuredTable, currentConfig$options$buttons,    NULL)
+      outputTableExtensions <<- Set$new(if(length(rv$tableWidgetConfig$options$buttons)) "Buttons")
+      insertUI(selector = "#table_wrapper", getOutputTableOptions(), where = "beforeEnd")
+      hideEl(session, "#hot_preview")
+      hideEl(session, "#pivotColsRestriction")
+      showEl(session, "#outputTable_preview")
     }
+    if(length(currentConfig))
+      enableEl(session, "#deleteTableWidget")
+    else
+      disableEl(session, "#deleteTableWidget")
+  }
+)
+
+getSymbolHotOptions <- reactive({
+  tagList(
+    # tags$div(class="option-wrapper",
+    #          textInput("table_alias", lang$adminMode$widgets$ui$alias, value = rv$tableWidgetConfig$alias)),
+    checkboxInput_MIRO("table_bigdata", lang$adminMode$widgets$table$bigData, value = isTRUE(rv$tableWidgetConfig$bigData)),
+    checkboxInput_MIRO("table_readonly", lang$adminMode$widgets$table$readonly, value = rv$tableWidgetConfig$readonly),
+    if(length(pivotCols)){
+      tags$div(class="option-wrapper",
+               selectInput("table_pivotCols", lang$adminMode$widgets$table$pivotCols, 
+                           choices = c(`_` = "_", pivotCols), 
+                           selected = if(length(rv$tableWidgetConfig$pivotCols)) rv$tableWidgetConfig$pivotCols else "_"))
+    },
+    conditionalPanel(condition = "input.table_bigdata===false && input.table_pivotCols === '_'",
+                     tags$div(class="option-wrapper",
+                              selectInput("table_readonlyCols", lang$adminMode$widgets$table$readonlyCols, 
+                                          choices = inputSymHeaders[[input$table_symbol]], 
+                                          selected = rv$tableWidgetConfig$readonlyCols, multiple = TRUE))
+    ),
+    conditionalPanel(condition = "input.table_bigdata===false",
+                     tags$div(class="option-wrapper",
+                              checkboxInput_MIRO("table_hideIndexCol", 
+                                                 lang$adminMode$widgets$table$hideIndexCol, 
+                                                 value = rv$tableWidgetConfig$hideIndexCol),
+                              checkboxInput_MIRO("table_heatmap", 
+                                                 lang$adminMode$widgets$table$heatmap, 
+                                                 value = rv$tableWidgetConfig$heatmap))
+    ))
+})
+
+getOutputTableOptions <- reactive({
+  tagList(
+    tags$div(class="shiny-input-container option-wrapper", style = "max-width:400px;",
+             selectInput("outputTable_class", lang$adminMode$tables$dt$class$label, 
+                         choices = langSpecificTable$class, 
+                         selected = rv$tableWidgetConfig$class),
+             selectInput("outputTable_filter", lang$adminMode$tables$dt$filter$label, 
+                         choices = langSpecificTable$filter,
+                         selected = rv$tableWidgetConfig$filter),
+             numericInput("outputTable_pagelength", lang$adminMode$tables$dt$pagelength$label, 
+                          value = rv$tableWidgetConfig$options$pageLength),
+             numericInput("outputTable_decimals", lang$adminMode$tables$dt$decimals$label, 
+                          value = rv$tableWidgetConfig$options$decimals),
+             checkboxInput_MIRO("outputTable_rownames", lang$adminMode$tables$dt$rownames$label,
+                                value = rv$tableWidgetConfig$rownames),
+             selectInput("outputTable_buttons", 
+                         labelTooltip(label = lang$adminMode$tables$dt$buttons$select, 
+                                      tooltip = paste0(lang$adminMode$tables$dt$buttons$title, " - ",
+                                                       tolower(lang$adminMode$general$ui$tooltipDocs)),
+                                      href = "https://gams.com/miro/customize.html#export-buttons"),
+                         choices = langSpecificTable$buttons, 
+                         selected = rv$tableWidgetConfig$options$buttons,
+                         multiple = TRUE),
+             checkboxInput_MIRO("outputTable_noGraph", lang$adminMode$tables$symbol$noGraph,
+                                value = if(tolower(currentTableSymbolName) %in% tolower(names(configJSON$dataRendering)) &&
+                                           identical(configJSON$dataRendering[[currentTableSymbolName]]$outType, "datatable")) TRUE
+                                else FALSE)
+    )
+  )
+})
+
+observeEvent(input$outputTable_class, {
+  rv$tableWidgetConfig$class <<- input$outputTable_class
+})
+observeEvent(input$outputTable_filter, {
+  rv$tableWidgetConfig$filter <<- input$outputTable_filter
+})
+observeEvent(input$outputTable_pagelength, {
+  if(is.na(input$outputTable_pagelength)){
+    rv$tableWidgetConfig$options$pageLength <<- NULL
+    return()
+  }
+  rv$tableWidgetConfig$options$pageLength <<- input$outputTable_pagelength
+})
+observeEvent(input$outputTable_decimals, {
+  if(is.na(input$outputTable_decimals)){
+    rv$tableWidgetConfig$options$decimals <<- NULL
+    return()
+  }
+  rv$tableWidgetConfig$options$decimals <<- input$outputTable_decimals
+})
+observeEvent(input$outputTable_rownames, {
+  rv$tableWidgetConfig$rownames <<- input$outputTable_rownames
+})
+observeEvent(input$outputTable_buttons, ignoreNULL = FALSE, {
+  if(length(input$outputTable_buttons)){
+    rv$tableWidgetConfig$options$buttons <<- input$outputTable_buttons
+    outputTableExtensions$push("Buttons")
+    rv$tableWidgetConfig$options$dom <<- 'Bfrtip'
+  }else{
+    outputTableExtensions$delete("Buttons")
+    rv$tableWidgetConfig$options$dom <<- NULL
+    rv$tableWidgetConfig$options$buttons <<- NULL
+  }
+  rv$tableWidgetConfig$extensions <<- outputTableExtensions$get()
 })
 
 createTableData <- function(symbol, pivotCol){
-  headersRaw <- inputSymHeaders[[symbol]]
-  headersTmp <- names(headersRaw)
+  if(symbol %in% inputSymMultiDimChoices){
+    headersRaw <- inputSymHeaders[[symbol]]
+    headersTmp <- names(headersRaw)
+  }
+  if(symbol %in% outputSymMultiDimChoices){
+    headersRaw <- outputSymHeaders[[symbol]]
+    headersTmp <- headersRaw
+  }  
   data        <- data.frame(matrix(c(replicate(length(headersTmp) - 1L,
                                                letters[1:10]), 1:10),
                                    10))
+  data[length(data)] <- as.integer(data[[length(data)]])
   isPivotTable <- FALSE
   if(length(pivotCol) && pivotCol != "_"){
     isPivotTable <- TRUE
     pivotIdx <- match(pivotCol, inputSymHeaders[[input$table_symbol]])[[1L]]
-    data[length(data)] <- as.integer(data[[length(data)]])
     data <- pivot_wider(data, names_from = !!pivotIdx, 
                         values_from = !!length(data))
     attrTmp <- headersTmp[-c(pivotIdx, length(headersTmp))]
@@ -315,19 +380,20 @@ output$hot_preview <- renderRHandsontable({
   
   headersTmp <- data$headersRaw
   headersUnnamed <- unname(headersTmp)
+  colHeaders <- data$headers
   pivotTable <- data$isPivotTable
   data <- data$data
+  colsReadonly <- match(input$table_readonlyCols, headersUnnamed)
+  colsReadonly <- colsReadonly[!is.na(colsReadonly)]
   
   ht <- rhandsontable(data = data,
                       rowHeaders = if(isTRUE(input$table_hideIndexCol)) NULL else rownames(data),
-                      colHeaders = headersUnnamed,
+                      colHeaders = colHeaders,
                       readOnly = input$table_readonly,
-                      digits = NA)
-  if(!pivotTable && length(input$table_readonlyCols) && 
-     input$table_readonlyCols %in% headersTmp){
-    ht <- hot_col(ht, headersUnnamed[match(input$table_readonlyCols, 
-                                           headersTmp)], 
-                  readOnly = TRUE)
+                      digits = NA,
+                      naAsNull = pivotTable)
+  if(!pivotTable && length(colsReadonly)){
+    ht <- hot_col(ht, colsReadonly, readOnly = TRUE)
   }
   if(isTRUE(input$table_heatmap)){
     return(hot_heatmap(ht))
@@ -338,7 +404,7 @@ output$hot_preview <- renderRHandsontable({
 
 output$dt_preview <- renderDT({
   req(input$table_symbol %in% names(inputSymHeaders))
-
+  
   data <- createTableData(input$table_symbol, input$table_pivotCols)
   
   headersTmp <- unname(data$headers)
@@ -346,12 +412,32 @@ output$dt_preview <- renderDT({
   
   dtOptions <- list(editable = !isTRUE(input$table_readonly),
                     colnames = headersTmp)
+  if(!is.null(configJSON$datatable)){
+    dtOptions <- modifyList(configJSON$datatable,
+                            dtOptions)
+  }
   
-  if(!isTRUE(rv$tableWidgetConfig$bigData)){
+  if(!isTRUE(currentTableSymbolName %in% names(configJSON$outputTables)) && !isTRUE(rv$tableWidgetConfig$bigData)){
+    hideEl(session, "#outputTable_preview")
     showEl(session, "#hot_preview")
     return()
   }
   #hideEl(session, "#hot_preview")
+  return(renderDTable(data, dtOptions, render = FALSE))
+})
+
+output$outputTable_preview <- renderDT({
+  req(input$table_symbol %in% outputSymMultiDimChoices)
+  
+  data <- createTableData(input$table_symbol, "_")
+  
+  headersTmp <- unname(data$headers)
+  data <- data$data
+  hideEl(session, "#hot_preview")
+  showEl(session, "#outputTable_preview")
+  dtOptions <- rv$tableWidgetConfig
+  dtOptions$editable <- FALSE
+  dtOptions$colnames <- headersTmp
   return(renderDTable(data, dtOptions, render = FALSE))
 })
 
@@ -433,44 +519,17 @@ observeEvent(input$dt_pagelength, {
   else
     rv$tableConfig$datatable$options$pageLength <<- NULL
 })
-observeEvent(input$dt_buttons, {
-  if(identical(isolate({input$dt_buttons}), TRUE)){
-    isolate({
-      rv$tableConfig$datatable$options$buttons <<- input$dt_buttons_select
-    })
-    if(length(input$dt_buttons_select)){
-      dtExtensions$push("Buttons")
-      rv$tableConfig$datatable$options$dom <<- 'Bfrtip'
-    }
+observeEvent(input$dt_buttons, ignoreNULL = FALSE, {
+  if(length(input$dt_buttons)){
+    rv$tableConfig$datatable$options$buttons <<- input$dt_buttons
+    dtExtensions$push("Buttons")
+    rv$tableConfig$datatable$options$dom <<- 'Bfrtip'
   }else{
     dtExtensions$delete("Buttons")
     rv$tableConfig$datatable$options$dom <<- NULL
     rv$tableConfig$datatable$options$buttons <<- NULL
-    newExtensionsVector <- rv$tableConfig$datatable$extensions[!rv$tableConfig$datatable$extensions %in% "Buttons"]
-    if(!length(newExtensionsVector))
-      newExtensionsVector <- NULL
-    rv$tableConfig$datatable$extensions <<- newExtensionsVector
   }
   rv$tableConfig$datatable$extensions <<- dtExtensions$get()
-})
-observe({
-  input$dt_buttons_select
-  isolate({
-    rv$tableConfig$datatable$options$buttons <<- input$dt_buttons_select
-    if(length(rv$tableConfig$datatable$options$buttons) > 0){
-      rv$tableConfig$datatable$options$dom <<- 'Bfrtip'
-      dtExtensions$push("Buttons")
-    }else{
-      rv$tableConfig$datatable$options$dom <<- NULL
-      rv$tableConfig$datatable$options$buttons <<- NULL
-      dtExtensions$delete("Buttons")
-      newExtensionsVector <- rv$tableConfig$datatable$extensions[!rv$tableConfig$datatable$extensions %in% "Buttons"]
-      if(!length(newExtensionsVector))
-        newExtensionsVector <- NULL
-      rv$tableConfig$datatable$extensions <<- newExtensionsVector
-    }
-    rv$tableConfig$datatable$extensions <<- dtExtensions$get()
-  })
 })
 
 observe({
@@ -506,7 +565,6 @@ observe({
       })
     }else if(isolate(rv$tableConfig$tableType) == "dt"){
       dtOptions <- rv$tableConfig$datatable
-
       callModule(renderData, "table_preview_dt", type = "datatable", 
                  data = data, dtOptions = dtOptions,
                  roundPrecision = 2, modelDir = modelDir)
@@ -521,19 +579,30 @@ observe({
 }, priority = -1000)
 
 
-observeEvent(input$table_alias, {
-  if(length(input$table_alias))
-    rv$tableWidgetConfig$alias <<- input$table_alias
-  else
-    rv$tableWidgetConfig$alias <<- NULL
-})
+# observeEvent(input$table_alias, {
+#   if(length(input$table_alias))
+#     rv$tableWidgetConfig$alias <<- input$table_alias
+#   else
+#     rv$tableWidgetConfig$alias <<- NULL
+# })
 observeEvent(input$table_bigdata, {
   if(input$table_bigdata == TRUE){
-    rv$tableWidgetConfig$bigData <<- TRUE
-    rv$tableWidgetConfig$heatmap <<- FALSE
+    rv$tableWidgetConfig <<- list(
+      widgetType   = "table",
+      bigData      = input$table_bigdata,
+      readonly     = input$table_readonly,
+      pivotCols    = input$table_pivotCols
+    )
   }else{
-    rv$tableWidgetConfig$bigData <<- FALSE
-    rv$tableWidgetConfig$heatmap <<- input$table_heatmap
+    rv$tableWidgetConfig <<- list(
+      widgetType   = "table",
+      bigData      = input$table_bigdata,
+      readonly     = input$table_readonly,
+      pivotCols    = input$table_pivotCols,
+      readonlyCols = input$table_readonlyCols,
+      hideIndexCol = input$table_hideIndexCol,
+      heatmap      = input$table_heatmap
+    )
   }
 })
 observeEvent(input$table_hideIndexCol, {
@@ -545,21 +614,25 @@ observeEvent(input$table_readonly, {
 observeEvent(input$table_readonlyCols, ignoreNULL = FALSE, {
   if(!length(input$table_readonlyCols)){
     configJSON$tableWidgetConfig$readonlyCols <<- NULL
+    return()
   }
   rv$tableWidgetConfig$readonlyCols <<- input$table_readonlyCols
 })
 observeEvent(input$table_pivotCols, {
   rv$tableWidgetConfig$pivotCols <<- input$table_pivotCols
+  if(!identical(input$table_pivotCols, "_")){
+    rv$tableWidgetConfig$readonlyCols <<- NULL
+  }else{
+    rv$tableWidgetConfig$readonlyCols <<- input$table_readonlyCols
+  }
 })
 observeEvent(input$table_heatmap, {
   rv$tableWidgetConfig$heatmap <<- input$table_heatmap
 })
 observeEvent(c(input$table_pivotCols, input$table_readonly, input$table_heatmap), {
-  if(!identical(input$table_pivotCols, "_")){
-    if(isTRUE(input$table_readonly) || isTRUE(input$table_heatmap))
-      showEl(session, "#pivotColsRestriction")
-    else
-      hideEl(session, "#pivotColsRestriction")
+  if(!identical(input$table_pivotCols, "_") && 
+     (isTRUE(input$table_readonly) || isTRUE(input$table_heatmap))){
+    showEl(session, "#pivotColsRestriction")
   }else{
     hideEl(session, "#pivotColsRestriction")
   }
@@ -567,26 +640,23 @@ observeEvent(c(input$table_pivotCols, input$table_readonly, input$table_heatmap)
 
 
 validateTableConfig <- function(configJSON){
-  if(!length(configJSON$alias) || identical(nchar(trimws(configJSON$alias)), 0L)){
-    return(lang$adminMode$widgets$validate[["val1"]])
-  }
-  if(identical(grepl("\\s", currentTableSymbolName), TRUE)){
-    return(lang$adminMode$widgets$validate$val39)
-  }
-  
-  if(!is.logical(configJSON$readonly)){
-    return(lang$adminMode$widgets$validate$val32)
-  }
-  if(!is.logical(configJSON$heatmap)){
-    return(lang$adminMode$widgets$validate$val33)
-  }
-  if(any(!configJSON$readonlyCols %in% inputSymHeaders[[currentTableSymbolName]])){
-    return(lang$adminMode$widgets$validate$val34)
+  if(currentTableSymbolName %in% inputSymMultiDimChoices){
+    # if(!length(configJSON$alias) || identical(nchar(trimws(configJSON$alias)), 0L)){
+    #   return(lang$adminMode$widgets$validate[["val1"]])
+    # }
+    if(identical(grepl("\\s", currentTableSymbolName), TRUE)){
+      return(lang$adminMode$widgets$validate$val39)
+    }
+    if(any(!configJSON$readonlyCols %in% inputSymHeaders[[currentTableSymbolName]])){
+      return(lang$adminMode$widgets$validate$val34)
+    }
+  }else if(currentTableSymbolName %in% outputSymMultiDimChoices){
+    
   }
   return("")
 }
-  
-  
+
+
 #  =====================================================================
 #          SAVE JSON (global settings are saved automatically)
 #  =====================================================================
@@ -617,27 +687,49 @@ observeEvent(input$saveTableWidget, {
     showHideEl(session, "#tableValidationErr", 5000L, errMsg)
     return()
   }
+  if(isTRUE(input$outputTable_noGraph) && tolower(currentTableSymbolName) %in% tolower(names(configJSON$dataRendering)) &&
+     !identical(configJSON$dataRendering[[currentTableSymbolName]]$outType, "datatable")){
+    showModal(modalDialog(title = lang$adminMode$tables$symbol$saveJson$warnTitle, sprintf(lang$adminMode$tables$symbol$saveJson$warnContent, currentTableSymbolName), 
+                          footer = tagList(modalButton(lang$adminMode$tables$symbol$saveJson$cancel), 
+                                           actionButton("saveTableConfirm", lang$adminMode$tables$symbol$saveJson$overwrite))))
+    return()
+  }
   rv$saveTableConfirm <- rv$saveTableConfirm + 1L
 })
 observeEvent(virtualActionButton(input$saveTableConfirm, rv$saveTableConfirm), {
   req(length(currentTableSymbolName) > 0L, nchar(currentTableSymbolName) > 0L)
-
-  configJSON$inputWidgets[[currentTableSymbolName]] <<- rv$tableWidgetConfig
-  if(!length(configJSON$inputWidgets[[currentTableSymbolName]]$readonlyCols)){
-    configJSON$inputWidgets[[currentTableSymbolName]]$readonlyCols <<- NULL
-  }
-  if(identical(configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols, "_")){
-    configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols <<- NULL
-  }
   
-  currentTableSymbolID <- match(currentTableSymbolName, tableSymbols)
-  if(!is.na(currentTableSymbolID) && 
-     !identical(names(tableSymbols)[[currentTableSymbolID]], paste(currentTableSymbolName, ": ",
-                                                                   rv$tableWidgetConfig$alias))){
-    names(tableSymbols)[[currentTableSymbolID]] <<- paste0(currentTableSymbolName, ": ", 
-                                                           rv$tableWidgetConfig$alias)
-    updateSelectInput(session, "table_symbol", choices = tableSymbols)
+  if(currentTableSymbolName %in% inputSymMultiDimChoices){
+    configJSON$inputWidgets[[currentTableSymbolName]] <<- rv$tableWidgetConfig
+    if(!length(configJSON$inputWidgets[[currentTableSymbolName]]$readonlyCols)){
+      configJSON$inputWidgets[[currentTableSymbolName]]$readonlyCols <<- NULL
+    }
+    if(identical(configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols, "_")){
+      configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols <<- NULL
+    }
+  }else if(currentTableSymbolName %in% outputSymMultiDimChoices){
+    configJSON$outputTables[[currentTableSymbolName]] <<- rv$tableWidgetConfig
+    if(isTRUE(input$outputTable_noGraph)){
+      configJSON$dataRendering[[currentTableSymbolName]] <<- rv$tableWidgetConfig
+      configJSON$dataRendering[[currentTableSymbolName]]$outType <<- "datatable"
+      if(identical(tolower(input$table_symbol), tolower(activeSymbol$name))){
+        newChartTool <<- "datatable"
+        updateSelectInput(session, "chart_tool", selected = newChartTool)
+          tableSymbol <<- TRUE
+          rv$refreshOptions <- rv$refreshOptions + 1L
+          disableEl(session, "#saveGraph")
+          showEl(session, "#deleteGraph")
+      }
+    }
   }
+  # currentTableSymbolID <- match(currentTableSymbolName, tableSymbols)
+  # if(!is.na(currentTableSymbolID) && 
+  #    !identical(names(tableSymbols)[[currentTableSymbolID]], paste(currentTableSymbolName, ": ",
+  #                                                                  rv$tableWidgetConfig$alias))){
+  #   names(tableSymbols)[[currentTableSymbolID]] <<- paste0(currentTableSymbolName, ": ", 
+  #                                                          rv$tableWidgetConfig$alias)
+  #   updateSelectInput(session, "table_symbol", choices = tableSymbols)
+  # }
   write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
   
   if(noTableSymbols){
@@ -646,6 +738,7 @@ observeEvent(virtualActionButton(input$saveTableConfirm, rv$saveTableConfirm), {
   }
   removeModal()
   showHideEl(session, "#tableWidgetUpdateSuccess", 4000L)
+  enableEl(session, "#deleteTableWidget")
 })
 observeEvent(input$deleteTableWidget, {
   req(length(input$table_symbol) > 0L, nchar(input$table_symbol) > 0L)
@@ -657,8 +750,15 @@ observeEvent(input$deleteTableWidget, {
 observeEvent(input$deleteTableWidgetConfirm, {
   req(length(currentTableSymbolName) > 0L, nchar(currentTableSymbolName) > 0L)
   
-  configJSON$inputWidgets[[currentTableSymbolName]] <<- NULL
+  if(currentTableSymbolName %in% inputSymMultiDimChoices){
+    configJSON$inputWidgets[[currentTableSymbolName]] <<- NULL
+  }else if(currentTableSymbolName %in% outputSymMultiDimChoices){
+    configJSON$outputTables[[currentTableSymbolName]] <<- NULL
+    if(!length(configJSON$outputTables))
+      configJSON$outputTables <<- NULL
+  }
   write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
+  disableEl(session, "#deleteTableWidget")
   removeModal()
   showHideEl(session, "#tableWidgetUpdateSuccess", 4000L)
   hideEl(session, "#noTableSymbolMsg")
@@ -669,8 +769,13 @@ observeEvent(input$deleteTableWidgetConfirm, {
     }
     currentTableSymbolName <<- character(0L)
   }else{
-    currentTableSymbolID <- match(currentTableSymbolName, tableSymbols)
-    names(tableSymbols)[[currentTableSymbolID]] <<- inputSymMultiDimChoices[[currentTableSymbolID]]
+    if(currentTableSymbolName %in% inputSymMultiDimChoices){
+      currentTableSymbolID <- match(currentTableSymbolName, tableSymbols[[names(tableSymbols)[[1]]]])
+      names(tableSymbols)[[currentTableSymbolID]] <<- inputSymMultiDimChoices[[currentTableSymbolID]]
+    }else if(currentTableSymbolName %in% outputSymMultiDimChoices){
+      currentTableSymbolID <- match(currentTableSymbolName, tableSymbols[[names(tableSymbols)[[2]]]])
+      names(tableSymbols)[[currentTableSymbolID]] <<- outputSymMultiDimChoices[[currentTableSymbolID]]
+    }
     updateSelectInput(session, "table_symbol", choices = tableSymbols)
     rv$reset_table_input <- rv$reset_table_input + 1L
   }

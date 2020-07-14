@@ -44,7 +44,13 @@ checkNotFALSE <- function(configuredWithThisTool = FALSE, el = NULL){
   else
     return(TRUE)
 }
-
+labelTooltip <- function(label = NULL, tooltip = NULL, href = NULL){
+  return(
+    tags$div(label, 
+             tags$a("", title = tooltip, class="info-wrapper", href = href, 
+                    tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))
+  )
+}
 optionSection <- function(title, ..., collapsed = FALSE){
   tags$div(class = "shiny-input-container", style = "min-height:30px;",
            tags$h4(class = "box-title option-section-header", title, if(isFALSE(collapsed)) icon("minus") else icon("plus"), 
