@@ -117,7 +117,7 @@ class InputArray {
             }
 
             arrayContent += InputArray.createSelectInput(k, elID, v[1],
-              choices, aliases, selected, v[5], newEl, v[6]);
+              choices, aliases, selected, v[5], v[6], v[7]);
             break;
           case 'selectDep':
             [,,, [selected]] = v;
@@ -406,7 +406,6 @@ class InputArray {
           optionsHTML += `<option value="${choices[i]}"${$.inArray(choices[i], selected) !== -1 ? ' selected' : ''
           }>${aliases[i++]}</option>\n`);
       }
-
       return (`<div class="config-array-err" id="${id}_err" style="display:none;"></div>\
 <div class="form-group">\n\
 <label class="control-label" for="${id}">${label}</label>\n\
@@ -479,13 +478,13 @@ ${optionsJSON !== '{}' ? `<script type="application/json" data-for="${id}">${opt
     static createSelectDepInput(arrayID, elID, rAddID, altEl, label, choices, aliases = choices,
       selected = '', isChecked = false, newEl = true) {
       const firstInput = InputArray.createSelectInput(arrayID, elID, label,
-        choices, aliases, selected, undefined, newEl);
+        choices, aliases, selected);
       let secondInput;
 
       switch (altEl[1]) {
         case 'select':
           secondInput = InputArray.createSelectInput(`${arrayID}_alt`, elID, altEl[2],
-            altEl[3], altEl[4], altEl[5], altEl[6], newEl);
+            altEl[3], altEl[4], altEl[5], altEl[6], altEl[7]);
           break;
         case 'text':
           secondInput = InputArray.createTextInput(`${arrayID}_alt`, elID, altEl[2],
