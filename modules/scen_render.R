@@ -68,14 +68,14 @@ lapply(scenTableNamesToDisplay, function(sheetName){
                type = tabData$graphConfig$outType, 
                data = if(length(rendererData)) rendererData else dataToRender, 
                configData = scalarData[[scenIdLong]], 
-               dtOptions = config$datatable, graphOptions = tabData$graphConfig$graph, 
+               dtOptions = tabData$graphConfig$datatable, graphOptions = tabData$graphConfig$graph, 
                pivotOptions = tabData$graphConfig$pivottable, 
                customOptions = tabData$graphConfig$options,
                roundPrecision = roundPrecision, modelDir = modelDir,
                rendererEnv = rendererEnv[[scenIdLong]])
     callModule(renderData, paste0("table_tab_", scenCounter, "_", tabData$tabId), type = "datatable", 
                data = dataToRender, 
-               dtOptions = config$datatable, roundPrecision = roundPrecision)
+               dtOptions = tabData$graphConfig$datatable, roundPrecision = roundPrecision)
   }, error = function(e) {
     flog.error("Problem rendering graphs for dataset: '%s'. Error message: %s.", sheetName, e)
     eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderGraph$desc, sheetName), sep = "\n")
