@@ -1119,7 +1119,7 @@ setDbConfig <- function(){
     list(envVar = 'MIRO_DB_USERNAME', keyName = 'username', desc = 'database username'),
     list(envVar = 'MIRO_DB_PASSWORD', keyName = 'password', desc = 'database password'),
     list(envVar = 'MIRO_DB_NAME', keyName = 'name', desc = 'database name'),
-    list(envVar = 'MIRO_DB_HOST', keyName = 'host', desc = 'database host'),
+    list(envVar = 'MIRO_DB_HOST', keyName = 'host', desc = 'database host', default = 'localhost'),
     list(envVar = 'MIRO_DB_PORT', keyName = 'port', desc = 'database port', numeric = TRUE, default = 5432))
   
   for(i in seq_along(envNameDbDataMap)){
