@@ -43,14 +43,12 @@ getCommandArg <- function(argName, exception = TRUE){
     }
   }
 }
-getModelPath <- function(modelPath = NULL, isShinyProxy = FALSE, envVarPath = NULL, modeBaseDir = NULL){
+getModelPath <- function(modelPath = NULL, envVarPath = NULL){
   # returns name of the model currently rendered
   # 
   # Args:
   # modelPath:                  path of the GAMS model as defined externally (e.g. in development mode)
-  # isShinyProxy:               boolean that specifies whether shiny proxy is used
-  # envVarPath:                 name of the environment variable that specifies model path in shiny proxy
-  # modeBaseDir:               directory where model folders are located
+  # envVarPath:                 name of the environment variable that specifies model path
   #
   # Returns:
   # string with model name or error  in case no model name could be retrieved
@@ -58,7 +56,7 @@ getModelPath <- function(modelPath = NULL, isShinyProxy = FALSE, envVarPath = NU
   envName <- Sys.getenv(envVarPath)
   if(identical(envName, "")){
     modelPath <- file.path(getwd(), modelDir, modelName, modelName %+% ".gms")
-  }else if(isShinyProxy || identical(Sys.getenv("SHINYTEST"), "yes")){
+  }else if(identical(Sys.getenv("SHINYTEST"), "yes")){
     # shiny proxy mode
     modelPath <- file.path(modeBaseDir, envName, envName %+% ".gms")
   }else{

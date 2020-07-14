@@ -117,8 +117,7 @@ if(is.null(errMsg)){
   # set maximum upload size
   options(shiny.maxRequestSize = maxUploadSize*1024^2)
   # get model path and name
-  modelPath    <- getModelPath(modelPath, isShinyProxy, "MIRO_MODEL_PATH",
-                               file.path(getwd(), modelDir))
+  modelPath    <- getModelPath(modelPath, "MIRO_MODEL_PATH")
   modelNameRaw <- modelPath[[4]]
   modelName    <- modelPath[[3]]
   modelName    <<- modelName
