@@ -47,6 +47,69 @@
       "label": "Solver to use",
       "choices": ["BARON", "BDMLP", "CBC", "CPLEX", "LINDO", "LINDOGLOBAL", "MOSEK", "SCIP", "XPRESS"],
       "selected": "CPLEX"
+    },
+    "_gmspar_sliderrange": {
+      "widgetType": "slider",
+      "alias": "slider range tab",
+      "min": 1,
+      "max": "card(price$symbol)",
+      "default": [7, 22],
+      "step": 3,
+      "ticks": true,
+      "noHcube": true,
+      "label": "select the slider range",
+      "minStep": 1
+    },
+    "_gmsopt_checkbox": {
+      "widgetType": "checkbox",
+      "alias": "checkbox tab",
+      "value": 1,
+      "noHcube": true,
+      "class": "checkbox-material",
+      "label": "select checkbox"
+    },
+    "_gmspar_date": {
+      "widgetType": "date",
+      "alias": "date widget tab",
+      "format": "yyyy-mm-dd",
+      "startview": "year",
+      "weekstart": 1,
+      "autoclose": true,
+      "noHcube": false,
+      "label": "select a date",
+      "value": "2020-07-15",
+      "min": "2020-01-01",
+      "daysofweekdisabled": [0, 6]
+    },
+    "_gmspar_daterange": {
+      "widgetType": "daterange",
+      "alias": "date range tab",
+      "format": "dd.mm.yyyy",
+      "startview": "month",
+      "weekstart": 0,
+      "separator": " - ",
+      "autoclose": true,
+      "noHcube": false,
+      "label": "select a date range"
+    },
+    "_gmspar_textinput": {
+      "widgetType": "textinput",
+      "alias": "textinput tab",
+      "value": "",
+      "placeholder": "insert text here",
+      "label": "write a text"
+    },
+    "_gmspar_numericinput": {
+      "widgetType": "numericinput",
+      "alias": "numericinput tab",
+      "value": 4000.56,
+      "min": -1,
+      "decimal": 3,
+      "decimalCharacter": ",",
+      "digitGroupSeparator": ".",
+      "label": "select a number",
+      "max": 10000,
+      "sign": "€"
     }
   },
   "dataRendering": {

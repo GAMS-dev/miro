@@ -1,0 +1,131 @@
+{
+  "input": {
+    "btEditReadme": 0,
+    "chart_tool": "pie",
+    "dbBackupZip": null,
+    "dbInput": 0,
+    "default_scen_check": true,
+    "deleteGraph": 0,
+    "deleteTableWidget": 0,
+    "deleteWidget": 0,
+    "gams_symbols": "",
+    "general_act_attach": false,
+    "general_act_log": false,
+    "general_act_lst": false,
+    "general_act_upload": false,
+    "general_aggregate": false,
+    "general_args": "--test=true",
+    "general_auto": false,
+    "general_decimal": 0,
+    "general_default_scen_name": "defaultTest",
+    "general_downloadTempFiles": false,
+    "general_empty": false,
+    "general_hidden": [
+      "firstdaytraining",
+      "lastdaytraining"
+    ],
+    "general_hiddenOutputSymbols": null,
+    "general_meta": false,
+    "general_mirologfile": "miro.log",
+    "general_overwriteSheetOrderInput": [
+      "_widgets",
+      "price"
+    ],
+    "general_overwriteSheetOrderOutput": [
+      "dowvsindex",
+      "stock_weight",
+      "abserror",
+      "pricemerge",
+      "_scalars_out"
+    ],
+    "general_overwriteSymAlias__scalars_out": "Output Scalars",
+    "general_overwriteSymAlias_abserror": "absolute error",
+    "general_overwriteSymAlias_dowvsindex": "dow jones vs. index fund",
+    "general_overwriteSymAlias_price": "Symbol alias for price",
+    "general_overwriteSymAlias_pricemerge": "Price (stocks & dow jones)",
+    "general_overwriteSymAlias_stock_weight": "weight",
+    "general_overwriteSymHeaders__scalars_out": [
+      "Scalar Name",
+      "Scalar Description",
+      "Value"
+    ],
+    "general_overwriteSymHeaders_abserror": [
+      "date",
+      "absolute error train",
+      "absolute error test"
+    ],
+    "general_overwriteSymHeaders_dowvsindex": [
+      "date",
+      "dow jones",
+      "index fund"
+    ],
+    "general_overwriteSymHeaders_price": [
+      "1st header",
+      "2nd header",
+      "3rd header"
+    ],
+    "general_overwriteSymHeaders_pricemerge": [
+      "date",
+      "Universal set",
+      "Price (stocks & dow jones)"
+    ],
+    "general_overwriteSymHeaders_stock_weight": [
+      "stock symbol",
+      "weight"
+    ],
+    "general_pageTitle": "Test title",
+    "general_readmeEnableMath": true,
+    "general_readmeFileName": "Readme.md",
+    "general_readmeTabtitle": "Readme",
+    "general_save_duration": 0,
+    "general_save_trace": false,
+    "general_scen": "tab",
+    "general_theme": "dark",
+    "general_useReadme": true,
+    "localInput": null,
+    "preview_output_dygraphs-data_filter": null,
+    "preview_output_leaflet-data_filter": null,
+    "preview_output_miropivot-miroPivot-aggregationFunction": "count",
+    "preview_output_miropivot-miroPivot-aggregationIndexList": [
+
+    ],
+    "preview_output_miropivot-miroPivot-colIndexList": [
+
+    ],
+    "preview_output_miropivot-miroPivot-filterIndexList": [
+
+    ],
+    "preview_output_miropivot-miroPivot-pivotRenderer": "table",
+    "preview_output_miropivot-miroPivot-rowIndexList": [
+
+    ],
+    "preview_output_plotly-data_filter": null,
+    "preview_output_timevis-data_filter": null,
+    "restoreDb": 0,
+    "saveGraph": 0,
+    "saveTableWidget": 0,
+    "saveWidget": 0,
+    "scenList": "",
+    "sidebarCollapsed": false,
+    "sidebarItemExpanded": null,
+    "sidebarMenuId": "new_gen",
+    "table_symbol": "",
+    "table_type": "hot",
+    "widget_dd": "",
+    "widget_general_logo_upload": null,
+    "widget_go": "",
+    "widget_symbol": "",
+    "widget_symbol_type": "gams",
+    "widget_type": ""
+  },
+  "output": {
+    "general_logo_preview": {
+      "src": "[image data sha1: e97477a1384d08a382a1a2336258e1e6c578c399]",
+      "height": "50px",
+      "alt": "custom logo"
+    }
+  },
+  "export": {
+
+  }
+}
