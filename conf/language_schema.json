@@ -4077,6 +4077,14 @@
                 "saveTable": {
                   "type": "string",
                   "minLength": 1
+                },
+                "inputSymbols": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "outputSymbols": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
               "minProperties": 6
@@ -4207,6 +4215,17 @@
                   },
                   "minProperties": 1
                 },
+                "decimals": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "label": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "minProperties": 1
+                },
                 "rownames": {
                   "type": "object",
                   "additionalProperties": false,
@@ -4259,7 +4278,7 @@
                   "minProperties": 4
                 }
               },
-              "minProperties": 6
+              "minProperties": 7
             },
             "symbol": {
               "type": "object",
@@ -4287,9 +4306,36 @@
                     }
                   },
                   "minProperties": 4
+                },
+                "noGraph": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "saveJson": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "warnTitle": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "warnContent": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "cancel": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "overwrite": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "minProperties": 4
                 }
               },
-              "minProperties": 1
+              "minProperties": 3
             }
           },
           "minProperties": 4
@@ -6431,6 +6477,17 @@
               "minProperties": 3
             },
             "miroPivotOptions": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "infoMsg": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 1
+            },
+            "datatableOptions": {
               "type": "object",
               "additionalProperties": false,
               "properties": {

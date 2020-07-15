@@ -1054,7 +1054,9 @@
         "output": "output tables (global)",
         "symbol": "symbol tables",
         "resetTable": "Reset",
-        "saveTable": "Save"
+        "saveTable": "Save",
+		"inputSymbols": "Input symbols",
+        "outputSymbols": "Output symbols"
       },
       "hot":{
         "height": "Height of input tables (in px)",
@@ -1084,6 +1086,9 @@
         "pagelength":{
           "label":"Number of items to display per page"
         },
+        "decimals":{
+          "label":"Number of decimal places to display"
+        },
         "rownames":{
           "label":"Show row numbers?"
         },
@@ -1103,6 +1108,13 @@
           "message": "Are you sure that you want to reset the existing configuration for this symbol? This cannot be undone!",
           "cancel": "Cancel",
           "confirm": "Confirm"
+        },
+		"noGraph": "Only display the table and no graphic for this symbol",
+        "saveJson":{
+          "warnTitle": "Data exists",
+          "warnContent": "According to the configuration, no graphic should be displayed for the symbol '%s'. A graph configuration already exists for this symbol. Do you want to overwrite this configuration? This cannot be undone!",
+          "cancel": "Cancel",
+          "overwrite": "Overwrite"
         }
       }
     },
@@ -1614,6 +1626,9 @@
       },
       "miroPivotOptions":{
         "infoMsg": "Please use directly the preview on the right side to configure the default view."
+      },
+      "datatableOptions":{
+        "infoMsg": "Table configuration is done in '"
       },
       "pivotOptions":{
         "rows": "Prepopulate rows of the pivot table",
