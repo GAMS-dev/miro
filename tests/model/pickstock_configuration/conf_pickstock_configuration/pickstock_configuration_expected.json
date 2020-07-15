@@ -15,7 +15,11 @@
   "inputWidgets": {
     "price": {
       "widgetType": "table",
-      "readonlyCols": "date"
+      "bigData": false,
+      "readonly": false,
+      "readonlyCols": ["date", "symbol"],
+      "hideIndexCol": true,
+      "heatmap": true
     },
     "maxstock": {
       "label": "select the maximum number of stocks",
@@ -442,5 +446,19 @@
       "dom": "Bfrtip"
     },
     "extensions": "Buttons"
+  },
+  "outputTables": {
+    "stock_weight": {
+      "class": "row-border",
+      "filter": "top",
+      "options": {
+        "pageLength": 3,
+        "decimals": 5,
+        "buttons": ["copy", "print"],
+        "dom": "Bfrtip"
+      },
+      "rownames": true,
+      "extensions": "Buttons"
+    }
   }
 }
