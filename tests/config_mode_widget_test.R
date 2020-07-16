@@ -15,8 +15,8 @@ configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_
 #load and save all widgets
 app$findElement("a[data-value='new_widget']")$click()
 Sys.sleep(1)
-for(widgetToTest in c("price", "maxstock", "trainingdays", "_gmspar_sliderrange", "_gmsopt_checkbox", "_gmspar_date", "_gmspar_daterange", "_gmspar_textinput", "_gmspar_numericinput")){
-  app$setInputs(widget_symbol = "_gmspar_sliderrange")
+for(widgetToTest in names(configRaw$inputWidgets)){
+  app$setInputs(widget_symbol = widgetToTest)
   Sys.sleep(1)
   app$findElement("button[id='saveWidget']")$click()
   Sys.sleep(1)
@@ -47,11 +47,16 @@ expect_identical(configRaw$inputWidgets$trainingdays$step, configNew$inputWidget
 expect_identical(configRaw$inputWidgets$trainingdays$max, configNew$inputWidgets$trainingdays$max)
 expect_identical(configRaw$inputWidgets$trainingdays$alias, configNew$inputWidgets$trainingdays$alias)
 expect_identical(configRaw$inputWidgets$trainingdays$widgetType, configNew$inputWidgets$trainingdays$widgetType)
+expect_identical(configRaw$inputWidgets$trainingdays$ticks, configNew$inputWidgets$trainingdays$ticks)
+expect_identical(configRaw$inputWidgets$trainingdays$noHcube, configNew$inputWidgets$trainingdays$noHcube)
 expect_identical(configRaw$inputWidgets$solver$alias, configNew$inputWidgets$solver$alias)
 expect_identical(configRaw$inputWidgets$solver$widgetType, configNew$inputWidgets$solver$widgetType)
 expect_identical(configRaw$inputWidgets$solver$label, configNew$inputWidgets$solver$label)
 expect_identical(configRaw$inputWidgets$solver$choices, configNew$inputWidgets$solver$choices)
 expect_identical(configRaw$inputWidgets$solver$selected, configNew$inputWidgets$solver$selected)
+expect_identical(configRaw$inputWidgets$solver$noHcube, configNew$inputWidgets$solver$noHcube)
+expect_identical(configRaw$inputWidgets$solver$clearValue, configNew$inputWidgets$solver$clearValue)
+expect_identical(configRaw$inputWidgets$solver$multiple, configNew$inputWidgets$solver$multiple)
 expect_identical(configRaw$inputWidgets[["_gmspar_sliderrange"]]$widgetType, configNew$inputWidgets[["_gmspar_sliderrange"]]$widgetType)
 expect_identical(configRaw$inputWidgets[["_gmspar_sliderrange"]]$alias, configNew$inputWidgets[["_gmspar_sliderrange"]]$alias)
 expect_identical(configRaw$inputWidgets[["_gmspar_sliderrange"]]$min, configNew$inputWidgets[["_gmspar_sliderrange"]]$min)

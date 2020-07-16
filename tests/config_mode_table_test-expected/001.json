@@ -30,27 +30,27 @@
     "general_overwriteSheetOrderInput": [
       "_widgets",
       "price",
-      "_scalars"
+      "_widgets1"
     ],
     "general_overwriteSheetOrderOutput": [
       "dowvsindex",
       "stock_weight",
       "abserror",
       "pricemerge",
-      "_scalars_out"
+      "_scalars_out",
+      "schedule",
+      "gantt",
+      "repc"
     ],
-    "general_overwriteSymAlias__scalars": "Scalars",
     "general_overwriteSymAlias__scalars_out": "Output Scalars",
     "general_overwriteSymAlias_abserror": "absolute error",
     "general_overwriteSymAlias_dowvsindex": "dow jones vs. index fund",
+    "general_overwriteSymAlias_gantt": "asdasd",
     "general_overwriteSymAlias_price": "Symbol alias for price",
     "general_overwriteSymAlias_pricemerge": "Price (stocks & dow jones)",
+    "general_overwriteSymAlias_repc": "crop report",
+    "general_overwriteSymAlias_schedule": "shipment quantities in cases",
     "general_overwriteSymAlias_stock_weight": "weight",
-    "general_overwriteSymHeaders__scalars": [
-      "Scalar Name",
-      "Scalar Description",
-      "Scalar Value"
-    ],
     "general_overwriteSymHeaders__scalars_out": [
       "Scalar Name",
       "Scalar Description",
@@ -66,6 +66,14 @@
       "dow jones",
       "index fund"
     ],
+    "general_overwriteSymHeaders_gantt": [
+      "gannt_id",
+      "gannt_start",
+      "gannt_end",
+      "gannt_content",
+      "gantt_group",
+      "asdasd"
+    ],
     "general_overwriteSymHeaders_price": [
       "1st header",
       "2nd header",
@@ -75,6 +83,27 @@
       "date",
       "Universal set",
       "Price (stocks & dow jones)"
+    ],
+    "general_overwriteSymHeaders_repc": [
+      "c",
+      "crop planted [acres]",
+      "seed cost [$]",
+      "crop yield [tons]",
+      "crop sold [tons]",
+      "crop revenue [$]",
+      "crop purchased [tons]",
+      "purchase cost [$]"
+    ],
+    "general_overwriteSymHeaders_schedule": [
+      "i",
+      "j",
+      "lngp",
+      "latp",
+      "lngm",
+      "latm",
+      "cap",
+      "demand",
+      "quantities"
     ],
     "general_overwriteSymHeaders_stock_weight": [
       "stock symbol",
@@ -129,11 +158,32 @@
     "sidebarCollapsed": false,
     "sidebarItemExpanded": null,
     "sidebarMenuId": "new_gen",
+    "slider_def": 3,
+    "slider_def_dep": "price",
+    "slider_def_dep_header": "date",
+    "slider_def_dep_op": "min",
+    "slider_def_dep_selector": true,
+    "slider_max": 10,
+    "slider_max_dep": "price",
+    "slider_max_dep_header": "symbol",
+    "slider_max_dep_op": "card",
+    "slider_max_dep_selector": false,
+    "slider_min": 1,
+    "slider_min_dep": "price",
+    "slider_min_dep_header": "date",
+    "slider_min_dep_op": "min",
+    "slider_min_dep_selector": true,
+    "slider_minStep": null,
+    "slider_step": 1,
+    "slider_ticks": false,
     "table_symbol": "price",
     "table_type": "hot",
+    "widget_alias": "maximum number of stocks to select",
     "widget_dd": "",
     "widget_general_logo_upload": null,
     "widget_go": "",
+    "widget_hcube": true,
+    "widget_label": "select the maximum number of stocks",
     "widget_symbol": "maxstock",
     "widget_symbol_type": "gams",
     "widget_type": "slider"
