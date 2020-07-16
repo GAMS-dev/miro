@@ -43,14 +43,12 @@ getCommandArg <- function(argName, exception = TRUE){
     }
   }
 }
-getModelPath <- function(modelPath = NULL, isShinyProxy = FALSE, envVarPath = NULL, modeBaseDir = NULL){
+getModelPath <- function(modelPath = NULL, envVarPath = NULL){
   # returns name of the model currently rendered
   # 
   # Args:
   # modelPath:                  path of the GAMS model as defined externally (e.g. in development mode)
-  # isShinyProxy:               boolean that specifies whether shiny proxy is used
-  # envVarPath:                 name of the environment variable that specifies model path in shiny proxy
-  # modeBaseDir:               directory where model folders are located
+  # envVarPath:                 name of the environment variable that specifies model path
   #
   # Returns:
   # string with model name or error  in case no model name could be retrieved
@@ -58,7 +56,7 @@ getModelPath <- function(modelPath = NULL, isShinyProxy = FALSE, envVarPath = NU
   envName <- Sys.getenv(envVarPath)
   if(identical(envName, "")){
     modelPath <- file.path(getwd(), modelDir, modelName, modelName %+% ".gms")
-  }else if(isShinyProxy || identical(Sys.getenv("SHINYTEST"), "yes")){
+  }else if(identical(Sys.getenv("SHINYTEST"), "yes")){
     # shiny proxy mode
     modelPath <- file.path(modeBaseDir, envName, envName %+% ".gms")
   }else{
@@ -1121,7 +1119,7 @@ setDbConfig <- function(){
     list(envVar = 'MIRO_DB_USERNAME', keyName = 'username', desc = 'database username'),
     list(envVar = 'MIRO_DB_PASSWORD', keyName = 'password', desc = 'database password'),
     list(envVar = 'MIRO_DB_NAME', keyName = 'name', desc = 'database name'),
-    list(envVar = 'MIRO_DB_HOST', keyName = 'host', desc = 'database host'),
+    list(envVar = 'MIRO_DB_HOST', keyName = 'host', desc = 'database host', default = 'localhost'),
     list(envVar = 'MIRO_DB_PORT', keyName = 'port', desc = 'database port', numeric = TRUE, default = 5432))
   
   for(i in seq_along(envNameDbDataMap)){

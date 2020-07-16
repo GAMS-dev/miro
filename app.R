@@ -117,8 +117,7 @@ if(is.null(errMsg)){
   # set maximum upload size
   options(shiny.maxRequestSize = maxUploadSize*1024^2)
   # get model path and name
-  modelPath    <- getModelPath(modelPath, isShinyProxy, "MIRO_MODEL_PATH",
-                               file.path(getwd(), modelDir))
+  modelPath    <- getModelPath(modelPath, "MIRO_MODEL_PATH")
   modelNameRaw <- modelPath[[4]]
   modelName    <- modelPath[[3]]
   modelName    <<- modelName
@@ -687,6 +686,7 @@ Note that you can remove orphaned database tables using the configuration mode (
     }, error = function(e){
       flog.error("Problems fetching database tables (for inconsistency checks).\nDetails: '%s'.", e)
       if(miroStoreDataOnly){
+        write("\n", stderr())
         write("merr:::500", stderr())
       }
       errMsg <<- paste(errMsg, sprintf("Problems fetching database tables (for inconsistency checks). Error message: '%s'.", 
@@ -704,6 +704,7 @@ Those tables are: '%s'.\nError message: '%s'.",
                    collapse = "\n")
       errMsg <<- paste(errMsg, msg, sep = "\n")
       if(miroStoreDataOnly){
+        write("\n", stderr())
         write(paste0("merr:::409:::", paste(vapply(inconsistentTables$names, 
                                                    function(el) base64_enc(charToRaw(el)), 
                                                    character(1L), USE.NAMES = FALSE), 
@@ -733,13 +734,20 @@ if(is.null(errMsg)){
                                modelName)
   credConfig <- NULL
   if(isShinyProxy){
-    usernameTmp <- if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) "user" else uid
-    credConfig <- list(url = Sys.getenv("MIRO_GAMS_HOST"), 
-                       username = usernameTmp,
-                       password = usernameTmp,
-                       namespace = "global",
+    namespace <- Sys.getenv("MIRO_ENGINE_NAMESPACE")
+    engineUid <- uid
+    if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")){
+      engineUid <- "anonymous"
+    }
+    userCredentials <- db$getUserCredentials(uid = engineUid, namespace = namespace)
+    credConfig <- list(url = Sys.getenv("MIRO_ENGINE_HOST"), 
+                       username = userCredentials$username[1],
+                       password = userCredentials$password[1],
+                       namespace = namespace,
                        useRegistered = TRUE,
-                       registerUser = TRUE)
+                       registerUser = TRUE,
+                       adminCredentials = list(username = Sys.getenv("MIRO_ENGINE_ADMIN_USER"), 
+                                               password = Sys.getenv("MIRO_ENGINE_ADMIN_PASS")))
   }else if(config$activateModules$remoteExecution){
     tryCatch({
       if(file.exists(file.path(miroWorkspace, "pinned_pub_keys"))){
@@ -1015,6 +1023,7 @@ if(!is.null(errMsg)){
             flog.info("Could not remove file: '%s'.", miroDataFile)
           }
           if(miroStoreDataOnly){
+            write("\n", stderr())
             write(paste0("mprog:::", round(i/length(miroDataFiles) * 100)), 
                   stderr())
           }
@@ -1031,6 +1040,7 @@ if(!is.null(errMsg)){
       flog.error("Problems saving MIRO data to database. Error message: '%s'.", e)
       gc()
       if(miroStoreDataOnly){
+        write("\n", stderr())
         write("merr:::500", stderr())
         if(interactive())
           stop()
