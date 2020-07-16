@@ -284,7 +284,7 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
         }
       }
     }else if(miroDeploy){
-      errMsg <- paste(errMsg, paste0("No model data ('", modelName, "_files.txt') found."), 
+      errMsg <- paste(errMsg, paste0("No model assembly file ('", modelName, "_files.txt') found."), 
                       sep = "\n")
     }
     if(miroDeploy){
@@ -333,7 +333,7 @@ if(is.null(errMsg)){
      file.exists(file.path(currentModelDir, paste0(modelName, ".zip")))){
     modelData <- file.path(currentModelDir, paste0(modelName, ".zip"))
   }else if(config$activateModules$remoteExecution || LAUNCHHCUBEMODE){
-    errMsg <- paste(errMsg, sprintf("No model data ('%s.zip') found. Please make sure that you specify the files that belong to your model in a text file named '%s_files.txt'.", 
+    errMsg <- paste(errMsg, sprintf("No model data ('%s.zip') found.\nPlease make sure that you specify the files that belong to your model in a text file named '%s_files.txt' (model assembly file).", 
                                     modelName, modelName), 
                     sep = "\n")
   }else{
@@ -449,7 +449,7 @@ if(miroBuildonly){
     warning(errMsg)
     if(interactive())
       stop()
-    if(identical(errMsg, paste0("\nNo model data ('", modelName, "_files.txt') found."))){
+    if(identical(errMsg, paste0("\nNo model assembly file ('", modelName, "_files.txt') found."))){
       quit("no", status = 2)
     }else{
       quit("no", status = 1) 
@@ -1367,7 +1367,7 @@ if(!is.null(errMsg)){
                   return(scriptOutput$sendContent(lang$errMsg$unknownError, scriptId, isError = TRUE))
                 }
               }else{
-                flog.info("No 'scripts_%s' directory was found. Did you forget to include it in '%s_files.txt'?",
+                flog.info("No 'scripts_%s' directory was found. Did you forget to include it in the model assembly file ('%s_files.txt')?",
                           modelName, modelName)
                 hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
                 showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
