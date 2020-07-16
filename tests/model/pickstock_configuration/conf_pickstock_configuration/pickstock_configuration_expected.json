@@ -556,6 +556,63 @@
           "uni": null
         }
       }
+    },
+    "pressurethickness": {
+      "outType": "graph",
+      "graph": {
+        "tool": "plotly",
+        "type": "scatter",
+        "ydata": {
+          "pressure": {
+            "label": "pressure",
+            "mode": "lines",
+            "line": {
+              "width": 2,
+              "shape": "linear",
+              "dash": "solid"
+            },
+            "showlegend": true,
+            "yaxis": "y"
+          },
+          "thickness": {
+            "label": "thickness",
+            "mode": "lines",
+            "line": {
+              "width": 2,
+              "shape": "linear",
+              "dash": "solid"
+            },
+            "showlegend": true,
+            "yaxis": "y2"
+          }
+        },
+        "xdata": "x",
+        "xaxis": {
+          "title": "x",
+          "showgrid": false,
+          "zeroline": false,
+          "showticklabels": true,
+          "categoryorder": "trace"
+        },
+        "yaxis": {
+          "title": "pressure",
+          "showgrid": false,
+          "zeroline": false,
+          "showticklabels": true,
+          "categoryorder": "trace"
+        },
+        "y2axis": {
+          "title": "thickness",
+          "showgrid": false,
+          "zeroline": false,
+          "showticklabels": true,
+          "categoryorder": "trace"
+        },
+        "title": "Pressure & Thickness",
+        "showlegend": true,
+        "staticPlot": false
+      },
+      "height": 700
     }
   },
   "storeLogFilesDuration": 0,
@@ -583,7 +640,7 @@
   ],
   "overwriteSheetOrder": {
     "input": ["_widgets", "price", "_widgets1"],
-    "output": ["dowvsindex", "stock_weight", "abserror", "pricemerge", "_scalars_out", "schedule", "gantt", "repc"]
+    "output": ["dowvsindex", "stock_weight", "abserror", "pricemerge", "_scalars_out", "schedule", "gantt", "repc", "pressurethickness"]
   },
   "pageTitle": "Test title",
   "defaultScenName": "defaultTest",
@@ -615,6 +672,9 @@
     },
     "repc": {
       "newAlias": "crop report"
+    },
+    "pressurethickness": {
+      "newAlias": "pressurethickness"
     }
   },
   "overwriteHeaderAliases": {

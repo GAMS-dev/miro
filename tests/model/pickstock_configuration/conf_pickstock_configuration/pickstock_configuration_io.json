@@ -238,6 +238,28 @@
 					"alias":	"purchase cost [$]"
 				}
 			}
+		},
+		"pressurethickness":	{
+			"alias":	"pressurethickness",
+			"symtype":	"parameter",
+			"headers":	{
+				"j0":	{
+					"type":	"string",
+					"alias":	"j0"
+				},
+				"x":	{
+					"type":	"numeric",
+					"alias":	"x"
+				},
+				"pressure":	{
+					"type":	"numeric",
+					"alias":	"pressure"
+				},
+				"thickness":	{
+					"type":	"numeric",
+					"alias":	"thickness"
+				}
+			}
 		}
 	}
 }
