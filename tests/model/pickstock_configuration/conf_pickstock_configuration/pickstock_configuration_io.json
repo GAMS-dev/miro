@@ -128,6 +128,116 @@
 					"alias":	"Price (stocks & dow jones)"
 				}
 			}
+		},
+		"schedule":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"i"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"j"
+				},
+				"lngp":	{
+					"type":	"numeric",
+					"alias":	"lngp"
+				},
+				"latp":	{
+					"type":	"numeric",
+					"alias":	"latp"
+				},
+				"lngm":	{
+					"type":	"numeric",
+					"alias":	"lngm"
+				},
+				"latm":	{
+					"type":	"numeric",
+					"alias":	"latm"
+				},
+				"cap":	{
+					"type":	"numeric",
+					"alias":	"cap"
+				},
+				"demand":	{
+					"type":	"numeric",
+					"alias":	"demand"
+				},
+				"quantities":	{
+					"type":	"numeric",
+					"alias":	"quantities"
+				}
+			}
+		},
+		"gantt":	{
+			"alias":	"asdasd",
+			"symtype":	"parameter",
+			"headers":	{
+				"id":	{
+					"type":	"string",
+					"alias":	"gannt_id"
+				},
+				"start":	{
+					"type":	"string",
+					"alias":	"gannt_start"
+				},
+				"end":	{
+					"type":	"string",
+					"alias":	"gannt_end"
+				},
+				"content":	{
+					"type":	"string",
+					"alias":	"gannt_content"
+				},
+				"group":	{
+					"type":	"string",
+					"alias":	"gantt_group"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"asdasd"
+				}
+			}
+		},
+		"repc":	{
+			"alias":	"crop report",
+			"symtype":	"parameter",
+			"headers":	{
+				"c":	{
+					"type":	"string",
+					"alias":	"c"
+				},
+				"planted":	{
+					"type":	"numeric",
+					"alias":	"crop planted [acres]"
+				},
+				"seedcost":	{
+					"type":	"numeric",
+					"alias":	"seed cost [$]"
+				},
+				"yield":	{
+					"type":	"numeric",
+					"alias":	"crop yield [tons]"
+				},
+				"sold":	{
+					"type":	"numeric",
+					"alias":	"crop sold [tons]"
+				},
+				"sales":	{
+					"type":	"numeric",
+					"alias":	"crop revenue [$]"
+				},
+				"purchased":	{
+					"type":	"numeric",
+					"alias":	"crop purchased [tons]"
+				},
+				"pcost":	{
+					"type":	"numeric",
+					"alias":	"purchase cost [$]"
+				}
+			}
 		}
 	}
 }

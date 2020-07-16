@@ -129,3 +129,66 @@ Parameter priceMerge(date,*) 'Price (stocks & dow jones)';
 $offExternalOutput
 priceMerge(d,symbol)        = price(d,symbol);
 priceMerge(d,'DowJones')    = index(d);
+
+
+Set i
+    j
+;
+Set scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM', 'latM', 'cap', 'demand', 'quantities' /;
+$onExternalOutput
+Table schedule(i<, j<,scheduleHdr) 'shipment quantities in cases'
+$onDelim
+,,lngP,latP,lngM,latM,cap,demand,quantities
+Seattle,New-york,-122.335,47.608,-73.9352,40.7306,350,325,50
+Seattle,Chicago,-122.335,47.608,-87.6232,41.8818,350,300,300
+Seattle,Topeka,-122.335,47.608,-95.6953,39.0562,350,275,
+San-Diego,New-york,-117.161,32.7157,-73.9352,40.7306,600,325,275
+San-Diego,Chicago,-117.161,32.7157,-87.6232,41.8818,600,300,
+San-Diego,Topeka,-117.161,32.7157,-95.6953,39.0562,600,275,275
+$offDelim
+;
+$offExternalOutput
+
+
+Set
+   id       'gannt_id'      / 1, 2, 3, 4, 5, 6 /
+   start    'gannt_start'   / 2016-01-04, 2016-01-05, 2016-01-06, 2016-01-07, 2016-01-08, 2016-01-09 /
+   end      'gannt_end'     / 2016-01-05, 2016-01-06, 2016-01-07, 2016-01-08, 2016-01-09, 2016-01-10 /
+   content  'gannt_content' / test1, test2, test3, test4, test5, test6 /
+   group    'gantt_group'   / a, b /
+   ;
+$onExternalOutput
+Parameter
+   gantt(id, start, end, content, group) 'asdasd' ;
+$offExternalOutput
+*gantt(id, start, end, content, group)$(ord(id) = ord(start) and (ord(id) = ord(end)) and (ord(id) = ord(content))) = 1;
+gantt('1', '2016-01-04', '2016-01-05', 'test1', 'a') = 1;
+gantt('2', '2016-01-05', '2016-01-06', 'test2', 'a') = 1;
+gantt('3', '2016-01-06', '2016-01-07', 'test3', 'a') = 1;
+gantt('4', '2016-01-07', '2016-01-08', 'test4', 'b') = 1;
+gantt('5', '2016-01-08', '2016-01-09', 'test5', 'b') = 1;
+gantt('6', '2016-01-09', '2016-01-10', 'test6', 'b') = 1;
+
+
+set c
+    rch 'crop report header' /
+              planted    'crop planted [acres]'
+              seedcost   'seed cost [$]'
+              yield      'crop yield [tons]'
+              sold       'crop sold [tons]'
+              sales      'crop revenue [$]'
+              purchased  'crop purchased [tons]'
+              pcost      'purchase cost [$]' /;
+              
+$onExternalOutput
+Table
+    repc(c<,rch)          'crop report'
+$onDelim
+,yield,planted,seedcost,sold,sales,purchased,pcost
+wheat,425,170,25500,225,38250,,
+corn,240,80,18400,16,2400,16,3360
+'sugar beets',5000,250,65000,5000,180000,,
+$offDelim
+;
+
+$offExternalOutput
