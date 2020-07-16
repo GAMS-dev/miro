@@ -343,7 +343,6 @@ observeEvent({input$widget_symbol
     hideEl(session, "#noWidgetConfigMsg")
     hideEl(session, "#optionConfigMsg")
     hideEl(session, "#doubledashConfigMsg")
-    
   if(input$widget_symbol %in% modelInRaw[[scalarsFileName]]$symnames){
     currentWidgetSymbolName <<- input$widget_symbol
     if(!currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
@@ -718,7 +717,6 @@ observeEvent({input$widget_type
            rv$widgetConfig$label <- currentConfig$label
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
-           
            staticMinInput <- numericInput("slider_min", lang$adminMode$widgets$sliderrange$min, 
                                           value = if(is.numeric(rv$widgetConfig$min)) rv$widgetConfig$min else 0L)
            staticMaxInput <- numericInput("slider_max", lang$adminMode$widgets$sliderrange$max, 
@@ -836,10 +834,10 @@ observeEvent({input$widget_type
                     ), 
                     where = "beforeEnd")
            output$widget_preview <- renderUI({
-             sliderInput("slider_preview", rv$widgetConfig$label, min = rv$widgetConfig$min,
-                         max = rv$widgetConfig$max, 
+             sliderInput("slider_preview", rv$widgetConfig$label, min = if(is.numeric(rv$widgetConfig$min)) rv$widgetConfig$min else 0L,
+                         max = if(is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max else 10L, 
                          value = rv$widgetConfig$default,
-                         step = rv$widgetConfig$step,
+                         step = if(is.numeric(rv$widgetConfig$step)) rv$widgetConfig$step else 1L,
                          ticks = rv$widgetConfig$ticks)
            })
          },
@@ -971,7 +969,7 @@ observeEvent({input$widget_type
          checkbox = {
            rv$widgetConfig <- list(widgetType = "checkbox",
                                    alias = widgetAlias,
-                                   value = isTRUE(currentConfig$value),
+                                   value = identical(currentConfig$value, 1L),
                                    noHcube = isTRUE(currentConfig$noHcube),
                                    class =  "checkbox-material")
            rv$widgetConfig$label <- currentConfig$label
@@ -1090,11 +1088,12 @@ observeEvent({input$widget_type
                       tags$div(class = "shiny-input-container two-col-wrapper",
                                tags$div(class = "two-col-left",
                                         selectInput("date_startview", lang$adminMode$widgets$date$startview$label, 
-                                                    choices = langSpecificWidget$startview)),
+                                                    choices = langSpecificWidget$startview,
+                                                    selected = rv$widgetConfig$startview)),
                                tags$div(class = "two-col-right",
                                         selectInput("date_weekstart", lang$adminMode$widgets$date$weekstart$label, 
                                                     choices = langSpecificWidget$weekdays,
-                                                    selected = 0L))),
+                                                    selected = rv$widgetConfig$weekstart))),
                       selectInput("date_daysdisabled", lang$adminMode$widgets$date$daysDisabled, 
                                   choices = langSpecificWidget$weekdays,
                                   selected = rv$widgetConfig$daysofweekdisabled, multiple = TRUE),
@@ -1221,11 +1220,12 @@ observeEvent({input$widget_type
                       tags$div(class = "shiny-input-container two-col-wrapper",
                                tags$div(class = "two-col-left",
                       selectInput("date_startview", lang$adminMode$widgets$daterange$startview$label, 
-                                  choices = langSpecificWidget$startview)),
+                                  choices = langSpecificWidget$startview,
+                                  selected = rv$widgetConfig$startview)),
                       tags$div(class = "two-col-right",
                       selectInput("date_weekstart", lang$adminMode$widgets$daterange$weekstart$label, 
                                   choices = langSpecificWidget$weekdays,
-                                  selected = 0L))),
+                                  selected = rv$widgetConfig$weekstart))),
                       tags$div(class = "option-wrapper",
                       textInput("date_separator", lang$adminMode$widgets$daterange$separator, 
                                   value = rv$widgetConfig$separator)),

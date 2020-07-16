@@ -1693,7 +1693,7 @@ observeEvent(input$bar_orientation, {
     rv$graphConfig$graph$orientation <<- NULL
 })
 observeEvent(input$chart_xdata, {
-  if(!(length(input$x_title) && nchar(input$x_title))){
+  if(!length(input$x_title)){
     updateTextInput(session, "x_title", value = names(activeSymbol$indices)[match(input$chart_xdata, 
                                                                                   activeSymbol$indices)][1])
   }
