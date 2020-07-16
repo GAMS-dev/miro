@@ -3549,6 +3549,10 @@ observeEvent(rv$saveGraphConfirm, {
   configJSON$dataRendering[activeSymbol$name == tolower(names(configJSON$dataRendering))] <<- NULL
   configJSON$dataRendering[[activeSymbol$name]] <<- rv$graphConfig
   configJSON$dataRendering[[activeSymbol$name]]$height <<- 700
+  if(is.null(rv$graphConfig$graph$tool)){
+    flog.error("Problems fetching configuration.")
+    return()
+  }
   if(rv$graphConfig$graph$tool == "miropivot"){
     configJSON$dataRendering[[activeSymbol$name]]$graph <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$pivottable <<- NULL
