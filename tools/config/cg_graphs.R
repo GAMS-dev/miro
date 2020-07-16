@@ -2040,13 +2040,14 @@ observeEvent(input$gams_symbols, {
     if(length(currentGraphConfig[["type"]])){
       if(identical(currentGraphConfig[["type"]], "scatter")){
         #distinguish between line chart and scatter plot
-        if(length(currentGraphConfig$ydata[[scalarIndices[[1]]]][["mode"]]) && 
-           identical(currentGraphConfig$ydata[[scalarIndices[[1]]]][["mode"]], "lines")){
+        lineTraces <- vapply(scalarIndices, function(scalarIndex){
+          return(identical(currentGraphConfig$ydata[[scalarIndex]][["mode"]], "lines"))
+        }, logical(1L), USE.NAMES = FALSE)
+        if(any(lineTraces)){
           newChartTool <<- "line"
-        }
-        if(length(currentGraphConfig$ydata[[scalarIndices[[1]]]][["mode"]]) &&
-           identical(currentGraphConfig$ydata[[scalarIndices[[1]]]][["mode"]], "markers"))
+        }else{
           newChartTool <<- "scatter"
+        }
       }else{
         newChartTool <<- currentGraphConfig[["type"]] 
       }
