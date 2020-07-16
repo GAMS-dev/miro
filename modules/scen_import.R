@@ -184,6 +184,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   if(!is.null(errMsg)){
     return(NULL)
   }
+  errMsg <- NULL
   if(LAUNCHHCUBEMODE){
     noOutputData <<- TRUE
   }else{
@@ -199,7 +200,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     }, error = function(e){
       flog.info("Problems loading output data. Error message: %s.", 
                 conditionMessage(e))
-      errMsg <<- lang$errMsg$badOutputData$badOutputData
+      errMsg <<- conditionMessage(e)
     })
     if(is.null(showErrorMsg(lang$errMsg$GAMSOutput$title, errMsg))){
       return()
