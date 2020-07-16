@@ -25,24 +25,29 @@ Worker <- R6Class("Worker", public = list(
     unlink(private$metadata$rememberMeFileName, force = TRUE)
   },
   setCredentials = function(url, username, password, namespace,
-                            useRegistered, registerUser = FALSE){
-    private$metadata$url       <- url
+                            useRegistered, registerUser = FALSE,
+                            adminCredentials = NULL){
+    engineUrl <- trimws(url, which = "right", whitespace = "/")
+    if(!endsWith(engineUrl, "/api")){
+      engineUrl <- paste0(engineUrl, "/api")
+    }
+    private$metadata$url       <- engineUrl
     private$metadata$username  <- username
     private$metadata$useRegistered <- useRegistered
     private$metadata$password  <- password
     private$metadata$namespace <- namespace
     if(registerUser){
-      private$buildAuthHeader()
+      private$authHeader <- private$buildAuthHeader()
       authenticationStatus <- private$checkAuthenticationStatus()
       if(identical(authenticationStatus, 401L)){
-        private$registerUser()
+        private$registerUser(adminCredentials)
       }else if(!identical(authenticationStatus, 200L)){
         flog.fatal("Could not check authentication status. Return code from remote executor: %s.", 
                    authenticationStatus)
         stop()
       }
     }else{
-      private$buildAuthHeader(TRUE)
+      private$authHeader <- private$buildAuthHeader(TRUE)
     }
     return(invisible(self))
   },
@@ -59,7 +64,7 @@ Worker <- R6Class("Worker", public = list(
     private$metadata$username  <- username
     private$metadata$useRegistered <- useRegistered
     private$metadata$password  <- password
-    private$buildAuthHeader()
+    private$authHeader <- private$buildAuthHeader()
     
     private$metadata$namespace <- namespace
     
@@ -1319,14 +1324,12 @@ Worker <- R6Class("Worker", public = list(
   },
   buildAuthHeader = function(useTokenAuth = FALSE){
     if(useTokenAuth){
-      private$authHeader <- paste0("Bearer ", private$metadata$password)
-      return(invisible(self))
+      return(paste0("Bearer ", private$metadata$password))
     }
-    private$authHeader <- paste0("Basic ", 
-                                 base64_encode(charToRaw(
-                                   paste0(private$metadata$username, 
-                                          ":", private$metadata$password))))
-    return(invisible(self))
+    return(paste0("Basic ", 
+                  base64_encode(charToRaw(
+                    paste0(private$metadata$username, 
+                           ":", private$metadata$password)))))
   },
   saveLoginCredentials = function(url, username, namespace, useRegistered){
     sessionToken <- private$validateAPIResponse(POST(
@@ -1435,11 +1438,28 @@ Worker <- R6Class("Worker", public = list(
                                         Timestamp = as.character(Sys.time(), usetz = TRUE)),
                             timeout(10L))))
   },
-  registerUser = function(){
-    private$validateAPIResponse(POST(paste0(private$metadata$url, "/users/?username=", 
-                                            private$metadata$username, "&password=", 
-                                            private$metadata$password), 
-                                     timeout(10L)))
+  registerUser = function(adminCredentials){
+    invitationToken <- private$validateAPIResponse(
+      POST(paste0(private$metadata$url, "/users/invitation"),
+           body = list(namespace_permissions = 
+                         paste0("1@", private$metadata$namespace)),
+           add_headers(Authorization = paste0("Basic ", 
+                                              base64_encode(charToRaw(
+                                                paste0(adminCredentials$username, 
+                                                       ":", adminCredentials$password)))),
+                       Timestamp = as.character(Sys.time(), usetz = TRUE)),
+           timeout(10L)))$invitation_token
+    private$validateAPIResponse(
+      POST(paste0(private$metadata$url, "/users"),
+           body = list(username = private$metadata$username,
+                       password = private$metadata$password,
+                       invitation_code = invitationToken),
+           add_headers(Authorization = paste0("Basic ", 
+                                              base64_encode(charToRaw(
+                                                paste0(adminCredentials$username, 
+                                                       ":", adminCredentials$password)))),
+                       Timestamp = as.character(Sys.time(), usetz = TRUE)),
+           timeout(10L)))
     return(invisible(self))
   },
   resolveRemoteURL = function(url){
