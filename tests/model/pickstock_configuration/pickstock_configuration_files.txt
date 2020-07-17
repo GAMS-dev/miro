@@ -1,0 +1,3 @@
+pickstock_configuration.gms
+dowjones2016.csv
+scripts_pickstock_configuration/hcube_analysis.ipynb

@@ -720,6 +720,16 @@ observeEvent(virtualActionButton(input$saveTableConfirm, rv$saveTableConfirm), {
           disableEl(session, "#saveGraph")
           showEl(session, "#deleteGraph")
       }
+    }else if(identical(configJSON$dataRendering[[currentTableSymbolName]]$outType, "datatable")){
+      configJSON$dataRendering[[currentTableSymbolName]] <<- NULL
+      if(identical(tolower(input$table_symbol), tolower(activeSymbol$name))){
+        newChartTool <<- "pie"
+        updateSelectInput(session, "chart_tool", selected = newChartTool)
+        tableSymbol <<- FALSE
+        rv$refreshOptions <- rv$refreshOptions + 1L
+        enableEl(session, "#saveGraph")
+        showEl(session, "#deleteGraph")
+      }
     }
   }
   # currentTableSymbolID <- match(currentTableSymbolName, tableSymbols)

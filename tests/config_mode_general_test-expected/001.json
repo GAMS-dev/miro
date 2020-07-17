@@ -1,0 +1,201 @@
+{
+  "input": {
+    "btEditReadme": 0,
+    "chart_tool": "pie",
+    "dbBackupZip": null,
+    "dbInput": 0,
+    "default_scen_check": true,
+    "deleteGraph": 0,
+    "deleteTableWidget": 0,
+    "deleteWidget": 0,
+    "gams_symbols": "",
+    "general_act_attach": false,
+    "general_act_log": false,
+    "general_act_lst": false,
+    "general_act_upload": false,
+    "general_aggregate": false,
+    "general_args": "--test=true",
+    "general_auto": false,
+    "general_decimal": 0,
+    "general_default_scen_name": "defaultTest",
+    "general_downloadTempFiles": false,
+    "general_empty": false,
+    "general_hidden": [
+      "firstdaytraining",
+      "lastdaytraining"
+    ],
+    "general_hiddenOutputSymbols": null,
+    "general_meta": false,
+    "general_mirologfile": "miro.log",
+    "general_overwriteSheetOrderInput": [
+      "_widgets",
+      "price",
+      "_widgets1"
+    ],
+    "general_overwriteSheetOrderOutput": [
+      "dowvsindex",
+      "stock_weight",
+      "abserror",
+      "pricemerge",
+      "_scalars_out",
+      "schedule",
+      "gantt",
+      "repc"
+    ],
+    "general_overwriteSymAlias__scalars_out": "Output Scalars",
+    "general_overwriteSymAlias_abserror": "absolute error",
+    "general_overwriteSymAlias_dowvsindex": "dow jones vs. index fund",
+    "general_overwriteSymAlias_gantt": "asdasd",
+    "general_overwriteSymAlias_price": "Symbol alias for price",
+    "general_overwriteSymAlias_pricemerge": "Price (stocks & dow jones)",
+    "general_overwriteSymAlias_repc": "crop report",
+    "general_overwriteSymAlias_schedule": "shipment quantities in cases",
+    "general_overwriteSymAlias_stock_weight": "weight",
+    "general_overwriteSymHeaders__scalars_out": [
+      "Scalar Name",
+      "Scalar Description",
+      "Value"
+    ],
+    "general_overwriteSymHeaders_abserror": [
+      "date",
+      "absolute error train",
+      "absolute error test"
+    ],
+    "general_overwriteSymHeaders_dowvsindex": [
+      "date",
+      "dow jones",
+      "index fund"
+    ],
+    "general_overwriteSymHeaders_gantt": [
+      "gannt_id",
+      "gannt_start",
+      "gannt_end",
+      "gannt_content",
+      "gantt_group",
+      "asdasd"
+    ],
+    "general_overwriteSymHeaders_price": [
+      "1st header",
+      "2nd header",
+      "3rd header"
+    ],
+    "general_overwriteSymHeaders_pricemerge": [
+      "date",
+      "Universal set",
+      "Price (stocks & dow jones)"
+    ],
+    "general_overwriteSymHeaders_repc": [
+      "c",
+      "crop planted [acres]",
+      "seed cost [$]",
+      "crop yield [tons]",
+      "crop sold [tons]",
+      "crop revenue [$]",
+      "crop purchased [tons]",
+      "purchase cost [$]"
+    ],
+    "general_overwriteSymHeaders_schedule": [
+      "i",
+      "j",
+      "lngp",
+      "latp",
+      "lngm",
+      "latm",
+      "cap",
+      "demand",
+      "quantities"
+    ],
+    "general_overwriteSymHeaders_stock_weight": [
+      "stock symbol",
+      "weight"
+    ],
+    "general_pageTitle": "Test title",
+    "general_readmeEnableMath": true,
+    "general_readmeFileName": "Readme.md",
+    "general_readmeTabtitle": "Readme",
+    "general_save_duration": 0,
+    "general_save_trace": false,
+    "general_scen": "tab",
+    "general_theme": "dark",
+    "general_useReadme": true,
+    "hot_colwidth": 200,
+    "hot_context_coledit": false,
+    "hot_context_enable": true,
+    "hot_context_readonly": true,
+    "hot_context_rowedit": false,
+    "hot_customWidth": true,
+    "hot_height": 250,
+    "hot_highcol": false,
+    "hot_highrow": false,
+    "hot_readonly": false,
+    "hot_resize": false,
+    "hot_sort": false,
+    "hot_stretch": "none",
+    "localInput": null,
+    "preview_output_dygraphs-data_filter": null,
+    "preview_output_leaflet-data_filter": null,
+    "preview_output_miropivot-miroPivot-aggregationFunction": "count",
+    "preview_output_miropivot-miroPivot-aggregationIndexList": [
+
+    ],
+    "preview_output_miropivot-miroPivot-colIndexList": [
+
+    ],
+    "preview_output_miropivot-miroPivot-filterIndexList": [
+
+    ],
+    "preview_output_miropivot-miroPivot-pivotRenderer": "table",
+    "preview_output_miropivot-miroPivot-rowIndexList": [
+
+    ],
+    "preview_output_plotly-data_filter": null,
+    "preview_output_timevis-data_filter": null,
+    "restoreDb": 0,
+    "saveGraph": 0,
+    "saveTableWidget": 0,
+    "saveWidget": 0,
+    "scenList": "1_Robin",
+    "sidebarCollapsed": false,
+    "sidebarItemExpanded": null,
+    "sidebarMenuId": "new_gen",
+    "slider_def": 3,
+    "slider_def_dep": "price",
+    "slider_def_dep_header": "date",
+    "slider_def_dep_op": "min",
+    "slider_def_dep_selector": true,
+    "slider_max": 10,
+    "slider_max_dep": "price",
+    "slider_max_dep_header": "symbol",
+    "slider_max_dep_op": "card",
+    "slider_max_dep_selector": false,
+    "slider_min": 1,
+    "slider_min_dep": "price",
+    "slider_min_dep_header": "date",
+    "slider_min_dep_op": "min",
+    "slider_min_dep_selector": true,
+    "slider_minStep": null,
+    "slider_step": 1,
+    "slider_ticks": false,
+    "table_symbol": "price",
+    "table_type": "hot",
+    "widget_alias": "maximum number of stocks to select",
+    "widget_dd": "",
+    "widget_general_logo_upload": null,
+    "widget_go": "",
+    "widget_hcube": true,
+    "widget_label": "select the maximum number of stocks",
+    "widget_symbol": "maxstock",
+    "widget_symbol_type": "gams",
+    "widget_type": "slider"
+  },
+  "output": {
+    "general_logo_preview": {
+      "src": "[image data sha1: e97477a1384d08a382a1a2336258e1e6c578c399]",
+      "height": "50px",
+      "alt": "custom logo"
+    }
+  },
+  "export": {
+
+  }
+}
