@@ -260,6 +260,28 @@
 					"alias":	"thickness"
 				}
 			}
+		},
+		"hovercraft":	{
+			"alias":	"hovercraft",
+			"symtype":	"parameter",
+			"headers":	{
+				"ind":	{
+					"type":	"string",
+					"alias":	"Individuals"
+				},
+				"time":	{
+					"type":	"string",
+					"alias":	"Time points"
+				},
+				"x":	{
+					"type":	"numeric",
+					"alias":	"x"
+				},
+				"y":	{
+					"type":	"numeric",
+					"alias":	"y"
+				}
+			}
 		}
 	}
 }

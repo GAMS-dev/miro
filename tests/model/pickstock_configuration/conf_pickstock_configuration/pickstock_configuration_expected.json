@@ -557,6 +557,73 @@
         }
       }
     },
+    "hovercraft": {
+      "outType": "graph",
+      "graph": {
+        "tool": "plotly",
+        "type": "scatter",
+        "ydata": {
+          "y": {
+            "mode": "markers",
+            "fill": "none",
+            "marker": {
+              "opacity": 1,
+              "size": 6,
+              "line": {
+                "width": 0
+              }
+            },
+            "showlegend": true,
+            "yaxis": "y",
+            "frame": "time"
+          }
+        },
+        "xdata": "x",
+        "xaxis": {
+          "title": "x",
+          "showgrid": false,
+          "zeroline": false,
+          "showticklabels": true,
+          "categoryorder": "trace",
+          "rangefrom": 0,
+          "rangeto": 0.7
+        },
+        "yaxis": {
+          "title": "y",
+          "showgrid": false,
+          "zeroline": false,
+          "showticklabels": true,
+          "categoryorder": "trace",
+          "rangefrom": 0,
+          "rangeto": 0.25
+        },
+        "y2axis": {
+          "title": "x",
+          "showgrid": false,
+          "zeroline": false,
+          "showticklabels": true,
+          "categoryorder": "trace"
+        },
+        "color": "ind",
+        "title": "Hovercraft example",
+        "showlegend": true,
+        "staticPlot": false,
+        "animation": {
+          "easing": "linear",
+          "mode": "immediate",
+          "redraw": false,
+          "frame": 25,
+          "transition": 25,
+          "slider": {
+            "hide": false,
+            "fontcolor": "#000000",
+            "prefix": "time frame: "
+          }
+        },
+        "plot_bgcolor": "rgba(94,170,240,0.25)"
+      },
+      "height": 700
+    },
     "pressurethickness": {
       "outType": "graph",
       "graph": {

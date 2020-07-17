@@ -557,6 +557,73 @@
         }
       }
     },
+    "hovercraft": {
+      "outType": "graph",
+      "graph": {
+        "tool": "plotly",
+        "type": "scatter",
+        "ydata": {
+          "y": {
+            "mode": "markers",
+            "fill": "none",
+            "marker": {
+              "opacity": 1,
+              "size": 6,
+              "line": {
+                "width": 0
+              }
+            },
+            "showlegend": true,
+            "yaxis": "y",
+            "frame": "time"
+          }
+        },
+        "xdata": "x",
+        "xaxis": {
+          "title": "x",
+          "showgrid": false,
+          "zeroline": false,
+          "showticklabels": true,
+          "categoryorder": "trace",
+          "rangefrom": 0,
+          "rangeto": 0.7
+        },
+        "yaxis": {
+          "title": "y",
+          "showgrid": false,
+          "zeroline": false,
+          "showticklabels": true,
+          "categoryorder": "trace",
+          "rangefrom": 0,
+          "rangeto": 0.25
+        },
+        "y2axis": {
+          "title": "x",
+          "showgrid": false,
+          "zeroline": false,
+          "showticklabels": true,
+          "categoryorder": "trace"
+        },
+        "color": "ind",
+        "title": "Hovercraft example",
+        "showlegend": true,
+        "plot_bgcolor": "rgba(94,170,240,0.25)",
+        "staticPlot": false,
+        "animation": {
+          "easing": "linear",
+          "mode": "immediate",
+          "redraw": false,
+          "frame": 25,
+          "transition": 25,
+          "slider": {
+            "hide": false,
+            "prefix": "time frame: ",
+            "fontcolor": "#000000"
+          }
+        }
+      },
+      "height": 700
+    },
     "pressurethickness": {
       "outType": "graph",
       "graph": {
@@ -599,9 +666,7 @@
           "showgrid": false,
           "zeroline": false,
           "showticklabels": true,
-          "categoryorder": "trace",
-          "rangefrom": "",
-          "rangeto": ""
+          "categoryorder": "trace"
         },
         "y2axis": {
           "title": "thickness",
@@ -642,7 +707,7 @@
   ],
   "overwriteSheetOrder": {
     "input": ["_widgets", "price", "_widgets1"],
-    "output": ["dowvsindex", "stock_weight", "abserror", "pricemerge", "_scalars_out", "schedule", "gantt", "repc", "pressurethickness"]
+    "output": ["dowvsindex", "stock_weight", "abserror", "pricemerge", "_scalars_out", "schedule", "gantt", "repc", "pressurethickness", "hovercraft"]
   },
   "pageTitle": "Test title",
   "defaultScenName": "defaultTest",
@@ -677,6 +742,9 @@
     },
     "pressurethickness": {
       "newAlias": "pressurethickness"
+    },
+    "hovercraft": {
+      "newAlias": "hovercraft"
     }
   },
   "overwriteHeaderAliases": {
