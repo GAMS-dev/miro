@@ -22,7 +22,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
   },
   getSymbols = function(gdxName = NULL){
     if(length(gdxName))
-      return(gdxrrwMIRO::gdxInfo(gdxName, returnList = TRUE, dump = FALSE))
+      return(gdxrrwMIRO::gdxInfo(enc2native(gdxName), returnList = TRUE, dump = FALSE))
     return(private$gdxSymbols)
   },
   rgdx = function(gdxName, symName, names = character(0L), 
@@ -33,7 +33,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     
     if(isNewGdx || !identical(gdxName, private$rgdxName)){
       private$rgdxName   <- gdxName
-      private$gdxSymbols <- gdxrrwMIRO::gdxInfo(gdxName, returnList = TRUE, dump = FALSE)
+      private$gdxSymbols <- gdxrrwMIRO::gdxInfo(enc2native(gdxName), returnList = TRUE, dump = FALSE)
     }
     symName <- tolower(symName)
     if(symName %in% c(private$scalarsFileName, private$scalarsOutName)){
@@ -95,7 +95,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
   },
   wgdx = function(gdxName, data, squeezeZeros = c("n", "y", "e")){
     if(!length(names(data))){
-      gdxrrwMIRO::wgdx(gdxName, list())
+      gdxrrwMIRO::wgdx(enc2native(gdxName), list())
       return(invisible(self))
     }
     squeezeZeros <- match.arg(squeezeZeros)
@@ -281,7 +281,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     
     scalarSymList <- scalarSymList[!is.na(scalarSymList)]
     wgdxDotList  <- wgdxDotList[!(isScalarData | isEmptySymbol)]
-    do.call(gdxrrwMIRO::wgdx, c(gdxName, wgdxDotList, scalarSymList, list(squeeze = squeezeZeros)))
+    do.call(gdxrrwMIRO::wgdx, c(enc2native(gdxName), wgdxDotList, scalarSymList, list(squeeze = squeezeZeros)))
     return(invisible(self))
   }
 ), private = list(
@@ -295,7 +295,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
   scalarEquationsOutName = character(1L),
   dropdownAliases = list(),
   rgdxVe = function(symName, names = NULL){
-    sym <- gdxrrwMIRO::rgdx(private$rgdxName, 
+    sym <- gdxrrwMIRO::rgdx(enc2native(private$rgdxName), 
                             list(name = symName, 
                                  compress = FALSE, 
                                  ts = FALSE, 
@@ -309,14 +309,14 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
   },
   rgdxScalarVe = function(symName = NULL, sym = NULL){
     if(!length(sym)){
-      sym <- gdxrrwMIRO::rgdx(private$rgdxName, list(name = symName, compress = FALSE, 
-                                                     ts = FALSE, field = "all"),
+      sym <- gdxrrwMIRO::rgdx(enc2native(private$rgdxName), list(name = symName, compress = FALSE, 
+                                                                 ts = FALSE, field = "all"),
                               squeeze = FALSE, useDomInfo = TRUE)
     }
     return(sym$val[, 2L])
   },
   rgdxParam = function(symName, names = NULL){
-    sym <- gdxrrwMIRO::rgdx(private$rgdxName, list(name = symName, compress = FALSE, ts = FALSE),
+    sym <- gdxrrwMIRO::rgdx(enc2native(private$rgdxName), list(name = symName, compress = FALSE, ts = FALSE),
                             squeeze = FALSE, useDomInfo = TRUE)
     symDim <- sym$dim
     if(identical(symDim, 0L)){
@@ -395,7 +395,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
   },
   rgdxScalar = function(symName = NULL, sym = NULL){
     if(!length(sym)){
-      sym <- gdxrrwMIRO::rgdx(private$rgdxName, list(name = symName))
+      sym <- gdxrrwMIRO::rgdx(enc2native(private$rgdxName), list(name = symName))
     }
     c <- 0
     if(identical(1L, dim(sym$val)[1])){
@@ -404,9 +404,9 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     return(c)
   },
   rgdxSet = function(symName, names = NULL){
-    sym <- gdxrrwMIRO::rgdx(private$rgdxName, list(name = symName, 
-                                                   compress = FALSE, 
-                                                   ts = FALSE, te = TRUE),
+    sym <- gdxrrwMIRO::rgdx(enc2native(private$rgdxName), list(name = symName, 
+                                                               compress = FALSE, 
+                                                               ts = FALSE, te = TRUE),
                             squeeze = FALSE, useDomInfo = TRUE)
     symDim <- sym$dim
     if(length(names)){
