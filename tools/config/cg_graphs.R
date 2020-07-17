@@ -1056,13 +1056,6 @@ observeEvent(input$animation_slider_hide, {
   req(rv$graphConfig$graph$animation)
   rv$graphConfig$graph$animation$slider$hide <<- as.logical(input$animation_slider_hide)
 }, priority = -500)
-observeEvent(input$animation_slider_label, {
-  req(rv$graphConfig$graph$animation)
-  if(length(input$animation_slider_label) && !identical(input$animation_slider_prefix, ""))
-    rv$graphConfig$graph$animation$slider$label <<- input$animation_slider_label
-  else 
-    rv$graphConfig$graph$animation$slider$label <<- NULL
-}, priority = -500)
 observeEvent(input$animation_slider_prefix, {
   req(rv$graphConfig$graph$animation)
   if(length(input$animation_slider_prefix) && !identical(input$animation_slider_prefix, ""))
@@ -2742,8 +2735,7 @@ getAnimationOptions  <- reactive({
       rv$graphConfig$graph$animation$transition <<- checkLength(configuredWithThisTool,
                                                                 currentGraphConfig[["animation"]][["transition"]],
                                                                 animationDefaults$frame )
-    }
-    else{
+    }else{
       rv$graphConfig$graph$animation <- NULL
     }
   })
@@ -2764,13 +2756,11 @@ getAnimationSliderOptions  <- reactive({
   isolate({
     animationDefaults <- list(
       hide      = checkTRUE(configuredWithThisTool, currentGraphConfig[["animation"]][["slider"]][["hide"]]),
-      label     = checkLength(configuredWithThisTool, currentGraphConfig[["animation"]][["slider"]][["label"]], ""),
       prefix    = checkLength(configuredWithThisTool, currentGraphConfig[["animation"]][["slider"]][["prefix"]], ""),
       fontcolor = checkLength(configuredWithThisTool, currentGraphConfig[["animation"]][["slider"]][["fontcolor"]], "#000000")
     )
-    if(length(currentGraphConfig[["animation"]][["slider"]])){
+    if(isTRUE(configuredWithThisTool) && length(currentGraphConfig[["animation"]][["slider"]])){
       rv$graphConfig$graph$animation$slider$hide      <<- animationDefaults$hide     
-      rv$graphConfig$graph$animation$slider$label     <<- animationDefaults$label    
       rv$graphConfig$graph$animation$slider$prefix    <<- animationDefaults$prefix   
       rv$graphConfig$graph$animation$slider$fontcolor <<- animationDefaults$fontcolor
     }
@@ -2780,8 +2770,6 @@ getAnimationSliderOptions  <- reactive({
   })
   tagList(checkboxInput_MIRO("animation_slider_hide", lang$adminMode$graphs$animationSliderOptions$hide,
                              value = animationDefaults$hide), 
-          textInput("animation_slider_label", lang$adminMode$graphs$animationSliderOptions$label,
-                    value = animationDefaults$label),
           textInput("animation_slider_prefix", lang$adminMode$graphs$animationSliderOptions$prefix,
                     value = animationDefaults$prefix),
           colorPickerInput("animation_slider_font_color", lang$adminMode$graphs$animationSliderOptions$fontColor, 
