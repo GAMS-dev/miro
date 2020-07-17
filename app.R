@@ -67,6 +67,7 @@ if(!miroBuildonly){
                         "dplyr", "readxl", "writexl", "futile.logger", "tidyr")
 }
 config <- list()
+modelFiles <- character()
 gamsSysDir <- Sys.getenv("GAMS_SYS_DIR")
 
 installedPackages <<- installed.packages()[, "Package"]
