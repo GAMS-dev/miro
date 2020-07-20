@@ -142,7 +142,6 @@
     "lstFile": true,
     "loadLocal": true,
     "attachments": true,
-    "remoteExecution": false,
     "downloadTempFiles": true
   },
   "autoGenInputGraphs": true,

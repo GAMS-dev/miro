@@ -14,7 +14,6 @@
     "lstFile": false,
     "loadLocal": true,
     "attachments": true,
-    "remoteExecution": false,
     "downloadTempFiles": false
   },
   "autoGenInputGraphs": false,
