@@ -344,7 +344,6 @@
     "logFile": true,
     "lstFile": true,
     "attachments": true,
-    "remoteExecution": false,
     "downloadTempFiles": true
   },
   "aggregateWidgets": true,

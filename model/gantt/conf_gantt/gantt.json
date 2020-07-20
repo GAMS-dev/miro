@@ -10,7 +10,6 @@
     "logFile": true,
     "lstFile": true,
     "attachments": true,
-    "remoteExecution": false,
     "downloadTempFiles": false
   },
   "aggregateWidgets": true,
