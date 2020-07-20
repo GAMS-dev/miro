@@ -40,12 +40,16 @@
       "_scalars_out",
       "schedule",
       "gantt",
-      "repc"
+      "repc",
+      "pressurethickness",
+      "hovercraft"
     ],
     "general_overwriteSymAlias__scalars_out": "Output Scalars",
     "general_overwriteSymAlias_abserror": "absolute error",
     "general_overwriteSymAlias_dowvsindex": "dow jones vs. index fund",
     "general_overwriteSymAlias_gantt": "asdasd",
+    "general_overwriteSymAlias_hovercraft": "hovercraft",
+    "general_overwriteSymAlias_pressurethickness": "pressurethickness",
     "general_overwriteSymAlias_price": "Symbol alias for price",
     "general_overwriteSymAlias_pricemerge": "Price (stocks & dow jones)",
     "general_overwriteSymAlias_repc": "crop report",
@@ -73,6 +77,18 @@
       "gannt_content",
       "gantt_group",
       "asdasd"
+    ],
+    "general_overwriteSymHeaders_hovercraft": [
+      "Individuals",
+      "Time points",
+      "x",
+      "y"
+    ],
+    "general_overwriteSymHeaders_pressurethickness": [
+      "j0",
+      "x",
+      "pressure",
+      "thickness"
     ],
     "general_overwriteSymHeaders_price": [
       "1st header",
