@@ -707,7 +707,7 @@
   ],
   "overwriteSheetOrder": {
     "input": ["_widgets", "price", "_widgets1"],
-    "output": ["dowvsindex", "stock_weight", "abserror", "pricemerge", "_scalars_out", "schedule", "gantt", "repc", "pressurethickness"]
+    "output": ["dowvsindex", "stock_weight", "abserror", "pricemerge", "_scalars_out", "schedule", "gantt", "repc", "pressurethickness", "hovercraft"]
   },
   "pageTitle": "Test title",
   "defaultScenName": "defaultTest",
@@ -742,6 +742,9 @@
     },
     "pressurethickness": {
       "newAlias": "pressurethickness"
+    },
+    "hovercraft": {
+      "newAlias": "hovercraft"
     }
   },
   "overwriteHeaderAliases": {
@@ -778,7 +781,7 @@
   ],
   "outputGroups": [
     {
-      "name": "Dow Jones vs. Index Fund ⨠",
+      "name": "Dow Jones vs. Index Fund",
       "members": ["dowvsindex", "abserror"]
     }
   ],

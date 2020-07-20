@@ -333,10 +333,7 @@
           "axisLabelFontSize": 14,
           "gridLineWidth": 0.3,
           "gridLineColor": "gray",
-          "valueRange": [
-            null,
-            null
-          ],
+          "valueRange": [null, null],
           "independentTicks": true
         },
         "yaxis2": {
@@ -346,10 +343,7 @@
           "axisLabelFontSize": 14,
           "gridLineWidth": 0.3,
           "drawGrid": true,
-          "valueRange": [
-            null,
-            null
-          ],
+          "valueRange": [null, null],
           "independentTicks": true
         },
         "dyEvent": {
@@ -806,7 +800,7 @@
   ],
   "outputGroups": [
     {
-      "name": "Dow Jones vs. Index Fund ⨠",
+      "name": "Dow Jones vs. Index Fund",
       "members": ["dowvsindex", "abserror"]
     }
   ],
