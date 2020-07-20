@@ -1,7 +1,7 @@
 app <- ShinyDriver$new("../", loadTimeout = 1000000)
 app$snapshotInit("config_mode_graph_test")
 Sys.sleep(2)
-app$snapshot(screenshot = TRUE)
+app$snapshot(items = list(input = "deleteGraph"), screenshot = TRUE)
 
 jsonPath <- file.path(getwd(), "model", "pickstock_configuration", "conf_pickstock_configuration")
 configRaw <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration_expected.json"), 
@@ -391,9 +391,5 @@ expect_identical(configRaw$dataRendering$hovercraft$graph$animation$slider$hide,
 expect_identical(configRaw$dataRendering$hovercraft$graph$animation$slider$fontcolor, configNew$dataRendering$hovercraft$graph$animation$slider$fontcolor)
 expect_identical(configRaw$dataRendering$hovercraft$graph$animation$slider$prefix, configNew$dataRendering$hovercraft$graph$animation$slider$prefix)
 expect_identical(configRaw$dataRendering$hovercraft$graph$plot_bgcolor, configNew$dataRendering$hovercraft$graph$plot_bgcolor)
-
-app$snapshot(screenshot = TRUE)
-
-
 
 app$stop()
