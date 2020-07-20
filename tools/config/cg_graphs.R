@@ -117,6 +117,35 @@ langSpecificGraphs$categoryorderChoices <- c("trace" = "trace", "category ascend
 names(langSpecificGraphs$categoryorderChoices) <- lang$adminMode$graphs$axisOptions$categoryorderChoices
 langSpecificGraphs$dyLegendOptions <- c("auto" = "auto", "always" = "always", "onmouseover" = "onmouseover", "follow" = "follow")
 names(langSpecificGraphs$dyLegendOptions) <- lang$adminMode$graphs$dygraphsOptions$legend$showChoices
+langSpecificGraphs$graphOptions           <- setNames(c("pie","bar","scatter","line","bubble","hist","dygraphs","leaflet","timevis","miropivot","valuebox","custom"), 
+                                                      c(lang$adminMode$graphs$graphOptions$pie,
+                                                        lang$adminMode$graphs$graphOptions$bar,
+                                                        lang$adminMode$graphs$graphOptions$scatter,
+                                                        lang$adminMode$graphs$graphOptions$line,
+                                                        lang$adminMode$graphs$graphOptions$bubble,
+                                                        lang$adminMode$graphs$graphOptions$hist,
+                                                        lang$adminMode$graphs$graphOptions$dygraphs,
+                                                        lang$adminMode$graphs$graphOptions$leaflet,
+                                                        lang$adminMode$graphs$graphOptions$timevis,
+                                                        lang$adminMode$graphs$graphOptions$miropivot,
+                                                        lang$adminMode$graphs$graphOptions$valuebox,
+                                                        lang$adminMode$graphs$graphOptions$custom))
+langSpecificGraphs$graphOptionsNoScalars  <- setNames(c("pie","bar","scatter","line","bubble","hist","dygraphs","leaflet","timevis","miropivot","custom"), 
+                                                      c(lang$adminMode$graphs$graphOptions$pie,
+                                                        lang$adminMode$graphs$graphOptions$bar,
+                                                        lang$adminMode$graphs$graphOptions$scatter,
+                                                        lang$adminMode$graphs$graphOptions$line,
+                                                        lang$adminMode$graphs$graphOptions$bubble,
+                                                        lang$adminMode$graphs$graphOptions$hist,
+                                                        lang$adminMode$graphs$graphOptions$dygraphs,
+                                                        lang$adminMode$graphs$graphOptions$leaflet,
+                                                        lang$adminMode$graphs$graphOptions$timevis,
+                                                        lang$adminMode$graphs$graphOptions$miropivot,
+                                                        lang$adminMode$graphs$graphOptions$custom))
+langSpecificGraphs$graphOptionsSet        <- setNames(c("timevis", "miropivot", "custom"), 
+                                                      c(lang$adminMode$graphs$graphOptions$timevis,
+                                                        lang$adminMode$graphs$graphOptions$miropivot,
+                                                        lang$adminMode$graphs$graphOptions$custom))
 
 hideFilter <- function(){
   hideEl(session, "#preview_output_plotly-data_filter")
@@ -2043,14 +2072,21 @@ observeEvent(input$gams_symbols, {
     }else if(identical(graphType, "custom")){
       newChartTool <<- "custom"
     }else{
-      newChartTool <<- "pie"
+      if(identical(modelInRaw[[activeSymbolName]]$symtype, "set")){
+        newChartTool <<- "miropivot"
+      }else{
+        newChartTool <<- "pie"
+      }
     }
-    if(identical(newChartTool, input$chart_tool))
+    if(identical(modelInRaw[[activeSymbolName]]$symtype, "set")){
+      graphOptions <- langSpecificGraphs$graphOptionsSet
+    }else{
+      graphOptions <- langSpecificGraphs$graphOptionsNoScalars
+    }
+    updateSelectInput(session, "chart_tool", choices = graphOptions, selected = newChartTool)
+    if(identical(newChartTool, input$chart_tool)){
       rv$refreshOptions <- rv$refreshOptions + 1L
-    else
-      updateSelectInput(session, "chart_tool", choices = setNames(c("pie", "bar", "scatter", "line", "bubble", "hist", "dygraphs", "leaflet", "timevis", "miropivot", "custom"),
-                                                                  lang$adminMode$graphs$updateToolNoScalars),
-                        selected = newChartTool)
+    }
   }
   if(tolower(activeSymbol$name) %in% tolower(names(configJSON$dataRendering))){
     showEl(session, "#deleteGraph")

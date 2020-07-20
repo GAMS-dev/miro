@@ -203,9 +203,7 @@ body_admin <- dashboardBody({
                                                         selectInput("gams_symbols", lang$adminMode$graphs$ui$gamsSymbols,
                                                                     choices = NULL)),
                                                tags$div(class = "two-col-right",
-                                                        selectInput("chart_tool", lang$adminMode$graphs$ui$tool, 
-                                                                    setNames(c("pie", "bar", "scatter", "line", "bubble", "hist", "dygraphs", "leaflet", "timevis", "miropivot", "valuebox", "custom"), 
-                                                                             lang$adminMode$graphs$ui$choices)))
+                                                        selectInput("chart_tool", lang$adminMode$graphs$ui$tool, choices = c()))
                                       ),
                                       tags$hr(),
                                       tags$div(class = "side-tab col-sm-3",
