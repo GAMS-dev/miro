@@ -1445,7 +1445,8 @@
       },
       "validate":{
         "val1": "Could not set range for x axis. Check for correct data format!",
-        "pieValues": "The selected symbol has too many values to be displayed as a pie chart. The maximum number of values that can be displayed in a pie chart is 100."
+        "pieValues": "The selected symbol has too many values to be displayed as a pie chart. The maximum number of values that can be displayed in a pie chart is 100.",
+        "tableNeeded": "A symbol that is to be configured as a map must be declared as a GAMS table, since multiple value columns are required (e.g. latitude and longitude information)."
       },
       "errMsg":{
         "errTitle1": "No valid data",

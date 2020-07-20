@@ -1445,7 +1445,8 @@
       },
       "validate":{
         "val1": "Der Bereich für die x-Achse konnte nicht eingestellt werden. Überprüfen Sie das korrekte Datenformat!",
-        "pieValues": "Das ausgewählte Symbol hat zu viele Werte, um als Kuchendiagramm angezeigt zu werden. Die maximale Anzahl der Werte, die in einem Kuchendiagramm dargestellt werden können, beträgt 100."
+        "pieValues": "Das ausgewählte Symbol hat zu viele Werte, um als Kuchendiagramm angezeigt zu werden. Die maximale Anzahl der Werte, die in einem Kuchendiagramm dargestellt werden können, beträgt 100.",
+        "tableNeeded": "Ein Symbol, das als Karte konfiguriert werden soll, muss als GAMS-Tabelle deklariert werden (table statement), da mehrere Wertespalten benötigt werden (z.B. Breiten- und Längengradangaben)."
       },
       "errMsg":{
         "errTitle1": "Keine gültigen Daten",

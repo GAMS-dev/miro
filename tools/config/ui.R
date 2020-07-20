@@ -368,6 +368,7 @@ body_admin <- dashboardBody({
                                                    height = 400, 
                                                    noDataTxt = lang$nav$outputScreen$boxResults$noData)),
                              tags$div(id="pieValues", class = "config-message", lang$adminMode$graphs$validate$pieValues),
+                             tags$div(id="tableNeeded", class = "config-message", lang$adminMode$graphs$validate$tableNeeded),
                              tags$div(id = "preview-content-dygraphs", style = "display:none;",
                                       renderDataUI("preview_output_dygraphs", type = "graph", 
                                                    graphTool = "dygraphs", 

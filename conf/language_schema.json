@@ -5693,9 +5693,13 @@
                 "pieValues": {
                   "type": "string",
                   "minLength": 1
+                },
+                "tableNeeded": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 2
+              "minProperties": 3
             },
             "errMsg": {
               "type": "object",

@@ -535,6 +535,15 @@ abserror(ntd,'absolute error test')    = error(ntd);
                                   <p>MIRO uses <a href = "https://rstudio.github.io/leaflet/" target = "_blank">Leaflet</a> to render maps.</p>
                                   <h3 class="block-title">Configuration</h3>
                                     <p>Example: Model <i>Transport</i>, parameter <i>shipment quantities in cases</i></p>
+									<div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Note:</b>
+                                            <p>A symbol that is to be configured as a map must be declared as a GAMS table, since multiple value columns are required (e.g. latitude and longitude information). Read more about the usage of GAMS tables <a href = "./model.html#table-miro">here</a>.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
                                     <p>The parameter to plot represents the shipment quantities between canning plants and markets. <br>
                                     </p>
                                     <pre><code class="language-gams">Set   
@@ -554,20 +563,11 @@ schedule(i,j, 'cap')        = a(i);
 schedule(i,j, 'demand')     = b(j);
 schedule(i,j, 'quantities') = x.l(i,j);
 </code></pre>
-                                    <div class="callout-block callout-warning">
-                                        <div class="icon-holder">
-                                            <i class="fas fa-info-circle"></i>
-                                        </div><!--//icon-holder-->
-                                        <div class="content">
-                                            <b class="callout-title">Note:</b>
-                                            <p>To be able to set markers on a map, the map tool requires latitude and longitude information. Because we need multiple value columns, we need to declare the parameter to plot as a <a href="./model.html#display-tables">table</a> instead of a parameter (which only has a single value column). In this way, the set elements of the last index of the symbol are flipped up and communicated as columns to which MIRO now has access. 
-                                            By declaring the parameter <code class="language-gams">schedule</code> as a 
-                                            <code class="language-gams">table</code>, the elements of the last index set 
-                                            <code class="language-gams">scheduleHdr</code> (<code class="language-gams">lngP, latP, lngM, latM, 
-                                            cap, demand, quantities</code>) can be used for the map configuration. 
-                                            You can find a detailed example <a href = "./model.html#table-miro">here</a></p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block-->
+                                    <p>To be able to set markers on a map, the map tool requires latitude and longitude information. Because we need multiple value columns, we need to declare the parameter to plot as a <a href="./model.html#display-tables">table</a> instead of a parameter (which only has a single value column). In this way, the set elements of the last index of the symbol are flipped up and communicated as columns to which MIRO now has access. 
+									By declaring the parameter <code class="language-gams">schedule</code> as a 
+									<code class="language-gams">table</code>, the elements of the last index set 
+									<code class="language-gams">scheduleHdr</code> (<code class="language-gams">lngP, latP, lngM, latM, cap, demand, quantities</code>) can be used for the map configuration. 
+									You can find a detailed example <a href = "./model.html#table-miro">here</a>.</p>
                                     <p>In a resulting <i>GDX</i> this parameter looks as follows:</p>
                                     <div class="section-block" id="map-data">
                                         <img class="img-fluid" style= "max-height:140pt;" src="assets/images/configuration_mode/map_data.png" alt="Map data"/>
