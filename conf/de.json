@@ -1443,6 +1443,20 @@
         "deleteGraph": "Löschen",
         "saveGraph": "Speichern"
       },
+      "graphOptions":{
+        "pie": "Kreisdiagramm",
+		"bar": "Balkendiagramm",
+		"scatter": "Streudiagramm",
+		"line": "Liniendiagramm",
+		"bubble": "Blasendiagramm",
+		"hist": "Histogramm",
+		"dygraphs": "Zeitreihen-Diagramm",
+		"leaflet": "Kartendiagramm",
+		"timevis": "Gantt-Diagramm",
+		"miropivot": "Pivot-Tabelle und Pivot-Charts",
+		"valuebox": "Wertebox für skalare Werte",
+		"custom": "Eigener Renderer"
+      },
       "validate":{
         "val1": "Der Bereich für die x-Achse konnte nicht eingestellt werden. Überprüfen Sie das korrekte Datenformat!",
         "pieValues": "Das ausgewählte Symbol hat zu viele Werte, um als Kuchendiagramm angezeigt zu werden. Die maximale Anzahl der Werte, die in einem Kuchendiagramm dargestellt werden können, beträgt 100.",

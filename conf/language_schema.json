@@ -5682,6 +5682,61 @@
               },
               "minProperties": 12
             },
+            "graphOptions": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pie": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "bar": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "scatter": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "line": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "bubble": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "hist": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dygraphs": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "leaflet": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "timevis": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "miropivot": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "valuebox": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "custom": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 12
+            },
             "validate": {
               "type": "object",
               "additionalProperties": false,
@@ -7635,7 +7690,7 @@
               "minProperties": 21
             }
           },
-          "minProperties": 23
+          "minProperties": 24
         }
       },
       "minProperties": 7
