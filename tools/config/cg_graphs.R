@@ -2373,12 +2373,11 @@ observeEvent({
       if(isTRUE(configuredWithThisTool)){
         markersTmp <- currentGraphConfig[["markers"]]
         if(length(markersTmp)){
-          groupsTmp <- vapply(markersTmp, function(el){
-            if(length(el$group)){
-              leafletGroups$update(old = NULL, new = el$group)
+          for(markerTmp in markersTmp){
+            if(length(markerTmp$group)){
+              leafletGroups$update(old = NULL, new = markerTmp$group)
             }
-            el$group
-          }, character(1L), USE.NAMES = FALSE)
+          }
           rv$updateLeafletGroups <- rv$updateLeafletGroups + 1L
         }
       }else{
