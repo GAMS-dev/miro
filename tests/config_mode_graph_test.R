@@ -26,7 +26,7 @@ for(GraphToTest in names(configRaw$dataRendering)){
   if(identical(GraphToTest, "maptest")){
     setOptions <- getSelectizeOptions(app, "#chart_tool")
     #langSpecificGraphs$graphOptionsSet in tools/cg_graphs.R 
-    expect_identical(setOptions, c("timevis", "miropivot", "custom"))
+    expect_identical(setOptions, c("timevis", "miropivot", "custom", "leaflet"))
   }
   app$findElement("button[id='saveGraph']")$click()
   Sys.sleep(1)
