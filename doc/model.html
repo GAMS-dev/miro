@@ -440,6 +440,27 @@ $offExternalOutput
                                         <div class="section-block" style="text-align:center;">
                                            <img class="img-fluid" style="max-height:250pt;" src="assets/images/multi-col-map.png" alt="Map configuration with Table statement" />
                                        </div>
+									   <div class="callout-block callout-success">
+                                           <div class="icon-holder">
+                                               <i class="fas fa-thumbs-up"></i>
+                                           </div><!--//icon-holder-->
+                                           <div class="content">
+                                               <b class="callout-title">Tip:</b>
+                                               <p>Instead of a table with the geoinformation in the header, we can also use a parameter or even a set that contains all latitude and longitude information in separate domains:</p>
+										<pre><code class="language-gams">$onExternalOutput
+Parameter schedule(i,j,latP, lngP, latM, lngM) 'shipment quantities in cases';
+$offExternalOutput
+
+schedule('Seattle',  'New-York', '47.608013', '-122.335167', '40.730610', '-73.935242') = 50;
+schedule('Seattle',  'Chicago',  '47.608013', '-122.335167', '41.881832', '-87.623177') = 300;
+schedule('San-Diego','New-York', '32.715736', '-117.161087', '40.730610', '-73.935242') = 275;
+schedule('San-Diego','Topeka',   '32.715736', '-117.161087', '39.056198', '-95.695312') = 275;
+</pre></code>     
+                                               <p>The geoinformation is then no longer available in numerical form, but the map tool interprets the data properly.</p>
+                                           </div><!--//content-->
+                                       </div><!--//callout-block-->
+									    
+										
                                         <p>Maps and Gantt charts are examples of tools that require separate columns for information such as geodata, start/end time etc.
                                         Other tools allow pivoting of the parameters internally. Example: </p> 
                                         <p>In the model Pickstock there is the parameter <i>Price</i>, which contains all stock symbols 

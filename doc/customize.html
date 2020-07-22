@@ -827,29 +827,24 @@ $offExternalInput
                                   <p>Besides the default tabular format, multidimensional GAMS symbols can be visualized as graphs. GAMS MIRO offers comprehensive visualization options. 
                                   A lot of plotting types are available and only need to be configured, i.e. adapted to your model-specific data. 
                                   </p>
-                                  <p>If you want to configure a graphic for a GAMS symbol, you have to be aware of how many dimensions your GAMS symbol has, as this influences the type of graph to choose. 
-                                  GAMS symbols sometimes have many dimensions. Different chart types allow you to visualize a different number of dimension. Whereas a pie chart allows you to visualize two dimensions - a numerical one that defines the area of the slices and a categorical one that defines the labels of the slices - a bar chart allows three dimensions to be visualized: a numerical dimension that defines the height of the bars, a categorical one that defines the discrete set of bars on the x-axis, and another categorical one that defines the color of the bars. In fact, we could even display a fourth, numerical dimension that defines the width of the bars.</p><p>As an example we can look at the parameter <code class="language-gams">d(i,j) 'distance in thousands of miles'</code> in the model <i>transport</i>. In addition to the domains '<i>i</i>' - the set of plants - and '<i>j</i>' - the set of markets - there is the value column, i.e. a total of 3 dimensions:</p>
-                                  <div class="section-block">
-                                      <img class="img-fluid" style= "max-height:100pt; display: block; margin:auto;" src="assets/images/configuration_mode/graphs_dimensions3.png" alt="Symbol d: three dimensions" />
+                                  <div style="outline: solid 1px black; outline-offset: 5px; margin:30px 0px">
+                                        <h3 id="symbol-dimensions"  class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Advanced: Symbol dimensions</h3>
+                                        <div class="section-block" style="display:none">
+                                            <p>If you want to configure a graphic for a GAMS symbol, you have to be aware of how many dimensions your GAMS symbol has, as this influences the type of graph to choose. 
+                                            GAMS symbols sometimes have many dimensions. Different chart types allow you to visualize a different number of dimensions. Whereas a pie chart allows you to visualize two dimensions - a numerical one that defines the area of the slices and a categorical one that defines the labels of the slices - a bar chart allows three dimensions to be visualized: a numerical dimension that defines the height of the bars, a categorical one that defines the discrete set of bars on the x-axis, and another categorical one that defines the color of the bars. In fact, we could even display a fourth, numerical dimension that defines the width of the bars.</p><p>As an example we can look at the parameter <code class="language-gams">d(i,j) 'distance in thousands of miles'</code> in the model <i>transport</i>. In addition to the domains '<i>i</i>' - the set of plants - and '<i>j</i>' - the set of markets - there is the value column, i.e. a total of 3 dimensions:</p>
+                                            <div class="section-block">
+                                                <img class="img-fluid" style= "max-height:100pt; display: block; margin:auto;" src="assets/images/configuration_mode/graphs_dimensions3.png" alt="Symbol d: three dimensions" />
+                                            </div>
+                                            <p>We just learned that bar charts allow us to visualize 3 dimensions, so let's choose a bar chart: </p>
+                                            <div class="section-block">
+                                                <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/graphs_dimensions.png" alt="Bar chart - three dimensions" />
+                                            </div>
+                                            <p>What if we had a fourth domain, e.g. another categorical dimension? A scatter plot allows us to visualize a forth dimension in the form of the marker type (e.g. circle, square, triangle etc.).</p>
+                                            <p>The more dimensions we try to plot in one chart, the harder it is to understand what is actually going on. Instead of trying to plot as many dimensions as possible in a single chart, we should think about reducing the number of dimensions. One way to do this is to <a href = "./charts.html#animation">animate our chart</a> (e.g. to show how our data changes over time). Another way is to use a <a href = "./charts.html#filter-option">filter</a> that allows us to select a particular slice of our data. Both of these options are supported by MIRO!</p>
+                                        </div><!--//section-block-->
                                   </div>
-                                  <p>We just learned that bar charts allow us to visualize 3 dimensions, so let's choose a bar chart: </p>
-                                  <div class="section-block">
-                                      <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/graphs_dimensions.png" alt="Bar chart - three dimensions" />
-                                  </div>
-                                  <p>What if we had a fourth domain, e.g. another categorical dimension? A scatter plot allows us to visualize a forth dimension in the form of the marker type (e.g. circle, square, triangle etc.).</p>
-                                  <p>The more dimensions we try to plot in one chart, the harder it is to understand what is actually going on. Instead of trying to plot as many dimensions as possible in a single chart, we should think about reducing the number of dimensions. One way to do this is to <a href = "./charts.html#animation">animate our chart</a> (e.g. to show how our data changes over time). Another way is to use a <a href = "./charts.html#filter-option">filter</a> that allows us to select a particular slice of our data. Both of these options are supported by MIRO!</p>
                                   <p>The following section shows some examples for different chart types you can use in MIRO. It is not useful to describe all possible options MIRO supports. Instead, you should just explore it yourself! 
                                   Start the Configuration Mode and play around with the data until you get a satisfactory result. </p>
-                                  <div class="callout-block callout-warning">
-                                        <div class="icon-holder">
-                                            <i class="fas fa-info-circle"></i>
-                                        </div><!--//icon-holder-->
-                                        <div class="content">
-                                            <b class="callout-title">Note:</b>
-                                            <p>Currently already configured graphics are not preloaded at the start of the Configuration Mode. 
-                                            This means that if you want to make changes to an existing graphic after restarting the Configuration Mode, you must reconfigure it from the beginning.</p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block-->
                                   <div id="graphs-wrapper" class="cards-section text-center cards-wrapper row" style="background:white;">
                                       <div class="item col-lg-4 col-6">
                                          <div class="item-inner" style="padding-bottom: 10px;">
