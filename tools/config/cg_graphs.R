@@ -143,10 +143,11 @@ langSpecificGraphs$graphOptionsNoScalars  <- setNames(c("pie","bar","scatter","l
                                                         lang$adminMode$graphs$graphOptions$timevis,
                                                         lang$adminMode$graphs$graphOptions$miropivot,
                                                         lang$adminMode$graphs$graphOptions$custom))
-langSpecificGraphs$graphOptionsSet        <- setNames(c("timevis", "miropivot", "custom"), 
+langSpecificGraphs$graphOptionsSet        <- setNames(c("timevis", "miropivot", "custom", "leaflet"), 
                                                       c(lang$adminMode$graphs$graphOptions$timevis,
                                                         lang$adminMode$graphs$graphOptions$miropivot,
-                                                        lang$adminMode$graphs$graphOptions$custom))
+                                                        lang$adminMode$graphs$graphOptions$custom,
+                                                        lang$adminMode$graphs$graphOptions$leaflet))
 
 hideFilter <- function(){
   hideEl(session, "#preview_output_plotly-data_filter")
@@ -3445,7 +3446,6 @@ observe({
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-valuebox")
       hideEl(session, "#preview-content-custom")
-      hideEl(session, "#tableNeeded")
     }else if(isolate(rv$graphConfig$graph$tool) == "dygraphs"){
       callModule(renderData, "preview_output_dygraphs", type = "graph", 
                  data = data, configData = configScalars, 
@@ -3460,7 +3460,6 @@ observe({
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-valuebox")
       hideEl(session, "#preview-content-custom")
-      hideEl(session, "#tableNeeded")
     }else if(isolate(rv$graphConfig$graph$tool) == "pivot"){
       callModule(renderData, "preview_output_pivot", type = "pivot", 
                  data = data, configData = configScalars, 
@@ -3475,7 +3474,6 @@ observe({
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-valuebox")
       hideEl(session, "#preview-content-custom")
-      hideEl(session, "#tableNeeded")
     }else if(isolate(rv$graphConfig$graph$tool) == "miropivot"){
       for(el in ls(envir = miroPivotRendererEnv)){
         if("Observer" %in% class(miroPivotRendererEnv[[el]])){
@@ -3498,7 +3496,6 @@ observe({
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-valuebox")
       hideEl(session, "#preview-content-custom")
-      hideEl(session, "#tableNeeded")
     }else if(isolate(rv$graphConfig$graph$tool) == "timevis"){
       callModule(renderData, "preview_output_timevis", type = "graph", 
                  data = data, configData = configScalars, 
@@ -3513,7 +3510,6 @@ observe({
       hideEl(session, "#preview-content-dygraphs")
       hideEl(session, "#preview-content-valuebox")
       hideEl(session, "#preview-content-custom")
-      hideEl(session, "#tableNeeded")
     }else if(isolate(rv$graphConfig$graph$tool) == "valuebox"){
       customOptionstmp <- as.vector(rv$graphConfig$options, mode = "list")
       customOptionstmp$count <- configGraphsOut[[i]]$options$count
@@ -3530,7 +3526,6 @@ observe({
       hideEl(session, "#preview-content-leaflet")
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-custom")
-      hideEl(session, "#tableNeeded")
     }else if(isolate(rv$graphConfig$graph$tool) == "custom"){
       nameTmp <- rv$graphConfig$outType
       customR <- paste0(nameTmp, "Output <- function(id, height = NULL, options = NULL, path = NULL){
@@ -3560,28 +3555,20 @@ observe({
       hideEl(session, "#preview-content-leaflet")
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-valuebox")
-      hideEl(session, "#tableNeeded")
     }else{
-      if(length(activeSymbol$indices[activeSymbol$indexTypes == "numeric"]) < 2L){
-        showEl(session, "#tableNeeded")
-        hideEl(session, "#preview-content-leaflet")
-      }else{
-        callModule(renderData, "preview_output_leaflet", type = "graph", 
-                   data = data, configData = configScalars, 
-                   graphOptions = rv$graphConfig$graph,
-                   roundPrecision = roundPrecision, modelDir = modelDir)
-        showEl(session, "#preview-content-leaflet")
-        hideEl(session, "#tableNeeded")
-        
-      }
-        hideEl(session, "#preview-content-plotly")
-        hideEl(session, "#pieValues")
-        hideEl(session, "#preview-content-dygraphs")
-        hideEl(session, "#preview-content-pivot")
-        hideEl(session, "#preview-content-miropivot")
-        hideEl(session, "#preview-content-timevis")
-        hideEl(session, "#preview-content-valuebox")
-        hideEl(session, "#preview-content-custom")
+      callModule(renderData, "preview_output_leaflet", type = "graph", 
+                 data = data, configData = configScalars, 
+                 graphOptions = rv$graphConfig$graph,
+                 roundPrecision = roundPrecision, modelDir = modelDir)
+      showEl(session, "#preview-content-leaflet")
+      hideEl(session, "#preview-content-plotly")
+      hideEl(session, "#pieValues")
+      hideEl(session, "#preview-content-dygraphs")
+      hideEl(session, "#preview-content-pivot")
+      hideEl(session, "#preview-content-miropivot")
+      hideEl(session, "#preview-content-timevis")
+      hideEl(session, "#preview-content-valuebox")
+      hideEl(session, "#preview-content-custom")
     }
     hideEl(session, "#preview-error")
   }, error = function(e) {
@@ -3594,7 +3581,6 @@ observe({
     hideEl(session, "#preview-content-timevis")
     hideEl(session, "#preview-content-valuebox")
     hideEl(session, "#preview-content-custom")
-    hideEl(session, "#tableNeeded")
     showElReplaceTxt(session, "#preview-error", "An error occurred: " %+% toString(e))
   })
 }, priority = -1000)
