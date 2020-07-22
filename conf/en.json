@@ -1431,17 +1431,17 @@
       },
       "graphOptions":{
         "pie": "Pie chart",
-		"bar": "Bar chart",
-		"scatter": "Scatter plot",
-		"line": "Line plot",
-		"bubble": "Bubble chart",
-		"hist": "Histogram",
-		"dygraphs": "Time Series Diagram",
-		"leaflet": "Map chart",
-		"timevis": "Gantt chart",
-		"miropivot": "Pivot table and pivot charts",
-		"valuebox": "Valuebox for scalar values",
-		"custom": "Custom renderer"
+        "bar": "Bar chart",
+        "scatter": "Scatter plot",
+        "line": "Line plot",
+        "bubble": "Bubble chart",
+        "hist": "Histogram",
+        "dygraphs": "Time Series Diagram",
+        "leaflet": "Map chart",
+        "timevis": "Gantt chart",
+        "miropivot": "Pivot table and pivot charts",
+        "valuebox": "Valuebox for scalar values",
+        "custom": "Custom renderer"
       },
       "validate":{
         "val1": "Could not set range for x axis. Check for correct data format!",
