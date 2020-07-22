@@ -573,7 +573,7 @@ schedule(i,j, 'quantities') = x.l(i,j);
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <b class="callout-title">Tip:</b>
-                                            <p>Instead of a table with the geoinformation in the header, we can also use a parameter or even a set that contains all latitude and longitude information in separate domains:</p>
+                                            <p>Instead of a table with the geographic information in the header, we can also use a parameter or even a set that contains all latitude and longitude information in separate domains:</p>
 									        <pre><code class="language-gams">$onExternalOutput
 Parameter schedule(i,j,latP, lngP, latM, lngM) 'shipment quantities in cases';
 $offExternalOutput
@@ -582,8 +582,8 @@ schedule('Seattle',  'New-York', '47.608013', '-122.335167', '40.730610', '-73.9
 schedule('Seattle',  'Chicago',  '47.608013', '-122.335167', '41.881832', '-87.623177') = 300;
 schedule('San-Diego','New-York', '32.715736', '-117.161087', '40.730610', '-73.935242') = 275;
 schedule('San-Diego','Topeka',   '32.715736', '-117.161087', '39.056198', '-95.695312') = 275;
-</pre></code>     
-                                            <p>The geoinformation is then no longer available in numerical form, but the map tool interprets the data properly.</p>
+</code></pre>     
+                                            <p>The geographic information is then no longer available in numerical form, but the map tool interprets the data properly.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                     <p>With regard to map-based graphics, a multitude of possible visualizations are conceivable. In the Configuration Mode of MIRO, the following features can be realized on a map:</p>
@@ -644,7 +644,7 @@ $offExternalOutput
                                       The data of the pie chart for each state were determined in Configuration Mode with <i>Renewable</i> and <i>Fossil</i>. <br>
                                       You also have the option to define a time dimension in the charts. The data of the example covers a period of one year with a resolution of one hour. 
                                       The first column was defined as the time dimension (starting with <i>t001</i>. 
-                                      In this way, a separate pie chart is displayed for each period for each state (see play button at the bottom right of the map).</p>
+                                      In this way, a separate pie chart is displayed for each period for each state (see play button at the bottom right of the map).
                                       <div class="callout-block callout-warning">
                                           <div class="icon-holder">
                                               <i class="fas fa-info-circle"></i>
@@ -1128,7 +1128,7 @@ else
 $onExternalInput
 Parameter price(date<,symbol<) 'Price';
 $offExternalInput
-</pre></code> 
+</code> </pre>
                                         <p><i>Price</i> is not declared as a table but as a normal parameter. For MIRO, this means that the data is available in list format with the headers <i>date</i> and <i>symbol</i>. The individual stocks are listed in the rows:</p>
                                         <div class="section-block" style="text-align:center;">
                                             <img class="img-fluid" style="max-height:250pt;" src="assets/images/single-col-line-table.png" alt="Parameter Price" />
