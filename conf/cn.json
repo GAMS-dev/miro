@@ -1445,17 +1445,17 @@
       },
       "graphOptions":{
         "pie": "饼图",
-		"bar": "柱形图",
-		"scatter": "散点图",
-		"line": "折线图",
-		"bubble": "气泡图",
-		"hist": "直方图",
-		"dygraphs": "时间序列图形工具",
-		"leaflet": "地图工具",
-		"timevis": "甘特图",
-		"miropivot": "数据透视表",
-		"valuebox": "标量值的值框",
-		"custom": "自定义绘制器"
+        "bar": "柱形图",
+        "scatter": "散点图",
+        "line": "折线图",
+        "bubble": "气泡图",
+        "hist": "直方图",
+        "dygraphs": "时间序列图形工具",
+        "leaflet": "地图工具",
+        "timevis": "甘特图",
+        "miropivot": "数据透视表",
+        "valuebox": "标量值的值框",
+        "custom": "自定义绘制器"
       },
       "validate":{
         "val1": "无法设置x轴的范围。 请检查数据格式是否正确！",
