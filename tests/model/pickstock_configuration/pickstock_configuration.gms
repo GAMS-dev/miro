@@ -147,8 +147,9 @@ San-Diego,Chicago,-117.161,32.7157,-87.6232,41.8818,600,300,
 San-Diego,Topeka,-117.161,32.7157,-95.6953,39.0562,600,275,275
 $offDelim
 ;
+Table mapNoGroup(i, j,scheduleHdr) 'shipment quantities in cases';
 $offExternalOutput
-
+mapNoGroup(i, j,scheduleHdr) = schedule(i, j,scheduleHdr);
 
 Set
    id       'gannt_id'      / 1, 2, 3, 4, 5, 6 /
@@ -356,3 +357,14 @@ Bob,191,0.441588,0.185397
 $offDelim
 ;
 $offExternalOutput
+
+Set
+  latitude,
+  longitude
+;
+$onExternalInput
+Set mapTest(j,latitude<, longitude<) 'Market location information'   
+ / 'New-York'.'40.730610'.'-73.935242', 
+   'Chicago'.'41.881832'.'-87.623177',
+   'Topeka'.'39.056198'.'-95.695312' /;
+$offExternalInput

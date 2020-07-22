@@ -210,9 +210,7 @@ body_admin <- dashboardBody({
                                                         selectInput("gams_symbols", lang$adminMode$graphs$ui$gamsSymbols,
                                                                     choices = NULL)),
                                                tags$div(class = "two-col-right",
-                                                        selectInput("chart_tool", lang$adminMode$graphs$ui$tool, 
-                                                                    setNames(c("pie", "bar", "scatter", "line", "bubble", "hist", "dygraphs", "leaflet", "timevis", "miropivot", "valuebox", "custom"), 
-                                                                             lang$adminMode$graphs$ui$choices)))
+                                                        selectInput("chart_tool", lang$adminMode$graphs$ui$tool, choices = c()))
                                       ),
                                       tags$hr(),
                                       tags$div(class = "side-tab col-sm-3",
@@ -368,7 +366,6 @@ body_admin <- dashboardBody({
                                                    height = 400, 
                                                    noDataTxt = lang$nav$outputScreen$boxResults$noData)),
                              tags$div(id="pieValues", class = "config-message", lang$adminMode$graphs$validate$pieValues),
-                             tags$div(id="tableNeeded", class = "config-message", lang$adminMode$graphs$validate$tableNeeded),
                              tags$div(id = "preview-content-dygraphs", style = "display:none;",
                                       renderDataUI("preview_output_dygraphs", type = "graph", 
                                                    graphTool = "dygraphs", 

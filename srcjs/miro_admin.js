@@ -313,8 +313,8 @@ const arrayTypes = {
     try { labelColor = rest.labelOptions.style.color; } catch (error) { labelColor = ''; }
     try { labelBgColor = rest.labelOptions.style['background-color']; } catch (error) { labelBgColor = ''; }
     const elements = {
-      leaflet_markers: ['select', lang.addLeafletMarkers.leafletMarkers, scalarIndices, scalarIndexAliases, lat],
-      leafMark_lng: ['select', lang.addLeafletMarkers.lng, scalarIndices, scalarIndexAliases, lng],
+      leaflet_markers: ['select', lang.addLeafletMarkers.leafletMarkers, indices, indexAliases, lat == null ? scalarIndices[0] : lat],
+      leafMark_lng: ['select', lang.addLeafletMarkers.lng, indices, indexAliases, lng == null ? scalarIndices[0] : lng],
       leafMark_groupName: ['text', lang.addLeafletMarkers.groupName, group == null ? '' : group],
       leafMark_label: ['text', lang.addLeafletMarkers.label, label == null ? '' : label],
       iconOptionsStart: ['optionsStart', lang.addLeafletMarkers.iconOptions],
@@ -341,11 +341,11 @@ const arrayTypes = {
       }] = defaults;
     }
     const elements = {
-      leaflet_flows: ['select', lang.addLeafletFlows.leafletFlows, scalarIndices, scalarIndexAliases, lat0],
-      leafFlow_lng: ['select', lang.addLeafletFlows.lng, scalarIndices, scalarIndexAliases, lng0],
-      leafFlow_lat1: ['select', lang.addLeafletFlows.lat1, scalarIndices, scalarIndexAliases, lat1],
-      leafFlow_lng1: ['select', lang.addLeafletFlows.lng1, scalarIndices, scalarIndexAliases, lng1],
-      leafFlow_flow: ['select', lang.addLeafletFlows.flow, scalarIndices, scalarIndexAliases, flow],
+      leaflet_flows: ['select', lang.addLeafletFlows.leafletFlows, indices, indexAliases, lat0 == null ? scalarIndices[0] : lat0],
+      leafFlow_lng: ['select', lang.addLeafletFlows.lng, indices, indexAliases, lng0 == null ? scalarIndices[0] : lng0],
+      leafFlow_lat1: ['select', lang.addLeafletFlows.lat1, indices, indexAliases, lat1 == null ? scalarIndices[0] : lat1],
+      leafFlow_lng1: ['select', lang.addLeafletFlows.lng1, indices, indexAliases, lng1 == null ? scalarIndices[0] : lng1],
+      leafFlow_flow: ['select', lang.addLeafletFlows.flow, indices, indexAliases, flow == null ? scalarIndices[0] : flow],
       leafFlow_time: ['select', lang.addLeafletFlows.time, ['_'].concat(nonScalarIndices), ['_'].concat(nonScalarIndexAliases), time],
       leafFlow_label: ['text', `${lang.addLeafletFlows.label}<a title="${lang.addLeafletFlows.labelTooltip}" class="info-wrapper" href="https://gams.com/miro/charts.html#unique-flow-label" target="_blank"><span class="fas fa-info-circle info-icon"></span></a>`, layerId == null ? '' : layerId],
       optionsStart: ['optionsStart', lang.addLeafletFlows.options],
@@ -368,9 +368,9 @@ const arrayTypes = {
       }] = defaults;
     }
     const elements = {
-      leaflet_minicharts: ['select', lang.addLeafletMinicharts.leafletMinicharts, scalarIndices, scalarIndexAliases, lat],
-      leafChart_lng: ['select', lang.addLeafletMinicharts.lng, scalarIndices, scalarIndexAliases, lng],
-      leafChart_chartdata: ['select', lang.addLeafletMinicharts.chartdata, scalarIndices, scalarIndexAliases, chartdata == null ? scalarIndices[0] : chartdata, true],
+      leaflet_minicharts: ['select', lang.addLeafletMinicharts.leafletMinicharts, indices, indexAliases, lat == null ? scalarIndices[0] : lat],
+      leafChart_lng: ['select', lang.addLeafletMinicharts.lng, indices, indexAliases, lng == null ? scalarIndices[0] : lng],
+      leafChart_chartdata: ['select', lang.addLeafletMinicharts.chartdata, indices, indexAliases, chartdata == null ? scalarIndices[0] : chartdata, true],
       leafChart_time: ['select', lang.addLeafletMinicharts.time, ['_'].concat(nonScalarIndices), ['_'].concat(nonScalarIndexAliases), time],
       leafChart_type: ['select', lang.addLeafletMinicharts.type, ['bar', 'pie', 'polar-area', 'polar-radius', 'auto'], lang.addLeafletMinicharts.typeChoices, type],
       optionsStart: ['optionsStart', lang.addLeafletMinicharts.options],
@@ -413,7 +413,7 @@ const arrayTypes = {
     try { makerLineColor = rest.marker.line.color; } catch (error) { makerLineColor = ''; }
     try { markerColor = rest.marker.color; } catch (error) { markerColor = ''; }
     const elements = {
-      chart_ydata: ['select', lang.addBarDataEl.chartYdatabar, indices, indexAliases, key],
+      chart_ydata: ['select', lang.addBarDataEl.chartYdatabar, indices, indexAliases, key == null ? scalarIndices[0] : key],
       chart_ylabel: ['text', lang.addBarDataEl.chartYlabel, label == null ? 'label' : label],
       marker_color: ['color', lang.addBarDataEl.color, markerColor],
       marker_line_width: ['numeric', lang.addBarDataEl.lineWidth, makerLineWidth, 0],

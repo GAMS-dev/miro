@@ -218,6 +218,49 @@
       },
       "height": 700
     },
+    "mapNoGroup": {
+      "outType": "graph",
+      "graph": {
+        "tool": "leaflet",
+        "layersControl": {
+          "options": {
+            "collapsed": true
+          },
+          "position": "topright"
+        },
+        "markers": {
+          "1": {
+            "lng": "lngp",
+            "lat": "latp",
+            "iconOptions": {
+              "icon": "circle",
+              "iconColor": "",
+              "markerColor": "blue"
+            },
+            "labelOptions": {
+              "textsize": "12px",
+              "permanent": true
+            },
+            "label": ""
+          },
+          "2": {
+            "lng": "lngm",
+            "lat": "latm",
+            "iconOptions": {
+              "icon": "circle",
+              "iconColor": "",
+              "markerColor": "blue"
+            },
+            "labelOptions": {
+              "textsize": "12px",
+              "permanent": true
+            },
+            "label": ""
+          }
+        }
+      },
+      "height": 700
+    },
     "gantt": {
       "outType": "graph",
       "graph": {
@@ -706,8 +749,8 @@
     }
   ],
   "overwriteSheetOrder": {
-    "input": ["_widgets", "price", "_widgets1"],
-    "output": ["dowvsindex", "stock_weight", "abserror", "pricemerge", "_scalars_out", "schedule", "gantt", "repc", "pressurethickness", "hovercraft"]
+    "input": ["_widgets", "price", "_widgets1", "maptest"],
+    "output": ["dowvsindex", "stock_weight", "abserror", "pricemerge", "_scalars_out", "schedule", "gantt", "repc", "pressurethickness", "hovercraft", "mapnogroup"]
   },
   "pageTitle": "Test title",
   "defaultScenName": "defaultTest",

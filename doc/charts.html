@@ -535,15 +535,6 @@ abserror(ntd,'absolute error test')    = error(ntd);
                                   <p>MIRO uses <a href = "https://rstudio.github.io/leaflet/" target = "_blank">Leaflet</a> to render maps.</p>
                                   <h3 class="block-title">Configuration</h3>
                                     <p>Example: Model <i>Transport</i>, parameter <i>shipment quantities in cases</i></p>
-									<div class="callout-block callout-warning">
-                                        <div class="icon-holder">
-                                            <i class="fas fa-info-circle"></i>
-                                        </div><!--//icon-holder-->
-                                        <div class="content">
-                                            <b class="callout-title">Note:</b>
-                                            <p>A symbol that is to be configured as a map must be declared as a GAMS table, since multiple value columns are required (e.g. latitude and longitude information). Read more about the usage of GAMS tables <a href = "./model.html#table-miro">here</a>.</p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block-->
                                     <p>The parameter to plot represents the shipment quantities between canning plants and markets. <br>
                                     </p>
                                     <pre><code class="language-gams">Set   
@@ -563,7 +554,7 @@ schedule(i,j, 'cap')        = a(i);
 schedule(i,j, 'demand')     = b(j);
 schedule(i,j, 'quantities') = x.l(i,j);
 </code></pre>
-                                    <p>To be able to set markers on a map, the map tool requires latitude and longitude information. Because we need multiple value columns, we need to declare the parameter to plot as a <a href="./model.html#display-tables">table</a> instead of a parameter (which only has a single value column). In this way, the set elements of the last index of the symbol are flipped up and communicated as columns to which MIRO now has access. 
+                                    <p>To be able to set markers on a map, the map tool requires latitude and longitude information. 
 									By declaring the parameter <code class="language-gams">schedule</code> as a 
 									<code class="language-gams">table</code>, the elements of the last index set 
 									<code class="language-gams">scheduleHdr</code> (<code class="language-gams">lngP, latP, lngM, latM, cap, demand, quantities</code>) can be used for the map configuration. 
@@ -576,6 +567,25 @@ schedule(i,j, 'quantities') = x.l(i,j);
                                     <div class="section-block">
                                         <img class="img-fluid" src="assets/images/configuration_mode/graphs_map_config.png" alt="Map configuration"/>
                                     </div>
+									<div class="callout-block callout-success">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-thumbs-up"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Tip:</b>
+                                            <p>Instead of a table with the geographic information in the header, we can also use a parameter or even a set that contains all latitude and longitude information in separate domains:</p>
+									        <pre><code class="language-gams">$onExternalOutput
+Parameter schedule(i,j,latP, lngP, latM, lngM) 'shipment quantities in cases';
+$offExternalOutput
+
+schedule('Seattle',  'New-York', '47.608013', '-122.335167', '40.730610', '-73.935242') = 50;
+schedule('Seattle',  'Chicago',  '47.608013', '-122.335167', '41.881832', '-87.623177') = 300;
+schedule('San-Diego','New-York', '32.715736', '-117.161087', '40.730610', '-73.935242') = 275;
+schedule('San-Diego','Topeka',   '32.715736', '-117.161087', '39.056198', '-95.695312') = 275;
+</code></pre>     
+                                            <p>The geographic information is then no longer available in numerical form, but the map tool interprets the data properly.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
                                     <p>With regard to map-based graphics, a multitude of possible visualizations are conceivable. In the Configuration Mode of MIRO, the following features can be realized on a map:</p>
                                     <ul>
                                       <li><b>Markers</b><br>
@@ -593,6 +603,15 @@ schedule(i,j, 'quantities') = x.l(i,j);
                                       The data overview from the <a href="#map-data" class="scrollto">table above</a> also helps to understand this: 
                                       In the example below the flows have been configured to point from <i>lngP</i>/<i>latP</i> to <i>lngM</i>/<i>latM</i>. 
                                       The thickness depends on the data in the column <i>quantities</i>.
+                                      <div class="callout-block callout-warning">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-info-circle"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <b class="callout-title">Note:</b>
+                                              <p>Flows cannot be configured for sets, since numeric values are required for the flow data.</p>
+                                          </div><!--//content-->
+                                      </div><!--//callout-block-->
                                       <div class="section-block">
                                         <img class="img-fluid" src="assets/images/configuration_mode/map_flows.png" alt="Map flows"/>
                                       </div>
@@ -625,7 +644,17 @@ $offExternalOutput
                                       The data of the pie chart for each state were determined in Configuration Mode with <i>Renewable</i> and <i>Fossil</i>. <br>
                                       You also have the option to define a time dimension in the charts. The data of the example covers a period of one year with a resolution of one hour. 
                                       The first column was defined as the time dimension (starting with <i>t001</i>. 
-                                      In this way, a separate pie chart is displayed for each period for each state (see play button at the bottom right of the map).<br><br>
+                                      In this way, a separate pie chart is displayed for each period for each state (see play button at the bottom right of the map).
+                                      <div class="callout-block callout-warning">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-info-circle"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <b class="callout-title">Note:</b>
+                                              <p>Charts on maps cannot be configured for sets, because numeric values are required for the chart data.</p>
+                                          </div><!--//content-->
+                                      </div><!--//callout-block-->
+									  <p>
                                       <b>Note</b> that all data of your entire graph must come from the same GAMS symbol. If you want to have more sophisticated graphics, it may make sense to combine data from different symbols in one symbol. Or you can use our <a href="./customize.html#custom-renderers">R API</a> and create your own graphics.
                                       </li>
                                     </ul>
@@ -1099,7 +1128,7 @@ else
 $onExternalInput
 Parameter price(date<,symbol<) 'Price';
 $offExternalInput
-</pre></code> 
+</code> </pre>
                                         <p><i>Price</i> is not declared as a table but as a normal parameter. For MIRO, this means that the data is available in list format with the headers <i>date</i> and <i>symbol</i>. The individual stocks are listed in the rows:</p>
                                         <div class="section-block" style="text-align:center;">
                                             <img class="img-fluid" style="max-height:250pt;" src="assets/images/single-col-line-table.png" alt="Parameter Price" />

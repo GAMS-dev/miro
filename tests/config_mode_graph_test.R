@@ -23,6 +23,11 @@ for(GraphToTest in names(configRaw$dataRendering)){
     Sys.sleep(12)
   else
     Sys.sleep(4)
+  if(identical(GraphToTest, "maptest")){
+    setOptions <- getSelectizeOptions(app, "#chart_tool")
+    #langSpecificGraphs$graphOptionsSet in tools/cg_graphs.R 
+    expect_identical(setOptions, c("timevis", "miropivot", "custom", "leaflet"))
+  }
   app$findElement("button[id='saveGraph']")$click()
   Sys.sleep(1)
   app$findElement("button[id='saveGraphConfirm']")$click()
@@ -92,6 +97,16 @@ expect_identical(configRaw$dataRendering$schedule$graph$flows[["1"]]$minThicknes
 expect_identical(configRaw$dataRendering$schedule$graph$flows[["1"]]$maxThickness, configNew$dataRendering$schedule$graph$flows[["1"]]$maxThickness)
 expect_identical(configRaw$dataRendering$schedule$graph$flows[["1"]]$layerId, configNew$dataRendering$schedule$graph$flows[["1"]]$layerId)
 expect_identical(configRaw$dataRendering$schedule$height, configNew$dataRendering$schedule$height)
+
+#map without groups
+expect_null(configNew$dataRendering$mapNoGroup$graph$markers[["1"]]$group)
+expect_null(configNew$dataRendering$mapNoGroup$graph$markers[["2"]]$group)
+expect_identical(configRaw$dataRendering$mapNoGroup$graph$markers[["1"]]$lng, configNew$dataRendering$mapNoGroup$graph$markers[["1"]]$lng)
+expect_identical(configRaw$dataRendering$mapNoGroup$graph$markers[["1"]]$lat, configNew$dataRendering$mapNoGroup$graph$markers[["1"]]$lat)
+expect_identical(configRaw$dataRendering$mapNoGroup$graph$markers[["1"]]$label, configNew$dataRendering$mapNoGroup$graph$markers[["1"]]$label)
+expect_identical(configRaw$dataRendering$mapNoGroup$graph$markers[["2"]]$lng, configNew$dataRendering$mapNoGroup$graph$markers[["2"]]$lng)
+expect_identical(configRaw$dataRendering$mapNoGroup$graph$markers[["2"]]$lat, configNew$dataRendering$mapNoGroup$graph$markers[["2"]]$lat)
+expect_identical(configRaw$dataRendering$mapNoGroup$graph$markers[["2"]]$label, configNew$dataRendering$mapNoGroup$graph$markers[["2"]]$label)
 
 #gantt chart
 expect_identical(configRaw$dataRendering$gantt$outType, configNew$dataRendering$gantt$outType)
