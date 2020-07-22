@@ -80,6 +80,21 @@
                             <section id="v11" class="doc-section">
                               <h2 class="section-title" style="display:inline-block">GAMS MIRO 1.1</h2> <div style="display:inline-block; padding-left:15px;">(2020-07-02)</div>
                                  <div class="section-block">
+                                    <h5 style="display:inline-block">GAMS MIRO 1.1.2</h5><div style="display:inline-block; padding-left:15px;"> (2020-07-22)</div>
+                                    <ul>
+                                      <li>Fix bug that caused gdxrrw to fail on Windows when special characters were used in the file path (encoding problem).</li>
+                                      <li>Fix bug where no groups specified in map configuration would lead to crash on next startup of Configuration Mode.</li>
+                                      <li>Fix set configuration: Only show those tools that can be configured with with a set</li>
+                                      <li>Fix bugs in Configuration mode with animation options.</li>
+                                      <li>Fix bug that caused a line chart configuration to not be recognized as such in some situations when using a GAMS table symbol.</li>
+                                      <li>Fix bug that caused empty xaxis title to be overwritten on next startup of Configuration Mode.</li>
+                                      <li>Fix bug that caused slider range preview to fail when configuring a dynamic limit.</li>
+                                      <li>Fix bug that caused configured checkbox starting value to be overwritten on next start of Configuration Mode.</li>
+                                      <li>Fix bug in date & date range selector configuration that caused startview and weekstart option to be overwritten on next start of Configuration Mode.</li>
+                                      <li>Fix bug in the configuration schema of the texinput widget that caused an error when configuring an empty starting value or placeholder.</li>
+                                    </ul>
+                                </div>
+                                 <div class="section-block">
                                     <h5 style="display:inline-block">GAMS MIRO 1.1.1</h5><div style="display:inline-block; padding-left:15px;"> (2020-07-02)</div>
                                     <ul>
                                       <li>Fixed an issue where numericinput would send wrong values in certain situations</li>
