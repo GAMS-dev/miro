@@ -1043,14 +1043,16 @@ observeEvent(input$trace_frame, {
     }else {
       500
     }
-    rv$graphConfig$graph$animation <- list(easing = if(!is.null(input$animation_easing) && length(input$animation_easing)) input$animation_easing else "linear",
-                                           mode = if(!is.null(input$animation_mode) && length(input$animation_mode)) input$animation_mode else "immediate",
-                                           redraw = if(!is.null(input$animation_redraw) && length(input$animation_redraw)) input$animation_redraw else TRUE,
+    rv$graphConfig$graph$animation <- list(easing = if(length(input$animation_easing)) input$animation_easing else "linear",
+                                           mode = if(length(input$animation_mode)) input$animation_mode else "immediate",
+                                           redraw = if(length(input$animation_redraw)) input$animation_redraw else TRUE,
                                            frame = frameTmp,
                                            transition = frameTmp,
-                                           slider = list(fontcolor = if(!is.null(input$animation_slider_font_color) && length(input$animation_slider_font_color)) input$animation_slider_font_color else "#000000",
-                                                         hide = if(!is.null(input$animation_slider_hide) && length(input$animation_slider_hide)) input$animation_slider_hide else FALSE))
-    rv$graphConfig$graph$animation$slider$prefix <- if(nchar(input$animation_slider_prefix)) input$animation_slider_prefix else NULL
+                                           slider = list(fontcolor = if(length(input$animation_slider_font_color)) input$animation_slider_font_color else "#000000",
+                                                         hide = if(length(input$animation_slider_hide)) input$animation_slider_hide else FALSE))
+    if(length(input$animation_slider_prefix) && !identical(input$animation_slider_prefix, "")){
+        rv$graphConfig$graph$animation$slider$prefix <- input$animation_slider_prefix
+    }
     hideEl(session, "#no_plotly_animation_options")
     showEl(session, "#plotly_animation_options")
     traceframetmp <<- input$trace_frame[2]
