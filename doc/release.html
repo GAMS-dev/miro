@@ -75,6 +75,9 @@
                     <li>Besides GAMS tables now also normal parameters and sets can be configured as maps.</li>
                                     </ul>
                                     <h3>Bug fixes</h3>
+                                    <ul>
+                                      <li>Improve support of non-ASCII characters in file paths on Windows.</li>
+                                    </ul>
                                  </div>
                             </section>
                             <section id="v11" class="doc-section">
@@ -82,7 +85,6 @@
                                  <div class="section-block">
                                     <h5 style="display:inline-block">GAMS MIRO 1.1.2</h5><div style="display:inline-block; padding-left:15px;"> (2020-07-22)</div>
                                     <ul>
-                                      <li>Fix bug that caused gdxrrw to fail on Windows when special characters were used in the file path (encoding problem).</li>
                                       <li>Fix bug where no groups specified in map configuration would lead to crash on next startup of Configuration Mode.</li>
                                       <li>Fix set configuration: Only show those tools that can be configured with with a set</li>
                                       <li>Fix bugs in Configuration mode with animation options.</li>
