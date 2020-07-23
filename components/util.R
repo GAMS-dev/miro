@@ -1486,3 +1486,9 @@ getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NUL
               tabTitles = tabTitles[!vapply(tabTitles, is.null, logical(1L), USE.NAMES = FALSE)],
               tabSheetMap = tabSheetMap))
 }
+nativeFileEnc <- function(path){
+  if(isWindows()){
+    return(enc2native(path))
+  }
+  return(path)
+}
