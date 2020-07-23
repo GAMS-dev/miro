@@ -1356,3 +1356,9 @@ sanitizeFn <- function(filename) {
   filename <- gsub("[/\\\\\\?%*:|\"<>]", "", filename)
   return(stringi::stri_trim_left(filename, pattern = "[^\\.]"))
 }
+nativeFileEnc <- function(path){
+  if(isWindows()){
+    return(enc2native(path))
+  }
+  return(path)
+}
