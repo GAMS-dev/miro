@@ -1050,6 +1050,7 @@ observeEvent(input$trace_frame, {
                                            transition = frameTmp,
                                            slider = list(fontcolor = if(!is.null(input$animation_slider_font_color) && length(input$animation_slider_font_color)) input$animation_slider_font_color else "#000000",
                                                          hide = if(!is.null(input$animation_slider_hide) && length(input$animation_slider_hide)) input$animation_slider_hide else FALSE))
+    rv$graphConfig$graph$animation$slider$prefix <- if(nchar(input$animation_slider_prefix)) input$animation_slider_prefix else NULL
     hideEl(session, "#no_plotly_animation_options")
     showEl(session, "#plotly_animation_options")
     traceframetmp <<- input$trace_frame[2]
