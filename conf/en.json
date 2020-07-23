@@ -1433,7 +1433,7 @@
         "pie": "Pie chart",
         "bar": "Bar chart",
         "scatter": "Scatter plot",
-        "line": "Line plot",
+        "line": "Line chart",
         "bubble": "Bubble chart",
         "hist": "Histogram",
         "dygraphs": "Time Series Diagram",
