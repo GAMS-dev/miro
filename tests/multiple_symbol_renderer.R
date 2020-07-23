@@ -1,4 +1,4 @@
-app <- ShinyDriver$new("../", loadTimeout = 10000)
+app <- ShinyDriver$new("../", loadTimeout = 20000)
 app$snapshotInit("multiple_symbol_renderer")
 
 app$setInputs(sidebarMenuId = "outputData")

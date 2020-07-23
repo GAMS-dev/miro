@@ -1,4 +1,4 @@
-app <- ShinyDriver$new("../", loadTimeout = 10000)
+app <- ShinyDriver$new("../", loadTimeout = 20000)
 app$snapshotInit(paste0("load_from_db_test_", Sys.getenv("GMSMODELNAME")))
 
 app$setInputs(btImport = "click")

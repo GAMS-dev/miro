@@ -1,4 +1,4 @@
-app <- ShinyDriver$new("../", loadTimeout = 10000)
+app <- ShinyDriver$new("../", loadTimeout = 20000)
 
 app$snapshotInit("output_attach_test_2")
 app$snapshot(items = list(output = "outputDataTitle"),

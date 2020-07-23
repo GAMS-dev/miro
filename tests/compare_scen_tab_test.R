@@ -1,4 +1,4 @@
-app <- ShinyDriver$new("../", loadTimeout = 10000)
+app <- ShinyDriver$new("../", loadTimeout = 20000)
 app$snapshotInit(paste0("compare_scen_tab_test_", Sys.getenv("GMSMODELNAME")))
 
 app$findElement("a[data-value='scenarios']")$click()
