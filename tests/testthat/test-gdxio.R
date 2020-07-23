@@ -1,6 +1,8 @@
 context("gdxio class")
 
-load(file.path(getwd(), "dätä/test_gdxio.miroconf"), .GlobalEnv)
+miroConfPath <- file.path(getwd(), "dätä/test_gdxio.miroconf")
+Encoding(miroConfPath) <- "UTF-8"
+load(miroConfPath, .GlobalEnv)
 source("../../global.R")
 source("../../components/util.R")
 source("../../components/gdxio.R")
