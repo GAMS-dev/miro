@@ -53,6 +53,14 @@
       "clearValue": false,
       "multiple": false
     },
+    "clearvalueset": {
+      "widgetType": "textinput",
+      "alias": "clearvalueset",
+      "value": "element text",
+      "placeholder": "value communicated with GAMS as element text",
+      "clearValue": true,
+      "label": "clear the value"
+    },
     "_gmspar_sliderrange": {
       "widgetType": "slider",
       "alias": "slider range tab",
