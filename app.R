@@ -731,7 +731,7 @@ if(is.null(errMsg)){
                                       file.path("bin", "x64") else "bin"), 
         c(modelInRaw, modelOut), scalarsFileName,
         scalarsOutName, scalarEquationsName, scalarEquationsOutName,
-        dropdownAliases)
+        dropdownAliases, config$textOnlySymbols)
     }
   }, error = function(e){
     flog.error(e)
