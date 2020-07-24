@@ -1334,7 +1334,9 @@
       "textinput":{
         "label": "Choose a label",
         "value": "Choose the default value",
-        "placeholder": "Choose a placeholder"
+        "placeholder": "Choose a placeholder",
+        "clearValue": "Communicate as element text with GAMS",
+        "clearValueTooltip": "Causes element label to be an empty string. - Open documentation"
       },
       "numericinput":{
         "label": "Choose a label",

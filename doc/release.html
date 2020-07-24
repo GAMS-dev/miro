@@ -73,6 +73,7 @@
                     <li>Settings for output tables can now be configured symbol-specific. Read more <a href = "./customize.html#symbol-table">here</a>.</li>
                     <li>Add option to specify default app title and description when deploying MIRO apps. Read more <a href = "./deployment.html">here</a>.</li>
                     <li>Besides GAMS tables now also normal parameters and sets can be configured as maps.</li>
+					<li>Add option for text input widgets that causes <a href="./widgets.html#textbox-option-clearvalue">element label of a singleton set to be the empty string</a>. The idea is to use singleton sets to define compile-time variables in the GAMS model (read more <a href="./model.html#command-line">here</a>). Note that this is currently not supported in Hypercube Mode.</li>
                     <li>Remove unnecessary options for global input table settings in Configuration Mode.</li>
                                     </ul>
                                     <h3>Bug fixes</h3>
@@ -125,7 +126,7 @@
 									  <li>Add option to define the decimal separator character and the thousand groups separator character for <a href="./widgets.html#widget-numeric">numeric inputs</a>.</li>
 									  <li>Add legend configuration options to <a href="./charts.html#timeseries-chart">time series diagrams</a>.</li>
 									  <li>Add option for static event lines to <a href="./charts.html#timeseries-chart">time series diagrams</a>.</li>
-									  <li>Add option for dropdown menus that causes <a href="./widgets.html#dropdown-option-clearvalue">element text to be the empty string</a>. This is only supported if aliases are defined. Also note that this is currently not supported in Hypercube Mode.</li>
+									  <li>Add option for dropdown menus that causes <a href="./widgets.html#dropdown-option-clearvalue">element label of a singleton set to be the empty string</a>. This is only supported if aliases are defined. Also note that this is currently not supported in Hypercube Mode.</li>
 									  <li>Add option to <a href="./customize.html#table-option-hide-indexing-column">hide indexing column</a> in input tables. Only available for default input tables and not for <a href="./customize.html#table-option-large">big data tables</a>.</li>
 									  <li>Minor UI adjustments in input widgets tab</li>
 									  <li>Add caching for deployed apps which drastically increases their startup performance.</li>

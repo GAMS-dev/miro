@@ -1335,7 +1335,9 @@
       "textinput":{
         "label": "选择一个标签",
         "value": "选择默认值",
-        "placeholder": "选择占位符"
+        "placeholder": "选择占位符",
+        "clearValue": "与GAMS通信作为元素文本",
+        "clearValueTooltip": "元素标签为空字符串。 更多信息，请查看文档"
       },
       "numericinput":{
         "label": "选择一个标签",

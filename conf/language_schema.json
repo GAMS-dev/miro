@@ -5238,6 +5238,14 @@
                 "placeholder": {
                   "type": "string",
                   "minLength": 1
+                },
+                "clearValue": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "clearValueTooltip": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
               "minProperties": 3
