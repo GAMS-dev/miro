@@ -1,4 +1,4 @@
-app <- ShinyDriver$new("../", loadTimeout = 1000000)
+app <- ShinyDriver$new("../", loadTimeout = 20000)
 app$snapshotInit("output_table_settings")
 
 Sys.sleep(2)

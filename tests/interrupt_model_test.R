@@ -1,4 +1,4 @@
-app <- ShinyDriver$new("../", loadTimeout = 10000)
+app <- ShinyDriver$new("../", loadTimeout = 20000)
 app$snapshotInit("interrupt_model_test")
 
 Sys.sleep(2)

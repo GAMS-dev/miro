@@ -1,4 +1,4 @@
-app <- ShinyDriver$new("../", loadTimeout = 10000)
+app <- ShinyDriver$new("../", loadTimeout = 20000)
 app$snapshotInit(paste0("excel_upload_test_", Sys.getenv("GMSMODELNAME")))
 widgetSheetId <- 1L
 if(identical(Sys.getenv("GMSMODELNAME"), "pickstock")){

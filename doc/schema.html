@@ -771,13 +771,11 @@
                    },
                    "value":{  
                      "description":"default value",
-                     "type":["string","null"],
-                     "minLength":1
+                     "type":["string","null"]
                    },
                    "placeholder":{  
                      "description":"placeholder (e.g. to give more information about what kind of value is expected from user)",
-                     "type":["string","null"],
-                     "minLength":1
+                     "type":["string","null"]
                    },
                    "width":{  
                      "description":"width of the input",
@@ -962,6 +960,138 @@
             ]
          }
       },
+      "outputTables":{  
+         "description":"Table settings of an output symbol in MIRO.",
+         "type":"object",
+         "additionalProperties":{  
+            "type":"object",
+            "properties":{
+              "class":{  
+                 "description":"css classes used for styling datatable",
+                 "type":[  
+                    "array",
+                    "string"
+                 ],
+                 "minItems":1,
+                 "default":"display"
+               },
+               "filter":{  
+                  "description":"Whether and where to include column filter",
+                  "type":"string",
+                  "enum":[  
+                     "none",
+                     "bottom",
+                     "top"
+                  ],
+                  "default":"bottom"
+               },
+               "rownames":{  
+                  "description":"Boolean that specifies whether to show row names",
+                  "type":"boolean",
+                  "default":false
+               },
+               "autoHideNavigation":{  
+                  "description":"Boolean that specifies whether to automatically hide navigation elements when number of total records is less than page size",
+                  "type":"boolean",
+                  "default":true
+               },
+               "extensions":{  
+                  "description":"For a list of supported extensions see: https://rstudio.github.io/DT/extensions.html",
+                  "type":["array", "string"],
+                  "uniqueItems":true,
+                  "items":{  
+                     "type":"string",
+                     "enum":[  
+                        "AutoFill",
+                        "Buttons",
+                        "ColReorder",
+                        "ColVis",
+                        "FixedColumns",
+                        "FixedHeader",
+                        "KeyTable",
+                        "Responsive",
+                        "RowReorder",
+                        "Scroller",
+                        "Select"
+                     ]
+                  }
+               },
+               "options":{  
+                  "description":"Additional options (e.g. column specific).",
+                  "type":"object",
+                  "default": {"pageLength": 15, "decimals": 2},
+                  "properties":{  
+                     "dom":{  
+                        "description":"Defines where the table control elements appear (position) and in what order",
+                        "type":"string",
+                        "minLength":1
+                     },
+                     "buttons":{  
+                        "description":"Buttons or groups of buttons to insert",
+                        "type":["array", "string"],
+                        "uniqueItems":true,
+                        "items":{
+                            "type": "string",
+                            "enum":["copy", "csv", "excel", "pdf", "print"]
+                        }
+                     },
+                     "pageLength":{  
+                        "description":"Number of items to display per page",
+                        "type":"integer",
+                        "minimum":1,
+                        "default":15
+                     },
+                     "decimals":{  
+                        "description":"Integer that specifies the number of decimal places to use",
+                        "type":"integer",
+                        "minimum":0,
+                        "default":2
+                     },
+                     "columnDefs":{  
+                        "description":"Column specific options.",
+                        "type":"array",
+                        "uniqueItems":true,
+                        "items":{  
+                           "type":"object",
+                           "required": ["targets"],
+                           "properties":{  
+                              "targets":{  
+                                 "anyOf":[  
+                                    {  
+                                       "description":"Column numbers to refer to.",
+                                       "type":["array", "integer"],
+                                       "minimum":1,
+                                       "minItems":1,
+                                       "items":{  
+                                          "type":"integer",
+                                          "minimum":1
+                                       }
+                                    },
+                                    {  
+                                       "description":"Use _all_ to refer to all the columns",
+                                       "type":"string",
+                                       "minLength":1
+                                    }
+                                 ]
+                              },
+                              "className":{  
+                                 "type":"string",
+                                 "minLength":1
+                              },
+                              "visible":{  
+                                 "type":"boolean"
+                              },
+                              "searchable":{  
+                                 "type":"boolean"
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      },
       "dataRendering":{  
         "description":"Format in which input or output data is to be displayed in MIRO.",
          "type":"object",
@@ -982,6 +1112,129 @@
                         "description":"Height of the output element.",
                         "type":"integer",
                         "minimum":0
+                     },
+                     "class":{  
+                       "description":"css classes used for styling datatable",
+                       "type":[  
+                          "array",
+                          "string"
+                       ],
+                       "minItems":1,
+                       "default":"display"
+                     },
+                     "filter":{  
+                        "description":"Whether and where to include column filter",
+                        "type":"string",
+                        "enum":[  
+                           "none",
+                           "bottom",
+                           "top"
+                        ],
+                        "default":"bottom"
+                     },
+                     "rownames":{  
+                        "description":"Boolean that specifies whether to show row names",
+                        "type":"boolean",
+                        "default":false
+                     },
+                     "autoHideNavigation":{  
+                        "description":"Boolean that specifies whether to automatically hide navigation elements when number of total records is less than page size",      
+                        "type":"boolean",
+                        "default":true
+                     },
+                     "extensions":{  
+                        "description":"For a list of supported extensions see: https://rstudio.github.io/DT/extensions.html",
+                        "type":["array", "string"],
+                        "uniqueItems":true,
+                        "items":{  
+                           "type":"string",
+                           "enum":[  
+                              "AutoFill",
+                              "Buttons",
+                              "ColReorder",
+                              "ColVis",
+                              "FixedColumns",
+                              "FixedHeader",
+                              "KeyTable",
+                              "Responsive",
+                              "RowReorder",
+                              "Scroller",
+                              "Select"
+                           ]
+                        }
+                     },
+                     "options":{  
+                        "description":"Additional options (e.g. column specific).",
+                        "type":"object",
+                        "default": {"pageLength": 15, "decimals": 2},
+                        "properties":{  
+                           "dom":{  
+                              "description":"Defines where the table control elements appear (position) and in what order",
+                              "type":"string",
+                              "minLength":1
+                           },
+                           "buttons":{  
+                              "description":"Buttons or groups of buttons to insert",
+                              "type":["array", "string"],
+                              "uniqueItems":true,
+                              "items":{
+                                  "type": "string",
+                                  "enum":["copy", "csv", "excel", "pdf", "print"]
+                              }
+                           },
+                           "pageLength":{  
+                              "description":"Number of items to display per page",
+                              "type":"integer",
+                              "minimum":1,
+                              "default":15
+                           },
+                           "decimals":{  
+                              "description":"Integer that specifies the number of decimal places to use",
+                              "type":"integer",
+                              "minimum":0,
+                              "default":2
+                           },
+                           "columnDefs":{  
+                              "description":"Column specific options.",
+                              "type":"array",
+                              "uniqueItems":true,
+                              "items":{  
+                                 "type":"object",
+                                 "required": ["targets"],
+                                 "properties":{  
+                                    "targets":{  
+                                       "anyOf":[  
+                                          {  
+                                             "description":"Column numbers to refer to.",
+                                             "type":["array", "integer"],
+                                             "minimum":1,
+                                             "minItems":1,
+                                             "items":{  
+                                                "type":"integer",
+                                                "minimum":1
+                                             }
+                                          },
+                                          {  
+                                             "description":"Use _all_ to refer to all the columns",
+                                             "type":"string",
+                                             "minLength":1
+                                          }
+                                       ]
+                                    },
+                                    "className":{  
+                                       "type":"string",
+                                       "minLength":1
+                                    },
+                                    "visible":{  
+                                       "type":"boolean"
+                                    },
+                                    "searchable":{  
+                                       "type":"boolean"
+                                    }
+                                 }
+                              }
+                           }
+                        }
                      }
                   },
                   "additionalProperties":false,
@@ -1608,6 +1861,7 @@
             "options":{  
                "description":"Additional options (e.g. column specific).",
                "type":"object",
+               "default": {"pageLength": 15},
                "properties":{  
                   "dom":{  
                      "description":"Defines where the table control elements appear (position) and in what order",
@@ -1671,6 +1925,38 @@
                   }
                }
             }
+         }
+      },
+      "inputWidgetGroups":{
+         "description": "Specify input widgets that shall be aggregated to groups",
+         "type": "array",
+         "minItems":1,
+         "items":{
+           "type":"object",
+           "additionalProperties":false,
+           "required": ["name", "members"],
+           "properties":{
+              "name":{
+                "description":"Specify the name of the group as it is displayed in the UI",
+                "type":"string",
+                "minLength":1
+              },
+              "members":{
+                "description":"Specify the group members (input widgets)",
+                "type":["array", "string"],
+                "uniqueItems":true,
+                "minItems":1,
+                "items":{
+                  "type":"string",
+                  "minLength":1
+                }
+              },
+              "sameTab":{
+                "description":"Gather grouped symbols on same tab",
+                "type":"boolean",
+                "default":true
+              }
+           }
          }
       },
       "inputGroups":{

@@ -1,6 +1,6 @@
 context("gdxio class")
 
-load(file.path(getwd(), "dätä/test_gdxio.miroconf"), .GlobalEnv)
+load(file.path(getwd(), "data/test_gdxio.miroconf"), .GlobalEnv)
 source("../../global.R")
 source("../../components/util.R")
 source("../../components/gdxio.R")

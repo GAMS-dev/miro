@@ -1,4 +1,4 @@
-app <- ShinyDriver$new("../", loadTimeout = 1000000)
+app <- ShinyDriver$new("../", loadTimeout = 20000)
 app$snapshotInit("config_mode_graph_test")
 Sys.sleep(2)
 app$snapshot(items = list(input = "deleteGraph"), screenshot = TRUE)
