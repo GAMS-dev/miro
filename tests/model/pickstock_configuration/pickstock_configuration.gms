@@ -16,6 +16,7 @@ $gdxin stockdata
 $load price
 
 Singleton Set solver / CPLEX /;
+Singleton Set clearValueSet / asd /;
 $offExternalInput
 
 Alias (d,date), (s,symbol);

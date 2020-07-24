@@ -21,9 +21,9 @@
 		},
 		"_scalars":	{
 			"alias":	"Input Scalars",
-			"symnames":	["maxstock", "trainingdays", "solver"],
-			"symtext":	["maximum number of stocks to select", "number of days for training", "solver"],
-			"symtypes":	["parameter", "parameter", "set"],
+			"symnames":	["maxstock", "trainingdays", "solver", "clearvalueset"],
+			"symtext":	["maximum number of stocks to select", "number of days for training", "solver", "clearvalueset"],
+			"symtypes":	["parameter", "parameter", "set", "set"],
 			"headers":	{
 				"scalar":	{
 					"type":	"string",

@@ -22,7 +22,6 @@
       "heatmap": true
     },
     "maxstock": {
-      "label": "select the maximum number of stocks",
       "widgetType": "slider",
       "alias": "maximum number of stocks to select",
       "min": 1,
@@ -30,28 +29,37 @@
       "default": 3,
       "step": 1,
       "ticks": false,
-      "noHcube": false
+      "noHcube": false,
+      "label": "select the maximum number of stocks"
     },
     "trainingdays": {
-      "label": "select the number of days for training",
+      "widgetType": "slider",
+      "alias": "number of days for training",
       "min": 1,
+      "max": "card(price$date)",
       "default": 99,
       "step": 1,
-      "max": "card(price$date)",
-      "alias": "number of days for training",
-      "widgetType": "slider",
       "ticks": false,
-      "noHcube": false
+      "noHcube": false,
+      "label": "select the number of days for training"
     },
     "solver": {
-      "alias": "MIP-Solver",
       "widgetType": "dropdown",
-      "label": "Solver to use",
+      "alias": "MIP-Solver",
       "choices": ["BARON", "BDMLP", "CBC", "CPLEX", "LINDO", "LINDOGLOBAL", "MOSEK", "SCIP", "XPRESS"],
       "selected": "CPLEX",
       "noHcube": false,
       "clearValue": false,
-      "multiple": false
+      "multiple": false,
+      "label": "Solver to use"
+    },
+    "clearvalueset": {
+      "widgetType": "textinput",
+      "alias": "clearvalueset",
+      "value": "element text",
+      "placeholder": "value communicated with GAMS as element text",
+      "clearValue": true,
+      "label": "clear the value"
     },
     "_gmspar_sliderrange": {
       "widgetType": "slider",
@@ -62,8 +70,8 @@
       "step": 3,
       "ticks": true,
       "noHcube": true,
-      "label": "select the slider range",
-      "minStep": 1
+      "minStep": 1,
+      "label": "select the slider range"
     },
     "_gmsopt_checkbox": {
       "widgetType": "checkbox",
@@ -81,8 +89,8 @@
       "weekstart": 1,
       "autoclose": true,
       "noHcube": false,
-      "label": "select a date",
       "value": "2020-07-15",
+      "label": "select a date",
       "min": "2020-01-01",
       "daysofweekdisabled": [0, 6]
     },
@@ -109,12 +117,12 @@
       "alias": "numericinput tab",
       "value": 4000.56,
       "min": -1,
+      "max": 10000,
       "decimal": 3,
       "decimalCharacter": ",",
       "digitGroupSeparator": ".",
-      "label": "select a number",
-      "max": 10000,
-      "sign": "€"
+      "sign": "€",
+      "label": "select a number"
     }
   },
   "dataRendering": {
@@ -376,10 +384,7 @@
           "axisLabelFontSize": 14,
           "gridLineWidth": 0.3,
           "gridLineColor": "gray",
-          "valueRange": [
-            null,
-            null
-          ],
+          "valueRange": [null, null],
           "independentTicks": true
         },
         "yaxis2": {
@@ -389,10 +394,7 @@
           "axisLabelFontSize": 14,
           "gridLineWidth": 0.3,
           "drawGrid": true,
-          "valueRange": [
-            null,
-            null
-          ],
+          "valueRange": [null, null],
           "independentTicks": true
         },
         "dyEvent": {
