@@ -62,9 +62,9 @@ getModelPath <- function(modelPath = NULL, envVarPath = NULL){
   }else{
     modelPath <- envName
   }
-  gmsFileName  <- basename(modelPath)
-  modelNameRaw <- gsub("\\.[[:alpha:]]{2,3}$", "", gmsFileName)
-  modelDir     <- dirname(modelPath)
+  gmsFileName  <- enc2native(basename(modelPath))
+  modelNameRaw <- enc2native(gsub("\\.[[:alpha:]]{2,3}$", "", gmsFileName))
+  modelDir     <- enc2native(dirname(modelPath))
   return(list(modelDir, gmsFileName, tolower(modelNameRaw), modelNameRaw))
 }
 getInputToImport <- function(data, keywordsNoImport){
@@ -1213,8 +1213,7 @@ zipMiro <- function(zipfile, files, baseDir, ...){
   currentWd <- getwd()
   on.exit(setwd(currentWd))
   setwd(baseDir)
-  
-  suppressMessages(zip::zip(zipfile, files, ...))
+  suppressMessages(zip::zip(zipfile, nativeFileEnc(files), ...))
 }
 getHcubeScalars <- function(modelIn){
   return(names(modelIn)[vapply(seq_along(modelIn), 
