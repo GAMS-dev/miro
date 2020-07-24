@@ -493,36 +493,14 @@ putclose;
                                     <h6 class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Restrict editing of tables? If activated, tables can not be modified by the user.</h6>
                                     <div class="expanded"><p>Sets all input tables to readonly. No manual edits can be made by the user. Database scenarios or local data can still be loaded.</p>
                                     </div>
-                                    <h6 class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Highlight the column/row of current active cell</h6>
-                                    <div class="expanded"><p>With these options you can enable/disable the highlighting of selected rows/columns in the table.
-                                    Note that there is no live preview available for these options.</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/tables_highlight.png" alt="Highlighting of columsn/rows" />
-                                    </div>
-                                    </div>
                                     <h6 class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Default column stretching</h6>
                                     <div class="expanded"><p>Sets the general stretch behavior of columns. Available options are <i>no stretch</i>, 
                                     <i>stretch last column</i> and <i>stretch all columns</i>. Stretched columns mean that the table always fills the 
                                     entire window width. With large tables, this can have a negative effect on the performance of the application. 
-                                    Columns that are not set to stretch have a default column with of 150px.</p>
+                                    Columns that are not set to stretch have a default column with of 200px.</p>
                                     </div>
-                                    <h6 class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Set custom column width</h6>
-                                    <div class="expanded"><p>Here, the default column with of 150px can be adjusted. It is recommended not to choose column widths that are too small, otherwise the table contents may not be displayed correctly. </p>
-                                    </div>
-                                    <h6 class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Enable column sorting in ascending/descending order</h6>
-                                    <div class="expanded"><p>If activated, table columns can be sorted in ascending and descending order.</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/tables_column_sorting.png" alt="Column sorting" />
-                                    </div>
-                                    <div class="callout-block callout-warning">
-                                        <div class="icon-holder">
-                                            <i class="fas fa-info-circle"></i>
-                                        </div><!--//icon-holder-->
-                                        <div class="content">
-                                            <b class="callout-title">Note:</b>
-                                            <p>This functionality is not available in a table if the <a href = "#table-option-pivot" class = "scrollto">pivot</a> option is used.</p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block-->
+                                    <h6 class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Width of a single (non-streched) column.</h6>
+                                    <div class="expanded"><p>Here, the default column with of 200px can be adjusted. It is recommended not to choose column widths that are too small, otherwise the table contents may not be displayed correctly. </p>
                                     </div>
                                     <h6 class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Enable manual column resizing</h6>
                                     <div class="expanded"><p>Enables/disables the manual setting of the column width by the user. </p>

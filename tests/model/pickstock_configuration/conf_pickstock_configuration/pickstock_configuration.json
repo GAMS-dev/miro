@@ -862,15 +862,11 @@
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
-    "highlightCol": false,
-    "highlightRow": false,
-    "columnSorting": false,
     "manualColumnResize": false,
     "contextMenu": {
       "enabled": true,
       "allowRowEdit": false,
-      "allowColEdit": false,
-      "allowReadOnly": true
+      "allowColEdit": false
     },
     "height": 250,
     "colWidths": 200

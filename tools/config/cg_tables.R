@@ -62,16 +62,6 @@ getHotOptions <- reactive({
                                 value = if(length(configJSON$handsontable$readonly)) configJSON$handsontable$readonly 
                                 else config$handsontable$readonly)
     ),
-    tags$div(class = "shiny-input-container",
-             checkboxInput_MIRO("hot_highcol", lang$adminMode$tables$hot$highcol, 
-                                value = if(length(configJSON$handsontable$highlightCol)) configJSON$handsontable$highlightCol 
-                                else config$handsontable$highlightCol)
-    ),
-    tags$div(class = "shiny-input-container",
-             checkboxInput_MIRO("hot_highrow", lang$adminMode$tables$hot$highrow, 
-                                value = if(length(configJSON$handsontable$highlightRow)) configJSON$handsontable$highlightRow 
-                                else config$handsontable$highlightRow)
-    ),
     tags$div(style = "max-width:400px;",
              selectInput("hot_stretch", lang$adminMode$tables$hot$stretch, 
                          choices = langSpecificTable$stretch,
@@ -79,20 +69,9 @@ getHotOptions <- reactive({
              )),
     conditionalPanel(
       condition = "input.hot_stretch !== 'all'",
-      tags$div(class = "shiny-input-container",
-               checkboxInput_MIRO("hot_customWidth", lang$adminMode$tables$hot$stretchCustom, 
-                                  value = if(length(configJSON$handsontable$colWidths)) TRUE else FALSE)
-      )),
-    conditionalPanel(
-      condition = "input.hot_customWidth===true && input.hot_stretch !== 'all'",
-      tags$div(style = "padding-left:40px;max-width:440px;",
+      tags$div(style = "max-width:400px;",
                numericInput("hot_colwidth", lang$adminMode$tables$hot$colwidth, min = 0L, 
-                            value = if(length(configJSON$handsontable$colWidths)) configJSON$handsontable$colWidths else 150L))),
-    tags$div(class = "shiny-input-container",
-             checkboxInput_MIRO("hot_sort", lang$adminMode$tables$hot$sort, 
-                                value = if(length(configJSON$handsontable$columnSorting)) configJSON$handsontable$columnSorting 
-                                else config$handsontable$columnSorting)
-    ),
+                            value = if(length(configJSON$handsontable$colWidths)) configJSON$handsontable$colWidths else 200L))),
     tags$div(class = "shiny-input-container",
              checkboxInput_MIRO("hot_resize", lang$adminMode$tables$hot$resize, 
                                 value = if(length(configJSON$handsontable$manualColumnResize)) configJSON$handsontable$manualColumnResize 
@@ -112,10 +91,7 @@ getHotOptions <- reactive({
                                   else config$handsontable$contextMenu$allowRowEdit),
                checkboxInput_MIRO("hot_context_coledit", lang$adminMode$tables$hot$contextColedit, 
                                   value = if(length(configJSON$handsontable$contextMenu$allowColEdit)) configJSON$handsontable$contextMenu$allowColEdit 
-                                  else config$handsontable$contextMenu$allowColEdit),
-               checkboxInput_MIRO("hot_context_readonly", lang$adminMode$tables$hot$contextReadonly, 
-                                  value = if(length(configJSON$handsontable$contextMenu$allowReadOnly)) configJSON$handsontable$contextMenu$allowReadOnly 
-                                  else config$handsontable$contextMenu$allowReadOnly)
+                                  else config$handsontable$contextMenu$allowColEdit)
              )
     )
   )
@@ -452,34 +428,19 @@ observeEvent(input$hot_height, {
 observeEvent(input$hot_readonly, {
   rv$tableConfig$handsontable$readonly <<- input$hot_readonly
 })
-observeEvent(input$hot_highcol, {
-  rv$tableConfig$handsontable$highlightCol <<- input$hot_highcol
-})
-observeEvent(input$hot_highrow, {
-  rv$tableConfig$handsontable$highlightRow <<- input$hot_highrow
-})
 observeEvent(input$hot_stretch, {
   rv$tableConfig$handsontable$stretchH <<- input$hot_stretch
-  if(identical(input$hot_stretch, "all")){
-    updateCheckboxInput(session, "hot_customWidth", value=FALSE)
-  }
 })
-observeEvent(input$hot_sort, {
-  rv$tableConfig$handsontable$columnSorting <<- input$hot_sort
-})
-observeEvent(input$hot_move, {
-  rv$tableConfig$handsontable$manualColumnMove <<- input$hot_move
+observeEvent(input$hot_colwidth, {
+  if(!is.na(input$hot_colwidth) && input$hot_colwidth != 0)
+    rv$tableConfig$handsontable$colWidths <<- input$hot_colwidth
+  else
+    rv$tableConfig$handsontable$colWidths <<- 200L
 })
 observeEvent(input$hot_resize, {
   rv$tableConfig$handsontable$manualColumnResize <<- input$hot_resize
 })
 
-observeEvent(input$hot_colwidth, {
-  if(!is.na(input$hot_colwidth) && input$hot_colwidth != 0)
-    rv$tableConfig$handsontable$colWidths <<- input$hot_colwidth
-  else
-    rv$tableConfig$handsontable$colWidths <<- 300L
-})
 observeEvent(input$hot_context_enable, {
   rv$tableConfig$handsontable$contextMenu$enabled <<- input$hot_context_enable
 })
@@ -488,9 +449,6 @@ observeEvent(input$hot_context_rowedit, {
 })
 observeEvent(input$hot_context_coledit, {
   rv$tableConfig$handsontable$contextMenu$allowColEdit <<- input$hot_context_coledit
-})
-observeEvent(input$hot_context_readonly, {
-  rv$tableConfig$handsontable$contextMenu$allowReadOnly <<- input$hot_context_readonly
 })
 
 observeEvent(input$dt_class, {
@@ -547,17 +505,17 @@ observe({
                             readOnly = hotOptions$readonly, selectCallback = TRUE,
                             digits = NA)
         ht <- hot_table(ht, contextMenu = hotOptions$contextMenu$enabled, 
-                        highlightCol = hotOptions$highlightCol, 
-                        highlightRow = hotOptions$highlightRow,
+                        highlightCol = config$handsontable$highlightCol, 
+                        highlightRow = config$handsontable$highlightRow,
                         rowHeaderWidth = hotOptions$rowHeaderWidth,
                         stretchH = hotOptions$stretchH,
                         overflow = hotOptions$overflow)
         if(isTRUE(hotOptions$contextMenu$enabled)){
           ht <- hot_context_menu(ht, allowRowEdit = hotOptions$contextMenu$allowRowEdit, 
                                  allowColEdit = hotOptions$contextMenu$allowColEdit, 
-                                 allowReadOnly = hotOptions$contextMenu$allowReadOnly)
+                                 allowReadOnly = config$handsontable$contextMenu$allowReadOnly)
         }
-        ht <- hot_cols(ht, columnSorting = hotOptions$columnSorting, 
+        ht <- hot_cols(ht, columnSorting = config$handsontable$columnSorting, 
                        manualColumnMove = hotOptions$manualColumnMove, 
                        manualColumnResize = hotOptions$manualColumnResize, 
                        colWidths = hotOptions$colWidths, 

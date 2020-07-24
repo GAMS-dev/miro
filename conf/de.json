@@ -1061,18 +1061,13 @@
       "hot":{
         "height": "Höhe der Eingabetabellen (in px)",
         "readonly": "Bearbeitung von Tabellen verbieten? Wenn aktiviert, können Tabellen vom Benutzer nicht geändert werden.",
-        "highcol": "Markieren der aktiven Spalte (keine Live-Vorschau).",
-        "highrow": "Markieren der aktiven Zeile (keine Live-Vorschau).",
         "stretch": "Strecken von Tabellenspalten.",
         "stretchChoices": ["Nicht strecken", "Letzte Spalte strecken", "Alle Spalten strecken"],
-        "stretchCustom": "Benutzerdefinierte Spaltenbreite einstellen.",
-        "colwidth": "Breite einer einzelnen (nicht gestreckten) Spalte.",
-        "sort": "Spaltensortierung in aufsteigender/absteigender Reihenfolge aktivieren (durch Klicken auf den Spaltennamen in der Kopfzeile).",
+        "colwidth": "Breite einer einzelnen (nicht gestreckten) Spalte. Für den Standardwert leer lassen oder auf 0 setzen.",
         "resize": "Manuelle Anpassung der Spaltenbreite aktivieren.",
         "enable": "Kontextmenü der Tabelle aktivieren (erreichbar über rechte Maustaste).",
         "contextRowedit": "Zeilenbearbeitung aktivieren",
-        "contextColedit": "Spaltenbearbeitung aktivieren",
-        "contextReadonly": "schreibgeschützt-Toggle aktivieren"
+        "contextColedit": "Spaltenbearbeitung aktivieren"
       },
       "dt":{
         "class":{

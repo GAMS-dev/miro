@@ -1061,18 +1061,14 @@
       "hot":{
         "height": "输入表格的高度（以px为单位）",
         "readonly": "要限制用户编辑表格？ 如果激活，则用户无法修改表格。",
-        "highcol": "突出显示选中单元格的列（不支持实时预览）。",
-        "highrow": "突出显示选中单元格的行（不支持实时预览）。",
         "stretch": "指定默认单元格的列的拉伸样式",
         "stretchChoices": ["无拉伸", "仅拉伸最后一列", "拉伸所有列"],
-        "stretchCustom": "设置自定义列宽。",
+        "stretchCustom": "设置自定义列宽。 留空或0设置默认值。",
         "colwidth": "单个（未拉伸）列的宽度。",
-        "sort": "允许用户对列按照升序或降序进行排序（通过单击标题行中的列名称）。",
         "resize": "允许用户手动调整列的大小。",
         "enable": "允许使用表格的上下文菜单（通过鼠标右键单击访问）。",
         "contextRowedit": "允许行编辑",
-        "contextColedit": "允许列编辑",
-        "contextReadonly": "允许只读功能"
+        "contextColedit": "允许列编辑"
       },
       "dt":{
         "class":{
