@@ -288,6 +288,7 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
     }else if(miroDeploy){
       errMsg <- paste(errMsg, paste0("No model data ('", modelName, "_files.txt') found."), 
                       sep = "\n")
+      attr(errMsg, "noMA") <- TRUE
     }
     if(miroDeploy){
       if(file.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))){
@@ -448,10 +449,16 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "<a href=\\'http://www.gams.com/miro/license.html\\' target=\\'_blank\\'>here</a>.")
 if(miroBuildonly){
   if(!is.null(errMsg)){
+    if(file.exists(file.path(currentModelDir,
+                             paste0(modelNameRaw, ".miroapp"))) &&
+       unlink(file.path(currentModelDir,
+                        paste0(modelNameRaw, ".miroapp")), force = TRUE) == 1){
+      warning("Problems removing corrupted miroapp file")
+    }
     warning(errMsg)
     if(interactive())
       stop()
-    if(identical(errMsg, paste0("\nNo model data ('", modelName, "_files.txt') found."))){
+    if(isTRUE(attr(errMsg, "noMA"))){
       quit("no", status = 2)
     }else{
       quit("no", status = 1) 
