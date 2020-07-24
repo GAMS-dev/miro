@@ -1339,7 +1339,9 @@
       "textinput":{
         "label": "Wählen Sie eine Widget-Beschriftung",
         "value": "Wählen Sie einen Standardwert",
-        "placeholder": "Wählen Sie einen Platzhalter"
+        "placeholder": "Wählen Sie einen Platzhalter",
+        "clearValue": "Als Elementtext mit GAMS kommunizieren",
+        "clearValueTooltip": "Bewirkt, dass das Elementlabel ein leerer String ist. - Dokumentation öffnen"
       },
       "numericinput":{
         "label": "Wählen Sie eine Widget-Beschriftung",

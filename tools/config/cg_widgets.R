@@ -1254,8 +1254,13 @@ observeEvent({input$widget_type
            rv$widgetConfig <- list(widgetType = "textinput",
                                    alias = widgetAlias,
                                    value = if(length(currentConfig$value)) currentConfig$value else "",
-                                   placeholder = if(length(currentConfig$placeholder)) currentConfig$placeholder else "")
+                                   placeholder = if(length(currentConfig$placeholder)) currentConfig$placeholder else "",
+                                   clearValue = isTRUE(currentConfig$clearValue))
            rv$widgetConfig$label <- currentConfig$label
+           singletonSetId <- NA_integer_
+           if(scalarsFileName %in% names(modelInRaw)){
+             singletonSetId <- match(currentWidgetSymbolName, modelInRaw[[scalarsFileName]]$symnames)[1L]
+           }
            insertUI(selector = "#widget_options",
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",
@@ -1268,7 +1273,16 @@ observeEvent({input$widget_type
                                tags$div(class = "two-col-left",
                                         textInput("widget_value", lang$adminMode$widgets$textinput$value, value = rv$widgetConfig$value)),
                                tags$div(class = "two-col-right",
-                                        textInput("text_placeholder", lang$adminMode$widgets$textinput$placeholder, value = rv$widgetConfig$placeholder)))
+                                        textInput("text_placeholder", lang$adminMode$widgets$textinput$placeholder, value = rv$widgetConfig$placeholder))),
+                      if(!is.na(singletonSetId) && 
+                         identical(modelInRaw[[scalarsFileName]]$symtypes[singletonSetId], "set")){
+                        tags$div(class = "shiny-input-container two-col-wrapper",
+                                 tags$div(class = "two-col-left",
+                                          checkboxInput_MIRO("widget_clearValue", labelTooltip(lang$adminMode$widgets$textinput$clearValue, 
+                                                                                             lang$adminMode$widgets$textinput$clearValueTooltip, 
+                                                                                             "https://gams.com/miro/widgets.html#textbox-option-clearvalue"), 
+                                                             value = rv$widgetConfig$clearValue)))
+                      }
                     ), 
                     where = "beforeEnd")
            

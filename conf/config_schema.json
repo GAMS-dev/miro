@@ -718,6 +718,10 @@
                        "integer"
                      ],
                      "minLength":1
+                   },
+                   "clearValue":{
+                      "description":"Whether to communicate only element text with GAMS. This will not mess up the UEL order.",
+                      "type":"boolean"
                    }
                  },
                  "required":[  
