@@ -4101,14 +4101,6 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "highcol": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "highrow": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "stretch": {
                   "type": "string",
                   "minLength": 1
@@ -4123,15 +4115,7 @@
                     "minLength": 1
                   }
                 },
-                "stretchCustom": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "colwidth": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "sort": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -4150,13 +4134,9 @@
                 "contextColedit": {
                   "type": "string",
                   "minLength": 1
-                },
-                "contextReadonly": {
-                  "type": "string",
-                  "minLength": 1
                 }
               },
-              "minProperties": 14
+              "minProperties": 9
             },
             "dt": {
               "type": "object",
@@ -5256,6 +5236,14 @@
                   "minLength": 1
                 },
                 "placeholder": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "clearValue": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "clearValueTooltip": {
                   "type": "string",
                   "minLength": 1
                 }

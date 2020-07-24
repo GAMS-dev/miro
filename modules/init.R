@@ -234,6 +234,10 @@ if(is.null(errMsg)){
           modelIn[[el_l]]$noImport <- widgetConfig$noImport
           widgetConfig$noImport    <- NULL
         }
+        if(isTRUE(widgetConfig$clearValue) && !identical(widgetType, "dropdown")){
+          config$textOnlySymbols <- c(config$textOnlySymbols, el)
+          widgetConfig$clearValue  <- NULL
+        }
         config$inputWidgets[[el]]     <- NULL
         modelIn[[el_l]][[widgetType]] <- widgetConfig
         modelIn[[tolower(scalarsFileName)]]$symnames <- modelIn[[tolower(scalarsFileName)]]$symnames[-c(j)]
@@ -303,6 +307,10 @@ if(is.null(errMsg)){
       if(!is.null(widgetConfig$noImport)){
         modelIn[[i]]$noImport <- widgetConfig$noImport
         widgetConfig$noImport  <- NULL
+      }
+      if(isTRUE(widgetConfig$clearValue) && !identical(widgetType, "dropdown")){
+        config$textOnlySymbols <- c(config$textOnlySymbols, el)
+        widgetConfig$clearValue  <- NULL
       }
       if(!is.null(widgetConfig$rendererName)){
         modelIn[[i]]$rendererName <- widgetConfig$rendererName

@@ -17,14 +17,10 @@ configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_
 #general input table settings
 expect_identical(configRaw$handsontable$stretchH, configNew$handsontable$stretchH)
 expect_identical(configRaw$handsontable$readonly, configNew$handsontable$readonly)
-expect_identical(configRaw$handsontable$highlightCol, configNew$handsontable$highlightCol)
-expect_identical(configRaw$handsontable$highlightRow, configNew$handsontable$highlightRow)
-expect_identical(configRaw$handsontable$columnSorting, configNew$handsontable$columnSorting)
 expect_identical(configRaw$handsontable$manualColumnResize, configNew$handsontable$manualColumnResize)
 expect_identical(configRaw$handsontable$contextMenu$enabled, configNew$handsontable$contextMenu$enabled)
 expect_identical(configRaw$handsontable$contextMenu$allowRowEdit, configNew$handsontable$contextMenu$allowRowEdit)
 expect_identical(configRaw$handsontable$contextMenu$allowColEdit, configNew$handsontable$contextMenu$allowColEdit)
-expect_identical(configRaw$handsontable$contextMenu$allowReadOnly, configNew$handsontable$contextMenu$allowReadOnly)
 expect_identical(configRaw$handsontable$height, configNew$handsontable$height)
 expect_identical(configRaw$handsontable$colWidths, configNew$handsontable$colWidths)
 

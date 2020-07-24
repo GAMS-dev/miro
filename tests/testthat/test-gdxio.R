@@ -220,6 +220,32 @@ test_that("Writing of singleton set with data from dropdown and clearValue=TRUE 
                                                 NA_character_)))
 })
 
+test_that("Reading / writing of textOnlySymbols works", {
+  gdxio <- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", "bin"), 
+                     c(modelInRaw, modelOut), 
+                     scalarsFileName, scalarsOutName, 
+                     scalarEquationsName, 
+                     scalarEquationsOutName,
+                     list(),
+                     textOnlySymbols = c("sub_i"))
+  scalarData <- tibble::tibble(`scalarSymbols$symnames` = 'sub_i',
+                               `scalarSymbols$symtext` = 'sub_i',
+                               `vapply(...)` = 'test')
+  data <- list(scalarData)
+  names(data) <- scalarsFileName
+  filePath <- filePathEnc
+  on.exit(unlink(filePath), add = TRUE)
+  gdxio$wgdx(filePath, data)
+  expect_equal(gdxio$rgdx(filePath, scalarsFileName), 
+               tibble::tibble(`scalarSymbols$symnames` = c('sub_i', 'f', 'mins', 'beta'),
+                              `scalarSymbols$symtext` = c('sub_i', 'freight in dollars per case per thousand miles',
+                                                          'minimum shipment (MIP- and MINLP-only)',
+                                                          'beta (MINLP-only)'),
+                              `vapply(...)` = c('test', NA_character_, NA_character_,
+                                                NA_character_)))
+  expect_identical(gdxrrwMIRO::rgdx(filePath, list(name = "sub_i", te = TRUE))$te, "test")
+})
+
 test_that("Reading/writing unicode characters work", {
   setData <- tibble::tibble('1' = c("seattle䤉䤉", "😀😀😀😀😀😀😀"), '2' = c("😈", "ધધધધ"))
   data <- list(setData)

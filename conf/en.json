@@ -1061,18 +1061,13 @@
       "hot":{
         "height": "Height of input tables (in px)",
         "readonly": "Restrict editing of tables? If activated, tables can not be modified by the user.",
-        "highcol": "Highlight the column of current active cell (no live preview).",
-        "highrow": "Highlight the row of current active cell (no live preview).",
         "stretch": "Default column stretching.",
         "stretchChoices": ["No stretch", "Stretch last column", "Stretch all columns"],
-        "stretchCustom": "Set custom column width.",
-        "colwidth": "Width of a single (non-streched) column.",
-        "sort": "Enable column sorting in ascending/descending order (by clicking on column name in header row).",
+        "colwidth": "Width of a single (non-streched) column. Leave empty or 0 to set the default value.",
         "resize": "Enable manual column resizing.",
         "enable": "Enable table context menu (accessible via right mouse click).",
         "contextRowedit": "Enable row editing",
-        "contextColedit": "Enable column editing",
-        "contextReadonly": "Enable readonly toggle"
+        "contextColedit": "Enable column editing"
       },
       "dt":{
         "class":{
@@ -1339,7 +1334,9 @@
       "textinput":{
         "label": "Choose a label",
         "value": "Choose the default value",
-        "placeholder": "Choose a placeholder"
+        "placeholder": "Choose a placeholder",
+        "clearValue": "Communicate as element text with GAMS",
+        "clearValueTooltip": "Causes element label to be an empty string. - Open documentation"
       },
       "numericinput":{
         "label": "Choose a label",
