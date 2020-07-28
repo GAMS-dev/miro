@@ -647,6 +647,22 @@
                                     </div>
                                 </div><!--//section-block-->
                             </section>
+                            <section id="performance-aspects" class="doc-section">
+                                <h2 class="section-title">Performance Aspects</h2>
+                                <div  class="section-block">
+                                    <p>The size and/or complexity of a GAMS model has no influence on the performance of a MIRO application. As the <a href="#data-concept" class="scrollto">data concept</a> shows, only data is communicated between model and application, more precisely the data of all symbols which are visible in MIRO. Therefore the amount of data to be exchanged and its visualization have a decisive effect on the performance. 
+                                    Important factors are:</p>
+                                    <ul>
+                                      <li>Number of symbols that are communicated with MIRO<br>
+                                      The number of symbols displayed in MIRO has a particular effect on the start-up time of an application. For each non-scalar symbol a table and a graphic is rendered in a separate tab. MIRO is not designed to display several dozen symbols at once. However, it should be no problem to use 50 symbols in MIRO (rough guide). Nevertheless, it should be reflected whether it makes sense to have such a large number of symbols in the user interface. Should the data of all these symbols be displayed in tables and be editable? Or do many of the symbols represent static data which can also be communicated in other ways? With an increasing number of symbols, the following aspects should also be taken into consideration.</li>
+                                      <li>Amount of data that is communicated with MIRO<br>
+                                      Data is rendered in MIRO in form of a table and a graphic. The larger the amount of data, the more computationally intensive this procedure becomes. Furthermore, the rendering of graphics can be of varying complexity. While a simple pie chart is usually rendered quite quickly, graphics that include <a href="./charts.html#animation">animations</a> can take much more time. With very large amounts of data, which are displayed in MIRO for visualization purposes only, it can make sense from a performance point of view to communicate only parts of the data with MIRO or to visualize only extracts of it. </li>
+                                      <li>Table tool to use<br>
+                                      MIRO provides two different table tools for input symbols, each of which has its advantages and disadvantages. The default tool for input data (<a href="https://github.com/jrowen/rhandsontable" target="_blank">rhandsontable</a>) offers a spreadsheet-like feeling. However, the second table tool (<a href="https://github.com/rstudio/DT" target="_blank">DT</a>) - which is also used for output data - is more performant for large amounts of data. In the Configuration Mode this can be configured for individual symbols as the <a href="./customize.html#table-option-large">table tool to be used</a>.</li>
+                                      <li><a href="./start.html#file-attachments">Attachments</a> offer a convenient way to communicate large amounts of data from MIRO with the GAMS model without significantly affecting the performance of the application. Since attachments are communicated as a file and therefore no data needs to be rendered, they require very few computing resources.</li>
+                                    </ul>
+                                </div><!--//section-block-->
+                            </section>
                             <section id="additional-features" class="doc-section">
                                 <h2 class="section-title">Additional Features </h2>
                                 <div id="multiple-scenarios" class="section-block">
@@ -705,6 +721,7 @@
                                       </nav><!--//nav-->
                                     <a class="nav-link scrollto" href="#data-concept">Data concept</a>
                                     <a class="nav-link scrollto" href="#scenario-concept">Scenario concept</a>
+                                    <a class="nav-link scrollto" href="#performance-aspects">Performance Aspects</a>
                                     <a class="nav-link scrollto" href="#additional-features">Additional features</a>
                                       <nav class="doc-sub-menu nav flex-column">
                                         <a class="nav-link scrollto" href="#multiple-scenarios">Manage multiple scenarios</a>

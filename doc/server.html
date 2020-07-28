@@ -130,8 +130,42 @@
                                       </div><!--//callout-block-->
                                       </li>
                                       <li>Next, login to the GAMS Docker registry. To do so, run <div class = "console-box"><span class="console-content">&gt; docker login hub.gams.com</span></div> with the credentials GAMS provided you with. </li>
-                                      <li>Make sure that you have a valid GAMS license file (<i>gamslice.txt</i>) inside the directory where you unzipped your files.</li>
-                                      <li>Afterwards, you are ready to install MIRO Server by running: <div class = "console-box"><span class="console-content">&gt; ./miro-compose install</span>.</div> During installation you will be asked for a GAMS MIRO Server key (if this was not already set up for you when you by GAMS). The installation script will inform you whether the installation was successful or not.</li>
+                                      <li>Afterwards, you are ready to install MIRO Server by running: <div class = "console-box"><span class="console-content">&gt; ./miro-compose install</span>.</div> The installation script will inform you whether the installation was successful or not.</li>
+                                      <li>GAMS MIRO Server requires an instance of <a href="https://www.gams.com/miro/engine/">GAMS MIRO Engine</a> to solve the GAMS jobs. You have to provide the credentials to GAMS MIRO Engine via environment variables.
+                                      You can either set these variables inside the shell you start GAMS MIRO Server from or append them to the <i>.env</i> file that is located inside the ZIP file mentioned above. The following environment variables have to be set:
+                                      <div class="table-responsive" style="margin:15px auto;">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                  <th style="width:30%;">Environment Variable Name</th>
+                                                  <th>Environment Variable Value</th>
+                                                  <th>Example</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                  <td>GMS_MIRO_ENGINE_HOST</td>
+                                                  <td>IP adress and port/DNS of Engine</td>
+                                                  <td>https://miro.gams.com/engine/api</td>
+                                                </tr>
+                                                <tr>
+                                                  <td>GMS_MIRO_ENGINE_NS</td>
+                                                  <td>Namespace to use for GAMS MIRO Server</td>
+                                                  <td>miro_server</td>
+                                                </tr>
+                                                <tr>
+                                                  <td>GMS_MIRO_ENGINE_USER</td>
+                                                  <td>Name of a user that is an inviter (or admin) inside the given namespace</td>
+                                                  <td>miro_server_admin</td>
+                                                </tr>
+                                                <tr>
+                                                  <td>GMS_MIRO_ENGINE_PWD</td>
+                                                  <td>Password of the user</td>
+                                                  <td>miro_server_admin_password</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                      </div><!--//table-responsive--></li>
                                     </ul>
                                 </div>
                                 <div  id="server-start"  class="section-block">
@@ -167,7 +201,11 @@
                                 <div  id="server-nginx"  class="section-block">
                                     <h3 class="block-title">Nginx example configuration</h3> 
                                     <p>We suggest to run GAMS MIRO Server behind a reverse proxy such as <a href = "https://www.nginx.com/" target = "_blank">nginx</a>. The following configuration will allow you to access GAMS MIRO Server on the root of your server:</p>
-                                     <pre><code class="language-">location / {
+                                     <pre><code class="language-">map $http_upgrade $connection_upgrade {
+   default upgrade;
+   ''      close;
+}
+location / {
     proxy_pass http://127.0.0.1:8080;
 
     client_max_body_size 200M;
@@ -198,11 +236,11 @@
                             <section id="miro-desktop-remote" class="doc-section">
                                 <h2 class="section-title">GAMS MIRO Desktop - Boosted by GAMS MIRO Engine</h2>
                                 <div class="section-block">
-                                    <p>With <i>GAMS MIRO Desktop - Boosted by GAMS MIRO Engine</i>, you can solve GAMS jobs in the cloud with your locally running MIRO applications. In order to use switch from executing your optimization jobs on your local machine to solving them in the cloud you only have to activate the checkbox "Execution of models on GAMS MIRO Engine" in the preferences of GAMS MIRO.</p> 
+                                    <p>With <i>GAMS MIRO Desktop - Boosted by GAMS MIRO Engine</i>, you can solve GAMS jobs in the cloud with your locally running MIRO applications. This requires an instance of <a href="https://www.gams.com/miro/engine/">GAMS MIRO Engine</a> to solve the GAMS jobs. In order to use switch from executing your optimization jobs on your local machine to solving them in the cloud you only have to activate the checkbox "Execution of models on GAMS MIRO Engine" in the preferences of GAMS MIRO.</p> 
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/remote/remote_enable.png" alt="Enable remote execution" />
                                     </div>
-                                    <p>The next time you start a MIRO application a login button appears in the upper right corner. Click on it in order to connect to the server.</p>
+                                    <p>The next time you start a MIRO application a login button appears in the upper right corner. Click on it in order to connect to GAMS MIRO Engine.</p>
                                     <div class="callout-block callout-success">
                                           <div class="icon-holder">
                                               <i class="fas fa-thumbs-up"></i>
@@ -231,12 +269,6 @@
                                     </up>
                                 </div>
                             </section>  
-                            <section id="miro-server" class="doc-section">
-                                <h2 class="section-title">GAMS MIRO Server</h2>
-                                <div class="section-block">
-                                    <p>Coming soon...</p>
-                                </div>
-                            </section> 
                         </div><!--//content-inner-->
                     </div><!--//doc-content-->
                     <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
@@ -255,7 +287,6 @@
                                   <a class="nav-link scrollto" href="#server-nginx">Nginx example configuration</a>
                                 </nav><!--//nav-->
                                 <a class="nav-link scrollto" href="#miro-desktop-remote">GAMS MIRO Desktop - Boosted by GAMS MIRO Engine</a>
-                                <a class="nav-link scrollto" href="#miro-server">GAMS MIRO Server</a>
                             </nav><!--//doc-menu-->
                         </div>
                     </div><!--//doc-sidebar-->
