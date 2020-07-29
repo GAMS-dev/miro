@@ -1153,7 +1153,22 @@ setDbConfig <- function(){
 }
 file.move <- function(from, to){
   createDirIfNonExistent(to)
-  file.rename(from = from,  to = to)
+  renameErrors <- !suppressWarnings(file.rename(from = from,
+                                                to = to))
+  if(any(renameErrors)){
+    # try to move by copy-remove as a backup
+    file.move2(from = from[renameErrors],
+               to = to[renameErrors])
+  }
+}
+file.move2 <- function(from, to){
+  # move by copy-remove (e.g. cross-partition)
+  createDirIfNonExistent(to)
+  ret <- file.copy2(from = from,  to = to)
+  if(unlink(from, recursive = TRUE, force = TRUE) != 0){
+    flog.warn("Problems removing directory: %s", from)
+  }
+  return(ret)
 }
 file.copy2 <- function(from, to){
   createDirIfNonExistent(to)
