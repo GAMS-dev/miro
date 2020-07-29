@@ -83,9 +83,9 @@ Scenario <- R6Class("Scenario",
                           private$stime     <- Sys.time()
                           private$suid      <- private$uid
                           private$sname     <- sname
+                          private$removeAllExistingAttachments <- TRUE
                           if(length(duplicatedMetadata$attach)){
                             private$localAttachments <- duplicatedMetadata$attach$localAttachments
-                            private$attachmentsToRemove <- duplicatedMetadata$attach$attachmentsToRemove
                             private$attachmentsUpdateExec <- duplicatedMetadata$attach$attachmentsUpdateExec
                             if(length(duplicatedMetadata$attach$sidToDuplicate)){
                               private$sidToDuplicate <- as.integer(duplicatedMetadata$attach$sidToDuplicate)
@@ -140,7 +140,6 @@ Scenario <- R6Class("Scenario",
                         permissionConfig <- list()
                         if(!isTRUE(discardAttach)){
                           attachmentConfig <- list(localAttachments = private$localAttachments,
-                                                   attachmentsToRemove = private$attachmentsToRemove,
                                                    attachmentsUpdateExec = private$attachmentsUpdateExec,
                                                    sidToDuplicate = private$sid)
                         }
@@ -185,6 +184,11 @@ Scenario <- R6Class("Scenario",
                                           writePermAlias = aliases[["writePerm"]],
                                           execPermAlias = aliases[["execPerm"]])
                       },
+                      resetAccessPerm = function(){
+                        private$readPerm  <- private$uid
+                        private$writePerm <- private$uid
+                        private$execPerm  <- private$uid
+                      },
                       save = function(datasets, msgProgress = NULL){
                         # Saves multiple dataframes to database
                         #
@@ -228,8 +232,14 @@ Scenario <- R6Class("Scenario",
                         }
                         # write scenario metadata
                         private$writeMetadata()
-                        # save dirty attachments 
-                        if(length(private$attachmentsToRemove)){
+                        # remove existing scenarios if scenario is overwritten
+                        if(isTRUE(private$removeAllExistingAttachments)){
+                          super$deleteRows(private$dbSchema$tabName[["_scenAttach"]],
+                                           conditionSep = "OR", subsetSids = private$sid)
+                          private$attachmentsToRemove <- character(0L)
+                          private$removeAllExistingAttachments <- FALSE
+                        }else if(length(private$attachmentsToRemove)){
+                          # save dirty attachments 
                           super$deleteRows(private$dbSchema$tabName[["_scenAttach"]], "fileName", 
                                            private$attachmentsToRemove, 
                                            conditionSep = "OR", subsetSids = private$sid)
@@ -375,7 +385,7 @@ Scenario <- R6Class("Scenario",
                         invisible(self)
                       },
                       fetchAttachmentList = function(){
-                        # Fetches file names of saved attachments from database
+                        # Fetches list of attachments
                         # 
                         # Args:
                         #
@@ -553,6 +563,20 @@ Scenario <- R6Class("Scenario",
                         private$localAttachments$execPerm[localFileId]  <- value
                         
                         invisible(self)
+                      },
+                      removeAllAttachments = function(){
+                        # Deletes all attachments from scenario
+                        #
+                        # Returns:
+                        #   R6 object (reference to itself)
+                        
+                        attachmentsToRemove <- self$fetchAttachmentList()[["name"]]
+                        
+                        if(length(attachmentsToRemove) == 0L){
+                          return(invisible(self))
+                        }
+                        return(self$removeAttachments(attachmentsToRemove,
+                                                      removeLocal = TRUE))
                       },
                       removeAttachments = function(fileNames, removeLocal = TRUE){
                         # Deletes attachments from scenario
@@ -767,6 +791,7 @@ Scenario <- R6Class("Scenario",
                       newScen             = logical(1L),
                       traceData           = tibble(),
                       duplicateAttachmentsOnNextSave = FALSE,
+                      removeAllExistingAttachments = FALSE,
                       sidToDuplicate      = integer(0L),
                       localAttachments    = list(filePaths = character(0L), 
                                                  execPerm = logical(0L)),
