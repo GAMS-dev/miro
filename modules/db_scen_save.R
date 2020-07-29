@@ -143,13 +143,20 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   tryCatch({
     if(saveAsFlag){
       if(!is.null(activeScen)){
-        if(length(activeScen$getSid())){
+        if(length(activeScen$getSid()) &&
+           !identical(input$scenName, activeScen$getScenName())){
           duplicatedMetadata <- activeScen$getMetadataInfo(input$newScenDiscardAttach, 
                                                            input$newScenDiscardPerm)
           activeScen <<- NULL
           gc()
         }else{
           activeScen$updateMetadata(newName = input$scenName, newTags = scenTags)
+          if(isTRUE(input$newScenDiscardAttach)){
+            activeScen$removeAllAttachments()
+          }
+          if(isTRUE(input$newScenDiscardPerm)){
+            activeScen$resetAccessPerm()
+          }
         }
       }
       rv$activeSname <<- input$scenName
@@ -172,7 +179,8 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
     scenMetaData[["scen_1_"]] <<- activeScen$getMetadata(lang$nav$excelExport$metadataSheet)
     flog.debug("%s: Scenario saved to database (Scenario: %s).", uid, activeScen$getScenName())
   }, error = function(e) {
-    flog.error("Some error occurred saving scenario to database. Error message: %s.", e)
+    flog.error("Some error occurred saving scenario to database. Error message: %s.",
+               conditionMessage(e))
     errMsg <<- lang$errMsg$saveScen$desc
   })
   if(is.null(showErrorMsg(lang$errMsg$saveScen$title, errMsg))){
