@@ -1591,11 +1591,14 @@ if(!is.null(errMsg)){
           if(length(rv$activeSname)){
             if(length(activeScen))
               activeScen$updateMetadata(newName = rv$activeSname)
-            return(tags$i(paste0("<", htmltools::htmlEscape(rv$activeSname), ">", nameSuffix)))
+            return(tags$i(paste0("<", rv$activeSname, ">", nameSuffix)))
           }
-          return(tags$i(paste0("<", htmltools::htmlEscape(lang$nav$dialogNewScen$newScenName), ">", nameSuffix)))
+          return(tags$i(paste0("<", lang$nav$dialogNewScen$newScenName, ">", nameSuffix)))
         }else{
-          return(paste0(htmltools::htmlEscape(rv$activeSname), nameSuffix))
+          if(activeScen$isReadonlyOrLocked){
+            nameSuffix <- paste0(nameSuffix, ' <i class="fas fa-lock"></i>')
+          }
+          return(HTML(paste0(htmltools::htmlEscape(rv$activeSname), nameSuffix)))
         }
       })
       output$inputDataTitle <- renderUI(getScenTitle())
