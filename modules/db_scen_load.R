@@ -263,13 +263,18 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     if(!loadIntoSandbox){
       tryCatch({
         activeScen <<- Scenario$new(db = db, sid = sidsToLoad[[1]])
-      }, 
+      },
       error = function(e){
         flog.error("Error generating new Scenario object. Error message: '%s'.", e)
         errMsg <<- lang$errMsg$loadScen$desc
       })
       if(is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))){
         return()
+      }
+      if(length(activeScen$getLockUid())){
+        suppressCloseModalLocal <- TRUE
+        showErrorMsg(lang$nav$dialogLockScen$title, sprintf(lang$nav$dialogLockScen$desc,
+                                                            activeScen$getLockUid()))
       }
     }
     

@@ -4087,7 +4087,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 6
+              "minProperties": 8
             },
             "hot": {
               "type": "object",
@@ -5248,7 +5248,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 3
+              "minProperties": 5
             },
             "numericinput": {
               "type": "object",
@@ -7678,7 +7678,7 @@
               "minProperties": 21
             }
           },
-          "minProperties": 24
+          "minProperties": 25
         }
       },
       "minProperties": 7

@@ -104,8 +104,10 @@ closeScenario <- function(){
   # reset model output data
   renderOutputData(rendererEnv)
   activeScenario    <<- NULL
-  if(length(activeScen))
+  if(length(activeScen)){
     activeScen$cleanLocalFiles()
+    activeScen$close()
+  }
   activeScen        <<- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
                                      isNewScen = TRUE)
   rv$activeSname    <<- NULL

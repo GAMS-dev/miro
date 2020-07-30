@@ -397,7 +397,7 @@
     },
     "dialogLockScen":{
       "title":"场景锁定",
-      "desc":"用户'%s'正在访问要加载的场景，请稍后重试。"
+      "desc":"用户'%s'正在访问要加载的场景。"
     },
     "dialogReadonly":{
       "title":"无写入权限",

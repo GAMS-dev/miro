@@ -397,7 +397,7 @@
     },
     "dialogLockScen":{
       "title":"Scenario locked",
-      "desc":"The scenario you want to load is currently being accessed by the user: '%s'. Please try again later."
+      "desc":"The scenario you want to load is currently being accessed by the user: '%s'."
     },
     "dialogReadonly":{
       "title": "No write permissions",

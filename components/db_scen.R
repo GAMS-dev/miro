@@ -134,6 +134,7 @@ Scenario <- R6Class("Scenario",
                       getReadPerm = function() csv2Vector(private$readPerm),
                       getWritePerm = function() csv2Vector(private$writePerm),
                       getExecPerm = function() csv2Vector(private$execPerm),
+                      getLockUid = function() private$lockUid,
                       getMetadataInfo = function(discardAttach = FALSE, discardPerm = FALSE){
                         stopifnot(length(private$sid) > 0L)
                         attachmentConfig <- list()
@@ -753,15 +754,22 @@ Scenario <- R6Class("Scenario",
                         super$exportScenDataset(private$bindSidCol(scriptResults), 
                                                 private$dbSchema$tabName[['_scenScripts']])
                       },
-                      finalize = function(){
+                      close = function(){
                         if(length(private$sid)){
-                          flog.debug("Scenario: '%s' unlocked.", private$sid)
-                          private$unlock()
+                          if(private$isAlreadyLocked){
+                            flog.debug("Scenario: '%s' unlocked.", private$sid)
+                            private$unlock()
+                          }
                           if(private$newScen && !private$scenSaved){
                             flog.debug("Scenario was not saved. Thus, it will be removed.")
                             self$delete()
                           }
+                          private$sid <- integer(0L)
                         }
+                        return(invisible(self))
+                      },
+                      finalize = function(){
+                        
                       }
                     ),
                     active = list(
@@ -792,6 +800,8 @@ Scenario <- R6Class("Scenario",
                       readPerm            = character(0L),
                       writePerm           = character(0L),
                       execPerm            = character(0L),
+                      lockUid             = character(0L),
+                      isAlreadyLocked     = FALSE,
                       dbSchema            = vector("list", 3L),
                       scode               = integer(1L),
                       scenSaved           = logical(1L),
@@ -988,7 +998,7 @@ Scenario <- R6Class("Scenario",
                           return(invisible(self))
                         #END error checks
                         if(private$isReadonly()){
-                          flog.debug("Db: Scenario wasn't locked as it is readonly (Scenario.lock).")
+                          flog.debug("Scenario wasn't locked as it is readonly (Scenario.lock).")
                           return(invisible(self))
                         }
                         if(!DBI::dbExistsTable(private$conn, private$tableNameScenLocks)){
@@ -1016,7 +1026,9 @@ Scenario <- R6Class("Scenario",
                           # a lock already exists for the scenario
                           if(!identical(uidLocked, private$uid)){
                             # user who has currently locked the scenario is not the same as the active user provided
-                            stop(sprintf("Db: %s: The scenario: '%s' is already locked by user: '%s' (Scenario.lock).", private$uid, private$sid, uidLocked), call. = FALSE)
+                            flog.debug("Scenario loaded in readonly mode as it is locked (Scenario.lock).")
+                            private$lockUid <- uidLocked
+                            return(invisible(self))
                           }else{
                             # user who currently has scenario locked is the same, so refresh lock
                             private$unlock()
@@ -1034,6 +1046,7 @@ Scenario <- R6Class("Scenario",
                           stop(sprintf("Db: %s: An error occurred writing to database (Scenario.lock, table: '%s', scenario: '%s'). Error message: %s", 
                                        private$uid, private$tableNameScenLocks, private$sid, e), call. = FALSE)
                         })
+                        private$isAlreadyLocked <- TRUE
                         invisible(self)
                       },
                       unlock = function(){
@@ -1090,6 +1103,9 @@ Scenario <- R6Class("Scenario",
                         #
                         # Returns:
                         #   logical: returns TRUE if scenario is readonly, FALSE otherwise 
+                        if(length(private$lockUid)){
+                          return(TRUE)
+                        }
                         if(any(private$userAccessGroups %in% csv2Vector(private$writePerm))){
                           return(FALSE)
                         }else{

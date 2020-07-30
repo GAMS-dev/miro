@@ -397,7 +397,7 @@
     },
     "dialogLockScen":{
       "title":"Szenario gesperrt",
-      "desc":"Das Szenario, welches Sie laden möchten, wird derzeit vom Benutzer: '%s' bearbeitet. Bitte versuchen Sie es später erneut."
+      "desc":"Das Szenario, welches Sie laden möchten, wird derzeit vom Benutzer: '%s' bearbeitet."
     },
     "dialogReadonly":{
       "title": "Keine Schreibberechtigung",

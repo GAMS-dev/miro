@@ -1508,3 +1508,19 @@ nativeFileEnc <- function(path){
   }
   return(path)
 }
+condition <- function(subclass, message, call = sys.call(-1), ...) {
+  # taken from: Advanced R by Hadley Wickham (chapter about Debugging, 
+  #   condition handling, and defensive programming)
+  structure(
+    class = c(subclass, "condition"),
+    list(message = message, call = call),
+    ...
+  )
+}
+custom_stop <- function(subclass, message, call = sys.call(-1), 
+                        ...) {
+  # taken from: Advanced R by Hadley Wickham (chapter about Debugging, 
+  #   condition handling, and defensive programming)
+  c <- condition(c(subclass, "error"), message, call = call, ...)
+  stop(c)
+}
