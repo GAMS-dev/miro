@@ -543,10 +543,16 @@ Scenario <- R6Class("Scenario",
                         localFileId <- match(fileName, basename(private$localAttachments$filePaths))
                         
                         if(is.na(localFileId)){
-                          private$attachmentsUpdateExec$name <- c(private$attachmentsUpdateExec$name, 
-                                                                  fileName)
-                          private$attachmentsUpdateExec$execPerm <- c(private$attachmentsUpdateExec$execPerm, 
-                                                                      value)
+                          updateId <- match(fileName, private$attachmentsUpdateExec$name)
+                          if(is.na(updateId)){
+                            private$attachmentsUpdateExec$name <- c(private$attachmentsUpdateExec$name, 
+                                                                    fileName)
+                            private$attachmentsUpdateExec$execPerm <- c(private$attachmentsUpdateExec$execPerm, 
+                                                                        value)
+                          }else{
+                            private$attachmentsUpdateExec$name[updateId]     <- fileName
+                            private$attachmentsUpdateExec$execPerm[updateId] <- value
+                          }
                           return(invisible(self))
                         }
                         
