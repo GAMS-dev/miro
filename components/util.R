@@ -1157,6 +1157,8 @@ file.move <- function(from, to){
     # try to move by copy-remove as a backup
     file.move2(from = from[renameErrors],
                to = to[renameErrors])
+  }else{
+    return(!renameErrors)
   }
 }
 file.move2 <- function(from, to){
