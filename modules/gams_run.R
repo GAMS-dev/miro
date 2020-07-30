@@ -1,7 +1,8 @@
 # run GAMS
 storeGAMSOutputFiles <- function(workDir){
   if(config$activateModules$attachments && 
-     config$storeLogFilesDuration > 0L && !is.null(activeScen)){
+     !is.null(activeScen) && 
+     (config$storeLogFilesDuration > 0L || length(config$outputAttachments))){
     errMsg <- NULL
     tryCatch({
       filesToStore <- character(0L)
@@ -13,45 +14,65 @@ storeGAMSOutputFiles <- function(workDir){
       if(config$activateModules$miroLogFile)
         filesToStore <- c(filesToStore, file.path(workDir, config$miroLogFile))
       
+      enforceFileAccess <- rep.int(TRUE, length(filesToStore))
+      fileAccessPerm    <- rep.int(FALSE, length(filesToStore))
+      
+      if(length(config$outputAttachments)){
+        filesToStore <- c(filesToStore, file.path(workDir, vapply(config$outputAttachments, "[[", character(1L),
+                                                                  "filename", USE.NAMES = FALSE)))
+        enforceFileAccess <- c(enforceFileAccess, vapply(config$outputAttachments, function(el) {
+          return(!isFALSE(el[["throwError"]]))}, logical(1L), USE.NAMES = FALSE))
+        fileAccessPerm <- c(fileAccessPerm, vapply(config$outputAttachments, function(el) {
+          return(isTRUE(el[["execPerm"]]))}, logical(1L), USE.NAMES = FALSE))
+      }
+      
       if(!length(filesToStore))
         return()
       
       filesNoAccess <- file.access(filesToStore) == -1L
-      if(any(filesNoAccess)){
-        if(all(filesNoAccess))
+      if(any(filesNoAccess[enforceFileAccess])){
+        if(all(filesNoAccess[enforceFileAccess]))
           stop("fileAccessException", call. = FALSE)
         flog.info("GAMS output files: '%s' could not be accessed. Check file permissions.", 
-                  paste(filesToStore[filesNoAccess], collapse = "', '"))
-        errMsg <- lang$errMsg$saveGAMSLog$noFileAccess
+                  paste(filesToStore[filesNoAccess & enforceFileAccess], collapse = "', '"))
+        errMsg <- sprintf(lang$errMsg$saveAttachments$noFileAccess, 
+                          paste(basename(filesToStore[filesNoAccess & enforceFileAccess]), collapse = "', '"))
+      }
+      if(any(filesNoAccess)){
+        flog.debug("File(s): '%s' were not added as attachment as they could not be accessed.",
+                   paste(filesToStore[filesNoAccess], collapse = "', '"))
       }
       filesToStore <- filesToStore[!filesNoAccess]
+      fileAccessPerm <- fileAccessPerm[!filesNoAccess]
       filesTooLarge <- file.size(filesToStore) > attachMaxFileSize
       if(any(filesTooLarge)){
         if(all(filesTooLarge))
           stop("fileSizeException", call. = FALSE)
         flog.info("GAMS output files: '%s' are too large. They will not be saved.", 
                   paste(filesToStore[filesTooLarge], collapse = "', '"))
-        errMsg <<- paste(errMsg, lang$errMsg$saveGAMSLog$fileSizeExceeded, sep = "\n")
+        errMsg <- paste(errMsg, sprintf(lang$errMsg$saveAttachments$fileSizeExceeded, 
+                                        paste(basename(filesToStore[filesTooLarge]), collapse = "', '")), sep = "\n")
       }
-      filesToStore <- filesToStore[!filesTooLarge]
-      activeScen$addAttachments(filesToStore, overwrite = TRUE, 
-                                execPerm = rep.int(FALSE, length(filesToStore)))
+      activeScen$addAttachments(filesToStore[!filesTooLarge], overwrite = TRUE, 
+                                execPerm = fileAccessPerm[!filesTooLarge])
     }, error = function(e){
       switch(conditionMessage(e),
              fileAccessException = {
                flog.info("No GAMS output files could not be accessed. Check file permissions.")
-               errMsg <<- lang$errMsg$saveGAMSLog$noFileAccess
+               errMsg <<- sprintf(lang$errMsg$saveAttachments$noFileAccess, 
+                                  paste(basename(filesToStore), collapse = "', '"))
              },
              fileSizeException = {
                flog.info("All GAMS output files are too large to be saved.")
-               errMsg <<- lang$errMsg$saveGAMSLog$fileSizeExceeded
+               errMsg <<- sprintf(lang$errMsg$saveAttachments$fileSizeExceeded, 
+                                  paste(basename(filesToStore), collapse = "', '"))
              },
              {
                flog.error("Problems while trying to store GAMS output files in the database. Error message: '%s'.", e)
                errMsg <<- lang$errMsg$unknownError
              })
     })
-    showErrorMsg(lang$errMsg$saveGAMSLog$title, errMsg)
+    showErrorMsg(lang$errMsg$saveAttachments$title, errMsg)
   }
 }
 prepareModelRun <- function(async = FALSE){
@@ -71,6 +92,9 @@ prepareModelRun <- function(async = FALSE){
                                 gdxio = gdxio, csvDelim = config$csvDelim)
   lapply(seq_along(dataTmp), function(i){
     # write compile time variable file and remove compile time variables from scalar dataset
+    if(is.null(dataTmp[[i]])){
+      return()
+    }
     if(identical(tolower(names(dataTmp)[[i]]), scalarsFileName)){
       # scalars file exists, so remove compile time variables from it
       DDParIdx           <- dataTmp[[i]][[1]] %in% outer(DDPar, c("", "$lo", "$up"), 
@@ -106,19 +130,19 @@ prepareModelRun <- function(async = FALSE){
         pfGMSOpt      <- pfGMSOpt[!is.na(pfGMSOpt)]
         pfFileContent <<- c(pfGMSPar, pfGMSOpt)
         # remove those rows from scalars file that are compile time variables
-        csvData <- dataTmp[[i]][!(DDParIdx | GMSOptIdx), ]
+        modelInputData[[i]] <<- dataTmp[[i]][!(DDParIdx | GMSOptIdx), ]
       }else{
-        csvData <- dataTmp[[i]]
+        modelInputData[[i]] <<- dataTmp[[i]]
       }
       rm(GMSOptValues, DDParValues)
     }else if(identical(modelIn[[names(dataTmp)[[i]]]]$type, "dropdown") &&
              names(dataTmp)[[i]] %in% modelInTabularDataBase){
-      csvData <- ddToTibble(dataTmp[[i]][[1L]], modelIn[[names(dataTmp)[[i]]]])
+      modelInputData[[i]] <<- ddToTibble(dataTmp[[i]][[1L]], modelIn[[names(dataTmp)[[i]]]])
     }else{
-      csvData <- dataTmp[[i]]
+      modelInputData[[i]] <<- dataTmp[[i]]
     }
     
-    inputData$push(names(dataTmp)[[i]], csvData)
+    inputData$push(names(dataTmp)[[i]], modelInputData[[i]])
   })
   if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
     return(NULL)
@@ -277,7 +301,7 @@ if(LAUNCHHCUBEMODE){
              dropdown = {
                if(isTRUE(modelIn[[i]]$dropdown$checkbox)){
                  convertNumeric <- TRUE
-               }else if(!isTRUE(modelIn[[i]]$dropdown$single)){
+               }else if(!isTRUE(modelIn[[i]]$dropdown$single) && isTRUE(modelIn[[i]]$dropdown$multiple)){
                  data <- ddToTibble(sort(input[["dropdown_" %+% i]]), modelIn[[i]])
                  staticData$push(names(modelIn)[[i]], data)
                  return(paste0(parPrefix, "= ", digest(data, algo = "md5")))
@@ -389,7 +413,7 @@ if(LAUNCHHCUBEMODE){
     return(list(ids = scenIds, gmspar = gmsString, attachmentFilePaths = attachmentFilePaths))
   })
   
-  prevJobSubmitted <- Sys.time()
+  prevJobSubmitted <- Sys.time() - 5L
   
   runHcubeJob <- function(scenGmsPar, downloadFile = NULL){
     if(!length(scenGmsPar)){
@@ -669,6 +693,22 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     return(NULL)
   }
   dataTmp <- dataModelRun$dataTmp
+  if(any(config$activateModules$logFile,
+         config$activateModules$miroLogFile)){
+    if(config$activateModules$logFile){
+      logFilePath <- file.path(workDir, modelName %+% ".log")
+      logContainerId <- "#logStatus"
+    }else{
+      logFilePath <- file.path(workDir, config$miroLogFile)
+      logContainerId <- "#miroLogFile"
+    }
+    if(config$activateModules$attachments && 
+       config$storeLogFilesDuration > 0L && !is.null(activeScen)){
+      if(!identical(unlink(logFilePath, force = TRUE), 0L)){
+        flog.warn("Could not remove log file: '%s'.", logFilePath)
+      }
+    }
+  }
   # run GAMS
   tryCatch({
     jobSid <- NULL
@@ -692,7 +732,8 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   enableEl(session, "#btInterrupt")
   switchTab(session, "gamsinter")
   # read log file
-  if(config$activateModules$logFile){
+  if(any(config$activateModules$logFile,
+         config$activateModules$miroLogFile)){
     tryCatch({
       logfile <- worker$getReactiveLog(session)
       logfileObs <- logfile$obs
@@ -714,22 +755,25 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   })
   showErrorMsg(lang$errMsg$readLog$title, errMsg)
   
-  logFilePath <- NULL
-  if(config$activateModules$logFile){
+  if(any(config$activateModules$logFile,
+         config$activateModules$miroLogFile)){
     if(config$activateModules$attachments && 
        config$storeLogFilesDuration > 0L && !is.null(activeScen)){
-      logFilePath <- file.path(workDir, modelName %+% ".log")
-      if(!identical(unlink(logFilePath, force = TRUE), 0L)){
-        flog.warn("Could not remove log file: '%s'.", logFilePath)
+      if(!config$activateModules$logFile){
+        logFilePath <- NULL
       }
+    }else{
+      logFilePath <- NULL
     }
-    emptyEl(session, "#logStatus")
+    emptyEl(session, logContainerId)
     logObs <<- observe({
-      logText    <- logfile()
-      if(length(logFilePath)){
+      logText    <- NULL
+      try(logText <- logfile(), silent = TRUE)
+      if(!length(logText)) return()
+      if(!is.null(logFilePath)){
         write_file(logText, logFilePath, append = TRUE)
       }
-      return(appendEl(session, "#logStatus", logText, 
+      return(appendEl(session, logContainerId, logText, 
                       scroll = identical(isolate(input$logUpdate), TRUE)))
     })
   }
@@ -754,7 +798,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
       enableEl(session, "#btSolve")
       disableEl(session, "#btInterrupt")
       
-      if(config$activateModules$logFile){
+      if(any(config$activateModules$logFile, config$activateModules$miroLogFile)){
         logfileObs$destroy()
         logfileObs <- NULL
         logObs$destroy()
@@ -849,10 +893,6 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
         
         storeGAMSOutputFiles(workDir)
         
-        #select first tab in current run tabset
-        switchTab(session, "output")
-        updateTabsetPanel(session, "scenTabset",
-                          selected = "results.current")
         errMsg <- NULL
         tryCatch({
           GAMSResults <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, workDir = workDir, 
@@ -896,8 +936,11 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
         
         
         GAMSResults <- NULL
-        
-        renderOutputData()
+        #select first tab in current run tabset
+        switchTab(session, "output")
+        updateTabsetPanel(session, "scenTabset",
+                          selected = "results.current")
+        renderOutputData(rendererEnv)
         
         markUnsaved()
       }

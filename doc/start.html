@@ -4,14 +4,13 @@
 <!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
 <head>
-    <title>MIRO - Getting started</title>
+    <title>GAMS MIRO - Getting started</title>
     <!-- Meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="GAMS MIRO documentation">
     <meta name="author" content="GAMS Development Corp.">
-    <link rel="shortcut icon" href="favicon.ico">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
     <!-- FontAwesome JS -->
     <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
@@ -23,29 +22,13 @@
 
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
-    <!-- Cookie consent by https://cookieconsent.osano.com -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
-    <script>
-    window.addEventListener("load", function(){
-    window.cookieconsent.initialise({
-      "palette": {
-        "popup": {
-          "background": "#000"
-        },
-        "button": {
-          "background": "#F39619"
-        }
-      }
-    })});
-    </script>
+    <!--#include virtual="/wheader.html" -->
 </head>
 
 <body class="body-orange">
     <!--#include virtual="/wbody.html" -->
     <div class="page-wrapper">
     <!--#include virtual="/mirover.html" -->
-        <!--TYPO3SEARCH_begin-->
 
         <!-- ******Header****** -->
         <header id="header" class="sub-header">
@@ -65,6 +48,13 @@
         </header><!--//header-->
         <div class="doc-wrapper">
             <div class="container">
+                <div class="row justify-content-end search-box-wrapper">
+                    <div class="float-right">
+                        <input class="form-control search-box" id="miroSearch" type="text" placeholder="Search" aria-label="Search">
+                        <ul id="miroSearchResults" class="list-group">
+                        </ul>
+                    </div>
+                </div>
                 <div id="doc-header" class="doc-header text-center">
                     <h1 class="doc-title"><i class="icon fa fa-paper-plane"></i> Getting started</h1>
                 </div><!--//doc-header-->
@@ -75,8 +65,19 @@
                                 <h2 class="section-title">Introduction</h2>
                                 <div id="step1"  class="section-block">
                                     <p>This chapter guides you through the first steps of using GAMS MIRO and shows you how to deploy your own GAMS models.</p>
-                                    <p>In this as well as the subsequent sections we will mainly deal with the GAMS MIRO base mode. In the base mode, you can supply your models with input data, generate, display and save the results of your optimization as well as compare different scenarios with each other, everything visually supported by various plotting tools.
-                                    The Hypercube mode will be the subject of an extra section, see <a href="./hypercube.html">here</a>.</p>
+                                    <p>In this as well as the subsequent sections we will mainly deal with the GAMS MIRO Base Mode. In the Base Mode, you can supply your models with input data, generate, display and save the results of your optimization as well as compare different scenarios with each other, everything visually supported by various plotting tools.
+                                    The Hypercube Mode will be the subject of an extra section, see <a href="./hypercube.html">here</a>.</p>
+                                </div><!--//section-block-->
+                                <h3 class="block-title">GAMS connection</h3>
+                                <div id="gams-connection"  class="section-block">
+                                    <p>First of all you should make sure that GAMS and MIRO know about each other. If you work with GAMS Studio, then go to <i>File</i> &rarr; <i>Settings</i> &rarr; <i>MIRO</i> and check whether the MIRO installation location is correct, e.g.:</p>
+                                    <div class="section-block" style="display:block; margin:auto;">
+                                        <img class="img-fluid" style="max-height: 330pt;" src="assets/images/studio/miro_path.png" alt="MIRO installation location" />
+                                    </div>
+                                    <p>On the MIRO side, open MIRO and go to <i>Preferences</i> &rarr; <i>Paths</i>. Ensure that the location of the correct GAMS version is specified, e.g.:</p>
+                                    <div class="section-block" style="display:block; margin:auto;">
+                                        <img class="img-fluid" style="max-height: 370pt;" src="assets/images/gams_path.png" alt="GAMS installation location" />
+                                    </div>
                                 </div><!--//section-block-->
                                 <h3 class="block-title">GAMS connection</h3>
                                 <div id="gams-connection"  class="section-block">
@@ -91,7 +92,7 @@
                                 </div><!--//section-block-->
                                 <div  id="demo-applications"  class="section-block">
                                     <h3 class="block-title">Demo Applications</h3>
-                                    <p>To get a feeling for the use of GAMS MIRO, we recommend to have a look at the demo applications first which you can download <a href = "./index.html#demo-section">here</a>. To use the demo applications, unzip the archive and put the extracted folder <i>miro_lib</i> into the user model library directory. Via GAMS Studio you can find this location by clicking on <i>File</i> &rarr; <i>Settings</i> &rarr; <i>Misc.</i> &rarr; <i>user model library</i>:</p>
+                                    <p>To get a feeling for the use of GAMS MIRO, we recommend to have a look at the demo applications first which you can download <a href = "./download.html#demo-section">here</a>. To use the demo applications, unzip the archive and put the extracted folder <i>miro_lib</i> into the user model library directory. Via GAMS Studio you can find this location by clicking on <i>File</i> &rarr; <i>Settings</i> &rarr; <i>Misc.</i> &rarr; <i>user model library</i>:</p>
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                         <img class="img-fluid" style = "max-height:150pt;" src="assets/images/miro_lib.png" alt="MIRO model library" />
                                     </div>
@@ -134,7 +135,7 @@
                                 <div  id="start-miro"  class="section-block">
                                     <h3 class="block-title">Start GAMS MIRO</h3>
                                     <p>Let's take the famous <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">trnsport</a> example from George Dantzig to guide us through this documentation: We own a bunch of factories and wish to find a least cost shipping schedule that meets the demand at markets we are shipping to. Furthermore, the capacity constraints of our factories must not be violated.
-                                    <br>In order to launch the MIRO app for this model from within GAMS Studio, we open the model from the <i>GAMS MIRO model collection</i> and choose <i>Run base mode</i> from the MIRO menu.</p>
+                                    <br>In order to launch the MIRO app for this model from within GAMS Studio, we open the model from the <i>GAMS MIRO model collection</i> and choose <i>Run Base Mode</i> from the MIRO menu.</p>
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                         <img class="img-fluid" style = "max-height:175pt;" src="assets/images/studio/launch-miro-btn.png" alt="Launch MIRO button" />
                                     </div>
@@ -161,7 +162,7 @@
                                         If the model execution is skipped, the GAMS/MIRO data contract is not created or renewed. This means that changes made in the model are not communicated to MIRO. If you have a model that takes a long time to be solved and you don't want to run through it in order to launch MIRO, you can simply set the GAMS option <a href = "https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOaction" target = "_blank"><i>a=c</i></a> (action=compile) instead of the option "Skip model execution". This will only compile the model which is sufficient to update the data contract. Note that in this case a new default scenario is created, but it contains only input data and no output data.</p>
                                     </div>
                                     <div style="outline: solid 1px black; outline-offset: 5px; margin-top:30px">
-                                        <h3 id="start-via-command-line"  class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Advanced: Start MIRO using the command line</h3>
+                                        <h3 id="start-via-command-line"  class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Advanced: Start MIRO using the command line</h3>
                                         <div class="section-block" style="display:none">
                                             <p>In case you want to launch MIRO from the command line, the data contract between GAMS and MIRO must be created first (<i><a href = "./faqs.html#file-io">&lt;modelname&gt;_io.json</a></i>). This happens when the model is called in GAMS with the option <span class="code">IDCGenerateJSON=path/to/conf_&lt;modelname&gt;/&lt;modelname&gt;_io.json</span>.</p>
                                             <p>For the <i>transport</i> model this would result in the following call:</p>
@@ -192,7 +193,7 @@
                                                 <a class="nav-link active" id="win-start" data-toggle="tab" href="#windows" role="tab" aria-controls="windows" aria-selected="true">Windows</a>
                                               </li>
                                               <li class="nav-item">
-                                                <a class="nav-link" id="macos-start" data-toggle="tab" href="#macos" role="tab" aria-controls="macos" aria-selected="false">MacOS</a>
+                                                <a class="nav-link" id="macos-start" data-toggle="tab" href="#macos" role="tab" aria-controls="macos" aria-selected="false">macOS</a>
                                               </li>
                                               <li class="nav-item">
                                                 <a class="nav-link" id="linux-start" data-toggle="tab" href="#linux" role="tab" aria-controls="linux" aria-selected="false">Linux</a>
@@ -269,7 +270,7 @@
                                     <p>In addition, the buttons for loading input data and for starting a GAMS run are located here:</p>
                                     <ol class="fa-ul">
                                       <li><span class="fa-li"><i class="fas fa-square"></i></span><b>Load data:</b><br/>
-                                        Load input data for a model run. This can be a local file, existing data from the database or scenarios coming from the <a href="./hypercube.html">Hypercube mode</a>.
+                                        Load input data for a model run. This can be a local file, existing data from the database or scenarios coming from the <a href="./hypercube.html">Hypercube Mode</a>.
                                       </li>
                                       <li><span style="color: #F39619;" class="fa-li"><i class="fas fa-square"></i></span><b>Solve model:</b><br/>
                                         Solve the GAMS model with the current set of input data. This will run your GAMS model and collect the results when it finished executing.
@@ -318,7 +319,7 @@
                                           </div><!--//icon-holder-->
                                           <div class="content">
                                               <b class="callout-title">What is a scenario? What is a sandbox scenario? What data is used for a model run?</b>
-                                              <p>To understand the MIRO data concept, what a scenario is and how it differs from a sandbox scenario, you should have a look at the sectios <a href = "#data-concept" class="scrollto">data concept</a> and <a href = "#scenario-concept" class="scrollto">scenario concept</a>!</p>
+                                              <p>To understand the MIRO data concept, what a scenario is and how it differs from a sandbox scenario, you should have a look at the sections <a href = "#data-concept" class="scrollto">data concept</a> and <a href = "#scenario-concept" class="scrollto">scenario concept</a>!</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
                                     </div>
@@ -355,7 +356,7 @@
                                         <p>To import a file from your local machine, either in the form of a gdx container, an Excel spreadsheet or a CSV file, select the menu item <i>Local</i> and click on </i>browse</i>. Navigate to the directory where your file resides and select it.
                                         Confirm the data import with a click on <i>import</i>. If you started with an empty sheet, a new, unnamed scenario is now shown in the interface. To save it, click on <i>Save as</i> and give it a name.</p>
                                         <div style="outline: solid 1px black; outline-offset: 5px; margin:20px 0px">
-                                            <h6 id = "excel-import-rules" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Excel spreadsheeet - import rules</h6>
+                                            <h6 id = "excel-import-rules" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Excel spreadsheet - import rules</h6>
                                             <div class="section-block" style="display:none">
                                                 <p>If you want to use data from a spreadsheet, this spreadsheet must meet certain criteria regarding the format in which the data is provided:</p>
                                                 <ul>
@@ -384,14 +385,14 @@
                                             </div>
                                         </div>
                                         <p>Instead of importing all the datasets for your model, you can also select the symbols to import manually. To do so, click on <i>Manually choose datasets</i> and choose those symbols to be imported from the uploaded spreadsheet. This will cause MIRO to ignore other datasets.</p>
-                                        <p>Besides the local and the database import there is a third option: <i>Hypercube</i>. This tab allows you to import scenarios that have been generated and saved in the <a href="./hypercube.html">Hypercube mode</a>.
-                                        Such a scenario that is generated in Hypercube mode corresponds to a scenario from the base mode, except that the former additionally contains a <a href = "https://www.gams.com/latest/docs/UG_SolverUsage.html#UG_SolverUsage_TraceFile" target = "_blank">trace file</a>. 
-                                        Since those scenarios are identified by their hash value (read more about this <a href="./hypercube.html">here</a>) and not by a user-defined name like in base mode, you need to import them differently.
+                                        <p>Besides the local and the database import there is a third option: <i>Hypercube</i>. This tab allows you to import scenarios that have been generated and saved in the <a href="./hypercube.html">Hypercube Mode</a>.
+                                        Such a scenario that is generated in Hypercube Mode corresponds to a scenario from the Base Mode, except that the former additionally contains a <a href = "https://www.gams.com/latest/docs/UG_SolverUsage.html#UG_SolverUsage_TraceFile" target = "_blank">trace file</a>. 
+                                        Since those scenarios are identified by their hash value (read more about this <a href="./hypercube.html">here</a>) and not by a user-defined name like in Base Mode, you need to import them differently.
                                         </p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                             <img class="img-fluid" style="max-height:225pt;" src="assets/images/import-hypercube.png" alt="Import scenario via hash value" />
                                         </div>
-                                        <p>Please refer to the chapter about <a href="./hypercube.html#scenario-selection">scenario selection</a> in Hypercube mode to learn how to retrieve the hash value of a Hypercube scenario.</p>
+                                        <p>Please refer to the chapter about <a href="./hypercube.html#scenario-selection">scenario selection</a> in Hypercube Mode to learn how to retrieve the hash value of a Hypercube scenario.</p>
                                         <p id = "startup-import"><b>Import multiple scenarios on startup</b>
                                         <br>In addition to the options mentioned above, which can be accessed directly from MIRO, (multiple) scenarios 
                                         can also be imported automatically when starting an application. To do this, the scenarios to be imported 
@@ -445,7 +446,7 @@
                                         </div>
                                         <p></p>
                                         <h6 class="callout-title">Download temporary files:</h6>
-                                        <p>If this <a href = "./customize.html#general-temp-dir">option</a> is not disabled, all temporarily created files of the model run (like solution reports or the <span class="code">lst</span> and <span class="code">log</span> files) can be downloaded either separately or as a ZIP archive with a click on the <img class="img-fluid" width="25" height="25" align="middle" src="assets/images/advanced-button.png" alt="Download temporary files" /> button.</p>
+                                        <p>If this <a href = "./customize.html#general-temp-dir">option</a> is enabled, all temporarily created files of the model run (like solution reports or the <span class="code">lst</span> and <span class="code">log</span> files) can be downloaded either separately or as a ZIP archive with a click on the <img class="img-fluid" width="25" height="25" align="middle" src="assets/images/advanced-button.png" alt="Download temporary files" /> button.</p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                              <img class="img-fluid" style="max-height:325pt;" src="assets/images/advanced-options.png" alt="Output data screen - scalars" />
                                         </div>
@@ -605,7 +606,7 @@
                                     </div>
                                 </div><!--//section-block-->
                                 <div style="outline: solid 1px black; outline-offset: 5px; margin-top:30px">
-                                    <h3 id="na-zero-eps"  class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Advanced: Working with <i>NAs</i>, <i>zeros</i> and <i>EPS</i></h3>
+                                    <h3 id="na-zero-eps"  class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Advanced: Working with <i>NAs</i>, <i>zeros</i> and <i>EPS</i></h3>
                                     <div class="section-block" style="display:none">
                                         <p>Special attention should be paid to the communication of <i>zeros</i>, <i>NAs</i> and <i>EPS</i> between GAMS and MIRO. The following rules describe how the data is communicated in detail:</p>
                                         <ul>
@@ -615,7 +616,7 @@
                                           The use of the special value <i>EPS</i> is required when you want to store <i>zeros</i> in a GDX file. In MIRO, a <i>0</i> is displayed for the corresponding entries. If a GAMS model is solved out of MIRO, <i>zeros</i> are stored in the GDX file. In the model these can then be interpreted as <i>zeros</i> by using the GAMS option <a href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARonoffeps" target="_blank">$onEps</a>. If this option is not set, <i>zeros</i> are omitted.                                           
                                           </li>
                                           <li><b>NA:</b><br>
-                                          <i>NAs</i> in GAMS become <i>NAs</i> in MIRO and vice versa. But: <i>NAs</i> are only displayed in the default input tables used in MIRO and only if the table is not pivoted (see above). In output tables (or in input tables where the option to use <a href="./customize.htmltable-option-large">large amounts of data</a> is enabled), <i>NAs</i> are displayed as blank cells.</li>
+                                          <i>NAs</i> in GAMS become <i>NAs</i> in MIRO and vice versa. But: <i>NAs</i> are only displayed in the default input tables used in MIRO and only if the table is not pivoted (see above). In output tables (or in input tables where the option to use <a href="./customize.html#table-option-large">large amounts of data</a> is enabled), <i>NAs</i> are displayed as blank cells.</li>
                                         </ul>
                                     </div><!--//section-block-->
                                 </div>
@@ -650,8 +651,8 @@
                                 <h2 class="section-title">Additional Features </h2>
                                 <div id="multiple-scenarios" class="section-block">
                                   <h6>Manage multiple scenarios</h6>
-                                  <p>The mode of GAMS MIRO that you learned about in this chapter is designed to configure and solve one scenario at a time. But what if we want to solve a multitude of such scenarios with different parameterizations one after the other? To avoid having to configure and solve each scenario individually, there is another mode built into MIRO that we call the <a href="./hypercube.html"><i>Hypercube mode</i></a>. In this mode, you can automatically solve scenarios with several different parameterizations.</p>
-                                  <p>We developed this mode to efficiently generate, store and analyze a multitude of scenarios. Look at the chapter about the <a href="./hypercube.html">Hypercube mode</a> to learn more.
+                                  <p>The mode of GAMS MIRO that you learned about in this chapter is designed to configure and solve one scenario at a time. But what if we want to solve a multitude of such scenarios with different parameterizations one after the other? To avoid having to configure and solve each scenario individually, there is another mode built into MIRO that we call the <a href="./hypercube.html"><i>Hypercube Mode</i></a>. In this mode, you can automatically solve scenarios with several different parameterizations.</p>
+                                  <p>We developed this mode to efficiently generate, store and analyze a multitude of scenarios. Look at the chapter about the <a href="./hypercube.html">Hypercube Mode</a> to learn more.
 
                                 </div>
                                 <div id="miro-server" class="section-block">
@@ -716,15 +717,15 @@
                 </div><!--//doc-body-->
             </div><!--//container-->
         </div><!--//doc-wrapper-->
-
-    <!--TYPO3SEARCH_end-->
-    </div><!--//page-wrapper--><!--#include virtual="/footer_miro.html" -->
+    </div><!--//page-wrapper-->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <!--#include virtual="/footer.html" -->
 
     <!-- Main Javascript -->
-    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
     <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/markjs/jquery.mark.min.js"></script>
     <script type="text/javascript" src="assets/js/main.js"></script>
     <script type = "application/javascript">
        if (navigator.appVersion.indexOf("Mac")!==-1){

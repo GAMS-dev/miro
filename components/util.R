@@ -121,12 +121,8 @@ getWidgetDependencies <- function(widgetType, depString){
              depID <- 0L
            }
            depString <- strsplit(depString, "$", fixed = TRUE)[[1]]
-           if(identical(depString, "")){
-             if(length(depString) == 3L)
-               depString <- depString[-1]
-             else
-               depString[1] <- "_"
-           }
+           if(length(depString) == 1L)
+             depString <- c("", depString)
            return(c(depID, depString))
          },
          {
@@ -183,8 +179,7 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL){
     hasDep <- forwardDep | backwardDep
     ddownDep$strings <- unlist(gsub("$$", "$", choices[!hasDep], 
                                     fixed = TRUE), use.names = FALSE)
-    
-    lapply(seq_along(choices), function(i){
+    lapply(seq_along(choices)[hasDep], function(i){
       #check for each element of "choices" if it contains a data reference in json (in the form of a string, e.g. "dataset_1$column_3") or a simple string or number
       # examples: "$a$b"   <- column b from sheet a are choices for dropdown
       #           "$b"     <- all columns b are choices for dropdown
@@ -196,87 +191,85 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL){
       # examples : "a$$b"  <- "a$b" (string without dependencies), "a$$" -> "a$" (same), "$$a" <- "$a" (same)
       
       # check case with both backward and forward dependency on the same column and issue error if stric mode is active
-      if(hasDep[i]){
-        # find out if column has dependency defined and replace leading and ending signs
-        
-        if(grepl("$", elRaw[i], fixed = TRUE)){
-          # split string into the layers/elements ("dataset_1$column_3" -> "dataset_1", "column_3")
-          el <- strsplit(elRaw[i], "$", fixed = TRUE)[[1]]
-          # check if elements in el match with the structure of the considered input data.
-          idx1 <- match(el[[1]], names(modelIn))[1]
-          idx2 <- match(el[[2]], names(modelIn[[idx1]]$headers))[1]
-          if(is.na(idx2)){
-            if(identical(el[[1]], name)){
-              # first index is element itself, thus it is a reference to a shared database
-              if(length(el) > 1){
-                ddownDep$shared <<- el[[2]]
-              }else{
-                ddownDep$shared <<- el[[1]]
-              }
-              return(ddownDep)
-            }else if(!is.na(idx1) && 
-                     identical(modelIn[[idx1]]$type, "dropdown") &&
-                     length(el) > 1 && forwardDep[i]){
-              # dependency on another dropdown menu, so dont check header info
-              j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
-              ddownDep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- getNestedDep(el[-1])
+      # find out if column has dependency defined and replace leading and ending signs
+      
+      if(grepl("$", elRaw[i], fixed = TRUE)){
+        # split string into the layers/elements ("dataset_1$column_3" -> "dataset_1", "column_3")
+        el <- strsplit(elRaw[i], "$", fixed = TRUE)[[1]]
+        # check if elements in el match with the structure of the considered input data.
+        idx1 <- match(el[[1]], names(modelIn))[1]
+        idx2 <- match(el[[2]], names(modelIn[[idx1]]$headers))[1]
+        if(is.na(idx2)){
+          if(identical(el[[1]], name)){
+            # first index is element itself, thus it is a reference to a shared database
+            if(length(el) > 1){
+              ddownDep$shared <<- el[[2]]
             }else{
-              stop(paste0("The header: '", el[[2]], "' for input sheet: '", 
-                          el[[1]], "' could not be found. Make sure you define a valid reference."), 
-                   call. = FALSE)
+              ddownDep$shared <<- el[[1]]
             }
+            return(ddownDep)
+          }else if(!is.na(idx1) && 
+                   identical(modelIn[[idx1]]$type, "dropdown") &&
+                   length(el) > 1 && forwardDep[i]){
+            # dependency on another dropdown menu, so dont check header info
+            j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
+            ddownDep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- getNestedDep(el[-1])
           }else{
-            # add another forward dependency
-            if(forwardDep[i]){
-              j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
-              ddownDep$fw[[names(modelIn)[[idx1]]]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
-            }
-            # add another backward dependency
-            if(backwardDep[i]){
-              j <- length(ddownDep$bw[[names(modelIn)[[idx1]]]]) + 1
-              ddownDep$bw[[names(modelIn)[[idx1]]]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
-            }else if(!forwardDep[i]){
-              # neither forward nor backward dependency selected results in error or rendering as string
-              stop(paste0("Neither a forward nor a backward dependency was defined in: '", 
-                          choices[[i]], "'. Make sure you define some type of dependency."), 
-                   call. = FALSE)
-            }
+            stop(paste0("The header: '", el[[2]], "' for input sheet: '", 
+                        el[[1]], "' could not be found. Make sure you define a valid reference."), 
+                 call. = FALSE)
           }
         }else{
-          # define identifier variable to check whether column exists
-          colFound <- FALSE
-          # only column was entered (no sheet name)
-          # find all sheets with column names
-          if(length(modelIn)){
-            for(idx1 in seq_along(modelIn)){
-              # return index if available
-              idx2 <- match(elRaw[i], names(modelIn[[idx1]]$headers))[1]
-              if(!is.na(idx2)){
-                # add another forward dependency
-                if(forwardDep[i]){
-                  j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
-                  ddownDep$fw[[names(modelIn)[[idx1]]]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
-                }
-                # add another backward dependency
-                if(backwardDep[i]){
-                  j <- length(ddownDep$bw[[names(modelIn)[[idx1]]]]) + 1
-                  ddownDep$bw[[names(modelIn)[[idx1]]]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
-                }
-                # new element was added so increment counter
-                if(forwardDep[i] || backwardDep[i]){
-                  colFound <- TRUE
-                }else{
-                  # neither forward nor backward dependency selected results in error or rendering as string
-                  stop(paste0("Neither a forward nor a backward dependency was defined in: '", 
-                              choices[[i]], "'. Make sure you define some type of dependency."), call. = FALSE)
-                }
+          # add another forward dependency
+          if(forwardDep[i]){
+            j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
+            ddownDep$fw[[names(modelIn)[[idx1]]]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
+          }
+          # add another backward dependency
+          if(backwardDep[i]){
+            j <- length(ddownDep$bw[[names(modelIn)[[idx1]]]]) + 1
+            ddownDep$bw[[names(modelIn)[[idx1]]]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
+          }else if(!forwardDep[i]){
+            # neither forward nor backward dependency selected results in error or rendering as string
+            stop(paste0("Neither a forward nor a backward dependency was defined in: '", 
+                        choices[[i]], "'. Make sure you define some type of dependency."), 
+                 call. = FALSE)
+          }
+        }
+      }else{
+        # define identifier variable to check whether column exists
+        colFound <- FALSE
+        # only column was entered (no sheet name)
+        # find all sheets with column names
+        if(length(modelIn)){
+          for(idx1 in seq_along(modelIn)){
+            # return index if available
+            idx2 <- match(elRaw[i], names(modelIn[[idx1]]$headers))[1]
+            if(!is.na(idx2)){
+              # add another forward dependency
+              if(forwardDep[i]){
+                j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
+                ddownDep$fw[[names(modelIn)[[idx1]]]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
+              }
+              # add another backward dependency
+              if(backwardDep[i]){
+                j <- length(ddownDep$bw[[names(modelIn)[[idx1]]]]) + 1
+                ddownDep$bw[[names(modelIn)[[idx1]]]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
+              }
+              # new element was added so increment counter
+              if(forwardDep[i] || backwardDep[i]){
+                colFound <- TRUE
+              }else{
+                # neither forward nor backward dependency selected results in error or rendering as string
+                stop(paste0("Neither a forward nor a backward dependency was defined in: '", 
+                            choices[[i]], "'. Make sure you define some type of dependency."), call. = FALSE)
               }
             }
-            # no column was found with matching name (invalid reference)
-            if(!colFound){
-              stop(paste0("A column named: '", elRaw[i], "' could not be found. Make sure you define a valid reference."),
-                   call. = FALSE)
-            }
+          }
+          # no column was found with matching name (invalid reference)
+          if(!colFound){
+            stop(paste0("A column named: '", elRaw[i], "' could not be found. Make sure you define a valid reference."),
+                 call. = FALSE)
           }
         }
       }
@@ -366,56 +359,6 @@ getDependenciesSlider <- function(min, max, def, step, modelIn, listOfOperators)
   }else{
     return(NULL)
   }
-}
-
-renderOutput <- function(data, type, dtOptions = NULL, graphOptions = NULL, mapOptions = NULL, pivotOptions = NULL, customOptions = NULL,
-                         height = NULL, roundPrecision = 2, static = FALSE){
-  # Renders output sheets according to visualization options specified
-  #
-  # Args:
-  #   data:                     dataframe containing output data to be visualized
-  #   type:                     type of visualization chosen
-  #   dtOptions:               options specifed to customize datatable
-  #   graphOptions:            options specified to cusutomize graphs
-  #   mapOptions:              options specified to cusutomize interactive maps
-  #   pivotOptions:            options specified to customize pivot table
-  #   customOptions:           options specified for custom renderer
-  #   height:                   height of output object  
-  #   roundPrecision:           number of decimal places data should be rounded to
-  #   static:                   boolean which specifies whether return value is static DT object or renderDT object used 
-  #                             for reactive programming
-  #
-  # Returns:
-  #   Rendered output data
-  
-  switch(type,
-         pivot = {
-           return(renderPivot(data, options = pivotOptions, height = height, roundPrecision = roundPrecision, static = static))
-         },
-         datatable = {
-           return(renderDTable(data, options = dtOptions, height = height, roundPrecision = roundPrecision))
-         },
-         dtGraph = {
-           return(tagList(
-             column(6, renderDTable(data, options = dtOptions, height = height, roundPrecision = roundPrecision)),
-             column(6, renderGraph(data,graphOptions, height = height))
-           ))
-         },
-         graph = {
-           return(renderGraph(data, graphOptions, height = height))
-         }
-  )
-  tryCatch({
-    customRenderer <- match.fun(paste0("render", toupper(substr(type, 1, 1)), tolower(substr(type, 2, nchar(type)))))
-  }, error = function(e){
-    stop(paste0("A custom renderer function: '", type, "' was not found. Please make sure you first define such a function."), call. = F)
-  })
-  tryCatch({
-    return(customRenderer(data, options = customOptions))
-  }, error = function(e){
-    stop(paste0("An error occurred while using the custom renderer: '", type, "'. Error message: ", conditionMessage(e)), call. = F)
-  })
-  
 }
 isDate <- function(x){
   tryCatch(!is.na(as.Date(x[[1]])), error = function(e){FALSE})
@@ -583,12 +526,12 @@ virtualActionButton <- function(...){
   invisible(o)
 }
 showErrorMsg <- function(title, errMsg){
-  stopifnot(is.character(title), length(title) == 1)
   if(!is.null(errMsg)){
     stopifnot(is.character(errMsg), length(errMsg) == 1)
   }
   
   if(!is.null(errMsg)){
+    stopifnot(is.character(title), length(title) == 1)
     showModal(modalDialog(
       title = title, HTML(addHtmlLineBreaks(errMsg))
     ))
@@ -646,6 +589,9 @@ showElReplaceTxt <- function(session, id, txt){
 }
 hideEl <- function(session, id){
   session$sendCustomMessage("gms-hideEl", id)
+}
+changeHeightEl <- function(session, id, height, delay = NULL){
+  session$sendCustomMessage("gms-changeHeightEl", list(id = id, height = height, delay = delay))
 }
 showHideEl <- function(session, id, delay = 2000, msg = NULL){
   session$sendCustomMessage("gms-showHideEl", list(id = id, delay = delay, msg = msg))
@@ -736,6 +682,40 @@ reactiveFileReader2 <- function(intervalMillis, session, filePath) {
     }
   )
 }
+reactiveFileReaderAppend <- function(intervalMillis, session, filePath) {
+  checkFunc <- function() {
+    info <- file.info(filePath)
+    return(paste(filePath, info$mtime, info$size))
+  }
+  valueFunc <- function(skip) {
+    read_lines(filePath, skip = skip)
+  }
+  rv <- reactiveValues(cookie = isolate(checkFunc()))
+  cursorPos <- 0L
+  
+  obs <- observe({
+    rv$cookie <- checkFunc()
+    invalidateLater(intervalMillis, session)
+  })
+  
+  re <- reactive({
+    rv$cookie
+    fileContent <- valueFunc(cursorPos)
+    
+    if(!length(fileContent)){
+      return("")
+    }
+    if(identical(cursorPos, 0L)){
+      cursorPos <<- length(fileContent)
+    }else{
+      cursorPos <<- cursorPos + length(fileContent)
+      fileContent <- c("", fileContent)
+    }
+    return(paste(fileContent, collapse = "\n"))
+  })
+  
+  return(list("re" = re, "obs" = obs))
+}
 prepopPivot <- function(symbol){
   pivotConf <- list(rows = c(), vals = character(1L), aggregatorName = "Sum")
   setEl     <- vector("character", length(symbol$headers))
@@ -785,13 +765,16 @@ checkboxInput_MIRO <- function(inputId, label, value = FALSE){
              ))
   )
 }
-autoNumericInput <- function(id, label = NULL, value = NULL, min = NULL, max = NULL, sign = NULL, decimal = NULL){
+autoNumericInput <- function(id, label = NULL, value = NULL, min = NULL, max = NULL, 
+                             sign = NULL, decimal = NULL, decimalCharacter = NULL, digitGroupSeparator = NULL){
   HTML(paste0('<div class="form-group shiny-input-container">\n
     <label for="', id, '">', label, '</label>\n
       <input id="', id, '" type="text" class="form-control miro-auto-numeric" value="', value, 
               '"', if(length(min)) paste0(' data-minimum-value="', min, '"'), 
               if(length(max)) paste0(' data-maximum-value="', max, '"'), 
               if(length(sign)) paste0(' data-currency-symbol="', sign, '"'), 
+              if(length(decimalCharacter)) paste0(' data-decimal-character="', decimalCharacter, '"'), 
+              if(length(digitGroupSeparator)) paste0(' data-digit-group-separator="', digitGroupSeparator, '"'), 
               if(length(decimal)) paste0(' data-decimal-places-override="', decimal, '"'), ' />\n
     </div>'))
 }
@@ -889,6 +872,7 @@ ddToTibble <- function(values, metaData){
     }
   }else{
     aliases <- character(0L)
+    values <- character(0L)
   }
   if(length(headers) > 1L){
     ddTibble <- tibble(val = values, text = aliases)
@@ -1237,8 +1221,8 @@ zipMiro <- function(zipfile, files, baseDir, ...){
 getHcubeScalars <- function(modelIn){
   return(names(modelIn)[vapply(seq_along(modelIn), 
                                function(i) 
-                                 identical(modelIn[[i]]$type, "dropdown") ||
-                                 identical(modelIn[[i]]$type, "checkbox"), 
+                                 isTRUE(modelIn[[i]]$dropdown$single) ||
+                                 isTRUE(modelIn[[i]]$dropdown$checkbox), 
                                logical(1L), USE.NAMES = FALSE)])
 }
 loadPfFileContent <- function(content, GMSOpt = character(0L), DDPar = character(0L)){
@@ -1310,4 +1294,71 @@ getValidCsvFromZip <- function(zipFileName, dsToVerify, uid){
     stop(sprintf("zip archive contains symlinks! Import stopped."))
   }
   return(list(tmpDir = tmpDir, validFileNames = validFileNames))
+}
+DTbuildColHeaderContainer <- function(colNames, noRowHeaders, rowHeaders){
+  if(noRowHeaders > 0){
+    colNameHeaders <- colNames[-seq_len(noRowHeaders)]
+  }else{
+    colNameHeaders <- colNames
+  }
+  # note that split character is not an ASCII full stop, but UNICODE U+2024
+  colNameList <- stri_split_fixed(colNameHeaders, "\U2024")
+  noColDim <- length(colNameList[[1L]])
+  noCols   <- length(colNameHeaders)
+  
+  colNameList <- purrr::transpose(colNameList)
+  colGroupBorders <- integer(0L)
+  return(htmltools::withTags(tags$table(
+    class = 'display',
+    tags$thead(
+      lapply(seq_len(noColDim - 1L), function(i){
+        k <- 1L
+        colSpan <- 1L
+        headerRowHTML <- vector("list", length(colNameHeaders))
+        currDimColNames <- colNameList[[i]]
+        if(identical(noCols, 1L)){
+          headerRowHTML[[k]] <- tags$th(colspan = 2L, class = "pivot-hdr-col",
+                                        currDimColNames[[1]])
+        }else{
+          for(j in seq(2L, noCols)){
+            if(j %in% colGroupBorders || !identical(currDimColNames[[j]], currDimColNames[[j - 1L]])){
+              headerRowHTML[[k]] <- tags$th(colspan = colSpan, class = "pivot-hdr-col", currDimColNames[[j - 1L]])
+              k <- k + 1L
+              colSpan <- 1L
+              if(!j %in% colGroupBorders){
+                colGroupBorders <<- c(colGroupBorders, j)
+              }
+              if(identical(j, noCols)){
+                headerRowHTML[[k]] <- tags$th(colspan = 1L, class = "pivot-hdr-col", currDimColNames[[j]])
+              }
+            }else if(identical(j, noCols)){
+              headerRowHTML[[k]] <- tags$th(colspan = colSpan + 1L, class = "pivot-hdr-col",
+                                            currDimColNames[[j]])
+            }else{
+              colSpan <- colSpan + 1L
+            }
+          }
+        }
+        if(i == 1L){
+          return(tags$tr(c(lapply(rowHeaders, tags$th, rowspan = noColDim), 
+                           headerRowHTML[seq_len(k)])))
+        }
+        return(tags$tr(headerRowHTML[seq_len(k)]))
+      }),
+      tags$tr(lapply(if(identical(noColDim, 1L)) 
+        c(rowHeaders, colNameList[[noColDim]]) else colNameList[[noColDim]], tags$th))
+    )
+  )))
+}
+sanitizeFn <- function(filename) {
+  # DO NOT USE THIS TO GET REALLY SECURE FILENAMES!
+  # IT IS NOT MEANT TO CATCH ALL EDGE CASES AND CAN BE BYPASSED EASILY!
+  filename <- gsub("[/\\\\\\?%*:|\"<>]", "", filename)
+  return(stringi::stri_trim_left(filename, pattern = "[^\\.]"))
+}
+nativeFileEnc <- function(path){
+  if(isWindows()){
+    return(enc2native(path))
+  }
+  return(path)
 }

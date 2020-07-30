@@ -4,14 +4,13 @@
 <!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
 <head>
-    <title>MIRO - Tutorial</title>
+    <title>GAMS MIRO - Tutorial</title>
     <!-- Meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="GAMS MIRO documentation">
     <meta name="author" content="GAMS Development Corp.">
-    <link rel="shortcut icon" href="favicon.ico">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
     <!-- FontAwesome JS -->
     <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
@@ -23,29 +22,13 @@
 
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
-    <!-- Cookie consent by https://cookieconsent.osano.com -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
-    <script>
-    window.addEventListener("load", function(){
-    window.cookieconsent.initialise({
-      "palette": {
-        "popup": {
-          "background": "#000"
-        },
-        "button": {
-          "background": "#F39619"
-        }
-      }
-    })});
-    </script>
+    <!--#include virtual="/wheader.html" -->
 </head>
 
 <body class="body-orange">
     <!--#include virtual="/wbody.html" -->
     <div class="page-wrapper">
     <!--#include virtual="/mirover.html" -->
-        <!--TYPO3SEARCH_begin-->
 
         <!-- ******Header****** -->
         <header id="header" class="sub-header">
@@ -65,16 +48,23 @@
         </header><!--//header-->
         <div class="doc-wrapper">
             <div class="container">
+                <div class="row justify-content-end search-box-wrapper">
+                    <div class="float-right">
+                        <input class="form-control search-box" id="miroSearch" type="text" placeholder="Search" aria-label="Search">
+                        <ul id="miroSearchResults" class="list-group">
+                        </ul>
+                    </div>
+                </div>
                 <div id="doc-header" class="doc-header text-center">
                     <h1 class="doc-title"><i class="icon fa fa-glasses"></i> Tutorial</h1>
                 </div><!--//doc-header-->
                 <div class="doc-body row">
                     <div class="doc-content col-md-9 col-12 order-1">
                         <div class="content-inner">
-                            <section class="doc-section">
+                            <section id="tutorial-introduction" class="doc-section">
                                 <h2 class="section-title">Introduction</h2>
                                 <div class="section-block">
-                                    <p>IIn this section we show you how a typical workflow in the development of a MIRO application can look like - from the simple GAMS model to the initialization and customization of a MIRO application up to its deployment. This tutorial is a quick guide to the most important aspects of the MIRO application development. The individual aspects are explained in more detail in corresponding linked chapters (<i class="icon fa fa-external-link-alt"></i>). <p>
+                                    <p>In this section we show you how a typical workflow in the development of a MIRO application can look like - from the simple GAMS model to the initialization and customization of a MIRO application up to its deployment. This tutorial is a quick guide to the most important aspects of the MIRO application development. The individual aspects are explained in more detail in corresponding linked chapters (<i class="icon fa fa-external-link-alt"></i>). <p>
                                     <p>The easiest way to develop a MIRO application from scratch is to use the new <a href="https://www.gams.com/latest/docs/T_STUDIO.html">GAMS Studio</a>. It offers built-in functionality of the most important interactions with MIRO. Learn more about this <a href="./studio.html">here</a>.</p>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
@@ -175,7 +165,7 @@ display x.l, x.m;
                                 <h2 class="section-title info-label">Deployment</h2><a title="Go to chapter" class=" info-wrapper" href="./deployment.html"><i class="icon fa fa-external-link-alt info-icon"></i></a>
                                 <div class="section-block">
                                     <p>When the MIRO app is completely configured, i.e. all graphics have been created, options have been set and adjustments have been made, the app can be deployed. Deploying a MIRO application is the process of exporting and installing your app so that it can be easily shared and used in the daily business of your end users. No further changes to the model or the configuration can be made once it is deployed.</p>
-                                    <p>Deploying MIRO applications can be done directly <a href="./studio#studio-deployment">from within GAMS Studio</a>. We need to do two things: clarify which files belong to the GAMS model and then package all these files together with the app configuration into an app bundle. The result is a single <i>.miroapp</i> file which can be sent to the end user(s) of the application.</p>
+                                    <p>Deploying MIRO applications can be done directly <a href="./studio.html#studio-deployment">from within GAMS Studio</a>. We need to do two things: clarify which files belong to the GAMS model and then package all these files together with the app configuration into an app bundle. The result is a single <i>.miroapp</i> file which can be sent to the end user(s) of the application.</p>
                                     <div style="display:block; margin:auto;">
                                         <img class="img-fluid" style = "max-height:70pt;" src="assets/images/tutorial/miroapp.png" alt="miroapp file" />
                                     </div>
@@ -195,7 +185,7 @@ display x.l, x.m;
 
 	                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
                                     <a class="nav-link scrollto" href="#tutorial-introduction">Introduction</a>
-                                    <a class="nav-link scrollto" href="#tutorial-model-preparation">Model adjustments</a>
+                                    <a class="nav-link scrollto" href="#tutorial-model-adjustments">Model adjustments</a>
                                     <a class="nav-link scrollto" href="#tutorial-configuration">Configuration</a>
                                     <a class="nav-link scrollto" href="#tutorial-deployment">Deployment</a>
 	                            </nav><!--//doc-menu-->
@@ -205,16 +195,16 @@ display x.l, x.m;
                 </div><!--//doc-body-->
             </div><!--//container-->
         </div><!--//doc-wrapper-->
-
-    <!--TYPO3SEARCH_end-->
-    </div><!--//page-wrapper--><!--#include virtual="/footer_miro.html" -->
+    </div><!--//page-wrapper-->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <!--#include virtual="/footer.html" -->
 
     <!-- Main Javascript -->
-    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
     <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
     <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/markjs/jquery.mark.min.js"></script>
     <script type="text/javascript" src="assets/js/main.js"></script>
 </body>
 </html>

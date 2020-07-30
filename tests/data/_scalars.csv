@@ -1,0 +1,4 @@
+scalar,description,value
+maxstock,maximum number of stocks to select,4
+trainingdays,number of days for training,100
+solver,MIP-Solver,CPLEX

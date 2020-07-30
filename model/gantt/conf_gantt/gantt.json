@@ -10,7 +10,6 @@
     "logFile": true,
     "lstFile": true,
     "attachments": true,
-    "remoteExecution": false,
     "downloadTempFiles": false
   },
   "aggregateWidgets": true,
@@ -22,6 +21,46 @@
     "input": "_widgets"
   },
   "theme": "browser",
+  "overwriteAliases": {
+    "gantt": {
+      "newAlias": "asdasd"
+    }
+  },
+  "dataRendering": {
+    "gantt": {
+      "outType": "graph",
+      "graph": {
+        "tool": "timevis",
+        "showZoom": true,
+        "fit": true,
+        "zoomFactor": 0.5,
+        "editable": false,
+        "multiselect": false,
+        "showCurrentTime": false,
+        "series": {
+          "1": {
+            "content": "content",
+            "start": "start",
+            "type": "range",
+            "end": "end",
+            "title": "id",
+            "group": "group"
+          }
+        },
+        "filter": {
+          "col": "group",
+          "multiple": false,
+          "date": false
+        },
+        "custom": {
+          "1": {
+            "time": "2016-05-27"
+          }
+        }
+      },
+      "height": 700
+    }
+  },
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
@@ -33,8 +72,7 @@
       "enabled": true,
       "allowRowEdit": true,
       "allowColEdit": true,
-      "allowReadOnly": false,
-      "allowComments": true
+      "allowReadOnly": false
     },
     "height": 700,
     "colWidths": 150

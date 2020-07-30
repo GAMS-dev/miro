@@ -13,7 +13,6 @@
     "lstFile": false,
     "loadLocal": true,
     "attachments": true,
-    "remoteExecution": false,
     "downloadTempFiles": false
   },
   "autoGenInputGraphs": true,
@@ -24,6 +23,9 @@
   "saveTraceFile": true,
   "dataRendering": {
     "results": {
+      "outType": "sudoku"
+    },
+    "initial_state": {
       "outType": "sudoku"
     }
   },

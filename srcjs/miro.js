@@ -3,7 +3,7 @@
 const spinnerActive = {};
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function changeActiveButtons(tabId) {
@@ -382,6 +382,16 @@ $(document).ready(() => {
     } else {
       $(id).show();
     }
+    $(id).trigger('shown');
+  });
+  Shiny.addCustomMessageHandler('gms-changeHeightEl', (data) => {
+    if (data.delay != null) {
+      setTimeout(() => {
+        $(data.id).height(data.height);
+      }, data.delay);
+    } else {
+      $(data.id).height(data.height);
+    }
   });
   Shiny.addCustomMessageHandler('gms-scriptExecuted', (data) => {
     let scriptOutputContainer;
@@ -453,6 +463,7 @@ ${data.data}</div>` : data.data);
     } else {
       $(id).hide();
     }
+    $(id).trigger('hidden');
   });
   Shiny.addCustomMessageHandler('gms-showHideEl', (data) => {
     showHideEl(data.id, data.delay, data.msg);
@@ -517,8 +528,8 @@ ${data.data}</div>` : data.data);
     if (!$(data.id).is(':visible')) {
       return;
     }
-    const percentCompleted = Math.round(parseInt(data.progress.noCompleted, 10)
-          / parseInt(data.progress.noTotal, 10) * 100);
+    const percentCompleted = Math.round((parseInt(data.progress.noCompleted, 10)
+          / parseInt(data.progress.noTotal, 10)) * 100);
     $(data.id)
       .css('width', `${percentCompleted}%`)
       .attr('aria-valuenow', percentCompleted)
@@ -565,6 +576,34 @@ ${data.data}</div>` : data.data);
       }
     }, 500);
   });
+  Shiny.addCustomMessageHandler('gms-updateSortable', (data) => {
+    $(`#${data.id}`).html(data.children);
+    Shiny.setInputValue(`${data.id}:sortablejs.rank_list`,
+      $.map(document.getElementById(data.id).children,
+        (child) => $(child).attr('data-rank-id') || $.trim(child.innerText)));
+  });
+  Shiny.addCustomMessageHandler('gms-populateMiroPivotFilters', (data) => {
+    const { ns } = data;
+    const idContainerMap = [{ id: 'filter', container: 'filterDropdowns' },
+      { id: 'aggregations', container: 'aggregateDropdowns' },
+      { id: 'cols', container: 'colDropdowns' }];
+    idContainerMap.forEach((filterEl) => {
+      $(`#${ns + filterEl.container} .shiny-input-container`).each((i, el) => {
+        Shiny.unbindAll(el, true);
+        $(el).remove();
+        return true;
+      });
+    });
+    idContainerMap.forEach((filterEl) => {
+      const content = data[filterEl.id];
+      if (content) {
+        const dropdownContainer = document.getElementById(ns + filterEl.container);
+        Shiny.renderContent(dropdownContainer,
+          content, 'beforeEnd');
+        Shiny.bindAll(dropdownContainer);
+      }
+    });
+  });
   Shiny.addCustomMessageHandler('gms-showValidationErrors', (content) => {
     const inSyms = Object.keys(content);
     $('.input-validation-error').empty();
@@ -603,7 +642,7 @@ ${data.data}</div>` : data.data);
     },
     getRatePolicy() {
       return {
-        policy: 'debounce',
+        policy: 'throttle',
         delay: 250,
       };
     },

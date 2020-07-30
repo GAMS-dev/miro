@@ -54,6 +54,7 @@ Db <- R6Class("Db",
                     private$userAccessGroups <- uid
                   }
                   private$modelName                   <- modelName
+                  private$modelNameDb                 <- gsub("_", "", modelName, fixed = TRUE)
                   private$dbSchema                    <- dbSchema
                   private$scenMetaColnames            <- dbSchema$colNames[['_scenMeta']]
                   private$slocktimeIdentifier         <- dbSchema$colNames[['_scenLock']][['lock']]
@@ -99,6 +100,7 @@ Db <- R6Class("Db",
                 getTableNamesScenario = function() private$tableNamesScenario,
                 getAttachmentConfig   = function() private$attachmentConfig,
                 getHcubeActive        = function() private$hcubeActive,
+                getModelNameDb        = function() private$modelNameDb,
                 getOrphanedTables     = function(hcubeScalars = NULL){
                   # find orphaned database tables 
                   #
@@ -112,13 +114,12 @@ Db <- R6Class("Db",
                     query <- SQL(paste0("SELECT table_name FROM information_schema.tables", 
                                         " WHERE table_schema='public' AND table_type='BASE TABLE'", 
                                         " AND table_name LIKE ", 
-                                        dbQuoteString(private$conn, private$modelName %+% "\\_%"), ";"))
+                                        dbQuoteString(private$conn, self$escapePattern(private$modelNameDb) %+% "\\_%"), ";"))
                   }else{
                     query <- SQL(paste0("SELECT name FROM sqlite_master WHERE type = 'table'",
                                         " AND name LIKE ", 
-                                        dbQuoteString(private$conn, private$modelName %+% "\\_%"), " ESCAPE '\\';"))
+                                        dbQuoteString(private$conn, self$escapePattern(private$modelNameDb) %+% "\\_%"), " ESCAPE '\\';"))
                   }
-                  
                   tryCatch({
                     dbTables <- dbGetQuery(private$conn, query)[[1L]]
                   }, error = function(e){
@@ -127,7 +128,7 @@ Db <- R6Class("Db",
                   })
                   orphanedTables <- dbTables[!dbTables %in% private$tableNamesScenario]
                   if(!is.null(hcubeScalars)){
-                    hcubeScalarsIdx <-  orphanedTables %in% paste0(private$modelName, "_", 
+                    hcubeScalarsIdx <-  orphanedTables %in% paste0(private$modelNameDb, "_", 
                                                                    hcubeScalars)
                     orphanedTables <- orphanedTables[!hcubeScalarsIdx]
                   }
@@ -1145,11 +1146,7 @@ Db <- R6Class("Db",
                   }
                 },
                 escapePattern = function(pattern){
-                  if(inherits(private$conn, "PqConnection")){
-                    pattern <- gsub("([%_\\])", "\\\\\\1", pattern)
-                  }else{
-                    pattern <- gsub("([%_])", "\\1\\1", pattern)
-                  }
+                  pattern <- gsub("([%_\\])", "\\\\\\1", pattern)
                   return(pattern)
                 },
                 removeExpiredAttachments = function(fileNames, maxDuration){
@@ -1205,6 +1202,7 @@ Db <- R6Class("Db",
                 conn                = NULL,
                 uid                 = character(1L),
                 modelName           = character(1L),
+                modelNameDb         = character(1L),
                 dbSchema            = vector("list", 3L),
                 scenMetaColnames    = character(1L),
                 slocktimeIdentifier = character(1L),
@@ -1236,7 +1234,8 @@ Db <- R6Class("Db",
                 },
                 getCsvSubsetClause = function(colName, vector){
                   subsetClause <- tibble(colName,
-                                         paste0("%,", self$escapePattern(vector), ",%"), "LIKE")
+                                         paste0("%,", self$escapePattern(vector), ",%"), 
+                                         "LIKE")
                   return(subsetClause)
                 },
                 buildRSubsetString = function(dataFrame, sep = " "){
@@ -1343,7 +1342,12 @@ Db <- R6Class("Db",
                     fields <- paste0(dbQuoteIdentifier(private$conn, dataFrame[[4]]),
                                      ".", fields)
                   }
-                  query <- paste(paste(fields, dataFrame[[3]], vals), collapse = sep)
+                  operator <- dataFrame[[3]]
+                  if(!inherits(private$conn, "PqConnection")){
+                    # SQLite needs explicit mention of escape character in clause
+                    vals[operator == "LIKE"] <- paste0(vals[operator == "LIKE"], "  ESCAPE '\\'")
+                  }
+                  query <- paste(paste(fields, operator, vals), collapse = sep)
                   return(SQL(query))
                 },
                 getFieldTypes = function(data){
@@ -1412,7 +1416,7 @@ Db <- R6Class("Db",
                                                                             private$dbSchema$tabName[['_scenTrc']])),
                                               collapse = ", "),
                                         ") OR table_name LIKE ", 
-                                        dbQuoteString(private$conn, private$modelName %+% "\\_%"), 
+                                        dbQuoteString(private$conn, self$escapePattern(private$modelNameDb) %+% "\\_%"), 
                                         ");"))
                   }else{
                     query <- SQL(paste0("SELECT name FROM sqlite_master WHERE type = 'table'",
@@ -1424,7 +1428,7 @@ Db <- R6Class("Db",
                                                                             private$dbSchema$tabName[['_scenTrc']])),
                                               collapse = ", "),
                                         ") OR name LIKE ", 
-                                        dbQuoteString(private$conn, private$modelName %+% "\\_%"), " ESCAPE '\\');"))
+                                        dbQuoteString(private$conn, self$escapePattern(private$modelNameDb) %+% "\\_%"), " ESCAPE '\\');"))
                   }
                   return(dbGetQuery(private$conn, query)[[1L]])
                 }

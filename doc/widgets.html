@@ -4,14 +4,13 @@
 <!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
 <head>
-    <title>GAMS MIRO - Configuration</title>
+    <title>GAMS MIRO - Widgets</title>
     <!-- Meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="GAMS MIRO documentation">
     <meta name="author" content="GAMS Development Corp.">
-    <link rel="shortcut icon" href="favicon.ico">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
     <!-- FontAwesome JS -->
     <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
@@ -23,6 +22,7 @@
     <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+    <!--#include virtual="/wheader.html" -->
 <!--<script>
 $(document).ready(function(){
     $('#dropdown-option-choices')[0].click();
@@ -34,8 +34,6 @@ $(document).ready(function(){
     <!--#include virtual="/wbody.html" -->
     <div class="page-wrapper">
     <!--#include virtual="/mirover.html" -->
-
-        <!--TYPO3SEARCH_begin-->
 
         <!-- ******Header****** -->
         <header id="header" class="sub-header">
@@ -49,12 +47,20 @@ $(document).ready(function(){
                 </div><!--//branding-->
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active"><a href="customize.html">Configuration</a></li>
                     <li class="breadcrumb-item active">Widgets</li>
                 </ol>
             </div><!--//container-->
         </header><!--//header-->
         <div class="doc-wrapper">
             <div class="container">
+                <div class="row justify-content-end search-box-wrapper">
+                    <div class="float-right">
+                        <input class="form-control search-box" id="miroSearch" type="text" placeholder="Search" aria-label="Search">
+                        <ul id="miroSearchResults" class="list-group">
+                        </ul>
+                    </div>
+                </div>
                 <div id="doc-header" class="doc-header text-center">
                     <h1 class="doc-title"><span aria-hidden="true" class="icon fas fa-sliders-h"></span> Widgets</h1>
                 </div><!--//doc-header-->
@@ -74,7 +80,7 @@ $(document).ready(function(){
                                 <div class="section-block" id = "widget-slider-options">
                                   <h3 class="block-title">Available Options</h3>
                                     <p>The following options are available for a slider widget:</p>
-                                    <h6 id="slider-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
+                                    <h6 id="slider-option-name" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Enter the element name as it should be displayed in a tab</h6>
                                     <div class="expanded"><p>With this option the tab name of the symbol is defined, see screenshot below. 
                                     The default value of the element name is the explanatory text of the symbol.</p>
                                     <div class="callout-block callout-warning">
@@ -83,21 +89,21 @@ $(document).ready(function(){
                                       </div><!--//icon-holder-->
                                       <div class="content">
                                           <b class="callout-title">Note:</b>
-                                          <p>If all scalar widgets are displayed in the same tab (see <a href = "./customize#aggregate-widgets">aggregate widgets</a> in the general options), then the name specified here is not displayed at all.  </p>
+                                          <p>If all scalar widgets are displayed in the same tab (see <a href = "./customize.html#aggregate-widgets">aggregate widgets</a> in the general options), then the name specified here is not displayed at all.  </p>
                                       </div><!--//content-->
                                   </div><!--//callout-block-->
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_slider_aggregate.png" alt="Element name"/>
                                     </div>
                                     </div>
-                                    <h6 id="slider-option-label" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a label</h6>
+                                    <h6 id="slider-option-label" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Choose a label</h6>
                                     <div class="expanded"><p>If a label has been specified, it will be displayed above the slider. In the example below the label 
                                     <i>select the maximum number of stocks</i> is used. A label is optional.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_slider_label.png" alt="Element label"/>
                                     </div>
                                     </div>
-                                    <h6 id="slider-option-minmaxdef" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Minimum / maximum / default value</h6>
+                                    <h6 id="slider-option-minmaxdef" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Minimum / maximum / default value</h6>
                                     <div class="expanded"><p><i>Minimum / maximum value</i>: Both a minimum and a maximum value are required for a slider. These define the range from which the user can select values. 
                                     <br><i>Default value</i>: A default value is the initial value of the slider i.e. the slider value set when starting the application. This is optional. 
                                     If the value does not fall between the minimum and maximum values, a warning is issued.
@@ -109,7 +115,7 @@ $(document).ready(function(){
                                     </div>
                                     <p id="dynamic-limits"><br><br><b>Dynamic limits</b>:
                                     <br>Sometimes it makes sense to adapt the limits to the data. An example for this can be found in the demo model <i>pickstock</i>. 
-                                    Here, two sliders are used. With one of the sliders, the user can select the <i>maxmimum number of stocks</i>, with the other one the <i>number of training days</i>.</p>
+                                    Here, two sliders are used. With one of the sliders, the user can select the <i>maximum number of stocks</i>, with the other one the <i>number of training days</i>.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:150pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider3.png" alt="Configuration of a slider (3)" />
                                     </div>
@@ -119,7 +125,7 @@ $(document).ready(function(){
                                     </div>
                                     <p>The maximum value for the <i>maximum number of stocks</i> is 30, since the data set <i>Price</i> that is currently loaded contains 30 stocks. If the user deletes e.g. all values of the stock <i>AAPL</i> from the data, the maximum value of the slider changes to 29.
                                     The same is true for the second slider: the <i>number of training days</i>. Here the maximum value of 252 results from the number of available <i>dates</i> in <i>price</i>.
-                                    <br>In the Configuration mode we can easily define such dynamic limits. For the first slider the configuration looks as follows:</p>
+                                    <br>In the Configuration Mode we can easily define such dynamic limits. For the first slider the configuration looks as follows:</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:250pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider5.png" alt="Configuration of a slider (4)" />
                                     </div>
@@ -131,30 +137,30 @@ $(document).ready(function(){
                                     </div>
                                     <p>More on Dependencies among widgets can be found <a href="./customize.html#widgets-dependencies">here</a>.</p>
                                     </div>
-                                    <h6 id="slider-option-step" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Step size</h6>
+                                    <h6 id="slider-option-step" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Step size</h6>
                                     <div class="expanded"><p>The step size specifies the interval between each selectable value on the slider. The value must be greater than 0 and must not exceed the total range of the slider.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:40pt;" src="assets/images/configuration_mode/widget_slider_step.png" alt="Step size"/>
                                     </div>
                                     </div>
-                                    <h6 id="slider-option-minstep" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Minimum step size</h6>
+                                    <h6 id="slider-option-minstep" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Minimum step size</h6>
                                     <div class="expanded">
                                     <div class="callout-block callout-success" style="margin-top:10px;">
                                        <div class="icon-holder">
                                            <i class="fas fa-thumbs-up"></i>
                                        </div><!--//icon-holder-->
                                        <div class="content">
-                                            <p>The minimum step size defines the minimum interval that can be used for scenario creation in Hypercube mode for a range slider. </p>
+                                            <p>The minimum step size defines the minimum interval that can be used for scenario creation in Hypercube Mode for a range slider. </p>
                                             <div class="section-block">
                                         <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_sliderrange_minstep_example_marked.png" alt="Sliderrange with step size of 5 and minimum step size of 1"/>
                                     </div>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
-                                    <p>In Hypercube mode, when a slider range is used, scenarios are generated depending on the specified step size. Example: We configure a single slider with a lower bound of 70, an upper bound of 100 and a step size of 5. In the Hypercube mode this single slider becomes a slider range with the same limits and the same step size. In the image below the selected limits of 75 to 90 and a step size of 5 result in 4 different variants (75, 80, 85, 90), i.e. 4 scenarios to be calculated.<p>
+                                    <p>In Hypercube Mode, when a slider range is used, scenarios are generated depending on the specified step size. Example: We configure a single slider with a lower bound of 70, an upper bound of 100 and a step size of 5. In the Hypercube Mode this single slider becomes a slider range with the same limits and the same step size. In the image below the selected limits of 75 to 90 and a step size of 5 result in 4 different variants (75, 80, 85, 90), i.e. 4 scenarios to be calculated.<p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_sliderrange_step_example.png" alt="Sliderrange with step size of 5"/>
                                     </div>
-                                    <p>The <i>minimum step size</i> sets the minimum value the user can specify as step size in Hypercube mode. The value may be lower than the regular step size. For example, if the slider above is configured with a regular step size of 5, the limits of the slider can be set in increments of 5. However, the step size for scenario generation on the right side can differ, e.g. be set in smaller intervals. If set to 1, this would result in 16 scenarios (75, 76, 77, ..., 89, 90).</p>
+                                    <p>The <i>minimum step size</i> sets the minimum value the user can specify as step size in Hypercube Mode. The value may be lower than the regular step size. For example, if the slider above is configured with a regular step size of 5, the limits of the slider can be set in increments of 5. However, the step size for scenario generation on the right side can differ, e.g. be set in smaller intervals. If set to 1, this would result in 16 scenarios (75, 76, 77, ..., 89, 90).</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_sliderrange_minstep_example.png" alt="Sliderrange with step size of 5 and minimum step size of 1"/>
                                     </div>
@@ -165,11 +171,11 @@ $(document).ready(function(){
                                       </div><!--//icon-holder-->
                                       <div class="content">
                                           <b class="callout-title">Note:</b>
-                                          <p>The minimum step size is only relevant in Hypercube mode.</p>
+                                          <p>The minimum step size is only relevant in Hypercube Mode.</p>
                                       </div><!--//content-->
                                     </div><!--//callout-block-->
                                     </div>
-                                    <h6 id="slider-option-tick" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Show tick marks?</h6>
+                                    <h6 id="slider-option-tick" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Show tick marks?</h6>
                                     <div class="expanded"><p>Tick marks are displayed below the sliders and help to visually divide the entire slider width. </p>
                                     <p>Slider without tick marks:</p>
                                     <div class="section-block">
@@ -180,11 +186,11 @@ $(document).ready(function(){
                                         <img class="img-fluid" style= "max-height:60pt;" src="assets/images/configuration_mode/widget_slider_tick.png" alt="Slider with tick marks"/>
                                     </div>
                                     </div>
-                                    <h6 id="slider-option-expand" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should element be expanded automatically in Hypercube mode?</h6>
-                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube mode. 
+                                    <h6 id="slider-option-expand" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Should element be expanded automatically in Hypercube Mode?</h6>
+                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube Mode. 
                                     With the option available here, the automatic extension of a widget can be switched off. The picture below shows extended widgets.</p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/batch_img/regular_batch.png" alt="Expand in Hypercube mode"/>
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/batch_img/regular_batch.png" alt="Expand in Hypercube Mode"/>
                                     </div>
                                     </div>
                                 </div><!--//section-block-->
@@ -214,17 +220,17 @@ $(document).ready(function(){
                                   <h3 class="block-title">Configuration</h3>
                                     <p>A range slider returns two numeric values. For this reason, such a slider is not suitable for GAMS scales, but only for GAMS command line parameters, i.e. double-dash parameters.</p>
                                     <p>Example:</p>
-                                    <p>In the Configuration mode we define a double-dash parameter <i>--range</i> with the bounds <i>1</i> and <i>100</i>. The lower default value shall be <i>42</i> and the upper default value <i>75</i>:</p>
+                                    <p>In the Configuration Mode we define a double-dash parameter <i>--range</i> with the bounds <i>1</i> and <i>100</i>. The lower default value shall be <i>42</i> and the upper default value <i>75</i>:</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_sliderrange_config.png" alt="Slider range configuration"/>
                                     </div>
                                     <p>In the GAMS model we can access the selected range with
                                     <code class="language-gams">%RANGE_LO%</code> for the lower value and <code class="language-gams">%RANGE_UP%</code> for the upper value.</p>
                                     <p>More on widgets with ranges can be found <a href="./customize.html#widgets-ranges">here</a>.</p>
-                                    <h6 class="block-title">Range sliders in Hypercube mode</h6>
-                                    <p>A range slider in base mode becomes a range slider in Hypercube mode with an additional checkbox:</p>
+                                    <h6 class="block-title">Range sliders in Hypercube Mode</h6>
+                                    <p>A range slider in Base Mode becomes a range slider in Hypercube Mode with an additional checkbox:</p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_sliderrange_hypercube.png" alt="Sliderrange in Hypercube mode"/>
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_sliderrange_hypercube.png" alt="Sliderrange in Hypercube Mode"/>
                                     </div>
                                     <p>With this checkbox you can determine if the selected range of the slider should result in a single scenario (<i>All combinations?</i> unchecked) or if all possible combinations within this range should be used (<i>All combinations?</i> checked). In the example above - <i>All combinations?</i> is checked - the selected step size determines which scenarios are generated for the Hypercube job. With a step size of 5 this would result in 10 different symbol ranges / scenarios:</p>
                                     <ul>
@@ -286,19 +292,19 @@ $offExternalInput
                                 <div class="section-block" id = "widget-checkbox-options">
                                   <h3 class="block-title">Available Options</h3>
                                     <p>The following options are available for a checkbox widget:</p>
-                                    <h6 id="checkbox-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
+                                    <h6 id="checkbox-option-name" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Enter the element name as it should be displayed in a tab</h6>
                                     <div class="expanded"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
                                     The default value of the element name is the explanatory text of the symbol.</p>
                                     </div>
-                                    <h6 id="checkbox-option-label" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a label</h6>
+                                    <h6 id="checkbox-option-label" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Choose a label</h6>
                                     <div class="expanded"><p>If a label has been specified, it will be displayed above the checkbox. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
                                     </div>
-                                    <h6 id="checkbox-option-default" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default value</h6>
+                                    <h6 id="checkbox-option-default" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Default value</h6>
                                     <div class="expanded"><p>The default value specifies the initial state of the checkbox (checked or unchecked).</p>
                                     </div>
-                                    <h6 id="checkbox-option-expand" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should element be expanded automatically in Hypercube mode?</h6>
-                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube mode. 
-                                    In Hypercube mode a checkbox becomes a multi dropdwon menu with the entries <i>yes</i> and <i>no</i>. With the option available here, the automatic expansion of a widget can be switched off.</p>
+                                    <h6 id="checkbox-option-expand" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Should element be expanded automatically in Hypercube Mode?</h6>
+                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube Mode. 
+                                    In Hypercube Mode a checkbox becomes a multi dropdwon menu with the entries <i>yes</i> and <i>no</i>. With the option available here, the automatic expansion of a widget can be switched off.</p>
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widget-checkbox-json">
@@ -329,7 +335,7 @@ $offExternalInput
                                     <div class="section-block">
                                         <img class="img-fluid" src="assets/images/configuration_mode/widget_dropdown_config.png" alt="Dropdown menu configuration"/>
                                     </div>
-                                    <p>The <i>model type</i> for which the dropdown menu is configurated, is a GAMS Singleton Set (symbol name: <i>typeSelect</i>). The configuration of a GAMS option has been avoided because the information about such a command-line parameter is lost when a scenario is exported as a GDX file or used in Hypercube mode. By using a singleton set instead, this information is saved:</p>
+                                    <p>The <i>model type</i> for which the dropdown menu is configured, is a GAMS Singleton Set (symbol name: <i>typeSelect</i>). The configuration of a GAMS option has been avoided because the information about such a command-line parameter is lost when a scenario is exported as a GDX file or used in Hypercube Mode. By using a singleton set instead, this information is saved:</p>
                                     <pre><code class="language-gams">
 Set t      'Available model types' / lp, mip, minlp /;
 
@@ -366,14 +372,14 @@ solve transport%type% using %type% minimizing z;
                                 <div class="section-block" id = "widget-dropdown-options">
                                   <h3 class="block-title">Available options</h3>
                                     <p>The following options are available for a checkbox widget:</p>
-                                    <h6 id="dropdown-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
+                                    <h6 id="dropdown-option-name" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Enter the element name as it should be displayed in a tab</h6>
                                     <div class="expanded"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
                                     The default value of the element name is the explanatory text of the symbol.</p>
                                     </div>
-                                    <h6 id="dropdown-option-label" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a label</h6>
+                                    <h6 id="dropdown-option-label" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Choose a label</h6>
                                     <div class="expanded"><p>If a label has been specified, it will be displayed above the dropdown menu. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
                                     </div>
-                                    <h6 id="dropdown-option-choices" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Static Choices / dynamic choices</h6>
+                                    <h6 id="dropdown-option-choices" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Static Choices / dynamic choices</h6>
                                     <div class="expanded"><p>As with a slider, the values/elements of a dropdown menu can be filled either statically or dynamically. 
                                     Static choices remain unchanged, regardless of the loaded data. In contrast to this the selectable elements of a dropdown menu with dynamic choices are filled depending on the loaded data.</p>
                                     <br><h4 id="static-dropdown">Static choices:</h4>
@@ -381,7 +387,7 @@ solve transport%type% using %type% minimizing z;
                                     <ul>
                                      
                                     <li>Choices to select from: 
-                                    <br>Here, a list of values to select from in the resulting dropdwn menu is specified.
+                                    <br>Here, a list of values to select from in the resulting dropdown menu is specified.
                                     </li> 
                                     <li>Aliases for choices: 
                                     <br>If aliases are given, then an alias — rather than the choice — is displayed to the user. Aliases are optional. 
@@ -482,9 +488,9 @@ $offExternalInput
                                        </li>
                                     </ul>
                                     </div>
-                                    <h6 id="dropdown-option-clearvalue" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Only communicate element text of symbol with GAMS?</h6>
+                                    <h6 id="dropdown-option-clearvalue" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Only communicate element text of symbol with GAMS?</h6>
                                     <div class="expanded"><p></p>
-                                    <p>This options is only available for Singleton sets. They can have a label and an element text. When configured as a dropdown menu, label and element text are communicated with GAMS. If this option is activated, the element text of the selected choice is communicated as an empty string (i.e. only the element text is considered). Because of this, the UEL order of the used set is preserved. This is especially recommended if the singleton set is used to define a compile-time variable in the GAMS model. Migrating into such a compile time variable can be done using the <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset">$eval.set</a> method. Since the variable should be filled by the element text of the singleton set, the attribute <i>TE</i> has to be used: <code class = "language-gams">$eval.Set VARNAME SETID.TE</code>.</p> 
+                                    <p>This options is only available for Singleton sets. They can have a label and an element text. When configured as a dropdown menu, label and element text are communicated with GAMS. If this option is activated, the element text of the selected choice is communicated as an empty string (i.e. only the element text is considered). Because of this, the UEL order is preserved. This is especially recommended if the singleton set is used to define a compile-time variable in the GAMS model. Migrating into such a compile time variable can be done using the <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset">$eval.set</a> method. Since the variable should be filled by the element text of the singleton set, the attribute <i>TE</i> has to be used: <code class = "language-gams">$eval.Set VARNAME SETID.TE</code>.</p> 
                                     <p>Note that aliases for the dropdown menu choices must be configured to use this option!</p>
                                     <div class="callout-block callout-success" style="margin-top:10px;">
                                        <div class="icon-holder">
@@ -496,9 +502,9 @@ $offExternalInput
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                     </div>
-                                    <h6 id="dropdown-option-expand" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should element be expanded automatically in Hypercube mode?</h6>
-                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube mode. 
-                                    In Hypercube mode a dropdown menu becomes a multi dropdwon menu. With the option available here, the automatic expansion of a widget can be switched off.</p>
+                                    <h6 id="dropdown-option-expand" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Should element be expanded automatically in Hypercube Mode?</h6>
+                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube Mode. 
+                                    In Hypercube Mode a dropdown menu becomes a multi dropdwon menu. With the option available here, the automatic expansion of a widget can be switched off.</p>
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widget-dropdown-json">
@@ -551,7 +557,7 @@ set       subdate(date)        'subset of dates' /2016-01-04/;
 $offExternalInput
 
 </code></pre>
-                                    <p>In the configuation mode we can configure a multi-dropdown menu for symbol <i>subdate</i>:<p>
+                                    <p>In the Configuration Mode we can configure a multi-dropdown menu for symbol <i>subdate</i>:<p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_multidropdown_config.png" alt="Multi-dropdown menu configuration"/>
                                     </div>
@@ -616,25 +622,25 @@ $offExternalInput
                                 <div class="section-block" id = "widget-date-options">
                                   <h3 class="block-title">Available options</h3>
                                     <p>The following options are available for a date selector widget:</p>
-                                    <h6 id="date-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
+                                    <h6 id="date-option-name" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Enter the element name as it should be displayed in a tab</h6>
                                     <div class="expanded"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
                                     The default value of the element name is the explanatory text of the symbol.</p>
                                     </div>
-                                    <h6 id="date-option-label" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a label</h6>
+                                    <h6 id="date-option-label" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Choose a label</h6>
                                     <div class="expanded"><p>If a label has been specified, it will be displayed above the date selector. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
                                     </div>
-                                    <h6 id="date-option-minmaxdef" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default / earliest / latest date</h6>
+                                    <h6 id="date-option-minmaxdef" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Default / earliest / latest date</h6>
                                     <div class="expanded"><p>When configuring a date selector, the earliest and the latest date that can be selected by the user can be specified. 
                                     Dates outside this range cannot be selected. In addition, a specific date can be set as the default date. 
                                     The dates for the earliest and the latest selectable date are optional. If required, they can be set statically by specifying a fixed date. 
                                     The default date is not optional. Here either a static date string can be specified or the option <i>Use current date</i> can be activated. 
                                     The current date is then always selected as the default. </p>
                                     </div>
-                                    <h6 id="date-option-format" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose how you want the date to be formatted</h6>
+                                    <h6 id="date-option-format" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Choose how you want the date to be formatted</h6>
                                     <div class="expanded"><p>This option specifies the format of the date to display in the browser. The defaults is <i>yyyy-mm-dd</i>. 
                                     This setting does not affect the actual format of the string the widget returns.</p>
                                     </div>
-                                    <h6 id="date-option-range" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ What date range should be displayed per default?</h6>
+                                    <h6 id="date-option-range" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> What date range should be displayed per default?</h6>
                                     <div class="expanded"><p>Specifies the start screen of the date overview. The start screens <i>Month</i>, <i>Year</i> and <i>Decade</i> are available.</p>
                                     <div class = "row">
                                         <div class = "col-lg-4 col-6">
@@ -658,7 +664,7 @@ $offExternalInput
                                     </div>
                                     <p>If you click on a year, the monthly overview opens. From there, you can click on a month to go to the detailed day view.</p>
                                     </div>
-                                    <h6 id="date-option-start" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ What day shall be the start of the week?</h6>
+                                    <h6 id="date-option-start" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> What day shall be the start of the week?</h6>
                                     <div class="expanded"><p>This option determines the day of the week with which each line of the date overview should begin.</p>
                                         <div class = "row">
                                             <div class = "col-lg-4 col-6">
@@ -675,18 +681,18 @@ $offExternalInput
                                             </div>
                                         </div>
                                     </div>
-                                    <h6 id="date-option-disable" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Select weekdays that you want to disable</h6>
+                                    <h6 id="date-option-disable" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Select weekdays that you want to disable</h6>
                                     <div class="expanded"><p>Individual weekdays can be deactivated in the date overview, so that the corresponding days are not selectable by the user. </p>
                                     </div>
-                                    <h6 id="date-option-close" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should datepicker be closed immediately when a date is selected?</h6>
+                                    <h6 id="date-option-close" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Should datepicker be closed immediately when a date is selected?</h6>
                                     <div class="expanded"><p>If active, the date overview of the widget will be closed as soon as a date is clicked. 
                                     Otherwise, the widget remains open and closes only when you click outside the datepicker.</p>
                                     </div>
-                                    <h6 id="date-option-expand" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should element be expanded automatically in Hypercube mode?</h6>
-                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube mode. A date selector in Base mode will become a date range selector in Hypercube mode.
+                                    <h6 id="date-option-expand" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Should element be expanded automatically in Hypercube Mode?</h6>
+                                    <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube Mode. A date selector in Base Mode will become a date range selector in Hypercube Mode.
                                     With the option available here, the automatic extension of a widget can be switched off.</p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/batch_img/regular_batch.png" alt="Expand in Hypercube mode"/>
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/batch_img/regular_batch.png" alt="Expand in Hypercube Mode"/>
                                     </div>
                                     </div>
                                 </div><!--//section-block-->
@@ -728,13 +734,13 @@ $offExternalInput
                                   <h3 class="block-title">Available options</h3>
                                     <p>The available options of a date range selector are almost identical to those of a <a href = "./widgets.html#widget-date-options" class = "scrollto">date selector</a>. 
                                     The following options are available in addition to a date selector:</p>
-                                    <h6 id="daterange-option-default" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default dates</h6>
+                                    <h6 id="daterange-option-default" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Default dates</h6>
                                     <div class="expanded"><p>Since the widget is used for date <i>ranges</i> the date range selector needs two default dates instead of one. 
                                     The configuration of these does not differ from that of the <a href = "#date-option-minmaxdef" class = "scrollto">standard date selector</a>.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:60pt;" src="assets/images/configuration_mode/widget_daterange_separator.png" alt="Date range separator"/>
                                     </div>
-                                    </div><h6 id="daterange-option-separator" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Select the separator between start and end date selector</h6>
+                                    </div><h6 id="daterange-option-separator" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Select the separator between start and end date selector</h6>
                                     <div class="expanded"><p>With this option you can determine what should be displayed between the two date selectors (default: "<i>to</i>").</p>
                                     <p>Example with two different separators:</p>
                                     <div class="section-block">
@@ -778,20 +784,29 @@ $offExternalInput
                                 <div class="section-block" id = "widget-textbox-options">
                                   <h3 class="block-title">Available options</h3>
                                     <p>The following options are available for a text input widget:</p>
-                                    <h6 id="textbox-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
+                                    <h6 id="textbox-option-name" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Enter the element name as it should be displayed in a tab</h6>
                                     <div class="expanded"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
                                     The default value of the element name is the explanatory text of the symbol.</p>
                                     </div>
-                                    <h6 id="textbox-option-label" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a label</h6>
+                                    <h6 id="textbox-option-label" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Choose a label</h6>
                                     <div class="expanded"><p>If a label has been specified, it will be displayed above the text input. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
                                     </div>
-                                    <h6 id="textbox-option-default" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose the default value</h6>
+                                    <h6 id="textbox-option-default" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Choose the default value</h6>
                                     <div class="expanded"><p>The default value is the initial value of the text input i.e. the text set when starting the application. This is optional.</p>
                                     </div>
-                                    <h6 id="textbox-option-placeholder" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a placeholder</h6>
+                                    <h6 id="textbox-option-placeholder" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Choose a placeholder</h6>
                                     <div class="expanded"><p>A placeholder is a text that is displayed in the text box as long as no input has been made by the user. 
                                     This is primarily for orientation purposes. A placeholder is optional.</p>
                                     </div>
+									<div class="callout-block callout-success" style="margin-top:10px;">
+                                       <div class="icon-holder">
+                                           <i class="fas fa-thumbs-up"></i>
+                                       </div><!--//icon-holder-->
+                                       <div class="content">
+                                           <b class="callout-title">Text input and Singleton Sets:</b>
+                                            <p>If a text input is used for a Singleton Set and you want to communicate both its label and its element text via GAMS MIRO, you must use a double pipe ('||') as separator. Find more information <a href = "./model.html#singleton-set-separator">here</a>.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widget-textbox-json">
                                   <h3 class="block-title">JSON example</h3>
@@ -816,7 +831,6 @@ $offExternalInput
                                   <h3 class="block-title">Configuration</h3>
                                     <p>Returns a number.</p>
                                     <p>Example: </p>
-                                    <p>Numeric input for Scalar <i>maxstock</i> (<i>maximum numer of stocks to select</i>):<p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_numeric_config.png" alt="Numeric input configuration"/>
                                     </div>
@@ -824,23 +838,32 @@ $offExternalInput
                                 <div class="section-block" id = "widget-numeric-options">
                                   <h3 class="block-title">Available options</h3>
                                     <p>The following options are available for a numeric input widget:</p>
-                                    <h6 id="numeric-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
+                                    <h6 id="numeric-option-name" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Enter the element name as it should be displayed in a tab</h6>
                                     <div class="expanded"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
                                     The default value of the element name is the explanatory text of the symbol.</p>
                                     </div>
-                                    <h6 id="numeric-option-label" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a label</h6>
+                                    <h6 id="numeric-option-label" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Choose a label</h6>
                                     <div class="expanded"><p>If a label has been specified, it will be displayed above the numeric input. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
                                     </div>
-                                    <h6 id="numeric-option-default" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default value</h6>
+                                    <h6 id="numeric-option-default" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Default value</h6>
                                     <div class="expanded"><p>A default value is the initial value of the numeric input i.e. the value set when starting the application. This is optional.</p>
                                     </div>
-                                    <h6 id="numeric-option-minimum" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Minimum value</h6>
+                                    <h6 id="numeric-option-minimum" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Minimum value</h6>
                                     <div class="expanded"><p>Specifies the minimum valid value for the widget. This is optional. </p>
                                     </div>
-                                    <h6 id="numeric-option-maximum" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Maximum value</h6>
+                                    <h6 id="numeric-option-maximum" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Maximum value</h6>
                                     <div class="expanded"><p>Specifies the maximum valid value for the widget. This is optional. </p>
                                     </div>
-                                    <h6 id="numeric-option-sign" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Currency symbol</h6>
+                                    <h6 id="numeric-option-decimal-places" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Number of decimal places</h6>
+                                    <div class="expanded"><p>Defines the default number of decimal places to show on the formatted value, and keep for the precision</p>
+                                    </div>
+                                    <h6 id="numeric-option-decimal-separator" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Decimal separator to use</h6>
+                                    <div class="expanded"><p>Defines the decimal separator character to be used. Default: "." (dot).</p>
+                                    </div>
+                                    <h6 id="numeric-option-thousand-separator" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Thousand grouping separator to use</h6>
+                                    <div class="expanded"><p>Defines the thousand grouping separator character to be used. Default: "," (comma).</p>
+                                    </div>
+                                    <h6 id="numeric-option-sign" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Currency symbol</h6>
                                     <div class="expanded"><p>Places a symbol in front of the entered value, e.g. a dollar sign. This option is used exclusively for visual support. 
                                     Only the number is returned as value. This is optional. </p>
                                     </div>
@@ -929,17 +952,17 @@ $offExternalInput
                 </div><!--//doc-body-->
             </div><!--//container-->
         </div><!--//doc-wrapper-->
-
-    <!--TYPO3SEARCH_end-->
-    </div><!--//page-wrapper--><!--#include virtual="/footer_miro.html" -->
+    </div><!--//page-wrapper-->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <!--#include virtual="/footer.html" -->
 
     <!-- Main Javascript -->
-    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>
     <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
     <script type="text/javascript" src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"></script>
     <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/markjs/jquery.mark.min.js"></script>
 
     <script type="text/javascript" src="assets/js/main.js"></script>
     <!-- dependencies (jquery, handlebars and bootstrap) -->

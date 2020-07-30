@@ -1,4 +1,4 @@
-FROM python:alpine
+FROM python:3-alpine
 
 RUN adduser -D -u 1000 mirodoc
 

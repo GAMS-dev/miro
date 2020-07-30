@@ -173,11 +173,18 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   }
   prog$set(detail = lang$progressBar$importScen$renderInput, value = 0.4)
   
+  # reset input data
+  lapply(seq_along(modelIn)[names(modelIn) %in% datasetsToFetch], function(i){
+    hideEl(session, "#graph-in_" %+% i)
+    showEl(session, "#data-in_" %+% i)
+  })
+  
   source("./modules/input_load.R", local = TRUE)
   markUnsaved()
   if(!is.null(errMsg)){
     return(NULL)
   }
+  errMsg <- NULL
   if(LAUNCHHCUBEMODE){
     noOutputData <<- TRUE
   }else{
@@ -193,7 +200,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     }, error = function(e){
       flog.info("Problems loading output data. Error message: %s.", 
                 conditionMessage(e))
-      errMsg <<- lang$errMsg$badOutputData$badOutputData
+      errMsg <<- conditionMessage(e)
     })
     if(is.null(showErrorMsg(lang$errMsg$GAMSOutput$title, errMsg))){
       return()
@@ -203,7 +210,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
       if(!is.null(outputData$scalar)){
         scalarData[["scen_1_"]] <<- outputData$scalar
       }
-      renderOutputData()
+      renderOutputData(rendererEnv)
       noOutputData <<- FALSE
     }else{
       noOutputData <<- TRUE

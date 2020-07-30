@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "1.0.4"
+MIROVersion <- "1.1.2"
 APIVersion  <- "1"
-MIRORDate   <- "Apr 20 2020"
+MIRORDate   <- "Jul 22 2020"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -9,7 +9,6 @@ MIRORDate   <- "Apr 20 2020"
 # plotly          #MIT
 # V8              #MIT
 # jsonlite        #MIT
-# jsonvalidate    #MIT
 # rpivotTable     #MIT
 # R6              #MIT
 # dygraphs        #MIT
@@ -31,8 +30,8 @@ MIRORDate   <- "Apr 20 2020"
 # RSQLite(Scenario mode) #LGPL >=2
 # digest (Hypercube mode) #GPL >=2
 
-# specify CRAN mirror (for list of mirrors, see: https://cran.r-project.org/mirrors.html)
-CRANMirror <- "http://cran.us.r-project.org"
+# specify CRAN mirror
+CRANMirror <- "https://cloud.r-project.org/"
 errMsg <- NULL
 warningMsg <- NULL
 loggerInitialised <- FALSE
@@ -45,6 +44,7 @@ isShinyProxy <<- !identical(Sys.getenv("SHINYPROXY_USERNAME"), "")
 debugMode <- TRUE
 RLibPath <- NULL
 miroBuildonly <- identical(Sys.getenv("MIRO_BUILD"), "true")
+miroStoreDataOnly <- identical(Sys.getenv("MIRO_POPULATE_DB"), "true")
 miroDeploy <- miroBuildonly
 if(identical(Sys.getenv("MIRO_TEST_DEPLOY"), "true")){
   miroDeploy <- TRUE
@@ -61,8 +61,13 @@ tmpFileDir <- tempdir(check = TRUE)
 # required packages
 suppressMessages(library(R6))
 requiredPackages <- c("jsonlite", "zip", "tibble", "readr")
-
+if(!miroBuildonly){
+  requiredPackages <- c(requiredPackages, "shiny", "shinydashboard", "rhandsontable", 
+                        "rpivotTable", "stringi", "processx", 
+                        "dplyr", "readxl", "writexl", "futile.logger", "tidyr")
+}
 config <- list()
+modelFiles <- character()
 gamsSysDir <- Sys.getenv("GAMS_SYS_DIR")
 
 installedPackages <<- installed.packages()[, "Package"]
@@ -210,6 +215,11 @@ if(is.null(errMsg)){
       assign(customRendererName, get(customRendererName), envir = .GlobalEnv)
     }
   }
+  if(isShinyProxy || identical(Sys.getenv("MIRO_REMOTE_EXEC"), "true")){
+    config$activateModules$remoteExecution <- TRUE
+  }
+}
+if(is.null(errMsg)){
   if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildonly){
     errMsg <- paste(errMsg, 
                     sprintf("Can not use 'gdx' as file exchange with GAMS if gdxrrw library is not installed.\n
@@ -231,10 +241,6 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
   if(isShinyProxy || identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
     dbConfig <- setDbConfig()
     
-    if(isShinyProxy || identical(Sys.getenv("MIRO_REMOTE_EXEC"), "true")){
-      config$activateModules$remoteExecution <- TRUE
-    }
-    
     if(length(dbConfig$errMsg)){
       errMsg <- dbConfig$errMsg
     }else{
@@ -244,9 +250,6 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
     dbConfig <- list(type = "sqlite",
                      name = file.path(miroDbDir, 
                                       "miro.sqlite3"))
-    if(identical(Sys.getenv("MIRO_REMOTE_EXEC"), "true")){
-      config$activateModules$remoteExecution <- TRUE
-    }
   }
   if(isTRUE(config$activateModules$remoteExecution)){
     useTempDir <- TRUE
@@ -277,7 +280,7 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
         if(LAUNCHHCUBEMODE){
           errMsg <- paste(errMsg, "Hypercube mode requires to be executed in temporary directory. Set the environment variable MIRO_BUILD_ARCHIVE to 'true'!", 
                           sep = "\n")
-        }else if(config$activateModules$remoteExecution){
+        }else if(isTRUE(config$activateModules$remoteExecution)){
           errMsg <- paste(errMsg, "Remote execution mode requires to be executed in temporary directory. Set the environment variable MIRO_BUILD_ARCHIVE to 'true'!", 
                           sep = "\n")
         }
@@ -389,7 +392,7 @@ if(is.null(errMsg) && debugMode){
   requiredPackagesCR <<- NULL
   
   if(!LAUNCHCONFIGMODE){
-    for(customRendererConfig in c(configGraphsOut, configGraphsIn)){
+    for(customRendererConfig in c(configGraphsOut, configGraphsIn, config$inputWidgets)){
       # check whether non standard renderers were defined in graph config
       if(!is.null(customRendererConfig$rendererName)){
         customRendererConfig$outType <- customRendererConfig$rendererName
@@ -427,6 +430,22 @@ if(is.null(errMsg) && debugMode){
   customRendererNames <- listOfCustomRenderers$get()
   rm(listOfCustomRenderers)
 }
+aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
+                          "Release Date: ", MIRORDate, "<br/>", 
+                          "Copyright (c) 2020 GAMS Software GmbH &lt;support@gams.com&gt;<br/>",
+                          "Copyright (c) 2020 GAMS Development Corp. &lt;support@gams.com&gt;<br/><br/>",
+                          "This program is free software: you can redistribute it and/or modify ",
+                          "it under the terms of version 3 of the GNU General Public License as published by ",
+                          "the Free Software Foundation.<br/><br/>",
+                          "This program is distributed in the hope that it will be useful, ", 
+                          "but WITHOUT ANY WARRANTY; without even the implied warranty of ",
+                          "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the ",
+                          "GNU General Public License for more details.<br/><br/>",
+                          "You should have received a copy of the GNU General Public License ",
+                          "along with this program. If not, see ",
+                          "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
+                          "For more information about third-party software included in MIRO, see ",
+                          "<a href=\\'http://www.gams.com/miro/license.html\\' target=\\'_blank\\'>here</a>.")
 if(miroBuildonly){
   if(!is.null(errMsg)){
     warning(errMsg)
@@ -438,6 +457,7 @@ if(miroBuildonly){
       quit("no", status = 1) 
     }
   }
+  
   save(list = c("customRendererNames", customRendererNames, "modelIn", "modelInRaw", 
                 "modelOut", "config", "lang", "inputDsNames", "inputDsAliases", 
                 "outputTabTitles", "modelInTemplate", "scenDataTemplate", 
@@ -457,6 +477,7 @@ if(miroBuildonly){
                 #TODO: Update API version when dataContract is used elsewhere than in Configuration mode
                 "dataContract"), 
        file = rSaveFilePath)
+  
   if(identical(Sys.getenv("MIRO_COMPILE_ONLY"), "true")){
     quit("no")
   }
@@ -531,10 +552,6 @@ if(is.null(errMsg)){
     })
   }
 }
-requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx", 
-                      "dplyr", "readxl", "writexl", "rhandsontable", 
-                      "rpivotTable", "futile.logger", "tidyr")
-source("./components/install_packages.R", local = TRUE)
 
 if(is.null(errMsg)){
   flog.appender(do.call(if(identical(logToConsole, TRUE)) "appender.tee" else "appender.file", 
@@ -545,11 +562,7 @@ if(is.null(errMsg)){
   flog.threshold(loggingLevel)
   flog.trace("Logging facility initialised.")
   loggerInitialised <- TRUE
-  if(!is.null(requiredPackagesCR)){
-    requiredPackages <- requiredPackagesCR
-    source("./components/install_packages.R", local = TRUE)
-    rm(requiredPackagesCR)
-  }
+  
   if(config$activateModules$remoteExecution){
     requiredPackages <- c("future", "httr")
   }else if(length(externalInputConfig) || length(datasetsRemoteExport)){
@@ -558,19 +571,27 @@ if(is.null(errMsg)){
     requiredPackages <- character(0L)
   }
   if(LAUNCHCONFIGMODE){
-    requiredPackages <- c(requiredPackages, "plotly", "xts", "dygraphs", "leaflet",
+    requiredPackages <- c(requiredPackages, "plotly", "xts", "dygraphs", "leaflet", "chartjs", "sortable",
                           "leaflet.minicharts", "timevis", "DT")
   }else{
     requiredPackages <- c(requiredPackages, 
                           if(identical(installPackage$plotly, TRUE)) "plotly",
                           if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
                           if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"),
-                          if(identical(installPackage$timevis, TRUE)) c("timevis"))
+                          if(identical(installPackage$timevis, TRUE)) c("timevis"),
+                          if(identical(installPackage$miroPivot, TRUE)) c("DT", "sortable", "chartjs"))
   }
   if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
     requiredPackages <- c(requiredPackages, "DT")
   }
+  
+  if(!is.null(requiredPackagesCR)){
+    requiredPackages <- c(requiredPackages, requiredPackagesCR)
+    rm(requiredPackagesCR)
+  }
+  requiredPackages <- unique(requiredPackages)
   source("./components/install_packages.R", local = TRUE)
+  
   options("DT.TOJSON_ARGS" = list(na = "string", na_as_null = TRUE))
   
   if(config$activateModules$remoteExecution && !LAUNCHCONFIGMODE){
@@ -643,7 +664,7 @@ if(is.null(errMsg)){
   }
 }
 inconsistentTableNames <- NULL
-if(is.null(errMsg) && debugMode){
+if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
   # checking database inconsistencies
   local({
     orphanedTables <- NULL
@@ -666,6 +687,9 @@ Note that you can remove orphaned database tables using the configuration mode (
       inconsistentTables <- db$getInconsistentTables()
     }, error = function(e){
       flog.error("Problems fetching database tables (for inconsistency checks).\nDetails: '%s'.", e)
+      if(miroStoreDataOnly){
+        write("merr:::500", stderr())
+      }
       errMsg <<- paste(errMsg, sprintf("Problems fetching database tables (for inconsistency checks). Error message: '%s'.", 
                                        conditionMessage(e)), sep = '\n')
     })
@@ -680,26 +704,15 @@ Those tables are: '%s'.\nError message: '%s'.",
                                    paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg),
                    collapse = "\n")
       errMsg <<- paste(errMsg, msg, sep = "\n")
+      if(miroStoreDataOnly){
+        write(paste0("merr:::409:::", paste(vapply(inconsistentTables$names, 
+                                                   function(el) base64_enc(charToRaw(el)), 
+                                                   character(1L), USE.NAMES = FALSE), 
+                                            collapse = ",")), stderr())
+      }
     }
   })
 }
-
-aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
-                          "Release Date: ", MIRORDate, "<br/>", 
-                          "Copyright (c) 2020 GAMS Software GmbH &lt;support@gams.com&gt;<br/>",
-                          "Copyright (c) 2020 GAMS Development Corp. &lt;support@gams.com&gt;<br/><br/>",
-                          "This program is free software: you can redistribute it and/or modify ",
-                          "it under the terms of version 3 of the GNU General Public License as published by ",
-                          "the Free Software Foundation.<br/><br/>",
-                          "This program is distributed in the hope that it will be useful, ", 
-                          "but WITHOUT ANY WARRANTY; without even the implied warranty of ",
-                          "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the ",
-                          "GNU General Public License for more details.<br/><br/>",
-                          "You should have received a copy of the GNU General Public License ",
-                          "along with this program. If not, see ",
-                          "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
-                          "For more information about third-party software included in MIRO, see ",
-                          "<a href=\\'http://www.gams.com/miro/license.html\\' target=\\'_blank\\'>here</a>.")
 
 if(is.null(errMsg)){
   tryCatch({
@@ -777,6 +790,10 @@ if(!is.null(errMsg)){
   }
   if(isShinyProxy){
     stop('An error occured. Check log for more information!', call. = FALSE)
+  }else if(miroStoreDataOnly){
+    if(interactive())
+      stop()
+    quit("no", 1L)
   }
   if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
     setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
@@ -850,7 +867,6 @@ if(!is.null(errMsg)){
                  )
                )
              },
-             tableOutput("JSONErrorMessages"),
              tags$div(style = "text-align:center;margin-top:20px;", 
                       actionButton("btCloseInitErrWindow", if(!exists("lang") || is.null(lang$errMsg$initErrors$okButton))
                         "Ok" else lang$errMsg$initErrors$okButton))
@@ -905,9 +921,6 @@ if(!is.null(errMsg)){
     output$errorMessages <- renderText(
       errMsg
     )
-    output$JSONErrorMessages <- renderTable(
-      if(exists("jsonErrors")) jsonErrors, bordered = TRUE
-    )
     observeEvent(input$btCloseInitErrWindow, {
       if(!interactive()){
         stopApp()
@@ -952,9 +965,9 @@ if(!is.null(errMsg)){
         inputIdsTmp        <- inputIdsTmp[!is.na(inputIdsTmp)]
         metaDataTmp        <- metaDataTmp[inputIdsTmp]
         modelInTemplateTmp <- modelInTemplateTmp[inputIdsTmp]
-        
+
         tmpDirToRemove     <- character(0L)
-        
+
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
           flog.info("New data: '%s' is being stored in the database. Please wait a until the import is finished.", miroDataFile)
@@ -964,8 +977,8 @@ if(!is.null(errMsg)){
           }else if(dataFileExt[i] == "zip"){
             method <- "csv"
             tmpDir <- tryCatch(
-              getValidCsvFromZip(file.path(miroDataDir, miroDataFile), 
-                                 c(names(modelOut), 
+              getValidCsvFromZip(file.path(miroDataDir, miroDataFile),
+                                 c(names(modelOut),
                                    inputDsNames), uid)$tmpDir
               , error = function(e){
                 flog.error(conditionMessage(e))
@@ -984,8 +997,8 @@ if(!is.null(errMsg)){
                                   execPerm = c(uidAdmin, ugroups), uid = uidAdmin)
           dataOut <- loadScenData(scalarsOutName, modelOut, tmpDir, modelName, scalarsFileHeaders,
                                   modelOutTemplate, method = method, fileName = miroDataFile)$tabular
-          dataIn  <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp, 
-                                  workDir = tmpDir, 
+          dataIn  <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp,
+                                  workDir = tmpDir,
                                   modelName = modelName, errMsg = lang$errMsg$GAMSInput$badInputData,
                                   scalarsFileHeaders = scalarsFileHeaders,
                                   templates = modelInTemplateTmp, method = method,
@@ -998,9 +1011,13 @@ if(!is.null(errMsg)){
           }else{
             newScen$save(c(dataOut, dataIn))
           }
-          
+
           if(!debugMode && !file.remove(file.path(miroDataDir, miroDataFile))){
             flog.info("Could not remove file: '%s'.", miroDataFile)
+          }
+          if(miroStoreDataOnly){
+            write(paste0("mprog:::", round(i/length(miroDataFiles) * 100)), 
+                  stderr())
           }
         }
         if(length(tmpDirToRemove)){
@@ -1014,13 +1031,14 @@ if(!is.null(errMsg)){
     }, error = function(e){
       flog.error("Problems saving MIRO data to database. Error message: '%s'.", e)
       gc()
-      if(identical(Sys.getenv("MIRO_POPULATE_DB"), "true")){
+      if(miroStoreDataOnly){
+        write("merr:::500", stderr())
         if(interactive())
           stop()
         quit("no", 1L)
       }
     })
-    if(identical(Sys.getenv("MIRO_POPULATE_DB"), "true")){
+    if(miroStoreDataOnly){
       if(interactive())
         stop()
       quit("no", 0L)
@@ -1107,18 +1125,19 @@ if(!is.null(errMsg)){
       
       worker <- Worker$new(metadata = list(uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
                                            tableNameTracePrefix = tableNameTracePrefix, maxSizeToRead = 5000,
-                                           modelDataFiles = if(identical(config$fileExchange, "gdx")) 
+                                           modelDataFiles = c(if(identical(config$fileExchange, "gdx")) 
                                              c(MIROGdxInName, MIROGdxOutName) else 
-                                               paste0(c(names(modelOut), inputDsNames), ".csv"),
+                                               paste0(c(names(modelOut), inputDsNames), ".csv"), 
+                                             vapply(config$outputAttachments, "[[", character(1L), "filename", USE.NAMES = FALSE)),
                                            MIROGdxInName = MIROGdxInName,
                                            clArgs = GAMSClArgs, 
                                            text_entities = c(paste0(modelName, ".lst"), 
                                                              if(config$activateModules$miroLogFile) config$miroLogFile),
-                                           gamsExecMode = gamsExecMode,
+                                           miroLogFile = config$miroLogFile,
                                            extraClArgs = config$extraClArgs, 
                                            saveTraceFile = config$saveTraceFile,
                                            modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
-                                           timeout = 10L, serverOS = getOS(), modelData = modelData, hcubeMode = LAUNCHHCUBEMODE,
+                                           timeout = 10L, serverOS = getOS(), modelData = modelData,
                                            rememberMeFileName = rememberMeFileName,
                                            hiddenLogFile = !config$activateModules$logFile), 
                            remote = config$activateModules$remoteExecution,
@@ -1127,6 +1146,8 @@ if(!is.null(errMsg)){
       if(length(credConfig)){
         do.call(worker$setCredentials, credConfig)
       }
+      rendererEnv        <- new.env(parent = emptyenv())
+      rendererEnv$output <- new.env(parent = emptyenv())
       
       scenMetaData     <- list()
       # scenario metadata of scenario saved in database
@@ -1764,7 +1785,7 @@ if(!is.null(errMsg)){
     source("./UI/sidebar.R", local = TRUE)
     source("./UI/body.R", local = TRUE)
     
-    ui <- dashboardPage(header, sidebar, body, skin = "black")
+    ui <- dashboardPage(header, sidebar, miroBody, skin = "black")
     
     app <- shinyApp(ui = ui, server = server)
   }

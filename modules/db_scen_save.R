@@ -187,7 +187,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   }
   if(!saveOutput){
     # remove output from UI
-    renderOutputData()
+    renderOutputData(rendererEnv)
   }
   
   # reset dirty flag and unsaved status
@@ -316,7 +316,7 @@ if(config$activateModules$attachments){
     observeEvent(input[["btRemoveAttachment_" %+% i]], {
       req(nchar(attachmentList[["name"]][[i]]) > 0L, activeScen)
       activeScen$removeAttachments(attachmentList[["name"]][[i]])
-      attachmentList[i, ] <<- c(NA_character_, FALSE)
+      attachmentList[i, ] <<- list(NA_character_, FALSE)
       markUnsaved()
       showHideEl(session, "#attachSuccess")
     })

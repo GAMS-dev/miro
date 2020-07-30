@@ -11,7 +11,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="GAMS MIRO documentation">
     <meta name="author" content="GAMS Development Corp.">
-    <link rel="shortcut icon" href="favicon.ico">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
     <!-- FontAwesome JS -->
     <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
@@ -21,29 +20,13 @@
     <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
-    <!-- Cookie consent by https://cookieconsent.osano.com -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
-    <script>
-    window.addEventListener("load", function(){
-    window.cookieconsent.initialise({
-      "palette": {
-        "popup": {
-          "background": "#000"
-        },
-        "button": {
-          "background": "#F39619"
-        }
-      }
-    })});
-    </script>
+    <!--#include virtual="/wheader.html" -->
 </head>
 
 <body class="landing-page">
     <!--#include virtual="/wbody.html" -->
     <div class="page-wrapper">
     <!--#include virtual="/mirover.html" -->
-        <!--TYPO3SEARCH_begin-->
 
         <!-- ******Header****** -->
         <header class="sub-header text-center" style="padding:0;position: relative;">
@@ -60,10 +43,11 @@
                     <div class="container" style="box-shadow:none; padding-top: 15pt;";>
                       <div class="row">
                         <div class="col-sm-12 col-md-6 col-lg-6 header-btn header-btn-left">
-                          <a class="btn btn-primary btn-cta" style="width: 125pt;padding: 12pt 0pt; -webkit-transition:unset;" href="./introduction.html">Introduction</a>
+                          <a class="btn btn-primary btn-cta" style="width: 140pt;padding: 12pt 0pt; -webkit-transition:unset;" href="./introduction.html">Introduction</a>
                         </div>
                         <div class="col-sm-12 col-md-6 col-lg-6 header-btn header-btn-right">
-                          <a class="btn btn-primary btn-cta" style="width: 125pt;padding: 12pt 0pt; -webkit-transition:unset;" href="./download.html">Get GAMS MIRO</a>
+                          <a class="btn btn-primary btn-cta" style="width: 140pt;padding: 12pt 0pt; -webkit-transition:unset;" href="./download.html">Get GAMS MIRO 1.1.2</a>
+                          
                         </div>
                       </div>
                     </div>
@@ -74,19 +58,18 @@
             </div><!--//container-->
         </header><!--//header-->
 
-        <section class="cards-section text-center">
+        <section class="cards-section text-center index-page">
             <div class="container">
-                <h1 class="title">Welcome!</h1>
+                <div class="row justify-content-end search-box-wrapper">
+                    <div class="float-right">
+                        <input class="form-control search-box" id="miroSearch" type="text" placeholder="Search" aria-label="Search">
+                        <ul id="miroSearchResults" class="list-group">
+                        </ul>
+                    </div>
+                </div>
                 <div class="intro">
-                    <p>Welcome to the documentation of GAMS MIRO (Model Interface with Rapid Orchestration) for and from <a href="https://www.gams.com/">GAMS</a>. <br>GAMS MIRO is a deployment environment which allows you to easily turn your GAMS models into fully interactive applications. MIRO is designed for people looking for an easy and automated way to make their GAMS models available to end users. Extensive visualization options support you to make decisions based on optimization. State-of-the-art technology makes it possible to run in highly scalable cloud environments. </p>
-                      <div class="callout-block callout-success">
-                        <div class="custom-icon-holder icon-holder" style="top:15px">
-                            <i class="fas fa-thumbs-up"></i>
-                        </div><!--//icon-holder-->
-                        <div class="custom-icon-content content">
-                              <p>GAMS MIRO is supported on Windows, MacOS and Linux.</p>
-                          </div><!--//content-->
-                      </div><!--//callout-block-->
+                <h3 class="block-title">Welcome!</h3>
+                    <p>GAMS MIRO is a deployment environment which allows you to easily turn your <a href="https://www.gams.com/">GAMS</a> models into fully interactive applications. MIRO is designed for people looking for an easy and automated way to make their GAMS models available to end users. Extensive visualization options support you to make decisions based on optimization. State-of-the-art technology makes it possible to run in highly scalable cloud environments. </p>
                 </div><!--//intro-->
                 <div class="intro" style="margin: 115px auto;">
                     <div class="row">
@@ -141,7 +124,7 @@
                                 <span aria-hidden="true" class="icon fas fa-arrow-alt-circle-down"></span>
                             </div><!--//icon-holder-->
                             <h3 class="title">Download & installation</h3>
-                            <p class="intro">Get GAMS MIRO for Windows, MacOS or Linux</p>
+                            <p class="intro">Get GAMS MIRO for Windows, macOS or Linux</p>
                             <a class="link" href="download.html"><span></span></a>
                         </div><!--//item-inner-->
                     </div><!--//item-->
@@ -190,7 +173,7 @@
                             <div class="icon-holder">
                                 <span aria-hidden="true" class="icon fas fa-cube"></span>
                             </div><!--//icon-holder-->
-                            <h3 class="title">Hypercube mode</h3>
+                            <h3 class="title">Hypercube Mode</h3>
                             <p class="intro">Scenario runs and sensitivity analysis</p>
                             <a class="link" href="hypercube.html"><span></span></a>
                         </div><!--//item-inner-->
@@ -236,8 +219,8 @@
                         </div><!--//item-inner-->
                     </div><!--//item-->
                 </div><!--//cards-wrapper-->
-                <div id="why-section" style="padding-top:45px;">
-                  <h2 class="title">Why should I use GAMS MIRO?</h2>
+                <div class="intro" id="why-section" style="padding-top:45px;">
+                  <h3 class="block-title">Why should I use GAMS MIRO?</h3>
                   <p>Are you working with GAMS and looking for a fast way to deploy your GAMS models automatically?
                   <br>Do you have to make decisions based on optimization problems and are looking for an intuitive visualization tool?</p>
                   <p>Then GAMS MIRO is a good choice for you!</p>
@@ -263,8 +246,18 @@
                       </div><!--//content-->
                   </div><!--//callout-block-->
                 </div><!--//why-section-->
+                <div class="intro" id="video-wrapper">
+                  <h3 class="block-title">Learn more</h3>
+                  <div class="section-block">
+                    <p>Watch the recording of our webinar "GAMS MIRO 1.0 - Deploy your GAMS models in minutes" (2020-04-21):</p>
+                        <!-- 16:9 aspect ratio -->
+                        <div class="embed-responsive embed-responsive-16by9" style="max-width:760px; margin: auto;">
+                            <iframe class="embed-responsive-item" src="https://www.youtube-nocookie.com/embed/grQTmWvZnIs" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                  </div>
+                </div>
                 <div id="cheatsheets">
-                  <h2 class="title">Cheat sheets</h2>
+                  <h2  class="block-title" style="color:#616670">Cheat sheets</h2>
                   <div class="section-block">
                     <p>Lazy to read the documentation or just want a compact summary of the most important features of GAMS MIRO?</p>
                     <p>Download our cheat sheets:</p>
@@ -273,34 +266,28 @@
                       <div class="col-md-6">
                         <a href="assets/images/cheat_sheets/miro_cheatsheet_base.png" download>
                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto; max-height:300px;" src="assets/images/cheat_sheets/miro_cheatsheet_base_lowres.png" alt="Custom visualization options"/>
-                          <p>GAMS MIRO Base mode</p>
+                          <p>GAMS MIRO Base Mode</p>
                         </a>
                       </div>
                       <div class="col-md-6">
                         <a href="assets/images/cheat_sheets/miro_cheatsheet_hcube.png" download>
                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto; max-height:300px;" src="assets/images/cheat_sheets/miro_cheatsheet_hcube_lowres.png" alt="Custom visualization options"/>
-                          <p>GAMS MIRO Hypercube mode</p>
+                          <p>GAMS MIRO Hypercube Mode</p>
                         </a>
                       </div>
                     </div><!--//row-->
                   </div><!--//section-block-->
                 </div><!--//cheatsheets-->
-                <div id="demo-section" style="padding-top:45px;">
-                  <h2 class="title">Demo applications</h2>
-                  <p>We provide some GAMS MIRO demo applications. You can use these to get to know some of MIRO's basic features. To run the sample applications, you must first extract them. More about this <a href = "./start.html#demo-applications">here</a>. </p>
-                  <div class="cta-container">
-                    <a id="demo-download" class="btn btn-primary btn-cta" href="./miroDemoApps.zip" target="_blank"><i class="fas fa-cloud-download-alt"></i> Download Demo applications</a>
-                  </div><!--//cta-container-->
-                </div><!--//demo-section-->
             </div><!--//container-->
         </section><!--//cards-section-->
-    <!--TYPO3SEARCH_end-->
-    </div><!--//page-wrapper--><!--#include virtual="/footer_miro.html" -->
+    </div><!--//page-wrapper-->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <!--#include virtual="/footer.html" -->
 
     <!-- Main Javascript -->
-    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/markjs/jquery.mark.min.js"></script>
     <script type="text/javascript" src="assets/js/main.js"></script>
-    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
 
     <script type = "application/javascript">
@@ -310,7 +297,7 @@
        let leftDl = document.getElementById('dl-miro-left');
        let rightDl = document.getElementById('dl-miro-right');
        if (navigator.appVersion.indexOf("Mac")!==-1){
-         defDl.innerHTML = "<i class='fas fa-cloud-download-alt'></i> GAMS MIRO (v. 0.2.3.1) for MacOS";
+         defDl.innerHTML = "<i class='fas fa-cloud-download-alt'></i> GAMS MIRO (v. 0.2.3.1) for macOS";
          defDl.href = "https://cloud.gams.com/s/eYcCaD6tM97QnHs"
          leftDl.innerHTML = "Download for Windows";
          leftDl.href = "https://cloud.gams.com/s/eYcCaD6tM97QnHs";
@@ -320,7 +307,7 @@
        if (navigator.appVersion.indexOf("Linux")!==-1){
          defDl.innerHTML = "<i class='fas fa-cloud-download-alt'></i> GAMS MIRO (v. 0.2.3.1) for Linux";
          defDl.href = "https://cloud.gams.com/s/eYcCaD6tM97QnHs"
-         leftDl.innerHTML = "Download for MacOS";
+         leftDl.innerHTML = "Download for macOS";
          leftDl.href = "https://cloud.gams.com/s/eYcCaD6tM97QnHs";
          rightDl.innerHTML = "Download for Windows";
          rightDl.href = "https://cloud.gams.com/s/eYcCaD6tM97QnHs";

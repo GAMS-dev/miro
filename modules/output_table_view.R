@@ -13,13 +13,15 @@ observeEvent(input$outputTableView, {
     j <- as.integer(strsplit(isolate(input[[paste0("outputTabset", i)]]), "_")[[1]][2])
     i <- outputTabs[[i]][j]
   }else{
-    i <- outputTabs[[i]][1]
+    i <- outputTabs[[i]]
   }
-  if(is.na(i)){
+  if(any(is.na(i))){
     flog.error("Table view button for symbol that doesn't exist clicked. This is most likely an attempt to tamper with the application!")
     return(NULL)
   }
-  flog.debug("Table view for model output in sheet: %d activated.", i)
-  toggleEl(session, paste0("#graph-out_", i))
-  toggleEl(session, paste0("#data-out_", i))
+  flog.debug("Table view for model output in sheet(s): %s activated.", paste0(i, collapse = ", "))
+  for(iEl in i){
+    toggleEl(session, paste0("#graph-out_", iEl))
+    toggleEl(session, paste0("#data-out_", iEl))
+  }
 })

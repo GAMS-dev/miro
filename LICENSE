@@ -16,6 +16,7 @@ these components are included below):
 - Font Awesome, https://github.com/FortAwesome/Font-Awesome
 - selectize.js, https://github.com/selectize/selectize.js
 - es5-shim, https://github.com/es-shims/es5-shim
+- ajv, https://github.com/ajv-validator/ajv or https://ajv.js.org
 - ion.rangeSlider, https://github.com/IonDen/ion.rangeSlider
 - strftime for Javascript, https://github.com/samsonjs/strftime
 - DataTables, https://github.com/DataTables/DataTables
@@ -43,11 +44,12 @@ these components are included below):
 - shinydashboard https://github.com/rstudio/shinydashboard or https://cran.r-project.org/web/packages/shinydashboard/index.html
 - plotly https://github.com/ropensci/plotly or https://cran.r-project.org/web/packages/plotly/index.html
 - DT https://github.com/rstudio/DT or https://cran.r-project.org/web/packages/DT/index.html
-- V8 https://github.com/jeroen/V8 or https://cran.r-project.org/web/packages/V8/index.html      
+- V8 (R package) https://github.com/jeroen/V8 or https://cran.r-project.org/web/packages/V8/index.html 
+- V8 https://github.com/v8/v8
 - jsonlite https://github.com/jeroen/jsonlite or https://cran.r-project.org/web/packages/jsonlite/index.html
-- jsonvalidate https://github.com/ropensci/jsonvalidate or https://cran.r-project.org/web/packages/jsonvalidate/index.html
 - rpivotTable https://github.com/smartinsightsfromdata/rpivotTable or https://cran.r-project.org/web/packages/rpivotTable/index.html
 - futile.logger https://github.com/zatonovo/futile.logger or https://cran.r-project.org/web/packages/futile.logger/index.html
+- KaTeX https://github.com/KaTeX/KaTeX or https://katex.org
 - zip https://github.com/r-lib/zip or https://cran.r-project.org/web/packages/zip/index.html    
 - stringi https://github.com/gagolews/stringi or https://cran.r-project.org/web/packages/stringi/index.html
 - dygraphs https://github.com/rstudio/dygraphs or https://cran.r-project.org/web/packages/dygraphs/index.html
@@ -59,6 +61,8 @@ these components are included below):
 - ellipsis https://github.com/r-lib/ellipsis or https://ellipsis.r-lib.org or https://cran.r-project.org/web/packages/ellipsis/index.html
 - withr http://withr.r-lib.org or http://github.com/r-lib/withr or https://cran.r-project.org/web/packages/withr/index.html
 - DBI https://github.com/r-dbi/DBI or https://cran.r-project.org/web/packages/DBI/index.html
+- askpass https://github.com/jeroen/askpass or https://cran.r-project.org/web/packages/askpass/index.html 
+- timevis https://github.com/daattali/timevis or https://cran.r-project.org/web/packages/timevis/index.html
 - readr https://github.com/tidyverse/readr or https://cran.r-project.org/web/packages/readr/index.html
 - blob https://github.com/tidyverse/blob or https://cran.r-project.org/web/packages/blob/index.html
 - hms https://github.com/tidyverse/hms or https://cran.r-project.org/web/packages/hms/index.html
@@ -89,6 +93,7 @@ these components are included below):
 - clipr https://github.com/mdlincoln/clipr or https://cran.r-project.org/web/packages/clipr/index.html
 - cellranger https://github.com/rsheets/cellranger or https://cran.r-project.org/web/packages/cellranger/index.html
 - scales https://github.com/r-lib/scales or https://cran.r-project.org/web/packages/scales/index.html
+- farver https://cran.r-project.org/web/packages/farver/index.html or https://github.com/thomasp85/farver
 - httr https://github.com/r-lib/httr or https://cran.r-project.org/web/packages/httr/index.html
 - future https://github.com/HenrikBengtsson/future or https://cran.r-project.org/web/packages/future/index.html
 - globals https://github.com/HenrikBengtsson/globals or https://cran.r-project.org/web/packages/globals/index.html
@@ -115,6 +120,9 @@ these components are included below):
 - progress https://github.com/r-lib/progress or https://cran.r-project.org/web/packages/progress/index.html
 - rematch https://github.com/MangoTheCat/rematch or https://cran.r-project.org/web/packages/rematch/index.html
 - prettyunits https://github.com/gaborcsardi/prettyunits or https://cran.r-project.org/web/packages/prettyunits/index.html
+- chartjs (R link) https://github.com/Tutuchan/chartjs
+- Chart.js https://github.com/chartjs/Chart.js or https://www.chartjs.org/ 
+- sortable https://github.com/rstudio/sortable or https://cran.r-project.org/web/packages/sortable/index.html
 - yaml https://github.com/viking/r-yaml/ or https://cran.r-project.org/web/packages/yaml/index.html
 - formatR https://github.com/yihui/formatR or https://cran.r-project.org/web/packages/formatR/index.html
 - withr https://github.com/r-lib/withr or https://cran.r-project.org/web/packages/withr/index.html
@@ -619,6 +627,7 @@ Section 8 -- Interpretation.
                         The MIT License (MIT)
         applies to: 
         - AdminLTE, Copyright (c) 2014-2017 Abdullah Almsaeed
+        - ajv, Copyright (c) 2015-2017 Evgeny Poberezkin
         - polyfill.io, Copyright (c) 2016 Financial Times
         - subtotal, Copyright (c) 2016 Nagarajan Chinnasamy, Mindtree and other contributors
         - numbro.languages, Copyright © 2017-2019 Benjamin Van Ryseghem, Copyright © 2015-2017 Företagsplatsen AB, Copyright © 2014 Adam Draper
@@ -627,19 +636,20 @@ Section 8 -- Interpretation.
         - handsontable, Copyright (c) 2012-2014 Marcin Warpechowski, Copyright (c) 2015 Handsoncode sp. z o.o. <hello@handsoncode.net>
         - R6, Copyright (c) 2015 RStudio
         - processx, Copyright (c) 2016-2018 Mango Solutions, RStudio, Gábor Csárdi
-        - dplyr, Copyright (c) 2013-2015 RStudio
+        - askpass, Copyright (c) 2018 Jeroen Ooms
+        - timevis, Copyright (c) 2016 Dean Attali [aut, cre] (R interface), Almende B.V. [aut, cph] (vis.js library, http://visjs.org, http://www.almende.com/home)
+        - dplyr, Copyright (c) 2013-2020 Hadley Wickham [aut, cre], Romain François [aut], Lionel Henry [aut], Kirill Müller [aut], RStudio [cph, fnd]
         - rhandsontable , Copyright (c) 2015-2018 Marcin Warpechowski, Handsoncode sp. z o.o., 
           Gregor Aisch, Tim Wood, Iskren Chernev, Moment.js contributors, David Bushell, 
           jQuery Foundation, Splunk Inc, Jon Rohan, James M. Greeneand, Företagsplatsen, 
           Kent Russell and Jonathan Owen
         - natural.js (DataTables plugin), Copyright (c) Jim Palmer (based on chunking idea from Dave Koelle), Mike Grier (mgrier.com), Clint Priest, Kyle Adams, guillermo
         - plotly, Copyright (c) 2017 Plotly, Inc.
-        - V8, Copyright (c) 2017 Jeroen Ooms
+        - V8 (R package), Copyright (c) 2017 Jeroen Ooms
         - jsonlite, Copyright (c) 2017 Jeroen Ooms
-        - jsonvalidate, Copyright (c) 2016 Rich FitzJohn
         - rpivotTable, Copyright (c) 2015 Enzo Martoglio
         - dygraphs, Copyright (c) 2015-2016 Dan Vanderkam; RStudio, Inc.
-        - tidyr, Copyright (c) 2014 Hadley Wickham and RStudio
+        - tidyr, Copyright (c) 2020 Hadley Wickham [aut, cre], Lionel Henry [aut], RStudio [cph]
         - plogr, Copyright (c) 2016 Kirill Müller [aut, cre], 
           Sergey Podobry [cph] (Author of the bundled plog library)
         - sourcetools, Copyright (c) 2015-2017 Kevin Ushey 
@@ -656,6 +666,10 @@ Section 8 -- Interpretation.
         - tibble, Copyright (c) 2013-2017 RStudio
         - cellranger, Copyright (c) 2018 RStudio
         - scales, Copyright (c) 2010-2016 Hadley Wickham
+        - farver, Copyright (c) 2018 Thomas Lin Pedersen [cre, aut], Berendea Nicolae [aut] (Author of the ColorSpace C++ library), Romain François ORCID iD [aut]
+        - chartjs (R link), Copyright (c) 2015-2016 Pierre Formont
+        - Chart.js, Copyright (c) 2018 Chart.js Contributors
+        - sortable, Copyright (c) 2019 Andrie de Vries [cre, aut], Barret Schloerke [aut], Kenton Russell [aut, ccp] (Original author), Lebedev Konstantin [cph] ('SortableJS', http://sortablejs.github.io/Sortable/)
         - httr, Copyright (c) 2014 Hadley Wickham; RStudio
         - viridisLite, Copyright (c) 2015 Simon Garnier
         - memoise, Copyright (c) 2010-2017 Hadley Wickham
@@ -665,6 +679,7 @@ Section 8 -- Interpretation.
         - rematch, Copyright (c) 2016 Mango Solutions
         - prettyunits, Copyright (c) 2014 Gabor Csardi
         - viridis, Copyright (c) 2015 Simon Garnier
+        - KaTeX, Copyright (c) 2013-2019 Khan Academy and other contributors
         - labeling, Copyright (c) 2014 Justin Talbot
         - munsell, Copyright (c) 2016 Charlotte Wickham
         - reshape2, Copyright (c) 2008-2016 Hadley Wickham
@@ -1054,7 +1069,7 @@ Library.
         - mgcv, Copyright (c) Simon Wood
         - MASS, Copyright (c) Brian Ripley [aut, cre, cph], Bill Venables [ctb], Douglas M. Bates [ctb], Kurt Hornik [trl] (partial port ca 1998), Albrecht Gebhardt [trl] (partial port ca 1998), David Firth [ctb]
         - gridExtra, Copyright (c)  Baptiste Auguie [aut, cre], Anton Antonov [ctb]
-        - lattice, Copyright (c)  Deepayan Sarkar
+        - lattice, Copyright (c)  Deepayan Sarkar [aut, cre], Felix Andrews [ctb], Kevin Wright [ctb] (documentation), Neil Klepeis [ctb], Paul Murrell [ctb]
         - RGraphics, Copyright (c) 	Paul Murrell
         - lifecycle, Copyright (c) 	Lionel Henry [aut, cre], RStudio [cph]
         - backports, Copyright (c)  Michel Lang [cre, aut], R Core Team [aut]
@@ -1743,7 +1758,7 @@ Public License instead of this License.  But first, please read
 -----------------------------------------------------------------------------
             The “2-Clause BSD License” (BSD-2-Clause)
         applies to: 
-        - writexl, Copyright (c) 2017 Jeroen Ooms
+        - writexl, Copyright (c) 2017 Jeroen Ooms [aut, cre], John McNamara [cph] (Author of libxlsxwriter), Gilles Vollant, Mathias Svensson (authors of minizip), Niels Provos (author of tree.h)
         - leaflet.providers, Copyright (c) 2019 Leslie Huang [aut, cre], Leaflet Providers contributors [ctb, cph] (Leaflet Providers plugin), RStudio [cph, fnd]
 -----------------------------------------------------------------------------
 
@@ -2830,3 +2845,383 @@ of the copyright holder.
 
 All trademarks and registered trademarks mentioned herein are the
 property of their respective owners.
+
+### Chinese/Japanese Word Break Dictionary Data (cjdict.txt)
+
+```
+    The Google Chrome software developed by Google is licensed under
+the BSD license. Other software included in this distribution is
+provided under other licenses, as set forth below.
+
+ The BSD License
+ http://opensource.org/licenses/bsd-license.php
+ Copyright (C) 2006-2008, Google Inc.
+
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+ Redistributions of source code must retain the above copyright notice,
+this list of conditions and the following disclaimer.
+ Redistributions in binary form must reproduce the above
+copyright notice, this list of conditions and the following
+disclaimer in the documentation and/or other materials provided with
+the distribution.
+ Neither the name of  Google Inc. nor the names of its
+contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.
+
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+ The word list in cjdict.txt are generated by combining three word lists
+listed below with further processing for compound word breaking. The
+frequency is generated with an iterative training against Google web
+corpora.
+
+ * Libtabe (Chinese)
+   - https://sourceforge.net/project/?group_id=1519
+   - Its license terms and conditions are shown below.
+
+ * IPADIC (Japanese)
+   - http://chasen.aist-nara.ac.jp/chasen/distribution.html
+   - Its license terms and conditions are shown below.
+```
+
+```
+ ---------COPYING.libtabe ---- BEGIN--------------------
+
+
+Copyright (c) 1999 TaBE Project.
+Copyright (c) 1999 Pai-Hsiang Hsiao.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+. Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+. Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in
+  the documentation and/or other materials provided with the
+  distribution.
+. Neither the name of the TaBE Project nor the names of its
+  contributors may be used to endorse or promote products derived
+  from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+
+Copyright (c) 1999 Computer Systems and Communication Lab,
+                   Institute of Information Science, Academia
+                   Sinica. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+. Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+. Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in
+  the documentation and/or other materials provided with the
+  distribution.
+. Neither the name of the Computer Systems and Communication Lab
+  nor the names of its contributors may be used to endorse or
+  promote products derived from this software without specific
+  prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+Copyright 1996 Chih-Hao Tsai @ Beckman Institute,
+    University of Illinois
+c-tsai4@uiuc.edu  http://casper.beckman.uiuc.edu/~c-tsai4
+
+ ---------------COPYING.libtabe-----END--------------------------------
+```
+
+```
+ ---------------COPYING.ipadic-----BEGIN-------------------------------
+
+Copyright 2000, 2001, 2002, 2003 Nara Institute of Science
+and Technology.  All Rights Reserved.
+
+Use, reproduction, and distribution of this software is permitted.
+Any copy of this software, whether in its original form or modified,
+must include both the above copyright notice and the following
+paragraphs.
+
+Nara Institute of Science and Technology (NAIST),
+the copyright holders, disclaims all warranties with regard to this
+software, including all implied warranties of merchantability and
+fitness, in no event shall NAIST be liable for
+any special, indirect or consequential damages or any damages
+whatsoever resulting from loss of use, data or profits, whether in an
+action of contract, negligence or other tortuous action, arising out
+of or in connection with the use or performance of this software.
+
+A large portion of the dictionary entries
+originate from ICOT Free Software.  The following conditions for ICOT
+Free Software applies to the current dictionary as well.
+
+Each User may also freely distribute the Program, whether in its
+original form or modified, to any third party or parties, PROVIDED
+that the provisions of Section 3 ("NO WARRANTY") will ALWAYS appear
+on, or be attached to, the Program, which is distributed substantially
+in the same form as set out herein and that such intended
+distribution, if actually made, will neither violate or otherwise
+contravene any of the laws and regulations of the countries having
+jurisdiction over the User or the intended distribution itself.
+
+NO WARRANTY
+
+The program was produced on an experimental basis in the course of the
+research and development conducted during the project and is provided
+to users as so produced on an experimental basis.  Accordingly, the
+program is provided without any warranty whatsoever, whether express,
+implied, statutory or otherwise.  The term "warranty" used herein
+includes, but is not limited to, any warranty of the quality,
+performance, merchantability and fitness for a particular purpose of
+the program and the nonexistence of any infringement or violation of
+any right of any third party.
+
+Each user of the program will agree and understand, and be deemed to
+have agreed and understood, that there is no warranty whatsoever for
+the program and, accordingly, the entire risk arising from or
+otherwise connected with the program is assumed by the user.
+
+Therefore, neither ICOT, the copyright holder, or any other
+organization that participated in or was otherwise related to the
+development of the program and their respective officials, directors,
+officers and other employees shall be held liable for any and all
+damages, including, without limitation, general, special, incidental
+and consequential damages, arising out of or otherwise in connection
+with the use or inability to use the program or any product, material
+or result produced or otherwise obtained by using the program,
+regardless of whether they have been advised of, or otherwise had
+knowledge of, the possibility of such damages at any time during the
+project or thereafter.  Each user will be deemed to have agreed to the
+foregoing by his or her commencement of use of the program.  The term
+"use" as used herein includes, but is not limited to, the use,
+modification, copying and distribution of the program and the
+production of secondary products from the program.
+
+In the case where the program, whether in its original form or
+modified, was distributed or delivered to or received by a user from
+any person, organization or entity other than ICOT, unless it makes or
+grants independently of ICOT any specific warranty to the user in
+writing, such person, organization or entity, will also be exempted
+from and not be held liable to the user for any such damages as noted
+above as far as the program is concerned.
+
+ ---------------COPYING.ipadic-----END----------------------------------
+```
+
+### Lao Word Break Dictionary Data (laodict.txt)
+
+```
+Copyright (c) 2013 International Business Machines Corporation
+and others. All Rights Reserved.
+
+Project: http://code.google.com/p/lao-dictionary/
+Dictionary: http://lao-dictionary.googlecode.com/git/Lao-Dictionary.txt
+License: http://lao-dictionary.googlecode.com/git/Lao-Dictionary-LICENSE.txt
+             (copied below)
+
+This file is derived from the above dictionary, with slight
+modifications.
+----------------------------------------------------------------------
+Copyright (C) 2013 Brian Eugene Wilson, Robert Martin Campbell.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification,
+are permitted provided that the following conditions are met:
+
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer. Redistributions in
+binary form must reproduce the above copyright notice, this list of
+conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+OF THE POSSIBILITY OF SUCH DAMAGE.
+```
+
+### Burmese Word Break Dictionary Data (burmesedict.txt)
+
+```
+Copyright (c) 2014 International Business Machines Corporation
+and others. All Rights Reserved.
+
+This list is part of a project hosted at:
+  github.com/kanyawtech/myanmar-karen-word-lists
+
+--------------------------------------------------------------------------
+Copyright (c) 2013, LeRoy Benjamin Sharon
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met: Redistributions of source code must retain the above
+copyright notice, this list of conditions and the following
+disclaimer.  Redistributions in binary form must reproduce the
+above copyright notice, this list of conditions and the following
+disclaimer in the documentation and/or other materials provided
+with the distribution.
+
+  Neither the name Myanmar Karen Word Lists, nor the names of its
+  contributors may be used to endorse or promote products derived
+  from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGE.
+```
+
+### Time Zone Database
+
+```
+  ICU uses the public domain data and code derived from Time Zone
+Database for its time zone support. The ownership of the TZ database
+is explained in BCP 175: Procedure for Maintaining the Time Zone
+Database section 7.
+
+The TZ database itself is not an IETF Contribution or an IETF
+document.  Rather it is a pre-existing and regularly updated work
+that is in the public domain, and is intended to remain in the
+public domain.  Therefore, BCPs 78 [RFC5378] and 79 [RFC3979] do
+not apply to the TZ Database or contributions that individuals make
+to it.  Should any claims be made and substantiated against the TZ
+Database, the organization that is providing the IANA
+Considerations defined in this RFC, under the memorandum of
+understanding with the IETF, currently ICANN, may act in accordance
+with all competent court orders.  No ownership claims will be made
+by ICANN or the IETF Trust on the database or the code.  Any person
+making a contribution to the database or code waives all rights to
+future claims in that contribution or in the TZ Database.
+```
+
+### Google double-conversion
+
+```
+Copyright 2006-2011, the V8 project authors. All rights reserved.
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+    * Neither the name of Google Inc. nor the names of its
+      contributors may be used to endorse or promote products derived
+      from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
+
+
+-----------------------------------------------------------------------------
+
+
+V8 is licensed for use as follows:
+
+Copyright 2014, the V8 project authors. All rights reserved.
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+    * Neither the name of Google Inc. nor the names of its
+      contributors may be used to endorse or promote products derived
+      from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
