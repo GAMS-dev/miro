@@ -185,9 +185,10 @@ Scenario <- R6Class("Scenario",
                                           execPermAlias = aliases[["execPerm"]])
                       },
                       resetAccessPerm = function(){
-                        private$readPerm  <- private$uid
-                        private$writePerm <- private$uid
-                        private$execPerm  <- private$uid
+                        private$readPerm  <- vector2Csv(private$uid)
+                        private$writePerm <- vector2Csv(private$uid)
+                        private$execPerm  <- vector2Csv(private$uid)
+                        return(invisible(self))
                       },
                       save = function(datasets, msgProgress = NULL){
                         # Saves multiple dataframes to database
