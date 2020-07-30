@@ -168,6 +168,14 @@ if(is.null(errMsg)){
                       sep = "\n")
     }
   }else{
+    uidTmp <- Sys.getenv("MIRO_USERNAME")
+    if(!identical(uidTmp, "")){
+      uid <- uidTmp
+      ugroupsTmp <- Sys.getenv("MIRO_USERGROUPS")
+      if(!identical(ugroupsTmp, "")){
+        ugroups <- ugroupsTmp
+      }
+    }
     if(length(uid) != 1 || !is.character(uid)){
       errMsg <- "Invalid user ID specified."
     }
