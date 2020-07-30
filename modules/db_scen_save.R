@@ -329,7 +329,6 @@ if(config$activateModules$attachments){
       showHideEl(session, "#attachSuccess")
     })
     observe({
-      input[["btexecPermAttachment_" %+% i]]
       value <- input[["execPermAttachment_" %+% i]]
       req(activeScen)
       if(is.na(attachmentList[["name"]][[i]]) || is.null(value) ||
