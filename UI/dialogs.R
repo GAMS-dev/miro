@@ -52,7 +52,8 @@ showLoginDialog <- function(cred, forwardOnSuccess = NULL){
 }
 
 showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm", 
-                              scenTags = character(0L), showDiscardButtons = TRUE){
+                              scenTags = character(0L), showDiscardButtons = TRUE,
+                              discardPermDefault = FALSE){
   if(LAUNCHHCUBEMODE){
     modeDescriptor <- "dialogNewHCJob"
   }else{
@@ -75,7 +76,8 @@ showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm",
                                            lang$nav[[modeDescriptor]]$discardAttach)),
                  column(6L,
                         checkboxInput_MIRO("newScenDiscardPerm", 
-                                           lang$nav[[modeDescriptor]]$discardPerm))
+                                           lang$nav[[modeDescriptor]]$discardPerm,
+                                           isTRUE(discardPermDefault)))
                )
     ),
     tags$div(id = "badScenarioName", class = "gmsalert gmsalert-error", 
