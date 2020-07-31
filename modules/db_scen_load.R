@@ -272,9 +272,11 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         return()
       }
       if(length(activeScen$getLockUid())){
-        suppressCloseModalLocal <- TRUE
-        showErrorMsg(lang$nav$dialogLockScen$title, sprintf(lang$nav$dialogLockScen$desc,
-                                                            activeScen$getLockUid()))
+        showNotification(tagList(tags$b(lang$nav$dialogLockScen$title), tags$br(),
+                         tags$span(sprintf(lang$nav$dialogLockScen$desc,
+                                 activeScen$getLockUid()))),
+                         duration = 10,
+                         type = "warning")
       }
     }
     
