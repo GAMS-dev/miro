@@ -83,7 +83,6 @@ Scenario <- R6Class("Scenario",
                           private$stime     <- Sys.time()
                           private$suid      <- private$uid
                           private$sname     <- sname
-                          private$removeAllExistingAttachments <- TRUE
                           if(length(duplicatedMetadata$attach)){
                             private$localAttachments <- duplicatedMetadata$attach$localAttachments
                             private$attachmentsUpdateExec <- duplicatedMetadata$attach$attachmentsUpdateExec
@@ -91,6 +90,8 @@ Scenario <- R6Class("Scenario",
                               private$sidToDuplicate <- as.integer(duplicatedMetadata$attach$sidToDuplicate)
                               private$duplicateAttachmentsOnNextSave <- TRUE
                             }
+                          }else{
+                            private$removeAllExistingAttachments <- TRUE
                           }
                           if(length(duplicatedMetadata$perm)){
                             private$readPerm  <- vector2Csv(
@@ -236,10 +237,14 @@ Scenario <- R6Class("Scenario",
                         # remove existing scenarios if scenario is overwritten
                         if(isTRUE(private$removeAllExistingAttachments)){
                           super$deleteRows(private$dbSchema$tabName[["_scenAttach"]],
-                                           conditionSep = "OR", subsetSids = private$sid)
+                                           subsetSids = private$sid)
                           private$attachmentsToRemove <- character(0L)
                           private$removeAllExistingAttachments <- FALSE
-                        }else if(length(private$attachmentsToRemove)){
+                        }else if(isTRUE(private$duplicateAttachmentsOnNextSave)){
+                          private$duplicateAttachments()
+                        }
+                        
+                        if(length(private$attachmentsToRemove)){
                           # save dirty attachments 
                           super$deleteRows(private$dbSchema$tabName[["_scenAttach"]], "fileName", 
                                            private$attachmentsToRemove, 
@@ -277,9 +282,6 @@ Scenario <- R6Class("Scenario",
                           private$localAttachments <- list(filePaths = character(0L), 
                                                            execPerm = logical(0L))
                           
-                        }
-                        if(isTRUE(private$duplicateAttachmentsOnNextSave)){
-                          private$duplicateAttachments()
                         }
                         Map(function(dataset, tableName){
                           if(!is.null(dataset) && nrow(dataset)){
