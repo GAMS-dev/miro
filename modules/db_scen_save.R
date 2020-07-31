@@ -143,8 +143,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   tryCatch({
     if(saveAsFlag){
       if(!is.null(activeScen)){
-        if(length(activeScen$getSid()) &&
-           !identical(input$scenName, activeScen$getScenName())){
+        if(length(activeScen$getSid())){
           duplicatedMetadata <- activeScen$getMetadataInfo(input$newScenDiscardAttach, 
                                                            input$newScenDiscardPerm)
           activeScen <<- NULL
