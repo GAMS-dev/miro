@@ -186,6 +186,10 @@ Scenario <- R6Class("Scenario",
                                           execPermAlias = aliases[["execPerm"]])
                       },
                       resetAccessPerm = function(){
+                        if(private$isReadonly()){
+                          stop("Db: Metadata wasn't updated as scenario is readonly (Scenario.resetAccessPerm).", 
+                               call. = FALSE)
+                        }
                         private$readPerm  <- vector2Csv(private$uid)
                         private$writePerm <- vector2Csv(private$uid)
                         private$execPerm  <- vector2Csv(private$uid)
@@ -538,10 +542,6 @@ Scenario <- R6Class("Scenario",
                         stopifnot(is.character(fileName), length(fileName) == 1L,
                                   is.logical(value), length(value) == 1L)
                         
-                        if(private$isReadonly()){
-                          stop("Scenario is readonly. Updating attachment data failed. (Scenario.setAttachmentExecPerm).", 
-                               call. = FALSE)
-                        }
                         localFileId <- match(fileName, basename(private$localAttachments$filePaths))
                         
                         if(is.na(localFileId)){
@@ -696,7 +696,9 @@ Scenario <- R6Class("Scenario",
                         stopifnot(is.character(newWritePerm))
                         stopifnot(is.character(newExecPerm))
                         #END error checks 
-                        if(private$isReadonly()){
+                        if(private$isReadonly() && sum(length(newReadPerm),
+                                                       length(newWritePerm),
+                                                       length(newExecPerm)) > 0){
                           stop("Db: Metadata wasn't updated as scenario is readonly (Scenario.updateMetadata).", 
                                call. = FALSE)
                         }
@@ -798,7 +800,6 @@ Scenario <- R6Class("Scenario",
                       writePerm           = character(0L),
                       execPerm            = character(0L),
                       lockUid             = character(0L),
-                      isAlreadyLocked     = FALSE,
                       dbSchema            = vector("list", 3L),
                       scode               = integer(1L),
                       scenSaved           = logical(1L),
@@ -1043,7 +1044,6 @@ Scenario <- R6Class("Scenario",
                           stop(sprintf("Db: %s: An error occurred writing to database (Scenario.lock, table: '%s', scenario: '%s'). Error message: %s", 
                                        private$uid, private$tableNameScenLocks, private$sid, e), call. = FALSE)
                         })
-                        private$isAlreadyLocked <- TRUE
                         invisible(self)
                       },
                       unlock = function(){
