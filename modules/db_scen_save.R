@@ -158,7 +158,13 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
           }
         }
       }
-      rv$activeSname <<- input$scenName
+      if(identical(input$scenName, rv$activeSname)){
+        # make sure title is refreshed even when scen name is identical
+        # (e.g. because owner changed)
+        markUnsaved()
+      }else{
+        rv$activeSname <<- input$scenName
+      }
     }
     if(is.null(activeScen)){
       activeScen <<- Scenario$new(db = db, sname = isolate(rv$activeSname), 

@@ -1595,6 +1595,10 @@ if(!is.null(errMsg)){
           }
           return(tags$i(paste0("<", lang$nav$dialogNewScen$newScenName, ">", nameSuffix)))
         }else{
+          scenUid <- activeScen$getScenUid()
+          if(!identical(scenUid, uid)){
+            nameSuffix <- paste0(nameSuffix, ' <span class="badge badge-info">', scenUid, '</span>')
+          }
           if(activeScen$isReadonlyOrLocked){
             nameSuffix <- paste0(nameSuffix, ' <i class="fas fa-lock"></i>')
           }
