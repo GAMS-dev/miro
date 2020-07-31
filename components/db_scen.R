@@ -83,6 +83,7 @@ Scenario <- R6Class("Scenario",
                           private$stime     <- Sys.time()
                           private$suid      <- private$uid
                           private$sname     <- sname
+                          private$removeAllExistingAttachments <- TRUE
                           if(length(duplicatedMetadata$attach)){
                             private$localAttachments <- duplicatedMetadata$attach$localAttachments
                             private$attachmentsUpdateExec <- duplicatedMetadata$attach$attachmentsUpdateExec
@@ -90,8 +91,6 @@ Scenario <- R6Class("Scenario",
                               private$sidToDuplicate <- as.integer(duplicatedMetadata$attach$sidToDuplicate)
                               private$duplicateAttachmentsOnNextSave <- TRUE
                             }
-                          }else{
-                            private$removeAllExistingAttachments <- TRUE
                           }
                           if(length(duplicatedMetadata$perm)){
                             private$readPerm  <- vector2Csv(
@@ -241,11 +240,18 @@ Scenario <- R6Class("Scenario",
                         private$writeMetadata()
                         # remove existing scenarios if scenario is overwritten
                         if(isTRUE(private$removeAllExistingAttachments)){
-                          super$deleteRows(private$dbSchema$tabName[["_scenAttach"]],
-                                           subsetSids = private$sid)
+                          if(identical(private$sidToDuplicate, private$sid)){
+                            # in case scenario id is identical to the one 
+                            # where attachments should be duplicated, we do nothing
+                            private$duplicateAttachmentsOnNextSave <- FALSE
+                          }else{
+                            super$deleteRows(private$dbSchema$tabName[["_scenAttach"]],
+                                             subsetSids = private$sid)
+                          }
                           private$attachmentsToRemove <- character(0L)
                           private$removeAllExistingAttachments <- FALSE
-                        }else if(isTRUE(private$duplicateAttachmentsOnNextSave)){
+                        }
+                        if(isTRUE(private$duplicateAttachmentsOnNextSave)){
                           private$duplicateAttachments()
                         }
                         
