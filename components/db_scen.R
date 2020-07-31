@@ -754,9 +754,9 @@ Scenario <- R6Class("Scenario",
                         super$exportScenDataset(private$bindSidCol(scriptResults), 
                                                 private$dbSchema$tabName[['_scenScripts']])
                       },
-                      close = function(){
+                      finalize = function(){
                         if(length(private$sid)){
-                          if(private$isAlreadyLocked){
+                          if(identical(private$getUidLock(), private$uid)){
                             flog.debug("Scenario: '%s' unlocked.", private$sid)
                             private$unlock()
                           }
@@ -767,9 +767,6 @@ Scenario <- R6Class("Scenario",
                           private$sid <- integer(0L)
                         }
                         return(invisible(self))
-                      },
-                      finalize = function(){
-                        
                       }
                     ),
                     active = list(

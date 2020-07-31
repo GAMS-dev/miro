@@ -106,7 +106,7 @@ closeScenario <- function(){
   activeScenario    <<- NULL
   if(length(activeScen)){
     activeScen$cleanLocalFiles()
-    activeScen$close()
+    activeScen$finalize()
   }
   activeScen        <<- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
                                      isNewScen = TRUE)
