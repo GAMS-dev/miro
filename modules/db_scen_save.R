@@ -220,7 +220,8 @@ observeEvent(input$btEditMeta, {
                      allowAttachments = config$activateModules$attachments, 
                      attachmentMetadata = attachmentMetadata, 
                      attachAllowExec = attachAllowExec, 
-                     ugroups = c(uid, csv2Vector(ugroups)))
+                     ugroups = c(uid, csv2Vector(ugroups)),
+                     isLocked = length(activeScen) != 0L && length(activeScen$getLockUid()) > 0L)
 })
 
 observeEvent(input$btUpdateMeta, {

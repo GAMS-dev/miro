@@ -464,7 +464,9 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
 showEditMetaDialog <- function(metadata,
                                ugroups = character(0L), 
                                allowAttachments = FALSE, 
-                               attachmentMetadata = character(0L), attachAllowExec = FALSE){
+                               attachmentMetadata = character(0L),
+                               attachAllowExec = FALSE,
+                               isLocked = FALSE){
   if(LAUNCHHCUBEMODE){
     modeDescriptor <- "dialogEditMetaHC"
   }else{
@@ -492,7 +494,7 @@ showEditMetaDialog <- function(metadata,
              )
   )
   writePerm <- csv2Vector(metadata[["writePerm"]][[1]])
-  if(length(ugroups) && any(ugroups %in% writePerm)){
+  if(!isLocked && length(ugroups) && any(ugroups %in% writePerm)){
     readPerm  <- csv2Vector(metadata[["readPerm"]][[1]])
     execPerm <- csv2Vector(metadata[["execPerm"]][[1]])
     
