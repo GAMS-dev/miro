@@ -128,6 +128,17 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
   test_that("Output attachments work (part2)",
             expect_pass(testApp(file.path(testDir, ".."), "output_attach_test_2",
                                 compareImages = FALSE)))
+  Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "model", "pickstock_with_data",
+                                         "pickstock_with_data.gms"))
+  test_that("Attachments work",
+            expect_pass(testApp(file.path(testDir, ".."), "attachments_test",
+                                compareImages = FALSE)))
+  test_that("Save as dialog (attachments) works",
+            expect_pass(testApp(file.path(testDir, ".."), "save_as_attachments_test",
+                                compareImages = FALSE)))
+  test_that("Save as dialog (permissions) works",
+            expect_pass(testApp(file.path(testDir, ".."), "save_as_permissions_test",
+                                compareImages = FALSE)))
   Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "model", "transport_miropivot",
                                          "transport_miropivot.gms"))
   test_that("MIRO Pivot renderer works.",
