@@ -43,7 +43,7 @@ slocktimeLimit <- 3600
 # log file directory and name
 logFileDir <- paste0("logs", .Platform$file.sep)
 # specify the logging level (["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"])
-loggingLevel <- Sys.getenv("MIRO_LOG_LEVEL", "TRACE")
+loggingLevel <- Sys.getenv("MIRO_LOG_LEVEL", "INFO")
 # name of table with scenario/hcube metadata as well as scenario locks
 scenMetadataTablePrefix <- "_sys_metadata_"
 tableNameMetaHcubePrefix <- "_sys_hcubemeta_"
