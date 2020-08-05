@@ -1524,3 +1524,10 @@ custom_stop <- function(subclass, message, call = sys.call(-1),
   c <- condition(c(subclass, "error"), message, call = call, ...)
   stop(c)
 }
+appender.miro <- function(file){
+  function(line) {
+    if(get("level", envir=sys.frame(-1)) <= loggingLevel)
+      cat(line, sep='')
+    cat(line, file=file, append=TRUE, sep='')
+  }
+}
