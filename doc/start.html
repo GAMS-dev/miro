@@ -68,19 +68,8 @@
                                     <p>In this as well as the subsequent sections we will mainly deal with the GAMS MIRO Base Mode. In the Base Mode, you can supply your models with input data, generate, display and save the results of your optimization as well as compare different scenarios with each other, everything visually supported by various plotting tools.
                                     The Hypercube Mode will be the subject of an extra section, see <a href="./hypercube.html">here</a>.</p>
                                 </div><!--//section-block-->
-                                <h3 class="block-title">GAMS connection</h3>
                                 <div id="gams-connection"  class="section-block">
-                                    <p>First of all you should make sure that GAMS and MIRO know about each other. If you work with GAMS Studio, then go to <i>File</i> &rarr; <i>Settings</i> &rarr; <i>MIRO</i> and check whether the MIRO installation location is correct, e.g.:</p>
-                                    <div class="section-block" style="display:block; margin:auto;">
-                                        <img class="img-fluid" style="max-height: 330pt;" src="assets/images/studio/miro_path.png" alt="MIRO installation location" />
-                                    </div>
-                                    <p>On the MIRO side, open MIRO and go to <i>Preferences</i> &rarr; <i>Paths</i>. Ensure that the location of the correct GAMS version is specified, e.g.:</p>
-                                    <div class="section-block" style="display:block; margin:auto;">
-                                        <img class="img-fluid" style="max-height: 370pt;" src="assets/images/gams_path.png" alt="GAMS installation location" />
-                                    </div>
-                                </div><!--//section-block-->
-                                <h3 class="block-title">GAMS connection</h3>
-                                <div id="gams-connection"  class="section-block">
+                                    <h3 class="block-title">GAMS connection</h3>
                                     <p>First of all you should make sure that GAMS and MIRO know about each other. If you work with GAMS Studio, then go to <i>File</i> &rarr; <i>Settings</i> &rarr; <i>MIRO</i> and check whether the MIRO installation location is correct, e.g.:</p>
                                     <div class="section-block" style="display:block; margin:auto;">
                                         <img class="img-fluid" style="max-height: 330pt;" src="assets/images/studio/miro_path.png" alt="MIRO installation location" />
@@ -107,31 +96,6 @@
                                       </span>
                                     </div>
                                 </div>
-                                <div class="section-block">
-                                    <p>The following demos are available:</p>
-                                    <ul>
-                                    <li>Transport<br>
-                                    This problem looks for a least cost shipping schedule that meets requirements at markets and supplies at factories. More about this transportation problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">here</a>.
-                                    <div class="callout-block callout-warning">
-                                        <div class="icon-holder">
-                                            <i class="fas fa-info-circle"></i>
-                                        </div><!--//icon-holder-->
-                                        <div class="content">
-                                            <b class="callout-title">Note:</b>
-                                            <p>The well-known model from the GAMS model library is called <i>trnsport</i>. To avoid two models of the same name, the GAMS MIRO Demo model is called <i>transport</i>.</p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block--></li>
-                                    <li>Transport_live<br>
-                                    A "live" version of the transport model. Extends transport in the sense that locations of suppliers and markets can be adjusted right from within MIRO. Geographical information about the cities you entered is automatically fetched and the distance matrix calculated via <a href="https://www.gams.com/latest/docs/UG_EmbeddedCode.html" target="_blank">embedded Python code</a>.
-                                    <br>This model needs an internet connection.</li>
-                                    <li>Pickstock<br>
-                                    Optimization model to find a small subset of stocks of the Dow Jones index together with some weights, such that this portfolio has a similar behavior to the overall index.</li>
-                                    <li>Sudoku<br>
-                                    Optimization model to find a solution for the classical combinatorial number-placement puzzle <i>Sudoku</i>.</li>
-                                    <li>Kport<br>
-                                    This problem computes minimal cost solutions satisfying the demand of certain product portfolios. More about this optimization problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_kport.html" target="_blank">here</a>.</li>
-                                    </ul>
-                                </div><!--//section-block-->
                                 <div  id="start-miro"  class="section-block">
                                     <h3 class="block-title">Start GAMS MIRO</h3>
                                     <p>Let's take the famous <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">trnsport</a> example from George Dantzig to guide us through this documentation: We own a bunch of factories and wish to find a least cost shipping schedule that meets the demand at markets we are shipping to. Furthermore, the capacity constraints of our factories must not be violated.
