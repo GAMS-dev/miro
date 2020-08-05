@@ -568,12 +568,13 @@ if(is.null(errMsg)){
 }
 
 if(is.null(errMsg)){
-  flog.appender(do.call(if(identical(logToConsole, TRUE)) "appender.tee" else "appender.file", 
+  loggingLevel <<- c(FATAL, ERROR, WARN, INFO, DEBUG, TRACE)[[loggingLevel]]
+  flog.appender(do.call(if(identical(logToConsole, TRUE)) "appender.miro" else "appender.file", 
                         list(file = file.path(logFileDir, 
                                               paste0(modelName, "_", uid, "_", 
                                                      format(Sys.time(), 
                                                             "%y.%m.%d_%H.%M.%S"), ".log")))))
-  flog.threshold(loggingLevel)
+  flog.threshold("TRACE")
   flog.trace("Logging facility initialised.")
   loggerInitialised <- TRUE
   
