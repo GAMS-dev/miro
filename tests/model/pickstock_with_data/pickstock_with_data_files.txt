@@ -1,0 +1,2 @@
+pickstock_with_data.gms
+dowjones2016.csv
