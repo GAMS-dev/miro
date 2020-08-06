@@ -128,6 +128,16 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
   test_that("Output attachments work (part2)",
             expect_pass(testApp(file.path(testDir, ".."), "output_attach_test_2",
                                 compareImages = FALSE)))
+  Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "model", "transport_miropivot",
+                                         "transport_miropivot.gms"))
+  test_that("MIRO Pivot renderer works.",
+            expect_pass(testApp(file.path(testDir, ".."), "miropivot_test",
+                                compareImages = FALSE)))
+  Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "model", "pickstock_output_tables",
+                                         "pickstock_output_tables.gms"))
+  test_that("Output table config works.",
+            expect_pass(testApp(file.path(testDir, ".."), "output_table_settings",
+                                compareImages = FALSE)))
   Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "model", "pickstock_with_data",
                                          "pickstock_with_data.gms"))
   test_that("Attachments work",
@@ -139,15 +149,14 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
   test_that("Save as dialog (permissions) works",
             expect_pass(testApp(file.path(testDir, ".."), "save_as_permissions_test",
                                 compareImages = FALSE)))
-  Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "model", "transport_miropivot",
-                                         "transport_miropivot.gms"))
-  test_that("MIRO Pivot renderer works.",
-            expect_pass(testApp(file.path(testDir, ".."), "miropivot_test",
-                                compareImages = FALSE)))
-  Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "model", "pickstock_output_tables",
-                                         "pickstock_output_tables.gms"))
-  test_that("Output table config works.",
-            expect_pass(testApp(file.path(testDir, ".."), "output_table_settings",
+  #remove existing database because permissions tests refer on numbered scenarios for default usergroup "users" 
+  if(file.exists(file.path(Sys.getenv("MIRO_DB_PATH"), "miro.sqlite3"))){
+    if(unlink(file.path(Sys.getenv("MIRO_DB_PATH"), "miro.sqlite3"), force = TRUE)){
+      stop("Could not remove old database SQLite file for tests")
+    }
+  }
+  test_that("Permissions work",
+            expect_pass(testApp(file.path(testDir, ".."), "permissions_test",
                                 compareImages = FALSE)))
   Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "model", "pickstock_configuration",
                                          "pickstock_configuration.gms"))
