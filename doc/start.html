@@ -415,17 +415,18 @@
                                              <img class="img-fluid" style="max-height:325pt;" src="assets/images/advanced-options.png" alt="Output data screen - scalars" />
                                         </div>
                                     </div><!--//section-block-->
-                                    <div id="save-results"  class="section-block">
-                                        <h3 class="block-title">Save scenario</h3>
+                                    <div id="save-export-delete"  class="section-block">
+                                        <h3 class="block-title">Save / export / delete  a scenario</h3>
                                         <div id = "save-general" class="section-block">
-                                            <h5 class="block-title">General</h5>
                                             <p>The set of all the input and output data is what we call a scenario. Data that is currently loaded in the MIRO interface (in memory) is what we call a <i>sandbox scenario</i> (more on this <a href = "#scenario-concept" class="scrollto">here</a>). 
                                             A sandbox scenario can be saved at any point. The menu where you can interact with your currently active scenario can be found in header bar of your MIRO app:</p>
                                             <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                                   <img class="img-fluid" style="max-height:175pt;" src="assets/images/output-export.png" alt="Scenario data - database interaction" />
                                             </div>
-                                            <p>Here, we can choose between the following options:</p>
                                             <ul>
+                                            <li id="metadata"><b>Edit metadata</b>
+                                            <br>Allows you to edit scenario metadata, i.e. the scenario name and/or the tags assigned as well as file attachments and scenario access permissions. Read more about scenario metadata <a href = "#scenario-metadata" class = "scrollto">here</a>.
+                                            </li>
                                             <li id="save"><b>Save</b>
                                             <br>Saves the currently active sandbox scenario under an already specified name. Data of the initially loaded scenario is overwritten.<br><br>
                                             <div class="callout-block callout-success">
@@ -441,46 +442,17 @@
                                             <li id="save-as"><b>Save As</b>
                                             <br>Saves the currently active sandbox scenario under an new name. If the sandbox scenario has no name yet, only this option is available for saving. 
                                             <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                                  <img class="img-fluid" style="max-height:235pt;" src="assets/images/scenario_saveas.png" alt="Save sandbox scenario in database" />
+                                                  <img class="img-fluid" style="max-height:250pt;" src="assets/images/scenario_saveas.png" alt="Save sandbox scenario in database" />
                                             </div>
                                             Optionally, you can add tags to the scenario. 
                                             Tags are stored together with the scenario data. If you want to find a scenario later on, you can search for a given tag. 
                                             This may help you to better find a certain scenario or a set of scenarios that share certain attributes.
                                             Also, if your sandbox scenario contains <a href = "#file-attachments" class = "scrollto">attachments</a> or you have defined <a href = "#access-permissions" class = "scrollto">user access permissions</a>, you can adopt these settings for the scenario to be saved. 
                                             </li>
-                                            <li id="metadata"><b>Edit metadata</b>
-                                            <br>Allows you to edit scenario metadata, i.e. the scenario name and/or the tags assigned as well as file attachments and scenario access permissions.
-                                            <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                                  <img class="img-fluid" style="max-height:250pt;" src="assets/images/scenario_metadata.png" alt="Edit scenario metadata" />
-                                            </div>
-                                            <p><b>General options</b>:<br>
-                                            In the <i>general options</i> tab you can change the scenario name and add/edit scenario tags.</p>
-                                            <p id="file-attachments"><b>Attachments</b>:<br>
-                                            With the <i>attachments</i> option, you can attach files to the (sandbox) scenario you currently have open. These can be files of any format.
-                                            MIRO distinguishes between two types of attachments: attachments that can be seen and read by your GAMS model and files that can not be seen.
-                                            For example, if you want to provide data to your model that doesn't need to be visible/modifiable in the UI (e.g. in the form of a gdx container or Excel files), attachments that your model can read are what you are looking for.
-                                            In case you just want to add some report about a particular scenario, which is irrelevant for the GAMS model, you should not allow the model to read this file. Note that all files that you allow your model to read need to be first downloaded into the working directory before GAMS is executed.
-                                            Thus, it is advisable to select only those files to be readable that are actually relevant for the optimization run.</p>
-                                            <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                                  <img class="img-fluid" style="max-height:250pt;" src="assets/images/scenario_attachments.png" alt="Scenario attachments" />
-                                            </div>
-                                            <p>Attachments added to a sanbox scenario are not automatically saved! If you want to apply the changes to a database scenario, you have click on <i>save</i>.</p>
-                                            <p id="access-permissions"><b>Access permissions</b>:<br>
-                                            With access permissions you can determine who can access your scenario. You can differentiate between read permissions (users can load the scenario but are not authorized to edit or execute it), write permissions (users can edit the scenario), and execution permissions (users can solve the model with your scenario data).</p>
-                                            <div class="callout-block callout-warning">
-                                                <div class="icon-holder">
-                                                    <i class="fas fa-info-circle"></i>
-                                                </div><!--//icon-holder-->
-                                                <div class="content">
-                                                    <b class="callout-title">Note:</b>
-                                                    <p>If you edit metadata, the changes will initially only affect the loaded sandbox scenario. You have to save the scenario, so that the changes are stored in the database and are available at a later stage.</p>
-                                                </div><!--//content-->
-                                            </div><!--//callout-block-->
-                                            </li>
                                             <li><b>Export</b>
                                             <br>Download of the scenario data in the form of a gdx container, as an Excel spreadsheet or as CSV files.</li>
                                             <li><b>Delete</b>
-                                            <br>Delete a scenario from the database.</li>
+                                            <br>Delete the scenario from the database.</li>
                                             </ul>
                                         </div>
                                     </div><!--//section-block-->
@@ -611,6 +583,82 @@
                                     </div>
                                 </div><!--//section-block-->
                             </section>
+                            <section id="scenario-metadata" class="doc-section">
+                                <h2 class="section-title">Scenario metadata</h2>
+                                <div  class="section-block">
+                                    <p>In addition to the classic data of a scenario, which is visualized in the form of tables, widgets and graphics and with which the user interacts primarily for and after a model run, a scenario also consists of metadata. Metadata can be edited under <i>Scenario</i> &rarr; <i>Edit metadata</i>. This includes the following:</p>
+                                    <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                          <img class="img-fluid" style="max-height:250pt;" src="assets/images/scenario_metadata.png" alt="Edit scenario metadata" />
+                                    </div>
+                                    <div id="metadata-general"  class="section-block">
+                                        <h3 class="block-title">General options</h3>
+                                        <p>In the <i>general options</i> tab you can change the scenario name and add/edit scenario tags. As mentioned above, you can search for a given tag in the database. Thus, tags can be used to better find a saved scenario or a set of scenarios that share certain attributes.</p>
+                                    </div>
+                                    <div id="file-attachments"  class="section-block">
+                                        <h3 class="block-title">Attachments</h3>
+                                        With the <i>attachments</i> option, you can attach files to the (sandbox) scenario you currently have open. These can be files of any format.
+                                        MIRO distinguishes between attachments that can be seen and read by your GAMS model and files that can not be seen.
+                                        For example, if you want to provide data to your model that doesn't need to be visible/modifiable in the UI (e.g. in the form of a gdx container or Excel files), attachments that your model can read are what you are looking for.
+                                        In case you just want to add some report about a particular scenario, which is irrelevant for the GAMS model, you should not allow the model to read this file. Note that all files that you allow your model to read need to be first downloaded into the working directory before GAMS is executed.
+                                        Thus, it is advisable to select only those files to be readable that are actually relevant for the optimization run.</p>
+                                        <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                              <img class="img-fluid" style="max-height:250pt;" src="assets/images/scenario_attachments.png" alt="Scenario attachments" />
+                                        </div>
+                                        <p>Besides this type of attachments, there are also <i>output attachments</i> which allow you to automatically attach files after a GAMS run has been successfully completed. This lets you store additional results alongside the ones displayed in the UI. You can also use such an attachment for the next GAMS run with this scenario. Read more about output attachments <a href="./customize.html#general-output-attach">here</a>.</p>
+                                        <div class="callout-block callout-warning">
+                                            <div class="icon-holder">
+                                                <i class="fas fa-info-circle"></i>
+                                            </div><!--//icon-holder-->
+                                            <div class="content">
+                                                <b class="callout-title">Note:</b>
+                                                <p>Attachments added to a sandbox scenario are not automatically saved! If you want to apply the changes to a database scenario, you have to <i>save</i> it.</p>
+                                            </div><!--//content-->
+                                        </div><!--//callout-block-->
+                                    </div>
+                                    <div id="metadata-views"  class="section-block">
+                                        <h3 class="block-title">Views</h3>
+                                        <p></p>
+                                    </div>
+                                    <div id="access-permissions"  class="section-block">
+                                        <h3 class="block-title">Access permissions</h3>
+                                        <p>Access permissions are relevant if more than one user has access to a MIRO database. This can be the case, for example, if several MIRO users work on the same computer. Scenarios can then be shared between MIRO applications. By specifying permissions you can determine who can access your scenario. </p>
+                                        <div class="callout-block callout-warning" style="padding-top:10pt;">
+                                            <div class="icon-holder">
+                                                <i class="fas fa-info-circle"></i>
+                                            </div><!--//icon-holder-->
+                                            <div class="content">
+                                                <b class="callout-title">Note:</b>
+                                                <p>In contrast to the database used by GAMS MIRO Server, the database for MIRO Desktop is not designed for concurrent use. We therefore recommend to use one database per user for MIRO Desktop applications.</p>
+                                            </div><!--//content-->
+                                        </div><!--//callout-block-->
+                                        
+                                        <p>MIRO distinguishes between 3 access permissions:
+                                        <ul>
+                                            <li>Read permissions: Users that only have read permissions can load the owner's scenario but are not authorized to edit or execute it. The scenario is marked with a lock symbol.</p>
+                                            <div class="section-block" style="text-align:left;padding-top:0pt;">
+                                                <img class="img-fluid" style= "max-height:100pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/readonly_scenario.png" alt="Scenario in readonly mode" />
+                                            </div>
+                                            <p>Note that users can only not <i>overwrite</i> the owner's scenario. However, he or she can save it under a new name with self-defined access permissions.
+                                            </li>
+                                            <li>Write permissions: Users can edit the owner's scenario.</li>
+                                            <li>Execution permissions: Users can solve the model with the owner's scenario data.</li>
+                                        </ul>
+                                        The user who first saves a new scenario is its owner. When other users load this scenario, the name of the owner is displayed. It is not possible to revoke the owner's permissions of a scenario.
+                                        </p>
+                                        <p id="scenario-lock" ><b>Locked scenarios</b><br>
+                                            For the time a scenario is opened in MIRO, it is locked for other users. This prevents conflicts arising when a scenario is used concurrently. Locked scenarios can be opened in readonly mode by others. If you open such a scenario, a lock symbol next to the scenario name indicates the readonly status. If you have write permissions for the scenario, a notification in the lower right corner of the screen informs you about the lock status additionally. 
+                                        </p>
+                                        <div class="row">
+                                          <div class="col-sm-12 col-md-12 col-lg-6" style="padding:10pt;">
+                                            <img class="img-fluid center-image-lg" style= "max-height:100pt; display: block;" src="assets/images/readonly_scenario.png" alt="Scenario in readonly mode" />
+                                          </div>
+                                          <div class="col-sm-12 col-md-12 col-lg-6" style="padding:10pt;">
+                                            <img class="img-fluid center-image-lg" style= "max-height:100pt; display: block;" src="assets/images/locked_scenario.png" alt="Locked scenario notification" />
+                                          </div>
+                                        </div>
+                                    </div>
+                                </div><!--//section-block-->
+                            </section>
                             <section id="performance-aspects" class="doc-section">
                                 <h2 class="section-title">Performance Aspects</h2>
                                 <div  class="section-block">
@@ -669,13 +717,7 @@
                                         <a class="nav-link scrollto" href="#data-manipulation">Data manipulation</a>
                                         <a class="nav-link scrollto" href="#solve-model">Solve the model</a>
                                         <a class="nav-link scrollto" href="#inspect-results">Inspect the results</a>
-                                        <a class="nav-link scrollto has-sub-sub" href="#save-results">Save scenario</a>
-                                        <nav class="sub-sub-menu nav flex-column">
-                                          <a class="nav-link scrollto" href="#save-general">General</a>
-                                          <a class="nav-link scrollto" href="#save">Save</a>
-                                          <a class="nav-link scrollto" href="#save-as">Save as</a>
-                                          <a class="nav-link scrollto" href="#metadata">Edit metadata</a>
-                                        </nav>
+                                        <a class="nav-link scrollto" href="#save-export-delete">Save / export / delete a scenario</a>
                                         <a class="nav-link scrollto has-sub-sub" href="#scenario-comparison">Scenario comparison</a>
                                         <nav class="sub-sub-menu nav flex-column">
                                           <a class="nav-link scrollto" href="#compare-split">Split screen</a>
@@ -685,6 +727,13 @@
                                       </nav><!--//nav-->
                                     <a class="nav-link scrollto" href="#data-concept">Data concept</a>
                                     <a class="nav-link scrollto" href="#scenario-concept">Scenario concept</a>
+                                    <a class="nav-link scrollto" href="#scenario-metadata">Scenario metadata</a>
+                                    <nav class="doc-sub-menu nav flex-column">
+                                          <a class="nav-link scrollto" href="#metadata-general">General options</a>
+                                          <a class="nav-link scrollto" href="#file-attachments">Attachments</a>
+                                          <a class="nav-link scrollto" href="#metadata-views">Views</a>
+                                          <a class="nav-link scrollto" href="#access-permissions">Access permissions</a>
+                                    </nav>
                                     <a class="nav-link scrollto" href="#performance-aspects">Performance Aspects</a>
                                     <a class="nav-link scrollto" href="#additional-features">Additional features</a>
                                       <nav class="doc-sub-menu nav flex-column">
