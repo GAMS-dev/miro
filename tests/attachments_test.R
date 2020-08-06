@@ -31,12 +31,16 @@ Sys.sleep(0.5)
 app$setInputs(btLoadScenConfirm = "click")
 Sys.sleep(1)
 
-#un-check model read permissions for attachment several times, save and remove scenario from sandbox
+#download attachment
 app$setInputs(btEditMeta = "click")
 Sys.sleep(0.5)
 app$findElement("a[data-value='Attachments']")$click()
 Sys.sleep(0.1)
 attachmentList <- app$findElements(".attachment-line")
+attachmentList[[1]]$findElement("a")$click()
+app$snapshotDownload("downloadAttachmentData", "attachment.md")
+
+#un-check model read permissions for attachment several times, save and remove scenario from sandbox
 expect_identical(length(attachmentList), 1L)
 expect_identical(attachmentList[[1]]$findElement(".checkbox input")$getAttribute("checked"), "true")
 attachmentList[[1]]$findElement(".checkbox input")$click()
