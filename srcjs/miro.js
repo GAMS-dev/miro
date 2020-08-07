@@ -1,103 +1,9 @@
-/* global $:false Shiny: false HTMLWidgets:false Selectize:false */
+/* global $:false Shiny: false Selectize:false */
 
-const spinnerActive = {};
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function changeActiveButtons(tabId) {
-  switch (tabId) {
-    case 'inputData':
-      $('#btImport').show();
-      $('.btSolve').show();
-      $('#btInterrupt').hide();
-      $('#btSplitView').hide();
-      $('#btCompareScen').hide();
-      break;
-
-    case 'outputData':
-      $('#btImport').hide();
-      $('.btSolve').hide();
-      $('#btInterrupt').hide();
-      $('#btSplitView').hide();
-      $('#btCompareScen').hide();
-      break;
-
-    case 'gamsinter':
-      $('#btImport').hide();
-      $('.btSolve').hide();
-      $('#btInterrupt').show();
-      $('#btSplitView').hide();
-      $('#btCompareScen').hide();
-      break;
-
-    case 'scenarios':
-      $('#btImport').hide();
-      $('.btSolve').hide();
-      $('#btInterrupt').hide();
-      $('#btSplitView').show();
-      $('#btCompareScen').show();
-      break;
-
-    default:
-      $('#btImport').hide();
-      $('.btSolve').hide();
-      $('#btInterrupt').hide();
-      $('#btSplitView').hide();
-      $('#btCompareScen').hide();
-  }
-}
-
-function switchTab(el) {
-  switch (el) {
-    case 'input':
-      changeActiveButtons('inputData');
-      $('[href="#shiny-tab-inputData"]').tab('show');
-      break;
-
-    case 'output':
-      changeActiveButtons('outputData');
-      $('[href="#shiny-tab-outputData"]').tab('show');
-      break;
-
-    case 'gamsinter':
-      changeActiveButtons('gamsinter');
-      $('[href="#shiny-tab-gamsinter"]').tab('show');
-      break;
-
-    case 'importData':
-      changeActiveButtons('importData');
-      $('[href="#shiny-tab-importData"]').tab('show');
-      break;
-
-    case 'hcubeAna':
-      changeActiveButtons('default');
-      $('[href="#shiny-tab-hcubeAnalyze"]').tab('show');
-      break;
-
-    case 'scenComp':
-      changeActiveButtons('scenarios');
-      $('[href="#shiny-tab-scenarios"]').tab('show');
-      break;
-    default:
-      break;
-  }
-}
-
-export function showSpinnerIcon(el, delay = 3000) {
-  if (spinnerActive[$(el).prop('id')]) {
-    return;
-  }
-
-  spinnerActive[$(el).prop('id')] = true;
-  const content = $(el).html();
-  $(el).html('<i class="fa fa-refresh fa-spin"></i>');
-  setTimeout(() => {
-    $(el).html(content);
-    spinnerActive[$(el).prop('id')] = false;
-  }, delay);
-}
+import {
+  sleep, changeActiveButtons, switchTabInTabset, removeModal,
+  switchTab, isInputEl, rerenderDygraph, rerenderHot, showHideEl, scrollDown,
+} from './util';
 
 export function changeTab(object, idActive, idRefer) {
   const tabPane = object.closest('.tabbable');
@@ -105,15 +11,6 @@ export function changeTab(object, idActive, idRefer) {
   tabPane.find(`li:nth-of-type(${idRefer})`).addClass('active');
   tabPane.find(`.tab-content div:nth-child(${idActive})`).removeClass('active');
   tabPane.find(`.tab-content div:nth-child(${idRefer})`).addClass('active');
-}
-
-function switchTabInTabset(tabsetID, tabValue) {
-  const tabset = $(`#${tabsetID}`);
-  tabset.find(`a[data-value='${tabValue}']`).tab('show');
-}
-
-function removeModal() {
-  $('#shiny-modal-wrapper').find('.modal').modal('hide');
 }
 
 export function slideToggleEl(data) {
@@ -223,45 +120,6 @@ export async function jumpToLogMark(id) {
       .delay(1000)
       .animate({ backgroundColor: 'transparent' }, 400);
   }
-}
-
-function isInputEl(id) {
-  if ($(id).parents('.form-group').length) {
-    return true;
-  }
-  return false;
-}
-function rerenderDygraph(delay = 100) {
-  try {
-    setTimeout(() => {
-      HTMLWidgets.getInstance($('.dygraphs:visible').get(0)).dygraph.resize();
-    }, delay);
-  } catch (e) {
-    // continue regardless of error
-  }
-}
-function rerenderHot(delay = 100) {
-  setTimeout(() => {
-    const el = $('.rhandsontable:visible').get(0);
-    if (el !== undefined) {
-      HTMLWidgets.getInstance(el).hot.render();
-    }
-  }, delay);
-}
-
-function showHideEl(el, delay, msg = null) {
-  if (msg !== null) {
-    $(el).text(msg);
-  }
-  $(el).show().delay(delay).fadeOut();
-}
-
-function scrollDown(id, delay = 500) {
-  setTimeout(() => {
-    $(id).animate({
-      scrollTop: $(id)[0].scrollHeight - $(id)[0].clientHeight,
-    }, 300);
-  }, delay);
 }
 
 $(document).ready(() => {
