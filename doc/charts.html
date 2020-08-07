@@ -731,7 +731,7 @@ $offExternalOutput
                                   <h3 class="block-title">Configuration</h3>
                                     <p>As the name of the graphic type suggests, this chart type is useful if you want to visualize time series data. 
                                     An important property of such time series is the format of the data. You should make sure that the elements of the index set, which should represent the time component of your graphic, have their data available in a date format or at least can be formatted into such a format. 
-                                    A suitable syntax for a date would be <i>yyyy-mm-dd</i>, e.g. <i>2014-07-13</i>.</p>
+                                    A suitable syntax for a date would be <i>yyyy-MM-dd</i>, e.g. <i>2014-07-13</i>. For a finer granularity, the format <i style="white-space: nowrap;">yyyy-MM-dd HH:mm:ss</i> is recommended.</p>
                                     <p>Example: Model <i>Pickstock</i>, parameter <i>dow jones vs. index fund</i></p>
                                     <pre><code class="language-gams">Set date      'date'
     fHdr      'fund header'   / dj 'dow jones','index fund'  /;
