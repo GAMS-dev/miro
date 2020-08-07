@@ -464,7 +464,10 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
       if(any(isInputWidget)){
         for(widgetGroupId in which(isWidgetGroup)){
           i <- suppressWarnings(as.integer(substring(config$overwriteSheetOrder$input[widgetGroupId], 9L)))
-          if(is.na(i) || i > length(config$inputWidgetGroups)){
+          if(is.na(i)){
+            config$overwriteSheetOrder$input[widgetGroupId] <- names(modelIn)[which(isInputWidget)[1L]]
+            next
+          }else if(i > length(config$inputWidgetGroups)){
             if(sum(isWidgetGroup) <= length(config$inputWidgetGroups)){
               config$overwriteSheetOrder$input[widgetGroupId] <- names(modelIn)[which(isInputWidget)[1L]]
             }else{
