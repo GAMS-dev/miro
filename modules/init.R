@@ -1069,8 +1069,7 @@ if(is.null(errMsg)){
       }
       
       # abort since rpivottable crashes when setting table to readonly if there exist columns with the same name
-      if(!LAUNCHCONFIGMODE &&
-         identical(modelIn[[i]]$type, "hot") && any(duplicated(attr(modelInTemplate[[i]], "aliases"))) &&
+      if(identical(modelIn[[i]]$type, "hot") && any(duplicated(attr(modelInTemplate[[i]], "aliases"))) &&
          (identical(modelIn[[i]]$readonly, TRUE) || any(vapply(modelIn[[i]]$headers, function(header){
            if(identical(header$readonly, TRUE))
              return(TRUE)
