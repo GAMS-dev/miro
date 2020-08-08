@@ -75,20 +75,6 @@ expect_identical(configRaw$scripts$hcube[[1]]$command, configNew$scripts$hcube[[
 expect_identical(configRaw$scripts$hcube[[1]]$args, configNew$scripts$hcube[[1]]$args)
 expect_identical(configRaw$scripts$hcube[[1]]$outputFile, configNew$scripts$hcube[[1]]$outputFile)
 
-app$findElement("a[data-value='Symbol configuration']")$click()
-app$setInput("general_overwriteSymHeaders_price_1" = "stock symbol")
-Sys.sleep(1L)
-configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
-                                                 simplifyDataFrame = FALSE, 
-                                                 simplifyMatrix = FALSE))
-expect_identical(configNew$overwriteHeaderAliases$price$newHeaders, c("stock symbol", "stock symbol", "Price"))
-app$setInput("general_overwriteSymHeaders_price_1" = "")
-Sys.sleep(1L)
-configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration.json"),
-                                                 simplifyDataFrame = FALSE, 
-                                                 simplifyMatrix = FALSE))
-expect_identical(configNew$overwriteHeaderAliases$price$newHeaders, c("date", "stock symbol", "Price"))
 
-expect_true(app$waitFor("$('#general_overwriteSymHeaders_price').hasClass('has-error')", timeout = 50))
 
 app$stop()
