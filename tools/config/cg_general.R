@@ -205,22 +205,43 @@ lapply(c(names(modelInRaw), names(modelOut)), function(name){
       return()
     }
   })
-  observeEvent(input[[paste0("general_overwriteSymHeaders_", name)]], ignoreNULL = FALSE, {
-    newHeaders <- input[[paste0("general_overwriteSymHeaders_", name)]]
+  observe({
     defaultAlias <- FALSE
     if(name %in% names(modelOut)){
-      if(length(newHeaders) != length(dataContract$outputSymbols[[name]]$headers) ||
-         identical(newHeaders, vapply(dataContract$outputSymbols[[name]]$headers, "[[", 
-                                      character(1L), "alias",
-                                      USE.NAMES = FALSE))){
+      newHeaders <- unlist(lapply(seq_along(dataContract$outputSymbols[[name]]$headers), function(hdrIdx){
+        input[[paste0("general_overwriteSymHeaders_", name, "_", hdrIdx)]]
+      }))
+      if(length(newHeaders) != length(dataContract$outputSymbols[[name]]$headers)){
+        return()
+      }
+      if(any(newHeaders == "")){
+        addClassEl(session, paste0("#general_overwriteSymHeaders_", name), "has-error")
         defaultAlias <- TRUE
+      }else if(identical(newHeaders, vapply(dataContract$outputSymbols[[name]]$headers, "[[", 
+                                            character(1L), "alias",
+                                            USE.NAMES = FALSE))){
+        removeClassEl(session, paste0("#general_overwriteSymHeaders_", name), "has-error")
+        defaultAlias <- TRUE
+      }else{
+        removeClassEl(session, paste0("#general_overwriteSymHeaders_", name), "has-error")
       }
     }else{
-      if(length(newHeaders) != length(dataContract$inputSymbols[[name]]$headers) ||
-         identical(newHeaders, vapply(dataContract$inputSymbols[[name]]$headers, "[[", 
+      newHeaders <- unlist(lapply(seq_along(dataContract$inputSymbols[[name]]$headers), function(hdrIdx){
+        input[[paste0("general_overwriteSymHeaders_", name, "_", hdrIdx)]]
+      }))
+      if(length(newHeaders) != length(dataContract$inputSymbols[[name]]$headers)){
+        return()
+      }
+      if(any(newHeaders == "")){
+        addClassEl(session, paste0("#general_overwriteSymHeaders_", name), "has-error")
+        defaultAlias <- TRUE
+      }else if(identical(newHeaders, vapply(dataContract$inputSymbols[[name]]$headers, "[[", 
                                       character(1L), "alias",
                                       USE.NAMES = FALSE))){
+        removeClassEl(session, paste0("#general_overwriteSymHeaders_", name), "has-error")
         defaultAlias <- TRUE
+      }else{
+        removeClassEl(session, paste0("#general_overwriteSymHeaders_", name), "has-error")
       }
     }
     if(defaultAlias){

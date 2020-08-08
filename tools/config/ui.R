@@ -646,14 +646,15 @@ body_admin <- dashboardBody({
                                                             textInput(paste0("general_overwriteSymAlias_", name), 
                                                                       lang$adminMode$general$overwriteSymbolAliases$label,
                                                                       symAlias),
-                                                            selectizeInput(paste0("general_overwriteSymHeaders_", name), 
-                                                                           lang$adminMode$general$overwriteSymbolHeaders$label,
-                                                                           choices = symHeaders, selected = symHeaders,
-                                                                           multiple = TRUE,  options = list(
-                                                                             'maxItems' = length(symHeaders),
-                                                                             'create' = TRUE,
-                                                                             'persist' = FALSE,
-                                                                             plugins = list("restore_on_backspace"))))
+                                                            tags$b(lang$adminMode$general$overwriteSymbolHeaders$label),
+                                                            tags$div(id = paste0("general_overwriteSymHeaders_", name),
+                                                                     class="form-group shiny-input-container",
+                                                              lapply(seq_along(symHeaders), function(hdrIdx){
+                                                                tags$input(id = paste0("general_overwriteSymHeaders_", name,"_", hdrIdx),
+                                                                           type="text", class="form-control shiny-bound-input",
+                                                                           value=symHeaders[[hdrIdx]])
+                                                              }))
+                                                     )
                                                    )
                                                  }),
                                                  tags$div(class = "space"),
@@ -679,14 +680,15 @@ body_admin <- dashboardBody({
                                                             textInput(paste0("general_overwriteSymAlias_", name), 
                                                                       lang$adminMode$general$overwriteSymbolAliases$label,
                                                                       symAlias),
-                                                            selectizeInput(paste0("general_overwriteSymHeaders_", name), 
-                                                                           lang$adminMode$general$overwriteSymbolHeaders$label,
-                                                                           choices = symHeaders, selected = symHeaders,
-                                                                           multiple = TRUE,  options = list(
-                                                                             'maxItems' = length(symHeaders),
-                                                                             'create' = TRUE,
-                                                                             'persist' = FALSE,
-                                                                             plugins = list("restore_on_backspace"))))
+                                                            tags$b(lang$adminMode$general$overwriteSymbolHeaders$label),
+                                                            tags$div(id = paste0("general_overwriteSymHeaders_", name),
+                                                                     class="form-group shiny-input-container",
+                                                                     lapply(seq_along(symHeaders), function(hdrIdx){
+                                                                       tags$input(id = paste0("general_overwriteSymHeaders_", name,"_", hdrIdx),
+                                                                                  type="text", class="form-control shiny-bound-input",
+                                                                                  value=symHeaders[[hdrIdx]], required = "")
+                                                                     }))
+                                                            )
                                                    )
                                                  }),
                                                  tags$div(class = "space")
