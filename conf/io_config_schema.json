@@ -36,7 +36,6 @@
         "symtype":{
           "description": "Symbol type",
           "type":"string",
-          "default":"en",
           "enum":[  
              "set",
              "parameter",
