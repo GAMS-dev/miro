@@ -80,7 +80,7 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
     miroModelDir <- file.path(getwd(), "..", "..", "model", modelToTest)
     Sys.setenv(MIRO_MODEL_PATH = file.path(miroModelDir,  paste0(modelToTest, ".gms")))
     Sys.setenv(GMSMODELNAME = modelToTest)
-    if(modelToTest %in% c("pickstock")){
+    if(modelToTest %in% c("pickstock", "kport")){
       extraClArgs <- "MIP=CBC"
     }else{
       extraClArgs <- character(0L)
