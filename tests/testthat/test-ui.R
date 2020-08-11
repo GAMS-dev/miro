@@ -76,7 +76,7 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
   if(!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")){
     additionalGamsClArgs <- paste0('license="', Sys.getenv("MIRO_TEST_GAMS_LICE"), '"')
   }
-  for(modelToTest in c("pickstock", "transport", "sudoku", "farming", "inscribedsquare", "tsp", "cpack")){
+  for(modelToTest in c("pickstock", "transport", "sudoku", "farming", "inscribedsquare", "tsp", "cpack", "lubrication", "kport")){
     miroModelDir <- file.path(getwd(), "..", "..", "model", modelToTest)
     Sys.setenv(MIRO_MODEL_PATH = file.path(miroModelDir,  paste0(modelToTest, ".gms")))
     Sys.setenv(GMSMODELNAME = modelToTest)
