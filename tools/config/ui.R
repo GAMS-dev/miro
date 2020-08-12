@@ -646,7 +646,7 @@ body_admin <- dashboardBody({
                                                             textInput(paste0("general_overwriteSymAlias_", name), 
                                                                       lang$adminMode$general$overwriteSymbolAliases$label,
                                                                       symAlias),
-                                                            tags$b(lang$adminMode$general$overwriteSymbolHeaders$label),
+                                                            tags$label(lang$adminMode$general$overwriteSymbolHeaders$label),
                                                             tags$div(id = paste0("general_overwriteSymHeaders_", name),
                                                                      class="form-group shiny-input-container",
                                                               lapply(seq_along(symHeaders), function(hdrIdx){
@@ -682,7 +682,7 @@ body_admin <- dashboardBody({
                                                             textInput(paste0("general_overwriteSymAlias_", name), 
                                                                       lang$adminMode$general$overwriteSymbolAliases$label,
                                                                       symAlias),
-                                                            tags$b(lang$adminMode$general$overwriteSymbolHeaders$label),
+                                                            tags$label(lang$adminMode$general$overwriteSymbolHeaders$label),
                                                             tags$div(id = paste0("general_overwriteSymHeaders_", name),
                                                                      class="form-group shiny-input-container",
                                                                      lapply(seq_along(symHeaders), function(hdrIdx){
