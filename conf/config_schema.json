@@ -174,7 +174,6 @@
               "newHeaders":{
                 "description":"Specify new headers (number needs to match dimension of symbol)",
                 "type":"array",
-                "uniqueItems":true,
                 "items":{
                   "type":"string",
                   "minLength": 1
