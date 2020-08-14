@@ -96,6 +96,7 @@ closeScenario <- function(){
   if(is.R6(activeScen))
     flog.debug("Scenario: '%s' closed.", activeScen$getScenName())
   # reset input data
+  modelInputGraphVisible[] <<- FALSE
   lapply(seq_along(modelIn), function(i){
     hideEl(session, "#graph-in_" %+% i)
     showEl(session, "#data-in_" %+% i)

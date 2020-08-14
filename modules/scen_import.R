@@ -173,6 +173,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   prog$set(detail = lang$progressBar$importScen$renderInput, value = 0.4)
   
   # reset input data
+  modelInputGraphVisible[] <<- FALSE
   lapply(seq_along(modelIn)[names(modelIn) %in% datasetsToFetch], function(i){
     hideEl(session, "#graph-in_" %+% i)
     showEl(session, "#data-in_" %+% i)
