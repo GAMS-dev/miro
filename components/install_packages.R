@@ -25,6 +25,7 @@ installAndRequirePackages <- function(requiredPackages, installedPackages, RLibP
       installedPackagesTmp <- vapply(installedPackagesTmp, "[[",
                                      character(1), 1, USE.NAMES = FALSE)
       buildDepInstalled <- "remotes" %in% installedPackages
+      print("Installing R packages. This might take more than an hour...")
       for(package in packageVersionMap){
         if (package[1] %in% installedPackagesTmp){
           next
