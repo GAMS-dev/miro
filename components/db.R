@@ -1098,7 +1098,7 @@ Db <- R6Class("Db",
                   # END error checks
                   
                   limit <- min(nrow(scenList), limit)
-                  scenList <- scenList[1:limit, , drop = FALSE]
+                  scenList <- scenList[seq_len(limit), , drop = FALSE]
                   if(!is.null(orderBy)){
                     if(desc){
                       scenList <- dplyr::arrange(scenList, desc(!!as.name(orderBy)))

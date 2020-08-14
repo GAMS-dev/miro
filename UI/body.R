@@ -266,7 +266,13 @@ if(buildUI){
                                tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
                                tags$div(id = paste0("data-in_", i), {
                                  if(modelIn[[i]]$type == "hot"){
-                                   rHandsontableOutput(paste0("in_", i))
+                                   tagList(tags$div(class = "hot-search-wrapper",
+                                                    tags$label(
+                                                      lang$nav$hot$search,
+                                                      tags$input(class = "hot-search-box",
+                                                                 type = "search", id = paste0("in_", i, "-search"))
+                                                    )),
+                                                    rHandsontableOutput(paste0("in_", i)))
                                  }else if(modelIn[[i]]$type == "dt"){
                                    dataTableOutput(paste0("in_", i))
                                  }else{
@@ -381,13 +387,13 @@ if(buildUI){
             )
     ),
     tabItem(tabName = "scenarios",
-            tags$div(id = "scen-tab-view", style = if(identical(config$defCompMode, "split")) "display:none;" else "",
+            generateScenarioTabsetPivot(),
+            tags$div(id = "scen-tab-view", style = if(identical(config$defCompMode, "tab")) "" else "display:none;",
                      tabsetPanel(id="scenTabset"),
-                     tags$div(id = "no-scen", lang$nav$scen$noScen, 
+                     tags$div(id = "no-scen", lang$nav$scen$noScen, class = "no-scen",
                               tags$div(style = "margin: 10px;",
                                        HTML(paste0('<button class="btn btn-default action-button" ',
-                                                   'type="button" onclick="Shiny.setInputValue(\'btLoadScen\', ',
-                                                   1, ', {priority: \'event\'})">', 
+                                                   'type="button" onclick="Shiny.setInputValue(\'btLoadScen\',1,{priority: \'event\'})">', 
                                                    lang$nav$scen$btLoad, '</button>')))
                      )
             ),

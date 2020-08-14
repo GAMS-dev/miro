@@ -352,7 +352,7 @@
   "saveTraceFile": true,
   "autoGenInputGraphs": true,
   "theme": "browser",
-  "defCompMode": "split",
+  "defCompMode": "pivot",
   "symbolLinks": [
     {
       "source": "pricemerge",

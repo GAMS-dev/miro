@@ -42,6 +42,10 @@ In order to launch GAMS MIRO you need R (v. 4.0.2 or later) with the following p
 * DBI (https://github.com/GAMS-dev/miro_desktop/tree/master/r-src/DBI)
 * RSQLite (https://github.com/GAMS-dev/RSQLite)
 * digest
+* DT (https://github.com/GAMS-dev/DT)
+* sortable
+* chartjs (https://github.com/GAMS-dev/miro_desktop/tree/master/r-src/chartjs)
+
 
 MIRO will install these packages automatically when you first launch it. Note that some of the required packages have been customized to work seamlessly with MIRO. These packages are automatically downloaded from the corresponding GitHub repository. The URLs where you can find these packages are given in brackets. When using certain graphs and especially in the MIRO Configuration Mode, the following additional packages are required:
 
@@ -51,7 +55,6 @@ MIRO will install these packages automatically when you first launch it. Note th
 * leaflet (https://github.com/GAMS-dev/leaflet)
 * leaflet.minicharts
 * timevis (https://github.com/GAMS-dev/timevis)
-* DT (https://github.com/GAMS-dev/DT)
 
 MIRO will install these when it detects that they are required.
 

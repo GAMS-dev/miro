@@ -26,7 +26,9 @@
       "solve":"Solve model",
       "submitJob": "Submit job",
       "solveHcube":"Submit job",
+      "changeMode": "Change mode",
       "splitView":"Split view",
+      "pivotView": "Pivot view",
       "tabView":"Tab view",
       "compareStart":"Compare mode",
       "compareStop":"Stop compare",
@@ -603,6 +605,9 @@
         "timeout": "Script timed out.",
         "crash": "Script crashed."
       }
+    },
+    "hot":{
+      "search": "Search:"
     }
   },
   "renderers":{
@@ -619,6 +624,7 @@
       "newViewLabel": "Please choose a name for the view.",
       "newViewBtCancel": "Cancel",
       "newViewBtSave": "Save",
+      "pivotCompScenColName": "Scenario",
       "errUniqueViewName": "The view name you entered already exists. Please choose another name.",
       "aggregationFunctions":{
         "sum": "Sum",
@@ -919,7 +925,8 @@
       },
       "scen":{
         "label": "Default scenario comparison mode",
-        "choices": ["Split screen (suited for 2 scenarios to compare)", "Tab view (suited for > 2 scenarios to compare)"]
+        "choices": ["Split view (suited for 2 scenarios to compare)", "Tab view (suited for > 2 scenarios to compare)",
+        "Pivot view (suited for > 2 scenarios to compare)"]
       },
       "defaultScenName":{
         "checkbox": "Use a default scenario that will be loaded on startup?",

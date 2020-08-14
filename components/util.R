@@ -1531,3 +1531,32 @@ appender.miro <- function(file){
     cat(line, file=file, append=TRUE, sep='')
   }
 }
+switchCompareMode <- function(session, mode, numberScenTabs){
+  if(identical(mode, "pivotView")){
+    hideEl(session, "#scen-split-view")
+    hideEl(session, "#scen-tab-view")
+    showEl(session, "#scen-pivot-view")
+    hideEl(session, "#btCompareScen")
+    session$sendCustomMessage("gms-setAttrib",
+                              list(selector = "#btCompareScen",
+                                   attr = "data-noshow", val = "true"))
+    return()
+  }
+  showEl(session, "#btCompareScen")
+  session$sendCustomMessage("gms-setAttrib",
+                            list(selector = "#btCompareScen",
+                                 attr = "data-noshow", val = "false"))
+  if(identical(mode, "splitView")){
+    if(numberScenTabs < 2){
+      disableEl(session, "#btCompareScen")
+    }
+    showEl(session, "#scen-split-view")
+    hideEl(session, "#scen-tab-view")
+    hideEl(session, "#scen-pivot-view")
+  }else{
+    enableEl(session, "#btCompareScen")
+    hideEl(session, "#scen-split-view")
+    showEl(session, "#scen-tab-view")
+    hideEl(session, "#scen-pivot-view")
+  }
+}
