@@ -266,7 +266,13 @@ if(buildUI){
                                tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
                                tags$div(id = paste0("data-in_", i), {
                                  if(modelIn[[i]]$type == "hot"){
-                                   rHandsontableOutput(paste0("in_", i))
+                                   tagList(tags$div(class = "hot-search-wrapper",
+                                                    tags$label(
+                                                      lang$nav$hot$search,
+                                                      tags$input(class = "hot-search-box",
+                                                                 type = "search", id = paste0("in_", i, "-search"))
+                                                    )),
+                                                    rHandsontableOutput(paste0("in_", i)))
                                  }else if(modelIn[[i]]$type == "dt"){
                                    dataTableOutput(paste0("in_", i))
                                  }else{

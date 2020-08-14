@@ -605,6 +605,9 @@
         "timeout": "脚本超时了",
         "crash": "脚本崩溃了"
       }
+    },
+    "hot":{
+      "search": "搜索："
     }
   },
   "progressBar":{

@@ -605,6 +605,9 @@
         "timeout": "Skript-Timeout abgelaufen.",
         "crash": "Das Skript ist abgestürzt."
       }
+    },
+    "hot":{
+      "search": "Suche:"
     }
   },
   "progressBar":{  
