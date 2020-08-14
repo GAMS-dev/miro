@@ -2354,9 +2354,20 @@
             }
           },
           "minProperties": 3
+        },
+        "hot": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "search": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 1
         }
       },
-      "minProperties": 46
+      "minProperties": 47
     },
     "renderers": {
       "description": "language specific objects of renderers",

@@ -605,6 +605,9 @@
         "timeout": "Script timed out.",
         "crash": "Script crashed."
       }
+    },
+    "hot":{
+      "search": "Search:"
     }
   },
   "renderers":{
