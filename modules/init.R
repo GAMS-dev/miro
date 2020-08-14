@@ -1517,8 +1517,6 @@ if(is.null(errMsg)){
   })
   
   installPackage    <- list()
-  installPackage$DT <- any(vapply(seq_along(modelIn), function(i){if(identical(modelIn[[i]]$type, "dt")) TRUE else FALSE}, 
-                                  logical(1L), USE.NAMES = FALSE))
   installPackage$plotly <- LAUNCHCONFIGMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
                                                          function(conf){if(identical(conf$graph$tool, "plotly")) TRUE else FALSE}, 
                                                          logical(1L), USE.NAMES = FALSE))
@@ -1531,9 +1529,6 @@ if(is.null(errMsg)){
   installPackage$timevis <- LAUNCHCONFIGMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
                                                           function(conf){if(identical(conf$graph$tool, "timevis")) TRUE else FALSE}, 
                                                           logical(1L), USE.NAMES = FALSE))
-  installPackage$miroPivot <- LAUNCHCONFIGMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
-                                                             function(conf){if(identical(conf$outType, "miroPivot")) TRUE else FALSE}, 
-                                                             logical(1L), USE.NAMES = FALSE))
   
   dbSchema <- list(tabName = c('_scenMeta' = scenMetadataTablePrefix %+% modelName, 
                                '_scenLock' = scenLockTablePrefix %+% modelName,

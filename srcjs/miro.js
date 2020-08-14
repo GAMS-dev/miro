@@ -174,7 +174,7 @@ $(document).ready(() => {
   $('#btImport').show();
   $('.btSolve').show();
   $('#btInterrupt').hide();
-  $('#btSplitView').hide();
+  $('.btSplitView').hide();
   $('#btCompareScen').hide();
   $('#btLoadScen').hide();
   $('a[data-value="inputData"]').click(() => {
@@ -233,6 +233,9 @@ $(document).ready(() => {
       e.preventDefault();
       e.returnValue = 'Are you sure you want to leave? Unsaved changes will be lost!';
     }
+  });
+  Shiny.addCustomMessageHandler('gms-setAttrib', (data) => {
+    $(data.selector).attr(data.attr, data.val);
   });
   Shiny.addCustomMessageHandler('gms-showEl', (id) => {
     if (isInputEl(id)) {

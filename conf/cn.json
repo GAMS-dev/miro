@@ -24,9 +24,11 @@
     "sidebarButtons":{
       "importInput":"加载数据",
       "solve":"求解模型",
-	  "submitJob": "提交作业",							
+      "submitJob": "提交作业",							
       "solveHcube":"提交作业",
+      "changeMode": "改变模式",
       "splitView":"拆分视图",
+      "pivotView": "Pivot view",
       "tabView":"标签视图",
       "compareStart":"比较模式",
       "compareStop":"停止比较",
@@ -660,6 +662,7 @@
       "newViewLabel": "请为该视图选择一个名称。",
       "newViewBtCancel": "取消",
       "newViewBtSave": "保存",
+      "pivotCompScenColName": "场景选项",
       "errUniqueViewName": "您输入的视图名称已经存在。请选择其他名称。",
       "aggregationFunctions":{
         "sum": "总额",
@@ -919,7 +922,7 @@
       },
       "scen":{
         "label": "指定默认的场景比较模式",
-        "choices": ["分屏视图 （适合比较两个场景）", "标签视图 （适合多于两个的场景之间的比较）"]
+        "choices": ["分屏视图 （适合比较两个场景）", "标签视图 （适合多于两个的场景之间的比较）", "枢轴视图 （适合多于两个的场景之间的比较）"]
       },
       "defaultScenName":{
         "checkbox": "要使用一个在启动时加载的默认场景吗？",

@@ -10,7 +10,7 @@ export function changeActiveButtons(tabId) {
       $('#btImport').show();
       $('.btSolve').show();
       $('#btInterrupt').hide();
-      $('#btSplitView').hide();
+      $('.btSplitView').hide();
       $('#btCompareScen').hide();
       break;
 
@@ -18,7 +18,7 @@ export function changeActiveButtons(tabId) {
       $('#btImport').hide();
       $('.btSolve').hide();
       $('#btInterrupt').hide();
-      $('#btSplitView').hide();
+      $('.btSplitView').hide();
       $('#btCompareScen').hide();
       break;
 
@@ -26,7 +26,7 @@ export function changeActiveButtons(tabId) {
       $('#btImport').hide();
       $('.btSolve').hide();
       $('#btInterrupt').show();
-      $('#btSplitView').hide();
+      $('.btSplitView').hide();
       $('#btCompareScen').hide();
       break;
 
@@ -34,15 +34,17 @@ export function changeActiveButtons(tabId) {
       $('#btImport').hide();
       $('.btSolve').hide();
       $('#btInterrupt').hide();
-      $('#btSplitView').show();
-      $('#btCompareScen').show();
+      $('.btSplitView').show();
+      if ($('#btCompareScen').attr('data-noshow') === 'false') {
+        $('#btCompareScen').show();
+      }
       break;
 
     default:
       $('#btImport').hide();
       $('.btSolve').hide();
       $('#btInterrupt').hide();
-      $('#btSplitView').hide();
+      $('.btSplitView').hide();
       $('#btCompareScen').hide();
   }
 }

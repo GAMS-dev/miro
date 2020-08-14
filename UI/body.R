@@ -381,13 +381,13 @@ if(buildUI){
             )
     ),
     tabItem(tabName = "scenarios",
-            tags$div(id = "scen-tab-view", style = if(identical(config$defCompMode, "split")) "display:none;" else "",
+            generateScenarioTabsetPivot(),
+            tags$div(id = "scen-tab-view", style = if(identical(config$defCompMode, "tab")) "" else "display:none;",
                      tabsetPanel(id="scenTabset"),
-                     tags$div(id = "no-scen", lang$nav$scen$noScen, 
+                     tags$div(id = "no-scen", lang$nav$scen$noScen, class = "no-scen",
                               tags$div(style = "margin: 10px;",
                                        HTML(paste0('<button class="btn btn-default action-button" ',
-                                                   'type="button" onclick="Shiny.setInputValue(\'btLoadScen\', ',
-                                                   1, ', {priority: \'event\'})">', 
+                                                   'type="button" onclick="Shiny.setInputValue(\'btLoadScen\',1,{priority: \'event\'})">', 
                                                    lang$nav$scen$btLoad, '</button>')))
                      )
             ),
