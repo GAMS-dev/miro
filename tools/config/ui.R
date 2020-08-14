@@ -8,8 +8,9 @@ names(langSpecificUI$symbolType) <- lang$adminMode$widgets$ui$choices
 langSpecificUI$theme <- c("Use system/browser settings" = "browser", 
                         "Light mode" = "light", "Dark mode" = "dark")
 names(langSpecificUI$theme) <- lang$adminMode$general$theme$choices
-langSpecificUI$scen <- c("Split screen (suited for 2 scenarios to compare)" = "split", "Tab view 
-                        (suited for > 2 scenarios to compare)" = "tab")
+langSpecificUI$scen <- c("Split view (suited for 2 scenarios to compare)" = "split",
+                         "Tab view (suited for > 2 scenarios to compare)" = "tab",
+                         "Pivot view (suited for > 2 scenarios to compare)" = "pivot")
 names(langSpecificUI$scen) <- lang$adminMode$general$scen$choices
 inputTabs <- c(inputSymMultiDim, 
                setNames("_widgets", 

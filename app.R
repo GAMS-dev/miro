@@ -64,7 +64,8 @@ requiredPackages <- c("jsonlite", "zip", "tibble", "readr")
 if(!miroBuildonly){
   requiredPackages <- c(requiredPackages, "shiny", "shinydashboard", "rhandsontable", 
                         "rpivotTable", "stringi", "processx", 
-                        "dplyr", "readxl", "writexl", "futile.logger", "tidyr")
+                        "dplyr", "readxl", "writexl", "futile.logger", "tidyr",
+                        "DT", "sortable", "chartjs")
 }
 config <- list()
 modelFiles <- character()
@@ -82,7 +83,7 @@ filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./component
                     "./components/data_instance.R", "./components/worker.R", 
                     "./components/dataio.R", "./components/hcube_data_instance.R", 
                     "./components/miro_tabsetpanel.R", "./modules/render_data.R", 
-                    "./modules/generate_data.R", "./components/script_output.R")
+                    "./modules/generate_data.R", "./components/script_output.R", "./components/scen_comp_pivot.R")
 LAUNCHCONFIGMODE <- FALSE
 LAUNCHHCUBEMODE <<- FALSE
 if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
@@ -226,6 +227,10 @@ if(is.null(errMsg)){
     config$activateModules$remoteExecution <- TRUE
   }
 }
+ioConfig <<- list(modelIn = modelIn,
+                  modelOut = modelOut,
+                  inputDsNames = inputDsNames,
+                  scenTableNamesToDisplay = scenTableNamesToDisplay)
 if(is.null(errMsg)){
   if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildonly){
     errMsg <- paste(errMsg, 
@@ -587,17 +592,13 @@ if(is.null(errMsg)){
   }
   if(LAUNCHCONFIGMODE){
     requiredPackages <- c(requiredPackages, "plotly", "xts", "dygraphs", "leaflet", "chartjs", "sortable",
-                          "leaflet.minicharts", "timevis", "DT")
+                          "leaflet.minicharts", "timevis")
   }else{
     requiredPackages <- c(requiredPackages, 
                           if(identical(installPackage$plotly, TRUE)) "plotly",
                           if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
                           if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"),
-                          if(identical(installPackage$timevis, TRUE)) c("timevis"),
-                          if(identical(installPackage$miroPivot, TRUE)) c("DT", "sortable", "chartjs"))
-  }
-  if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
-    requiredPackages <- c(requiredPackages, "DT")
+                          if(identical(installPackage$timevis, TRUE)) c("timevis"))
   }
   
   if(!is.null(requiredPackagesCR)){
@@ -672,7 +673,7 @@ if(is.null(errMsg)){
       flog.error(errMsgTmp)
       errMsg <- paste(msg, errMsgTmp, sep = '\n')
     }
-    requiredPackages <- c("digest", "DT")
+    requiredPackages <- c("digest")
     source("./components/install_packages.R", local = TRUE)
     source("./components/db_hcubeimport.R")
     source("./components/db_hcubeload.R")
@@ -1187,6 +1188,7 @@ if(!is.null(errMsg)){
       scenCounterMultiComp <- 4L
       sidsInComp       <- vector("integer", length = maxNumberScenarios + 1)
       sidsInSplitComp  <- vector("integer", length = 2L)
+      sidsInPivotComp  <- vector("integer", length = maxNumberScenarios + 1)
       # occupied slots (scenario is loaded in ui with this rv$scenId)
       occupiedSidSlots <- vector("logical", length = maxNumberScenarios)
       loadInLeftBoxSplit <- TRUE
@@ -1446,7 +1448,7 @@ if(!is.null(errMsg)){
       rv <- reactiveValues(scenId = 4L, unsavedFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
                            btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
                            btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
-                           btSplitView = 0L, noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
+                           noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
                            jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L)
       suppressCloseModal <- FALSE
       # list of scenario IDs to load
@@ -1704,6 +1706,11 @@ if(!is.null(errMsg)){
       
       source("./modules/scen_compare_actions.R", local = TRUE)
       
+      observeEvent(input$btScenPivot_close, {
+        showEl(session, "#pivotCompBtWrapper")
+        hideEl(session, "#pivotCompScenWrapper")
+        sidsInPivotComp[] <<- 0L
+      })
       lapply(seq_len(maxNumberScenarios  + 3L), function(i){
         scenIdLong <- paste0("scen_", i, "_")
         # compare scenarios

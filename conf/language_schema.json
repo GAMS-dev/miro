@@ -115,7 +115,15 @@
               "type": "string",
               "minLength": 1
             },
+            "changeMode": {
+              "type": "string",
+              "minLength": 1
+            },
             "splitView": {
+              "type": "string",
+              "minLength": 1
+            },
+            "pivotView": {
               "type": "string",
               "minLength": 1
             },
@@ -140,7 +148,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 10
+          "minProperties": 12
         },
         "header": {
           "type": "object",
@@ -2407,6 +2415,10 @@
               "type": "string",
               "minLength": 1
             },
+            "pivotCompScenColName": {
+              "type": "string",
+              "minLength": 1
+            },
             "errUniqueViewName": {
               "type": "string",
               "minLength": 1
@@ -2470,7 +2482,7 @@
               "minProperties": 5
             }
           },
-          "minProperties": 15
+          "minProperties": 16
         }
       },
       "minProperties": 1
@@ -3565,8 +3577,8 @@
                 "choices": {
                   "type": "array",
                   "uniqueItems": true,
-                  "minItems": 2,
-                  "maxItems": 2,
+                  "minItems": 3,
+                  "maxItems": 3,
                   "items": {
                     "type": "string",
                     "minLength": 1

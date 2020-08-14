@@ -26,7 +26,9 @@
       "solve":"Modell lösen",
       "submitJob": "Job senden",
       "solveHcube":"Jobs absenden",
+      "changeMode": "Modus Ändern",
       "splitView":"Split Screen Ansicht",
+      "pivotView": "Pivot Ansicht",
       "tabView":"Tabansicht",
       "compareStart":"Vergleichsmodus",
       "compareStop":"Stoppe Vergleich",
@@ -660,6 +662,7 @@
       "newViewLabel": "Bitte wählen Sie einen Namen für den View.",
       "newViewBtCancel": "Abbrechen",
       "newViewBtSave": "Speichern",
+      "pivotCompScenColName": "Szenario",
       "errUniqueViewName": "Der von Ihnen eingegebene Viewname existiert bereits. Bitte wählen Sie einen anderen Namen.",
       "aggregationFunctions":{
         "sum": "Summe",
@@ -919,7 +922,8 @@
       },
       "scen":{
         "label": "Standard-Szenarienvergleichsmodus",
-        "choices": ["Geteilter Bildschirm (geeignet für 2 Szenarien zum Vergleichen)", "Registerkartenansicht (geeignet für > 2 Szenarien zum Vergleichen)"]
+        "choices": ["Geteilter Bildschirm (geeignet für 2 Szenarien zum Vergleichen)", "Registerkartenansicht (geeignet für > 2 Szenarien zum Vergleichen)",
+        "Pivot-Ansicht (geeignet für > 2 Szenarien zum Vergleichen)"]
       },
       "defaultScenName":{
         "checkbox": "Soll ein Standardszenario definiert werden, welches beim Start geladen wird?",
