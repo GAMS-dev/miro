@@ -127,6 +127,18 @@ observeEvent(input$btGraphIn, {
   }else{
     i <- inputTabs[[i]][1]
   }
+  toggleEl(session, "#graph-in_" %+% i)
+  toggleEl(session, "#data-in_" %+% i)
+  
+  if(modelInputGraphVisible[[i]]){
+    flog.debug("Graph view for model input in sheet: %d deactivated", i)
+    modelInputGraphVisible[[i]] <<- FALSE
+    return()
+  }else{
+    flog.debug("Graph view for model input in sheet: %d activated.", i)
+    modelInputGraphVisible[[i]] <<- TRUE
+  }
+  
   if(is.null(configGraphsIn[[i]])){
     return()
   }else if(modelIn[[i]]$type %in% c("hot", "dt")){
@@ -144,17 +156,6 @@ observeEvent(input$btGraphIn, {
     }
   }else{
     data <- isolate(modelInputDataVisible[[i]]())
-  }
-  toggleEl(session, "#graph-in_" %+% i)
-  toggleEl(session, "#data-in_" %+% i)
-  
-  if(modelInputGraphVisible[[i]]){
-    flog.debug("Graph view for model input in sheet: %d deactivated", i)
-    modelInputGraphVisible[[i]] <<- FALSE
-    return()
-  }else{
-    flog.debug("Graph view for model input in sheet: %d activated.", i)
-    modelInputGraphVisible[[i]] <<- TRUE
   }
   
   errMsg <- NULL
