@@ -24,14 +24,14 @@ installAndRequirePackages <- function(requiredPackages, installedPackages, RLibP
       }, logical(1), USE.NAMES = FALSE)]
       installedPackagesTmp <- vapply(installedPackagesTmp, "[[",
                                      character(1), 1, USE.NAMES = FALSE)
-      buildDepInstalled <- "devtools" %in% installedPackages
+      buildDepInstalled <- "remotes" %in% installedPackages
       for(package in packageVersionMap){
         if (package[1] %in% installedPackagesTmp){
           next
         }
         if(!buildDepInstalled){
-          print("Installing: devtools")
-          install.packages("devtools", lib = if(length(RLibPath)) RLibPath else .libPaths()[[1]], 
+          print("Installing: remotes")
+          install.packages("remotes", lib = if(length(RLibPath)) RLibPath else .libPaths()[[1]], 
                            repos = CRANMirror, dependencies = c("Depends", "Imports", "LinkingTo"))
           buildDepInstalled <- TRUE
         }
@@ -39,18 +39,18 @@ installAndRequirePackages <- function(requiredPackages, installedPackages, RLibP
         if(length(package) == 1L){
           if(package %in% c("DBI", "chartjs")){
             # those are not submodules
-            devtools::install_github(paste0("GAMS-dev/miro_desktop/r-src/", package),
-                                     dependencies = FALSE,
-                                     INSTALL_opts = '--no-multiarch')
-          }else{
-            devtools::install_github(paste0("GAMS-dev/", if(identical(package, "gdxrrwMIRO")) "gdxrrw-miro" else package),
-                                     dependencies = FALSE,
-                                     INSTALL_opts = '--no-multiarch')
-          }
-        }else{
-          devtools::install_version(package[1], package[2],
+            remotes::install_github(paste0("GAMS-dev/miro_desktop/r-src/", package),
                                     dependencies = FALSE,
                                     INSTALL_opts = '--no-multiarch')
+          }else{
+            remotes::install_github(paste0("GAMS-dev/", if(identical(package, "gdxrrwMIRO")) "gdxrrw-miro" else package),
+                                    dependencies = FALSE,
+                                    INSTALL_opts = '--no-multiarch')
+          }
+        }else{
+          remotes::install_version(package[1], package[2],
+                                   dependencies = FALSE,
+                                   INSTALL_opts = '--no-multiarch')
         }
       }
       rm(installedPackagesTmp, packageVersionMap, buildDepInstalled)
