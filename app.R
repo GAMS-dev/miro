@@ -83,7 +83,8 @@ filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./component
                     "./components/data_instance.R", "./components/worker.R", 
                     "./components/dataio.R", "./components/hcube_data_instance.R", 
                     "./components/miro_tabsetpanel.R", "./modules/render_data.R", 
-                    "./modules/generate_data.R", "./components/script_output.R", "./components/scen_comp_pivot.R")
+                    "./modules/generate_data.R", "./components/script_output.R",
+                    "./components/install_packages.R", "./components/scen_comp_pivot.R")
 LAUNCHCONFIGMODE <- FALSE
 LAUNCHHCUBEMODE <<- FALSE
 if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
@@ -93,7 +94,6 @@ if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
 }else{
   pb <- txtProgressBar(file = stderr())
 }
-source("./components/install_packages.R", local = TRUE)
 if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
   setWinProgressBar(pb, 0.3, label= "Initializing GAMS MIRO")
 }else{
@@ -126,6 +126,7 @@ if(is.null(errMsg)){
   modelGmsName <- modelPath[[2]]
   modelPath    <- modelPath[[1]]
 }
+errMsg <- installAndRequirePackages(requiredPackages, installedPackages, RLibPath, CRANMirror, miroWorkspace, TRUE)
 
 if(is.null(errMsg)){
   miroWorkspace <- NULL
@@ -194,6 +195,7 @@ if(is.null(errMsg)){
     errMsg <- sprintf("The GAMS model file: '%s' could not be found in the directory: '%s'." %+%
                         "Please make sure you specify a valid gms file path.", modelGmsName, modelPath)
   }
+  customRendererDir <<- file.path(currentModelDir, paste0("renderer_", modelName))
 }
 if(!miroDeploy &&
    identical(tolower(Sys.getenv("MIRO_MODE")), "config")){
@@ -310,8 +312,7 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
                                paste0(miroDataDirPrefix, modelName)))){
         modelFiles <- c(modelFiles, paste0(miroDataDirPrefix, modelName))
       }
-      if(file.exists(file.path(currentModelDir, 
-                               paste0("renderer_", modelName)))){
+      if(file.exists(customRendererDir)){
         modelFiles <- c(modelFiles, paste0("renderer_", modelName))
       }
       if(is.null(errMsg) && identical(Sys.getenv("MIRO_TEST_DEPLOY"), "true")){
@@ -378,29 +379,25 @@ if(is.null(errMsg)){
   }
 }
 if(is.null(errMsg) && debugMode){
-  customRendererDirs <<- file.path(c(file.path(currentModelDir, ".."),
-                                     currentModelDir), paste0("renderer_", modelName))
-  for(customRendererDir in customRendererDirs){
-    rendererFiles <- list.files(customRendererDir, pattern = "\\.R$")
-    lapply(rendererFiles, function(file){
-      if(!file.access(file.path(customRendererDir, file), mode = 4)){
-        tryCatch({
-          source(file.path(customRendererDir, file))
-        }, error = function(e){
-          errMsg <<- paste(errMsg, 
-                           sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
-                                   file, e), sep = "\n")
-        }, warning = function(w){
-          errMsg <<- paste(errMsg, 
-                           sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
-                                   file, w), sep = "\n")
-        })
-      }else{
-        errMsg <<- paste(errMsg, sprintf("Custom renderer file: '%s' could not be found or user has no read permissions.",
-                                         file), sep = "\n")
-      }
-    })
-  }
+  rendererFiles <- list.files(customRendererDir, pattern = "\\.R$", ignore.case = TRUE)
+  lapply(rendererFiles, function(file){
+    if(!file.access(file.path(customRendererDir, file), mode = 4)){
+      tryCatch({
+        source(file.path(customRendererDir, file))
+      }, error = function(e){
+        errMsg <<- paste(errMsg, 
+                         sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
+                                 file, e), sep = "\n")
+      }, warning = function(w){
+        errMsg <<- paste(errMsg, 
+                         sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
+                                 file, w), sep = "\n")
+      })
+    }else{
+      errMsg <<- paste(errMsg, sprintf("Custom renderer file: '%s' could not be found or user has no read permissions.",
+                                       file), sep = "\n")
+    }
+  })
   listOfCustomRenderers <- Set$new()
   requiredPackagesCR <<- NULL
   
@@ -602,12 +599,14 @@ if(is.null(errMsg)){
   }
   
   if(!is.null(requiredPackagesCR)){
+    # add custom library path to libPaths
+    .libPaths(c(.libPaths(), file.path(miroWorkspace, "custom_packages")))
+    installedPackages <<- installed.packages()[, "Package"]
     requiredPackages <- c(requiredPackages, requiredPackagesCR)
     rm(requiredPackagesCR)
   }
-  requiredPackages <- unique(requiredPackages)
-  source("./components/install_packages.R", local = TRUE)
-  
+ 
+  errMsg <- installAndRequirePackages(unique(requiredPackages), installedPackages, RLibPath, CRANMirror, miroWorkspace)
   options("DT.TOJSON_ARGS" = list(na = "string", na_as_null = TRUE))
   
   if(config$activateModules$remoteExecution && !LAUNCHCONFIGMODE){
@@ -621,7 +620,7 @@ if(is.null(errMsg)){
   }else{
     requiredPackages <- c("DBI", "RPostgres")
   }
-  source("./components/install_packages.R", local = TRUE)
+  errMsg <- installAndRequirePackages(requiredPackages, installedPackages, RLibPath, CRANMirror, miroWorkspace)
   
   source("./components/db.R")
   source("./components/db_scen.R")
@@ -673,8 +672,7 @@ if(is.null(errMsg)){
       flog.error(errMsgTmp)
       errMsg <- paste(msg, errMsgTmp, sep = '\n')
     }
-    requiredPackages <- c("digest")
-    source("./components/install_packages.R", local = TRUE)
+    errMsg <- installAndRequirePackages(c("digest"), installedPackages, RLibPath, CRANMirror, miroWorkspace)
     source("./components/db_hcubeimport.R")
     source("./components/db_hcubeload.R")
   }
