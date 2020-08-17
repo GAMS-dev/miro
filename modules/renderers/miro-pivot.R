@@ -476,22 +476,31 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
           }
         }
       }
-      selectizeInput(ns(paste0("filter_", filterIndex)), setIndexAliases[[filterIndex]], 
-                     choices = if(allowEmpty) c(allPlaceholder, as.character(filterElements[[filterIndex]]))
-                     else as.character(filterElements[[filterIndex]]), 
-                     selected = selectedFilterVal, multiple = TRUE,
-                     options = list('plugins' = list('remove_button')))
+      if(allowEmpty){
+        choices <- c(allPlaceholder, as.character(filterElements[[filterIndex]]))
+      }else{
+        choices <- as.character(filterElements[[filterIndex]])
+      }
+      ddHash <- digest::digest(list(filterIndex, choices), algo = "sha1")
+      list(htmltools::doRenderTags(
+        htmltools::tagAppendAttributes(
+          selectizeInput(ns(paste0("filter_", filterIndex)), setIndexAliases[[filterIndex]], 
+                         choices = choices, 
+                         selected = selectedFilterVal, multiple = TRUE,
+                         options = list('plugins' = list('remove_button'))),
+        `data-hash` = ddHash)),
+        ddHash,
+        initData
+      )
     }
     initFilter <<- FALSE
     session$
       sendCustomMessage("gms-populateMiroPivotFilters", 
                         list(ns = ns(""),
-                             filter = htmltools::doRenderTags(
-                               lapply(filterIndexList, getFilterDropdowns)),
-                             aggregations = htmltools::doRenderTags(
-                               lapply(aggregationIndexList, getFilterDropdowns, optionId = "aggregations")),
-                             cols = htmltools::doRenderTags(
-                               lapply(colIndexList, getFilterDropdowns, optionId = "cols"))))
+                             filter = lapply(filterIndexList, getFilterDropdowns),
+                             aggregations = lapply(aggregationIndexList, getFilterDropdowns,
+                                                   optionId = "aggregations"),
+                             cols = lapply(colIndexList, getFilterDropdowns, optionId = "cols")))
   })
   
   
@@ -524,9 +533,13 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
     })
   })
   
+  throttledFilters <- vector("list", length(setIndices))
   lapply(setIndices, function(filterIndex){
+    throttledFilters[[filterIndex]] <<- throttle(reactive({
+      input[[paste0("filter_", filterIndex)]]
+    }), 2000)
     rendererEnv[[ns(paste0("filter_", filterIndex))]] <- observe({
-      if(is.null(input[[paste0("filter_", filterIndex)]])){
+      if(is.null(throttledFilters[[filterIndex]]())){
         if(!filterIndex %in% isolate(c(input$aggregationIndexList, input$colIndexList))){
           return()
         }
