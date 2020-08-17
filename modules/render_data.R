@@ -154,9 +154,9 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
       })
     })
   }else if(type == "miropivot"){
-    callModule(renderMiroPivot, "miroPivot", data, options = customOptions, 
-               roundPrecision = roundPrecision, 
-               rendererEnv = rendererEnv, views = views)
+    renderMiroPivot("miroPivot", data, options = customOptions, 
+                    roundPrecision = roundPrecision, 
+                    rendererEnv = rendererEnv, views = views)
   }else{
     tryCatch({
       customRenderer <- match.fun(paste0("render", toupper(substr(typeCustom, 1, 1)),

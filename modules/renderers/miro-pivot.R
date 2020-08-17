@@ -165,625 +165,629 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
   )
 }
 
-renderMiroPivot <- function(input, output, session, data, options = NULL, path = NULL, roundPrecision = 2L, rendererEnv = NULL, views = NULL){ 
-  ns <- session$ns
-  
-  valueColName <- names(data)[length(data)]
-  allPlaceholder <- setNames("", options$lang$allPlaceholder)
-  
-  initFilter <- TRUE
-  initData <- TRUE
-  initRenderer <- TRUE
-  initInterface <- TRUE
-  numericCols <- vapply(data, class, character(1L), USE.NAMES = FALSE) %in% c("numeric", "integer")
-  if(sum(numericCols) > 1L){
-    # data is already pivoted
-    data <- pivot_longer(data, names(data)[numericCols], names_to = "Hdr", 
-                         values_to = "value", names_repair = "unique")
-    valueColName <- "value"
-  }else if(sum(numericCols) == 0L){
-    # data is a set -> drop last column and replace with 1
-    data[, length(data)] <- 1L
-    names(data) <- c(names(data)[-length(data)], "value")
-    valueColName <- "value"
-  }
-  data <- mutate_if(data, is.character, as.factor)
-  noColDim <- 1L
-  setIndices <- names(data)[-length(data)]
-  
-  noRowDim <- length(data) - 1L
-  
-  updateFilter <- reactiveVal(1L)
-  noUpdateFilterEl <- logical(length(setIndices))
-  names(noUpdateFilterEl) <- setIndices
-  
-  setIndexAliases <- vapply(options[["_metadata_"]]$headers, "[[", character(1L),
-                            "alias", USE.NAMES = FALSE)[seq_along(setIndices)]
-  if(sum(numericCols) > 1L){
-    setIndexAliases[length(setIndices)] <- "Header"
-  }
-  
-  indices <- character(0L)
-  # we need to update aggregation functions in case the symbol type is not available when rendering the UI
-  # (e.g. in Configuration Mode)
-  aggregationFunctions <- if(identical(options[["_metadata_"]]$symtype, "parameter"))
-    setNames(c("sum", "count", "mean", "median", "min", "max"), 
-             c(options$lang$aggregationFunctions$sum,
-               options$lang$aggregationFunctions$count,
-               options$lang$aggregationFunctions$mean,
-               options$lang$aggregationFunctions$median,
-               options$lang$aggregationFunctions$min,
-               options$lang$aggregationFunctions$max)) 
-  else
-    setNames("count", options$lang$aggregationFunctions$count)
-  
-  customChartColors <- c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", 
-                         "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00", 
-                         "#cab2d6", "#6a3d9a", "#ffff99", "#b15928", 
-                         "#FCDCDB", "#f9b9b7", "#D5D3DA", "#ada9b7", 
-                         "#e2546b", "#66101F", "#E0ABD7", "#c45ab3", 
-                         "#8bf2fe", "#1BE7FF", "#a1d1b6", "#4C9F70", 
-                         "#F6FAA9", "#f0f757", "#d3b499", "#9E6D42", 
-                         "#50caf3", "#086788", "#eee49d", "#E0CA3C", 
-                         "#dbcac7", "#BA9790", "#f69e84", "#EB4511", 
-                         "#ccadf1", "#9B5DE5", "#A1FB8B", "#47fa1a", 
-                         "#8dadd0", "#38618c", "#fcebea", "#fad8d6", 
-                         "#a6b474", "#373d20", "#a248ce", "#210b2c", 
-                         "#f37ea9", "#d81159", "#68f7f7", "#08bdbd", 
-                         "#98feb1", "#35ff69", "#d27193", "#6d213c", 
-                         "#edfab1", "#dcf763", "#feb46f", "#e06c00", 
-                         "#f3ebaa", "#e9d758", "#c0c7c7", "#829191", 
-                         "#f3cac5", "#E8998D", "#c7dac9", "#91b696", 
-                         "#BE99A4", "#714955", "#7c7ccf", "#2a2a72", 
-                         "#7efee0", "#00ffc5", "#c28eb1", "#6c3a5c", 
-                         "#df7192", "#8b1e3f", "#95D86B", "#3E721D")
-  
-  resetView <- function(options, domainFilterDomains){
-    unassignedSetIndices <- setNames(setIndices, 
-                                     setIndexAliases)
-    
-    indices <<- getIndexLists(unassignedSetIndices, options)
-    for(indexEl in list(c("filter", "filterIndexList"),
-                        c("rows", "rowIndexList"), 
-                        c("cols", "colIndexList"),
-                        c("aggregations", "aggregationIndexList"))) {
-      session$sendCustomMessage("gms-updateSortable", 
-                                list(id = ns(indexEl[[2]]), 
-                                     children = lapply(genIndexList(indices[[indexEl[[1]]]]), 
-                                                       as.character)))
-    }
-    
-    if(length(options[["pivotRenderer"]]) &&
-       options[["pivotRenderer"]] %in% c("table", "line", "bar", "stackedbar", "radar")){
-      updateSelectInput(session, "pivotRenderer", selected = options[["pivotRenderer"]])
-    }else{
-      updateSelectInput(session, "pivotRenderer", selected = "table")
-    }
-    newView <- list(filter = unname(indices$filter),
-                    aggregations = unname(indices$aggregations),
-                    cols = unname(indices$cols))
-    if(length(domainFilterDomains)){
-      if(length(options[["domainFilter"]][["default"]]) &&
-         options[["domainFilter"]][["default"]] %in% domainFilterDomains){
-        updateTabsetPanel(session, "domainFilter", 
-                          selected = options[["domainFilter"]][["default"]])
-        newView$domainFilter <- options[["domainFilter"]][["default"]]
-      }else{
-        updateTabsetPanel(session, "domainFilter", 
-                          selected = domainFilterDomains[[1]])
-        newView$domainFilter <- domainFilterDomains[[1]]
+renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecision = 2L, rendererEnv = NULL, views = NULL){
+  moduleServer(
+    id,
+    function(input, output, session) {
+      ns <- session$ns
+      
+      valueColName <- names(data)[length(data)]
+      allPlaceholder <- setNames("", options$lang$allPlaceholder)
+      
+      initFilter <- TRUE
+      initData <- TRUE
+      initRenderer <- TRUE
+      initInterface <- TRUE
+      numericCols <- vapply(data, class, character(1L), USE.NAMES = FALSE) %in% c("numeric", "integer")
+      if(sum(numericCols) > 1L){
+        # data is already pivoted
+        data <- pivot_longer(data, names(data)[numericCols], names_to = "Hdr", 
+                             values_to = "value", names_repair = "unique")
+        valueColName <- "value"
+      }else if(sum(numericCols) == 0L){
+        # data is a set -> drop last column and replace with 1
+        data[, length(data)] <- 1L
+        names(data) <- c(names(data)[-length(data)], "value")
+        valueColName <- "value"
       }
-    }
-    if(initInterface){
+      data <- mutate_if(data, is.character, as.factor)
+      noColDim <- 1L
+      setIndices <- names(data)[-length(data)]
+      
+      noRowDim <- length(data) - 1L
+      
+      updateFilter <- reactiveVal(1L)
+      noUpdateFilterEl <- logical(length(setIndices))
+      names(noUpdateFilterEl) <- setIndices
+      
+      setIndexAliases <- vapply(options[["_metadata_"]]$headers, "[[", character(1L),
+                                "alias", USE.NAMES = FALSE)[seq_along(setIndices)]
+      if(sum(numericCols) > 1L){
+        setIndexAliases[length(setIndices)] <- "Header"
+      }
+      
+      indices <- character(0L)
       # we need to update aggregation functions in case the symbol type is not available when rendering the UI
       # (e.g. in Configuration Mode)
-      if(length(options[["aggregationFunction"]]) &&
-         options[["aggregationFunction"]] %in% aggregationFunctions){
-        updateSelectInput(session, "aggregationFunction", choices = aggregationFunctions, 
-                          selected = options[["aggregationFunction"]])
-      }else{
-        updateSelectInput(session, "aggregationFunction", choices = aggregationFunctions, 
-                          selected = aggregationFunctions[[1]])
-      }
-    }else{
-      if(length(options[["aggregationFunction"]]) &&
-         options[["aggregationFunction"]] %in% aggregationFunctions){
-        updateSelectInput(session, "aggregationFunction",
-                          selected = options[["aggregationFunction"]])
-      }else{
-        updateSelectInput(session, "aggregationFunction",
-                          selected = aggregationFunctions[[1]])
-      }
-      initFilter <<- TRUE
-      initData   <<- TRUE
-      initRenderer <<- TRUE
-      options$resetOnInit <<- TRUE
-      noUpdateFilterEl[] <<- FALSE
-      isolate({
-        if(identical(currentFilters(), newView)){
-          newVal <- updateFilter() + 1L
-          updateFilter(newVal)
-        }
-      })
-    }
-  }
-  
-  if(isTRUE(options$resetOnInit)){
-    resetView(options, options[["domainFilter"]]$domains)
-  }
-  
-  setIndexAliases <- as.list(setIndexAliases)
-  names(setIndexAliases) <- setIndices
-  currentView <- options
-  
-  if(!isFALSE(options$enablePersistentViews)){
-    updateViewList <- function(){
-      removeUI(paste0("#", ns("savedViewsDD"), " li"), multiple = TRUE)
+      aggregationFunctions <- if(identical(options[["_metadata_"]]$symtype, "parameter"))
+        setNames(c("sum", "count", "mean", "median", "min", "max"), 
+                 c(options$lang$aggregationFunctions$sum,
+                   options$lang$aggregationFunctions$count,
+                   options$lang$aggregationFunctions$mean,
+                   options$lang$aggregationFunctions$median,
+                   options$lang$aggregationFunctions$min,
+                   options$lang$aggregationFunctions$max)) 
+      else
+        setNames("count", options$lang$aggregationFunctions$count)
       
-      viewChoices <- lapply(views$getIds(session), function(viewId){
-        createBootstrapDropdownChoices(list(id = htmlIdEnc(viewId), 
-                                            alias = viewId), 
-                                       ns("savedViews"), ns("deleteView"))
-      })
-      insertUI(paste0("#", ns("savedViewsDD")), 
-               c(list(createBootstrapDropdownChoices(list(id = "iZGVmYXVsdA--", 
-                                                          alias = "default"), 
-                                                     ns("savedViews"))),
-                 viewChoices), 
-               where = "beforeEnd")
-    }
-    updateViewList()
-    readonlyViews <- views$isReadonly(session)
-    if(readonlyViews){
-      disableEl(session, paste0("#", ns("saveView")))
-    }else{
-      views$registerUpdateCallback(session, updateViewList)
-    }
-    
-    rendererEnv[[ns("saveView")]] <- observe({
-      if(is.null(input$saveView) || initData || input$saveView == 0L || readonlyViews){
-        return()
-      }
-      showModal(modalDialog(tags$div(id = ns("errUniqueName"), class = "gmsalert gmsalert-error", 
-                                     style = "position:relative",
-                                     options$lang$errUniqueViewName),
-                            textInput(ns("newViewName"),
-                                      options$lang$newViewLabel), 
-                            footer = tagList(
-                              modalButton(options$lang$newViewBtCancel),
-                              actionButton(ns("saveViewConfirm"), options$lang$newViewBtSave, 
-                                           class = "bt-highlight-1 bt-gms-confirm")
-                            ),
-                            fade = TRUE, easyClose = FALSE, size = "s", 
-                            title = options$lang$newViewTitle))
-    })
-    rendererEnv[[ns("saveViewConfirm")]] <- observe({
-      if(is.null(input$saveViewConfirm) || initData || 
-         input$saveViewConfirm == 0L || readonlyViews){
-        return()
-      }
-      isolate({
-        if(identical(input$newViewName, "")){
-          return()
+      customChartColors <- c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", 
+                             "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00", 
+                             "#cab2d6", "#6a3d9a", "#ffff99", "#b15928", 
+                             "#FCDCDB", "#f9b9b7", "#D5D3DA", "#ada9b7", 
+                             "#e2546b", "#66101F", "#E0ABD7", "#c45ab3", 
+                             "#8bf2fe", "#1BE7FF", "#a1d1b6", "#4C9F70", 
+                             "#F6FAA9", "#f0f757", "#d3b499", "#9E6D42", 
+                             "#50caf3", "#086788", "#eee49d", "#E0CA3C", 
+                             "#dbcac7", "#BA9790", "#f69e84", "#EB4511", 
+                             "#ccadf1", "#9B5DE5", "#A1FB8B", "#47fa1a", 
+                             "#8dadd0", "#38618c", "#fcebea", "#fad8d6", 
+                             "#a6b474", "#373d20", "#a248ce", "#210b2c", 
+                             "#f37ea9", "#d81159", "#68f7f7", "#08bdbd", 
+                             "#98feb1", "#35ff69", "#d27193", "#6d213c", 
+                             "#edfab1", "#dcf763", "#feb46f", "#e06c00", 
+                             "#f3ebaa", "#e9d758", "#c0c7c7", "#829191", 
+                             "#f3cac5", "#E8998D", "#c7dac9", "#91b696", 
+                             "#BE99A4", "#714955", "#7c7ccf", "#2a2a72", 
+                             "#7efee0", "#00ffc5", "#c28eb1", "#6c3a5c", 
+                             "#df7192", "#8b1e3f", "#95D86B", "#3E721D")
+      
+      resetView <- function(options, domainFilterDomains){
+        unassignedSetIndices <- setNames(setIndices, 
+                                         setIndexAliases)
+        
+        indices <<- getIndexLists(unassignedSetIndices, options)
+        for(indexEl in list(c("filter", "filterIndexList"),
+                            c("rows", "rowIndexList"), 
+                            c("cols", "colIndexList"),
+                            c("aggregations", "aggregationIndexList"))) {
+          session$sendCustomMessage("gms-updateSortable", 
+                                    list(id = ns(indexEl[[2]]), 
+                                         children = lapply(genIndexList(indices[[indexEl[[1]]]]), 
+                                                           as.character)))
         }
-        if(input$newViewName %in% c("default", views$getIds(session))){
-          showEl(session, paste0("#", ns("errUniqueName")))
-          return()
-        }
-        newViewConfig <- list(aggregationFunction = input$aggregationFunction,
-                              pivotRenderer = input$pivotRenderer,
-                              domainFilter = list(default = input$domainFilter))
-        for(indexEl in list(c("rows", "rowIndexList"))){
-          indexVal <- input[[indexEl[[2]]]]
-          if(length(indexVal)){
-            newViewConfig[[indexEl[[1]]]] <- indexVal
-          }
-        }
-        for(indexEl in list(c("aggregations", "aggregationIndexList"), 
-                            c("filter", "filterIndexList"),
-                            c("cols", "colIndexList"))){
-          indexVal <- input[[indexEl[[2]]]]
-          if(length(indexVal)){
-            filterElList <- lapply(indexVal, function(el){
-              return(input[[paste0("filter_", el)]])
-            })
-            names(filterElList) <- indexVal
-            newViewConfig[[indexEl[[1]]]] <- filterElList
-          }
-        }
-        insertUI(paste0("#", ns("savedViewsDD")), 
-                 createBootstrapDropdownChoices(list(id = htmlIdEnc(input$newViewName), 
-                                                     alias = input$newViewName), 
-                                                ns("savedViews"), ns("deleteView")), 
-                 where = "beforeEnd")
-        views$add(session, input$newViewName, newViewConfig)
-      })
-      removeModal(session)
-    })
-    rendererEnv[[ns("deleteView")]] <- observe({
-      if(is.null(input$deleteView) || initData || readonlyViews){
-        return()
-      }
-      viewId <- htmlIdDec(input$deleteView)
-      if(length(viewId) != 1L || 
-         !viewId %in% c("default", views$getIds(session))){
-        flog.error("Invalid view id: '%s' attempted to be removed This looks like an attempt to tamper with the app!",
-                   input$deleteView)
-        return()
-      }
-      views$remove(session, viewId)
-      removeUI(paste0("#", ns("savedViews"), "_", stri_replace_all(input$deleteView, "\\.", fixed = ".")))
-    })
-    rendererEnv[[ns("savedViews")]] <- observe({
-      if(is.null(input$savedViews) || initData){
-        return()
-      }
-      viewId <- htmlIdDec(input$savedViews)
-      if(length(viewId) != 1L || 
-         !viewId %in% c("default", views$getIds(session))){
-        flog.error("Invalid view id: '%s' attempted to be loaded. This looks like an attempt to tamper with the app!",
-                   input$savedViews)
-        return()
-      }
-      currentView <<- if(identical(viewId, "default")) options else 
-        views$get(session, viewId)
-      resetView(currentView, options[["domainFilter"]]$domains)
-    })
-  }
-  
-  output$downloadCsv <- downloadHandler(filename = paste0(options[["_metadata_"]]$symname, ".csv"),
-                                        content = function(file) {
-                                          write_csv(dataToRender(), file, na = "")
-                                        })
-  rendererEnv[[ns("filterDropdowns")]] <- observe({
-    filterElements <- filteredData()$filterElements
-    if(is.null(filteredData())){
-      return()
-    }
-    initData <- initFilter
-    if(initFilter && isTRUE(options$resetOnInit)){
-      filterIndexList <- unname(indices[["filter"]])
-      aggregationIndexList <- unname(indices[["aggregations"]])
-      colIndexList <- unname(indices[["cols"]])
-    }else{
-      filterIndexList <- isolate(input$filterIndexList)
-      aggregationIndexList <- isolate(input$aggregationIndexList)
-      colIndexList <- isolate(input$colIndexList)
-    }
-    getFilterDropdowns <- function(filterIndex, optionId = "filter"){
-      allowEmpty <- optionId %in% c("aggregations", "cols")
-      if(initData && (allowEmpty || length(currentView[[optionId]][[filterIndex]]))){
-        currentFilterVal <- currentView[[optionId]][[filterIndex]]
-        if(!identical(isolate(input[[paste0("filter_", filterIndex)]]), currentFilterVal))
-          noUpdateFilterEl[[filterIndex]] <<- TRUE
-      }else{
-        currentFilterVal <- isolate(input[[paste0("filter_", filterIndex)]])
-      }
-      availableFilterVal <- currentFilterVal %in% filterElements[[filterIndex]]
-      if(any(availableFilterVal)) {
-        selectedFilterVal <- currentFilterVal[availableFilterVal]
-      }else{
-        if(allowEmpty){
-          selectedFilterVal <- ""
-          if(!is.null(isolate(input[[paste0("filter_", filterIndex)]])))
-            noUpdateFilterEl[[filterIndex]] <<- TRUE
+        
+        if(length(options[["pivotRenderer"]]) &&
+           options[["pivotRenderer"]] %in% c("table", "line", "bar", "stackedbar", "radar")){
+          updateSelectInput(session, "pivotRenderer", selected = options[["pivotRenderer"]])
         }else{
-          selectedFilterVal <- filterElements[[filterIndex]][1]
-          if(identical(isolate(input[[paste0("filter_", filterIndex)]]), selectedFilterVal)){
-            noUpdateFilterEl[[filterIndex]] <<- FALSE
+          updateSelectInput(session, "pivotRenderer", selected = "table")
+        }
+        newView <- list(filter = unname(indices$filter),
+                        aggregations = unname(indices$aggregations),
+                        cols = unname(indices$cols))
+        if(length(domainFilterDomains)){
+          if(length(options[["domainFilter"]][["default"]]) &&
+             options[["domainFilter"]][["default"]] %in% domainFilterDomains){
+            updateTabsetPanel(session, "domainFilter", 
+                              selected = options[["domainFilter"]][["default"]])
+            newView$domainFilter <- options[["domainFilter"]][["default"]]
           }else{
-            noUpdateFilterEl[[filterIndex]] <<- TRUE
+            updateTabsetPanel(session, "domainFilter", 
+                              selected = domainFilterDomains[[1]])
+            newView$domainFilter <- domainFilterDomains[[1]]
           }
         }
+        if(initInterface){
+          # we need to update aggregation functions in case the symbol type is not available when rendering the UI
+          # (e.g. in Configuration Mode)
+          if(length(options[["aggregationFunction"]]) &&
+             options[["aggregationFunction"]] %in% aggregationFunctions){
+            updateSelectInput(session, "aggregationFunction", choices = aggregationFunctions, 
+                              selected = options[["aggregationFunction"]])
+          }else{
+            updateSelectInput(session, "aggregationFunction", choices = aggregationFunctions, 
+                              selected = aggregationFunctions[[1]])
+          }
+        }else{
+          if(length(options[["aggregationFunction"]]) &&
+             options[["aggregationFunction"]] %in% aggregationFunctions){
+            updateSelectInput(session, "aggregationFunction",
+                              selected = options[["aggregationFunction"]])
+          }else{
+            updateSelectInput(session, "aggregationFunction",
+                              selected = aggregationFunctions[[1]])
+          }
+          initFilter <<- TRUE
+          initData   <<- TRUE
+          initRenderer <<- TRUE
+          options$resetOnInit <<- TRUE
+          noUpdateFilterEl[] <<- FALSE
+          isolate({
+            if(identical(currentFilters(), newView)){
+              newVal <- updateFilter() + 1L
+              updateFilter(newVal)
+            }
+          })
+        }
       }
-      if(allowEmpty){
-        choices <- c(allPlaceholder, as.character(filterElements[[filterIndex]]))
-      }else{
-        choices <- as.character(filterElements[[filterIndex]])
+      
+      if(isTRUE(options$resetOnInit)){
+        resetView(options, options[["domainFilter"]]$domains)
       }
-      ddHash <- digest::digest(list(filterIndex, choices), algo = "sha1")
-      list(htmltools::doRenderTags(
-        htmltools::tagAppendAttributes(
-          selectizeInput(ns(paste0("filter_", filterIndex)), setIndexAliases[[filterIndex]], 
-                         choices = choices, 
-                         selected = selectedFilterVal, multiple = TRUE,
-                         options = list('plugins' = list('remove_button'))),
-        `data-hash` = ddHash)),
-        ddHash,
-        initData
-      )
-    }
-    initFilter <<- FALSE
-    session$
-      sendCustomMessage("gms-populateMiroPivotFilters", 
-                        list(ns = ns(""),
-                             filter = lapply(filterIndexList, getFilterDropdowns),
-                             aggregations = lapply(aggregationIndexList, getFilterDropdowns,
-                                                   optionId = "aggregations"),
-                             cols = lapply(colIndexList, getFilterDropdowns, optionId = "cols")))
-  })
-  
-  
-  currentFilters <- reactiveVal(NULL)
-  rendererEnv[[ns("currentFilters")]] <- observe({
-    newFilters <- list(filter = input$filterIndexList,
-                       aggregations = input$aggregationIndexList,
-                       cols = input$colIndexList)
-    if(sum(vapply(newFilters, length, integer(1L), USE.NAMES = FALSE)) +
-       length(input$rowIndexList) != length(setIndices) ||
-       any(vapply(newFilters, is.null, logical(1L), USE.NAMES = FALSE))){
-      # UI not initialised
-      return()
-    }
-    if(initFilter && isTRUE(options$resetOnInit)){
-      newFilters <- list(filter = unname(indices[["filter"]]),
-                         aggregations = unname(indices[["aggregations"]]),
-                         cols = unname(indices[["cols"]]))
-    }
-    if(length(options$domainFilter$domains)){
-      newFilters$domainFilter <- input$domainFilter
-      if(initFilter && length(currentView$domainFilter[["default"]]) &&
-         !identical(input$domainFilter, currentView$domainFilter[["default"]])){
-        return()
+      
+      setIndexAliases <- as.list(setIndexAliases)
+      names(setIndexAliases) <- setIndices
+      currentView <- options
+      
+      if(!isFALSE(options$enablePersistentViews)){
+        updateViewList <- function(){
+          removeUI(paste0("#", ns("savedViewsDD"), " li"), multiple = TRUE)
+          
+          viewChoices <- lapply(views$getIds(session), function(viewId){
+            createBootstrapDropdownChoices(list(id = htmlIdEnc(viewId), 
+                                                alias = viewId), 
+                                           ns("savedViews"), ns("deleteView"))
+          })
+          insertUI(paste0("#", ns("savedViewsDD")), 
+                   c(list(createBootstrapDropdownChoices(list(id = "iZGVmYXVsdA--", 
+                                                              alias = "default"), 
+                                                         ns("savedViews"))),
+                     viewChoices), 
+                   where = "beforeEnd")
+        }
+        updateViewList()
+        readonlyViews <- views$isReadonly(session)
+        if(readonlyViews){
+          disableEl(session, paste0("#", ns("saveView")))
+        }else{
+          views$registerUpdateCallback(session, updateViewList)
+        }
+        
+        rendererEnv[[ns("saveView")]] <- observe({
+          if(is.null(input$saveView) || initData || input$saveView == 0L || readonlyViews){
+            return()
+          }
+          showModal(modalDialog(tags$div(id = ns("errUniqueName"), class = "gmsalert gmsalert-error", 
+                                         style = "position:relative",
+                                         options$lang$errUniqueViewName),
+                                textInput(ns("newViewName"),
+                                          options$lang$newViewLabel), 
+                                footer = tagList(
+                                  modalButton(options$lang$newViewBtCancel),
+                                  actionButton(ns("saveViewConfirm"), options$lang$newViewBtSave, 
+                                               class = "bt-highlight-1 bt-gms-confirm")
+                                ),
+                                fade = TRUE, easyClose = FALSE, size = "s", 
+                                title = options$lang$newViewTitle))
+        })
+        rendererEnv[[ns("saveViewConfirm")]] <- observe({
+          if(is.null(input$saveViewConfirm) || initData || 
+             input$saveViewConfirm == 0L || readonlyViews){
+            return()
+          }
+          isolate({
+            if(identical(input$newViewName, "")){
+              return()
+            }
+            if(input$newViewName %in% c("default", views$getIds(session))){
+              showEl(session, paste0("#", ns("errUniqueName")))
+              return()
+            }
+            newViewConfig <- list(aggregationFunction = input$aggregationFunction,
+                                  pivotRenderer = input$pivotRenderer,
+                                  domainFilter = list(default = input$domainFilter))
+            for(indexEl in list(c("rows", "rowIndexList"))){
+              indexVal <- input[[indexEl[[2]]]]
+              if(length(indexVal)){
+                newViewConfig[[indexEl[[1]]]] <- indexVal
+              }
+            }
+            for(indexEl in list(c("aggregations", "aggregationIndexList"), 
+                                c("filter", "filterIndexList"),
+                                c("cols", "colIndexList"))){
+              indexVal <- input[[indexEl[[2]]]]
+              if(length(indexVal)){
+                filterElList <- lapply(indexVal, function(el){
+                  return(input[[paste0("filter_", el)]])
+                })
+                names(filterElList) <- indexVal
+                newViewConfig[[indexEl[[1]]]] <- filterElList
+              }
+            }
+            insertUI(paste0("#", ns("savedViewsDD")), 
+                     createBootstrapDropdownChoices(list(id = htmlIdEnc(input$newViewName), 
+                                                         alias = input$newViewName), 
+                                                    ns("savedViews"), ns("deleteView")), 
+                     where = "beforeEnd")
+            views$add(session, input$newViewName, newViewConfig)
+          })
+          removeModal(session)
+        })
+        rendererEnv[[ns("deleteView")]] <- observe({
+          if(is.null(input$deleteView) || initData || readonlyViews){
+            return()
+          }
+          viewId <- htmlIdDec(input$deleteView)
+          if(length(viewId) != 1L || 
+             !viewId %in% c("default", views$getIds(session))){
+            flog.error("Invalid view id: '%s' attempted to be removed This looks like an attempt to tamper with the app!",
+                       input$deleteView)
+            return()
+          }
+          views$remove(session, viewId)
+          removeUI(paste0("#", ns("savedViews"), "_", stri_replace_all(input$deleteView, "\\.", fixed = ".")))
+        })
+        rendererEnv[[ns("savedViews")]] <- observe({
+          if(is.null(input$savedViews) || initData){
+            return()
+          }
+          viewId <- htmlIdDec(input$savedViews)
+          if(length(viewId) != 1L || 
+             !viewId %in% c("default", views$getIds(session))){
+            flog.error("Invalid view id: '%s' attempted to be loaded. This looks like an attempt to tamper with the app!",
+                       input$savedViews)
+            return()
+          }
+          currentView <<- if(identical(viewId, "default")) options else 
+            views$get(session, viewId)
+          resetView(currentView, options[["domainFilter"]]$domains)
+        })
       }
-    }
-    
-    isolate({
-      currentFilters(newFilters)
-    })
-  })
-  
-  throttledFilters <- vector("list", length(setIndices))
-  lapply(setIndices, function(filterIndex){
-    throttledFilters[[filterIndex]] <<- throttle(reactive({
-      input[[paste0("filter_", filterIndex)]]
-    }), 2000)
-    rendererEnv[[ns(paste0("filter_", filterIndex))]] <- observe({
-      if(is.null(throttledFilters[[filterIndex]]())){
-        if(!filterIndex %in% isolate(c(input$aggregationIndexList, input$colIndexList))){
+      
+      output$downloadCsv <- downloadHandler(filename = paste0(options[["_metadata_"]]$symname, ".csv"),
+                                            content = function(file) {
+                                              write_csv(dataToRender(), file, na = "")
+                                            })
+      rendererEnv[[ns("filterDropdowns")]] <- observe({
+        filterElements <- filteredData()$filterElements
+        if(is.null(filteredData())){
           return()
         }
-      }
-      if(isFALSE(noUpdateFilterEl[[filterIndex]])){
+        initData <- initFilter
+        if(initFilter && isTRUE(options$resetOnInit)){
+          filterIndexList <- unname(indices[["filter"]])
+          aggregationIndexList <- unname(indices[["aggregations"]])
+          colIndexList <- unname(indices[["cols"]])
+        }else{
+          filterIndexList <- isolate(input$filterIndexList)
+          aggregationIndexList <- isolate(input$aggregationIndexList)
+          colIndexList <- isolate(input$colIndexList)
+        }
+        getFilterDropdowns <- function(filterIndex, optionId = "filter"){
+          allowEmpty <- optionId %in% c("aggregations", "cols")
+          if(initData && (allowEmpty || length(currentView[[optionId]][[filterIndex]]))){
+            currentFilterVal <- currentView[[optionId]][[filterIndex]]
+            if(!identical(isolate(input[[paste0("filter_", filterIndex)]]), currentFilterVal))
+              noUpdateFilterEl[[filterIndex]] <<- TRUE
+          }else{
+            currentFilterVal <- isolate(input[[paste0("filter_", filterIndex)]])
+          }
+          availableFilterVal <- currentFilterVal %in% filterElements[[filterIndex]]
+          if(any(availableFilterVal)) {
+            selectedFilterVal <- currentFilterVal[availableFilterVal]
+          }else{
+            if(allowEmpty){
+              selectedFilterVal <- ""
+              if(!is.null(isolate(input[[paste0("filter_", filterIndex)]])))
+                noUpdateFilterEl[[filterIndex]] <<- TRUE
+            }else{
+              selectedFilterVal <- filterElements[[filterIndex]][1]
+              if(identical(isolate(input[[paste0("filter_", filterIndex)]]), selectedFilterVal)){
+                noUpdateFilterEl[[filterIndex]] <<- FALSE
+              }else{
+                noUpdateFilterEl[[filterIndex]] <<- TRUE
+              }
+            }
+          }
+          if(allowEmpty){
+            choices <- c(allPlaceholder, as.character(filterElements[[filterIndex]]))
+          }else{
+            choices <- as.character(filterElements[[filterIndex]])
+          }
+          ddHash <- digest::digest(list(filterIndex, choices), algo = "sha1")
+          list(htmltools::doRenderTags(
+            htmltools::tagAppendAttributes(
+              selectizeInput(ns(paste0("filter_", filterIndex)), setIndexAliases[[filterIndex]], 
+                             choices = choices, 
+                             selected = selectedFilterVal, multiple = TRUE,
+                             options = list('plugins' = list('remove_button'))),
+              `data-hash` = ddHash)),
+            ddHash,
+            initData
+          )
+        }
+        initFilter <<- FALSE
+        session$
+          sendCustomMessage("gms-populateMiroPivotFilters", 
+                            list(ns = ns(""),
+                                 filter = lapply(filterIndexList, getFilterDropdowns),
+                                 aggregations = lapply(aggregationIndexList, getFilterDropdowns,
+                                                       optionId = "aggregations"),
+                                 cols = lapply(colIndexList, getFilterDropdowns, optionId = "cols")))
+      })
+      
+      
+      currentFilters <- reactiveVal(NULL)
+      rendererEnv[[ns("currentFilters")]] <- observe({
+        newFilters <- list(filter = input$filterIndexList,
+                           aggregations = input$aggregationIndexList,
+                           cols = input$colIndexList)
+        if(sum(vapply(newFilters, length, integer(1L), USE.NAMES = FALSE)) +
+           length(input$rowIndexList) != length(setIndices) ||
+           any(vapply(newFilters, is.null, logical(1L), USE.NAMES = FALSE))){
+          # UI not initialised
+          return()
+        }
+        if(initFilter && isTRUE(options$resetOnInit)){
+          newFilters <- list(filter = unname(indices[["filter"]]),
+                             aggregations = unname(indices[["aggregations"]]),
+                             cols = unname(indices[["cols"]]))
+        }
+        if(length(options$domainFilter$domains)){
+          newFilters$domainFilter <- input$domainFilter
+          if(initFilter && length(currentView$domainFilter[["default"]]) &&
+             !identical(input$domainFilter, currentView$domainFilter[["default"]])){
+            return()
+          }
+        }
+        
         isolate({
-          newVal <- updateFilter() + 1L
-          updateFilter(newVal)
+          currentFilters(newFilters)
         })
-      }else{
-        noUpdateFilterEl[[filterIndex]] <<- FALSE
-      }
-    })
-  })
-  
-  filteredData <- reactive({
-    updateFilter()
-    if(is.null(currentFilters())){
-      return()
-    }
-    filterIndexList <- currentFilters()$filter
-    aggFilterIndexList <- currentFilters()$aggregations
-    colFilterIndexList <- currentFilters()$cols
-    domainFilter <- currentFilters()$domainFilter
-    filterIndexList <- c(filterIndexList, aggFilterIndexList, colFilterIndexList)
-    if(length(domainFilter)){
-      dataTmp <- data %>% filter(.data[[domainFilter]] != if(length(options$domainFilter$filterVal)) 
-        options$domainFilter$filterVal else "\U00A0")
-      if(!length(filterIndexList)){
-        return(list(data = dataTmp, filterElements = list()))
-      }
-    }else{
-      if(!length(filterIndexList)){
-        return(list(data = data, filterElements = list()))
-      }
-      dataTmp <- data
-    }
-    
-    filterElements <- vector("list", length(filterIndexList))
-    names(filterElements) <- filterIndexList
-    multiFilterIndices <- c()
-    
-    for(filterIndex in filterIndexList){
-      filterElements[[filterIndex]] <- sort(unique(dataTmp[[filterIndex]]))
-      optionId <- "filter"
-      if(filterIndex %in% aggFilterIndexList){
-        optionId <- "aggregations"
-      }else if(filterIndex %in% colFilterIndexList){
-        optionId <- "cols"
-      }
-      if(initFilter && (optionId %in% c("aggregations", "cols") || 
-                        length(currentView[[optionId]][[filterIndex]]))){
-        filterVal <- currentView[[optionId]][[filterIndex]]
-      }else{
-        filterVal <- isolate(input[[paste0("filter_", filterIndex)]])
-      }
-      if(!any(filterVal %in% filterElements[[filterIndex]])){
-        if(filterIndex %in% c(aggFilterIndexList, colFilterIndexList)){
-          # nothing selected = no filter for aggregations/cols
-          next
+      })
+      
+      throttledFilters <- vector("list", length(setIndices))
+      lapply(setIndices, function(filterIndex){
+        throttledFilters[[filterIndex]] <<- throttle(reactive({
+          input[[paste0("filter_", filterIndex)]]
+        }), 2000)
+        rendererEnv[[ns(paste0("filter_", filterIndex))]] <- observe({
+          if(is.null(throttledFilters[[filterIndex]]())){
+            if(!filterIndex %in% isolate(c(input$aggregationIndexList, input$colIndexList))){
+              return()
+            }
+          }
+          print(filterIndex)
+          if(isFALSE(noUpdateFilterEl[[filterIndex]])){
+            isolate({
+              newVal <- updateFilter() + 1L
+              updateFilter(newVal)
+            })
+          }else{
+            noUpdateFilterEl[[filterIndex]] <<- FALSE
+          }
+        })
+      })
+      
+      filteredData <- reactive({
+        updateFilter()
+        if(is.null(currentFilters())){
+          return()
         }
-        filterVal <- filterElements[[filterIndex]][[1]]
-      }
-      if(any(is.na(match(filterIndex, names(dataTmp))))){
-        flog.warn("Attempt to tamper with the app detected! User entered: '%s' as filter index",
-                  filterIndex)
-        stop("Attempt to tamper with the app detected!", call. = FALSE)
-      }
-      if(length(filterVal) > 1L){
-        multiFilterIndices <- c(multiFilterIndices, filterIndex)
-        filterExpression <- paste0(".[[\"", filterIndex, "\"]]%in%c('",
-                                   paste(gsub("'", "\\'", filterVal, fixed = TRUE),  collapse = "','"),
-                                   "')")
-      }else{
-        filterExpression <- paste0(".[[\"", filterIndex, "\"]]=='",
-                                   gsub("'", "\\'", filterVal, fixed = TRUE),
-                                   "'")
-      }
-      dataTmp <- dataTmp %>% filter(
-        !!rlang::parse_expr(filterExpression))
-    }
-    return(list(data = dataTmp, filterElements = filterElements, 
-                multiFilterIndices = multiFilterIndices))
-  })
-  
-  dataToRender <- reactive({
-    dataTmp <- filteredData()$data
-    rowIndexList <- input$rowIndexList
-    initData   <<- FALSE
-    initInterface <<- FALSE
-    if(!length(dataTmp)){
-      return()
-    }
-    colIndexList <- isolate(currentFilters()$cols)
-    aggIndexList <- isolate(currentFilters()$aggregations)
-    multiFilterIndices <- filteredData()$multiFilterIndices
-    aggregationFunction <- NULL
-    
-    if(is.null(rowIndexList)){
-      rowIndexList <- setIndices
-    }
-    if(length(rowIndexList) + length(filteredData()$filterElements) != length(setIndices)){
-      return()
-    }
-    rowIndexList <- c(rowIndexList, 
-                      multiFilterIndices[!multiFilterIndices %in% c(aggIndexList, colIndexList)])
-    if(length(aggIndexList)){
-      if(identical(options[["_metadata_"]]$symtype, "parameter")){
-        aggregationFunctionTmp <- input$aggregationFunction
-        if(is.null(aggregationFunction)){
-          aggregationFunction <- aggregationFunctionTmp
+        filterIndexList <- currentFilters()$filter
+        aggFilterIndexList <- currentFilters()$aggregations
+        colFilterIndexList <- currentFilters()$cols
+        domainFilter <- currentFilters()$domainFilter
+        filterIndexList <- c(filterIndexList, aggFilterIndexList, colFilterIndexList)
+        if(length(domainFilter)){
+          dataTmp <- data %>% filter(.data[[domainFilter]] != if(length(options$domainFilter$filterVal)) 
+            options$domainFilter$filterVal else "\U00A0")
+          if(!length(filterIndexList)){
+            return(list(data = dataTmp, filterElements = list()))
+          }
+        }else{
+          if(!length(filterIndexList)){
+            return(list(data = data, filterElements = list()))
+          }
+          dataTmp <- data
         }
-        if(!aggregationFunction %in% c("sum", "count", "min", "max", "mean", "median")){
-          flog.warn("Attempt to tamper with the app detected! User entered: '%s' as aggregation function.",
-                    aggregationFunction)
-          stop("Attempt to tamper with the app detected!", call. = FALSE)
+        
+        filterElements <- vector("list", length(filterIndexList))
+        names(filterElements) <- filterIndexList
+        multiFilterIndices <- c()
+        
+        for(filterIndex in filterIndexList){
+          filterElements[[filterIndex]] <- sort(unique(dataTmp[[filterIndex]]))
+          optionId <- "filter"
+          if(filterIndex %in% aggFilterIndexList){
+            optionId <- "aggregations"
+          }else if(filterIndex %in% colFilterIndexList){
+            optionId <- "cols"
+          }
+          if(initFilter && (optionId %in% c("aggregations", "cols") || 
+                            length(currentView[[optionId]][[filterIndex]]))){
+            filterVal <- currentView[[optionId]][[filterIndex]]
+          }else{
+            filterVal <- isolate(input[[paste0("filter_", filterIndex)]])
+          }
+          if(!any(filterVal %in% filterElements[[filterIndex]])){
+            if(filterIndex %in% c(aggFilterIndexList, colFilterIndexList)){
+              # nothing selected = no filter for aggregations/cols
+              next
+            }
+            filterVal <- filterElements[[filterIndex]][[1]]
+          }
+          if(any(is.na(match(filterIndex, names(dataTmp))))){
+            flog.warn("Attempt to tamper with the app detected! User entered: '%s' as filter index",
+                      filterIndex)
+            stop("Attempt to tamper with the app detected!", call. = FALSE)
+          }
+          if(length(filterVal) > 1L){
+            multiFilterIndices <- c(multiFilterIndices, filterIndex)
+            filterExpression <- paste0(".[[\"", filterIndex, "\"]]%in%c('",
+                                       paste(gsub("'", "\\'", filterVal, fixed = TRUE),  collapse = "','"),
+                                       "')")
+          }else{
+            filterExpression <- paste0(".[[\"", filterIndex, "\"]]=='",
+                                       gsub("'", "\\'", filterVal, fixed = TRUE),
+                                       "'")
+          }
+          dataTmp <- dataTmp %>% filter(
+            !!rlang::parse_expr(filterExpression))
         }
-      }else{
-        aggregationFunction <- "count"
-      }
-      dataTmp <- dataTmp %>% group_by(!!!rlang::syms(c(rowIndexList, colIndexList))) %>% 
-        summarise(value = !!rlang::parse_expr(
-          if(identical(aggregationFunction, "count")) 
-            "sum(!is.na(value))"
-          else
-            paste0(aggregationFunction, "(value, na.rm = TRUE)")), .groups = "drop_last")
-    }
-    if(length(rowIndexList)){
-      dataTmp <- dataTmp %>% select(!!!c(rowIndexList, colIndexList, valueColName)) %>% 
-        arrange(!!!rlang::syms(rowIndexList))
-    }else{
-      dataTmp <- dataTmp %>% select(!!!c(colIndexList, valueColName))
-    }
-    if(length(colIndexList)){
-      # note that names_sep is not an ASCII full stop, but UNICODE U+2024
-      dataTmp <- dataTmp %>% 
-        pivot_wider(names_from = !!colIndexList, values_from = value, names_sep = "\U2024", 
-                    names_sort = TRUE, names_repair = "unique")
-    }
-    attr(dataTmp, "noRowHeaders") <- length(rowIndexList)
-    return(dataTmp)
-  })
-  
-  # ===================================================
-  #        CHART RENDERER
-  # ===================================================
-  
-  output$pivotChart <- renderChartjs({
-    pivotRenderer <- input$pivotRenderer
-    if(initRenderer && isTRUE(options$resetOnInit)){
-      if(length(currentView[["pivotRenderer"]])){
-        pivotRenderer <- currentView[["pivotRenderer"]]
-      }else{
-        return()
-      }
-    }
-    if(!pivotRenderer %in% c("line", "bar", "stackedbar", "radar")){
-      return()
-    }
-    showEl(session, paste0("#", ns("loadPivotTable")))
-    dataTmp <- dataToRender()
-    if(!length(dataTmp)){
-      return()
-    }
-    rowHeaderLen <- attr(dataTmp, "noRowHeaders")
-    noSeries <- length(dataTmp) - rowHeaderLen
-    noError <- TRUE
-    if(noSeries > 40L){
-      showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(options$lang$colTruncationWarning, "40"))
-      noError <- FALSE
-    }
-    if(nrow(dataTmp) > 500L){
-      showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(options$lang$rowTruncationWarning, "500"))
-      dataTmp <- slice(dataTmp, 1:500L)
-      noError <- FALSE
-    }
-    if(noError){
-      hideEl(session, paste0("#", ns("errMsg")))
-    }
-    labels <- do.call(paste, c(dataTmp[seq_len(rowHeaderLen)], list(sep = ".")))
-    if(!length(labels)){
-      labels <- "value"
-    }
-    if(identical(pivotRenderer, "line")){
-      chartJsObj <- chartjs(customColors = customChartColors) %>% 
-        cjsLine(labels = labels)
-    }else if(identical(pivotRenderer, "stackedbar")){
-      chartJsObj <- chartjs(customColors = customChartColors) %>% 
-        cjsBar(labels = labels, stacked = TRUE)
-    }else if(identical(pivotRenderer, "radar")){
-      chartJsObj <- chartjs(customColors = customChartColors) %>% 
-        cjsRadar(labels = labels)
-    }else{
-      chartJsObj <- chartjs(customColors = customChartColors) %>% 
-        cjsBar(labels = labels)
-    }
-    for(i in seq_len(min(noSeries, 40L))){
-      chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]], 
-                              label = names(dataTmp)[rowHeaderLen + i])
-    }
-    hideEl(session, paste0("#", ns("loadPivotTable")))
-    
-    return(chartJsObj %>% cjsLegend())
-  })
-  
-  # ===================================================
-  #        TABLE RENDERER
-  # ===================================================
-  
-  output$pivotTable <- renderDT({
-    pivotRenderer <- input$pivotRenderer
-    if(initRenderer && isTRUE(options$resetOnInit)){
-      if(length(currentView[["pivotRenderer"]])){
-        pivotRenderer <- currentView[["pivotRenderer"]]
-      }else{
-        pivotRenderer <- "table"
-      }
-      initRenderer <<- FALSE
-    }
-    if(!identical(pivotRenderer, "table")){
-      return()
-    }
-    changeHeightEl(session, paste0("#", ns("pivotChart")), 1, 500)
-    showEl(session, paste0("#", ns("loadPivotTable")))
-    dataTmp <- dataToRender()
-    if(!length(dataTmp)){
-      return()
-    }
-    if(length(dataTmp) > 500){
-      showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(options$lang$colTruncationWarning, "500"))
-      dataTmp <- dataTmp[, 1:500]
-    }else{
-      hideEl(session, paste0("#", ns("errMsg")))
-    }
-    noRowHeaders <- attr(dataTmp, "noRowHeaders")
-    hideEl(session, paste0("#", ns("loadPivotTable")))
-    
-    datatable(dataTmp, extensions = c("Scroller", "FixedColumns"), 
-              selection = "none",
-              container = DTbuildColHeaderContainer(names(dataTmp), 
-                                                    noRowHeaders, 
-                                                    unlist(setIndexAliases[names(dataTmp)[seq_len(noRowHeaders)]], 
-                                                           use.names = FALSE)),
-              options = list(fnDrawCallback = if(noRowHeaders > 1) JS(paste0("function ( settings ) {
+        return(list(data = dataTmp, filterElements = filterElements, 
+                    multiFilterIndices = multiFilterIndices))
+      })
+      
+      dataToRender <- reactive({
+        dataTmp <- filteredData()$data
+        rowIndexList <- input$rowIndexList
+        initData   <<- FALSE
+        initInterface <<- FALSE
+        if(!length(dataTmp)){
+          return()
+        }
+        colIndexList <- isolate(currentFilters()$cols)
+        aggIndexList <- isolate(currentFilters()$aggregations)
+        multiFilterIndices <- filteredData()$multiFilterIndices
+        aggregationFunction <- NULL
+        
+        if(is.null(rowIndexList)){
+          rowIndexList <- setIndices
+        }
+        if(length(rowIndexList) + length(filteredData()$filterElements) != length(setIndices)){
+          return()
+        }
+        rowIndexList <- c(rowIndexList, 
+                          multiFilterIndices[!multiFilterIndices %in% c(aggIndexList, colIndexList)])
+        if(length(aggIndexList)){
+          if(identical(options[["_metadata_"]]$symtype, "parameter")){
+            aggregationFunctionTmp <- input$aggregationFunction
+            if(is.null(aggregationFunction)){
+              aggregationFunction <- aggregationFunctionTmp
+            }
+            if(!aggregationFunction %in% c("sum", "count", "min", "max", "mean", "median")){
+              flog.warn("Attempt to tamper with the app detected! User entered: '%s' as aggregation function.",
+                        aggregationFunction)
+              stop("Attempt to tamper with the app detected!", call. = FALSE)
+            }
+          }else{
+            aggregationFunction <- "count"
+          }
+          dataTmp <- dataTmp %>% group_by(!!!rlang::syms(c(rowIndexList, colIndexList))) %>% 
+            summarise(value = !!rlang::parse_expr(
+              if(identical(aggregationFunction, "count")) 
+                "sum(!is.na(value))"
+              else
+                paste0(aggregationFunction, "(value, na.rm = TRUE)")), .groups = "drop_last")
+        }
+        if(length(rowIndexList)){
+          dataTmp <- dataTmp %>% select(!!!c(rowIndexList, colIndexList, valueColName)) %>% 
+            arrange(!!!rlang::syms(rowIndexList))
+        }else{
+          dataTmp <- dataTmp %>% select(!!!c(colIndexList, valueColName))
+        }
+        if(length(colIndexList)){
+          # note that names_sep is not an ASCII full stop, but UNICODE U+2024
+          dataTmp <- dataTmp %>% 
+            pivot_wider(names_from = !!colIndexList, values_from = value, names_sep = "\U2024", 
+                        names_sort = TRUE, names_repair = "unique")
+        }
+        attr(dataTmp, "noRowHeaders") <- length(rowIndexList)
+        return(dataTmp)
+      })
+      
+      # ===================================================
+      #        CHART RENDERER
+      # ===================================================
+      
+      output$pivotChart <- renderChartjs({
+        pivotRenderer <- input$pivotRenderer
+        if(initRenderer && isTRUE(options$resetOnInit)){
+          if(length(currentView[["pivotRenderer"]])){
+            pivotRenderer <- currentView[["pivotRenderer"]]
+          }else{
+            return()
+          }
+        }
+        if(!pivotRenderer %in% c("line", "bar", "stackedbar", "radar")){
+          return()
+        }
+        showEl(session, paste0("#", ns("loadPivotTable")))
+        dataTmp <- dataToRender()
+        if(!length(dataTmp)){
+          return()
+        }
+        rowHeaderLen <- attr(dataTmp, "noRowHeaders")
+        noSeries <- length(dataTmp) - rowHeaderLen
+        noError <- TRUE
+        if(noSeries > 40L){
+          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(options$lang$colTruncationWarning, "40"))
+          noError <- FALSE
+        }
+        if(nrow(dataTmp) > 500L){
+          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(options$lang$rowTruncationWarning, "500"))
+          dataTmp <- slice(dataTmp, 1:500L)
+          noError <- FALSE
+        }
+        if(noError){
+          hideEl(session, paste0("#", ns("errMsg")))
+        }
+        labels <- do.call(paste, c(dataTmp[seq_len(rowHeaderLen)], list(sep = ".")))
+        if(!length(labels)){
+          labels <- "value"
+        }
+        if(identical(pivotRenderer, "line")){
+          chartJsObj <- chartjs(customColors = customChartColors) %>% 
+            cjsLine(labels = labels)
+        }else if(identical(pivotRenderer, "stackedbar")){
+          chartJsObj <- chartjs(customColors = customChartColors) %>% 
+            cjsBar(labels = labels, stacked = TRUE)
+        }else if(identical(pivotRenderer, "radar")){
+          chartJsObj <- chartjs(customColors = customChartColors) %>% 
+            cjsRadar(labels = labels)
+        }else{
+          chartJsObj <- chartjs(customColors = customChartColors) %>% 
+            cjsBar(labels = labels)
+        }
+        for(i in seq_len(min(noSeries, 40L))){
+          chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]], 
+                                  label = names(dataTmp)[rowHeaderLen + i])
+        }
+        hideEl(session, paste0("#", ns("loadPivotTable")))
+        
+        return(chartJsObj %>% cjsLegend())
+      })
+      
+      # ===================================================
+      #        TABLE RENDERER
+      # ===================================================
+      
+      output$pivotTable <- renderDT({
+        pivotRenderer <- input$pivotRenderer
+        if(initRenderer && isTRUE(options$resetOnInit)){
+          if(length(currentView[["pivotRenderer"]])){
+            pivotRenderer <- currentView[["pivotRenderer"]]
+          }else{
+            pivotRenderer <- "table"
+          }
+          initRenderer <<- FALSE
+        }
+        if(!identical(pivotRenderer, "table")){
+          return()
+        }
+        changeHeightEl(session, paste0("#", ns("pivotChart")), 1, 500)
+        showEl(session, paste0("#", ns("loadPivotTable")))
+        dataTmp <- dataToRender()
+        if(!length(dataTmp)){
+          return()
+        }
+        if(length(dataTmp) > 500){
+          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(options$lang$colTruncationWarning, "500"))
+          dataTmp <- dataTmp[, 1:500]
+        }else{
+          hideEl(session, paste0("#", ns("errMsg")))
+        }
+        noRowHeaders <- attr(dataTmp, "noRowHeaders")
+        hideEl(session, paste0("#", ns("loadPivotTable")))
+        
+        datatable(dataTmp, extensions = c("Scroller", "FixedColumns"), 
+                  selection = "none",
+                  container = DTbuildColHeaderContainer(names(dataTmp), 
+                                                        noRowHeaders, 
+                                                        unlist(setIndexAliases[names(dataTmp)[seq_len(noRowHeaders)]], 
+                                                               use.names = FALSE)),
+                  options = list(fnDrawCallback = if(noRowHeaders > 1) JS(paste0("function ( settings ) {
     var api = this.api();
     var cols = api.columns([", paste(seq_len(noRowHeaders - 1L) - 1L, collapse = ","), "], {page:'current'} ).nodes();
     api.columns([", paste(seq_len(noRowHeaders - 1L) - 1L, collapse = ","), "], 
@@ -808,10 +812,12 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
       } );
     });
 }")),
-                             scrollY = 400, scrollX = TRUE, scrollCollapse = TRUE,
-                             scroller = list(loadingIndicator = FALSE),
-                             fixedColumns = list(leftColumns = noRowHeaders)), rownames = FALSE) %>%
-      formatRound(seq(noRowHeaders + 1, length(dataTmp)), 
-                  digits = roundPrecision)
-  })
+                                 scrollY = 400, scrollX = TRUE, scrollCollapse = TRUE,
+                                 scroller = list(loadingIndicator = FALSE),
+                                 fixedColumns = list(leftColumns = noRowHeaders)), rownames = FALSE) %>%
+          formatRound(seq(noRowHeaders + 1, length(dataTmp)), 
+                      digits = roundPrecision)
+      })
+    }
+  )
 }
