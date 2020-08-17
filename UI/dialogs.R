@@ -541,7 +541,7 @@ showEditMetaDialog <- function(metadata,
                                        tags$div(class = "row attachment-line", 
                                                 column(width = 6, 
                                                        HTML(paste0('<button class="btn btn-default bt-icon" id="btRemoveAttachment_', i,
-                                                                   '" type="button" onclick="Miro.removeAttachment(', i, ')"><i class="fa fa-times-circle"></i></button>
+                                                                   '" type="button" onclick="Miro.removeAttachment(', i, ')"><i class="fa fa-times-circle" role="presentation" aria-label="Remove attachment"></i></button>
                                                                    <a href="#" onclick="Miro.downloadAttachment(', i, ')">', 
                                                                    htmltools::htmlEscape(attachmentMetadata[["name"]][[i]]), '</a>'))
                                                 ),
@@ -690,7 +690,9 @@ showHcubeSubmitDialog <- function(noIdsToSolve, noIdsExist){
     title = lang$nav$dialogHcube$title,
     footer = tagList(
       tags$div(style = "text-align:left;", 
-               tags$i(class="fas fa-arrow-down", 
+               tags$i(class="fas fa-arrow-down",
+                      role = "presentation",
+                      `aria-label` = "More options",
                       onclick = "$(this).next().slideToggle();$(this).toggleClass('fa-arrow-up');$(this).toggleClass('fa-arrow-down');", 
                       style = "cursor: pointer;"),
                tags$div(style = "display:none;",
@@ -761,7 +763,9 @@ showHcubeLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolvers
                             selectInput("selPaverAttribs", lang$nav$hcubeMode$hcubeLoadDialog$selPaverAttribs, 
                                         attribs, multiple = TRUE, width = "100%"),
                             tags$div(style = "text-align:left;",
-                                     tags$i(class="fas fa-arrow-down", 
+                                     tags$i(class="fas fa-arrow-down",
+                                            role = "presentation",
+                                            `aria-label` = "More options",
                                             onclick = "$(this).next().slideToggle();$(this).toggleClass('fa-arrow-up');$(this).toggleClass('fa-arrow-down');", 
                                             style = "cursor: pointer;"),
                                      tags$div(style = "display:none;",

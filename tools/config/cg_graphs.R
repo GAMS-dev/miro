@@ -2679,7 +2679,9 @@ getOuttype <- reactive({
     checkboxInput_MIRO("outType", tags$div(lang$adminMode$graphs$chartOptions$options$outType, 
                                            tags$a("", class="info-wrapper", 
                                                   href="https://gams.com/miro/charts.html#table-graph-split-screen",
-                                                  tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")), 
+                                                  tags$span(class="fas fa-info-circle", class="info-icon",
+                                                            role = "presentation",
+                                                            `aria-label` = "More information"), target="_blank")), 
                        value = identical(rv$graphConfig$outType, "dtGraph"))
   )
 })
@@ -2986,7 +2988,9 @@ getDygraphsOptions <- reactive({
                                     getDyaxisOptions("dyAxis2", names(scalarIndices)[1])))),
     tags$div(class="cat-body cat-body-29", style="display:none;",
              selectInput("chart_color", tags$div(lang$adminMode$graphs$dygraphsOptions$color, tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#group-domain", 
-                                                                                            tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                                                            tags$span(class="fas fa-info-circle", class="info-icon",
+                                                                                                      role = "presentation",
+                                                                                                      `aria-label` = "More information"), target="_blank")),
                          choices = c("_", indices), selected = rv$graphConfig$graph$color),
              getFilterOptions()),
     if(length(configScalars) && nrow(configScalars)){
@@ -3331,7 +3335,9 @@ getCustomOptions <- reactive({
              textInput("custom_name", lang$adminMode$graphs$customOptions$name, value = rv$graphConfig$outType),
              selectizeInput("custom_packages", tags$div(lang$adminMode$graphs$customOptions$packages, 
                                                         tags$a("", title = lang$adminMode$general$ui$tooltipDocs, class="info-wrapper", href="https://gams.com/miro/customize.html#custom-renderers", 
-                                                               tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                               tags$span(class="fas fa-info-circle", class="info-icon",
+                                                                         role = "presentation",
+                                                                         `aria-label` = "More information"), target="_blank")),
                             choices = if(length(rv$graphConfig$packages)) rv$graphConfig$packages else c(), 
                             selected = rv$graphConfig$packages,
                             multiple = TRUE, options = list("create" = TRUE,"persist" = FALSE)),
@@ -3359,7 +3365,9 @@ getColorPivotOptions <- reactive({
   tagList(
   selectInput("chart_color", tags$div(lang$adminMode$graphs$chartOptions$color, 
               tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#group-domain", 
-                     tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                     tags$span(class="fas fa-info-circle", class="info-icon",
+                               role = "presentation",
+                               `aria-label` = "More information"), target="_blank")),
               choices = c("_", indices),
               selected = rv$graphConfig$graph$color))
 })
@@ -3392,7 +3400,9 @@ getFilterOptions <- reactive({
   tagList(
     tags$label(class = "cb-label info-position", "for" = "filter_dim", 
                tags$div(lang$adminMode$graphs$filterOptions$filter, tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#filter-option", 
-                                                                                                        tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
+                                                                                                        tags$span(class="fas fa-info-circle", class="info-icon",
+                                                                                                                  role = "presentation",
+                                                                                                                  `aria-label` = "More information"), target="_blank"))),
     tags$div(
       tags$label(class = "checkbox-material", 
                  checkboxInput("filter_dim", value = isTRUE(length(rv$graphConfig$graph$filter$col) > 0L), label = NULL)

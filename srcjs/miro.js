@@ -16,9 +16,9 @@ export function changeTab(object, idActive, idRefer) {
 export function slideToggleEl(data) {
   if (data.toggleIconDiv !== undefined) {
     if ($(data.id).is(':visible')) {
-      $(data.toggleIconDiv).html('<i class="fa fa-plus"></i>');
+      $(data.toggleIconDiv).html('<i class="fa fa-plus" role="presentation" aria-label="More options"></i>');
     } else {
-      $(data.toggleIconDiv).html('<i class="fa fa-minus"></i>');
+      $(data.toggleIconDiv).html('<i class="fa fa-minus" role="presentation" aria-label="Less options"></i>');
     }
   }
   let duration = 400;
@@ -145,12 +145,12 @@ $(document).ready(() => {
   $('.nav-tabs-dropdown a').on('shown.bs.tab', (e) => {
     const currTab = $(e.target);
     if (currTab.closest('.dropdown').find('.dropdown-toggle').length) {
-      currTab.closest('.dropdown').find('.dropdown-toggle').html(`${currTab.text()} <i class="fa fa-angle-double-right"></i>`);
+      currTab.closest('.dropdown').find('.dropdown-toggle').html(`${currTab.text()} <i class="fa fa-angle-double-right" role="presentation" aria-label="More tabs"></i>`);
       return;
     }
     const prevTab = $(e.relatedTarget).closest('.dropdown').find('.dropdown-toggle');
     if (prevTab.length) {
-      prevTab.html(` ${prevTab.data('defaultlabel')} <i class="fa fa-angle-double-right"></i>`);
+      prevTab.html(` ${prevTab.data('defaultlabel')} <i class="fa fa-angle-double-right" role="presentation" aria-label="More tabs"></i>`);
     }
   });
   // code snippet taken from SwishWez: https://stackoverflow.com/questions/21582558/disable-remove-on-backspace-or-remove-ibeam-entirely
@@ -202,7 +202,7 @@ $(document).ready(() => {
   });
   $('#scenTabset').append('<li id="scenTabsetAdd"><a href="#" id="btLoadScen" data-value="scen_add" '
     + 'onclick="Shiny.setInputValue(\'btLoadScen\', 1, {priority: \'event\'});">'
-    + '<i class="far fa-plus-square" style="font-size:13pt;"></i></a></li>'); // show/hide buttons after (R triggered) tab switch.
+    + '<i class="far fa-plus-square" style="font-size:13pt;" role="presentation" aria-label="Add scenario"></i></a></li>'); // show/hide buttons after (R triggered) tab switch.
 
   Shiny.addCustomMessageHandler('gms-switchTab', (el) => {
     switchTab(el);
@@ -421,7 +421,7 @@ ${data.data}</div>` : data.data);
         checkBoxHTML = `<div class="col-sm-6"><div class="form-group shiny-input-container"><div class="checkbox"><label><input type="checkbox" onchange="Shiny.setInputValue('execPermAttachment_${id[i]}', $(this).is(':checked'));" checked="checked"><span>${el.labelCb}</span></label></div></div></div>`;
       }
 
-      $(`<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_${id[i]}" type="button" onclick="Miro.removeAttachment(${id[i]})"><i class="fa fa-times-circle"></i></button><a href="#" onclick="Miro.downloadAttachment(${id[i]})"> ${name[i]}</a></div>${checkBoxHTML}</div>`).insertBefore('#endAttachList');
+      $(`<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_${id[i]}" type="button" onclick="Miro.removeAttachment(${id[i]})"><i class="fa fa-times-circle" role="presentation" aria-label="Remove attachment"></i></button><a href="#" onclick="Miro.downloadAttachment(${id[i]})"> ${name[i]}</a></div>${checkBoxHTML}</div>`).insertBefore('#endAttachList');
     }
   });
   Shiny.addCustomMessageHandler('gms-fitTitleInBox', (id) => {
@@ -550,7 +550,6 @@ $(document).keyup((event) => {
     return;
   } // Import shortcut: CTRL + ALT + I
 
-
   if (event.keyCode === 83) {
     Shiny.setInputValue('btSave', 1, {
       priority: 'event',
@@ -558,12 +557,10 @@ $(document).keyup((event) => {
     return;
   } // SAVE shortcut: CTRL + ALT + S
 
-
   if (event.keyCode === 13) {
     $('#btSolve:visible:enabled').click();
     return;
   } // Solve shortcut: CTRL + ALT + ENTER
-
 
   if (event.keyCode === 82) {
     Shiny.setInputValue('btDelete', 1, {
@@ -572,12 +569,10 @@ $(document).keyup((event) => {
     return;
   } // Remove shortcut: CTRL + ALT + R
 
-
   if (event.keyCode === 67) {
     $('.btRemove:visible').click();
     return;
   } // Close shortcut (remove button in input sheet): CTRL + ALT + C
-
 
   if (event.keyCode === 67) {
     for (let i = 2; i <= maxNumScen; i += 1) {
@@ -586,19 +581,16 @@ $(document).keyup((event) => {
     return;
   } // Close shortcut (remove button in output sheet): CTRL + ALT + C
 
-
   if (event.keyCode === 70) {
     $('body').toggleClass('sidebar-collapse');
     rerenderHot(400);
     return;
   } // Fullscreen mode (hide sidebar) shortcut: CTRL + ALT + F
 
-
   if (event.keyCode === 49) {
     $('a[href="#shiny-tab-inputData"]').click();
     return;
   } // Select input menu shortcut: CTRL + ALT + 1
-
 
   if (event.keyCode === 50) {
     const tab = $('a[href="#shiny-tab-outputData"]');
@@ -611,7 +603,6 @@ $(document).keyup((event) => {
     return;
   } // Select output menu shortcut: CTRL + ALT + 2
 
-
   if (event.keyCode === 51) {
     const tab = $('a[href="#shiny-tab-gamsinter"]');
 
@@ -622,7 +613,6 @@ $(document).keyup((event) => {
     }
     return;
   } // Select gams interaction menu shortcut: CTRL + ALT + 3
-
 
   if (event.keyCode === 52) {
     $('a[href="#shiny-tab-scenarios"]').click();
@@ -637,7 +627,6 @@ $(document).keyup((event) => {
     }
     return;
   } // Select scenario menu shortcut: CTRL + ALT + 5
-
 
   if (event.keyCode === 84) {
     if ($('#btGraphIn').is(':visible')) {
@@ -656,13 +645,11 @@ $(document).keyup((event) => {
     return;
   } // Table view (scenario compare mode) shortcut: CTRL + ALT + T
 
-
   if (event.keyCode === 39) {
     Shiny.onInputChange('tabsetShortcutNext', count);
     count += 1;
     return;
   } // Select next tab shortcut: CTRL + ALT + arrow right
-
 
   if (event.keyCode === 37) {
     Shiny.onInputChange('tabsetShortcutPrev', count);
@@ -670,20 +657,17 @@ $(document).keyup((event) => {
     return;
   } // Select previous tab shortcut: CTRL + ALT + arrow left
 
-
   if (event.keyCode === 40) {
     Shiny.onInputChange('tabsetShortcutNest', count);
     count += 1;
     return;
   } // Nest to next lower tabset shortcut: CTRL + ALT + arrow down
 
-
   if (event.keyCode === 38) {
     Shiny.onInputChange('tabsetShortcutUnnest', count);
     count += 1;
     return;
   } // Unnest to next higher tabset shortcut: CTRL + ALT + arrow up
-
 
   if (event.keyCode === 32 && $('#btCompareScen').is(':enabled') && $('#btCompareScen').is(':visible')) {
     $('#btCompareScen').click();

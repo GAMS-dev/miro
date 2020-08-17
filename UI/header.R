@@ -10,11 +10,11 @@ header <- dashboardHeader(
                         lang$nav$dialogRemoteLogout$cancelButton, '\', \'', 
                         lang$nav$dialogRemoteLogout$okButton, 
                         '\', \'Shiny.setInputValue(\\\'btRemoteExecLogout\\\', 1, {priority: \\\'event\\\'})\')"">',
-                        '<i class="fa fa-sign-out-alt"></i> ', 
+                        '<i class="fa fa-sign-out-alt" aria-hidden="true"></i> ', 
                         lang$nav$header$remoteExec$logout,
                         '</a><a href="#" id="btRemoteExecLogin" class="action-button" ',
                         if(length(credConfig)) 'style="display:none;" ',
-                        '>', lang$nav$header$remoteExec$login, ' <i class="fa fa-sign-in-alt"></i></a>')))
+                        '>', lang$nav$header$remoteExec$login, ' <i class="fa fa-sign-in-alt" aria-hidden="true"></i></a>')))
   }else{
     tags$li(class = "dropdown")
   },
