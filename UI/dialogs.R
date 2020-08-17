@@ -41,7 +41,7 @@ showLoginDialog <- function(cred, forwardOnSuccess = NULL){
       if(length(forwardOnSuccess)){
         tags$button(class = "btn btn-default bt-highlight-1 bt-gms-confirm",
                     type = "button", onclick = paste0("Shiny.setInputValue('btSaveCredentials', '", 
-                    forwardOnSuccess,"', {priority:'event'})"),
+                                                      forwardOnSuccess,"', {priority:'event'})"),
                     lang$nav$dialogRemoteLogin$okButton)
       }else{
         actionButton("btSaveCredentials", label = lang$nav$dialogRemoteLogin$okButton, 
@@ -71,11 +71,14 @@ showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm",
                               'persist' = FALSE)),
              if(isTRUE(showDiscardButtons))
                fluidRow(
-                 column(6L,
+                 column(4L,
                         checkboxInput_MIRO("newScenDiscardAttach", 
                                            lang$nav[[modeDescriptor]]$discardAttach)),
-                 column(6L,
-                        checkboxInput_MIRO("newScenDiscardPerm", 
+                 column(4L,
+                        checkboxInput_MIRO("newScenDiscardViews", 
+                                           lang$nav[[modeDescriptor]]$discardViews)),
+                 column(4L,
+                        checkboxInput_MIRO("newScenDiscardPerm",
                                            lang$nav[[modeDescriptor]]$discardPerm,
                                            isTRUE(discardPermDefault)))
                )
@@ -124,7 +127,7 @@ showDeleteScenDialog <- function(){
     title = lang$nav[[modeDescriptor]]$title,
     tags$div(id = "deleteScen_db",
              lang$nav[[modeDescriptor]]$desc
-             ),
+    ),
     tags$div(id = "deleteScen_ui", style = "display:none;",
              lang$nav[[modeDescriptor]]$removeFromUI$desc),
     footer = tagList(
@@ -132,8 +135,8 @@ showDeleteScenDialog <- function(){
       actionButton("btDeleteConfirm", lang$nav[[modeDescriptor]]$okButton, 
                    class = "bt-highlight-1 bt-gms-confirm"),
       actionButton("btRemoveDeletedConfirm", 
-                  label = lang$nav[[modeDescriptor]]$removeFromUI$okButton, 
-                  class = "bt-highlight-1 bt-gms-confirm", style = "display:none;")),
+                   label = lang$nav[[modeDescriptor]]$removeFromUI$okButton, 
+                   class = "bt-highlight-1 bt-gms-confirm", style = "display:none;")),
     fade=TRUE, easyClose=FALSE))
 }
 
@@ -183,27 +186,27 @@ getLoadDbPanel <- function(id, title, scenList, tagList, iconName, modeDescripto
   )
   tabPanel(title, value = "tb_importData_" %+% id,
            tags$div(id = "loadData_content" %+% suffixInputs,
-             fluidRow(
-               column(12,
-                      if(async){
-                        tagList(
-                          genSpinner("importDataDbSpinner"),
-                          tags$div(id = "importDataDbUnknownError", style = "display:none;",
-                                   lang$errMsg$unknownError), 
-                          tags$div(id = "importDataDbNoContent", style = "display:none;", 
-                                   lang$nav$dialogLoadScen$descNoScen),
-                          tags$div(id = "importDataDbContent", style = "display:none;",
-                                   content)
-                        )
-                      }else{
-                        if(!length(scenList)){
-                          lang$nav$dialogLoadScen$descNoScen
-                        }else{
-                          content
-                        }
-                      }
-               )
-             )
+                    fluidRow(
+                      column(12,
+                             if(async){
+                               tagList(
+                                 genSpinner("importDataDbSpinner"),
+                                 tags$div(id = "importDataDbUnknownError", style = "display:none;",
+                                          lang$errMsg$unknownError), 
+                                 tags$div(id = "importDataDbNoContent", style = "display:none;", 
+                                          lang$nav$dialogLoadScen$descNoScen),
+                                 tags$div(id = "importDataDbContent", style = "display:none;",
+                                          content)
+                               )
+                             }else{
+                               if(!length(scenList)){
+                                 lang$nav$dialogLoadScen$descNoScen
+                               }else{
+                                 content
+                               }
+                             }
+                      )
+                    )
            ),
            icon = icon(iconName)
   )
@@ -219,15 +222,15 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
   tabLoadFromExternalSource <- NULL
   tabLoadFromBase <- NULL 
   tabLoadFromHcube <- NULL 
-
+  
   if(length(externalInputConfig)){
     tabLoadFromExternalSource <- tabPanel(lang$nav$dialogImport$tabExternal, vale = "tb_importData_external",
                                           tags$div(class = "space"),
                                           fluidRow(
                                             column(12,
-                                              selectInput("selExternalSource", lang$nav$dialogImport$selExternalSource, 
-                                                          names(externalInputConfig), 
-                                                          multiple = FALSE, width = "100%")
+                                                   selectInput("selExternalSource", lang$nav$dialogImport$selExternalSource, 
+                                                               names(externalInputConfig), 
+                                                               multiple = FALSE, width = "100%")
                                             )
                                           ),
                                           fluidRow(
@@ -353,7 +356,7 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
       tags$div(id = "importScenSnameExistsErr", class = "gmsalert gmsalert-error", 
                lang$nav$dialogImport$scenNameExistsErr),
       tags$div(id = "importScenNoDsSelected", class = "gmsalert gmsalert-error", 
-              lang$nav$dialogLoadScen$noDsSelected),
+               lang$nav$dialogLoadScen$noDsSelected),
       tags$div(id = "importScenInvalidFile", class = "gmsalert gmsalert-error", 
                lang$nav$dialogLoadScen$invalidFile),
       tags$div(id = "importScenError", class = "gmsalert gmsalert-error", 
@@ -381,7 +384,7 @@ getHcubeHashLookupTable <- function(hashLookupResults){
              lang$errMsg$unknownError
     )
   }else{
-    tags$table(class = "cJob-wrapper",
+    tags$table(class = "cJob-wrapper miro-table",
                tags$tr(
                  tags$th(lang$nav$importJobsDialog$header$tags),
                  tags$th(lang$nav$importJobsDialog$header$date)
@@ -457,14 +460,15 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
       modalButton(lang$nav$dialogLoadScen$cancelButton),
       actionButton("btLoadScenConfirm", lang$nav$dialogLoadScen$okButton, 
                    class = "bt-highlight-1 bt-gms-confirm")
-      ),
+    ),
     fade = TRUE, easyClose = FALSE
   ))
 }
 showEditMetaDialog <- function(metadata,
                                ugroups = character(0L), 
-                               allowAttachments = FALSE, 
-                               attachmentMetadata = character(0L),
+                               allowAttachments = FALSE,
+                               attachmentMetadata = character(0L), 
+                               viewsMetadata = character(0L),
                                attachAllowExec = FALSE,
                                isLocked = FALSE){
   if(LAUNCHHCUBEMODE){
@@ -484,14 +488,14 @@ showEditMetaDialog <- function(metadata,
     tags$div(class = "gmsalert gmsalert-error", id = "editMetaNameExists",
              langData$scenExists),
     tags$div(class = "space"),
-             textInput("editMetaName", langData$newName, 
-                       value = metadata[["sname"]][[1]]),
-             selectizeInput("editMetaTags", langData$newTags, 
-                            scenTags, selected = scenTags,
-                            multiple = TRUE, options = list(
-                              'create' = TRUE,
-                              'persist' = FALSE)
-             )
+    textInput("editMetaName", langData$newName, 
+              value = metadata[["sname"]][[1]]),
+    selectizeInput("editMetaTags", langData$newTags, 
+                   scenTags, selected = scenTags,
+                   multiple = TRUE, options = list(
+                     'create' = TRUE,
+                     'persist' = FALSE)
+    )
   )
   writePerm <- csv2Vector(metadata[["writePerm"]][[1]])
   if(!isLocked && length(ugroups) && any(ugroups %in% writePerm)){
@@ -506,16 +510,16 @@ showEditMetaDialog <- function(metadata,
                                   tags$div(class = "gmsalert gmsalert-error", id = "editAccessRightsError", 
                                            langData$errMsg),
                                   tags$div(class = "space"),
-        selectizeInput("editMetaReadPerm", lang$nav$excelExport$metadataSheet$readPerm, 
-                       unique(c(readPerm, ugroups)), selected = readPerm,
-                       multiple = TRUE),
-        selectizeInput("editMetaWritePerm", lang$nav$excelExport$metadataSheet$writePerm, 
-                       unique(c(writePerm, ugroups)), selected = writePerm,
-                       multiple = TRUE),
-        selectizeInput("editMetaExecPerm", lang$nav$excelExport$metadataSheet$execPerm, 
-                       unique(c(execPerm, ugroups)), selected = execPerm,
-                       multiple = TRUE)
-      )
+                                  selectizeInput("editMetaReadPerm", lang$nav$excelExport$metadataSheet$readPerm, 
+                                                 unique(c(readPerm, ugroups)), selected = readPerm,
+                                                 multiple = TRUE),
+                                  selectizeInput("editMetaWritePerm", lang$nav$excelExport$metadataSheet$writePerm, 
+                                                 unique(c(writePerm, ugroups)), selected = writePerm,
+                                                 multiple = TRUE),
+                                  selectizeInput("editMetaExecPerm", lang$nav$excelExport$metadataSheet$execPerm, 
+                                                 unique(c(execPerm, ugroups)), selected = execPerm,
+                                                 multiple = TRUE)
+    )
   }
   if(allowAttachments){
     contentAttachments <- tabPanel(langData$categoryAttachments,
@@ -558,10 +562,62 @@ showEditMetaDialog <- function(metadata,
                                    tags$div(id = "endAttachList", class = "small-space"),
                                    genSpinner(id = "addAttachLoading", hidden = TRUE, absolute = FALSE)
     )
+    contentViews <- tabPanel(langData$categoryViews,
+                             tags$div(class = "gmsalert gmsalert-success", id = "viewsSuccess", 
+                                      lang$nav$dialogEditMeta$viewsSuccess),
+                             tags$div(class = "gmsalert gmsalert-error", id = "viewsInvalidDataError",
+                                      lang$nav$dialogEditMeta$viewsInvalidData),
+                             tags$div(class = "gmsalert gmsalert-error", id = "viewsCustomError"),
+                             tags$div(class = "gmsalert gmsalert-error", id = "viewsNoneSelected", 
+                                      lang$nav$dialogEditMeta$viewsNoneSelected),
+                             tags$div(class = "gmsalert gmsalert-error", id = "viewsUnknownError", 
+                                      lang$errMsg$unknownError),
+                             tags$div(class = "space"),
+                             fileInput("file_addViews", lang$nav$dialogEditMeta$viewsAdd, multiple = TRUE),
+                             tags$div(id = "currentViewsTable-noData",
+                                      style = paste0("padding:20px;text-align:center;",
+                                                     if(length(viewsMetadata[["id"]])) "display:none;"),
+                                      lang$nav$dialogEditMeta$noViewData),
+                             tags$div(id = "currentViewsTable-wrapper",
+                                      style = if(!length(viewsMetadata[["id"]])) "display:none;",
+                                      tags$a(onClick = "Miro.selectAllRows('currentViewsTable')",
+                                             href = "#", lang$nav$dialogEditMeta$selectAllViews),
+                                      tags$a(onClick = "Miro.selectNoRow('currentViewsTable')",
+                                             href = "#", lang$nav$dialogEditMeta$selectNoViews,
+                                             style = "margin-left:30px;"),
+                                      tags$div(style = "max-height:300px;overflow-y:auto;",
+                                               tags$table(id = "currentViewsTable",
+                                                          class = "miro-table", 
+                                                          tags$thead(tags$tr(
+                                                            tags$th(lang$nav$dialogEditMeta$viewsTableHeaderSymbol),
+                                                            tags$th(lang$nav$dialogEditMeta$viewsTableHeaderId)
+                                                          )),
+                                                          tags$tbody(do.call("tagList", lapply(seq_along(viewsMetadata[["id"]]), function(i){
+                                                            symbolName <- viewsMetadata[["symName"]][i]
+                                                            tags$tr(onClick = "$(this).toggleClass('selected')",
+                                                                    tags$td(if(identical(symbolName, viewsMetadata[["symName"]][i - 1L]))
+                                                                      "" else viewsMetadata[["symAlias"]][i],
+                                                                      `data-val` = base64_enc(symbolName)),
+                                                                    tags$td(viewsMetadata[["id"]][i]))
+                                                          })))
+                                               ))),
+                             tags$div(class = "small-space"),
+                             downloadLink("downloadViews", "", style = "visibility:hidden;"),
+                             tags$button(class = "btn btn-default",
+                                         type = "button",
+                                         onClick = "Miro.sendSelectedRowsRequest('currentViewsTable','downloadViews','viewsNoneSelected',true)",
+                                         icon("download"),
+                                         lang$nav$dialogEditMeta$viewsDownload),
+                             tags$button(class = "btn btn-default bt-remove",
+                                         type = "button",
+                                         onClick = "Miro.sendSelectedRowsRequest('currentViewsTable','removeViews','viewsNoneSelected')",
+                                         lang$nav$dialogEditMeta$viewsRemove),
+                             genSpinner(id = "addViewsLoading", hidden = TRUE, absolute = FALSE)
+    )
     contentList <- list(tabPanel(langData$categoryGeneral, 
-                                 content), contentAttachments)
+                                 content), contentAttachments, contentViews)
     if(length(contentAccessPerm)){
-      contentList[[3L]] <- contentAccessPerm
+      contentList[[4L]] <- contentAccessPerm
     }
     content <- do.call(tabsetPanel, contentList)
   }else if(length(contentAccessPerm)){
@@ -593,7 +649,7 @@ showScenExportDialog <- function(id, exportTypes){
     selectInput("exportFileType", lang$nav$dialogExportScen$desc, exportTypes),
     tags$div(style = "display:none;",
              numericInput("scenExportId", NULL, id)
-             ),
+    ),
     div(class= "choose-input", 
         column(6,
                tags$label(class = "checkbox-material flex-design", 
@@ -618,7 +674,7 @@ showScenExportDialog <- function(id, exportTypes){
       actionButton("scenRemoteExportHandler", lang$nav$dialogExportScen$okButton,  
                    class = "bt-highlight-1 bt-gms-confirm remote-export", 
                    style = "display: none;")
-      ), fade = TRUE, easyClose = TRUE
+    ), fade = TRUE, easyClose = TRUE
   ))
 }
 showJobSubmissionDialog <- function(jobName = ""){
@@ -686,7 +742,7 @@ showHcubeSubmitDialog <- function(noIdsToSolve, noIdsExist){
                                 'create' = TRUE,
                                 'persist' = FALSE))
              )
-             ),
+    ),
     title = lang$nav$dialogHcube$title,
     footer = tagList(
       tags$div(style = "text-align:left;", 
@@ -827,7 +883,7 @@ showHcubeLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolvers
                lang$nav$hcubeMode$hcubeLoadDialog$selectMethod
              }else{
                sprintf(lang$nav$hcubeMode$hcubeLoadDialog$maxScenWarning1, maxConcurentLoad) %+% 
-               lang$nav$hcubeMode$hcubeLoadDialog$maxScenWarning2
+                 lang$nav$hcubeMode$hcubeLoadDialog$maxScenWarning2
              }
     ),
     tags$div(id="configDownload", style = "display:none",
@@ -835,7 +891,7 @@ showHcubeLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolvers
                          c("gdx", "csv"), width = "100%")),
     tags$div(id="configAnalysis", style = "display:none;",
              analysisTabset
-            
+             
     ),
     footer = tagList(
       if(hasRemovePerm){
@@ -870,35 +926,35 @@ $('#hcAnaButtonWrapper').show();$('#btHcubeLoad').hide();$('#hcubeLoadMethod').h
 }
 # Hypercube job import module
 showManualJobImportDialog <- function(){
-   showModal(modalDialog(
-     title = lang$nav$hcubeMode$manualJobImportDialog$title,
-     tags$div(class = "gmsalert gmsalert-error", id = "manHcubeImportUnknownError", 
-              lang$errMsg$unknownError),
-     tags$div(
-       tags$div(
-         fileInput("hcubeImport", 
-                   label = lang$nav$hcubeMode$manualJobImportDialog$uploadZip,
-                   accept = c(".zip", "application/zip", 
-                              "application/octet-stream", 
-                              "application/x-zip-compressed", 
-                              "multipart/x-zip"))
-       ),
-       tags$div(
-         selectizeInput("hcubeTags", 
-                        lang$nav$hcubeMode$manualJobImportDialog$hcubeTags, c(),
-                        multiple = TRUE, options = list(
-                          'create' = TRUE,
-                          'persist' = FALSE)
-         )
-       )
-     ),
-     footer = tagList(
-       modalButton(lang$nav$hcubeMode$manualJobImportDialog$cancelButton),
-       actionButton("btUploadHcube", label = lang$nav$hcubeMode$manualJobImportDialog$uploadButton, 
-                    class = "bt-highlight-1 bt-gms-confirm")
-     ),
-     fade = TRUE, easyClose = TRUE
-   ))
+  showModal(modalDialog(
+    title = lang$nav$hcubeMode$manualJobImportDialog$title,
+    tags$div(class = "gmsalert gmsalert-error", id = "manHcubeImportUnknownError", 
+             lang$errMsg$unknownError),
+    tags$div(
+      tags$div(
+        fileInput("hcubeImport", 
+                  label = lang$nav$hcubeMode$manualJobImportDialog$uploadZip,
+                  accept = c(".zip", "application/zip", 
+                             "application/octet-stream", 
+                             "application/x-zip-compressed", 
+                             "multipart/x-zip"))
+      ),
+      tags$div(
+        selectizeInput("hcubeTags", 
+                       lang$nav$hcubeMode$manualJobImportDialog$hcubeTags, c(),
+                       multiple = TRUE, options = list(
+                         'create' = TRUE,
+                         'persist' = FALSE)
+        )
+      )
+    ),
+    footer = tagList(
+      modalButton(lang$nav$hcubeMode$manualJobImportDialog$cancelButton),
+      actionButton("btUploadHcube", label = lang$nav$hcubeMode$manualJobImportDialog$uploadButton, 
+                   class = "bt-highlight-1 bt-gms-confirm")
+    ),
+    fade = TRUE, easyClose = TRUE
+  ))
 }
 showNewCompletedJobsDialog <- function(hcubeMode = FALSE){
   showModal(modalDialog(
@@ -924,7 +980,7 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, hcubeMode = TRUE, showLogFi
     jobOwners  <- hcubeMeta[[2]]
     jobTimes   <- hcubeMeta[[4]]
     jStatuses  <- hcubeMeta[[3]]
-    content <- tags$table(class = "cJob-wrapper",
+    content <- tags$table(class = "miro-table cJob-wrapper",
                           tags$tr(
                             tags$th(lang$nav$importJobsDialog$header$owner),
                             tags$th(lang$nav$importJobsDialog$header$date),
@@ -1056,12 +1112,12 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, hcubeMode = TRUE, showLogFi
                                                 lang$nav$importJobsDialog$buttons$progress),
                                   tags$button(class = "btn btn-default", 
                                               onclick = paste0("Miro.confirmModalShow('",
-                                              lang$nav$importJobsDialog$discardConfirm$title, "', '", 
-                                              lang$nav$importJobsDialog$discardConfirm$desc, "', '", 
-                                              lang$nav$importJobsDialog$discardConfirm$cancelButton, "', '",  
-                                              lang$nav$importJobsDialog$discardConfirm$confirmButton, 
-                                              "', 'Shiny.setInputValue(\\'discardJob\\',", jID, 
-                                              ",{priority:\\'event\\'})')"),
+                                                               lang$nav$importJobsDialog$discardConfirm$title, "', '", 
+                                                               lang$nav$importJobsDialog$discardConfirm$desc, "', '", 
+                                                               lang$nav$importJobsDialog$discardConfirm$cancelButton, "', '",  
+                                                               lang$nav$importJobsDialog$discardConfirm$confirmButton, 
+                                                               "', 'Shiny.setInputValue(\\'discardJob\\',", jID, 
+                                                               ",{priority:\\'event\\'})')"),
                                               lang$nav$importJobsDialog$buttons$discard)
                                 )
                               }
@@ -1086,7 +1142,7 @@ showJobsCompletedDialog <- function(){
   showModal(modalDialog(
     title = lang$nav$hcubeMode$jobsCompletedDialog$title,
     lang$nav$hcubeMode$jobsCompletedDialog$desc,
-  fade = TRUE, easyClose = TRUE))
+    fade = TRUE, easyClose = TRUE))
 }
 showJobHistoryDialog <- function(jobMeta, hcubeMode = TRUE){
   showModal(modalDialog(
@@ -1205,7 +1261,7 @@ addHcubeLoadBlock <- function(id, choices){
     where = "beforeEnd",
     ui = tags$div(id = "block" %+% id, style="position:relative;", if(id > 1L){
       tags$div(tags$hr(),
-      tags$div(class = "or-sign", lang$nav$hcubeLoad$orButton))
+               tags$div(class = "or-sign", lang$nav$hcubeLoad$orButton))
     },
     tags$div(class="and-wrapper", 
              tags$div(class="and-sign", "&"),

@@ -1,5 +1,5 @@
 # rendering output tables and graphs
-renderOutputData <- function(rendererEnv){
+renderOutputData <- function(rendererEnv, views){
   progress <- Progress$new()
   on.exit(progress$close())
   progress$set(message = lang$progressBar$renderOutput$title, value = 0)
@@ -34,7 +34,7 @@ renderOutputData <- function(rendererEnv){
       callModule(renderData, "tab_" %+% i, type = configGraphsOut[[i]]$outType, data = rendererData,
                  configData = scalarData[["scen_1_"]], dtOptions = configGraphsOut[[i]]$datatable, graphOptions = configGraphsOut[[i]]$graph, 
                  pivotOptions = configGraphsOut[[i]]$pivottable, customOptions = configGraphsOut[[i]]$options,
-                 roundPrecision = roundPrecision, modelDir = modelDir, rendererEnv = rendererEnv$output)
+                 roundPrecision = roundPrecision, modelDir = modelDir, rendererEnv = rendererEnv$output, views = views)
       callModule(renderData, "table-out_" %+% i, type = "datatable", data = scenData[["scen_1_"]][[i]],
                  dtOptions = configGraphsOut[[i]]$datatable , roundPrecision = roundPrecision)
     }, error = function(e) {

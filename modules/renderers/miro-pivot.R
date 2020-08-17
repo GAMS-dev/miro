@@ -7,6 +7,7 @@ getIndexLists <- function(setIndices, options = list()){
   
   for(id in c("cols", "filter", "aggregations")) {
     indexIds <- match(names(options[[id]]), unassignedSetIndices)
+    indexIds <- indexIds[!is.na(indexIds)]
     indices[[id]] <- unassignedSetIndices[indexIds]
     if(length(indexIds))
       unassignedSetIndices <- unassignedSetIndices[-indexIds]
@@ -22,7 +23,7 @@ genIndexList <- function(indexList) {
 }
 createBootstrapDropdownChoices <- function(el, eventId, deleteEventId = NULL){
   tags$li(id = paste0(eventId, "_", el$id), style = "display:flex;position:relative;",
-          tags$a(class="dropdown-item", role = "button", htmltools::htmlEscape(el$alias), 
+          tags$a(class="dropdown-item", role = "button", el$alias, 
                  style = "width: 100%",
                  onClick = paste0("Shiny.setInputValue('", eventId, "','",
                                   el$id, "',{priority:\'event\'});")),
@@ -86,23 +87,22 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                                    class="drop-index-list filter-index-list",
                                    genIndexList(indices$filter)
                            ),
-                           if(isTRUE(options$enablePersistentViews)){
+                           if(!isFALSE(options$enablePersistentViews)){
                              tagList(
                                actionButton(ns("saveView"), label = NULL, icon = icon("plus-square"), 
                                             title = options$lang$btNewView),
                                downloadButton(ns("downloadCsv"), label = NULL,
                                               title = options$lang$btDownloadCsv),
                                tags$div(class="dropdown", style = "margin-top:10px;",
-                                        tags$button(class="btn btn-default dropdown-toggle",
-                                                    type = "button", id=ns("toggleViewButton"),
+                                        tags$button(class="btn btn-default dropdown-toggle btn-dropdown",
+                                                    type = "button", id = ns("toggleViewButton"),
                                                     `data-toggle`="dropdown", `aria-haspopup`="true",
                                                     `aria-expanded` = "false", style = "width:100%",
-                                                    options$lang$btLoadView, tags$span(class = "caret")),
-                                        tags$ul(id = ns("savedViewsDD"), class = "dropdown-menu",
+                                                    options$lang$btLoadView, tags$span(
+                                                      class = "caret btn-dropdown-caret")),
+                                        tags$ul(id = ns("savedViewsDD"), class = "dropdown-menu btn-dropdown-menu",
                                                 `aria-labelledby` = ns("toggleViewButton"),
-                                                createBootstrapDropdownChoices(list(id = "c21f969b5f03d33d43e04f8f136e7682", 
-                                                                                    alias = "default"), 
-                                                                               ns("savedViews"))))
+                                        ))
                              )
                            }else{
                              downloadButton(ns("downloadCsv"), label = options$lang$btDownloadCsv)
@@ -165,7 +165,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
   )
 }
 
-renderMiroPivot <- function(input, output, session, data, options = NULL, path = NULL, roundPrecision = 2L, rendererEnv = NULL){ 
+renderMiroPivot <- function(input, output, session, data, options = NULL, path = NULL, roundPrecision = 2L, rendererEnv = NULL, views = NULL){ 
   ns <- session$ns
   
   valueColName <- names(data)[length(data)]
@@ -253,7 +253,8 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
                                                        as.character)))
     }
     
-    if(length(options[["pivotRenderer"]])){
+    if(length(options[["pivotRenderer"]]) &&
+       options[["pivotRenderer"]] %in% c("table", "line", "bar", "stackedbar", "radar")){
       updateSelectInput(session, "pivotRenderer", selected = options[["pivotRenderer"]])
     }else{
       updateSelectInput(session, "pivotRenderer", selected = "table")
@@ -262,7 +263,8 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
                     aggregations = unname(indices$aggregations),
                     cols = unname(indices$cols))
     if(length(domainFilterDomains)){
-      if(length(options[["domainFilter"]][["default"]])){
+      if(length(options[["domainFilter"]][["default"]]) &&
+         options[["domainFilter"]][["default"]] %in% domainFilterDomains){
         updateTabsetPanel(session, "domainFilter", 
                           selected = options[["domainFilter"]][["default"]])
         newView$domainFilter <- options[["domainFilter"]][["default"]]
@@ -275,7 +277,8 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
     if(initInterface){
       # we need to update aggregation functions in case the symbol type is not available when rendering the UI
       # (e.g. in Configuration Mode)
-      if(length(options[["aggregationFunction"]])){
+      if(length(options[["aggregationFunction"]]) &&
+         options[["aggregationFunction"]] %in% aggregationFunctions){
         updateSelectInput(session, "aggregationFunction", choices = aggregationFunctions, 
                           selected = options[["aggregationFunction"]])
       }else{
@@ -283,7 +286,8 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
                           selected = aggregationFunctions[[1]])
       }
     }else{
-      if(length(options[["aggregationFunction"]])){
+      if(length(options[["aggregationFunction"]]) &&
+         options[["aggregationFunction"]] %in% aggregationFunctions){
         updateSelectInput(session, "aggregationFunction",
                           selected = options[["aggregationFunction"]])
       }else{
@@ -312,14 +316,32 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
   names(setIndexAliases) <- setIndices
   currentView <- options
   
-  if(isTRUE(options$enablePersistentViews)){
-    if(!length(rendererEnv[[ns(options[["_metadata_"]]$symname)]])){
-      rendererEnv[[ns(options[["_metadata_"]]$symname)]] <- list("c21f969b5f03d33d43e04f8f136e7682" =
-                                                                   list(name = "default"))
+  if(!isFALSE(options$enablePersistentViews)){
+    updateViewList <- function(){
+      removeUI(paste0("#", ns("savedViewsDD"), " li"), multiple = TRUE)
+      
+      viewChoices <- lapply(views$getIds(session), function(viewId){
+        createBootstrapDropdownChoices(list(id = htmlIdEnc(viewId), 
+                                            alias = viewId), 
+                                       ns("savedViews"), ns("deleteView"))
+      })
+      insertUI(paste0("#", ns("savedViewsDD")), 
+               c(list(createBootstrapDropdownChoices(list(id = "iZGVmYXVsdA--", 
+                                                          alias = "default"), 
+                                                     ns("savedViews"))),
+                 viewChoices), 
+               where = "beforeEnd")
+    }
+    updateViewList()
+    readonlyViews <- views$isReadonly(session)
+    if(readonlyViews){
+      disableEl(session, paste0("#", ns("saveView")))
+    }else{
+      views$registerUpdateCallback(session, updateViewList)
     }
     
     rendererEnv[[ns("saveView")]] <- observe({
-      if(is.null(input$saveView) || initData || input$saveView == 0L){
+      if(is.null(input$saveView) || initData || input$saveView == 0L || readonlyViews){
         return()
       }
       showModal(modalDialog(tags$div(id = ns("errUniqueName"), class = "gmsalert gmsalert-error", 
@@ -337,20 +359,18 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
     })
     rendererEnv[[ns("saveViewConfirm")]] <- observe({
       if(is.null(input$saveViewConfirm) || initData || 
-         input$saveViewConfirm == 0L){
+         input$saveViewConfirm == 0L || readonlyViews){
         return()
       }
       isolate({
         if(identical(input$newViewName, "")){
           return()
         }
-        if(input$newViewName %in% vapply(rendererEnv[[ns(options[["_metadata_"]]$symname)]], 
-                                         "[[", character(1L), "name", USE.NAMES = FALSE)){
+        if(input$newViewName %in% c("default", views$getIds(session))){
           showEl(session, paste0("#", ns("errUniqueName")))
           return()
         }
-        newViewConfig <- list(name = input$newViewName,
-                              aggregationFunction = input$aggregationFunction,
+        newViewConfig <- list(aggregationFunction = input$aggregationFunction,
                               pivotRenderer = input$pivotRenderer,
                               domainFilter = list(default = input$domainFilter))
         for(indexEl in list(c("rows", "rowIndexList"))){
@@ -371,47 +391,42 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
             newViewConfig[[indexEl[[1]]]] <- filterElList
           }
         }
-        viewId <- digest::digest(input$newViewName, 
-                                 "md5", serialize = FALSE)
         insertUI(paste0("#", ns("savedViewsDD")), 
-                 createBootstrapDropdownChoices(list(id = viewId, 
-                                                     alias = newViewConfig$name), 
+                 createBootstrapDropdownChoices(list(id = htmlIdEnc(input$newViewName), 
+                                                     alias = input$newViewName), 
                                                 ns("savedViews"), ns("deleteView")), 
                  where = "beforeEnd")
-        newViewConfig <- list(newViewConfig)
-        names(newViewConfig) <- viewId
-        rendererEnv[[ns(options[["_metadata_"]]$symname)]] <<- c(rendererEnv[[ns(options[["_metadata_"]]$symname)]],
-                                                                 newViewConfig)
+        views$add(session, input$newViewName, newViewConfig)
       })
       removeModal(session)
     })
     rendererEnv[[ns("deleteView")]] <- observe({
-      if(is.null(input$deleteView) || initData){
+      if(is.null(input$deleteView) || initData || readonlyViews){
         return()
       }
-      viewId <- input$deleteView
+      viewId <- htmlIdDec(input$deleteView)
       if(length(viewId) != 1L || 
-         !viewId %in% names(rendererEnv[[ns(options[["_metadata_"]]$symname)]])){
+         !viewId %in% c("default", views$getIds(session))){
         flog.error("Invalid view id: '%s' attempted to be removed This looks like an attempt to tamper with the app!",
                    input$deleteView)
         return()
       }
-      rendererEnv[[ns(options[["_metadata_"]]$symname)]][[viewId]] <- NULL
-      removeUI(paste0("#", ns("savedViews"), "_", viewId))
+      views$remove(session, viewId)
+      removeUI(paste0("#", ns("savedViews"), "_", stri_replace_all(input$deleteView, "\\.", fixed = ".")))
     })
     rendererEnv[[ns("savedViews")]] <- observe({
       if(is.null(input$savedViews) || initData){
         return()
       }
-      viewId <- input$savedViews
+      viewId <- htmlIdDec(input$savedViews)
       if(length(viewId) != 1L || 
-         !viewId %in% names(rendererEnv[[ns(options[["_metadata_"]]$symname)]])){
+         !viewId %in% c("default", views$getIds(session))){
         flog.error("Invalid view id: '%s' attempted to be loaded. This looks like an attempt to tamper with the app!",
                    input$savedViews)
         return()
       }
-      currentView <<- if(identical(viewId, "c21f969b5f03d33d43e04f8f136e7682")) options else 
-        rendererEnv[[ns(options[["_metadata_"]]$symname)]][[viewId]]
+      currentView <<- if(identical(viewId, "default")) options else 
+        views$get(session, viewId)
       resetView(currentView, options[["domainFilter"]]$domains)
     })
   }
@@ -462,8 +477,8 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
         }
       }
       selectizeInput(ns(paste0("filter_", filterIndex)), setIndexAliases[[filterIndex]], 
-                     choices = if(allowEmpty) c(allPlaceholder, filterElements[[filterIndex]])
-                     else filterElements[[filterIndex]], 
+                     choices = if(allowEmpty) c(allPlaceholder, as.character(filterElements[[filterIndex]]))
+                     else as.character(filterElements[[filterIndex]]), 
                      selected = selectedFilterVal, multiple = TRUE,
                      options = list('plugins' = list('remove_button')))
     }
@@ -511,7 +526,7 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
   
   lapply(setIndices, function(filterIndex){
     rendererEnv[[ns(paste0("filter_", filterIndex))]] <- observe({
-      if(is.null(input[[paste0("filter_", filterIndex)]]) || initData){
+      if(is.null(input[[paste0("filter_", filterIndex)]])){
         if(!filterIndex %in% isolate(c(input$aggregationIndexList, input$colIndexList))){
           return()
         }

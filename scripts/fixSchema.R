@@ -22,4 +22,4 @@ fixRequired <- function(schema){
   }
   return(recurseFixRequired(schema))
 }
-write_json(fixRequired(schema), "conf/language_schema.json", pretty = TRUE, auto_unbox = TRUE, null = "null")
+jsonlite::write_json(fixRequired(schema), "conf/language_schema.json", pretty = TRUE, auto_unbox = TRUE, null = "null")

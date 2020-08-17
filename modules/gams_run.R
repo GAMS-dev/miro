@@ -940,7 +940,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
         switchTab(session, "output")
         updateTabsetPanel(session, "scenTabset",
                           selected = "results.current")
-        renderOutputData(rendererEnv)
+        renderOutputData(rendererEnv, views)
         
         markUnsaved()
       }

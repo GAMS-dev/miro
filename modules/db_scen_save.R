@@ -166,6 +166,9 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
       }else{
         rv$activeSname <<- input$scenName
       }
+      if(isTRUE(input$newScenDiscardViews)){
+        views$clearConf()
+      }
     }
     if(is.null(activeScen)){
       activeScen <<- Scenario$new(db = db, sname = isolate(rv$activeSname), 
@@ -173,6 +176,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
                                   isNewScen = TRUE, duplicatedMetadata = duplicatedMetadata)
       scenTags   <<- NULL
     }
+    activeScen$updateViewConf(views$getConf())
     activeScen$save(scenData[[scenStr]], msgProgress = lang$progressBar$saveScenDb)
     if(saveOutput){
       if(config$saveTraceFile && length(traceData)){
@@ -201,7 +205,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   }
   if(!saveOutput){
     # remove output from UI
-    renderOutputData(rendererEnv)
+    renderOutputData(rendererEnv, views)
   }
   
   # reset dirty flag and unsaved status
@@ -211,14 +215,17 @@ observeEvent(input$btEditMeta, {
   req(activeScen)
   
   attachmentMetadata <- NULL
+  viewsMetadata <- NULL
   if(config$activateModules$attachments){
     attachmentList <<- activeScen$fetchAttachmentList()
     attachmentMetadata <- attachmentList
+    viewsMetadata <- views$getSummary(modelInRaw, modelOut)
   }
   showEditMetaDialog(activeScen$getMetadata(c(uid = "uid", sname = "sname", stime = "stime", stag = "stag",
                                               readPerm = "readPerm", writePerm = "writePerm", execPerm = "execPerm"), noPermFields = FALSE), 
                      allowAttachments = config$activateModules$attachments, 
                      attachmentMetadata = attachmentMetadata, 
+                     viewsMetadata = viewsMetadata,
                      attachAllowExec = attachAllowExec, 
                      ugroups = c(uid, csv2Vector(ugroups)),
                      isLocked = length(activeScen) != 0L && length(activeScen$getLockUid()) > 0L)
@@ -327,6 +334,9 @@ observeEvent(input$btUpdateMeta, {
 })
 
 if(config$activateModules$attachments){
+  ################################################
+  #            ATTACHMENTS
+  ################################################
   lapply(seq_len(attachMaxNo), function(i){
     observeEvent(input[["btRemoveAttachment_" %+% i]], {
       req(nchar(attachmentList[["name"]][[i]]) > 0L, activeScen)
@@ -435,5 +445,110 @@ if(config$activateModules$attachments){
              })
     })
     hideEl(session, "#addAttachLoading")
+  })
+  ################################################
+  #            VIEWS
+  ################################################
+  updateViewsTable <- function(){
+    newViewData <- views$getSummary(modelInRaw, modelOut)
+    session$sendCustomMessage("gms-updateTable", 
+                              list(id = "currentViewsTable", hierarchical = TRUE,
+                                   valCol = 2L,
+                                   data = list(I(newViewData[["symAlias"]]),
+                                               I(newViewData[["id"]]),
+                                               I(newViewData[["symName"]]))))
+  }
+  observeEvent(input$removeViews, {
+    req(activeScen)
+    showEl(session, "#addViewsLoading")
+    flog.debug("Request to remove views received.")
+    on.exit(hideEl(session, "#addViewsLoading"))
+    
+    viewsToRemove <- tryCatch({
+      fromJSON(input$removeViews,
+               simplifyMatrix = FALSE)
+    }, error = function(e){
+      flog.error("Problems parsing request to remove views. This seems like an attempt to tamper with the app! Error message: %s.",
+                 conditionMessage(e))
+      return(NULL)
+    })
+    if(is.null(viewsToRemove)){
+      return()
+    }
+    if(length(viewsToRemove) == 0){
+      showHideEl(session, "#viewsNoneSelected", delay = 4000L)
+      return()
+    }
+    
+    if(tryCatch({
+      views$removeConf(viewsToRemove)
+      FALSE
+    }, error = function(e){
+      flog.warn("Problems removing rows from table: %s. Error message: %s.",
+                as.character(input$removeViews), conditionMessage(e))
+      return(TRUE)
+    })){
+      showHideEl(session, "#viewsUnknownError", 4000L)
+      return()
+    }
+    updateViewsTable()
+  })
+  output$downloadViews <- downloadHandler(
+    filename = function() {
+      scenName <- isolate(rv$activeSname)
+      if(!length(scenName)){
+        scenName <- lang$nav$dialogNewScen$newScenName
+      }
+      return(paste0(scenName, "_views.json"))
+    },
+    content = function(file){
+      flog.debug("Request to download views received.")
+      tryCatch(write_file(views$getJSON(fromJSON(input$downloadViews,
+                                                 simplifyMatrix = FALSE)), file),
+               error = function(e){
+                 flog.warn("Problems writing views JSON file. Error message: %s",
+                           conditionMessage(e))
+                 return(writeLines('{"error": "Some problem occurred while writing views."}', file))
+               })
+    }, contentType = "application/json"
+  )
+  observeEvent(input$file_addViews$datapath, {
+    req(activeScen)
+    flog.debug("New view configuration uploaded.")
+    showEl(session, "#addViewsLoading")
+    on.exit(hideEl(session, "#addViewsLoading"))
+    
+    if(!identical(try(tolower(tools::file_ext(input$file_addViews$datapath)),
+                      silent = TRUE), "json")){
+      showHideEl(session, "#viewsInvalidDataError", 4000L)
+      return()
+    }
+    
+    if(tryCatch({
+      views$addConf(fromJSON(read_file(input$file_addViews$datapath),
+                             simplifyDataFrame = FALSE, simplifyVector = FALSE))
+      invalidViews <- views$getInvalidViews()
+      if(length(invalidViews)){
+        showHideEl(session, "#viewsCustomError",
+                   msg = sprintf(lang$nav$dialogEditMeta$viewsInvalidError,
+                                 paste(invalidViews, collapse = "', '")), 4000L)
+      }
+      FALSE
+    }, error = function(e){
+      flog.info("Problems adding views configuration. Error message: %s",
+                conditionMessage(e))
+      showHideEl(session, "#viewsInvalidDataError", 4000L)
+      TRUE
+    })){
+      return()
+    }
+    duplicatedViews <- views$getDuplicatedViews()
+    if(length(duplicatedViews)){
+      showHideEl(session, "#viewsCustomError",
+                 msg = sprintf(lang$nav$dialogEditMeta$viewsDuplicateError,
+                               paste(duplicatedViews, collapse = "', '")),
+                 4000L)
+    }
+    updateViewsTable()
   })
 }
