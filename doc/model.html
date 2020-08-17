@@ -251,6 +251,24 @@ Positive Variable x;
                                             </div><!--//content-->
                                         </div><!--//callout-block-->
                                     </div><!--//section-block-->
+                                    <div id="data-contract" class="section-block">
+                                        <h3 class="block-title">The GAMS/MIRO data contract</h3>
+                                        <p>All GAMS symbols, which are marked with the <code class="language-gams">$onExternalInput
+                                        </code> / <code class="language-gams">$offExternalInput
+                                        </code> or <code class="language-gams">$onExternalOutput
+                                        </code> / <code class="language-gams">$offExternalOutput
+                                        </code> tags define the <i>GAMS/MIRO data contract</i>. This contract contains the metadata of all included symbols and is generated automatically each time MIRO is run in <a href = "./model.html#development-mode">development mode</a>. It is stored in the <i>&lt;modelname&gt;_io.json</i> file located in the <i>conf_&lt;modelname&gt;</i> directory.</p>
+                                        <div class="callout-block callout-warning">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-info-circle"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <b class="callout-title">Warning:</b>
+                                              <p>The <i>&lt;modelname&gt;_io.json</i> file should never be touched!</p>
+                                          </div><!--//content-->
+                                        </div><!--//callout-block-->
+                                        <p>The database schema that GAMS MIRO uses internally depends directly on the structure of the symbols in the data contract. When you launch a MIRO application for the first time, database tables are created according to this schema. These tables are immutable, which means that you cannot easily overwrite the structure of the exported GAMS symbols at a later stage. If an affected symbol changes in the GAMS model (e.g. an index changes), you may use the <a href="#database" class="scrollto">admin mode</a> to remove the corresponding tables from the database.</p>
+                                    </div><!--//section-block-->
                             <section id="gams-symbols" class="doc-section">
                                 <h2 class="section-title">GAMS symbols</h2>
                                 <div  class="section-block">
@@ -388,7 +406,7 @@ $offExternalInput
                                     </div><!--//section-block-->
                                     <div id = "table-miro" class="section-block">
                                         <h5 class="block-title">Tables in MIRO</h5>
-                                        <p>The usage of a table statement affects the <a href = "./start.html#data-contract">data contract</a> between 
+                                        <p>The usage of a table statement affects the <a href = "./model.html#data-contract">data contract</a> between 
                                         GAMS and MIRO. Instead of the last dimension of the symbol, its elements are now communicated as columns. 
                                         The database schema that GAMS MIRO uses internally depends directly on the data contract between GAMS and MIRO, i.e. 
                                         the structure of your exported parameters, equations, variables, and quantities. When you save a scenario for the first time, database tables are created according to this schema. Since the data contract is immutable, the symbol columns created by the table statement are also immutable. This means that you can't easily change the structure of 
@@ -808,6 +826,7 @@ $log What you see here is the %fn%
                                 <nav class="doc-sub-menu nav flex-column">
                                     <a class="nav-link scrollto" href="#model-adjustments">Model adjustments</a>
                                     <a class="nav-link scrollto" href="#launch-miro">Launch MIRO</a>
+                                    <a class="nav-link scrollto" href="#data-contract">The GAMS/MIRO data contract</a>
                                 </nav><!--//nav-->
                                 <a class="nav-link scrollto" href="#gams-symbols">GAMS symbols</a>
                                   <nav class="doc-sub-menu nav flex-column">
