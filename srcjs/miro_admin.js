@@ -4,7 +4,6 @@ export { confirmModalShow, slideToggleEl } from './miro';
 
 /* global $:false Shiny:false showdown:false renderMathInElement:false */
 
-
 const converter = new showdown.Converter({
   tables: true,
   tasklists: true,
@@ -37,7 +36,6 @@ let outputSymbols = [];
 let outputSymbolsAliases = [];
 
 const inputArrayFactory = new InputArrayFactory();
-
 
 export function removeArrayEl(arrayID, elID) {
   inputArrayFactory.remove(arrayID, elID);
@@ -347,7 +345,7 @@ const arrayTypes = {
       leafFlow_lng1: ['select', lang.addLeafletFlows.lng1, indices, indexAliases, lng1 == null ? scalarIndices[0] : lng1],
       leafFlow_flow: ['select', lang.addLeafletFlows.flow, indices, indexAliases, flow == null ? scalarIndices[0] : flow],
       leafFlow_time: ['select', lang.addLeafletFlows.time, ['_'].concat(nonScalarIndices), ['_'].concat(nonScalarIndexAliases), time],
-      leafFlow_label: ['text', `${lang.addLeafletFlows.label}<a title="${lang.addLeafletFlows.labelTooltip}" class="info-wrapper" href="https://gams.com/miro/charts.html#unique-flow-label" target="_blank"><span class="fas fa-info-circle info-icon"></span></a>`, layerId == null ? '' : layerId],
+      leafFlow_label: ['text', `${lang.addLeafletFlows.label}<a title="${lang.addLeafletFlows.labelTooltip}" class="info-wrapper" href="https://gams.com/miro/charts.html#unique-flow-label" target="_blank"><span class="fas fa-info-circle info-icon" role="presentation" aria-label="More information"></span></a>`, layerId == null ? '' : layerId],
       optionsStart: ['optionsStart', lang.addLeafletFlows.options],
       leafFlow_color: ['color', lang.addLeafletFlows.color, color == null ? '' : color],
       leafFlow_minThickness: ['numeric', lang.addLeafletFlows.minThickness, minThickness == null ? 1 : minThickness, 0],

@@ -365,7 +365,7 @@ if(buildUI){
                                      lang$nav$dialogRemoveScen$cancelButton, '\', \'', 
                                      lang$nav$dialogRemoveScen$okButton, 
                                      '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
-                            <i class="fa fa-times"></i></button>'))
+                            <i class="fa fa-times" role="presentation" aria-label="', lang$nav$dialogRemoveScen$title, '"></i></button>'))
                 )
               ), status="primary", solidHeader = TRUE, width = 12L,
               tags$div(class="scen-header",
@@ -677,7 +677,7 @@ if(buildUI){
                                        lang$nav$dialogRemoveScen$cancelButton, '\', \'', 
                                        lang$nav$dialogRemoveScen$okButton, 
                                        '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
-                            <i class="fa fa-times"></i></button>'))
+                            <i class="fa fa-times" role="presentation" aria-label="', lang$nav$dialogRemoveScen$title, '"></i></button>'))
                   )
                 ), status="primary", solidHeader = TRUE, width = 12,
                 tags$div(class="scen-header",
@@ -685,7 +685,8 @@ if(buildUI){
                                   if(isTRUE(config$hasSymbolLinks)){
                                     tags$div(title = lang$nav$scen$tooltips$btSymbolLink, class = "scen-button-tt",
                                              tags$button(class = "btn btn-default scen-button", id = "btSymbolLink",
-                                                         tags$i(class = "fa fa-share"), 
+                                                         tags$i(class = "fa fa-share", role = "presentation",
+                                                                `aria-label` = "Load dataset as input data"), 
                                                          onclick = paste0("Miro.confirmModalShow('",
                                                                           lang$nav$dialogImport$title, "', '", 
                                                                           lang$nav$dialogImport$descOverwriteInput, "', '", 

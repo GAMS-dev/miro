@@ -1603,7 +1603,7 @@ if(!is.null(errMsg)){
             nameSuffix <- paste0(nameSuffix, ' <span class="badge badge-info">', scenUid, '</span>')
           }
           if(activeScen$isReadonlyOrLocked){
-            nameSuffix <- paste0(nameSuffix, ' <i class="fas fa-lock"></i>')
+            nameSuffix <- paste0(nameSuffix, ' <i class="fas fa-lock" role="presentation" aria-label="Readonly icon"></i>')
           }
           return(HTML(paste0(htmltools::htmlEscape(rv$activeSname), nameSuffix)))
         }
