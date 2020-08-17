@@ -1508,6 +1508,14 @@ nativeFileEnc <- function(path){
   }
   return(path)
 }
+htmlIdEnc <- function(string){
+  paste0("i", stri_replace_all(base64_enc(string), c("-", "_", "."), fixed = c("=", "/", "+"),
+                               vectorize_all = FALSE))
+}
+htmlIdDec <- function(string){
+  rawToChar(base64_dec(stri_replace_all(substring(string, 2), c("=", "/", "+"), fixed = c("-", "_", "."),
+                                        vectorize_all = FALSE)))
+}
 condition <- function(subclass, message, call = sys.call(-1), ...) {
   # taken from: Advanced R by Hadley Wickham (chapter about Debugging, 
   #   condition handling, and defensive programming)

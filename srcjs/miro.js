@@ -109,6 +109,41 @@ export function validateHcubeHash() {
   $('#hcHashLookup').addClass('invalidInput');
 }
 
+export function sendSelectedRowsRequest(tableId, shinyId, noneSelectedErrorId = null,
+  downloadLink = false) {
+  const data = [];
+
+  $(`#${tableId} tr.selected`).each(function () {
+    data.push($(this).children('td')
+      .map((i, el) => {
+        const { val } = el.dataset;
+        if (val != null && val !== '') {
+          return atob(val);
+        }
+        return el.innerText;
+      }).get());
+  });
+  if (noneSelectedErrorId && data.length === 0) {
+    showHideEl(`#${noneSelectedErrorId}`, 4000);
+    return;
+  }
+  Shiny.setInputValue(shinyId, JSON.stringify(data), {
+    priority: 'event',
+  });
+  if (downloadLink === true) {
+    setTimeout(() => {
+      $(`#${shinyId}`)[0].click();
+    }, 200);
+  }
+}
+
+export function selectAllRows(tableId) {
+  $(`#${tableId} tbody tr`).addClass('selected');
+}
+export function selectNoRow(tableId) {
+  $(`#${tableId} tbody tr`).removeClass('selected');
+}
+
 export async function jumpToLogMark(id) {
   switchTab('gamsinter');
   $('#logFileTabsset [data-value="mirolog"]').tab('show');
@@ -207,7 +242,7 @@ $(document).ready(() => {
   Shiny.addCustomMessageHandler('gms-switchTab', (el) => {
     switchTab(el);
   });
-  $('body').on('click', '.bt-highlight-1, .bt-highlight-2, .bt-highlight-3', function () {
+  $(document).on('click', '.bt-highlight-1, .bt-highlight-2, .bt-highlight-3', function () {
     const btn = $(this);
     if (btn.hasClass('dropdown-toggle')) {
       return;
@@ -442,6 +477,44 @@ ${data.data}</div>` : data.data);
     Shiny.setInputValue(`${data.id}:sortablejs.rank_list`,
       $.map(document.getElementById(data.id).children,
         (child) => $(child).attr('data-rank-id') || $.trim(child.innerText)));
+  });
+  Shiny.addCustomMessageHandler('gms-updateTable', (data) => {
+    const tableToUpdate = document.getElementById(data.id);
+    const noCols = tableToUpdate.rows[0].cells.length;
+    const noNewRows = data.data[0].length;
+    const { valCol } = data;
+    if (noNewRows === 0) {
+      document.getElementById(`${data.id}-wrapper`).style.display = 'none';
+      document.getElementById(`${data.id}-noData`).style.display = 'block';
+      return;
+    }
+    document.getElementById(`${data.id}-wrapper`).style.display = '';
+    document.getElementById(`${data.id}-noData`).style.display = 'none';
+
+    const $tbody = $(`#${data.id} tbody`);
+    const tbody = $tbody[0];
+    $tbody.children('tr').remove();
+
+    for (let i = 0; i < noNewRows; i++) {
+      const tr = document.createElement('tr');
+      tr.onclick = function () {
+        $(this).toggleClass('selected');
+      };
+      for (let j = 0; j < noCols; j++) {
+        const td = document.createElement('td');
+        if (j === 0 && valCol != null) {
+          td.dataset.val = btoa(data.data[valCol][i]);
+        }
+        if (i > 0 && data.hierarchical === true
+          && data.data[j][i] === data.data[j][i - 1]) {
+          td.appendChild(document.createTextNode(''));
+        } else {
+          td.appendChild(document.createTextNode(data.data[j][i]));
+        }
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    }
   });
   Shiny.addCustomMessageHandler('gms-populateMiroPivotFilters', (data) => {
     const { ns } = data;

@@ -666,6 +666,10 @@
               "type": "string",
               "minLength": 1
             },
+            "discardViews": {
+              "type": "string",
+              "minLength": 1
+            },
             "discardPerm": {
               "type": "string",
               "minLength": 1
@@ -703,7 +707,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 12
+          "minProperties": 13
         },
         "dialogNewHCJob": {
           "type": "object",
@@ -776,6 +780,10 @@
               "type": "string",
               "minLength": 1
             },
+            "categoryViews": {
+              "type": "string",
+              "minLength": 1
+            },
             "categoryAccessPerm": {
               "type": "string",
               "minLength": 1
@@ -832,6 +840,58 @@
               "type": "string",
               "minLength": 1
             },
+            "viewsSuccess": {
+              "type": "string",
+              "minLength": 1
+            },
+            "viewsInvalidData": {
+              "type": "string",
+              "minLength": 1
+            },
+            "viewsDuplicateError": {
+              "type": "string",
+              "minLength": 1
+            },
+            "viewsInvalidError": {
+              "type": "string",
+              "minLength": 1
+            },
+            "viewsNoneSelected": {
+              "type": "string",
+              "minLength": 1
+            },
+            "noViewData": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selectAllViews": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selectNoViews": {
+              "type": "string",
+              "minLength": 1
+            },
+            "viewsAdd": {
+              "type": "string",
+              "minLength": 1
+            },
+            "viewsTableHeaderSymbol": {
+              "type": "string",
+              "minLength": 1
+            },
+            "viewsTableHeaderId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "viewsDownload": {
+              "type": "string",
+              "minLength": 1
+            },
+            "viewsRemove": {
+              "type": "string",
+              "minLength": 1
+            },
             "errMsg": {
               "type": "string",
               "minLength": 1
@@ -845,7 +905,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 20
+          "minProperties": 33
         },
         "dialogEditMetaHC": {
           "type": "object",
@@ -863,6 +923,10 @@
               "type": "string",
               "minLength": 1
             },
+            "categoryViews": {
+              "type": "string",
+              "minLength": 1
+            },
             "categoryAccessPerm": {
               "type": "string",
               "minLength": 1
@@ -932,7 +996,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 20
+          "minProperties": 21
         },
         "dialogRemoteLogin": {
           "type": "object",

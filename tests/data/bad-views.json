@@ -1,0 +1,1 @@
+"cubeinput":{"schokolino":{"aggregationFunction":"sum","pivotRenderer":"table","domainFilter":{"default":"all_reg"},"rows":["soname","sow","com_grp","prc","allyear","all_reg","vintage","all_ts","uc_n"],"filter":{"scenario":"demo12"}}}}

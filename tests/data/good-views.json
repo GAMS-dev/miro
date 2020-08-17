@@ -1,0 +1,1 @@
+{"a":{"<script>alert('asd')<\/script>":{"aggregationFunction":"sum","pivotRenderer":"table","domainFilter":{"default":null},"filter":{"i":"San-Diego"}}},"idontexist":{"<script>alert('asd')<\/script>":{"aggregationFunction":"sum","pivotRenderer":"table","domainFilter":{"default":null},"filter":{"i":"San-Diego"}}}}

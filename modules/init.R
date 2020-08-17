@@ -1291,11 +1291,6 @@ if(is.null(errMsg)){
     if(!identical(graphConfig$outType, "miroPivot")){
       return(TRUE)
     }
-    # TODO: remove this warning when persistent views are fully supported
-    if(isTRUE(graphConfig$options$enablePersistentViews)){
-      warning("Persistent views in the MIRO Pivot renderer is an experimental feature. 
-              Do not use this feature in deployed applications, as they may break in future MIRO versions without warning!")
-    }
     if(length(graphConfig$options$aggregationFunction) &&
        !identical(graphConfig$options$aggregationFunction, "count") &&
        identical(graphConfig$options[["_metadata_"]]$symtype, "set")){
@@ -1534,6 +1529,7 @@ if(is.null(errMsg)){
                                '_scenLock' = scenLockTablePrefix %+% modelName,
                                '_scenTrc' = tableNameTracePrefix %+% modelName,
                                '_scenAttach' = tableNameAttachPrefix %+% modelName,
+                               '_scenViews' = tableNameViewsPrefix %+% modelName,
                                '_scenScripts' = tableNameScriptsPrefix %+% modelName,
                                '_jobMeta' = tableNameJobPrefix %+% modelName),
                    colNames = list('_scenMeta' = c(sid = sidIdentifier, uid = uidIdentifier, sname = snameIdentifier,
@@ -1547,6 +1543,8 @@ if(is.null(errMsg)){
                                                      execPerm = "execPerm",
                                                      content = "fileContent",
                                                      time = "timestamp"),
+                                   '_scenViews'  = c(sid = sidIdentifier, symname = "symName",
+                                                     id = "id", data = "data", time = "timestamp"),
                                    '_scenScripts' = c(sid = sidIdentifier, id = "id",
                                                      content = "scriptContent"),
                                    '_jobMeta' = c(jid = '_jid', uid = uidIdentifier,  
@@ -1556,7 +1554,7 @@ if(is.null(errMsg)){
                                                   scode = scodeIdentifier, sname = snameIdentifier)),
                    colTypes = c('_scenMeta' = "iccTcccci",
                                 '_scenLock' = "ciT", '_scenTrc' = "cccccdidddddiiiddddddc",
-                                '_scenAttach' = "icclbT", '_scenScripts' = "icc", '_jobMeta' = "iciTcciiic"))
+                                '_scenAttach' = "icclbT", '_scenViews' = "icccT", '_scenScripts' = "icc", '_jobMeta' = "iciTcciiic"))
   
   dbSchema$tabName  <- c(dbSchema$tabName, scenTableNames)
   scenColNamesTmp   <- lapply(c(modelOut, modelIn), function(el) return(names(el$headers)))
