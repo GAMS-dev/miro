@@ -217,14 +217,16 @@ generateScenarioTabsetMulti <- function(scenId, noData = vector("logical", lengt
                     tags$div(class = "scen-buttons-wrapper",
                              tags$div(title = lang$nav$scen$tooltips$btExport, class = "scen-button-tt",
                                       HTML(paste0('<button type="button" class="btn btn-default scen-button" 
-onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\'})"><i class="fas fa-download"></i></button>'))
+onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\'})"><i class="fas fa-download" role="presentation" aria-label="Download"></i></button>'))
                              ),
                              tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
                                       tags$button(class = "btn btn-default scen-button", 
                                                   id = paste0("btScenTableView", scenId), type = "button", 
                                                   onclick = paste0("Shiny.setInputValue('btScenTableView',",
                                                                    scenId, ",{priority:'event'})"),
-                                                  tags$i(class = "fa fa-chart-bar"))
+                                                  tags$i(class = "fa fa-chart-bar",
+                                                         role = "presentation",
+                                                         `aria-label` = "Table view"))
                                       )
                     )
                     
@@ -248,14 +250,16 @@ generateScenarioTabsetSplit <- function(scenId){
              tags$div(class = "scen-buttons-wrapper",
                       tags$div(title = lang$nav$scen$tooltips$btExport, class = "scen-button-tt",
                                HTML(paste0('<button type="button" class="btn btn-default scen-button" 
-onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\'})"><i class="fas fa-download"></i></button>'))
+onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\'})"><i class="fas fa-download" role="presentation" aria-label="Download"></i></button>'))
                       ),
                       tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
                                tags$button(class = "btn btn-default scen-button", 
                                            id = paste0("btScenTableView", scenId), type = "button", 
                                            onclick = paste0("Shiny.setInputValue('btScenTableView',",
                                                             scenId, ",{priority:'event'})"),
-                                           tags$i(class = "fa fa-chart-bar"))
+                                           tags$i(class = "fa fa-chart-bar",
+                                                  role = "presentation",
+                                                  `aria-label` = "Table view"))
                       )
              )
              

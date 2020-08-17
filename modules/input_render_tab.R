@@ -177,7 +177,7 @@ observeEvent(input$btGraphIn, {
                pivotOptions = configGraphsIn[[i]]$pivottable, 
                customOptions = configGraphsIn[[i]]$options,
                roundPrecision = roundPrecision, modelDir = modelDir,
-               rendererEnv = rendererEnv[[paste0("in_", i)]])
+               rendererEnv = rendererEnv[[paste0("in_", i)]], views = views)
   }, error = function(e) {
     flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", 
                modelInAlias[i], e)

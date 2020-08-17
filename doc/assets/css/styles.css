@@ -1481,3 +1481,14 @@ input[type=text], select {
   border-radius: 4px;
   box-sizing: border-box;
 }
+.page-wrapper .doc-section .api-header {
+  font-weight: normal;
+  font-size: 14pt;
+  margin-bottom: 5px;
+}
+.api-arguments {
+  margin: 10px 0;
+}
+.api-arguments td {
+  padding: 5px;
+}

@@ -80,7 +80,8 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
                                        `aria-haspopup` = "true",
                                        `aria-expanded` = "false",
                                        href = "#", btCollapsedTabs,
-                                       tags$i(class = "fa fa-angle-double-right")),
+                                       tags$i(class = "fa fa-angle-double-right",
+                                              `aria-hide` = "true")),
                                 tags$ul(class = "dropdown-menu maxTabsDropdown",
                                         ddLiTagList))))
   }
@@ -156,7 +157,9 @@ MIRObuildTabItem <- function(index, tabsetId, tabs = NULL,
                                      scenButtonLang[["okButton"]], 
                     "', 'Shiny.setInputValue(\\'btScenClose\\',", scenID, 
                     ",{priority:\\'event\\'})')"),
-                    tags$i(class = "fa fa-times"))
+                    tags$i(class = "fa fa-times",
+                           role = "presentation",
+                           `aria-label` = scenButtonLang[["title"]]))
     )
   )
   # if this tabPanel is selected item, mark it active

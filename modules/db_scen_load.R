@@ -256,6 +256,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
                                       msgProgress = lang$progressBar$loadScenDb)
       scriptDataTmp <- db$loadScriptResults(sidsToLoadVector,
                                             msgProgress = lang$progressBar$loadScenDb)
+      views$loadConf(db$importDataset(tableName = dbSchema$tabName[["_scenViews"]], 
+                                      subsetSids = sidsToLoadVector), isInSolveMode)
     }, error = function(e){
       flog.error("Some error occurred loading scenarios: '%s' from database. Error message: %s.", 
                  paste(sidsToLoad, collapse = ", "), e)
@@ -358,7 +360,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         noOutputData <<- FALSE
       }
       # rendering tables and graphs
-      renderOutputData(rendererEnv)
+      renderOutputData(rendererEnv, views)
       
       # load script results
       if(length(config$scripts$base)){
@@ -412,7 +414,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
           return(paste0(scenOwner, ": "))
         }, character(1L), USE.NAMES = FALSE), metadataFull[[3]])
         renderScenPivotCompare(scenData[scenIdsLong], scenNamesToCompare, 
-                               rendererEnv, lang$renderers$miroPivot, roundPrecision)
+                               rendererEnv, lang$renderers$miroPivot, views, roundPrecision)
       }else{
         sidsToLoadVector <- match(sidsInPivotCompTmp, metadataFull[[1]])
         sidsToLoadVector <- sidsToLoadVector[!is.na(sidsToLoadVector)]
@@ -423,7 +425,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
           return(paste0(scenOwner, ": "))
         }, character(1L), USE.NAMES = FALSE), metadataFull[["_sname"]][sidsToLoadVector])
         renderScenPivotCompare(scenDataTmp, scenNamesToCompare, 
-                               rendererEnv, lang$renderers$miroPivot, roundPrecision)
+                               rendererEnv, lang$renderers$miroPivot, views, roundPrecision)
       }
       hideEl(session, "#pivotCompBtWrapper")
       showEl(session, "#pivotCompScenWrapper")

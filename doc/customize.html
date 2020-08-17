@@ -1380,7 +1380,7 @@ renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path
   ns &#x3C;- NS(id)
 }
 
-render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL, ...){
+render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){
 }
                                         </code></pre>
                                     </div><!--//code-block-->
@@ -1390,7 +1390,7 @@ render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, session, data, op
                                         <pre><code class="language-r">transportMapOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
   ns &#x3C;- NS(id)
 }
-renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, ...){
+renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){
 }</code></pre>
                                     </div><!--//code-block-->
                                     <div class="callout-block callout-warning">
@@ -1418,7 +1418,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
   ns &#x3C;- NS(id)
   leafletOutput(ns(&#x22;map&#x22;), height = height)
 }
-renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, ...){
+renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){
   output$map &#x3C;- renderLeaflet(leaflet(data))
 }</code></pre>
                                       </div><!--//code-block-->
@@ -1461,7 +1461,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
     leafletOutput(ns(&#x22;map&#x22;))
   )
 }
-renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, ...){
+renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){
   output$title &#x3C;- renderText(options$title)
   output$map   &#x3C;- renderLeaflet(leaflet(data) %&#x3E;%
                                   addTiles() %&#x3E;%
@@ -1485,6 +1485,219 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                       </div>
                                       <p>You now know everything you need in order to get started writing your own custom renderers! Congratulations! In case you create a new renderer that you would like to share so that others can benefit from your work as well, please <a href="mailto:miro@gams.com" target="_blank">contact us</a>!
                                       </p>
+                                      <h4 id="custom-renderer-views">Views</h4>
+                                      <p>In cases where your renderers are interactive, you might want to allow users to store the current state of your renderer and load it later with a single click. This is what <i>MIRO views</i> were designed for. A MIRO view can be any (nested) list that is JSON serializable. Views are bound to a particular GAMS symbol and each view has a unique id. One example of a renderer where the MIRO views API is used is the <a href="./charts.html#pivot-chart">pivot table</a> renderer.</p>
+                                      <p>You might have already seen that there is another argument in the renderer function that we have not yet talked about: the <kbd>views</kbd> argument. This is a reference to an instance of the views R6 class. You can get, add and remove views as well as register callbacks via this object. The following section explains how to use the API.</p>
+                                      <h5>Get view data</h5>
+                                      <div class="code-block">
+                                        <pre><code class="language-r">
+views$get(session, id = NULL)
+                                        </code></pre>
+                                      </div><!--//code-block-->
+                                      <h6 class="api-header">Arguments</h6>
+                                      <table class="api-arguments">
+                                        <tbody>
+                                          <tr>
+                                            <th>session</th>
+                                            <td>The <kbd>session</kbd> object passed to the custom renderer</td>
+                                          </tr>
+                                          <tr>
+                                            <th>id</th>
+                                            <td>id of the view to load</td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+                                      <h6 class="api-header">Value</h6>
+                                      <p>In case <kbd>id</kbd> is <kbd>NULL</kbd>: a named list where the names are the ids of the views and the values are the view data.</p>
+                                      <p>In case <kbd>id</kbd> is not <kbd>NULL</kbd>: a list with the data of the view. Will throw an error in case the id provided does not exist.</p>
+                                      <h6 class="api-header">Description</h6>
+                                      <p>This method allows you to retrieve the data of views registered for the symbol. You can retrieve either the data of all views (<kbd>id</kbd> is <kbd>NULL</kbd>) or the data of a specific view (<kbd>id</kbd> not <kbd>NULL</kbd>).</p>
+                                      <h6 class="api-header">Example</h6>
+                                      <div class="code-block">
+                                        <pre><code class="language-r">
+# myViews <- list(filter1 = list(filter = list(element1 = "Value 1", element2 = c("Value 2", "Value 4"))),
+#                 filter2 = list(filter = list(element3 = "Value 7")))
+
+views$get(session, "filter1")
+#> $filter
+#> $filter$element1
+#> [1] "Value 1"
+#> 
+#> $filter$element2
+#> [1] "Value 2" "Value 4"
+
+views$get(session)
+#> $filter1
+#> $filter1$filter
+#> $filter1$filter$element1
+#> [1] "Value 1"
+#> 
+#> $filter1$filter$element2
+#> [1] "Value 2" "Value 4"
+#> 
+#> 
+#> 
+#> $filter2
+#> $filter2$filter
+#> $filter2$filter$element3
+#> [1] "Value 7"
+
+views$get(session, "filter3")
+#> Error: View with id: filter3 could not be found.
+                                        </code></pre>
+                                      </div><!--//code-block-->
+                                      <h5>Get view ids</h5>
+                                      <div class="code-block">
+                                        <pre><code class="language-r">
+views$getIds(session)
+                                        </code></pre>
+                                      </div><!--//code-block-->
+                                      <h6 class="api-header">Arguments</h6>
+                                      <table class="api-arguments">
+                                        <tbody>
+                                          <tr>
+                                            <th>session</th>
+                                            <td>The <kbd>session</kbd> object passed to the custom renderer</td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+                                      <h6 class="api-header">Value</h6>
+                                      <p>Character vector with the view ids registered for the symbol.</p>
+                                      <h6 class="api-header">Description</h6>
+                                      <p>Retrieves the view ids that are currently registered for the symbol. It is equivalent to <code class="language-r">names(views$get(session))</code>.</p>
+                                      <h6 class="api-header">Example</h6>
+                                      <div class="code-block">
+                                        <pre><code class="language-r">
+# myViews <- list(filter1 = list(filter = list(element1 = "Value 1", element2 = c("Value 2", "Value 4"))),
+#                 filter2 = list(filter = list(element3 = "Value 7")))
+
+views$getIds(session)
+#> [1] "filter1" "filter2"
+                                        </code></pre>
+                                      </div><!--//code-block-->
+                                      <h5>Add view</h5>
+                                      <div class="code-block">
+                                        <pre><code class="language-r">
+views$add(session, id, viewConf)
+                                        </code></pre>
+                                      </div><!--//code-block-->
+                                      <h6 class="api-header">Arguments</h6>
+                                      <table class="api-arguments">
+                                        <tbody>
+                                          <tr>
+                                            <th>session</th>
+                                            <td>The <kbd>session</kbd> object passed to the custom renderer</td>
+                                          </tr>
+                                          <tr>
+                                            <th>id</th>
+                                            <td>id of the view to add</td>
+                                          </tr>
+                                          <tr>
+                                            <th>viewConf</th>
+                                            <td>The view configuration</td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+                                      <h6 class="api-header">Description</h6>
+                                      <p>Adds/registers a new view. The view configuration can be any JSON serializable list. If a view with the same id already exists for the symbol, the previous view is replaced. In case the current renderer is read-only (not a sandbox scenario), an error is thrown. You can test whether the renderer is read-only with the method <code class="language-r">views$isReadonly(session)</code>.</p>
+                                      <h6 class="api-header">Example</h6>
+                                      <div class="code-block">
+                                        <pre><code class="language-r">
+# myViews <- list(filter1 = list(filter = list(element1 = "Value 1", element2 = c("Value 2", "Value 4"))),
+#                 filter2 = list(filter = list(element3 = "Value 7")))
+
+views$add(session, "filter3", list(filter = list(element4 = "Value 10")))
+                                        </code></pre>
+                                      </div><!--//code-block-->
+                                      <h5>Remove view</h5>
+                                      <div class="code-block">
+                                        <pre><code class="language-r">
+views$remove(session, id)
+                                        </code></pre>
+                                      </div><!--//code-block-->
+                                      <h6 class="api-header">Arguments</h6>
+                                      <table class="api-arguments">
+                                        <tbody>
+                                          <tr>
+                                            <th>session</th>
+                                            <td>The <kbd>session</kbd> object passed to the custom renderer</td>
+                                          </tr>
+                                          <tr>
+                                            <th>id</th>
+                                            <td>id of the view to remove</td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+                                      <h6 class="api-header">Description</h6>
+                                      <p>Removes a view with the specified id. If no view with this id exists, an error is thrown. In case the current renderer is read-only (not a sandbox scenario), an error is thrown. You can test whether the renderer is read-only with the method <code class="language-r">views$isReadonly(session)</code>.</p>
+                                      <h6 class="api-header">Example</h6>
+                                      <div class="code-block">
+                                        <pre><code class="language-r">
+# myViews <- list(filter1 = list(filter = list(element1 = "Value 1", element2 = c("Value 2", "Value 4"))),
+#                 filter2 = list(filter = list(element3 = "Value 7")))
+
+views$get(session)
+#> $filter1
+#> $filter1$filter
+#> $filter1$filter$element1
+#> [1] "Value 1"
+#> 
+#> $filter1$filter$element2
+#> [1] "Value 2" "Value 4"
+#> 
+#> 
+#> 
+#> $filter2
+#> $filter2$filter
+#> $filter2$filter$element3
+#> [1] "Value 7"
+
+views$remove(session, "filter2")
+
+views$get(session, "filter1")
+#> $filter
+#> $filter$element1
+#> [1] "Value 1"
+#> 
+#> $filter$element2
+#> [1] "Value 2" "Value 4"
+
+views$remove(session, "filter2")
+#> Error: View with id: filter2 does not exist, so it could not be removed.
+                                        </code></pre>
+                                      </div><!--//code-block-->
+                                      <h5>Register update callback</h5>
+                                      <div class="code-block">
+                                        <pre><code class="language-r">
+views$registerUpdateCallback(session, callback)
+                                        </code></pre>
+                                      </div><!--//code-block-->
+                                      <h6 class="api-header">Arguments</h6>
+                                      <table class="api-arguments">
+                                        <tbody>
+                                          <tr>
+                                            <th>session</th>
+                                            <td>The <kbd>session</kbd> object passed to the custom renderer</td>
+                                          </tr>
+                                          <tr>
+                                            <th>callback</th>
+                                            <td>a callback function</td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+                                      <h6 class="api-header">Description</h6>
+                                      <p>You can register a callback function that is triggered whenever the view data of a symbol is modified <b>outside</b> the renderer. This happens when a user modifies the view data via the <a href="./start.html#metadata-views">metadata dialog</a>. Note that the callback function is not triggered by the methods <code class="language-r">views$add</code> or <code class="language-r">views$remove</code> described above.</p>
+                                      <h6 class="api-header">Example</h6>
+                                      <div class="code-block">
+                                        <pre><code class="language-r">
+updateCallback <- function(){
+  print(sprintf("View data changed from outside! New view ids: %s.",
+                views$getIds(session)))
+}
+
+views$registerUpdateCallback(session, updateCallback)
+                                        </code></pre>
+                                      </div><!--//code-block-->
                                 </div><!--//section-block-->
                                 <div class="section-block" id="language-files">
                                   <h3 class="block-title">Language Files</h3> 

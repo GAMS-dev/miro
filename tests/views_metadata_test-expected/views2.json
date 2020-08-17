@@ -1,0 +1,1 @@
+{"a":{"<script>alert('asd')<\/script>":{"aggregationFunction":"sum","pivotRenderer":"bar","domainFilter":{"default":null},"filter":{"i":"San-Diego"}}},"b":{"<script>location.reload();<\/script>":{"aggregationFunction":"sum","pivotRenderer":"bar","domainFilter":{"default":null},"aggregations":{"j":["Chicago","New-york"]}}}}
