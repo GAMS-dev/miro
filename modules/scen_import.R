@@ -210,7 +210,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
       if(!is.null(outputData$scalar)){
         scalarData[["scen_1_"]] <<- outputData$scalar
       }
-      renderOutputData(rendererEnv)
+      renderOutputData(rendererEnv, views)
       noOutputData <<- FALSE
     }else{
       noOutputData <<- TRUE

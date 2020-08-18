@@ -303,6 +303,12 @@ Scenario <- R6Class("Scenario",
                             updateProgress(detail = msgProgress$progress)
                           }
                         }, datasets, private$tableNamesScenario)
+                        
+                        if(length(private$viewData)){
+                          super$exportScenDataset(private$bindSidCol(private$viewData),
+                                                  private$dbSchema$tabName[["_scenViews"]])
+                        }
+                        
                         private$scenSaved <- TRUE
                         # refresh lock for scenario
                         private$lock()
@@ -324,6 +330,18 @@ Scenario <- R6Class("Scenario",
                         }
                         super$exportScenDataset(private$bindSidCol(traceData), private$dbSchema$tabName[["_scenTrc"]])
                         private$scenSaved <- TRUE
+                        invisible(self)
+                      },
+                      updateViewConf = function(viewConf){
+                        if(!length(viewConf) || !nrow(viewConf)){
+                          return(invisible(self))
+                        }
+                        viewConfToSave <- fixColTypes(viewConf %>%
+                                                        add_column(time = Sys.time()),
+                                                      substring(private$dbSchema$colTypes[["_scenViews"]],
+                                                                2))
+                        names(viewConfToSave) <- private$dbSchema$colNames[["_scenViews"]][-1]
+                        private$viewData <- viewConfToSave
                         invisible(self)
                       },
                       addAttachments = function(filePaths, fileNames = NULL, forbiddenFnames = NULL, 
@@ -813,6 +831,7 @@ Scenario <- R6Class("Scenario",
                       scenSaved           = logical(1L),
                       newScen             = logical(1L),
                       traceData           = tibble(),
+                      viewData            = NULL,
                       duplicateAttachmentsOnNextSave = FALSE,
                       removeAllExistingAttachments = FALSE,
                       sidToDuplicate      = integer(0L),

@@ -103,7 +103,7 @@ closeScenario <- function(){
   })
   
   # reset model output data
-  renderOutputData(rendererEnv)
+  renderOutputData(rendererEnv, views)
   activeScenario    <<- NULL
   if(length(activeScen)){
     activeScen$cleanLocalFiles()

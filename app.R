@@ -79,7 +79,7 @@ if("gdxrrwMIRO" %in% installedPackages){
 }
 # vector of required files
 filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./components/gdxio.R", 
-                    "./components/json.R", "./components/load_scen_data.R", 
+                    "./components/json.R", "./components/views.R", "./components/load_scen_data.R", 
                     "./components/data_instance.R", "./components/worker.R", 
                     "./components/dataio.R", "./components/hcube_data_instance.R", 
                     "./components/miro_tabsetpanel.R", "./modules/render_data.R", 
@@ -967,9 +967,10 @@ if(!is.null(errMsg)){
     if(identical(miroDataDir, "")){
       miroDataDir   <- file.path(currentModelDir, paste0(miroDataDirPrefix, modelName))
     }
-    miroDataFiles <- list.files(miroDataDir)
+    miroDataFilesRaw <- list.files(miroDataDir)
+    dataFileExt   <- tolower(tools::file_ext(miroDataFilesRaw))
+    miroDataFiles <- miroDataFilesRaw[dataFileExt %in% c(if(useGdx) "gdx", "xlsx", "xls", "zip")]
     dataFileExt   <- tolower(tools::file_ext(miroDataFiles))
-    miroDataFiles <- miroDataFiles[dataFileExt %in% c(if(useGdx) "gdx", "xlsx", "xls", "zip")]
     newScen <- NULL
     tryCatch({
       if(length(miroDataFiles)){
@@ -1015,7 +1016,8 @@ if(!is.null(errMsg)){
             method <- dataFileExt[i]
             tmpDir <- miroDataDir
           }
-          newScen <- Scenario$new(db = db, sname = gsub("\\.[^\\.]*$", "", miroDataFile), isNewScen = TRUE,
+          scenName <- tools::file_path_sans_ext(miroDataFile)
+          newScen <- Scenario$new(db = db, sname = scenName, isNewScen = TRUE,
                                   readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
                                   execPerm = c(uidAdmin, ugroups), uid = uidAdmin)
           dataOut <- loadScenData(scalarsOutName, modelOut, tmpDir, modelName, scalarsFileHeaders,
@@ -1026,6 +1028,16 @@ if(!is.null(errMsg)){
                                   scalarsFileHeaders = scalarsFileHeaders,
                                   templates = modelInTemplateTmp, method = method,
                                   fileName = miroDataFile, DDPar = DDPar, GMSOpt = GMSOpt)$tabular
+          viewDataId <- match(paste0(tolower(scenName), "_views.json"), tolower(miroDataFilesRaw))
+          if(!is.na(viewDataId)){
+            flog.debug("Found view data for scenario: %s.", scenName)
+            views <- Views$new(names(modelIn),
+                               names(modelOut),
+                               inputDsNames)
+            views$addConf(fromJSON(read_file(file.path(miroDataDir, miroDataFilesRaw[viewDataId])),
+                                   simplifyDataFrame = FALSE, simplifyVector = FALSE))
+            newScen$updateViewConf(views$getConf())
+          }
           if(!scalarsFileName %in% names(metaDataTmp) && length(c(DDPar, GMSOpt))){
             # additional command line parameters that are not GAMS symbols
             scalarsTemplate <- tibble(a = character(0L), b = character(0L), c = character(0L))
@@ -1034,7 +1046,6 @@ if(!is.null(errMsg)){
           }else{
             newScen$save(c(dataOut, dataIn))
           }
-
           if(!debugMode && !file.remove(file.path(miroDataDir, miroDataFile))){
             flog.info("Could not remove file: '%s'.", miroDataFile)
           }
@@ -1053,7 +1064,8 @@ if(!is.null(errMsg)){
         }
       }
     }, error = function(e){
-      flog.error("Problems saving MIRO data to database. Error message: '%s'.", e)
+      flog.error("Problems saving MIRO data to database. Error message: '%s'.",
+                 conditionMessage(e))
       gc()
       if(miroStoreDataOnly){
         write("\n", stderr())
@@ -1148,6 +1160,12 @@ if(!is.null(errMsg)){
       # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
       sidCompOrder     <- NULL
       
+      rv <- reactiveValues(scenId = 4L, unsavedFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
+                           btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
+                           btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
+                           noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
+                           jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L)
+      
       worker <- Worker$new(metadata = list(uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
                                            tableNameTracePrefix = tableNameTracePrefix, maxSizeToRead = 5000,
                                            modelDataFiles = c(if(identical(config$fileExchange, "gdx")) 
@@ -1173,6 +1191,9 @@ if(!is.null(errMsg)){
       }
       rendererEnv        <- new.env(parent = emptyenv())
       rendererEnv$output <- new.env(parent = emptyenv())
+      views              <- Views$new(names(modelIn),
+                                      names(modelOut),
+                                      inputDsNames, rv)
       
       scenMetaData     <- list()
       # scenario metadata of scenario saved in database
@@ -1443,11 +1464,6 @@ if(!is.null(errMsg)){
         flog.debug("Working directory was created: '%s'.", workDir)
       }
       # initialization of several variables
-      rv <- reactiveValues(scenId = 4L, unsavedFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
-                           btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
-                           btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
-                           noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
-                           jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L)
       suppressCloseModal <- FALSE
       # list of scenario IDs to load
       sidsToLoad <- list()
@@ -1601,7 +1617,7 @@ if(!is.null(errMsg)){
             nameSuffix <- paste0(nameSuffix, ' <span class="badge badge-info">', scenUid, '</span>')
           }
           if(activeScen$isReadonlyOrLocked){
-            nameSuffix <- paste0(nameSuffix, ' <i class="fas fa-lock"></i>')
+            nameSuffix <- paste0(nameSuffix, ' <i class="fas fa-lock" role="presentation" aria-label="Readonly icon"></i>')
           }
           return(HTML(paste0(htmltools::htmlEscape(rv$activeSname), nameSuffix)))
         }

@@ -677,7 +677,9 @@ observeEvent({input$widget_type
                                                                          tags$a("", title = lang$adminMode$widgets$slider$minStepTooltip, 
                                                                                 class="info-wrapper",
                                                                                 href="https://gams.com/miro/widgets.html#slider-option-minstep", 
-                                                                                tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                                                tags$span(class="fas fa-info-circle", class="info-icon",
+                                                                                          role = "presentation",
+                                                                                          `aria-label` = "More information"), target="_blank")),
                                               value = rv$widgetConfig$minStep, min = 0L))),
                       tags$div(class = "shiny-input-container",
                                checkboxInput_MIRO("slider_ticks", lang$adminMode$widgets$slider$ticks,
@@ -944,7 +946,9 @@ observeEvent({input$widget_type
                                                     tags$div(lang$adminMode$widgets$dropdown$clearValue,
                                                              tags$a("", title = lang$adminMode$widgets$dropdown$clearValueTooltip, 
                                                                     class="info-wrapper", href="https://gams.com/miro/widgets.html#dropdown-option-clearvalue", 
-                                                                    tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                                    tags$span(class="fas fa-info-circle", class="info-icon",
+                                                                              role = "presentation",
+                                                                              `aria-label` = "More information"), target="_blank")),
                                                     rv$widgetConfig$clearValue)
                         )
                       },

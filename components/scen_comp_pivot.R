@@ -1,5 +1,5 @@
 renderScenPivotCompare <- function(scenData, scenNames, rendererEnv,
-                                   langData, roundPrecision = 2L){
+                                   langData, views, roundPrecision = 2L){
   scenIdLong     <- "scen_0_"
   outputDsNames  <- names(ioConfig$modelOut)
   scenTableNamesToDisplay <- tolower(ioConfig$scenTableNamesToDisplay)
@@ -45,7 +45,8 @@ renderScenPivotCompare <- function(scenData, scenNames, rendererEnv,
                  data = dataToRender,
                  customOptions = graphOptions,
                  roundPrecision = roundPrecision,
-                 rendererEnv = rendererEnv[[scenIdLong]])
+                 rendererEnv = rendererEnv[[scenIdLong]],
+                 views = views)
     }, error = function(e) {
       stop(sprintf("Problem rendering graphs for dataset: '%s'. Error message: %s.",
                    sheetName, conditionMessage(e)), call. = FALSE)
