@@ -126,6 +126,7 @@ if(is.null(errMsg)){
   modelPath    <- modelPath[[1]]
 }
 errMsg <- installAndRequirePackages(requiredPackages, installedPackages, RLibPath, CRANMirror, miroWorkspace, TRUE)
+installedPackages <<- installed.packages()[, "Package"]
 
 if(is.null(errMsg)){
   miroWorkspace <- NULL
