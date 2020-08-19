@@ -6,9 +6,10 @@ installAndRequirePackages <- function(requiredPackages, installedPackages, RLibP
     options(install.packages.check.source = "no")
     
     if(installMIROPackages){
-      packageVersionMap <- read.csv("miro-pkg-lock.csv", header = FALSE)
+      packageVersionMap <- read.csv("miro-pkg-lock.csv",
+                                    header = FALSE, stringsAsFactors = FALSE)
       packageVersionMap <- lapply(seq_len(nrow(packageVersionMap)), function(pkgIdx){
-        pkgInfo <- trimws(as.character(as.vector(packageVersionMap[pkgIdx, ])))
+        pkgInfo <- trimws(as.character(packageVersionMap[pkgIdx, ]))
         if(identical(pkgInfo[2], "")){
           return(pkgInfo[1])
         }
@@ -57,7 +58,6 @@ installAndRequirePackages <- function(requiredPackages, installedPackages, RLibP
       rm(installedPackagesTmp, packageVersionMap, buildDepInstalled)
     }else{
       customLibPath <- NULL
-      print(customPackages)
       customLibPath <- file.path(miroWorkspace, "custom_packages")
       if(!dir.exists(customLibPath) &&
          !dir.create(customLibPath, recursive = TRUE)){
@@ -82,9 +82,10 @@ installAndRequirePackages <- function(requiredPackages, installedPackages, RLibP
     
   }, error = function(e){
     if(exists("flog.fatal")){
-      flog.fatal("Problems loading required R packages. Error message: %s.", e)
+      flog.fatal("Problems loading required R packages. Error message: %s.", conditionMessage(e))
     }
-    errMsg <<- paste(errMsg, paste0("Not all the required packages are installed. Error message: ", e), sep = "\n")
+    errMsg <<- paste(errMsg, paste0("Not all the required packages are installed. Error message: ",
+                                    conditionMessage(e)), sep = "\n")
   })
   return(errMsg)
 }

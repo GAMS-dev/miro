@@ -76,6 +76,9 @@ if("gdxrrwMIRO" %in% installedPackages){
   useGdx <<- TRUE
   requiredPackages <- c(requiredPackages, "gdxrrwMIRO")
 }
+source("./components/install_packages.R")
+errMsg <- installAndRequirePackages(requiredPackages, installedPackages, RLibPath, CRANMirror, miroWorkspace, TRUE)
+installedPackages <<- installed.packages()[, "Package"]
 # vector of required files
 filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./components/gdxio.R", 
                     "./components/json.R", "./components/views.R", "./components/load_scen_data.R", 
@@ -83,7 +86,7 @@ filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./component
                     "./components/dataio.R", "./components/hcube_data_instance.R", 
                     "./components/miro_tabsetpanel.R", "./modules/render_data.R", 
                     "./modules/generate_data.R", "./components/script_output.R",
-                    "./components/install_packages.R", "./components/scen_comp_pivot.R")
+                    "./components/scen_comp_pivot.R")
 LAUNCHCONFIGMODE <- FALSE
 LAUNCHHCUBEMODE <<- FALSE
 if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
@@ -125,8 +128,6 @@ if(is.null(errMsg)){
   modelGmsName <- modelPath[[2]]
   modelPath    <- modelPath[[1]]
 }
-errMsg <- installAndRequirePackages(requiredPackages, installedPackages, RLibPath, CRANMirror, miroWorkspace, TRUE)
-installedPackages <<- installed.packages()[, "Package"]
 
 if(is.null(errMsg)){
   miroWorkspace <- NULL
