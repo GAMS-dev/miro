@@ -547,7 +547,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               return()
             }
           }
-          print(filterIndex)
           if(isFALSE(noUpdateFilterEl[[filterIndex]])){
             isolate({
               newVal <- updateFilter() + 1L
