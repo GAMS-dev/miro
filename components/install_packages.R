@@ -71,7 +71,6 @@ installAndRequirePackages <- function(requiredPackages, installedPackages, RLibP
                            repos = CRANMirror, dependencies = c("Depends", "Imports", "LinkingTo"))
         }
       }
-      rm(customPackages, customLibPath)
     }
 
     options(install.packages.check.source = checkSourceDefault)
