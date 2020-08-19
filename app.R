@@ -598,16 +598,16 @@ if(is.null(errMsg)){
                           if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"),
                           if(identical(installPackage$timevis, TRUE)) c("timevis"))
   }
+  errMsg <- installAndRequirePackages(unique(requiredPackages), installedPackages, RLibPath, CRANMirror, miroWorkspace)
   
   if(!is.null(requiredPackagesCR)){
     # add custom library path to libPaths
     .libPaths(c(.libPaths(), file.path(miroWorkspace, "custom_packages")))
-    installedPackages <<- installed.packages()[, "Package"]
-    requiredPackages <- c(requiredPackages, requiredPackagesCR)
+    installAndRequirePackages(unique(requiredPackagesCR), installedPackages,
+                              RLibPath, CRANMirror, miroWorkspace,
+                              attachPackages = FALSE)
     rm(requiredPackagesCR)
   }
- 
-  errMsg <- installAndRequirePackages(unique(requiredPackages), installedPackages, RLibPath, CRANMirror, miroWorkspace)
   options("DT.TOJSON_ARGS" = list(na = "string", na_as_null = TRUE))
   
   if(config$activateModules$remoteExecution && !LAUNCHCONFIGMODE){
@@ -637,7 +637,7 @@ if(is.null(errMsg)){
     flog.debug("Database connection established.")
   }, error = function(e){
     flog.error("Problems initialising database class. Error message: %s", e)
-    errMsg <<- conditionMessage(e)
+    errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
   })
   # initialise access management
   source("./components/db_auth.R")

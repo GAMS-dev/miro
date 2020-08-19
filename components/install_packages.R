@@ -1,4 +1,5 @@
-installAndRequirePackages <- function(requiredPackages, installedPackages, RLibPath, CRANMirror, miroWorkspace, installMIROPackages = FALSE){
+installAndRequirePackages <- function(requiredPackages, installedPackages, RLibPath, CRANMirror, miroWorkspace, installMIROPackages = FALSE,
+                                      attachPackages = TRUE){
   newPackages <- requiredPackages[!requiredPackages %in% installedPackages]
   errMsg <- NULL
   if(length(newPackages)){
@@ -75,17 +76,17 @@ installAndRequirePackages <- function(requiredPackages, installedPackages, RLibP
 
     options(install.packages.check.source = checkSourceDefault)
   }
-  
-  tryCatch({
-    suppressWarnings(suppressMessages(lapply(requiredPackages, library, character.only = TRUE, 
-                                             quietly = TRUE, verbose = FALSE, warn.conflicts = FALSE, lib.loc = RLibPath)))
-    
-  }, error = function(e){
-    if(exists("flog.fatal")){
-      flog.fatal("Problems loading required R packages. Error message: %s.", conditionMessage(e))
-    }
-    errMsg <<- paste(errMsg, paste0("Not all the required packages are installed. Error message: ",
-                                    conditionMessage(e)), sep = "\n")
-  })
+  if(attachPackages){
+    tryCatch({
+      suppressWarnings(suppressMessages(lapply(requiredPackages, library, character.only = TRUE, 
+                                               quietly = TRUE, verbose = FALSE, warn.conflicts = FALSE, lib.loc = RLibPath)))
+      
+    }, error = function(e){
+      if(exists("flog.fatal")){
+        flog.fatal("Problems loading required R packages. Error message: %s.", conditionMessage(e))
+      }
+      errMsg <<- paste0("Not all the required packages are installed. Error message: ", conditionMessage(e))
+    })
+  }
   return(errMsg)
 }
