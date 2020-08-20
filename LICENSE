@@ -136,7 +136,6 @@ these components are included below):
 - labeling https://github.com/cran/labeling or https://cran.r-project.org/web/packages/labeling/index.html
 - munsell https://github.com/cwickham/munsell/ or https://cran.r-project.org/web/packages/munsell/index.html
 - graphics https://github.com/zenspider/graphics or https://cran.r-project.org/web/packages/RGraphics/index.html
-- reshape2, https://github.com/hadley/reshape/ or https://cran.r-project.org/web/packages/reshape2/index.html
 - Matrix, https://cran.r-project.org/web/packages/Matrix/index.html
 - nlme, https://cran.r-project.org/web/packages/nlme/index.html
 - colorspace, https://cran.r-project.org/web/packages/colorspace/index.html
@@ -682,7 +681,6 @@ Section 8 -- Interpretation.
         - KaTeX, Copyright (c) 2013-2019 Khan Academy and other contributors
         - labeling, Copyright (c) 2014 Justin Talbot
         - munsell, Copyright (c) 2016 Charlotte Wickham
-        - reshape2, Copyright (c) 2008-2016 Hadley Wickham
         - plyr, Copyright (c) 2014 Hadley Wickham [aut, cre]
         - fastmap, Copyright (c) 2019 RStudio
         - bootstrap, Copyright (c) 2011-2019 Twitter, Inc. 
