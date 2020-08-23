@@ -905,7 +905,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 33
+          "minProperties": 34
         },
         "dialogEditMetaHC": {
           "type": "object",
