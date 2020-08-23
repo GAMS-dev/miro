@@ -672,6 +672,7 @@
       "btDownloadCsv": "CSV herunterladen",
       "btLoadView": "View laden",
       "btNewView": "View hinzufügen",
+      "btEnableEdit": "Bearbeitung aktivieren",
       "aggregateLabel": "aggregieren",
       "filterLabel": "filtern",
       "allPlaceholder": "Alle",
@@ -683,6 +684,11 @@
       "newViewBtSave": "Speichern",
       "pivotCompScenColName": "Szenario",
       "errUniqueViewName": "Der von Ihnen eingegebene Viewname existiert bereits. Bitte wählen Sie einen anderen Namen.",
+      "duplicateRecordTitle": "Doppelter Datensatz",
+      "duplicateRecordDesc": "Der von Ihnen eingegebene Datensatz ist bereits vorhanden.",
+      "errPivotDuplicate": "Die Daten enthalten doppelte Datensätze und können daher nicht gepivotisiert werden.",
+      "errPivot": "Die Daten konnten nicht gepivotisiert werden. Dies könnte daran liegen, dass Ihre Daten zu groß sind.",
+      "errorTitle": "Fehler",
       "aggregationFunctions":{
         "sum": "Summe",
         "count": "Anzahl",
@@ -700,7 +706,7 @@
       }
     }
   },
-  "errMsg":{  
+  "errMsg":{
     "unknownError": "Ein unerwarteter Fehler ist aufgetreten. Wenn dieses Problem weiterhin besteht, wenden Sie sich an einen Systemadministrator.",
     "permErr": "Die Operation ist fehlgeschlagen, weil Sie nicht über ausreichende Berechtigungen verfügen.",
     "fileRead":{  

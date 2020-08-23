@@ -140,6 +140,10 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                                                        genIndexList(indices$rows))),
                     column(width = 10L,
                            style = "min-height: 400px;",
+                           if(isTRUE(options$input)){
+                             actionButton(ns("enableEdit"), options$lang$btEnableEdit,
+                                          style = "display:none")
+                           },
                            tags$div(id = ns("errMsg"), class = "gmsalert gmsalert-error", 
                                     style = "position:static;margin-bottom:5px;"),
                            genSpinner(ns("loadPivotTable"), hidden = TRUE),
@@ -188,12 +192,41 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
     valueColName <- "value"
   }
   data <- mutate_if(data, is.character, as.factor)
+  
   noColDim <- 1L
   setIndices <- names(data)[-length(data)]
   
   noRowDim <- length(data) - 1L
   
   updateFilter <- reactiveVal(1L)
+  
+  isInput <- isTRUE(options$input)
+  isEditable <- FALSE
+  bigData <- FALSE
+  
+  if(isInput){
+    dataUpdated <- reactiveVal(1L)
+    if(nrow(data) < 5e+05){
+      isEditable <- TRUE
+      data <- unite(data, "__key__", !!!setIndices,
+                    remove = FALSE, sep = "\U2024", na.rm = FALSE)
+    }else{
+      bigData <- TRUE
+      showEl(session, paste0("#", ns("enableEdit")))
+      rendererEnv[[ns("enableEdit")]] <- observe({
+        if(is.null(input$enableEdit)){
+          return()
+        }
+        showEl(session, "#loading-screen")
+        on.exit(hideEl(session, "#loading-screen"))
+        data <<- unite(data, "__key__", !!!setIndices,
+                       remove = FALSE, sep = "\U2024", na.rm = FALSE)
+        isEditable <<- TRUE
+        hideEl(session, paste0("#", ns("enableEdit")))
+      })
+    }
+  }
+  
   noUpdateFilterEl <- logical(length(setIndices))
   names(noUpdateFilterEl) <- setIndices
   
@@ -553,16 +586,16 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
     domainFilter <- currentFilters()$domainFilter
     filterIndexList <- c(filterIndexList, aggFilterIndexList, colFilterIndexList)
     if(length(domainFilter)){
-      dataTmp <- data %>% filter(.data[[domainFilter]] != if(length(options$domainFilter$filterVal)) 
+      dataTmp <- data[-1] %>% filter(.data[[domainFilter]] != if(length(options$domainFilter$filterVal)) 
         options$domainFilter$filterVal else "\U00A0")
       if(!length(filterIndexList)){
         return(list(data = dataTmp, filterElements = list()))
       }
     }else{
       if(!length(filterIndexList)){
-        return(list(data = data, filterElements = list()))
+        return(list(data = data[-1], filterElements = list()))
       }
-      dataTmp <- data
+      dataTmp <- data[-1]
     }
     
     filterElements <- vector("list", length(filterIndexList))
@@ -634,6 +667,7 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
     rowIndexList <- c(rowIndexList, 
                       multiFilterIndices[!multiFilterIndices %in% c(aggIndexList, colIndexList)])
     if(length(aggIndexList)){
+      isEditable <<- FALSE
       if(identical(options[["_metadata_"]]$symtype, "parameter")){
         aggregationFunctionTmp <- input$aggregationFunction
         if(is.null(aggregationFunction)){
@@ -653,6 +687,8 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
             "sum(!is.na(value))"
           else
             paste0(aggregationFunction, "(value, na.rm = TRUE)")), .groups = "drop_last")
+    }else if(isInput){
+      isEditable <<- TRUE
     }
     if(length(rowIndexList)){
       dataTmp <- dataTmp %>% select(!!!c(rowIndexList, colIndexList, valueColName)) %>% 
@@ -662,9 +698,27 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
     }
     if(length(colIndexList)){
       # note that names_sep is not an ASCII full stop, but UNICODE U+2024
-      dataTmp <- dataTmp %>% 
-        pivot_wider(names_from = !!colIndexList, values_from = value, names_sep = "\U2024", 
-                    names_sort = TRUE, names_repair = "unique")
+      tryCatch({
+        dataTmp <- dataTmp %>% 
+          pivot_wider(names_from = !!colIndexList, values_from = value, names_sep = "\U2024", 
+                      names_sort = TRUE, names_repair = "unique")
+      }, warning = function(w){
+        if(grepl("list-cols", conditionMessage(w), fixed = TRUE)){
+          flog.trace("MIRO pivot: Data contains duplicated keys and can therefore not be pivoted.")
+          showErrorMsg(options$lang$errorTitle,
+                       options$lang$errPivotDuplicate)
+        }else{
+          flog.info("MIRO pivot: Unexpected warning while pivoting data. Error message: %s",
+                    conditionMessage(e))
+          showErrorMsg(options$lang$errorTitle,
+                       options$lang$errPivot)
+        }
+      }, error = function(e){
+        flog.info("MIRO pivot: Unexpected error while pivoting data. Error message: %s",
+                  conditionMessage(e))
+        showErrorMsg(options$lang$errorTitle,
+                     options$lang$errPivot)
+      })
     }
     attr(dataTmp, "noRowHeaders") <- length(rowIndexList)
     return(dataTmp)
@@ -765,7 +819,7 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
     hideEl(session, paste0("#", ns("loadPivotTable")))
     
     datatable(dataTmp, extensions = c("Scroller", "FixedColumns"), 
-              selection = "none",
+              selection = "none", editable = isEditable,
               container = DTbuildColHeaderContainer(names(dataTmp), 
                                                     noRowHeaders, 
                                                     unlist(setIndexAliases[names(dataTmp)[seq_len(noRowHeaders)]], 
@@ -801,4 +855,188 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
       formatRound(seq(noRowHeaders + 1, length(dataTmp)), 
                   digits = roundPrecision)
   })
+  
+  if(isInput){
+    dtProxy <- dataTableProxy(ns("pivotTable"))
+    
+    rendererEnv[[ns("editTable")]] <- observe({
+      info <- input[["pivotTable_cell_edit"]]
+      if(is.null(info)){
+        return()
+      }
+      if(bigData){
+        if(!identical("__key__", names(data)[1])){
+          flog.error("User edited input table even though it was readonly. This seems like an attempt to tamper with the app!")
+          return()
+        }
+        showEl(session, "#loading-screen")
+        on.exit(hideEl(session, "#loading-screen"))
+      }
+      isolate({
+        editedCol <- suppressWarnings(as.integer(info$col)) + 1L
+        newUpdateFilterVal <- updateFilter() + 1L
+        
+        if(is.na(editedCol) || length(editedCol) != 1L){
+          flog.error("MIRO pivot: Could not determine edited column.")
+          updateFilter(newUpdateFilterVal)
+          return()
+        }
+        if(tryCatch({
+          valueColName <- names(data)[length(data)]
+          dataHeaders   <- names(dataToRender())
+          noRowHeaders <- attr(dataToRender(), "noRowHeaders")
+          
+          rowIndices <- dataHeaders[seq_len(noRowHeaders)]
+          colIndices <- currentFilters()$cols
+          colIndices <- colIndices[colIndices != valueColName]
+          filterIndices <- currentFilters()$filter
+          filterIndices <- filterIndices[!filterIndices %in% c(filteredData()$multiFilterIndices, valueColName)]
+          
+          keyToReplace <- NULL
+          indexOrder <- match(c(rowIndices,
+                                colIndices,
+                                filterIndices), setIndices)
+          
+          rowToReplace <- slice(dataToRender(), info$row[1])
+          rowElements <- vapply(rowIndices, function(rowIndex){
+            as.character(rowToReplace[[rowIndex]][1])
+            }, character(1L), USE.NAMES = FALSE)
+          filterElements <- vapply(filterIndices, function(filterIndex){
+            return(input[[paste0("filter_", filterIndex)]])
+          }, character(1L), USE.NAMES = FALSE)
+          
+          if(length(colIndices)){
+            colHeaders <- dataHeaders[-seq_len(noRowHeaders)]
+            if(editedCol > noRowHeaders){
+              colElements <- strsplit(dataHeaders[editedCol], "\U2024", fixed = TRUE)[[1]]
+            }else if(length(colHeaders) == 1L){
+              colElements <- strsplit(colHeaders, "\U2024", fixed = TRUE)[[1]]
+            }else{
+              # key was edited while columns are pivoted -> need to (potentially) change multiple keys
+              colElementsList <- strsplit(colHeaders, "\U2024", fixed = TRUE)
+              keyToReplace <- vapply(colElementsList, function(colElements){
+                paste(c(rowElements,
+                        colElements,
+                        filterElements)[indexOrder],
+                      collapse = "\U2024")
+              }, character(1L), USE.NAMES = FALSE)
+              rowId <- vapply(keyToReplace, function(key){
+                which(key == data[["__key__"]])
+              }, integer(1L), USE.NAMES = FALSE)
+            }
+          }else{
+            colElements <- character()
+          }
+          
+          if(is.null(keyToReplace)){
+            keyVector <- c(rowElements,
+                           colElements,
+                           filterElements)
+            if(length(keyVector) < length(setIndices)){
+              stop("MIRO pivot: Could not determine row ID!", call. = FALSE)
+            }
+            keyVector <- keyVector[indexOrder]
+            keyToReplace <- paste(keyVector,
+                                  collapse = "\U2024")
+            rowId <- which(keyToReplace == data[["__key__"]])
+          }
+          if(!length(rowId)){
+            if(editedCol <= noRowHeaders || length(colElements) != 1L){
+              stop(sprintf("MIRO pivot: Could not find row with ID: '%s' in original data.",
+                           paste(keyToReplace, collapse = ", ")), call. = FALSE)
+            }
+            # value was added in a pivoted column that was empty/NA before
+          }
+          FALSE
+        }, error = function(e){
+          flog.error("MIRO pivot: Problems getting row to replace. Error message: %s",
+                     conditionMessage(e))
+          TRUE
+        })){
+          return()
+        }
+        if(editedCol > noRowHeaders){
+          # edited column is value column
+          editedVal <- suppressWarnings(as.numeric(info$value))
+          if(is.na(editedVal) || length(editedVal) != 1L){
+            if(identical(info$value, "")){
+              # delete row
+              if(!length(rowId)){
+                flog.debug("MIRO pivot: Edited value is not numeric!.")
+                return()
+              }
+              data <<- data[-c(rowId), ]
+              editedVal <- NA_real_
+              if(length(colElements) == 1L){
+                updateFilter(newUpdateFilterVal)
+                return()
+              }
+            }else{
+              flog.debug("MIRO pivot: Edited value is not numeric!.")
+              return()
+            }
+          }else{
+            if(length(rowId)){
+              data[rowId, length(data)] <<- editedVal
+            }else{
+              # need to add new row
+              data[nrow(data) + 1L, ] <<- c(list(keyToReplace),
+                                            as.list(keyVector),
+                                            list(editedVal))
+            }
+          }
+          newData <- dataToRender()
+          newData[info$row, editedCol] <- editedVal
+          replaceData(dtProxy, newData, resetPaging = FALSE)
+          
+          newVal <- dataUpdated() + 1L
+          dataUpdated(newVal)
+          return()
+        }
+        # edited column is key column
+        editedKey <- as.character(info$value)
+        if(is.na(editedKey) || length(editedKey) != 1L){
+          flog.info("MIRO pivot: Edited key is invalid!.")
+          updateFilter(newUpdateFilterVal)
+          return()
+        }
+        colId <- match(dataHeaders[editedCol], setIndices)
+        if(length(rowId) == 1L){
+          keyVector[colId] <- editedKey
+          newKey <- paste(keyVector,
+                          collapse = "\U2024")
+        }else{
+          rowElements[editedCol] <- editedKey
+          newKey <- vapply(colElementsList, function(colElements){
+            paste(c(rowElements,
+                    colElements,
+                    filterElements)[indexOrder],
+                  collapse = "\U2024")
+          }, character(1L), USE.NAMES = FALSE)
+        }
+        if(any(newKey %in% data[["__key__"]])){
+          return(showErrorMsg(options$lang$duplicateRecordTitle,
+                              options$lang$duplicateRecordDesc))
+        }
+        data[rowId, 1L] <<- newKey
+        if(editedKey %in% levels(data[[colId + 1L]])){
+          data[rowId, colId + 1L] <<- editedKey
+        }else{
+          levels(data[[colId + 1L]]) <<- c(levels(data[[colId + 1L]]), editedKey)
+          data[rowId, colId + 1L] <<- editedKey
+          # reorder factor column
+          data[[colId + 1L]] <<- factor(data[[colId + 1L]],
+                                        levels = unique(sort(levels(data[[colId + 1L]]))))
+        }
+        updateFilter(newUpdateFilterVal)
+      })
+    })
+    return(reactive({
+      dataUpdated()
+      if(identical(names(data)[1], "__key__")){
+        return(data[-1])
+      }
+      return(data)
+    }))
+  }
 }

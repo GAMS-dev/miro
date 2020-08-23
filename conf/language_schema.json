@@ -905,7 +905,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 33
+          "minProperties": 34
         },
         "dialogEditMetaHC": {
           "type": "object",
@@ -2454,6 +2454,10 @@
               "type": "string",
               "minLength": 1
             },
+            "btEnableEdit": {
+              "type": "string",
+              "minLength": 1
+            },
             "aggregateLabel": {
               "type": "string",
               "minLength": 1
@@ -2495,6 +2499,26 @@
               "minLength": 1
             },
             "errUniqueViewName": {
+              "type": "string",
+              "minLength": 1
+            },
+            "duplicateRecordTitle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "duplicateRecordDesc": {
+              "type": "string",
+              "minLength": 1
+            },
+            "errPivotDuplicate": {
+              "type": "string",
+              "minLength": 1
+            },
+            "errPivot": {
+              "type": "string",
+              "minLength": 1
+            },
+            "errorTitle": {
               "type": "string",
               "minLength": 1
             },
@@ -2557,7 +2581,7 @@
               "minProperties": 5
             }
           },
-          "minProperties": 16
+          "minProperties": 22
         }
       },
       "minProperties": 1

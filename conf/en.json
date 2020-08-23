@@ -631,6 +631,7 @@
       "btDownloadCsv": "Download CSV",
       "btLoadView": "Load view",
       "btNewView": "Add view",
+      "btEnableEdit": "Enable editing",
       "aggregateLabel": "aggregate",
       "filterLabel": "filter",
       "allPlaceholder": "All",
@@ -642,6 +643,11 @@
       "newViewBtSave": "Save",
       "pivotCompScenColName": "Scenario",
       "errUniqueViewName": "The view name you entered already exists. Please choose another name.",
+      "duplicateRecordTitle": "Duplicate record",
+      "duplicateRecordDesc": "The record you entered already exists.",
+      "errPivotDuplicate": "The data contains duplicate records and can therefore not be pivoted.",
+      "errPivot": "The data could not be pivoted. This could be because your data is too large.",
+      "errorTitle": "Error",
       "aggregationFunctions":{
         "sum": "Sum",
         "count": "Count",
@@ -700,7 +706,7 @@
       "success": "Import successful"
     }
   },
-  "errMsg":{  
+  "errMsg":{
     "unknownError": "An unexpected error occurred. If this problem persists, please contact a system administrator.",
     "permErr": "The operation failed because you do not have sufficient permissions.",
     "fileRead":{  
