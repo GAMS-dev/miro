@@ -453,6 +453,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           aggregationIndexList <- isolate(input$aggregationIndexList)
           colIndexList <- isolate(input$colIndexList)
         }
+        serverSideSelectize <- list()
         getFilterDropdowns <- function(filterIndex, optionId = "filter"){
           allowEmpty <- optionId %in% c("aggregations", "cols")
           if(initData && (allowEmpty || length(currentView[[optionId]][[filterIndex]]))){
@@ -484,6 +485,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }else{
             choices <- as.character(filterElements[[filterIndex]])
           }
+          if(length(choices) > 500L){
+            serverSideSelectize[[ns(paste0("filter_", filterIndex))]] <<- choices
+            choices <- NULL
+          }
           ddHash <- digest::digest(list(filterIndex, choices), algo = "sha1")
           list(htmltools::doRenderTags(
             htmltools::tagAppendAttributes(
@@ -504,6 +509,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                  aggregations = lapply(aggregationIndexList, getFilterDropdowns,
                                                        optionId = "aggregations"),
                                  cols = lapply(colIndexList, getFilterDropdowns, optionId = "cols")))
+        for(filterEl in names(serverSideSelectize)){
+          updateSelectizeInput(session, filterEl, choices = serverSideSelectize[[filterEl]],
+                               server = TRUE)
+        }
       })
       
       
