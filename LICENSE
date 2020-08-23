@@ -79,6 +79,7 @@ these components are included below):
 - promises https://github.com/rstudio/promises or https://cran.r-project.org/web/packages/promises/index.html
 - crayon https://github.com/r-lib/crayon or https://cran.r-project.org/web/packages/crayon/index.html
 - rlang https://github.com/r-lib/rlang or https://cran.r-project.org/web/packages/rlang/index.html
+- sys https://github.com/jeroen/sys or https://cran.r-project.org/web/packages/sys/index.html
 - htmlwidgets https://github.com/ramnathv/htmlwidgets or https://cran.r-project.org/web/packages/htmlwidgets/index.html
 - magrittr https://github.com/tidyverse/magrittr or https://cran.r-project.org/web/packages/magrittr/index.html
 - crosstalk https://github.com/rstudio/crosstalk or https://cran.r-project.org/web/packages/crosstalk/index.html
@@ -653,6 +654,7 @@ Section 8 -- Interpretation.
         - plogr, Copyright (c) 2016 Kirill Müller [aut, cre], 
           Sergey Podobry [cph] (Author of the bundled plog library)
         - sourcetools, Copyright (c) 2015-2017 Kevin Ushey 
+        - sys, Copyright (c) 2019 Jeroen Ooms ORCID iD [aut, cre], Gábor Csárdi [ctb]
         - promises, Copyright (c) 2016-2017 RStudio, Inc. 
         - crayon, Copyright (c) 2014-2016 Gabor Csardi 
         - htmlwidgets, Copyright (c) 2016 Ramnath Vaidyanathan, Joe Cheng, 
