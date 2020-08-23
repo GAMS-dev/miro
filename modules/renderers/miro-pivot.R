@@ -586,16 +586,28 @@ renderMiroPivot <- function(input, output, session, data, options = NULL, path =
     domainFilter <- currentFilters()$domainFilter
     filterIndexList <- c(filterIndexList, aggFilterIndexList, colFilterIndexList)
     if(length(domainFilter)){
-      dataTmp <- data[-1] %>% filter(.data[[domainFilter]] != if(length(options$domainFilter$filterVal)) 
-        options$domainFilter$filterVal else "\U00A0")
+      if(identical("__key__", names(data)[1])){
+        dataTmp <- data[-1] %>% filter(.data[[domainFilter]] != if(length(options$domainFilter$filterVal)) 
+          options$domainFilter$filterVal else "\U00A0")
+      }else{
+        dataTmp <- data %>% filter(.data[[domainFilter]] != if(length(options$domainFilter$filterVal)) 
+          options$domainFilter$filterVal else "\U00A0")
+      }
       if(!length(filterIndexList)){
         return(list(data = dataTmp, filterElements = list()))
       }
     }else{
       if(!length(filterIndexList)){
-        return(list(data = data[-1], filterElements = list()))
+        if(identical("__key__", names(data)[1])){
+          return(list(data = data[-1], filterElements = list()))
+        }
+        return(list(data = data, filterElements = list()))
       }
-      dataTmp <- data[-1]
+      if(identical("__key__", names(data)[1])){
+        dataTmp <- data[-1]
+      }else{
+        dataTmp <- data
+      }
     }
     
     filterElements <- vector("list", length(filterIndexList))
