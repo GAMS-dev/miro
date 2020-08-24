@@ -992,10 +992,30 @@ if(!is.null(errMsg)){
         modelInTemplateTmp <- modelInTemplateTmp[inputIdsTmp]
 
         tmpDirToRemove     <- character(0L)
+        
+        if(debugMode){
+          currentDataHashesDf  <- db$importDataset("_sys__data_hashes",
+                                                   tibble("model", modelName))
+          currentDataHashes <- list()
+          if(length(currentDataHashesDf) && nrow(currentDataHashesDf)){
+            currentDataHashes <- currentDataHashesDf[["hash"]]
+            names(currentDataHashes) <- currentDataHashesDf[["filename"]]
+          }
+          newDataHashes <- currentDataHashes
+        }
 
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
-          flog.info("New data: '%s' is being stored in the database. Please wait a until the import is finished.", miroDataFile)
+          if(debugMode){
+            dataHash <- digest::digest(file = file.path(miroDataDir, miroDataFile),
+                                       algo = "sha1", serialize = FALSE)
+            if(identical(dataHash, currentDataHashes[[miroDataFile]])){
+              flog.info("Data: '%s' skipped because it has not changed since the last start.", miroDataFile)
+              next
+            }
+            newDataHashes[[miroDataFile]] <- dataHash
+          }
+          flog.info("New data: '%s' is stored in the database. Please wait until the import is finished.", miroDataFile)
           if(dataFileExt[i] %in% c("xls", "xlsx")){
             method <- "xls"
             tmpDir <- miroDataDir
@@ -1062,6 +1082,13 @@ if(!is.null(errMsg)){
           }else{
             flog.error("Problems removing temporary directory: '%s'.", tmpDirToRemove)
           }
+        }
+        if(debugMode && !identical(currentDataHashes, newDataHashes)){
+          db$deleteRows("_sys__data_hashes", "model", modelName)
+          db$exportDataset("_sys__data_hashes",
+                           tibble(model = modelName,
+                                  filename = names(newDataHashes),
+                                  hash = unlist(newDataHashes, use.names = FALSE)))
         }
       }
     }, error = function(e){
