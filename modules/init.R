@@ -1,5 +1,4 @@
-requiredPackages <- c("V8")
-source("./components/install_packages.R", local = TRUE)
+errMsg <- installAndRequirePackages("V8", installedPackages, RLibPath, CRANMirror, miroWorkspace)
 # check whether there exists a config file and if not create an empty one
 if(is.null(errMsg)){
   if(!file.exists(paste0(currentModelDir, .Platform$file.sep, "conf_", modelName,
