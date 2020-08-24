@@ -1,6 +1,10 @@
 {
-  "input": {
-    "slider_2": 3,
-    "slider_3": 99
+  "output": {
+    "inputDataTitle": {
+      "html": "<i>&lt;新建场景&gt;<\/i>",
+      "deps": [
+
+      ]
+    }
   }
 }
