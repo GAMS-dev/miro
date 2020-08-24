@@ -7,9 +7,11 @@ if(identical(Sys.getenv("GMSMODELNAME"), "pickstock")){
   widgetSheetId <- 7L
 }
 app$setInputs(inputTabset = paste0("inputTabset_", widgetSheetId))
-Sys.sleep(1)
-app$snapshot(items = list(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L))), 
-             screenshot = TRUE)
+if(!identical(Sys.getenv("GMSMODELNAME"), "pickstock")){
+  Sys.sleep(1)
+  app$snapshot(items = list(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L))), 
+               screenshot = TRUE)
+}
 app$setInputs(btImport = "click")
 app$setInputs(tb_importData = "tb_importData_local")
 app$uploadFile(localInput = paste0("data/", Sys.getenv("GMSMODELNAME"), ".xlsx"))
