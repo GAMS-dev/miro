@@ -11,10 +11,10 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
   message("GAMS_SYS_DIR environment variable not set. Skipping tests.")
 }else{
   additionalGamsClArgs <- character(0L)
-  miroModelDir <- file.path(testDir, "model", "pickstock_configuration")
+  miroModelDir <- file.path(testDir, "model", "transport_outputAttach")
   if(!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")){
     additionalGamsClArgs <- paste0('license="', Sys.getenv("MIRO_TEST_GAMS_LICE"), '"')
-    saveAdditionalGamsClArgs(miroModelDir, "pickstock_configuration", additionalGamsClArgs)
+    saveAdditionalGamsClArgs(miroModelDir, "transport", additionalGamsClArgs)
   }
   Sys.setenv(MIRO_DB_PATH = testDir)
   Sys.setenv(MIRO_MODEL_PATH = file.path(testDir, "model", "transport_outputAttach",
