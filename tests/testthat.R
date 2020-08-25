@@ -4,7 +4,7 @@ library("tibble")
 library("R6")
 library("shinytest")
 
-source(file.path("components", "global.R"))
+source("global.R")
 source(file.path("tests", "util.R"))
 source(file.path("components", "util.R"))
 
