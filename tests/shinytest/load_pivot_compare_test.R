@@ -90,7 +90,7 @@ expect_chartjs("tab_0_3-miroPivot-pivotChart",
 app$findElements("#scen-pivot-view .box-title button")[[1]]$click()
 Sys.sleep(0.5)
 app$snapshot(items = list(output = c("title_2", "title_3")), screenshot = TRUE)
-expect_options(app$getValue("selLoadScen"),
+expect_options(app$getAllValues$input$selLoadScen,
                paste0(c("1_", "2_"), currentUser))
 app$findElement("button[data-dismiss='modal']")$click()
 Sys.sleep(0.5)
