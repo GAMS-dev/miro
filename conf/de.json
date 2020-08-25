@@ -593,7 +593,7 @@
         "cancelButton": "Abbrechen"
       },
       "showLogFileDialog":{
-        "title": "Hypercube-Job Log-Datei",
+        "title": "Log-Datei",
         "noContent": "Die Log-Datei konnte nicht aufgerufen werden oder enthält keine Daten.",
         "fileSize": "Die Log-Datei enthält zu viele Daten, um angezeigt zu werden.",
         "cancelButton": "Abbrechen"
