@@ -527,17 +527,20 @@ Worker <- R6Class("Worker", public = list(
     }
     
     if(!length(private$jobResultsFile[[jIDChar]])){
-      private$jobResultsFile[[jIDChar]] <- file.path(tempdir(TRUE), jIDChar, "results.zip")
-      if(file.exists(private$jobResultsFile[[jIDChar]]))
-        return(100L)
+      jobResultsFile <- file.path(tempdir(TRUE), jIDChar, "results.zip")
       
-      if(dir.exists(dirname(private$jobResultsFile[[jIDChar]])) && 
-         identical(unlink(dirname(private$jobResultsFile[[jIDChar]]),
+      if(file.exists(jobResultsFile)){
+        private$jobResultsFile[[jIDChar]] <- jobResultsFile
+        return(100L)
+      }
+      
+      if(dir.exists(dirname(jobResultsFile)) && 
+         identical(unlink(dirname(jobResultsFile),
                           recursive = TRUE, force = TRUE), 1L))
         stop(sprintf("Problems removing existing directory: '%s'.", 
-                     private$jobResultsFile[[jIDChar]]), call. = FALSE)
+                     jobResultsFile), call. = FALSE)
       
-      if(!dir.create(dirname(private$jobResultsFile[[jIDChar]]), recursive = TRUE))
+      if(!dir.create(dirname(jobResultsFile), recursive = TRUE))
         stop("Problems creating temporary directory for saving results.", 
              call. = FALSE)
       ret <- HEAD(url = paste0(private$metadata$url, 
@@ -558,6 +561,7 @@ Worker <- R6Class("Worker", public = list(
                      jIDChar), call. = FALSE)
       
       private$resultFileSize[[jIDChar]] <- fileSize
+      private$jobResultsFile[[jIDChar]] <- jobResultsFile
       
       if(private$hcube){
         private$fJobRes[[jIDChar]] <- future({
