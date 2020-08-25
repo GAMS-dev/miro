@@ -54,7 +54,7 @@ app$findElement(".btSplitView button")$click()
 app$findElements(".btSplitView a[data-view='pivot']")[[1]]$click()
 
 app$findElement("#pivotCompBtWrapper button")$click()
-Sys.sleep(0.5)
+Sys.sleep(1)
 expect_options(app$getValue("selLoadScen"),
                c(scenToSelect, paste0("4_", currentUser)))
 app$setInputs(btLoadScenConfirm = "click")
@@ -73,7 +73,7 @@ expect_chartjs("tab_0_3-miroPivot-pivotChart",
                  "default4.Seattle"))
 
 app$findElements("#scen-pivot-view .box-title button")[[1]]$click()
-Sys.sleep(0.5)
+Sys.sleep(1)
 expect_options(app$getValue("selLoadScen"),
                c(scenToSelect, paste0("4_", currentUser)))
 app$setInputs(selLoadScen = paste0(c("1_", "2_"), currentUser))
@@ -88,7 +88,7 @@ expect_chartjs("tab_0_3-miroPivot-pivotChart",
                  "default2.San-Diego",
                  "default2.Seattle"))
 app$findElements("#scen-pivot-view .box-title button")[[1]]$click()
-Sys.sleep(0.5)
+Sys.sleep(1)
 expect_options(app$getValue("selLoadScen"),
                paste0(c("1_", "2_"), currentUser))
 app$findElement("button[data-dismiss='modal']")$click()

@@ -14,7 +14,7 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
   miroModelDir <- file.path(testDir, "model", "pickstock_configuration")
   if(!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")){
     additionalGamsClArgs <- paste0('license="', Sys.getenv("MIRO_TEST_GAMS_LICE"), '"')
-    saveAdditionalGamsClArgs(miroModelDir, modelToTest, additionalGamsClArgs)
+    saveAdditionalGamsClArgs(miroModelDir, "pickstock_configuration", additionalGamsClArgs)
   }
   Sys.setenv(MIRO_DB_PATH = testDir)
   Sys.setenv(MIRO_MODEL_PATH = file.path(testDir, "model", "transport_outputAttach",
