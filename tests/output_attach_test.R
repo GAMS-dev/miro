@@ -1,23 +1,6 @@
 app <- ShinyDriver$new("../", loadTimeout = 20000)
 app$snapshotInit("output_attach_test")
 
-repeat{
-  # delete all existing scenarios
-  app$setInputs(btDelete = "click")
-  Sys.sleep(0.5)
-  app$setInputs(btDeleteConfirm = "click")
-  app$setInputs(btRemoveDeletedConfirm = "click")
-  Sys.sleep(0.5)
-  app$setInputs(btImport = "click")
-  Sys.sleep(0.5)
-  noScenExists <- class(try(app$getValue("selLoadScen"), silent = TRUE)) == "try-error"
-  if(noScenExists){
-    break
-  }else{
-    app$setInputs(btLoadScenConfirm = "click")
-    Sys.sleep(1)
-  }
-}
 app$snapshot(items = list(output = "outputDataTitle"),
              screenshot = TRUE)
 

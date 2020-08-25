@@ -122,6 +122,11 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
     unlink(file.path(getwd(), "..", "model", "transport_outputAttach",
                      "report.put"), force = TRUE)
   }
+  if(file.exists(file.path(Sys.getenv("MIRO_DB_PATH"), "miro.sqlite3"))){
+    if(unlink(file.path(Sys.getenv("MIRO_DB_PATH"), "miro.sqlite3"), force = TRUE)){
+      stop("Could not remove old database SQLite file for tests")
+    }
+  }
   test_that("Output attachments work (part 1)",
             expect_pass(testApp(file.path(testDir, ".."), "output_attach_test",
                                 compareImages = FALSE)))
