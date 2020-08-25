@@ -59,6 +59,7 @@ Worker <- R6Class("Worker", public = list(
     private$metadata$url <- private$resolveRemoteURL(url)
     
     if(!private$testConnection()){
+      private$metadata$url <- ""
       stop(426, call. = FALSE)
     }
     private$metadata$username  <- username
@@ -1427,7 +1428,17 @@ Worker <- R6Class("Worker", public = list(
        !startsWith(private$metadata$url, "http://localhost")){
       return(FALSE)
     }
-    ret <- HEAD(private$metadata$url, timeout(10L))$url
+    if(tryCatch({
+      ret <- HEAD(private$metadata$url, timeout(10L))$url
+      FALSE
+    }, error = function(e){
+      flog.debug("Could not connect to provided URL. Error message: '%s'.",
+                 conditionMessage(e))
+      return(TRUE)
+    })){
+      return(FALSE)
+    }
+    
     if(startsWith(ret, "https://") ||
        identical(ret, "http://localhost") ||
        startsWith(ret, "http://localhost:") ||
