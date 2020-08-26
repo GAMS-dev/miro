@@ -64,6 +64,10 @@
                             <section id="v12" class="doc-section">
                               <h2 class="section-title" style="display:inline-block">GAMS MIRO 1.2</h2> <div style="display:inline-block; padding-left:15px;">(XXXX-XX-XX)</div>
                                  <div class="section-block">
+                                    <h3>Breaking changes</h3>
+                                    <ul>
+                                      <li>Additional packages in custom renderers are now installed in the MIRO workspace. These packages are no longer attached because this could lead to conflicts with packages required by MIRO. Read <a href="./customize.html#additional-r-packages">here</a> for more details.</li>
+                                    </ul>
                                     <h3>New features</h3>
                                     <ul>
                                       <li>Input widgets can now be <a href="./customize.html#tab-grouping">grouped</a>, and the order of widgets within a group can be changed.</li>
@@ -86,6 +90,8 @@
                                       <li>Improve support of non-ASCII characters in file paths on Windows.</li>
                                       <li>In Configuration Mode, allow symbols with multiple header aliases of the same name to be saved.</li>
                                       <li>Fix issue where stale data would be displayed when loading scenario while an input chart of the previous scenario was still open.</li>
+                                      <li>Fix issue where wrong files could be deleted when a scenario was removed from the sandbox.</li>
+                                      <li>Fix issue where removing and then adding attachments again would cause an unexpected error.</li>
                                     </ul>
                                  </div>
                             </section>

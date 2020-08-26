@@ -583,7 +583,7 @@ putclose;
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_pivot.png" alt="Pivot column"/>
                                     </div>
-                                    <p>Unlike the <a href = "./model.html#table-miro">table statement</a> in the GAMS model itself (<code class="language-gams">Table symbolname;</code>), this option does not affect the <a href = "./start.html#data-contract">data contract</a> between GAMS and MIRO. 
+                                    <p>Unlike the <a href = "./model.html#table-miro">table statement</a> in the GAMS model itself (<code class="language-gams">Table symbolname;</code>), this option does not affect the <a href = "./model.html#data-contract">data contract</a> between GAMS and MIRO. 
                                     Hence, the columns of the symbol remain variable, since the symbol itself is communicated in list format. 
                                     The pivoting of the configured column then happens "live" in the MIRO application.</br>
                                     Variable columns do not only mean that the column elements can change their names. It is also possible to add or delete whole columns. 
@@ -1113,7 +1113,7 @@ renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path
                                     <p>The entire configuration of MIRO is done via JSON files. After the first start of a MIRO app, the following files are located in <span class="code">&lt;modeldirectory&gt;/conf_&lt;modelname&gt</span>: </p>
                                     <ol class="list">
                                       <li><h6>&lt;modelname&gt;_io.json</h6>
-                                        This <a href="./faqs.html#file-io">file</a> describes the data contract between MIRO and GAMS and is generated automatically each time MIRO is run in <a href = "./model.html#development-mode">development mode</a>.
+                                        This <a href="./faqs.html#file-io">file</a> describes the <a href="./model.html#data-contract">data contract</a> between MIRO and GAMS and is generated automatically each time MIRO is run in <a href = "./model.html#development-mode">development mode</a>.
                                         All GAMS symbols that are marked in your GAMS model with the <code class="language-gams">$onExternalInput
                                         </code> / <code class="language-gams">$offExternalInput
                                         </code> and <code class="language-gams">$onExternalOutput
@@ -1367,12 +1367,13 @@ renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <b class="callout-title">Note:</b>
-                                            <p>The following example shows how a map can be created via a custom renderer. Note that maps can also be configured in the <a href="#configurationMode" class="scrollto">Configuration Mode</a>. However, the following example shows how to use the R API for customized graphics in general.</p>
+                                            <p>The following example shows how a map can be created using a custom renderer. Note that maps can also be configured in the <a href="#configurationMode" class="scrollto">Configuration Mode</a>. However, the following example shows how the R API can be used for custom graphics in general.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:250pt;" src="assets/images/output-data_raw1.png" alt="Result of custom renderer - Map with markers" />
                                   </div>
+                                    <h5 id="custom-renderer-how-to">How to use a custom renderer</h5>
                                     <p>In order to visualize a dataset, you will need to write two functions: a placeholder where your graphs etc. will later be rendered as well as the rendering function itself. To learn more about the concepts of this dual component approach, visit the website for the R Shiny framework that GAMS MIRO is based upon: <a href="https://shiny.rstudio.com/">https://shiny.rstudio.com/</a>. In particular, we are using <a href="https://shiny.rstudio.com/articles/modules.html" target="_blank">Shiny Modules</a> to realize the interface between MIRO and your custom renderer functions. The template for the two components of every custom renderer is as follows:</p>
                                     <div class="code-block">
                                         <pre><code class="language-r">
@@ -1416,16 +1417,26 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                       <div class="code-block">
                                           <pre><code class="language-r">transportMapOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
   ns &#x3C;- NS(id)
-  leafletOutput(ns(&#x22;map&#x22;), height = height)
+  leaflet::leafletOutput(ns(&#x22;map&#x22;), height = height)
 }
 renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){
-  output$map &#x3C;- renderLeaflet(leaflet(data))
+  output$map &#x3C;- leaflet::renderLeaflet(leaflet::leaflet(data))
 }</code></pre>
                                       </div><!--//code-block-->
-                                      <p>Note that we used the aforementioned <kbd>ns()</kbd> function to prefix the ID (<span class="code">"map"</span>) that we chose for our Leaflet element. Just like any other placeholder element, the function <kbd>leafletOutput()</kbd> generates an element that can be accessed via the list-like <kbd>output</kbd> object.
-                                      Inside our rendering function we assign this object the Leaflet map that is created by the <kbd>renderLeaflet()</kbd> function. In case you find the whole concept of having an output function, a rendering function, an output object etc. still very confusing, you should take a look at the <a href="https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/" target="_blank">official tutorial series</a> for the Shiny framework. <br>
+                                      <p>Note that we used the aforementioned <kbd>ns()</kbd> function to prefix the ID (<span class="code">"map"</span>) that we chose for our Leaflet element. Just like any other placeholder element, the function <kbd>leafletOutput()</kbd> generates an element that can be accessed via the list-like <kbd>output</kbd> object.<p>
+                                      <p>Inside our rendering function we assign this object the Leaflet map that is created by the <kbd>renderLeaflet()</kbd> function. In case you find the whole concept of having an output function, a rendering function, an output object etc. still very confusing, you should take a look at the <a href="https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/" target="_blank">official tutorial series</a> for the Shiny framework. <br>
                                       To summarize: elements that generate data can be accessed by the <kbd>input</kbd> object; elements that transform data to some form of visualization via the <kbd>output</kbd> object and any user-specific information via the <kbd>session</kbd> object.
-                                    </p><p>
+                                    </p>
+                                    <div class="callout-block callout-warning" id="cr-package-note">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Note:</b>
+                                            <p>If you use functions from packages other than <kbd>shiny</kbd>, <kbd>DT</kbd>, <kbd>rhandsontable</kbd>, <kbd>dplyr</kbd>, <kbd>readr</kbd> or the R base packages, make sure you specify the package/namespace that exports this function. In our example, the functions <kbd>leafletOutput</kbd>, <kbd>renderLeaflet</kbd> and <kbd>leaflet</kbd> are exported from the package <kbd>leaflet</kbd>. So we need to use the <i>double colon operator</i> to access them (e.g. <kbd>leaflet::leafletOutput</kbd>).</p>
+                                        </div><!--//content-->
+                                    </div>
+                                    <p>
                                       The data that you want to visualize is supplied to your rendering function by the <kbd>data</kbd> argument - an R <a href="https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html">tibble</a>, a data structure that is very similar to a Data Frame. In case you specified <a class="link" href="./charts.html#custom-graphics">additional datasets</a> to be communicated with your custom renderer, <kbd>data</kbd> will be a named list of <i>tibbles</i> where the names are the GAMS symbol names. The function argument <kbd>path</kbd> is a string (a one-dimensional character vector) that specifies the absolute path to your <span class="code">renderer_&lt;modelname&gt;</span> directory. This is useful if you want to include external files in your custom renderer functions. Optional parameters that you want to pass to the renderer can be accessed via the argument <kbd>options</kbd> - a (nested) list. </p>
                                       <div class="callout-block callout-success">
                                           <div class="icon-holder">
@@ -1458,14 +1469,14 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
   ns &#x3C;- NS(id)
   tagList(
     textOutput(ns(&#x22;title&#x22;)),
-    leafletOutput(ns(&#x22;map&#x22;))
+    leaflet::leafletOutput(ns(&#x22;map&#x22;))
   )
 }
 renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){
   output$title &#x3C;- renderText(options$title)
-  output$map   &#x3C;- renderLeaflet(leaflet(data) %&#x3E;%
-                                  addTiles() %&#x3E;%
-                                  addMarkers(~lngp, ~latp, label = ~plant)
+  output$map   &#x3C;- leaflet::renderLeaflet(leaflet::leaflet(data) %&#x3E;%
+                                           leaflet::addTiles() %&#x3E;%
+                                           leaflet::addMarkers(~lngp, ~latp, label = ~plant)
   )
 }</code></pre>
                                         </div><!--//code-block-->
@@ -1485,7 +1496,60 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                       </div>
                                       <p>You now know everything you need in order to get started writing your own custom renderers! Congratulations! In case you create a new renderer that you would like to share so that others can benefit from your work as well, please <a href="mailto:miro@gams.com" target="_blank">contact us</a>!
                                       </p>
-                                      <h4 id="custom-renderer-views">Views</h4>
+                                      <h5 id="additional-datasets">Additional datasets</h5>
+                                      <p>A custom renderer for an output symbol can use the data of other GAMS symbols. For example - let's stay with the above example of a map - the geographical information can come from other symbols than the transport data. For a custom renderer to access this data, the corresponding symbols must be specified in the <span class="code">&lt;modelname&gt;.json</span> file under <code class="language-json">"additionalData"</code>:</p>
+                                      <div class="code-block">
+                                            <pre><code class="language-json">{
+   &#x22;dataRendering&#x22;:{
+      &#x22;optSched&#x22;:{
+         &#x22;outType&#x22;:&#x22;transportMap&#x22;,
+         &#x22;height&#x22;:&#x22;700&#x22;,
+         &#x22;options&#x22;:{
+            &#x22;title&#x22;:&#x22;Optimal transportation schedule&#x22;
+         },
+         &#x22;additionalData&#x22;: [&#x22;symbol_a&#x22;, &#x22;symbol_b&#x22;]
+      }
+   }
+}</code></pre>
+                                        </div><!--//code-block-->
+                                        <div class="callout-block callout-warning">
+                                            <div class="icon-holder">
+                                                <i class="fas fa-info-circle"></i>
+                                            </div><!--//icon-holder-->
+                                            <div class="content">
+                                                <b class="callout-title">Note:</b>
+                                                <p>All symbols that a custom renderer should use must be included in the GAMS/MIRO <a href = "./model.html#data-contract">data contract</a>.</p>
+                                            </div><!--//content-->
+                                        </div><!--//callout-block-->
+                                        
+                                      <h4 id="additional-r-packages">Additional R packages</h5>
+                                      <p>In a custom renderer you can include any R packages that are not part of MIRO. This allows you to use all data visualization and data processing capabilities of R. In order for such packages to be installed when starting a MIRO application, they must be specified in the <span class="code">&lt;modelname&gt;.json</span> file at the configuration of the corresponding symbol under <code class="language-json">"packages"</code>:</p>
+                                      <div class="code-block">
+                                            <pre><code class="language-json">{
+   &#x22;dataRendering&#x22;:{
+      &#x22;optSched&#x22;:{
+         &#x22;outType&#x22;:&#x22;transportMap&#x22;,
+         &#x22;height&#x22;:&#x22;700&#x22;,
+         &#x22;options&#x22;:{
+            &#x22;title&#x22;:&#x22;Optimal transportation schedule&#x22;
+         },
+         &#x22;additionalData&#x22;: [&#x22;symbol_a&#x22;, &#x22;symbol_b&#x22;],
+         &#x22;packages&#x22;: [&#x22;package_a&#x22;, &#x22;package_b&#x22;]
+      }
+   }
+}</code></pre>
+                                        </div><!--//code-block-->
+                                        <p>Note that these additional packages are installed but not loaded! This means that when you call the function, you must explicitly specify the package name using the <i>Double Colon Operator</i>: <span class="code">pkg::name(...)</span>. See also the <a href="#cr-package-note" class="scrollto">info box</a> in the previous section.
+                                        <div class="callout-block callout-success" style="margin-top:10px;">
+                                           <div class="icon-holder">
+                                               <i class="fas fa-thumbs-up"></i>
+                                           </div><!--//icon-holder-->
+                                           <div class="content">
+                                               <b class="callout-title">Tip:</b>
+                                                <p>Additional R packages are installed in the <a href="./download.html#miro-workspace">workspace</a> of GAMS MIRO the first time a MIRO application is started.</p>
+                                            </div><!--//content-->
+                                        </div><!--//callout-block-->
+                                      <h5 id="custom-renderer-views">Views</h5>
                                       <p>In cases where your renderers are interactive, you might want to allow users to store the current state of your renderer and load it later with a single click. This is what <i>MIRO views</i> were designed for. A MIRO view can be any (nested) list that is JSON serializable. Views are bound to a particular GAMS symbol and each view has a unique id. One example of a renderer where the MIRO views API is used is the <a href="./charts.html#pivot-chart">pivot table</a> renderer.</p>
                                       <p>You might have already seen that there is another argument in the renderer function that we have not yet talked about: the <kbd>views</kbd> argument. This is a reference to an instance of the views R6 class. You can get, add and remove views as well as register callbacks via this object. The following section explains how to use the API.</p>
                                       <h5>Get view data</h5>
@@ -1730,7 +1794,13 @@ views$registerUpdateCallback(session, updateCallback)
                                 <nav class="doc-sub-menu nav flex-column">
                                     <a class="nav-link scrollto" href="#widgets-advanced">Widgets with ranges</a>
                                     <a class="nav-link scrollto" href="#widgets-dependencies">Dependencies among Widgets</a>
-                                    <a class="nav-link scrollto" href="#custom-renderers">Custom Renderers</a>
+                                    <a class="nav-link scrollto has-sub-sub" href="#custom-renderers">Custom Renderers</a>
+                                        <nav class="sub-sub-menu nav flex-column">
+                                          <a class="nav-link scrollto" href="#custom-renderer-how-to">How to use a custom renderer</a>
+                                          <a class="nav-link scrollto" href="#additional-datasets">Additional datasets</a>
+                                          <a class="nav-link scrollto" href="#additional-r-packages">Additional R packages</a>
+                                          <a class="nav-link scrollto" href="#custom-renderer-views">Views</a>
+                                        </nav>
                                     <a class="nav-link scrollto" href="#language-files">Language Files</a>
                                 </nav>
                             </nav><!--//doc-menu-->
