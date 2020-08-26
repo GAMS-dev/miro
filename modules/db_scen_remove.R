@@ -90,9 +90,6 @@ closeScenario <- function(){
   }
   resetWidgetsOnClose <<- TRUE
   
-  if(useTempDir){
-    unlink(list.files(workDir, recursive = TRUE))
-  }
   if(is.R6(activeScen))
     flog.debug("Scenario: '%s' closed.", activeScen$getScenName())
   # reset input data

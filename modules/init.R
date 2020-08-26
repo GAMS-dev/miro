@@ -73,6 +73,10 @@ if(is.null(errMsg)){
 lang <- NULL
 if(is.null(errMsg)){
   # read JSON language file
+  overwriteLang <- Sys.getenv("MIRO_LANG")
+  if(!identical(overwriteLang, "") && !identical(overwriteLang, config$language)){
+    config$language <- overwriteLang
+  }
   if(!file.exists(paste0('./conf/', config$language, ".json"))){
     errMsg <- paste0("The JSON language file: '", config$language,
                      ".json' could not be located. Please make sure file is available and accessible.")

@@ -230,11 +230,11 @@ if(is.null(errMsg)){
     config$activateModules$remoteExecution <- TRUE
   }
 }
-ioConfig <<- list(modelIn = modelIn,
-                  modelOut = modelOut,
-                  inputDsNames = inputDsNames,
-                  scenTableNamesToDisplay = scenTableNamesToDisplay)
 if(is.null(errMsg)){
+  ioConfig <<- list(modelIn = modelIn,
+                    modelOut = modelOut,
+                    inputDsNames = inputDsNames,
+                    scenTableNamesToDisplay = scenTableNamesToDisplay)
   if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildonly){
     errMsg <- paste(errMsg, 
                     sprintf("Can not use 'gdx' as file exchange with GAMS if gdxrrw library is not installed.\n

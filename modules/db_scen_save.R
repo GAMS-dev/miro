@@ -346,10 +346,10 @@ if(config$activateModules$attachments){
       showHideEl(session, "#attachSuccess")
     })
     observe({
-      value <- input[["execPermAttachment_" %+% i]]
+      value <- suppressWarnings(as.logical(input[["execPermAttachment_" %+% i]]))
       req(activeScen)
-      if(is.na(attachmentList[["name"]][[i]]) || is.null(value) ||
-         identical(value, attachmentList[["execPerm"]][[i]])){
+      if(is.na(attachmentList[["name"]][[i]]) || length(value) != 1L || is.na(value) ||
+         value == attachmentList[["execPerm"]][[i]]){
         return(NULL)
       }
       tryCatch({
@@ -408,7 +408,7 @@ if(config$activateModules$attachments){
           attachmentList <<- add_row(attachmentList, name = isolate(input$file_addAttachments$name)[[i]], execPerm = TRUE)
         }else{
           idx <- idx[[1]]
-          attachmentList[idx, ] <<- c(isolate(input$file_addAttachments$name)[[i]], TRUE)
+          attachmentList[idx, ] <<- list(isolate(input$file_addAttachments$name)[[i]], TRUE)
         }
         idxes[[i]] <- idx
       }
