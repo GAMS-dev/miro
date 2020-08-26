@@ -655,7 +655,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             if(is.null(aggregationFunction)){
               aggregationFunction <- aggregationFunctionTmp
             }
-            if(!aggregationFunction %in% c("sum", "count", "min", "max", "mean", "median")){
+            if(length(aggregationFunction) != 1L ||
+               !aggregationFunction %in% c("sum", "count", "min", "max", "mean", "median")){
               flog.warn("Attempt to tamper with the app detected! User entered: '%s' as aggregation function.",
                         aggregationFunction)
               stop("Attempt to tamper with the app detected!", call. = FALSE)
