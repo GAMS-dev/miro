@@ -575,7 +575,7 @@ if(LAUNCHHCUBEMODE){
       showHideEl(session, "#jobSubmitSuccess", 2000)
     }, error = function(e){
       errMsg <- conditionMessage(e)
-      flog.error("Some problem occurred while executing Hypercube job. Error message: '%s'.", errMsg)
+      flog.error("Some problem occurred while executing job. Error message: '%s'.", errMsg)
       
       if(identical(errMsg, '404') || startsWith(errMsg, "Could not") || 
          startsWith(errMsg, "Timeout"))

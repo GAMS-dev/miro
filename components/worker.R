@@ -193,7 +193,7 @@ Worker <- R6Class("Worker", public = list(
         })
       }
     }
-    flog.trace("Hypercube job submitted successfuly. Hypercube job process ID: '%s'.", private$process)
+    flog.trace("Job submitted successfuly. Job process ID: '%s'.", private$process)
     private$fRemoteSub <- NULL
     return(private$process)
   },
@@ -490,7 +490,7 @@ Worker <- R6Class("Worker", public = list(
     if(file.exists(private$jobResultsFile[[jIDChar]])){
       if(identical(unlink(private$jobResultsFile[[jIDChar]], 
                           force = TRUE), 1L)){
-        flog.error("Problems removing Hypercube job file: '%s'.",
+        flog.error("Problems removing job file: '%s'.",
                    private$jobResultsFile[[jIDChar]])
       }
     }
