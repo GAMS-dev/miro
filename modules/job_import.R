@@ -137,8 +137,9 @@ observeEvent(input$importJob, {
     showHideEl(session, "#fetchJobsError")
     return()
   }
-  if(!identical(worker$getStatus(jobImportID), JOBSTATUSMAP[['completed']])){
-    flog.error("Import button was clicked but job is not yet marked as 'completed' (Job ID: '%s'). The user probably tampered with the app.", jID)
+  if(!worker$getStatus(jobImportID) %in% c(JOBSTATUSMAP[['completed']], JOBSTATUSMAP[['downloaded']])){
+    flog.error("Import button was clicked but job is not yet marked as 'completed' or 'downloaded' (Job ID: '%s'). The user probably tampered with the app.", 
+               jobImportID)
     showHideEl(session, "#fetchJobsError")
     return()
   }
@@ -154,9 +155,11 @@ observeEvent(
   virtualActionButton(input$importJobNew, rv$importJobNew), {
     removeModal()
     errMsg <- NULL
-    if(!identical(worker$getStatus(jobImportID), JOBSTATUSMAP[['completed']])){
-      flog.error("Import button was clicked but job is not yet marked as 'completed' (Job ID: '%s'). The user probably tampered with the app.", jID)
+    if(!worker$getStatus(jobImportID) %in% c(JOBSTATUSMAP[['completed']], JOBSTATUSMAP[['downloaded']])){
+      flog.error("Import button was clicked but job is not yet marked as 'completed' or 'downloaded' (Job ID: '%s'). The user probably tampered with the app.", 
+                 jobImportID)
       showHideEl(session, "#fetchJobsError")
+      return()
     }
     tryCatch({
       activeScen <<- Scenario$new(db = db, sname = rv$activeSname, 
@@ -178,9 +181,11 @@ observeEvent(virtualActionButton(
   rv$importJobConfirm), {
     req(length(jobImportID) == 1L)
     removeModal()
-    if(!identical(worker$getStatus(jobImportID), JOBSTATUSMAP[['completed']])){
-      flog.error("Import button was clicked but job is not yet marked as 'completed' (Job ID: '%s'). The user probably tampered with the app.", jID)
+    if(!worker$getStatus(jobImportID) %in% c(JOBSTATUSMAP[['completed']], JOBSTATUSMAP[['downloaded']])){
+      flog.error("Import button was clicked but job is not yet marked as 'completed' or 'downloaded' (Job ID: '%s'). The user probably tampered with the app.", 
+                 jobImportID)
       showHideEl(session, "#fetchJobsError")
+      return()
     }
     resetWidgetsOnClose <<- FALSE
     if(!closeScenario()){
