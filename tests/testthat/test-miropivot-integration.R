@@ -1,8 +1,8 @@
 context("MIRO pivot renderer")
 library(dplyr)
+library(jsonlite)
 
-source("../../global.R")
-source("../../components/util.R")
+source("../../components/views.R")
 source("../../modules/renderers/miro-pivot.R")
 
 
@@ -168,5 +168,97 @@ test_that("MIRO pivot renderer handles aggregation", {
                                                                e2 = 3L))
   }, args = list(data = testData,
                  options = list(enablePersistentViews = FALSE,
+                                "_metadata_" = list(symtype = "parameter"))))
+})
+test_that("MIRO pivot renderer handles sorting (part1)", {
+  testServer(renderMiroPivot, {
+    session$setInputs(rowIndexList = letters[c(6,5,3,2,4)], colIndexList = "a",
+                      filterIndexList = character(), aggregationIndexList = character(),
+                      aggregationFunction = "sum")
+    expect_identical(convert_to_df(dataToRender()),
+                     data.frame(f = "f10",
+                                e = paste0("e", c(10, 10, 10, 10, 10, 2, 2, 2, 2, 2)),
+                                c = paste0("c", c(10, 2, 4, 6, 8, 1, 3, 5, 7, 9)),
+                                b = paste0("b", c(10, 2, 4, 6, 8, 1, 3, 5, 7, 9)),
+                                d = paste0("d", c(10, 2, 4, 6, 8, 1, 3, 5, 7, 9)),
+                                a1 = c(NA_integer_, NA_integer_, NA_integer_, 6L, NA_integer_, 1L, NA_integer_, NA_integer_, NA_integer_, NA_integer_),
+                                a2 = c(NA_integer_, 2L, NA_integer_, NA_integer_, NA_integer_, NA_integer_, NA_integer_, NA_integer_, 7L, NA_integer_),
+                                a3 = c(NA_integer_, NA_integer_, NA_integer_, NA_integer_, 8L, NA_integer_, 3L, NA_integer_, NA_integer_, NA_integer_),
+                                a4 = c(NA_integer_, NA_integer_, 4L, NA_integer_, NA_integer_, NA_integer_, NA_integer_, NA_integer_, NA_integer_, 9L),
+                                a5 = c(10L, NA_integer_, NA_integer_, NA_integer_, NA_integer_, NA_integer_, NA_integer_, 5L, NA_integer_, NA_integer_)))
+   
+  }, args = list(data = testData,
+                 options = list(enablePersistentViews = FALSE,
+                                "_metadata_" = list(symtype = "parameter"))))
+})
+test_that("MIRO pivot renderer handles sorting (part2)", {
+  testServer(renderMiroPivot, {
+    session$setInputs(rowIndexList = c("c", "d"), colIndexList = c("a", "e"),
+                      filterIndexList = "b", filter_b = c("b11", "b5"),
+                      aggregationIndexList = "f", aggregationFunction = "sum")
+    expect_identical(convert_to_df(dataToRender()),
+                     data.frame(c = c("c1", "c1", "c10", "c10"),
+                                d = paste0("d", c(10, 4, 5, 9)),
+                                b = c("b5", "b11", "b5", "b11"),
+                                `a4․e10` = c(NA_integer_, 4L, NA_integer_, NA_integer_),
+                                `a4․e2` = c(NA_integer_, NA_integer_, NA_integer_, 9L),
+                                `a5․e10` = c(10L, NA_integer_, NA_integer_, NA_integer_),
+                                `a5․e2` = c(NA_integer_, NA_integer_, 5L, NA_integer_)))
+    
+  }, args = list(data = tibble(a = rep.int(paste0("a", seq_len(5)), 2L), b = rep.int(c("b2", "b10", "b4", "b11", "b5"), 2L),
+                               c = rep.int(c("c10", "c1"), 5L), d = paste0("d", seq_len(10)),
+                               e = rep.int(c("e2", "e10"), 5L), f = "f10",
+                               value = 1:10),
+                 options = list(enablePersistentViews = FALSE,
+                                "_metadata_" = list(symtype = "parameter"))))
+})
+MockView <- R6Class("MockView", inherit = Views, private = list(
+  getSymbolName = function(session){
+    return("test1")
+  }
+))
+views <- MockView$new("test1",
+                      character(),
+                      "test1")
+views$addConf(list(test1 = list(view1 = list(rows = letters[c(6,5,3,2,4)], cols = "a",
+                                             filters = character(), aggregations = character(),
+                                             aggregationFunction = "sum"))))
+test_that("Views work", {
+  testServer(renderMiroPivot, {
+    session$setInputs(rowIndexList = letters[1:6], colIndexList = character(),
+                      filterIndexList = character(), aggregationIndexList = character(),
+                      aggregationFunction = "sum")
+    expect_identical(convert_to_df(dataToRender()),
+                     data.frame(a = c("a1", "a1", "a2", "a2", "a3", "a3", "a4", "a4", "a5", "a5"),
+                                b = c("b2", "b2", "b10", "b10", "b4", "b4", "b11", "b11", "b5", "b5"),
+                                c = c("c1", "c10", "c1", "c10", "c1", "c10", "c1", "c10", "c1", "c10"),
+                                d = c("d6", "d1", "d2", "d7", "d8", "d3", "d4", "d9", "d10", "d5"),
+                                e = c("e10", "e2", "e10", "e2", "e10", "e2", "e10", "e2", "e10", "e2"),
+                                f = "f10",
+                                value = c(6L, 1L, 2L, 7L, 8L, 3L, 4L, 9L, 10L, 5L)))
+    session$setInputs(saveViewConfirm = 1L, newViewName = "view1")
+    expect_identical(views$get(session, "view1"), list(rows = letters[c(6,5,3,2,4)], cols = "a",
+                                                       filters = character(), aggregations = character(),
+                                                       aggregationFunction = "sum"))
+    session$setInputs(rowIndexList = character(), colIndexList = "a", filter_a = c("a1", "a5"),
+                      filter_c = "c2",
+                      filterIndexList = character(), aggregationIndexList = letters[2:6],
+                      aggregationFunction = "count", pivotRenderer = "bar")
+    session$setInputs(saveViewConfirm = 1L, newViewName = "view2")
+    expect_identical(views$get(session, "view2"), list(aggregationFunction = "count",
+                                                       pivotRenderer = "bar",
+                                                       domainFilter = list(default = NULL),
+                                                       aggregations = list(b = NULL, c = "c2", d = NULL,
+                                                                           e = NULL, f = NULL),
+                                                       cols = list(a = c("a1", "a5"))))
+    session$setInputs(deleteView = htmlIdEnc("view1"))
+    expect_error(views$get(session, "view1"))
+    expect_output(session$setInputs(savedViews = htmlIdEnc("view1")))
+  }, args = list(data = tibble(a = rep.int(paste0("a", seq_len(5)), 2L), b = rep.int(c("b2", "b10", "b4", "b11", "b5"), 2L),
+                               c = rep.int(c("c10", "c1"), 5L), d = paste0("d", seq_len(10)),
+                               e = rep.int(c("e2", "e10"), 5L), f = "f10",
+                               value = 1:10),
+                 views = views,
+                 options = list(enablePersistentViews = TRUE,
                                 "_metadata_" = list(symtype = "parameter"))))
 })
