@@ -12,5 +12,5 @@ if(!dependenciesInstalled()){
   installDependencies()
 }
 
-test_file("tests/testthat/test-views-ui.R")
-#test_dir("tests/testthat")
+#test_file("tests/testthat/test-gdxio-uni.R")
+test_dir("tests/testthat")
