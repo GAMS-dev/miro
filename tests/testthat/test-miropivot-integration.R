@@ -1,5 +1,10 @@
-context("MIRO pivot renderer")
+context("Integration tests - MIRO pivot renderer")
 library(dplyr)
+library(shiny)
+library(DT)
+library(tidyr)
+library(futile.logger)
+library(chartjs)
 library(jsonlite)
 
 source("../../components/views.R")
@@ -223,7 +228,7 @@ views <- MockView$new("test1",
 views$addConf(list(test1 = list(view1 = list(rows = letters[c(6,5,3,2,4)], cols = "a",
                                              filters = character(), aggregations = character(),
                                              aggregationFunction = "sum"))))
-test_that("Views work", {
+test_that("MIRO pivot renderer views work", {
   testServer(renderMiroPivot, {
     session$setInputs(rowIndexList = letters[1:6], colIndexList = character(),
                       filterIndexList = character(), aggregationIndexList = character(),
