@@ -71,7 +71,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
                    Please make sure you first define such a function.", typeCustom), call. = FALSE)
     })
     data <- customOutput(ns("custom"), height = height, options = customOptions,
-                         path = customRendererDirs[[2L]])
+                         path = customRendererDir)
     }
   return(tagList(
     tags$div(id = ns("noData"), class = "out-no-data", noDataTxt),

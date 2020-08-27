@@ -1,6 +1,6 @@
 tspOutput <- function(id, height, options, path){
   ns <- NS(id)
-  leafletOutput(ns("tsp_input"), width = "100%", height = 700)
+  leaflet::leafletOutput(ns("tsp_input"), width = "100%", height = 700)
 }
 
 renderTsp <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, ...){
@@ -14,14 +14,14 @@ renderTsp <- function(input, output, session, data, options = NULL, path = NULL,
     })
     names(dataTmp) <- data[[1]]
   }
-  output$tsp_input <- renderLeaflet({
+  output$tsp_input <- leaflet::renderLeaflet({
     if(length(dataTmp)){
-      return(leaflet() %>% addTiles() %>%
-               addMarkers(data[[3L]], data[[2L]], label = data[[1L]],
-                          group = "markers", options = markerOptions(draggable = TRUE), 
-                          layerId = data[[1L]]))
+      return(leaflet::leaflet() %>% leaflet::addTiles() %>%
+               leaflet::addMarkers(data[[3L]], data[[2L]], label = data[[1L]],
+                                   group = "markers", options = leaflet::markerOptions(draggable = TRUE), 
+                                   layerId = data[[1L]]))
     }else{
-      return(leaflet() %>% addTiles())
+      return(leaflet::leaflet() %>% leaflet::addTiles())
     }
   })
   
@@ -36,8 +36,8 @@ renderTsp <- function(input, output, session, data, options = NULL, path = NULL,
     isolate({
       markerId <- input$tsp_input_marker_click$id
       rv$markerPositions[[markerId]] <<- NULL
-      leafletProxy("tsp_input") %>%
-        removeMarker(markerId)
+      leaflet::leafletProxy("tsp_input") %>%
+        leaflet::removeMarker(markerId)
     })
   })
   rendererEnv$markerDragend <- observe({
@@ -65,9 +65,9 @@ renderTsp <- function(input, output, session, data, options = NULL, path = NULL,
       rv$markerPositions[[markerId]] <<- newMarker
       markerCnt <<- markerCnt + 1L
       
-      leafletProxy("tsp_input") %>%
-        addMarkers(lat = newMarker$lat, lng = newMarker$lng, group = "markers",
-                   options = markerOptions(draggable = TRUE), layerId = markerId) 
+      leaflet::leafletProxy("tsp_input") %>%
+        leaflet::addMarkers(lat = newMarker$lat, lng = newMarker$lng, group = "markers",
+                            options = leaflet::markerOptions(draggable = TRUE), layerId = markerId) 
     })
   })
   return(reactive({

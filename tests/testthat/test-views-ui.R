@@ -1,11 +1,5 @@
 context("UI tests - views")
-library(shinytest)
 
-source("../../components/util.R")
-
-if(!dependenciesInstalled()){
-  installDependencies()
-}
 testDir <- file.path(getwd(), "..")
 
 if(file.exists(file.path(testDir, "miro.sqlite3"))){
@@ -35,7 +29,7 @@ test_that("Import views from data folder works",
 unlink(modelDataPath, recursive = TRUE, force = TRUE)
 
 test_that("Saving views to database works",
-          expect_pass(testApp(file.path(testDir, ".."), "save_as_views_test",
+          expect_pass(testApp(file.path(testDir, ".."), "views_save_as_test",
                               compareImages = FALSE)))
 
-Sys.unsetenv(c("MIRO_MODEL_PATH", "GMSMODELNAME", "MIRO_DB_PATH", "MIRO_MODE"))
+Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))
