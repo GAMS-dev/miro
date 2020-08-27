@@ -1,5 +1,7 @@
 context("UI tests - asynchronous solve")
 
+testDir <- file.path(getwd(), "..")
+
 if(file.exists(file.path(testDir, "miro.sqlite3"))){
   if(unlink(file.path(testDir, "miro.sqlite3"), force = TRUE)){
     stop("Could not remove old database SQLite file for tests")
@@ -7,7 +9,6 @@ if(file.exists(file.path(testDir, "miro.sqlite3"))){
 }
 
 modelToTest <- "transport"
-testDir <- file.path(getwd(), "..")
 testModelDir <- file.path(testDir, "model", modelToTest)
 Sys.setenv(MIRO_DB_PATH = testDir)
 Sys.setenv(MIRO_MODEL_PATH = file.path(testModelDir, paste0(modelToTest, ".gms")))
