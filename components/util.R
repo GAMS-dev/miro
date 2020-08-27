@@ -1568,3 +1568,12 @@ switchCompareMode <- function(session, mode, numberScenTabs){
     hideEl(session, "#scen-pivot-view")
   }
 }
+# safeFromJSON function taken from Shiny package 
+# see LICENSE file for license information of Shiny package
+safeFromJSON <- function(txt, ...) {
+  if (!jsonlite::validate(txt)) {
+    stop("Argument 'txt' is not a valid JSON string.")
+  }
+  jsonlite::fromJSON(txt, ...)
+}
+
