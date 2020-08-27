@@ -59,6 +59,7 @@ Worker <- R6Class("Worker", public = list(
     private$metadata$url <- private$resolveRemoteURL(url)
     
     if(!private$testConnection()){
+      private$metadata$url <- ""
       stop(426, call. = FALSE)
     }
     private$metadata$username  <- username
@@ -192,7 +193,7 @@ Worker <- R6Class("Worker", public = list(
         })
       }
     }
-    flog.trace("Hypercube job submitted successfuly. Hypercube job process ID: '%s'.", private$process)
+    flog.trace("Job submitted successfuly. Job process ID: '%s'.", private$process)
     private$fRemoteSub <- NULL
     return(private$process)
   },
@@ -489,7 +490,7 @@ Worker <- R6Class("Worker", public = list(
     if(file.exists(private$jobResultsFile[[jIDChar]])){
       if(identical(unlink(private$jobResultsFile[[jIDChar]], 
                           force = TRUE), 1L)){
-        flog.error("Problems removing Hypercube job file: '%s'.",
+        flog.error("Problems removing job file: '%s'.",
                    private$jobResultsFile[[jIDChar]])
       }
     }
@@ -527,17 +528,20 @@ Worker <- R6Class("Worker", public = list(
     }
     
     if(!length(private$jobResultsFile[[jIDChar]])){
-      private$jobResultsFile[[jIDChar]] <- file.path(tempdir(TRUE), jIDChar, "results.zip")
-      if(file.exists(private$jobResultsFile[[jIDChar]]))
-        return(100L)
+      jobResultsFile <- file.path(tempdir(TRUE), jIDChar, "results.zip")
       
-      if(dir.exists(dirname(private$jobResultsFile[[jIDChar]])) && 
-         identical(unlink(dirname(private$jobResultsFile[[jIDChar]]),
+      if(file.exists(jobResultsFile)){
+        private$jobResultsFile[[jIDChar]] <- jobResultsFile
+        return(100L)
+      }
+      
+      if(dir.exists(dirname(jobResultsFile)) && 
+         identical(unlink(dirname(jobResultsFile),
                           recursive = TRUE, force = TRUE), 1L))
         stop(sprintf("Problems removing existing directory: '%s'.", 
-                     private$jobResultsFile[[jIDChar]]), call. = FALSE)
+                     jobResultsFile), call. = FALSE)
       
-      if(!dir.create(dirname(private$jobResultsFile[[jIDChar]]), recursive = TRUE))
+      if(!dir.create(dirname(jobResultsFile), recursive = TRUE))
         stop("Problems creating temporary directory for saving results.", 
              call. = FALSE)
       ret <- HEAD(url = paste0(private$metadata$url, 
@@ -558,6 +562,7 @@ Worker <- R6Class("Worker", public = list(
                      jIDChar), call. = FALSE)
       
       private$resultFileSize[[jIDChar]] <- fileSize
+      private$jobResultsFile[[jIDChar]] <- jobResultsFile
       
       if(private$hcube){
         private$fJobRes[[jIDChar]] <- future({
@@ -1423,7 +1428,17 @@ Worker <- R6Class("Worker", public = list(
        !startsWith(private$metadata$url, "http://localhost")){
       return(FALSE)
     }
-    ret <- HEAD(private$metadata$url, timeout(10L))$url
+    if(tryCatch({
+      ret <- HEAD(private$metadata$url, timeout(10L))$url
+      FALSE
+    }, error = function(e){
+      flog.debug("Could not connect to provided URL. Error message: '%s'.",
+                 conditionMessage(e))
+      return(TRUE)
+    })){
+      return(FALSE)
+    }
+    
     if(startsWith(ret, "https://") ||
        identical(ret, "http://localhost") ||
        startsWith(ret, "http://localhost:") ||
