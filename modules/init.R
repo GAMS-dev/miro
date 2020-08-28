@@ -70,7 +70,7 @@ if(is.null(errMsg)){
   })
 }
 
-lang <- NULL
+lang <<- NULL
 if(is.null(errMsg)){
   # read JSON language file
   overwriteLang <- Sys.getenv("MIRO_LANG")
@@ -92,7 +92,7 @@ if(is.null(errMsg)){
       return()
     }
     if(is.null(valid$errors)){
-      lang <- valid$data
+      lang <<- valid$data
     }else{
       errMsg <- paste(errMsg, 
                       paste0("Some error occurred parsing JSON language file: '",
@@ -1412,8 +1412,6 @@ if(is.null(errMsg)){
                                              "': ", validGraphConfig), sep = "\n")
               next
             }
-            configGraphsOut[[i]]$options <- c(configGraphsOut[[i]]$options, 
-                                              list(lang = lang$renderers$miroPivot))
           }else if(identical(configGraphsOut[[i]]$outType, "valueBox")){
             if(identical(names(modelOut)[[i]], scalarsOutName)){
               configGraphsOut[[i]]$options$count <- modelOut[[i]]$count - length(config$hiddenOutputScalars)
@@ -1463,8 +1461,6 @@ if(is.null(errMsg)){
                                          "': ", validGraphConfig), sep = "\n")
           next
         }
-        configGraphsIn[[i]]$options <- c(configGraphsIn[[i]]$options, 
-                                         list(lang = lang$renderers$miroPivot))
       }else if(identical(configGraphsIn[[i]]$outType, "valueBox")){
         if(identical(names(modelIn)[[i]], scalarsFileName)){
           configGraphsIn[[i]]$options$count <- modelIn[[i]]$count
