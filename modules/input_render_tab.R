@@ -432,7 +432,8 @@ lapply(modelInTabularData, function(sheet){
                                                   type = modelIn[[i]]$rendererName, 
                                                   data = dataModelIn[[i]](),
                                                   customOptions = modelIn[[i]]$options,
-                                                  rendererEnv = rendererEnv[[paste0("input_", i)]])
+                                                  rendererEnv = rendererEnv[[paste0("input_", i)]],
+                                                  views = views)
       }, error = function(e){
         flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
                    modelInAlias[[i]], e)
