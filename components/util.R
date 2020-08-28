@@ -1568,3 +1568,57 @@ switchCompareMode <- function(session, mode, numberScenTabs){
     hideEl(session, "#scen-pivot-view")
   }
 }
+serverSelectInput <- function(session, inputId, label, choices, selected = NULL, multiple = FALSE, width = NULL, options = NULL, maxChoicesClientSide = 500L){
+  # largely basen on shiny package (see LICENSE file for more information about license of Shiny package)
+  # this function avoids having to call updateSelectizeInput as would be the shiny approach.
+  # when dynamically rendering selectize input, it is often more convenient to have a single function call to create
+  # a server-side selectize input
+  if(length(choices) <= maxChoicesClientSide){
+    return(selectizeInput(inputId, label, choices, selected, multiple, options = options, width = width))
+  }
+  labl <- names(choices)
+  if(!length(labl)){
+    labl <- choices
+  }
+  choicesDf <- data.frame(label = labl, value = choices, stringsAsFactors = FALSE)
+  attr(choicesDf, 'selected_value') <- unname(selected)
+  # very hacky, but unfortunately shiny doesn't export the selectizeJSON function
+  url <- session$registerDataObj(inputId, choicesDf, shiny:::selectizeJSON)
+  selectizeInput(inputId, label, choices = c(), selected = selected, multiple = multiple, width = width,
+                 options = modifyList(list(preload = TRUE, load = I(paste0("function(query, callback) {
+            var selectize = this;
+            var settings = selectize.settings;
+            $.ajax({
+              url: '", url, "',
+              data: {
+                query: query,
+                field: JSON.stringify([settings.searchField]),
+                value: settings.valueField,
+                conju: settings.searchConjunction,
+                maxop: settings.maxOptions
+              },
+              type: 'GET',
+              error: function() {
+                callback();
+              },
+              success: function(res) {
+                $.each(res, function(index, elem) {
+                  let optgroupId = elem[settings.optgroupField || \"optgroup\"];
+                  let optgroup = {};
+                  optgroup[settings.optgroupLabelField || \"label\"] = optgroupId;
+                  optgroup[settings.optgroupValueField || \"value\"] = optgroupId;
+                  selectize.addOptionGroup(optgroupId, optgroup);
+                });
+                callback(res);
+              }
+            });
+          }"))), options))
+}
+isValidUEL <- function(uelToTest){
+  if(!is.character(uelToTest) || length(uelToTest) != 1L || is.na(uelToTest) ||
+     !identical(trimws(uelToTest), uelToTest)){
+    return(FALSE)
+  }
+  return(TRUE)
+}
+
