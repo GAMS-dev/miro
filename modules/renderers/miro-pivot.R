@@ -512,11 +512,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               }
             }
           }
-          selectizeInput(ns(paste0("filter_", filterIndex)), setIndexAliases[[filterIndex]], 
-                         choices = if(allowEmpty) c(allPlaceholder, as.character(filterElements[[filterIndex]]))
-                         else as.character(filterElements[[filterIndex]]), 
-                         selected = selectedFilterVal, multiple = TRUE,
-                         options = list('plugins' = list('remove_button')))
+          serverSelectInput(session, ns(paste0("filter_", filterIndex)), setIndexAliases[[filterIndex]], 
+                            choices = if(allowEmpty) c(allPlaceholder, as.character(filterElements[[filterIndex]]))
+                            else as.character(filterElements[[filterIndex]]), 
+                            selected = selectedFilterVal, multiple = TRUE,
+                            options = list('plugins' = list('remove_button')))
         }
         initFilter <<- FALSE
         session$
