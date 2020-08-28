@@ -673,6 +673,8 @@
       "btLoadView": "View laden",
       "btNewView": "View hinzufügen",
       "btEnableEdit": "Bearbeitung aktivieren",
+      "btAddRow": "Zeile hinzufügen",
+      "btRemoveRows": "Zeilen entfernen",
       "aggregateLabel": "aggregieren",
       "filterLabel": "filtern",
       "allPlaceholder": "Alle",
@@ -689,6 +691,14 @@
       "errPivotDuplicate": "Die Daten enthalten doppelte Datensätze und können daher nicht gepivotisiert werden.",
       "errPivot": "Die Daten konnten nicht gepivotisiert werden. Dies könnte daran liegen, dass Ihre Daten zu groß sind.",
       "errorTitle": "Fehler",
+      "duplicateRecordError": "Der Datensatz: '%s' existiert bereits. Bitte entfernen Sie ihn und versuchen Sie es erneut.",
+      "dialogAddRow":{
+        "title": "Neue Zeile hinzufügen",
+        "btCancel": "Abbrechen",
+        "invalidKeysError": "Die von Ihnen eingegebenen Elemente sind ungültig. Bitte beachten Sie, dass die Elemente aus mindestens einem druckbaren Zeichen bestehen müssen.",
+        "invalidValuesError": "Die von Ihnen eingegebenen Daten sind ungültig. Stellen Sie sicher, dass die von Ihnen eingegebenen Werte numerisch sind.",
+        "unknownError": "Beim Versuch, die neuen Daten hinzuzufügen, ist ein unerwarteter Fehler aufgetreten."
+      },
       "aggregationFunctions":{
         "sum": "Summe",
         "count": "Anzahl",

@@ -59,14 +59,14 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
   
   aggregationFunctions <- if(identical(options[["_metadata_"]]$symtype, "parameter"))
     setNames(c("sum", "count", "mean", "median", "min", "max"), 
-             c(options$lang$aggregationFunctions$sum,
-               options$lang$aggregationFunctions$count,
-               options$lang$aggregationFunctions$mean,
-               options$lang$aggregationFunctions$median,
-               options$lang$aggregationFunctions$min,
-               options$lang$aggregationFunctions$max)) 
+             c(lang$renderers$miroPivot$aggregationFunctions$sum,
+               lang$renderers$miroPivot$aggregationFunctions$count,
+               lang$renderers$miroPivot$aggregationFunctions$mean,
+               lang$renderers$miroPivot$aggregationFunctions$median,
+               lang$renderers$miroPivot$aggregationFunctions$min,
+               lang$renderers$miroPivot$aggregationFunctions$max)) 
   else
-    setNames("count", options$lang$aggregationFunctions$count)
+    setNames("count", lang$renderers$miroPivot$aggregationFunctions$count)
   
   tags$div(id = ns("container"),
            if(length(options$domainFilter$domains)){
@@ -90,22 +90,22 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                            if(!isFALSE(options$enablePersistentViews)){
                              tagList(
                                actionButton(ns("saveView"), label = NULL, icon = icon("plus-square"), 
-                                            title = options$lang$btNewView),
+                                            title = lang$renderers$miroPivot$btNewView),
                                downloadButton(ns("downloadCsv"), label = NULL,
-                                              title = options$lang$btDownloadCsv),
+                                              title = lang$renderers$miroPivot$btDownloadCsv),
                                tags$div(class="dropdown", style = "margin-top:10px;",
                                         tags$button(class="btn btn-default dropdown-toggle btn-dropdown",
                                                     type = "button", id = ns("toggleViewButton"),
                                                     `data-toggle`="dropdown", `aria-haspopup`="true",
                                                     `aria-expanded` = "false", style = "width:100%",
-                                                    options$lang$btLoadView, tags$span(
+                                                    lang$renderers$miroPivot$btLoadView, tags$span(
                                                       class = "caret btn-dropdown-caret")),
                                         tags$ul(id = ns("savedViewsDD"), class = "dropdown-menu btn-dropdown-menu",
                                                 `aria-labelledby` = ns("toggleViewButton"),
                                         ))
                              )
                            }else{
-                             downloadButton(ns("downloadCsv"), label = options$lang$btDownloadCsv)
+                             downloadButton(ns("downloadCsv"), label = lang$renderers$miroPivot$btDownloadCsv)
                            }
                     ),
                     column(width = 4L, style = "padding: 1em;", 
@@ -123,11 +123,11 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                     column(width = 2L,
                            selectInput(ns("pivotRenderer"), "", 
                                        setNames(c("table", "bar", "stackedbar", "line", "radar"),
-                                                c(options$lang$renderer$table,
-                                                  options$lang$renderer$bar,
-                                                  options$lang$renderer$stackedbar,
-                                                  options$lang$renderer$line,
-                                                  options$lang$renderer$radar)),
+                                                c(lang$renderers$miroPivot$renderer$table,
+                                                  lang$renderers$miroPivot$renderer$bar,
+                                                  lang$renderers$miroPivot$renderer$stackedbar,
+                                                  lang$renderers$miroPivot$renderer$line,
+                                                  lang$renderers$miroPivot$renderer$radar)),
                                        selected = if(length(options$pivotRenderer))
                                          options$pivotRenderer else "table")),
                     column(width = 6L, style = "padding: 1em;",
@@ -141,8 +141,12 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                     column(width = 10L,
                            style = "min-height: 400px;",
                            if(isTRUE(options$input)){
-                             actionButton(ns("enableEdit"), options$lang$btEnableEdit,
-                                          style = "display:none")
+                             tagList(
+                               actionButton(ns("btAddRow"), lang$renderers$miroPivot$btAddRow),
+                               actionButton(ns("btRemoveRows"), lang$renderers$miroPivot$btRemoveRows, class = "bt-remove"),
+                               actionButton(ns("enableEdit"), lang$renderers$miroPivot$btEnableEdit,
+                                            style = "display:none")
+                             )
                            },
                            tags$div(id = ns("errMsg"), class = "gmsalert gmsalert-error", 
                                     style = "position:static;margin-bottom:5px;"),
@@ -173,10 +177,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
   moduleServer(
     id,
     function(input, output, session) {
+      
       ns <- session$ns
       
       valueColName <- names(data)[length(data)]
-      allPlaceholder <- setNames("", options$lang$allPlaceholder)
+      allPlaceholder <- setNames("", lang$renderers$miroPivot$allPlaceholder)
       
       initFilter <- TRUE
       initData <- TRUE
@@ -185,6 +190,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       numericCols <- vapply(data, class, character(1L), USE.NAMES = FALSE) %in% c("numeric", "integer")
       if(sum(numericCols) > 1L){
         # data is already pivoted
+        flog.warn("MIRO Pivot should not be used to render a symbol that is already pivoted. Please declare your symbol as parameter and not as table.")
         data <- pivot_longer(data, names(data)[numericCols], names_to = "Hdr", 
                              values_to = "value", names_repair = "unique")
         valueColName <- "value"
@@ -216,8 +222,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }else{
           bigData <- TRUE
           showEl(session, paste0("#", ns("enableEdit")))
+          hideEl(session, paste0("#", ns("btAddRow")))
+          hideEl(session, paste0("#", ns("btRemoveRows")))
           rendererEnv[[ns("enableEdit")]] <- observe({
-            if(is.null(input$enableEdit)){
+            if(length(input$enableEdit) != 1L || input$enableEdit == 0L){
               return()
             }
             showEl(session, "#loading-screen")
@@ -226,6 +234,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                            remove = FALSE, sep = "\U2024", na.rm = FALSE)
             isEditable <<- TRUE
             hideEl(session, paste0("#", ns("enableEdit")))
+            showEl(session, paste0("#", ns("btAddRow")))
+            showEl(session, paste0("#", ns("btRemoveRows")))
           })
         }
       }
@@ -244,14 +254,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       # (e.g. in Configuration Mode)
       aggregationFunctions <- if(identical(options[["_metadata_"]]$symtype, "parameter"))
         setNames(c("sum", "count", "mean", "median", "min", "max"), 
-                 c(options$lang$aggregationFunctions$sum,
-                   options$lang$aggregationFunctions$count,
-                   options$lang$aggregationFunctions$mean,
-                   options$lang$aggregationFunctions$median,
-                   options$lang$aggregationFunctions$min,
-                   options$lang$aggregationFunctions$max)) 
+                 c(lang$renderers$miroPivot$aggregationFunctions$sum,
+                   lang$renderers$miroPivot$aggregationFunctions$count,
+                   lang$renderers$miroPivot$aggregationFunctions$mean,
+                   lang$renderers$miroPivot$aggregationFunctions$median,
+                   lang$renderers$miroPivot$aggregationFunctions$min,
+                   lang$renderers$miroPivot$aggregationFunctions$max)) 
       else
-        setNames("count", options$lang$aggregationFunctions$count)
+        setNames("count", lang$renderers$miroPivot$aggregationFunctions$count)
       
       customChartColors <- c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", 
                              "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00", 
@@ -382,16 +392,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
           showModal(modalDialog(tags$div(id = ns("errUniqueName"), class = "gmsalert gmsalert-error", 
                                          style = "position:relative",
-                                         options$lang$errUniqueViewName),
+                                         lang$renderers$miroPivot$errUniqueViewName),
                                 textInput(ns("newViewName"),
-                                          options$lang$newViewLabel), 
+                                          lang$renderers$miroPivot$newViewLabel), 
                                 footer = tagList(
-                                  modalButton(options$lang$newViewBtCancel),
-                                  actionButton(ns("saveViewConfirm"), options$lang$newViewBtSave, 
+                                  modalButton(lang$renderers$miroPivot$newViewBtCancel),
+                                  actionButton(ns("saveViewConfirm"), lang$renderers$miroPivot$newViewBtSave, 
                                                class = "bt-highlight-1 bt-gms-confirm")
                                 ),
                                 fade = TRUE, easyClose = FALSE, size = "s", 
-                                title = options$lang$newViewTitle))
+                                title = lang$renderers$miroPivot$newViewTitle))
         })
         rendererEnv[[ns("saveViewConfirm")]] <- observe({
           if(is.null(input$saveViewConfirm) || initData || 
@@ -682,7 +692,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         rowIndexList <- c(rowIndexList, 
                           multiFilterIndices[!multiFilterIndices %in% c(aggIndexList, colIndexList)])
         if(length(aggIndexList)){
-          isEditable <<- FALSE
+          if(isInput){
+            isEditable <<- FALSE
+            disableEl(session, paste0("#", ns("btAddRow")))
+            disableEl(session, paste0("#", ns("btRemoveRows")))
+          }
           if(identical(options[["_metadata_"]]$symtype, "parameter")){
             aggregationFunctionTmp <- input$aggregationFunction
             if(is.null(aggregationFunction)){
@@ -704,6 +718,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 paste0(aggregationFunction, "(value, na.rm = TRUE)")), .groups = "drop_last")
         }else if(isInput){
           isEditable <<- TRUE
+          enableEl(session, paste0("#", ns("btAddRow")))
+          enableEl(session, paste0("#", ns("btRemoveRows")))
         }
         if(length(rowIndexList)){
           dataTmp <- dataTmp %>% select(!!!c(rowIndexList, colIndexList, valueColName)) %>% 
@@ -720,19 +736,19 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }, warning = function(w){
             if(grepl("list-cols", conditionMessage(w), fixed = TRUE)){
               flog.trace("MIRO pivot: Data contains duplicated keys and can therefore not be pivoted.")
-              showErrorMsg(options$lang$errorTitle,
-                           options$lang$errPivotDuplicate)
+              showErrorMsg(lang$renderers$miroPivot$errorTitle,
+                           lang$renderers$miroPivot$errPivotDuplicate)
             }else{
               flog.info("MIRO pivot: Unexpected warning while pivoting data. Error message: %s",
                         conditionMessage(e))
-              showErrorMsg(options$lang$errorTitle,
-                           options$lang$errPivot)
+              showErrorMsg(lang$renderers$miroPivot$errorTitle,
+                           lang$renderers$miroPivot$errPivot)
             }
           }, error = function(e){
             flog.info("MIRO pivot: Unexpected error while pivoting data. Error message: %s",
                       conditionMessage(e))
-            showErrorMsg(options$lang$errorTitle,
-                         options$lang$errPivot)
+            showErrorMsg(lang$renderers$miroPivot$errorTitle,
+                         lang$renderers$miroPivot$errPivot)
           })
         }
         attr(dataTmp, "noRowHeaders") <- length(rowIndexList)
@@ -764,11 +780,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         noSeries <- length(dataTmp) - rowHeaderLen
         noError <- TRUE
         if(noSeries > 40L){
-          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(options$lang$colTruncationWarning, "40"))
+          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, "40"))
           noError <- FALSE
         }
         if(nrow(dataTmp) > 500L){
-          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(options$lang$rowTruncationWarning, "500"))
+          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$rowTruncationWarning, "500"))
           dataTmp <- slice(dataTmp, 1:500L)
           noError <- FALSE
         }
@@ -825,7 +841,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           return()
         }
         if(length(dataTmp) > 500){
-          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(options$lang$colTruncationWarning, "500"))
+          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, "500"))
           dataTmp <- dataTmp[, 1:500]
         }else{
           hideEl(session, paste0("#", ns("errMsg")))
@@ -834,7 +850,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         hideEl(session, paste0("#", ns("loadPivotTable")))
         
         datatable(dataTmp, extensions = c("Scroller", "FixedColumns"), 
-                  selection = "none", editable = isEditable,
+                  selection = if(isEditable) "multiple" else "none", editable = isEditable,
                   container = DTbuildColHeaderContainer(names(dataTmp), 
                                                         noRowHeaders, 
                                                         unlist(setIndexAliases[names(dataTmp)[seq_len(noRowHeaders)]], 
@@ -874,11 +890,253 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       if(isInput){
         dtProxy <- dataTableProxy(ns("pivotTable"))
         
+        rendererEnv[[ns("editTableAdd")]] <- observe({
+          if(length(input[["btAddRow"]]) != 1L ||
+             input[["btAddRow"]] == 0L || !isEditable){
+            return()
+          }
+          isolate({
+            if(!length(dataToRender())){
+              flog.warn("MIRO Pivot: Add row button was clicked but dataToRender has no length.")
+              return()
+            }
+            colHeaders <- names(dataToRender())
+            noRowHeaders <- attr(dataToRender(), "noRowHeaders")
+            colHeaders[seq_len(noRowHeaders)] <- unlist(setIndexAliases[colHeaders[seq_len(noRowHeaders)]], 
+                                                        use.names = FALSE)
+            showModal(
+              modalDialog(
+                title = lang$renderers$miroPivot$dialogAddRow$title,
+                tags$div(id = ns("newRowError"), class = "gmsalert gmsalert-error"),
+                tags$div(class = "table-responsive", style = "margin-top:30px",
+                         tags$table(class = "table",
+                                    tags$tr(
+                                      lapply(colHeaders, tags$th)
+                                    ),
+                                    tags$tr(lapply(seq_along(colHeaders), function(i){
+                                      tags$td(style = "min-width:100px;",
+                                              if(i <= noRowHeaders)
+                                                serverSelectInput(session, ns(paste0("newRow_", i)), NULL,
+                                                                  levels(dataToRender()[[i]]), multiple = TRUE,
+                                                                  width = "100%",
+                                                                  options = list(create = TRUE, maxItems = 1L,
+                                                                                 dropdownParent = "body"))
+                                              else
+                                                textInput(ns(paste0("newRow_", i)), NULL, NA, width = "100%"))
+                                    }))
+                         )
+                ),
+                footer = tagList(
+                  modalButton(lang$renderers$miroPivot$dialogAddRow$btCancel),
+                  actionButton(ns("btAddRowConfirm"),
+                               label = lang$renderers$miroPivot$btAddRow, 
+                               class = "bt-highlight-1 bt-gms-confirm")),
+                fade = TRUE, easyClose = FALSE, size = "l"
+              ))
+          })
+        })
+        rendererEnv[[ns("editTableAddConfirm")]] <- observe({
+          if(length(input[["btAddRowConfirm"]]) != 1L ||
+             input[["btAddRowConfirm"]] == 0L || !isEditable){
+            return()
+          }
+          isolate({
+            if(!length(dataToRender())){
+              flog.warn("MIRO Pivot: Add row button was clicked but dataToRender has no length.")
+              return()
+            }
+            if(bigData){
+              showEl(session, "#loading-screen")
+              on.exit(hideEl(session, "#loading-screen"))
+            }
+            flog.trace("MIRO pivot: Received request to add new row(s).")
+            colHeaders <- names(dataToRender())
+            noRowHeaders <- attr(dataToRender(), "noRowHeaders")
+            newKeys <- vapply(seq_len(noRowHeaders), function(i){
+              editedKey <- tryCatch(trimws(input[[paste0("newRow_", i)]]),
+                                    error = function(e){NA_character_})
+              if(isValidUEL(editedKey))
+                return(editedKey)
+              return(NA_character_)
+            }, character(1L), USE.NAMES = FALSE)
+            if(any(is.na(newKeys))){
+              return(showHideEl(session, paste0("#", ns("newRowError")), 5000L,
+                                lang$renderers$miroPivot$dialogAddRow$invalidKeysError))
+            }
+            
+            newValues <- vapply(seq(noRowHeaders + 1L, length(colHeaders)), function(i){
+              newVal <- tryCatch(suppressWarnings(as.numeric(input[[paste0("newRow_", i)]])),
+                                 error = function(e){NA_real_})
+              if(length(newVal) != 1L){
+                return(NA_real_)
+              }
+              return(newVal)
+            }, numeric(1L), USE.NAMES = FALSE)
+            newColIds <- which(!is.na(newValues))
+            if(!length(newColIds)){
+              return(showHideEl(session, paste0("#", ns("newRowError")), 5000L,
+                                lang$renderers$miroPivot$dialogAddRow$invalidValuesError))
+            }
+            newValues <- newValues[newColIds]
+            
+            valueColName <- names(data)[length(data)]
+            
+            rowIndices <- colHeaders[seq_len(noRowHeaders)]
+            colIndices <- currentFilters()$cols
+            colIndices <- colIndices[colIndices != valueColName]
+            filterIndices <- currentFilters()$filter
+            filterIndices <- filterIndices[!filterIndices %in% c(filteredData()$multiFilterIndices, valueColName)]
+            
+            colElements <- vector("list", length(newColIds))
+            if(length(colIndices)){
+              colElements <- strsplit(colHeaders[newColIds], "\U2024", fixed = TRUE)
+            }else if(length(newColIds) > 1L){
+              flog.error("MIRO pivot: Column dimensions of current filters and dataToRender don't match. Please contact GAMS!")
+              return(showHideEl(session, paste0("#", ns("newRowError")), 5000L,
+                                lang$renderers$miroPivot$dialogAddRow$unknownError))
+            }
+            indexOrder <- match(c(rowIndices,
+                                  colIndices,
+                                  filterIndices), setIndices)
+            if(any(is.na(indexOrder)) || length(indexOrder) != length(setIndices)){
+              flog.error("MIRO pivot: Could not determine index order.")
+              return(showHideEl(session, paste0("#", ns("newRowError")), 5000L,
+                                lang$renderers$miroPivot$dialogAddRow$unknownError))
+            }
+            if(tryCatch({
+              filterElements <- vapply(filterIndices, function(filterIndex){
+                return(input[[paste0("filter_", filterIndex)]])
+              }, character(1L), USE.NAMES = FALSE)
+              FALSE
+            }, error = function(e){
+              flog.warn("Could not determine filter elements. Error message: %s",
+                        conditionMessage(e))
+              return(TRUE)
+            })){
+              return(showHideEl(session, paste0("#", ns("newRowError")), 5000L,
+                                lang$renderers$miroPivot$dialogAddRow$unknownError))
+            }
+            newKeysColIds <- match(rowIndices, setIndices) + 1L
+            # we might have to extend factor if there are new keys
+            hasNewUELs <- FALSE
+            for(i in seq_along(newKeys)){
+              if(!newKeys[i] %in% levels(data[[newKeysColIds[i]]])){
+                hasNewUELs <- TRUE
+                data[[newKeysColIds[i]]] <<- factor(data[[newKeysColIds[i]]],
+                                                    levels = unique(sort(c(levels(data[[newKeysColIds[i]]]),
+                                                                           newKeys[i]))))
+              }
+            }
+            # now that factors are extended, we can safely add new rows
+            newRow <- vector("list", length(newValues))
+            newKey <- vector("list", length(newValues))
+            for(i in seq_along(newValues)){
+              newRowTmp <- c(newKeys, colElements[[i]], filterElements)[indexOrder]
+              newKey[[i]] <- paste(newRowTmp, collapse = "\U2024")
+              newRow[[i]] <- c(list(newKey[[i]]), as.list(newRowTmp),
+                               list(newValues[i]))
+              if(!hasNewUELs && newKey[[i]] %in% data[["__key__"]]){
+                flog.debug("Key: '%s' already exists.", newKey[[i]])
+                return(showHideEl(session, paste0("#", ns("newRowError")), 5000L,
+                                  sprintf(lang$renderers$miroPivot$duplicateRecordError, newKey[[i]])))
+              }
+            }
+            for(i in seq_along(newValues)){
+              flog.debug("MIRO pivot: adding new data record: %s", newKey[[i]])
+              data[nrow(data) + 1L, ] <<- newRow[[i]]
+            }
+            removeModal()
+            newUpdateFilterVal <- updateFilter() + 1L
+            updateFilter(newUpdateFilterVal)
+          })
+        })
+        
+        rendererEnv[[ns("editTableRemove")]] <- observe({
+          if(length(input[["btRemoveRows"]]) != 1L ||
+             input[["btRemoveRows"]] == 0L || !isEditable){
+            return()
+          }
+          isolate({
+            idsToRemove <- input[["pivotTable_rows_selected"]]
+            if(!length(idsToRemove)){
+              return()
+            }
+            if(!length(dataToRender())){
+              flog.warn("MIRO Pivot: Remove rows button was clicked but dataToRender has no length.")
+              return()
+            }
+            if(bigData){
+              showEl(session, "#loading-screen")
+              on.exit(hideEl(session, "#loading-screen"))
+            }
+            flog.trace("MIRO pivot: Received request to remove row(s).")
+            colHeaders <- names(dataToRender())
+            noRowHeaders <- attr(dataToRender(), "noRowHeaders")
+            rowIndices <- colHeaders[seq_len(noRowHeaders)]
+            colIndices <- currentFilters()$cols
+            colIndices <- colIndices[colIndices != valueColName]
+            filterIndices <- currentFilters()$filter
+            filterIndices <- filterIndices[!filterIndices %in% c(filteredData()$multiFilterIndices, valueColName)]
+            
+            indexOrder <- match(c(rowIndices,
+                                  colIndices,
+                                  filterIndices), setIndices)
+            rowsToRemove <- mutate(slice(dataToRender(), idsToRemove)[seq_len(noRowHeaders)],
+                                   across(where(is.factor), as.character))
+            if(tryCatch({
+              filterElements <- vapply(filterIndices, function(filterIndex){
+                return(input[[paste0("filter_", filterIndex)]])
+              }, character(1L), USE.NAMES = FALSE)
+              FALSE
+            }, error = function(e){
+              flog.error("Could not determine filter elements. Error message: %s",
+                         conditionMessage(e))
+              return(TRUE)
+            })){
+              return()
+            }
+            if(length(colIndices)){
+              if(noRowHeaders > 0L){
+                colHeadersTmp <- colHeaders[-seq_len(noRowHeaders)]
+              }else{
+                colHeadersTmp <- colHeaders
+              }
+              colElementsList <- strsplit(colHeadersTmp, "\U2024", fixed = TRUE)
+            }else{
+              colElementsList <- list(character())
+            }
+            keysToRemove <- unlist(lapply(seq_along(idsToRemove), function(i){
+              vapply(colElementsList, function(colElements){
+                paste(c(as.character(rowsToRemove[i, ]),
+                        colElements,
+                        filterElements)[indexOrder], collapse = "\U2024")
+              }, character(1L), USE.NAMES = FALSE)
+            }))
+            rowIdsToRemove <- match(keysToRemove, data[["__key__"]])
+            if(any(is.na(rowIdsToRemove))){
+              flog.error("MIRO pivot: Key(s): %s could not be removed as they don't exist in the data!",
+                         paste(keysToRemove[is.na(rowIdsToRemove)]))
+              return()
+            }
+            if(length(rowIdsToRemove) > 0L){
+              data <<- data[-rowIdsToRemove, ]
+              flog.trace("MIRO pivot: %s row(s) removed.", length(rowIdsToRemove))
+              
+              newUpdateFilterVal <- updateFilter() + 1L
+              updateFilter(newUpdateFilterVal)
+            }
+          })
+        })
+        
         rendererEnv[[ns("editTable")]] <- observe({
+          if(!isEditable){
+            return()
+          }
           info <- input[["pivotTable_cell_edit"]]
           if(is.null(info)){
             return()
           }
+          flog.trace("MIRO pivot: Received request to edit table data.")
           if(bigData){
             if(!identical("__key__", names(data)[1])){
               flog.error("User edited input table even though it was readonly. This seems like an attempt to tamper with the app!")
@@ -921,7 +1179,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               }, character(1L), USE.NAMES = FALSE)
               
               if(length(colIndices)){
-                colHeaders <- dataHeaders[-seq_len(noRowHeaders)]
+                if(noRowHeaders > 0L){
+                  colHeaders <- dataHeaders[-seq_len(noRowHeaders)]
+                }else{
+                  colHeaders <- dataHeaders
+                }
                 if(editedCol > noRowHeaders){
                   colElements <- strsplit(dataHeaders[editedCol], "\U2024", fixed = TRUE)[[1]]
                 }else if(length(colHeaders) == 1L){
@@ -1009,8 +1271,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               return()
             }
             # edited column is key column
-            editedKey <- as.character(info$value)
-            if(is.na(editedKey) || length(editedKey) != 1L){
+            editedKey <- tryCatch(trimws(info$value), error = function(e){""})
+            if(!isValidUEL(editedKey)){
               flog.info("MIRO pivot: Edited key is invalid!.")
               updateFilter(newUpdateFilterVal)
               return()
@@ -1029,12 +1291,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                       collapse = "\U2024")
               }, character(1L), USE.NAMES = FALSE)
             }
-            if(any(newKey %in% data[["__key__"]])){
-              return(showErrorMsg(options$lang$duplicateRecordTitle,
-                                  options$lang$duplicateRecordDesc))
-            }
-            data[rowId, 1L] <<- newKey
             if(editedKey %in% levels(data[[colId + 1L]])){
+              if(any(newKey %in% data[["__key__"]])){
+                flog.debug("The record: %s already exists.", newKey)
+                return(showErrorMsg(lang$renderers$miroPivot$duplicateRecordTitle,
+                                    lang$renderers$miroPivot$duplicateRecordDesc))
+              }
               data[rowId, colId + 1L] <<- editedKey
             }else{
               levels(data[[colId + 1L]]) <<- c(levels(data[[colId + 1L]]), editedKey)
@@ -1043,12 +1305,23 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               data[[colId + 1L]] <<- factor(data[[colId + 1L]],
                                             levels = unique(sort(levels(data[[colId + 1L]]))))
             }
+            data[rowId, 1L] <<- newKey
             updateFilter(newUpdateFilterVal)
           })
         })
         return(reactive({
           dataUpdated()
-          if(identical(names(data)[1], "__key__")){
+          if(sum(numericCols) == 0L){
+            # data is a set -> add empty text column back
+            if(identical(names(data)[1], "__key__")){
+              dataRet <- data[-1]
+            }else{
+              dataRet <- data
+            }
+            dataRet[length(dataRed)] <- NA_character_
+            
+            return(dataRet)
+          }else if(identical(names(data)[1], "__key__")){
             return(data[-1])
           }
           return(data)

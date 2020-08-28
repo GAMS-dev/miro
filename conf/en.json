@@ -632,6 +632,8 @@
       "btLoadView": "Load view",
       "btNewView": "Add view",
       "btEnableEdit": "Enable editing",
+      "btAddRow": "Add row",
+      "btRemoveRows": "Remove rows",
       "aggregateLabel": "aggregate",
       "filterLabel": "filter",
       "allPlaceholder": "All",
@@ -648,6 +650,14 @@
       "errPivotDuplicate": "The data contains duplicate records and can therefore not be pivoted.",
       "errPivot": "The data could not be pivoted. This could be because your data is too large.",
       "errorTitle": "Error",
+      "duplicateRecordError": "The record: '%s' already exists. Please remove it and try again.",
+      "dialogAddRow":{
+        "title": "Add new row",
+        "btCancel": "Cancel",
+        "invalidKeysError": "The elements you entered are invalid. Please note that the elements must consist of at least one printable character.",
+        "invalidValuesError": "The data you entered is invalid. Make sure that the values you enter are numeric.",
+        "unknownError": "An unexpected error occurred when trying to add the new data."
+      },
       "aggregationFunctions":{
         "sum": "Sum",
         "count": "Count",

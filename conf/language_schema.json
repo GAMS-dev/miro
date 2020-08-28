@@ -2458,6 +2458,14 @@
               "type": "string",
               "minLength": 1
             },
+            "btAddRow": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btRemoveRows": {
+              "type": "string",
+              "minLength": 1
+            },
             "aggregateLabel": {
               "type": "string",
               "minLength": 1
@@ -2522,6 +2530,37 @@
               "type": "string",
               "minLength": 1
             },
+            "duplicateRecordError": {
+              "type": "string",
+              "minLength": 1
+            },
+            "dialogAddRow": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btCancel": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "invalidKeysError": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "invalidValuesError": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "unknownError": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 5
+            },
             "aggregationFunctions": {
               "type": "object",
               "additionalProperties": false,
@@ -2581,7 +2620,7 @@
               "minProperties": 5
             }
           },
-          "minProperties": 22
+          "minProperties": 25
         }
       },
       "minProperties": 1
