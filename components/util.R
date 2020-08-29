@@ -1621,4 +1621,5 @@ isValidUEL <- function(uelToTest){
   }
   return(TRUE)
 }
+is_wholenumber <- function(x) x%%1==0
 

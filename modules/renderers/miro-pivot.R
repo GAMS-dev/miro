@@ -978,6 +978,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                 lang$renderers$miroPivot$dialogAddRow$invalidValuesError))
             }
             newValues <- newValues[newColIds]
+            # in case new values are non-integer and value column was integer before,
+            # we have to convert it
+            mustConvertValCol <- FALSE
+            if(is.integer(data[[length(data)]])){
+              if(all(is_wholenumber(newValues))){
+                newValues <- as.integer(newValues)
+              }else{
+                mustConvertValCol <- TRUE
+              }
+            }
             
             valueColName <- names(data)[length(data)]
             
@@ -1040,6 +1050,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 return(showHideEl(session, paste0("#", ns("newRowError")), 5000L,
                                   sprintf(lang$renderers$miroPivot$duplicateRecordError, newKey[[i]])))
               }
+            }
+            if(mustConvertValCol){
+              data[[length(data)]] <<- as.numeric(data[[length(data)]])
             }
             for(i in seq_along(newValues)){
               flog.debug("MIRO pivot: adding new data record: %s", newKey[[i]])
@@ -1257,6 +1270,17 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                   data[rowId, length(data)] <<- editedVal
                 }else{
                   # need to add new row
+                  
+                  # in case new values are non-integer and value column was integer before,
+                  # we have to convert it
+                  mustConvertValCol <- FALSE
+                  if(is.integer(data[[length(data)]])){
+                    if(all(is_wholenumber(newValues))){
+                      editedVal <- as.integer(editedVal)
+                    }else{
+                      data[[length(data)]] <<- as.numeric(data[[length(data)]])
+                    }
+                  }
                   data[nrow(data) + 1L, ] <<- c(list(keyToReplace),
                                                 as.list(keyVector),
                                                 list(editedVal))
