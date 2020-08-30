@@ -180,14 +180,24 @@ test_that("Editing with reordered columns works", {
                                 c = c("c2", "c4", "c10", "c1", "c6", "c7", "c3", "c9", "c5"),
                                 d = c("d2", "d4", "d10", "d1", "d3", "d7", "d3", "d9", "d5"),
                                 value = c(2, 4, 10, 1, 2, 7, 3, 9, 5)))
+    # remove row by setting value to "" (empty string)
+    session$setInputs(pivotTable_cell_edit = list(col = 6L, row = 1L, value = ""))
+    expect_identical(convert_to_df(dataToRender()),
+                     data.frame(e = c("e10", "e10", "e2", "e2", "e2", "e2", "e2", "e2"),
+                                f = c("f10", "f10", "f10", "f10", "f10", "f10", "f10", "f10"),
+                                a = c("a4", "a5", "a1", "a1", "a2", "a3", "a4", "a5"),
+                                b = c("b4", "b10", "b1", "b6", "b7", "b3", "b9", "b5"),
+                                c = c("c4", "c10", "c1", "c6", "c7", "c3", "c9", "c5"),
+                                d = c("d4", "d10", "d1", "d3", "d7", "d3", "d9", "d5"),
+                                value = c(4, 10, 1, 2, 7, 3, 9, 5)))
     expect_identical(convert_to_df(session$returned()),
-                     data.frame(a = c("a1", "a2", "a3", "a4", "a5", "a1", "a2", "a4", "a5"),
-                                b = c("b1", "b2", "b3", "b4", "b5", "b6", "b7", "b9", "b10"),
-                                c = c("c1", "c2", "c3", "c4", "c5", "c6", "c7", "c9", "c10"),
-                                d = c("d1", "d2", "d3", "d4", "d5", "d3", "d7", "d9", "d10"),
-                                e = c("e2", "e10", "e2", "e10", "e2", "e2", "e2", "e2", "e10"),
-                                f = c("f10", "f10", "f10", "f10", "f10", "f10", "f10", "f10", "f10"),
-                                value = c(1, 2, 3, 4, 5, 2, 7, 9, 10)))
+                     data.frame(a = c("a1", "a3", "a4", "a5", "a1", "a2", "a4", "a5"),
+                                b = c("b1", "b3", "b4", "b5", "b6", "b7", "b9", "b10"),
+                                c = c("c1", "c3", "c4", "c5", "c6", "c7", "c9", "c10"),
+                                d = c("d1", "d3", "d4", "d5", "d3", "d7", "d9", "d10"),
+                                e = c("e2", "e2", "e10", "e2", "e2", "e2", "e2", "e10"),
+                                f = c("f10","f10", "f10", "f10", "f10", "f10", "f10", "f10"),
+                                value = c(1, 3, 4, 5, 2, 7, 9, 10)))
   }, args = list(data = testData,
                  options = list(enablePersistentViews = FALSE, input = TRUE,
                                 "_metadata_" = list(symtype = "parameter"))))
@@ -309,12 +319,28 @@ test_that("Editing with pivoted columns works", {
                                 f = c("f10", "f9"),
                                 c2.d2 = c(2, NA),
                                 c7.d7 = c(1.5, 2)))
+    session$setInputs(pivotTable_cell_edit = list(col = 4, row = 1L, value = ""))
+    session$setInputs(pivotTable_cell_edit = list(col = 0, row = 1L, value = "b2"))
+    expect_identical(convert_to_df(dataToRender()),
+                     data.frame(b = c("b2", "b7"),
+                                e = c("e10", "e2"),
+                                f = c("f10", "f9"),
+                                c2.d2 = c(2, NA),
+                                c7.d7 = c(NA, 2)))
+    session$setInputs(pivotTable_cell_edit = list(col = 4, row = 1L, value = 1.5))
+    session$setInputs(pivotTable_cell_edit = list(col = 0, row = 1L, value = "b3"))
+    expect_identical(convert_to_df(dataToRender()),
+                     data.frame(b = c("b3", "b7"),
+                                e = c("e10", "e2"),
+                                f = c("f10", "f9"),
+                                c2.d2 = c(2, NA),
+                                c7.d7 = c(1.5, 2)))
     session$setInputs(pivotTable_rows_selected = 1:2, btRemoveRows = 2L)
     # all rows removed -> filter switches to a1
     expect_identical(convert_to_df(dataToRender()),
                      data.frame(b = c("b1", "b6"),
                                 e = c("e2", "e10"),
-                                f = c("f10", "f10"), 
+                                f = c("f10", "f10"),
                                 c1.d1 = c(1, NA),
                                 c6.d6 = c(NA, 6)))
     # clicking the add row button should not throw an error
@@ -324,7 +350,7 @@ test_that("Editing with pivoted columns works", {
     expect_identical(convert_to_df(dataToRender()),
                      data.frame(b = c("b1", "b6"),
                                 e = c("e2", "e10"),
-                                f = c("f10", "f10"), 
+                                f = c("f10", "f10"),
                                 c1.d1 = c(1, NA),
                                 c6.d6 = c(1.2, 6)))
     expect_identical(convert_to_df(session$returned()),
@@ -341,14 +367,14 @@ test_that("Editing with pivoted columns works", {
     expect_identical(convert_to_df(dataToRender()),
                      data.frame(b = c("b1", "b1", "b6"),
                                 e = c("e2", "e2", "e10"),
-                                f = c("f10", "f11", "f10"), 
+                                f = c("f10", "f11", "f10"),
                                 c1.d1 = c(1, 123.001, NA),
                                 c6.d6 = c(1.2, 156.123456789, 6)))
     expect_identical(convert_to_df(session$returned()),
                      data.frame(a = c("a1", "a3", "a4", "a5", "a1", "a3", "a4", "a5", "a1", "a1", "a1"),
                                 b = c("b1", "b3", "b4", "b5", "b6", "b8", "b9", "b10", "b1", "b1", "b1"),
                                 c = c("c1", "c3", "c4", "c5", "c6", "c8", "c9", "c10", "c6", "c1", "c6"),
-                                d = c("d1", "d3", "d4", "d5", "d6", "d8", "d9", "d10", "d6", "d1", "d6"), 
+                                d = c("d1", "d3", "d4", "d5", "d6", "d8", "d9", "d10", "d6", "d1", "d6"),
                                 e = c("e2", "e2", "e10", "e2", "e10", "e10", "e2", "e10", "e2", "e2", "e2"),
                                 f = c("f10", "f10", "f10", "f10", "f10", "f10", "f10", "f10", "f10", "f11", "f11"),
                                 value = c(1, 3, 4, 5, 6, 8, 9, 10, 1.2, 123.001, 156.123456789)))
