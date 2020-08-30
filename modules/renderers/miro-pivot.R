@@ -1210,9 +1210,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                             filterElements)[indexOrder],
                           collapse = "\U2024")
                   }, character(1L), USE.NAMES = FALSE)
-                  rowId <- vapply(keyToReplace, function(key){
-                    which(key == data[["__key__"]])
-                  }, integer(1L), USE.NAMES = FALSE)
+                  rowId <- match(keyToReplace, data[["__key__"]])
                 }
               }else{
                 colElements <- character()
@@ -1307,6 +1305,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               newKey <- paste(keyVector,
                               collapse = "\U2024")
             }else{
+              validRowIds <- !is.na(rowId)
+              rowId <- rowId[validRowIds]
+              colElementsList <- colElementsList[validRowIds]
               rowElements[editedCol] <- editedKey
               newKey <- vapply(colElementsList, function(colElements){
                 paste(c(rowElements,
