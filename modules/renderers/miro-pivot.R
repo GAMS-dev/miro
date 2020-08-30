@@ -999,7 +999,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             
             colElements <- vector("list", length(newColIds))
             if(length(colIndices)){
-              colElements <- strsplit(colHeaders[newColIds], "\U2024", fixed = TRUE)
+              colElements <- strsplit(colHeaders[noRowHeaders + newColIds], "\U2024", fixed = TRUE)
             }else if(length(newColIds) > 1L){
               flog.error("MIRO pivot: Column dimensions of current filters and dataToRender don't match. Please contact GAMS!")
               return(showHideEl(session, paste0("#", ns("newRowError")), 5000L,
@@ -1126,11 +1126,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               }, character(1L), USE.NAMES = FALSE)
             }))
             rowIdsToRemove <- match(keysToRemove, data[["__key__"]])
-            if(any(is.na(rowIdsToRemove))){
-              flog.error("MIRO pivot: Key(s): %s could not be removed as they don't exist in the data!",
-                         paste(keysToRemove[is.na(rowIdsToRemove)]))
-              return()
-            }
+            rowIdsToRemove <- rowIdsToRemove[!is.na(rowIdsToRemove)]
             if(length(rowIdsToRemove) > 0L){
               data <<- data[-rowIdsToRemove, ]
               flog.trace("MIRO pivot: %s row(s) removed.", length(rowIdsToRemove))
@@ -1229,7 +1225,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 rowId <- which(keyToReplace == data[["__key__"]])
               }
               if(!length(rowId)){
-                if(editedCol <= noRowHeaders || length(colElements) != 1L){
+                if(editedCol <= noRowHeaders){
                   stop(sprintf("MIRO pivot: Could not find row with ID: '%s' in original data.",
                                paste(keyToReplace, collapse = ", ")), call. = FALSE)
                 }
@@ -1264,6 +1260,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                   return()
                 }
               }else{
+                newData <- dataToRender()
                 if(length(rowId)){
                   data[rowId, length(data)] <<- editedVal
                 }else{
@@ -1273,10 +1270,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                   # we have to convert it
                   mustConvertValCol <- FALSE
                   if(is.integer(data[[length(data)]])){
-                    if(all(is_wholenumber(newValues))){
+                    if(all(is_wholenumber(editedVal))){
                       editedVal <- as.integer(editedVal)
                     }else{
                       data[[length(data)]] <<- as.numeric(data[[length(data)]])
+                      newData[[editedCol]] <- as.numeric(newData[[editedCol]])
                     }
                   }
                   data[nrow(data) + 1L, ] <<- c(list(keyToReplace),
@@ -1284,7 +1282,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                                 list(editedVal))
                 }
               }
-              newData <- dataToRender()
               newData[info$row, editedCol] <- editedVal
               replaceData(dtProxy, newData, resetPaging = FALSE)
               
