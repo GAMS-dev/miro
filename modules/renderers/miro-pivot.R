@@ -228,6 +228,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             if(length(input$enableEdit) != 1L || input$enableEdit == 0L){
               return()
             }
+            if(isEditable){
+              # already editable
+              return()
+            }
             showEl(session, "#loading-screen")
             on.exit(hideEl(session, "#loading-screen"))
             data <<- unite(data, "__key__", !!!setIndices,
@@ -731,7 +735,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           # note that names_sep is not an ASCII full stop, but UNICODE U+2024
           tryCatch({
             dataTmp <- dataTmp %>% 
-              pivot_wider(names_from = !!colIndexList, values_from = value, names_sep = "\U2024", 
+              pivot_wider(names_from = !!colIndexList, values_from = !!valueColName,
+                          names_sep = "\U2024", 
                           names_sort = TRUE, names_repair = "unique")
           }, warning = function(w){
             if(grepl("list-cols", conditionMessage(w), fixed = TRUE)){
@@ -1138,11 +1143,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         })
         
         rendererEnv[[ns("editTable")]] <- observe({
-          if(!isEditable){
-            return()
-          }
           info <- input[["pivotTable_cell_edit"]]
-          if(is.null(info)){
+          if(!isEditable || is.null(info)){
             return()
           }
           flog.trace("MIRO pivot: Received request to edit table data.")
