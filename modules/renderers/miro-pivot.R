@@ -1005,9 +1005,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               return(showHideEl(session, paste0("#", ns("newRowError")), 5000L,
                                 lang$renderers$miroPivot$dialogAddRow$unknownError))
             }
-            indexOrder <- match(c(rowIndices,
-                                  colIndices,
-                                  filterIndices), setIndices)
+            indexOrder <- match(setIndices, c(rowIndices,
+                                              colIndices,
+                                              filterIndices))
             if(any(is.na(indexOrder)) || length(indexOrder) != length(setIndices)){
               flog.error("MIRO pivot: Could not determine index order.")
               return(showHideEl(session, paste0("#", ns("newRowError")), 5000L,
@@ -1091,9 +1091,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             filterIndices <- currentFilters()$filter
             filterIndices <- filterIndices[!filterIndices %in% c(filteredData()$multiFilterIndices, valueColName)]
             
-            indexOrder <- match(c(rowIndices,
-                                  colIndices,
-                                  filterIndices), setIndices)
+            indexOrder <- match(setIndices, c(rowIndices,
+                                              colIndices,
+                                              filterIndices))
             rowsToRemove <- mutate(slice(dataToRender(), idsToRemove)[seq_len(noRowHeaders)],
                                    across(where(is.factor), as.character))
             if(tryCatch({
@@ -1179,9 +1179,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               filterIndices <- filterIndices[!filterIndices %in% c(filteredData()$multiFilterIndices, valueColName)]
               
               keyToReplace <- NULL
-              indexOrder <- match(c(rowIndices,
-                                    colIndices,
-                                    filterIndices), setIndices)
+              indexOrder <- match(setIndices, c(rowIndices,
+                                                colIndices,
+                                                filterIndices))
               
               rowToReplace <- slice(dataToRender(), info$row[1])
               rowElements <- vapply(rowIndices, function(rowIndex){
