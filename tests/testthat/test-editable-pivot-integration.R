@@ -180,7 +180,6 @@ test_that("Editing with reordered columns works", {
                                 c = c("c2", "c4", "c10", "c1", "c6", "c7", "c3", "c9", "c5"),
                                 d = c("d2", "d4", "d10", "d1", "d3", "d7", "d3", "d9", "d5"),
                                 value = c(2, 4, 10, 1, 2, 7, 3, 9, 5)))
-    dput(convert_to_df(session$returned()))
     expect_identical(convert_to_df(session$returned()),
                      data.frame(a = c("a1", "a2", "a3", "a4", "a5", "a1", "a2", "a4", "a5"),
                                 b = c("b1", "b2", "b3", "b4", "b5", "b6", "b7", "b9", "b10"),
@@ -336,6 +335,23 @@ test_that("Editing with pivoted columns works", {
                                 e = c("e2", "e2", "e10", "e2", "e10", "e10", "e2", "e10", "e2"),
                                 f = c("f10", "f10", "f10", "f10", "f10", "f10", "f10", "f10", "f10"),
                                 value = c(1, 3, 4, 5, 6, 8, 9, 10, 1.2)))
+    session$setInputs(newRow_1 = "b1", newRow_2 = "e2", newRow_3 = "f11",
+                      newRow_4 = 123.001,
+                      newRow_5 = 156.123456789, btAddRowConfirm = 1L)
+    expect_identical(convert_to_df(dataToRender()),
+                     data.frame(b = c("b1", "b1", "b6"),
+                                e = c("e2", "e2", "e10"),
+                                f = c("f10", "f11", "f10"), 
+                                c1.d1 = c(1, 123.001, NA),
+                                c6.d6 = c(1.2, 156.123456789, 6)))
+    expect_identical(convert_to_df(session$returned()),
+                     data.frame(a = c("a1", "a3", "a4", "a5", "a1", "a3", "a4", "a5", "a1", "a1", "a1"),
+                                b = c("b1", "b3", "b4", "b5", "b6", "b8", "b9", "b10", "b1", "b1", "b1"),
+                                c = c("c1", "c3", "c4", "c5", "c6", "c8", "c9", "c10", "c6", "c1", "c6"),
+                                d = c("d1", "d3", "d4", "d5", "d6", "d8", "d9", "d10", "d6", "d1", "d6"), 
+                                e = c("e2", "e2", "e10", "e2", "e10", "e10", "e2", "e10", "e2", "e2", "e2"),
+                                f = c("f10", "f10", "f10", "f10", "f10", "f10", "f10", "f10", "f10", "f11", "f11"),
+                                value = c(1, 3, 4, 5, 6, 8, 9, 10, 1.2, 123.001, 156.123456789)))
   }, args = list(data = testData,
                  options = list(enablePersistentViews = FALSE, input = TRUE,
                                 "_metadata_" = list(symtype = "parameter"))))
