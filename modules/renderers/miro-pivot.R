@@ -1333,6 +1333,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         })
         return(reactive({
           dataUpdated()
+          dataToRender()
           if(sum(numericCols) == 0L){
             # data is a set -> add empty text column back
             if(identical(names(data)[1], "__key__")){
