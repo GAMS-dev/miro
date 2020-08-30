@@ -1242,6 +1242,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             if(editedCol > noRowHeaders){
               # edited column is value column
               editedVal <- suppressWarnings(as.numeric(info$value))
+              newData <- dataToRender()
               if(is.na(editedVal) || length(editedVal) != 1L){
                 if(identical(info$value, "")){
                   # delete row
@@ -1251,7 +1252,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                   }
                   data <<- data[-c(rowId), ]
                   editedVal <- NA_real_
-                  if(length(colElements) == 1L){
+                  if(length(colIndices) == 0L){
                     updateFilter(newUpdateFilterVal)
                     return()
                   }
@@ -1260,7 +1261,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                   return()
                 }
               }else{
-                newData <- dataToRender()
                 if(length(rowId)){
                   data[rowId, length(data)] <<- editedVal
                 }else{
