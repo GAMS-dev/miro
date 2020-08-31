@@ -527,7 +527,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             }
           }
           if(allowEmpty){
-            choices <- c(allPlaceholder, as.character(filterElements[[filterIndex]]))
+            choices <- as.character(filterElements[[filterIndex]])
+            choices <- c(allPlaceholder, setNames(choices, choices))
           }else{
             choices <- as.character(filterElements[[filterIndex]])
           }
