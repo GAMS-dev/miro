@@ -1584,7 +1584,7 @@ serverSelectInput <- function(session, inputId, label, choices, selected = NULL,
   attr(choicesDf, 'selected_value') <- unname(selected)
   # very hacky, but unfortunately shiny doesn't export the selectizeJSON function
   url <- session$registerDataObj(inputId, choicesDf, shiny:::selectizeJSON)
-  selectizeInput(inputId, label, choices = c(), selected = selected, multiple = multiple, width = width,
+  selectizeInput(inputId, label, choices = c(), multiple = multiple, width = width,
                  options = modifyList(list(preload = TRUE, load = I(paste0("function(query, callback) {
             var selectize = this;
             var settings = selectize.settings;
@@ -1609,7 +1609,12 @@ serverSelectInput <- function(session, inputId, label, choices, selected = NULL,
                   optgroup[settings.optgroupValueField || \"value\"] = optgroupId;
                   selectize.addOptionGroup(optgroupId, optgroup);
                 });
-                callback(res);
+                callback(res);", if(length(selected))
+                  paste0("if(selectize.settings.loaded!==true){
+                  selectize.settings.loaded = true;
+                         selectize.setValue(atob(\"",
+                         jsonlite::base64_enc(as.character(selected)), "\"));
+                         }"), "
               }
             });
           }"))), options))
@@ -1622,4 +1627,12 @@ isValidUEL <- function(uelToTest){
   return(TRUE)
 }
 is_wholenumber <- function(x) x%%1==0
+# safeFromJSON function taken from Shiny package 
+# see LICENSE file for license information of Shiny package
+safeFromJSON <- function(txt, ...) {
+  if (!jsonlite::validate(txt)) {
+    stop("Argument 'txt' is not a valid JSON string.")
+  }
+  jsonlite::fromJSON(txt, ...)
+}
 

@@ -465,8 +465,8 @@ if(config$activateModules$attachments){
     on.exit(hideEl(session, "#addViewsLoading"))
     
     viewsToRemove <- tryCatch({
-      fromJSON(input$removeViews,
-               simplifyMatrix = FALSE)
+      safeFromJSON(input$removeViews,
+                   simplifyMatrix = FALSE)
     }, error = function(e){
       flog.error("Problems parsing request to remove views. This seems like an attempt to tamper with the app! Error message: %s.",
                  conditionMessage(e))
@@ -503,8 +503,8 @@ if(config$activateModules$attachments){
     },
     content = function(file){
       flog.debug("Request to download views received.")
-      tryCatch(write_file(views$getJSON(fromJSON(input$downloadViews,
-                                                 simplifyMatrix = FALSE)), file),
+      tryCatch(write_file(views$getJSON(safeFromJSON(input$downloadViews,
+                                                     simplifyMatrix = FALSE)), file),
                error = function(e){
                  flog.warn("Problems writing views JSON file. Error message: %s",
                            conditionMessage(e))
@@ -525,8 +525,8 @@ if(config$activateModules$attachments){
     }
     
     if(tryCatch({
-      views$addConf(fromJSON(read_file(input$file_addViews$datapath),
-                             simplifyDataFrame = FALSE, simplifyVector = FALSE))
+      views$addConf(safeFromJSON(read_file(input$file_addViews$datapath),
+                                 simplifyDataFrame = FALSE, simplifyVector = FALSE))
       invalidViews <- views$getInvalidViews()
       if(length(invalidViews)){
         showHideEl(session, "#viewsCustomError",

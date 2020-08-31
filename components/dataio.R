@@ -39,7 +39,7 @@ DataIO <- R6Class("DataIO", public = list(
       }
       names(bodyValues) <- bodyKeys
       item$body <- bodyValues
-      data <- as_tibble(fromJSON(private$sendHTTPRequest(item)))
+      data <- as_tibble(safeFromJSON(private$sendHTTPRequest(item)))
     }
     return(private$validateData(dsName, data))
   },

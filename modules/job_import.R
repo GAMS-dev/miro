@@ -11,11 +11,14 @@ observeEvent({
       return()
     }
   jID <- strsplit(input$asyncLogFileTabsset, "_", fixed = TRUE)[[1]]
-  flog.debug("Log file for job: '%s' requested.", jID)
   if(length(jID) < 2L){
     flog.error("Log file could not be shown as no job ID could be identified. This looks like an attempt to tamper with the app!")
     return()
   }
+  if(!identical(jID[2], input$showJobLog)){
+    return()
+  }
+  flog.debug("Log file for job: '%s' requested.", jID[2])
   fileType <- jID[[1L]]
   jID <- suppressWarnings(as.integer(jID[[2L]]))
   if(is.na(jID)){
@@ -25,7 +28,7 @@ observeEvent({
   
   if(identical(fileType, "log")){
     if(asyncLogLoaded[1L]){
-      flog.debug("Log file not is already loaded. No reloading..")
+      flog.debug("Log file is already loaded. No reloading..")
       return()
     }
     asyncLogLoaded[1L] <<- TRUE
@@ -45,14 +48,14 @@ observeEvent({
       return()
     }
     if(asyncLogLoaded[3L]){
-      flog.debug("MIRO log file not is already loaded. No reloading..")
+      flog.debug("MIRO log file is already loaded. No reloading..")
       return()
     }
     asyncLogLoaded[3L] <<- TRUE
     fileToFetch <- config$miroLogFile
     containerID <- "#asyncMiroLogContainer"
   }else{
-    flog.error("Log file type Could not be identified. This looks like an attempt to tamper with the app!")
+    flog.error("Log file type could not be identified. This looks like an attempt to tamper with the app!")
     return()
   }
   pID <- worker$getPid(jID)
@@ -106,7 +109,7 @@ observeEvent(input$loadTextEntityChunk, {
     fileToFetch <- config$miroLogFile
     containerID <- "#asyncMiroLogContainer"
   }else{
-    flog.error("Log file type Could not be identified. This looks like an attempt to tamper with the app!")
+    flog.error("Log file type could not be identified. This looks like an attempt to tamper with the app!")
     return()
   }
   logContent <- tryCatch({
@@ -137,8 +140,9 @@ observeEvent(input$importJob, {
     showHideEl(session, "#fetchJobsError")
     return()
   }
-  if(!identical(worker$getStatus(jobImportID), JOBSTATUSMAP[['completed']])){
-    flog.error("Import button was clicked but job is not yet marked as 'completed' (Job ID: '%s'). The user probably tampered with the app.", jID)
+  if(!worker$getStatus(jobImportID) %in% c(JOBSTATUSMAP[['completed']], JOBSTATUSMAP[['downloaded']])){
+    flog.error("Import button was clicked but job is not yet marked as 'completed' or 'downloaded' (Job ID: '%s'). The user probably tampered with the app.", 
+               jobImportID)
     showHideEl(session, "#fetchJobsError")
     return()
   }
@@ -154,9 +158,11 @@ observeEvent(
   virtualActionButton(input$importJobNew, rv$importJobNew), {
     removeModal()
     errMsg <- NULL
-    if(!identical(worker$getStatus(jobImportID), JOBSTATUSMAP[['completed']])){
-      flog.error("Import button was clicked but job is not yet marked as 'completed' (Job ID: '%s'). The user probably tampered with the app.", jID)
+    if(!worker$getStatus(jobImportID) %in% c(JOBSTATUSMAP[['completed']], JOBSTATUSMAP[['downloaded']])){
+      flog.error("Import button was clicked but job is not yet marked as 'completed' or 'downloaded' (Job ID: '%s'). The user probably tampered with the app.", 
+                 jobImportID)
       showHideEl(session, "#fetchJobsError")
+      return()
     }
     tryCatch({
       activeScen <<- Scenario$new(db = db, sname = rv$activeSname, 
@@ -178,9 +184,11 @@ observeEvent(virtualActionButton(
   rv$importJobConfirm), {
     req(length(jobImportID) == 1L)
     removeModal()
-    if(!identical(worker$getStatus(jobImportID), JOBSTATUSMAP[['completed']])){
-      flog.error("Import button was clicked but job is not yet marked as 'completed' (Job ID: '%s'). The user probably tampered with the app.", jID)
+    if(!worker$getStatus(jobImportID) %in% c(JOBSTATUSMAP[['completed']], JOBSTATUSMAP[['downloaded']])){
+      flog.error("Import button was clicked but job is not yet marked as 'completed' or 'downloaded' (Job ID: '%s'). The user probably tampered with the app.", 
+                 jobImportID)
       showHideEl(session, "#fetchJobsError")
+      return()
     }
     resetWidgetsOnClose <<- FALSE
     if(!closeScenario()){

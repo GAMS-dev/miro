@@ -526,22 +526,31 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               }
             }
           }
-          serverSelectInput(session, ns(paste0("filter_", filterIndex)), setIndexAliases[[filterIndex]], 
-                            choices = if(allowEmpty) c(allPlaceholder, as.character(filterElements[[filterIndex]]))
-                            else as.character(filterElements[[filterIndex]]), 
-                            selected = selectedFilterVal, multiple = TRUE,
-                            options = list('plugins' = list('remove_button')))
+          if(allowEmpty){
+            choices <- c(allPlaceholder, as.character(filterElements[[filterIndex]]))
+          }else{
+            choices <- as.character(filterElements[[filterIndex]])
+          }
+          ddHash <- digest::digest(list(filterIndex, choices), algo = "sha1")
+          list(htmltools::doRenderTags(
+            htmltools::tagAppendAttributes(
+              serverSelectInput(session, ns(paste0("filter_", filterIndex)), setIndexAliases[[filterIndex]], 
+                                choices = choices, 
+                                selected = selectedFilterVal, multiple = TRUE,
+                                options = list('plugins' = list('remove_button'))),
+              `data-hash` = ddHash)),
+            ddHash,
+            initData
+          )
         }
         initFilter <<- FALSE
         session$
           sendCustomMessage("gms-populateMiroPivotFilters", 
                             list(ns = ns(""),
-                                 filter = htmltools::doRenderTags(
-                                   lapply(filterIndexList, getFilterDropdowns)),
-                                 aggregations = htmltools::doRenderTags(
-                                   lapply(aggregationIndexList, getFilterDropdowns, optionId = "aggregations")),
-                                 cols = htmltools::doRenderTags(
-                                   lapply(colIndexList, getFilterDropdowns, optionId = "cols"))))
+                                 filter = lapply(filterIndexList, getFilterDropdowns),
+                                 aggregations = lapply(aggregationIndexList, getFilterDropdowns,
+                                                       optionId = "aggregations"),
+                                 cols = lapply(colIndexList, getFilterDropdowns, optionId = "cols")))
       })
       
       
@@ -573,10 +582,13 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           currentFilters(newFilters)
         })
       })
-      
+      throttledFilters <- vector("list", length(setIndices))
       lapply(setIndices, function(filterIndex){
+        throttledFilters[[filterIndex]] <<- throttle(reactive({
+          input[[paste0("filter_", filterIndex)]]
+        }), if(bigData) 2000 else 500)
         rendererEnv[[ns(paste0("filter_", filterIndex))]] <- observe({
-          if(is.null(input[[paste0("filter_", filterIndex)]])){
+          if(is.null(throttledFilters[[filterIndex]]())){
             if(!filterIndex %in% isolate(c(input$aggregationIndexList, input$colIndexList))){
               return()
             }
@@ -650,7 +662,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               # nothing selected = no filter for aggregations/cols
               next
             }
-            filterVal <- filterElements[[filterIndex]][[1]]
+            filterVal <- filterElements[[filterIndex]][1]
           }
           if(any(is.na(match(filterIndex, names(dataTmp))))){
             flog.warn("Attempt to tamper with the app detected! User entered: '%s' as filter index",
@@ -706,7 +718,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             if(is.null(aggregationFunction)){
               aggregationFunction <- aggregationFunctionTmp
             }
-            if(!aggregationFunction %in% c("sum", "count", "min", "max", "mean", "median")){
+            if(length(aggregationFunction) != 1L ||
+               !aggregationFunction %in% c("sum", "count", "min", "max", "mean", "median")){
               flog.warn("Attempt to tamper with the app detected! User entered: '%s' as aggregation function.",
                         aggregationFunction)
               stop("Attempt to tamper with the app detected!", call. = FALSE)

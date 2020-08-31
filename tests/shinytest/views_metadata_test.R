@@ -18,6 +18,8 @@ app$uploadFile(file_addViews = "../data/transport.gdx")
 expect_true(app$waitFor("$('#viewsInvalidDataError').is(':visible');", timeout = 50))
 app$uploadFile(file_addViews = "../data/bad-views.json")
 expect_true(app$waitFor("$('#viewsInvalidDataError').is(':visible');", timeout = 50))
+app$uploadFile(file_addViews = "../data/bad-views2.json")
+expect_true(app$waitFor("$('#viewsInvalidDataError').is(':visible');", timeout = 50))
 app$uploadFile(file_addViews = "../data/good-views.json")
 expect_error(app$findElement("#currentViewsTable tbody tr"), NA)
 expect_true(app$waitFor("$('#viewsCustomError')[0].innerText.includes('idontexist')",
