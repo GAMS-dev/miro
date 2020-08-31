@@ -15,11 +15,11 @@ testData <- tibble(a = rep.int(paste0("a", seq_len(5)), 2L), b = paste0("b", seq
                    c = paste0("c", seq_len(10)), d = paste0("d", seq_len(10)),
                    e = rep.int(c("e2", "e10"), 5L), f = "f10",
                    value = 1:10)
-testDataFactor <- testData %>% mutate_if(is.character, as.factor)
 
 convert_to_df <- function(df){
   data.frame(df %>% ungroup() %>% mutate_if(is.factor, as.character))
 }
+lang <<- list()
 
 test_that("Editing in list view works", {
   testServer(renderMiroPivot, {
