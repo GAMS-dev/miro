@@ -1,9 +1,9 @@
 JSONValidator <- R6Class(
   "Worker", 
   public = list(
-    initialize = function(){
+    initialize = function(miroRootDir = "."){
       private$ct <- V8::v8(global = "window")
-      private$ct$source("JS/ajv.min.js")
+      private$ct$source(file.path(miroRootDir, "JS", "ajv.min.js"))
       private$ct$eval("const ajv=new Ajv({useDefaults:true,validateSchema:false});")
     },
     validate = function(jsonFileLocation, jsonSchemaLocation){
