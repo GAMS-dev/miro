@@ -630,6 +630,10 @@ if(is.null(errMsg)){
   source("./components/db.R")
   source("./components/db_scen.R")
   tryCatch({
+    dbSchema$tabName["_scenViews"] <- paste0(tableNameViewsPrefix, modelName)
+    dbSchema$colNames[["_scenViews"]] <- c(sid = sidIdentifier, symname = "symName",
+                                           id = "id", data = "data", time = "timestamp")
+    dbSchema$colTypes["_scenViews"] <- "icccT"
     scenMetadataTable <- scenMetadataTablePrefix %+% modelName
     db   <- Db$new(uid = uid, dbConf = dbConfig, dbSchema = dbSchema,
                    slocktimeLimit = slocktimeLimit, modelName = modelName,
