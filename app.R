@@ -215,6 +215,9 @@ if(is.null(errMsg)){
                                       Sys.getenv("MIRO_VERSION_STRING"), 
                                     if(identical(Sys.getenv("MIRO_MODE"), "hcube")) "_hcube",
                                     ".miroconf"))
+  lang <<- fromJSON(file.path(".", "conf", paste0(miroLanguage, ".json")),
+                    simplifyDataFrame = FALSE, 
+                    simplifyMatrix = FALSE)
   if(debugMode){
     source("./modules/init.R", local = TRUE)
   }else if(!file.exists(rSaveFilePath)){
@@ -222,6 +225,7 @@ if(is.null(errMsg)){
                       rSaveFilePath)
   }else{
     load(rSaveFilePath)
+    suppressWarnings(rm(lang))
     for (customRendererName  in customRendererNames){
       assign(customRendererName, get(customRendererName), envir = .GlobalEnv)
     }
@@ -476,7 +480,7 @@ if(miroBuildonly){
   }
   
   save(list = c("customRendererNames", customRendererNames, "modelIn", "modelInRaw", 
-                "modelOut", "config", "lang", "inputDsNames", "inputDsAliases", 
+                "modelOut", "config", "inputDsNames", "inputDsAliases", 
                 "outputTabTitles", "modelInTemplate", "scenDataTemplate", 
                 "modelInTabularData", "modelInTabularDataBase", "externalInputConfig", "tabSheetMap",
                 "modelInFileNames", "ddownDep", "aliasesNoDep", "idsIn",

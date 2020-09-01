@@ -73,8 +73,8 @@ modelDir <- "model"
 # prefix used for identifying compile time variables
 prefixDDPar  <- "_gmspar_"
 prefixGMSOpt <- "_gmsopt_"
-# language schema name
-languageSchemaName <- "language_schema.json"
+
+miroLanguage <- Sys.getenv("MIRO_LANG", "en")
 # get maximum number of lines to read for files
 maxSizeToRead <- 5e5
 # Limits on external programs that are allowed to be executed 
