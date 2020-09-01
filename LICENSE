@@ -33,6 +33,7 @@ these components are included below):
 - chroma, https://github.com/gka/chroma.js
 - highlight.js, https://github.com/isagalaev/highlight.js
 - tar implementation from R, http://www.r-project.org/
+- cpp11, https://github.com/r-lib/cpp11 or https://cran.rstudio.com/web/packages/cpp11/index.html
 - R6, https://github.com/r-lib/R6/ or https://cran.r-project.org/web/packages/R6/index.html
 - processx https://github.com/r-lib/processx or https://cran.r-project.org/web/packages/processx/index.html
 - dplyr https://github.com/tidyverse/dplyr or https://cran.r-project.org/web/packages/dplyr/index.html
@@ -639,6 +640,7 @@ Section 8 -- Interpretation.
         - askpass, Copyright (c) 2018 Jeroen Ooms
         - timevis, Copyright (c) 2016 Dean Attali [aut, cre] (R interface), Almende B.V. [aut, cph] (vis.js library, http://visjs.org, http://www.almende.com/home)
         - dplyr, Copyright (c) 2013-2020 Hadley Wickham [aut, cre], Romain François [aut], Lionel Henry [aut], Kirill Müller [aut], RStudio [cph, fnd]
+        - cpp11, Copyright (c) 2020 RStudio
         - rhandsontable , Copyright (c) 2015-2018 Marcin Warpechowski, Handsoncode sp. z o.o., 
           Gregor Aisch, Tim Wood, Iskren Chernev, Moment.js contributors, David Bushell, 
           jQuery Foundation, Splunk Inc, Jon Rohan, James M. Greeneand, Företagsplatsen, 
