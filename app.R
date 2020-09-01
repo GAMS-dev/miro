@@ -1339,15 +1339,8 @@ if(!is.null(errMsg)){
         workDir <- file.path(tmpFileDir, session$token)
         if(!config$activateModules$remoteExecution && length(modelData)){
           tryCatch({
-            if(isWindows() && !identical(substring(workDir, 1L, 1L),
-                                         substring(.libPaths()[1L], 1L, 1L))){
-              # workaround as cmdunzip crashed on Windows when on different drive  than exdir
-              # see https://github.com/r-lib/zip/issues/45
-              unzip(modelData, exdir = workDir)
-            }else{
-              unzipModelFilesProcess <- unzip_process()$new(modelData, exdir = workDir, 
-                                                            stderr = NULL)
-            }
+            unzipModelFilesProcess <- unzip_process()$new(modelData, exdir = workDir, 
+                                                          stderr = NULL)
           }, error = function(e){
             flog.error("Problems creating process to extract model file archive. Error message: '%s'.", 
                        conditionMessage(e))
