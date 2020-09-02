@@ -37,4 +37,18 @@ unlink(modelDataPath, recursive = TRUE, force = TRUE)
 file.move(file.path(testModelPath, "conf_transport", "transport_copy.json"),
           file.path(testModelPath, "conf_transport", "transport.json"))
 
+testModelPath <- file.path(testDir, "model", "pickstock_with_data")
+modelDataPath <- file.path(testModelPath, "data_pickstock_with_data")
+Sys.setenv(MIRO_MODEL_PATH = file.path(testModelPath,
+                                       "pickstock_with_data.gms"))
+
+file.copy2(file.path(modelDataPath, "default.gdx"),
+           file.path(modelDataPath, "pickstock.gdx"))
+
+context("UI tests - comparison mode in split/tab view")
+test_that("Scenario comparison mode in split/tab view works",
+          expect_pass(testApp(file.path(testDir, ".."), "comparison_mode_test",
+                              compareImages = FALSE)))
+unlink(file.path(modelDataPath, "pickstock.gdx"), force = TRUE)
+
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))

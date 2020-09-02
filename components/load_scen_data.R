@@ -5,7 +5,7 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
   ret <- list(tabular = NULL, scalar = NULL)
   
   if(identical(method, "xls")){
-    xlsPath <- file.path(workDir, fileName)
+    xlsPath <- nativeFileEnc(file.path(workDir, fileName))
     if(!file.exists(xlsPath)){
       stop(sprintf("File: '%s' could not be found.", xlsPath), call. = FALSE)
     }
