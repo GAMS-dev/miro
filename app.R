@@ -274,12 +274,18 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
       tryCatch({
         modelFiles <- gsub("^[.][/\\\\]", "", readLines(file.path(currentModelDir, 
                                                                   paste0(modelName, "_files.txt")),
-                                                        warn = FALSE))
+                                                        encoding = "UTF-8", warn = FALSE))
       }, error = function(e){
         errMsg <<- paste(errMsg, sprintf("Problems reading file: '%s_files.txt'. Error message: '%s'.", 
                                          modelName, conditionMessage(e)),
                          sep = "\n")
       })
+      if(!modelGmsName %in% modelFiles){
+        errMsg <- paste(errMsg, sprintf("Problems reading file: '%s_files.txt'. 
+                                        Main GAMS model file not found in model assembly file.", 
+                                        modelName),
+                        sep = "\n")
+      }
       buildArchive <- !identical(Sys.getenv("MIRO_BUILD_ARCHIVE"), "false")
       if(is.null(errMsg) && useTempDir && buildArchive){
         tryCatch({

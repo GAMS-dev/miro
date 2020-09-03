@@ -5,4 +5,3 @@
 - [ ] Release notes
 - [ ] Tests
 - [ ] Configuration Mode (remove if not applicable)
-- [ ] Successful jenkins pipeline

@@ -111,6 +111,8 @@ $if not set type $set type lp
 *some starting point
 x.l(i,j) = 1;
 
+$if set sleep $call sleep 25
+
 solve transport%type% using %type% minimizing z;
 abort$(transport%type%.modelstat > 2 and transport%type%.modelstat <> 8) "No feasible solution found"
 

@@ -62,9 +62,9 @@ getModelPath <- function(modelPath = NULL, envVarPath = NULL){
   }else{
     modelPath <- envName
   }
-  gmsFileName  <- enc2native(basename(modelPath))
-  modelNameRaw <- enc2native(gsub("\\.[[:alpha:]]{2,3}$", "", gmsFileName))
-  modelDir     <- enc2native(dirname(modelPath))
+  gmsFileName  <- basename(modelPath)
+  modelNameRaw <- gsub("\\.[[:alpha:]]{2,3}$", "", gmsFileName)
+  modelDir     <- dirname(modelPath)
   return(list(modelDir, gmsFileName, tolower(modelNameRaw), modelNameRaw))
 }
 getInputToImport <- function(data, keywordsNoImport){
@@ -1568,3 +1568,12 @@ switchCompareMode <- function(session, mode, numberScenTabs){
     hideEl(session, "#scen-pivot-view")
   }
 }
+# safeFromJSON function taken from Shiny package 
+# see LICENSE file for license information of Shiny package
+safeFromJSON <- function(txt, ...) {
+  if (!jsonlite::validate(txt)) {
+    stop("Argument 'txt' is not a valid JSON string.")
+  }
+  jsonlite::fromJSON(txt, ...)
+}
+

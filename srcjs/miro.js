@@ -522,20 +522,31 @@ ${data.data}</div>` : data.data);
       { id: 'aggregations', container: 'aggregateDropdowns' },
       { id: 'cols', container: 'colDropdowns' }];
     idContainerMap.forEach((filterEl) => {
-      $(`#${ns + filterEl.container} .shiny-input-container`).each((i, el) => {
-        Shiny.unbindAll(el, true);
-        $(el).remove();
+      const dropdownContainer = document.getElementById(ns + filterEl.container);
+      const currContent = $(`#${ns + filterEl.container} .shiny-input-container`);
+      const newContent = data[filterEl.id];
+
+      if (currContent.length !== newContent.length) {
+        Shiny.unbindAll(dropdownContainer);
+        $(dropdownContainer).empty();
+        Shiny.renderContent(dropdownContainer,
+          newContent.map((el) => el[0]).join(''), 'beforeEnd');
+        return;
+      }
+      if (currContent.length === 0) {
+        // nothing to do (new content = old content = empty)
+        return;
+      }
+      Shiny.unbindAll(dropdownContainer);
+      currContent.each((i, el) => {
+        if (newContent[i][2] !== true && newContent[i][1] === $(el).data('hash')) {
+          return true;
+        }
+        $(el).replaceWith(newContent[i][0]);
         return true;
       });
-    });
-    idContainerMap.forEach((filterEl) => {
-      const content = data[filterEl.id];
-      if (content) {
-        const dropdownContainer = document.getElementById(ns + filterEl.container);
-        Shiny.renderContent(dropdownContainer,
-          content, 'beforeEnd');
-        Shiny.bindAll(dropdownContainer);
-      }
+      Shiny.initializeInputs(dropdownContainer);
+      Shiny.bindAll(dropdownContainer);
     });
   });
   Shiny.addCustomMessageHandler('gms-showValidationErrors', (content) => {
