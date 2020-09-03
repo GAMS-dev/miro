@@ -392,16 +392,7 @@ Scenario <- R6Class("Scenario",
                                                  removeLocal = FALSE)
                           
                         }
-                        localFileNames <- basename(private$localAttachments$filePaths)
-                        if(any(fileNames %in% localFileNames)){
-                          if(!overwrite)
-                            stop("duplicateException", call. = FALSE)
-                          localFnToKeep <- !localFileNames %in% fileNames
-                          private$localAttachments$filePaths <- private$localAttachments$filePaths[localFnToKeep]
-                          private$localAttachments$execPerm <- private$localAttachments$execPerm[localFnToKeep]
-                        }
-                        if(length(fileNamesDb) + length(private$localAttachments$filePaths) +
-                           length(filePaths) > private$attachmentConfig[["maxNo"]]){
+                        if(length(fileNamesDb) + length(filePaths) > private$attachmentConfig[["maxNo"]]){
                           stop("maxNoException", call. = FALSE)
                         }
                         if(!is.null(workDir)){
