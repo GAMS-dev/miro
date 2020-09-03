@@ -1130,9 +1130,8 @@
           "label":"Neuordnung von Spalten erlaubt?"
         },
         "buttons":{
-          "label":"Export-Buttons hinzufügen?",
           "title": "Wenn ein Symbol mehrere Tabellenseiten enthält, wirkt sich die Verwendung eines Export-Buttons nur auf die aktuell sichtbare Tabellenseite aus!",
-          "choices": ["Zwischenablage", "csv", "Excel", "pdf", "Druck"],
+          "choices": ["Zwischenablage", "csv", "Excel", "pdf", "Druck", "Spalten-Sichtbarkeit"],
           "select": "Wählen Sie zu verwendende Buttons aus. Hinweis: Eine Buttonfunktion wirkt sich stets nur auf die sichtbare Tabellenseite aus."
         }
       },

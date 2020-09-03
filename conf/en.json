@@ -1130,9 +1130,8 @@
           "label":"Allow reordering of columns?"
         },
         "buttons":{
-          "label":"Add export buttons?",
           "title": "If a symbol contains multiple table pages, using an export button only affects the currently visible table page!",
-          "choices": ["copy", "CSV", "Excel", "PDF", "print"],
+          "choices": ["copy", "CSV", "Excel", "PDF", "print", "column visibility"],
           "select": "Select buttons to use. Note: All button functions only affect the visible table page."
         }
       },

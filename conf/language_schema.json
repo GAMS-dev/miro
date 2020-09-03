@@ -4382,10 +4382,6 @@
                   "type": "object",
                   "additionalProperties": false,
                   "properties": {
-                    "label": {
-                      "type": "string",
-                      "minLength": 1
-                    },
                     "title": {
                       "type": "string",
                       "minLength": 1
@@ -4393,8 +4389,8 @@
                     "choices": {
                       "type": "array",
                       "uniqueItems": true,
-                      "minItems": 5,
-                      "maxItems": 5,
+                      "minItems": 6,
+                      "maxItems": 6,
                       "items": {
                         "type": "string",
                         "minLength": 1
@@ -4405,7 +4401,7 @@
                       "minLength": 1
                     }
                   },
-                  "minProperties": 4
+                  "minProperties": 3
                 }
               },
               "minProperties": 7

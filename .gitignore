@@ -34,6 +34,7 @@ model/**/*.bat
 model/**/*.opt
 model/**/*.pf
 model/**/*.gdx
+model/**/*.trc
 !model/**/data_*/*.gdx
 !model/**/data_*/*.xls
 !model/**/data_*/*.xlsx
