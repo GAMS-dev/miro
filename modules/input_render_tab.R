@@ -155,7 +155,10 @@ observeEvent(input$btGraphIn, {
       return()
     }
   }else{
-    data <- isolate(modelInputDataVisible[[i]]())
+    data <- tryCatch(isolate(modelInputDataVisible[[i]]()), error = function(e){
+      flog.warn("Problems getting data from custom renderer. Error message: %s", conditionMessage(e))
+      return(modelInTemplate[[i]])
+    })
   }
   
   errMsg <- NULL
