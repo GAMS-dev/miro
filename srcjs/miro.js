@@ -522,12 +522,14 @@ ${data.data}</div>` : data.data);
       { id: 'aggregations', container: 'aggregateDropdowns' },
       { id: 'cols', container: 'colDropdowns' }];
     idContainerMap.forEach((filterEl) => {
+      Shiny.unbindAll(document.getElementById(ns + filterEl.container));
+    });
+    idContainerMap.forEach((filterEl) => {
       const dropdownContainer = document.getElementById(ns + filterEl.container);
       const currContent = $(`#${ns + filterEl.container} .shiny-input-container`);
       const newContent = data[filterEl.id];
 
       if (currContent.length !== newContent.length) {
-        Shiny.unbindAll(dropdownContainer);
         $(dropdownContainer).empty();
         Shiny.renderContent(dropdownContainer,
           newContent.map((el) => el[0]).join(''), 'beforeEnd');
@@ -537,7 +539,6 @@ ${data.data}</div>` : data.data);
         // nothing to do (new content = old content = empty)
         return;
       }
-      Shiny.unbindAll(dropdownContainer);
       currContent.each((i, el) => {
         if (newContent[i][2] !== true && newContent[i][1] === $(el).data('hash')) {
           return true;
