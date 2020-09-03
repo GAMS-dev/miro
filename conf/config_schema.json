@@ -970,7 +970,7 @@
                         "uniqueItems":true,
                         "items":{
                             "type": "string",
-                            "enum":["copy", "csv", "excel", "pdf", "print"]
+                            "enum":["copy", "csv", "excel", "pdf", "print", "colvis"]
                         }
                      },
                      "pageLength":{  
@@ -1117,7 +1117,7 @@
                               "uniqueItems":true,
                               "items":{
                                   "type": "string",
-                                  "enum":["copy", "csv", "excel", "pdf", "print"]
+                                  "enum":["copy", "csv", "excel", "pdf", "print", "colvis"]
                               }
                            },
                            "pageLength":{  
@@ -1812,7 +1812,7 @@
                      "uniqueItems":true,
                      "items":{
                          "type": "string",
-                         "enum":["copy", "csv", "excel", "pdf", "print"]
+                         "enum":["copy", "csv", "excel", "pdf", "print", "colvis"]
                      }
                   },
                   "pageLength":{  

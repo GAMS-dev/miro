@@ -492,7 +492,7 @@ Scenario <- R6Class("Scenario",
                         if(allExecPerm){
                           if(any(private$localAttachments$execPerm)){
                             localPaths <- private$localAttachments$filePaths[private$localAttachments$execPerm]
-                            localPathNeedsRelocation <- dirname(localPaths) != fileDir
+                            localPathNeedsRelocation <- dirname(localPaths) != file.path(dirname(fileDir), basename(fileDir))
                             
                             if(any(localPathNeedsRelocation)){
                               if(fullPath){
