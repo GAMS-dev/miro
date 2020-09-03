@@ -140,7 +140,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                                                        genIndexList(indices$rows))),
                     column(width = 10L,
                            style = "min-height: 400px;",
-                           if(isTRUE(options$input)){
+                           if(isTRUE(options[["_input_"]])){
                              tagList(
                                actionButton(ns("btAddRow"), lang$renderers$miroPivot$btAddRow),
                                actionButton(ns("btRemoveRows"), lang$renderers$miroPivot$btRemoveRows, class = "bt-remove"),
@@ -180,6 +180,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       
       ns <- session$ns
       
+      if(is.null(views)){
+        # deactivate persistent views if no view object available
+        options$enablePersistentViews <- FALSE
+      }
+      
       valueColName <- names(data)[length(data)]
       allPlaceholder <- setNames("", lang$renderers$miroPivot$allPlaceholder)
       
@@ -209,7 +214,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       
       updateFilter <- reactiveVal(1L)
       
-      isInput <- isTRUE(options$input)
+      isInput <- isTRUE(options[["_input_"]])
       isEditable <- FALSE
       bigData <- FALSE
       

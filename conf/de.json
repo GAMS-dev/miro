@@ -1234,7 +1234,8 @@
         "val55": "Es darf nur ein Element im Dropdownmenü auswählbar sein, wenn nur der Elementtext mit GAMS kommuniziert wird.",
         "val56": "Ein Anhang mit diesem Dateinamen existiert bereits!",
         "val57": "Der Dateiname enthält ungültige Zeichen. Anhänge in Unterverzeichnissen werden nicht unterstützt!",
-        "val58": "Das Dezimaltrennzeichen und das Tausender-Trennzeichen dürfen nicht identisch sein!"
+        "val58": "Das Dezimaltrennzeichen und das Tausender-Trennzeichen dürfen nicht identisch sein!",
+        "val59": "Das GAMS-Symbol: %s ist als Tabelle deklariert. Dies bewirkt, dass die letzte Spalte in MIRO gepivoted wird. MIRO-Pivot kann nicht mit bereits gepivoteten Symbolen verwendet werden. Bitte deklarieren Sie das Symbol stattdessen als Parameter."
       },
       "widgetOptions":{
         "slider": "Schieberegler",
@@ -1248,7 +1249,8 @@
         "numericinput": "Numerische Eingabe"
       },
       "table":{
-        "bigData": "Werden große Datenmengen in der Tabelle gespeichert (d.h. mehr als 20.000 Zeilen)?",
+        "type": "Wählen Sie die Art der Tabelle, die Sie verwenden möchten",
+        "typeChoices": ["Standard", "Big Data-Tabelle", "Pivot-Tabelle"],
         "hideIndexCol": "Indexierungsspalte ausblenden?",
         "readonly": "Soll die Tabelle schreibgeschützt sein?",
         "readonlyCols": "Wählen Sie Spalten aus, die schreibgeschützt sein sollen",

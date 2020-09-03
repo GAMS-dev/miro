@@ -798,12 +798,21 @@
                        "table"
                      ]
                    },
-                   "alias":{  
+                   "alias":{
                      "type":"string",
                      "minLength":1
                    },
+                   "tableType": {
+                     "description":"Choose type of table",
+                     "type":"string",
+                     "enum":[
+                       "default",
+                       "bigdata",
+                       "pivot"
+                     ]
+                   },
                    "bigData":{  
-                     "description":"Does the table represent a large dataset (i.e. more than 20.000 records)?",
+                     "description":"DEPRECATED! Use tableType instead!",
                      "type":"boolean",
                      "default": false
                    },
@@ -840,7 +849,11 @@
                         "type":"string",
                         "minLength":1
                       }
-                    }
+                    },
+                    "options":{
+                      "description":"Additional options",
+                      "type":"object"
+                   }
                  },
                  "required":[  
                     "widgetType"

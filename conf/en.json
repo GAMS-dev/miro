@@ -1234,7 +1234,8 @@
         "val55": "Only one item can be selectable in the dropdown menu if only the element text is communicated with GAMS.",
         "val56": "An attachment with this file name already exists!",
         "val57": "The file name contains invalid characters. Attachments in subdirectories are not supported!",
-        "val58": "The decimal separator and the thousand grouping separator must not be identical!"
+        "val58": "The decimal separator and the thousand grouping separator must not be identical!",
+        "val59": "The GAMS symbol: %s is declared as table. This causes the last column to be pivoted in MIRO. MIRO pivot cannot be used with already pivoted symbols. Please declare the symbol as a parameter instead."
       },
       "widgetOptions":{
         "slider": "Slider",
@@ -1248,7 +1249,8 @@
         "numericinput": "Numeric input"
       },
       "table":{
-        "bigData": "Are large amounts of data stored in the table (i.e. more than 20,000 records)?",
+        "type": "Select the type of table you want to use",
+        "typeChoices": ["Default", "Big Data table", "Pivot table"],
         "hideIndexCol": "Hide indexing column?",
         "readonly": "Should table be readonly?",
         "readonlyCols": "Select columns to be readonly",

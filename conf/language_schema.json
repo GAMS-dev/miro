@@ -4806,6 +4806,10 @@
                 "val58": {
                   "type": "string",
                   "minLength": 1
+                },
+                "val59": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
               "minProperties": 56
@@ -4857,9 +4861,19 @@
               "type": "object",
               "additionalProperties": false,
               "properties": {
-                "bigData": {
+                "type": {
                   "type": "string",
                   "minLength": 1
+                },
+                "typeChoices": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "minItems": 3,
+                  "maxItems": 3,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
                 },
                 "hideIndexCol": {
                   "type": "string",
