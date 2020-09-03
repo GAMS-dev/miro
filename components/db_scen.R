@@ -375,6 +375,7 @@ Scenario <- R6Class("Scenario",
                         if(!is.null(fileNames)){
                           stopifnot(is.character(fileNames), length(fileNames) >= 1L)
                         }else{
+                          filePaths <- unique(file.path(dirname(filePaths)), basename(filePaths))
                           fileNames <- basename(filePaths)
                         }
                         if(length(forbiddenFnames) && 
