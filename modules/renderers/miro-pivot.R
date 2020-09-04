@@ -1120,8 +1120,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             indexOrder <- match(setIndices, c(rowIndices,
                                               colIndices,
                                               filterIndices))
-            rowsToRemove <- mutate(slice(dataToRender(), idsToRemove)[seq_len(noRowHeaders)],
-                                   across(where(is.factor), as.character))
+            rowsToRemove <- mutate_if(slice(dataToRender(), idsToRemove)[seq_len(noRowHeaders)],
+                                      is.factor, as.character)
             if(tryCatch({
               filterElements <- vapply(filterIndices, function(filterIndex){
                 return(input[[paste0("filter_", filterIndex)]])
