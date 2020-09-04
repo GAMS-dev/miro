@@ -563,18 +563,11 @@ putclose;
                                     </div>
                                     <h4 id="symbol-table" class="docu-general-header">Symbol tables (symbol specific settings)</h4>
                                     <p>By default, every cell in an input table is editable and rows can be inserted and removed. 
-                                    If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter.</p>
+                                    If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter. You can also use a different type of table to enter your data. For example, if you have large amounts of data (>100,000 records) in your table, we recommend using either the <i>bigdata</i> table or the <i>pivot</i> table.</p>
                                     <p>Also global table settings for <a href = "#output-tables" class="scrollto">output symbols</a> can be overwritten for each individual symbol. The available options are almost identical. The only additional settings are the number of decimal places to display and an option to disable graphics for the symbol.</p>
 									<p>Note that in contrast to the global settings, a symbol-specific configuration needs to be applied by clicking on the corresponding save-button!</p>
-									<p><b>Available options for an input symbol table:</b></p>
-                                    <h6 id="table-option-large" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Are large amounts of data stored in the table (i.e. more than 20,000 records)?</h6>
-                                    <div class="expanded"><p>This option is intended for situations in which large amounts of data are to be displayed within a table. 
-                                    If this option is set, a multi-page table is displayed instead of a long, 1-page table. Only the data currently visible on the client side is loaded in this table. <br>
-                                    This type of tabular representation corresponds to that of output data. When this option is activated, the only other configuration items are <a href="#table-option-readonly" class="scrollto"><i>Should table be read-only?</i></a> and <a href="#table-option-pivot" class="scrollto"><i>Select a column to pivot</i></a>. </p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui_big.png" alt="Big data table"/>
-                                    </div>
-                                    </div>
+									<p><b>Available options for an input symbol table (type: Default):</b></p>
+                  <p>This is the standard table in MIRO, which works similar to a spreadsheet.</p>
                                     <h6 id="table-option-readonly" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Should table be read-only?</h6>
                                     <div class="expanded"><p>This option prevents the user from making manual changes in the input table of a scenario. 
                                     If active, the table can only be filled with scenario data from the database/local files.</p></div>
@@ -588,6 +581,15 @@ putclose;
                                     The pivoting of the configured column then happens "live" in the MIRO application.</br>
                                     Variable columns do not only mean that the column elements can change their names. It is also possible to add or delete whole columns. 
                                     On the GAMS model side, this is equivalent to adding or deleting a set element of the affected index.</p>
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Note:</b>
+                                            <p>Instead of pivoting a single column, the <a href="#input-pivot-table" class="scrollto">MIRO pivot table</a> can be used in case you want to interactively filter, pivot or aggregate columns.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
                                     <p>When using the pivot option, note the following:
                                     <ul>
                                       <li>The table columns displayed with the pivot option can no longer be sorted alphabetically or numerically.</li>
@@ -628,6 +630,29 @@ $offExternalInput
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui.png" alt="Heatmap"/>
                                     </div>
                                     </div>
+                                    <p><b>Available options for an input symbol table (type: Big Data Table):</b></p>
+                                    <p>This table type is intended for situations in which large amounts of data are to be displayed within a table. 
+                                    Instead of a long, 1-page table, a multi-page table is displayed. Only the data currently visible on the client side is loaded in this table.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui_big.png" alt="Big data table"/>
+                                    </div>
+                                    <h6 id="table-option-readonly-bigdata" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Should table be read-only?</h6>
+                                    <div class="expanded"><p>This option prevents the user from making manual changes in the input table of a scenario. 
+                                    If active, the table can only be filled with scenario data from the database/local files.</p></div>
+                                    <h6 id="table-option-pivot-bigdata" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Select a column to pivot</h6>
+                                    <div class="expanded"><p>See <a href="#table-option-pivot" class="scrollto">previous section</a></p></div>
+                                    <p id="input-pivot-table"><b>Available options for an input symbol table (type: MIRO Pivot Table):</b></p>
+                                    <p>This table type is also capable of handling large amounts of data (> 1 million records). It allows you to interactively filter, pivot or aggregate data. See <a href="./charts.html#pivot-chart">here</a> for more information about the MIRO Pivot Table. The configuration of this table can be done directly from the preview on the right side.</p>
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Note:</b>
+                                            <p>The MIRO Pivot Table has no concept of "order" because the table can be sorted interactively by changing the order of the rows. When you add or change UELs, they are always appended to the underlying data source. So when MIRO passes the data to GAMS, you cannot rely on the order of the elements coming from this table type. If you need UELs in a certain order, you should either use one of the other input table types or declare the sets you need sorted as additional external input (instead of using the <a href="https://www.gams.com/31/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition">implicit set definition</a>).</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                    <div class="section-block">
 									<p style="margin-top:1rem;"><b>Available Options for an output symbol table:</b></p>
                                     <h6 id="output-table-option-decimals" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Number of decimal places to display</h6>
                                     <div class="expanded"><p>Adjusts the number of decimal places to display for table columns with numeric values.</p>
