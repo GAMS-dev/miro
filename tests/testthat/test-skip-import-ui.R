@@ -19,6 +19,10 @@ file.copy2(file.path(testDir, "data", "transport.gdx"),
 test_that("Skipping import of data files if unchanged works",
           expect_pass(testApp(file.path(testDir, ".."), "skip_scen_import_test",
                               compareImages = FALSE)))
+Sys.setenv(MIRO_FORCE_SCEN_IMPORT = "true")
+test_that("MIRO_FORCE_SCEN_IMPORT option works",
+          expect_pass(testApp(file.path(testDir, ".."), "skip_scen_import_test",
+                              compareImages = FALSE)))
 unlink(modelDataPath, recursive = TRUE, force = TRUE)
 
-Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))
+Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE", "MIRO_FORCE_SCEN_IMPORT"))

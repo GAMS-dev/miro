@@ -1000,19 +1000,22 @@ if(!is.null(errMsg)){
         tmpDirToRemove     <- character(0L)
         
         if(debugMode){
-          currentDataHashesDf  <- db$importDataset("_sys__data_hashes",
-                                                   tibble("model", modelName))
-          currentDataHashes <- list()
-          if(length(currentDataHashesDf) && nrow(currentDataHashesDf)){
-            currentDataHashes <- currentDataHashesDf[["hash"]]
-            names(currentDataHashes) <- currentDataHashesDf[["filename"]]
+          forceScenImport <- identical(Sys.getenv("MIRO_FORCE_SCEN_IMPORT"), "true")
+          if(!forceScenImport){
+            currentDataHashesDf  <- db$importDataset("_sys__data_hashes",
+                                                     tibble("model", modelName))
+            currentDataHashes <- list()
+            if(length(currentDataHashesDf) && nrow(currentDataHashesDf)){
+              currentDataHashes <- currentDataHashesDf[["hash"]]
+              names(currentDataHashes) <- currentDataHashesDf[["filename"]]
+            }
+            newDataHashes <- currentDataHashes
           }
-          newDataHashes <- currentDataHashes
         }
 
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
-          if(debugMode){
+          if(debugMode && !forceScenImport){
             dataHash <- digest::digest(file = file.path(miroDataDir, miroDataFile),
                                        algo = "sha1", serialize = FALSE)
             if(identical(dataHash, currentDataHashes[[miroDataFile]])){
@@ -1089,7 +1092,7 @@ if(!is.null(errMsg)){
             flog.error("Problems removing temporary directory: '%s'.", tmpDirToRemove)
           }
         }
-        if(debugMode && !identical(currentDataHashes, newDataHashes)){
+        if(debugMode && !forceScenImport && !identical(currentDataHashes, newDataHashes)){
           db$deleteRows("_sys__data_hashes", "model", modelName)
           db$exportDataset("_sys__data_hashes",
                            tibble(model = modelName,
