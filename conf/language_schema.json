@@ -2620,7 +2620,7 @@
               "minProperties": 5
             }
           },
-          "minProperties": 25
+          "minProperties": 26
         }
       },
       "minProperties": 1
@@ -4812,7 +4812,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 56
+              "minProperties": 57
             },
             "widgetOptions": {
               "type": "object",
@@ -4896,7 +4896,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 6
+              "minProperties": 7
             },
             "slider": {
               "type": "object",
