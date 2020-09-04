@@ -103,7 +103,7 @@ test_that("Editing in list view works", {
                                 f = c("f10", "f10", "f10", "f10", "f10", "f10", "f10", "f10", "f11"),
                                 value = c(2, 3, 4, 6, 7, 8, 9, 10, 1.5)))
   }, args = list(data = testData,
-                 options = list(enablePersistentViews = FALSE, input = TRUE,
+                 options = list(enablePersistentViews = FALSE, `_input_` = TRUE,
                                 "_metadata_" = list(symtype = "parameter"))))
 })
 
@@ -199,7 +199,7 @@ test_that("Editing with reordered columns works", {
                                 f = c("f10","f10", "f10", "f10", "f10", "f10", "f10", "f10"),
                                 value = c(1, 3, 4, 5, 2, 7, 9, 10)))
   }, args = list(data = testData,
-                 options = list(enablePersistentViews = FALSE, input = TRUE,
+                 options = list(enablePersistentViews = FALSE, `_input_` = TRUE,
                                 "_metadata_" = list(symtype = "parameter"))))
 })
 
@@ -264,6 +264,7 @@ test_that("Editing with active filters works", {
                                 e = c("e10", "e2"),
                                 value = c(2, 2)))
     session$setInputs(filter_e = c("e10", "e1"))
+    session$elapse(550)
     expect_identical(convert_to_df(dataToRender()),
                      data.frame(b = c("b2", "b3"),
                                 c = c("c2", "c2"),
@@ -288,7 +289,7 @@ test_that("Editing with active filters works", {
                                 f = c("f10", "f10", "f10", "f10", "f10", "f9", "f10", "f10", "f10", "f10"),
                                 value = c(1, 3, 4, 5, 6, 2, 8, 9, 10, 1.5)))
   }, args = list(data = testData,
-                 options = list(enablePersistentViews = FALSE, input = TRUE,
+                 options = list(enablePersistentViews = FALSE, `_input_` = TRUE,
                                 "_metadata_" = list(symtype = "parameter"))))
 })
 
@@ -379,6 +380,6 @@ test_that("Editing with pivoted columns works", {
                                 f = c("f10", "f10", "f10", "f10", "f10", "f10", "f10", "f10", "f10", "f11", "f11"),
                                 value = c(1, 3, 4, 5, 6, 8, 9, 10, 1.2, 123.001, 156.123456789)))
   }, args = list(data = testData,
-                 options = list(enablePersistentViews = FALSE, input = TRUE,
+                 options = list(enablePersistentViews = FALSE, `_input_` = TRUE,
                                 "_metadata_" = list(symtype = "parameter"))))
 })

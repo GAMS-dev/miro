@@ -48,7 +48,7 @@ test_that("Editing large data in list view works", {
                session$setInputs(pivotTable_rows_selected = c(2, 11), btRemoveRows = 2L))
     expect_identical(nrow(session$returned()), 4163488L)
   }, args = list(data = data,
-                 options = list(enablePersistentViews = FALSE, input = TRUE,
+                 options = list(enablePersistentViews = FALSE, `_input_` = TRUE,
                                 "_metadata_" = list(symtype = "parameter"))))
 })
 pr$publish()
@@ -89,7 +89,7 @@ test_that("Editing large data in table view works", {
                session$setInputs(pivotTable_rows_selected = c(1, 11), btRemoveRows = 2L))
     expect_identical(nrow(session$returned()), 4163475L)
   }, args = list(data = data,
-                 options = list(enablePersistentViews = FALSE, input = TRUE,
+                 options = list(enablePersistentViews = FALSE, `_input_` = TRUE,
                                 "_metadata_" = list(symtype = "parameter"))))
 })
 pr$publish()

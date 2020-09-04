@@ -733,14 +733,18 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }else{
             aggregationFunction <- "count"
           }
-          names(dataTmp)[length(dataTmp)] <- "value"
+          if(!identical(valueColName, "value")){
+            names(dataTmp)[length(dataTmp)] <- "value"
+          }
           dataTmp <- dataTmp %>% group_by(!!!rlang::syms(c(rowIndexList, colIndexList))) %>% 
             summarise(value = !!rlang::parse_expr(
               if(identical(aggregationFunction, "count")) 
                 "sum(!is.na(value))"
               else
                 paste0(aggregationFunction, "(value, na.rm = TRUE)")), .groups = "drop_last")
-          names(dataTmp)[length(dataTmp)] <- valueColName
+          if(!identical(valueColName, "value")){
+            names(dataTmp)[length(dataTmp)] <- valueColName
+          }
         }else if(isInput){
           isEditable <<- TRUE
           enableEl(session, paste0("#", ns("btAddRow")))
