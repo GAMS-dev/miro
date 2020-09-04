@@ -220,7 +220,7 @@ observeEvent({input$table_symbol
       rv$tableWidgetConfig$options$buttons    <<- checkLength(configuredTable, currentConfig$options$buttons,    NULL)
       outputTableExtensions <<- Set$new(if(length(rv$tableWidgetConfig$options$buttons)) "Buttons")
       insertUI(selector = "#table_wrapper", getOutputTableOptions(), where = "beforeEnd")
-      hideEl(session, "#hot_preview")
+      #hideEl(session, "#hot_preview")
       hideEl(session, "#pivotColsRestriction")
       showEl(session, "#outputTable_preview")
     }
@@ -253,13 +253,13 @@ getSymbolHotOptions <- reactive({
                               lang$adminMode$graphs$miroPivotOptions$infoMsg)),
     conditionalPanel(condition = "input.inputTable_type!=='pivot'",
                      checkboxInput_MIRO("table_readonly", lang$adminMode$widgets$table$readonly, value = rv$tableWidgetConfig$readonly),
-                     if(length(pivotCols)){
-                       tags$div(class="option-wrapper",
-                                selectInput("table_pivotCols", lang$adminMode$widgets$table$pivotCols, 
-                                            choices = c(`_` = "_", pivotCols), 
-                                            selected = if(length(rv$tableWidgetConfig$pivotCols)) rv$tableWidgetConfig$pivotCols else "_"))
-                     }),
-    conditionalPanel(condition = "input.inputTable_type==='default' && input.table_pivotCols === '_'",
+                     conditionalPanel(condition = paste0("true===", if(length(pivotCols)) "true" else "false"),
+                                      tags$div(class="option-wrapper",
+                                               selectInput("table_pivotCols", lang$adminMode$widgets$table$pivotCols, 
+                                                           choices = c(`_` = "_", pivotCols), 
+                                                           selected = if(length(rv$tableWidgetConfig$pivotCols)) rv$tableWidgetConfig$pivotCols else "_"))
+                     )),
+    conditionalPanel(condition = "input.inputTable_type==='default' && (input.table_pivotCols==null || input.table_pivotCols==='_')",
                      tags$div(class="option-wrapper",
                               selectInput("table_readonlyCols", lang$adminMode$widgets$table$readonlyCols, 
                                           choices = inputSymHeaders[[input$table_symbol]], 
@@ -360,6 +360,10 @@ createTableData <- function(symbol, pivotCol = NULL, createColNames = FALSE){
   if(length(pivotCol) && pivotCol != "_"){
     isPivotTable <- TRUE
     pivotIdx <- match(pivotCol, inputSymHeaders[[input$table_symbol]])[[1L]]
+    if(is.na(pivotIdx)){
+      return(list(data = data, headers = headersTmp, headersRaw = headersRaw,
+                  isPivotTable = isPivotTable))
+    }
     data <- pivot_wider(data, names_from = !!pivotIdx, 
                         values_from = !!length(data))
     attrTmp <- headersTmp[-c(pivotIdx, length(headersTmp))]
@@ -435,7 +439,6 @@ output$outputTable_preview <- renderDT({
   
   headersTmp <- unname(data$headers)
   data <- data$data
-  hideEl(session, "#hot_preview")
   showEl(session, "#outputTable_preview")
   dtOptions <- rv$tableWidgetConfig
   dtOptions$editable <- FALSE
