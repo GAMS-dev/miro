@@ -1,4 +1,6 @@
 context("Integration tests - MIRO pivot - big data")
+skip_if(identical(Sys.getenv("SKIP_PERFORMANCE_TESTS"), "true"),
+        "Skipping performance tests since SKIP_PERFORMANCE_TESTS is set.")
 library(dplyr)
 library(shiny)
 library(DT)
