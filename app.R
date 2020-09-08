@@ -215,6 +215,9 @@ if(is.null(errMsg)){
                                       Sys.getenv("MIRO_VERSION_STRING"), 
                                     if(identical(Sys.getenv("MIRO_MODE"), "hcube")) "_hcube",
                                     ".miroconf"))
+  lang <<- fromJSON(file.path(".", "conf", paste0(miroLanguage, ".json")),
+                    simplifyDataFrame = FALSE, 
+                    simplifyMatrix = FALSE)
   if(debugMode){
     source("./modules/init.R", local = TRUE)
   }else if(!file.exists(rSaveFilePath)){
@@ -222,6 +225,7 @@ if(is.null(errMsg)){
                       rSaveFilePath)
   }else{
     load(rSaveFilePath)
+    suppressWarnings(rm(lang))
     for (customRendererName  in customRendererNames){
       assign(customRendererName, get(customRendererName), envir = .GlobalEnv)
     }
@@ -482,7 +486,7 @@ if(miroBuildonly){
   }
   
   save(list = c("customRendererNames", customRendererNames, "modelIn", "modelInRaw", 
-                "modelOut", "config", "lang", "inputDsNames", "inputDsAliases", 
+                "modelOut", "config", "inputDsNames", "inputDsAliases", 
                 "outputTabTitles", "modelInTemplate", "scenDataTemplate", 
                 "modelInTabularData", "modelInTabularDataBase", "externalInputConfig", "tabSheetMap",
                 "modelInFileNames", "ddownDep", "aliasesNoDep", "idsIn",
@@ -632,6 +636,10 @@ if(is.null(errMsg)){
   source("./components/db.R")
   source("./components/db_scen.R")
   tryCatch({
+    dbSchema$tabName["_scenViews"] <- paste0(tableNameViewsPrefix, modelName)
+    dbSchema$colNames[["_scenViews"]] <- c(sid = sidIdentifier, symname = "symName",
+                                           id = "id", data = "data", time = "timestamp")
+    dbSchema$colTypes["_scenViews"] <- "icccT"
     scenMetadataTable <- scenMetadataTablePrefix %+% modelName
     db   <- Db$new(uid = uid, dbConf = dbConfig, dbSchema = dbSchema,
                    slocktimeLimit = slocktimeLimit, modelName = modelName,
@@ -1345,15 +1353,8 @@ if(!is.null(errMsg)){
         workDir <- file.path(tmpFileDir, session$token)
         if(!config$activateModules$remoteExecution && length(modelData)){
           tryCatch({
-            if(isWindows() && !identical(substring(workDir, 1L, 1L),
-                                         substring(.libPaths()[1L], 1L, 1L))){
-              # workaround as cmdunzip crashed on Windows when on different drive  than exdir
-              # see https://github.com/r-lib/zip/issues/45
-              unzip(modelData, exdir = workDir)
-            }else{
-              unzipModelFilesProcess <- unzip_process()$new(modelData, exdir = workDir, 
-                                                            stderr = NULL)
-            }
+            unzipModelFilesProcess <- unzip_process()$new(modelData, exdir = workDir, 
+                                                          stderr = NULL)
           }, error = function(e){
             flog.error("Problems creating process to extract model file archive. Error message: '%s'.", 
                        conditionMessage(e))
