@@ -57,10 +57,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
       )
     }
   }else if(type == "valuebox"){
-    data <- lapply(seq_len(customOptions$count), function(i){
-      valueBoxOutput(ns("valBox" %+% i),
-                     width = if(is.null(customOptions$width)) 4 else customOptions$width)
-    })
+    data <- uiOutput(ns("scalarBoxes"))
   }else if(type == "miropivot"){
     data <- miroPivotOutput(ns("miroPivot"), height = height, options = customOptions)
   }else{
@@ -137,20 +134,45 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
                                   input = input, filterCol = if(!is.null(filterCol)) filterCol)
     }
   }else if(type == "valuebox"){
-    lapply(seq_len(min(length(data[[1]]), customOptions$count)), function(i){
-      scalarDataTmp <- suppressWarnings(as.numeric(data[[3]][[i]]))
-      if(is.na(scalarDataTmp)){
-        scalarData <- data[[3]][[i]]
+    output$scalarBoxes <- renderUI({
+      if(!length(customOptions) || !length(names(customOptions[[1]]))){
+        boxWidth <- if(length(customOptions$width)) customOptions$width else 4L
+        noBoxesRow <- 12/boxWidth
+        numberRows <- ceiling(boxWidth*length(data[[1]])/12)
+        oldConfig <- TRUE
       }else{
-        scalarData <- formatC(round(scalarDataTmp, roundPrecision), digits = roundPrecision, 
-                              big.mark = " ", big.interval = 3, format = "f", drop0trailing = TRUE)
+        oldConfig <- FALSE
+        numberRows <- length(customOptions)
       }
-      output[["valBox" %+% i]] <- renderValueBox({
-        valueBox(
-          scalarData, data[[2]][[i]], 
-          getIcon(customOptions$icon$name, customOptions$icon$lib),
-          if(identical(customOptions$color, NULL)) "aqua" else customOptions$color
-        )
+      lapply(seq_len(numberRows), function(rowId){
+        if(oldConfig){
+          rowConfig <- vector("list", noBoxesRow)
+        }else{
+          rowConfig <- customOptions[[rowId]]
+          boxWidth <- 12/length(rowConfig)
+        }
+        fluidRow(lapply(seq_along(rowConfig), function(scalarId){
+          if(oldConfig){
+            scalarId <- scalarId + noBoxesRow * (rowId - 1L)
+            if(scalarId > length(data[[1]])){
+              return()
+            }
+            scalarConfig <- list(icon = customOptions$icon,
+                                 color = customOptions$color)
+          }else{
+            scalarConfig <- rowConfig[[scalarId]]
+            scalarId <- match(names(rowConfig)[scalarId], data[[1]])
+            if(is.na(scalarId)){
+              stop()
+            }
+          }
+          valueBox(data[[3]][scalarId], 
+                   subtitle = if(length(scalarConfig$description)) scalarConfig$description else data[[2]][scalarId], 
+                   width = boxWidth, 
+                   #object
+                   icon = if(length(scalarConfig$icon)) icon(scalarConfig$icon$name, lib = scalarConfig$icon$lib),
+                   color = if(length(scalarConfig$color)) scalarConfig$color else "aqua")
+        }))
       })
     })
   }else if(type == "miropivot"){
