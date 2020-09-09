@@ -166,12 +166,13 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
               stop()
             }
           }
-          valueBox(data[[3]][scalarId], 
-                   subtitle = if(length(scalarConfig$description)) scalarConfig$description else data[[2]][scalarId], 
-                   width = boxWidth, 
-                   #object
-                   icon = if(length(scalarConfig$icon)) icon(scalarConfig$icon$name, lib = scalarConfig$icon$lib),
-                   color = if(length(scalarConfig$color)) scalarConfig$color else "aqua")
+          valueBox(if(length(scalarConfig$round) && as.numeric(scalarData[[3]][scalarId])) 
+            round(as.numeric(scalarData[[3]][scalarId]), digits = scalarConfig$round) else scalarData[[3]][scalarId],
+            subtitle = if(length(scalarConfig$description)) scalarConfig$description else data[[2]][scalarId], 
+            width = boxWidth, 
+            #object
+            icon = if(length(scalarConfig$icon)) icon(scalarConfig$icon$name, lib = scalarConfig$icon$lib),
+            color = if(length(scalarConfig$color)) scalarConfig$color else "aqua")
         }))
       })
     })
