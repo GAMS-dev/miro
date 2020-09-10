@@ -166,7 +166,7 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
               stop()
             }
           }
-          valueBox(if(as.numeric(data[[3]][scalarId])) 
+          valueBox(if(!is.na(as.numeric(data[[3]][scalarId]))) 
             round(as.numeric(data[[3]][scalarId]), 
                   digits = if(length(scalarConfig$round)) 
                     scalarConfig$round 
