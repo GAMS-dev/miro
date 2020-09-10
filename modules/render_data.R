@@ -142,7 +142,7 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
         oldConfig <- TRUE
       }else{
         oldConfig <- FALSE
-        numberRows <- length(customOptions)
+        numberRows <- length(customOptions[!names(customOptions) %in% c("_metadata_", "count")])
       }
       lapply(seq_len(numberRows), function(rowId){
         if(oldConfig){
@@ -166,8 +166,12 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
               stop()
             }
           }
-          valueBox(if(length(scalarConfig$round) && as.numeric(scalarData[[3]][scalarId])) 
-            round(as.numeric(scalarData[[3]][scalarId]), digits = scalarConfig$round) else scalarData[[3]][scalarId],
+          valueBox(if(as.numeric(data[[3]][scalarId])) 
+            round(as.numeric(data[[3]][scalarId]), 
+                  digits = if(length(scalarConfig$round)) 
+                    scalarConfig$round 
+                  else roundPrecision) 
+            else data[[3]][scalarId],
             subtitle = if(length(scalarConfig$description)) scalarConfig$description else data[[2]][scalarId], 
             width = boxWidth, 
             #object
