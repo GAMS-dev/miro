@@ -1018,7 +1018,8 @@ if(!is.null(errMsg)){
           if(debugMode && !forceScenImport){
             dataHash <- digest::digest(file = file.path(miroDataDir, miroDataFile),
                                        algo = "sha1", serialize = FALSE)
-            if(identical(dataHash, currentDataHashes[[miroDataFile]])){
+            if(miroDataFile %in% names(currentDataHashes) && 
+               identical(dataHash, currentDataHashes[[miroDataFile]])){
               flog.info("Data: '%s' skipped because it has not changed since the last start.", miroDataFile)
               next
             }

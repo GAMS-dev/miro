@@ -20,6 +20,11 @@ test_that("Skipping import of data files if unchanged works",
           expect_pass(testApp(file.path(testDir, ".."), "skip_scen_import_test",
                               compareImages = FALSE)))
 file.copy2(file.path(testDir, "data", "transport2.gdx"),
+           file.path(modelDataPath, "default2.gdx"))
+test_that("Import new scenario works",
+          expect_pass(testApp(file.path(testDir, ".."), "skip_scen_import_test",
+                              compareImages = FALSE)))
+file.copy2(file.path(testDir, "data", "transport2.gdx"),
            file.path(modelDataPath, "default.gdx"))
 test_that("Skipping import of data files if changed works",
           expect_pass(testApp(file.path(testDir, ".."), "skip_scen_import_test",
