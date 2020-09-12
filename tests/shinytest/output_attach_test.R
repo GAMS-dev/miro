@@ -17,6 +17,8 @@ app$findElement("[data-value='Attachments']")$click()
 attachmentList <- app$findElements(".attachment-line")
 expect_identical(length(attachmentList), 4L)
 expect_identical(attachmentList[[2]]$findElement(".checkbox input")$getAttribute("checked"), "true")
+#miro.log as output attachment with execPerm=true
+expect_identical(attachmentList[[1]]$findElement(".checkbox input")$getAttribute("checked"), "true")
 
 #solve again to test previous local path allocation bug (Windows) b67fe02c3e959d1ad2a82b4e587e1b92a1c4cdca
 app$setInputs(btUpdateMeta = "click")

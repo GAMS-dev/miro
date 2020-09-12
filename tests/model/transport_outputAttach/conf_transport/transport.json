@@ -11,6 +11,11 @@
   {
     "filename": "report3.put",
     "throwError": false
+  },
+  {
+    "filename": "miro.log",
+    "throwError": false,
+    "execPerm": true
   }],
   "inputWidgets": {
     "f": {

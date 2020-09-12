@@ -6,20 +6,31 @@ storeGAMSOutputFiles <- function(workDir){
     errMsg <- NULL
     tryCatch({
       filesToStore <- character(0L)
-      if(any(c(config$activateModules$logFile, config$activateModules$lstFile)))
-        filesToStore  <- c(file.path(workDir, 
+      if(config$storeLogFilesDuration > 0L){
+        if(any(c(config$activateModules$logFile, config$activateModules$lstFile)))
+          filesToStore  <- file.path(workDir, 
                                      paste0(modelNameRaw, 
                                             c(if(config$activateModules$logFile) ".log", 
-                                              if(config$activateModules$lstFile) ".lst"))))
-      if(config$activateModules$miroLogFile)
-        filesToStore <- c(filesToStore, file.path(workDir, config$miroLogFile))
+                                              if(config$activateModules$lstFile) ".lst")))
+        if(config$activateModules$miroLogFile)
+          filesToStore <- c(filesToStore, file.path(workDir, config$miroLogFile))
+      }
       
       enforceFileAccess <- rep.int(TRUE, length(filesToStore))
       fileAccessPerm    <- rep.int(FALSE, length(filesToStore))
       
       if(length(config$outputAttachments)){
-        filesToStore <- c(filesToStore, file.path(workDir, vapply(config$outputAttachments, "[[", character(1L),
-                                                                  "filename", USE.NAMES = FALSE)))
+        fnOutputAttachments <- file.path(workDir, vapply(config$outputAttachments, "[[", character(1L),
+                                                         "filename", USE.NAMES = FALSE))
+        if(any(fnOutputAttachments %in% filesToStore)){
+          # overwrite settings of attachments
+          # if they are also declared as output attachments
+          filesNotInOA <- !filesToStore %in% fnOutputAttachments
+          filesToStore <- filesToStore[filesNotInOA]
+          enforceFileAccess <- enforceFileAccess[filesNotInOA]
+          fileAccessPerm <- fileAccessPerm[filesNotInOA]
+        }
+        filesToStore <- c(filesToStore, fnOutputAttachments)
         enforceFileAccess <- c(enforceFileAccess, vapply(config$outputAttachments, function(el) {
           return(!isFALSE(el[["throwError"]]))}, logical(1L), USE.NAMES = FALSE))
         fileAccessPerm <- c(fileAccessPerm, vapply(config$outputAttachments, function(el) {
