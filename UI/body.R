@@ -46,7 +46,7 @@ if(!debugMode){
   miroCacheFile <- paste0(modelNameRaw, "_",
                           MIROVersion, "_",
                           if(LAUNCHHCUBEMODE) "1_" else "0_",
-                          config[["language"]], 
+                          miroLanguage, 
                           if(config$activateModules$remoteExecution) "_1" else "_0")
   if(isShinyProxy){
     miroCacheFile <- file.path(Sys.getenv("MIRO_DATA_DIR"), "cache", miroCacheFile)
@@ -189,7 +189,7 @@ if(buildUI){
                                               format = modelIn[[i]]$daterange$format, 
                                               startview = modelIn[[i]]$daterange$startview, 
                                               weekstart = modelIn[[i]]$daterange$weekstart, 
-                                              language = config$language, 
+                                              language = miroLanguage, 
                                               separator = if(identical(modelIn[[i]]$daterange$separator, 
                                                                        NULL)) " to " else modelIn[[i]]$daterange$separator, 
                                               width = modelIn[[i]]$daterange$width, 
@@ -204,7 +204,8 @@ if(buildUI){
                                          value = modelIn[[i]]$date$value, min = modelIn[[i]]$date$min, 
                                          max = modelIn[[i]]$date$max, format = modelIn[[i]]$date$format, 
                                          startview = modelIn[[i]]$date$startview, 
-                                         weekstart = modelIn[[i]]$date$weekstart, language = config$language, 
+                                         weekstart = modelIn[[i]]$date$weekstart,
+                                         language = miroLanguage, 
                                          width = modelIn[[i]]$date$width)
                              )
                            },

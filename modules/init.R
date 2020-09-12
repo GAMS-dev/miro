@@ -70,38 +70,6 @@ if(is.null(errMsg)){
   })
 }
 
-lang <<- NULL
-if(is.null(errMsg)){
-  # read JSON language file
-  overwriteLang <- Sys.getenv("MIRO_LANG")
-  if(!identical(overwriteLang, "") && !identical(overwriteLang, config$language)){
-    config$language <- overwriteLang
-  }
-  if(!file.exists(paste0('./conf/', config$language, ".json"))){
-    errMsg <- paste0("The JSON language file: '", config$language,
-                     ".json' could not be located. Please make sure file is available and accessible.")
-  }else{
-    tryCatch({
-      valid <- jsonValidator$validate(file.path("conf", config$language %+% ".json"), 
-                                      file.path("conf", languageSchemaName))
-    }, error = function(e){
-      errMsg <<- paste0("Some error occurred validating language file: '",
-                        config$language, ".json'. \n Error message: ", conditionMessage(e))
-    })
-    if(!is.null(errMsg)){
-      return()
-    }
-    if(is.null(valid$errors)){
-      lang <<- valid$data
-    }else{
-      errMsg <- paste(errMsg, 
-                      paste0("Some error occurred parsing JSON language file: '",
-                             config$language, ".json'. \nError message: ", 
-                             valid$errors), sep = "\n")
-    }
-  }
-}
-
 # load model input and output parameters
 if(is.null(errMsg)){
   # handsontable options
@@ -1551,7 +1519,6 @@ if(is.null(errMsg)){
                                '_scenLock' = scenLockTablePrefix %+% modelName,
                                '_scenTrc' = tableNameTracePrefix %+% modelName,
                                '_scenAttach' = tableNameAttachPrefix %+% modelName,
-                               '_scenViews' = tableNameViewsPrefix %+% modelName,
                                '_scenScripts' = tableNameScriptsPrefix %+% modelName,
                                '_jobMeta' = tableNameJobPrefix %+% modelName),
                    colNames = list('_scenMeta' = c(sid = sidIdentifier, uid = uidIdentifier, sname = snameIdentifier,
@@ -1565,8 +1532,6 @@ if(is.null(errMsg)){
                                                      execPerm = "execPerm",
                                                      content = "fileContent",
                                                      time = "timestamp"),
-                                   '_scenViews'  = c(sid = sidIdentifier, symname = "symName",
-                                                     id = "id", data = "data", time = "timestamp"),
                                    '_scenScripts' = c(sid = sidIdentifier, id = "id",
                                                      content = "scriptContent"),
                                    '_jobMeta' = c(jid = '_jid', uid = uidIdentifier,  
@@ -1576,7 +1541,7 @@ if(is.null(errMsg)){
                                                   scode = scodeIdentifier, sname = snameIdentifier)),
                    colTypes = c('_scenMeta' = "iccTcccci",
                                 '_scenLock' = "ciT", '_scenTrc' = "cccccdidddddiiiddddddc",
-                                '_scenAttach' = "icclbT", '_scenViews' = "icccT", '_scenScripts' = "icc", '_jobMeta' = "iciTcciiic"))
+                                '_scenAttach' = "icclbT", '_scenScripts' = "icc", '_jobMeta' = "iciTcciiic"))
   
   dbSchema$tabName  <- c(dbSchema$tabName, scenTableNames)
   scenColNamesTmp   <- lapply(c(modelOut, modelIn), function(el) return(names(el$headers)))
