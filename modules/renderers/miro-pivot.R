@@ -1280,6 +1280,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                   # delete row
                   if(!length(rowId)){
                     flog.debug("MIRO pivot: Edited value is not numeric!.")
+                    updateFilter(newUpdateFilterVal)
                     return()
                   }
                   data <<- data[-c(rowId), ]
@@ -1290,6 +1291,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                   }
                 }else{
                   flog.debug("MIRO pivot: Edited value is not numeric!.")
+                  updateFilter(newUpdateFilterVal)
                   return()
                 }
               }else{
@@ -1348,6 +1350,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             if(editedKey %in% levels(data[[colId + 1L]])){
               if(any(newKey %in% data[["__key__"]])){
                 flog.debug("The record: %s already exists.", newKey)
+                updateFilter(newUpdateFilterVal)
                 return(showErrorMsg(lang$renderers$miroPivot$duplicateRecordTitle,
                                     lang$renderers$miroPivot$duplicateRecordDesc))
               }
