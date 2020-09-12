@@ -197,7 +197,9 @@ lapply(modelInTabularData, function(sheet){
   }
   if(length(colsWithDep[[i]])){
     dataModelIn[[i]] <- reactive({
-      hotInit[[i]] <<- TRUE
+      if(identical(modelIn[[i]]$type, "hot")){
+        hotInit[[i]] <<- TRUE
+      }
       # make sure data will be updated when old data is overwritten
       rv[["in_" %+% i]]
       if(isEmptyInput[i]){
@@ -269,8 +271,8 @@ lapply(modelInTabularData, function(sheet){
   }else{
     dataModelIn[[i]] <- reactive({
       rv[["in_" %+% i]]
-      hotInit[[i]] <<- TRUE
       if(identical(modelIn[[i]]$type, "hot")){
+        hotInit[[i]] <<- TRUE
         if(length(modelInputData[[i]]) && 
            nrow(modelInputData[[i]]) > 0L){
           if(!is.null(configGraphsIn[[i]])){
@@ -445,10 +447,10 @@ lapply(modelInTabularData, function(sheet){
     })
     observe({
       if(length(rv[["in_" %+% i]]) && length(modelInputDataVisible[[i]])){
-        force(modelInputDataVisible[[i]]())
-        if(!inputInitialized[[i]]){
-          inputInitialized[[i]] <<- TRUE
-        }else{
+        if(is.null(modelInputDataVisible[[i]]())){
+          return()
+        }
+        if(hotInit[[i]]){
           isolate({
             if(is.null(rv[[paste0("wasModified_", i)]])){
               rv[[paste0("wasModified_", i)]] <- 1
@@ -456,6 +458,8 @@ lapply(modelInTabularData, function(sheet){
               rv[[paste0("wasModified_", i)]] <- rv[[paste0("wasModified_", i)]] + 1L
             }
           })
+        }else{
+          hotInit[[i]] <<- TRUE
         }
       }
     })
