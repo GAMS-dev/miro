@@ -199,12 +199,6 @@ observeEvent({input$table_symbol
         # need to trigger observer as it is lazy..
         rv$refreshInputTableType <- rv$refreshInputTableType + 1L
       }
-      if(!identical(rv$tableWidgetConfig$pivotCols, "_") && 
-         (isTRUE(rv$tableWidgetConfig$readonly) || isTRUE(rv$tableWidgetConfig$heatmap))){
-        showEl(session, "#pivotColsRestriction")
-      }else{
-        hideEl(session, "#pivotColsRestriction")
-      }
     }else if(currentTableSymbolName %in% outputSymMultiDimChoices){
       if(currentTableSymbolName %in% names(configJSON$outputTables)){
         currentConfig <- configJSON$outputTables[[currentTableSymbolName]]
@@ -221,6 +215,7 @@ observeEvent({input$table_symbol
       outputTableExtensions <<- Set$new(if(length(rv$tableWidgetConfig$options$buttons)) "Buttons")
       insertUI(selector = "#table_wrapper", getOutputTableOptions(), where = "beforeEnd")
       #hideEl(session, "#hot_preview")
+      hideEl(session, "#inputTable_pivot-data")
       hideEl(session, "#pivotColsRestriction")
       showEl(session, "#outputTable_preview")
     }
@@ -231,7 +226,7 @@ observeEvent({input$table_symbol
   }
 )
 
-getSymbolHotOptions <- reactive({
+getSymbolHotOptions <- function(){
   tagList(
     # tags$div(class="option-wrapper",
     #          textInput("table_alias", lang$adminMode$widgets$ui$alias, value = rv$tableWidgetConfig$alias)),
@@ -274,7 +269,7 @@ getSymbolHotOptions <- reactive({
                                                  lang$adminMode$widgets$table$heatmap, 
                                                  value = rv$tableWidgetConfig$heatmap))
     ))
-})
+}
 
 getOutputTableOptions <- reactive({
   tagList(
@@ -576,6 +571,7 @@ observeEvent({rv$refreshInputTableType
   input$inputTable_type}, {
   if(identical(input$inputTable_type, "bigdata")){
     rv$tableWidgetConfig$tableType <- "bigdata"
+    hideEl(session, "#pivotColsRestriction")
     hideEl(session, "#inputTable_pivot-data")
     rv$tableWidgetConfig <<- list(
       widgetType   = "table",
@@ -585,6 +581,7 @@ observeEvent({rv$refreshInputTableType
     )
   }else if(identical(input$inputTable_type, "pivot")){
     rv$tableWidgetConfig$tableType <- "pivot"
+    hideEl(session, "#pivotColsRestriction")
     showEl(session, "#inputTable_pivot-data")
     for(el in ls(envir = inputPivotRendererEnv)){
       if("Observer" %in% class(inputPivotRendererEnv[[el]])){
@@ -611,6 +608,12 @@ observeEvent({rv$refreshInputTableType
       hideIndexCol = input$table_hideIndexCol,
       heatmap      = input$table_heatmap
     )
+    if(!identical(rv$tableWidgetConfig$pivotCols, "_") && 
+       (isTRUE(rv$tableWidgetConfig$readonly) || isTRUE(rv$tableWidgetConfig$heatmap))){
+      showEl(session, "#pivotColsRestriction")
+    }else{
+      hideEl(session, "#pivotColsRestriction")
+    }
   }
 })
 observeEvent(input$table_hideIndexCol, {
