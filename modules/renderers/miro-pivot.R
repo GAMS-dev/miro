@@ -923,7 +923,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         
         rendererEnv[[ns("editTableAdd")]] <- observe({
           if(length(input[["btAddRow"]]) != 1L ||
-             input[["btAddRow"]] == 0L || !isEditable){
+             input[["btAddRow"]] == 0L || !isEditable ||
+             identical(rendererEnv[[ns("editTableAdd")]]$.execCount, 1L)){
             return()
           }
           isolate({
@@ -968,7 +969,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         })
         rendererEnv[[ns("editTableAddConfirm")]] <- observe({
           if(length(input[["btAddRowConfirm"]]) != 1L ||
-             input[["btAddRowConfirm"]] == 0L || !isEditable){
+             input[["btAddRowConfirm"]] == 0L || !isEditable ||
+             identical(rendererEnv[[ns("editTableAddConfirm")]]$.execCount, 1L)){
             return()
           }
           isolate({
@@ -1097,7 +1099,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         
         rendererEnv[[ns("editTableRemove")]] <- observe({
           if(length(input[["btRemoveRows"]]) != 1L ||
-             input[["btRemoveRows"]] == 0L || !isEditable){
+             input[["btRemoveRows"]] == 0L || !isEditable ||
+             identical(rendererEnv[[ns("editTableRemove")]]$.execCount, 1L)){
             return()
           }
           isolate({
@@ -1170,7 +1173,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         
         rendererEnv[[ns("editTable")]] <- observe({
           info <- input[["pivotTable_cell_edit"]]
-          if(!isEditable || is.null(info)){
+          if(!isEditable || is.null(info) ||
+             identical(rendererEnv[[ns("editTable")]]$.execCount, 1L)){
             return()
           }
           flog.trace("MIRO pivot: Received request to edit table data.")
