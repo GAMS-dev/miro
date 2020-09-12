@@ -1621,7 +1621,7 @@ serverSelectInput <- function(session, inputId, label, choices, selected = NULL,
 }
 isValidUEL <- function(uelToTest){
   if(!is.character(uelToTest) || length(uelToTest) != 1L || is.na(uelToTest) ||
-     !identical(trimws(uelToTest), uelToTest)){
+     !identical(trimws(uelToTest), uelToTest) || nchar(trimws(uelToTest)) == 0L){
     return(FALSE)
   }
   return(TRUE)
