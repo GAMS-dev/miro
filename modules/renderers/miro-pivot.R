@@ -963,7 +963,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                       tags$td(style = "min-width:100px;",
                                               if(i <= noRowHeaders)
                                                 serverSelectInput(session, ns(paste0("newRow_", i)), NULL,
-                                                                  levels(dataToRender()[[i]]), multiple = TRUE,
+                                                                  if(!identical(nrow(data), 0L)) levels(dataToRender()[[i]]), multiple = TRUE,
                                                                   width = "100%",
                                                                   options = list(create = TRUE, maxItems = 1L,
                                                                                  dropdownParent = "body"))
