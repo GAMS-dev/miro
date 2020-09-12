@@ -932,8 +932,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               flog.warn("MIRO Pivot: Add row button was clicked but dataToRender has no length.")
               return()
             }
-            colHeaders <- names(dataToRender())
-            noRowHeaders <- attr(dataToRender(), "noRowHeaders")
+            if(identical(nrow(data), 0L)){
+              # pretend we are in list view when no data exists
+              colHeaders <- names(data)[-1]
+              noRowHeaders <- length(data) - 2L
+            }else{
+              colHeaders <- names(dataToRender())
+              noRowHeaders <- attr(dataToRender(), "noRowHeaders")
+            }
             colHeaders[seq_len(noRowHeaders)] <- unlist(setIndexAliases[colHeaders[seq_len(noRowHeaders)]], 
                                                         use.names = FALSE)
             showModal(
@@ -983,8 +989,26 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               on.exit(hideEl(session, "#loading-screen"))
             }
             flog.trace("MIRO pivot: Received request to add new row(s).")
-            colHeaders <- names(dataToRender())
-            noRowHeaders <- attr(dataToRender(), "noRowHeaders")
+            if(identical(nrow(data), 0L)){
+              # pretend we are in list view when no data exists
+              colHeaders <- names(data)[-1]
+              noRowHeaders <- length(data) - 2L
+              
+              rowIndices <- colHeaders[seq_len(noRowHeaders)]
+              colIndices <- character(0L)
+              filterIndices <- character(0L)
+            }else{
+              colHeaders <- names(dataToRender())
+              noRowHeaders <- attr(dataToRender(), "noRowHeaders")
+              
+              valueColName <- names(data)[length(data)]
+              
+              rowIndices <- colHeaders[seq_len(noRowHeaders)]
+              colIndices <- currentFilters()$cols
+              colIndices <- colIndices[colIndices != valueColName]
+              filterIndices <- currentFilters()$filter
+              filterIndices <- filterIndices[!filterIndices %in% c(filteredData()$multiFilterIndices, valueColName)]
+            }
             newKeys <- vapply(seq_len(noRowHeaders), function(i){
               editedKey <- tryCatch(trimws(input[[paste0("newRow_", i)]]),
                                     error = function(e){NA_character_})
@@ -1021,14 +1045,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 mustConvertValCol <- TRUE
               }
             }
-            
-            valueColName <- names(data)[length(data)]
-            
-            rowIndices <- colHeaders[seq_len(noRowHeaders)]
-            colIndices <- currentFilters()$cols
-            colIndices <- colIndices[colIndices != valueColName]
-            filterIndices <- currentFilters()$filter
-            filterIndices <- filterIndices[!filterIndices %in% c(filteredData()$multiFilterIndices, valueColName)]
             
             colElements <- vector("list", length(newColIds))
             if(length(colIndices)){
