@@ -443,5 +443,21 @@ lapply(modelInTabularData, function(sheet){
         errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
       })
     })
+    observe({
+      if(length(rv[["in_" %+% i]]) && length(modelInputDataVisible[[i]])){
+        force(modelInputDataVisible[[i]]())
+        if(!inputInitialized[[i]]){
+          inputInitialized[[i]] <<- TRUE
+        }else{
+          isolate({
+            if(is.null(rv[[paste0("wasModified_", i)]])){
+              rv[[paste0("wasModified_", i)]] <- 1
+            }else{
+              rv[[paste0("wasModified_", i)]] <- rv[[paste0("wasModified_", i)]] + 1L
+            }
+          })
+        }
+      }
+    })
   }
 })

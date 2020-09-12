@@ -1569,6 +1569,9 @@ if(!is.null(errMsg)){
                  },
                  checkbox = {
                    input[["cb_" %+% i]]
+                 },
+                 custom = {
+                   rv[[paste0("wasModified_", i)]]
                  })
           if(noCheck[i]){
             noCheck[i] <<- FALSE
