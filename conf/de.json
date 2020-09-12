@@ -688,8 +688,8 @@
       "errUniqueViewName": "Der von Ihnen eingegebene Viewname existiert bereits. Bitte wählen Sie einen anderen Namen.",
       "duplicateRecordTitle": "Doppelter Datensatz",
       "duplicateRecordDesc": "Der von Ihnen eingegebene Datensatz ist bereits vorhanden.",
-      "errPivotDuplicate": "Die Daten enthalten doppelte Datensätze und können daher nicht gepivotisiert werden.",
-      "errPivot": "Die Daten konnten nicht gepivotisiert werden. Dies könnte daran liegen, dass Ihre Daten zu groß sind.",
+      "errPivotDuplicate": "Die Daten enthalten doppelte Datensätze und können daher nicht gepivoted werden.",
+      "errPivot": "Die Daten konnten nicht gepivoted werden. Dies könnte daran liegen, dass Ihre Daten zu groß sind.",
       "errorTitle": "Fehler",
       "duplicateRecordError": "Der Datensatz: '%s' existiert bereits. Bitte entfernen Sie ihn und versuchen Sie es erneut.",
       "dialogAddRow":{
