@@ -379,7 +379,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         updateViewList <- function(){
           removeUI(paste0("#", ns("savedViewsDD"), " li"), multiple = TRUE)
           
-          viewChoices <- lapply(views$getIds(session), function(viewId){
+          viewChoices <- lapply(sort(views$getIds(session)), function(viewId){
             createBootstrapDropdownChoices(list(id = htmlIdEnc(viewId), 
                                                 alias = viewId), 
                                            ns("savedViews"), ns("deleteView"))
