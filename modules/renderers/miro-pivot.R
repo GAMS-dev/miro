@@ -241,6 +241,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               # already editable
               return()
             }
+            flog.trace("MIRO pivot: enable edit button clicked.")
             showEl(session, "#loading-screen")
             on.exit(hideEl(session, "#loading-screen"))
             data <<- unite(data, "__key__", !!!setIndices,
@@ -751,7 +752,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             names(dataTmp)[length(dataTmp)] <- valueColName
           }
         }else if(isInput){
-          isEditable <<- TRUE
+          if(bigData){
+            isEditable <<- identical(names(data)[1], "__key__")
+          }else{
+            isEditable <<- TRUE
+          }
           enableEl(session, paste0("#", ns("btAddRow")))
           enableEl(session, paste0("#", ns("btRemoveRows")))
           if(editMade){
