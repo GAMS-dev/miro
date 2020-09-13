@@ -386,7 +386,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           })
           insertUI(paste0("#", ns("savedViewsDD")), 
                    c(list(createBootstrapDropdownChoices(list(id = "iZGVmYXVsdA--", 
-                                                              alias = "default"), 
+                                                              alias = lang$renderers$miroPivot$defaultViewName), 
                                                          ns("savedViews"))),
                      viewChoices), 
                    where = "beforeEnd")
@@ -465,7 +465,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
           viewId <- htmlIdDec(input$deleteView)
           if(length(viewId) != 1L || 
-             !viewId %in% c("default", views$getIds(session))){
+             !viewId %in% views$getIds(session)){
             flog.error("Invalid view id: '%s' attempted to be removed This looks like an attempt to tamper with the app!",
                        input$deleteView)
             return()

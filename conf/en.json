@@ -637,6 +637,7 @@
       "aggregateLabel": "aggregate",
       "filterLabel": "filter",
       "allPlaceholder": "All",
+      "defaultViewName": "default",
       "colTruncationWarning": "Data was truncated to the first %s columns.",
       "rowTruncationWarning": "Data was truncated to the first %s rows.",
       "newViewTitle": "New view",

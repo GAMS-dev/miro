@@ -678,6 +678,7 @@
       "aggregateLabel": "aggregieren",
       "filterLabel": "filtern",
       "allPlaceholder": "Alle",
+      "defaultViewName": "Standardeinstellung",
       "colTruncationWarning": "Die Daten wurden auf die ersten %s Spalten gekürzt.",
       "rowTruncationWarning": "Die Daten wurden auf die ersten %s Zeilen gekürzt.",
       "newViewTitle": "Neuer view",

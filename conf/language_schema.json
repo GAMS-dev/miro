@@ -2478,6 +2478,10 @@
               "type": "string",
               "minLength": 1
             },
+            "defaultViewName": {
+              "type": "string",
+              "minLength": 1
+            },
             "colTruncationWarning": {
               "type": "string",
               "minLength": 1
@@ -2620,7 +2624,7 @@
               "minProperties": 5
             }
           },
-          "minProperties": 26
+          "minProperties": 27
         }
       },
       "minProperties": 1

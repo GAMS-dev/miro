@@ -678,6 +678,7 @@
       "aggregateLabel": "汇总",
       "filterLabel": "过滤",
       "allPlaceholder": "全部",
+      "defaultViewName": "默认",
       "colTruncationWarning": "数据被截断到前%s列。",
       "rowTruncationWarning": "数据被截断到前%s行。",
       "newViewTitle": "新增检视",
