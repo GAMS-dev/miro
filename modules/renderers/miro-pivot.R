@@ -223,6 +223,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         editMade <- FALSE
         if(nrow(data) < 5e+05){
           isEditable <- TRUE
+          hideEl(session, paste0("#", ns("enableEdit")))
+          showEl(session, paste0("#", ns("btAddRow")))
+          showEl(session, paste0("#", ns("btRemoveRows")))
           data <- unite(data, "__key__", !!!setIndices,
                         remove = FALSE, sep = "\U2024", na.rm = FALSE)
         }else{
