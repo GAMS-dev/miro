@@ -1,7 +1,7 @@
 {
   "output": {
-    "outputDataTitle": {
-      "html": "defaultGermany (*)",
+    "inputDataTitle": {
+      "html": "defaultGermany",
       "deps": [
 
       ]
