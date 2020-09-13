@@ -948,6 +948,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               colHeaders <- names(dataToRender())
               noRowHeaders <- attr(dataToRender(), "noRowHeaders")
             }
+            removeUI("body>.selectize-dropdown", multiple = TRUE, immediate = TRUE)
             colHeaders[seq_len(noRowHeaders)] <- unlist(setIndexAliases[colHeaders[seq_len(noRowHeaders)]], 
                                                         use.names = FALSE)
             showModal(
