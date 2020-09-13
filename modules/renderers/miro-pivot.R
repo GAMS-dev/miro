@@ -141,7 +141,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                     column(width = 10L,
                            style = "min-height: 400px;",
                            if(isTRUE(options[["_input_"]])){
-                             tagList(
+                             tags$div(style = "margin-bottom:2px;",
                                actionButton(ns("btAddRow"), lang$renderers$miroPivot$btAddRow),
                                actionButton(ns("btRemoveRows"), lang$renderers$miroPivot$btRemoveRows, class = "bt-remove"),
                                actionButton(ns("enableEdit"), lang$renderers$miroPivot$btEnableEdit,
@@ -896,7 +896,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         noRowHeaders <- attr(dataTmp, "noRowHeaders")
         hideEl(session, paste0("#", ns("loadPivotTable")))
         
-        datatable(dataTmp, extensions = c("Scroller", "FixedColumns"), 
+        datatable(dataTmp, extensions = c("Scroller", "FixedColumns", if(noRowHeaders > 5L) "Buttons"), 
                   selection = if(isEditable) "multiple" else "none", editable = isEditable,
                   container = DTbuildColHeaderContainer(names(dataTmp), 
                                                         noRowHeaders, 
@@ -928,7 +928,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
     });
 }")),
                                  scrollY = 400, scrollX = TRUE, scrollCollapse = TRUE,
-                                 scroller = list(loadingIndicator = FALSE),
+                                 scroller = list(loadingIndicator = FALSE), dom = 'Bfrtip',
+                                 buttons = if(noRowHeaders > 5L) I("colvis"),
                                  fixedColumns = list(leftColumns = noRowHeaders)), rownames = FALSE) %>%
           formatRound(seq(noRowHeaders + 1, length(dataTmp)), 
                       digits = roundPrecision)
