@@ -13,8 +13,13 @@ getVisibleTabData <- function(id, type){
   if(length(modelIn[[id]]$pivotCols)){
     keyIdx <- match(modelIn[[id]]$pivotCols[[1]], 
                     names(modelIn[[id]]$headers))[[1L]]
-    if(!is.na(keyIdx) && length(data) == length(modelIn[[id]]$headers)){
+    if(identical(names(data)[keyIdx], modelIn[[id]]$pivotCols[[1]]) &&
+       length(data) == length(modelIn[[id]]$headers)){
+      names(data) <- names(modelIn[[id]]$headers)
       return(data)
+    }
+    if(length(data) < length(modelIn[[id]]$headers) - 1L){
+      return(modelInTemplate[[id]])
     }
     return(select(pivot_longer(data, 
                                cols = seq(length(modelIn[[id]]$headers) - 1L, 

@@ -464,10 +464,10 @@ lapply(seq_along(modelIn), function(id){
                      }, error = function(e){
                        flog.error("Some problem occurred attempting to fetch values for slider: '%s' " %+%
                                     "(forward dependency on dataset: '%s'). Error message: %s.", 
-                                  modelInAlias[id], modelInAlias[k], e)
+                                  modelInAlias[id], modelInAlias[k], conditionMessage(e))
                        errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                      })
-                   }else if(length(modelInputData[[k]][[1]]) && isEmptyInput[k]){
+                   }else if(length(modelInputData[[k]][[1]]) == 1L && !is.na(modelInputData[[k]][[1]][1]) && isEmptyInput[k]){
                      # no input is shown in UI, so get hidden data
                      try(dataTmp <- unique(modelInputData[[k]][[el[[1]][1]]]))
                    }else{
