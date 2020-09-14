@@ -631,3 +631,18 @@ table.DTFC_Cloned tr {
        background: darken(@row-odd-dark,3%)!important;
     });
 }
+/* Buttons extension */
+div.dt-button-collection {
+    .responsiveDark({
+    },
+    {
+       background-color: darken(@row-odd-dark,3%)!important;
+    });
+}
+div.dt-button-collection button.dt-button:active:not(.disabled), div.dt-button-collection button.dt-button.active:not(.disabled), div.dt-button-collection div.dt-button:active:not(.disabled), div.dt-button-collection div.dt-button.active:not(.disabled), div.dt-button-collection a.dt-button:active:not(.disabled), div.dt-button-collection a.dt-button.active:not(.disabled) {
+    .responsiveDark({
+    },
+    {
+       box-shadow: 1px 1px 3px #fff inset !important;
+    });
+}
