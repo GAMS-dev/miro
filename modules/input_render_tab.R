@@ -384,6 +384,13 @@ lapply(modelInTabularData, function(sheet){
         return(hot_heatmap(ht))
       return(ht)
     })
+    observe({
+      input[[paste0("in_", i)]]
+      if(is.null(isolate(rv[[paste0("in_", i)]])) && !isEmptyInput[i]){
+        modelInputData[[i]] <<- getVisibleTabData(i, "hot")
+        isolate(rv[[paste0("in_", i)]] <- 1L)
+      }
+    })
   }else if(identical(modelIn[[i]]$type, "dt")){
     output[["in_" %+% i]] <- renderDT({
       errMsg <- NULL
