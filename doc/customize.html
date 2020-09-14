@@ -250,7 +250,7 @@ putclose log;
                                   If an graph is configured for a symbol, this will be used instead.</p>
                                   <h6 id="decimal-places" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Number of decimal 
                                   places used for rounding numerical values</h6>
-                                  <div class="expanded"><p>Defines the number of decimal places for numeric symbols in the MIRO application. This is a global setting and has an effect on all <a href="./customize.html#output-tables" class="scrollto">output tables</a>, <a href="./customize.html#table-option-large" class="scrollto">big data input tables</a> and the table for <a href="./hypercube.html#scenario-selection">loading scenarios in Hypercube Mode</a>.</p>
+                                  <div class="expanded"><p>Defines the number of decimal places for numeric symbols in the MIRO application. This is a global setting and has an effect on all <a href="./customize.html#output-tables" class="scrollto">output tables</a>, <a href="./customize.html#table-option-large" class="scrollto">Big Data input tables</a> and the table for <a href="./hypercube.html#scenario-selection">loading scenarios in Hypercube Mode</a>.</p>
                                   <p>Note that this only applies to symbols that are treated as numerical values by MIRO. For example, elements of GAMS <i>Sets</i> may contain numbers, but they are not treated as such but as strings. These are therefore not affected by the maximum decimal place set.</p>
                                       <p></p>
                                   </div>
@@ -563,7 +563,7 @@ putclose;
                                     </div>
                                     <h4 id="symbol-table" class="docu-general-header">Symbol tables (symbol specific settings)</h4>
                                     <p>By default, every cell in an input table is editable and rows can be inserted and removed. 
-                                    If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter. You can also use a different type of table to enter your data. For example, if you have large amounts of data (>100,000 records) in your table, we recommend using either the <i>bigdata</i> table or the <i>pivot</i> table.</p>
+                                    If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter. You can also use a different type of table to enter your data. For example, if you have large amounts of data (>100,000 records) in your table, we recommend using either the <i>Big Data Table</i> or the <i>pivot</i> table.</p>
                                     <p>Also global table settings for <a href = "#output-tables" class="scrollto">output symbols</a> can be overwritten for each individual symbol. The available options are almost identical. The only additional settings are the number of decimal places to display and an option to disable graphics for the symbol.</p>
 									<p>Note that in contrast to the global settings, a symbol-specific configuration needs to be applied by clicking on the corresponding save-button!</p>
 									<p><b>Available options for an input symbol table (type: Default):</b></p>
@@ -630,11 +630,11 @@ $offExternalInput
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui.png" alt="Heatmap"/>
                                     </div>
                                     </div>
-                                    <p><b>Available options for an input symbol table (type: Big Data Table):</b></p>
+                                    <p id="input-bigdata-table"><b>Available options for an input symbol table (type: Big Data Table):</b></p>
                                     <p>This table type is intended for situations in which large amounts of data are to be displayed within a table. 
                                     Instead of a long, 1-page table, a multi-page table is displayed. Only the data currently visible on the client side is loaded in this table.</p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui_big.png" alt="Big data table"/>
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui_big.png" alt="Big Data table"/>
                                     </div>
                                     <h6 id="table-option-readonly-bigdata" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Should table be read-only?</h6>
                                     <div class="expanded"><p>This option prevents the user from making manual changes in the input table of a scenario. 
