@@ -698,6 +698,10 @@
         "radar": "雷达图",
         "line": "折线图"
       }
+    },
+    "datatable":{
+      "addRowPos": ["在选择上面添加一行", "在选择下面增加一行"],
+      "addRowPosNoneSelected": ["在第一行之上增加一行", "在最后一行下面添加一行"]
     }
   },
   "errMsg":{
