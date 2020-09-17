@@ -1576,4 +1576,39 @@ safeFromJSON <- function(txt, ...) {
   }
   jsonlite::fromJSON(txt, ...)
 }
-
+# taken from fs package (https://cran.r-project.org/web/packages/fs)
+# licensed under GPL-3 (see file LICENSE for more information)
+path_sanitize <- function(filename, replacement = "") {
+  illegal <- "[/\\?<>\\:*|\":]"
+  control <- "[[:cntrl:]]"
+  reserved <- "^[.]+$"
+  windows_reserved <- "^(con|prn|aux|nul|com[0-9]|lpt[0-9])([.].*)?$"
+  windows_trailing <- "[. ]+$"
+  
+  filename <- gsub(illegal, replacement, filename)
+  filename <- gsub(control, replacement, filename)
+  filename <- gsub(reserved, replacement, filename)
+  filename <- gsub(windows_reserved, replacement, filename, ignore.case = TRUE)
+  filename <- gsub(windows_trailing, replacement, filename)
+  
+  # TODO: this substr should really be unicode aware, so it doesn't chop a
+  # multibyte code point in half.
+  filename <- substr(filename, 1, 255)
+  if (replacement == "") {
+    return(filename)
+  }
+  path_sanitize(filename, "")
+}
+# taken from Advanced R by Hadley Wickham (https://adv-r.hadley.nz/conditions.html)
+# licensed under the MIT license
+stop_custom <- function(.subclass, message, call = NULL, ...) {
+  err <- structure(
+    list(
+      message = message,
+      call = call,
+      ...
+    ),
+    class = c(.subclass, "error", "condition")
+  )
+  stop(err)
+}
