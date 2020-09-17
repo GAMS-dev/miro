@@ -232,6 +232,9 @@ Attachments <- R6Class("Attachments",
                              return(invisible(self))
                            }
                            
+                           filePath <- file.path(dirname(filePath),
+                                                 basename(filePath))
+                           
                            if(fullPath){
                              stopifnot(!allExecPerm, length(filePath) == length(fileNames))
                              fileNames <- path_sanitize(fileNames)
@@ -253,8 +256,7 @@ Attachments <- R6Class("Attachments",
                            if(allExecPerm){
                              if(any(private$localAttachments$execPerm)){
                                localPaths <- private$localAttachments$filePaths[private$localAttachments$execPerm]
-                               localPathNeedsRelocation <- dirname(localPaths) != file.path(dirname(fileDir),
-                                                                                            basename(fileDir))
+                               localPathNeedsRelocation <- dirname(localPaths) != fileDir
                                
                                if(any(localPathNeedsRelocation)){
                                  if(fullPath){
@@ -277,8 +279,14 @@ Attachments <- R6Class("Attachments",
                              localPaths <- filePaths[isLocalAttachment]
                              
                              if(length(localPaths)){
-                               localPathNeedsRelocation <- basename(private$localAttachments$filePaths) %in% fileNames &
-                                 dirname(private$localAttachments$filePaths) != fileDir
+                               localPathId <- match(basename(private$localAttachments$filePaths), fileNames)
+                               localPathId <- localPathId[!is.na(localPathId)]
+                               
+                               if(length(localPathId)){
+                                 localPathNeedsRelocation <- private$localAttachments$filePaths[localPathId] != filePaths
+                               }else{
+                                 localPathNeedsRelocation <- FALSE
+                               }
                                
                                if(any(localPathNeedsRelocation)){
                                  if(fullPath){
