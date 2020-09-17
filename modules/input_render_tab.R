@@ -177,7 +177,8 @@ observeEvent(input$btGraphIn, {
                pivotOptions = configGraphsIn[[i]]$pivottable, 
                customOptions = configGraphsIn[[i]]$options,
                roundPrecision = roundPrecision, modelDir = modelDir,
-               rendererEnv = rendererEnv[[paste0("in_", i)]], views = views)
+               rendererEnv = rendererEnv[[paste0("in_", i)]],
+               views = views, attachments = attachments)
   }, error = function(e) {
     flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", 
                modelInAlias[i], e)
@@ -432,7 +433,8 @@ lapply(modelInTabularData, function(sheet){
                                                   type = modelIn[[i]]$rendererName, 
                                                   data = dataModelIn[[i]](),
                                                   customOptions = modelIn[[i]]$options,
-                                                  rendererEnv = rendererEnv[[paste0("input_", i)]])
+                                                  rendererEnv = rendererEnv[[paste0("input_", i)]],
+                                                  attachments = attachments)
       }, error = function(e){
         flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
                    modelInAlias[[i]], e)

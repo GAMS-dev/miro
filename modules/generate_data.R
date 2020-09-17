@@ -10,12 +10,13 @@ generateDataUI <- function(id, type, height= NULL, customOptions = NULL){
                    Please make sure you first define such a function.", typeCustom), call. = FALSE)
   })
   data <- customInput(ns("custom"), height = height, options = customOptions,
-                       path = customRendererDir)
+                      path = customRendererDir)
   return(tags$div(id = ns("data"), data))
 }
 
 generateData <- function(input, output, session, data, type, 
-                         configData = NULL, customOptions = NULL, rendererEnv = NULL){
+                         configData = NULL, customOptions = NULL, rendererEnv = NULL,
+                         attachments = NULL){
   typeCustom <- type
   
   tryCatch({
@@ -27,7 +28,7 @@ generateData <- function(input, output, session, data, type,
   })
   tryCatch({
     return(callModule(customGenerator, "custom", as_tibble(data), options = customOptions, 
-               path = customRendererDir, rendererEnv = rendererEnv))
+                      path = customRendererDir, rendererEnv = rendererEnv, attachments = attachments))
   }, error = function(e){
     stop(sprintf("An error occured in the custom generator function: '%s'. Error message: %s.", typeCustom, e), call. = FALSE)
   })
