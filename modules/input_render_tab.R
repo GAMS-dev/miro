@@ -174,7 +174,10 @@ observeEvent(input$btGraphIn, {
       return()
     }
   }else{
-    data <- isolate(modelInputDataVisible[[i]]())
+    data <- tryCatch(isolate(modelInputDataVisible[[i]]()), error = function(e){
+      flog.warn("Problems getting data from custom renderer. Error message: %s", conditionMessage(e))
+      return(modelInTemplate[[i]])
+    })
   }
   
   errMsg <- NULL
@@ -213,7 +216,9 @@ lapply(modelInTabularData, function(sheet){
   }
   if(length(colsWithDep[[i]])){
     dataModelIn[[i]] <- reactive({
-      hotInit[[i]] <<- TRUE
+      if(identical(modelIn[[i]]$type, "hot")){
+        hotInit[[i]] <<- TRUE
+      }
       # make sure data will be updated when old data is overwritten
       rv[["in_" %+% i]]
       if(isEmptyInput[i]){
@@ -285,8 +290,8 @@ lapply(modelInTabularData, function(sheet){
   }else{
     dataModelIn[[i]] <- reactive({
       rv[["in_" %+% i]]
-      hotInit[[i]] <<- TRUE
       if(identical(modelIn[[i]]$type, "hot")){
+        hotInit[[i]] <<- TRUE
         if(length(modelInputData[[i]]) && 
            nrow(modelInputData[[i]]) > 0L){
           if(!is.null(configGraphsIn[[i]])){
@@ -617,12 +622,31 @@ lapply(modelInTabularData, function(sheet){
                                                   type = modelIn[[i]]$rendererName, 
                                                   data = dataModelIn[[i]](),
                                                   customOptions = modelIn[[i]]$options,
-                                                  rendererEnv = rendererEnv[[paste0("input_", i)]])
+                                                  rendererEnv = rendererEnv[[paste0("input_", i)]],
+                                                  views = views)
       }, error = function(e){
         flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
                    modelInAlias[[i]], e)
         errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
       })
+    })
+    observe({
+      if(length(rv[["in_" %+% i]]) && length(modelInputDataVisible[[i]])){
+        if(is.null(modelInputDataVisible[[i]]())){
+          return()
+        }
+        if(hotInit[[i]]){
+          isolate({
+            if(is.null(rv[[paste0("wasModified_", i)]])){
+              rv[[paste0("wasModified_", i)]] <- 1
+            }else{
+              rv[[paste0("wasModified_", i)]] <- rv[[paste0("wasModified_", i)]] + 1L
+            }
+          })
+        }else{
+          hotInit[[i]] <<- TRUE
+        }
+      }
     })
   }
 })

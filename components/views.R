@@ -301,8 +301,17 @@ Views <- R6Class("Views",
                    updateCallbacks = list(),
                    rv = NULL,
                    getSymbolName = function(session){
-                     id <- strsplit(session$ns(""), "-", fixed = TRUE)[[1]][1]
-                     id <- strsplit(id, "_", fixed = TRUE)[[1]]
+                     id <- strsplit(session$ns(""), "-", fixed = TRUE)[[1]]
+                     if(identical(id[1], "data")){
+                       # editable input table
+                       id <- strsplit(id[2], "_", fixed = TRUE)[[1]]
+                       symId <- suppressWarnings(as.integer(id[2]))
+                       if(is.na(symId) ||symId > length(private$inputSymbols)){
+                         stop(sprintf("Invalid symbol id: %s", symId), call. = FALSE)
+                       }
+                       return(private$inputSymbols[[symId]])
+                     }
+                     id <- strsplit(id[1], "_", fixed = TRUE)[[1]]
                      if(identical(id[1], "in")){
                        # input symbol
                        symId <- suppressWarnings(as.integer(id[2]))

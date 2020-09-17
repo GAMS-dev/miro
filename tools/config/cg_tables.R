@@ -2,6 +2,7 @@ tableSymbols <- setNames(list(c(inputSymMultiDimChoices),
                               c(outputSymMultiDimChoices)), 
                          c(lang$adminMode$tables$ui$inputSymbols, 
                            lang$adminMode$tables$ui$outputSymbols))
+inputPivotRendererEnv <- new.env(parent = emptyenv())
 if(length(tableSymbols)){
   updateSelectInput(session, "table_symbol", choices = tableSymbols)
   noTableSymbols <- FALSE
@@ -31,7 +32,7 @@ observeEvent(input$table_type, {
   
   rv$tableConfig$tableType <<- input$table_type
   
-  removeUI(selector = "#table_wrapper .shiny-input-container", multiple = TRUE)
+  removeUI(selector = "#table_wrapper div", multiple = TRUE)
   
   if(identical(input$table_type, "hot")){
     insertUI(selector = "#table_wrapper", getHotOptions(), where = "beforeEnd")
@@ -135,11 +136,13 @@ getDtOptions <- reactive({
 observeEvent({input$table_symbol
   input$table_type
   rv$reset_table_input}, {
-    req(identical(input$table_type, "symbol"), length(input$table_symbol) > 0L, nchar(input$table_symbol) > 0L)
+    req(identical(input$table_type, "symbol"),
+        length(input$table_symbol) > 0L,
+        nchar(input$table_symbol) > 0L)
     currentTableSymbolName <<- input$table_symbol
     rv$tableWidgetConfig <- list() 
     currentConfig <- NULL
-    removeUI(selector = "#table_wrapper .shiny-input-container", multiple = TRUE)
+    removeUI(selector = "#table_wrapper div", multiple = TRUE)
     
     if(currentTableSymbolName %in% inputSymMultiDimChoices){
       if(currentTableSymbolName %in% names(configJSON$inputWidgets)){
@@ -169,33 +172,32 @@ observeEvent({input$table_symbol
       #     tableAlias <- names(inputSymMultiDim)[[tablesymbolID]]
       #   }
       # }
-      rv$tableWidgetConfig$widgetType       <<- "table"
-      if(isTRUE(currentConfig$bigData)){
-        rv$tableWidgetConfig$bigData          <<- checkLength(configuredTable, currentConfig$bigData, FALSE)
-        rv$tableWidgetConfig$readonly         <<- checkLength(configuredTable, currentConfig[["readonly"]], FALSE)
-        rv$tableWidgetConfig$pivotCols        <<- checkLength(configuredTable, currentConfig$pivotCols, "_")
+      
+      if(identical(currentConfig$tableType, "pivot")){
+        rv$tableWidgetConfig <- list(widgetType = "table",
+                                     tableType = "pivot",
+                                     options = checkLength(configuredTable, currentConfig[["options"]], list()))
+        rv$tableWidgetConfig$options$input <- TRUE
+      }else if(identical(currentConfig$tableType, "bigdata") || isTRUE(currentConfig$bigData)){
+        rv$tableWidgetConfig <- list(widgetType = "table",
+                                     tableType = "bigdata",
+                                     readonly =  checkLength(configuredTable, currentConfig[["readonly"]], FALSE),
+                                     pivotCols = checkLength(configuredTable, currentConfig$pivotCols, "_"))
       }else{
-        # rv$tableWidgetConfig$alias            <<- tableAlias,
-        rv$tableWidgetConfig$bigData          <<- checkLength(configuredTable, currentConfig$bigData, FALSE)
-        rv$tableWidgetConfig$readonly         <<- checkLength(configuredTable, currentConfig[["readonly"]], FALSE)
-        rv$tableWidgetConfig$readonlyCols     <<- checkLength(configuredTable, currentConfig[["readonlyCols"]], NULL)
-        rv$tableWidgetConfig$hideIndexCol     <<- checkLength(configuredTable, currentConfig$hideIndexCol, FALSE)
-        rv$tableWidgetConfig$heatmap          <<- checkLength(configuredTable, currentConfig$heatmap, FALSE)
-        rv$tableWidgetConfig$pivotCols        <<- checkLength(configuredTable, currentConfig$pivotCols, "_")
+        rv$tableWidgetConfig <- list(widgetType = "table",
+                                     tableType = "default",
+                                     readonly = checkLength(configuredTable, currentConfig[["readonly"]], FALSE),
+                                     readonlyCols = checkLength(configuredTable, currentConfig[["readonlyCols"]], NULL),
+                                     hideIndexCol = checkLength(configuredTable, currentConfig$hideIndexCol, FALSE),
+                                     heatmap = checkLength(configuredTable, currentConfig$heatmap, FALSE),
+                                     pivotCols = checkLength(configuredTable, currentConfig$pivotCols, "_"))
       }
       
       insertUI(selector = "#table_wrapper", getSymbolHotOptions(), where = "beforeEnd")
       hideEl(session, "#outputTable_preview")
-      if(isTRUE(rv$tableWidgetConfig$bigData)){
-        #hideEl(session, "#hot_preview")
-      }else{
-        showEl(session, "#hot_preview")
-      }
-      if(!identical(rv$tableWidgetConfig$pivotCols, "_") && 
-         (isTRUE(rv$tableWidgetConfig$readonly) || isTRUE(rv$tableWidgetConfig$heatmap))){
-        showEl(session, "#pivotColsRestriction")
-      }else{
-        hideEl(session, "#pivotColsRestriction")
+      if(identical(rv$tableWidgetConfig$tableType, input$inputTable_type)){
+        # need to trigger observer as it is lazy..
+        rv$refreshInputTableType <- rv$refreshInputTableType + 1L
       }
     }else if(currentTableSymbolName %in% outputSymMultiDimChoices){
       if(currentTableSymbolName %in% names(configJSON$outputTables)){
@@ -212,7 +214,8 @@ observeEvent({input$table_symbol
       rv$tableWidgetConfig$options$buttons    <<- checkLength(configuredTable, currentConfig$options$buttons,    NULL)
       outputTableExtensions <<- Set$new(if(length(rv$tableWidgetConfig$options$buttons)) "Buttons")
       insertUI(selector = "#table_wrapper", getOutputTableOptions(), where = "beforeEnd")
-      hideEl(session, "#hot_preview")
+      #hideEl(session, "#hot_preview")
+      hideEl(session, "#inputTable_pivot-data")
       hideEl(session, "#pivotColsRestriction")
       showEl(session, "#outputTable_preview")
     }
@@ -223,25 +226,41 @@ observeEvent({input$table_symbol
   }
 )
 
-getSymbolHotOptions <- reactive({
+getSymbolHotOptions <- function(){
   tagList(
     # tags$div(class="option-wrapper",
     #          textInput("table_alias", lang$adminMode$widgets$ui$alias, value = rv$tableWidgetConfig$alias)),
-    checkboxInput_MIRO("table_bigdata", lang$adminMode$widgets$table$bigData, value = isTRUE(rv$tableWidgetConfig$bigData)),
-    checkboxInput_MIRO("table_readonly", lang$adminMode$widgets$table$readonly, value = rv$tableWidgetConfig$readonly),
-    if(length(pivotCols)){
-      tags$div(class="option-wrapper",
-               selectInput("table_pivotCols", lang$adminMode$widgets$table$pivotCols, 
-                           choices = c(`_` = "_", pivotCols), 
-                           selected = if(length(rv$tableWidgetConfig$pivotCols)) rv$tableWidgetConfig$pivotCols else "_"))
-    },
-    conditionalPanel(condition = "input.table_bigdata===false && input.table_pivotCols === '_'",
+    tags$div(class="option-wrapper",
+             selectInput("inputTable_type", lang$adminMode$widgets$table$type,
+                         choices = setNames(c("default", "bigdata", "pivot"),
+                                            lang$adminMode$widgets$table$typeChoices),
+                         selected = if(length(rv$tableWidgetConfig$tableType)){
+                           rv$tableWidgetConfig$tableType
+                         }else if(isTRUE(rv$tableWidgetConfig$bigData)){
+                           "bigdata"
+                         }else{
+                           "default"
+                         })
+             ),
+    conditionalPanel(condition = "input.inputTable_type==='pivot'",
+                     tags$div(class="config-message", 
+                              style = "display:block;",
+                              lang$adminMode$graphs$miroPivotOptions$infoMsg)),
+    conditionalPanel(condition = "input.inputTable_type!=='pivot'",
+                     checkboxInput_MIRO("table_readonly", lang$adminMode$widgets$table$readonly, value = rv$tableWidgetConfig$readonly),
+                     conditionalPanel(condition = paste0("true===", if(length(pivotCols)) "true" else "false"),
+                                      tags$div(class="option-wrapper",
+                                               selectInput("table_pivotCols", lang$adminMode$widgets$table$pivotCols, 
+                                                           choices = c(`_` = "_", pivotCols), 
+                                                           selected = if(length(rv$tableWidgetConfig$pivotCols)) rv$tableWidgetConfig$pivotCols else "_"))
+                     )),
+    conditionalPanel(condition = "input.inputTable_type==='default' && (input.table_pivotCols==null || input.table_pivotCols==='_')",
                      tags$div(class="option-wrapper",
                               selectInput("table_readonlyCols", lang$adminMode$widgets$table$readonlyCols, 
                                           choices = inputSymHeaders[[input$table_symbol]], 
                                           selected = rv$tableWidgetConfig$readonlyCols, multiple = TRUE))
     ),
-    conditionalPanel(condition = "input.table_bigdata===false",
+    conditionalPanel(condition = "input.inputTable_type==='default'",
                      tags$div(class="option-wrapper",
                               checkboxInput_MIRO("table_hideIndexCol", 
                                                  lang$adminMode$widgets$table$hideIndexCol, 
@@ -250,7 +269,7 @@ getSymbolHotOptions <- reactive({
                                                  lang$adminMode$widgets$table$heatmap, 
                                                  value = rv$tableWidgetConfig$heatmap))
     ))
-})
+}
 
 getOutputTableOptions <- reactive({
   tagList(
@@ -310,7 +329,7 @@ observeEvent(input$outputTable_buttons, ignoreNULL = FALSE, {
   if(length(input$outputTable_buttons)){
     rv$tableWidgetConfig$options$buttons <<- input$outputTable_buttons
     outputTableExtensions$push("Buttons")
-    rv$tableWidgetConfig$options$dom <<- 'Bfrtip'
+    rv$tableWidgetConfig$options$dom <<- "Bfrtip"
   }else{
     outputTableExtensions$delete("Buttons")
     rv$tableWidgetConfig$options$dom <<- NULL
@@ -319,7 +338,7 @@ observeEvent(input$outputTable_buttons, ignoreNULL = FALSE, {
   rv$tableWidgetConfig$extensions <<- outputTableExtensions$get()
 })
 
-createTableData <- function(symbol, pivotCol){
+createTableData <- function(symbol, pivotCol = NULL, createColNames = FALSE){
   if(symbol %in% inputSymMultiDimChoices){
     headersRaw <- inputSymHeaders[[symbol]]
     headersTmp <- names(headersRaw)
@@ -336,6 +355,10 @@ createTableData <- function(symbol, pivotCol){
   if(length(pivotCol) && pivotCol != "_"){
     isPivotTable <- TRUE
     pivotIdx <- match(pivotCol, inputSymHeaders[[input$table_symbol]])[[1L]]
+    if(is.na(pivotIdx)){
+      return(list(data = data, headers = headersTmp, headersRaw = headersRaw,
+                  isPivotTable = isPivotTable))
+    }
     data <- pivot_wider(data, names_from = !!pivotIdx, 
                         values_from = !!length(data))
     attrTmp <- headersTmp[-c(pivotIdx, length(headersTmp))]
@@ -343,13 +366,15 @@ createTableData <- function(symbol, pivotCol){
                  names(data)[seq(length(attrTmp) + 1L, 
                                  length(data))])
     headersTmp  <- attrTmp
+  }else if(createColNames){
+    names(data) <- headersRaw
   }
   return(list(data = data, headers = headersTmp, headersRaw = headersRaw,
               isPivotTable = isPivotTable))
 }
 output$hot_preview <- renderRHandsontable({
   req(input$table_symbol %in% names(inputSymHeaders))
-  if(isTRUE(rv$tableWidgetConfig$bigData)){
+  if(!identical(rv$tableWidgetConfig$tableType, "default")){
     return()
   }
   data <- createTableData(input$table_symbol, input$table_pivotCols)
@@ -393,9 +418,9 @@ output$dt_preview <- renderDT({
                             dtOptions)
   }
   
-  if(!isTRUE(currentTableSymbolName %in% names(configJSON$outputTables)) && !isTRUE(rv$tableWidgetConfig$bigData)){
+  if(!isTRUE(currentTableSymbolName %in% names(configJSON$outputTables)) &&
+     !identical(rv$tableWidgetConfig$tableType, "bigdata")){
     hideEl(session, "#outputTable_preview")
-    showEl(session, "#hot_preview")
     return()
   }
   #hideEl(session, "#hot_preview")
@@ -409,7 +434,6 @@ output$outputTable_preview <- renderDT({
   
   headersTmp <- unname(data$headers)
   data <- data$data
-  hideEl(session, "#hot_preview")
   showEl(session, "#outputTable_preview")
   dtOptions <- rv$tableWidgetConfig
   dtOptions$editable <- FALSE
@@ -543,24 +567,53 @@ observe({
 #   else
 #     rv$tableWidgetConfig$alias <<- NULL
 # })
-observeEvent(input$table_bigdata, {
-  if(input$table_bigdata == TRUE){
+observeEvent({rv$refreshInputTableType
+  input$inputTable_type}, {
+  if(identical(input$inputTable_type, "bigdata")){
+    rv$tableWidgetConfig$tableType <- "bigdata"
+    hideEl(session, "#pivotColsRestriction")
+    hideEl(session, "#inputTable_pivot-data")
     rv$tableWidgetConfig <<- list(
       widgetType   = "table",
-      bigData      = input$table_bigdata,
+      tableType    = "bigdata",
       readonly     = input$table_readonly,
       pivotCols    = input$table_pivotCols
     )
+  }else if(identical(input$inputTable_type, "pivot")){
+    rv$tableWidgetConfig$tableType <- "pivot"
+    hideEl(session, "#pivotColsRestriction")
+    showEl(session, "#inputTable_pivot-data")
+    for(el in ls(envir = inputPivotRendererEnv)){
+      if("Observer" %in% class(inputPivotRendererEnv[[el]])){
+        inputPivotRendererEnv[[el]]$destroy()
+      }
+    }
+    callModule(renderData, "inputTable_pivot", type = "miropivot", 
+               data = createTableData(currentTableSymbolName, createColNames = TRUE)$data, rendererEnv = inputPivotRendererEnv,
+               customOptions = c(list("_metadata_" = list(headers = modelIn[[currentTableSymbolName]]$headers,
+                                                          symtype = modelIn[[currentTableSymbolName]]$symtype,
+                                                          symname = currentTableSymbolName), 
+                                      resetOnInit = TRUE), 
+                                 rv$tableWidgetConfig$options),
+               roundPrecision = 2, modelDir = modelDir)
   }else{
+    rv$tableWidgetConfig$tableType <- "default"
+    hideEl(session, "#inputTable_pivot-data")
     rv$tableWidgetConfig <<- list(
       widgetType   = "table",
-      bigData      = input$table_bigdata,
+      tableType    = "default",
       readonly     = input$table_readonly,
       pivotCols    = input$table_pivotCols,
       readonlyCols = input$table_readonlyCols,
       hideIndexCol = input$table_hideIndexCol,
       heatmap      = input$table_heatmap
     )
+    if(!identical(rv$tableWidgetConfig$pivotCols, "_") && 
+       (isTRUE(rv$tableWidgetConfig$readonly) || isTRUE(rv$tableWidgetConfig$heatmap))){
+      showEl(session, "#pivotColsRestriction")
+    }else{
+      hideEl(session, "#pivotColsRestriction")
+    }
   }
 })
 observeEvent(input$table_hideIndexCol, {
@@ -604,6 +657,10 @@ validateTableConfig <- function(configJSON){
     # }
     if(identical(grepl("\\s", currentTableSymbolName), TRUE)){
       return(lang$adminMode$widgets$validate$val39)
+    }
+    if(identical(configJSON$tableType, "pivot") && sum(vapply(modelIn[[currentTableSymbolName]]$headers, function(header){
+      return(identical(header$type, "numeric"))}, logical(1L))) > 1L){
+      return(sprintf(lang$adminMode$widgets$validate$val59, currentTableSymbolName))
     }
     if(any(!configJSON$readonlyCols %in% inputSymHeaders[[currentTableSymbolName]])){
       return(lang$adminMode$widgets$validate$val34)
@@ -658,12 +715,40 @@ observeEvent(virtualActionButton(input$saveTableConfirm, rv$saveTableConfirm), {
   req(length(currentTableSymbolName) > 0L, nchar(currentTableSymbolName) > 0L)
   
   if(currentTableSymbolName %in% inputSymMultiDimChoices){
-    configJSON$inputWidgets[[currentTableSymbolName]] <<- rv$tableWidgetConfig
-    if(!length(configJSON$inputWidgets[[currentTableSymbolName]]$readonlyCols)){
-      configJSON$inputWidgets[[currentTableSymbolName]]$readonlyCols <<- NULL
-    }
-    if(identical(configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols, "_")){
-      configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols <<- NULL
+    if(identical(input$inputTable_type, "pivot")){
+      newConfig <- list(widgetType = "table",
+                        tableType = "pivot",
+                        options = list(
+                          aggregationFunction = input[["inputTable_pivot-miroPivot-aggregationFunction"]],
+                          pivotRenderer = input[["inputTable_pivot-miroPivot-pivotRenderer"]]
+                        ))
+      for(indexEl in list(c("rows", "rowIndexList"))){
+        indexVal <- input[[paste0("inputTable_pivot-miroPivot-", indexEl[[2]])]]
+        if(length(indexVal)){
+          newConfig$options[[indexEl[[1]]]] <- indexVal
+        }
+      }
+      for(indexEl in list(c("aggregations", "aggregationIndexList"), 
+                          c("filter", "filterIndexList"),
+                          c("cols", "colIndexList"))){
+        indexVal <- input[[paste0("inputTable_pivot-miroPivot-", indexEl[[2]])]]
+        if(length(indexVal)){
+          filterElList <- lapply(indexVal, function(el){
+            return(input[[paste0("inputTable_pivot-miroPivot-filter_", el)]])
+          })
+          names(filterElList) <- indexVal
+          newConfig$options[[indexEl[[1]]]] <- filterElList
+        }
+      }
+      configJSON$inputWidgets[[currentTableSymbolName]] <<- newConfig
+    }else{
+      configJSON$inputWidgets[[currentTableSymbolName]] <<- rv$tableWidgetConfig
+      if(!length(configJSON$inputWidgets[[currentTableSymbolName]]$readonlyCols)){
+        configJSON$inputWidgets[[currentTableSymbolName]]$readonlyCols <<- NULL
+      }
+      if(identical(configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols, "_")){
+        configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols <<- NULL
+      }
     }
   }else if(currentTableSymbolName %in% outputSymMultiDimChoices){
     configJSON$outputTables[[currentTableSymbolName]] <<- rv$tableWidgetConfig

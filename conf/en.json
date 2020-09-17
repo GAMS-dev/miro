@@ -631,9 +631,13 @@
       "btDownloadCsv": "Download CSV",
       "btLoadView": "Load view",
       "btNewView": "Add view",
+      "btEnableEdit": "Enable editing",
+      "btAddRow": "Add row",
+      "btRemoveRows": "Remove rows",
       "aggregateLabel": "aggregate",
       "filterLabel": "filter",
       "allPlaceholder": "All",
+      "defaultViewName": "default",
       "colTruncationWarning": "Data was truncated to the first %s columns.",
       "rowTruncationWarning": "Data was truncated to the first %s rows.",
       "newViewTitle": "New view",
@@ -642,6 +646,19 @@
       "newViewBtSave": "Save",
       "pivotCompScenColName": "Scenario",
       "errUniqueViewName": "The view name you entered already exists. Please choose another name.",
+      "duplicateRecordTitle": "Duplicate record",
+      "duplicateRecordDesc": "The record you entered already exists.",
+      "errPivotDuplicate": "The data contains duplicate records and can therefore not be pivoted.",
+      "errPivot": "The data could not be pivoted. This could be because your data is too large.",
+      "errorTitle": "Error",
+      "duplicateRecordError": "The record: '%s' already exists. Please remove it and try again.",
+      "dialogAddRow":{
+        "title": "Add new row",
+        "btCancel": "Cancel",
+        "invalidKeysError": "The elements you entered are invalid. Please note that the elements must consist of at least one printable character.",
+        "invalidValuesError": "The data you entered is invalid. Make sure that the values you enter are numeric.",
+        "unknownError": "An unexpected error occurred when trying to add the new data."
+      },
       "aggregationFunctions":{
         "sum": "Sum",
         "count": "Count",
@@ -704,7 +721,7 @@
       "success": "Import successful"
     }
   },
-  "errMsg":{  
+  "errMsg":{
     "unknownError": "An unexpected error occurred. If this problem persists, please contact a system administrator.",
     "permErr": "The operation failed because you do not have sufficient permissions.",
     "fileRead":{  
@@ -1222,7 +1239,8 @@
         "val55": "Only one item can be selectable in the dropdown menu if only the element text is communicated with GAMS.",
         "val56": "An attachment with this file name already exists!",
         "val57": "The file name contains invalid characters. Attachments in subdirectories are not supported!",
-        "val58": "The decimal separator and the thousand grouping separator must not be identical!"
+        "val58": "The decimal separator and the thousand grouping separator must not be identical!",
+        "val59": "The GAMS symbol: %s is declared as table. This causes the last column to be pivoted in MIRO. MIRO pivot cannot be used with already pivoted symbols. Please declare the symbol as a parameter instead."
       },
       "widgetOptions":{
         "slider": "Slider",
@@ -1236,7 +1254,8 @@
         "numericinput": "Numeric input"
       },
       "table":{
-        "bigData": "Are large amounts of data stored in the table (i.e. more than 20,000 records)?",
+        "type": "Select the type of table you want to use",
+        "typeChoices": ["Default", "Big Data table", "Pivot table"],
         "hideIndexCol": "Hide indexing column?",
         "readonly": "Should table be readonly?",
         "readonlyCols": "Select columns to be readonly",
