@@ -279,7 +279,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     }
     if(!loadIntoSandbox){
       tryCatch({
-        activeScen <<- Scenario$new(db = db, sid = sidsToLoad[[1]])
+        activeScen <<- Scenario$new(db = db, sid = sidsToLoad[[1]],
+                                    views = views, attachments = attachments)
       },
       error = function(e){
         flog.error("Error generating new Scenario object. Error message: '%s'.", e)

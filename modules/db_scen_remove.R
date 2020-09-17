@@ -101,13 +101,11 @@ closeScenario <- function(){
   
   # reset model output data
   renderOutputData(rendererEnv, views)
-  activeScenario    <<- NULL
   if(length(activeScen)){
-    activeScen$cleanLocalFiles()
     activeScen$finalize()
   }
   activeScen        <<- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
-                                     isNewScen = TRUE)
+                                     isNewScen = TRUE, views = views, attachments = attachments)
   rv$activeSname    <<- NULL
   scenTags          <<- NULL
   attachmentList    <<- tibble(name = vector("character", attachMaxNo), 

@@ -48,7 +48,7 @@ observeEvent(input$btSaveOutput, {
 })
 observeEvent(input$btSaveReadonly, 
              rv$btSaveAs <<- isolate(rv$btSaveAs + 1L)
-             )
+)
 # enter scenario name
 observeEvent(virtualActionButton(rv$btSaveAs), {
   saveAsFlag <<- TRUE
@@ -113,7 +113,7 @@ observeEvent(input$btCheckName, {
 })
 observeEvent(input$btSaveConfirm, 
              rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1)
-             )
+)
 observeEvent(virtualActionButton(rv$btSaveConfirm), {
   # check whether scenario is currently locked
   errMsg <- NULL
@@ -152,7 +152,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
         }else{
           activeScen$updateMetadata(newName = input$scenName, newTags = scenTags)
           if(isTRUE(input$newScenDiscardAttach)){
-            activeScen$removeAllAttachments()
+            attachments$removeAll()
           }
           if(isTRUE(input$newScenDiscardPerm)){
             activeScen$resetAccessPerm()
@@ -173,10 +173,10 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
     if(is.null(activeScen)){
       activeScen <<- Scenario$new(db = db, sname = isolate(rv$activeSname), 
                                   tags = scenTags, overwrite = identical(saveAsFlag, TRUE),
-                                  isNewScen = TRUE, duplicatedMetadata = duplicatedMetadata)
+                                  isNewScen = TRUE, duplicatedMetadata = duplicatedMetadata,
+                                  views = views, attachments = attachments)
       scenTags   <<- NULL
     }
-    activeScen$updateViewConf(views$getConf())
     activeScen$save(scenData[[scenStr]], msgProgress = lang$progressBar$saveScenDb)
     if(saveOutput){
       if(config$saveTraceFile && length(traceData)){
@@ -198,7 +198,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   }
   # check whether output data was saved and in case it was set identifier accordingly
   if(!LAUNCHHCUBEMODE && any(vapply(scenData[[scenStr]][seq_along(modelOut)], 
-                hasContent, logical(1L), USE.NAMES = FALSE))){
+                                    hasContent, logical(1L), USE.NAMES = FALSE))){
     noOutputData <<- FALSE
   }else{
     noOutputData <<- TRUE
@@ -217,7 +217,7 @@ observeEvent(input$btEditMeta, {
   attachmentMetadata <- NULL
   viewsMetadata <- NULL
   if(config$activateModules$attachments){
-    attachmentList <<- activeScen$fetchAttachmentList()
+    attachmentList <<- attachments$getMetadata()
     attachmentMetadata <- attachmentList
     viewsMetadata <- views$getSummary(modelInRaw, modelOut)
   }
@@ -340,9 +340,8 @@ if(config$activateModules$attachments){
   lapply(seq_len(attachMaxNo), function(i){
     observeEvent(input[["btRemoveAttachment_" %+% i]], {
       req(nchar(attachmentList[["name"]][[i]]) > 0L, activeScen)
-      activeScen$removeAttachments(attachmentList[["name"]][[i]])
+      attachments$remove(session = NULL, attachmentList[["name"]][[i]])
       attachmentList[i, ] <<- list(NA_character_, FALSE)
-      markUnsaved()
       showHideEl(session, "#attachSuccess")
     })
     observe({
@@ -353,15 +352,14 @@ if(config$activateModules$attachments){
         return(NULL)
       }
       tryCatch({
-        activeScen$setAttachmentExecPerm(attachmentList[["name"]][[i]], 
-                                         value, workDir = workDir)
+        attachments$setExecPerm(session = NULL, attachmentList[["name"]][[i]], 
+                                value)
         attachmentList[i, "execPerm"] <<- value
-        markUnsaved()
         showHideEl(session, "#attachSuccess")
-        }, error = function(e){
-          flog.error(e)
-          showHideEl(session, "#attachUnknownError", 6000) 
-        })
+      }, error = function(e){
+        flog.error(e)
+        showHideEl(session, "#attachUnknownError", 6000) 
+      })
       
     })
   })
@@ -377,8 +375,8 @@ if(config$activateModules$attachments){
       if(!is.integer(i) || length(attachmentList[["name"]]) < i){
         return(writeLines("error", file))
       }
-      activeScen$downloadAttachmentData(file, fileNames = attachmentList[["name"]][[i]], 
-                                        fullPath = TRUE)
+      attachments$download(file, fileNames = attachmentList[["name"]][[i]], 
+                           fullPath = TRUE)
     }
   )
   observeEvent(input$file_addAttachments$datapath, {
@@ -392,10 +390,8 @@ if(config$activateModules$attachments){
     errMsg <- NULL
     
     tryCatch({
-      activeScen$addAttachments(isolate(input$file_addAttachments$datapath), workDir = workDir,
-                                fileNames = isolate(input$file_addAttachments$name),
-                                forbiddenFnames = c(paste0(c(names(modelInTabularData), 
-                                                             names(modelOut)), ".csv"), paste0(modelName, c(".log", ".lst"))))
+      attachments$add(session = NULL, isolate(input$file_addAttachments$datapath),
+                      fileNames = isolate(input$file_addAttachments$name))
       idxes <- vector("integer", length(isolate(input$file_addAttachments$name)))
       for(i in seq_along(isolate(input$file_addAttachments$name))){
         idx <- which(is.na(attachmentList[["name"]]))
@@ -414,35 +410,27 @@ if(config$activateModules$attachments){
       }
       updateAttachList(session, fileName = isolate(input$file_addAttachments$name), id = idxes, token = session$token, 
                        labelCb = lang$nav$dialogEditMeta$attachmentsExecPerm, allowExec = attachAllowExec)
-      markUnsaved()
       showHideEl(session, "#attachSuccess")
-    }, error = function(e){
-      errMsg <<- character(1L)
-      switch(conditionMessage(e),
-             maxSizeException = {
-               flog.info("Attachment wasn't added because the size is too large.")
-               showHideEl(session, "#attachMaxSizeError", 6000)
-             },
-             maxNoException = {
-               flog.info("Attachment wasn't added because the maximum number of attachment is reached.")
-               showHideEl(session, "#attachMaxNoError", 6000)
-             },
-             duplicateException = {
-               flog.info("Attachment wasn't added because the filename already exists.")
-               showHideEl(session, "#attachDuplicateError", 6000)
-             },
-             forbiddenFnameException = {
-               flog.info("Attachment wasn't added because the filename is forbidden.")
-               showHideEl(session, "#attachForbiddenFnameError", 6000)
-             },
-             roException = {
-               flog.info("Attachment wasn't added because scenario is readonly.")
-               showHideEl(session, "#attachRO", 6000)
-             },
-             {
-               flog.error(e)
-               showHideEl(session, "#attachUnknownError", 6000) 
-             })
+    },
+    error_forbidden_filename = function(e){
+      flog.info("Attachment wasn't added because the filename is forbidden.")
+      showHideEl(session, "#attachForbiddenFnameError", 6000)
+    },
+    error_max_size = function(e){
+      flog.info("Attachment wasn't added because the size is too large.")
+      showHideEl(session, "#attachMaxSizeError", 6000)
+    },
+    error_duplicate_files = function(e){
+      flog.info("Attachment wasn't added because the filename already exists.")
+      showHideEl(session, "#attachDuplicateError", 6000)
+    },
+    error_max_no = function(e){
+      flog.info("Attachment wasn't added because the maximum number of attachment is reached.")
+      showHideEl(session, "#attachMaxNoError", 6000)
+    },
+    error = function(e){
+      flog.error(conditionMessage(e))
+      showHideEl(session, "#attachUnknownError", 6000) 
     })
     hideEl(session, "#addAttachLoading")
   })

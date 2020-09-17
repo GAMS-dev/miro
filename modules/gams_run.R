@@ -64,8 +64,8 @@ storeGAMSOutputFiles <- function(workDir){
         errMsg <- paste(errMsg, sprintf(lang$errMsg$saveAttachments$fileSizeExceeded, 
                                         paste(basename(filesToStore[filesTooLarge]), collapse = "', '")), sep = "\n")
       }
-      activeScen$addAttachments(filesToStore[!filesTooLarge], overwrite = TRUE, 
-                                execPerm = fileAccessPerm[!filesTooLarge])
+      attachments$add(session = NULL, filesToStore[!filesTooLarge], overwrite = TRUE, 
+                      execPerm = fileAccessPerm[!filesTooLarge])
     }, error = function(e){
       switch(conditionMessage(e),
              fileAccessException = {
@@ -161,7 +161,7 @@ prepareModelRun <- function(async = FALSE){
   tryCatch({
     if(config$activateModules$attachments && attachAllowExec && !is.null(activeScen)){
       prog$inc(amount = 0, detail = lang$progressBar$prepRun$downloadAttach)
-      inputData$addFilePaths(activeScen$downloadAttachmentData(workDir, allExecPerm = TRUE))
+      inputData$addFilePaths(attachments$download(workDir, allExecPerm = TRUE))
     }
     prog$close()
   }, error = function(e) {
@@ -404,7 +404,7 @@ if(LAUNCHHCUBEMODE){
                                         modelName = modelName)
     attachmentFilePaths <- NULL
     if(config$activateModules$attachments && attachAllowExec && !is.null(activeScen)){
-      attachmentFilePaths <- activeScen$downloadAttachmentData(workDir, allExecPerm = TRUE)
+      attachmentFilePaths <- attachments$download(workDir, allExecPerm = TRUE)
       attachmentFilePaths <- attachmentFilePaths[match(basename(attachmentFilePaths), 
                                                        sort(basename(attachmentFilePaths)))]
       if(length(attachmentFilePaths)){
