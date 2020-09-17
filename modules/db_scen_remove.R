@@ -102,6 +102,8 @@ closeScenario <- function(){
   # reset model output data
   renderOutputData(rendererEnv, views)
   if(length(activeScen)){
+    views$clearConf()
+    attachments$clear()
     activeScen$finalize()
   }
   activeScen        <<- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
