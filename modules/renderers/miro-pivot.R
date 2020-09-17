@@ -493,7 +493,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       
       output$downloadCsv <- downloadHandler(filename = paste0(options[["_metadata_"]]$symname, ".csv"),
                                             content = function(file) {
-                                              dataUpdated()
+                                              if(isInput){
+                                                dataUpdated()
+                                              }
                                               write_csv(dataToRender(), file, na = "")
                                             })
       rendererEnv[[ns("filterDropdowns")]] <- observe({
