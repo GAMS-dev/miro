@@ -419,9 +419,6 @@ Scenario <- R6Class("Scenario",
                             self$delete()
                           }
                           private$sid <- integer(0L)
-                          if(!is.null(private$views)){
-                            private$views$clearConf()
-                          }
                         }
                         return(invisible(self))
                       }
