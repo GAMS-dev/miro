@@ -439,6 +439,9 @@ if(config$activateModules$attachments){
   ################################################
   updateViewsTable <- function(){
     newViewData <- views$getSummary(modelInRaw, modelOut)
+    if(!length(newViewData$symAlias)){
+      return()
+    }
     session$sendCustomMessage("gms-updateTable", 
                               list(id = "currentViewsTable", hierarchical = TRUE,
                                    valCol = 2L,
