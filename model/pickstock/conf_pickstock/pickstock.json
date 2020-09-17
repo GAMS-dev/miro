@@ -15,8 +15,7 @@
   "inputWidgets": {
     "price": {
       "widgetType": "table",
-      "tableType": "default",
-      "pivotCols": "date"
+      "readonlyCols": "date"
     },
     "maxstock": {
       "label": "select the maximum number of stocks",
