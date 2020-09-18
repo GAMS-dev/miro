@@ -2,7 +2,7 @@ app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("config_mode_graph_test")
 
 app$snapshot(items = list(input = "deleteGraph"), screenshot = TRUE)
-
+Sys.sleep(1)
 jsonPath <- file.path("..", "model", "pickstock_configuration", "conf_pickstock_configuration")
 configRaw <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration_expected.json"), 
                                                  simplifyDataFrame = FALSE, 

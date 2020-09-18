@@ -2,7 +2,7 @@ app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("config_mode_table_test")
 
 app$snapshot(items = list(input = "deleteGraph"), screenshot = TRUE)
-
+Sys.sleep(1)
 
 
 jsonPath <- file.path("..", "model", "pickstock_configuration", "conf_pickstock_configuration")
