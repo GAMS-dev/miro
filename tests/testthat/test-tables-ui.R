@@ -18,4 +18,8 @@ test_that("Output table config works.",
           expect_pass(testApp(file.path(testDir, ".."), "output_table_settings",
                               compareImages = FALSE)))
 
+test_that("Input table markdown works",
+          expect_pass(testApp(file.path(testDir, ".."), "input_table_markdown_test",
+                              compareImages = FALSE)))
+
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))
