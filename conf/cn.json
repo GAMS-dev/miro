@@ -1231,6 +1231,7 @@
         "numericinput": "数值输入"						  
       },
       "table":{
+        "label": "标签（支持Markdown）",
         "bigData": "表中是否存储了大量数据（超过20,000条记录）？",
         "hideIndexCol": "隐藏索引列？",
         "readonly": "设定表格为只读吗？",

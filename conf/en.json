@@ -1232,6 +1232,7 @@
         "numericinput": "Numeric input"
       },
       "table":{
+        "label": "Label (Markdown is supported)",
         "bigData": "Are large amounts of data stored in the table (i.e. more than 20,000 records)?",
         "hideIndexCol": "Hide indexing column?",
         "readonly": "Should table be readonly?",

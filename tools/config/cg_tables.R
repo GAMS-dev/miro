@@ -51,6 +51,20 @@ observeEvent(input$table_type, {
   }
 })
 
+output$tableLabelWrapper <- renderUI({
+  if(length(rv$tableWidgetConfig$label) && !identical(trimws(rv$tableWidgetConfig$label), "")){
+    tags$div(tags$div(id = "inputTableLabelToggle",
+                      icon("minus"), style = "cursor:pointer;font-weight:bold;", 
+                      onclick = "Miro.slideToggleEl({id: '#inputTableLabel',
+                      toggleIconDiv:'#inputTableLabelToggle'})",
+                      "aria-expanded" = "true", "aria-controls" = "inputTableLabelToggle"),
+             tags$div(id = "inputTableLabel",
+                      class = "readme-wrapper", style = "max-height:150px",
+                      markdown(rv$tableWidgetConfig$label)
+             ))
+  }
+})
+
 getHotOptions <- reactive({
   input$table_type
   tagList(
@@ -170,6 +184,7 @@ observeEvent({input$table_symbol
       #   }
       # }
       rv$tableWidgetConfig$widgetType       <<- "table"
+      rv$tableWidgetConfig$label            <<- currentConfig$label
       if(isTRUE(currentConfig$bigData)){
         rv$tableWidgetConfig$bigData          <<- checkLength(configuredTable, currentConfig$bigData, FALSE)
         rv$tableWidgetConfig$readonly         <<- checkLength(configuredTable, currentConfig[["readonly"]], FALSE)
@@ -227,6 +242,9 @@ getSymbolHotOptions <- reactive({
   tagList(
     # tags$div(class="option-wrapper",
     #          textInput("table_alias", lang$adminMode$widgets$ui$alias, value = rv$tableWidgetConfig$alias)),
+    tags$div(class="option-wrapper",
+             textAreaInput("table_label", lang$adminMode$widgets$table$label,
+                           value = rv$tableWidgetConfig$label)),
     checkboxInput_MIRO("table_bigdata", lang$adminMode$widgets$table$bigData, value = isTRUE(rv$tableWidgetConfig$bigData)),
     checkboxInput_MIRO("table_readonly", lang$adminMode$widgets$table$readonly, value = rv$tableWidgetConfig$readonly),
     if(length(pivotCols)){
@@ -568,6 +586,9 @@ observeEvent(input$table_hideIndexCol, {
 })
 observeEvent(input$table_readonly, {
   rv$tableWidgetConfig$readonly <<- input$table_readonly
+})
+observeEvent(input$table_label, {
+  rv$tableWidgetConfig$label <<- input$table_label
 })
 observeEvent(input$table_readonlyCols, ignoreNULL = FALSE, {
   if(!length(input$table_readonlyCols)){
