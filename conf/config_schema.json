@@ -802,6 +802,10 @@
                      "type":"string",
                      "minLength":1
                    },
+                   "label":{
+                     "type":"string",
+                     "minLength":1
+                   },
                    "bigData":{  
                      "description":"Does the table represent a large dataset (i.e. more than 20.000 records)?",
                      "type":"boolean",
