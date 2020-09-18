@@ -50,6 +50,7 @@ configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_
 
 #input symbol price
 expect_identical(configRaw$inputWidgets$price$widgetType, configNew$inputWidgets$price$widgetType)
+expect_identical(configRaw$inputWidgets$price$label, configNew$inputWidgets$price$label)
 expect_identical(configRaw$inputWidgets$price$bigData, configNew$inputWidgets$price$bigData)
 expect_identical(configRaw$inputWidgets$price$readonly, configNew$inputWidgets$price$readonly)
 expect_identical(configRaw$inputWidgets$price$readonlyCols, configNew$inputWidgets$price$readonlyCols)
