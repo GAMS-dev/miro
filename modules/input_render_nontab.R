@@ -467,7 +467,7 @@ lapply(seq_along(modelIn), function(id){
                                   modelInAlias[id], modelInAlias[k], conditionMessage(e))
                        errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                      })
-                   }else if(length(modelInputData[[k]][[1]]) == 1L && !is.na(modelInputData[[k]][[1]][1]) && isEmptyInput[k]){
+                   }else if(length(modelInputData[[k]][[1]]) && !is.na(modelInputData[[k]][[1]][1]) && isEmptyInput[k]){
                      # no input is shown in UI, so get hidden data
                      try(dataTmp <- unique(modelInputData[[k]][[el[[1]][1]]]))
                    }else{
