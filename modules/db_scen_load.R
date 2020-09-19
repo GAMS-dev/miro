@@ -402,6 +402,11 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   
   if(is.null(input$btSplitView) && identical(config$defCompMode, "pivot") ||
      identical(input$btSplitView, "pivotView")){
+    if(!compareModeTabsetGenerated[3]){
+      compareModeTabsetGenerated[3] <<- TRUE
+      insertUI("#pivotCompScenWrapper", where = "afterBegin",
+               generateScenarioTabset(0L, pivotCompare = TRUE), immediate = TRUE)
+    }
     return(tryCatch({
       sidsInPivotCompTmp <- unlist(sidsToLoad)
       if(allSidsInComp){

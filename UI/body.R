@@ -407,8 +407,7 @@ if(buildUI){
                                                            class = "bt-icon",
                                                            icon = icon("times"), 
                                                            label = NULL))), 
-                           tags$div(id = "scenSplit1_content", style = "display:none;", 
-                                    generateScenarioTabsetSplit(2)), 
+                           tags$div(id = "scenSplit1_content", style = "display:none;"), 
                            genSplitCompButtons(1)
                        ),
                        box(width = 6, solidHeader = TRUE, status="primary", 
@@ -416,8 +415,7 @@ if(buildUI){
                                            tags$div(style = "float: right;", 
                                                     actionButton(inputId = "btScenSplit2_close", 
                                                                  class = "bt-icon", icon = icon("times"), label = NULL))),
-                           tags$div(id = "scenSplit2_content", style = "display:none;", 
-                                    generateScenarioTabsetSplit(3)), 
+                           tags$div(id = "scenSplit2_content", style = "display:none;"), 
                            genSplitCompButtons(2)
                        )
               )

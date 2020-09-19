@@ -5,6 +5,11 @@ if(isInSplitView){
   # hide button and show content
   local({
     id <- if(loadInLeftBoxSplit) 1L else 2L
+    if(!compareModeTabsetGenerated[id]){
+      compareModeTabsetGenerated[id] <<- TRUE
+      insertUI(paste0("#scenSplit", id, "_content"), where = "afterBegin",
+               generateScenarioTabsetSplit(id + 1L), immediate = TRUE)
+    }
     showEl(session, paste0("#scenSplit", id, "_content"))
     hideEl(session, paste0("#scenSplit", id, "_open"))
   })

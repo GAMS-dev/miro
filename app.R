@@ -1167,6 +1167,7 @@ if(!is.null(errMsg)){
       isInSolveMode      <- TRUE
       modelStatus        <- NULL
       
+      compareModeTabsetGenerated <- vector("logical", 3L)
       # currently active scenario (R6 object)
       activeScen         <- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
                                          isNewScen = TRUE)
