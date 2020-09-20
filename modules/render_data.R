@@ -163,7 +163,7 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
             scalarConfig <- rowConfig[[scalarId]]
             scalarId <- match(names(rowConfig)[scalarId], data[[1]])
             if(is.na(scalarId)){
-              stop()
+              return()
             }
           }
           valueBox(if(!is.na(suppressWarnings(as.numeric(data[[3]][scalarId]))))
