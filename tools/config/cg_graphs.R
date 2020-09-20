@@ -2913,36 +2913,35 @@ getValueboxOptions  <- reactive({
              }
              tagList(tags$div(id = paste0("valueboxRow_", rowId), class="drop-index-list",
                               style = "margin-bottom:20px;display:flex;",
-                              lapply(seq_along(rowConfig), function(i){
-                                if(rowId > numberRows){
-                                  return()
-                                }
-                                if(oldConfig){
-                                  i <- i + noBoxesRow * (rowId - 1L)
-                                  if(i > noScalars){
-                                    return()
+                              if(rowId <= numberRows){
+                                lapply(seq_along(rowConfig), function(i){
+                                  if(oldConfig){
+                                    i <- i + noBoxesRow * (rowId - 1L)
+                                    if(i > noScalars){
+                                      return()
+                                    }
+                                    scalarConfig <- list(icon = currentGraphConfig[["icon"]],
+                                                         color = currentGraphConfig[["color"]])
+                                  }else{
+                                    scalarConfig <- rowConfig[[i]]
+                                    i <- match(names(rowConfig)[i], modelOut[[scalarsOutName]]$symnames)
+                                    if(is.na(scalarId)){
+                                      return()
+                                    }
                                   }
-                                  scalarConfig <- list(icon = currentGraphConfig[["icon"]],
-                                                       color = currentGraphConfig[["color"]])
-                                }else{
-                                  scalarConfig <- rowConfig[[i]]
-                                  i <- match(names(rowConfig)[i], modelOut[[scalarsOutName]]$symnames)
-                                  if(is.na(scalarId)){
-                                    return()
-                                  }
-                                }
-                                tags$div("data-rank-id" = paste0("valueBox_", i),
-                                         style = "float:none;flex: 0 0 auto;width: auto;max-width:none;background-color:black;padding:10px;",
-                                         textInput(paste0("valueBoxDesc_", i), label = NULL,
-                                                   value = if(length(scalarConfig$description)) scalarConfig$description else
-                                                     modelOut[[scalarsOutName]]$symtext[[i]]),
-                                         selectInput(paste0("valueBoxColor_", i), label = NULL,
-                                                     choices = langSpecificGraphs$valueboxColor,
-                                                     selected = if(length(scalarConfig$color)) scalarConfig$color else "aqua"),
-                                         selectInput(paste0("valueBoxIcon_", i), label = NULL,
-                                                     choices = langSpecificGraphs$valueboxIconChoices,
-                                                     selected = if(length(scalarConfig$icon)) scalarConfig$icon))
-                              })
+                                  tags$div("data-rank-id" = paste0("valueBox_", i),
+                                           style = "float:none;flex: 0 0 auto;width: auto;max-width:none;background-color:black;padding:10px;",
+                                           textInput(paste0("valueBoxDesc_", i), label = NULL,
+                                                     value = if(length(scalarConfig$description)) scalarConfig$description else
+                                                       modelOut[[scalarsOutName]]$symtext[[i]]),
+                                           selectInput(paste0("valueBoxColor_", i), label = NULL,
+                                                       choices = langSpecificGraphs$valueboxColor,
+                                                       selected = if(length(scalarConfig$color)) scalarConfig$color else "aqua"),
+                                           selectInput(paste0("valueBoxIcon_", i), label = NULL,
+                                                       choices = langSpecificGraphs$valueboxIconChoices,
+                                                       selected = if(length(scalarConfig$icon)) scalarConfig$icon))
+                                })
+                              }
              ),
              sortable_js(paste0("valueboxRow_", rowId), 
                          options = sortable_options(group = "valueBoxes", supportPointer = FALSE,
