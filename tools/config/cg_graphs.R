@@ -1983,6 +1983,25 @@ observeEvent(input$filter_date, {
   req(isTRUE(input$filter_dim))
   rv$graphConfig$graph$filter$date <<- input$filter_date
 })
+observe({
+  req(identical(rv$graphConfig$graph$tool, "valuebox"), input$valueBoxes)
+  boxOptionsTmp <- lapply(seq_along(input$valueBoxes), function(rowId){
+    if(!length(input$valueBoxes[[rowId]])){
+      return(NA)
+    }
+    scalarIds <- vapply(strsplit(input$valueBoxes[[rowId]], "_", fixed = TRUE), function(boxId){
+      as.integer(boxId[2])
+    }, integer(1L), USE.NAMES = FALSE)
+    ret <- lapply(scalarIds, function(i){
+      list(description = input[[paste0("valueBoxDesc_", i)]],
+           color = input[[paste0("valueBoxColor_", i)]],
+           icon = list(name = input[[paste0("valueBoxIcon_", i)]], lib = "font-awesome"))
+    })
+    names(ret) <- modelOut[[scalarsOutName]]$symnames[scalarIds]
+    return(ret)
+  })
+  rv$graphConfig$options <- boxOptionsTmp[!is.na(boxOptionsTmp)]
+})
 
 getCurrentGraphConfig <- function(){
   currentGraphConfig <<- NULL
@@ -2873,34 +2892,72 @@ getHistOptions <- reactive({
 getValueboxOptions  <- reactive({
   rv$initData
   rv$refreshContent
-  indices       <- activeSymbol$indices
-  scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
-  isolate({
-   rv$graphConfig$options$width     <<- checkLength(configuredWithThisTool, currentGraphConfig[["width"]], 4L)
-   rv$graphConfig$options$color     <<- checkLength(configuredWithThisTool, currentGraphConfig[["color"]], "aqua")
-   rv$graphConfig$options$icon$name <<- checkLength(configuredWithThisTool, currentGraphConfig[["icon"]][["name"]], NULL)
-  })
-  tagList(
-    tags$div(class="cat-body cat-body-49",
-             selectInput("valuebox_width", lang$adminMode$graphs$valueboxOptions$width,
-                         choices = c("1" = 12, "2" = 6, "3" = 4, "4" = 3), 
-                         selected = rv$graphConfig$options$width),
-             selectInput("valuebox_color", lang$adminMode$graphs$valueboxOptions$color,
-                         choices = langSpecificGraphs$valueboxColor, 
-                         selected = rv$graphConfig$options$color),
-             selectInput("valuebox_icon", lang$adminMode$graphs$valueboxOptions$icon,
-                         choices = langSpecificGraphs$valueboxIconChoices,
-                         selected = if(is.null(rv$graphConfig$options$icon$name)) "_"
-                         else if(!(rv$graphConfig$options$icon$name %in% langSpecificGraphs$valueboxIconChoices))
-                           "other"
-                         else
-                           rv$graphConfig$options$icon$name),
-             conditionalPanel(condition = "input.valuebox_icon=== 'other'",
-                              tags$div(class = "shiny-input-container", style = "padding-left: 20px;",
-                                       textInput("valuebox_other_icon", span(HTML(htmltools::htmlEscape(lang$adminMode$graphs$valueboxOptions$otherIcon)), tags$br(), 
-                                                                       tags$a(href="http://fontawesome.io/icons/", target = "_blank", "http://fontawesome.io/icons/")),
-                                                 value = rv$graphConfig$options$icon$name, placeholder = "dollar-sign")))
-    )
+  noScalars <- length(modelOut[[scalarsOutName]]$symnames)
+  if(!length(currentGraphConfig) || !length(names(currentGraphConfig[[1]]))){
+    boxWidth <- checkLength(configuredWithThisTool, currentGraphConfig[["width"]], 4L)
+    noBoxesRow <- 12/boxWidth
+    numberRows <- ceiling(boxWidth*noScalars/12)
+    oldConfig <- TRUE
+  }else{
+    numberRows <- length(currentGraphConfig)
+    oldConfig <- FALSE
+  }
+  
+  tags$div(class="cat-body cat-body-49",
+           lapply(seq_len(noScalars), function(rowId){
+             if(oldConfig || rowId > numberRows){
+               rowConfig <- vector("list", noBoxesRow)
+             }else{
+               rowConfig <- currentGraphConfig[[rowId]]
+               boxWidth <- 12/length(rowConfig)
+             }
+             tagList(tags$div(id = paste0("valueboxRow_", rowId), class="drop-index-list",
+                              style = "margin-bottom:20px;display:flex;",
+                              lapply(seq_along(rowConfig), function(i){
+                                if(rowId > numberRows){
+                                  return()
+                                }
+                                if(oldConfig){
+                                  i <- i + noBoxesRow * (rowId - 1L)
+                                  if(i > noScalars){
+                                    return()
+                                  }
+                                  scalarConfig <- list(icon = currentGraphConfig[["icon"]],
+                                                       color = currentGraphConfig[["color"]])
+                                }else{
+                                  scalarConfig <- rowConfig[[i]]
+                                  i <- match(names(rowConfig)[i], modelOut[[scalarsOutName]]$symnames)
+                                  if(is.na(scalarId)){
+                                    return()
+                                  }
+                                }
+                                tags$div("data-rank-id" = paste0("valueBox_", i),
+                                         style = "float:none;flex: 0 0 auto;width: auto;max-width:none;background-color:black;padding:10px;",
+                                         textInput(paste0("valueBoxDesc_", i), label = NULL,
+                                                   value = if(length(scalarConfig$description)) scalarConfig$description else
+                                                     modelOut[[scalarsOutName]]$symtext[[i]]),
+                                         selectInput(paste0("valueBoxColor_", i), label = NULL,
+                                                     choices = langSpecificGraphs$valueboxColor,
+                                                     selected = if(length(scalarConfig$color)) scalarConfig$color else "aqua"),
+                                         selectInput(paste0("valueBoxIcon_", i), label = NULL,
+                                                     choices = langSpecificGraphs$valueboxIconChoices,
+                                                     selected = if(length(scalarConfig$icon)) scalarConfig$icon))
+                              })
+             ),
+             sortable_js(paste0("valueboxRow_", rowId), 
+                         options = sortable_options(group = "valueBoxes", supportPointer = FALSE,
+                                                    put = htmlwidgets::JS("
+                                                      function(to) {
+                                                        return (to.el.children.length < 12 && from.el.children.length > 1);
+                                                      }
+                                                    "),
+                                                    onLoad = sortable_js_capture_bucket_input("valueBoxes",
+                                                                                              paste0("valueboxRow_", seq_len(noScalars)),
+                                                                                              paste0("valueboxRow_", seq_len(noScalars))),
+                                                    onSort = sortable_js_capture_bucket_input("valueBoxes",
+                                                                                              paste0("valueboxRow_", seq_len(noScalars)),
+                                                                                              paste0("valueboxRow_", seq_len(noScalars))))))
+           })
   )
 })
 getDygraphsOptions <- reactive({
@@ -3422,7 +3479,7 @@ getFilterOptions <- reactive({
                                   value = rv$graphConfig$graph$filter$date)
              ))
   )
-}) 
+})
 observe({
   req(rv$graphConfig$graph$tool, activeSymbol$id > 0L, allDataAvailable)
   if(identical(rv$graphConfig$graph$tool, "plotly") && identical(length(rv$graphConfig$graph$type), 0L))
@@ -3525,7 +3582,7 @@ observe({
       hideEl(session, "#preview-content-custom")
     }else if(isolate(rv$graphConfig$graph$tool) == "valuebox"){
       customOptionstmp <- as.vector(rv$graphConfig$options, mode = "list")
-      customOptionstmp$count <- configGraphsOut[[i]]$options$count
+      customOptionstmp$count <- length(modelOut[[scalarsOutName]]$symnames)
       callModule(renderData, "preview_output_valuebox", type = "valuebox", 
                  data = data, configData = configScalars, 
                  customOptions = customOptionstmp,
