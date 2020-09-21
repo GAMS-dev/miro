@@ -53,7 +53,7 @@ langSpecificGraphs$valueboxIconChoices <- c("_" = "_", "Coins" = "coins", "Walle
                                             "Question mark" = "question-circle", "Play" = "play-circle", 
                                             "Check" = "check-circle", "Home" = "home", "Cog" = "cog", "Asterisk" = "asterisk", 
                                             "Ban" = "ban", "Heart" = "heart", "Leaf" = "leaf", "Lightbulb" = "lightbulb", 
-                                            "Smile" = "smile", "Star" = "star", "Other..." = "other")
+                                            "Smile" = "smile", "Star" = "star")
 names(langSpecificGraphs$valueboxIconChoices) <- lang$adminMode$graphs$valueboxOptions$valueboxIconChoices
 langSpecificGraphs$easingChoices <- c("linear" = "linear","quad" = "quad","cubic" = "cubic","sin" = "sin",
                                       "exp" = "exp","circle" = "circle","elastic" = "elastic","back" = "back","bounce" = "bounce",

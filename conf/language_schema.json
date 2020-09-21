@@ -6069,8 +6069,8 @@
                 "valueboxIconChoices": {
                   "type": "array",
                   "uniqueItems": true,
-                  "minItems": 30,
-                  "maxItems": 30,
+                  "minItems": 29,
+                  "maxItems": 29,
                   "items": {
                     "type": "string",
                     "minLength": 1
