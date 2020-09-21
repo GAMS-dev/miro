@@ -530,16 +530,24 @@ lapply(modelInTabularData, function(sheet){
         return(showHideEl(session, paste0("#", "newRowError"), 5000L,
                           lang$renderers$miroPivot$dialogAddRow$invalidKeysError))
       }
+      invalidValue <- FALSE
       newValues <- vapply(seq(noRowHeaders + 1L, length(tableContent[[i]])), function(i){
+        newVal <- trimws(input[[paste0("newRow_", i)]])
+        if(identical(newVal, "")){
+          return(NA_real_)
+        }
         newVal <- tryCatch(suppressWarnings(as.numeric(input[[paste0("newRow_", i)]])),
                            error = function(e){NA_real_})
         if(length(newVal) != 1L){
           return(NA_real_)
         }
+        if(is.na(newVal) && !invalidValue){
+          invalidValue <<- TRUE
+        }
         return(newVal)
       }, numeric(1L), USE.NAMES = FALSE)
       
-      if(all(is.na(newValues))){
+      if(invalidValue){
         return(showHideEl(session, paste0("#", "newRowError"), 5000L,
                           lang$renderers$miroPivot$dialogAddRow$invalidValuesError))
       }
