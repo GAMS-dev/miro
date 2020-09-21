@@ -2905,7 +2905,9 @@ getValueboxOptions  <- reactive({
   
   tags$div(class="cat-body cat-body-49",
            lapply(seq_len(noScalars), function(rowId){
-             if(oldConfig || rowId > numberRows){
+             if(rowId > numberRows){
+               wConfig <- vector("list", 1L)
+             }else if(oldConfig){
                rowConfig <- vector("list", noBoxesRow)
              }else{
                rowConfig <- currentGraphConfig[[rowId]]
@@ -2925,7 +2927,7 @@ getValueboxOptions  <- reactive({
                                   }else{
                                     scalarConfig <- rowConfig[[i]]
                                     i <- match(names(rowConfig)[i], modelOut[[scalarsOutName]]$symnames)
-                                    if(is.na(scalarId)){
+                                    if(is.na(i)){
                                       return()
                                     }
                                   }
