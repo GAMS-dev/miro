@@ -6694,9 +6694,13 @@
                 "infoMsg": {
                   "type": "string",
                   "minLength": 1
+                },
+                "infoMsgDummyData": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 1
+              "minProperties": 2
             },
             "datatableOptions": {
               "type": "object",

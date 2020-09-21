@@ -1678,7 +1678,8 @@
         }
       },
       "miroPivotOptions":{
-        "infoMsg": "Please use directly the preview on the right side to configure the default view."
+        "infoMsg": "Please use directly the preview on the right side to configure the default view.",
+        "infoMsgDummyData": "Currently the preview uses dummy data. This means that the filters will have dummy values. If you want to change these, you have to edit the JSON configuration file manually."
       },
       "datatableOptions":{
         "infoMsg": "Table configuration is done in '"

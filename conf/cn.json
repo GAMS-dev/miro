@@ -1677,7 +1677,8 @@
         }
       },
       "miroPivotOptions":{
-        "infoMsg": "请直接使用右侧的预览来配置默认视图。"
+        "infoMsg": "请直接使用右侧的预览来配置默认视图。",
+        "infoMsgDummyData": "当前，预览使用伪数据。 这意味着过滤器将具有伪值。 如果要更改它们，则必须手动编辑JSON配置文件。"
       },
       "datatableOptions":{
         "infoMsg": "可以在以下部分中调整表格：'"
