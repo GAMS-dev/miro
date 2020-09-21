@@ -63,7 +63,7 @@ expect_deploy_works <- function(useTemp = TRUE, buildArchive = TRUE, miroMode = 
                             #         R_LIB_PATHS = .libPaths()[[1]])
   )
   deployProc$read_all_error()
-  
+  deployProc$wait()
   if(identical(miroMode, "hcube") && (isFALSE(useTemp) || isFALSE(buildArchive))){
     expect_identical(deployProc$get_exit_status(), 1L)
     unlink(testModelPath, recursive = TRUE, force = TRUE)

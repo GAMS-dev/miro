@@ -3,6 +3,89 @@
    "title":"Configuration file schema",
    "description":"GAMS MIRO configuration file schema",
    "type":"object",
+   "definitions": {
+    "miroPivotOptions":{
+      "description":"MIRO pivot options",
+      "type":"object",
+      "additionalProperties":false,
+      "properties":{
+         "rows":{  
+            "description":"Columns in the symbol to prepopulate the rows of the pivot table.",
+            "type":["array", "string", "null"],
+            "minLength":1,
+            "uniqueItems":true,
+            "minItems":0,
+            "items":{  
+               "type":"string",
+               "minLength":1
+            },
+            "default":null
+         },
+         "cols":{
+            "description":"Columns in the symbol to prepopulate the columns of the pivot table.",
+            "type":"object",
+            "additionalProperties":{
+               "type":["array", "string", "null"],
+               "uniqueItems":true
+            }
+         },
+         "aggregations":{
+            "description":"Columns in the symbol to prepopulate the aggregations of the pivot table.",
+            "type":"object",
+            "additionalProperties":{
+               "type":["array", "string", "null"],
+               "uniqueItems":true
+            }
+         },
+         "aggregationFunction":{
+            "description":"Function to use for aggregating data.",
+            "type":"string",
+            "enum": ["sum", "mean", "median", "min", "max", "count"]
+         },
+         "filter":{
+            "description":"Columns in the symbol to prepopulate the filter of the pivot table (key) and the element to be filtered by (value).",
+            "type":"object",
+            "additionalProperties":{
+               "type":["array", "string"],
+               "uniqueItems":true
+            }
+         },
+         "domainFilter":{
+           "description":"Domain filter that will be displayed as tabs and filter a domain by all elements except for the empty string",
+            "type":"object",
+            "additionalProperties":false,
+            "properties":{  
+               "domains":{  
+                  "description":"Domains that can be filtered.",
+                  "type":["array", "string"],
+                  "minItems":1,
+                  "uniqueItems":true,
+                  "items":{  
+                     "type":"string"
+                  }
+               },
+               "default":{
+                 "description":"Domain that is filtered on startup. (optional)",
+                  "type":"string"
+               },
+               "filterVal":{
+                 "description":"String (UEL) to filter by (optional)",
+                  "type":"string"
+               }
+            }
+         },
+         "pivotRenderer":{
+           "description":"Sepcify the default renderer.",
+            "type":"string",
+            "enum": ["table", "line", "bar", "stackedbar", "radar"]
+         },
+         "enablePersistentViews": {
+           "description":"Enable persistent views.",
+           "type": "boolean"
+         }
+      }
+    }
+   },
    "additionalProperties":false,
    "properties":{  
       "language":{  
@@ -798,12 +881,21 @@
                        "table"
                      ]
                    },
-                   "alias":{  
+                   "alias":{
                      "type":"string",
                      "minLength":1
                    },
+                   "tableType": {
+                     "description":"Choose type of table",
+                     "type":"string",
+                     "enum":[
+                       "default",
+                       "bigdata",
+                       "pivot"
+                     ]
+                   },
                    "bigData":{  
-                     "description":"Does the table represent a large dataset (i.e. more than 20.000 records)?",
+                     "description":"DEPRECATED! Use tableType instead!",
                      "type":"boolean",
                      "default": false
                    },
@@ -840,6 +932,9 @@
                         "type":"string",
                         "minLength":1
                       }
+                    },
+                    "options":{
+                      "$ref": "#/definitions/miroPivotOptions"
                     }
                  },
                  "required":[  
@@ -1515,86 +1610,8 @@
                         "default":null
                      },
                      "options":{
-                        "description":"Additional options",
-                        "type":"object",
-                        "additionalProperties":false,
-                        "properties":{  
-                           "rows":{  
-                              "description":"Columns in the symbol to prepopulate the rows of the pivot table.",
-                              "type":["array", "string", "null"],
-                              "minLength":1,
-                              "uniqueItems":true,
-                              "minItems":0,
-                              "items":{  
-                                 "type":"string",
-                                 "minLength":1
-                              },
-                              "default":null
-                           },
-                           "cols":{
-                              "description":"Columns in the symbol to prepopulate the columns of the pivot table.",
-                              "type":"object",
-                              "additionalProperties":{
-                                 "type":["array", "string", "null"],
-                                 "uniqueItems":true
-                              }
-                           },
-                           "aggregations":{
-                              "description":"Columns in the symbol to prepopulate the aggregations of the pivot table.",
-                              "type":"object",
-                              "additionalProperties":{
-                                 "type":["array", "string", "null"],
-                                 "uniqueItems":true
-                              }
-                           },
-                           "aggregationFunction":{
-                              "description":"Function to use for aggregating data.",
-                              "type":"string",
-                              "enum": ["sum", "mean", "median", "min", "max", "count"]
-                           },
-                           "filter":{
-                              "description":"Columns in the symbol to prepopulate the filter of the pivot table (key) and the element to be filtered by (value).",
-                              "type":"object",
-                              "additionalProperties":{
-                                 "type":["array", "string"],
-                                 "uniqueItems":true
-                              }
-                           },
-                           "domainFilter":{
-                             "description":"Domain filter that will be displayed as tabs and filter a domain by all elements except for the empty string",
-                              "type":"object",
-                              "additionalProperties":false,
-                              "properties":{  
-                                 "domains":{  
-                                    "description":"Domains that can be filtered.",
-                                    "type":["array", "string"],
-                                    "minItems":1,
-                                    "uniqueItems":true,
-                                    "items":{  
-                                       "type":"string"
-                                    }
-                                 },
-                                 "default":{
-                                   "description":"Domain that is filtered on startup. (optional)",
-                                    "type":"string"
-                                 },
-                                 "filterVal":{
-                                   "description":"String (UEL) to filter by (optional)",
-                                    "type":"string"
-                                 }
-                              }
-                           },
-                           "pivotRenderer":{
-                             "description":"Sepcify the default renderer.",
-                              "type":"string",
-                              "enum": ["table", "line", "bar", "stackedbar", "radar"]
-                           },
-                           "enablePersistentViews": {
-                             "description":"Enable persistent views (experimental).",
-                             "type": "boolean"
-                           }
-                        }
-                     }
+                        "$ref": "#/definitions/miroPivotOptions"
+                      }
                   },
                   "additionalProperties":false,
                   "required":[  

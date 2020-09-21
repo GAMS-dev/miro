@@ -672,9 +672,13 @@
       "btDownloadCsv": "下载CSV",
       "btLoadView": "加载视图",
       "btNewView": "添加视图",
+      "btEnableEdit": "激活编辑",
+      "btAddRow": "添加行",
+      "btRemoveRows": "删除行",
       "aggregateLabel": "汇总",
       "filterLabel": "过滤",
       "allPlaceholder": "全部",
+      "defaultViewName": "默认",
       "colTruncationWarning": "数据被截断到前%s列。",
       "rowTruncationWarning": "数据被截断到前%s行。",
       "newViewTitle": "新增检视",
@@ -683,6 +687,19 @@
       "newViewBtSave": "保存",
       "pivotCompScenColName": "场景选项",
       "errUniqueViewName": "您输入的视图名称已经存在。请选择其他名称。",
+      "duplicateRecordTitle": "双重记录",
+      "duplicateRecordDesc": "您输入的记录已经存在。",
+      "errPivotDuplicate": "数据中包含重复的记录，因此无法进行枢纽。",
+      "errPivot": "数据无法透视。 这可能是因为您的数据太大。",
+      "errorTitle": "错误",
+      "duplicateRecordError": "记录：'％s'已经存在。 请删除它，然后重试。",
+      "dialogAddRow":{
+        "title": "添加新行",
+        "btCancel": "取消",
+        "invalidKeysError": "您输入的元素无效。 请注意，这些元素必须至少包含一个可打印字符。",
+        "invalidValuesError": "您输入的数据无效。 确保您输入的值是数字。",
+        "unknownError": "尝试添加新数据时发生意外错误。"
+      },
       "aggregationFunctions":{
         "sum": "总额",
         "count": "计数",
@@ -1217,7 +1234,8 @@
         "val55": "如果仅使用符号的元素文本与GAMS通信，则下拉菜单中只能选择一项。",
         "val56": "这个文件名的附件已经存在!",
         "val57": "文件名包含无效字符。不支持子目录中的附件!",
-        "val58": "小数分隔符和千组分隔符不能完全相同!"
+        "val58": "小数分隔符和千组分隔符不能完全相同!",
+        "val59": "GAMS符号：％s被声明为表格。 这导致最后一列在MIRO中旋转。 MIRO枢轴不能与已旋转的符号一起使用。 请声明该符号作为参数。"
       },
       "widgetOptions":{
 	    "slider": "滑动条",
@@ -1231,7 +1249,8 @@
         "numericinput": "数值输入"						  
       },
       "table":{
-        "bigData": "表中是否存储了大量数据（超过20,000条记录）？",
+        "type": "选择您要使用的表格类型 ",
+        "typeChoices": ["默认", "大数据表", "数据透视表"],
         "hideIndexCol": "隐藏索引列？",
         "readonly": "设定表格为只读吗？",
         "readonlyCols": "设定表格的某些列为只读",
@@ -1658,7 +1677,8 @@
         }
       },
       "miroPivotOptions":{
-        "infoMsg": "请直接使用右侧的预览来配置默认视图。"
+        "infoMsg": "请直接使用右侧的预览来配置默认视图。",
+        "infoMsgDummyData": "当前，预览使用伪数据。 这意味着过滤器将具有伪值。 如果要更改它们，则必须手动编辑JSON配置文件。"
       },
       "datatableOptions":{
         "infoMsg": "可以在以下部分中调整表格：'"
