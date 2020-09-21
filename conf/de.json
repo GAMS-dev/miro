@@ -672,9 +672,13 @@
       "btDownloadCsv": "CSV herunterladen",
       "btLoadView": "View laden",
       "btNewView": "View hinzufügen",
+      "btEnableEdit": "Bearbeitung aktivieren",
+      "btAddRow": "Zeile hinzufügen",
+      "btRemoveRows": "Zeilen entfernen",
       "aggregateLabel": "aggregieren",
       "filterLabel": "filtern",
       "allPlaceholder": "Alle",
+      "defaultViewName": "Standardeinstellung",
       "colTruncationWarning": "Die Daten wurden auf die ersten %s Spalten gekürzt.",
       "rowTruncationWarning": "Die Daten wurden auf die ersten %s Zeilen gekürzt.",
       "newViewTitle": "Neuer view",
@@ -683,6 +687,19 @@
       "newViewBtSave": "Speichern",
       "pivotCompScenColName": "Szenario",
       "errUniqueViewName": "Der von Ihnen eingegebene Viewname existiert bereits. Bitte wählen Sie einen anderen Namen.",
+      "duplicateRecordTitle": "Doppelter Datensatz",
+      "duplicateRecordDesc": "Der von Ihnen eingegebene Datensatz ist bereits vorhanden.",
+      "errPivotDuplicate": "Die Daten enthalten doppelte Datensätze und können daher nicht gepivoted werden.",
+      "errPivot": "Die Daten konnten nicht gepivoted werden. Dies könnte daran liegen, dass Ihre Daten zu groß sind.",
+      "errorTitle": "Fehler",
+      "duplicateRecordError": "Der Datensatz: '%s' existiert bereits. Bitte entfernen Sie ihn und versuchen Sie es erneut.",
+      "dialogAddRow":{
+        "title": "Neue Zeile hinzufügen",
+        "btCancel": "Abbrechen",
+        "invalidKeysError": "Die von Ihnen eingegebenen Elemente sind ungültig. Bitte beachten Sie, dass die Elemente aus mindestens einem druckbaren Zeichen bestehen müssen.",
+        "invalidValuesError": "Die von Ihnen eingegebenen Daten sind ungültig. Stellen Sie sicher, dass die von Ihnen eingegebenen Werte numerisch sind.",
+        "unknownError": "Beim Versuch, die neuen Daten hinzuzufügen, ist ein unerwarteter Fehler aufgetreten."
+      },
       "aggregationFunctions":{
         "sum": "Summe",
         "count": "Anzahl",
@@ -700,7 +717,7 @@
       }
     }
   },
-  "errMsg":{  
+  "errMsg":{
     "unknownError": "Ein unerwarteter Fehler ist aufgetreten. Wenn dieses Problem weiterhin besteht, wenden Sie sich an einen Systemadministrator.",
     "permErr": "Die Operation ist fehlgeschlagen, weil Sie nicht über ausreichende Berechtigungen verfügen.",
     "fileRead":{  
@@ -1218,7 +1235,8 @@
         "val55": "Es darf nur ein Element im Dropdownmenü auswählbar sein, wenn nur der Elementtext mit GAMS kommuniziert wird.",
         "val56": "Ein Anhang mit diesem Dateinamen existiert bereits!",
         "val57": "Der Dateiname enthält ungültige Zeichen. Anhänge in Unterverzeichnissen werden nicht unterstützt!",
-        "val58": "Das Dezimaltrennzeichen und das Tausender-Trennzeichen dürfen nicht identisch sein!"
+        "val58": "Das Dezimaltrennzeichen und das Tausender-Trennzeichen dürfen nicht identisch sein!",
+        "val59": "Das GAMS-Symbol: %s ist als Tabelle deklariert. Dies bewirkt, dass die letzte Spalte in MIRO gepivoted wird. MIRO-Pivot kann nicht mit bereits gepivoteten Symbolen verwendet werden. Bitte deklarieren Sie das Symbol stattdessen als Parameter."
       },
       "widgetOptions":{
         "slider": "Schieberegler",
@@ -1233,7 +1251,8 @@
       },
       "table":{
         "label": "Label (Markdown wird unterstützt)",
-        "bigData": "Werden große Datenmengen in der Tabelle gespeichert (d.h. mehr als 20.000 Zeilen)?",
+        "type": "Wählen Sie die Art der Tabelle, die Sie verwenden möchten",
+        "typeChoices": ["Standard", "Big Data-Tabelle", "Pivot-Tabelle"],
         "hideIndexCol": "Indexierungsspalte ausblenden?",
         "readonly": "Soll die Tabelle schreibgeschützt sein?",
         "readonlyCols": "Wählen Sie Spalten aus, die schreibgeschützt sein sollen",
@@ -1660,7 +1679,8 @@
         }
       },
       "miroPivotOptions":{
-         "infoMsg": "Bitte benutzen Sie direkt die Vorschau auf der rechten Seite, um die Standardansicht zu konfigurieren."
+         "infoMsg": "Bitte benutzen Sie direkt die Vorschau auf der rechten Seite, um die Standardansicht zu konfigurieren.",
+         "infoMsgDummyData": "Derzeit verwendet die Vorschau Dummy-Daten. Das bedeutet, dass die Filter Dummy-Werte haben werden. Wenn Sie diese ändern möchten, müssen Sie die JSON-Konfigurationsdatei manuell bearbeiten."
       },
       "datatableOptions":{
         "infoMsg": "Tabellen können angepasst werden unter '"

@@ -16,7 +16,7 @@
     "price": {
       "widgetType": "table",
       "label": "#asd\n*test*",
-      "bigData": false,
+      "tableType": "default",
       "readonly": false,
       "readonlyCols": ["date", "symbol"],
       "hideIndexCol": true,

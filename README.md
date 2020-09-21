@@ -58,7 +58,7 @@ MIRO will install these packages automatically when you first launch it (e.g. `R
 
 MIRO will install these when it detects that they are required.
 
-If you want to use gdx as a file exchange with GAMS (which is the default for all sample models), you will also need to install either the gdxrrwMIO package, which you can find [here](https://github.com/GAMS-dev/gdxrrw-miro).
+If you want to use gdx as a file exchange with GAMS (which is the default for all sample models), you will also need to install the gdxrrwMIRO package, which you can find [here](https://github.com/GAMS-dev/gdxrrw-miro).
 
 Some (optional) functions are provided by the package miro.util, which you can find [here](https://github.com/GAMS-dev/miro.util). If you do not have this package installed, fallback functions are used.
 
