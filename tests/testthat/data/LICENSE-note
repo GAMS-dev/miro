@@ -1,0 +1,1 @@
+The structure of the `emp-bigdata.testData` test dataset comes from the TIMES-DK model (https://github.com/energy-modelling-club/TIMES-DK_COMETS) which is licensed under GPL-3 (find copy of the license text in the `LICENSE` file in the root of this repo). The data were adjusted using a normal distribution with a mean value of 0.1 and a standard deviation of 1.

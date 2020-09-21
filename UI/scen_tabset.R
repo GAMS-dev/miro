@@ -46,7 +46,7 @@ getScenTabData <- function(sheetName){
   return(tabData)
 }
 generateScenarioTabset <- function(scenId, noData = vector("logical", length(scenTableNamesToDisplay)), 
-                                   noDataTxt = lang$nav$outputScreen$boxResults$noData, scenCounter = scenId,
+                                   scenCounter = scenId,
                                    createdDynamically = FALSE, pivotCompare = FALSE){
   errMsg <- NULL
   noDataDiv <- tags$div(class = "out-no-data", lang$nav$outputScreen$boxResults$noData)
@@ -77,9 +77,7 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                  graphConfig <- configGraphsIn[[sheetId]]
                                }
                                if(pivotCompare){
-                                 graphConfig <- list(outType = "miroPivot",
-                                                     options = list(
-                                                       lang = lang$renderers$miroPivot))
+                                 graphConfig <- list(outType = "miroPivot")
                                }
                                tabContent <- NULL
                                tabId <- match(sheetName, 
@@ -105,8 +103,7 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                                                  graphTool = graphConfig$graph$tool, 
                                                                  customOptions = graphConfig$options,
                                                                  filterOptions = graphConfig$graph$filter,
-                                                                 height = graphConfig$height, modelDir = modelDir, 
-                                                                 noDataTxt = noDataTxt, 
+                                                                 height = graphConfig$height, modelDir = modelDir,
                                                                  createdDynamically = createdDynamically)
                                                   }, error = function(e) {
                                                     flog.error("Problems rendering UI elements for scenario dataset: '%s'. Error message: %s.", 
@@ -122,7 +119,6 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                                   tryCatch({
                                                     renderDataUI(paste0("table_tab_", scenCounter, "_",
                                                                         tabId), type = "datatable",
-                                                                 noDataTxt = noDataTxt,
                                                                  createdDynamically = createdDynamically)
                                                   }, error = function(e) {
                                                     flog.error("Problems rendering table for scenario dataset: '%s'. Error message: %s.", 
@@ -204,7 +200,7 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
 generateScenarioTabsetMulti <- function(scenId, noData = vector("logical", length(scenTableNamesToDisplay)), 
                                         scenCounter = scenId){
   tryCatch({
-    scenTabset <- generateScenarioTabset(scenId, noData, noDataTxt = NULL, scenCounter = scenCounter,
+    scenTabset <- generateScenarioTabset(scenId, noData, scenCounter = scenCounter,
                                          createdDynamically = TRUE)
   }, error = function(e){
     flog.error("Problems generating scenario tabset (multi comparison mode). Error message: %s.", e)

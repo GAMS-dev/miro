@@ -2454,6 +2454,18 @@
               "type": "string",
               "minLength": 1
             },
+            "btEnableEdit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btAddRow": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btRemoveRows": {
+              "type": "string",
+              "minLength": 1
+            },
             "aggregateLabel": {
               "type": "string",
               "minLength": 1
@@ -2463,6 +2475,10 @@
               "minLength": 1
             },
             "allPlaceholder": {
+              "type": "string",
+              "minLength": 1
+            },
+            "defaultViewName": {
               "type": "string",
               "minLength": 1
             },
@@ -2497,6 +2513,57 @@
             "errUniqueViewName": {
               "type": "string",
               "minLength": 1
+            },
+            "duplicateRecordTitle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "duplicateRecordDesc": {
+              "type": "string",
+              "minLength": 1
+            },
+            "errPivotDuplicate": {
+              "type": "string",
+              "minLength": 1
+            },
+            "errPivot": {
+              "type": "string",
+              "minLength": 1
+            },
+            "errorTitle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "duplicateRecordError": {
+              "type": "string",
+              "minLength": 1
+            },
+            "dialogAddRow": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btCancel": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "invalidKeysError": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "invalidValuesError": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "unknownError": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 5
             },
             "aggregationFunctions": {
               "type": "object",
@@ -2557,7 +2624,7 @@
               "minProperties": 5
             }
           },
-          "minProperties": 16
+          "minProperties": 27
         }
       },
       "minProperties": 1
@@ -4743,9 +4810,13 @@
                 "val58": {
                   "type": "string",
                   "minLength": 1
+                },
+                "val59": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 56
+              "minProperties": 57
             },
             "widgetOptions": {
               "type": "object",
@@ -4794,9 +4865,19 @@
               "type": "object",
               "additionalProperties": false,
               "properties": {
-                "bigData": {
+                "type": {
                   "type": "string",
                   "minLength": 1
+                },
+                "typeChoices": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "minItems": 3,
+                  "maxItems": 3,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
                 },
                 "hideIndexCol": {
                   "type": "string",
@@ -4819,7 +4900,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 6
+              "minProperties": 7
             },
             "slider": {
               "type": "object",
@@ -6613,9 +6694,13 @@
                 "infoMsg": {
                   "type": "string",
                   "minLength": 1
+                },
+                "infoMsgDummyData": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 1
+              "minProperties": 2
             },
             "datatableOptions": {
               "type": "object",
