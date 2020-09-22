@@ -1,4 +1,4 @@
-context("Integration tests - Editable MIRO pivot - big data - list view")
+context(paste0("Integration tests - Editable MIRO pivot - big data - list view -", Sys.info()[['sysname']]))
 skip_if(identical(Sys.getenv("SKIP_PERFORMANCE_TESTS"), "true"),
         "Skipping performance tests since SKIP_PERFORMANCE_TESTS is set.")
 library(dplyr)
@@ -54,7 +54,7 @@ test_that("Editing large data in list view works", {
                                 "_metadata_" = list(symtype = "parameter"))))
 })
 pr$publish()
-context("Integration tests - Editable MIRO pivot - big data - table view")
+context(paste0("Integration tests - Editable MIRO pivot - big data - table view - ", Sys.info()[['sysname']]))
 gc()
 test_that("Editing large data in table view works", {
   testServer(renderMiroPivot, {
