@@ -275,7 +275,15 @@ if(buildUI){
                                                     )),
                                                     rHandsontableOutput(paste0("in_", i)))
                                  }else if(modelIn[[i]]$type == "dt"){
-                                   dataTableOutput(paste0("in_", i))
+                                   tagList(
+                                     tags$div(style = "margin-bottom:10px;",
+                                              actionButton(paste0("in_", i, "_add_row"),
+                                                           lang$renderers$miroPivot$btAddRow),
+                                              actionButton(paste0("in_", i, "_remove_row"),
+                                                           lang$renderers$miroPivot$btRemoveRows, class = "bt-remove")
+                                     ),
+                                     dataTableOutput(paste0("in_", i))
+                                   )
                                  }else{
                                    tryCatch({
                                      generateDataUI(paste0("data-in_", i), type = modelIn[[i]]$rendererName,
@@ -296,8 +304,7 @@ if(buildUI){
                                                        graphTool = configGraphsIn[[i]]$graph$tool, 
                                                        customOptions = configGraphsIn[[i]]$options,
                                                        filterOptions = configGraphsIn[[i]]$graph$filter,
-                                                       height = configGraphsIn[[i]]$height, 
-                                                       noDataTxt = lang$nav$outputScreen$boxResults$noData,
+                                                       height = configGraphsIn[[i]]$height,
                                                        createdDynamically = TRUE)
                                         }, error = function(e) {
                                           flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
@@ -571,13 +578,11 @@ if(buildUI){
                                 graphTool = configGraphsOut[[i]]$graph$tool, 
                                 customOptions = configGraphsOut[[i]]$options,
                                 filterOptions = configGraphsOut[[i]]$graph$filter,
-                                height = configGraphsOut[[i]]$height, 
-                                noDataTxt = lang$nav$outputScreen$boxResults$noData)
+                                height = configGraphsOut[[i]]$height)
           ),
           tags$div(id = paste0("data-out_", i), class = "render-output", style = "display:none;",{
             tryCatch({
-              renderDataUI(paste0("table-out_",i), type = "datatable", 
-                           noDataTxt = lang$nav$outputScreen$boxResults$noData)
+              renderDataUI(paste0("table-out_",i), type = "datatable")
             }, error = function(e) {
               flog.error(paste0(sprintf(lang$errMsg$renderTable$desc, name), e))
               eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderTable$desc, name), sep = "\n")

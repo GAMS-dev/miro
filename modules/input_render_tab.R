@@ -1,6 +1,36 @@
 # render tabular datasets
 proxy <- vector("list", length(modelIn))
 
+getVisibleTabData <- function(id, type){
+  if(identical(type, "hot")){
+    data <- hotToR(isolate(input[["in_" %+% id]]),
+                   modelIn[[id]])
+  }else if(identical(type, "dt")){
+    data <- tableContent[[id]]
+  }else{
+    stop("Unsupported type (getVisibleTabData).", call. = FALSE)
+  }
+  if(length(modelIn[[id]]$pivotCols)){
+    keyIdx <- match(modelIn[[id]]$pivotCols[[1]], 
+                    names(modelIn[[id]]$headers))[[1L]]
+    if(identical(names(data)[keyIdx], modelIn[[id]]$pivotCols[[1]]) &&
+       length(data) == length(modelIn[[id]]$headers)){
+      names(data) <- names(modelIn[[id]]$headers)
+      return(data)
+    }
+    if(length(data) < length(modelIn[[id]]$headers) - 1L){
+      return(modelInTemplate[[id]])
+    }
+    return(select(pivot_longer(data, 
+                               cols = seq(length(modelIn[[id]]$headers) - 1L, 
+                                          length(data)),
+                               names_to = modelIn[[id]]$pivotCols[[1]], 
+                               values_to = names(modelIn[[id]]$headers)[length(modelIn[[id]]$headers)],
+                               values_drop_na = TRUE), !!!names(modelIn[[id]]$headers)))
+  }
+  return(data)
+} 
+
 getInputDataset <- function(id, visible = FALSE){
   if(!length(modelIn[[id]]$pivotCols)){
     return(getInputDatasetRaw(id) %>%
@@ -9,10 +39,9 @@ getInputDataset <- function(id, visible = FALSE){
   }
   if(visible){
     if(identical(modelIn[[id]]$type, "hot")){
-      intermDataTmp <- hotToR(isolate(input[["in_" %+% id]]),
-                              modelIn[[id]])
+      intermDataTmp <- getVisibleTabData(id, "hot")
     }else if(identical(modelIn[[id]]$type, "dt")){
-      intermDataTmp <- tableContent[[id]]
+      intermDataTmp <- getVisibleTabData(id, "dt")
     }else{
       flog.error("Cannot get input datatset: '%s': Unsupported type: '%s'.",
                  names(modelIn)[id], modelIn[[id]]$type)
@@ -27,15 +56,7 @@ getInputDataset <- function(id, visible = FALSE){
              mutate_if(is.character, 
                        replace_na, replace = ""))
   }
-  keyIdx        <- match(modelIn[[id]]$pivotCols[[1]], 
-                         names(modelIn[[id]]$headers))[[1L]]
-  intermDataTmp <- fixColTypes(pivot_longer(intermDataTmp, 
-                                            cols = seq(length(modelIn[[id]]$headers) - 1L, 
-                                                       length(intermDataTmp)),
-                                            names_to = modelIn[[id]]$pivotCols[[1]], 
-                                      values_to = names(modelIn[[id]]$headers)[length(modelIn[[id]]$headers)],
-                                      values_drop_na = TRUE) %>%
-                                 select(!!!names(modelIn[[id]]$headers)), 
+  intermDataTmp <- fixColTypes(intermDataTmp, 
                                modelIn[[id]]$colTypes) %>%
     replace(is.na(.), "")
   
@@ -47,25 +68,23 @@ getInputDatasetRaw <- function(id){
       if(length(colsWithDep[[id]])){
         if(!isEmptyInput[id]){
           if(modelIn[[id]]$type == "hot"){
-            dataTmp <- hotToR(isolate(input[["in_" %+% id]]), 
-                              modelIn[[id]])
+            dataTmp <- getVisibleTabData(id, "hot")
             if(!length(dataTmp) || identical(nrow(dataTmp), 1L) &&
                all(vapply(dataTmp, identical, logical(1L), "", USE.NAMES = FALSE)))
               return(bind_rows(modelInputData[[id]], 
                                modelInputDataVisible[[id]]))
             return(bind_rows(dataTmp, modelInputData[[id]]))
           }
-          return(bind_rows(tableContent[[id]], 
+          return(bind_rows(getVisibleTabData(id, "dt"), 
                            modelInputData[[id]]))
         }
         return(modelInputData[[id]])
       }
       if(!isEmptyInput[id]){
         if(modelIn[[id]]$type == "hot"){
-          return(hotToR(isolate(input[["in_" %+% id]]), 
-                        modelIn[[id]]))
+          return(getVisibleTabData(id, "hot"))
         }
-        return(tableContent[[id]])
+        return(getVisibleTabData(id, "dt"))
       }
       return(modelInTemplate[[id]])
     }else if(!is.null(modelInputData[[id]])){
@@ -155,7 +174,10 @@ observeEvent(input$btGraphIn, {
       return()
     }
   }else{
-    data <- isolate(modelInputDataVisible[[i]]())
+    data <- tryCatch(isolate(modelInputDataVisible[[i]]()), error = function(e){
+      flog.warn("Problems getting data from custom renderer. Error message: %s", conditionMessage(e))
+      return(modelInTemplate[[i]])
+    })
   }
   
   errMsg <- NULL
@@ -195,7 +217,9 @@ lapply(modelInTabularData, function(sheet){
   }
   if(length(colsWithDep[[i]])){
     dataModelIn[[i]] <- reactive({
-      hotInit[[i]] <<- TRUE
+      if(identical(modelIn[[i]]$type, "hot")){
+        hotInit[[i]] <<- TRUE
+      }
       # make sure data will be updated when old data is overwritten
       rv[["in_" %+% i]]
       if(isEmptyInput[i]){
@@ -221,7 +245,7 @@ lapply(modelInTabularData, function(sheet){
         id  <- colsWithDep[[i]][[iDep]]
         # in case nothing was selected in dropdown menu, skip this iteration
         if(is.null(input[["dropdown_" %+% id]]) || 
-           input[["dropdown_" %+% id]] %in% c("","_")){
+           input[["dropdown_" %+% id]] %in% c("", "_")){
           next
         }
         # get column name with dependency
@@ -267,8 +291,8 @@ lapply(modelInTabularData, function(sheet){
   }else{
     dataModelIn[[i]] <- reactive({
       rv[["in_" %+% i]]
-      hotInit[[i]] <<- TRUE
       if(identical(modelIn[[i]]$type, "hot")){
+        hotInit[[i]] <<- TRUE
         if(length(modelInputData[[i]]) && 
            nrow(modelInputData[[i]]) > 0L){
           if(!is.null(configGraphsIn[[i]])){
@@ -366,6 +390,13 @@ lapply(modelInTabularData, function(sheet){
         return(hot_heatmap(ht))
       return(ht)
     })
+    observe({
+      input[[paste0("in_", i)]]
+      if(is.null(isolate(rv[[paste0("in_", i)]])) && !isEmptyInput[i]){
+        modelInputData[[i]] <<- getVisibleTabData(i, "hot")
+        isolate(rv[[paste0("in_", i)]] <- 1L)
+      }
+    })
   }else if(identical(modelIn[[i]]$type, "dt")){
     output[["in_" %+% i]] <- renderDT({
       errMsg <- NULL
@@ -376,6 +407,7 @@ lapply(modelInTabularData, function(sheet){
         tabData  <- pivotData(i, tabData)
         colnames <- tabData$colnames
         tabData  <- tabData$data
+        tableContent[[i]] <<- tabData
       }else{
         colnames <- attr(modelInputData[[i]], "aliases")
         if(!length(colnames)){
@@ -403,6 +435,166 @@ lapply(modelInTabularData, function(sheet){
     })
     proxy[[i]] <<- dataTableProxy("in_" %+% i)
     
+    observeEvent(input[[paste0("in_", i, "_add_row")]], {
+      if(!length(tableContent[[i]])){
+        flog.warn("Remove rows button (symbol: %s) was clicked but tableContent has no length.",
+                  names(modelIn)[i])
+        return()
+      }
+      removeUI("body>.selectize-dropdown", multiple = TRUE, immediate = TRUE)
+      
+      noRowHeaders <- sum(vapply(modelIn[[i]]$headers, function(header){
+        return(identical(header$type, "string"))
+      }, logical(1L), USE.NAMES = FALSE))
+      
+      if(length(modelIn[[i]]$pivotCols) && nrow(tableContent[[i]]) > 0L){
+        noRowHeaders <- noRowHeaders - 1L
+        pivotIdx <- match(modelIn[[i]]$pivotCols[[1]], names(modelIn[[i]]$headers))[[1L]]
+        colnames <- c(attr(modelInTemplate[[i]], "aliases")[-c(pivotIdx, length(modelInTemplate[[i]]))],
+                      names(tableContent[[i]])[seq(noRowHeaders + 1L, length(tableContent[[i]]))])
+      }else{
+        if(length(colnames)){
+          colnames <- attr(modelInputData[[i]], "aliases")
+        }else{
+          colnames <- attr(modelInTemplate[[i]], "aliases")
+        }
+      }
+      newRowId <- suppressWarnings(as.integer(input[[paste0("in_", i, "_rows_selected")]]))
+      if(any(is.na(newRowId))){
+        return(flog.error("Invalid data for 'rows_selected' (symbol: %s).", names(modelIn)[i]))
+      }
+      if(length(newRowId) == 1L){
+        newRowId <- c(newRowId - 1L, newRowId)
+      }else if(length(newRowId) > 1L){
+        newRowId <- c(min(newRowId) - 1L, max(newRowId))
+      }
+      showModal(
+        modalDialog(
+          title = lang$renderers$miroPivot$dialogAddRow$title,
+          tags$div(id = "newRowError", class = "gmsalert gmsalert-error"),
+          tags$div(class = "table-responsive", style = "margin-top:30px",
+                   tags$table(class = "table",
+                              tags$tr(
+                                lapply(colnames, tags$th)
+                              ),
+                              tags$tr(lapply(seq_along(colnames), function(j){
+                                tags$td(style = "min-width:100px;",
+                                        if(j <= noRowHeaders)
+                                          serverSelectInput(session, paste0("newRow_", j), NULL,
+                                                            unique(tableContent[[i]][[j]]),
+                                                            multiple = TRUE,
+                                                            width = "100%",
+                                                            options = list(create = TRUE, maxItems = 1L,
+                                                                           dropdownParent = "body"))
+                                        else
+                                          textInput(paste0("newRow_", j), NULL, NA, width = "100%"))
+                              }))
+                   )
+          ),
+          selectInput("newRowId", NULL,
+                      choices = if(length(newRowId) == 0L)
+                        setNames(c(0L, nrow(tableContent[[i]])),
+                                 lang$renderers$datatable$addRowPosNoneSelected)
+                      else
+                        setNames(newRowId, lang$renderers$datatable$addRowPos),
+                      selected = newRowId[2]),
+          footer = tagList(
+            modalButton(lang$renderers$miroPivot$dialogAddRow$btCancel),
+            actionButton(paste0("in_", i, "_add_row_confirm"),
+                         label = lang$renderers$miroPivot$btAddRow, 
+                         class = "bt-highlight-1 bt-gms-confirm")),
+          fade = TRUE, easyClose = FALSE, size = "l"
+        ))
+    })
+    observeEvent(input[[paste0("in_", i, "_add_row_confirm")]], {
+      flog.trace("Add row button for table: %s clicked.", names(modelIn)[i])
+      if(!length(tableContent[[i]])){
+        flog.warn("Add rows button (symbol: %s) was clicked but tableContent has no length.",
+                  names(modelIn)[i])
+        return()
+      }
+      noRowHeaders <- sum(vapply(modelIn[[i]]$headers, function(header){
+        return(identical(header$type, "string"))
+      }, logical(1L), USE.NAMES = FALSE))
+      
+      if(length(modelIn[[i]]$pivotCols) && nrow(tableContent[[i]]) > 0L){
+        noRowHeaders <- noRowHeaders - 1L
+      }
+      newKeys <- vapply(seq_len(noRowHeaders), function(i){
+        editedKey <- tryCatch(trimws(input[[paste0("newRow_", i)]]),
+                              error = function(e){NA_character_})
+        if(isValidUEL(editedKey))
+          return(editedKey)
+        return(NA_character_)
+      }, character(1L), USE.NAMES = FALSE)
+      if(any(is.na(newKeys))){
+        return(showHideEl(session, paste0("#", "newRowError"), 5000L,
+                          lang$renderers$miroPivot$dialogAddRow$invalidKeysError))
+      }
+      invalidValue <- FALSE
+      newValues <- vapply(seq(noRowHeaders + 1L, length(tableContent[[i]])), function(i){
+        newVal <- trimws(input[[paste0("newRow_", i)]])
+        if(identical(newVal, "")){
+          return(NA_real_)
+        }
+        newVal <- tryCatch(suppressWarnings(as.numeric(input[[paste0("newRow_", i)]])),
+                           error = function(e){NA_real_})
+        if(length(newVal) != 1L){
+          return(NA_real_)
+        }
+        if(is.na(newVal) && !invalidValue){
+          invalidValue <<- TRUE
+        }
+        return(newVal)
+      }, numeric(1L), USE.NAMES = FALSE)
+      
+      if(invalidValue){
+        return(showHideEl(session, paste0("#", "newRowError"), 5000L,
+                          lang$renderers$miroPivot$dialogAddRow$invalidValuesError))
+      }
+      
+      newRowId <- suppressWarnings(as.integer(input$newRowId))
+      if(length(newRowId) != 1L || is.na(newRowId)){
+        return(flog.error("Invalid data for 'newRowId' (symbol: %s).", names(modelIn)[i]))
+      }
+      tableContent[[i]] <<- add_row(tableContent[[i]],
+                                    !!!setNames(c(as.list(newKeys),
+                                                  as.list(newValues)),
+                                                names(tableContent[[i]])), .after = newRowId)
+      replaceData(proxy[[i]], tableContent[[i]], resetPaging = FALSE, rownames = config$datatable$rownames)
+      removeModal()
+      if(is.null(rv[[paste0("in_", i)]])){
+        modelInputData[[i]] <<- tableContent[[i]]
+        rv[[paste0("in_", i)]] <- 1
+      }
+      if(is.null(rv[[paste0("wasModified_", i)]])){
+        rv[[paste0("wasModified_", i)]] <- 1
+      }else{
+        rv[[paste0("wasModified_", i)]] <- rv[[paste0("wasModified_", i)]] + 1L
+      }
+      flog.trace("Added row (symbol: %s).", names(modelIn)[i])
+    })
+    observeEvent(input[[paste0("in_", i, "_remove_row")]], {
+      flog.trace("Remove rows button (symbol: %s) was clicked.", names(modelIn)[i])
+      idsToRemove <- input[[paste0("in_", i, "_rows_selected")]]
+      if(!length(idsToRemove)){
+        flog.trace("No rows selected (symbol: %s).", names(modelIn)[i])
+        return()
+      }
+      if(!length(tableContent[[i]])){
+        flog.warn("Remove rows button (symbol: %s) was clicked but tableContent has no length.",
+                  names(modelIn)[i])
+        return()
+      }
+      tableContent[[i]] <<- tableContent[[i]][-idsToRemove, ]
+      replaceData(proxy[[i]], tableContent[[i]], resetPaging = FALSE, rownames = config$datatable$rownames)
+      if(is.null(rv[[paste0("wasModified_", i)]])){
+        rv[[paste0("wasModified_", i)]] <- 1
+      }else{
+        rv[[paste0("wasModified_", i)]] <- rv[[paste0("wasModified_", i)]] + 1L
+      }
+      flog.trace("Removed %s row(s) (symbol: %s).", length(idsToRemove), names(modelIn)[i])
+    })
     observeEvent(input[[paste0("in_", i, "_cell_edit")]], {
       rownames <- config$datatable$rownames
       info <- input[[paste0("in_", i, "_cell_edit")]]
@@ -419,6 +611,12 @@ lapply(modelInTabularData, function(sheet){
       tableContent[[i]][row, col] <<- suppressWarnings(coerceValue(val, 
                                                                    tableContent[[i]][[col]][row]))
       replaceData(proxy[[i]], tableContent[[i]], resetPaging = FALSE, rownames = rownames)
+      if(is.null(rv[[paste0("wasModified_", i)]])){
+        rv[[paste0("wasModified_", i)]] <- 1
+      }else{
+        rv[[paste0("wasModified_", i)]] <- rv[[paste0("wasModified_", i)]] + 1L
+      }
+      flog.trace("Modified value of row: %s, column: %s, value: %s (symbol: %s).", row, col, val, names(modelIn)[i])
     })
   }else if(identical(modelIn[[i]]$type, "custom")){
     rendererEnv[[paste0("input_", i)]] <- new.env(parent = emptyenv())
@@ -434,12 +632,31 @@ lapply(modelInTabularData, function(sheet){
                                                   data = dataModelIn[[i]](),
                                                   customOptions = modelIn[[i]]$options,
                                                   rendererEnv = rendererEnv[[paste0("input_", i)]],
-                                                  attachments = attachments)
+                                                  attachments = attachments,
+                                                  views = views)
       }, error = function(e){
         flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
                    modelInAlias[[i]], e)
         errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
       })
+    })
+    observe({
+      if(length(rv[["in_" %+% i]]) && length(modelInputDataVisible[[i]])){
+        if(is.null(modelInputDataVisible[[i]]())){
+          return()
+        }
+        if(hotInit[[i]]){
+          isolate({
+            if(is.null(rv[[paste0("wasModified_", i)]])){
+              rv[[paste0("wasModified_", i)]] <- 1
+            }else{
+              rv[[paste0("wasModified_", i)]] <- rv[[paste0("wasModified_", i)]] + 1L
+            }
+          })
+        }else{
+          hotInit[[i]] <<- TRUE
+        }
+      }
     })
   }
 })

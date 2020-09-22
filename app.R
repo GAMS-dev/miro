@@ -348,9 +348,9 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
   overwriteLang <- Sys.getenv("MIRO_LANG")
   if(!identical(overwriteLang, "") && !identical(overwriteLang, config$language)){
     if(file.exists(file.path(".", "conf", paste0(overwriteLang, ".json")))){
-      lang <- fromJSON(file.path(".", "conf", paste0(overwriteLang, ".json")),
-                       simplifyDataFrame = FALSE, 
-                       simplifyMatrix = FALSE)
+      lang <<- fromJSON(file.path(".", "conf", paste0(overwriteLang, ".json")),
+                        simplifyDataFrame = FALSE, 
+                        simplifyMatrix = FALSE)
       config$language <- overwriteLang
     }
   }
@@ -1554,7 +1554,7 @@ if(!is.null(errMsg)){
                    input[["in_" %+% i]]
                  },
                  dt ={
-                   input[[paste0("in_", i, "_cell_edit")]]
+                   rv[[paste0("wasModified_", i)]]
                  }, 
                  slider = {
                    input[["slider_" %+% i]]
@@ -1578,6 +1578,9 @@ if(!is.null(errMsg)){
                  },
                  checkbox = {
                    input[["cb_" %+% i]]
+                 },
+                 custom = {
+                   rv[[paste0("wasModified_", i)]]
                  })
           if(noCheck[i]){
             noCheck[i] <<- FALSE

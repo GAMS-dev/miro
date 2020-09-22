@@ -15,7 +15,7 @@
   "inputWidgets": {
     "price": {
       "widgetType": "table",
-      "bigData": false,
+      "tableType": "default",
       "readonly": false,
       "readonlyCols": ["date", "symbol"],
       "hideIndexCol": true,

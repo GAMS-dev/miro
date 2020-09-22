@@ -1,5 +1,5 @@
 renderScenPivotCompare <- function(scenData, scenNames, rendererEnv,
-                                   langData, views, roundPrecision = 2L){
+                                   views, roundPrecision = 2L){
   scenIdLong     <- "scen_0_"
   outputDsNames  <- names(ioConfig$modelOut)
   scenTableNamesToDisplay <- tolower(ioConfig$scenTableNamesToDisplay)
@@ -19,19 +19,17 @@ renderScenPivotCompare <- function(scenData, scenNames, rendererEnv,
     scenTableId <- match(sheetName, ioConfig$inputDsNames)
     if(is.na(scenTableId)){
       scenTableId <- match(sheetName, outputDsNames)
-      graphOptions <- list(lang = langData,
-                           resetOnInit = TRUE,
+      graphOptions <- list(resetOnInit = TRUE,
                            "_metadata_" = list(symname = sheetName,
-                                               headers = c(list("_scenName" = list(alias = langData$pivotCompScenColName,
+                                               headers = c(list("_scenName" = list(alias = lang$renderers$miroPivot$pivotCompScenColName,
                                                                                    type = "string")),
                                                            ioConfig$modelOut[[sheetName]]$headers),
                                                symtype = ioConfig$modelOut[[sheetName]]$symtype))
     }else{
       scenTableId <- length(outputDsNames) + scenTableId
-      graphOptions <- list(lang = langData,
-                           resetOnInit = TRUE,
+      graphOptions <- list(resetOnInit = TRUE,
                            "_metadata_" = list(symname = sheetName,
-                                               headers = c(list("_scenName" = list(alias = langData$pivotCompScenColName,
+                                               headers = c(list("_scenName" = list(alias = lang$renderers$miroPivot$pivotCompScenColName,
                                                                                    type = "string")),
                                                            ioConfig$modelIn[[sheetName]]$headers),
                                                symtype = ioConfig$modelIn[[sheetName]]$symtype))

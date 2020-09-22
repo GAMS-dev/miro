@@ -3,6 +3,12 @@ generateDataUI <- function(id, type, height= NULL, customOptions = NULL){
   
   typeCustom <- type
   
+  if(tolower(typeCustom) == "miropivot"){
+    return(tags$div(id = ns("data"),
+                    miroPivotOutput(ns("inputPivot"),
+                                    height = height, options = customOptions)))
+  }
+  
   tryCatch({
     customInput <- match.fun(typeCustom %+% "Output")
   }, error = function(e){
@@ -16,9 +22,12 @@ generateDataUI <- function(id, type, height= NULL, customOptions = NULL){
 
 generateData <- function(input, output, session, data, type, 
                          configData = NULL, customOptions = NULL, rendererEnv = NULL,
-                         attachments = NULL){
+                         views = NULL, attachments = NULL){
   typeCustom <- type
-  
+  if(tolower(typeCustom) == "miropivot"){
+    return(renderMiroPivot("inputPivot", as_tibble(data), options = customOptions, 
+                           path = customRendererDir, rendererEnv = rendererEnv, views = views))
+  }
   tryCatch({
     customGenerator <- match.fun(paste0("render", toupper(substr(typeCustom, 1, 1)), 
                                         substr(typeCustom, 2, nchar(typeCustom))))
@@ -28,7 +37,8 @@ generateData <- function(input, output, session, data, type,
   })
   tryCatch({
     return(callModule(customGenerator, "custom", as_tibble(data), options = customOptions, 
-                      path = customRendererDir, rendererEnv = rendererEnv, attachments = attachments))
+                      path = customRendererDir, rendererEnv = rendererEnv, views = views, 
+                      attachments = attachments))
   }, error = function(e){
     stop(sprintf("An error occured in the custom generator function: '%s'. Error message: %s.", typeCustom, e), call. = FALSE)
   })
