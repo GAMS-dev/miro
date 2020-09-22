@@ -715,6 +715,10 @@
         "radar": "Radardiagramm",
         "line": "Liniendiagramm"
       }
+    },
+    "datatable":{
+      "addRowPos": ["Zeile oberhalb der Auswahl hinzufügen", "Zeile unterhalb der Auswahl hinzufügen"],
+      "addRowPosNoneSelected": ["Über der ersten Zeile hinzufügen", "Unter der letzten Zeile hinzufügen"]
     }
   },
   "errMsg":{

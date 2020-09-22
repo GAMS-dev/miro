@@ -1545,7 +1545,7 @@ if(!is.null(errMsg)){
                    input[["in_" %+% i]]
                  },
                  dt ={
-                   input[[paste0("in_", i, "_cell_edit")]]
+                   rv[[paste0("wasModified_", i)]]
                  }, 
                  slider = {
                    input[["slider_" %+% i]]

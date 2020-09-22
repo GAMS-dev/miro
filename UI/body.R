@@ -286,7 +286,15 @@ if(buildUI){
                                                     )),
                                            rHandsontableOutput(paste0("in_", i)))
                                  }else if(modelIn[[i]]$type == "dt"){
-                                   dataTableOutput(paste0("in_", i))
+                                   tagList(
+                                     tags$div(style = "margin-bottom:10px;",
+                                              actionButton(paste0("in_", i, "_add_row"),
+                                                           lang$renderers$miroPivot$btAddRow),
+                                              actionButton(paste0("in_", i, "_remove_row"),
+                                                           lang$renderers$miroPivot$btRemoveRows, class = "bt-remove")
+                                     ),
+                                     dataTableOutput(paste0("in_", i))
+                                   )
                                  }else{
                                    tryCatch({
                                      generateDataUI(paste0("data-in_", i), type = modelIn[[i]]$rendererName,

@@ -6,7 +6,8 @@
     "price": {
       "widgetType": "table",
       "label": "<h3>Data:</h3>\n<p><em>test</em> <strong>asd</strong></p>\n",
-      "readonlyCols": "date"
+      "bigData": true,
+      "pivotCols": "symbol"
     },
     "maxstock": {
       "label": "select the maximum number of stocks",
@@ -37,55 +38,6 @@
     }
   },
   "dataRendering": {
-    "price": {
-      "outType": "graph",
-      "height": 700,
-      "graph": {
-        "tool": "dygraphs",
-        "title": "Stock prices over time (year: 2016)",
-        "color": "symbol",
-        "dyOptions": {
-          "includeZero": true,
-          "logscale": false,
-          "drawGrid": true,
-          "drawPoints": false,
-          "pointSize": 2,
-          "fillGraph": false,
-          "fillAlpha": 0.15
-        },
-        "dylegend": {
-          "width": 450,
-          "show": "always",
-          "hideOnMouseOut": true
-        },
-        "dyHighlight": {
-          "highlightSeriesOpts": {
-            "strokeWidth": 3,
-            "strokeBorderWidth": 1,
-            "highlightCircleSize": 5
-          },
-          "hideOnMouseOut": true
-        },
-        "dyRangeSelector": {
-          "height": 20,
-          "strokeColor": ""
-        },
-        "xdata": "date",
-        "ydata": {
-          "Price": {
-            "label": "symbol"
-          }
-        },
-        "xaxis": {
-          "title": "date",
-          "showgrid": true
-        },
-        "yaxis": {
-          "title": "value",
-          "showgrid": true
-        }
-      }
-    },
     "stock_weight": {
       "outType": "dtGraph",
       "graph": {

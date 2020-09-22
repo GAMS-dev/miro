@@ -2625,9 +2625,34 @@
             }
           },
           "minProperties": 27
+        },
+        "datatable": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "addRowPos": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "addRowPosNoneSelected": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "minProperties": 2
         }
       },
-      "minProperties": 1
+      "minProperties": 2
     },
     "progressBar": {
       "description": "language specific objects of progressbars of the UI",

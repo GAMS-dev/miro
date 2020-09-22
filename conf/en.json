@@ -674,6 +674,10 @@
         "radar": "Radar chart",
         "line": "Line chart"
       }
+    },
+    "datatable":{
+      "addRowPos": ["Add row above selection", "Add row below selection"],
+      "addRowPosNoneSelected": ["Add above first row", "Add below last row"]
     }
   },
   "progressBar":{  
