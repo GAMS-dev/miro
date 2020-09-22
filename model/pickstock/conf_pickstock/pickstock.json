@@ -414,15 +414,11 @@
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
-    "highlightCol": true,
-    "highlightRow": true,
-    "columnSorting": true,
     "manualColumnResize": true,
     "contextMenu": {
       "enabled": true,
       "allowRowEdit": true,
-      "allowColEdit": false,
-      "allowReadOnly": false
+      "allowColEdit": false
     },
     "height": 700,
     "colWidths": 200
