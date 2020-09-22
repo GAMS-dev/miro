@@ -326,7 +326,7 @@ Db <- R6Class("Db",
                       private$scenMetaColnames['scode']), 
                     c(uid, sname, if(private$hcubeActive) -1L else 0L)), count = TRUE, limit = 1L)[[1]]
                   if(scenExists >= 1){
-                    flog.trace("Db: Scenario with name: '%s' alreaddy exists for user: '%s' " %+%
+                    flog.trace("Db: Scenario with name: '%s' already exists for user: '%s' " %+%
 "(Db.checkScenExists returns FALSE).", sname, uid)
                     return(TRUE)
                   }else{
