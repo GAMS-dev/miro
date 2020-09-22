@@ -23,11 +23,13 @@ Attachments <- R6Class("Attachments",
                          },
                          getConfig = function(){
                            return(list(localAttachments = private$localAttachments,
-                                       attachmentsUpdateExec = private$attachmentsUpdateExec))
+                                       attachmentsUpdateExec = private$attachmentsUpdateExec,
+                                       attachmentsToRemove = private$attachmentsToRemove))
                          },
                          setConfig = function(config){
                            private$localAttachments <- config$localAttachments
                            private$attachmentsUpdateExec <- config$attachmentsUpdateExec
+                           private$attachmentsToRemove <- config$attachmentsToRemove
                            return(invisible(self))
                          },
                          flushOpQueue = function(){

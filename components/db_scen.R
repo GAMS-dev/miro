@@ -93,7 +93,8 @@ Scenario <- R6Class("Scenario",
                           private$removeAllExistingAttachments <- TRUE
                           if(length(duplicatedMetadata$attach)){
                             savedAttachConfig <- list(localAttachments = duplicatedMetadata$attach$localAttachments,
-                                                      attachmentsUpdateExec = duplicatedMetadata$attach$attachmentsUpdateExec)
+                                                      attachmentsUpdateExec = duplicatedMetadata$attach$attachmentsUpdateExec,
+                                                      attachmentsToRemove = duplicatedMetadata$attach$attachmentsToRemove)
                             if(length(duplicatedMetadata$attach$sidToDuplicate)){
                               private$sidToDuplicate <- as.integer(duplicatedMetadata$attach$sidToDuplicate)
                               private$duplicateAttachmentsOnNextSave <- TRUE
