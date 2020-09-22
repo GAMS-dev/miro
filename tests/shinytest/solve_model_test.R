@@ -12,9 +12,9 @@ Sys.sleep(2)
 if(Sys.getenv("GMSMODELNAME") %in% c("kport")){
   Sys.sleep(2)
 }
+app$snapshot(items = list(output = "inputDataTitle"),
+             screenshot = TRUE)
 app$setInputs(btSolve = "click")
 Sys.sleep(10)
-app$snapshot(items = list(output = "outputDataTitle"),
-             screenshot = TRUE)
 expect_error(app$findElement("#outputTableView")$click(), NA)
 app$stop()

@@ -501,11 +501,17 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
       if(length(options$hideGroups)){
         p <- leaflet::hideGroup(p, options$hideGroups)
       }
+      # leaflet minicharts will always overwrite previous flow
+      # with identical coordinates, so we hack it by adding eps
+      eps <- 1e-14
+      
       lapply(seq_along(options$flows), function(j){
-        p <<- addFlows(p, lng0 = data[[options$flows[[j]]$lng0]], 
-                       lat0 = data[[options$flows[[j]]$lat0]], lng1 = data[[options$flows[[j]]$lng1]], 
-                       lat1 = data[[options$flows[[j]]$lat1]], color = options$flows[[j]]$color,
-                       flow = coalesce(data[[options$flows[[j]]$flow]], 0), opacity = options$flows[[j]]$opacity,
+        p <<- addFlows(p, lng0 = data[[options$flows[[j]]$lng0]] + (j - 1)*eps, 
+                       lat0 = data[[options$flows[[j]]$lat0]] + (j - 1)*eps,
+                       lng1 = data[[options$flows[[j]]$lng1]] + (j - 1)*eps, 
+                       lat1 = data[[options$flows[[j]]$lat1]] + (j - 1)*eps,
+                       color = options$flows[[j]]$color,
+                       flow = coalesce(data[[options$flows[[j]]$flow]], 0L), opacity = options$flows[[j]]$opacity,
                        minThickness = options$flows[[j]]$minThickness, 
                        layerId = if(length(options$flows[[j]]$layerId)) 
                          eval(parseLabel(options$flows[[j]]$layerId, names(data))),
