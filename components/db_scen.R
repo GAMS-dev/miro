@@ -766,9 +766,6 @@ Scenario <- R6Class("Scenario",
                         return(data)
                       },
                       saveAttachmentData = function(){
-                        if(is.null(private$attachments)){
-                          return(invisible(self))
-                        }
                         # remove existing attachments if scenario is overwritten
                         if(isTRUE(private$removeAllExistingAttachments)){
                           if(identical(private$sidToDuplicate, private$sid)){
@@ -783,6 +780,9 @@ Scenario <- R6Class("Scenario",
                         }
                         if(isTRUE(private$duplicateAttachmentsOnNextSave)){
                           private$duplicateAttachments()
+                        }
+                        if(is.null(private$attachments)){
+                          return(invisible(self))
                         }
                         attachmentOpQueue <- private$attachments$flushOpQueue()
                         if(length(attachmentOpQueue$remove)){
