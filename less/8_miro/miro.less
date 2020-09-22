@@ -1134,6 +1134,32 @@ animation: none !important;
      background-color: @highlight-bg-dark;
   });
 }
+.valuebox-config-el{
+  float:none;
+  flex: 0 0 auto;
+  width: auto;
+  max-width:none;
+  padding:10px;
+  margin-right:5pt;
+  .responsiveDark({
+     background-color: @highlight-bg;
+  },
+  {
+     background-color: @highlight-bg-dark;
+  });
+}
+.valuebox-config-el:last-child{
+  margin-right:0px;
+}
+.valuebox-left-col{
+  padding-right: 1px;
+}
+.valuebox-right-col{
+  padding-left: 1px;
+}
+.valuebox-config-row{
+  min-width: max-content;
+}
 .config-message{
   padding: 15px;
   margin-bottom: 20px;

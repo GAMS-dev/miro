@@ -1995,7 +1995,8 @@ observe({
     ret <- lapply(scalarIds, function(i){
       list(description = input[[paste0("valueBoxDesc_", i)]],
            color = input[[paste0("valueBoxColor_", i)]],
-           icon = list(name = input[[paste0("valueBoxIcon_", i)]], lib = "font-awesome"))
+           icon = list(name = input[[paste0("valueBoxIcon_", i)]], lib = "font-awesome"),
+           round = if(!is.na(input[[paste0("valueBoxRound_", i)]])) input[[paste0("valueBoxRound_", i)]] else 0L)
     })
     names(ret) <- modelOut[[scalarsOutName]]$symnames[scalarIds]
     return(ret)
@@ -2913,7 +2914,7 @@ getValueboxOptions  <- reactive({
                rowConfig <- currentGraphConfig[[rowId]]
                boxWidth <- 12/length(rowConfig)
              }
-             tagList(tags$div(id = paste0("valueboxRow_", rowId), class="drop-index-list",
+             tagList(tags$div(id = paste0("valueboxRow_", rowId), class="drop-index-list valuebox-config-row",
                               style = "margin-bottom:20px;display:flex;",
                               if(rowId <= numberRows){
                                 lapply(seq_along(rowConfig), function(i){
@@ -2932,16 +2933,22 @@ getValueboxOptions  <- reactive({
                                     }
                                   }
                                   tags$div("data-rank-id" = paste0("valueBox_", i),
-                                           style = "float:none;flex: 0 0 auto;width: auto;max-width:none;background-color:black;padding:10px;",
+                                           class = "valuebox-config-el",
                                            textInput(paste0("valueBoxDesc_", i), label = NULL,
                                                      value = if(length(scalarConfig$description)) scalarConfig$description else
                                                        modelOut[[scalarsOutName]]$symtext[[i]]),
-                                           selectInput(paste0("valueBoxColor_", i), label = NULL,
-                                                       choices = langSpecificGraphs$valueboxColor,
-                                                       selected = if(length(scalarConfig$color)) scalarConfig$color else "aqua"),
-                                           selectInput(paste0("valueBoxIcon_", i), label = NULL,
-                                                       choices = langSpecificGraphs$valueboxIconChoices,
-                                                       selected = if(length(scalarConfig$icon)) scalarConfig$icon))
+                                           fluidRow(
+                                             column(6, class = "valuebox-left-col",
+                                                    selectInput(paste0("valueBoxColor_", i), label = NULL,
+                                                                choices = langSpecificGraphs$valueboxColor,
+                                                                selected = if(length(scalarConfig$color)) scalarConfig$color else "aqua")),
+                                             column(6, class = "valuebox-right-col",
+                                                    selectInput(paste0("valueBoxIcon_", i), label = NULL,
+                                                                choices = langSpecificGraphs$valueboxIconChoices,
+                                                                selected = if(length(scalarConfig$icon)) scalarConfig$icon))),
+                                           numericInput(paste0("valueBoxRound_", i), label = NULL, min = 0L, 
+                                                        value = if(length(scalarConfig$round)) scalarConfig$round else config$roundingDecimals)
+                                  )
                                 })
                               }
              ),
