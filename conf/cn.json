@@ -1253,6 +1253,7 @@
         "numericinput": "数值输入"						  
       },
       "table":{
+        "label": "标签（支持Markdown）",
         "type": "选择您要使用的表格类型 ",
         "typeChoices": ["默认", "大数据表", "数据透视表"],
         "hideIndexCol": "隐藏索引列？",

@@ -5,6 +5,7 @@
   "inputWidgets": {
     "price": {
       "widgetType": "table",
+      "label": "<h3>Data:</h3>\n<p><em>test</em> <strong>asd</strong></p>\n",
       "bigData": true,
       "pivotCols": "symbol"
     },

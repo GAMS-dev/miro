@@ -1254,6 +1254,7 @@
         "numericinput": "Numeric input"
       },
       "table":{
+        "label": "Label (Markdown is supported)",
         "type": "Select the type of table you want to use",
         "typeChoices": ["Default", "Big Data table", "Pivot table"],
         "hideIndexCol": "Hide indexing column?",

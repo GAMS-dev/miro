@@ -1254,6 +1254,7 @@
         "numericinput": "Numerische Eingabe"
       },
       "table":{
+        "label": "Label (Markdown wird unterstützt)",
         "type": "Wählen Sie die Art der Tabelle, die Sie verwenden möchten",
         "typeChoices": ["Standard", "Big Data-Tabelle", "Pivot-Tabelle"],
         "hideIndexCol": "Indexierungsspalte ausblenden?",
