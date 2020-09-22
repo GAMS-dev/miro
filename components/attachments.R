@@ -270,6 +270,9 @@ Attachments <- R6Class("Attachments",
                                            toDir, 
                                            overwrite = TRUE)
                                }
+                               if(allExecPerm){
+                                 private$attachmentsToClean <- c(private$attachmentsToClean, localPaths)
+                               }
                              }
                            }else{
                              stopifnot(is.character(fileNames))
@@ -301,6 +304,9 @@ Attachments <- R6Class("Attachments",
                                            overwrite = TRUE)
                                }
                                
+                               if(allExecPerm){
+                                 private$attachmentsToClean <- c(private$attachmentsToClean, localPaths)
+                               }
                                if(length(localPaths) == length(filePaths)){
                                  return(filePaths)
                                }
@@ -348,6 +354,9 @@ Attachments <- R6Class("Attachments",
                                filePaths <- filePaths[match(data[["fileName"]], fileNames)]
                              }
                              Map(writeBin, data[["fileContent"]], filePaths)
+                             if(allExecPerm){
+                               private$attachmentsToClean <- c(private$attachmentsToClean, filePaths)
+                             }
                            }
                            
                            return(c(filePaths, localPaths))
@@ -498,10 +507,23 @@ Attachments <- R6Class("Attachments",
                            return(private$.remove(attachmentsToRemove,
                                                   removeLocal = TRUE))
                          },
-                         clear = function(){
+                         clear = function(cleanLocal = FALSE){
                            # clears attachments in sandbox
                            private$resetOpQueue()
                            private$sid <- NULL
+                           if(cleanLocal)
+                             self$cleanLocal()
+                           return(invisible(self))
+                         },
+                         cleanLocal = function(){
+                           if(length(private$attachmentsToClean)){
+                             removedLocalFiles <- file.remove(private$attachmentsToClean)
+                             if(any(!removedLocalFiles))
+                               flog.warn("Some local attachments could not be removed: '%s' (Attachments.cleanLocal).",
+                                         paste(private$attachmentsToClean[!removedLocalFiles], 
+                                               collapse = "', '"))
+                           }
+                           private$attachmentsToClean <- character(0L)
                            return(invisible(self))
                          }),
                        private = list(
@@ -512,6 +534,7 @@ Attachments <- R6Class("Attachments",
                          config = NULL,
                          attachmentData = NULL,
                          workDir = NULL,
+                         attachmentsToClean = character(0),
                          localAttachments    = list(filePaths = character(0L), 
                                                     execPerm = logical(0L)),
                          attachmentsToRemove = character(0L),

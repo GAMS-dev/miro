@@ -104,7 +104,7 @@ closeScenario <- function(clearMeta = TRUE){
   if(length(activeScen)){
     if(clearMeta){
       views$clearConf()
-      attachments$clear()
+      attachments$clear(cleanLocal = TRUE)
     }
     activeScen$finalize()
   }
