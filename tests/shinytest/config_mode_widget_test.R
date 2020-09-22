@@ -2,7 +2,7 @@ app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("config_mode_widget_test")
 
 app$snapshot(items = list(input = "deleteGraph"), screenshot = TRUE)
-
+Sys.sleep(1)
 jsonPath <- file.path("..", "model", "pickstock_configuration", "conf_pickstock_configuration")
 configRaw <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_configuration_expected.json"), 
                                                  simplifyDataFrame = FALSE, 
@@ -26,7 +26,7 @@ configNew <- suppressWarnings(jsonlite::fromJSON(file.path(jsonPath, "pickstock_
                                                  simplifyMatrix = FALSE))
 
 expect_identical(configRaw$inputWidgets$price$widgetType, configNew$inputWidgets$price$widgetType)
-expect_identical(configRaw$inputWidgets$price$bigData, configNew$inputWidgets$price$bigData)
+expect_identical(configRaw$inputWidgets$price$tableType, configNew$inputWidgets$price$tableType)
 expect_identical(configRaw$inputWidgets$price$readonly, configNew$inputWidgets$price$readonly)
 expect_identical(configRaw$inputWidgets$price$readonlyCols, configNew$inputWidgets$price$readonlyCols)
 expect_identical(configRaw$inputWidgets$price$hideIndexCol, configNew$inputWidgets$price$hideIndexCol)

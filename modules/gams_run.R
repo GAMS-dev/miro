@@ -327,10 +327,10 @@ if(LAUNCHHCUBEMODE){
                }
                
                if(!names(modelIn)[i] %in% c(DDPar, GMSOpt) && 
-                   length(modelIn[[i]]$dropdown$aliases)){
+                  length(modelIn[[i]]$dropdown$aliases)){
                  text <- paste0('|"""|--HCUBE_SCALART_', names(modelIn)[i], 
                                 "= ", escapeGAMSCL(modelIn[[i]]$dropdown$
-                                                    aliases[match(value, 
+                                                     aliases[match(value, 
                                                                    modelIn[[i]]$
                                                                      dropdown$choices)]))
                  if(isTRUE(modelIn[[i]]$dropdown$clearValue)){
@@ -670,7 +670,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
       error = function(e){
         flog.error("Problems getting list of scenarios to solve in Hypercube mode. Error message: '%s'.", e)
         errMsg <<- lang$errMsg$GAMSInput$desc
-    })
+      })
     if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
       return(NULL)
     }
@@ -688,13 +688,13 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     }
     if(config$saveTraceFile){
       scenGmsPar <<- paste0(scenGmsPar, ' trace="', tableNameTracePrefix, modelName, '.trc"',
-                           " traceopt=3")
+                            " traceopt=3")
     }
     
     sidsDiff <- setdiff(idsToSolve, idsSolved)
     prog$close()
     showHcubeSubmitDialog(noIdsToSolve = length(idsToSolve), noIdsExist = length(idsToSolve) - length(sidsDiff))
-  
+    
     enableEl(session, "#btSolve")
     
     return(NULL)

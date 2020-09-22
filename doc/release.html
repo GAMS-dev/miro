@@ -70,6 +70,7 @@
                                     </ul>
                                     <h3>New features</h3>
                                     <ul>
+                                      <li><a href="./charts.html#pivot-chart">MIRO Pivot Tables</a> introduced with MIRO 1.1 can now also be used for data input.</li>
                                       <li>Input widgets can now be <a href="./customize.html#tab-grouping">grouped</a>, and the order of widgets within a group can be changed.</li>
                                       <li><a href="./start.html#metadata-views">Views</a> can now be attached to a scenario. A view is a JSON encoded configuration of some renderer. The first renderer to support this new feature is the <a href="./charts.html#pivot-chart">MIRO pivot table renderer</a>.</li>
                                       <li>New scenario comparison mode: <a href="./start.html#compare-pivot">pivot view</a>. This mode allows you to merge datasets of multiple scenarios and analyze them with the <a href="charts.html#pivot-chart">pivot table</a> renderer.</li>
@@ -84,8 +85,11 @@
           <li>Remove unnecessary options for global input table settings in Configuration Mode.</li>
           <li>The filters in the MIRO pivot renderer now remain expanded even after selecting a new element.</li>
           <li>Improve accessibility of MIRO apps.</li>
+          <li>Development mode: New data is now only imported if the file has changed since the last start of MIRO.</li>
           <li>Added option to enable a <a href="./customize.html#export buttons">column visibility button</a> which allows to hide columns in big data tables.</li>
           <li>Increase maximum number of scenario attachments from 5 to 7.</li>
+          <li>Input tables can now be annotated with Markdown.</li>
+          <li><a href="./customize.html#input-bigdata-table">Big Data Tables</a> now support adding/removing rows.</li>
                                     </ul>
                                     <h3>Bug fixes</h3>
                                     <ul>
@@ -98,6 +102,7 @@
                                       <li>Fix issue that occurred when trying to display logs of two different asynchronously solved scenarios one after the other.</li>
                                       <li>Fix issue where removing and then adding attachments again would cause an unexpected error.</li>
                                       <li>Fix bug on Windows with local attachments.</li>
+                                      <li>Fix issue where multiple flows could not be displayed on one map - only the last flow was visible.</li>
                                     </ul>
                                  </div>
                             </section>

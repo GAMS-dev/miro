@@ -24,7 +24,7 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
   Sys.setenv(MIRO_MODE="base")
   
   saveAdditionalGamsClArgs(miroModelDir, modelToTest, additionalGamsClArgs)
-  
+  Sys.setenv(MIRO_FORCE_SCEN_IMPORT = "true")
   test_that("Permissions work",
             expect_pass(testApp(file.path(testDir, ".."), "permissions_test",
                                 compareImages = FALSE)))
@@ -35,5 +35,6 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
     file.rename(file.path(miroModelDir, paste0("conf_", modelToTest), paste0(modelToTest, "_tmp.json")),
                 file.path(miroModelDir, paste0("conf_", modelToTest), paste0(modelToTest, ".json")))
   }
-  Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE", "MIRO_USERNAME", "MIRO_USERGROUPS"))
+  Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE", "MIRO_USERNAME", "MIRO_USERGROUPS",
+                 "MIRO_FORCE_SCEN_IMPORT"))
 }

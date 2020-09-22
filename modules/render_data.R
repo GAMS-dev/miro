@@ -1,6 +1,5 @@
 renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions = NULL, 
-                         filterOptions = NULL, modelDir = NULL, noDataTxt = "no data",
-                         createdDynamically = FALSE){
+                         filterOptions = NULL, modelDir = NULL, createdDynamically = FALSE, showNoDataTxt = TRUE){
   ns <- NS(id)
   # make output type case insensitive
   typeCustom <- type
@@ -71,7 +70,8 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
                          path = customRendererDir)
     }
   return(tagList(
-    tags$div(id = ns("noData"), class = "out-no-data", noDataTxt),
+    if(showNoDataTxt) tags$div(id = ns("noData"), class = "out-no-data",
+                                if(!createdDynamically) lang$nav$outputScreen$boxResults$noData),
     tags$div(id = ns("data"), style = if(createdDynamically) "" else "display:none", data)
   ))
 }

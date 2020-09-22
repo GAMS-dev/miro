@@ -5,6 +5,8 @@
 *_tsp*.R
 *_transport*.R
 *_pickstock*.R
+*_lubrication*.R
+*_kport*.R
 *_de*.R
 *_en*.R
 *_cn*.R

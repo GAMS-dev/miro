@@ -15,7 +15,8 @@
   "inputWidgets": {
     "price": {
       "widgetType": "table",
-      "bigData": false,
+      "label": "#asd\n*test*",
+      "tableType": "default",
       "readonly": false,
       "readonlyCols": ["date", "symbol"],
       "hideIndexCol": true,

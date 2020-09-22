@@ -249,9 +249,7 @@ if(is.null(errMsg)){
     }else{
       symDim          <- length(modelIn[[i]]$headers)
       if(symDim > 1L && !(widgetType %in% c("table", "custom"))){
-        if(!(identical(symDim, 2L) && identical(names(modelIn[[i]]$headers)[2], "text") && 
-           all(vapply(modelIn[[i]]$headers$type, identical, logical(1L), "string", USE.NAMES = FALSE)) &&
-           identical(widgetType, "dropdown"))){
+        if(!(identical(widgetType, "dropdown") && identical(symDim, 2L) && identical(modelIn[[i]]$headers[[2]]$type, "string"))){
           errMsg <- paste(errMsg, sprintf("The output type for the GAMS symbol: '%s' is not valid. This widget type can not represent multi-dimensional data.", 
                                           names(modelIn)[i]), sep = "\n")
           next
@@ -264,8 +262,37 @@ if(is.null(errMsg)){
       }
       widgetConfig$widgetType <- NULL
       
-      if(identical(widgetType, "table") && identical(widgetConfig$bigData, TRUE)){
-        modelIn[[i]]$dtHeaders <- TRUE
+      if(!is.null(widgetConfig$options)){
+        modelIn[[i]]$options      <- widgetConfig$options
+        widgetConfig$options      <- NULL
+      }
+      if(identical(widgetType, "table")){
+        if(identical(widgetConfig$bigData, TRUE) || identical(widgetConfig$tableType, "bigdata")){
+          modelIn[[i]]$dtHeaders <- TRUE
+        }else if(identical(widgetConfig$tableType, "pivot")){
+          if(sum(vapply(modelIn[[i]]$headers, function(header){
+            return(identical(header$type, "numeric"))}, logical(1L))) > 1L){
+            errMsg <- paste(errMsg, sprintf("The GAMS symbol: %s is declared as table. This causes the last column to be pivoted in MIRO.\nMIRO pivot cannot be used with already pivoted symbols.\nPlease declare the symbol as a parameter instead.", 
+                                            names(modelIn)[i]), sep = "\n")
+            next
+          }
+          modelIn[[i]]$type <- "custom"
+          modelIn[[i]]$rendererName <- "miroPivot"
+          modelIn[[i]]$options <- c(modelIn[[i]]$options, 
+                                    list("_input_" = TRUE,
+                                         "_metadata_" = list(
+                                           symname = names(modelIn)[i],
+                                           headers = modelIn[[i]]$headers,
+                                           symtype = modelIn[[i]]$symtype)))
+          if(is.null(config$dataRendering[[names(modelIn)[i]]])){
+            if(length(config$dataRendering)){
+              config$dataRendering[[names(modelIn)[i]]] <- list(outType = "datatable")
+            }else{
+              config$dataRendering <- list(list(outType = "datatable"))
+              names(config$dataRendering) <- names(modelIn)[i]
+            }
+          }
+        }
       }
       if(!is.null(widgetConfig$alias)){
         modelIn[[i]]$alias <- widgetConfig$alias
@@ -291,14 +318,14 @@ if(is.null(errMsg)){
         widgetConfig$rendererName  <- NULL
         widgetConfig$packages      <- NULL
       }
-      if(!is.null(widgetConfig$options)){
-        modelIn[[i]]$options      <- widgetConfig$options
-        widgetConfig$options      <- NULL
-      }
       if(!widgetType %in% c("table", "custom")){
         modelIn[[i]]$headers       <- NULL
         modelIn[[i]][[widgetType]] <- widgetConfig
         next
+      }
+      if(!is.null(widgetConfig[["label"]])){
+        modelIn[[i]]$label <- widgetConfig[["label"]]
+        widgetConfig$label  <- NULL
       }
       if(!is.null(widgetConfig[["hideIndexCol"]])){
         modelIn[[i]]$hideIndexCol  <- widgetConfig[["hideIndexCol"]]
@@ -1380,8 +1407,6 @@ if(is.null(errMsg)){
                                              "': ", validGraphConfig), sep = "\n")
               next
             }
-            configGraphsOut[[i]]$options <- c(configGraphsOut[[i]]$options, 
-                                              list(lang = lang$renderers$miroPivot))
           }else if(identical(configGraphsOut[[i]]$outType, "valueBox")){
             if(identical(names(modelOut)[[i]], scalarsOutName)){
               configGraphsOut[[i]]$options$count <- modelOut[[i]]$count - length(config$hiddenOutputScalars)
@@ -1431,8 +1456,6 @@ if(is.null(errMsg)){
                                          "': ", validGraphConfig), sep = "\n")
           next
         }
-        configGraphsIn[[i]]$options <- c(configGraphsIn[[i]]$options, 
-                                         list(lang = lang$renderers$miroPivot))
       }else if(identical(configGraphsIn[[i]]$outType, "valueBox")){
         if(identical(names(modelIn)[[i]], scalarsFileName)){
           configGraphsIn[[i]]$options$count <- modelIn[[i]]$count

@@ -347,9 +347,9 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
   overwriteLang <- Sys.getenv("MIRO_LANG")
   if(!identical(overwriteLang, "") && !identical(overwriteLang, config$language)){
     if(file.exists(file.path(".", "conf", paste0(overwriteLang, ".json")))){
-      lang <- fromJSON(file.path(".", "conf", paste0(overwriteLang, ".json")),
-                       simplifyDataFrame = FALSE, 
-                       simplifyMatrix = FALSE)
+      lang <<- fromJSON(file.path(".", "conf", paste0(overwriteLang, ".json")),
+                        simplifyDataFrame = FALSE, 
+                        simplifyMatrix = FALSE)
       config$language <- overwriteLang
     }
   }
@@ -1006,10 +1006,34 @@ if(!is.null(errMsg)){
         modelInTemplateTmp <- modelInTemplateTmp[inputIdsTmp]
 
         tmpDirToRemove     <- character(0L)
+        
+        if(debugMode){
+          forceScenImport <- identical(Sys.getenv("MIRO_FORCE_SCEN_IMPORT"), "true")
+          if(!forceScenImport){
+            currentDataHashesDf  <- db$importDataset("_sys__data_hashes",
+                                                     tibble("model", modelName))
+            currentDataHashes <- list()
+            if(length(currentDataHashesDf) && nrow(currentDataHashesDf)){
+              currentDataHashes <- currentDataHashesDf[["hash"]]
+              names(currentDataHashes) <- currentDataHashesDf[["filename"]]
+            }
+            newDataHashes <- currentDataHashes
+          }
+        }
 
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
-          flog.info("New data: '%s' is being stored in the database. Please wait a until the import is finished.", miroDataFile)
+          if(debugMode && !forceScenImport){
+            dataHash <- digest::digest(file = file.path(miroDataDir, miroDataFile),
+                                       algo = "sha1", serialize = FALSE)
+            if(miroDataFile %in% names(currentDataHashes) && 
+               identical(dataHash, currentDataHashes[[miroDataFile]])){
+              flog.info("Data: '%s' skipped because it has not changed since the last start.", miroDataFile)
+              next
+            }
+            newDataHashes[[miroDataFile]] <- dataHash
+          }
+          flog.info("New data: '%s' is stored in the database. Please wait until the import is finished.", miroDataFile)
           if(dataFileExt[i] %in% c("xls", "xlsx")){
             method <- "xls"
             tmpDir <- miroDataDir
@@ -1076,6 +1100,13 @@ if(!is.null(errMsg)){
           }else{
             flog.error("Problems removing temporary directory: '%s'.", tmpDirToRemove)
           }
+        }
+        if(debugMode && !forceScenImport && !identical(currentDataHashes, newDataHashes)){
+          db$deleteRows("_sys__data_hashes", "model", modelName)
+          db$exportDataset("_sys__data_hashes",
+                           tibble(model = modelName,
+                                  filename = names(newDataHashes),
+                                  hash = unlist(newDataHashes, use.names = FALSE)))
         }
       }
     }, error = function(e){
@@ -1545,7 +1576,7 @@ if(!is.null(errMsg)){
                    input[["in_" %+% i]]
                  },
                  dt ={
-                   input[[paste0("in_", i, "_cell_edit")]]
+                   rv[[paste0("wasModified_", i)]]
                  }, 
                  slider = {
                    input[["slider_" %+% i]]
@@ -1569,6 +1600,9 @@ if(!is.null(errMsg)){
                  },
                  checkbox = {
                    input[["cb_" %+% i]]
+                 },
+                 custom = {
+                   rv[[paste0("wasModified_", i)]]
                  })
           if(noCheck[i]){
             noCheck[i] <<- FALSE

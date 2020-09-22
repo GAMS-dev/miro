@@ -3495,12 +3495,14 @@ observe({
   if(activeSymbol$id > length(modelIn)){
     symId <- activeSymbol$id - length(modelIn)
     metadata <- list(headers = modelOut[[symId]]$headers,
-                     symtype = modelOut[[symId]]$symtype)
+                     symtype = modelOut[[symId]]$symtype,
+                     symname = names(modelOut)[symId])
     data <- modelOutputData[[symId]]
   }else{
     symId <- activeSymbol$id
     metadata <- list(headers = modelIn[[symId]]$headers,
-                     symtype = modelIn[[symId]]$symtype)
+                     symtype = modelIn[[symId]]$symtype,
+                     symname = names(modelIn)[symId])
     data <- modelInputData[[symId]]
   }
   tryCatch({
@@ -3561,8 +3563,7 @@ observe({
       callModule(renderData, "preview_output_miropivot", type = "miropivot", 
                  data = data, rendererEnv = miroPivotRendererEnv,
                  customOptions = c(list("_metadata_" = metadata, 
-                                      resetOnInit = TRUE,
-                                      lang = lang$renderers$miroPivot), 
+                                      resetOnInit = TRUE), 
                                    currentGraphConfig$options),
                  roundPrecision = 2, modelDir = modelDir)
       showEl(session, "#preview-content-miropivot")
