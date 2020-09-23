@@ -832,30 +832,6 @@ observeEvent(input$timevis_showCurrentTime, {
   rv$graphConfig$graph$showCurrentTime <<- input$timevis_showCurrentTime
 })
 
-observeEvent(input$valuebox_width, {
-  rv$graphConfig$options$width <<- as.numeric(input$valuebox_width)
-})
-observeEvent(input$valuebox_color, {
-  rv$graphConfig$options$color <<- input$valuebox_color
-})
-observeEvent(input$valuebox_icon, {
-  if(identical(input$valuebox_icon, "other"))
-    updateTextInput(session, "valuebox_other_icon", value = "")
-}, priority = -1)
-observeEvent(c(input$valuebox_icon, input$valuebox_other_icon), {
-  if(identical(input$valuebox_icon, "_") ||
-     identical(input$valuebox_icon, "other") && identical(input$valuebox_other_icon, "")){
-    rv$graphConfig$options$icon <<- NULL
-    return()
-  }else if(identical(input$valuebox_icon, "other") && !identical(input$valuebox_other_icon, "")){
-    rv$graphConfig$options$icon$name <<- input$valuebox_other_icon
-    rv$graphConfig$options$icon$lib <<- "font-awesome"
-    return()
-  }
-  rv$graphConfig$options$icon$name <<- input$valuebox_icon
-  rv$graphConfig$options$icon$lib <<- "font-awesome"
-})
-
 observeEvent(input$hist_norm, {
   if(identical(input$hist_norm, " "))
     value <- ""
@@ -1985,6 +1961,9 @@ observeEvent(input$filter_date, {
 })
 observe({
   req(identical(rv$graphConfig$graph$tool, "valuebox"), input$valueBoxes)
+  
+  scalarNames <- modelOut[[scalarsOutName]]$symnames[!tolower(modelOut[[scalarsOutName]]$symnames)
+                                                     %in% tolower(configJSON$hiddenOutputScalars)]
   boxOptionsTmp <- lapply(seq_along(input$valueBoxes), function(rowId){
     if(!length(input$valueBoxes[[rowId]])){
       return(NA)
@@ -1998,7 +1977,7 @@ observe({
            icon = list(name = input[[paste0("valueBoxIcon_", i)]], lib = "font-awesome"),
            round = if(!is.na(input[[paste0("valueBoxRound_", i)]])) input[[paste0("valueBoxRound_", i)]] else 0L)
     })
-    names(ret) <- modelOut[[scalarsOutName]]$symnames[scalarIds]
+    names(ret) <- scalarNames[scalarIds]
     return(ret)
   })
   rv$graphConfig$options <- boxOptionsTmp[!is.na(boxOptionsTmp)]
@@ -2893,7 +2872,10 @@ getHistOptions <- reactive({
 getValueboxOptions  <- reactive({
   rv$initData
   rv$refreshContent
-  noScalars <- length(modelOut[[scalarsOutName]]$symnames)
+  visibleScalars <- !tolower(modelOut[[scalarsOutName]]$symnames) %in% tolower(configJSON$hiddenOutputScalars)
+  scalarNames <- modelOut[[scalarsOutName]]$symnames[visibleScalars]
+
+  noScalars <- length(scalarNames)
   if(!length(currentGraphConfig) || !length(names(currentGraphConfig[[1]]))){
     boxWidth <- checkLength(configuredWithThisTool, currentGraphConfig[["width"]], 4L)
     noBoxesRow <- 12/boxWidth
@@ -2927,7 +2909,7 @@ getValueboxOptions  <- reactive({
                                                          color = currentGraphConfig[["color"]])
                                   }else{
                                     scalarConfig <- rowConfig[[i]]
-                                    i <- match(names(rowConfig)[i], modelOut[[scalarsOutName]]$symnames)
+                                    i <- match(names(rowConfig)[i], scalarNames)
                                     if(is.na(i)){
                                       return()
                                     }
