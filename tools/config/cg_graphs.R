@@ -2916,20 +2916,25 @@ getValueboxOptions  <- reactive({
                                   }
                                   tags$div("data-rank-id" = paste0("valueBox_", i),
                                            class = "valuebox-config-el",
-                                           textInput(paste0("valueBoxDesc_", i), label = NULL,
-                                                     value = if(length(scalarConfig$description)) scalarConfig$description else
-                                                       modelOut[[scalarsOutName]]$symtext[[i]]),
-                                           fluidRow(
-                                             column(6, class = "valuebox-left-col",
+                                           tags$div(title = lang$adminMode$graphs$valueboxOptions$desc,
+                                                    textInput(paste0("valueBoxDesc_", i), label = NULL,
+                                                              value = if(length(scalarConfig$description)) scalarConfig$description else
+                                                                modelOut[[scalarsOutName]]$symtext[[i]])),
+                                           tags$div(title = lang$adminMode$graphs$valueboxOptions$color,
                                                     selectInput(paste0("valueBoxColor_", i), label = NULL,
                                                                 choices = langSpecificGraphs$valueboxColor,
                                                                 selected = if(length(scalarConfig$color)) scalarConfig$color else "aqua")),
-                                             column(6, class = "valuebox-right-col",
-                                                    selectInput(paste0("valueBoxIcon_", i), label = NULL,
-                                                                choices = langSpecificGraphs$valueboxIconChoices,
-                                                                selected = if(length(scalarConfig$icon)) scalarConfig$icon))),
-                                           numericInput(paste0("valueBoxRound_", i), label = NULL, min = 0L, 
-                                                        value = if(length(scalarConfig$round)) scalarConfig$round else config$roundingDecimals)
+                                           fluidRow(
+                                             column(5, class = "valuebox-left-col",
+                                                    tags$div(title = lang$adminMode$graphs$valueboxOptions$round,
+                                                             numericInput(paste0("valueBoxRound_", i), label = NULL, min = 0L, 
+                                                                          value = if(length(scalarConfig$round)) scalarConfig$round else config$roundingDecimals))),
+                                             column(7, class = "valuebox-right-col",
+                                                    tags$div(title = lang$adminMode$graphs$valueboxOptions$icon,
+                                                             selectInput(paste0("valueBoxIcon_", i), label = NULL,
+                                                                         choices = langSpecificGraphs$valueboxIconChoices,
+                                                                         selected = if(length(scalarConfig$icon)) scalarConfig$icon))))
+                                           
                                   )
                                 })
                               }

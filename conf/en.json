@@ -1558,7 +1558,8 @@
         "colorChoices": ["red", "yellow", "aqua", "blue", "light-blue", "green", "navy", "teal", "olive", "lime", "orange", "fuchsia", "purple", "maroon", "black"],
         "icon": "Specify an icon for the valuebox (optional).",
         "valueboxIconChoices": ["_", "coins", "wallet", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupee", "Ruble", "Pound", "Lira", "User", "Users", "Plus", "Minus", "Exclamation mark", "Question mark", "Play", "Check", "Home", "Cog", "Asterisk", "Ban", "Heart", "Leaf", "Lightbulb", "Smile", "Star"],
-        "otherIcon": "Use other icon from here: "
+        "desc": "Descriptive text",
+        "round": "Number of decimal places (rounding)"
       },
       "animationOptions":{
         "title": "Animation options",

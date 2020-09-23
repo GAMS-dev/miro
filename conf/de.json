@@ -1557,8 +1557,9 @@
         "color": "Wählen Sie die Farbe der Wertebox aus",
         "colorChoices": ["rot", "gelb", "aqua", "blau", "hellblau", "grün", "marineblau", "blaugrün", "oliv", "limette", "orange", "fuchsia", "lila", "kastanienbraun", "schwarz"],
         "icon": "Geben Sie ein Symbol für die Wertebox an.",
-        "valueboxIconChoices": ["_", "Münzen", "Brieftasche", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupie", "Rubel", "Pfund", "Lira", "Benutzer", "Mehrere Benutzer", "Plus", "Minus", "Ausrufezeichen", "Fragezeichen", "Abspielen", "Haken", "Haus", "Zahnrad", "Asterisk", "Verbot", "Herz", "Blatt", "Glühbirne", "Smile", "Stern"],
-        "otherIcon": "Use other icon from here: "
+        "valueboxIconChoices": ["_", "Münzen", "Brieftasche", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupie", "Rubel", "Pfund", "Lira", "Benutzer", "Mehrere Benutzer", "Plus", "Minus", "Ausrufezeichen", "Fragezeichen", "Abspielen", "Haken", "Haus", "Zahnrad", "Asterisk", "Verbot", "Herz", "Blatt", "Glühbirne", "Smile", "Stern"]
+        "desc": "Beschreibender Text",
+        "round": "Anzahl der Dezimalstellen (Rundung)"
       },
       "animationOptions":{
         "title": "Animationsoptionen",

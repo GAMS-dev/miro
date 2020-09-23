@@ -6186,12 +6186,16 @@
                     "minLength": 1
                   }
                 },
-                "otherIcon": {
+                "desc": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "round": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 6
+              "minProperties": 7
             },
             "animationOptions": {
               "type": "object",
