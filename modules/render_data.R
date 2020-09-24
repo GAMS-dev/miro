@@ -155,33 +155,34 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
           rowConfig <- customOptions[[rowId]]
           boxWidth <- 12/length(rowConfig)
         }
-        fluidRow(lapply(seq_along(rowConfig), function(scalarId){
-          if(oldConfig){
-            scalarId <- scalarId + noBoxesRow * (rowId - 1L)
-            if(scalarId > length(data[[1]])){
-              return()
-            }
-            scalarConfig <- list(icon = customOptions$icon,
-                                 color = customOptions$color)
-          }else{
-            scalarConfig <- rowConfig[[scalarId]]
-            scalarId <- match(names(rowConfig)[scalarId], data[[1]])
-            if(is.na(scalarId)){
-              return()
-            }
-          }
-          valueBox(if(!is.na(suppressWarnings(as.numeric(data[[3]][scalarId]))))
-            round(as.numeric(data[[3]][scalarId]),
-                  digits = if(length(scalarConfig$round))
-                    scalarConfig$round
-                  else roundPrecision)
-            else data[[3]][scalarId],
-            subtitle = if(length(scalarConfig$description)) scalarConfig$description else data[[2]][scalarId],
-            width = boxWidth,
-            #object
-            icon = if(length(scalarConfig$icon)) icon(scalarConfig$icon$name, lib = scalarConfig$icon$lib),
-            color = if(length(scalarConfig$color)) scalarConfig$color else "aqua")
-        }))
+        tags$div(class = "container-fluid",
+                 fluidRow(lapply(seq_along(rowConfig), function(scalarId){
+                   if(oldConfig){
+                     scalarId <- scalarId + noBoxesRow * (rowId - 1L)
+                     if(scalarId > length(data[[1]])){
+                       return()
+                     }
+                     scalarConfig <- list(icon = customOptions$icon,
+                                          color = customOptions$color)
+                   }else{
+                     scalarConfig <- rowConfig[[scalarId]]
+                     scalarId <- match(names(rowConfig)[scalarId], data[[1]])
+                     if(is.na(scalarId)){
+                       return()
+                     }
+                   }
+                   valueBox(if(!is.na(suppressWarnings(as.numeric(data[[3]][scalarId]))))
+                     round(as.numeric(data[[3]][scalarId]),
+                           digits = if(length(scalarConfig$round))
+                             scalarConfig$round
+                           else roundPrecision)
+                     else data[[3]][scalarId],
+                     subtitle = if(length(scalarConfig$description)) scalarConfig$description else data[[2]][scalarId],
+                     width = boxWidth,
+                     #object
+                     icon = if(length(scalarConfig$icon)) icon(scalarConfig$icon$name, lib = scalarConfig$icon$lib),
+                     color = if(length(scalarConfig$color)) scalarConfig$color else "aqua")
+                 })))
       })
     })
   }else if(type == "miropivot"){
