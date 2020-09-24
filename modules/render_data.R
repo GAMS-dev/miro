@@ -142,7 +142,11 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
         oldConfig <- TRUE
       }else{
         oldConfig <- FALSE
-        numberRows <- length(customOptions[!names(customOptions) %in% c("_metadata_", "count")])
+        if(length(names(customOptions))){
+           numberRows <- length(customOptions[!names(customOptions) %in% c("_metadata_", "count")])
+        }else{
+           numberRows <- length(customOptions)
+        }
       }
       lapply(seq_len(numberRows), function(rowId){
         if(oldConfig){

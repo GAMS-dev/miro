@@ -1024,7 +1024,7 @@ gantt('6', '2016-01-09 19:00:00', '2016-01-10 19:00:00', 'test6', 'b') = 1;</cod
                                     The scalar <code class="language-gams">error_train</code> is equivalent to the objective function value <code class="language-gams">obj.l</code>. 
                                     The absolute error in entire testing phase <code class="language-gams">error_test</code> is the sum of all errors in this time: <code class="language-gams">sum(ntd, error(ntd))</code>. 
                                     The ratio of both values is calculated with <code class="language-gams">error_ratio = error_test/error_train;</code>. <br>
-                                    In addition to these numeric values, two singleton sets are used, which show the dates of the beginning and the end of the training period. 
+                                    In addition to these numerical values, two singleton sets are used to indicate the dates of the beginning and end of the training period. 
                                     </p>
                                     <pre><code class="language-gams">$onExternalOutput
 Scalar error_train                     'Absolute error in entire training phase'
@@ -1050,7 +1050,7 @@ firstDayTraining(td)                   = td.pos = 1;
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:530pt;" src="assets/images/configuration_mode/graphs_valuebox_config.png" alt="Valuebox configuration"/>
                                     </div>
-                                    <p>For a value box, the descriptive text (default: explanatory text of the symbol), the color of the box, an optional icon and the rounding behavior can be configured. The width of a valuebox results from the number of boxes in a row. Each box can be placed in the desired position by drag &amp; drop. Free rows are ignored.</p>
+                                    <p>For a value box, the descriptive text (default: explanatory text of the symbol), the color of the box, an optional icon and the rounding behavior can be configured. The width of a value box results from the number of boxes in a row. Each box can be placed in the desired position by drag &amp; drop. Free rows are ignored.</p>
                                 </div><!--//section-block-->
                                 <div class="section-block">
                                   <h3 class="block-title">JSON example</h3>

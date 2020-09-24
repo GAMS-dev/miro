@@ -2889,7 +2889,7 @@ getValueboxOptions  <- reactive({
   tags$div(class="cat-body cat-body-49",
            lapply(seq_len(noScalars), function(rowId){
              if(rowId > numberRows){
-               wConfig <- vector("list", 1L)
+               rowConfig <- vector("list", 1L)
              }else if(oldConfig){
                rowConfig <- vector("list", noBoxesRow)
              }else{
