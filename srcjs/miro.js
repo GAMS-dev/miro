@@ -203,6 +203,13 @@ $(document).ready(() => {
       }());
     });
   }
+  $('.toggle-config-view-graph').click(() => {
+    $('#config-left-graph').toggleClass('collapse-config-left');
+    $('#config-right-graph').toggleClass('col-sm-12 col-sm-6');
+    $('#toggleFullscreenGraph i').toggleClass('fa-expand fa-compress');
+    $(window).trigger('resize');
+    return false;
+  });
 
   $('body').addClass('fixed'); // besides these updates, gms-switchTab (see below) has always has to be considered as well
 

@@ -1484,7 +1484,8 @@
         "tool": "Charttyp",
         "choices": ["Kreisdiagramm", "Balkendiagramm", "Streudiagramm", "Liniendiagramm", "Blasendiagramm", "Histogramm", "Zeitreihen-Diagramm", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle und Pivot-Charts", "Wertebox für skalare Werte", "Eigener Renderer"],
         "deleteGraph": "Löschen",
-        "saveGraph": "Speichern"
+        "saveGraph": "Speichern",
+        "toggleFullscreen": "Vollbild wechseln"
       },
       "graphOptions":{
         "pie": "Kreisdiagramm",

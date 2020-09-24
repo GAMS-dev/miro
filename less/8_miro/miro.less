@@ -1243,6 +1243,20 @@ animation: none !important;
   border: 1px dashed #222d32;
   margin-bottom:5px;
 }
+.toggle-fullscreen-btn{
+  text-shadow: none;
+  border: none;
+  margin-top: 2px;
+  .responsiveDark({
+     background-color: @highlight-bg;
+  },
+  {
+     background-color: @highlight-bg-dark;
+  });
+}
+.toggle-fullscreen-btn:hover {
+  background-color: #cfd5db;
+}
 .save-delete-save-btn {
   text-shadow: none;
   border: none;
@@ -1562,4 +1576,23 @@ animation: none !important;
     {
        background-color: @modal-bg-dark !important;
     });
+}
+#config-main-tab-graph {
+  overflow-x: hidden;
+}
+#config-right-graph {
+    -webkit-transition: width 0.3s ease;
+    -moz-transition: width 0.3s ease;
+    -o-transition: width 0.3s ease;
+    transition: width 0.3s ease;
+}
+#config-left-graph {
+    -webkit-transition: margin 0.3s ease;
+    -moz-transition: margin 0.3s ease;
+    -o-transition: margin 0.3s ease;
+    transition: margin 0.3s ease;
+}
+.collapse-config-left {
+  display: block;
+  margin-left: -50%;
 }

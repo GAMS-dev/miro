@@ -5859,9 +5859,13 @@
                 "saveGraph": {
                   "type": "string",
                   "minLength": 1
+                },
+                "toggleFullscreen": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 12
+              "minProperties": 13
             },
             "graphOptions": {
               "type": "object",

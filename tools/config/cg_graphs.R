@@ -506,7 +506,7 @@ observeEvent(input$localInput, {
                                       modelName = modelName, errMsg = lang$errMsg$GAMSOutput,
                                       scalarsFileHeaders = scalarsFileHeaders, 
                                       templates = modelOutTemplate, method = loadMode, 
-                                      hiddenOutputScalars = config$hiddenOutputScalars,
+                                      hiddenOutputScalars = character(0L),
                                       fileName = basename(isolate(input$localInput$datapath)))
     }, error = function(e){
       flog.error("Problems loading output data. Error message: %s.", e)
@@ -3591,8 +3591,9 @@ observe({
     }else if(isolate(rv$graphConfig$graph$tool) == "valuebox"){
       customOptionstmp <- as.vector(rv$graphConfig$options, mode = "list")
       customOptionstmp$count <- length(modelOut[[scalarsOutName]]$symnames)
+      dataVisible <- data[!tolower(data[[1]]) %in% tolower(configJSON$hiddenOutputScalars), ]
       callModule(renderData, "preview_output_valuebox", type = "valuebox", 
-                 data = data, configData = configScalars, 
+                 data = dataVisible, configData = configScalars, 
                  customOptions = customOptionstmp,
                  modelDir = modelDir)
       showEl(session, "#preview-content-valuebox")

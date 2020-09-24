@@ -175,12 +175,12 @@ body_admin <- dashboardBody({
       ),
       tabItem(tabName = "new_graph",
               fluidRow(
-                box(title = lang$adminMode$graphs$ui$title, status="primary", solidHeader = TRUE, width = 12,
+                box(title = lang$adminMode$graphs$ui$title, status="primary", solidHeader = TRUE, width = 12, id = "config-main-tab-graph",
                     tags$div(id = "graphUpdateSuccess", class = "gmsalert gmsalert-success center-alert", lang$adminMode$graphs$ui$graphUpdateSuccess),
                     tags$div(id = "graphValidationErr", class = "gmsalert gmsalert-error center-alert"),
                     tags$div(id = "unknownErrorGraphs", class = "gmsalert gmsalert-error center-alert",
                              lang$adminMode$graphs$ui$gamsSymbols),
-                    tags$div(class = "col-sm-6",
+                    tags$div(class = "col-sm-6", id = "config-left-graph",
                                       tags$h4(id = "previewDataInputToggle", class = "box-title", 
                                               icon("minus"), style = "cursor:pointer;font-weight:bold;", 
                                               onclick = "Miro.slideToggleEl({id: '#previewDataInputWrapper', 
@@ -191,9 +191,10 @@ body_admin <- dashboardBody({
                                                           tags$div(class = "space"),
                                                           tags$div(id = "noDbScen", lang$nav$dialogLoadScen$descNoScen),
                                                           tags$div(id = "dbScen", 
-                                                                   selectInput("scenList", lang$nav$dialogLoadScen$selLoadScen, 
-                                                                               c(), 
-                                                                               multiple = FALSE, width = "100%"),
+                                                                   selectizeInput("scenList", lang$nav$dialogLoadScen$selLoadScen, 
+                                                                                  c(), 
+                                                                                  multiple = FALSE, width = "100%",
+                                                                                  options = list(dropdownParent = "body")),
                                                                    actionButton("dbInput", lang$nav$dialogLoadScen$okButton),
                                                                    tags$div(class = "space"))),
                                                  tabPanel(lang$nav$dialogImport$tabLocal,
@@ -356,7 +357,11 @@ body_admin <- dashboardBody({
                                       )
                              )
                     ),
-                    tags$div(class = "col-sm-6 preview-outer-wrapper",
+                    tags$div(class = "col-sm-6 preview-outer-wrapper", id = "config-right-graph",
+                             tags$div(style = "margin-bottom:50px;text-align:right;",
+                                      actionButton("toggleFullscreenGraph", lang$adminMode$graphs$ui$toggleFullscreen, icon("expand"), 
+                                                   class = "toggle-fullscreen-btn toggle-config-view-graph")
+                             ),
                              tags$div(id = "preview-error", class = "err-msg"),
                              tags$div(id = "preview-content-plotly", style="overflow: auto;",
                                       renderDataUI("preview_output_plotly", type = "graph", 
@@ -431,7 +436,7 @@ body_admin <- dashboardBody({
                                                   tabPanel(lang$adminMode$widgets$ui$go, value = "go"),
                                                   tabPanel(lang$adminMode$widgets$ui$dd, value = "dd")
                                       )),
-                             tags$div(class = "col-sm-6",
+                             tags$div(class = "col-sm-6", id = "config-left-widget",
                                       tags$div(id = "noSymbolMsg", class="config-message", 
                                                lang$adminMode$widgets$ui$noSymbolMsg),
                                       tags$div(id = "noWidgetMsg", class="config-message", 
@@ -466,7 +471,7 @@ body_admin <- dashboardBody({
                                                tags$div(class = "space")
                                       )
                              ),
-                             tags$div(class = "col-sm-6",
+                             tags$div(class = "col-sm-6", id = "config-right-widget",
                                       tags$div(style = "margin-bottom:50px;text-align:right;",
                                                actionButton("deleteWidget", "Delete", icon("trash-alt"), class = "save-delete-delete-btn",
                                                             style = "width:100px;"),

@@ -1484,7 +1484,8 @@
         "tool": "Charting type",
         "choices": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram", "Time Series Diagram", "Map chart", "Gantt chart", "Pivot table and pivot charts", "Valuebox for scalar values", "Custom renderer"],
         "deleteGraph": "Delete",
-        "saveGraph": "Save"
+        "saveGraph": "Save",
+        "toggleFullscreen": "Toggle fullscreen"
       },
       "graphOptions":{
         "pie": "Pie chart",
