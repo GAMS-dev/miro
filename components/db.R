@@ -2,8 +2,8 @@
 Db <- R6Class("Db",
               public = list(
                 initialize        = function(uid, dbConf, dbSchema, slocktimeLimit, modelName,
-                                             traceColNames = NULL, attachmentConfig = NULL, 
-                                             hcubeActive = FALSE, ugroups = character(0L)){
+                                             traceColNames = NULL, hcubeActive = FALSE,
+                                             ugroups = character(0L)){
                   # Initialize database class
                   #
                   # Args:
@@ -12,8 +12,7 @@ Db <- R6Class("Db",
                   #                        password and name elements
                   #   dbSchema:            database schema
                   #   modelName:           name of the current model
-                  #   slocktimeLimit:      maximum duration a lock is allowed to persist 
-                  #   attachmentConfig:    attachment module configuration
+                  #   slocktimeLimit:      maximum duration a lock is allowed to persist
                   #   hcubeActive:         boolean that specifies whether Hypercube mode is currently active
                   #   ugroups:             user group(s) (optional)
                   
@@ -40,9 +39,6 @@ Db <- R6Class("Db",
                   stopifnot(is.character(dbConf$type), length(dbConf$type) == 1L)
                   stopifnot(is.list(dbSchema), !is.null(dbSchema$tabName), !is.null(dbSchema$colNames),
                             !is.null(dbSchema$colTypes))
-                  if(!is.null(attachmentConfig)){
-                    stopifnot(is.list(attachmentConfig), length(attachmentConfig) >= 1L)
-                  }
                   stopifnot(is.character(modelName), length(modelName) == 1L)
                   stopifnot(is.logical(hcubeActive), length(hcubeActive) == 1L)
                   #END error checks 
@@ -62,7 +58,6 @@ Db <- R6Class("Db",
                   private$tableNameScenLocks          <- dbSchema$tabName[['_scenLock']]
                   private$tableNamesScenario          <- dbSchema$tabName[!startsWith(dbSchema$tabName, "_")]
                   private$slocktimeLimit              <- slocktimeLimit
-                  private$attachmentConfig            <- attachmentConfig
                   private$hcubeActive                 <- hcubeActive
                   
                   if(identical(dbConf$type, "postgres")){
@@ -98,7 +93,6 @@ Db <- R6Class("Db",
                 getTableNameMetadata  = function() private$tableNameMetadata,
                 getTableNameScenLocks = function() private$tableNameScenLocks,
                 getTableNamesScenario = function() private$tableNamesScenario,
-                getAttachmentConfig   = function() private$attachmentConfig,
                 getHcubeActive        = function() private$hcubeActive,
                 getModelNameDb        = function() private$modelNameDb,
                 getOrphanedTables     = function(hcubeScalars = NULL){
@@ -332,7 +326,7 @@ Db <- R6Class("Db",
                       private$scenMetaColnames['scode']), 
                     c(uid, sname, if(private$hcubeActive) -1L else 0L)), count = TRUE, limit = 1L)[[1]]
                   if(scenExists >= 1){
-                    flog.trace("Db: Scenario with name: '%s' alreaddy exists for user: '%s' " %+%
+                    flog.trace("Db: Scenario with name: '%s' already exists for user: '%s' " %+%
 "(Db.checkScenExists returns FALSE).", sname, uid)
                     return(TRUE)
                   }else{
@@ -1227,7 +1221,6 @@ Db <- R6Class("Db",
                 slocktimeLimit      = character(1L),
                 hcubeActive         = logical(1L),
                 info                = new.env(),
-                attachmentConfig    = vector("list", 2L),
                 isValidSubsetGroup  = function(dataFrame){
                   if(inherits(dataFrame, "data.frame") 
                      && length(dataFrame) <= 3L

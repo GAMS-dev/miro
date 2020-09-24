@@ -3,6 +3,7 @@ context("Unit tests - views class")
 library(jsonlite)
 library(futile.logger)
 
+source("../../components/scenario_metadata.R")
 source("../../components/views.R")
 
 FakeSession <- R6Class("FakeSession", public = list(
