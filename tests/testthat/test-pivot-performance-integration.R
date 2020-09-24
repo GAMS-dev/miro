@@ -1,4 +1,4 @@
-context("Integration tests - MIRO pivot - big data")
+context(paste0("Integration tests - MIRO pivot - big data - ", Sys.info()[['sysname']]))
 skip_if(identical(Sys.getenv("SKIP_PERFORMANCE_TESTS"), "true"),
         "Skipping performance tests since SKIP_PERFORMANCE_TESTS is set.")
 library(dplyr)

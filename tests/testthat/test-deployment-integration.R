@@ -22,6 +22,7 @@ Sys.setenv(MIRO_BUILD = "true")
 Sys.setenv(RE_SHINY_PATH = ".")
 Sys.setenv(RE_SHINY_PORT = "9876")
 Sys.setenv(R_LIB_PATHS = .libPaths()[[1]])
+Sys.unsetenv("MIRO_REMOTE_EXEC")
 
 expect_deploy_works <- function(useTemp = TRUE, buildArchive = TRUE, miroMode = "base", manipulate = NULL){
   if(file.exists(testModelPath)){
@@ -62,7 +63,7 @@ expect_deploy_works <- function(useTemp = TRUE, buildArchive = TRUE, miroMode = 
                             #         RE_SHINY_PORT = "9876",
                             #         R_LIB_PATHS = .libPaths()[[1]])
   )
-  deployProc$read_all_error()
+  print(deployProc$read_all_error())
   deployProc$wait()
   if(identical(miroMode, "hcube") && (isFALSE(useTemp) || isFALSE(buildArchive))){
     expect_identical(deployProc$get_exit_status(), 1L)

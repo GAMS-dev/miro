@@ -1,10 +1,6 @@
 {
-  "output": {
-    "inputDataTitle": {
-      "html": "<i>&lt;New Scenario&gt;<\/i>",
-      "deps": [
-
-      ]
-    }
+  "input": {
+    "slider_2": 3,
+    "slider_3": 99
   }
 }
