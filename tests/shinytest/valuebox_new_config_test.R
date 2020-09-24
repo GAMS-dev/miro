@@ -8,7 +8,8 @@ app$snapshot(items = list(output = "inputDataTitle"),
 
 expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .row')[0].childElementCount===2", timeout = 50))
 expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .row')[1].childElementCount===1", timeout = 50))
-expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .row')[2].childElementCount===2", timeout = 50))
+expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .row')[2].childElementCount===1", timeout = 50))
+expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .row')[3].childElementCount===1", timeout = 50))
 
 expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .small-box.bg-green h3')[0].innerText==='79.6136'", timeout = 50))
 expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .small-box.bg-green p')[0].innerText==='Absolute error in entire training phase'", timeout = 50))
@@ -22,6 +23,5 @@ expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .small-box.bg-aqu
 expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .small-box.bg-aqua p')[1].innerText==='last date of training period'", timeout = 50))
 
 expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .row .bg-aqua .fa-play-circle').length==1", timeout = 50))
-expect_true(app$waitFor("$('div[data-value=\"outputTabset_1\"] .row .bg-aqua .fa-ban').length==1", timeout = 50))
 
 app$stop()

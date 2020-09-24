@@ -95,15 +95,6 @@
               "lib": "font-awesome"
             },
             "round": 0
-          },
-          "lastdaytraining": {
-            "description": "last date of training period",
-            "color": "aqua",
-            "icon": {
-              "name": "ban",
-              "lib": "font-awesome"
-            },
-            "round": 0
           }
         }
       ]
