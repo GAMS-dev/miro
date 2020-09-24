@@ -15,6 +15,7 @@
   "inputWidgets": {
     "price": {
       "widgetType": "table",
+      "label": "#asd\n*test*",
       "tableType": "default",
       "readonly": false,
       "readonlyCols": ["date", "symbol"],

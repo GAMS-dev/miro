@@ -81,7 +81,8 @@ errMsg <- installAndRequirePackages(requiredPackages, installedPackages, RLibPat
 installedPackages <<- installed.packages()[, "Package"]
 # vector of required files
 filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./components/gdxio.R", 
-                    "./components/json.R", "./components/views.R", "./components/load_scen_data.R", 
+                    "./components/json.R", "./components/scenario_metadata.R", "./components/views.R",
+                    "./components/attachments.R", "./components/load_scen_data.R",
                     "./components/data_instance.R", "./components/worker.R", 
                     "./components/dataio.R", "./components/hcube_data_instance.R", 
                     "./components/miro_tabsetpanel.R", "./modules/render_data.R", 
@@ -643,9 +644,6 @@ if(is.null(errMsg)){
     scenMetadataTable <- scenMetadataTablePrefix %+% modelName
     db   <- Db$new(uid = uid, dbConf = dbConfig, dbSchema = dbSchema,
                    slocktimeLimit = slocktimeLimit, modelName = modelName,
-                   attachmentConfig = if(config$activateModules$attachments) 
-                     list(maxSize = attachMaxFileSize, maxNo = attachMaxNo)
-                   else NULL,
                    hcubeActive = LAUNCHHCUBEMODE, ugroups = ugroups)
     conn <- db$getConn()
     flog.debug("Database connection established.")
@@ -1006,10 +1004,34 @@ if(!is.null(errMsg)){
         modelInTemplateTmp <- modelInTemplateTmp[inputIdsTmp]
 
         tmpDirToRemove     <- character(0L)
+        
+        if(debugMode){
+          forceScenImport <- identical(Sys.getenv("MIRO_FORCE_SCEN_IMPORT"), "true")
+          if(!forceScenImport){
+            currentDataHashesDf  <- db$importDataset("_sys__data_hashes",
+                                                     tibble("model", modelName))
+            currentDataHashes <- list()
+            if(length(currentDataHashesDf) && nrow(currentDataHashesDf)){
+              currentDataHashes <- currentDataHashesDf[["hash"]]
+              names(currentDataHashes) <- currentDataHashesDf[["filename"]]
+            }
+            newDataHashes <- currentDataHashes
+          }
+        }
 
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
-          flog.info("New data: '%s' is being stored in the database. Please wait a until the import is finished.", miroDataFile)
+          if(debugMode && !forceScenImport){
+            dataHash <- digest::digest(file = file.path(miroDataDir, miroDataFile),
+                                       algo = "sha1", serialize = FALSE)
+            if(miroDataFile %in% names(currentDataHashes) && 
+               identical(dataHash, currentDataHashes[[miroDataFile]])){
+              flog.info("Data: '%s' skipped because it has not changed since the last start.", miroDataFile)
+              next
+            }
+            newDataHashes[[miroDataFile]] <- dataHash
+          }
+          flog.info("New data: '%s' is stored in the database. Please wait until the import is finished.", miroDataFile)
           if(dataFileExt[i] %in% c("xls", "xlsx")){
             method <- "xls"
             tmpDir <- miroDataDir
@@ -1032,9 +1054,20 @@ if(!is.null(errMsg)){
             tmpDir <- miroDataDir
           }
           scenName <- tools::file_path_sans_ext(miroDataFile)
+          viewDataId <- match(paste0(tolower(scenName), "_views.json"),
+                              tolower(miroDataFilesRaw))
+          views <- NULL
+          if(!is.na(viewDataId)){
+            flog.debug("Found view data for scenario: %s.", scenName)
+            views <- Views$new(names(modelIn),
+                               names(modelOut),
+                               inputDsNames)
+            views$addConf(fromJSON(read_file(file.path(miroDataDir, miroDataFilesRaw[viewDataId])),
+                                   simplifyDataFrame = FALSE, simplifyVector = FALSE))
+          }
           newScen <- Scenario$new(db = db, sname = scenName, isNewScen = TRUE,
                                   readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
-                                  execPerm = c(uidAdmin, ugroups), uid = uidAdmin)
+                                  execPerm = c(uidAdmin, ugroups), uid = uidAdmin, views = views)
           dataOut <- loadScenData(scalarsOutName, modelOut, tmpDir, modelName, scalarsFileHeaders,
                                   modelOutTemplate, method = method, fileName = miroDataFile)$tabular
           dataIn  <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp,
@@ -1043,16 +1076,6 @@ if(!is.null(errMsg)){
                                   scalarsFileHeaders = scalarsFileHeaders,
                                   templates = modelInTemplateTmp, method = method,
                                   fileName = miroDataFile, DDPar = DDPar, GMSOpt = GMSOpt)$tabular
-          viewDataId <- match(paste0(tolower(scenName), "_views.json"), tolower(miroDataFilesRaw))
-          if(!is.na(viewDataId)){
-            flog.debug("Found view data for scenario: %s.", scenName)
-            views <- Views$new(names(modelIn),
-                               names(modelOut),
-                               inputDsNames)
-            views$addConf(fromJSON(read_file(file.path(miroDataDir, miroDataFilesRaw[viewDataId])),
-                                   simplifyDataFrame = FALSE, simplifyVector = FALSE))
-            newScen$updateViewConf(views$getConf())
-          }
           if(!scalarsFileName %in% names(metaDataTmp) && length(c(DDPar, GMSOpt))){
             # additional command line parameters that are not GAMS symbols
             scalarsTemplate <- tibble(a = character(0L), b = character(0L), c = character(0L))
@@ -1076,6 +1099,13 @@ if(!is.null(errMsg)){
           }else{
             flog.error("Problems removing temporary directory: '%s'.", tmpDirToRemove)
           }
+        }
+        if(debugMode && !forceScenImport && !identical(currentDataHashes, newDataHashes)){
+          db$deleteRows("_sys__data_hashes", "model", modelName)
+          db$exportDataset("_sys__data_hashes",
+                           tibble(model = modelName,
+                                  filename = names(newDataHashes),
+                                  hash = unlist(newDataHashes, use.names = FALSE)))
         }
       }
     }, error = function(e){
@@ -1168,19 +1198,49 @@ if(!is.null(errMsg)){
       modelStatus        <- NULL
       
       compareModeTabsetGenerated <- vector("logical", 3L)
-      # currently active scenario (R6 object)
-      activeScen         <- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
-                                         isNewScen = TRUE)
-      exportFileType     <- if(useGdx) "gdx" else "xls"
       
-      # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
-      sidCompOrder     <- NULL
+      # set local working directory
+      unzipModelFilesProcess <- NULL
+      if(useTempDir){
+        workDir <- file.path(tmpFileDir, session$token)
+        if(!config$activateModules$remoteExecution && length(modelData)){
+          tryCatch({
+            unzipModelFilesProcess <- unzip_process()$new(modelData, exdir = workDir, 
+                                                          stderr = NULL)
+          }, error = function(e){
+            flog.error("Problems creating process to extract model file archive. Error message: '%s'.", 
+                       conditionMessage(e))
+          })
+        }
+      }else{
+        workDir <- currentModelDir
+      }
       
       rv <- reactiveValues(scenId = 4L, unsavedFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
                            btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
                            btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
                            noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
                            jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L)
+      
+      views              <- Views$new(names(modelIn),
+                                      names(modelOut),
+                                      inputDsNames, rv)
+      attachments        <- Attachments$new(db, list(maxSize = attachMaxFileSize, maxNo = attachMaxNo,
+                                                     forbiddenFNames = c(if(identical(config$fileExchange, "gdx")) 
+                                                       c(MIROGdxInName, MIROGdxOutName) else 
+                                                         paste0(c(names(modelOut), inputDsNames), ".csv"),
+                                                                         paste0(modelName, c(".log", ".lst")))),
+                                            workDir,
+                                            names(modelIn),
+                                            names(modelOut),
+                                            inputDsNames, rv)
+      # currently active scenario (R6 object)
+      activeScen         <- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
+                                         isNewScen = TRUE, views = views, attachments = attachments)
+      exportFileType     <- if(useGdx) "gdx" else "xls"
+      
+      # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
+      sidCompOrder     <- NULL
       
       worker <- Worker$new(metadata = list(uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
                                            tableNameTracePrefix = tableNameTracePrefix, maxSizeToRead = 5000,
@@ -1207,9 +1267,6 @@ if(!is.null(errMsg)){
       }
       rendererEnv        <- new.env(parent = emptyenv())
       rendererEnv$output <- new.env(parent = emptyenv())
-      views              <- Views$new(names(modelIn),
-                                      names(modelOut),
-                                      inputDsNames, rv)
       
       scenMetaData     <- list()
       # scenario metadata of scenario saved in database
@@ -1348,22 +1405,6 @@ if(!is.null(errMsg)){
       # initially set rounding precision to default
       roundPrecision <- config$roundingDecimals
       
-      # set local working directory
-      unzipModelFilesProcess <- NULL
-      if(useTempDir){
-        workDir <- file.path(tmpFileDir, session$token)
-        if(!config$activateModules$remoteExecution && length(modelData)){
-          tryCatch({
-            unzipModelFilesProcess <- unzip_process()$new(modelData, exdir = workDir, 
-                                                          stderr = NULL)
-          }, error = function(e){
-            flog.error("Problems creating process to extract model file archive. Error message: '%s'.", 
-                       conditionMessage(e))
-          })
-        }
-      }else{
-        workDir <- currentModelDir
-      }
       flog.info("Session started (model: '%s', user: '%s', workdir: '%s').", 
                 modelName, uid, workDir)
       
@@ -1546,7 +1587,7 @@ if(!is.null(errMsg)){
                    input[["in_" %+% i]]
                  },
                  dt ={
-                   input[[paste0("in_", i, "_cell_edit")]]
+                   rv[[paste0("wasModified_", i)]]
                  }, 
                  slider = {
                    input[["slider_" %+% i]]

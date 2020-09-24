@@ -220,7 +220,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       
       if(isInput){
         dataUpdated <- reactiveVal(1L)
-        editMade <- FALSE
         if(nrow(data) < 5e+05){
           isEditable <- TRUE
           hideEl(session, paste0("#", ns("enableEdit")))
@@ -761,13 +760,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
           enableEl(session, paste0("#", ns("btAddRow")))
           enableEl(session, paste0("#", ns("btRemoveRows")))
-          if(editMade){
-            editMade <<- FALSE
-            isolate({
-              newVal <- dataUpdated() + 1L
-              dataUpdated(newVal)
-            })
-          }
         }
         if(length(rowIndexList)){
           dataTmp <- dataTmp %>% select(!!!c(rowIndexList, colIndexList, valueColName)) %>% 
@@ -1128,7 +1120,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               data[nrow(data) + 1L, ] <<- newRow[[i]]
             }
             removeModal()
-            editMade <<- TRUE
+            newVal <- dataUpdated() + 1L
+            dataUpdated(newVal)
             newUpdateFilterVal <- updateFilter() + 1L
             updateFilter(newUpdateFilterVal)
           })
@@ -1202,7 +1195,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               data <<- data[-rowIdsToRemove, ]
               flog.trace("MIRO pivot: %s row(s) removed.", length(rowIdsToRemove))
               
-              editMade <<- TRUE
+              newVal <- dataUpdated() + 1L
+              dataUpdated(newVal)
               newUpdateFilterVal <- updateFilter() + 1L
               updateFilter(newUpdateFilterVal)
             }
@@ -1324,7 +1318,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                   data <<- data[-c(rowId), ]
                   editedVal <- NA_real_
                   if(length(colIndices) == 0L){
-                    editMade <<- TRUE
+                    newVal <- dataUpdated() + 1L
+                    dataUpdated(newVal)
                     updateFilter(newUpdateFilterVal)
                     return()
                   }
@@ -1402,7 +1397,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                             levels = unique(sort(levels(data[[colId + 1L]]))))
             }
             data[rowId, 1L] <<- newKey
-            editMade <<- TRUE
+            newVal <- dataUpdated() + 1L
+            dataUpdated(newVal)
             updateFilter(newUpdateFilterVal)
           })
         })

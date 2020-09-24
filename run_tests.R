@@ -6,4 +6,6 @@ if(!identical(RLibPath, "")) {
 options(testthat.output_file = "test-out.xml")
 options(testthat.default_reporter = "junit")
 
+print(sessionInfo())
+
 source(file.path("tests", "testthat.R"))

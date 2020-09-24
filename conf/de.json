@@ -715,6 +715,10 @@
         "radar": "Radardiagramm",
         "line": "Liniendiagramm"
       }
+    },
+    "datatable":{
+      "addRowPos": ["Zeile oberhalb der Auswahl hinzufügen", "Zeile unterhalb der Auswahl hinzufügen"],
+      "addRowPosNoneSelected": ["Über der ersten Zeile hinzufügen", "Unter der letzten Zeile hinzufügen"]
     }
   },
   "errMsg":{
@@ -1250,6 +1254,7 @@
         "numericinput": "Numerische Eingabe"
       },
       "table":{
+        "label": "Label (Markdown wird unterstützt)",
         "type": "Wählen Sie die Art der Tabelle, die Sie verwenden möchten",
         "typeChoices": ["Standard", "Big Data-Tabelle", "Pivot-Tabelle"],
         "hideIndexCol": "Indexierungsspalte ausblenden?",

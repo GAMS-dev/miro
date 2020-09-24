@@ -323,6 +323,10 @@ if(is.null(errMsg)){
         modelIn[[i]][[widgetType]] <- widgetConfig
         next
       }
+      if(!is.null(widgetConfig[["label"]])){
+        modelIn[[i]]$label <- widgetConfig[["label"]]
+        widgetConfig$label  <- NULL
+      }
       if(!is.null(widgetConfig[["hideIndexCol"]])){
         modelIn[[i]]$hideIndexCol  <- widgetConfig[["hideIndexCol"]]
         widgetConfig$hideIndexCol  <- NULL

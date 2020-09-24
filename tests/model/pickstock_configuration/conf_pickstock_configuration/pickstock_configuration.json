@@ -15,6 +15,7 @@
   "inputWidgets": {
     "price": {
       "widgetType": "table",
+      "label": "#asd\n*test*",
       "bigData": false,
       "readonly": false,
       "readonlyCols": ["date", "symbol"],
@@ -22,6 +23,7 @@
       "heatmap": true
     },
     "maxstock": {
+      "label": "select the maximum number of stocks",
       "widgetType": "slider",
       "alias": "maximum number of stocks to select",
       "min": 1,
@@ -29,29 +31,28 @@
       "default": 3,
       "step": 1,
       "ticks": false,
-      "noHcube": false,
-      "label": "select the maximum number of stocks"
+      "noHcube": false
     },
     "trainingdays": {
-      "widgetType": "slider",
-      "alias": "number of days for training",
+      "label": "select the number of days for training",
       "min": 1,
-      "max": "card(price$date)",
       "default": 99,
       "step": 1,
+      "max": "card(price$date)",
+      "alias": "number of days for training",
+      "widgetType": "slider",
       "ticks": false,
-      "noHcube": false,
-      "label": "select the number of days for training"
+      "noHcube": false
     },
     "solver": {
-      "widgetType": "dropdown",
       "alias": "MIP-Solver",
+      "widgetType": "dropdown",
+      "label": "Solver to use",
       "choices": ["BARON", "BDMLP", "CBC", "CPLEX", "LINDO", "LINDOGLOBAL", "MOSEK", "SCIP", "XPRESS"],
       "selected": "CPLEX",
       "noHcube": false,
       "clearValue": false,
-      "multiple": false,
-      "label": "Solver to use"
+      "multiple": false
     },
     "clearvalueset": {
       "widgetType": "textinput",
@@ -70,8 +71,8 @@
       "step": 3,
       "ticks": true,
       "noHcube": true,
-      "minStep": 1,
-      "label": "select the slider range"
+      "label": "select the slider range",
+      "minStep": 1
     },
     "_gmsopt_checkbox": {
       "widgetType": "checkbox",
@@ -89,8 +90,8 @@
       "weekstart": 1,
       "autoclose": true,
       "noHcube": false,
-      "value": "2020-07-15",
       "label": "select a date",
+      "value": "2020-07-15",
       "min": "2020-01-01",
       "daysofweekdisabled": [0, 6]
     },
@@ -117,63 +118,30 @@
       "alias": "numericinput tab",
       "value": 4000.56,
       "min": -1,
-      "max": 10000,
       "decimal": 3,
       "decimalCharacter": ",",
       "digitGroupSeparator": ".",
-      "sign": "€",
-      "label": "select a number"
+      "label": "select a number",
+      "max": 10000,
+      "sign": "€"
     }
   },
   "dataRendering": {
-    "mapNoGroup": {
-      "outType": "graph",
-      "graph": {
-        "tool": "leaflet",
-        "layersControl": {
-          "options": {
-            "collapsed": true
-          },
-          "position": "topright"
-        },
-        "markers": {
-          "1": {
-            "lng": "lngp",
-            "lat": "latp",
-            "iconOptions": {
-              "icon": "circle",
-              "iconColor": "",
-              "markerColor": "blue"
-            },
-            "labelOptions": {
-              "textsize": "12px",
-              "permanent": true
-            },
-            "label": ""
-          },
-          "2": {
-            "lng": "lngm",
-            "lat": "latm",
-            "iconOptions": {
-              "icon": "circle",
-              "iconColor": "",
-              "markerColor": "blue"
-            },
-            "labelOptions": {
-              "textsize": "12px",
-              "permanent": true
-            },
-            "label": ""
-          }
-        }
-      },
-      "height": 700
-    },
     "abserror": {
       "outType": "dtGraph",
+      "height": 700,
       "graph": {
         "tool": "plotly",
         "type": "hist",
+        "histnorm": "percent",
+        "nbins": 20,
+        "barmode": "overlay",
+        "alpha": 0.6,
+        "cumulative": false,
+        "horizontal": false,
+        "title": "Absolute Error: Dow Jones vs. Index Fund",
+        "showlegend": true,
+        "staticPlot": false,
         "xdata": {
           "absolute error train": {
             "labels": "training",
@@ -186,23 +154,13 @@
             "alpha": 0.6
           }
         },
-        "histnorm": "percent",
-        "nbins": 20,
-        "barmode": "overlay",
-        "alpha": 0.6,
-        "cumulative": false,
-        "horizontal": false,
         "xaxis": {
           "title": "Absolute Error"
         },
         "yaxis": {
           "title": "Frequency"
-        },
-        "title": "Absolute Error: Dow Jones vs. Index Fund",
-        "showlegend": true,
-        "staticPlot": false
-      },
-      "height": 700
+        }
+      }
     },
     "schedule": {
       "outType": "graph",
@@ -212,8 +170,8 @@
           "options": {
             "collapsed": true
           },
-          "overlayGroups": ["Canning plants", "Markets"],
-          "position": "topright"
+          "position": "topright",
+          "overlayGroups": ["Canning plants", "Markets"]
         },
         "markers": {
           "1": {
@@ -269,6 +227,49 @@
       },
       "height": 700
     },
+    "mapNoGroup": {
+      "outType": "graph",
+      "graph": {
+        "tool": "leaflet",
+        "layersControl": {
+          "options": {
+            "collapsed": true
+          },
+          "position": "topright"
+        },
+        "markers": {
+          "1": {
+            "lng": "lngp",
+            "lat": "latp",
+            "iconOptions": {
+              "icon": "circle",
+              "iconColor": "",
+              "markerColor": "blue"
+            },
+            "labelOptions": {
+              "textsize": "12px",
+              "permanent": true
+            },
+            "label": ""
+          },
+          "2": {
+            "lng": "lngm",
+            "lat": "latm",
+            "iconOptions": {
+              "icon": "circle",
+              "iconColor": "",
+              "markerColor": "blue"
+            },
+            "labelOptions": {
+              "textsize": "12px",
+              "permanent": true
+            },
+            "label": ""
+          }
+        }
+      },
+      "height": 700
+    },
     "gantt": {
       "outType": "graph",
       "graph": {
@@ -319,22 +320,6 @@
       "graph": {
         "tool": "dygraphs",
         "xdata": "date",
-        "ydata": {
-          "dj": {
-            "label": "Dow Jones index",
-            "stepPlot": false,
-            "stemPlot": false,
-            "fillGraph": false,
-            "drawpoints": true
-          },
-          "index fund": {
-            "label": "Index fund",
-            "stepPlot": false,
-            "stemPlot": false,
-            "fillGraph": false,
-            "drawpoints": true
-          }
-        },
         "title": "Dow Jones vs. Index Fund",
         "dyOptions": {
           "logscale": false,
@@ -346,28 +331,11 @@
           "pointShape": "dot",
           "pointSize": 2
         },
-        "dyHighlight": {
-          "highlightCircleSize": 3,
-          "highlightSeriesBackgroundAlpha": 0.5,
-          "hideOnMouseOut": true,
-          "highlightSeriesOpts": {
-            "strokeWidth": 10,
-            "strokeBorderWidth": 2.5,
-            "strokeBorderColor": "#f50000"
-          }
-        },
         "dyLegend": {
           "show": "follow",
           "width": 450,
           "showZeroValues": false,
           "labelsSeparateLines": false
-        },
-        "dyRangeSelector": {
-          "height": 15,
-          "strokeColor": "#ff0000",
-          "fillColor": "#0058ff",
-          "retainDateWindow": false,
-          "keepMouseZoom": true
         },
         "xaxis": {
           "name": "x",
@@ -384,7 +352,10 @@
           "axisLabelFontSize": 14,
           "gridLineWidth": 0.3,
           "gridLineColor": "gray",
-          "valueRange": [null, null],
+          "valueRange": [
+            null,
+            null
+          ],
           "independentTicks": true
         },
         "yaxis2": {
@@ -394,8 +365,44 @@
           "axisLabelFontSize": 14,
           "gridLineWidth": 0.3,
           "drawGrid": true,
-          "valueRange": [null, null],
+          "valueRange": [
+            null,
+            null
+          ],
           "independentTicks": true
+        },
+        "ydata": {
+          "dj": {
+            "label": "Dow Jones index",
+            "stepPlot": false,
+            "stemPlot": false,
+            "fillGraph": false,
+            "drawpoints": true
+          },
+          "index fund": {
+            "label": "Index fund",
+            "stepPlot": false,
+            "stemPlot": false,
+            "fillGraph": false,
+            "drawpoints": true
+          }
+        },
+        "dyHighlight": {
+		  "highlightCircleSize": 3,
+          "hideOnMouseOut": true,
+          "highlightSeriesOpts": {
+            "strokeWidth": 10,
+            "strokeBorderWidth": 2.5,
+            "strokeBorderColor": "#f50000"
+          },
+          "highlightSeriesBackgroundAlpha": 0.5
+        },
+        "dyRangeSelector": {
+          "height": 15,
+          "strokeColor": "#ff0000",
+          "fillColor": "#0058ff",
+          "retainDateWindow": false,
+          "keepMouseZoom": true
         },
         "dyEvent": {
           "lastdaytraining": {
@@ -440,6 +447,7 @@
     "repc": {
       "outType": "graph",
       "graph": {
+        "title": "crop report",
         "tool": "plotly",
         "type": "pie",
         "traces": {
@@ -486,7 +494,6 @@
             "hole": 0.3
           }
         },
-        "title": "crop report",
         "showlegend": true,
         "staticPlot": false
       },
@@ -498,7 +505,6 @@
         "tool": "plotly",
         "type": "bar",
         "barmode": "group",
-        "width": "value",
         "ydata": {
           "value": {
             "label": "y label test",
@@ -526,6 +532,9 @@
           "showticklabels": false,
           "categoryorder": "trace"
         },
+        "title": "Some title",
+        "showlegend": true,
+        "staticPlot": true,
         "color": "symbol",
         "filter": {
           "col": "symbol",
@@ -533,11 +542,9 @@
           "multiple": true,
           "date": false
         },
-        "title": "Some title",
-        "showlegend": true,
+        "width": "value",
         "paper_bgcolor": "rgba(66,66,66,0.15)",
-        "plot_bgcolor": "rgba(222,62,62,0.08)",
-        "staticPlot": true
+        "plot_bgcolor": "rgba(222,62,62,0.08)"
       },
       "height": 700
     },
@@ -583,10 +590,10 @@
           "rangefrom": 45,
           "rangeto": 150
         },
-        "color": "symbol",
         "title": "",
         "showlegend": true,
-        "staticPlot": false
+        "staticPlot": false,
+        "color": "symbol"
       },
       "height": 700
     },
@@ -652,7 +659,6 @@
         "color": "ind",
         "title": "Hovercraft example",
         "showlegend": true,
-        "plot_bgcolor": "rgba(94,170,240,0.25)",
         "staticPlot": false,
         "animation": {
           "easing": "linear",
@@ -662,10 +668,11 @@
           "transition": 25,
           "slider": {
             "hide": false,
-            "prefix": "time frame: ",
-            "fontcolor": "#000000"
+            "fontcolor": "#000000",
+            "prefix": "time frame: "
           }
-        }
+        },
+        "plot_bgcolor": "rgba(94,170,240,0.25)"
       },
       "height": 700
     },
@@ -790,12 +797,6 @@
     },
     "hovercraft": {
       "newAlias": "hovercraft"
-    },
-    "mapnogroup": {
-      "newAlias": "shipment quantities in cases"
-    },
-    "maptest": {
-      "newAlias": "Market location information"
     }
   },
   "overwriteHeaderAliases": {
@@ -824,6 +825,30 @@
     }
   ],
   "extraClArgs": "--test=true",
+  "inputWidgetGroups": [
+    {
+      "name": "Advanced options",
+      "members": "solver"
+    }
+  ],
+  "outputGroups": [
+    {
+      "name": "Dow Jones vs. Index Fund",
+      "members": ["dowvsindex", "abserror"]
+    }
+  ],
+  "handsontable": {
+    "stretchH": "none",
+    "readonly": false,
+    "manualColumnResize": false,
+    "contextMenu": {
+      "enabled": true,
+      "allowRowEdit": false,
+      "allowColEdit": false
+    },
+    "height": 250,
+    "colWidths": 200
+  },
   "datatable": {
     "class": "stripe",
     "filter": "top",
@@ -848,29 +873,5 @@
       "rownames": true,
       "extensions": "Buttons"
     }
-  },
-  "inputWidgetGroups": [
-    {
-      "name": "Advanced options",
-      "members": "solver"
-    }
-  ],
-  "outputGroups": [
-    {
-      "name": "Dow Jones vs. Index Fund",
-      "members": ["dowvsindex", "abserror"]
-    }
-  ],
-  "handsontable": {
-    "stretchH": "none",
-    "readonly": false,
-    "manualColumnResize": false,
-    "contextMenu": {
-      "enabled": true,
-      "allowRowEdit": false,
-      "allowColEdit": false
-    },
-    "height": 250,
-    "colWidths": 200
   }
 }

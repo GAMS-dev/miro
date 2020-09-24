@@ -52,6 +52,20 @@ observeEvent(input$table_type, {
   }
 })
 
+output$tableLabelWrapper <- renderUI({
+  if(length(rv$tableWidgetConfig$label) && !identical(trimws(rv$tableWidgetConfig$label), "")){
+    tags$div(tags$div(id = "inputTableLabelToggle",
+                      icon("minus"), style = "cursor:pointer;font-weight:bold;", 
+                      onclick = "Miro.slideToggleEl({id: '#inputTableLabel',
+                      toggleIconDiv:'#inputTableLabelToggle'})",
+                      "aria-expanded" = "true", "aria-controls" = "inputTableLabelToggle"),
+             tags$div(id = "inputTableLabel",
+                      class = "readme-wrapper", style = "max-height:150px",
+                      markdown(rv$tableWidgetConfig$label)
+             ))
+  }
+})
+
 getHotOptions <- reactive({
   input$table_type
   tagList(
@@ -176,16 +190,19 @@ observeEvent({input$table_symbol
       if(identical(currentConfig$tableType, "pivot")){
         rv$tableWidgetConfig <- list(widgetType = "table",
                                      tableType = "pivot",
+                                     label = currentConfig$label,
                                      options = checkLength(configuredTable, currentConfig[["options"]], list()))
         rv$tableWidgetConfig$options$input <- TRUE
       }else if(identical(currentConfig$tableType, "bigdata") || isTRUE(currentConfig$bigData)){
         rv$tableWidgetConfig <- list(widgetType = "table",
                                      tableType = "bigdata",
+                                     label = currentConfig$label,
                                      readonly =  checkLength(configuredTable, currentConfig[["readonly"]], FALSE),
                                      pivotCols = checkLength(configuredTable, currentConfig$pivotCols, "_"))
       }else{
         rv$tableWidgetConfig <- list(widgetType = "table",
                                      tableType = "default",
+                                     label = currentConfig$label,
                                      readonly = checkLength(configuredTable, currentConfig[["readonly"]], FALSE),
                                      readonlyCols = checkLength(configuredTable, currentConfig[["readonlyCols"]], NULL),
                                      hideIndexCol = checkLength(configuredTable, currentConfig$hideIndexCol, FALSE),
@@ -231,6 +248,8 @@ getSymbolHotOptions <- function(){
     # tags$div(class="option-wrapper",
     #          textInput("table_alias", lang$adminMode$widgets$ui$alias, value = rv$tableWidgetConfig$alias)),
     tags$div(class="option-wrapper",
+             textAreaInput("table_label", lang$adminMode$widgets$table$label,
+                           value = rv$tableWidgetConfig$label),
              selectInput("inputTable_type", lang$adminMode$widgets$table$type,
                          choices = setNames(c("default", "bigdata", "pivot"),
                                             lang$adminMode$widgets$table$typeChoices),
@@ -624,6 +643,9 @@ observeEvent(input$table_hideIndexCol, {
 })
 observeEvent(input$table_readonly, {
   rv$tableWidgetConfig$readonly <<- input$table_readonly
+})
+observeEvent(input$table_label, {
+  rv$tableWidgetConfig$label <<- input$table_label
 })
 observeEvent(input$table_readonlyCols, ignoreNULL = FALSE, {
   if(!length(input$table_readonlyCols)){

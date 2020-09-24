@@ -674,6 +674,10 @@
         "radar": "Radar chart",
         "line": "Line chart"
       }
+    },
+    "datatable":{
+      "addRowPos": ["Add row above selection", "Add row below selection"],
+      "addRowPosNoneSelected": ["Add above first row", "Add below last row"]
     }
   },
   "progressBar":{  
@@ -1250,6 +1254,7 @@
         "numericinput": "Numeric input"
       },
       "table":{
+        "label": "Label (Markdown is supported)",
         "type": "Select the type of table you want to use",
         "typeChoices": ["Default", "Big Data table", "Pivot table"],
         "hideIndexCol": "Hide indexing column?",

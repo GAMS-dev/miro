@@ -205,10 +205,10 @@ test_that("MIRO pivot renderer handles sorting (part2)", {
                      data.frame(c = c("c1", "c1", "c10", "c10"),
                                 d = paste0("d", c(10, 4, 5, 9)),
                                 b = c("b5", "b11", "b5", "b11"),
-                                `a4․e10` = c(NA_integer_, 4L, NA_integer_, NA_integer_),
-                                `a4․e2` = c(NA_integer_, NA_integer_, NA_integer_, 9L),
-                                `a5․e10` = c(10L, NA_integer_, NA_integer_, NA_integer_),
-                                `a5․e2` = c(NA_integer_, NA_integer_, 5L, NA_integer_)))
+                                `a4.e10` = c(NA_integer_, 4L, NA_integer_, NA_integer_),
+                                `a4.e2` = c(NA_integer_, NA_integer_, NA_integer_, 9L),
+                                `a5.e10` = c(10L, NA_integer_, NA_integer_, NA_integer_),
+                                `a5.e2` = c(NA_integer_, NA_integer_, 5L, NA_integer_)))
     
   }, args = list(data = tibble(a = rep.int(paste0("a", seq_len(5)), 2L), b = rep.int(c("b2", "b10", "b4", "b11", "b5"), 2L),
                                c = rep.int(c("c10", "c1"), 5L), d = paste0("d", seq_len(10)),
