@@ -1,5 +1,5 @@
 #remove the currently active scenario
-closeScenario <- function(){
+closeScenario <- function(clearMeta = TRUE){
   # remove output data
   errMsg <- NULL
   lapply(seq_along(modelOut), function(i){
@@ -101,13 +101,15 @@ closeScenario <- function(){
   
   # reset model output data
   renderOutputData(rendererEnv, views)
-  activeScenario    <<- NULL
   if(length(activeScen)){
-    activeScen$cleanLocalFiles()
+    if(clearMeta){
+      views$clearConf()
+      attachments$clear(cleanLocal = TRUE)
+    }
     activeScen$finalize()
   }
   activeScen        <<- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
-                                     isNewScen = TRUE)
+                                     isNewScen = TRUE, views = views, attachments = attachments)
   rv$activeSname    <<- NULL
   scenTags          <<- NULL
   attachmentList    <<- tibble(name = vector("character", attachMaxNo), 

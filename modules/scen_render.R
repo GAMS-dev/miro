@@ -72,7 +72,7 @@ lapply(scenTableNamesToDisplay, function(sheetName){
                pivotOptions = tabData$graphConfig$pivottable, 
                customOptions = tabData$graphConfig$options,
                roundPrecision = roundPrecision, modelDir = modelDir,
-               rendererEnv = rendererEnv[[scenIdLong]], views = views)
+               rendererEnv = rendererEnv[[scenIdLong]], views = views, attachments = attachments)
     callModule(renderData, paste0("table_tab_", scenCounter, "_", tabData$tabId), type = "datatable", 
                data = dataToRender, 
                dtOptions = tabData$graphConfig$datatable, roundPrecision = roundPrecision)

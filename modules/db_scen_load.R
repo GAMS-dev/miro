@@ -274,12 +274,13 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   if(isInSolveMode){
     # close currently opened scenario
     resetWidgetsOnClose <<- FALSE
-    if(!closeScenario()){
+    if(!closeScenario(clearMeta = FALSE)){
       return()
     }
     if(!loadIntoSandbox){
       tryCatch({
-        activeScen <<- Scenario$new(db = db, sid = sidsToLoad[[1]])
+        activeScen <<- Scenario$new(db = db, sid = sidsToLoad[[1]],
+                                    views = views, attachments = attachments)
       },
       error = function(e){
         flog.error("Error generating new Scenario object. Error message: '%s'.", e)

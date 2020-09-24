@@ -44,7 +44,7 @@ renderScenPivotCompare <- function(scenData, scenNames, rendererEnv,
                  customOptions = graphOptions,
                  roundPrecision = roundPrecision,
                  rendererEnv = rendererEnv[[scenIdLong]],
-                 views = views)
+                 views = views, attachments = attachments)
     }, error = function(e) {
       stop(sprintf("Problem rendering graphs for dataset: '%s'. Error message: %s.",
                    sheetName, conditionMessage(e)), call. = FALSE)

@@ -72,6 +72,7 @@ these components are included below):
 - BH https://github.com/eddelbuettel/bh or https://cran.r-project.org/web/packages/BH/index.html
 - plogr https://github.com/krlmlr/plogr or https://cran.r-project.org/web/packages/plogr/index.html
 - httpuv https://github.com/rstudio/httpuv or https://cran.r-project.org/web/packages/httpuv/index.html
+- fs https://github.com/r-lib/fs or https://cran.r-project.org/web/packages/fs/index.html
 - mime https://github.com/yihui/mime or https://cran.r-project.org/web/packages/mime/index.html
 - xtable https://github.com/cran/xtable or https://cran.r-project.org/web/packages/xtable/index.html
 - digest https://github.com/eddelbuettel/digest or https://cran.r-project.org/web/packages/digest/index.html
@@ -1006,6 +1007,11 @@ Library.
             Hector Corrada Bravo [ctb], 
             Jeroen Ooms [ctb], 
             Winston Chang [ctb]
+        - fs, Copyright (c)
+            Jim Hester [aut, cre],
+            Hadley Wickham [aut],
+            libuv project contributors [cph] (libuv library), Joyent, Inc. and other Node contributors [cph] (libuv library),
+            RStudio [cph, fnd]
         - mime [expanded from: GPL], Copyright (c)
             Yihui Xie ORCID [aut, cre], 
             Jeffrey Horner [ctb], 
