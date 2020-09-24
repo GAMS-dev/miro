@@ -143,10 +143,21 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
       }else{
         oldConfig <- FALSE
         if(length(names(customOptions))){
-           numberRows <- length(customOptions[!names(customOptions) %in% c("_metadata_", "count")])
-        }else{
-           numberRows <- length(customOptions)
+          customOptions <- customOptions[!names(customOptions) %in% c("_metadata_", "count")]
         }
+        configuredScalars <- unlist(lapply(customOptions, names), use.names = FALSE)
+        unconfiguredScalars <- !tolower(data[[1]]) %in% tolower(configuredScalars)
+        if(any(unconfiguredScalars)){
+          unconfiguredScalars <- data[[1]][unconfiguredScalars]
+          additionalOptions <- lapply(seq_len(ceiling(length(unconfiguredScalars)/3L)) - 1L, function(rowId){
+            scalarNames <- unconfiguredScalars[seq(rowId*3L + 1L, min(length(unconfiguredScalars),
+                                                                      rowId*3L + 3L))]
+            return(setNames(vector("list", length(scalarNames)),
+                            scalarNames))
+          })
+          customOptions <- c(customOptions, additionalOptions)
+        }
+        numberRows <- length(customOptions)
       }
       lapply(seq_len(numberRows), function(rowId){
         if(oldConfig){
@@ -166,8 +177,13 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
                                           color = customOptions$color)
                    }else{
                      scalarConfig <- rowConfig[[scalarId]]
+                     if(is.na(names(rowConfig)[scalarId])){
+                       return()
+                     }
                      scalarId <- match(names(rowConfig)[scalarId], data[[1]])
                      if(is.na(scalarId)){
+                       flog.warn("Value box was configured for nonexistent scalar: %s",
+                                 names(rowConfig)[scalarId])
                        return()
                      }
                    }

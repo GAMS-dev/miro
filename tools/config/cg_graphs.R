@@ -2882,6 +2882,18 @@ getValueboxOptions  <- reactive({
     numberRows <- ceiling(boxWidth*noScalars/12)
     oldConfig <- TRUE
   }else{
+    configuredScalars <- unlist(lapply(currentGraphConfig, names), use.names = FALSE)
+    unconfiguredScalars <- !tolower(scalarNames) %in% tolower(configuredScalars)
+    if(any(unconfiguredScalars)){
+      unconfiguredScalars <- scalarNames[unconfiguredScalars]
+      additionalOptions <- lapply(seq_len(ceiling(length(unconfiguredScalars)/3L)) - 1L, function(rowId){
+        scalarNames <- unconfiguredScalars[seq(rowId*3L + 1L, min(length(unconfiguredScalars),
+                                                                  rowId*3L + 3L))]
+        return(setNames(vector("list", length(scalarNames)),
+                        scalarNames))
+      })
+      currentGraphConfig <- c(currentGraphConfig, additionalOptions)
+    }
     numberRows <- length(currentGraphConfig)
     oldConfig <- FALSE
   }
