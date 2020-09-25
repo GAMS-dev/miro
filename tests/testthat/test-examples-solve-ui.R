@@ -2,11 +2,8 @@ context("UI tests - Example models solve")
 
 testDir <- file.path(getwd(), "..")
 
-if(file.exists(file.path(testDir, "miro.sqlite3"))){
-  if(unlink(file.path(testDir, "miro.sqlite3"), force = TRUE)){
-    stop("Could not remove old database SQLite file for tests")
-  }
-}
+createTestDb()
+
 if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
   message("GAMS_SYS_DIR environment variable not set. Skipping tests.")
 }else{

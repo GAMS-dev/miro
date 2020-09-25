@@ -24,6 +24,17 @@ expect_download_size <- function(app, id, filename, tolerance = 100){
   }
 }
 
+createTestDb <- function(dbPath = file.path(getwd(), "..", "miro.sqlite3")){
+  if(file.exists(dbPath)){
+    if(unlink(dbPath, force = TRUE)){
+      gc()
+      if(unlink(dbPath, force = TRUE)){
+        stop("Could not remove old database SQLite file for tests")
+      }
+    }
+  }
+}
+
 saveAdditionalGamsClArgs <- function(miroModelDir, modelToTest, additionalGamsClArgs){
   if(!length(additionalGamsClArgs)){
     return()
