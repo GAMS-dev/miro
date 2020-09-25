@@ -143,7 +143,22 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
         oldConfig <- TRUE
       }else{
         oldConfig <- FALSE
-        numberRows <- length(customOptions[!names(customOptions) %in% c("_metadata_", "count")])
+        if(length(names(customOptions))){
+          customOptions <- customOptions[!names(customOptions) %in% c("_metadata_", "count")]
+        }
+        configuredScalars <- unlist(lapply(customOptions, names), use.names = FALSE)
+        unconfiguredScalars <- !tolower(data[[1]]) %in% tolower(configuredScalars)
+        if(any(unconfiguredScalars)){
+          unconfiguredScalars <- data[[1]][unconfiguredScalars]
+          additionalOptions <- lapply(seq_len(ceiling(length(unconfiguredScalars)/3L)) - 1L, function(rowId){
+            scalarNames <- unconfiguredScalars[seq(rowId*3L + 1L, min(length(unconfiguredScalars),
+                                                                      rowId*3L + 3L))]
+            return(setNames(vector("list", length(scalarNames)),
+                            scalarNames))
+          })
+          customOptions <- c(customOptions, additionalOptions)
+        }
+        numberRows <- length(customOptions)
       }
       lapply(seq_len(numberRows), function(rowId){
         if(oldConfig){
@@ -152,33 +167,39 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
           rowConfig <- customOptions[[rowId]]
           boxWidth <- 12/length(rowConfig)
         }
-        fluidRow(lapply(seq_along(rowConfig), function(scalarId){
-          if(oldConfig){
-            scalarId <- scalarId + noBoxesRow * (rowId - 1L)
-            if(scalarId > length(data[[1]])){
-              return()
-            }
-            scalarConfig <- list(icon = customOptions$icon,
-                                 color = customOptions$color)
-          }else{
-            scalarConfig <- rowConfig[[scalarId]]
-            scalarId <- match(names(rowConfig)[scalarId], data[[1]])
-            if(is.na(scalarId)){
-              stop()
-            }
-          }
-          valueBox(if(!is.na(as.numeric(data[[3]][scalarId]))) 
-            round(as.numeric(data[[3]][scalarId]), 
-                  digits = if(length(scalarConfig$round)) 
-                    scalarConfig$round 
-                  else roundPrecision) 
-            else data[[3]][scalarId],
-            subtitle = if(length(scalarConfig$description)) scalarConfig$description else data[[2]][scalarId], 
-            width = boxWidth, 
-            #object
-            icon = if(length(scalarConfig$icon)) icon(scalarConfig$icon$name, lib = scalarConfig$icon$lib),
-            color = if(length(scalarConfig$color)) scalarConfig$color else "aqua")
-        }))
+        tags$div(class = "container-fluid",
+                 fluidRow(lapply(seq_along(rowConfig), function(scalarId){
+                   if(oldConfig){
+                     scalarId <- scalarId + noBoxesRow * (rowId - 1L)
+                     if(scalarId > length(data[[1]])){
+                       return()
+                     }
+                     scalarConfig <- list(icon = customOptions$icon,
+                                          color = customOptions$color)
+                   }else{
+                     scalarConfig <- rowConfig[[scalarId]]
+                     if(is.na(names(rowConfig)[scalarId])){
+                       return()
+                     }
+                     scalarId <- match(names(rowConfig)[scalarId], data[[1]])
+                     if(is.na(scalarId)){
+                       flog.warn("Value box was configured for nonexistent scalar: %s",
+                                 names(rowConfig)[scalarId])
+                       return()
+                     }
+                   }
+                   valueBox(if(!is.na(suppressWarnings(as.numeric(data[[3]][scalarId]))))
+                     round(as.numeric(data[[3]][scalarId]),
+                           digits = if(length(scalarConfig$round))
+                             scalarConfig$round
+                           else roundPrecision)
+                     else data[[3]][scalarId],
+                     subtitle = if(length(scalarConfig$description)) scalarConfig$description else data[[2]][scalarId],
+                     width = boxWidth,
+                     #object
+                     icon = if(length(scalarConfig$icon)) icon(scalarConfig$icon$name, lib = scalarConfig$icon$lib),
+                     color = if(length(scalarConfig$color)) scalarConfig$color else "aqua")
+                 })))
       })
     })
   }else if(type == "miropivot"){

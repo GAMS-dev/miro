@@ -1483,7 +1483,8 @@
         "tool": "选择要使用的图表工具",
         "choices": ["饼图", "柱形图", "散点图", "折线图", "气泡图", "直方图", "时间序列图形工具", "地图工具", "甘特图", "数据透视表", "标量值的值框", "自定义绘制器"],
         "deleteGraph": "删除",
-        "saveGraph": "保存"
+        "saveGraph": "保存",
+        "toggleFullscreen": "切换全屏"
       },
       "graphOptions":{
         "pie": "饼图",
@@ -1556,8 +1557,9 @@
         "color": "选择值框的颜色",
         "colorChoices": ["红色", "黄色", "水蓝色", "蓝色", "浅蓝色", "绿色", "藏青色", "蓝绿色", "橄榄绿", "鲜绿色", "橙色", "品红", "紫色", "栗色", "黑色"],
         "icon": "指定值框的图标（可选）。",
-        "valueboxIconChoices": ["_", "coins", "wallet", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupee", "Ruble", "Pound", "Lira", "User", "Users", "Plus", "Minus", "Exclamation mark", "Question mark", "Play", "Check", "Home", "Cog", "Asterisk", "Ban", "Heart", "Leaf", "Lightbulb", "Smile", "Star", "Other..."],
-        "otherIcon": "Use other icon from here: "
+        "valueboxIconChoices": ["_", "coins", "wallet", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupee", "Ruble", "Pound", "Lira", "User", "Users", "Plus", "Minus", "Exclamation mark", "Question mark", "Play", "Check", "Home", "Cog", "Asterisk", "Ban", "Heart", "Leaf", "Lightbulb", "Smile", "Star"],
+        "desc": "说明性文字",
+        "round": "小数位数（四舍五入）"
       },
       "animationOptions":{
         "title": "动画选项",
