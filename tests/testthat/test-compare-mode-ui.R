@@ -2,11 +2,7 @@ context("UI tests - pivot compare mode")
 
 testDir <- file.path(getwd(), "..")
 
-if(file.exists(file.path(testDir, "miro.sqlite3"))){
-  if(unlink(file.path(testDir, "miro.sqlite3"), force = TRUE)){
-    stop("Could not remove old database SQLite file for tests")
-  }
-}
+createTestDb()
 Sys.setenv(MIRO_DB_PATH = testDir)
 testModelPath <- file.path(testDir, "model", "transport")
 Sys.setenv(MIRO_MODEL_PATH = file.path(testModelPath,
