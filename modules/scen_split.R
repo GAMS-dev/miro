@@ -33,10 +33,22 @@ observeEvent(input$loadActiveScenSplitComp, {
   flog.debug("Load active scenario to split comparison mode pressed. ID: '%s'.", 
              isolate(input$loadActiveScenSplitComp))
   id <- suppressWarnings(as.integer(isolate(input$loadActiveScenSplitComp)))
+  showEl(session, "#loading-screen")
+  on.exit(hideEl(session, "#loading-screen"))
   if(identical(id, 2L)){
     loadInLeftBoxSplit <<- TRUE
+    if(!compareModeTabsetGenerated[1]){
+      compareModeTabsetGenerated[1] <<- TRUE
+      insertUI("#scenSplit1_content", where = "afterBegin",
+               generateScenarioTabsetSplit(2), immediate = TRUE)
+    }
   }else if(identical(id, 3L)){
     loadInLeftBoxSplit <<- FALSE
+    if(!compareModeTabsetGenerated[2]){
+      compareModeTabsetGenerated[2] <<- TRUE
+      insertUI("#scenSplit2_content", where = "afterBegin",
+               generateScenarioTabsetSplit(3), immediate = TRUE)
+    }
   }else{
     flog.error("Button ID (load active scenario to split comp) has invalid value: '%s'. This should never happen! 
                User most likely tried to tamper with the app.", isolate(input$loadActiveScenSplitComp))

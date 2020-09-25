@@ -283,8 +283,7 @@ generateScenarioTabsetPivot <- function(){
                                                'type="button" onclick="Shiny.setInputValue(\'btLoadScen\',1,{priority: \'event\'})">', 
                                                lang$nav$scen$btLoad, '</button>')))
                  ),
-                 tags$div(id = "pivotCompScenWrapper", style = "margin-top: 10px;", style = "display:none",
-                          generateScenarioTabset(0L, pivotCompare = TRUE))
+                 tags$div(id = "pivotCompScenWrapper", style = "margin-top: 10px;", style = "display:none")
              )
     )
   )

@@ -1197,6 +1197,8 @@ if(!is.null(errMsg)){
       isInSolveMode      <- TRUE
       modelStatus        <- NULL
       
+      compareModeTabsetGenerated <- vector("logical", 3L)
+      
       # set local working directory
       unzipModelFilesProcess <- NULL
       if(useTempDir){
