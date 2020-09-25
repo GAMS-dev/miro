@@ -1018,17 +1018,22 @@ gantt('6', '2016-01-09 19:00:00', '2016-01-10 19:00:00', 'test6', 'b') = 1;</cod
                                 <div class="section-block">
                                   <h3 class="block-title">Configuration</h3>
                                     <p></p>
-                                    <p>Example: Model <i>Pickstock</i>, scalars <i>error_train</i>, <i>error_test</i> and <i>error_ratio</i></p>
-                                    <p>Value boxes are special in the sense that only scalar output values can be displayed as such. The other way around, scalar output values can only be visualized as value boxes in addition to the classic table.</p>
+                                    <p>Example: Model <i>Pickstock</i>, scalars <i>error_train</i>, <i>error_test</i> and <i>error_ratio</i>, singleton sets <i>firstDayTraining</i> and <i>lastDayTraining</i></p>
+                                    <p>Value boxes are special in the sense that only scalar output values (including singleton sets declared as output data) can be displayed as such. The other way around, scalar output values can only be visualized as value boxes in addition to the classic table.</p>
                                     <p>The three scalars to plot represent the absolute error in the entire training phase, the absolute error in the entire testing phase and the ratio between both values. <br>
                                     The scalar <code class="language-gams">error_train</code> is equivalent to the objective function value <code class="language-gams">obj.l</code>. 
                                     The absolute error in entire testing phase <code class="language-gams">error_test</code> is the sum of all errors in this time: <code class="language-gams">sum(ntd, error(ntd))</code>. 
-                                    The ratio of both values is calculated with <code class="language-gams">error_ratio = error_test/error_train;</code>.
+                                    The ratio of both values is calculated with <code class="language-gams">error_ratio = error_test/error_train;</code>. <br>
+                                    In addition to these numerical values, two singleton sets are used to indicate the dates of the beginning and end of the training period. 
                                     </p>
                                     <pre><code class="language-gams">$onExternalOutput
 Scalar error_train                     'Absolute error in entire training phase'
        error_test                      'Absolute error in entire testing phase'
        error_ratio                     'Ratio between error test and error train';
+       
+Singleton Set
+       firstDayTraining(date)          'first date of training period'
+       lastDayTraining(date)           'last date of training period';
 $offExternalOutput
 
 error_train                            = obj.l;
@@ -1037,24 +1042,76 @@ if(error_train > 0,
    error_ratio = error_test/error_train;
 else
    error_ratio = inf;);
+   
+lastDayTraining(td)                    = td.pos = card(td);
+firstDayTraining(td)                   = td.pos = 1; 
 </code></pre>
-                                    <p><br>In the Configuration Mode we can configure this by selecting the symbol <i>Output Scalars</i>:</p>
+                                    <p><br>In the Configuration Mode we can configure the value boxes by selecting the symbol <i>Output Scalars</i>:</p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_valuebox_config.png" alt="Valuebox configuration"/>
+                                        <img class="img-fluid" style= "max-height:530pt;" src="assets/images/configuration_mode/graphs_valuebox_config.png" alt="Valuebox configuration"/>
                                     </div>
-                                    <p>Inside a Value box an icon can be displayed next to the scalar value. Icons from the libraries <a href="http://fontawesome.io/icons/" target="_blank">fonts-awesome</a> and <a href="http://getbootstrap.com/components/#glyphicons" target="_blank">glyphicons</a> are available here. </p>
+                                    <p>For a value box, the descriptive text (default: explanatory text of the symbol), the color of the box, an optional icon and the rounding behavior can be configured. The width of a value box results from the number of boxes in a row. Each box can be placed in the desired position by drag &amp; drop. Free rows are ignored.</p>
                                 </div><!--//section-block-->
                                 <div class="section-block">
                                   <h3 class="block-title">JSON example</h3>
                                     <pre><code class="language-json">
 {
   "dataRendering": {
-    "scalars_out": {
+    "_scalars_out": {
       "outType": "valueBox",
-      "options": {
-        "color": "aqua",
-        "width": 4
-      }
+      "options": [
+        {
+          "error_train": {
+            "description": "Absolute error in entire training phase",
+            "color": "green",
+            "icon": {
+              "name": "_",
+              "lib": "font-awesome"
+            },
+            "round": 4
+          },
+          "error_test": {
+            "description": "Absolute error in entire testing phase",
+            "color": "yellow",
+            "icon": {
+              "name": "_",
+              "lib": "font-awesome"
+            },
+            "round": 4
+          }
+        },
+        {
+          "error_ratio": {
+            "description": "Ratio between error test and error train",
+            "color": "red",
+            "icon": {
+              "name": "_",
+              "lib": "font-awesome"
+            },
+            "round": 1
+          }
+        },
+        {
+          "firstdaytraining": {
+            "description": "first date of training period",
+            "color": "aqua",
+            "icon": {
+              "name": "play-circle",
+              "lib": "font-awesome"
+            },
+            "round": 0
+          },
+          "lastdaytraining": {
+            "description": "last date of training period",
+            "color": "aqua",
+            "icon": {
+              "name": "ban",
+              "lib": "font-awesome"
+            },
+            "round": 0
+          }
+        }
+      ]
     }
   }
 }
@@ -1224,7 +1281,7 @@ $offExternalInput
                              <a class="nav-link scrollto" href="#timeseries-chart">Time series diagram</a>
                              <a class="nav-link scrollto" href="#pivot-chart">Pivot table</a>
                              <a class="nav-link scrollto" href="#gantt-chart">Gantt chart</a>
-                             <a class="nav-link scrollto" href="#valuebox">Valuebox</a>
+                             <a class="nav-link scrollto" href="#valuebox">Value box</a>
                              <a class="nav-link scrollto" href="#custom-graphics">Custom renderer</a>
                              <a class="nav-link scrollto" href="#graph-options">Options</a>
                             </nav><!--//doc-menu-->

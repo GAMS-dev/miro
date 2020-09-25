@@ -306,14 +306,59 @@
     },
     "_scalars_out": {
       "outType": "valueBox",
-      "options": {
-        "width": 6,
-        "color": "olive",
-        "icon": {
-          "name": "euro-sign",
-          "lib": "font-awesome"
+      "options": [
+        {
+          "error_train": {
+            "description": "Absolute error in entire training phase",
+            "color": "green",
+            "icon": {
+              "name": "_",
+              "lib": "font-awesome"
+            },
+            "round": 4
+          },
+          "error_test": {
+            "description": "asd",
+            "color": "yellow",
+            "icon": {
+              "name": "_",
+              "lib": "font-awesome"
+            },
+            "round": 4
+          }
+        },
+        {
+          "error_ratio": {
+            "description": "",
+            "color": "red",
+            "icon": {
+              "name": "_",
+              "lib": "font-awesome"
+            },
+            "round": 1
+          }
+        },
+        {
+          "firstdaytraining": {
+            "description": "first date of training period",
+            "color": "aqua",
+            "icon": {
+              "name": "play-circle",
+              "lib": "font-awesome"
+            },
+            "round": 0
+          },
+          "lastdaytraining": {
+            "description": "last date of training period",
+            "color": "aqua",
+            "icon": {
+              "name": "ban",
+              "lib": "font-awesome"
+            },
+            "round": 0
+          }
         }
-      }
+      ]
     },
     "dowvsindex": {
       "outType": "graph",

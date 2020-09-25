@@ -5859,9 +5859,13 @@
                 "saveGraph": {
                   "type": "string",
                   "minLength": 1
+                },
+                "toggleFullscreen": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 12
+              "minProperties": 13
             },
             "graphOptions": {
               "type": "object",
@@ -6179,19 +6183,23 @@
                 "valueboxIconChoices": {
                   "type": "array",
                   "uniqueItems": true,
-                  "minItems": 30,
-                  "maxItems": 30,
+                  "minItems": 29,
+                  "maxItems": 29,
                   "items": {
                     "type": "string",
                     "minLength": 1
                   }
                 },
-                "otherIcon": {
+                "desc": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "round": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 6
+              "minProperties": 7
             },
             "animationOptions": {
               "type": "object",

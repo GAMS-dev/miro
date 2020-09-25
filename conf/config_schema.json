@@ -1289,42 +1289,99 @@
                         ]
                      },
                      "options":{
-                       "type": "object",
-                       "additionalProperties":false,
-                       "properties":{  
-                        "width":{  
-                           "description":"Width of the output element.",
-                           "type":"integer",
-                           "minimum":0,
-                           "default":4
-                        },
-                        "color":{  
-                           "type":"string",
-                           "description":"Background color of value box",
-                           "minLength":0,
-                           "default":"aqua"
-                        },
-                        "icon":{  
-                           "description":"icon for value box",
-                           "type":"object",
+                     "oneOf":[
+                        {
+                           "type": "object",
+                           "additionalProperties":false,
                            "properties":{  
-                              "name":{  
-                                 "type":"string",
-                                 "description":"Name of icon. Icons are drawn from the Font Awesome and Glyphicons libraries.",
-                                 "minLength":0
+                              "width":{  
+                                 "description":"Width of the output element.",
+                                 "type":"integer",
+                                 "minimum":0,
+                                 "default":4
                               },
-                              "lib":{  
+                              "color":{  
                                  "type":"string",
-                                 "description":"Name of library where icon is from.",
-                                 "enum":[  
-                                    "glyphicon",
-                                    "font-awesome"
-                                 ],
-                                 "default":"font-awesome"
+                                 "description":"Background color of value box",
+                                 "minLength":0,
+                                 "default":"aqua"
+                              },
+                              "icon":{  
+                                 "description":"icon for value box",
+                                 "type":"object",
+                                 "properties":{  
+                                    "name":{  
+                                       "type":"string",
+                                       "description":"Name of icon. Icons are drawn from the Font Awesome and Glyphicons libraries.",
+                                       "minLength":0
+                                    },
+                                    "lib":{  
+                                       "type":"string",
+                                       "description":"Name of library where icon is from.",
+                                       "enum":[  
+                                          "glyphicon",
+                                          "font-awesome"
+                                       ],
+                                       "default":"font-awesome"
+                                    }
+                                 }
                               }
                            }
+                        },
+                        {
+                            "type": "array",
+                            "items": [
+                               {
+                                 "type": "object",
+                                 "properties": {
+                                      "type": "object",
+                                      "additionalProperties":{  
+                                        "type":"object",
+                                        "additionalProperties":false,
+                                        "properties":{
+                                          "icon": {
+                                            "description": "Specify the icon to use for the valuebox",
+                                            "type": "object",
+                                            "properties": {
+                                              "name": {
+                                                "type": "string",
+                                                "minLength": 1
+                                              },
+                                              "lib": {
+                                                "description": "Specify the library to use for the valuebox icon",
+                                                "type": "string",
+                                                "minLength": 1
+                                              }
+                                            },
+                                            "required": [
+                                              "name",
+                                              "lib"
+                                            ]
+                                          },
+                                          "color": {
+                                            "description": "Specify the color to use for the valuebox",
+                                            "type": "string",
+                                            "minLength": 1
+                                          },
+                                          "description": {
+                                            "description": "Custom description to use for the valuebox",
+                                            "type": "string",
+                                            "minLength": 1
+                                          },
+                                          "round": {
+                                             "description": "Specify the rounding to use for the valuebox value",
+                                             "type": ["integer", "string"],
+                                             "minLength": 1,
+                                             "minimum": 0
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "maxProperties": 12 
+                               }
+                            ]
                         }
-                       }
+                     ]
                      }
                   },
                   "additionalProperties":false,
