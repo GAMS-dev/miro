@@ -1240,7 +1240,8 @@
         "val56": "Ein Anhang mit diesem Dateinamen existiert bereits!",
         "val57": "Der Dateiname enthält ungültige Zeichen. Anhänge in Unterverzeichnissen werden nicht unterstützt!",
         "val58": "Das Dezimaltrennzeichen und das Tausender-Trennzeichen dürfen nicht identisch sein!",
-        "val59": "Das GAMS-Symbol: %s ist als Tabelle deklariert. Dies bewirkt, dass die letzte Spalte in MIRO gepivoted wird. MIRO-Pivot kann nicht mit bereits gepivoteten Symbolen verwendet werden. Bitte deklarieren Sie das Symbol stattdessen als Parameter."
+        "val59": "Das GAMS-Symbol: %s ist als Tabelle deklariert. Dies bewirkt, dass die letzte Spalte in MIRO gepivoted wird. MIRO-Pivot kann nicht mit bereits gepivoteten Symbolen verwendet werden. Bitte deklarieren Sie das Symbol stattdessen als Parameter.",
+        "val60": "Jedes Gruppenmitglied darf nur in einer einzigen Gruppe auftreten!"
       },
       "widgetOptions":{
         "slider": "Schieberegler",
