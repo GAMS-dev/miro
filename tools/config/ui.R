@@ -713,7 +713,7 @@ body_admin <- dashboardBody({
                                                                 tags$span(class="fas fa-info-circle", class="info-icon",
                                                                           role = "presentation",
                                                                           `aria-label` = "More information"), target="_blank"), class="option-category"),
-                                                 tags$div(class = "option-wrapper",
+                                                 tags$div(
                                                           selectizeInput("general_overwriteSheetOrderInput", lang$adminMode$general$overwriteSheetOrder$input, 
                                                                          choices = inputTabs,
                                                                          selected = inputTabs,
@@ -725,7 +725,7 @@ body_admin <- dashboardBody({
                                                                          multiple = TRUE, options = list(plugins = list("drag_drop", "no_delete")))
                                                  ),
                                                  tags$div(class = "space"),
-                                                 tags$div(class = "option-wrapper",
+                                                 tags$div(
                                                    tags$div(class = "info-position",
                                                             tags$h2(title = lang$adminMode$general$ui$tooltipDocs, lang$adminMode$general$ui$headerTabGrouping, 
                                                                     tags$a(class="info-wrapper", style="top:-10px;", href="https://gams.com/miro/customize.html#tab-grouping", 
@@ -734,17 +734,17 @@ body_admin <- dashboardBody({
                                                                                      `aria-label` = "More information"), target="_blank"))
                                                    ),
                                                    tags$h4(lang$adminMode$general$ui$headerInputGroups),
-                                                   tags$div(class="option-wrapper-indented",
+                                                   tags$div(
                                                             createArray(NULL, "symbol_inputGroups", 
                                                                         lang$adminMode$general$groups$input, 
                                                                         autoCreate = FALSE)),
                                                    tags$h4(lang$adminMode$general$ui$headerInputWidgetGroups),
-                                                   tags$div(class="option-wrapper-indented",
+                                                   tags$div(
                                                             createArray(NULL, "symbol_inputWidgetGroups", 
                                                                         lang$adminMode$general$groups$widgets, 
                                                                         autoCreate = FALSE)),
                                                    tags$h4(lang$adminMode$general$ui$headerOutputGroups),
-                                                   tags$div(class="option-wrapper-indented",
+                                                   tags$div(
                                                             createArray(NULL, "symbol_outputGroups", 
                                                                         lang$adminMode$general$groups$output, 
                                                                         autoCreate = FALSE))
@@ -752,7 +752,7 @@ body_admin <- dashboardBody({
                                                  tags$div(class = "space"),
                                                  tags$h2(lang$adminMode$general$ui$headerSymbolDisplay, class="option-category"),
                                                  if(length(modelOut)){
-                                                   tags$div(class="option-wrapper",
+                                                   tags$div(
                                                             tags$div(class = "info-position", 
                                                                      selectInput("general_hiddenOutputSymbols", 
                                                                                  tags$div(lang$adminMode$general$hiddenOutputSymbols$label, 
@@ -768,7 +768,7 @@ body_admin <- dashboardBody({
                                                             ))
                                                  },
                                                  if(length(modelOut[[scalarsOutName]])){
-                                                   tags$div(class="option-wrapper",
+                                                   tags$div(
                                                             tags$div(class = "info-position", 
                                                                      selectInput("general_hidden", 
                                                                                  tags$div(lang$adminMode$general$hiddenOutputScalars$label, 
@@ -781,7 +781,7 @@ body_admin <- dashboardBody({
                                                                                  selected = configJSON$hiddenOutputScalars, multiple = TRUE)
                                                             ))
                                                  },
-                                                 tags$div(class="option-wrapper", title = lang$adminMode$general$aggregate$title,
+                                                 tags$div(title = lang$adminMode$general$aggregate$title,
                                                           tags$label(class = "cb-label", "for" = "general_aggregate", lang$adminMode$general$aggregate$label),
                                                           tags$div(
                                                             tags$label(class = "checkbox-material", 
@@ -791,7 +791,7 @@ body_admin <- dashboardBody({
                                                             ))
                                                  ),
                                                  tags$div(class = "space"),
-                                                 tags$div(class = "option-wrapper",
+                                                 tags$div(
                                                           tags$div(class = "info-position",
                                                                    tags$h2(title = lang$adminMode$general$ui$tooltipDocs, lang$adminMode$general$ui$headerTabSymlinks, 
                                                                            tags$a(class="info-header", href="https://gams.com/miro/customize.html#tab-symlinks", 
@@ -799,7 +799,7 @@ body_admin <- dashboardBody({
                                                                                             role = "presentation",
                                                                                             `aria-label` = "More information"), target="_blank"))
                                                           ),
-                                                          tags$div(class="option-wrapper-indented",
+                                                          tags$div(
                                                                    createArray(NULL, "symbol_links", 
                                                                                lang$adminMode$general$symlinks$label, 
                                                                                autoCreate = FALSE))
