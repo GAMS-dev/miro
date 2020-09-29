@@ -21,12 +21,13 @@ getVisibleTabData <- function(id, type){
     if(length(data) < length(modelIn[[id]]$headers) - 1L){
       return(modelInTemplate[[id]])
     }
-    return(select(pivot_longer(data, 
-                               cols = seq(length(modelIn[[id]]$headers) - 1L, 
-                                          length(data)),
-                               names_to = modelIn[[id]]$pivotCols[[1]], 
-                               values_to = names(modelIn[[id]]$headers)[length(modelIn[[id]]$headers)],
-                               values_drop_na = TRUE), !!!names(modelIn[[id]]$headers)))
+    return(fixColTypes(select(pivot_longer(data, 
+                                           cols = seq(length(modelIn[[id]]$headers) - 1L, 
+                                                      length(data)),
+                                           names_to = modelIn[[id]]$pivotCols[[1]], 
+                                           values_to = names(modelIn[[id]]$headers)[length(modelIn[[id]]$headers)],
+                                           values_drop_na = TRUE), !!!names(modelIn[[id]]$headers)),
+                       modelIn[[id]]$colTypes))
   }
   return(data)
 } 
@@ -56,9 +57,6 @@ getInputDataset <- function(id, visible = FALSE){
              mutate_if(is.character, 
                        replace_na, replace = ""))
   }
-  intermDataTmp <- fixColTypes(intermDataTmp, 
-                               modelIn[[id]]$colTypes) %>%
-    replace(is.na(.), "")
   
   return(intermDataTmp)
 }
