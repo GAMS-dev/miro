@@ -257,7 +257,7 @@
     "dialogRemoteLogin": {
       "title": "Login erforderlich",
       "desc": "Bitte geben Sie Ihre Zugangsdaten unten ein:",
-      "url": "GAMS MIRO Engine URL",
+      "url": "GAMS Engine URL",
       "username": "Benutzername",
       "password": "Passwort",
       "namespace": "Namensraum",
@@ -265,7 +265,7 @@
       "useRegistered": "Ist Ihr Modell im Namensraum registriert?",
       "remember": "Login speichern",
       "okButton": "Ok",
-      "hostNotFound": "GAMS MIRO Engine konnte unter der angegebenen URL nicht erreicht werden.",
+      "hostNotFound": "GAMS Engine konnte unter der angegebenen URL nicht erreicht werden.",
       "nsNotFound": "Der von Ihnen angegebene Namensraum konnte nicht gefunden werden.",
       "invalidCred": "Die von Ihnen eingegebenen Zugangsdaten sind ungültig.",
       "insuffPerm": "Sie haben nicht genügend Berechtigungen, um das Modell auszuführen.",
@@ -491,7 +491,7 @@
       "discardSuccess": "Job wurde verworfen",
       "importSuccess": "Job wurde erfolgreich importiert",
       "maxDownloads": "Die maximale Anzahl paralleler Downloads ist erreicht.",
-      "jobNotFound": "Der Job wurde auf GAMS MIRO Engine nicht gefunden.",
+      "jobNotFound": "Der Job wurde auf GAMS Engine nicht gefunden.",
       "accessDenied": "Zugriff verweigert",
       "histTitle": "Jobverlauf",
       "status":{

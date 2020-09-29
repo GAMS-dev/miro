@@ -257,7 +257,7 @@
     "dialogRemoteLogin": {
       "title": "Login required",
       "desc": "Please enter your credentials below:",
-      "url": "URL of GAMS MIRO Engine",
+      "url": "URL of GAMS Engine",
       "username": "Username",
       "password": "Password",
       "namespace": "Namespace",
@@ -265,7 +265,7 @@
       "remember": "Remember me",
       "cancelButton":"Cancel",
       "okButton": "Ok",
-      "hostNotFound": "GAMS MIRO Engine could not be reached under the given URL.",
+      "hostNotFound": "GAMS Engine could not be reached under the given URL.",
       "nsNotFound": "The namespace you entered could not be found.",
       "invalidCred": "The credentials you entered are invalid.",
       "insuffPerm": "You don't have sufficient permissions to execute the model.",
@@ -492,7 +492,7 @@
       "importSuccess": "Job was imported successfully",
       "accessDenied": "Access denied",
       "maxDownloads": "The maximum number of parallel downloads has been reached.",
-      "jobNotFound": "The job was not found on GAMS MIRO Engine.",
+      "jobNotFound": "The job was not found on GAMS Engine.",
       "histTitle": "Job history",
       "status":{
         "downloading": "Downloading results",

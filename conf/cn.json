@@ -257,7 +257,7 @@
     "dialogRemoteLogin": {
       "title": "请登陆",
       "desc": "请输入登陆信息:",
-      "url": "GAMS MIRO Engine公司的网站",
+      "url": "GAMS Engine公司的网站",
       "username": "用户名",
       "password": "密码",
       "namespace": "命名空间",
@@ -265,7 +265,7 @@
       "remember": "记住我",
       "cancelButton":"取消",
       "okButton": "确认",
-      "hostNotFound": "GAMS MIRO Engine无法从本网站访问。",
+      "hostNotFound": "GAMS Engine无法从本网站访问。",
       "nsNotFound": "找不到该命名空间。",
       "invalidCred": "该密匙无效",
       "insuffPerm": "没有足够的权限来执行该模型。",
@@ -492,7 +492,7 @@
         "importSuccess":"作业已导入",
         "accessDenied": "拒绝访问",
 		"maxDownloads": "文件数量已达到可以同时下载的最大值。",
-        "jobNotFound": "在GAMS MIRO ENGINE上没有找到这份工作。",
+        "jobNotFound": "在GAMS ENGINE上没有找到这份工作。",
         "histTitle": "作业历史",
         "status":{
           "downloading": "正在下载结果",
