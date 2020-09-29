@@ -346,7 +346,8 @@ lapply(modelInTabularData, function(sheet){
         isPivoted <- TRUE
         tabData  <- pivotData(i, tabData)
         colnames <- tabData$colnames
-        tabData  <- tabData$data
+        tabData  <- mutate_if(tabData$data, is.numeric, as.character) %>%
+          replace(is.na(.), "")
       }else{
         colnames <- attr(modelInputData[[i]], "aliases")
         if(!length(colnames)){
