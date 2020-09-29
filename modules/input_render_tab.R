@@ -163,7 +163,7 @@ observeEvent(input$btGraphIn, {
   }else if(modelIn[[i]]$type %in% c("hot", "dt")){
     errMsg <- NULL
     tryCatch({
-      data <- getInputDataset(i, visible = TRUE)
+      data <- getInputDataset(i)
     }, error = function(e){
       flog.error("Dataset: '%s' could not be loaded. Error message: '%s'.", 
                  modelInAlias[i], e)
