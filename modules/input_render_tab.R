@@ -125,7 +125,12 @@ observe({
     j <- as.integer(strsplit(input[[paste0("inputTabset", i)]], "_")[[1]][2])
     i <- inputTabs[[i]][j]
   }else{
-    i <- inputTabs[[i]][1]
+    i <- inputTabs[[i]]
+    if(length(i) > 1L){
+      # always enable if multiple symbols on same tab
+      enableEl(session, "#btGraphIn")
+      return()
+    }
   }
   if(is.null(configGraphsIn[[i]]) || isEmptyInput[i]){
     disableEl(session, "#btGraphIn")
@@ -261,7 +266,8 @@ lapply(modelInTabularData, function(sheet){
           data[1, ] <- NA
           data <- mutate_if(data, is.character, 
                             replace_na, replace = "")
-          if(!is.null(configGraphsIn[[i]])){
+          if(!is.null(configGraphsIn[[i]]) &&
+             length(inputTabs[[tabSheetMap$input[[i]]]]) == 1L){
             disableEl(session, "#btGraphIn")
           }
           isEmptyInput[i] <<- TRUE
@@ -274,7 +280,8 @@ lapply(modelInTabularData, function(sheet){
         modelInputDataVisible[[i]] <<- data
       }else{
         if(!nrow(data)){
-          if(!is.null(configGraphsIn[[i]])){
+          if(!is.null(configGraphsIn[[i]]) &&
+             length(inputTabs[[tabSheetMap$input[[i]]]]) == 1L){
             disableEl(session, "#btGraphIn")
           }
           isEmptyInput[i] <<- TRUE
@@ -303,7 +310,8 @@ lapply(modelInTabularData, function(sheet){
           modelInputData[[i]][1, ] <<- NA
           modelInputData[[i]] <- mutate_if(modelInputData[[i]], is.character, 
                                            replace_na, replace = "")
-          if(!is.null(configGraphsIn[[i]])){
+          if(!is.null(configGraphsIn[[i]]) &&
+             length(inputTabs[[tabSheetMap$input[[i]]]]) == 1L){
             disableEl(session, "#btGraphIn")
           }
           isEmptyInput[i] <<- TRUE
@@ -317,7 +325,8 @@ lapply(modelInTabularData, function(sheet){
         }
         isEmptyInput[i] <<- FALSE
       }else{
-        if(!is.null(configGraphsIn[[i]])){
+        if(!is.null(configGraphsIn[[i]]) &&
+           length(inputTabs[[tabSheetMap$input[[i]]]]) == 1L){
           disableEl(session, "#btGraphIn")
         }
         isEmptyInput[i] <<- TRUE
