@@ -101,18 +101,18 @@ prepareModelRun <- function(async = FALSE){
   pfFileContent <- NULL
   inputData <- DataInstance$new(modelInFileNames, fileExchange = config$fileExchange,
                                 gdxio = gdxio, csvDelim = config$csvDelim)
-  lapply(seq_along(dataTmp), function(i){
+  lapply(seq_along(dataTmp), function(id){
     # write compile time variable file and remove compile time variables from scalar dataset
-    if(is.null(dataTmp[[i]])){
+    if(is.null(dataTmp[[id]])){
       return()
     }
-    if(identical(tolower(names(dataTmp)[[i]]), scalarsFileName)){
+    if(identical(tolower(names(dataTmp)[[id]]), scalarsFileName)){
       # scalars file exists, so remove compile time variables from it
-      DDParIdx           <- dataTmp[[i]][[1]] %in% outer(DDPar, c("", "$lo", "$up"), 
+      DDParIdx           <- dataTmp[[id]][[1]] %in% outer(DDPar, c("", "$lo", "$up"), 
                                                          FUN = "paste0")
-      GMSOptIdx          <- dataTmp[[i]][[1]] %in% GMSOpt
-      DDParValues        <- dataTmp[[i]][DDParIdx, , drop = FALSE]
-      GMSOptValues       <- dataTmp[[i]][GMSOptIdx, , drop = FALSE]
+      GMSOptIdx          <- dataTmp[[id]][[1]] %in% GMSOpt
+      DDParValues        <- dataTmp[[id]][DDParIdx, , drop = FALSE]
+      GMSOptValues       <- dataTmp[[id]][GMSOptIdx, , drop = FALSE]
       if(nrow(DDParValues) || nrow(GMSOptValues)){
         pfGMSPar      <- vapply(seq_along(DDParValues[[1]]), 
                                 function(i){
@@ -141,19 +141,19 @@ prepareModelRun <- function(async = FALSE){
         pfGMSOpt      <- pfGMSOpt[!is.na(pfGMSOpt)]
         pfFileContent <<- c(pfGMSPar, pfGMSOpt)
         # remove those rows from scalars file that are compile time variables
-        modelInputData[[i]] <<- dataTmp[[i]][!(DDParIdx | GMSOptIdx), ]
+        inputDataToAdd <- dataTmp[[id]][!(DDParIdx | GMSOptIdx), ]
       }else{
-        modelInputData[[i]] <<- dataTmp[[i]]
+        inputDataToAdd <- dataTmp[[id]]
       }
       rm(GMSOptValues, DDParValues)
-    }else if(identical(modelIn[[names(dataTmp)[[i]]]]$type, "dropdown") &&
-             names(dataTmp)[[i]] %in% modelInTabularDataBase){
-      modelInputData[[i]] <<- ddToTibble(dataTmp[[i]][[1L]], modelIn[[names(dataTmp)[[i]]]])
+    }else if(identical(modelIn[[names(dataTmp)[[id]]]]$type, "dropdown") &&
+             names(dataTmp)[[id]] %in% modelInTabularDataBase){
+      inputDataToAdd <- ddToTibble(dataTmp[[id]][[1L]], modelIn[[names(dataTmp)[[id]]]])
     }else{
-      modelInputData[[i]] <<- dataTmp[[i]]
+      inputDataToAdd <- dataTmp[[id]]
     }
     
-    inputData$push(names(dataTmp)[[i]], modelInputData[[i]])
+    inputData$push(names(dataTmp)[[id]], inputDataToAdd)
   })
   if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
     return(NULL)
