@@ -182,7 +182,9 @@ Db <- R6Class("Db",
                 removeTablesModel     = function(tableNames = NULL){
                   stopifnot(is.null(tableNames) || is.character(tableNames))
                   
+                  removeAllTables <- FALSE
                   if(!length(tableNames)){
+                    removeAllTables <- TRUE
                     tableNames <- c(private$getTableNamesModel(), private$dbSchema$tabName[['_scenAttach']],
                                     private$dbSchema$tabName[['_scenScripts']])
                   }
@@ -206,6 +208,9 @@ Db <- R6Class("Db",
                   }
                   # turn foreign key usage on again
                   dbExecute(private$conn, "PRAGMA foreign_keys = ON;")
+                  if(removeAllTables){
+                    self$deleteRows("_sys__data_hashes", "model", private$modelNameDb)
+                  }
                   return(invisible(self))
                 },
                 saveTablesModel       = function(tempDir){
