@@ -1677,7 +1677,7 @@ if(is.null(errMsg)){
   dropdownAliases <- lapply(modelIn, function(el){
     if(identical(el$type, "dropdown") && 
        length(el$dropdown$aliases) && 
-       isFALSE(el$dropdown$multiple)){
+       !isTRUE(el$dropdown$multiple)){
       return(list(aliases = el$dropdown$aliases,
                   choices = el$dropdown$choices,
                   clearValue = isTRUE(el$dropdown$clearValue)))
