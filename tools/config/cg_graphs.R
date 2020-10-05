@@ -2014,7 +2014,7 @@ observeEvent(input$gams_symbols, {
   newChartTool <<- character(0L)
   if(identical(input$gams_symbols, scalarsFileName)){
     removeUI(selector = "#tool_options div", multiple = TRUE)
-    hideEl(session, "#preview-outer-wrapper")
+    hideEl(session, ".preview-outer-wrapper")
     insertUI(selector = "#tool_options", tags$div(class="config-no-hide", 
                                                   paste0(lang$adminMode$graphs$errMsg$scalarConfig, 
                                                          lang$adminMode$uiR$widgets, "'!"))
@@ -2024,7 +2024,7 @@ observeEvent(input$gams_symbols, {
     disableEl(session, "#deleteGraph")
     return()
   }else{
-    showEl(session, "#preview-outer-wrapper")
+    showEl(session, ".preview-outer-wrapper")
     enableEl(session, "#saveGraph")
     enableEl(session, "#deleteGraph")
   }
