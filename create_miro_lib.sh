@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ZIP_TOOL=zip
 if ! command -v zip &> /dev/null
