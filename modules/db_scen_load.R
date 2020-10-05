@@ -60,59 +60,73 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
   if(is.null(showErrorMsg(lang$errMsg$fetchScenData$title, errMsg))){
     return()
   }
-  if(!is.null(scenMetaDb) && nrow(scenMetaDb)){
-    # fetch only those scenarios that are not already loaded into the ui
-    if(isInSplitView){
-      scenMetaDb <<- scenMetaDb[!as.character(scenMetaDb[[1]]) %in% sidsInSplitComp, ]
+  if(is.null(scenMetaDb) || !nrow(scenMetaDb)){
+    return(showErrorMsg(lang$nav$dialogLoadScen$titleNoScen, 
+                        lang$nav$dialogLoadScen$descNoScen))
+  }
+  # fetch only those scenarios that are not already loaded into the ui
+  uiSidList <- NULL
+  uiSidListTmp <- NULL
+  if(isInSplitView){
+    scenMetaDb <<- scenMetaDb[!as.character(scenMetaDb[[1]]) %in% sidsInSplitComp, ]
+    currentMode <- "split"
+    sidsLoadedInOtherModes <- setdiff(c(sidsInComp, sidsInPivotComp), sidsInSplitComp)
+    sidsLoadedInOtherModes <- sidsLoadedInOtherModes[sidsLoadedInOtherModes != 0]
+    if(length(sidsLoadedInOtherModes)){
+      uiSidList <- db$formatScenList(scenMetaDb[scenMetaDb[[1]] %in% sidsLoadedInOtherModes, ],
+                                     stimeIdentifier, desc = TRUE)
+    }
+  }else if(is.null(input$btSplitView) && identical(config$defCompMode, "pivot") ||
+      identical(input$btSplitView, "pivotView")){
+    currentMode <- "pivot"
+    sidsLoadedInPivotMode <- sidsInPivotComp[!is.na(sidsInPivotComp) & sidsInPivotComp != 0]
+    if(length(sidsLoadedInPivotMode)){
+      uiSidListTmp <- sidsLoadedInPivotMode
     }else{
-      scenMetaDb <<- scenMetaDb[!as.character(scenMetaDb[[1]]) %in% sidsInComp, ]
+      sidsLoadedInOtherModes <- c(sidsInSplitComp, sidsInComp)
+      sidsLoadedInOtherModes <- sidsLoadedInOtherModes[sidsLoadedInOtherModes != 0 &
+                                                         !is.na(sidsLoadedInOtherModes)]
+      if(length(sidsLoadedInOtherModes)){
+        uiSidListTmp <- sidsLoadedInOtherModes
+      }
+    }
+  }else{
+    scenMetaDb <<- scenMetaDb[!as.character(scenMetaDb[[1]]) %in% sidsInComp, ]
+    currentMode <- "tab"
+    sidsLoadedInOtherModes <- setdiff(c(sidsInSplitComp, sidsInPivotComp), sidsInComp)
+    sidsLoadedInOtherModes <- sidsLoadedInOtherModes[sidsLoadedInOtherModes != 0 &
+                                                       !is.na(sidsLoadedInOtherModes)]
+    if(length(sidsLoadedInOtherModes)){
+      uiSidListTmp <- sidsLoadedInOtherModes
     }
   }
+  
+  if(is.null(scenMetaDb) || !nrow(scenMetaDb)){
+    return(showErrorMsg(lang$nav$dialogLoadScen$titleNoScen, 
+                        lang$nav$dialogLoadScen$descNoScen))
+  }
+  
   maxNoScenExceeded <- FALSE
-  if(!is.null(scenMetaDb) && nrow(scenMetaDb)){
-    if(length(scenMetaDb) && nrow(scenMetaDb) > maxNoScenToShow){
-      scenMetaDbSubset <<- scenMetaDb[order(scenMetaDb[[stimeIdentifier]], 
-                                            decreasing = TRUE), ][seq_len(maxNoScenToShow), ]
-      maxNoScenExceeded <- TRUE
-    }else{
-      scenMetaDbSubset <<- scenMetaDb
-      maxNoScenExceeded <- FALSE
-    }
-    dbTagList <- scenMetaDb[[stagIdentifier]]
-    dbTagList <- csv2Vector(dbTagList[dbTagList != ""])
-    # by default, put most recently saved scenario first
-    dbSidList <- db$formatScenList(scenMetaDbSubset, stimeIdentifier, desc = TRUE)
+  if(nrow(scenMetaDb) > maxNoScenToShow){
+    scenMetaDbSubset <<- scenMetaDb[order(scenMetaDb[[stimeIdentifier]], 
+                                          decreasing = TRUE), ][seq_len(maxNoScenToShow), ]
+    maxNoScenExceeded <- TRUE
   }else{
-    dbSidList <- NULL
-    dbTagList <- NULL
+    scenMetaDbSubset <<- scenMetaDb
+    maxNoScenExceeded <- FALSE
   }
-  if(isInSplitView && any(sidsInComp != 0L)){
-    uiSidList <- bind_rows(scenMetaData[vapply(scenMetaData, function(el) !is.null(el[[1]]), 
-                                               logical(1L), USE.NAMES = FALSE)])
-    if(!length(uiSidList)){
-      uiSidList <- NULL
-    }else{
-      uiSidList <- uiSidList[!uiSidList[[1]] %in% sidsInSplitComp, ]
-      names(uiSidList)[1:4] <- db$getScenMetaColnames()[c('sid', 'uid', 'sname', 'stime')]
-      uiSidList <- db$formatScenList(uiSidList, stimeIdentifier, desc = TRUE)
-    }
-  }else if(!isInSplitView && any(sidsInSplitComp[!is.na(sidsInSplitComp)] != 0L) && length(dbSidList)){
-    uiSidList <- vapply(sidsInSplitComp[!is.na(sidsInSplitComp)], function(i){
-      dbSidList[startsWith(dbSidList, paste0(i, "_"))][1]}, character(1L), USE.NAMES = FALSE)
-    uiSidList <- uiSidList[!is.na(uiSidList)]
-  }else{
-    uiSidList <- NULL
+  dbTagList <- scenMetaDb[[stagIdentifier]]
+  dbTagList <- csv2Vector(dbTagList[dbTagList != ""])
+  # by default, put most recently saved scenario first
+  dbSidList <- db$formatScenList(scenMetaDbSubset, stimeIdentifier, desc = TRUE)
+  if(!is.null(uiSidListTmp)){
+    uiSidList <- vapply(uiSidListTmp, function(i){
+      dbSidList[startsWith(dbSidList, paste0(i, "_"))][1]},
+      character(1L), USE.NAMES = FALSE)
   }
-  if(length(dbSidList) || length(uiSidList)){
-    showLoadScenDialog(dbSidList, uiSidList, isInSplitView, dbTagList = dbTagList)
-    if(maxNoScenExceeded)
-      showHideEl(session, "#importScenMaxNoScen", 4000L)
-  }else{
-    if(is.null(showErrorMsg(lang$nav$dialogLoadScen$titleNoScen, 
-                            lang$nav$dialogLoadScen$descNoScen))){
-      return()
-    }
-  }
+  showLoadScenDialog(dbSidList, uiSidList, isInSplitView, dbTagList = dbTagList)
+  if(maxNoScenExceeded)
+    showHideEl(session, "#importScenMaxNoScen", 4000L)
 })
 
 # sort by name
@@ -206,7 +220,8 @@ observeEvent(input$btHcubeLoad, {
   isInSolveMode <<- FALSE
   loadIntoSandbox <<- FALSE
   if(isInSplitView){
-    rv$btSplitView <<- isolate(rv$btSplitView + 1L)
+    switchCompareMode(session, "pivotView")
+    isInSplitView <<- FALSE
   }
   rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
 })
@@ -241,6 +256,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
                                       msgProgress = lang$progressBar$loadScenDb)
       scriptDataTmp <- db$loadScriptResults(sidsToLoadVector,
                                             msgProgress = lang$progressBar$loadScenDb)
+      views$loadConf(db$importDataset(tableName = dbSchema$tabName[["_scenViews"]], 
+                                      subsetSids = sidsToLoadVector), isInSolveMode)
     }, error = function(e){
       flog.error("Some error occurred loading scenarios: '%s' from database. Error message: %s.", 
                  paste(sidsToLoad, collapse = ", "), e)
@@ -257,19 +274,27 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   if(isInSolveMode){
     # close currently opened scenario
     resetWidgetsOnClose <<- FALSE
-    if(!closeScenario()){
+    if(!closeScenario(clearMeta = FALSE)){
       return()
     }
     if(!loadIntoSandbox){
       tryCatch({
-        activeScen <<- Scenario$new(db = db, sid = sidsToLoad[[1]])
-      }, 
+        activeScen <<- Scenario$new(db = db, sid = sidsToLoad[[1]],
+                                    views = views, attachments = attachments)
+      },
       error = function(e){
         flog.error("Error generating new Scenario object. Error message: '%s'.", e)
         errMsg <<- lang$errMsg$loadScen$desc
       })
       if(is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))){
         return()
+      }
+      if(length(activeScen$getLockUid())){
+        showNotification(tagList(tags$b(lang$nav$dialogLockScen$title), tags$br(),
+                         tags$span(sprintf(lang$nav$dialogLockScen$desc,
+                                 activeScen$getLockUid()))),
+                         duration = 10,
+                         type = "warning")
       }
     }
     
@@ -336,7 +361,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         noOutputData <<- FALSE
       }
       # rendering tables and graphs
-      renderOutputData(rendererEnv)
+      renderOutputData(rendererEnv, views)
       
       # load script results
       if(length(config$scripts$base)){
@@ -375,6 +400,51 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   lastImportedSid <- NULL
   idxScalarIn <- match(paste0(gsub("_", "", modelName, fixed = TRUE), 
                               "_", scalarsFileName), scenTableNames)[[1]]
+  
+  if(is.null(input$btSplitView) && identical(config$defCompMode, "pivot") ||
+     identical(input$btSplitView, "pivotView")){
+    if(!compareModeTabsetGenerated[3]){
+      compareModeTabsetGenerated[3] <<- TRUE
+      insertUI("#pivotCompScenWrapper", where = "afterBegin",
+               generateScenarioTabset(0L, pivotCompare = TRUE), immediate = TRUE)
+    }
+    return(tryCatch({
+      sidsInPivotCompTmp <- unlist(sidsToLoad)
+      if(allSidsInComp){
+        scenIdsLong    <- paste0("scen_", scenDataTmp, "_")
+        metadataFull   <- bind_rows(scenMetaData[scenIdsLong])
+        scenNamesToCompare <- paste0(vapply(metadataFull[[2]], function(scenOwner){
+          if(identical(scenOwner, uid)){
+            return("")
+          }
+          return(paste0(scenOwner, ": "))
+        }, character(1L), USE.NAMES = FALSE), metadataFull[[3]])
+        renderScenPivotCompare(scenData[scenIdsLong], scenNamesToCompare, 
+                               rendererEnv, views, roundPrecision)
+      }else{
+        sidsToLoadVector <- match(sidsInPivotCompTmp, metadataFull[[1]])
+        sidsToLoadVector <- sidsToLoadVector[!is.na(sidsToLoadVector)]
+        scenNamesToCompare <- paste0(vapply(metadataFull[["_uid"]][sidsToLoadVector], function(scenOwner){
+          if(identical(scenOwner, uid)){
+            return("")
+          }
+          return(paste0(scenOwner, ": "))
+        }, character(1L), USE.NAMES = FALSE), metadataFull[["_sname"]][sidsToLoadVector])
+        renderScenPivotCompare(scenDataTmp, scenNamesToCompare, 
+                               rendererEnv, views, roundPrecision)
+      }
+      hideEl(session, "#pivotCompBtWrapper")
+      showEl(session, "#pivotCompScenWrapper")
+      switchTab(session, "scenComp")
+      sidsInPivotComp <<- as.integer(sidsInPivotCompTmp)
+      removeModal()
+      flog.debug("Scenarios: '%s' loaded and rendered in scenario comparison mode (pivot view).", 
+                 paste(sidsToLoad, collapse = ", "))
+    }, error = function(e){
+      flog.warn("Problems rendering scenarios in pivot compare mode. Error message: %s", conditionMessage(e))
+      showErrorMsg(lang$errMsg$loadScen$title, lang$errMsg$loadScen$desc)
+    }))
+  }
   lapply(seq_along(scenDataTmp), function(i){
     tryCatch({
       if(!isInSplitView){

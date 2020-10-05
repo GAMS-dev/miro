@@ -490,17 +490,18 @@ $offExternalInput
                                     </div>
                                     <h6 id="dropdown-option-clearvalue" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Only communicate element text of symbol with GAMS?</h6>
                                     <div class="expanded"><p></p>
-                                    <p>This options is only available for Singleton sets. They can have a label and an element text. When configured as a dropdown menu, label and element text are communicated with GAMS. If this option is activated, the element text of the selected choice is communicated as an empty string (i.e. only the element text is considered). Because of this, the UEL order is preserved. This is especially recommended if the singleton set is used to define a compile-time variable in the GAMS model. Migrating into such a compile time variable can be done using the <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset">$eval.set</a> method. Since the variable should be filled by the element text of the singleton set, the attribute <i>TE</i> has to be used: <code class = "language-gams">$eval.Set VARNAME SETID.TE</code>.</p> 
-                                    <p>Note that aliases for the dropdown menu choices must be configured to use this option!</p>
-                                    <div class="callout-block callout-success" style="margin-top:10px;">
+									<div class="callout-block callout-success" style="margin-top:10px;">
                                        <div class="icon-holder">
                                            <i class="fas fa-thumbs-up"></i>
                                        </div><!--//icon-holder-->
                                        <div class="content">
                                            <b class="callout-title">Tip:</b>
-                                            <p>If a Singleton Set is used to define a compile time variable in the GAMS model, we recommend using this option!</p>
+                                            <p>This option is intended for the use of singleton sets to define compile-time variables in the GAMS model. Using singleton sets instead of command line parameters has the essential advantage that their information is not lost at any time, e.g. during GDX export. Read more about this topic <a href="./model.html#command-line">here</a>.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
+                                    <p>Singleton sets can have an element label and an element text. When configured as a dropdown menu, both components are communicated with GAMS. If this option is activated, the element label of the selected choice is communicated as an empty string (i.e. only the element text is considered). Because of this, the UEL order is preserved.</p> 
+									<p>Migrating a singleton set into a compile time variable can be done using the <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset">$eval.set</a> method. Since the variable should be filled by the element text, the attribute <i>TE</i> has to be used: <code class = "language-gams">$eval.Set VARNAME SETID.TE</code>.</p> 
+                                    <p>Note that aliases for the dropdown menu choices must be configured to use this option!</p>
                                     </div>
                                     <h6 id="dropdown-option-expand" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Should element be expanded automatically in Hypercube Mode?</h6>
                                     <div class="expanded"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding chapter</a>, widgets will be expanded in the Hypercube Mode. 
@@ -798,13 +799,35 @@ $offExternalInput
                                     <div class="expanded"><p>A placeholder is a text that is displayed in the text box as long as no input has been made by the user. 
                                     This is primarily for orientation purposes. A placeholder is optional.</p>
                                     </div>
+                                    <h6 id="textbox-option-clearvalue" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Only communicate element text of symbol with GAMS?</h6>
+                                    <div class="expanded"><p></p>
+									<div class="callout-block callout-success" style="margin-top:10px;">
+                                       <div class="icon-holder">
+                                           <i class="fas fa-thumbs-up"></i>
+                                       </div><!--//icon-holder-->
+                                       <div class="content">
+                                           <b class="callout-title">Tip:</b>
+                                            <p>This option is intended for the use of singleton sets to define compile-time variables in the GAMS model. Using singleton sets instead of command line parameters has the essential advantage that their information is not lost at any time, e.g. during GDX export. Read more about this topic <a href="./model.html#command-line">here</a>.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                    <p>Singleton sets can have an element label and an element text. When configured as a text input, both components can be communicated with GAMS by using a double pipe ('||') as separator:</p>
+                                    <div style="padding-bottom:10pt;">
+                                        <img class="img-fluid" style= "max-height:60pt;" src="assets/images/configuration_mode/widget_textbox_clearvalue.png" alt="Element name"/>
+                                    </div>
+									<p>If this option is activated, the entire content of the text input widget is communicated as the element text of the singleton set to GAMS. 
+									The element label in turn is communicated as an empty string. Migrating a singleton set into a compile time variable in GAMS can then be done using the <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset">$eval.set</a> method. Since the variable should be filled by the element text, the attribute <i>TE</i> has to be used: <code class = "language-gams">$eval.Set VARNAME SETID.TE</code>.</p> 
+                                    </div>
 									<div class="callout-block callout-success" style="margin-top:10px;">
                                        <div class="icon-holder">
                                            <i class="fas fa-thumbs-up"></i>
                                        </div><!--//icon-holder-->
                                        <div class="content">
                                            <b class="callout-title">Text input and Singleton Sets:</b>
-                                            <p>If a text input is used for a Singleton Set and you want to communicate both its label and its element text via GAMS MIRO, you must use a double pipe ('||') as separator. Find more information <a href = "./model.html#singleton-set-separator">here</a>.</p>
+                                            <p>If a text input is used for a Singleton Set and you want to communicate both its label and its element text via GAMS MIRO, you must use a double pipe ('||') as separator:</p>
+											<div style="padding-bottom:10pt;">
+                                                <img class="img-fluid" style= "max-height:60pt;" src="assets/images/configuration_mode/widget_textbox_clearvalue.png" alt="Element name"/>
+                                            </div>
+											<p>Find more information <a href = "./model.html#singleton-set-separator">here</a>.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                 </div><!--//section-block-->

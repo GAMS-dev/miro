@@ -6,6 +6,7 @@ miroPivotRendererEnv <- new.env(parent = emptyenv())
 newChartTool     <- character(0L)
 isInJSON         <- FALSE
 configuredWithThisTool <- FALSE
+tableSymbol      <- FALSE
 plotlyChartTools <- c("pie", "bar", "scatter", "line", "bubble", "hist")
 noTitle          <- c("leaflet", "timevis", "miropivot", "valuebox")
 modelInputData   <- vector("list", length(modelIn))
@@ -52,7 +53,7 @@ langSpecificGraphs$valueboxIconChoices <- c("_" = "_", "Coins" = "coins", "Walle
                                             "Question mark" = "question-circle", "Play" = "play-circle", 
                                             "Check" = "check-circle", "Home" = "home", "Cog" = "cog", "Asterisk" = "asterisk", 
                                             "Ban" = "ban", "Heart" = "heart", "Leaf" = "leaf", "Lightbulb" = "lightbulb", 
-                                            "Smile" = "smile", "Star" = "star", "Other..." = "other")
+                                            "Smile" = "smile", "Star" = "star")
 names(langSpecificGraphs$valueboxIconChoices) <- lang$adminMode$graphs$valueboxOptions$valueboxIconChoices
 langSpecificGraphs$easingChoices <- c("linear" = "linear","quad" = "quad","cubic" = "cubic","sin" = "sin",
                                       "exp" = "exp","circle" = "circle","elastic" = "elastic","back" = "back","bounce" = "bounce",
@@ -142,10 +143,11 @@ langSpecificGraphs$graphOptionsNoScalars  <- setNames(c("pie","bar","scatter","l
                                                         lang$adminMode$graphs$graphOptions$timevis,
                                                         lang$adminMode$graphs$graphOptions$miropivot,
                                                         lang$adminMode$graphs$graphOptions$custom))
-langSpecificGraphs$graphOptionsSet        <- setNames(c("timevis", "miropivot", "custom"), 
+langSpecificGraphs$graphOptionsSet        <- setNames(c("timevis", "miropivot", "custom", "leaflet"), 
                                                       c(lang$adminMode$graphs$graphOptions$timevis,
                                                         lang$adminMode$graphs$graphOptions$miropivot,
-                                                        lang$adminMode$graphs$graphOptions$custom))
+                                                        lang$adminMode$graphs$graphOptions$custom,
+                                                        lang$adminMode$graphs$graphOptions$leaflet))
 
 hideFilter <- function(){
   hideEl(session, "#preview_output_plotly-data_filter")
@@ -504,7 +506,7 @@ observeEvent(input$localInput, {
                                       modelName = modelName, errMsg = lang$errMsg$GAMSOutput,
                                       scalarsFileHeaders = scalarsFileHeaders, 
                                       templates = modelOutTemplate, method = loadMode, 
-                                      hiddenOutputScalars = config$hiddenOutputScalars,
+                                      hiddenOutputScalars = character(0L),
                                       fileName = basename(isolate(input$localInput$datapath)))
     }, error = function(e){
       flog.error("Problems loading output data. Error message: %s.", e)
@@ -828,30 +830,6 @@ observeEvent(input$timevis_multiselect, {
 })
 observeEvent(input$timevis_showCurrentTime, {
   rv$graphConfig$graph$showCurrentTime <<- input$timevis_showCurrentTime
-})
-
-observeEvent(input$valuebox_width, {
-  rv$graphConfig$options$width <<- as.numeric(input$valuebox_width)
-})
-observeEvent(input$valuebox_color, {
-  rv$graphConfig$options$color <<- input$valuebox_color
-})
-observeEvent(input$valuebox_icon, {
-  if(identical(input$valuebox_icon, "other"))
-    updateTextInput(session, "valuebox_other_icon", value = "")
-}, priority = -1)
-observeEvent(c(input$valuebox_icon, input$valuebox_other_icon), {
-  if(identical(input$valuebox_icon, "_") ||
-     identical(input$valuebox_icon, "other") && identical(input$valuebox_other_icon, "")){
-    rv$graphConfig$options$icon <<- NULL
-    return()
-  }else if(identical(input$valuebox_icon, "other") && !identical(input$valuebox_other_icon, "")){
-    rv$graphConfig$options$icon$name <<- input$valuebox_other_icon
-    rv$graphConfig$options$icon$lib <<- "font-awesome"
-    return()
-  }
-  rv$graphConfig$options$icon$name <<- input$valuebox_icon
-  rv$graphConfig$options$icon$lib <<- "font-awesome"
 })
 
 observeEvent(input$hist_norm, {
@@ -1981,6 +1959,29 @@ observeEvent(input$filter_date, {
   req(isTRUE(input$filter_dim))
   rv$graphConfig$graph$filter$date <<- input$filter_date
 })
+observe({
+  req(identical(rv$graphConfig$graph$tool, "valuebox"), input$valueBoxes)
+  
+  scalarNames <- modelOut[[scalarsOutName]]$symnames[!tolower(modelOut[[scalarsOutName]]$symnames)
+                                                     %in% tolower(configJSON$hiddenOutputScalars)]
+  boxOptionsTmp <- lapply(seq_along(input$valueBoxes), function(rowId){
+    if(!length(input$valueBoxes[[rowId]])){
+      return(NA)
+    }
+    scalarIds <- vapply(strsplit(input$valueBoxes[[rowId]], "_", fixed = TRUE), function(boxId){
+      as.integer(boxId[2])
+    }, integer(1L), USE.NAMES = FALSE)
+    ret <- lapply(scalarIds, function(i){
+      list(description = input[[paste0("valueBoxDesc_", i)]],
+           color = input[[paste0("valueBoxColor_", i)]],
+           icon = list(name = input[[paste0("valueBoxIcon_", i)]], lib = "font-awesome"),
+           round = if(!is.na(input[[paste0("valueBoxRound_", i)]])) input[[paste0("valueBoxRound_", i)]] else 0L)
+    })
+    names(ret) <- scalarNames[scalarIds]
+    return(ret)
+  })
+  rv$graphConfig$options <- boxOptionsTmp[!is.na(boxOptionsTmp)]
+})
 
 getCurrentGraphConfig <- function(){
   currentGraphConfig <<- NULL
@@ -2013,16 +2014,17 @@ observeEvent(input$gams_symbols, {
   newChartTool <<- character(0L)
   if(identical(input$gams_symbols, scalarsFileName)){
     removeUI(selector = "#tool_options div", multiple = TRUE)
-    hideEl(session, "#preview-outer-wrapper")
+    hideEl(session, ".preview-outer-wrapper")
     insertUI(selector = "#tool_options", tags$div(class="config-no-hide", 
-                                                  paste0("The configuration for input scalars is done in '", lang$adminMode$uiR$widgets, "'!"))
+                                                  paste0(lang$adminMode$graphs$errMsg$scalarConfig, 
+                                                         lang$adminMode$uiR$widgets, "'!"))
              , where = "afterBegin")
     
     disableEl(session, "#saveGraph")
     disableEl(session, "#deleteGraph")
     return()
   }else{
-    showEl(session, "#preview-outer-wrapper")
+    showEl(session, ".preview-outer-wrapper")
     enableEl(session, "#saveGraph")
     enableEl(session, "#deleteGraph")
   }
@@ -2038,6 +2040,8 @@ observeEvent(input$gams_symbols, {
         graphType <- "pivot"
       }else if(identical(configJSON$dataRendering[[chartId]]$outType, "miroPivot")){
         graphType <- "miropivot"
+      }else if(identical(configJSON$dataRendering[[chartId]]$outType, "datatable")){
+        graphType <- "datatable"
       }else if(!length(configJSON$dataRendering[[chartId]][["graph"]])){
         graphType <- "custom"
       }
@@ -2067,6 +2071,8 @@ observeEvent(input$gams_symbols, {
       newChartTool <<- "pivot"
     }else if(identical(graphType, "custom")){
       newChartTool <<- "custom"
+    }else if(identical(graphType, "datatable")){
+      newChartTool <<- "datatable"
     }else{
       if(identical(modelInRaw[[activeSymbolName]]$symtype, "set")){
         newChartTool <<- "miropivot"
@@ -2080,6 +2086,17 @@ observeEvent(input$gams_symbols, {
       graphOptions <- langSpecificGraphs$graphOptionsNoScalars
     }
     updateSelectInput(session, "chart_tool", choices = graphOptions, selected = newChartTool)
+    if(identical(newChartTool, "datatable")){
+      #tableSymbol identifier needed when configuration is deleted
+      tableSymbol <<- TRUE
+      #manual refresh options since updateSelectinput will not trigger an event when selecting (not available choice) 'datatable'
+      rv$refreshOptions <- rv$refreshOptions + 1L
+      disableEl(session, "#saveGraph")
+      showEl(session, "#deleteGraph")
+      return()
+    }else{
+      tableSymbol <<- FALSE
+    }
     if(identical(newChartTool, input$chart_tool)){
       rv$refreshOptions <- rv$refreshOptions + 1L
     }
@@ -2095,7 +2112,13 @@ observeEvent({
   rv$refreshOptions}, {
     req(rv$initData)
     allDataAvailable <<- FALSE
-    chartTool <- input$chart_tool
+    if(identical(newChartTool, "datatable")){
+      chartTool <- "datatable"
+      newChartTool <<- character(0L)
+    }else{
+      chartTool <- input$chart_tool
+      enableEl(session, "#saveGraph")
+    }
     #check whether symbol is already configured (in JSON file). Check for identical(newChartTool, chartTool) 
     #not sufficient since newChartTool = pie is the default for non-configured symbols
     if(isTRUE(isInJSON) && identical(newChartTool, chartTool))
@@ -2433,6 +2456,15 @@ observeEvent({
       insertUI(selector = "#tool_options",
                tags$div(id = "custom_options", getCustomOptions()), where = "beforeEnd")
       allDataAvailable <<- TRUE
+    }else if(identical(chartTool, "datatable")){
+      # only show info message for datatable configuration
+      insertUI(selector = "#tool_options", 
+               tags$div(id = "datatableInfoMsg", class="config-message", 
+                        style = "display:block;",
+                        paste0(lang$adminMode$graphs$datatableOptions$infoMsg, lang$adminMode$uiR$table, "'!")),
+               where = "beforeEnd")
+      rv$graphConfig$graph$symname <- activeSymbol$name
+      allDataAvailable <<- TRUE
     }else if(identical(chartTool, "valuebox")){
       showEl(session, ".category-btn-valuebox")
       addClassEl(session, id = "#categoryValuebox1", "category-btn-active")
@@ -2646,7 +2678,9 @@ getOuttype <- reactive({
     checkboxInput_MIRO("outType", tags$div(lang$adminMode$graphs$chartOptions$options$outType, 
                                            tags$a("", class="info-wrapper", 
                                                   href="https://gams.com/miro/charts.html#table-graph-split-screen",
-                                                  tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")), 
+                                                  tags$span(class="fas fa-info-circle", class="info-icon",
+                                                            role = "presentation",
+                                                            `aria-label` = "More information"), target="_blank")), 
                        value = identical(rv$graphConfig$outType, "dtGraph"))
   )
 })
@@ -2838,34 +2872,99 @@ getHistOptions <- reactive({
 getValueboxOptions  <- reactive({
   rv$initData
   rv$refreshContent
-  indices       <- activeSymbol$indices
-  scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
-  isolate({
-   rv$graphConfig$options$width     <<- checkLength(configuredWithThisTool, currentGraphConfig[["width"]], 4L)
-   rv$graphConfig$options$color     <<- checkLength(configuredWithThisTool, currentGraphConfig[["color"]], "aqua")
-   rv$graphConfig$options$icon$name <<- checkLength(configuredWithThisTool, currentGraphConfig[["icon"]][["name"]], NULL)
-  })
-  tagList(
-    tags$div(class="cat-body cat-body-49",
-             selectInput("valuebox_width", lang$adminMode$graphs$valueboxOptions$width,
-                         choices = c("1" = 12, "2" = 6, "3" = 4, "4" = 3), 
-                         selected = rv$graphConfig$options$width),
-             selectInput("valuebox_color", lang$adminMode$graphs$valueboxOptions$color,
-                         choices = langSpecificGraphs$valueboxColor, 
-                         selected = rv$graphConfig$options$color),
-             selectInput("valuebox_icon", lang$adminMode$graphs$valueboxOptions$icon,
-                         choices = langSpecificGraphs$valueboxIconChoices,
-                         selected = if(is.null(rv$graphConfig$options$icon$name)) "_"
-                         else if(!(rv$graphConfig$options$icon$name %in% langSpecificGraphs$valueboxIconChoices))
-                           "other"
-                         else
-                           rv$graphConfig$options$icon$name),
-             conditionalPanel(condition = "input.valuebox_icon=== 'other'",
-                              tags$div(class = "shiny-input-container", style = "padding-left: 20px;",
-                                       textInput("valuebox_other_icon", span(HTML(htmltools::htmlEscape(lang$adminMode$graphs$valueboxOptions$otherIcon)), tags$br(), 
-                                                                       tags$a(href="http://fontawesome.io/icons/", target = "_blank", "http://fontawesome.io/icons/")),
-                                                 value = rv$graphConfig$options$icon$name, placeholder = "dollar-sign")))
-    )
+  visibleScalars <- !tolower(modelOut[[scalarsOutName]]$symnames) %in% tolower(configJSON$hiddenOutputScalars)
+  scalarNames <- modelOut[[scalarsOutName]]$symnames[visibleScalars]
+
+  noScalars <- length(scalarNames)
+  if(!length(currentGraphConfig) || !length(names(currentGraphConfig[[1]]))){
+    boxWidth <- checkLength(configuredWithThisTool, currentGraphConfig[["width"]], 4L)
+    noBoxesRow <- 12/boxWidth
+    numberRows <- ceiling(boxWidth*noScalars/12)
+    oldConfig <- TRUE
+  }else{
+    configuredScalars <- unlist(lapply(currentGraphConfig, names), use.names = FALSE)
+    unconfiguredScalars <- !tolower(scalarNames) %in% tolower(configuredScalars)
+    if(any(unconfiguredScalars)){
+      unconfiguredScalars <- scalarNames[unconfiguredScalars]
+      additionalOptions <- lapply(seq_len(ceiling(length(unconfiguredScalars)/3L)) - 1L, function(rowId){
+        scalarNames <- unconfiguredScalars[seq(rowId*3L + 1L, min(length(unconfiguredScalars),
+                                                                  rowId*3L + 3L))]
+        return(setNames(vector("list", length(scalarNames)),
+                        scalarNames))
+      })
+      currentGraphConfig <- c(currentGraphConfig, additionalOptions)
+    }
+    numberRows <- length(currentGraphConfig)
+    oldConfig <- FALSE
+  }
+  
+  tags$div(class="cat-body cat-body-49",
+           lapply(seq_len(noScalars), function(rowId){
+             if(rowId > numberRows){
+               rowConfig <- vector("list", 1L)
+             }else if(oldConfig){
+               rowConfig <- vector("list", noBoxesRow)
+             }else{
+               rowConfig <- currentGraphConfig[[rowId]]
+               boxWidth <- 12/length(rowConfig)
+             }
+             tagList(tags$div(id = paste0("valueboxRow_", rowId), class="drop-index-list valuebox-config-row",
+                              style = "margin-bottom:20px;display:flex;",
+                              if(rowId <= numberRows){
+                                lapply(seq_along(rowConfig), function(i){
+                                  if(oldConfig){
+                                    i <- i + noBoxesRow * (rowId - 1L)
+                                    if(i > noScalars){
+                                      return()
+                                    }
+                                    scalarConfig <- list(icon = currentGraphConfig[["icon"]],
+                                                         color = currentGraphConfig[["color"]])
+                                  }else{
+                                    scalarConfig <- rowConfig[[i]]
+                                    i <- match(names(rowConfig)[i], scalarNames)
+                                    if(is.na(i)){
+                                      return()
+                                    }
+                                  }
+                                  tags$div("data-rank-id" = paste0("valueBox_", i),
+                                           class = "valuebox-config-el",
+                                           tags$div(title = lang$adminMode$graphs$valueboxOptions$desc,
+                                                    textInput(paste0("valueBoxDesc_", i), label = NULL,
+                                                              value = if(length(scalarConfig$description)) scalarConfig$description else
+                                                                modelOut[[scalarsOutName]]$symtext[[i]])),
+                                           tags$div(title = lang$adminMode$graphs$valueboxOptions$color,
+                                                    selectInput(paste0("valueBoxColor_", i), label = NULL,
+                                                                choices = langSpecificGraphs$valueboxColor,
+                                                                selected = if(length(scalarConfig$color)) scalarConfig$color else "aqua")),
+                                           fluidRow(
+                                             column(5, class = "valuebox-left-col",
+                                                    tags$div(title = lang$adminMode$graphs$valueboxOptions$round,
+                                                             numericInput(paste0("valueBoxRound_", i), label = NULL, min = 0L, 
+                                                                          value = if(length(scalarConfig$round)) scalarConfig$round else config$roundingDecimals))),
+                                             column(7, class = "valuebox-right-col",
+                                                    tags$div(title = lang$adminMode$graphs$valueboxOptions$icon,
+                                                             selectInput(paste0("valueBoxIcon_", i), label = NULL,
+                                                                         choices = langSpecificGraphs$valueboxIconChoices,
+                                                                         selected = if(length(scalarConfig$icon)) scalarConfig$icon))))
+                                           
+                                  )
+                                })
+                              }
+             ),
+             sortable_js(paste0("valueboxRow_", rowId), 
+                         options = sortable_options(group = "valueBoxes", supportPointer = FALSE,
+                                                    put = htmlwidgets::JS("
+                                                      function(to) {
+                                                        return (to.el.children.length < 12 && from.el.children.length > 1);
+                                                      }
+                                                    "),
+                                                    onLoad = sortable_js_capture_bucket_input("valueBoxes",
+                                                                                              paste0("valueboxRow_", seq_len(noScalars)),
+                                                                                              paste0("valueboxRow_", seq_len(noScalars))),
+                                                    onSort = sortable_js_capture_bucket_input("valueBoxes",
+                                                                                              paste0("valueboxRow_", seq_len(noScalars)),
+                                                                                              paste0("valueboxRow_", seq_len(noScalars))))))
+           })
   )
 })
 getDygraphsOptions <- reactive({
@@ -2953,7 +3052,9 @@ getDygraphsOptions <- reactive({
                                     getDyaxisOptions("dyAxis2", names(scalarIndices)[1])))),
     tags$div(class="cat-body cat-body-29", style="display:none;",
              selectInput("chart_color", tags$div(lang$adminMode$graphs$dygraphsOptions$color, tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#group-domain", 
-                                                                                            tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                                                            tags$span(class="fas fa-info-circle", class="info-icon",
+                                                                                                      role = "presentation",
+                                                                                                      `aria-label` = "More information"), target="_blank")),
                          choices = c("_", indices), selected = rv$graphConfig$graph$color),
              getFilterOptions()),
     if(length(configScalars) && nrow(configScalars)){
@@ -3298,7 +3399,9 @@ getCustomOptions <- reactive({
              textInput("custom_name", lang$adminMode$graphs$customOptions$name, value = rv$graphConfig$outType),
              selectizeInput("custom_packages", tags$div(lang$adminMode$graphs$customOptions$packages, 
                                                         tags$a("", title = lang$adminMode$general$ui$tooltipDocs, class="info-wrapper", href="https://gams.com/miro/customize.html#custom-renderers", 
-                                                               tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                               tags$span(class="fas fa-info-circle", class="info-icon",
+                                                                         role = "presentation",
+                                                                         `aria-label` = "More information"), target="_blank")),
                             choices = if(length(rv$graphConfig$packages)) rv$graphConfig$packages else c(), 
                             selected = rv$graphConfig$packages,
                             multiple = TRUE, options = list("create" = TRUE,"persist" = FALSE)),
@@ -3326,7 +3429,9 @@ getColorPivotOptions <- reactive({
   tagList(
   selectInput("chart_color", tags$div(lang$adminMode$graphs$chartOptions$color, 
               tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#group-domain", 
-                     tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                     tags$span(class="fas fa-info-circle", class="info-icon",
+                               role = "presentation",
+                               `aria-label` = "More information"), target="_blank")),
               choices = c("_", indices),
               selected = rv$graphConfig$graph$color))
 })
@@ -3359,7 +3464,9 @@ getFilterOptions <- reactive({
   tagList(
     tags$label(class = "cb-label info-position", "for" = "filter_dim", 
                tags$div(lang$adminMode$graphs$filterOptions$filter, tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#filter-option", 
-                                                                                                        tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
+                                                                                                        tags$span(class="fas fa-info-circle", class="info-icon",
+                                                                                                                  role = "presentation",
+                                                                                                                  `aria-label` = "More information"), target="_blank"))),
     tags$div(
       tags$label(class = "checkbox-material", 
                  checkboxInput("filter_dim", value = isTRUE(length(rv$graphConfig$graph$filter$col) > 0L), label = NULL)
@@ -3379,7 +3486,7 @@ getFilterOptions <- reactive({
                                   value = rv$graphConfig$graph$filter$date)
              ))
   )
-}) 
+})
 observe({
   req(rv$graphConfig$graph$tool, activeSymbol$id > 0L, allDataAvailable)
   if(identical(rv$graphConfig$graph$tool, "plotly") && identical(length(rv$graphConfig$graph$type), 0L))
@@ -3387,12 +3494,14 @@ observe({
   if(activeSymbol$id > length(modelIn)){
     symId <- activeSymbol$id - length(modelIn)
     metadata <- list(headers = modelOut[[symId]]$headers,
-                     symtype = modelOut[[symId]]$symtype)
+                     symtype = modelOut[[symId]]$symtype,
+                     symname = names(modelOut)[symId])
     data <- modelOutputData[[symId]]
   }else{
     symId <- activeSymbol$id
     metadata <- list(headers = modelIn[[symId]]$headers,
-                     symtype = modelIn[[symId]]$symtype)
+                     symtype = modelIn[[symId]]$symtype,
+                     symname = names(modelIn)[symId])
     data <- modelInputData[[symId]]
   }
   tryCatch({
@@ -3453,8 +3562,7 @@ observe({
       callModule(renderData, "preview_output_miropivot", type = "miropivot", 
                  data = data, rendererEnv = miroPivotRendererEnv,
                  customOptions = c(list("_metadata_" = metadata, 
-                                      resetOnInit = TRUE,
-                                      lang = lang$renderers$miroPivot), 
+                                      resetOnInit = TRUE), 
                                    currentGraphConfig$options),
                  roundPrecision = 2, modelDir = modelDir)
       showEl(session, "#preview-content-miropivot")
@@ -3482,9 +3590,10 @@ observe({
       hideEl(session, "#preview-content-custom")
     }else if(isolate(rv$graphConfig$graph$tool) == "valuebox"){
       customOptionstmp <- as.vector(rv$graphConfig$options, mode = "list")
-      customOptionstmp$count <- configGraphsOut[[i]]$options$count
+      customOptionstmp$count <- length(modelOut[[scalarsOutName]]$symnames)
+      dataVisible <- data[!tolower(data[[1]]) %in% tolower(configJSON$hiddenOutputScalars), ]
       callModule(renderData, "preview_output_valuebox", type = "valuebox", 
-                 data = data, configData = configScalars, 
+                 data = dataVisible, configData = configScalars, 
                  customOptions = customOptionstmp,
                  modelDir = modelDir)
       showEl(session, "#preview-content-valuebox")
@@ -3511,7 +3620,7 @@ observe({
 }
                             
 ",
-"render", toupper(substr(nameTmp, 1, 1)), substr(nameTmp, 2, nchar(nameTmp)), " <- function(input, output, session, data, options = NULL, path = NULL, ...){ 
+"render", toupper(substr(nameTmp, 1, 1)), substr(nameTmp, 2, nchar(nameTmp)), " <- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){ 
     #renderer 
 
 }")
@@ -3666,5 +3775,11 @@ observeEvent(input$deleteGraphConfirm, {
   currentGraphConfig <<- NULL
   isInJSON <<- FALSE
   newChartTool <<- "pie"
+  if(isTRUE(tableSymbol)){
+    tableSymbol <<- FALSE
+    updateSelectInput(session, "chart_tool", selected = newChartTool)
+    if(identical(tolower(input$table_symbol), tolower(activeSymbol$name)))
+      updateCheckboxInput(session, "outputTable_noGraph", value = FALSE)
+  }
   rv$refreshOptions <- rv$refreshOptions + 1L
 })

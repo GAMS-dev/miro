@@ -40,7 +40,6 @@ observeEvent(input$btOverwriteInput, {
 
 observeEvent(virtualActionButton(rv$btOverwriteInput),{
   if(is.null(input$localInput$datapath)){
-    flog.error("Load Excel event was triggered but no datapath specified. This should not happen!")
     return(NULL)
   }
   if(identical(config$activateModules$loadLocal, FALSE)){
@@ -174,6 +173,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   prog$set(detail = lang$progressBar$importScen$renderInput, value = 0.4)
   
   # reset input data
+  modelInputGraphVisible[] <<- FALSE
   lapply(seq_along(modelIn)[names(modelIn) %in% datasetsToFetch], function(i){
     hideEl(session, "#graph-in_" %+% i)
     showEl(session, "#data-in_" %+% i)
@@ -210,7 +210,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
       if(!is.null(outputData$scalar)){
         scalarData[["scen_1_"]] <<- outputData$scalar
       }
-      renderOutputData(rendererEnv)
+      renderOutputData(rendererEnv, views)
       noOutputData <<- FALSE
     }else{
       noOutputData <<- TRUE

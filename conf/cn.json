@@ -24,9 +24,11 @@
     "sidebarButtons":{
       "importInput":"加载数据",
       "solve":"求解模型",
-	  "submitJob": "提交作业",							
+      "submitJob": "提交作业",							
       "solveHcube":"提交作业",
+      "changeMode": "改变模式",
       "splitView":"拆分视图",
+      "pivotView": "Pivot view",
       "tabView":"标签视图",
       "compareStart":"比较模式",
       "compareStop":"停止比较",
@@ -169,6 +171,7 @@
       "desc":"请输入场景的名称:",
       "tags":"请为场景添加标签（可选）:",
       "discardAttach": "舍弃附件？",
+      "discardViews": "抛弃观点？",
       "discardPerm": "舍弃权限？",
       "newScenName":"新建场景",
       "badName":"请输入正确的名称。",
@@ -196,6 +199,7 @@
       "title":"编辑元数据",
       "categoryGeneral": "通用选项",
       "categoryAttachments": "附件",
+      "categoryViews": "浏览次数",
       "categoryAccessPerm": "访问权限",
       "newName":"新建名称",
       "badName":"该名称无效（太长或太短），请选择其他名称。",
@@ -210,6 +214,19 @@
       "attachMaxNoError":"已达最大附件数。请先删除附件,再上传新附件。",
       "attachDuplicateError":"已存在相同名称的附件。请选择其他名称,再重试。",
       "attachForbiddenFnameError":"尝试上传的附件使用了禁用的文件名。请选择其他文件名,再重试。",
+      "viewsSuccess": "观点已成功更新。",
+      "viewsInvalidData": "您上传的数据不是有效的视图数据。请确认该文件是JSON文件，且语法正确。",
+      "viewsDuplicateError": "以下视图没有被导入，因为该符号已经存在相同名称的视图。'%s'.",
+      "viewsInvalidError": "您尝试导入的某些视图未导入，因为它们是为不存在的符号定义的：'%s'.",
+      "noViewData": "没有意见",
+      "selectAllViews": "选择所有",
+      "selectNoViews": "选择无",
+      "viewsNoneSelected": "没有选择视图。点击行选择视图。",
+      "viewsAdd": "添加意见",
+      "viewsTableHeaderSymbol": "符号",
+      "viewsTableHeaderId": "名称",
+      "viewsDownload": "下载浏览量",
+      "viewsRemove": "删除观点",
       "errMsg":"更新场景元数据中出现错误。如果此问题仍然存在,请与系统管理员联系。",
       "cancelButton": "关闭",
       "okButton":"更新元数据"
@@ -218,6 +235,7 @@
       "title":"编辑元数据",
       "categoryGeneral": "通用选项",
       "categoryAttachments": "附件",
+      "categoryViews": "浏览次数",
       "categoryAccessPerm": "访问权限",
       "newName":"新建名称",
       "badName":"该名称无效（太长或太短），请选择其他名称。",
@@ -239,7 +257,7 @@
     "dialogRemoteLogin": {
       "title": "请登陆",
       "desc": "请输入登陆信息:",
-      "url": "GAMS MIRO Engine公司的网站",
+      "url": "GAMS Engine公司的网站",
       "username": "用户名",
       "password": "密码",
       "namespace": "命名空间",
@@ -247,7 +265,7 @@
       "remember": "记住我",
       "cancelButton":"取消",
       "okButton": "确认",
-      "hostNotFound": "GAMS MIRO Engine无法从本网站访问。",
+      "hostNotFound": "GAMS Engine无法从本网站访问。",
       "nsNotFound": "找不到该命名空间。",
       "invalidCred": "该密匙无效",
       "insuffPerm": "没有足够的权限来执行该模型。",
@@ -397,7 +415,7 @@
     },
     "dialogLockScen":{
       "title":"场景锁定",
-      "desc":"用户'%s'正在访问要加载的场景，请稍后重试。"
+      "desc":"用户'%s'正在访问要加载的场景。"
     },
     "dialogReadonly":{
       "title":"无写入权限",
@@ -474,7 +492,7 @@
         "importSuccess":"作业已导入",
         "accessDenied": "拒绝访问",
 		"maxDownloads": "文件数量已达到可以同时下载的最大值。",
-        "jobNotFound": "在GAMS MIRO ENGINE上没有找到这份工作。",
+        "jobNotFound": "在GAMS ENGINE上没有找到这份工作。",
         "histTitle": "作业历史",
         "status":{
           "downloading": "正在下载结果",
@@ -575,7 +593,7 @@
         "cancelButton":"取消"
       },
       "showLogFileDialog":{
-        "title":"Hypercube作业的日志文件",
+        "title":"日志文件",
         "noContent":"无法访问日志文件或该日志文件不包含任何数据。",
         "fileSize":"日志文件包含过多要显示的数据。",
         "cancelButton": "取消"
@@ -603,6 +621,9 @@
         "timeout": "脚本超时了",
         "crash": "脚本崩溃了"
       }
+    },
+    "hot":{
+      "search": "搜索："
     }
   },
   "progressBar":{
@@ -651,16 +672,34 @@
       "btDownloadCsv": "下载CSV",
       "btLoadView": "加载视图",
       "btNewView": "添加视图",
+      "btEnableEdit": "激活编辑",
+      "btAddRow": "添加行",
+      "btRemoveRows": "删除行",
       "aggregateLabel": "汇总",
       "filterLabel": "过滤",
       "allPlaceholder": "全部",
+      "defaultViewName": "默认",
       "colTruncationWarning": "数据被截断到前%s列。",
       "rowTruncationWarning": "数据被截断到前%s行。",
       "newViewTitle": "新增检视",
       "newViewLabel": "请为该视图选择一个名称。",
       "newViewBtCancel": "取消",
       "newViewBtSave": "保存",
+      "pivotCompScenColName": "场景选项",
       "errUniqueViewName": "您输入的视图名称已经存在。请选择其他名称。",
+      "duplicateRecordTitle": "双重记录",
+      "duplicateRecordDesc": "您输入的记录已经存在。",
+      "errPivotDuplicate": "数据中包含重复的记录，因此无法进行枢纽。",
+      "errPivot": "数据无法透视。 这可能是因为您的数据太大。",
+      "errorTitle": "错误",
+      "duplicateRecordError": "记录：'％s'已经存在。 请删除它，然后重试。",
+      "dialogAddRow":{
+        "title": "添加新行",
+        "btCancel": "取消",
+        "invalidKeysError": "您输入的元素无效。 请注意，这些元素必须至少包含一个可打印字符。",
+        "invalidValuesError": "您输入的数据无效。 确保您输入的值是数字。",
+        "unknownError": "尝试添加新数据时发生意外错误。"
+      },
       "aggregationFunctions":{
         "sum": "总额",
         "count": "计数",
@@ -676,6 +715,10 @@
         "radar": "雷达图",
         "line": "折线图"
       }
+    },
+    "datatable":{
+      "addRowPos": ["在选择上面添加一行", "在选择下面增加一行"],
+      "addRowPosNoneSelected": ["在第一行之上增加一行", "在最后一行下面添加一行"]
     }
   },
   "errMsg":{
@@ -889,6 +932,7 @@
         "headerTabGrouping": "组合选项卡",
         "headerTabSymlinks": "使用输出数据作为输入数据",
         "headerInputGroups": "输入组",
+        "headerInputWidgetGroups": "小工具组",
         "headerOutputGroups": "输入组",
         "headerSymbolNaming": "指定名称",
         "headerSymbolGrouping": "组合",
@@ -918,7 +962,7 @@
       },
       "scen":{
         "label": "指定默认的场景比较模式",
-        "choices": ["分屏视图 （适合比较两个场景）", "标签视图 （适合多于两个的场景之间的比较）"]
+        "choices": ["分屏视图 （适合比较两个场景）", "标签视图 （适合多于两个的场景之间的比较）", "枢轴视图 （适合多于两个的场景之间的比较）"]
       },
       "defaultScenName":{
         "checkbox": "要使用一个在启动时加载的默认场景吗？",
@@ -930,6 +974,7 @@
       },
       "groups":{
         "input": "将输入GAMS符号分组",
+        "widgets": "将输入部件划分为一组",
         "output": "将输出GAMS符号分组"
       },
       "symlinks":{
@@ -1052,23 +1097,20 @@
         "output": "输出表格",
         "symbol": "符号表格",
         "resetTable": "重启",
-        "saveTable": "保存"
+        "saveTable": "保存",
+		"inputSymbols": "输入的GAMS符号",
+        "outputSymbols": "输出的GAMS符号"
       },
       "hot":{
         "height": "输入表格的高度（以px为单位）",
         "readonly": "要限制用户编辑表格？ 如果激活，则用户无法修改表格。",
-        "highcol": "突出显示选中单元格的列（不支持实时预览）。",
-        "highrow": "突出显示选中单元格的行（不支持实时预览）。",
         "stretch": "指定默认单元格的列的拉伸样式",
         "stretchChoices": ["无拉伸", "仅拉伸最后一列", "拉伸所有列"],
-        "stretchCustom": "设置自定义列宽。",
         "colwidth": "单个（未拉伸）列的宽度。",
-        "sort": "允许用户对列按照升序或降序进行排序（通过单击标题行中的列名称）。",
         "resize": "允许用户手动调整列的大小。",
         "enable": "允许使用表格的上下文菜单（通过鼠标右键单击访问）。",
         "contextRowedit": "允许行编辑",
-        "contextColedit": "允许列编辑",
-        "contextReadonly": "允许只读功能"
+        "contextColedit": "允许列编辑"
       },
       "dt":{
         "class":{
@@ -1082,6 +1124,9 @@
         "pagelength":{
           "label":"每页显示信息的条目"
         },
+        "decimals":{
+          "label":"显示的小数点位数"
+        },
         "rownames":{
           "label":"显示行号？"
         },
@@ -1089,9 +1134,8 @@
           "label":"允许重新排序列？"
         },
         "buttons":{
-          "label":"添加导出按钮？",
           "title": "如果一个符号包含多个表格页面，使用导出按钮仅会对当前可见的表格页面有效。",
-          "choices": ["复制", "CSV文件", "Excel工作簿", "PDF", "打印"],
+          "choices": ["复制", "CSV文件", "Excel工作簿", "PDF", "打印", "列可见性"],
           "select": "选择要使用的按钮。 注意：所有按钮功能仅对可见的表格页面有效。"
         }
       },
@@ -1101,6 +1145,13 @@
           "message": "确定要重置此符号的现有配置吗？ 该操作无法撤消！",
           "cancel": "取消",
           "confirm": "确认"
+        },
+		"noGraph": "不要显示图形。 只显示表格。",					   
+        "saveJson":{
+          "warnTitle": "数据存在",
+          "warnContent": "根据配置，不应显示该符号的图形：'％s'。 该GAMS符号的图形配置已存在。 确定要覆盖此配置吗？该操作无法撤消！",
+          "cancel": "取消",
+          "overwrite": "确定覆盖"
         }
       }
     },
@@ -1118,7 +1169,7 @@
         "noWidgetConfigMsg": "当前没有为此GAMS符号配置小部件",
         "optionConfigMsg": "消息：该符号是GAMS选项：%s",
         "doubledashConfigMsg": "消息： 该符号是一个double-dash parameter：%s",
-        "tableWidget": "表格在“配置表格”中已配置完成！",
+        "tableWidget": "可以在以下部分中调整表格：'",
         "inputSymbol": "为哪个输入符号创建一个小部件？",
         "widgetGo": "GAMS option",
         "widgetDd": "double-dash parameter",
@@ -1187,7 +1238,9 @@
         "val55": "如果仅使用符号的元素文本与GAMS通信，则下拉菜单中只能选择一项。",
         "val56": "这个文件名的附件已经存在!",
         "val57": "文件名包含无效字符。不支持子目录中的附件!",
-        "val58": "小数分隔符和千组分隔符不能完全相同!"
+        "val58": "小数分隔符和千组分隔符不能完全相同!",
+        "val59": "GAMS符号：％s被声明为表格。 这导致最后一列在MIRO中旋转。 MIRO枢轴不能与已旋转的符号一起使用。 请声明该符号作为参数。",
+        "val60": "每个元素只能出现在一组中！"
       },
       "widgetOptions":{
 	    "slider": "滑动条",
@@ -1201,7 +1254,9 @@
         "numericinput": "数值输入"						  
       },
       "table":{
-        "bigData": "表中是否存储了大量数据（超过20,000条记录）？",
+        "label": "标签（支持Markdown）",
+        "type": "选择您要使用的表格类型 ",
+        "typeChoices": ["默认", "大数据表", "数据透视表"],
         "hideIndexCol": "隐藏索引列？",
         "readonly": "设定表格为只读吗？",
         "readonlyCols": "设定表格的某些列为只读",
@@ -1325,7 +1380,9 @@
       "textinput":{
         "label": "选择一个标签",
         "value": "选择默认值",
-        "placeholder": "选择占位符"
+        "placeholder": "选择占位符",
+        "clearValue": "与GAMS通信作为元素文本",
+        "clearValueTooltip": "元素标签为空字符串。 更多信息，请查看文档"
       },
       "numericinput":{
         "label": "选择一个标签",
@@ -1427,7 +1484,8 @@
         "tool": "选择要使用的图表工具",
         "choices": ["饼图", "柱形图", "散点图", "折线图", "气泡图", "直方图", "时间序列图形工具", "地图工具", "甘特图", "数据透视表", "标量值的值框", "自定义绘制器"],
         "deleteGraph": "删除",
-        "saveGraph": "保存"
+        "saveGraph": "保存",
+        "toggleFullscreen": "切换全屏"
       },
       "graphOptions":{
         "pie": "饼图",
@@ -1445,7 +1503,8 @@
       },
       "validate":{
         "val1": "无法设置x轴的范围。 请检查数据格式是否正确！",
-        "pieValues": "所选GAMS符号的值太多，无法显示饼图。 饼图中最多可显示100个值。"
+        "pieValues": "所选GAMS符号的值太多，无法显示饼图。 饼图中最多可显示100个值。",
+        "tableNeeded": "要配置为地图的符号必须声明为GAMS表，因为需要多个值列(如经纬度信息)。"
       },
       "errMsg":{
         "errTitle1": "无有效数据",
@@ -1499,8 +1558,9 @@
         "color": "选择值框的颜色",
         "colorChoices": ["红色", "黄色", "水蓝色", "蓝色", "浅蓝色", "绿色", "藏青色", "蓝绿色", "橄榄绿", "鲜绿色", "橙色", "品红", "紫色", "栗色", "黑色"],
         "icon": "指定值框的图标（可选）。",
-        "valueboxIconChoices": ["_", "coins", "wallet", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupee", "Ruble", "Pound", "Lira", "User", "Users", "Plus", "Minus", "Exclamation mark", "Question mark", "Play", "Check", "Home", "Cog", "Asterisk", "Ban", "Heart", "Leaf", "Lightbulb", "Smile", "Star", "Other..."],
-        "otherIcon": "Use other icon from here: "
+        "valueboxIconChoices": ["_", "coins", "wallet", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupee", "Ruble", "Pound", "Lira", "User", "Users", "Plus", "Minus", "Exclamation mark", "Question mark", "Play", "Check", "Home", "Cog", "Asterisk", "Ban", "Heart", "Leaf", "Lightbulb", "Smile", "Star"],
+        "desc": "说明性文字",
+        "round": "小数位数（四舍五入）"
       },
       "animationOptions":{
         "title": "动画选项",
@@ -1625,7 +1685,11 @@
         }
       },
       "miroPivotOptions":{
-        "infoMsg": "请直接使用右侧的预览来配置默认视图。"
+        "infoMsg": "请直接使用右侧的预览来配置默认视图。",
+        "infoMsgDummyData": "当前，预览使用伪数据。 这意味着过滤器将具有伪值。 如果要更改它们，则必须手动编辑JSON配置文件。"
+      },
+      "datatableOptions":{
+        "infoMsg": "可以在以下部分中调整表格：'"
       },
       "pivotOptions":{
         "rows": "预先填充数据透视表的行",
@@ -1670,8 +1734,11 @@
       "js":{
         "addInputGroup":{
           "symbolInputgroups": "输入组的名称",
+          "symbolWidgetgroups": "小组件组的名称",
           "groupMemberIn": "选择该组成员",
-          "groupSameTabIn": "Show all symbols side by side on the same tab?"
+          "groupMemberWidget": "选择该组成员",
+          "groupSameTabIn": "在同一标签上并排显示所有符号？",
+          "groupSameTabWidget": "在同一个标签页上并排显示所有小部件？"
         },
         "addOutputGroup":{
           "symbolOutputgroups": "输出组的名称",

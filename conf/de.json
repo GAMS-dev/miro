@@ -26,7 +26,9 @@
       "solve":"Modell lösen",
       "submitJob": "Job senden",
       "solveHcube":"Jobs absenden",
+      "changeMode": "Modus Ändern",
       "splitView":"Split Screen Ansicht",
+      "pivotView": "Pivot Ansicht",
       "tabView":"Tabansicht",
       "compareStart":"Vergleichsmodus",
       "compareStop":"Stoppe Vergleich",
@@ -168,6 +170,7 @@
       "title":"Neues Szenario",
       "desc":"Bitte wählen Sie einen Namen für das Szenario:",
       "discardAttach": "Anhänge verwerfen?",
+      "discardViews": "Views verwerfen?",
       "discardPerm": "Berechtigungen verwerfen?",
       "tags":"Füge dem Szenario Tag(s) hinzu (optional):",
       "badName":"Bitte wählen Sie eine gültige Bezeichnung für das neue Szenario.",
@@ -196,6 +199,7 @@
       "title":"Metadaten bearbeiten",
       "categoryGeneral": "Allgemeine Optionen",
       "categoryAttachments": "Anhänge",
+      "categoryViews": "Views",
       "categoryAccessPerm": "Zugriffsberechtigungen",
       "newName": "New name",
       "badName": "Der von Ihnen gewählte Name ist ungültig (entweder zu lang oder zu kurz). Bitte wählen Sie einen anderen Namen.",
@@ -210,6 +214,19 @@
       "attachMaxNoError":"Die maximale Anzahl an Anhängen wurde erreicht. Bevor neue Anhänge hochgeladen werden können, müssen zunächst alte Anhänge gelöscht werden.",
       "attachDuplicateError": "Ein Anhang mit diesem Namen existiert bereits. Bitte wählen Sie einen anderen Namen und versuchen es anschließend erneut.",
       "attachForbiddenFnameError": "Ein Anhang, den Sie hochladen möchten, verwendet einen verbotenen Dateinamen. Bitte wählen Sie einen anderen Dateinamen und versuchen Sie es erneut.",
+      "viewsSuccess": "Die Views wurden erfolgreich aktualisiert.",
+      "viewsInvalidData": "Die Daten, die Sie hochladen, sind keine gültigen View-Daten. Bitte stellen Sie sicher, dass die Datei eine JSON-Datei ist und die Syntax korrekt ist.",
+      "viewsDuplicateError": "Die folgenden Views wurden nicht importiert, da für dieses Symbol bereits einen View mit dem gleichen Namen existiert: '%s'.",
+      "viewsInvalidError": "Einige der Views, die Sie zu importieren versuchten, wurden nicht importiert, da sie für Symbole definiert sind, die nicht existieren: '%s'.",
+      "viewsNoneSelected": "Keine Views ausgewählt. Wählen Sie Views aus, indem Sie auf die Zeile klicken.",
+      "noViewData": "Keine Views",
+      "selectAllViews": "Alle auswählen",
+      "selectNoViews": "Keine auswählen",
+      "viewsAdd": "Views hinzufügen",
+      "viewsTableHeaderSymbol": "Symbol",
+      "viewsTableHeaderId": "Name",
+      "viewsDownload": "Views downloaden",
+      "viewsRemove": "Views entfernen",
       "errMsg": "Beim aktualisieren der Metadaten ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
       "cancelButton":"Schließen",
       "okButton":"Metadaten aktualisieren"
@@ -218,6 +235,7 @@
       "title":"Metadaten bearbeiten",
       "categoryGeneral": "Allgemeine Optionen",
       "categoryAttachments": "Anhänge",
+      "categoryViews": "Views",
       "categoryAccessPerm": "Zugriffsberechtigungen",
       "newName": "New name",
       "badName": "Der von Ihnen gewählte Name ist ungültig (entweder zu lang oder zu kurz). Bitte wählen Sie einen anderen Namen.",
@@ -239,7 +257,7 @@
     "dialogRemoteLogin": {
       "title": "Login erforderlich",
       "desc": "Bitte geben Sie Ihre Zugangsdaten unten ein:",
-      "url": "GAMS MIRO Engine URL",
+      "url": "GAMS Engine URL",
       "username": "Benutzername",
       "password": "Passwort",
       "namespace": "Namensraum",
@@ -247,7 +265,7 @@
       "useRegistered": "Ist Ihr Modell im Namensraum registriert?",
       "remember": "Login speichern",
       "okButton": "Ok",
-      "hostNotFound": "GAMS MIRO Engine konnte unter der angegebenen URL nicht erreicht werden.",
+      "hostNotFound": "GAMS Engine konnte unter der angegebenen URL nicht erreicht werden.",
       "nsNotFound": "Der von Ihnen angegebene Namensraum konnte nicht gefunden werden.",
       "invalidCred": "Die von Ihnen eingegebenen Zugangsdaten sind ungültig.",
       "insuffPerm": "Sie haben nicht genügend Berechtigungen, um das Modell auszuführen.",
@@ -397,7 +415,7 @@
     },
     "dialogLockScen":{
       "title":"Szenario gesperrt",
-      "desc":"Das Szenario, welches Sie laden möchten, wird derzeit vom Benutzer: '%s' bearbeitet. Bitte versuchen Sie es später erneut."
+      "desc":"Das Szenario, welches Sie laden möchten, wird derzeit vom Benutzer: '%s' bearbeitet."
     },
     "dialogReadonly":{
       "title": "Keine Schreibberechtigung",
@@ -473,7 +491,7 @@
       "discardSuccess": "Job wurde verworfen",
       "importSuccess": "Job wurde erfolgreich importiert",
       "maxDownloads": "Die maximale Anzahl paralleler Downloads ist erreicht.",
-      "jobNotFound": "Der Job wurde auf GAMS MIRO Engine nicht gefunden.",
+      "jobNotFound": "Der Job wurde auf GAMS Engine nicht gefunden.",
       "accessDenied": "Zugriff verweigert",
       "histTitle": "Jobverlauf",
       "status":{
@@ -575,7 +593,7 @@
         "cancelButton": "Abbrechen"
       },
       "showLogFileDialog":{
-        "title": "Hypercube-Job Log-Datei",
+        "title": "Log-Datei",
         "noContent": "Die Log-Datei konnte nicht aufgerufen werden oder enthält keine Daten.",
         "fileSize": "Die Log-Datei enthält zu viele Daten, um angezeigt zu werden.",
         "cancelButton": "Abbrechen"
@@ -603,6 +621,9 @@
         "timeout": "Skript-Timeout abgelaufen.",
         "crash": "Das Skript ist abgestürzt."
       }
+    },
+    "hot":{
+      "search": "Suche:"
     }
   },
   "progressBar":{  
@@ -651,16 +672,34 @@
       "btDownloadCsv": "CSV herunterladen",
       "btLoadView": "View laden",
       "btNewView": "View hinzufügen",
+      "btEnableEdit": "Bearbeitung aktivieren",
+      "btAddRow": "Zeile hinzufügen",
+      "btRemoveRows": "Zeilen entfernen",
       "aggregateLabel": "aggregieren",
       "filterLabel": "filtern",
       "allPlaceholder": "Alle",
+      "defaultViewName": "Standardeinstellung",
       "colTruncationWarning": "Die Daten wurden auf die ersten %s Spalten gekürzt.",
       "rowTruncationWarning": "Die Daten wurden auf die ersten %s Zeilen gekürzt.",
       "newViewTitle": "Neuer view",
       "newViewLabel": "Bitte wählen Sie einen Namen für den View.",
       "newViewBtCancel": "Abbrechen",
       "newViewBtSave": "Speichern",
+      "pivotCompScenColName": "Szenario",
       "errUniqueViewName": "Der von Ihnen eingegebene Viewname existiert bereits. Bitte wählen Sie einen anderen Namen.",
+      "duplicateRecordTitle": "Doppelter Datensatz",
+      "duplicateRecordDesc": "Der von Ihnen eingegebene Datensatz ist bereits vorhanden.",
+      "errPivotDuplicate": "Die Daten enthalten doppelte Datensätze und können daher nicht gepivoted werden.",
+      "errPivot": "Die Daten konnten nicht gepivoted werden. Dies könnte daran liegen, dass Ihre Daten zu groß sind.",
+      "errorTitle": "Fehler",
+      "duplicateRecordError": "Der Datensatz: '%s' existiert bereits. Bitte entfernen Sie ihn und versuchen Sie es erneut.",
+      "dialogAddRow":{
+        "title": "Neue Zeile hinzufügen",
+        "btCancel": "Abbrechen",
+        "invalidKeysError": "Die von Ihnen eingegebenen Elemente sind ungültig. Bitte beachten Sie, dass die Elemente aus mindestens einem druckbaren Zeichen bestehen müssen.",
+        "invalidValuesError": "Die von Ihnen eingegebenen Daten sind ungültig. Stellen Sie sicher, dass die von Ihnen eingegebenen Werte numerisch sind.",
+        "unknownError": "Beim Versuch, die neuen Daten hinzuzufügen, ist ein unerwarteter Fehler aufgetreten."
+      },
       "aggregationFunctions":{
         "sum": "Summe",
         "count": "Anzahl",
@@ -676,9 +715,13 @@
         "radar": "Radardiagramm",
         "line": "Liniendiagramm"
       }
+    },
+    "datatable":{
+      "addRowPos": ["Zeile oberhalb der Auswahl hinzufügen", "Zeile unterhalb der Auswahl hinzufügen"],
+      "addRowPosNoneSelected": ["Über der ersten Zeile hinzufügen", "Unter der letzten Zeile hinzufügen"]
     }
   },
-  "errMsg":{  
+  "errMsg":{
     "unknownError": "Ein unerwarteter Fehler ist aufgetreten. Wenn dieses Problem weiterhin besteht, wenden Sie sich an einen Systemadministrator.",
     "permErr": "Die Operation ist fehlgeschlagen, weil Sie nicht über ausreichende Berechtigungen verfügen.",
     "fileRead":{  
@@ -889,6 +932,7 @@
         "headerTabGrouping": "Tab-Gruppierung",
         "headerTabSymlinks": "Ergebnisse als Eingabedaten verwenden",
         "headerInputGroups": "Eingabegruppen",
+        "headerInputWidgetGroups": "Widget-Gruppen",
         "headerOutputGroups": "Ausgabegruppen",
         "headerSymbolNaming": "Benennung",
         "headerSymbolGrouping": "Reihenfolge",
@@ -918,7 +962,8 @@
       },
       "scen":{
         "label": "Standard-Szenarienvergleichsmodus",
-        "choices": ["Geteilter Bildschirm (geeignet für 2 Szenarien zum Vergleichen)", "Registerkartenansicht (geeignet für > 2 Szenarien zum Vergleichen)"]
+        "choices": ["Geteilter Bildschirm (geeignet für 2 Szenarien zum Vergleichen)", "Registerkartenansicht (geeignet für > 2 Szenarien zum Vergleichen)",
+        "Pivot-Ansicht (geeignet für > 2 Szenarien zum Vergleichen)"]
       },
       "defaultScenName":{
         "checkbox": "Soll ein Standardszenario definiert werden, welches beim Start geladen wird?",
@@ -930,6 +975,7 @@
       },
       "groups":{
         "input": "Eingabesymbole in Gruppen einteilen",
+        "widgets": "Eingabe-Widgets in Gruppen einteilen",
         "output": "Ausgabesymbole in Gruppen einteilen"
       },
       "symlinks":{
@@ -1052,23 +1098,20 @@
         "output": "Ausgabetabellen",
         "symbol": "Symboltabellen",
         "resetTable": "Zurücksetzen",
-        "saveTable": "Speichern"
+        "saveTable": "Speichern",
+		"inputSymbols": "Eingabesymbole",
+        "outputSymbols": "Ausgabesymbole"
       },
       "hot":{
         "height": "Höhe der Eingabetabellen (in px)",
         "readonly": "Bearbeitung von Tabellen verbieten? Wenn aktiviert, können Tabellen vom Benutzer nicht geändert werden.",
-        "highcol": "Markieren der aktiven Spalte (keine Live-Vorschau).",
-        "highrow": "Markieren der aktiven Zeile (keine Live-Vorschau).",
         "stretch": "Strecken von Tabellenspalten.",
         "stretchChoices": ["Nicht strecken", "Letzte Spalte strecken", "Alle Spalten strecken"],
-        "stretchCustom": "Benutzerdefinierte Spaltenbreite einstellen.",
-        "colwidth": "Breite einer einzelnen (nicht gestreckten) Spalte.",
-        "sort": "Spaltensortierung in aufsteigender/absteigender Reihenfolge aktivieren (durch Klicken auf den Spaltennamen in der Kopfzeile).",
+        "colwidth": "Breite einer einzelnen (nicht gestreckten) Spalte. Für den Standardwert leer lassen oder auf 0 setzen.",
         "resize": "Manuelle Anpassung der Spaltenbreite aktivieren.",
         "enable": "Kontextmenü der Tabelle aktivieren (erreichbar über rechte Maustaste).",
         "contextRowedit": "Zeilenbearbeitung aktivieren",
-        "contextColedit": "Spaltenbearbeitung aktivieren",
-        "contextReadonly": "schreibgeschützt-Toggle aktivieren"
+        "contextColedit": "Spaltenbearbeitung aktivieren"
       },
       "dt":{
         "class":{
@@ -1082,6 +1125,9 @@
         "pagelength":{
           "label":"Anzahl der anzuzeigenden Zeilen pro Seite"
         },
+        "decimals":{
+          "label":"Anzahl der anzuzeigenden Dezimalstellen"
+        },
         "rownames":{
           "label":"Zeilennummern anzeigen?"
         },
@@ -1089,9 +1135,8 @@
           "label":"Neuordnung von Spalten erlaubt?"
         },
         "buttons":{
-          "label":"Export-Buttons hinzufügen?",
           "title": "Wenn ein Symbol mehrere Tabellenseiten enthält, wirkt sich die Verwendung eines Export-Buttons nur auf die aktuell sichtbare Tabellenseite aus!",
-          "choices": ["Zwischenablage", "csv", "Excel", "pdf", "Druck"],
+          "choices": ["Zwischenablage", "csv", "Excel", "pdf", "Druck", "Spalten-Sichtbarkeit"],
           "select": "Wählen Sie zu verwendende Buttons aus. Hinweis: Eine Buttonfunktion wirkt sich stets nur auf die sichtbare Tabellenseite aus."
         }
       },
@@ -1101,6 +1146,13 @@
           "message": "Sind Sie sicher, dass Sie die bestehende Konfiguration für dieses Symbol zurücksetzen wollen? Dies kann nicht rückgängig gemacht werden!",
           "cancel": "Abbrechen",
           "confirm": "Bestätigen"
+        },
+		"noGraph": "Zeige nur die Tabelle und keine Grafik für dieses Symbol",
+        "saveJson":{
+          "warnTitle": "Daten existieren",
+          "warnContent": "Für das Symbol '%s' soll laut Konfiguration keine Grafik angezeigt werden. Es existiert bereits eine Grafikkonfiguration für dieses Symbol. Möchten Sie diese Konfiguration überschreiben? Das kann nicht rückgängig gemacht werden!",
+          "cancel": "Abbrechen",
+          "overwrite": "Überschreiben"
         }
       }
     },
@@ -1187,7 +1239,9 @@
         "val55": "Es darf nur ein Element im Dropdownmenü auswählbar sein, wenn nur der Elementtext mit GAMS kommuniziert wird.",
         "val56": "Ein Anhang mit diesem Dateinamen existiert bereits!",
         "val57": "Der Dateiname enthält ungültige Zeichen. Anhänge in Unterverzeichnissen werden nicht unterstützt!",
-        "val58": "Das Dezimaltrennzeichen und das Tausender-Trennzeichen dürfen nicht identisch sein!"
+        "val58": "Das Dezimaltrennzeichen und das Tausender-Trennzeichen dürfen nicht identisch sein!",
+        "val59": "Das GAMS-Symbol: %s ist als Tabelle deklariert. Dies bewirkt, dass die letzte Spalte in MIRO gepivoted wird. MIRO-Pivot kann nicht mit bereits gepivoteten Symbolen verwendet werden. Bitte deklarieren Sie das Symbol stattdessen als Parameter.",
+        "val60": "Jedes Gruppenmitglied darf nur in einer einzigen Gruppe auftreten!"
       },
       "widgetOptions":{
         "slider": "Schieberegler",
@@ -1201,7 +1255,9 @@
         "numericinput": "Numerische Eingabe"
       },
       "table":{
-        "bigData": "Werden große Datenmengen in der Tabelle gespeichert (d.h. mehr als 20.000 Zeilen)?",
+        "label": "Label (Markdown wird unterstützt)",
+        "type": "Wählen Sie die Art der Tabelle, die Sie verwenden möchten",
+        "typeChoices": ["Standard", "Big Data-Tabelle", "Pivot-Tabelle"],
         "hideIndexCol": "Indexierungsspalte ausblenden?",
         "readonly": "Soll die Tabelle schreibgeschützt sein?",
         "readonlyCols": "Wählen Sie Spalten aus, die schreibgeschützt sein sollen",
@@ -1325,7 +1381,9 @@
       "textinput":{
         "label": "Wählen Sie eine Widget-Beschriftung",
         "value": "Wählen Sie einen Standardwert",
-        "placeholder": "Wählen Sie einen Platzhalter"
+        "placeholder": "Wählen Sie einen Platzhalter",
+        "clearValue": "Als Elementtext mit GAMS kommunizieren",
+        "clearValueTooltip": "Bewirkt, dass das Elementlabel ein leerer String ist. - Dokumentation öffnen"
       },
       "numericinput":{
         "label": "Wählen Sie eine Widget-Beschriftung",
@@ -1427,7 +1485,8 @@
         "tool": "Charttyp",
         "choices": ["Kreisdiagramm", "Balkendiagramm", "Streudiagramm", "Liniendiagramm", "Blasendiagramm", "Histogramm", "Zeitreihen-Diagramm", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle und Pivot-Charts", "Wertebox für skalare Werte", "Eigener Renderer"],
         "deleteGraph": "Löschen",
-        "saveGraph": "Speichern"
+        "saveGraph": "Speichern",
+        "toggleFullscreen": "Vollbild wechseln"
       },
       "graphOptions":{
         "pie": "Kreisdiagramm",
@@ -1445,7 +1504,8 @@
       },
       "validate":{
         "val1": "Der Bereich für die x-Achse konnte nicht eingestellt werden. Überprüfen Sie das korrekte Datenformat!",
-        "pieValues": "Das ausgewählte Symbol hat zu viele Werte, um als Kuchendiagramm angezeigt zu werden. Die maximale Anzahl der Werte, die in einem Kuchendiagramm dargestellt werden können, beträgt 100."
+        "pieValues": "Das ausgewählte Symbol hat zu viele Werte, um als Kuchendiagramm angezeigt zu werden. Die maximale Anzahl der Werte, die in einem Kuchendiagramm dargestellt werden können, beträgt 100.",
+        "tableNeeded": "Ein Symbol, das als Karte konfiguriert werden soll, muss als GAMS-Tabelle deklariert werden (table statement), da mehrere Wertespalten benötigt werden (z.B. Breiten- und Längengradangaben)."
       },
       "errMsg":{
         "errTitle1": "Keine gültigen Daten",
@@ -1499,8 +1559,9 @@
         "color": "Wählen Sie die Farbe der Wertebox aus",
         "colorChoices": ["rot", "gelb", "aqua", "blau", "hellblau", "grün", "marineblau", "blaugrün", "oliv", "limette", "orange", "fuchsia", "lila", "kastanienbraun", "schwarz"],
         "icon": "Geben Sie ein Symbol für die Wertebox an.",
-        "valueboxIconChoices": ["_", "Münzen", "Brieftasche", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupie", "Rubel", "Pfund", "Lira", "Benutzer", "Mehrere Benutzer", "Plus", "Minus", "Ausrufezeichen", "Fragezeichen", "Abspielen", "Haken", "Haus", "Zahnrad", "Asterisk", "Verbot", "Herz", "Blatt", "Glühbirne", "Smile", "Stern", "Weitere..."],
-        "otherIcon": "Use other icon from here: "
+        "valueboxIconChoices": ["_", "Münzen", "Brieftasche", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupie", "Rubel", "Pfund", "Lira", "Benutzer", "Mehrere Benutzer", "Plus", "Minus", "Ausrufezeichen", "Fragezeichen", "Abspielen", "Haken", "Haus", "Zahnrad", "Asterisk", "Verbot", "Herz", "Blatt", "Glühbirne", "Smile", "Stern"],
+        "desc": "Beschreibender Text",
+        "round": "Anzahl der Dezimalstellen (Rundung)"
       },
       "animationOptions":{
         "title": "Animationsoptionen",
@@ -1625,7 +1686,11 @@
         }
       },
       "miroPivotOptions":{
-         "infoMsg": "Bitte benutzen Sie direkt die Vorschau auf der rechten Seite, um die Standardansicht zu konfigurieren."
+         "infoMsg": "Bitte benutzen Sie direkt die Vorschau auf der rechten Seite, um die Standardansicht zu konfigurieren.",
+         "infoMsgDummyData": "Derzeit verwendet die Vorschau Dummy-Daten. Das bedeutet, dass die Filter Dummy-Werte haben werden. Wenn Sie diese ändern möchten, müssen Sie die JSON-Konfigurationsdatei manuell bearbeiten."
+      },
+      "datatableOptions":{
+        "infoMsg": "Tabellen können angepasst werden unter '"
       },
       "pivotOptions":{
         "rows": "Zeilen der Pivot-Tabelle vorab füllen",
@@ -1669,9 +1734,12 @@
       },
       "js":{
         "addInputGroup":{
-          "symbolInputgroups": "Name der Eingabegruppe?",
+          "symbolInputgroups": "Name der Eingabegruppe",
+          "symbolWidgetgroups": "Name der Eingabe-Widget-Gruppe",
           "groupMemberIn": "Gruppenmitglieder auswählen",
-          "groupSameTabIn": "Alle Symbole nebeneinander in demselben Tab anzeigen?"
+          "groupMemberWidget": "Gruppenmitglieder auswählen",
+          "groupSameTabIn": "Alle Symbole nebeneinander in demselben Tab anzeigen?",
+          "groupSameTabWidget": "Alle Widgets nebeneinander in demselben Tab anzeigen?"
         },
         "addOutputGroup":{
           "symbolOutputgroups": "Name der Ausgabegruppe?",

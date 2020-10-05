@@ -22,7 +22,7 @@
 			}
 		},
 		"rdata":	{
-			"alias":	"Reactor data 😀⻩",
+			"alias":	"Reactor data",
 			"symtype":	"parameter",
 			"headers":	{
 				"rr":	{

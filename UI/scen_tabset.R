@@ -46,8 +46,8 @@ getScenTabData <- function(sheetName){
   return(tabData)
 }
 generateScenarioTabset <- function(scenId, noData = vector("logical", length(scenTableNamesToDisplay)), 
-                                   noDataTxt = lang$nav$outputScreen$boxResults$noData, scenCounter = scenId,
-                                   createdDynamically = FALSE){
+                                   scenCounter = scenId,
+                                   createdDynamically = FALSE, pivotCompare = FALSE){
   errMsg <- NULL
   noDataDiv <- tags$div(class = "out-no-data", lang$nav$outputScreen$boxResults$noData)
   scenTabContent <- lapply(seq_len(length(outputTabs) + length(scenInputTabs)), 
@@ -76,6 +76,9 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                  sheetName <- names(modelIn)[sheetId]
                                  graphConfig <- configGraphsIn[[sheetId]]
                                }
+                               if(pivotCompare){
+                                 graphConfig <- list(outType = "miroPivot")
+                               }
                                tabContent <- NULL
                                tabId <- match(sheetName, 
                                               scenTableNamesToDisplay)
@@ -100,8 +103,7 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                                                  graphTool = graphConfig$graph$tool, 
                                                                  customOptions = graphConfig$options,
                                                                  filterOptions = graphConfig$graph$filter,
-                                                                 height = graphConfig$height, modelDir = modelDir, 
-                                                                 noDataTxt = noDataTxt, 
+                                                                 height = graphConfig$height, modelDir = modelDir,
                                                                  createdDynamically = createdDynamically)
                                                   }, error = function(e) {
                                                     flog.error("Problems rendering UI elements for scenario dataset: '%s'. Error message: %s.", 
@@ -110,21 +112,22 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                                                                      sheetName), sep = "\n")
                                                   })
                                                 }),
-                                     tags$div(id= paste0("scenTable_", scenId, "_", tabId), 
-                                              style = "display:none;",
-                                              class = "render-output",{
-                                                tryCatch({
-                                                  renderDataUI(paste0("table_tab_", scenCounter, "_",
-                                                                      tabId), type = "datatable",
-                                                               noDataTxt = noDataTxt,
-                                                               createdDynamically = createdDynamically)
-                                                }, error = function(e) {
-                                                  flog.error("Problems rendering table for scenario dataset: '%s'. Error message: %s.", 
-                                                             sheetName, e)
-                                                  errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderTable$desc, 
-                                                                                   sheetName), sep = "\n")
+                                     if(!pivotCompare){
+                                       tags$div(id= paste0("scenTable_", scenId, "_", tabId), 
+                                                style = "display:none;",
+                                                class = "render-output",{
+                                                  tryCatch({
+                                                    renderDataUI(paste0("table_tab_", scenCounter, "_",
+                                                                        tabId), type = "datatable",
+                                                                 createdDynamically = createdDynamically)
+                                                  }, error = function(e) {
+                                                    flog.error("Problems rendering table for scenario dataset: '%s'. Error message: %s.", 
+                                                               sheetName, e)
+                                                    errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderTable$desc, 
+                                                                                     sheetName), sep = "\n")
+                                                  })
                                                 })
-                                              })
+                                     }
                                    )
                                  }
                                }
@@ -197,7 +200,7 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
 generateScenarioTabsetMulti <- function(scenId, noData = vector("logical", length(scenTableNamesToDisplay)), 
                                         scenCounter = scenId){
   tryCatch({
-    scenTabset <- generateScenarioTabset(scenId, noData, noDataTxt = NULL, scenCounter = scenCounter,
+    scenTabset <- generateScenarioTabset(scenId, noData, scenCounter = scenCounter,
                                          createdDynamically = TRUE)
   }, error = function(e){
     flog.error("Problems generating scenario tabset (multi comparison mode). Error message: %s.", e)
@@ -210,14 +213,16 @@ generateScenarioTabsetMulti <- function(scenId, noData = vector("logical", lengt
                     tags$div(class = "scen-buttons-wrapper",
                              tags$div(title = lang$nav$scen$tooltips$btExport, class = "scen-button-tt",
                                       HTML(paste0('<button type="button" class="btn btn-default scen-button" 
-onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\'})"><i class="fas fa-download"></i></button>'))
+onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\'})"><i class="fas fa-download" role="presentation" aria-label="Download"></i></button>'))
                              ),
                              tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
                                       tags$button(class = "btn btn-default scen-button", 
                                                   id = paste0("btScenTableView", scenId), type = "button", 
                                                   onclick = paste0("Shiny.setInputValue('btScenTableView',",
                                                                    scenId, ",{priority:'event'})"),
-                                                  tags$i(class = "fa fa-chart-bar"))
+                                                  tags$i(class = "fa fa-chart-bar",
+                                                         role = "presentation",
+                                                         `aria-label` = "Table view"))
                                       )
                     )
                     
@@ -241,20 +246,45 @@ generateScenarioTabsetSplit <- function(scenId){
              tags$div(class = "scen-buttons-wrapper",
                       tags$div(title = lang$nav$scen$tooltips$btExport, class = "scen-button-tt",
                                HTML(paste0('<button type="button" class="btn btn-default scen-button" 
-onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\'})"><i class="fas fa-download"></i></button>'))
+onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\'})"><i class="fas fa-download" role="presentation" aria-label="Download"></i></button>'))
                       ),
                       tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
                                tags$button(class = "btn btn-default scen-button", 
                                            id = paste0("btScenTableView", scenId), type = "button", 
                                            onclick = paste0("Shiny.setInputValue('btScenTableView',",
                                                             scenId, ",{priority:'event'})"),
-                                           tags$i(class = "fa fa-chart-bar"))
+                                           tags$i(class = "fa fa-chart-bar",
+                                                  role = "presentation",
+                                                  `aria-label` = "Table view"))
                       )
              )
              
     ),
     tags$div(style = "margin-top: 10px;",
              scenTabset
+    )
+  )
+}
+generateScenarioTabsetPivot <- function(){
+  fluidRow(
+    tags$div(id = "scen-pivot-view", style = if(!identical(config$defCompMode, "pivot")) "display:none;",
+             box(width = 12L, solidHeader = TRUE, status="primary", title = 
+                   tagList(HTML(paste0('<button class="btn btn-default bt-icon action-button" ',
+                                       'type="button" onclick="Shiny.setInputValue(\'btLoadScen\',1,{priority: \'event\'})">', 
+                                       '<i class="fas fa-folder-plus"></i></i></button>')), 
+                           tags$div(style = "float: right;", 
+                                    actionButton(inputId = "btScenPivot_close", 
+                                                 class = "bt-icon",
+                                                 icon = icon("times"), 
+                                                 label = NULL))), 
+                 tags$div(id = "pivotCompBtWrapper", class = "no-scen", lang$nav$scen$noScen, 
+                          tags$div(style = "margin: 10px;",
+                                   HTML(paste0('<button class="btn btn-default action-button" ',
+                                               'type="button" onclick="Shiny.setInputValue(\'btLoadScen\',1,{priority: \'event\'})">', 
+                                               lang$nav$scen$btLoad, '</button>')))
+                 ),
+                 tags$div(id = "pivotCompScenWrapper", style = "margin-top: 10px;", style = "display:none")
+             )
     )
   )
 }

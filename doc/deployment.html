@@ -120,11 +120,17 @@ inc/inc2.inc
                                     <h6>Bundling data with your app</h6>
                                     <p>In case you want to distribute scenario data with your MIRO application, you can do so by simply placing GDX files in the <span class="code">data_&lt;modelname&gt;</span> directory. When your MIRO app is started for the first time, these datasets will be stored in the MIRO database. The filename is used as the scenario name. To learn more, read the chapter on <a href="./start.html#startup-import">importing multiple scenarios on startup</a>. Note that the owner of these scenarios is the user that launches the MIRO app for the first time!</p>
                                     <h6>Assign a default logo</h6>
-                                    <p>When adding the MIRO app to the MIRO library, the user has the option to choose a logo to quickly identify your app. If you want to suggest a logo, simply place am image (format: png/jpg/jpeg; aspect ratio: 8 &times; 5 fits best) with the name <span class="code">&lt;modelname&gt;_logo</span> inside the <span class="code">static_&lt;modelname&gt;</span> folder before deploying. When a user imports your app, this logo will be suggested to them. If no such file is found, a default logo is used.</p>
+                                    <p>When adding the MIRO app to the MIRO library, the user has the option to choose a logo to quickly identify your app. If you want to suggest a logo, simply place am image (format: png/jpg/jpeg; aspect ratio: 8 &times; 5 fits best) with the name <span class="code">app_logo</span> inside the <span class="code">static_&lt;modelname&gt;</span> folder before deploying. When a user imports your app, this logo will be suggested to them. If no such file is found, a default logo is used.</p>
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" style="max-height:250pt" src="assets/images/deployment/custom_logo.png" alt="Custom Logo for MIRO library" />
                                     </div>
-                                    <p><b>Note</b>: The <span class="code">&lt;modelname&gt;_logo</span> logo described here is located in the same folder, but is independent of the logo <a href = "./customize.html#app-logo">set in the Configuration Mode</a>.</p>
+                                    <p><b>Note</b>: The <span class="code">app_logo</span> logo described here is located in the same folder, but is independent of the logo <a href = "./customize.html#app-logo">set in the Configuration Mode</a>.</p>
+                                    <h6>Specify a default title and description for your app</h6>
+                                    <p>When adding a new MIRO app to the library, a user can specify an app title as well as a short description. If you want to provide defaults for these, you can do so via a JSON file <span class="code">app_info.json</span> inside the <span class="code">static_&lt;modelname&gt;</span> folder. The JSON file has to have the following structure:</p>
+                                    <pre><code class="language-json">{
+    "title": "Example app",
+    "description": "This is my first MIRO app"
+}</code></pre>
                                     <p>If everything is set, click on <i>Deploy</i>. That's it! A new file <span class="code">&lt;modelname&gt;.miroapp</span> is created in your model directory. You can now distribute this MIRO app directly to your end users!</p>
                                     <div style="outline: solid 1px black; outline-offset: 5px; margin-top:30px">
                                         <h3 id="export-cl"  class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Advanced: Export MIRO app using the command line</h3>
@@ -244,7 +250,7 @@ inc/inc2.inc
                                                 </tr>
                                                 <tr>
                                                   <td></td>
-                                                  <td>Execution of models on GAMS MIRO Engine?</td>
+                                                  <td>Execution of models on GAMS Engine?</td>
                                                   <td>If enabled, GAMS jobs can be  <a href = "./server.html">run in the cloud</a> instead of on the local machine. For this purpose the server information must be specified in the MIRO application. This option can also be enabled by setting the environment variable <i>MIRO_REMOTE_EXEC</i> to true.</td>
                                                 </tr>
                                                 <tr>

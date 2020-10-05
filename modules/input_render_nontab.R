@@ -91,7 +91,7 @@ lapply(seq_along(modelIn), function(id){
                rv[["in_" %+% id]]
                
                tryCatch({
-                 value <- getInputDataset(k)[[modelIn[[id]]$checkbox$max]]
+                 value <- getInputDataset(k, visible = TRUE)[[modelIn[[id]]$checkbox$max]]
                }, error = function(e){
                  flog.error("Some problem occurred attempting to fetch values for checkbox: '%s' " %+%
                               "(forward dependency on dataset: '%s'). Error message: %s.", 
@@ -184,7 +184,7 @@ lapply(seq_along(modelIn), function(id){
              }
            })
            observe({
-             value <- getSelected[[id]]()
+             value <- as.numeric(getSelected[[id]]())
              if(!is.null(value) && !identical(value, isolate(input[["numeric_" %+% id]]))){
                noCheck[id] <<- TRUE
                updateNumericInput(session, "numeric_" %+% id, value = value)
@@ -288,9 +288,11 @@ lapply(seq_along(modelIn), function(id){
                    rv[["in_" %+% k]]
                    if(identical(modelIn[[k]]$type, "custom")){
                      force(modelInputDataVisible[[k]]())
+                   }else if(identical(modelIn[[k]]$type, "dt")){
+                     force(rv[[paste0("wasModified_", k)]])
                    }
                    tryCatch({
-                     dataTmp <- getInputDataset(k)
+                     dataTmp <- getInputDataset(k, visible = TRUE)
                    }, error = function(e){
                      flog.error("Some problem occurred attempting to fetch values for dropdown menu: '%s' " %+%
                                   "(forward dependency on dataset: '%s'). Error message: %s.", 
@@ -451,7 +453,7 @@ lapply(seq_along(modelIn), function(id){
                    }
                    if(length(rv[["in_" %+% k]]) && (modelIn[[k]]$type == "hot" && 
                                                     !is.null(input[["in_" %+% k]]) || 
-                                                    (!is.null(tableContent[[k]]) && nrow(tableContent[[k]])) ||
+                                                    (length(rv[[paste0("wasModified_", k)]]) && !is.null(tableContent[[k]])) ||
                                                     identical(modelIn[[k]]$type, "custom") && length(modelInputDataVisible[[k]])) 
                       && !isEmptyInput[k]){
                      tryCatch({
@@ -462,10 +464,10 @@ lapply(seq_along(modelIn), function(id){
                      }, error = function(e){
                        flog.error("Some problem occurred attempting to fetch values for slider: '%s' " %+%
                                     "(forward dependency on dataset: '%s'). Error message: %s.", 
-                                  modelInAlias[id], modelInAlias[k], e)
+                                  modelInAlias[id], modelInAlias[k], conditionMessage(e))
                        errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                      })
-                   }else if(length(modelInputData[[k]][[1]]) && isEmptyInput[k]){
+                   }else if(length(modelInputData[[k]][[1]]) && !is.na(modelInputData[[k]][[1]][1]) && isEmptyInput[k]){
                      # no input is shown in UI, so get hidden data
                      try(dataTmp <- unique(modelInputData[[k]][[el[[1]][1]]]))
                    }else{

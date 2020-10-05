@@ -1,103 +1,9 @@
-/* global $:false Shiny: false HTMLWidgets:false Selectize:false */
+/* global $:false Shiny: false Selectize:false */
 
-const spinnerActive = {};
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function changeActiveButtons(tabId) {
-  switch (tabId) {
-    case 'inputData':
-      $('#btImport').show();
-      $('.btSolve').show();
-      $('#btInterrupt').hide();
-      $('#btSplitView').hide();
-      $('#btCompareScen').hide();
-      break;
-
-    case 'outputData':
-      $('#btImport').hide();
-      $('.btSolve').hide();
-      $('#btInterrupt').hide();
-      $('#btSplitView').hide();
-      $('#btCompareScen').hide();
-      break;
-
-    case 'gamsinter':
-      $('#btImport').hide();
-      $('.btSolve').hide();
-      $('#btInterrupt').show();
-      $('#btSplitView').hide();
-      $('#btCompareScen').hide();
-      break;
-
-    case 'scenarios':
-      $('#btImport').hide();
-      $('.btSolve').hide();
-      $('#btInterrupt').hide();
-      $('#btSplitView').show();
-      $('#btCompareScen').show();
-      break;
-
-    default:
-      $('#btImport').hide();
-      $('.btSolve').hide();
-      $('#btInterrupt').hide();
-      $('#btSplitView').hide();
-      $('#btCompareScen').hide();
-  }
-}
-
-function switchTab(el) {
-  switch (el) {
-    case 'input':
-      changeActiveButtons('inputData');
-      $('[href="#shiny-tab-inputData"]').tab('show');
-      break;
-
-    case 'output':
-      changeActiveButtons('outputData');
-      $('[href="#shiny-tab-outputData"]').tab('show');
-      break;
-
-    case 'gamsinter':
-      changeActiveButtons('gamsinter');
-      $('[href="#shiny-tab-gamsinter"]').tab('show');
-      break;
-
-    case 'importData':
-      changeActiveButtons('importData');
-      $('[href="#shiny-tab-importData"]').tab('show');
-      break;
-
-    case 'hcubeAna':
-      changeActiveButtons('default');
-      $('[href="#shiny-tab-hcubeAnalyze"]').tab('show');
-      break;
-
-    case 'scenComp':
-      changeActiveButtons('scenarios');
-      $('[href="#shiny-tab-scenarios"]').tab('show');
-      break;
-    default:
-      break;
-  }
-}
-
-export function showSpinnerIcon(el, delay = 3000) {
-  if (spinnerActive[$(el).prop('id')]) {
-    return;
-  }
-
-  spinnerActive[$(el).prop('id')] = true;
-  const content = $(el).html();
-  $(el).html('<i class="fa fa-refresh fa-spin"></i>');
-  setTimeout(() => {
-    $(el).html(content);
-    spinnerActive[$(el).prop('id')] = false;
-  }, delay);
-}
+import {
+  sleep, changeActiveButtons, switchTabInTabset, removeModal,
+  switchTab, isInputEl, rerenderDygraph, rerenderHot, showHideEl, scrollDown,
+} from './util';
 
 export function changeTab(object, idActive, idRefer) {
   const tabPane = object.closest('.tabbable');
@@ -107,21 +13,12 @@ export function changeTab(object, idActive, idRefer) {
   tabPane.find(`.tab-content div:nth-child(${idRefer})`).addClass('active');
 }
 
-function switchTabInTabset(tabsetID, tabValue) {
-  const tabset = $(`#${tabsetID}`);
-  tabset.find(`a[data-value='${tabValue}']`).tab('show');
-}
-
-function removeModal() {
-  $('#shiny-modal-wrapper').find('.modal').modal('hide');
-}
-
 export function slideToggleEl(data) {
   if (data.toggleIconDiv !== undefined) {
     if ($(data.id).is(':visible')) {
-      $(data.toggleIconDiv).html('<i class="fa fa-plus"></i>');
+      $(data.toggleIconDiv).html('<i class="fa fa-plus" role="presentation" aria-label="More options"></i>');
     } else {
-      $(data.toggleIconDiv).html('<i class="fa fa-minus"></i>');
+      $(data.toggleIconDiv).html('<i class="fa fa-minus" role="presentation" aria-label="Less options"></i>');
     }
   }
   let duration = 400;
@@ -212,6 +109,41 @@ export function validateHcubeHash() {
   $('#hcHashLookup').addClass('invalidInput');
 }
 
+export function sendSelectedRowsRequest(tableId, shinyId, noneSelectedErrorId = null,
+  downloadLink = false) {
+  const data = [];
+
+  $(`#${tableId} tr.selected`).each(function () {
+    data.push($(this).children('td')
+      .map((i, el) => {
+        const { val } = el.dataset;
+        if (val != null && val !== '') {
+          return atob(val);
+        }
+        return el.innerText;
+      }).get());
+  });
+  if (noneSelectedErrorId && data.length === 0) {
+    showHideEl(`#${noneSelectedErrorId}`, 4000);
+    return;
+  }
+  Shiny.setInputValue(shinyId, JSON.stringify(data), {
+    priority: 'event',
+  });
+  if (downloadLink === true) {
+    setTimeout(() => {
+      $(`#${shinyId}`)[0].click();
+    }, 200);
+  }
+}
+
+export function selectAllRows(tableId) {
+  $(`#${tableId} tbody tr`).addClass('selected');
+}
+export function selectNoRow(tableId) {
+  $(`#${tableId} tbody tr`).removeClass('selected');
+}
+
 export async function jumpToLogMark(id) {
   switchTab('gamsinter');
   $('#logFileTabsset [data-value="mirolog"]').tab('show');
@@ -223,45 +155,6 @@ export async function jumpToLogMark(id) {
       .delay(1000)
       .animate({ backgroundColor: 'transparent' }, 400);
   }
-}
-
-function isInputEl(id) {
-  if ($(id).parents('.form-group').length) {
-    return true;
-  }
-  return false;
-}
-function rerenderDygraph(delay = 100) {
-  try {
-    setTimeout(() => {
-      HTMLWidgets.getInstance($('.dygraphs:visible').get(0)).dygraph.resize();
-    }, delay);
-  } catch (e) {
-    // continue regardless of error
-  }
-}
-function rerenderHot(delay = 100) {
-  setTimeout(() => {
-    const el = $('.rhandsontable:visible').get(0);
-    if (el !== undefined) {
-      HTMLWidgets.getInstance(el).hot.render();
-    }
-  }, delay);
-}
-
-function showHideEl(el, delay, msg = null) {
-  if (msg !== null) {
-    $(el).text(msg);
-  }
-  $(el).show().delay(delay).fadeOut();
-}
-
-function scrollDown(id, delay = 500) {
-  setTimeout(() => {
-    $(id).animate({
-      scrollTop: $(id)[0].scrollHeight - $(id)[0].clientHeight,
-    }, 300);
-  }, delay);
 }
 
 $(document).ready(() => {
@@ -287,12 +180,12 @@ $(document).ready(() => {
   $('.nav-tabs-dropdown a').on('shown.bs.tab', (e) => {
     const currTab = $(e.target);
     if (currTab.closest('.dropdown').find('.dropdown-toggle').length) {
-      currTab.closest('.dropdown').find('.dropdown-toggle').html(`${currTab.text()} <i class="fa fa-angle-double-right"></i>`);
+      currTab.closest('.dropdown').find('.dropdown-toggle').html(`${currTab.text()} <i class="fa fa-angle-double-right" role="presentation" aria-label="More tabs"></i>`);
       return;
     }
     const prevTab = $(e.relatedTarget).closest('.dropdown').find('.dropdown-toggle');
     if (prevTab.length) {
-      prevTab.html(` ${prevTab.data('defaultlabel')} <i class="fa fa-angle-double-right"></i>`);
+      prevTab.html(` ${prevTab.data('defaultlabel')} <i class="fa fa-angle-double-right" role="presentation" aria-label="More tabs"></i>`);
     }
   });
   // code snippet taken from SwishWez: https://stackoverflow.com/questions/21582558/disable-remove-on-backspace-or-remove-ibeam-entirely
@@ -310,13 +203,20 @@ $(document).ready(() => {
       }());
     });
   }
+  $('.toggle-config-view-graph').click(() => {
+    $('#config-left-graph').toggleClass('collapse-config-left');
+    $('#config-right-graph').toggleClass('col-sm-12 col-sm-6');
+    $('#toggleFullscreenGraph i').toggleClass('fa-expand fa-compress');
+    $(window).trigger('resize');
+    return false;
+  });
 
   $('body').addClass('fixed'); // besides these updates, gms-switchTab (see below) has always has to be considered as well
 
   $('#btImport').show();
   $('.btSolve').show();
   $('#btInterrupt').hide();
-  $('#btSplitView').hide();
+  $('.btSplitView').hide();
   $('#btCompareScen').hide();
   $('#btLoadScen').hide();
   $('a[data-value="inputData"]').click(() => {
@@ -344,12 +244,12 @@ $(document).ready(() => {
   });
   $('#scenTabset').append('<li id="scenTabsetAdd"><a href="#" id="btLoadScen" data-value="scen_add" '
     + 'onclick="Shiny.setInputValue(\'btLoadScen\', 1, {priority: \'event\'});">'
-    + '<i class="far fa-plus-square" style="font-size:13pt;"></i></a></li>'); // show/hide buttons after (R triggered) tab switch.
+    + '<i class="far fa-plus-square" style="font-size:13pt;" role="presentation" aria-label="Add scenario"></i></a></li>'); // show/hide buttons after (R triggered) tab switch.
 
   Shiny.addCustomMessageHandler('gms-switchTab', (el) => {
     switchTab(el);
   });
-  $('body').on('click', '.bt-highlight-1, .bt-highlight-2, .bt-highlight-3', function () {
+  $(document).on('click', '.bt-highlight-1, .bt-highlight-2, .bt-highlight-3', function () {
     const btn = $(this);
     if (btn.hasClass('dropdown-toggle')) {
       return;
@@ -375,6 +275,9 @@ $(document).ready(() => {
       e.preventDefault();
       e.returnValue = 'Are you sure you want to leave? Unsaved changes will be lost!';
     }
+  });
+  Shiny.addCustomMessageHandler('gms-setAttrib', (data) => {
+    $(data.selector).attr(data.attr, data.val);
   });
   Shiny.addCustomMessageHandler('gms-showEl', (id) => {
     if (isInputEl(id)) {
@@ -560,7 +463,7 @@ ${data.data}</div>` : data.data);
         checkBoxHTML = `<div class="col-sm-6"><div class="form-group shiny-input-container"><div class="checkbox"><label><input type="checkbox" onchange="Shiny.setInputValue('execPermAttachment_${id[i]}', $(this).is(':checked'));" checked="checked"><span>${el.labelCb}</span></label></div></div></div>`;
       }
 
-      $(`<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_${id[i]}" type="button" onclick="Miro.removeAttachment(${id[i]})"><i class="fa fa-times-circle"></i></button><a href="#" onclick="Miro.downloadAttachment(${id[i]})"> ${name[i]}</a></div>${checkBoxHTML}</div>`).insertBefore('#endAttachList');
+      $(`<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_${id[i]}" type="button" onclick="Miro.removeAttachment(${id[i]})"><i class="fa fa-times-circle" role="presentation" aria-label="Remove attachment"></i></button><a href="#" onclick="Miro.downloadAttachment(${id[i]})"> ${name[i]}</a></div>${checkBoxHTML}</div>`).insertBefore('#endAttachList');
     }
   });
   Shiny.addCustomMessageHandler('gms-fitTitleInBox', (id) => {
@@ -582,26 +485,76 @@ ${data.data}</div>` : data.data);
       $.map(document.getElementById(data.id).children,
         (child) => $(child).attr('data-rank-id') || $.trim(child.innerText)));
   });
+  Shiny.addCustomMessageHandler('gms-updateTable', (data) => {
+    const tableToUpdate = document.getElementById(data.id);
+    const noCols = tableToUpdate.rows[0].cells.length;
+    const noNewRows = data.data[0].length;
+    const { valCol } = data;
+    if (noNewRows === 0) {
+      document.getElementById(`${data.id}-wrapper`).style.display = 'none';
+      document.getElementById(`${data.id}-noData`).style.display = 'block';
+      return;
+    }
+    document.getElementById(`${data.id}-wrapper`).style.display = '';
+    document.getElementById(`${data.id}-noData`).style.display = 'none';
+
+    const $tbody = $(`#${data.id} tbody`);
+    const tbody = $tbody[0];
+    $tbody.children('tr').remove();
+
+    for (let i = 0; i < noNewRows; i++) {
+      const tr = document.createElement('tr');
+      tr.onclick = function () {
+        $(this).toggleClass('selected');
+      };
+      for (let j = 0; j < noCols; j++) {
+        const td = document.createElement('td');
+        if (j === 0 && valCol != null) {
+          td.dataset.val = btoa(data.data[valCol][i]);
+        }
+        if (i > 0 && data.hierarchical === true
+          && data.data[j][i] === data.data[j][i - 1]) {
+          td.appendChild(document.createTextNode(''));
+        } else {
+          td.appendChild(document.createTextNode(data.data[j][i]));
+        }
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    }
+  });
   Shiny.addCustomMessageHandler('gms-populateMiroPivotFilters', (data) => {
     const { ns } = data;
     const idContainerMap = [{ id: 'filter', container: 'filterDropdowns' },
       { id: 'aggregations', container: 'aggregateDropdowns' },
       { id: 'cols', container: 'colDropdowns' }];
     idContainerMap.forEach((filterEl) => {
-      $(`#${ns + filterEl.container} .shiny-input-container`).each((i, el) => {
-        Shiny.unbindAll(el, true);
-        $(el).remove();
-        return true;
-      });
+      Shiny.unbindAll(document.getElementById(ns + filterEl.container));
     });
     idContainerMap.forEach((filterEl) => {
-      const content = data[filterEl.id];
-      if (content) {
-        const dropdownContainer = document.getElementById(ns + filterEl.container);
+      const dropdownContainer = document.getElementById(ns + filterEl.container);
+      const currContent = $(`#${ns + filterEl.container} .shiny-input-container`);
+      const newContent = data[filterEl.id];
+
+      if (currContent.length !== newContent.length) {
+        $(dropdownContainer).empty();
         Shiny.renderContent(dropdownContainer,
-          content, 'beforeEnd');
-        Shiny.bindAll(dropdownContainer);
+          newContent.map((el) => el[0]).join(''), 'beforeEnd');
+        return;
       }
+      if (currContent.length === 0) {
+        // nothing to do (new content = old content = empty)
+        return;
+      }
+      currContent.each((i, el) => {
+        if (newContent[i][2] !== true && newContent[i][1] === $(el).data('hash')) {
+          return true;
+        }
+        $(el).replaceWith(newContent[i][0]);
+        return true;
+      });
+      Shiny.initializeInputs(dropdownContainer);
+      Shiny.bindAll(dropdownContainer);
     });
   });
   Shiny.addCustomMessageHandler('gms-showValidationErrors', (content) => {
@@ -689,7 +642,6 @@ $(document).keyup((event) => {
     return;
   } // Import shortcut: CTRL + ALT + I
 
-
   if (event.keyCode === 83) {
     Shiny.setInputValue('btSave', 1, {
       priority: 'event',
@@ -697,12 +649,10 @@ $(document).keyup((event) => {
     return;
   } // SAVE shortcut: CTRL + ALT + S
 
-
   if (event.keyCode === 13) {
     $('#btSolve:visible:enabled').click();
     return;
   } // Solve shortcut: CTRL + ALT + ENTER
-
 
   if (event.keyCode === 82) {
     Shiny.setInputValue('btDelete', 1, {
@@ -711,12 +661,10 @@ $(document).keyup((event) => {
     return;
   } // Remove shortcut: CTRL + ALT + R
 
-
   if (event.keyCode === 67) {
     $('.btRemove:visible').click();
     return;
   } // Close shortcut (remove button in input sheet): CTRL + ALT + C
-
 
   if (event.keyCode === 67) {
     for (let i = 2; i <= maxNumScen; i += 1) {
@@ -725,19 +673,16 @@ $(document).keyup((event) => {
     return;
   } // Close shortcut (remove button in output sheet): CTRL + ALT + C
 
-
   if (event.keyCode === 70) {
     $('body').toggleClass('sidebar-collapse');
     rerenderHot(400);
     return;
   } // Fullscreen mode (hide sidebar) shortcut: CTRL + ALT + F
 
-
   if (event.keyCode === 49) {
     $('a[href="#shiny-tab-inputData"]').click();
     return;
   } // Select input menu shortcut: CTRL + ALT + 1
-
 
   if (event.keyCode === 50) {
     const tab = $('a[href="#shiny-tab-outputData"]');
@@ -750,7 +695,6 @@ $(document).keyup((event) => {
     return;
   } // Select output menu shortcut: CTRL + ALT + 2
 
-
   if (event.keyCode === 51) {
     const tab = $('a[href="#shiny-tab-gamsinter"]');
 
@@ -761,7 +705,6 @@ $(document).keyup((event) => {
     }
     return;
   } // Select gams interaction menu shortcut: CTRL + ALT + 3
-
 
   if (event.keyCode === 52) {
     $('a[href="#shiny-tab-scenarios"]').click();
@@ -776,7 +719,6 @@ $(document).keyup((event) => {
     }
     return;
   } // Select scenario menu shortcut: CTRL + ALT + 5
-
 
   if (event.keyCode === 84) {
     if ($('#btGraphIn').is(':visible')) {
@@ -795,13 +737,11 @@ $(document).keyup((event) => {
     return;
   } // Table view (scenario compare mode) shortcut: CTRL + ALT + T
 
-
   if (event.keyCode === 39) {
     Shiny.onInputChange('tabsetShortcutNext', count);
     count += 1;
     return;
   } // Select next tab shortcut: CTRL + ALT + arrow right
-
 
   if (event.keyCode === 37) {
     Shiny.onInputChange('tabsetShortcutPrev', count);
@@ -809,20 +749,17 @@ $(document).keyup((event) => {
     return;
   } // Select previous tab shortcut: CTRL + ALT + arrow left
 
-
   if (event.keyCode === 40) {
     Shiny.onInputChange('tabsetShortcutNest', count);
     count += 1;
     return;
   } // Nest to next lower tabset shortcut: CTRL + ALT + arrow down
 
-
   if (event.keyCode === 38) {
     Shiny.onInputChange('tabsetShortcutUnnest', count);
     count += 1;
     return;
   } // Unnest to next higher tabset shortcut: CTRL + ALT + arrow up
-
 
   if (event.keyCode === 32 && $('#btCompareScen').is(':enabled') && $('#btCompareScen').is(':visible')) {
     $('#btCompareScen').click();

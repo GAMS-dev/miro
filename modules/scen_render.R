@@ -5,6 +5,11 @@ if(isInSplitView){
   # hide button and show content
   local({
     id <- if(loadInLeftBoxSplit) 1L else 2L
+    if(!compareModeTabsetGenerated[id]){
+      compareModeTabsetGenerated[id] <<- TRUE
+      insertUI(paste0("#scenSplit", id, "_content"), where = "afterBegin",
+               generateScenarioTabsetSplit(id + 1L), immediate = TRUE)
+    }
     showEl(session, paste0("#scenSplit", id, "_content"))
     hideEl(session, paste0("#scenSplit", id, "_open"))
   })
@@ -68,14 +73,14 @@ lapply(scenTableNamesToDisplay, function(sheetName){
                type = tabData$graphConfig$outType, 
                data = if(length(rendererData)) rendererData else dataToRender, 
                configData = scalarData[[scenIdLong]], 
-               dtOptions = config$datatable, graphOptions = tabData$graphConfig$graph, 
+               dtOptions = tabData$graphConfig$datatable, graphOptions = tabData$graphConfig$graph, 
                pivotOptions = tabData$graphConfig$pivottable, 
                customOptions = tabData$graphConfig$options,
                roundPrecision = roundPrecision, modelDir = modelDir,
-               rendererEnv = rendererEnv[[scenIdLong]])
+               rendererEnv = rendererEnv[[scenIdLong]], views = views, attachments = attachments)
     callModule(renderData, paste0("table_tab_", scenCounter, "_", tabData$tabId), type = "datatable", 
                data = dataToRender, 
-               dtOptions = config$datatable, roundPrecision = roundPrecision)
+               dtOptions = tabData$graphConfig$datatable, roundPrecision = roundPrecision)
   }, error = function(e) {
     flog.error("Problem rendering graphs for dataset: '%s'. Error message: %s.", sheetName, e)
     eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderGraph$desc, sheetName), sep = "\n")

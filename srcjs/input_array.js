@@ -117,7 +117,7 @@ class InputArray {
             }
 
             arrayContent += InputArray.createSelectInput(k, elID, v[1],
-              choices, aliases, selected, v[5], newEl);
+              choices, aliases, selected, v[5], v[6], v[7]);
             break;
           case 'selectDep':
             [,,, [selected]] = v;
@@ -188,7 +188,7 @@ class InputArray {
             arrayContent += `${'<div class="form-group" style="min-height:30px;">'
                 + '<h4 class="box-title option-section-header" style="cursor:pointer;font-weight:bold;" '
                 + 'onclick="$(this).next().toggle();$(this).children(\'.fa\').toggleClass(\'fa-plus fa-minus\')">'}${
-              v[1]} <i class="fa fa-plus"></i></h4><div class="option-section"${(v[2] === false) ? '' : ' style="display:none;"'}>`;
+              v[1]} <i class="fa fa-plus" role="presentation" aria-label="More options"></i></h4><div class="option-section"${(v[2] === false) ? '' : ' style="display:none;"'}>`;
             break;
           case 'optionsEnd':
             arrayContent += '</div></div>';
@@ -200,7 +200,7 @@ class InputArray {
       });
       arrayContent += `${(!this.options.elRequired || this.options.uniqueItems === true || elID > 1)
         ? `<button type="button" onclick="Miro.removeArrayEl('${this.arrayID}','${elID}\
-')" class="btn btn-default bt-icon"><i class="far fa-minus-square"></i></button>\n` : ''}<hr></div>`;
+')" class="btn btn-default bt-icon"><i class="far fa-minus-square" role="presentation" aria-label="Remove array element"></i></button>\n` : ''}<hr></div>`;
       $(`#${this.arrayID}_wrapper .array-wrapper`).append(arrayContent);
       this.registerChangeHandlers(elements, rAddID, elID, this.options);
       this.elCount += 1;
@@ -384,12 +384,14 @@ class InputArray {
     }
 
     static createSelectInput(arrayID, elID, label, choicesRaw, aliasesRaw = choicesRaw, selectedRaw = '',
-      multiple = false, create = false) {
+      multiple = false, create = false, options = {}) {
       const id = arrayID + elID;
       let choices = choicesRaw;
       let aliases = aliasesRaw;
       let selected = selectedRaw;
       let optionsHTML = '';
+      let optionsJSON = create === true ? { create: true, persist: false, openOnFocus: false } : {};
+      optionsJSON = JSON.stringify({ ...optionsJSON, ...options });
       if (!$.isArray(choices)) {
         choices = [choices];
       }
@@ -404,12 +406,11 @@ class InputArray {
           optionsHTML += `<option value="${choices[i]}"${$.inArray(choices[i], selected) !== -1 ? ' selected' : ''
           }>${aliases[i++]}</option>\n`);
       }
-
       return (`<div class="config-array-err" id="${id}_err" style="display:none;"></div>\
 <div class="form-group">\n\
 <label class="control-label" for="${id}">${label}</label>\n\
 <div><select id="${id}"${multiple === true ? ' multiple="multiple"' : ''}>${optionsHTML}</select>\
-${create === true ? `<script type="application/json" data-for="${id}">{"create":true,"persist":false,"openOnFocus":false}</script>` : ''}\
+${optionsJSON !== '{}' ? `<script type="application/json" data-for="${id}">${optionsJSON}</script>` : ''}\
 \n</div>\n</div>`);
     }
 
@@ -477,13 +478,13 @@ ${create === true ? `<script type="application/json" data-for="${id}">{"create":
     static createSelectDepInput(arrayID, elID, rAddID, altEl, label, choices, aliases = choices,
       selected = '', isChecked = false, newEl = true) {
       const firstInput = InputArray.createSelectInput(arrayID, elID, label,
-        choices, aliases, selected, undefined, newEl);
+        choices, aliases, selected);
       let secondInput;
 
       switch (altEl[1]) {
         case 'select':
           secondInput = InputArray.createSelectInput(`${arrayID}_alt`, elID, altEl[2],
-            altEl[3], altEl[4], altEl[5], altEl[6], newEl);
+            altEl[3], altEl[4], altEl[5], altEl[6], altEl[7]);
           break;
         case 'text':
           secondInput = InputArray.createTextInput(`${arrayID}_alt`, elID, altEl[2],

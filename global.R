@@ -32,7 +32,7 @@ SCODEMAP <- c(
 )
 
 # maximum upload size [MB] for data files
-maxUploadSize <- 100L
+maxUploadSize <- 500L
 
 # maximum number of scalars to represent as value box
 maxScalarsValBox <- 20L
@@ -43,7 +43,7 @@ slocktimeLimit <- 3600
 # log file directory and name
 logFileDir <- paste0("logs", .Platform$file.sep)
 # specify the logging level (["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"])
-loggingLevel <- Sys.getenv("MIRO_LOG_LEVEL", "TRACE")
+loggingLevel <- Sys.getenv("MIRO_LOG_LEVEL", "INFO")
 # name of table with scenario/hcube metadata as well as scenario locks
 scenMetadataTablePrefix <- "_sys_metadata_"
 tableNameMetaHcubePrefix <- "_sys_hcubemeta_"
@@ -73,8 +73,8 @@ modelDir <- "model"
 # prefix used for identifying compile time variables
 prefixDDPar  <- "_gmspar_"
 prefixGMSOpt <- "_gmsopt_"
-# language schema name
-languageSchemaName <- "language_schema.json"
+
+miroLanguage <- Sys.getenv("MIRO_LANG", "en")
 # get maximum number of lines to read for files
 maxSizeToRead <- 5e5
 # Limits on external programs that are allowed to be executed 
@@ -122,10 +122,11 @@ exclTraceCols <- c("NLP", "MIP", "NumberOfEquations", "NumberOfVariables", "Numb
 tableNameTracePrefix <- "_sys_trace_"
 
 tableNameAttachPrefix <- "_sys_attach_"
+tableNameViewsPrefix <- "_sys_views_"
 tableNameScriptsPrefix <- "_sys_scripts_"
 attachAllowExec       <- TRUE
 attachMaxFileSize     <- 1e7
-attachMaxNo           <- 5L
+attachMaxNo           <- 7L
 
 TIMEVIS_MAX_EVENTS <- 50L
 

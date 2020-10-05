@@ -48,7 +48,7 @@ observeEvent(input$btSaveOutput, {
 })
 observeEvent(input$btSaveReadonly, 
              rv$btSaveAs <<- isolate(rv$btSaveAs + 1L)
-             )
+)
 # enter scenario name
 observeEvent(virtualActionButton(rv$btSaveAs), {
   saveAsFlag <<- TRUE
@@ -62,7 +62,8 @@ observeEvent(virtualActionButton(rv$btSaveAs), {
     currentTags <- activeScen$getStags()
   }
   showNewScenDialog(tmpScenName, scenTags = currentTags, 
-                    showDiscardButtons = length(activeScen$getSid()) > 0L)
+                    showDiscardButtons = length(activeScen$getSid()) > 0L,
+                    discardPermDefault = !identical(activeScen$getScenUid(), uid))
 })
 
 observeEvent(input$btNewName, {
@@ -112,7 +113,7 @@ observeEvent(input$btCheckName, {
 })
 observeEvent(input$btSaveConfirm, 
              rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1)
-             )
+)
 observeEvent(virtualActionButton(rv$btSaveConfirm), {
   # check whether scenario is currently locked
   errMsg <- NULL
@@ -151,19 +152,29 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
         }else{
           activeScen$updateMetadata(newName = input$scenName, newTags = scenTags)
           if(isTRUE(input$newScenDiscardAttach)){
-            activeScen$removeAllAttachments()
+            attachments$removeAll()
           }
           if(isTRUE(input$newScenDiscardPerm)){
             activeScen$resetAccessPerm()
           }
         }
       }
-      rv$activeSname <<- input$scenName
+      if(identical(input$scenName, rv$activeSname)){
+        # make sure title is refreshed even when scen name is identical
+        # (e.g. because owner changed)
+        markUnsaved()
+      }else{
+        rv$activeSname <<- input$scenName
+      }
+      if(isTRUE(input$newScenDiscardViews)){
+        views$clearConf()
+      }
     }
     if(is.null(activeScen)){
       activeScen <<- Scenario$new(db = db, sname = isolate(rv$activeSname), 
                                   tags = scenTags, overwrite = identical(saveAsFlag, TRUE),
-                                  isNewScen = TRUE, duplicatedMetadata = duplicatedMetadata)
+                                  isNewScen = TRUE, duplicatedMetadata = duplicatedMetadata,
+                                  views = views, attachments = attachments)
       scenTags   <<- NULL
     }
     activeScen$save(scenData[[scenStr]], msgProgress = lang$progressBar$saveScenDb)
@@ -187,14 +198,14 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   }
   # check whether output data was saved and in case it was set identifier accordingly
   if(!LAUNCHHCUBEMODE && any(vapply(scenData[[scenStr]][seq_along(modelOut)], 
-                hasContent, logical(1L), USE.NAMES = FALSE))){
+                                    hasContent, logical(1L), USE.NAMES = FALSE))){
     noOutputData <<- FALSE
   }else{
     noOutputData <<- TRUE
   }
   if(!saveOutput){
     # remove output from UI
-    renderOutputData(rendererEnv)
+    renderOutputData(rendererEnv, views)
   }
   
   # reset dirty flag and unsaved status
@@ -204,16 +215,20 @@ observeEvent(input$btEditMeta, {
   req(activeScen)
   
   attachmentMetadata <- NULL
+  viewsMetadata <- NULL
   if(config$activateModules$attachments){
-    attachmentList <<- activeScen$fetchAttachmentList()
+    attachmentList <<- attachments$getMetadata()
     attachmentMetadata <- attachmentList
+    viewsMetadata <- views$getSummary(modelInRaw, modelOut)
   }
   showEditMetaDialog(activeScen$getMetadata(c(uid = "uid", sname = "sname", stime = "stime", stag = "stag",
                                               readPerm = "readPerm", writePerm = "writePerm", execPerm = "execPerm"), noPermFields = FALSE), 
                      allowAttachments = config$activateModules$attachments, 
                      attachmentMetadata = attachmentMetadata, 
+                     viewsMetadata = viewsMetadata,
                      attachAllowExec = attachAllowExec, 
-                     ugroups = c(uid, csv2Vector(ugroups)))
+                     ugroups = c(uid, csv2Vector(ugroups)),
+                     isLocked = length(activeScen) != 0L && length(activeScen$getLockUid()) > 0L)
 })
 
 observeEvent(input$btUpdateMeta, {
@@ -260,45 +275,45 @@ observeEvent(input$btUpdateMeta, {
     activeUserGroups <- c(uid, csv2Vector(ugroups))
     
     
-    if(any(activeUserGroups %in% currentWritePerm)){
+    if(activeScen$isReadonlyOrLocked){
+      newWritePerm <- character(0L)
+      newExecPerm <- character(0L)
+      newReadPerm  <- character(0L)
+    }else{
       newWritePerm <- input$editMetaWritePerm
       newExecPerm  <- input$editMetaExecPerm
       newReadPerm  <- input$editMetaReadPerm
-    }else{
-      newWritePerm <- currentWritePerm
-      newExecPerm <- currentExecPerm
-      newReadPerm  <- currentReadPerm
+      if(any(c(length(newReadPerm), length(newWritePerm), length(newExecPerm)) < 1L)){
+        enableEl(session, "#btUpdateMeta")
+        flog.debug("Empty permissions entered.")
+        showHideEl(session, "#editMetaEmptyPerm", 6000)
+        return()
+      }
+      if(any(!newReadPerm %in% c(activeUserGroups, currentReadPerm))){
+        showHideEl(session, "#editMetaError")
+        flog.error("Attempt to tamper with read access permissions!")
+        return()
+      }
+      if(any(!newWritePerm %in% c(activeUserGroups, currentWritePerm))){
+        showHideEl(session, "#editMetaError")
+        flog.error("Attempt to tamper with write access permissions!")
+        return()
+      }
+      if(any(!newExecPerm %in% c(activeUserGroups, currentExecPerm))){
+        showHideEl(session, "#editMetaError")
+        flog.error("Attempt to tamper with execute access permissions!")
+        return()
+      }
+      scenOwner <- activeScen$getScenUid()[[1L]]
+      if((!scenOwner %in% newReadPerm) 
+         || (!scenOwner %in% newWritePerm) 
+         || (!scenOwner %in% newExecPerm)){
+        showHideEl(session, "#editMetaIncapOwner")
+        flog.debug("Attempt to revoke the scenario owner's access rights.")
+        return()
+      }
     }
     
-    if(any(c(length(newReadPerm), length(newWritePerm), length(newExecPerm)) < 1L)){
-      enableEl(session, "#btUpdateMeta")
-      flog.debug("Empty permissions entered.")
-      showHideEl(session, "#editMetaEmptyPerm", 6000)
-      return()
-    }
-    if(any(!newReadPerm %in% c(activeUserGroups, currentReadPerm))){
-      showHideEl(session, "#editMetaError")
-      flog.error("Attempt to tamper with read access permissions!")
-      return()
-    }
-    if(any(!newWritePerm %in% c(activeUserGroups, currentWritePerm))){
-      showHideEl(session, "#editMetaError")
-      flog.error("Attempt to tamper with write access permissions!")
-      return()
-    }
-    if(any(!newExecPerm %in% c(activeUserGroups, currentExecPerm))){
-      showHideEl(session, "#editMetaError")
-      flog.error("Attempt to tamper with execute access permissions!")
-      return()
-    }
-    scenOwner <- activeScen$getScenUid()[[1L]]
-    if((!scenOwner %in% newReadPerm) 
-       || (!scenOwner %in% newWritePerm) 
-       || (!scenOwner %in% newExecPerm)){
-      showHideEl(session, "#editMetaIncapOwner")
-      flog.debug("Attempt to revoke the scenario owner's access rights.")
-      return()
-    }
     tryCatch({
       activeScen$updateMetadata(scenName, isolate(input$editMetaTags), 
                                 newReadPerm, newWritePerm, newExecPerm)
@@ -319,31 +334,32 @@ observeEvent(input$btUpdateMeta, {
 })
 
 if(config$activateModules$attachments){
+  ################################################
+  #            ATTACHMENTS
+  ################################################
   lapply(seq_len(attachMaxNo), function(i){
     observeEvent(input[["btRemoveAttachment_" %+% i]], {
       req(nchar(attachmentList[["name"]][[i]]) > 0L, activeScen)
-      activeScen$removeAttachments(attachmentList[["name"]][[i]])
+      attachments$remove(session = NULL, attachmentList[["name"]][[i]])
       attachmentList[i, ] <<- list(NA_character_, FALSE)
-      markUnsaved()
       showHideEl(session, "#attachSuccess")
     })
     observe({
-      value <- input[["execPermAttachment_" %+% i]]
+      value <- suppressWarnings(as.logical(input[["execPermAttachment_" %+% i]]))
       req(activeScen)
-      if(is.na(attachmentList[["name"]][[i]]) || is.null(value) ||
-         identical(value, attachmentList[["execPerm"]][[i]])){
+      if(is.na(attachmentList[["name"]][[i]]) || length(value) != 1L || is.na(value) ||
+         value == attachmentList[["execPerm"]][[i]]){
         return(NULL)
       }
       tryCatch({
-        activeScen$setAttachmentExecPerm(attachmentList[["name"]][[i]], 
-                                         value, workDir = workDir)
+        attachments$setExecPerm(session = NULL, attachmentList[["name"]][[i]], 
+                                value)
         attachmentList[i, "execPerm"] <<- value
-        markUnsaved()
         showHideEl(session, "#attachSuccess")
-        }, error = function(e){
-          flog.error(e)
-          showHideEl(session, "#attachUnknownError", 6000) 
-        })
+      }, error = function(e){
+        flog.error(e)
+        showHideEl(session, "#attachUnknownError", 6000) 
+      })
       
     })
   })
@@ -359,8 +375,8 @@ if(config$activateModules$attachments){
       if(!is.integer(i) || length(attachmentList[["name"]]) < i){
         return(writeLines("error", file))
       }
-      activeScen$downloadAttachmentData(file, fileNames = attachmentList[["name"]][[i]], 
-                                        fullPath = TRUE)
+      attachments$download(file, fileNames = attachmentList[["name"]][[i]], 
+                           fullPath = TRUE)
     }
   )
   observeEvent(input$file_addAttachments$datapath, {
@@ -374,10 +390,8 @@ if(config$activateModules$attachments){
     errMsg <- NULL
     
     tryCatch({
-      activeScen$addAttachments(isolate(input$file_addAttachments$datapath), workDir = workDir,
-                                fileNames = isolate(input$file_addAttachments$name),
-                                forbiddenFnames = c(paste0(c(names(modelInTabularData), 
-                                                             names(modelOut)), ".csv"), paste0(modelName, c(".log", ".lst"))))
+      attachments$add(session = NULL, isolate(input$file_addAttachments$datapath),
+                      fileNames = isolate(input$file_addAttachments$name))
       idxes <- vector("integer", length(isolate(input$file_addAttachments$name)))
       for(i in seq_along(isolate(input$file_addAttachments$name))){
         idx <- which(is.na(attachmentList[["name"]]))
@@ -390,42 +404,144 @@ if(config$activateModules$attachments){
           attachmentList <<- add_row(attachmentList, name = isolate(input$file_addAttachments$name)[[i]], execPerm = TRUE)
         }else{
           idx <- idx[[1]]
-          attachmentList[idx, ] <<- c(isolate(input$file_addAttachments$name)[[i]], TRUE)
+          attachmentList[idx, ] <<- list(isolate(input$file_addAttachments$name)[[i]], TRUE)
         }
         idxes[[i]] <- idx
       }
       updateAttachList(session, fileName = isolate(input$file_addAttachments$name), id = idxes, token = session$token, 
                        labelCb = lang$nav$dialogEditMeta$attachmentsExecPerm, allowExec = attachAllowExec)
-      markUnsaved()
       showHideEl(session, "#attachSuccess")
-    }, error = function(e){
-      errMsg <<- character(1L)
-      switch(conditionMessage(e),
-             maxSizeException = {
-               flog.info("Attachment wasn't added because the size is too large.")
-               showHideEl(session, "#attachMaxSizeError", 6000)
-             },
-             maxNoException = {
-               flog.info("Attachment wasn't added because the maximum number of attachment is reached.")
-               showHideEl(session, "#attachMaxNoError", 6000)
-             },
-             duplicateException = {
-               flog.info("Attachment wasn't added because the filename already exists.")
-               showHideEl(session, "#attachDuplicateError", 6000)
-             },
-             forbiddenFnameException = {
-               flog.info("Attachment wasn't added because the filename is forbidden.")
-               showHideEl(session, "#attachForbiddenFnameError", 6000)
-             },
-             roException = {
-               flog.info("Attachment wasn't added because scenario is readonly.")
-               showHideEl(session, "#attachRO", 6000)
-             },
-             {
-               flog.error(e)
-               showHideEl(session, "#attachUnknownError", 6000) 
-             })
+    },
+    error_forbidden_filename = function(e){
+      flog.info("Attachment wasn't added because the filename is forbidden.")
+      showHideEl(session, "#attachForbiddenFnameError", 6000)
+    },
+    error_max_size = function(e){
+      flog.info("Attachment wasn't added because the size is too large.")
+      showHideEl(session, "#attachMaxSizeError", 6000)
+    },
+    error_duplicate_files = function(e){
+      flog.info("Attachment wasn't added because the filename already exists.")
+      showHideEl(session, "#attachDuplicateError", 6000)
+    },
+    error_max_no = function(e){
+      flog.info("Attachment wasn't added because the maximum number of attachment is reached.")
+      showHideEl(session, "#attachMaxNoError", 6000)
+    },
+    error = function(e){
+      flog.error(conditionMessage(e))
+      showHideEl(session, "#attachUnknownError", 6000) 
     })
     hideEl(session, "#addAttachLoading")
+  })
+  ################################################
+  #            VIEWS
+  ################################################
+  updateViewsTable <- function(){
+    newViewData <- views$getSummary(modelInRaw, modelOut)
+    if(!length(newViewData$symAlias)){
+      newViewData <- tibble(symAlias = character(0L),
+                            id = character(0L),
+                            symName = character(0L))
+    }
+    session$sendCustomMessage("gms-updateTable", 
+                              list(id = "currentViewsTable", hierarchical = TRUE,
+                                   valCol = 2L,
+                                   data = list(I(newViewData[["symAlias"]]),
+                                               I(newViewData[["id"]]),
+                                               I(newViewData[["symName"]]))))
+  }
+  observeEvent(input$removeViews, {
+    req(activeScen)
+    showEl(session, "#addViewsLoading")
+    flog.debug("Request to remove views received.")
+    on.exit(hideEl(session, "#addViewsLoading"))
+    
+    viewsToRemove <- tryCatch({
+      safeFromJSON(input$removeViews,
+                   simplifyMatrix = FALSE)
+    }, error = function(e){
+      flog.error("Problems parsing request to remove views. This seems like an attempt to tamper with the app! Error message: %s.",
+                 conditionMessage(e))
+      return(NULL)
+    })
+    if(is.null(viewsToRemove)){
+      return()
+    }
+    if(length(viewsToRemove) == 0){
+      showHideEl(session, "#viewsNoneSelected", delay = 4000L)
+      return()
+    }
+    
+    if(tryCatch({
+      views$removeConf(viewsToRemove)
+      FALSE
+    }, error = function(e){
+      flog.warn("Problems removing rows from table: %s. Error message: %s.",
+                as.character(input$removeViews), conditionMessage(e))
+      return(TRUE)
+    })){
+      showHideEl(session, "#viewsUnknownError", 4000L)
+      return()
+    }
+    updateViewsTable()
+  })
+  output$downloadViews <- downloadHandler(
+    filename = function() {
+      scenName <- isolate(rv$activeSname)
+      if(!length(scenName)){
+        scenName <- lang$nav$dialogNewScen$newScenName
+      }
+      return(paste0(scenName, "_views.json"))
+    },
+    content = function(file){
+      flog.debug("Request to download views received.")
+      tryCatch(write_file(views$getJSON(safeFromJSON(input$downloadViews,
+                                                     simplifyMatrix = FALSE)), file),
+               error = function(e){
+                 flog.warn("Problems writing views JSON file. Error message: %s",
+                           conditionMessage(e))
+                 return(writeLines('{"error": "Some problem occurred while writing views."}', file))
+               })
+    }, contentType = "application/json"
+  )
+  observeEvent(input$file_addViews$datapath, {
+    req(activeScen)
+    flog.debug("New view configuration uploaded.")
+    showEl(session, "#addViewsLoading")
+    on.exit(hideEl(session, "#addViewsLoading"))
+    
+    if(!identical(try(tolower(tools::file_ext(input$file_addViews$datapath)),
+                      silent = TRUE), "json")){
+      showHideEl(session, "#viewsInvalidDataError", 4000L)
+      return()
+    }
+    
+    if(tryCatch({
+      views$addConf(safeFromJSON(read_file(input$file_addViews$datapath),
+                                 simplifyDataFrame = FALSE, simplifyVector = FALSE))
+      invalidViews <- views$getInvalidViews()
+      if(length(invalidViews)){
+        showHideEl(session, "#viewsCustomError",
+                   msg = sprintf(lang$nav$dialogEditMeta$viewsInvalidError,
+                                 paste(invalidViews, collapse = "', '")), 4000L)
+      }
+      FALSE
+    }, error = function(e){
+      flog.info("Problems adding views configuration. Error message: %s",
+                conditionMessage(e))
+      showHideEl(session, "#viewsInvalidDataError", 4000L)
+      TRUE
+    })){
+      return()
+    }
+    duplicatedViews <- views$getDuplicatedViews()
+    if(length(duplicatedViews)){
+      showHideEl(session, "#viewsCustomError",
+                 msg = sprintf(lang$nav$dialogEditMeta$viewsDuplicateError,
+                               paste(duplicatedViews, collapse = "', '")),
+                 4000L)
+    }
+    updateViewsTable()
   })
 }

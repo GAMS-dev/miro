@@ -1,0 +1,4 @@
+pickstock.gms
+dowjones2016.csv
+scripts_pickstock/hcube_analysis.ipynb
+täst/täst.txt

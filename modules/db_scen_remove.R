@@ -1,5 +1,5 @@
 #remove the currently active scenario
-closeScenario <- function(){
+closeScenario <- function(clearMeta = TRUE){
   # remove output data
   errMsg <- NULL
   lapply(seq_along(modelOut), function(i){
@@ -90,24 +90,26 @@ closeScenario <- function(){
   }
   resetWidgetsOnClose <<- TRUE
   
-  if(useTempDir){
-    unlink(list.files(workDir, recursive = TRUE))
-  }
   if(is.R6(activeScen))
     flog.debug("Scenario: '%s' closed.", activeScen$getScenName())
   # reset input data
+  modelInputGraphVisible[] <<- FALSE
   lapply(seq_along(modelIn), function(i){
     hideEl(session, "#graph-in_" %+% i)
     showEl(session, "#data-in_" %+% i)
   })
   
   # reset model output data
-  renderOutputData(rendererEnv)
-  activeScenario    <<- NULL
-  if(length(activeScen))
-    activeScen$cleanLocalFiles()
+  renderOutputData(rendererEnv, views)
+  if(length(activeScen)){
+    if(clearMeta){
+      views$clearConf()
+      attachments$clear(cleanLocal = TRUE)
+    }
+    activeScen$finalize()
+  }
   activeScen        <<- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
-                                     isNewScen = TRUE)
+                                     isNewScen = TRUE, views = views, attachments = attachments)
   rv$activeSname    <<- NULL
   scenTags          <<- NULL
   attachmentList    <<- tibble(name = vector("character", attachMaxNo), 

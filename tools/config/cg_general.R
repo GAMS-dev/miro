@@ -1,12 +1,14 @@
 rowtmp <- list()
 isolate({
   indexMap <- IdIdxMap$new(list(inputGroups = seq_along(configJSON$inputGroups),
+                                inputWidgetGroups = seq_along(configJSON$inputWidgetGroups),
                                 outputGroups = seq_along(configJSON$outputGroups),
                                 symlink = seq_along(configJSON$symbolLinks),
                                 outputAttachments = seq_along(configJSON$outputAttachments)))
   
-  groupTemp <- list(inputGroups = list(), outputGroups = list())
+  groupTemp <- list(inputGroups = list(), inputWidgetGroups = list(), outputGroups = list())
   rv$generalConfig$inputGroups <- configJSON$inputGroups
+  rv$generalConfig$inputWidgetGroups <- configJSON$inputWidgetGroups
   rv$generalConfig$outputGroups <- configJSON$outputGroups
   rv$generalConfig$outputAttachments <- configJSON$outputAttachments
   rv$generalConfig$symbolLinks <- configJSON$symbolLinks
@@ -38,6 +40,8 @@ outputAttachmentsValidator <- Validator$new(c("filename", "execPerm", "throwErro
 # set default values for array elements
 if(length(configJSON$inputGroups))
   addArrayEl(session, "symbol_inputGroups", defaults = configJSON$inputGroups)
+if(length(configJSON$inputWidgetGroups))
+  addArrayEl(session, "symbol_inputWidgetGroups", defaults = configJSON$inputWidgetGroups)
 if(length(configJSON$outputGroups))
   addArrayEl(session, "symbol_outputGroups", defaults = configJSON$outputGroups)
 if(length(configJSON$symbolLinks))
@@ -201,22 +205,43 @@ lapply(c(names(modelInRaw), names(modelOut)), function(name){
       return()
     }
   })
-  observeEvent(input[[paste0("general_overwriteSymHeaders_", name)]], ignoreNULL = FALSE, {
-    newHeaders <- input[[paste0("general_overwriteSymHeaders_", name)]]
+  observe({
     defaultAlias <- FALSE
     if(name %in% names(modelOut)){
-      if(length(newHeaders) != length(dataContract$outputSymbols[[name]]$headers) ||
-         identical(newHeaders, vapply(dataContract$outputSymbols[[name]]$headers, "[[", 
-                                      character(1L), "alias",
-                                      USE.NAMES = FALSE))){
+      newHeaders <- unlist(lapply(seq_along(dataContract$outputSymbols[[name]]$headers), function(hdrIdx){
+        input[[paste0("general_overwriteSymHeaders_", name, "_", hdrIdx)]]
+      }))
+      if(length(newHeaders) != length(dataContract$outputSymbols[[name]]$headers)){
+        return()
+      }
+      if(any(newHeaders == "")){
+        addClassEl(session, paste0("#general_overwriteSymHeaders_", name), "has-error")
         defaultAlias <- TRUE
+      }else if(identical(newHeaders, vapply(dataContract$outputSymbols[[name]]$headers, "[[", 
+                                            character(1L), "alias",
+                                            USE.NAMES = FALSE))){
+        removeClassEl(session, paste0("#general_overwriteSymHeaders_", name), "has-error")
+        defaultAlias <- TRUE
+      }else{
+        removeClassEl(session, paste0("#general_overwriteSymHeaders_", name), "has-error")
       }
     }else{
-      if(length(newHeaders) != length(dataContract$inputSymbols[[name]]$headers) ||
-         identical(newHeaders, vapply(dataContract$inputSymbols[[name]]$headers, "[[", 
+      newHeaders <- unlist(lapply(seq_along(dataContract$inputSymbols[[name]]$headers), function(hdrIdx){
+        input[[paste0("general_overwriteSymHeaders_", name, "_", hdrIdx)]]
+      }))
+      if(length(newHeaders) != length(dataContract$inputSymbols[[name]]$headers)){
+        return()
+      }
+      if(any(newHeaders == "")){
+        addClassEl(session, paste0("#general_overwriteSymHeaders_", name), "has-error")
+        defaultAlias <- TRUE
+      }else if(identical(newHeaders, vapply(dataContract$inputSymbols[[name]]$headers, "[[", 
                                       character(1L), "alias",
                                       USE.NAMES = FALSE))){
+        removeClassEl(session, paste0("#general_overwriteSymHeaders_", name), "has-error")
         defaultAlias <- TRUE
+      }else{
+        removeClassEl(session, paste0("#general_overwriteSymHeaders_", name), "has-error")
       }
     }
     if(defaultAlias){
@@ -257,14 +282,6 @@ observeEvent(input$general_hiddenOutputSymbols, ignoreNULL = FALSE, {
 observeEvent(input$general_decimal, {
   rv$generalConfig$roundingDecimals <<- input$general_decimal
 })
-observeEvent(input$general_pivotcolor, {
-  if(!nchar(input$general_pivotcolor))
-    configJSON$pivottable$bgColor <<- "#00000000"
-  if(nchar(input$general_pivotcolor))
-    rv$generalConfig$pivottable$bgColor <<- input$general_pivotcolor
-  else
-    rv$generalConfig$pivottable$bgColor <<- NULL
-})
 observeEvent(input$general_mirologfile, {
   if(!nchar(input$general_mirologfile))
     configJSON$miroLogFile <<- NULL
@@ -297,6 +314,14 @@ observeEvent(input$add_general, {
     newName <- input$add_general[2]
     if(arrayIdx <= length(rv$generalConfig[[arrayID]]) && length(rv$generalConfig[[arrayID]][[arrayIdx]])){
       rv$generalConfig[[arrayID]][[arrayIdx]]$name <- newName
+      if(identical(arrayID, "inputWidgetGroups")){
+        tabId <- match(paste0("_widgets", arrayIdx), inputTabs)
+        if(!is.na(tabId)){
+          names(inputTabs)[tabId] <<- newName
+          updateSelectInput(session, "general_overwriteSheetOrderInput", 
+                            choices = inputTabs, selected = inputTabs)
+        }
+      }
     }else if(arrayIdx <= length(groupTemp[[arrayID]]) && 
              length(groupTemp[[arrayID]][[arrayIdx]]$members) > 1L &&
              !any(groupTemp[[arrayID]][[arrayIdx]]$members %in% 
@@ -304,9 +329,17 @@ observeEvent(input$add_general, {
       rv$generalConfig[[arrayID]][[arrayIdx]] <- list(name = newName, 
                                                       members = groupTemp[[arrayID]][[arrayIdx]]$members,
                                                       sameTab = isTRUE(groupTemp[[arrayID]][[arrayIdx]]$sameTab))
+      if(identical(arrayID, "inputWidgetGroups")){
+        inputTabs <<- c(inputTabs, 
+                        setNames(paste0("_widgets", arrayIdx), 
+                                 newName))
+        updateSelectInput(session, "general_overwriteSheetOrderInput", 
+                          choices = inputTabs, selected = inputTabs)
+      }
     }else{
       showElReplaceTxt(session, paste0("#group_member", 
-                                       if(identical(arrayID, "inputGroups")) "In" else "Out", 
+                                       if(identical(arrayID, "inputGroups")) "In" 
+                                       else if(identical(arrayID, "inputWidgetGroups")) "Widget" else "Out", 
                                        input$add_general[1], "_err"), 
                        lang$adminMode$widgets$validate$val37)
     }
@@ -735,10 +768,10 @@ observeEvent(input$remove_attach, {
     rv$generalConfig$outputAttachments <- NULL
   }
 })
-changeAndValidateGroupMembers <- function(arrayID, groupMembers, HTMLarrayID){
+changeAndValidateGroupMembers <- function(arrayID, groupMembers, HTMLarrayID, minNoMembers = 2L){
   arrayIdx <- indexMap$push(arrayID, groupMembers[1])
   
-  if(length(groupMembers) > 2L && 
+  if(length(groupMembers) > minNoMembers && 
      !any(groupMembers[-1] %in% unlist(lapply(rv$generalConfig[[arrayID]][-arrayIdx], "[[", "members"), use.names = FALSE))){
     newMembers <- groupMembers[2:length(groupMembers)]
     if(arrayIdx <= length(rv$generalConfig[[arrayID]]) && length(rv$generalConfig[[arrayID]][[arrayIdx]])){
@@ -762,7 +795,8 @@ changeAndValidateGroupMembers <- function(arrayID, groupMembers, HTMLarrayID){
     }
     newMembers <- NULL
     showElReplaceTxt(session, paste0("#", HTMLarrayID, groupMembers[1], "_err"), 
-                     lang$adminMode$widgets$validate$val37)
+                     if(identical(minNoMembers, 2L)) lang$adminMode$widgets$validate$val37
+                     else lang$adminMode$widgets$validate$val60)
   }
   if(arrayIdx > length(groupTemp[[arrayID]])){
     groupTemp[[arrayID]][[arrayIdx]] <<- list(members = newMembers)
@@ -774,6 +808,10 @@ observeEvent(input$group_memberIn, {
   changeAndValidateGroupMembers("inputGroups", input$group_memberIn, 
                                 "group_memberIn")
 })
+observeEvent(input$group_memberWidget, {
+  changeAndValidateGroupMembers("inputWidgetGroups", input$group_memberWidget, 
+                                "group_memberWidget", 1L)
+})
 observeEvent(input$group_memberOut, {
   changeAndValidateGroupMembers("outputGroups", input$group_memberOut, 
                                 "group_memberOut")
@@ -783,15 +821,32 @@ observeEvent(input$group_sameTabIn, {
     return()
   
   arrayIdx <- indexMap$push("inputGroups", input$group_sameTabIn[1])
+  newVal   <- isTRUE(as.logical(input$group_sameTabIn[2]))
   
   if(arrayIdx <= length(rv$generalConfig[["inputGroups"]]) &&
      length(rv$generalConfig[["inputGroups"]][[arrayIdx]])){
-    rv$generalConfig[["inputGroups"]][[arrayIdx]]$sameTab <<- identical(input$group_sameTabIn[2], 1L)
+    rv$generalConfig[["inputGroups"]][[arrayIdx]]$sameTab <<- newVal
   }else if(arrayIdx <= length(groupTemp[["inputGroups"]]) &&
            length(groupTemp[["inputGroups"]][[arrayIdx]])){
-    groupTemp[["inputGroups"]][[arrayIdx]]$sameTab <<- identical(input$group_sameTabIn[2], 1L)
+    groupTemp[["inputGroups"]][[arrayIdx]]$sameTab <<- newVal
   }else{
-    groupTemp[["inputGroups"]][[arrayIdx]] <<- list(sameTab = identical(input$group_sameTabIn[2], 1L))
+    groupTemp[["inputGroups"]][[arrayIdx]] <<- list(sameTab = newVal)
+  }
+})
+observeEvent(input$group_sameTabWidget, {
+  if(length(input$group_sameTabWidget) < 2L)
+    return()
+  
+  arrayIdx <- indexMap$push("inputWidgetGroups", input$group_sameTabWidget[1])
+  newVal   <- isTRUE(as.logical(input$group_sameTabWidget[2]))
+  if(arrayIdx <= length(rv$generalConfig[["inputWidgetGroups"]]) &&
+     length(rv$generalConfig[["inputWidgetGroups"]][[arrayIdx]])){
+    rv$generalConfig[["inputWidgetGroups"]][[arrayIdx]]$sameTab <<- newVal
+  }else if(arrayIdx <= length(groupTemp[["inputWidgetGroups"]]) &&
+           length(groupTemp[["inputWidgetGroups"]][[arrayIdx]])){
+    groupTemp[["inputWidgetGroups"]][[arrayIdx]]$sameTab <<- newVal
+  }else{
+    groupTemp[["inputWidgetGroups"]][[arrayIdx]] <<- list(sameTab = newVal)
   }
 })
 observeEvent(input$group_sameTabOut, {
@@ -799,15 +854,16 @@ observeEvent(input$group_sameTabOut, {
     return()
   
   arrayIdx <- indexMap$push("outputGroups", input$group_sameTabOut[1])
+  newVal   <- isTRUE(as.logical(input$group_sameTabOut[2]))
   
   if(arrayIdx <= length(rv$generalConfig[["outputGroups"]]) && 
      length(rv$generalConfig[["outputGroups"]][[arrayIdx]])){
-    rv$generalConfig[["outputGroups"]][[arrayIdx]]$sameTab <<- identical(input$group_sameTabOut[2], 1L)
+    rv$generalConfig[["outputGroups"]][[arrayIdx]]$sameTab <<- newVal
   }else if(arrayIdx <= length(groupTemp[["outputGroups"]]) &&
            length(groupTemp[["outputGroups"]][[arrayIdx]])){
-    groupTemp[["outputGroups"]][[arrayIdx]]$sameTab <<- identical(input$group_sameTabOut[2], 1L)
+    groupTemp[["outputGroups"]][[arrayIdx]]$sameTab <<- newVal
   }else{
-    groupTemp[["outputGroups"]][[arrayIdx]] <<- list(sameTab = identical(input$group_sameTabOut[2], 1L))
+    groupTemp[["outputGroups"]][[arrayIdx]] <<- list(sameTab = newVal)
   }
 })
 observeEvent(input$remove_general, {
@@ -820,6 +876,14 @@ observeEvent(input$remove_general, {
       rv$generalConfig[[arrayID]][[arrayIdx]] <<- NULL
       if(!length(rv$generalConfig[[arrayID]])){
         rv$generalConfig[[arrayID]] <<- NULL
+      }
+      if(identical(arrayID, "inputWidgetGroups")){
+        tabId <- match(paste0("_widgets", arrayIdx), inputTabs)
+        if(!is.na(tabId)){
+          inputTabs <<- inputTabs[-tabId]
+          updateSelectInput(session, "general_overwriteSheetOrderInput", 
+                            choices = inputTabs, selected = inputTabs)
+        }
       }
     }
     if(arrayIdx <= length(groupTemp[[arrayID]])){
@@ -888,10 +952,13 @@ observeEvent(rv$generalConfig, {
   req(length(rv$generalConfig))
   configJSON$inputGroups <<- NULL
   configJSON$outputGroups <<- NULL
+  configJSON$inputWidgetGroups <<- NULL
   if(length(rv$generalConfig$inputGroups) || 
-     length(rv$generalConfig$outputGroups)){
+     length(rv$generalConfig$outputGroups) || 
+     length(rv$generalConfig$inputWidgetGroups)){
     newGeneralJSON <- rv$generalConfig
     newGeneralJSON$inputGroups[vapply(newGeneralJSON$inputGroups, is.null, logical(1L), USE.NAMES = FALSE)] <- NULL
+    newGeneralJSON$inputWidgetGroups[vapply(newGeneralJSON$inputWidgetGroups, is.null, logical(1L), USE.NAMES = FALSE)] <- NULL
     newGeneralJSON$outputGroups[vapply(newGeneralJSON$outputGroups, is.null, logical(1L), USE.NAMES = FALSE)] <- NULL
     configJSON <<- modifyList(configJSON, newGeneralJSON)
   }else{

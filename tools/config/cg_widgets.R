@@ -525,7 +525,7 @@ observeEvent({input$widget_type
                                    ticks = isTRUE(currentConfig$ticks),
                                    noHcube = isTRUE(currentConfig$noHcube))
            rv$widgetConfig$minStep <- currentConfig$minStep
-           rv$widgetConfig$label <- currentConfig$label
+           rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
            dynamicDef <- getWidgetDependencies("slider", rv$widgetConfig$default)
@@ -677,7 +677,9 @@ observeEvent({input$widget_type
                                                                          tags$a("", title = lang$adminMode$widgets$slider$minStepTooltip, 
                                                                                 class="info-wrapper",
                                                                                 href="https://gams.com/miro/widgets.html#slider-option-minstep", 
-                                                                                tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                                                tags$span(class="fas fa-info-circle", class="info-icon",
+                                                                                          role = "presentation",
+                                                                                          `aria-label` = "More information"), target="_blank")),
                                               value = rv$widgetConfig$minStep, min = 0L))),
                       tags$div(class = "shiny-input-container",
                                checkboxInput_MIRO("slider_ticks", lang$adminMode$widgets$slider$ticks,
@@ -714,7 +716,7 @@ observeEvent({input$widget_type
                                    ticks = isTRUE(currentConfig$ticks),
                                    noHcube = isTRUE(currentConfig$noHcube))
            rv$widgetConfig$minStep <- currentConfig$minStep
-           rv$widgetConfig$label <- currentConfig$label
+           rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
            staticMinInput <- numericInput("slider_min", lang$adminMode$widgets$sliderrange$min, 
@@ -850,7 +852,7 @@ observeEvent({input$widget_type
                                    noHcube = isTRUE(currentConfig$noHcube),
                                    clearValue = isTRUE(currentConfig$clearValue),
                                    multiple = isTRUE(currentConfig$multiple))
-           rv$widgetConfig$label <- currentConfig$label
+           rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            rv$widgetConfig$aliases <- currentConfig$aliases
            dynamicChoices <- getWidgetDependencies("dropdown", rv$widgetConfig$choices)
            singletonSetId <- NA_integer_
@@ -944,7 +946,9 @@ observeEvent({input$widget_type
                                                     tags$div(lang$adminMode$widgets$dropdown$clearValue,
                                                              tags$a("", title = lang$adminMode$widgets$dropdown$clearValueTooltip, 
                                                                     class="info-wrapper", href="https://gams.com/miro/widgets.html#dropdown-option-clearvalue", 
-                                                                    tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                                    tags$span(class="fas fa-info-circle", class="info-icon",
+                                                                              role = "presentation",
+                                                                              `aria-label` = "More information"), target="_blank")),
                                                     rv$widgetConfig$clearValue)
                         )
                       },
@@ -972,7 +976,7 @@ observeEvent({input$widget_type
                                    value = identical(currentConfig$value, 1L),
                                    noHcube = isTRUE(currentConfig$noHcube),
                                    class =  "checkbox-material")
-           rv$widgetConfig$label <- currentConfig$label
+           rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            insertUI(selector = "#widget_options",
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",
@@ -1011,7 +1015,7 @@ observeEvent({input$widget_type
                                    autoclose = if(identical(currentConfig$autoclose, FALSE)) FALSE else TRUE,
                                    noHcube = isTRUE(currentConfig$noHcube))
            rv$widgetConfig$value <- currentConfig$value
-           rv$widgetConfig$label <- currentConfig$label
+           rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            rv$widgetConfig$min <- currentConfig$min
            rv$widgetConfig$max <- currentConfig$max
            rv$widgetConfig$daysofweekdisabled <- currentConfig$daysofweekdisabled
@@ -1127,7 +1131,7 @@ observeEvent({input$widget_type
                                    autoclose = if(identical(currentConfig$autoclose, FALSE)) FALSE else TRUE,
                                    noHcube = isTRUE(currentConfig$noHcube))
            rv$widgetConfig[["start"]] <- currentConfig[["start"]]
-           rv$widgetConfig$label <- currentConfig$label
+           rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            rv$widgetConfig$end <- currentConfig$end
            rv$widgetConfig$min <- currentConfig$min
            rv$widgetConfig$max <- currentConfig$max
@@ -1254,8 +1258,13 @@ observeEvent({input$widget_type
            rv$widgetConfig <- list(widgetType = "textinput",
                                    alias = widgetAlias,
                                    value = if(length(currentConfig$value)) currentConfig$value else "",
-                                   placeholder = if(length(currentConfig$placeholder)) currentConfig$placeholder else "")
-           rv$widgetConfig$label <- currentConfig$label
+                                   placeholder = if(length(currentConfig$placeholder)) currentConfig$placeholder else "",
+                                   clearValue = isTRUE(currentConfig$clearValue))
+           rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
+           singletonSetId <- NA_integer_
+           if(scalarsFileName %in% names(modelInRaw)){
+             singletonSetId <- match(currentWidgetSymbolName, modelInRaw[[scalarsFileName]]$symnames)[1L]
+           }
            insertUI(selector = "#widget_options",
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",
@@ -1268,7 +1277,16 @@ observeEvent({input$widget_type
                                tags$div(class = "two-col-left",
                                         textInput("widget_value", lang$adminMode$widgets$textinput$value, value = rv$widgetConfig$value)),
                                tags$div(class = "two-col-right",
-                                        textInput("text_placeholder", lang$adminMode$widgets$textinput$placeholder, value = rv$widgetConfig$placeholder)))
+                                        textInput("text_placeholder", lang$adminMode$widgets$textinput$placeholder, value = rv$widgetConfig$placeholder))),
+                      if(!is.na(singletonSetId) && 
+                         identical(modelInRaw[[scalarsFileName]]$symtypes[singletonSetId], "set")){
+                        tags$div(class = "shiny-input-container two-col-wrapper",
+                                 tags$div(class = "two-col-left",
+                                          checkboxInput_MIRO("widget_clearValue", labelTooltip(lang$adminMode$widgets$textinput$clearValue, 
+                                                                                             lang$adminMode$widgets$textinput$clearValueTooltip, 
+                                                                                             "https://gams.com/miro/widgets.html#textbox-option-clearvalue"), 
+                                                             value = rv$widgetConfig$clearValue)))
+                      }
                     ), 
                     where = "beforeEnd")
            
@@ -1287,7 +1305,7 @@ observeEvent({input$widget_type
                                    decimalCharacter = if(length(currentConfig[["decimalCharacter"]])) currentConfig[["decimalCharacter"]] else ".",
                                    digitGroupSeparator = if(length(currentConfig[["digitGroupSeparator"]])) currentConfig[["digitGroupSeparator"]] else ",",
                                    sign = if(length(currentConfig$sign)) currentConfig$sign else NULL)
-           rv$widgetConfig$label <- currentConfig$label
+           rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            insertUI(selector = "#widget_options",
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",

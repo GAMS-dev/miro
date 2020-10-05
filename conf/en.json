@@ -26,7 +26,9 @@
       "solve":"Solve model",
       "submitJob": "Submit job",
       "solveHcube":"Submit job",
+      "changeMode": "Change mode",
       "splitView":"Split view",
+      "pivotView": "Pivot view",
       "tabView":"Tab view",
       "compareStart":"Compare mode",
       "compareStop":"Stop compare",
@@ -168,6 +170,7 @@
       "title":"New scenario",
       "desc":"Please enter a name for the scenario:",
       "discardAttach": "Discard attachments?",
+      "discardViews": "Discard views?",
       "discardPerm": "Discard permissions?",
       "tags":"Add tag(s) to your scenario (optional):",
       "newScenName":"New Scenario",
@@ -196,6 +199,7 @@
       "title":"Edit metadata",
       "categoryGeneral": "General options",
       "categoryAttachments": "Attachments",
+      "categoryViews": "Views",
       "categoryAccessPerm": "Access permissions",
       "newName": "New name",
       "badName": "The name you chose is invalid (either too long or too short). Please choose another name.",
@@ -210,6 +214,19 @@
       "attachMaxNoError":"The maximum number of attachments is reached. Please first remove attachments before uploading new ones.",
       "attachDuplicateError": "An attachment with the same name already exists. Please choose another name and try again.",
       "attachForbiddenFnameError": "An attachment you try to upload uses a forbidden filename. Please choose a different filename and try again.",
+      "viewsSuccess": "The views were successfully updated.",
+      "viewsInvalidData": "The data you upload is not valid view data. Please make sure that the file is a JSON file and the syntax is correct.",
+      "viewsDuplicateError": "The following views were not imported as a view with the same name already exists for that symbol: '%s'.",
+      "viewsInvalidError": "Some of the views you tried to import were not imported because they are defined for symbols that do not exist: '%s'.",
+      "noViewData": "No views",
+      "selectAllViews": "Select all",
+      "selectNoViews": "Select none",
+      "viewsNoneSelected": "No views selected. Select views by clicking on the row.",
+      "viewsAdd": "Add views",
+      "viewsTableHeaderSymbol": "Symbol",
+      "viewsTableHeaderId": "Name",
+      "viewsDownload": "Download views",
+      "viewsRemove": "Remove views",
       "errMsg": "Prolems updating scenario metadata. If this problem persists, please contact the system administrator.",
       "cancelButton":"Close",
       "okButton":"Update metadata"
@@ -218,6 +235,7 @@
       "title":"Edit metadata",
       "categoryGeneral": "General options",
       "categoryAttachments": "Attachments",
+      "categoryViews": "Views",
       "categoryAccessPerm": "Access permissions",
       "newName": "New name",
       "badName": "The name you chose is invalid (either too long or too short). Please choose another name.",
@@ -239,7 +257,7 @@
     "dialogRemoteLogin": {
       "title": "Login required",
       "desc": "Please enter your credentials below:",
-      "url": "URL of GAMS MIRO Engine",
+      "url": "URL of GAMS Engine",
       "username": "Username",
       "password": "Password",
       "namespace": "Namespace",
@@ -247,7 +265,7 @@
       "remember": "Remember me",
       "cancelButton":"Cancel",
       "okButton": "Ok",
-      "hostNotFound": "GAMS MIRO Engine could not be reached under the given URL.",
+      "hostNotFound": "GAMS Engine could not be reached under the given URL.",
       "nsNotFound": "The namespace you entered could not be found.",
       "invalidCred": "The credentials you entered are invalid.",
       "insuffPerm": "You don't have sufficient permissions to execute the model.",
@@ -397,7 +415,7 @@
     },
     "dialogLockScen":{
       "title":"Scenario locked",
-      "desc":"The scenario you want to load is currently being accessed by the user: '%s'. Please try again later."
+      "desc":"The scenario you want to load is currently being accessed by the user: '%s'."
     },
     "dialogReadonly":{
       "title": "No write permissions",
@@ -474,7 +492,7 @@
       "importSuccess": "Job was imported successfully",
       "accessDenied": "Access denied",
       "maxDownloads": "The maximum number of parallel downloads has been reached.",
-      "jobNotFound": "The job was not found on GAMS MIRO Engine.",
+      "jobNotFound": "The job was not found on GAMS Engine.",
       "histTitle": "Job history",
       "status":{
         "downloading": "Downloading results",
@@ -575,7 +593,7 @@
         "cancelButton": "Cancel"
       },
       "showLogFileDialog":{
-        "title": "Hypercube job log file",
+        "title": "Log file",
         "noContent": "The log file could not be accessed or does not contain any data.",
         "fileSize": "The log file contains too much data to be displayed.",
         "cancelButton": "Cancel"
@@ -603,6 +621,9 @@
         "timeout": "Script timed out.",
         "crash": "Script crashed."
       }
+    },
+    "hot":{
+      "search": "Search:"
     }
   },
   "renderers":{
@@ -610,16 +631,34 @@
       "btDownloadCsv": "Download CSV",
       "btLoadView": "Load view",
       "btNewView": "Add view",
+      "btEnableEdit": "Enable editing",
+      "btAddRow": "Add row",
+      "btRemoveRows": "Remove rows",
       "aggregateLabel": "aggregate",
       "filterLabel": "filter",
       "allPlaceholder": "All",
+      "defaultViewName": "default",
       "colTruncationWarning": "Data was truncated to the first %s columns.",
       "rowTruncationWarning": "Data was truncated to the first %s rows.",
       "newViewTitle": "New view",
       "newViewLabel": "Please choose a name for the view.",
       "newViewBtCancel": "Cancel",
       "newViewBtSave": "Save",
+      "pivotCompScenColName": "Scenario",
       "errUniqueViewName": "The view name you entered already exists. Please choose another name.",
+      "duplicateRecordTitle": "Duplicate record",
+      "duplicateRecordDesc": "The record you entered already exists.",
+      "errPivotDuplicate": "The data contains duplicate records and can therefore not be pivoted.",
+      "errPivot": "The data could not be pivoted. This could be because your data is too large.",
+      "errorTitle": "Error",
+      "duplicateRecordError": "The record: '%s' already exists. Please remove it and try again.",
+      "dialogAddRow":{
+        "title": "Add new row",
+        "btCancel": "Cancel",
+        "invalidKeysError": "The elements you entered are invalid. Please note that the elements must consist of at least one printable character.",
+        "invalidValuesError": "The data you entered is invalid. Make sure that the values you enter are numeric.",
+        "unknownError": "An unexpected error occurred when trying to add the new data."
+      },
       "aggregationFunctions":{
         "sum": "Sum",
         "count": "Count",
@@ -635,6 +674,10 @@
         "radar": "Radar chart",
         "line": "Line chart"
       }
+    },
+    "datatable":{
+      "addRowPos": ["Add row above selection", "Add row below selection"],
+      "addRowPosNoneSelected": ["Add above first row", "Add below last row"]
     }
   },
   "progressBar":{  
@@ -678,7 +721,7 @@
       "success": "Import successful"
     }
   },
-  "errMsg":{  
+  "errMsg":{
     "unknownError": "An unexpected error occurred. If this problem persists, please contact a system administrator.",
     "permErr": "The operation failed because you do not have sufficient permissions.",
     "fileRead":{  
@@ -889,6 +932,7 @@
         "headerTabGrouping": "Tab grouping",
         "headerTabSymlinks": "Use output data as input data",
         "headerInputGroups": "Input groups",
+        "headerInputWidgetGroups": "Widget groups",
         "headerOutputGroups": "Output groups",
         "headerSymbolNaming": "Naming",
         "headerSymbolGrouping": "Ordering",
@@ -918,7 +962,8 @@
       },
       "scen":{
         "label": "Default scenario comparison mode",
-        "choices": ["Split screen (suited for 2 scenarios to compare)", "Tab view (suited for > 2 scenarios to compare)"]
+        "choices": ["Split view (suited for 2 scenarios to compare)", "Tab view (suited for > 2 scenarios to compare)",
+        "Pivot view (suited for > 2 scenarios to compare)"]
       },
       "defaultScenName":{
         "checkbox": "Use a default scenario that will be loaded on startup?",
@@ -930,6 +975,7 @@
       },
       "groups":{
         "input": "Divide input symbols into groups",
+        "widgets": "Divide input widgets into groups",
         "output": "Divide output symbols into groups"
       },
       "symlinks":{
@@ -1052,23 +1098,20 @@
         "output": "output tables (global)",
         "symbol": "symbol tables",
         "resetTable": "Reset",
-        "saveTable": "Save"
+        "saveTable": "Save",
+		"inputSymbols": "Input symbols",
+        "outputSymbols": "Output symbols"
       },
       "hot":{
         "height": "Height of input tables (in px)",
         "readonly": "Restrict editing of tables? If activated, tables can not be modified by the user.",
-        "highcol": "Highlight the column of current active cell (no live preview).",
-        "highrow": "Highlight the row of current active cell (no live preview).",
         "stretch": "Default column stretching.",
         "stretchChoices": ["No stretch", "Stretch last column", "Stretch all columns"],
-        "stretchCustom": "Set custom column width.",
-        "colwidth": "Width of a single (non-streched) column.",
-        "sort": "Enable column sorting in ascending/descending order (by clicking on column name in header row).",
+        "colwidth": "Width of a single (non-streched) column. Leave empty or 0 to set the default value.",
         "resize": "Enable manual column resizing.",
         "enable": "Enable table context menu (accessible via right mouse click).",
         "contextRowedit": "Enable row editing",
-        "contextColedit": "Enable column editing",
-        "contextReadonly": "Enable readonly toggle"
+        "contextColedit": "Enable column editing"
       },
       "dt":{
         "class":{
@@ -1082,6 +1125,9 @@
         "pagelength":{
           "label":"Number of items to display per page"
         },
+        "decimals":{
+          "label":"Number of decimal places to display"
+        },
         "rownames":{
           "label":"Show row numbers?"
         },
@@ -1089,9 +1135,8 @@
           "label":"Allow reordering of columns?"
         },
         "buttons":{
-          "label":"Add export buttons?",
           "title": "If a symbol contains multiple table pages, using an export button only affects the currently visible table page!",
-          "choices": ["copy", "CSV", "Excel", "PDF", "print"],
+          "choices": ["copy", "CSV", "Excel", "PDF", "print", "column visibility"],
           "select": "Select buttons to use. Note: All button functions only affect the visible table page."
         }
       },
@@ -1101,6 +1146,13 @@
           "message": "Are you sure that you want to reset the existing configuration for this symbol? This cannot be undone!",
           "cancel": "Cancel",
           "confirm": "Confirm"
+        },
+		"noGraph": "Only display the table and no graphic for this symbol",
+        "saveJson":{
+          "warnTitle": "Data exists",
+          "warnContent": "According to the configuration, no graphic should be displayed for the symbol '%s'. A graph configuration already exists for this symbol. Do you want to overwrite this configuration? This cannot be undone!",
+          "cancel": "Cancel",
+          "overwrite": "Overwrite"
         }
       }
     },
@@ -1187,7 +1239,9 @@
         "val55": "Only one item can be selectable in the dropdown menu if only the element text is communicated with GAMS.",
         "val56": "An attachment with this file name already exists!",
         "val57": "The file name contains invalid characters. Attachments in subdirectories are not supported!",
-        "val58": "The decimal separator and the thousand grouping separator must not be identical!"
+        "val58": "The decimal separator and the thousand grouping separator must not be identical!",
+        "val59": "The GAMS symbol: %s is declared as table. This causes the last column to be pivoted in MIRO. MIRO pivot cannot be used with already pivoted symbols. Please declare the symbol as a parameter instead.",
+        "val60": "Each group member may only appear in a single group!"
       },
       "widgetOptions":{
         "slider": "Slider",
@@ -1201,7 +1255,9 @@
         "numericinput": "Numeric input"
       },
       "table":{
-        "bigData": "Are large amounts of data stored in the table (i.e. more than 20,000 records)?",
+        "label": "Label (Markdown is supported)",
+        "type": "Select the type of table you want to use",
+        "typeChoices": ["Default", "Big Data table", "Pivot table"],
         "hideIndexCol": "Hide indexing column?",
         "readonly": "Should table be readonly?",
         "readonlyCols": "Select columns to be readonly",
@@ -1325,7 +1381,9 @@
       "textinput":{
         "label": "Choose a label",
         "value": "Choose the default value",
-        "placeholder": "Choose a placeholder"
+        "placeholder": "Choose a placeholder",
+        "clearValue": "Communicate as element text with GAMS",
+        "clearValueTooltip": "Causes element label to be an empty string. - Open documentation"
       },
       "numericinput":{
         "label": "Choose a label",
@@ -1427,7 +1485,8 @@
         "tool": "Charting type",
         "choices": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram", "Time Series Diagram", "Map chart", "Gantt chart", "Pivot table and pivot charts", "Valuebox for scalar values", "Custom renderer"],
         "deleteGraph": "Delete",
-        "saveGraph": "Save"
+        "saveGraph": "Save",
+        "toggleFullscreen": "Toggle fullscreen"
       },
       "graphOptions":{
         "pie": "Pie chart",
@@ -1445,7 +1504,8 @@
       },
       "validate":{
         "val1": "Could not set range for x axis. Check for correct data format!",
-        "pieValues": "The selected symbol has too many values to be displayed as a pie chart. The maximum number of values that can be displayed in a pie chart is 100."
+        "pieValues": "The selected symbol has too many values to be displayed as a pie chart. The maximum number of values that can be displayed in a pie chart is 100.",
+        "tableNeeded": "A symbol that is to be configured as a map must be declared as a GAMS table, since multiple value columns are required (e.g. latitude and longitude information)."
       },
       "errMsg":{
         "errTitle1": "No valid data",
@@ -1499,8 +1559,9 @@
         "color": "Select color of the valuebox",
         "colorChoices": ["red", "yellow", "aqua", "blue", "light-blue", "green", "navy", "teal", "olive", "lime", "orange", "fuchsia", "purple", "maroon", "black"],
         "icon": "Specify an icon for the valuebox (optional).",
-        "valueboxIconChoices": ["_", "coins", "wallet", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupee", "Ruble", "Pound", "Lira", "User", "Users", "Plus", "Minus", "Exclamation mark", "Question mark", "Play", "Check", "Home", "Cog", "Asterisk", "Ban", "Heart", "Leaf", "Lightbulb", "Smile", "Star", "Other..."],
-        "otherIcon": "Use other icon from here: "
+        "valueboxIconChoices": ["_", "coins", "wallet", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupee", "Ruble", "Pound", "Lira", "User", "Users", "Plus", "Minus", "Exclamation mark", "Question mark", "Play", "Check", "Home", "Cog", "Asterisk", "Ban", "Heart", "Leaf", "Lightbulb", "Smile", "Star"],
+        "desc": "Descriptive text",
+        "round": "Number of decimal places (rounding)"
       },
       "animationOptions":{
         "title": "Animation options",
@@ -1625,7 +1686,11 @@
         }
       },
       "miroPivotOptions":{
-        "infoMsg": "Please use directly the preview on the right side to configure the default view."
+        "infoMsg": "Please use directly the preview on the right side to configure the default view.",
+        "infoMsgDummyData": "Currently the preview uses dummy data. This means that the filters will have dummy values. If you want to change these, you have to edit the JSON configuration file manually."
+      },
+      "datatableOptions":{
+        "infoMsg": "Table configuration is done in '"
       },
       "pivotOptions":{
         "rows": "Prepopulate rows of the pivot table",
@@ -1669,9 +1734,12 @@
       },
       "js":{
         "addInputGroup":{
-          "symbolInputgroups": "Name of the input group?",
+          "symbolInputgroups": "Name of the input group",
+          "symbolWidgetgroups": "Name of the widget group",
           "groupMemberIn": "Select group members",
-          "groupSameTabIn": "Show all symbols side by side on the same tab?"
+          "groupMemberWidget": "Select group members",
+          "groupSameTabIn": "Show all symbols side by side on the same tab?",
+          "groupSameTabWidget": "Show all widgets side by side on the same tab?"
         },
         "addOutputGroup":{
           "symbolOutputgroups": "Name of the output group?",

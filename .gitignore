@@ -34,6 +34,7 @@ model/**/*.bat
 model/**/*.opt
 model/**/*.pf
 model/**/*.gdx
+model/**/*.trc
 !model/**/data_*/*.gdx
 !model/**/data_*/*.xls
 !model/**/data_*/*.xlsx
@@ -41,17 +42,6 @@ model/**/*.gdx
 model/**/runapp.R
 model/**/*_miro.gms
 model/**/*_hcube_jobs
-tests/*_cpack*.R
-tests/*_farming*.R
-tests/*_inscribedsquare*.R
-tests/*_sudoku*.R
-tests/*_tsp*.R
-tests/*_transport*.R
-tests/*_pickstock*.R
-tests/*_de*.R
-tests/*_en*.R
-tests/*_cn*.R
-tests/*-current/
 node_modules/
 libraries/
 packages/

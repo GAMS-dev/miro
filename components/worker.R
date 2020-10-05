@@ -25,24 +25,29 @@ Worker <- R6Class("Worker", public = list(
     unlink(private$metadata$rememberMeFileName, force = TRUE)
   },
   setCredentials = function(url, username, password, namespace,
-                            useRegistered, registerUser = FALSE){
-    private$metadata$url       <- url
+                            useRegistered, registerUser = FALSE,
+                            adminCredentials = NULL){
+    engineUrl <- trimws(url, which = "right", whitespace = "/")
+    if(!endsWith(engineUrl, "/api")){
+      engineUrl <- paste0(engineUrl, "/api")
+    }
+    private$metadata$url       <- engineUrl
     private$metadata$username  <- username
     private$metadata$useRegistered <- useRegistered
     private$metadata$password  <- password
     private$metadata$namespace <- namespace
     if(registerUser){
-      private$buildAuthHeader()
+      private$authHeader <- private$buildAuthHeader()
       authenticationStatus <- private$checkAuthenticationStatus()
       if(identical(authenticationStatus, 401L)){
-        private$registerUser()
+        private$registerUser(adminCredentials)
       }else if(!identical(authenticationStatus, 200L)){
         flog.fatal("Could not check authentication status. Return code from remote executor: %s.", 
                    authenticationStatus)
         stop()
       }
     }else{
-      private$buildAuthHeader(TRUE)
+      private$authHeader <- private$buildAuthHeader(TRUE)
     }
     return(invisible(self))
   },
@@ -54,12 +59,13 @@ Worker <- R6Class("Worker", public = list(
     private$metadata$url <- private$resolveRemoteURL(url)
     
     if(!private$testConnection()){
+      private$metadata$url <- ""
       stop(426, call. = FALSE)
     }
     private$metadata$username  <- username
     private$metadata$useRegistered <- useRegistered
     private$metadata$password  <- password
-    private$buildAuthHeader()
+    private$authHeader <- private$buildAuthHeader()
     
     private$metadata$namespace <- namespace
     
@@ -187,7 +193,7 @@ Worker <- R6Class("Worker", public = list(
         })
       }
     }
-    flog.trace("Hypercube job submitted successfuly. Hypercube job process ID: '%s'.", private$process)
+    flog.trace("Job submitted successfuly. Job process ID: '%s'.", private$process)
     private$fRemoteSub <- NULL
     return(private$process)
   },
@@ -484,7 +490,7 @@ Worker <- R6Class("Worker", public = list(
     if(file.exists(private$jobResultsFile[[jIDChar]])){
       if(identical(unlink(private$jobResultsFile[[jIDChar]], 
                           force = TRUE), 1L)){
-        flog.error("Problems removing Hypercube job file: '%s'.",
+        flog.error("Problems removing job file: '%s'.",
                    private$jobResultsFile[[jIDChar]])
       }
     }
@@ -522,17 +528,20 @@ Worker <- R6Class("Worker", public = list(
     }
     
     if(!length(private$jobResultsFile[[jIDChar]])){
-      private$jobResultsFile[[jIDChar]] <- file.path(tempdir(TRUE), jIDChar, "results.zip")
-      if(file.exists(private$jobResultsFile[[jIDChar]]))
-        return(100L)
+      jobResultsFile <- file.path(tempdir(TRUE), jIDChar, "results.zip")
       
-      if(dir.exists(dirname(private$jobResultsFile[[jIDChar]])) && 
-         identical(unlink(dirname(private$jobResultsFile[[jIDChar]]),
+      if(file.exists(jobResultsFile)){
+        private$jobResultsFile[[jIDChar]] <- jobResultsFile
+        return(100L)
+      }
+      
+      if(dir.exists(dirname(jobResultsFile)) && 
+         identical(unlink(dirname(jobResultsFile),
                           recursive = TRUE, force = TRUE), 1L))
         stop(sprintf("Problems removing existing directory: '%s'.", 
-                     private$jobResultsFile[[jIDChar]]), call. = FALSE)
+                     jobResultsFile), call. = FALSE)
       
-      if(!dir.create(dirname(private$jobResultsFile[[jIDChar]]), recursive = TRUE))
+      if(!dir.create(dirname(jobResultsFile), recursive = TRUE))
         stop("Problems creating temporary directory for saving results.", 
              call. = FALSE)
       ret <- HEAD(url = paste0(private$metadata$url, 
@@ -553,6 +562,7 @@ Worker <- R6Class("Worker", public = list(
                      jIDChar), call. = FALSE)
       
       private$resultFileSize[[jIDChar]] <- fileSize
+      private$jobResultsFile[[jIDChar]] <- jobResultsFile
       
       if(private$hcube){
         private$fJobRes[[jIDChar]] <- future({
@@ -1319,14 +1329,12 @@ Worker <- R6Class("Worker", public = list(
   },
   buildAuthHeader = function(useTokenAuth = FALSE){
     if(useTokenAuth){
-      private$authHeader <- paste0("Bearer ", private$metadata$password)
-      return(invisible(self))
+      return(paste0("Bearer ", private$metadata$password))
     }
-    private$authHeader <- paste0("Basic ", 
-                                 base64_encode(charToRaw(
-                                   paste0(private$metadata$username, 
-                                          ":", private$metadata$password))))
-    return(invisible(self))
+    return(paste0("Basic ", 
+                  base64_encode(charToRaw(
+                    paste0(private$metadata$username, 
+                           ":", private$metadata$password)))))
   },
   saveLoginCredentials = function(url, username, namespace, useRegistered){
     sessionToken <- private$validateAPIResponse(POST(
@@ -1420,7 +1428,17 @@ Worker <- R6Class("Worker", public = list(
        !startsWith(private$metadata$url, "http://localhost")){
       return(FALSE)
     }
-    ret <- HEAD(private$metadata$url, timeout(10L))$url
+    if(tryCatch({
+      ret <- HEAD(private$metadata$url, timeout(10L))$url
+      FALSE
+    }, error = function(e){
+      flog.debug("Could not connect to provided URL. Error message: '%s'.",
+                 conditionMessage(e))
+      return(TRUE)
+    })){
+      return(FALSE)
+    }
+    
     if(startsWith(ret, "https://") ||
        identical(ret, "http://localhost") ||
        startsWith(ret, "http://localhost:") ||
@@ -1435,11 +1453,28 @@ Worker <- R6Class("Worker", public = list(
                                         Timestamp = as.character(Sys.time(), usetz = TRUE)),
                             timeout(10L))))
   },
-  registerUser = function(){
-    private$validateAPIResponse(POST(paste0(private$metadata$url, "/users/?username=", 
-                                            private$metadata$username, "&password=", 
-                                            private$metadata$password), 
-                                     timeout(10L)))
+  registerUser = function(adminCredentials){
+    invitationToken <- private$validateAPIResponse(
+      POST(paste0(private$metadata$url, "/users/invitation"),
+           body = list(namespace_permissions = 
+                         paste0("1@", private$metadata$namespace)),
+           add_headers(Authorization = paste0("Basic ", 
+                                              base64_encode(charToRaw(
+                                                paste0(adminCredentials$username, 
+                                                       ":", adminCredentials$password)))),
+                       Timestamp = as.character(Sys.time(), usetz = TRUE)),
+           timeout(10L)))$invitation_token
+    private$validateAPIResponse(
+      POST(paste0(private$metadata$url, "/users"),
+           body = list(username = private$metadata$username,
+                       password = private$metadata$password,
+                       invitation_code = invitationToken),
+           add_headers(Authorization = paste0("Basic ", 
+                                              base64_encode(charToRaw(
+                                                paste0(adminCredentials$username, 
+                                                       ":", adminCredentials$password)))),
+                       Timestamp = as.character(Sys.time(), usetz = TRUE)),
+           timeout(10L)))
     return(invisible(self))
   },
   resolveRemoteURL = function(url){

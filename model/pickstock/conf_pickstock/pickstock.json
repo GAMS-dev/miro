@@ -352,7 +352,7 @@
   "saveTraceFile": true,
   "autoGenInputGraphs": true,
   "theme": "browser",
-  "defCompMode": "split",
+  "defCompMode": "pivot",
   "symbolLinks": [
     {
       "source": "pricemerge",
@@ -360,7 +360,7 @@
     }
   ],
   "overwriteSheetOrder": {
-    "input": ["_widgets", "price"],
+    "input": ["_widgets", "price", "_widgets1"],
     "output": ["dowvsindex", "stock_weight", "abserror", "pricemerge", "_scalars_out"]
   },
   "pageTitle": "Stock Selection Optimization",
@@ -399,6 +399,12 @@
     "filename": "Readme.md",
     "enableMath": true
   },
+  "inputWidgetGroups": [
+    {
+      "name": "Advanced options",
+      "members": "solver"
+    }
+  ],
   "outputGroups": [
     {
       "name": "Dow Jones vs. Index Fund ⨠",
@@ -408,15 +414,11 @@
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
-    "highlightCol": true,
-    "highlightRow": true,
-    "columnSorting": true,
     "manualColumnResize": true,
     "contextMenu": {
       "enabled": true,
       "allowRowEdit": true,
-      "allowColEdit": false,
-      "allowReadOnly": false
+      "allowColEdit": false
     },
     "height": 700,
     "colWidths": 200

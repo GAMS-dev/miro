@@ -554,20 +554,11 @@ schedule(i,j, 'cap')        = a(i);
 schedule(i,j, 'demand')     = b(j);
 schedule(i,j, 'quantities') = x.l(i,j);
 </code></pre>
-                                    <div class="callout-block callout-warning">
-                                        <div class="icon-holder">
-                                            <i class="fas fa-info-circle"></i>
-                                        </div><!--//icon-holder-->
-                                        <div class="content">
-                                            <b class="callout-title">Note:</b>
-                                            <p>To be able to set markers on a map, the map tool requires latitude and longitude information. Because we need multiple value columns, we need to declare the parameter to plot as a <a href="./model.html#display-tables">table</a> instead of a parameter (which only has a single value column). In this way, the set elements of the last index of the symbol are flipped up and communicated as columns to which MIRO now has access. 
-                                            By declaring the parameter <code class="language-gams">schedule</code> as a 
-                                            <code class="language-gams">table</code>, the elements of the last index set 
-                                            <code class="language-gams">scheduleHdr</code> (<code class="language-gams">lngP, latP, lngM, latM, 
-                                            cap, demand, quantities</code>) can be used for the map configuration. 
-                                            You can find a detailed example <a href = "./model.html#table-miro">here</a></p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block-->
+                                    <p>To be able to set markers on a map, the map tool requires latitude and longitude information. 
+									By declaring the parameter <code class="language-gams">schedule</code> as a 
+									<code class="language-gams">table</code>, the elements of the last index set 
+									<code class="language-gams">scheduleHdr</code> (<code class="language-gams">lngP, latP, lngM, latM, cap, demand, quantities</code>) can be used for the map configuration. 
+									You can find a detailed example <a href = "./model.html#table-miro">here</a>.</p>
                                     <p>In a resulting <i>GDX</i> this parameter looks as follows:</p>
                                     <div class="section-block" id="map-data">
                                         <img class="img-fluid" style= "max-height:140pt;" src="assets/images/configuration_mode/map_data.png" alt="Map data"/>
@@ -576,6 +567,25 @@ schedule(i,j, 'quantities') = x.l(i,j);
                                     <div class="section-block">
                                         <img class="img-fluid" src="assets/images/configuration_mode/graphs_map_config.png" alt="Map configuration"/>
                                     </div>
+									<div class="callout-block callout-success">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-thumbs-up"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Tip:</b>
+                                            <p>Instead of a table with the geographic information in the header, we can also use a parameter or even a set that contains all latitude and longitude information in separate domains:</p>
+									        <pre><code class="language-gams">$onExternalOutput
+Parameter schedule(i,j,latP, lngP, latM, lngM) 'shipment quantities in cases';
+$offExternalOutput
+
+schedule('Seattle',  'New-York', '47.608013', '-122.335167', '40.730610', '-73.935242') = 50;
+schedule('Seattle',  'Chicago',  '47.608013', '-122.335167', '41.881832', '-87.623177') = 300;
+schedule('San-Diego','New-York', '32.715736', '-117.161087', '40.730610', '-73.935242') = 275;
+schedule('San-Diego','Topeka',   '32.715736', '-117.161087', '39.056198', '-95.695312') = 275;
+</code></pre>     
+                                            <p>The geographic information is then no longer available in numerical form, but the map tool interprets the data properly.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
                                     <p>With regard to map-based graphics, a multitude of possible visualizations are conceivable. In the Configuration Mode of MIRO, the following features can be realized on a map:</p>
                                     <ul>
                                       <li><b>Markers</b><br>
@@ -593,11 +603,20 @@ schedule(i,j, 'quantities') = x.l(i,j);
                                       The data overview from the <a href="#map-data" class="scrollto">table above</a> also helps to understand this: 
                                       In the example below the flows have been configured to point from <i>lngP</i>/<i>latP</i> to <i>lngM</i>/<i>latM</i>. 
                                       The thickness depends on the data in the column <i>quantities</i>.
+                                      <div class="callout-block callout-warning">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-info-circle"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <b class="callout-title">Note:</b>
+                                              <p>Flows cannot be configured for sets, since numeric values are required for the flow data.</p>
+                                          </div><!--//content-->
+                                      </div><!--//callout-block-->
                                       <div class="section-block">
                                         <img class="img-fluid" src="assets/images/configuration_mode/map_flows.png" alt="Map flows"/>
                                       </div>
                                       <b id="unique-flow-label">Unique flow labels</b>:
-                                      <p>When configuring flows, you can optionally specify a unique label for each flow. This label appears when you click on a flow. It is important that the label is different for each flow. If this is not the case, only one flow is displayed for each duplicated label. A suitable configuration for a label is to specify the originator and the recipient for each flow. You can achieve this by using the quare brackets syntax to address the symbol/data domains. In the example above the symbol <i>schedule</i> is used to display a map:</p><pre><code class="language-gams">Set   
+                                      <p>When configuring flows, you can optionally specify a unique label for each flow. This label appears when you click on a flow. It is important that the label is different for each flow. If this is not the case, only one flow is displayed for each duplicated label. A suitable configuration for a label is to specify the originator and the recipient for each flow. You can achieve this by using the square brackets syntax to address the symbol/data domains. In the example above the symbol <i>schedule</i> is used to display a map:</p><pre><code class="language-gams">Set   
     i           'canning plants'
     j           'markets'
     scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM', 'latM', 'cap', 'demand', 'quantities' /;
@@ -625,7 +644,17 @@ $offExternalOutput
                                       The data of the pie chart for each state were determined in Configuration Mode with <i>Renewable</i> and <i>Fossil</i>. <br>
                                       You also have the option to define a time dimension in the charts. The data of the example covers a period of one year with a resolution of one hour. 
                                       The first column was defined as the time dimension (starting with <i>t001</i>. 
-                                      In this way, a separate pie chart is displayed for each period for each state (see play button at the bottom right of the map).<br><br>
+                                      In this way, a separate pie chart is displayed for each period for each state (see play button at the bottom right of the map).
+                                      <div class="callout-block callout-warning">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-info-circle"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <b class="callout-title">Note:</b>
+                                              <p>Charts on maps cannot be configured for sets, because numeric values are required for the chart data.</p>
+                                          </div><!--//content-->
+                                      </div><!--//callout-block-->
+									  <p>
                                       <b>Note</b> that all data of your entire graph must come from the same GAMS symbol. If you want to have more sophisticated graphics, it may make sense to combine data from different symbols in one symbol. Or you can use our <a href="./customize.html#custom-renderers">R API</a> and create your own graphics.
                                       </li>
                                     </ul>
@@ -702,7 +731,7 @@ $offExternalOutput
                                   <h3 class="block-title">Configuration</h3>
                                     <p>As the name of the graphic type suggests, this chart type is useful if you want to visualize time series data. 
                                     An important property of such time series is the format of the data. You should make sure that the elements of the index set, which should represent the time component of your graphic, have their data available in a date format or at least can be formatted into such a format. 
-                                    A suitable syntax for a date would be <i>yyyy-mm-dd</i>, e.g. <i>2014-07-13</i>.</p>
+                                    A suitable syntax for a date would be <i>yyyy-MM-dd</i>, e.g. <i>2014-07-13</i>. For a finer granularity, the format <i style="white-space: nowrap;">yyyy-MM-dd HH:mm:ss</i> is recommended.</p>
                                     <p>Example: Model <i>Pickstock</i>, parameter <i>dow jones vs. index fund</i></p>
                                     <pre><code class="language-gams">Set date      'date'
     fHdr      'fund header'   / dj 'dow jones','index fund'  /;
@@ -853,7 +882,11 @@ dowVSindex(d,'index fund')     = fund(d);
                             <section id="pivot-chart" class="doc-section">
                                 <h2 class="section-title">Pivot table</h2>
                                 <div class="section-block">
-                                  <p>MIRO comes with a powerful pivot table renderer that allows you to filter, aggregate and pivot data. In addition to a table, the MIRO pivot table renderer also supports the visualization of data in the form of charts (line chart, bar chart etc.). Each slice, or "view" of data can be exported as a CSV file.</p>
+                                  <p>MIRO comes with a powerful pivot table renderer that allows you to filter, aggregate and pivot data. In addition to a table, the MIRO pivot table renderer also supports the visualization of data in the form of charts (line chart, bar chart etc.). Each slice, or "view" of data can be exported as a CSV file by clicking the <img class="img-fluid" src="assets/images/configuration_mode/miropivot_exportview_btn.png" width="25" height="25" align="middle" alt="Export as CSV" /> button.</p>
+                                  <p>The MIRO pivot table renderer allows you to store "views" - the current representation of the data - to the database and load it together with the scenario data. Simply click the <img class="img-fluid" src="assets/images/configuration_mode/miropivot_addview_btn.png" width="25" height="25" align="middle" alt="Add view" /> button and assign a name to the view. When you save the scenario, all your views are automatically stored as well. Load a view by first clicking on the "Load view" button and then selecting which view to load.</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" src="assets/images/configuration_mode/miropivot_loadview_btn.png" alt="Load views"/>
+                                  </div>
                                   <h3 class="block-title">Configuration</h3>
                                     <p>You can specify the default view as well as the default renderer (table/chart) of the pivot table renderer in the Configuration Mode. Note that unlike other charting tools, you configure the MIRO pivot table directly in the preview on the right. Drag and drop the domains where you want them to be and click on "Save". The symbol is loaded in MIRO with the same view that you have set up in the Configuration Mode.</p>
                                     <p>Example: Model <i>Transport</i>, parameter <i>shipment quantities in cases</i></p>
@@ -985,17 +1018,22 @@ gantt('6', '2016-01-09 19:00:00', '2016-01-10 19:00:00', 'test6', 'b') = 1;</cod
                                 <div class="section-block">
                                   <h3 class="block-title">Configuration</h3>
                                     <p></p>
-                                    <p>Example: Model <i>Pickstock</i>, scalars <i>error_train</i>, <i>error_test</i> and <i>error_ratio</i></p>
-                                    <p>Value boxes are special in the sense that only scalar output values can be displayed as such. The other way around, scalar output values can only be visualized as value boxes in addition to the classic table.</p>
+                                    <p>Example: Model <i>Pickstock</i>, scalars <i>error_train</i>, <i>error_test</i> and <i>error_ratio</i>, singleton sets <i>firstDayTraining</i> and <i>lastDayTraining</i></p>
+                                    <p>Value boxes are special in the sense that only scalar output values (including singleton sets declared as output data) can be displayed as such. The other way around, scalar output values can only be visualized as value boxes in addition to the classic table.</p>
                                     <p>The three scalars to plot represent the absolute error in the entire training phase, the absolute error in the entire testing phase and the ratio between both values. <br>
                                     The scalar <code class="language-gams">error_train</code> is equivalent to the objective function value <code class="language-gams">obj.l</code>. 
                                     The absolute error in entire testing phase <code class="language-gams">error_test</code> is the sum of all errors in this time: <code class="language-gams">sum(ntd, error(ntd))</code>. 
-                                    The ratio of both values is calculated with <code class="language-gams">error_ratio = error_test/error_train;</code>.
+                                    The ratio of both values is calculated with <code class="language-gams">error_ratio = error_test/error_train;</code>. <br>
+                                    In addition to these numerical values, two singleton sets are used to indicate the dates of the beginning and end of the training period. 
                                     </p>
                                     <pre><code class="language-gams">$onExternalOutput
 Scalar error_train                     'Absolute error in entire training phase'
        error_test                      'Absolute error in entire testing phase'
        error_ratio                     'Ratio between error test and error train';
+       
+Singleton Set
+       firstDayTraining(date)          'first date of training period'
+       lastDayTraining(date)           'last date of training period';
 $offExternalOutput
 
 error_train                            = obj.l;
@@ -1004,24 +1042,76 @@ if(error_train > 0,
    error_ratio = error_test/error_train;
 else
    error_ratio = inf;);
+   
+lastDayTraining(td)                    = td.pos = card(td);
+firstDayTraining(td)                   = td.pos = 1; 
 </code></pre>
-                                    <p><br>In the Configuration Mode we can configure this by selecting the symbol <i>Output Scalars</i>:</p>
+                                    <p><br>In the Configuration Mode we can configure the value boxes by selecting the symbol <i>Output Scalars</i>:</p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_valuebox_config.png" alt="Valuebox configuration"/>
+                                        <img class="img-fluid" style= "max-height:530pt;" src="assets/images/configuration_mode/graphs_valuebox_config.png" alt="Valuebox configuration"/>
                                     </div>
-                                    <p>Inside a Value box an icon can be displayed next to the scalar value. Icons from the libraries <a href="http://fontawesome.io/icons/" target="_blank">fonts-awesome</a> and <a href="http://getbootstrap.com/components/#glyphicons" target="_blank">glyphicons</a> are available here. </p>
+                                    <p>For a value box, the descriptive text (default: explanatory text of the symbol), the color of the box, an optional icon and the rounding behavior can be configured. The width of a value box results from the number of boxes in a row. Each box can be placed in the desired position by drag &amp; drop. Free rows are ignored.</p>
                                 </div><!--//section-block-->
                                 <div class="section-block">
                                   <h3 class="block-title">JSON example</h3>
                                     <pre><code class="language-json">
 {
   "dataRendering": {
-    "scalars_out": {
+    "_scalars_out": {
       "outType": "valueBox",
-      "options": {
-        "color": "aqua",
-        "width": 4
-      }
+      "options": [
+        {
+          "error_train": {
+            "description": "Absolute error in entire training phase",
+            "color": "green",
+            "icon": {
+              "name": "_",
+              "lib": "font-awesome"
+            },
+            "round": 4
+          },
+          "error_test": {
+            "description": "Absolute error in entire testing phase",
+            "color": "yellow",
+            "icon": {
+              "name": "_",
+              "lib": "font-awesome"
+            },
+            "round": 4
+          }
+        },
+        {
+          "error_ratio": {
+            "description": "Ratio between error test and error train",
+            "color": "red",
+            "icon": {
+              "name": "_",
+              "lib": "font-awesome"
+            },
+            "round": 1
+          }
+        },
+        {
+          "firstdaytraining": {
+            "description": "first date of training period",
+            "color": "aqua",
+            "icon": {
+              "name": "play-circle",
+              "lib": "font-awesome"
+            },
+            "round": 0
+          },
+          "lastdaytraining": {
+            "description": "last date of training period",
+            "color": "aqua",
+            "icon": {
+              "name": "ban",
+              "lib": "font-awesome"
+            },
+            "round": 0
+          }
+        }
+      ]
     }
   }
 }
@@ -1099,7 +1189,7 @@ else
 $onExternalInput
 Parameter price(date<,symbol<) 'Price';
 $offExternalInput
-</pre></code> 
+</code> </pre>
                                         <p><i>Price</i> is not declared as a table but as a normal parameter. For MIRO, this means that the data is available in list format with the headers <i>date</i> and <i>symbol</i>. The individual stocks are listed in the rows:</p>
                                         <div class="section-block" style="text-align:center;">
                                             <img class="img-fluid" style="max-height:250pt;" src="assets/images/single-col-line-table.png" alt="Parameter Price" />
@@ -1191,7 +1281,7 @@ $offExternalInput
                              <a class="nav-link scrollto" href="#timeseries-chart">Time series diagram</a>
                              <a class="nav-link scrollto" href="#pivot-chart">Pivot table</a>
                              <a class="nav-link scrollto" href="#gantt-chart">Gantt chart</a>
-                             <a class="nav-link scrollto" href="#valuebox">Valuebox</a>
+                             <a class="nav-link scrollto" href="#valuebox">Value box</a>
                              <a class="nav-link scrollto" href="#custom-graphics">Custom renderer</a>
                              <a class="nav-link scrollto" href="#graph-options">Options</a>
                             </nav><!--//doc-menu-->

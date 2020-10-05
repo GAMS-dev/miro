@@ -22,10 +22,10 @@ Simply pull the repository. Some example models that help you getting started ca
 
 ## Getting started
 
-In order to launch GAMS MIRO you need R (v. 3.6.0 or later) with the following packages installed:
+In order to launch GAMS MIRO you need R (v. 4.0.2 or later) with the following packages installed:
 
-* shiny
-* shinydashboard
+* shiny (https://github.com/GAMS-dev/shiny)
+* shinydashboard (https://github.com/GAMS-dev/shinydashboard)
 * stringi
 * processx
 * V8
@@ -33,30 +33,32 @@ In order to launch GAMS MIRO you need R (v. 3.6.0 or later) with the following p
 * readr
 * readxl
 * writexl
-* rhandsontable
-* jsonlite
-* jsonvalidate
-* rpivotTable
+* rhandsontable (https://github.com/GAMS-dev/rhandsontable)
+* jsonlite (https://github.com/GAMS-dev/jsonlite)
+* jsonvalidate 
 * futile.logger
 * zip
 * tidyr
-* DBI
-* RSQLite
+* DBI (https://github.com/GAMS-dev/miro_desktop/tree/master/r-src/DBI)
+* RSQLite (https://github.com/GAMS-dev/RSQLite)
 * digest
+* DT (https://github.com/GAMS-dev/DT)
+* sortable
+* chartjs (https://github.com/GAMS-dev/miro_desktop/tree/master/r-src/chartjs)
 
-MIRO will install these packages automatically when you first launch it. When using certain graphs and especially in the MIRO Configuration Mode, the following additional packages are required:
 
-* plotly
+MIRO will install these packages automatically when you first launch it (e.g. `R -f app.R`). Note that some of the required packages have been customized to work seamlessly with MIRO. These packages are automatically downloaded from the corresponding GitHub repository. The URLs where you can find these packages are given in brackets. When using certain graphs and especially in the MIRO Configuration Mode, the following additional packages are required:
+
+* plotly (https://github.com/GAMS-dev/plotly)
 * xts
 * dygraphs
-* leaflet
+* leaflet (https://github.com/GAMS-dev/leaflet)
 * leaflet.minicharts
-* timevis
-* DT
+* timevis (https://github.com/GAMS-dev/timevis)
 
 MIRO will install these when it detects that they are required.
 
-If you want to use gdx as a file exchange with GAMS (which is the default for all sample models), you will also need to install either the gdxrrwMIO package, which you can find [here](https://github.com/GAMS-dev/gdxrrw-miro).
+If you want to use gdx as a file exchange with GAMS (which is the default for all sample models), you will also need to install the gdxrrwMIRO package, which you can find [here](https://github.com/GAMS-dev/gdxrrw-miro).
 
 Some (optional) functions are provided by the package miro.util, which you can find [here](https://github.com/GAMS-dev/miro.util). If you do not have this package installed, fallback functions are used.
 

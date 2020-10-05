@@ -1,6 +1,5 @@
 renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions = NULL, 
-                         filterOptions = NULL, modelDir = NULL, noDataTxt = "no data",
-                         createdDynamically = FALSE){
+                         filterOptions = NULL, modelDir = NULL, createdDynamically = FALSE, showNoDataTxt = TRUE){
   ns <- NS(id)
   # make output type case insensitive
   typeCustom <- type
@@ -57,10 +56,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
       )
     }
   }else if(type == "valuebox"){
-    data <- lapply(seq_len(customOptions$count), function(i){
-      valueBoxOutput(ns("valBox" %+% i),
-                     width = if(is.null(customOptions$width)) 4 else customOptions$width)
-    })
+    data <- uiOutput(ns("scalarBoxes"))
   }else if(type == "miropivot"){
     data <- miroPivotOutput(ns("miroPivot"), height = height, options = customOptions)
   }else{
@@ -71,17 +67,19 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
                    Please make sure you first define such a function.", typeCustom), call. = FALSE)
     })
     data <- customOutput(ns("custom"), height = height, options = customOptions,
-                         path = customRendererDirs[[2L]])
+                         path = customRendererDir)
     }
   return(tagList(
-    tags$div(id = ns("noData"), class = "out-no-data", noDataTxt),
+    if(showNoDataTxt) tags$div(id = ns("noData"), class = "out-no-data",
+                                if(!createdDynamically) lang$nav$outputScreen$boxResults$noData),
     tags$div(id = ns("data"), style = if(createdDynamically) "" else "display:none", data)
   ))
 }
 
 renderData <- function(input, output, session, data, type, configData = NULL, dtOptions = NULL, 
                        graphOptions = NULL, pivotOptions = NULL, customOptions = NULL, 
-                       roundPrecision = 2, modelDir = NULL, rendererEnv = NULL){
+                       roundPrecision = 2, modelDir = NULL, rendererEnv = NULL, views = NULL,
+                       attachments = NULL){
   if(!is.null(graphOptions)){
     graphTool <- graphOptions$tool
   }
@@ -137,26 +135,77 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
                                   input = input, filterCol = if(!is.null(filterCol)) filterCol)
     }
   }else if(type == "valuebox"){
-    lapply(seq_len(min(length(data[[1]]), customOptions$count)), function(i){
-      scalarDataTmp <- suppressWarnings(as.numeric(data[[3]][[i]]))
-      if(is.na(scalarDataTmp)){
-        scalarData <- data[[3]][[i]]
+    output$scalarBoxes <- renderUI({
+      if(!length(customOptions) || !length(names(customOptions[[1]]))){
+        boxWidth <- if(length(customOptions$width)) customOptions$width else 4L
+        noBoxesRow <- 12/boxWidth
+        numberRows <- ceiling(boxWidth*length(data[[1]])/12)
+        oldConfig <- TRUE
       }else{
-        scalarData <- formatC(round(scalarDataTmp, roundPrecision), digits = roundPrecision, 
-                              big.mark = " ", big.interval = 3, format = "f", drop0trailing = TRUE)
+        oldConfig <- FALSE
+        if(length(names(customOptions))){
+          customOptions <- customOptions[!names(customOptions) %in% c("_metadata_", "count")]
+        }
+        configuredScalars <- unlist(lapply(customOptions, names), use.names = FALSE)
+        unconfiguredScalars <- !tolower(data[[1]]) %in% tolower(configuredScalars)
+        if(any(unconfiguredScalars)){
+          unconfiguredScalars <- data[[1]][unconfiguredScalars]
+          additionalOptions <- lapply(seq_len(ceiling(length(unconfiguredScalars)/3L)) - 1L, function(rowId){
+            scalarNames <- unconfiguredScalars[seq(rowId*3L + 1L, min(length(unconfiguredScalars),
+                                                                      rowId*3L + 3L))]
+            return(setNames(vector("list", length(scalarNames)),
+                            scalarNames))
+          })
+          customOptions <- c(customOptions, additionalOptions)
+        }
+        numberRows <- length(customOptions)
       }
-      output[["valBox" %+% i]] <- renderValueBox({
-        valueBox(
-          scalarData, data[[2]][[i]], 
-          getIcon(customOptions$icon$name, customOptions$icon$lib),
-          if(identical(customOptions$color, NULL)) "aqua" else customOptions$color
-        )
+      lapply(seq_len(numberRows), function(rowId){
+        if(oldConfig){
+          rowConfig <- vector("list", noBoxesRow)
+        }else{
+          rowConfig <- customOptions[[rowId]]
+          boxWidth <- 12/length(rowConfig)
+        }
+        tags$div(class = "container-fluid",
+                 fluidRow(lapply(seq_along(rowConfig), function(scalarId){
+                   if(oldConfig){
+                     scalarId <- scalarId + noBoxesRow * (rowId - 1L)
+                     if(scalarId > length(data[[1]])){
+                       return()
+                     }
+                     scalarConfig <- list(icon = customOptions$icon,
+                                          color = customOptions$color)
+                   }else{
+                     scalarConfig <- rowConfig[[scalarId]]
+                     if(is.na(names(rowConfig)[scalarId])){
+                       return()
+                     }
+                     scalarId <- match(names(rowConfig)[scalarId], data[[1]])
+                     if(is.na(scalarId)){
+                       flog.warn("Value box was configured for nonexistent scalar: %s",
+                                 names(rowConfig)[scalarId])
+                       return()
+                     }
+                   }
+                   valueBox(if(!is.na(suppressWarnings(as.numeric(data[[3]][scalarId]))))
+                     round(as.numeric(data[[3]][scalarId]),
+                           digits = if(length(scalarConfig$round))
+                             scalarConfig$round
+                           else roundPrecision)
+                     else data[[3]][scalarId],
+                     subtitle = if(length(scalarConfig$description)) scalarConfig$description else data[[2]][scalarId],
+                     width = boxWidth,
+                     #object
+                     icon = if(length(scalarConfig$icon)) icon(scalarConfig$icon$name, lib = scalarConfig$icon$lib),
+                     color = if(length(scalarConfig$color)) scalarConfig$color else "aqua")
+                 })))
       })
     })
   }else if(type == "miropivot"){
-    callModule(renderMiroPivot, "miroPivot", data, options = customOptions, 
-               roundPrecision = roundPrecision, 
-               rendererEnv = rendererEnv)
+    renderMiroPivot("miroPivot", data, options = customOptions, 
+                    roundPrecision = roundPrecision, 
+                    rendererEnv = rendererEnv, views = views)
   }else{
     tryCatch({
       customRenderer <- match.fun(paste0("render", toupper(substr(typeCustom, 1, 1)),
@@ -167,7 +216,8 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
     })
     tryCatch({
       callModule(customRenderer, "custom", data, options = customOptions, 
-                 path = customRendererDirs[[2L]], rendererEnv = rendererEnv)
+                 path = customRendererDirs[[2L]], rendererEnv = rendererEnv, views = views,
+                 attachments = attachments)
     }, error = function(e){
       stop(sprintf("An error occured in the custom renderer function: '%s'. Error message: %s.", typeCustom, e), call. = FALSE)
     })

@@ -1,19 +1,9 @@
-observeEvent(virtualActionButton(input$btSplitView, rv$btSplitView), {
-  if(isInSplitView){
-    if(numberScenTabs < 2){
-      disableEl(session, "#btCompareScen")
-    }
-    showEl(session, "#scen-tab-view")
-    hideEl(session, "#scen-split-view")
-    updateActionButton(session, "btSplitView", label = lang$nav$sidebarButtons$splitView)
-    isInSplitView <<- FALSE
-  }else{
-    # enable scenario comparison button
-    enableEl(session, "#btCompareScen")
-    showEl(session, "#scen-split-view")
-    hideEl(session, "#scen-tab-view")
-    updateActionButton(session, "btSplitView", label = lang$nav$sidebarButtons$tabView)
+observeEvent(input$btSplitView, {
+  switchCompareMode(session, input$btSplitView, numberScenTabs)
+  if(identical(input$btSplitView, "splitView")){
     isInSplitView <<- TRUE
+  }else{
+    isInSplitView <<- FALSE
   }
   if(isInCompareMode){
     rv$btCompareScen <- isolate(rv$btCompareScen + 1L)
@@ -43,10 +33,22 @@ observeEvent(input$loadActiveScenSplitComp, {
   flog.debug("Load active scenario to split comparison mode pressed. ID: '%s'.", 
              isolate(input$loadActiveScenSplitComp))
   id <- suppressWarnings(as.integer(isolate(input$loadActiveScenSplitComp)))
+  showEl(session, "#loading-screen")
+  on.exit(hideEl(session, "#loading-screen"))
   if(identical(id, 2L)){
     loadInLeftBoxSplit <<- TRUE
+    if(!compareModeTabsetGenerated[1]){
+      compareModeTabsetGenerated[1] <<- TRUE
+      insertUI("#scenSplit1_content", where = "afterBegin",
+               generateScenarioTabsetSplit(2), immediate = TRUE)
+    }
   }else if(identical(id, 3L)){
     loadInLeftBoxSplit <<- FALSE
+    if(!compareModeTabsetGenerated[2]){
+      compareModeTabsetGenerated[2] <<- TRUE
+      insertUI("#scenSplit2_content", where = "afterBegin",
+               generateScenarioTabsetSplit(3), immediate = TRUE)
+    }
   }else{
     flog.error("Button ID (load active scenario to split comp) has invalid value: '%s'. This should never happen! 
                User most likely tried to tamper with the app.", isolate(input$loadActiveScenSplitComp))
@@ -92,6 +94,7 @@ observeEvent(input$loadActiveScenSplitComp, {
     scenData[[scenIdLongNew]][[idxScalarOut]] <<- scenData[[scenIdLongNew]][[idxScalarOut]][!rowIdsToRemove, ]
   }
   scenIdLong <- scenIdLongNew
+  views$duplicateSandboxConf(scenId)
   try(source("./modules/scen_render.R", local = TRUE), silent = TRUE)
   # load script results
   if(length(config$scripts$base)){

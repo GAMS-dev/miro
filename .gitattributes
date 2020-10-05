@@ -1,2 +1,3 @@
+tests/**/*.csv text eol=lf
 tests/**/*.json text eol=lf
 tests/model/** text=auto !eol

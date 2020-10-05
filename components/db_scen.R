@@ -5,7 +5,8 @@ Scenario <- R6Class("Scenario",
                       initialize                    = function(db, sid = NULL, sname = NULL,
                                                                readPerm = NULL, writePerm = NULL, execPerm = NULL,
                                                                tags = NULL, overwrite = FALSE, isNewScen = FALSE, 
-                                                               duplicatedMetadata = NULL, uid = NULL){
+                                                               duplicatedMetadata = NULL, uid = NULL, views = NULL,
+                                                               attachments = NULL){
                         # Initialize scenario class
                         #
                         # Args:
@@ -20,6 +21,8 @@ Scenario <- R6Class("Scenario",
                         #   isNewScen:         whether the scenario is not yet stored in the database
                         #   duplicatedMetadata: metadata information of to apply
                         #   uid:               can be used to declare owner of the scenario (default is current user)
+                        #   views:             views object
+                        #   attachments:       attachments object
                         
                         #BEGIN error checks 
                         stopifnot(is.R6(db), is.logical(isNewScen), length(isNewScen) == 1L)
@@ -69,11 +72,15 @@ Scenario <- R6Class("Scenario",
                         private$tableNameMetadata   <- db$getTableNameMetadata()
                         private$tableNameScenLocks  <- db$getTableNameScenLocks()
                         private$tableNamesScenario  <- db$getTableNamesScenario()
-                        private$attachmentConfig    <- db$getAttachmentConfig()
                         private$tags                <- vector2Csv(unique(tags))
                         private$readPerm            <- vector2Csv(readPerm)
                         private$writePerm           <- vector2Csv(writePerm)
                         private$execPerm            <- vector2Csv(execPerm)
+                        private$views               <- views
+                        private$attachments         <- attachments
+                        
+                        savedAttachConfig <- NULL
+                        
                         if(db$getHcubeActive())
                           private$scode <- SCODEMAP[['hcube_jobconfig']]
                         else
@@ -85,8 +92,9 @@ Scenario <- R6Class("Scenario",
                           private$sname     <- sname
                           private$removeAllExistingAttachments <- TRUE
                           if(length(duplicatedMetadata$attach)){
-                            private$localAttachments <- duplicatedMetadata$attach$localAttachments
-                            private$attachmentsUpdateExec <- duplicatedMetadata$attach$attachmentsUpdateExec
+                            savedAttachConfig <- list(localAttachments = duplicatedMetadata$attach$localAttachments,
+                                                      attachmentsUpdateExec = duplicatedMetadata$attach$attachmentsUpdateExec,
+                                                      attachmentsToRemove = duplicatedMetadata$attach$attachmentsToRemove)
                             if(length(duplicatedMetadata$attach$sidToDuplicate)){
                               private$sidToDuplicate <- as.integer(duplicatedMetadata$attach$sidToDuplicate)
                               private$duplicateAttachmentsOnNextSave <- TRUE
@@ -124,6 +132,12 @@ Scenario <- R6Class("Scenario",
                           # set/refresh lock for scenario
                           private$lock()
                         }
+                        if(!is.null(private$attachments)){
+                          private$attachments$initScenData(private$sid)
+                          if(!is.null(savedAttachConfig)){
+                            private$attachments$setConfig(savedAttachConfig)
+                          }
+                        }
                         return(invisible(self))
                       },
                       getSid      = function() private$sid,
@@ -134,14 +148,14 @@ Scenario <- R6Class("Scenario",
                       getReadPerm = function() csv2Vector(private$readPerm),
                       getWritePerm = function() csv2Vector(private$writePerm),
                       getExecPerm = function() csv2Vector(private$execPerm),
+                      getLockUid = function() private$lockUid,
                       getMetadataInfo = function(discardAttach = FALSE, discardPerm = FALSE){
                         stopifnot(length(private$sid) > 0L)
                         attachmentConfig <- list()
                         permissionConfig <- list()
-                        if(!isTRUE(discardAttach)){
-                          attachmentConfig <- list(localAttachments = private$localAttachments,
-                                                   attachmentsUpdateExec = private$attachmentsUpdateExec,
-                                                   sidToDuplicate = private$sid)
+                        if(!isTRUE(discardAttach) && !is.null(private$attachments)){
+                          attachmentConfig <- private$attachments$getConfig()
+                          attachmentConfig$sidToDuplicate <- private$sid
                         }
                         if(!isTRUE(discardPerm)){
                           permissionConfig <- list(readPerm = private$readPerm,
@@ -185,6 +199,10 @@ Scenario <- R6Class("Scenario",
                                           execPermAlias = aliases[["execPerm"]])
                       },
                       resetAccessPerm = function(){
+                        if(private$isReadonly()){
+                          stop("Db: Metadata wasn't updated as scenario is readonly (Scenario.resetAccessPerm).", 
+                               call. = FALSE)
+                        }
                         private$readPerm  <- vector2Csv(private$uid)
                         private$writePerm <- vector2Csv(private$uid)
                         private$execPerm  <- vector2Csv(private$uid)
@@ -204,7 +222,9 @@ Scenario <- R6Class("Scenario",
                         if(private$isReadonly()){
                           stop("Scenario is readonly. Saving failed (Scenario.save).", call. = FALSE)
                         }
+                        addScenIdAttach <- FALSE
                         if(!length(private$sid)){
+                          addScenIdAttach <- TRUE
                           try(private$fetchMetadata(sname = private$sname, uid = private$uid), silent = TRUE)
                         }
                         stopifnot(length(private$tableNamesScenario) >= 1)
@@ -233,62 +253,12 @@ Scenario <- R6Class("Scenario",
                         }
                         # write scenario metadata
                         private$writeMetadata()
-                        # remove existing scenarios if scenario is overwritten
-                        if(isTRUE(private$removeAllExistingAttachments)){
-                          if(identical(private$sidToDuplicate, private$sid)){
-                            # in case scenario id is identical to the one 
-                            # where attachments should be duplicated, we do nothing
-                            private$duplicateAttachmentsOnNextSave <- FALSE
-                          }else{
-                            super$deleteRows(private$dbSchema$tabName[["_scenAttach"]],
-                                             subsetSids = private$sid)
-                          }
-                          private$attachmentsToRemove <- character(0L)
-                          private$removeAllExistingAttachments <- FALSE
-                        }
-                        if(isTRUE(private$duplicateAttachmentsOnNextSave)){
-                          private$duplicateAttachments()
+                        if(!is.null(private$attachments) && addScenIdAttach){
+                          private$attachments$setSid(private$sid)
                         }
                         
-                        if(length(private$attachmentsToRemove)){
-                          # save dirty attachments 
-                          super$deleteRows(private$dbSchema$tabName[["_scenAttach"]], "fileName", 
-                                           private$attachmentsToRemove, 
-                                           conditionSep = "OR", subsetSids = private$sid)
-                          private$attachmentsToRemove <- character(0L)
-                        }
+                        private$saveAttachmentData()
                         
-                        if(length(private$attachmentsUpdateExec$name)){
-                          fnHasExecPerm <- private$attachmentsUpdateExec$
-                            name[private$attachmentsUpdateExec$execPerm]
-                          fnHasNoExecPerm <- private$attachmentsUpdateExec$
-                            name[!private$attachmentsUpdateExec$execPerm]
-                          
-                          if(length(fnHasExecPerm))
-                            super$updateRows(private$dbSchema$tabName[["_scenAttach"]], 
-                                             tibble("fileName", fnHasExecPerm), 
-                                             colNames = "execPerm", 
-                                             values = TRUE, 
-                                             subsetSids = private$sid, innerSepAND = FALSE)
-                          
-                          if(length(fnHasNoExecPerm))
-                            super$updateRows(private$dbSchema$tabName[["_scenAttach"]], 
-                                             tibble("fileName", fnHasNoExecPerm), 
-                                             colNames = "execPerm", 
-                                             values = FALSE, 
-                                             subsetSids = private$sid, innerSepAND = FALSE)
-                          
-                          private$attachmentsUpdateExec <- list(name = character(0L),
-                                                                execPerm = logical(0L))
-                        }
-                        if(length(private$localAttachments$filePaths)){
-                          super$exportScenDataset(private$bindSidCol(
-                            private$readBlob()), 
-                            private$dbSchema$tabName[["_scenAttach"]], addForeignKey = FALSE)
-                          private$localAttachments <- list(filePaths = character(0L), 
-                                                           execPerm = logical(0L))
-                          
-                        }
                         Map(function(dataset, tableName){
                           if(!is.null(dataset) && nrow(dataset)){
                             super$exportScenDataset(private$bindSidCol(dataset), tableName)
@@ -298,6 +268,9 @@ Scenario <- R6Class("Scenario",
                             updateProgress(detail = msgProgress$progress)
                           }
                         }, datasets, private$tableNamesScenario)
+                        
+                        private$saveViewData()
+                        
                         private$scenSaved <- TRUE
                         # refresh lock for scenario
                         private$lock()
@@ -319,323 +292,6 @@ Scenario <- R6Class("Scenario",
                         }
                         super$exportScenDataset(private$bindSidCol(traceData), private$dbSchema$tabName[["_scenTrc"]])
                         private$scenSaved <- TRUE
-                        invisible(self)
-                      },
-                      addAttachments = function(filePaths, fileNames = NULL, forbiddenFnames = NULL, 
-                                                overwrite = FALSE, execPerm = NULL, workDir = NULL){
-                        # Saves attachments
-                        # 
-                        # Args:
-                        #   filePaths:        character vector with file paths to read data from
-                        #   fileNames:        names of the files in case custom name should be chosen
-                        #   forbiddenFnames:  character vector with forbidden file names
-                        #   overwrite:        boolean that specifies whether existing files should 
-                        #                     be overwritten
-                        #   workDir:          working directory where attachment will be stored until scenario is saved
-                        #
-                        # Returns:
-                        #   R6 object (reference to itself)
-                        
-                        stopifnot(is.character(filePaths), length(filePaths) >= 1L,
-                                  is.logical(overwrite), length(overwrite) == 1L)
-                        if(!is.null(workDir))
-                          stopifnot(is.character(workDir), length(workDir) == 1L)
-                        if(is.null(execPerm)){
-                          execPerm <- rep.int(TRUE, length(filePaths))
-                        }else{
-                          stopifnot(is.logical(execPerm), length(filePaths) == length(execPerm))
-                        }
-                        
-                        if(length(forbiddenFnames)){
-                          stopifnot(is.character(forbiddenFnames), length(forbiddenFnames) >= 1L)
-                        }
-                        if(!is.null(fileNames)){
-                          stopifnot(is.character(fileNames), length(fileNames) >= 1L)
-                        }else{
-                          fileNames <- basename(filePaths)
-                        }
-                        if(length(forbiddenFnames) && 
-                           any(gsub("\\.[^\\.]+$", "", fileNames) %in% forbiddenFnames)){
-                          stop("forbiddenFnameException", call. = FALSE)
-                        }
-                        fileNamesDb    <- self$fetchAttachmentList()[["name"]]
-                        
-                        if(any(fileNames %in% fileNamesDb)){
-                          if(!overwrite)
-                            stop("duplicateException", call. = FALSE)
-                          fnToOverwrite <- fileNames %in% fileNamesDb
-                          fileNamesDb   <- fileNamesDb[!fnToOverwrite]
-                          self$removeAttachments(fileNames[fnToOverwrite], 
-                                                 removeLocal = FALSE)
-                        }
-                        if(length(fileNamesDb) + length(filePaths) > private$attachmentConfig[["maxNo"]]){
-                          stop("maxNoException", call. = FALSE)
-                        }
-                        if(!is.null(workDir)){
-                          fileNamesTmp <- vapply(seq_along(fileNames), function(fnIdx){
-                            if(execPerm[fnIdx])
-                              return(fileNames[fnIdx])
-                            return(file.path("_miro_attach_", fileNames[fnIdx]))
-                          }, character(1L), USE.NAMES = FALSE)
-                          
-                          filePathsTmp <- file.path(workDir, fileNamesTmp)
-                          filePaths    <- filePathsTmp[file.move(filePaths, filePathsTmp)]
-                          if(length(filePathsTmp) != length(filePaths)){
-                            failedFileMoves <- !filePaths %in% filePathsTmp
-                            flog.warn("Some attachments could not be relocated: '%s' (Scenario.addAttachments).", 
-                                      paste(filePathsTmp[failedFileMoves], collapse = "', '"))
-                            execPerm <- execPerm[!failedFileMoves]
-                          }
-                        }
-                        
-                        private$localAttachments$filePaths <- c(private$localAttachments$filePaths, filePaths)
-                        private$localAttachments$execPerm  <- c(private$localAttachments$execPerm, execPerm)
-                        
-                        invisible(self)
-                      },
-                      fetchAttachmentList = function(){
-                        # Fetches list of attachments
-                        # 
-                        # Args:
-                        #
-                        # Returns:
-                        #   tibble with columns name and execPerm
-                        attachmentNames    <- basename(private$localAttachments$filePaths)
-                        attachmentExecPerm <- private$localAttachments$execPerm
-                        
-                        if(!length(private$sid)){
-                          return(dplyr::arrange(tibble(name = attachmentNames,
-                                                       execPerm = attachmentExecPerm), name))
-                        }
-                        attachments <- super$importDataset(private$dbSchema$tabName[["_scenAttach"]], 
-                                                           colNames = c("fileName", "execPerm"), 
-                                                           subsetSids = private$sid)
-                        attachmentNamesDb <- character(0L)
-                        attachmentExecPermDb <- logical(0L)
-                        if(length(attachments)){
-                          attachmentNamesDb    <- attachments[[1]]
-                          attachmentsToKeep    <- !attachmentNamesDb %in% attachmentNames
-                          attachmentNamesDb    <- attachmentNamesDb[attachmentsToKeep]
-                          attachmentExecPermDb <- attachments[[2]][attachmentsToKeep]
-                          if(length(private$attachmentsToRemove)){
-                            attachmentsToKeep     <- !attachmentNamesDb %in% private$attachmentsToRemove
-                            attachmentNamesDb     <- attachmentNamesDb[attachmentsToKeep]
-                            attachmentExecPermDb  <- attachmentExecPermDb[attachmentsToKeep]
-                          }
-                          if(length(private$attachmentsUpdateExec$name)){
-                            attachmentsToKeep <- !attachmentNamesDb %in% private$attachmentsUpdateExec$name
-                            attachmentNamesDb <- c(attachmentNamesDb[attachmentsToKeep], 
-                                                   private$attachmentsUpdateExec$name)
-                            attachmentExecPermDb  <- c(attachmentExecPermDb[attachmentsToKeep], 
-                                                     private$attachmentsUpdateExec$execPerm)
-                          }
-                        }
-                        
-                        
-                        return(dplyr::arrange(tibble(name = c(attachmentNamesDb, attachmentNames),
-                                                     execPerm = c(attachmentExecPermDb, attachmentExecPerm)), name))
-                      },
-                      downloadAttachmentData = function(filePath, fileNames = NULL, 
-                                                        fullPath = FALSE, allExecPerm = FALSE){
-                        # Fetches attachment data from db
-                        # 
-                        # Args:
-                        #   filePath:      1d character vector where to save files
-                        #   fileNames:     character vector with names of the files to download (optional)
-                        #   fullPath:      whether filePath includes file name + extension or not (optional)
-                        #   allExecPerm:   whether to download all files with execution permission (optional)
-                        #
-                        # Returns:
-                        #   filepaths of downloaded files
-                        
-                        stopifnot(is.character(filePath), length(filePath) == 1L,
-                                  is.logical(fullPath), length(fullPath) == 1L,
-                                  is.logical(allExecPerm), length(allExecPerm) == 1L)
-                        
-                        if(fullPath){
-                          if(length(fileNames) != 1L){
-                            stop("Only single file name allowed when full path is specified.", call. = FALSE)
-                          }
-                          fileDir   <- dirname(filePath)
-                          filePaths <- filePath
-                        }else{
-                          fileDir   <- filePath
-                          filePaths <- file.path(filePath, fileNames)
-                        }
-                        
-                        localPaths <- character(0L)
-                        
-                        if(allExecPerm){
-                          if(any(private$localAttachments$execPerm)){
-                            localPaths <- private$localAttachments$filePaths[private$localAttachments$execPerm]
-                            localPathNeedsRelocation <- dirname(localPaths) != fileDir
-                            
-                            if(any(localPathNeedsRelocation)){
-                              if(fullPath){
-                                toDir <- filePaths
-                              }else{
-                                toDir <- file.path(fileDir, basename(localPaths[localPathNeedsRelocation]))
-                              }
-                              file.copy(localPaths[localPathNeedsRelocation], 
-                                        toDir, 
-                                        overwrite = TRUE)
-                            }
-                          }
-                        }else{
-                          stopifnot(is.character(fileNames), length(fileNames) >= 1L)
-                          
-                          isLocalAttachment <- fileNames %in% basename(private$localAttachments$filePaths)
-                          localPaths <- filePaths[isLocalAttachment]
-                          
-                          if(length(localPaths)){
-                            localPathNeedsRelocation <- basename(private$localAttachments$filePaths) %in% fileNames &
-                              dirname(private$localAttachments$filePaths) != fileDir
-                            
-                            if(any(localPathNeedsRelocation)){
-                              if(fullPath){
-                                toDir <- filePaths
-                              }else{
-                                toDir <- file.path(fileDir, basename(private$localAttachments$filePaths[localPathNeedsRelocation]))
-                              }
-                              file.copy(private$localAttachments$filePaths[localPathNeedsRelocation], 
-                                        toDir,
-                                        overwrite = TRUE)
-                            }
-                              
-                            if(length(localPaths) == length(filePaths)){
-                              return(filePaths)
-                            }
-                            
-                            fileNames <- fileNames[!isLocalAttachment]
-                            filePaths <- filePaths[!isLocalAttachment]
-                          }
-                        }
-                        
-                        if(!length(private$sid)){
-                          return(localPaths)
-                        }
-                        
-                        data <- super$importDataset(private$dbSchema$tabName[["_scenAttach"]],
-                                                    if(allExecPerm) 
-                                                      tibble("execPerm", if(inherits(private$conn, "PqConnection")) TRUE else 1) 
-                                                    else 
-                                                      tibble(rep.int("fileName", length(fileNames)), fileNames),
-                                                    colNames = c("fileName", "fileContent"), innerSepAND = FALSE,
-                                                    subsetSids = private$sid)
-                        if(length(data)){
-                          if(allExecPerm){
-                            filePaths <- file.path(filePath, data[["fileName"]])
-                          }
-                          Map(writeBin, data[["fileContent"]], filePaths)
-                        }
-                        
-                        return(c(filePaths, localPaths))
-                      },
-                      setAttachmentExecPerm = function(fileName, value, workDir){
-                        # Sets execute permission for particular attachment
-                        # 
-                        # Args:
-                        #   fileName:  name of the file whose data to update
-                        #   value:     logical that specifies whether data can be executed by GAMS
-                        #   workDir:   working directory where attachment will be stored until scenario is saved
-                        #
-                        # Returns:
-                        #   R6 object (reference to itself)
-                        
-                        stopifnot(is.character(fileName), length(fileName) == 1L,
-                                  is.logical(value), length(value) == 1L)
-                        
-                        if(private$isReadonly()){
-                          stop("Scenario is readonly. Updating attachment data failed. (Scenario.setAttachmentExecPerm).", 
-                               call. = FALSE)
-                        }
-                        localFileId <- match(fileName, basename(private$localAttachments$filePaths))
-                        
-                        if(is.na(localFileId)){
-                          updateId <- match(fileName, private$attachmentsUpdateExec$name)
-                          if(is.na(updateId)){
-                            private$attachmentsUpdateExec$name <- c(private$attachmentsUpdateExec$name, 
-                                                                    fileName)
-                            private$attachmentsUpdateExec$execPerm <- c(private$attachmentsUpdateExec$execPerm, 
-                                                                        value)
-                          }else{
-                            private$attachmentsUpdateExec$name[updateId]     <- fileName
-                            private$attachmentsUpdateExec$execPerm[updateId] <- value
-                          }
-                          return(invisible(self))
-                        }
-                        
-                        if(value)
-                          newPath <- file.path(workDir, fileName)
-                        else
-                          newPath <- file.path(workDir, "_miro_attach_", fileName)
-                        
-                        if(!file.move(private$localAttachments$filePaths[localFileId], 
-                                      newPath))
-                          flog.warn("Problems moving attachment: '%s' (Scenario.setAttachmentExecPerm).", fileName)
-                        
-                        private$localAttachments$filePaths[localFileId] <- newPath
-                        private$localAttachments$execPerm[localFileId]  <- value
-                        
-                        invisible(self)
-                      },
-                      removeAllAttachments = function(){
-                        # Deletes all attachments from scenario
-                        #
-                        # Returns:
-                        #   R6 object (reference to itself)
-                        
-                        attachmentsToRemove <- self$fetchAttachmentList()[["name"]]
-                        
-                        if(length(attachmentsToRemove) == 0L){
-                          return(invisible(self))
-                        }
-                        return(self$removeAttachments(attachmentsToRemove,
-                                                      removeLocal = TRUE))
-                      },
-                      removeAttachments = function(fileNames, removeLocal = TRUE){
-                        # Deletes attachments from scenario
-                        # 
-                        # Args:
-                        #   fileNames:   file names of attachments to remove
-                        #   removeLocal: whether to remove file from disk
-                        #
-                        # Returns:
-                        #   R6 object (reference to itself)
-                        
-                        stopifnot(is.character(fileNames), length(fileNames) > 0L)
-                        
-                        localFiles <- match(fileNames, basename(private$localAttachments$filePaths))
-                        localFilesToRemoveId <- localFiles[!is.na(localFiles)]
-                        
-                        if(length(localFilesToRemoveId)){
-                          localFilesToRemove <- private$localAttachments$
-                            filePaths[localFilesToRemoveId]
-                          
-                          if(removeLocal){
-                            removedLocalFiles <- file.remove(localFilesToRemove)
-                            if(any(!removedLocalFiles))
-                              flog.warn("Some local attachments could not be removed: '%s'.",
-                                        paste(localFilesToRemove[!removedLocalFiles], 
-                                              collapse = "', '"))
-                          }
-                          
-                          private$localAttachments$filePaths <- private$localAttachments$filePaths[-localFilesToRemoveId]
-                          private$localAttachments$execPerm  <- private$localAttachments$execPerm[-localFilesToRemoveId]
-                          
-                          updatesToRemove <- match(fileNames, basename(private$attachmentsUpdateExec$name))
-                          updatesToRemove <- updatesToRemove[!is.na(updatesToRemove)]
-                          
-                          if(length(updatesToRemove)){
-                            private$attachmentsUpdateExec$name <- private$
-                              attachmentsUpdateExec$name[-updatesToRemove]
-                            private$attachmentsUpdateExec$execPerm <- private$
-                              attachmentsUpdateExec$execPerm[-updatesToRemove]
-                          }
-                          
-                          fileNames <- fileNames[is.na(localFiles)]
-                        }
-                        private$attachmentsToRemove <- c(private$attachmentsToRemove, fileNames)
                         invisible(self)
                       },
                       delete = function(){
@@ -668,16 +324,6 @@ Scenario <- R6Class("Scenario",
                         
                         invisible(self)
                       },
-                      cleanLocalFiles = function(){
-                        if(length(private$localAttachments$filePaths)){
-                          removedLocalFiles <- file.remove(private$localAttachments$filePaths)
-                          if(any(!removedLocalFiles))
-                            flog.warn("Some local attachments could not be removed: '%s'.",
-                                      paste(private$localAttachments$filePaths[!removedLocalFiles], 
-                                            collapse = "', '"))
-                        }
-                        return(invisible(self))
-                      },
                       updateMetadata = function(newName = character(0L), newTags = character(0L), 
                                                 newReadPerm = character(0L), newWritePerm = character(0L),
                                                 newExecPerm = character(0L)){
@@ -703,7 +349,9 @@ Scenario <- R6Class("Scenario",
                         stopifnot(is.character(newWritePerm))
                         stopifnot(is.character(newExecPerm))
                         #END error checks 
-                        if(private$isReadonly()){
+                        if(private$isReadonly() && sum(length(newReadPerm),
+                                                       length(newWritePerm),
+                                                       length(newExecPerm)) > 0){
                           stop("Db: Metadata wasn't updated as scenario is readonly (Scenario.updateMetadata).", 
                                call. = FALSE)
                         }
@@ -763,13 +411,17 @@ Scenario <- R6Class("Scenario",
                       },
                       finalize = function(){
                         if(length(private$sid)){
-                          flog.debug("Scenario: '%s' unlocked.", private$sid)
-                          private$unlock()
+                          if(identical(private$getUidLock(), private$uid)){
+                            flog.debug("Scenario: '%s' unlocked.", private$sid)
+                            private$unlock()
+                          }
                           if(private$newScen && !private$scenSaved){
                             flog.debug("Scenario was not saved. Thus, it will be removed.")
                             self$delete()
                           }
+                          private$sid <- integer(0L)
                         }
+                        return(invisible(self))
                       }
                     ),
                     active = list(
@@ -800,21 +452,17 @@ Scenario <- R6Class("Scenario",
                       readPerm            = character(0L),
                       writePerm           = character(0L),
                       execPerm            = character(0L),
+                      lockUid             = character(0L),
                       dbSchema            = vector("list", 3L),
                       scode               = integer(1L),
                       scenSaved           = logical(1L),
                       newScen             = logical(1L),
                       traceData           = tibble(),
+                      views               = NULL,
+                      attachments         = NULL,
                       duplicateAttachmentsOnNextSave = FALSE,
                       removeAllExistingAttachments = FALSE,
                       sidToDuplicate      = integer(0L),
-                      localAttachments    = list(filePaths = character(0L), 
-                                                 execPerm = logical(0L)),
-                      attachmentsToRemove = character(0L),
-                      attachmentsUpdateExec = list(name = character(0L),
-                                                   execPerm = logical(0L)),
-                      dirtyMetadata       = FALSE,
-                      dirtyAttachments    = FALSE,
                       fetchMetadata       = function(sid = NULL, sname = NULL, uid = NULL){
                         # fetches scenario metadata from database
                         #
@@ -996,7 +644,7 @@ Scenario <- R6Class("Scenario",
                           return(invisible(self))
                         #END error checks
                         if(private$isReadonly()){
-                          flog.debug("Db: Scenario wasn't locked as it is readonly (Scenario.lock).")
+                          flog.debug("Scenario wasn't locked as it is readonly (Scenario.lock).")
                           return(invisible(self))
                         }
                         if(!DBI::dbExistsTable(private$conn, private$tableNameScenLocks)){
@@ -1024,7 +672,9 @@ Scenario <- R6Class("Scenario",
                           # a lock already exists for the scenario
                           if(!identical(uidLocked, private$uid)){
                             # user who has currently locked the scenario is not the same as the active user provided
-                            stop(sprintf("Db: %s: The scenario: '%s' is already locked by user: '%s' (Scenario.lock).", private$uid, private$sid, uidLocked), call. = FALSE)
+                            flog.debug("Scenario loaded in readonly mode as it is locked (Scenario.lock).")
+                            private$lockUid <- uidLocked
+                            return(invisible(self))
                           }else{
                             # user who currently has scenario locked is the same, so refresh lock
                             private$unlock()
@@ -1098,16 +748,14 @@ Scenario <- R6Class("Scenario",
                         #
                         # Returns:
                         #   logical: returns TRUE if scenario is readonly, FALSE otherwise 
+                        if(length(private$lockUid)){
+                          return(TRUE)
+                        }
                         if(any(private$userAccessGroups %in% csv2Vector(private$writePerm))){
                           return(FALSE)
                         }else{
                           return(TRUE)
                         }
-                      },
-                      spreadScalarData = function(dataset){
-                        # Spreads scalar dataset
-                        dataset <- dataset[, -2, drop = FALSE]
-                        spread(dataset, 1, 2)
                       },
                       bindSidCol = function(data){
                         # binds sid column to dataset
@@ -1118,22 +766,77 @@ Scenario <- R6Class("Scenario",
                         }
                         return(data)
                       },
-                      readBlob = function(){
-                        # reads blob data and returns tibble with meta data and file content
-                        filePaths <- private$localAttachments$filePaths
-                        fileNames <- basename(filePaths)
-                        execPerm  <- private$localAttachments$execPerm
-                        
-                        fileSize <- file.info(filePaths, extra_cols = FALSE)$size
-                        
-                        if(any(fileSize > private$attachmentConfig[["maxSize"]])){
-                          stop("maxSizeException", call. = FALSE)
+                      saveAttachmentData = function(){
+                        # remove existing attachments if scenario is overwritten
+                        if(isTRUE(private$removeAllExistingAttachments)){
+                          if(identical(private$sidToDuplicate, private$sid)){
+                            # in case scenario id is identical to the one 
+                            # where attachments should be duplicated, we do nothing
+                            private$duplicateAttachmentsOnNextSave <- FALSE
+                          }else{
+                            super$deleteRows(private$dbSchema$tabName[["_scenAttach"]],
+                                             subsetSids = private$sid)
+                          }
+                          private$removeAllExistingAttachments <- FALSE
                         }
-                        content <- blob::new_blob(lapply(seq_along(filePaths), 
-                                                         function(i) readBin(filePaths[[i]], "raw", n = fileSize[[i]])))
-                        return(tibble(fileName = fileNames, fileExt = tools::file_ext(filePaths), 
-                                      execPerm = execPerm, 
-                                      fileContent = content, timestamp = as.character(Sys.time(), usetz = TRUE, tz = "GMT")))
+                        if(isTRUE(private$duplicateAttachmentsOnNextSave)){
+                          private$duplicateAttachments()
+                        }
+                        if(is.null(private$attachments)){
+                          return(invisible(self))
+                        }
+                        attachmentOpQueue <- private$attachments$flushOpQueue()
+                        if(length(attachmentOpQueue$remove)){
+                          # save dirty attachments 
+                          super$deleteRows(private$dbSchema$tabName[["_scenAttach"]], "fileName", 
+                                           attachmentOpQueue$remove, 
+                                           conditionSep = "OR", subsetSids = private$sid)
+                        }
+                        
+                        if(length(attachmentOpQueue$updateExec$name)){
+                          fnHasExecPerm <- attachmentOpQueue$updateExec$
+                            name[attachmentOpQueue$updateExec$execPerm]
+                          fnHasNoExecPerm <- attachmentOpQueue$updateExec$
+                            name[!attachmentOpQueue$updateExec$execPerm]
+                          
+                          if(length(fnHasExecPerm))
+                            super$updateRows(private$dbSchema$tabName[["_scenAttach"]], 
+                                             tibble("fileName", fnHasExecPerm), 
+                                             colNames = "execPerm", 
+                                             values = TRUE, 
+                                             subsetSids = private$sid, innerSepAND = FALSE)
+                          
+                          if(length(fnHasNoExecPerm))
+                            super$updateRows(private$dbSchema$tabName[["_scenAttach"]], 
+                                             tibble("fileName", fnHasNoExecPerm), 
+                                             colNames = "execPerm", 
+                                             values = FALSE, 
+                                             subsetSids = private$sid, innerSepAND = FALSE)
+                        }
+                        if(length(attachmentOpQueue$save)){
+                          super$exportScenDataset(private$bindSidCol(
+                            attachmentOpQueue$save), 
+                            private$dbSchema$tabName[["_scenAttach"]], addForeignKey = FALSE)
+                          
+                        }
+                        return(invisible(self))
+                      },
+                      saveViewData = function(){
+                        if(is.null(private$views)){
+                          return(invisible(self))
+                        }
+                        viewConf <- private$views$getConf()
+                        if(!length(viewConf) || !nrow(viewConf)){
+                          return(invisible(self))
+                        }
+                        viewConfToSave <- fixColTypes(viewConf %>%
+                                                        add_column(time = Sys.time()),
+                                                      substring(private$dbSchema$colTypes[["_scenViews"]],
+                                                                2))
+                        names(viewConfToSave) <- private$dbSchema$colNames[["_scenViews"]][-1]
+                        super$exportScenDataset(private$bindSidCol(viewConfToSave),
+                                                private$dbSchema$tabName[["_scenViews"]])
+                        invisible(self)
                       },
                       duplicateAttachments = function(){
                         stopifnot(is.integer(private$sidToDuplicate), 

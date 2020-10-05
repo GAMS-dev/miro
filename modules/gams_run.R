@@ -6,20 +6,31 @@ storeGAMSOutputFiles <- function(workDir){
     errMsg <- NULL
     tryCatch({
       filesToStore <- character(0L)
-      if(any(c(config$activateModules$logFile, config$activateModules$lstFile)))
-        filesToStore  <- c(file.path(workDir, 
+      if(config$storeLogFilesDuration > 0L){
+        if(any(c(config$activateModules$logFile, config$activateModules$lstFile)))
+          filesToStore  <- file.path(workDir, 
                                      paste0(modelNameRaw, 
                                             c(if(config$activateModules$logFile) ".log", 
-                                              if(config$activateModules$lstFile) ".lst"))))
-      if(config$activateModules$miroLogFile)
-        filesToStore <- c(filesToStore, file.path(workDir, config$miroLogFile))
+                                              if(config$activateModules$lstFile) ".lst")))
+        if(config$activateModules$miroLogFile)
+          filesToStore <- c(filesToStore, file.path(workDir, config$miroLogFile))
+      }
       
       enforceFileAccess <- rep.int(TRUE, length(filesToStore))
       fileAccessPerm    <- rep.int(FALSE, length(filesToStore))
       
       if(length(config$outputAttachments)){
-        filesToStore <- c(filesToStore, file.path(workDir, vapply(config$outputAttachments, "[[", character(1L),
-                                                                  "filename", USE.NAMES = FALSE)))
+        fnOutputAttachments <- file.path(workDir, vapply(config$outputAttachments, "[[", character(1L),
+                                                         "filename", USE.NAMES = FALSE))
+        if(any(fnOutputAttachments %in% filesToStore)){
+          # overwrite settings of attachments
+          # if they are also declared as output attachments
+          filesNotInOA <- !filesToStore %in% fnOutputAttachments
+          filesToStore <- filesToStore[filesNotInOA]
+          enforceFileAccess <- enforceFileAccess[filesNotInOA]
+          fileAccessPerm <- fileAccessPerm[filesNotInOA]
+        }
+        filesToStore <- c(filesToStore, fnOutputAttachments)
         enforceFileAccess <- c(enforceFileAccess, vapply(config$outputAttachments, function(el) {
           return(!isFALSE(el[["throwError"]]))}, logical(1L), USE.NAMES = FALSE))
         fileAccessPerm <- c(fileAccessPerm, vapply(config$outputAttachments, function(el) {
@@ -53,8 +64,8 @@ storeGAMSOutputFiles <- function(workDir){
         errMsg <- paste(errMsg, sprintf(lang$errMsg$saveAttachments$fileSizeExceeded, 
                                         paste(basename(filesToStore[filesTooLarge]), collapse = "', '")), sep = "\n")
       }
-      activeScen$addAttachments(filesToStore[!filesTooLarge], overwrite = TRUE, 
-                                execPerm = fileAccessPerm[!filesTooLarge])
+      attachments$add(session = NULL, filesToStore[!filesTooLarge], overwrite = TRUE, 
+                      execPerm = fileAccessPerm[!filesTooLarge])
     }, error = function(e){
       switch(conditionMessage(e),
              fileAccessException = {
@@ -90,18 +101,18 @@ prepareModelRun <- function(async = FALSE){
   pfFileContent <- NULL
   inputData <- DataInstance$new(modelInFileNames, fileExchange = config$fileExchange,
                                 gdxio = gdxio, csvDelim = config$csvDelim)
-  lapply(seq_along(dataTmp), function(i){
+  lapply(seq_along(dataTmp), function(id){
     # write compile time variable file and remove compile time variables from scalar dataset
-    if(is.null(dataTmp[[i]])){
+    if(is.null(dataTmp[[id]])){
       return()
     }
-    if(identical(tolower(names(dataTmp)[[i]]), scalarsFileName)){
+    if(identical(tolower(names(dataTmp)[[id]]), scalarsFileName)){
       # scalars file exists, so remove compile time variables from it
-      DDParIdx           <- dataTmp[[i]][[1]] %in% outer(DDPar, c("", "$lo", "$up"), 
+      DDParIdx           <- dataTmp[[id]][[1]] %in% outer(DDPar, c("", "$lo", "$up"), 
                                                          FUN = "paste0")
-      GMSOptIdx          <- dataTmp[[i]][[1]] %in% GMSOpt
-      DDParValues        <- dataTmp[[i]][DDParIdx, , drop = FALSE]
-      GMSOptValues       <- dataTmp[[i]][GMSOptIdx, , drop = FALSE]
+      GMSOptIdx          <- dataTmp[[id]][[1]] %in% GMSOpt
+      DDParValues        <- dataTmp[[id]][DDParIdx, , drop = FALSE]
+      GMSOptValues       <- dataTmp[[id]][GMSOptIdx, , drop = FALSE]
       if(nrow(DDParValues) || nrow(GMSOptValues)){
         pfGMSPar      <- vapply(seq_along(DDParValues[[1]]), 
                                 function(i){
@@ -130,19 +141,19 @@ prepareModelRun <- function(async = FALSE){
         pfGMSOpt      <- pfGMSOpt[!is.na(pfGMSOpt)]
         pfFileContent <<- c(pfGMSPar, pfGMSOpt)
         # remove those rows from scalars file that are compile time variables
-        modelInputData[[i]] <<- dataTmp[[i]][!(DDParIdx | GMSOptIdx), ]
+        scenData[["scen_1_"]][[id]] <<- dataTmp[[id]][!(DDParIdx | GMSOptIdx), ]
       }else{
-        modelInputData[[i]] <<- dataTmp[[i]]
+        scenData[["scen_1_"]][[id]] <<- dataTmp[[id]]
       }
       rm(GMSOptValues, DDParValues)
-    }else if(identical(modelIn[[names(dataTmp)[[i]]]]$type, "dropdown") &&
-             names(dataTmp)[[i]] %in% modelInTabularDataBase){
-      modelInputData[[i]] <<- ddToTibble(dataTmp[[i]][[1L]], modelIn[[names(dataTmp)[[i]]]])
+    }else if(identical(modelIn[[names(dataTmp)[[id]]]]$type, "dropdown") &&
+             names(dataTmp)[[id]] %in% modelInTabularDataBase){
+      scenData[["scen_1_"]][[id]] <<- ddToTibble(dataTmp[[id]][[1L]], modelIn[[names(dataTmp)[[id]]]])
     }else{
-      modelInputData[[i]] <<- dataTmp[[i]]
+      scenData[["scen_1_"]][[id]] <<- dataTmp[[id]]
     }
     
-    inputData$push(names(dataTmp)[[i]], modelInputData[[i]])
+    inputData$push(names(dataTmp)[[id]], scenData[["scen_1_"]][[id]])
   })
   if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
     return(NULL)
@@ -150,7 +161,7 @@ prepareModelRun <- function(async = FALSE){
   tryCatch({
     if(config$activateModules$attachments && attachAllowExec && !is.null(activeScen)){
       prog$inc(amount = 0, detail = lang$progressBar$prepRun$downloadAttach)
-      inputData$addFilePaths(activeScen$downloadAttachmentData(workDir, allExecPerm = TRUE))
+      inputData$addFilePaths(attachments$download(workDir, allExecPerm = TRUE))
     }
     prog$close()
   }, error = function(e) {
@@ -316,10 +327,10 @@ if(LAUNCHHCUBEMODE){
                }
                
                if(!names(modelIn)[i] %in% c(DDPar, GMSOpt) && 
-                   length(modelIn[[i]]$dropdown$aliases)){
+                  length(modelIn[[i]]$dropdown$aliases)){
                  text <- paste0('|"""|--HCUBE_SCALART_', names(modelIn)[i], 
                                 "= ", escapeGAMSCL(modelIn[[i]]$dropdown$
-                                                    aliases[match(value, 
+                                                     aliases[match(value, 
                                                                    modelIn[[i]]$
                                                                      dropdown$choices)]))
                  if(isTRUE(modelIn[[i]]$dropdown$clearValue)){
@@ -393,7 +404,7 @@ if(LAUNCHHCUBEMODE){
                                         modelName = modelName)
     attachmentFilePaths <- NULL
     if(config$activateModules$attachments && attachAllowExec && !is.null(activeScen)){
-      attachmentFilePaths <- activeScen$downloadAttachmentData(workDir, allExecPerm = TRUE)
+      attachmentFilePaths <- attachments$download(workDir, allExecPerm = TRUE)
       attachmentFilePaths <- attachmentFilePaths[match(basename(attachmentFilePaths), 
                                                        sort(basename(attachmentFilePaths)))]
       if(length(attachmentFilePaths)){
@@ -575,7 +586,7 @@ if(LAUNCHHCUBEMODE){
       showHideEl(session, "#jobSubmitSuccess", 2000)
     }, error = function(e){
       errMsg <- conditionMessage(e)
-      flog.error("Some problem occurred while executing Hypercube job. Error message: '%s'.", errMsg)
+      flog.error("Some problem occurred while executing job. Error message: '%s'.", errMsg)
       
       if(identical(errMsg, '404') || startsWith(errMsg, "Could not") || 
          startsWith(errMsg, "Timeout"))
@@ -659,7 +670,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
       error = function(e){
         flog.error("Problems getting list of scenarios to solve in Hypercube mode. Error message: '%s'.", e)
         errMsg <<- lang$errMsg$GAMSInput$desc
-    })
+      })
     if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
       return(NULL)
     }
@@ -677,13 +688,13 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     }
     if(config$saveTraceFile){
       scenGmsPar <<- paste0(scenGmsPar, ' trace="', tableNameTracePrefix, modelName, '.trc"',
-                           " traceopt=3")
+                            " traceopt=3")
     }
     
     sidsDiff <- setdiff(idsToSolve, idsSolved)
     prog$close()
     showHcubeSubmitDialog(noIdsToSolve = length(idsToSolve), noIdsExist = length(idsToSolve) - length(sidsDiff))
-  
+    
     enableEl(session, "#btSolve")
     
     return(NULL)
@@ -940,7 +951,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
         switchTab(session, "output")
         updateTabsetPanel(session, "scenTabset",
                           selected = "results.current")
-        renderOutputData(rendererEnv)
+        renderOutputData(rendererEnv, views)
         
         markUnsaved()
       }

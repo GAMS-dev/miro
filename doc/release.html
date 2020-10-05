@@ -61,6 +61,54 @@
                 <div class="doc-body row">
                     <div class="doc-content col-md-9 col-12 order-1">
                         <div class="content-inner">
+                            <section id="v12" class="doc-section">
+                              <h2 class="section-title" style="display:inline-block">GAMS MIRO 1.2</h2> <div style="display:inline-block; padding-left:15px;">(2020-10-05)</div>
+                                 <div class="section-block">
+                                    <h3>Breaking changes</h3>
+                                    <ul>
+                                      <li>Additional packages in custom renderers are now installed in the MIRO workspace. These packages are no longer attached because this could lead to conflicts with packages required by MIRO. Read <a href="./customize.html#additional-r-packages">here</a> for more details.</li>
+                                    </ul>
+                                    <h3>New features</h3>
+                                    <ul>
+                                      <li><a href="./charts.html#pivot-chart">MIRO Pivot Tables</a> introduced with MIRO 1.1 can now also be used for data input.</li>
+                                      <li>Input widgets can now be <a href="./customize.html#tab-grouping">grouped</a>, and the order of widgets within a group can be changed.</li>
+                                      <li><a href="./start.html#metadata-views">Views</a> can now be attached to a scenario. A view is a JSON encoded configuration of some renderer. The first renderer to support this new feature is the <a href="./charts.html#pivot-chart">MIRO pivot table renderer</a>.</li>
+                                      <li>New scenario comparison mode: <a href="./start.html#compare-pivot">pivot view</a>. This mode allows you to merge datasets of multiple scenarios and analyze them with the <a href="charts.html#pivot-chart">pivot table</a> renderer.</li>
+                                    </ul>
+                                    <h3>Minor new features and improvements</h3>
+                                    <ul>
+                    <li>Settings for output tables can now be configured symbol-specific. Read more <a href = "./customize.html#symbol-table">here</a>.</li>
+                    <li>Add option to specify default app title and description when deploying MIRO apps. Read more <a href = "./deployment.html">here</a>.</li>
+                    <li>Besides GAMS tables now also normal parameters and sets can be configured as maps.</li>
+					<li>Add option for text input widgets that causes <a href="./widgets.html#textbox-option-clearvalue">element label of a singleton set to be the empty string</a>. The idea is to use singleton sets to define compile-time variables in the GAMS model (read more <a href="./model.html#command-line">here</a>). Note that this is currently not supported in Hypercube Mode.</li>
+          <li>Handsontables (default input tables) can now be searched. Matching results are highlighted and the viewport is changed to show the first result. You can move to the next result by pressing <kbd>Enter</kbd> and move to the previous result by pressing <kbd>Shift</kbd> + <kbd>Enter</kbd>.</li>
+          <li>Remove unnecessary options for global input table settings in Configuration Mode.</li>
+          <li>The filters in the MIRO pivot renderer now remain expanded even after selecting a new element.</li>
+          <li>Improve accessibility of MIRO apps.</li>
+          <li>Development mode: New data is now only imported if the file has changed since the last start of MIRO.</li>
+          <li>Added option to enable a <a href="./customize.html#export buttons">column visibility button</a> which allows to hide columns in big data tables.</li>
+          <li>Increase maximum number of scenario attachments from 5 to 7.</li>
+          <li>Input tables can now be annotated with Markdown.</li>
+          <li><a href="./customize.html#input-bigdata-table">Big Data Tables</a> now support adding/removing rows.</li>
+          <li><a href="./charts.html#valuebox">Value boxes</a> can now be configured individually for each scalar value.</li>
+          <li>Live preview of the graphics configuration can now be viewed in full screen.</li>
+                                    </ul>
+                                    <h3>Bug fixes</h3>
+                                    <ul>
+                                      <li>Fix major issue that could result in wrong input data being stored after solving a model.</li>
+                                      <li>Improve support of non-ASCII characters in file paths on Windows.</li>
+                                      <li>In Configuration Mode, allow symbols with multiple header aliases of the same name to be saved.</li>
+                                      <li>Fix issue where stale data would be displayed when loading scenario while an input chart of the previous scenario was still open.</li>
+                                      <li>Fix issue where wrong files could be deleted when a scenario was removed from the sandbox.</li>
+                                      <li>Fix issue with downloading results after solving a job asynchronously.</li>
+                                      <li>Fix issue that occurred when several asynchronously solved scenarios were downloaded one after the other and then imported into the sandbox.</li>
+                                      <li>Fix issue that occurred when trying to display logs of two different asynchronously solved scenarios one after the other.</li>
+                                      <li>Fix issue where removing and then adding attachments again would cause an unexpected error.</li>
+                                      <li>Fix bug on Windows with local attachments.</li>
+                                      <li>Fix issue where multiple flows could not be displayed on one map - only the last flow was visible.</li>
+                                    </ul>
+                                 </div>
+                            </section>
                             <section id="v11" class="doc-section">
                               <h2 class="section-title" style="display:inline-block">GAMS MIRO 1.1</h2> <div style="display:inline-block; padding-left:15px;">(2020-07-02)</div>
                                   <div class="section-block">
@@ -115,7 +163,7 @@
 									  <li>Add option to define the decimal separator character and the thousand groups separator character for <a href="./widgets.html#widget-numeric">numeric inputs</a>.</li>
 									  <li>Add legend configuration options to <a href="./charts.html#timeseries-chart">time series diagrams</a>.</li>
 									  <li>Add option for static event lines to <a href="./charts.html#timeseries-chart">time series diagrams</a>.</li>
-									  <li>Add option for dropdown menus that causes <a href="./widgets.html#dropdown-option-clearvalue">element text to be the empty string</a>. This is only supported if aliases are defined. Also note that this is currently not supported in Hypercube Mode.</li>
+									  <li>Add option for dropdown menus that causes <a href="./widgets.html#dropdown-option-clearvalue">element label of a singleton set to be the empty string</a>. This is only supported if aliases are defined. Also note that this is currently not supported in Hypercube Mode.</li>
 									  <li>Add option to <a href="./customize.html#table-option-hide-indexing-column">hide indexing column</a> in input tables. Only available for default input tables and not for <a href="./customize.html#table-option-large">big data tables</a>.</li>
 									  <li>Minor UI adjustments in input widgets tab</li>
 									  <li>Add caching for deployed apps which drastically increases their startup performance.</li>

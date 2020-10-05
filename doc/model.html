@@ -74,7 +74,7 @@
                                           </div><!--//icon-holder-->
                                           <div class="content">
                                               <b class="callout-title">Case sensitivity:</b>
-                                              <p>For file systems that are case sensitive, the name of the main .gms file must be written in lower case. This is relevant, for example, if a MIRO application is to run on a Linux server.</p>
+                                              <p>For file systems that are case sensitive, the name of the main .gms file must be written in lower case. The same applies to the directories <i>conf_&lt;modelname&gt;</i>, <i>data_&lt;modelname&gt;</i>, <i>static_&lt;modelname&gt;</i>, <i>renderer_&lt;modelname&gt;</i> and <i>scripts_&lt;modelname&gt;</i>. This is relevant, for example, if a MIRO application is to run on a Linux server.</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
                                 </div><!--//section-block-->
@@ -251,6 +251,24 @@ Positive Variable x;
                                             </div><!--//content-->
                                         </div><!--//callout-block-->
                                     </div><!--//section-block-->
+                                    <div id="data-contract" class="section-block">
+                                        <h3 class="block-title">The GAMS/MIRO data contract</h3>
+                                        <p>All GAMS symbols, which are marked with the <code class="language-gams">$onExternalInput
+                                        </code> / <code class="language-gams">$offExternalInput
+                                        </code> or <code class="language-gams">$onExternalOutput
+                                        </code> / <code class="language-gams">$offExternalOutput
+                                        </code> tags define the <i>GAMS/MIRO data contract</i>. This contract contains the metadata of all included symbols and is generated automatically each time MIRO is run in <a href = "./model.html#development-mode">development mode</a>. It is stored in the <i>&lt;modelname&gt;_io.json</i> file located in the <i>conf_&lt;modelname&gt;</i> directory.</p>
+                                        <div class="callout-block callout-warning">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-info-circle"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <b class="callout-title">Warning:</b>
+                                              <p>The <i>&lt;modelname&gt;_io.json</i> file should never be touched!</p>
+                                          </div><!--//content-->
+                                        </div><!--//callout-block-->
+                                        <p>The database schema that GAMS MIRO uses internally depends directly on the structure of the symbols in the data contract. When you launch a MIRO application for the first time, database tables are created according to this schema. These tables are immutable, which means that you cannot easily overwrite the structure of the exported GAMS symbols at a later stage. If an affected symbol changes in the GAMS model (e.g. an index changes), you may use the <a href="#database" class="scrollto">admin mode</a> to remove the corresponding tables from the database.</p>
+                                    </div><!--//section-block-->
                             <section id="gams-symbols" class="doc-section">
                                 <h2 class="section-title">GAMS symbols</h2>
                                 <div  class="section-block">
@@ -388,7 +406,7 @@ $offExternalInput
                                     </div><!--//section-block-->
                                     <div id = "table-miro" class="section-block">
                                         <h5 class="block-title">Tables in MIRO</h5>
-                                        <p>The usage of a table statement affects the <a href = "./start.html#data-contract">data contract</a> between 
+                                        <p>The usage of a table statement affects the <a href = "./model.html#data-contract">data contract</a> between 
                                         GAMS and MIRO. Instead of the last dimension of the symbol, its elements are now communicated as columns. 
                                         The database schema that GAMS MIRO uses internally depends directly on the data contract between GAMS and MIRO, i.e. 
                                         the structure of your exported parameters, equations, variables, and quantities. When you save a scenario for the first time, database tables are created according to this schema. Since the data contract is immutable, the symbol columns created by the table statement are also immutable. This means that you can't easily change the structure of 
@@ -419,8 +437,8 @@ $offExternalInput
 $onExternalOutput
 Parameter schedule(i,j,scheduleHdr) 'shipment quantities in cases';
 $offExternalOutput
-</pre></code>                             <p>We want to use this symbol to display a <a href = "./charts.html#map-chart">map</a> in MIRO. On this map, markers are to be set based on the geodata available in the symbol. If the symbol is used as a normal parameter, columns 
-                                       <span class="code">i</span>, <span class="code">j</span> and <span class="code">scheduleHdr</span> are communicated with MIRO. The geoinformation is now only available as elements of the last dimension. In the <a href = "./customize.html#configurationMode">Configuration Mode</a> we now see only the one value column <span class="code">scheduleHdr</span> for selection:</p> 
+</code></pre>                        <p>We want to use this symbol to display a <a href = "./charts.html#map-chart">map</a> in MIRO. On this map, markers are to be set based on the geodata available in the symbol. If the symbol is used as a normal parameter, columns 
+                                       <span class="code">i</span>, <span class="code">j</span> and <span class="code">scheduleHdr</span> are communicated with MIRO. The geographic information is now only available as elements of the last dimension. In the <a href = "./customize.html#configurationMode">Configuration Mode</a> we now see only the one value column <span class="code">scheduleHdr</span> for selection:</p> 
                                        <div class="section-block" style="text-align:center;">
                                            <img class="img-fluid" style="max-height:225pt;" src="assets/images/no-multi-col-map.png" alt="Map configuration without Table statement" />
                                        </div>
@@ -434,12 +452,33 @@ $offExternalOutput
 $onExternalOutput
 Table schedule(i,j,scheduleHdr) 'shipment quantities in cases';
 $offExternalOutput
-</pre></code>      
+</code></pre> 
                                         <p>The elements previously included in the last dimension are now communicated with MIRO as columns. 
                                         This allows us to specify markers now:</p>
                                         <div class="section-block" style="text-align:center;">
                                            <img class="img-fluid" style="max-height:250pt;" src="assets/images/multi-col-map.png" alt="Map configuration with Table statement" />
                                        </div>
+									   <div class="callout-block callout-success">
+                                           <div class="icon-holder">
+                                               <i class="fas fa-thumbs-up"></i>
+                                           </div><!--//icon-holder-->
+                                           <div class="content">
+                                               <b class="callout-title">Tip:</b>
+                                               <p>Instead of a table with the geographic information in the header, we can also use a parameter or even a set that contains all latitude and longitude information in separate domains:</p>
+										<pre><code class="language-gams">$onExternalOutput
+Parameter schedule(i,j,latP, lngP, latM, lngM) 'shipment quantities in cases';
+$offExternalOutput
+
+schedule('Seattle',  'New-York', '47.608013', '-122.335167', '40.730610', '-73.935242') = 50;
+schedule('Seattle',  'Chicago',  '47.608013', '-122.335167', '41.881832', '-87.623177') = 300;
+schedule('San-Diego','New-York', '32.715736', '-117.161087', '40.730610', '-73.935242') = 275;
+schedule('San-Diego','Topeka',   '32.715736', '-117.161087', '39.056198', '-95.695312') = 275;
+</code></pre>     
+                                               <p>The geographic information is then no longer available in numerical form, but the map tool interprets the data properly.</p>
+                                           </div><!--//content-->
+                                       </div><!--//callout-block-->
+									    
+										
                                         <p>Maps and Gantt charts are examples of tools that require separate columns for information such as geodata, start/end time etc.
                                         Other tools allow pivoting of the parameters internally. Example: </p> 
                                         <p>In the model Pickstock there is the parameter <i>Price</i>, which contains all stock symbols 
@@ -449,7 +488,7 @@ $offExternalOutput
 $onExternalInput
 Parameter price(date<,symbol<) 'Price';
 $offExternalInput
-</pre></code> 
+</code></pre>
                                         <div class="section-block" style="text-align:center;">
                                             <img class="img-fluid" style="max-height:250pt;" src="assets/images/single-col-line-table.png" alt="Parameter Price" />
                                         </div>
@@ -470,7 +509,7 @@ $offExternalInput
                                         <p>The internal pivoting is available for the chart types <a href = "./charts.html#bar-chart">Bar chart</a>, 
                                         <a href = "./charts.html#scatter-chart">Scatter plot</a>, <a href = "./charts.html#line-chart">Line chart</a>, 
                                         <a href = "./charts.html#bubble-chart">Bubble chart</a>, <a href = "./charts.html#histogram-chart">Histogram</a> and 
-                                        <a href = "./charts.html#timeseries-chart">Time series diagram</a>.</p>
+                                        <a href = "./charts.html#timeseries-chart">Time series diagram</a>. Read more <a href="./charts.html#group-domain">here</a>.</p>
                                         <p>To sum up: If the structure of your table is fixed (that is, it does NOT depend on the data), you can declare the GAMS symbol as a table. This is especially important if you want to visualize your data in the form of a map or Gantt chart.
                                         If the structure of your table is not rigid but depends on the data, you must declare it as a parameter and not as a table.</p>
                                     </div><!--//section-block-->
@@ -507,7 +546,7 @@ $offExternalInput
 $onExternalInput
 Table price(date&lt;,symbol&lt;) 'Price';
 $offExternalInput
-</pre></code>
+</code></pre>
                                        <p>Here, the sets are declared outside the <span class="code">$on-/offExternalInput</span> tags but the definition, 
                                        i.e. the population with elements, takes place implicitly via the data statement <span class="code">price(date&lt;,symbol&lt;)</span>.
                                        The <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition" target="_blank"><span class="code">&lt;</span> signs</a> signal that the sets <span class="code">date</span> and <span class="code">price</span> will be defined implicitly via the parameter <span class="code">price</span> (see also <a href="#implicit-set" class="scrollto">here</a>).
@@ -558,7 +597,7 @@ Scalar f    'freight in dollars per case per thousand miles' / 90 /
        beta 'beta (MINLP-only)' / 0.95 /;
 Singleton Set  single  'Singleton Set'    / element  /;
 $offExternalInput
-</pre></code>
+</code></pre>
                                     <p>Here we have declared the scalar input data <span class="code">f</span>, <span class="code">minS</span> and <span class="code">beta</span> as well as a singleton set <span class="code">single</span> between the input tags. In MIRO, they are all displayed in the same table:
                                     <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style="max-height:200pt;" src="assets/images/scalars-table.png" alt="Visualization of scalars and singleton sets in a table" />
@@ -587,7 +626,7 @@ Singleton Set
    multidim(i,j)  'multidimensional singleton set'  / seattle.topeka 'this is an explanatory text'/
    multidim2(i,j) 'another multidimensional singleton set' / seattle.chicago /;
 $offExternalInput
-</pre></code>
+</code></pre>
                                     <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style="max-height:150pt;" src="assets/images/singleton-multi-table.png" alt="Visualization of multidimensional singleton sets in a table" />
                                     </div>
@@ -600,7 +639,7 @@ $offExternalInput
 Singleton Set i 'set description'    / 'label' elementtext /;
 Scalar        a 'scalar description' / 5 /;
 $offExternalInput
-</pre></code>
+</code></pre>
                                     
                                     <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style="max-height:150pt;" src="assets/images/singleton-set.png" alt="Singleton set in MIRO" />
@@ -631,7 +670,7 @@ $offExternalInput
                                     <pre><code class="language-gams">$onExternalOutput
 Variable x(i,j) 'shipment quantities in cases';
 $offExternalOutput
-</pre></code>
+</code></pre>
                                     <p>The resulting table then looks as follows:</p>
                                     <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style="max-height:200pt;" src="assets/images/variable-table.png" alt="Visualization of variables in a table" />
@@ -645,7 +684,7 @@ $offExternalOutput
                                     <pre><code class="language-gams">$onExternalOutput
 Equation demand(j)   'satisfy demand at market j';
 $offExternalOutput
-</pre></code>
+</code></pre>
                                     <p>This leads to the following table:</p>
                                     <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style="max-height:200pt;" src="assets/images/equation-table.png" alt="Visualization of equations in a table" />
@@ -659,7 +698,7 @@ $offExternalOutput
 Variable z      'total transportation costs in thousands of dollars';
 Equation cost   'define objective function';
 $offExternalInput
-</pre></code>
+</code></pre>
                                     <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style="max-height:250pt;" src="assets/images/eq-var-table.png" alt="Visualization of equations in a table" />
                                     </div>
@@ -687,7 +726,7 @@ $offExternalInput
 $eval.set fn i.te
 
 $log What you see here is the %fn%
-</pre></code>                       
+</code></pre>                   
                                     <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style="max-height:150pt;" src="assets/images/singleton-set-log.png" alt="Singleton set in MIRO" />
                                     </div>
@@ -765,7 +804,7 @@ $log What you see here is the %fn%
                                           </div><!--//icon-holder-->
                                           <div class="content">
                                               <b class="callout-title">Tip:</b>
-                                              <p>You can use the <span class="code">data_&lt;modelname&gt;</span> folder to automatically import multiple scenarios into your database when MIRO is launched. All gdx files inside this folder will be stored into the MIRO database the next time your MIRO app is launched! The name of the gdx file determines the name of the scenario. This way you can easily import several scenarios at once. For more information, see <a href = "./start.html#startup-import">here</a>.</p>
+                                              <p>You can use the <span class="code">data_&lt;modelname&gt;</span> folder to automatically import multiple scenarios into your database when MIRO is launched. Files inside this folder will be stored in the MIRO database the next time your MIRO app is launched! The name of the file determines the name of the scenario. This way you can easily import several scenarios at once. For more information, see <a href = "./start.html#startup-import">here</a>.</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
                                         </li>
@@ -787,6 +826,7 @@ $log What you see here is the %fn%
                                 <nav class="doc-sub-menu nav flex-column">
                                     <a class="nav-link scrollto" href="#model-adjustments">Model adjustments</a>
                                     <a class="nav-link scrollto" href="#launch-miro">Launch MIRO</a>
+                                    <a class="nav-link scrollto" href="#data-contract">The GAMS/MIRO data contract</a>
                                 </nav><!--//nav-->
                                 <a class="nav-link scrollto" href="#gams-symbols">GAMS symbols</a>
                                   <nav class="doc-sub-menu nav flex-column">

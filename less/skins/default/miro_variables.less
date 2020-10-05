@@ -16,7 +16,8 @@
 @highlight-bg-save:       #d9f1d9; 
 @highlight-bg-delete:     #ffd6d6;                
 @logo-background:         #fff;
-@checkbox-unchecked-dark: #848991;     
+@widget-bg-dark:          #848991;     
+@checkbox-unchecked-dark: @widget-bg-dark;     
 @readme-preview-dark:     #292D33;        
 @readme-preview-border-dark: #A9A9A9;       
           
@@ -38,6 +39,7 @@
 @or-sign-dark:            darken(@gray-base-dark, 93.5%); //from bootstrap variables
 @dropdown-sidebar-bg-dark:#1d2121;
 @shiny-notification-dark: #070808; //new
+@focus-color-dark:        @light-blue-dark;
 ///////////////////////////////////////////////////////
 
 //light
@@ -68,4 +70,8 @@
 @tabset-group-out:        #458fb8;                      //new - text color for output tabs in compare mode
 @or-sign:                 #ADADAD;
 @dropdown-sidebar-bg:     #222d32;
+@focus-color:             #66afe9;;
+
+@row-selected:            #acbad4;
+@row-selected-dark:       #00adb5;
 @import "../../8_miro/miro.less";

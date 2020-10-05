@@ -3,7 +3,8 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
                         scalarsFileName, scalarsOutName, 
                         scalarEquationsName, 
                         scalarEquationsOutName,
-                        dropdownAliases){
+                        dropdownAliases,
+                        textOnlySymbols = NULL){
     stopifnot(is.list(metaData), length(metaData) > 0L,
               is.character(libDir), identical(length(libDir), 1L))
     if(gdxrrwMIRO::igdx(libDir, silent = TRUE, returnStr = FALSE)){
@@ -18,6 +19,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     private$scalarEquationsName <- scalarEquationsName
     private$scalarEquationsOutName <- scalarEquationsOutName
     private$dropdownAliases <- dropdownAliases
+    private$textOnlySymbols <- textOnlySymbols
     return(invisible(self))
   },
   getSymbols = function(gdxName = NULL){
@@ -32,7 +34,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
               is.logical(isNewGdx), identical(length(isNewGdx), 1L))
     
     if(isNewGdx || !identical(gdxName, private$rgdxName)){
-      private$rgdxName   <- gdxName
+      private$rgdxName   <- nativeFileEnc(gdxName)
       private$gdxSymbols <- gdxrrwMIRO::gdxInfo(nativeFileEnc(gdxName), returnList = TRUE, dump = FALSE)
     }
     symName <- tolower(symName)
@@ -51,6 +53,9 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
                                 if(length(scalarTmp)){
                                   if(length(scalarTmp) == 2 && !is.na(nchar(scalarTmp[[2]][1])) && 
                                      nchar(scalarTmp[[2]][1])){
+                                    if(scalarSymbols$symnames[[i]] %in% private$textOnlySymbols){
+                                      return(as.character(scalarTmp[[2]])[1])
+                                    }
                                     return(paste0(as.character(scalarTmp[[1]])[1], "||", 
                                                   as.character(scalarTmp[[2]])[1]))
                                   }
@@ -208,9 +213,11 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
                      paste(symNames[is.na(symIds)], collapse = "', '")), call. = FALSE)
       symTypes <- private$metaData[[scalarIdList[[j]]]]$symtypes[symIds]
       
+      symValsRaw <- character()
       if(identical(nc, 3L)){
         symTexts <- df[[2L]][inclSymNames]
-        symVals  <- strsplit(df[[3L]][inclSymNames], "||", fixed = TRUE)
+        symValsRaw <- df[[3L]][inclSymNames]
+        symVals  <- strsplit(symValsRaw, "||", fixed = TRUE)
       }else{
         symTexts <- df[[2L]]
         df       <- df[-seq_len(3)]
@@ -255,6 +262,9 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
               }
               te      <- private$dropdownAliases[[symName]]$aliases[[aliasId]]
             }
+          }else if(symName %in% private$textOnlySymbols){ 
+            uels    <- list("")
+            te      <- symValsRaw[[j]]
           }else{
             uels    <- list(symVal[1])
             te      <- paste0(symVal[-1], collapse = "||")
@@ -294,8 +304,9 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
   scalarEquationsName = character(1L),
   scalarEquationsOutName = character(1L),
   dropdownAliases = list(),
+  textOnlySymbols = NULL,
   rgdxVe = function(symName, names = NULL){
-    sym <- gdxrrwMIRO::rgdx(nativeFileEnc(private$rgdxName), 
+    sym <- gdxrrwMIRO::rgdx(private$rgdxName, 
                             list(name = symName, 
                                  compress = FALSE, 
                                  ts = FALSE, 
@@ -309,14 +320,14 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
   },
   rgdxScalarVe = function(symName = NULL, sym = NULL){
     if(!length(sym)){
-      sym <- gdxrrwMIRO::rgdx(nativeFileEnc(private$rgdxName), list(name = symName, compress = FALSE, 
+      sym <- gdxrrwMIRO::rgdx(private$rgdxName, list(name = symName, compress = FALSE, 
                                                                  ts = FALSE, field = "all"),
                               squeeze = FALSE, useDomInfo = TRUE)
     }
     return(sym$val[, 2L])
   },
   rgdxParam = function(symName, names = NULL){
-    sym <- gdxrrwMIRO::rgdx(nativeFileEnc(private$rgdxName), list(name = symName, compress = FALSE, ts = FALSE),
+    sym <- gdxrrwMIRO::rgdx(private$rgdxName, list(name = symName, compress = FALSE, ts = FALSE),
                             squeeze = FALSE, useDomInfo = TRUE)
     symDim <- sym$dim
     if(identical(symDim, 0L)){
@@ -395,7 +406,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
   },
   rgdxScalar = function(symName = NULL, sym = NULL){
     if(!length(sym)){
-      sym <- gdxrrwMIRO::rgdx(nativeFileEnc(private$rgdxName), list(name = symName))
+      sym <- gdxrrwMIRO::rgdx(private$rgdxName, list(name = symName))
     }
     c <- 0
     if(identical(1L, dim(sym$val)[1])){
@@ -404,7 +415,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     return(c)
   },
   rgdxSet = function(symName, names = NULL){
-    sym <- gdxrrwMIRO::rgdx(nativeFileEnc(private$rgdxName), list(name = symName, 
+    sym <- gdxrrwMIRO::rgdx(private$rgdxName, list(name = symName, 
                                                                compress = FALSE, 
                                                                ts = FALSE, te = TRUE),
                             squeeze = FALSE, useDomInfo = TRUE)
@@ -429,6 +440,14 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     symDF <- dplyr::mutate_if(symDF, is.factor, as.character)
     if(length(names)){
       names(symDF) <- names
+    }
+    if(symName %in% names(private$dropdownAliases) && length(symDF) == 2L){
+      aliasId <- match(symDF[[2L]], private$dropdownAliases[[symName]]$aliases)
+      hasChoices <- !is.na(aliasId)
+      if(any(hasChoices)){
+        symChoices <- private$dropdownAliases[[symName]]$choices[aliasId[hasChoices]]
+        symDF[which(hasChoices), 1L] <- symChoices
+      }
     }
     return(symDF)
   }

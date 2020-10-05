@@ -46,7 +46,7 @@ if(!debugMode){
   miroCacheFile <- paste0(modelNameRaw, "_",
                           MIROVersion, "_",
                           if(LAUNCHHCUBEMODE) "1_" else "0_",
-                          config[["language"]], 
+                          miroLanguage, 
                           if(config$activateModules$remoteExecution) "_1" else "_0")
   if(isShinyProxy){
     miroCacheFile <- file.path(Sys.getenv("MIRO_DATA_DIR"), "cache", miroCacheFile)
@@ -189,7 +189,7 @@ if(buildUI){
                                               format = modelIn[[i]]$daterange$format, 
                                               startview = modelIn[[i]]$daterange$startview, 
                                               weekstart = modelIn[[i]]$daterange$weekstart, 
-                                              language = config$language, 
+                                              language = miroLanguage, 
                                               separator = if(identical(modelIn[[i]]$daterange$separator, 
                                                                        NULL)) " to " else modelIn[[i]]$daterange$separator, 
                                               width = modelIn[[i]]$daterange$width, 
@@ -204,7 +204,8 @@ if(buildUI){
                                          value = modelIn[[i]]$date$value, min = modelIn[[i]]$date$min, 
                                          max = modelIn[[i]]$date$max, format = modelIn[[i]]$date$format, 
                                          startview = modelIn[[i]]$date$startview, 
-                                         weekstart = modelIn[[i]]$date$weekstart, language = config$language, 
+                                         weekstart = modelIn[[i]]$date$weekstart,
+                                         language = miroLanguage, 
                                          width = modelIn[[i]]$date$width)
                              )
                            },
@@ -263,12 +264,37 @@ if(buildUI){
                            },
                            {
                              tagList(
+                               if(length(modelIn[[i]]$label) && !identical(trimws(modelIn[[i]]$label), "")){
+                                 tags$div(tags$div(id = paste0("tableLabelToggle_", i),
+                                                 icon("minus"), style = "cursor:pointer;font-weight:bold;", 
+                                                 onclick = paste0("Miro.slideToggleEl({id: '#tableLabel_", i, 
+                                                                  "',toggleIconDiv:'#tableLabelToggle_", i, "'})"),
+                                                 "aria-expanded" = "true", "aria-controls" = paste0("tableLabel_", i)),
+                                         tags$div(id = paste0("tableLabel_", i),
+                                                  class = "readme-wrapper", style = "max-height:150px",
+                                                  markdown(modelIn[[i]]$label)
+                                         ))
+                               },
                                tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
                                tags$div(id = paste0("data-in_", i), {
                                  if(modelIn[[i]]$type == "hot"){
-                                   rHandsontableOutput(paste0("in_", i))
+                                   tagList(tags$div(class = "hot-search-wrapper",
+                                                    tags$label(
+                                                      lang$nav$hot$search,
+                                                      tags$input(class = "hot-search-box",
+                                                                 type = "search", id = paste0("in_", i, "-search"))
+                                                    )),
+                                           rHandsontableOutput(paste0("in_", i)))
                                  }else if(modelIn[[i]]$type == "dt"){
-                                   dataTableOutput(paste0("in_", i))
+                                   tagList(
+                                     tags$div(style = "margin-bottom:10px;",
+                                              actionButton(paste0("in_", i, "_add_row"),
+                                                           lang$renderers$miroPivot$btAddRow),
+                                              actionButton(paste0("in_", i, "_remove_row"),
+                                                           lang$renderers$miroPivot$btRemoveRows, class = "bt-remove")
+                                     ),
+                                     dataTableOutput(paste0("in_", i))
+                                   )
                                  }else{
                                    tryCatch({
                                      generateDataUI(paste0("data-in_", i), type = modelIn[[i]]$rendererName,
@@ -289,8 +315,7 @@ if(buildUI){
                                                        graphTool = configGraphsIn[[i]]$graph$tool, 
                                                        customOptions = configGraphsIn[[i]]$options,
                                                        filterOptions = configGraphsIn[[i]]$graph$filter,
-                                                       height = configGraphsIn[[i]]$height, 
-                                                       noDataTxt = lang$nav$outputScreen$boxResults$noData,
+                                                       height = configGraphsIn[[i]]$height,
                                                        createdDynamically = TRUE)
                                         }, error = function(e) {
                                           flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
@@ -359,7 +384,7 @@ if(buildUI){
                                      lang$nav$dialogRemoveScen$cancelButton, '\', \'', 
                                      lang$nav$dialogRemoveScen$okButton, 
                                      '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
-                            <i class="fa fa-times"></i></button>'))
+                            <i class="fa fa-times" role="presentation" aria-label="', lang$nav$dialogRemoveScen$title, '"></i></button>'))
                 )
               ), status="primary", solidHeader = TRUE, width = 12L,
               tags$div(class="scen-header",
@@ -381,13 +406,13 @@ if(buildUI){
             )
     ),
     tabItem(tabName = "scenarios",
-            tags$div(id = "scen-tab-view", style = if(identical(config$defCompMode, "split")) "display:none;" else "",
+            generateScenarioTabsetPivot(),
+            tags$div(id = "scen-tab-view", style = if(identical(config$defCompMode, "tab")) "" else "display:none;",
                      tabsetPanel(id="scenTabset"),
-                     tags$div(id = "no-scen", lang$nav$scen$noScen, 
+                     tags$div(id = "no-scen", lang$nav$scen$noScen, class = "no-scen",
                               tags$div(style = "margin: 10px;",
                                        HTML(paste0('<button class="btn btn-default action-button" ',
-                                                   'type="button" onclick="Shiny.setInputValue(\'btLoadScen\', ',
-                                                   1, ', {priority: \'event\'})">', 
+                                                   'type="button" onclick="Shiny.setInputValue(\'btLoadScen\',1,{priority: \'event\'})">', 
                                                    lang$nav$scen$btLoad, '</button>')))
                      )
             ),
@@ -400,8 +425,7 @@ if(buildUI){
                                                            class = "bt-icon",
                                                            icon = icon("times"), 
                                                            label = NULL))), 
-                           tags$div(id = "scenSplit1_content", style = "display:none;", 
-                                    generateScenarioTabsetSplit(2)), 
+                           tags$div(id = "scenSplit1_content", style = "display:none;"), 
                            genSplitCompButtons(1)
                        ),
                        box(width = 6, solidHeader = TRUE, status="primary", 
@@ -409,8 +433,7 @@ if(buildUI){
                                            tags$div(style = "float: right;", 
                                                     actionButton(inputId = "btScenSplit2_close", 
                                                                  class = "bt-icon", icon = icon("times"), label = NULL))),
-                           tags$div(id = "scenSplit2_content", style = "display:none;", 
-                                    generateScenarioTabsetSplit(3)), 
+                           tags$div(id = "scenSplit2_content", style = "display:none;"), 
                            genSplitCompButtons(2)
                        )
               )
@@ -564,13 +587,11 @@ if(buildUI){
                                 graphTool = configGraphsOut[[i]]$graph$tool, 
                                 customOptions = configGraphsOut[[i]]$options,
                                 filterOptions = configGraphsOut[[i]]$graph$filter,
-                                height = configGraphsOut[[i]]$height, 
-                                noDataTxt = lang$nav$outputScreen$boxResults$noData)
+                                height = configGraphsOut[[i]]$height)
           ),
           tags$div(id = paste0("data-out_", i), class = "render-output", style = "display:none;",{
             tryCatch({
-              renderDataUI(paste0("table-out_",i), type = "datatable", 
-                           noDataTxt = lang$nav$outputScreen$boxResults$noData)
+              renderDataUI(paste0("table-out_",i), type = "datatable")
             }, error = function(e) {
               flog.error(paste0(sprintf(lang$errMsg$renderTable$desc, name), e))
               eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderTable$desc, name), sep = "\n")
@@ -671,7 +692,7 @@ if(buildUI){
                                        lang$nav$dialogRemoveScen$cancelButton, '\', \'', 
                                        lang$nav$dialogRemoveScen$okButton, 
                                        '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
-                            <i class="fa fa-times"></i></button>'))
+                            <i class="fa fa-times" role="presentation" aria-label="', lang$nav$dialogRemoveScen$title, '"></i></button>'))
                   )
                 ), status="primary", solidHeader = TRUE, width = 12,
                 tags$div(class="scen-header",
@@ -679,7 +700,8 @@ if(buildUI){
                                   if(isTRUE(config$hasSymbolLinks)){
                                     tags$div(title = lang$nav$scen$tooltips$btSymbolLink, class = "scen-button-tt",
                                              tags$button(class = "btn btn-default scen-button", id = "btSymbolLink",
-                                                         tags$i(class = "fa fa-share"), 
+                                                         tags$i(class = "fa fa-share", role = "presentation",
+                                                                `aria-label` = "Load dataset as input data"), 
                                                          onclick = paste0("Miro.confirmModalShow('",
                                                                           lang$nav$dialogImport$title, "', '", 
                                                                           lang$nav$dialogImport$descOverwriteInput, "', '", 
@@ -718,7 +740,7 @@ if(buildUI){
             tags$script(type = "application/javascript", `defer src`="katex.min.js"),
             tags$script(type = "application/javascript", `defer src`="auto-render.min.js",
                         onload = if(isTRUE(config$readme$enableMath))
-                        "renderMathInElement(document.getElementsByClassName('readme-wrapper')[0],
+                          "renderMathInElement(document.getElementsByClassName('readme-wrapper')[0],
 {throwOnError:false,delimiters:[{left:'$$',right:'$$',display:true},{left: '$',right:'$',display:false}]});")
           )
         },
@@ -737,19 +759,16 @@ if(buildUI){
 }
 .main-header .logo {
   background-image: url("', 
-                 if(!identical(config$UILogo, "gams_logo.png") && 
-                    dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) 
-                   "static_", modelName, "/", config$UILogo, '") ',
-                 if(!identical(config$UILogo, "gams_logo.png") && 
-                    dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) 
-                   '!important;
+if(!identical(config$UILogo, "gams_logo.png") && 
+   dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) 
+  "static_", modelName, "/", config$UILogo, '") ',
+if(!identical(config$UILogo, "gams_logo.png") && 
+   dir.exists(paste0(currentModelDir, .Platform$file.sep, "static_", modelName))) 
+  '!important;
   background-size: contain;
-}
-.pvtRows, .pvtCols { 
-  background-color: ', config$pivottable$bgColor, '; 
 }')))),
-      if(LAUNCHHCUBEMODE){
-        HTML('<!-- Creates modal dialog for images generated by paver -->
+if(LAUNCHHCUBEMODE){
+  HTML('<!-- Creates modal dialog for images generated by paver -->
 <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content" style="width:685px;">
@@ -766,7 +785,7 @@ if(buildUI){
     </div>
 </div>
 </div>')},
-      HTML(paste0('<!-- Creates modal dialog for confirm messages -->
+HTML(paste0('<!-- Creates modal dialog for confirm messages -->
 <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content" style="width:685px;">
@@ -783,9 +802,9 @@ if(buildUI){
 <div id="loading-screen"><noscript><div class="miro-noscript">Please enable Javascript to use GAMS MIRO</div></noscript>
 <div class="lds-ellipsis" style="position:relative;top:50%;left:50%"><div></div><div></div><div></div><div></div>
        </div></div><div class="gmsalert gmsalert-error" id="hcubeRunning">', 
-                  lang$errMsg$hcubeLaunch$hcubeRunning, '</div>', '<div class="gmsalert gmsalert-error" id="hcubeLaunchError">', 
-                  lang$errMsg$hcubeLaunch$launchError, '</div>')),
-      do.call(tabItems, tabItemList)
+            lang$errMsg$hcubeLaunch$hcubeRunning, '</div>', '<div class="gmsalert gmsalert-error" id="hcubeLaunchError">', 
+            lang$errMsg$hcubeLaunch$launchError, '</div>')),
+do.call(tabItems, tabItemList)
     )})
   if(!debugMode){
     cacheTestDir <- attr(rHandsontableOutput("test"), "html_dependencies")[[1]]$src$file
