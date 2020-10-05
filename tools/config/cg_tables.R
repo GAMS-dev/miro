@@ -645,7 +645,10 @@ observeEvent(input$table_readonly, {
   rv$tableWidgetConfig$readonly <<- input$table_readonly
 })
 observeEvent(input$table_label, {
-  rv$tableWidgetConfig$label <<- input$table_label
+  if(nchar(input$table_label))
+    rv$tableWidgetConfig$label <<- input$table_label
+  else
+    rv$tableWidgetConfig$label <<- NULL
 })
 observeEvent(input$table_readonlyCols, ignoreNULL = FALSE, {
   if(!length(input$table_readonlyCols)){
