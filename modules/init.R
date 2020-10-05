@@ -460,14 +460,43 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
         return(TRUE)
       }, logical(1L), USE.NAMES = FALSE)
       if(any(isInputWidget)){
+        remainingWidgetsUnassigned <- TRUE
         for(widgetGroupId in which(isWidgetGroup)){
           i <- suppressWarnings(as.integer(substring(config$overwriteSheetOrder$input[widgetGroupId], 9L)))
           if(is.na(i)){
-            config$overwriteSheetOrder$input[widgetGroupId] <- names(modelIn)[which(isInputWidget)[1L]]
+            if(remainingWidgetsUnassigned){
+              if(length(config$inputWidgetGroups)){
+                firstUnassignedWidgetId <- which(!names(modelIn)[isInputWidget] %in% unlist(lapply(config$inputWidgetGroups, function(el){
+                  return(el$members)
+                }), use.names = FALSE))[1]
+                if(is.na(firstUnassignedWidgetId)){
+                  config$overwriteSheetOrder$input[widgetGroupId] <- NA
+                  remainingWidgetsUnassigned <- FALSE
+                  next
+                }
+              }else{
+                firstUnassignedWidgetId <- 1L
+              }
+              config$overwriteSheetOrder$input[widgetGroupId] <- names(modelIn)[isInputWidget][firstUnassignedWidgetId]
+              remainingWidgetsUnassigned <- FALSE
+            }
             next
           }else if(i > length(config$inputWidgetGroups)){
-            if(sum(isWidgetGroup) <= length(config$inputWidgetGroups)){
-              config$overwriteSheetOrder$input[widgetGroupId] <- names(modelIn)[which(isInputWidget)[1L]]
+            if(remainingWidgetsUnassigned && sum(isWidgetGroup) <= length(config$inputWidgetGroups)){
+              if(length(config$inputWidgetGroups)){
+                firstUnassignedWidgetId <- which(!names(modelIn)[isInputWidget] %in% unlist(lapply(config$inputWidgetGroups, function(el){
+                  return(el$members)
+                }), use.names = FALSE))[1]
+                if(is.na(firstUnassignedWidgetId)){
+                  config$overwriteSheetOrder$input[widgetGroupId] <- NA
+                  remainingWidgetsUnassigned <- FALSE
+                  next
+                }
+              }else{
+                firstUnassignedWidgetId <- 1L
+              }
+              config$overwriteSheetOrder$input[widgetGroupId] <- names(modelIn)[isInputWidget][firstUnassignedWidgetId]
+              remainingWidgetsUnassigned <- FALSE
             }else{
               config$overwriteSheetOrder$input[widgetGroupId] <- NA
             }
@@ -1648,7 +1677,7 @@ if(is.null(errMsg)){
   dropdownAliases <- lapply(modelIn, function(el){
     if(identical(el$type, "dropdown") && 
        length(el$dropdown$aliases) && 
-       isFALSE(el$dropdown$multiple)){
+       !isTRUE(el$dropdown$multiple)){
       return(list(aliases = el$dropdown$aliases,
                   choices = el$dropdown$choices,
                   clearValue = isTRUE(el$dropdown$clearValue)))

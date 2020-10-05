@@ -17,10 +17,10 @@ renderOutputData <- function(rendererEnv, views){
         if(any(additionalOutputIdsNA)){
           additionalInputIds <- match(configGraphsOut[[i]]$
                                         additionalData[additionalOutputIdsNA],
-                                      names(modelIn))
+                                      modelInFileNames)
           additionalOutputIds <- c(i, additionalOutputIds[!additionalOutputIdsNA])
-          rendererData <- c(scenData[["scen_1_"]][additionalOutputIds], 
-                            modelInputData[additionalInputIds])
+          rendererData <- scenData[["scen_1_"]][c(additionalOutputIds,
+                                                  additionalInputIds + length(modelOut))]
           names(rendererData) <- c(names(modelOut)[additionalOutputIds], 
                                    names(modelIn)[additionalInputIds])
         }else{

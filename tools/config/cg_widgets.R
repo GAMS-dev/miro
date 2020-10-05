@@ -525,7 +525,7 @@ observeEvent({input$widget_type
                                    ticks = isTRUE(currentConfig$ticks),
                                    noHcube = isTRUE(currentConfig$noHcube))
            rv$widgetConfig$minStep <- currentConfig$minStep
-           rv$widgetConfig$label <- currentConfig$label
+           rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
            dynamicDef <- getWidgetDependencies("slider", rv$widgetConfig$default)
@@ -716,7 +716,7 @@ observeEvent({input$widget_type
                                    ticks = isTRUE(currentConfig$ticks),
                                    noHcube = isTRUE(currentConfig$noHcube))
            rv$widgetConfig$minStep <- currentConfig$minStep
-           rv$widgetConfig$label <- currentConfig$label
+           rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
            staticMinInput <- numericInput("slider_min", lang$adminMode$widgets$sliderrange$min, 
@@ -852,7 +852,7 @@ observeEvent({input$widget_type
                                    noHcube = isTRUE(currentConfig$noHcube),
                                    clearValue = isTRUE(currentConfig$clearValue),
                                    multiple = isTRUE(currentConfig$multiple))
-           rv$widgetConfig$label <- currentConfig$label
+           rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            rv$widgetConfig$aliases <- currentConfig$aliases
            dynamicChoices <- getWidgetDependencies("dropdown", rv$widgetConfig$choices)
            singletonSetId <- NA_integer_
@@ -976,7 +976,7 @@ observeEvent({input$widget_type
                                    value = identical(currentConfig$value, 1L),
                                    noHcube = isTRUE(currentConfig$noHcube),
                                    class =  "checkbox-material")
-           rv$widgetConfig$label <- currentConfig$label
+           rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            insertUI(selector = "#widget_options",
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",
@@ -1015,7 +1015,7 @@ observeEvent({input$widget_type
                                    autoclose = if(identical(currentConfig$autoclose, FALSE)) FALSE else TRUE,
                                    noHcube = isTRUE(currentConfig$noHcube))
            rv$widgetConfig$value <- currentConfig$value
-           rv$widgetConfig$label <- currentConfig$label
+           rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            rv$widgetConfig$min <- currentConfig$min
            rv$widgetConfig$max <- currentConfig$max
            rv$widgetConfig$daysofweekdisabled <- currentConfig$daysofweekdisabled
@@ -1131,7 +1131,7 @@ observeEvent({input$widget_type
                                    autoclose = if(identical(currentConfig$autoclose, FALSE)) FALSE else TRUE,
                                    noHcube = isTRUE(currentConfig$noHcube))
            rv$widgetConfig[["start"]] <- currentConfig[["start"]]
-           rv$widgetConfig$label <- currentConfig$label
+           rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            rv$widgetConfig$end <- currentConfig$end
            rv$widgetConfig$min <- currentConfig$min
            rv$widgetConfig$max <- currentConfig$max
@@ -1260,7 +1260,7 @@ observeEvent({input$widget_type
                                    value = if(length(currentConfig$value)) currentConfig$value else "",
                                    placeholder = if(length(currentConfig$placeholder)) currentConfig$placeholder else "",
                                    clearValue = isTRUE(currentConfig$clearValue))
-           rv$widgetConfig$label <- currentConfig$label
+           rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            singletonSetId <- NA_integer_
            if(scalarsFileName %in% names(modelInRaw)){
              singletonSetId <- match(currentWidgetSymbolName, modelInRaw[[scalarsFileName]]$symnames)[1L]
@@ -1305,7 +1305,7 @@ observeEvent({input$widget_type
                                    decimalCharacter = if(length(currentConfig[["decimalCharacter"]])) currentConfig[["decimalCharacter"]] else ".",
                                    digitGroupSeparator = if(length(currentConfig[["digitGroupSeparator"]])) currentConfig[["digitGroupSeparator"]] else ",",
                                    sign = if(length(currentConfig$sign)) currentConfig$sign else NULL)
-           rv$widgetConfig$label <- currentConfig$label
+           rv$widgetConfig$label <- checkLength(TRUE, currentConfig$label, widgetAlias)
            insertUI(selector = "#widget_options",
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",

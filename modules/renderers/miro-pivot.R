@@ -195,7 +195,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       numericCols <- vapply(data, class, character(1L), USE.NAMES = FALSE) %in% c("numeric", "integer")
       if(sum(numericCols) > 1L){
         # data is already pivoted
-        flog.warn("MIRO Pivot should not be used to render a symbol that is already pivoted. Please declare your symbol as parameter and not as table.")
+        flog.info("%s is already pivoted. MIRO pivot will unpivot the symbol.",
+                  options[["_metadata_"]]$symname)
         data <- pivot_longer(data, names(data)[numericCols], names_to = "Hdr", 
                              values_to = "value", names_repair = "unique")
         valueColName <- "value"

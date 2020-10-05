@@ -441,6 +441,14 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     if(length(names)){
       names(symDF) <- names
     }
+    if(symName %in% names(private$dropdownAliases) && length(symDF) == 2L){
+      aliasId <- match(symDF[[2L]], private$dropdownAliases[[symName]]$aliases)
+      hasChoices <- !is.na(aliasId)
+      if(any(hasChoices)){
+        symChoices <- private$dropdownAliases[[symName]]$choices[aliasId[hasChoices]]
+        symDF[which(hasChoices), 1L] <- symChoices
+      }
+    }
     return(symDF)
   }
 ))

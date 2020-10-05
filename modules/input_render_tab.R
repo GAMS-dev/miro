@@ -21,12 +21,13 @@ getVisibleTabData <- function(id, type){
     if(length(data) < length(modelIn[[id]]$headers) - 1L){
       return(modelInTemplate[[id]])
     }
-    return(select(pivot_longer(data, 
-                               cols = seq(length(modelIn[[id]]$headers) - 1L, 
-                                          length(data)),
-                               names_to = modelIn[[id]]$pivotCols[[1]], 
-                               values_to = names(modelIn[[id]]$headers)[length(modelIn[[id]]$headers)],
-                               values_drop_na = TRUE), !!!names(modelIn[[id]]$headers)))
+    return(fixColTypes(select(pivot_longer(data, 
+                                           cols = seq(length(modelIn[[id]]$headers) - 1L, 
+                                                      length(data)),
+                                           names_to = modelIn[[id]]$pivotCols[[1]], 
+                                           values_to = names(modelIn[[id]]$headers)[length(modelIn[[id]]$headers)],
+                                           values_drop_na = TRUE), !!!names(modelIn[[id]]$headers)),
+                       modelIn[[id]]$colTypes))
   }
   return(data)
 } 
@@ -56,9 +57,6 @@ getInputDataset <- function(id, visible = FALSE){
              mutate_if(is.character, 
                        replace_na, replace = ""))
   }
-  intermDataTmp <- fixColTypes(intermDataTmp, 
-                               modelIn[[id]]$colTypes) %>%
-    replace(is.na(.), "")
   
   return(intermDataTmp)
 }
@@ -127,7 +125,12 @@ observe({
     j <- as.integer(strsplit(input[[paste0("inputTabset", i)]], "_")[[1]][2])
     i <- inputTabs[[i]][j]
   }else{
-    i <- inputTabs[[i]][1]
+    i <- inputTabs[[i]]
+    if(length(i) > 1L){
+      # always enable if multiple symbols on same tab
+      enableEl(session, "#btGraphIn")
+      return()
+    }
   }
   if(is.null(configGraphsIn[[i]]) || isEmptyInput[i]){
     disableEl(session, "#btGraphIn")
@@ -142,69 +145,71 @@ observeEvent(input$btGraphIn, {
   }
   if(length(inputTabTitles[[i]]) > 1L){
     j <- as.integer(strsplit(input[[paste0("inputTabset", i)]], "_")[[1]][2])
-    i <- inputTabs[[i]][j]
+    ids <- inputTabs[[i]][j]
   }else{
-    i <- inputTabs[[i]][1]
+    ids <- inputTabs[[i]]
   }
-  toggleEl(session, "#graph-in_" %+% i)
-  toggleEl(session, "#data-in_" %+% i)
-  
-  if(modelInputGraphVisible[[i]]){
-    flog.debug("Graph view for model input in sheet: %d deactivated", i)
-    modelInputGraphVisible[[i]] <<- FALSE
-    return()
-  }else{
-    flog.debug("Graph view for model input in sheet: %d activated.", i)
-    modelInputGraphVisible[[i]] <<- TRUE
-  }
-  
-  if(is.null(configGraphsIn[[i]])){
-    return()
-  }else if(modelIn[[i]]$type %in% c("hot", "dt")){
-    errMsg <- NULL
-    tryCatch({
-      data <- getInputDataset(i, visible = TRUE)
-    }, error = function(e){
-      flog.error("Dataset: '%s' could not be loaded. Error message: '%s'.", 
-                 modelInAlias[i], e)
-      errMsg <<- sprintf(lang$errMsg$GAMSInput$noData, 
-                         modelInAlias[i])
-    })
-    if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
-      return()
-    }
-  }else{
-    data <- tryCatch(isolate(modelInputDataVisible[[i]]()), error = function(e){
-      flog.warn("Problems getting data from custom renderer. Error message: %s", conditionMessage(e))
-      return(modelInTemplate[[i]])
-    })
-  }
-  
   errMsg <- NULL
-  tryCatch({
-    if(is.null(rendererEnv[[paste0("in_", i)]])){
-      rendererEnv[[paste0("in_", i)]] <- new.env(parent = emptyenv())
+  lapply(ids, function(i){
+    toggleEl(session, "#graph-in_" %+% i)
+    toggleEl(session, "#data-in_" %+% i)
+    
+    if(modelInputGraphVisible[[i]]){
+      flog.debug("Graph view for model input in sheet: %d deactivated", i)
+      modelInputGraphVisible[[i]] <<- FALSE
+      return()
     }else{
-      for(el in ls(envir = rendererEnv[[paste0("in_", i)]])){
-        if("Observer" %in% class(rendererEnv[[paste0("in_", i)]][[el]])){
-          rendererEnv[[paste0("in_", i)]][[el]]$destroy()
+      flog.debug("Graph view for model input in sheet: %d activated.", i)
+      modelInputGraphVisible[[i]] <<- TRUE
+    }
+    
+    if(is.null(configGraphsIn[[i]])){
+      return()
+    }else if(modelIn[[i]]$type %in% c("hot", "dt")){
+      errMsg <- NULL
+      tryCatch({
+        data <- getInputDataset(i, visible = TRUE)
+      }, error = function(e){
+        flog.error("Dataset: '%s' could not be loaded. Error message: '%s'.", 
+                   modelInAlias[i], e)
+        errMsg <<- sprintf(lang$errMsg$GAMSInput$noData, 
+                           modelInAlias[i])
+      })
+      if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
+        return()
+      }
+    }else{
+      data <- tryCatch(isolate(modelInputDataVisible[[i]]()), error = function(e){
+        flog.warn("Problems getting data from custom renderer. Error message: %s", conditionMessage(e))
+        return(modelInTemplate[[i]])
+      })
+    }
+    
+    tryCatch({
+      if(is.null(rendererEnv[[paste0("in_", i)]])){
+        rendererEnv[[paste0("in_", i)]] <- new.env(parent = emptyenv())
+      }else{
+        for(el in ls(envir = rendererEnv[[paste0("in_", i)]])){
+          if("Observer" %in% class(rendererEnv[[paste0("in_", i)]][[el]])){
+            rendererEnv[[paste0("in_", i)]][[el]]$destroy()
+          }
         }
       }
-    }
-    callModule(renderData, "in_" %+% i, 
-               type = configGraphsIn[[i]]$outType, 
-               data = data,
-               dtOptions = config$datatable, 
-               graphOptions = configGraphsIn[[i]]$graph, 
-               pivotOptions = configGraphsIn[[i]]$pivottable, 
-               customOptions = configGraphsIn[[i]]$options,
-               roundPrecision = roundPrecision, modelDir = modelDir,
-               rendererEnv = rendererEnv[[paste0("in_", i)]],
-               views = views, attachments = attachments)
-  }, error = function(e) {
-    flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", 
-               modelInAlias[i], e)
-    errMsg <<- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
+      callModule(renderData, "in_" %+% i, 
+                 type = configGraphsIn[[i]]$outType, 
+                 data = data,
+                 dtOptions = config$datatable, 
+                 graphOptions = configGraphsIn[[i]]$graph, 
+                 pivotOptions = configGraphsIn[[i]]$pivottable, 
+                 customOptions = configGraphsIn[[i]]$options,
+                 roundPrecision = roundPrecision, modelDir = modelDir,
+                 rendererEnv = rendererEnv[[paste0("in_", i)]],
+                 views = views, attachments = attachments)
+    }, error = function(e) {
+      flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", 
+                 modelInAlias[i], e)
+      errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), sep = "\n")
+    })
   })
   showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
 })
@@ -261,7 +266,8 @@ lapply(modelInTabularData, function(sheet){
           data[1, ] <- NA
           data <- mutate_if(data, is.character, 
                             replace_na, replace = "")
-          if(!is.null(configGraphsIn[[i]])){
+          if(!is.null(configGraphsIn[[i]]) &&
+             length(inputTabs[[tabSheetMap$input[[i]]]]) == 1L){
             disableEl(session, "#btGraphIn")
           }
           isEmptyInput[i] <<- TRUE
@@ -274,7 +280,8 @@ lapply(modelInTabularData, function(sheet){
         modelInputDataVisible[[i]] <<- data
       }else{
         if(!nrow(data)){
-          if(!is.null(configGraphsIn[[i]])){
+          if(!is.null(configGraphsIn[[i]]) &&
+             length(inputTabs[[tabSheetMap$input[[i]]]]) == 1L){
             disableEl(session, "#btGraphIn")
           }
           isEmptyInput[i] <<- TRUE
@@ -303,7 +310,8 @@ lapply(modelInTabularData, function(sheet){
           modelInputData[[i]][1, ] <<- NA
           modelInputData[[i]] <- mutate_if(modelInputData[[i]], is.character, 
                                            replace_na, replace = "")
-          if(!is.null(configGraphsIn[[i]])){
+          if(!is.null(configGraphsIn[[i]]) &&
+             length(inputTabs[[tabSheetMap$input[[i]]]]) == 1L){
             disableEl(session, "#btGraphIn")
           }
           isEmptyInput[i] <<- TRUE
@@ -317,7 +325,8 @@ lapply(modelInTabularData, function(sheet){
         }
         isEmptyInput[i] <<- FALSE
       }else{
-        if(!is.null(configGraphsIn[[i]])){
+        if(!is.null(configGraphsIn[[i]]) &&
+           length(inputTabs[[tabSheetMap$input[[i]]]]) == 1L){
           disableEl(session, "#btGraphIn")
         }
         isEmptyInput[i] <<- TRUE
@@ -337,7 +346,8 @@ lapply(modelInTabularData, function(sheet){
         isPivoted <- TRUE
         tabData  <- pivotData(i, tabData)
         colnames <- tabData$colnames
-        tabData  <- tabData$data
+        tabData  <- mutate_if(tabData$data, is.numeric, as.character) %>%
+          replace(is.na(.), "")
       }else{
         colnames <- attr(modelInputData[[i]], "aliases")
         if(!length(colnames)){

@@ -768,10 +768,10 @@ observeEvent(input$remove_attach, {
     rv$generalConfig$outputAttachments <- NULL
   }
 })
-changeAndValidateGroupMembers <- function(arrayID, groupMembers, HTMLarrayID){
+changeAndValidateGroupMembers <- function(arrayID, groupMembers, HTMLarrayID, minNoMembers = 2L){
   arrayIdx <- indexMap$push(arrayID, groupMembers[1])
   
-  if(length(groupMembers) > 2L && 
+  if(length(groupMembers) > minNoMembers && 
      !any(groupMembers[-1] %in% unlist(lapply(rv$generalConfig[[arrayID]][-arrayIdx], "[[", "members"), use.names = FALSE))){
     newMembers <- groupMembers[2:length(groupMembers)]
     if(arrayIdx <= length(rv$generalConfig[[arrayID]]) && length(rv$generalConfig[[arrayID]][[arrayIdx]])){
@@ -795,7 +795,8 @@ changeAndValidateGroupMembers <- function(arrayID, groupMembers, HTMLarrayID){
     }
     newMembers <- NULL
     showElReplaceTxt(session, paste0("#", HTMLarrayID, groupMembers[1], "_err"), 
-                     lang$adminMode$widgets$validate$val37)
+                     if(identical(minNoMembers, 2L)) lang$adminMode$widgets$validate$val37
+                     else lang$adminMode$widgets$validate$val60)
   }
   if(arrayIdx > length(groupTemp[[arrayID]])){
     groupTemp[[arrayID]][[arrayIdx]] <<- list(members = newMembers)
@@ -809,7 +810,7 @@ observeEvent(input$group_memberIn, {
 })
 observeEvent(input$group_memberWidget, {
   changeAndValidateGroupMembers("inputWidgetGroups", input$group_memberWidget, 
-                                "group_memberWidget")
+                                "group_memberWidget", 1L)
 })
 observeEvent(input$group_memberOut, {
   changeAndValidateGroupMembers("outputGroups", input$group_memberOut, 
