@@ -67,6 +67,89 @@
    "title":"Configuration file schema",
    "description":"GAMS MIRO configuration file schema",
    "type":"object",
+   "definitions": {
+    "miroPivotOptions":{
+      "description":"MIRO pivot options",
+      "type":"object",
+      "additionalProperties":false,
+      "properties":{
+         "rows":{  
+            "description":"Columns in the symbol to prepopulate the rows of the pivot table.",
+            "type":["array", "string", "null"],
+            "minLength":1,
+            "uniqueItems":true,
+            "minItems":0,
+            "items":{  
+               "type":"string",
+               "minLength":1
+            },
+            "default":null
+         },
+         "cols":{
+            "description":"Columns in the symbol to prepopulate the columns of the pivot table.",
+            "type":"object",
+            "additionalProperties":{
+               "type":["array", "string", "null"],
+               "uniqueItems":true
+            }
+         },
+         "aggregations":{
+            "description":"Columns in the symbol to prepopulate the aggregations of the pivot table.",
+            "type":"object",
+            "additionalProperties":{
+               "type":["array", "string", "null"],
+               "uniqueItems":true
+            }
+         },
+         "aggregationFunction":{
+            "description":"Function to use for aggregating data.",
+            "type":"string",
+            "enum": ["sum", "mean", "median", "min", "max", "count"]
+         },
+         "filter":{
+            "description":"Columns in the symbol to prepopulate the filter of the pivot table (key) and the element to be filtered by (value).",
+            "type":"object",
+            "additionalProperties":{
+               "type":["array", "string"],
+               "uniqueItems":true
+            }
+         },
+         "domainFilter":{
+           "description":"Domain filter that will be displayed as tabs and filter a domain by all elements except for the empty string",
+            "type":"object",
+            "additionalProperties":false,
+            "properties":{  
+               "domains":{  
+                  "description":"Domains that can be filtered.",
+                  "type":["array", "string"],
+                  "minItems":1,
+                  "uniqueItems":true,
+                  "items":{  
+                     "type":"string"
+                  }
+               },
+               "default":{
+                 "description":"Domain that is filtered on startup. (optional)",
+                  "type":"string"
+               },
+               "filterVal":{
+                 "description":"String (UEL) to filter by (optional)",
+                  "type":"string"
+               }
+            }
+         },
+         "pivotRenderer":{
+           "description":"Sepcify the default renderer.",
+            "type":"string",
+            "enum": ["table", "line", "bar", "stackedbar", "radar"]
+         },
+         "enablePersistentViews": {
+           "description":"Enable persistent views.",
+           "type": "boolean"
+         }
+      }
+    }
+   },
    "additionalProperties":false,
    "properties":{  
       "language":{  
@@ -166,7 +249,8 @@
          "type":"string",
          "enum":[  
             "split",
-            "tab"
+            "tab",
+            "pivot"
          ],
          "default":"split"
       },
@@ -238,7 +322,6 @@
               "newHeaders":{
                 "description":"Specify new headers (number needs to match dimension of symbol)",
                 "type":"array",
-                "uniqueItems":true,
                 "items":{
                   "type":"string",
                   "minLength": 1
@@ -782,6 +865,10 @@
                        "integer"
                      ],
                      "minLength":1
+                   },
+                   "clearValue":{
+                      "description":"Whether to communicate only element text with GAMS. This will not mess up the UEL order.",
+                      "type":"boolean"
                    }
                  },
                  "required":[  
@@ -858,12 +945,24 @@
                        "table"
                      ]
                    },
-                   "alias":{  
+                   "alias":{
                      "type":"string",
                      "minLength":1
                    },
+                   "label":{
+                     "type":"string"
+                   },
+                   "tableType": {
+                     "description":"Choose type of table",
+                     "type":"string",
+                     "enum":[
+                       "default",
+                       "bigdata",
+                       "pivot"
+                     ]
+                   },
                    "bigData":{  
-                     "description":"Does the table represent a large dataset (i.e. more than 20.000 records)?",
+                     "description":"DEPRECATED! Use tableType instead!",
                      "type":"boolean",
                      "default": false
                    },
@@ -900,6 +999,9 @@
                         "type":"string",
                         "minLength":1
                       }
+                    },
+                    "options":{
+                      "$ref": "#/definitions/miroPivotOptions"
                     }
                  },
                  "required":[  
@@ -1030,7 +1132,7 @@
                         "uniqueItems":true,
                         "items":{
                             "type": "string",
-                            "enum":["copy", "csv", "excel", "pdf", "print"]
+                            "enum":["copy", "csv", "excel", "pdf", "print", "colvis"]
                         }
                      },
                      "pageLength":{  
@@ -1177,7 +1279,7 @@
                               "uniqueItems":true,
                               "items":{
                                   "type": "string",
-                                  "enum":["copy", "csv", "excel", "pdf", "print"]
+                                  "enum":["copy", "csv", "excel", "pdf", "print", "colvis"]
                               }
                            },
                            "pageLength":{  
@@ -1250,42 +1352,99 @@
                         ]
                      },
                      "options":{
-                       "type": "object",
-                       "additionalProperties":false,
-                       "properties":{  
-                        "width":{  
-                           "description":"Width of the output element.",
-                           "type":"integer",
-                           "minimum":0,
-                           "default":4
-                        },
-                        "color":{  
-                           "type":"string",
-                           "description":"Background color of value box",
-                           "minLength":0,
-                           "default":"aqua"
-                        },
-                        "icon":{  
-                           "description":"icon for value box",
-                           "type":"object",
+                     "oneOf":[
+                        {
+                           "type": "object",
+                           "additionalProperties":false,
                            "properties":{  
-                              "name":{  
-                                 "type":"string",
-                                 "description":"Name of icon. Icons are drawn from the Font Awesome and Glyphicons libraries.",
-                                 "minLength":0
+                              "width":{  
+                                 "description":"Width of the output element.",
+                                 "type":"integer",
+                                 "minimum":0,
+                                 "default":4
                               },
-                              "lib":{  
+                              "color":{  
                                  "type":"string",
-                                 "description":"Name of library where icon is from.",
-                                 "enum":[  
-                                    "glyphicon",
-                                    "font-awesome"
-                                 ],
-                                 "default":"font-awesome"
+                                 "description":"Background color of value box",
+                                 "minLength":0,
+                                 "default":"aqua"
+                              },
+                              "icon":{  
+                                 "description":"icon for value box",
+                                 "type":"object",
+                                 "properties":{  
+                                    "name":{  
+                                       "type":"string",
+                                       "description":"Name of icon. Icons are drawn from the Font Awesome and Glyphicons libraries.",
+                                       "minLength":0
+                                    },
+                                    "lib":{  
+                                       "type":"string",
+                                       "description":"Name of library where icon is from.",
+                                       "enum":[  
+                                          "glyphicon",
+                                          "font-awesome"
+                                       ],
+                                       "default":"font-awesome"
+                                    }
+                                 }
                               }
                            }
+                        },
+                        {
+                            "type": "array",
+                            "items": [
+                               {
+                                 "type": "object",
+                                 "properties": {
+                                      "type": "object",
+                                      "additionalProperties":{  
+                                        "type":"object",
+                                        "additionalProperties":false,
+                                        "properties":{
+                                          "icon": {
+                                            "description": "Specify the icon to use for the valuebox",
+                                            "type": "object",
+                                            "properties": {
+                                              "name": {
+                                                "type": "string",
+                                                "minLength": 1
+                                              },
+                                              "lib": {
+                                                "description": "Specify the library to use for the valuebox icon",
+                                                "type": "string",
+                                                "minLength": 1
+                                              }
+                                            },
+                                            "required": [
+                                              "name",
+                                              "lib"
+                                            ]
+                                          },
+                                          "color": {
+                                            "description": "Specify the color to use for the valuebox",
+                                            "type": "string",
+                                            "minLength": 1
+                                          },
+                                          "description": {
+                                            "description": "Custom description to use for the valuebox",
+                                            "type": "string",
+                                            "minLength": 1
+                                          },
+                                          "round": {
+                                             "description": "Specify the rounding to use for the valuebox value",
+                                             "type": ["integer", "string"],
+                                             "minLength": 1,
+                                             "minimum": 0
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "maxProperties": 12 
+                               }
+                            ]
                         }
-                       }
+                     ]
                      }
                   },
                   "additionalProperties":false,
@@ -1518,86 +1677,8 @@
                         "default":null
                      },
                      "options":{
-                        "description":"Additional options",
-                        "type":"object",
-                        "additionalProperties":false,
-                        "properties":{  
-                           "rows":{  
-                              "description":"Columns in the symbol to prepopulate the rows of the pivot table.",
-                              "type":["array", "string", "null"],
-                              "minLength":1,
-                              "uniqueItems":true,
-                              "minItems":0,
-                              "items":{  
-                                 "type":"string",
-                                 "minLength":1
-                              },
-                              "default":null
-                           },
-                           "cols":{
-                              "description":"Columns in the symbol to prepopulate the columns of the pivot table.",
-                              "type":"object",
-                              "additionalProperties":{
-                                 "type":["array", "string", "null"],
-                                 "uniqueItems":true
-                              }
-                           },
-                           "aggregations":{
-                              "description":"Columns in the symbol to prepopulate the aggregations of the pivot table.",
-                              "type":"object",
-                              "additionalProperties":{
-                                 "type":["array", "string", "null"],
-                                 "uniqueItems":true
-                              }
-                           },
-                           "aggregationFunction":{
-                              "description":"Function to use for aggregating data.",
-                              "type":"string",
-                              "enum": ["sum", "mean", "median", "min", "max", "count"]
-                           },
-                           "filter":{
-                              "description":"Columns in the symbol to prepopulate the filter of the pivot table (key) and the element to be filtered by (value).",
-                              "type":"object",
-                              "additionalProperties":{
-                                 "type":["array", "string"],
-                                 "uniqueItems":true
-                              }
-                           },
-                           "domainFilter":{
-                             "description":"Domain filter that will be displayed as tabs and filter a domain by all elements except for the empty string",
-                              "type":"object",
-                              "additionalProperties":false,
-                              "properties":{  
-                                 "domains":{  
-                                    "description":"Domains that can be filtered.",
-                                    "type":["array", "string"],
-                                    "minItems":1,
-                                    "uniqueItems":true,
-                                    "items":{  
-                                       "type":"string"
-                                    }
-                                 },
-                                 "default":{
-                                   "description":"Domain that is filtered on startup. (optional)",
-                                    "type":"string"
-                                 },
-                                 "filterVal":{
-                                   "description":"String (UEL) to filter by (optional)",
-                                    "type":"string"
-                                 }
-                              }
-                           },
-                           "pivotRenderer":{
-                             "description":"Sepcify the default renderer.",
-                              "type":"string",
-                              "enum": ["table", "line", "bar", "stackedbar", "radar"]
-                           },
-                           "enablePersistentViews": {
-                             "description":"Enable persistent views (experimental).",
-                             "type": "boolean"
-                           }
-                        }
-                     }
+                        "$ref": "#/definitions/miroPivotOptions"
+                      }
                   },
                   "additionalProperties":false,
                   "required":[  
@@ -1872,7 +1953,7 @@
                      "uniqueItems":true,
                      "items":{
                          "type": "string",
-                         "enum":["copy", "csv", "excel", "pdf", "print"]
+                         "enum":["copy", "csv", "excel", "pdf", "print", "colvis"]
                      }
                   },
                   "pageLength":{  
