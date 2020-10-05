@@ -214,8 +214,10 @@ test_that("Writing of singleton set with data from dropdown and clearValue=TRUE 
                               `scalarSymbols$symtext` = c('sub_i', 'freight in dollars per case per thousand miles',
                                                           'minimum shipment (MIP- and MINLP-only)',
                                                           'beta (MINLP-only)'),
-                              `vapply(...)` = c('||test', NA_character_, NA_character_,
+                              `vapply(...)` = c('seattle||test', NA_character_, NA_character_,
                                                 NA_character_)))
+  expect_identical(gdxio$rgdx(filePath, "sub_i"), tibble::tibble(`1` = "seattle",
+                                                                 `2` = "test"))
 })
 
 test_that("Reading / writing of textOnlySymbols works", {
