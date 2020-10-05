@@ -1,9 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
 ZIP_TOOL=zip
 if ! command -v zip &> /dev/null
 then
-    ZIP_TOOL=gmszip
+    if [[ ! -z "${GAMS_SYS_DIR}" ]]; then
+       GAMS_SYS_DIR_TMP=${GAMS_SYS_DIR}/
+    fi
+    ZIP_TOOL=${GAMS_SYS_DIR_TMP}gmszip
 fi
 
 echo "ZIP tool: $ZIP_TOOL"
