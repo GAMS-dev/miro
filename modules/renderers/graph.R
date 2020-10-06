@@ -511,7 +511,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                        lng1 = data[[options$flows[[j]]$lng1]] + (j - 1)*eps, 
                        lat1 = data[[options$flows[[j]]$lat1]] + (j - 1)*eps,
                        color = options$flows[[j]]$color,
-                       flow = coalesce(data[[options$flows[[j]]$flow]], 0L), opacity = options$flows[[j]]$opacity,
+                       flow = coalesce(data[[options$flows[[j]]$flow]], 0), opacity = options$flows[[j]]$opacity,
                        minThickness = options$flows[[j]]$minThickness, 
                        layerId = if(length(options$flows[[j]]$layerId)) 
                          eval(parseLabel(options$flows[[j]]$layerId, names(data))),
