@@ -97,6 +97,8 @@ these components are included below):
 - chroma, https://github.com/gka/chroma.js
 - highlight.js, https://github.com/isagalaev/highlight.js
 - tar implementation from R, http://www.r-project.org/
+- commonmark, https://github.com/jeroen/commonmark or https://cran.r-project.org/web/packages/commonmark/index.html
+- cpp11, https://github.com/r-lib/cpp11 or https://cran.rstudio.com/web/packages/cpp11/index.html
 - R6, https://github.com/r-lib/R6/ or https://cran.r-project.org/web/packages/R6/index.html
 - processx https://github.com/r-lib/processx or https://cran.r-project.org/web/packages/processx/index.html
 - dplyr https://github.com/tidyverse/dplyr or https://cran.r-project.org/web/packages/dplyr/index.html
@@ -134,6 +136,7 @@ these components are included below):
 - BH https://github.com/eddelbuettel/bh or https://cran.r-project.org/web/packages/BH/index.html
 - plogr https://github.com/krlmlr/plogr or https://cran.r-project.org/web/packages/plogr/index.html
 - httpuv https://github.com/rstudio/httpuv or https://cran.r-project.org/web/packages/httpuv/index.html
+- fs https://github.com/r-lib/fs or https://cran.r-project.org/web/packages/fs/index.html
 - mime https://github.com/yihui/mime or https://cran.r-project.org/web/packages/mime/index.html
 - xtable https://github.com/cran/xtable or https://cran.r-project.org/web/packages/xtable/index.html
 - digest https://github.com/eddelbuettel/digest or https://cran.r-project.org/web/packages/digest/index.html
@@ -143,6 +146,7 @@ these components are included below):
 - promises https://github.com/rstudio/promises or https://cran.r-project.org/web/packages/promises/index.html
 - crayon https://github.com/r-lib/crayon or https://cran.r-project.org/web/packages/crayon/index.html
 - rlang https://github.com/r-lib/rlang or https://cran.r-project.org/web/packages/rlang/index.html
+- sys https://github.com/jeroen/sys or https://cran.r-project.org/web/packages/sys/index.html
 - htmlwidgets https://github.com/ramnathv/htmlwidgets or https://cran.r-project.org/web/packages/htmlwidgets/index.html
 - magrittr https://github.com/tidyverse/magrittr or https://cran.r-project.org/web/packages/magrittr/index.html
 - crosstalk https://github.com/rstudio/crosstalk or https://cran.r-project.org/web/packages/crosstalk/index.html
@@ -200,7 +204,6 @@ these components are included below):
 - labeling https://github.com/cran/labeling or https://cran.r-project.org/web/packages/labeling/index.html
 - munsell https://github.com/cwickham/munsell/ or https://cran.r-project.org/web/packages/munsell/index.html
 - graphics https://github.com/zenspider/graphics or https://cran.r-project.org/web/packages/RGraphics/index.html
-- reshape2, https://github.com/hadley/reshape/ or https://cran.r-project.org/web/packages/reshape2/index.html
 - Matrix, https://cran.r-project.org/web/packages/Matrix/index.html
 - nlme, https://cran.r-project.org/web/packages/nlme/index.html
 - colorspace, https://cran.r-project.org/web/packages/colorspace/index.html
@@ -703,6 +706,7 @@ Section 8 -- Interpretation.
         - askpass, Copyright (c) 2018 Jeroen Ooms
         - timevis, Copyright (c) 2016 Dean Attali [aut, cre] (R interface), Almende B.V. [aut, cph] (vis.js library, http://visjs.org, http://www.almende.com/home)
         - dplyr, Copyright (c) 2013-2020 Hadley Wickham [aut, cre], Romain François [aut], Lionel Henry [aut], Kirill Müller [aut], RStudio [cph, fnd]
+        - cpp11, Copyright (c) 2020 RStudio
         - rhandsontable , Copyright (c) 2015-2018 Marcin Warpechowski, Handsoncode sp. z o.o., 
           Gregor Aisch, Tim Wood, Iskren Chernev, Moment.js contributors, David Bushell, 
           jQuery Foundation, Splunk Inc, Jon Rohan, James M. Greeneand, Företagsplatsen, 
@@ -717,6 +721,7 @@ Section 8 -- Interpretation.
         - plogr, Copyright (c) 2016 Kirill Müller [aut, cre], 
           Sergey Podobry [cph] (Author of the bundled plog library)
         - sourcetools, Copyright (c) 2015-2017 Kevin Ushey 
+        - sys, Copyright (c) 2019 Jeroen Ooms ORCID iD [aut, cre], Gábor Csárdi [ctb]
         - promises, Copyright (c) 2016-2017 RStudio, Inc. 
         - crayon, Copyright (c) 2014-2016 Gabor Csardi 
         - htmlwidgets, Copyright (c) 2016 Ramnath Vaidyanathan, Joe Cheng, 
@@ -746,7 +751,6 @@ Section 8 -- Interpretation.
         - KaTeX, Copyright (c) 2013-2019 Khan Academy and other contributors
         - labeling, Copyright (c) 2014 Justin Talbot
         - munsell, Copyright (c) 2016 Charlotte Wickham
-        - reshape2, Copyright (c) 2008-2016 Hadley Wickham
         - plyr, Copyright (c) 2014 Hadley Wickham [aut, cre]
         - fastmap, Copyright (c) 2019 RStudio
         - bootstrap, Copyright (c) 2011-2019 Twitter, Inc. 
@@ -1067,6 +1071,11 @@ Library.
             Hector Corrada Bravo [ctb], 
             Jeroen Ooms [ctb], 
             Winston Chang [ctb]
+        - fs, Copyright (c)
+            Jim Hester [aut, cre],
+            Hadley Wickham [aut],
+            libuv project contributors [cph] (libuv library), Joyent, Inc. and other Node contributors [cph] (libuv library),
+            RStudio [cph, fnd]
         - mime [expanded from: GPL], Copyright (c)
             Yihui Xie ORCID [aut, cre], 
             Jeffrey Horner [ctb], 
@@ -1822,6 +1831,7 @@ Public License instead of this License.  But first, please read
 -----------------------------------------------------------------------------
             The “2-Clause BSD License” (BSD-2-Clause)
         applies to: 
+        - commonmark, Copyright (c) 2017 Jeroen Ooms [aut, cre], John MacFarlane [cph] (Author of cmark)
         - writexl, Copyright (c) 2017 Jeroen Ooms [aut, cre], John McNamara [cph] (Author of libxlsxwriter), Gilles Vollant, Mathias Svensson (authors of minizip), Niels Provos (author of tree.h)
         - leaflet.providers, Copyright (c) 2019 Leslie Huang [aut, cre], Leaflet Providers contributors [ctb, cph] (Leaflet Providers plugin), RStudio [cph, fnd]
 -----------------------------------------------------------------------------
@@ -3277,6 +3287,181 @@ met:
     * Neither the name of Google Inc. nor the names of its
       contributors may be used to endorse or promote products derived
       from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+-----------------------------------------------------------------------------
+cmark (https://github.com/commonmark/cmark/)
+-----------------------------------------------------------------------------
+Copyright (c) 2014, John MacFarlane
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-----
+
+houdini.h, houdini_href_e.c, houdini_html_e.c, houdini_html_u.c
+
+derive from https://github.com/vmg/houdini (with some modifications)
+
+Copyright (C) 2012 Vicent Martí
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-----
+
+buffer.h, buffer.c, chunk.h
+
+are derived from code (C) 2012 Github, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-----
+
+utf8.c and utf8.c
+
+are derived from utf8proc
+(<http://www.public-software-group.org/utf8proc>),
+(C) 2009 Public Software Group e. V., Berlin, Germany.
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+-----
+
+The normalization code in normalize.py was derived from the
+markdowntest project, Copyright 2013 Karl Dubost:
+
+The MIT License (MIT)
+
+Copyright (c) 2013 Karl Dubost
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+-----
+
+The CommonMark spec (test/spec.txt) is
+
+Copyright (C) 2014-15 John MacFarlane
+
+Released under the Creative Commons CC-BY-SA 4.0 license:
+<http://creativecommons.org/licenses/by-sa/4.0/>.
+
+-----
+
+The test software in test/ is
+
+Copyright (c) 2014, John MacFarlane
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
