@@ -106,8 +106,17 @@ pivotData <- function(i, tabData){
     return(list(data = tabData, colnames = attr(modelInTemplate[[i]], "aliases")))
   }
   pivotIdx <- match(modelIn[[i]]$pivotCols[[1]], names(modelIn[[i]]$headers))[[1L]]
-  tabData <- pivot_wider(tabData, names_from = !!pivotIdx, 
-                         values_from = !!length(tabData))
+  if(tryCatch({
+    tabData <- pivot_wider(tabData, names_from = !!pivotIdx, 
+                           values_from = !!length(tabData))
+    FALSE
+  },
+  error = function(e){
+    TRUE
+  })){
+    return(list(data = tabData, colnames = attr(modelInTemplate[[i]], "aliases")))
+  }
+  
   attrTmp <- attr(modelInTemplate[[i]], "aliases")[-c(pivotIdx, length(modelInTemplate[[i]]))]
   attrTmp <- c(attrTmp, 
                names(tabData)[seq(length(attrTmp) + 1L, 
