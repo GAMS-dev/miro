@@ -579,70 +579,6 @@ vector2Csv <- function(vector){
     return(vector)
   }
 }
-showEl <- function(session, id){
-  session$sendCustomMessage("gms-showEl", id)
-}
-showElReplaceTxt <- function(session, id, txt){
-  session$sendCustomMessage("gms-showElReplaceTxt", list(id = id, txt = htmltools::htmlEscape(txt)))
-}
-hideEl <- function(session, id){
-  session$sendCustomMessage("gms-hideEl", id)
-}
-changeHeightEl <- function(session, id, height, delay = NULL){
-  session$sendCustomMessage("gms-changeHeightEl", list(id = id, height = height, delay = delay))
-}
-showHideEl <- function(session, id, delay = 2000, msg = NULL){
-  session$sendCustomMessage("gms-showHideEl", list(id = id, delay = delay, msg = msg))
-}
-enableEl <- function(session, id){
-  session$sendCustomMessage("gms-enableEl", id)
-}
-scrollDown <- function(session, id){
-  session$sendCustomMessage("gms-scrollDown", id)
-}
-disableEl <- function(session, id){
-  session$sendCustomMessage("gms-disableEl", id)
-}
-slideToggleEl <- function(session, id, duration = 400, toggleIconDiv = NULL){
-  session$sendCustomMessage("gms-slideToggleEl", 
-                            list(id = id, duration = duration, 
-                                 toggleIconDiv = toggleIconDiv))
-}
-toggleEl <- function(session, id){
-  session$sendCustomMessage("gms-toggleEl", id)
-}
-addClassEl <- function(session, id, class){
-  session$sendCustomMessage("gms-addClassEl", list(id = id, newclass = class))
-}
-removeClassEl <- function(session, id, class){
-  session$sendCustomMessage("gms-removeClassEl", list(id = id, oldclass = class))
-}
-emptyEl <- function(session, id){
-  session$sendCustomMessage("gms-emptyEl", id)
-}
-appendEl <- function(session, id, content, text = TRUE, scroll = FALSE, 
-                     triggerChange = FALSE){
-  session$sendCustomMessage("gms-appendEl", list(id = id, content = content, 
-                                                 text = text, scroll = scroll,
-                                                 triggerChange = triggerChange))
-}
-hideModal <- function(session, delay = 1L){
-  session$sendCustomMessage("gms-hideModal", delay)
-}
-updateAttachList <- function(session, id, fileName, token, labelCb, allowExec = FALSE){
-  session$sendCustomMessage("gms-updateAttachList", list(name = fileName, id = id, 
-                                                         token = token, labelCb = labelCb, 
-                                                         allowExec = allowExec))
-}
-fitTitleInBox <- function(session, id){
-  session$sendCustomMessage("gms-fitTitleInBox", id)
-}
-isBadScenName <- function(scenName){
-  return(grepl("^\\s*$", scenName)[[1L]] || nchar(scenName) > 63)
-}
-switchTab <- function(session, id){
-  session$sendCustomMessage("gms-switchTab", id)
-}
 # redefined reactiveFileReader and reactivePoll functions since the original shiny functions 
 # leak an observer that can not be destoryed
 # original implementation can be found here: 
@@ -1537,35 +1473,6 @@ appender.miro <- function(file){
     if(get("level", envir=sys.frame(-1)) <= loggingLevel)
       cat(line, sep='')
     cat(line, file=file, append=TRUE, sep='')
-  }
-}
-switchCompareMode <- function(session, mode, numberScenTabs){
-  if(identical(mode, "pivotView")){
-    hideEl(session, "#scen-split-view")
-    hideEl(session, "#scen-tab-view")
-    showEl(session, "#scen-pivot-view")
-    hideEl(session, "#btCompareScen")
-    session$sendCustomMessage("gms-setAttrib",
-                              list(selector = "#btCompareScen",
-                                   attr = "data-noshow", val = "true"))
-    return()
-  }
-  showEl(session, "#btCompareScen")
-  session$sendCustomMessage("gms-setAttrib",
-                            list(selector = "#btCompareScen",
-                                 attr = "data-noshow", val = "false"))
-  if(identical(mode, "splitView")){
-    if(numberScenTabs < 2){
-      disableEl(session, "#btCompareScen")
-    }
-    showEl(session, "#scen-split-view")
-    hideEl(session, "#scen-tab-view")
-    hideEl(session, "#scen-pivot-view")
-  }else{
-    enableEl(session, "#btCompareScen")
-    hideEl(session, "#scen-split-view")
-    showEl(session, "#scen-tab-view")
-    hideEl(session, "#scen-pivot-view")
   }
 }
 serverSelectInput <- function(session, inputId, label, choices, selected = NULL, multiple = FALSE, width = NULL, options = NULL, maxChoicesClientSide = 500L){
