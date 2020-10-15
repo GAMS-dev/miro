@@ -1750,7 +1750,7 @@
                "description":"Height of handsontable.",
                "type":"integer",
                "exclusiveMinimum":0,
-               "default":700
+               "default":600
             },
             "width":{  
                "description":"Width of handsontable.",
