@@ -629,11 +629,13 @@
   "renderers":{
     "miroPivot":{
       "btDownloadCsv": "Download CSV",
+      "btDownloadPng": "Download PNG",
       "btLoadView": "Load view",
       "btNewView": "Add view",
       "btEnableEdit": "Enable editing",
       "btAddRow": "Add row",
       "btRemoveRows": "Remove rows",
+      "cbHideEmptyCols": "Hide empty columns",
       "aggregateLabel": "aggregate",
       "filterLabel": "filter",
       "allPlaceholder": "All",

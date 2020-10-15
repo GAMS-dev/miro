@@ -129,7 +129,9 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                                                   lang$renderers$miroPivot$renderer$line,
                                                   lang$renderers$miroPivot$renderer$radar)),
                                        selected = if(length(options$pivotRenderer))
-                                         options$pivotRenderer else "table")),
+                                         options$pivotRenderer else "table"),
+                           if(isTRUE(options$enableHideEmptyCols))
+                              checkboxInput_MIRO(ns("hideEmptyCols"), lang$renderers$miroPivot$cbHideEmptyCols)),
                     column(width = 6L, style = "padding: 1em;",
                            tags$ul(id = ns("colIndexList"), class="drop-index-list vertical-index-list",
                                    genIndexList(indices$cols))),
@@ -846,7 +848,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if(noError){
           hideEl(session, paste0("#", ns("errMsg")))
         }
-        labels <- do.call(paste, c(dataTmp[seq_len(rowHeaderLen)], list(sep = ".")))
+        if(isTRUE(options$enableHideEmptyCols) && isTRUE(input$hideEmptyCols)){
+          labels <- do.call(paste, c(dataTmp[which(vapply(dataTmp[seq_len(rowHeaderLen)],
+                                                          function(x) !identical(as.character(unique(x)),
+                                                                                 if(length(options$emptyUEL))
+                                                                                   options$emptyUEL else "-"),
+                                                          logical(1L), USE.NAMES = FALSE))],
+                                     list(sep = ".")))
+        }else{
+          labels <- do.call(paste, c(dataTmp[seq_len(rowHeaderLen)], list(sep = ".")))
+        }
         if(!length(labels)){
           labels <- "value"
         }
@@ -904,7 +915,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         noRowHeaders <- attr(dataTmp, "noRowHeaders")
         hideEl(session, paste0("#", ns("loadPivotTable")))
         
-        datatable(dataTmp, extensions = c("Scroller", "FixedColumns", if(noRowHeaders > 5L) "Buttons"), 
+        datatable(dataTmp, extensions = c("Scroller", "FixedColumns"), 
                   selection = if(isEditable) "multiple" else "none", editable = isEditable,
                   container = DTbuildColHeaderContainer(names(dataTmp), 
                                                         noRowHeaders, 
@@ -937,8 +948,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 }")),
                                  scrollY = 400, scrollX = TRUE, scrollCollapse = TRUE,
                                  scroller = list(loadingIndicator = FALSE), dom = 'Bfrtip',
-                                 buttons = if(noRowHeaders > 5L) I("colvis"),
-                                 fixedColumns = list(leftColumns = noRowHeaders)), rownames = FALSE) %>%
+                                 fixedColumns = list(leftColumns = noRowHeaders),
+                                 columnDefs = if(isTRUE(options$enableHideEmptyCols) && isTRUE(input$hideEmptyCols))
+                                   list(list(visible = FALSE,
+                                             targets = which(vapply(dataTmp[seq_len(noRowHeaders)],
+                                                                    function(x) identical(as.character(unique(x)),
+                                                                                          if(length(options$emptyUEL))
+                                                                                            options$emptyUEL else "-"),
+                                                                    logical(1L), USE.NAMES = FALSE)) - 1L))), rownames = FALSE) %>%
           formatRound(seq(noRowHeaders + 1, length(dataTmp)), 
                       digits = roundPrecision)
       })

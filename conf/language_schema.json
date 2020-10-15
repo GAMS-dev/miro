@@ -2446,6 +2446,10 @@
               "type": "string",
               "minLength": 1
             },
+            "btDownloadPng": {
+              "type": "string",
+              "minLength": 1
+            },
             "btLoadView": {
               "type": "string",
               "minLength": 1
@@ -2463,6 +2467,10 @@
               "minLength": 1
             },
             "btRemoveRows": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cbHideEmptyCols": {
               "type": "string",
               "minLength": 1
             },
@@ -2624,7 +2632,7 @@
               "minProperties": 5
             }
           },
-          "minProperties": 27
+          "minProperties": 29
         },
         "datatable": {
           "type": "object",

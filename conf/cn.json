@@ -670,11 +670,13 @@
   "renderers":{
     "miroPivot":{
       "btDownloadCsv": "下载CSV",
+      "btDownloadPng": "下载PNG",
       "btLoadView": "加载视图",
       "btNewView": "添加视图",
       "btEnableEdit": "激活编辑",
       "btAddRow": "添加行",
       "btRemoveRows": "删除行",
+      "cbHideEmptyCols": "隐藏空列",
       "aggregateLabel": "汇总",
       "filterLabel": "过滤",
       "allPlaceholder": "全部",
