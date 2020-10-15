@@ -926,7 +926,7 @@ if(!is.null(errMsg)){
                                         is.null(lang$adminMode$database$cannotBeUndone)){
                                        "Are you sure that you want to delete all inconsistent database tables? This can not be undone! You might want to save the database first before proceeding."
                                      }else{
-                                       paste0(lang$adminMode$database$removeInconsistentConfirm, lang$adminMode$database$cannotBeUndone)
+                                       paste(lang$adminMode$database$removeInconsistentConfirm, lang$adminMode$database$cannotBeUndone)
                                      }, footer = tagList(
                                 modalButton(removeDbTabLang$cancel),
                                 actionButton("removeInconsistentDbTablesConfirm", label = removeDbTabLang$confirm, 
