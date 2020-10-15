@@ -517,7 +517,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           allowEmpty <- optionId %in% c("aggregations", "cols")
           if(initData && (allowEmpty || length(currentView[[optionId]][[filterIndex]]))){
             currentFilterVal <- currentView[[optionId]][[filterIndex]]
-            if(!identical(isolate(input[[paste0("filter_", filterIndex)]]), currentFilterVal))
+            if(currentFilterVal %in% filterElements[[filterIndex]] &&
+               !identical(isolate(input[[paste0("filter_", filterIndex)]]), currentFilterVal))
               noUpdateFilterEl[[filterIndex]] <<- TRUE
           }else{
             currentFilterVal <- isolate(input[[paste0("filter_", filterIndex)]])
