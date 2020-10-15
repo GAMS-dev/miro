@@ -93,6 +93,14 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                                             title = lang$renderers$miroPivot$btNewView),
                                downloadButton(ns("downloadCsv"), label = NULL,
                                               title = lang$renderers$miroPivot$btDownloadCsv),
+                               tags$a(id = ns("downloadPng"),
+                                      class = "btn btn-default bt-export-canvas",
+                                      download = "chart.png",
+                                      href = "#",
+                                      `data-canvasid` = ns("pivotChart"),
+                                      tags$i(class = "fa fa-download"),
+                                      title = lang$renderers$miroPivot$btDownloadPng,
+                                      style = "display:none;"),
                                tags$div(class="dropdown", style = "margin-top:10px;",
                                         tags$button(class="btn btn-default dropdown-toggle btn-dropdown",
                                                     type = "button", id = ns("toggleViewButton"),
@@ -898,8 +906,13 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           initRenderer <<- FALSE
         }
         if(!identical(pivotRenderer, "table")){
+          showEl(session, paste0("#", ns("downloadPng")))
+          hideEl(session, paste0("#", ns("downloadCsv")))
           return()
         }
+        hideEl(session, paste0("#", ns("downloadPng")))
+        showEl(session, paste0("#", ns("downloadCsv")))
+        
         changeHeightEl(session, paste0("#", ns("pivotChart")), 1, 500)
         showEl(session, paste0("#", ns("loadPivotTable")))
         dataTmp <- dataToRender()
