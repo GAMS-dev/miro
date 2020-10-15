@@ -1,6 +1,6 @@
 observeEvent(input$removeDbTables, {
   showModal(modalDialog(
-    lang$adminMode$database$removeConfirm,
+    lang$adminMode$database$removeDialogDesc,
     checkboxInput_MIRO("removeDbConfirmCb", lang$adminMode$database$removeCheck),
     footer = tagList(
       modalButton(lang$adminMode$database$cancel),
@@ -24,7 +24,7 @@ observeEvent(input$removeDbTablesConfirm, {
 })
 observeEvent(input$removeDbOrphans, {
   showModal(modalDialog(
-    lang$adminMode$database$removeOrphans,
+    lang$adminMode$database$removeOrphansDialogDesc,
     checkboxInput_MIRO("removeDbOrphansConfirmCb", lang$adminMode$database$removeOrphansCheck),
     footer = tagList(
       modalButton(lang$adminMode$database$cancel),
