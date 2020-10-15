@@ -877,7 +877,6 @@ if(!is.null(errMsg)){
              HTML("<br>"),
              verbatimTextOutput("errorMessages"),
              if(length(inconsistentTableNames)){
-               actionButton("removeDbTablesPre", lang$adminMode$database$remove)
                tagList(
                  tags$div(id = "db_remove_wrapper",
                           if(!exists("lang") || is.null(lang$adminMode$database$removeInconsistent)){
