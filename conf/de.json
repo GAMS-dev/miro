@@ -670,11 +670,13 @@
   "renderers":{
     "miroPivot":{
       "btDownloadCsv": "CSV herunterladen",
+      "btDownloadPng": "PNG herunterladen",
       "btLoadView": "View laden",
       "btNewView": "View hinzufügen",
       "btEnableEdit": "Bearbeitung aktivieren",
       "btAddRow": "Zeile hinzufügen",
       "btRemoveRows": "Zeilen entfernen",
+      "cbHideEmptyCols": "Leere Spalten ausblenden",
       "aggregateLabel": "aggregieren",
       "filterLabel": "filtern",
       "allPlaceholder": "Alle",
