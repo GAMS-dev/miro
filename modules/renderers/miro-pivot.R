@@ -142,10 +142,10 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                            style = "min-height: 400px;",
                            if(isTRUE(options[["_input_"]])){
                              tags$div(style = "margin-bottom:2px;",
-                               actionButton(ns("btAddRow"), lang$renderers$miroPivot$btAddRow),
-                               actionButton(ns("btRemoveRows"), lang$renderers$miroPivot$btRemoveRows, class = "bt-remove"),
-                               actionButton(ns("enableEdit"), lang$renderers$miroPivot$btEnableEdit,
-                                            style = "display:none")
+                                      actionButton(ns("btAddRow"), lang$renderers$miroPivot$btAddRow),
+                                      actionButton(ns("btRemoveRows"), lang$renderers$miroPivot$btRemoveRows, class = "bt-remove"),
+                                      actionButton(ns("enableEdit"), lang$renderers$miroPivot$btEnableEdit,
+                                                   style = "display:none")
                              )
                            },
                            tags$div(id = ns("errMsg"), class = "gmsalert gmsalert-error", 
@@ -603,19 +603,31 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           input[[paste0("filter_", filterIndex)]]
         }), if(bigData) 2000 else 500)
         rendererEnv[[ns(paste0("filter_", filterIndex))]] <- observe({
+          isInitialized <- TRUE
+          if(!initData && !filterIndex %in% rendererEnv[[ns("filtersInitialized")]]){
+            isInitialized <- FALSE
+            if(length(rendererEnv[[ns("filtersInitialized")]])){
+              rendererEnv[[ns("filtersInitialized")]] <- c(filterIndex,
+                                                           rendererEnv[[ns("filtersInitialized")]])
+            }else{
+              rendererEnv[[ns("filtersInitialized")]] <- filterIndex
+            }
+          }
           if(is.null(throttledFilters[[filterIndex]]())){
-            if(!filterIndex %in% isolate(c(input$aggregationIndexList, input$colIndexList))){
+            if(!isInitialized || 
+               !filterIndex %in% isolate(c(input$aggregationIndexList,
+                                           input$colIndexList))){
               return()
             }
           }
-          if(isFALSE(noUpdateFilterEl[[filterIndex]])){
-            isolate({
-              newVal <- updateFilter() + 1L
-              updateFilter(newVal)
-            })
-          }else{
+          if(!isFALSE(noUpdateFilterEl[[filterIndex]])){
             noUpdateFilterEl[[filterIndex]] <<- FALSE
+            return()
           }
+          isolate({
+            newVal <- updateFilter() + 1L
+            updateFilter(newVal)
+          })
         })
       })
       
