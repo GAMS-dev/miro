@@ -2946,7 +2946,7 @@ getValueboxOptions  <- reactive({
                                                              selectizeInput(paste0("valueBoxIcon_", i), label = NULL,
                                                                          choices = unique(c(langSpecificGraphs$valueboxIconChoices,
                                                                                      scalarConfig$icon$name)),
-                                                                         selected = if(length(scalarConfig$icon$name)) scalarConfig$icon$name,
+                                                                         selected = scalarConfig$icon$name,
                                                                          options = list(create = TRUE)))))
                                            
                                   )
