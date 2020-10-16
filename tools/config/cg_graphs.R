@@ -2943,9 +2943,11 @@ getValueboxOptions  <- reactive({
                                                                           value = if(length(scalarConfig$round)) scalarConfig$round else config$roundingDecimals))),
                                              column(7, class = "valuebox-right-col",
                                                     tags$div(title = lang$adminMode$graphs$valueboxOptions$icon,
-                                                             selectInput(paste0("valueBoxIcon_", i), label = NULL,
-                                                                         choices = langSpecificGraphs$valueboxIconChoices,
-                                                                         selected = if(length(scalarConfig$icon)) scalarConfig$icon))))
+                                                             selectizeInput(paste0("valueBoxIcon_", i), label = NULL,
+                                                                         choices = unique(c(langSpecificGraphs$valueboxIconChoices,
+                                                                                     scalarConfig$icon$name)),
+                                                                         selected = scalarConfig$icon$name,
+                                                                         options = list(create = TRUE)))))
                                            
                                   )
                                 })
