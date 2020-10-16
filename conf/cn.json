@@ -712,6 +712,7 @@
       },
       "renderer":{
         "table": "表格", 
+        "heatmap": "热图",
         "bar": "柱形图",
         "stackedbar": "堆积柱形图",
         "radar": "雷达图",

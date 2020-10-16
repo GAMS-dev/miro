@@ -671,6 +671,7 @@
       },
       "renderer":{
         "table": "Table", 
+        "heatmap": "Heatmap",
         "bar": "Bar chart",
         "stackedbar": "Stacked bar chart",
         "radar": "Radar chart",

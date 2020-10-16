@@ -711,7 +711,8 @@
         "max": "Max"
       },
       "renderer":{
-        "table": "Tabelle", 
+        "table": "Tabelle",
+        "heatmap": "Heatmap",
         "bar": "Balkendiagramm",
         "stackedbar": "Gestapeltes Balkendiagramm",
         "radar": "Radardiagramm",

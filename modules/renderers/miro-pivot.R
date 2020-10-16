@@ -130,8 +130,9 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
            fluidRow(style = "margin:0", 
                     column(width = 2L,
                            selectInput(ns("pivotRenderer"), "", 
-                                       setNames(c("table", "bar", "stackedbar", "line", "radar"),
+                                       setNames(c("table", "heatmap", "bar", "stackedbar", "line", "radar"),
                                                 c(lang$renderers$miroPivot$renderer$table,
+                                                  lang$renderers$miroPivot$renderer$heatmap,
                                                   lang$renderers$miroPivot$renderer$bar,
                                                   lang$renderers$miroPivot$renderer$stackedbar,
                                                   lang$renderers$miroPivot$renderer$line,
@@ -905,10 +906,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
           initRenderer <<- FALSE
         }
+        isEditableTable <- isEditable
+        isHeatmap <- FALSE
         if(!identical(pivotRenderer, "table")){
-          showEl(session, paste0("#", ns("downloadPng")))
-          hideEl(session, paste0("#", ns("downloadCsv")))
-          return()
+          if(!identical(pivotRenderer, "heatmap")){
+            showEl(session, paste0("#", ns("downloadPng")))
+            hideEl(session, paste0("#", ns("downloadCsv")))
+            return()
+          }
+          isHeatmap <- TRUE
+          isEditableTable <- FALSE
         }
         hideEl(session, paste0("#", ns("downloadPng")))
         showEl(session, paste0("#", ns("downloadCsv")))
@@ -919,17 +926,23 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if(!length(dataTmp)){
           return()
         }
+        noRowHeaders <- attr(dataTmp, "noRowHeaders")
+        if(isHeatmap){
+          brks <- quantile(dataTmp[-seq_len(noRowHeaders)],
+                           probs = seq(.05, .95, .05), na.rm = TRUE)
+          clrs <- round(seq(255, 40, length.out = length(brks) + 1), 0) %>%
+            {paste0("rgb(255,", ., ",", ., ")")}
+        }
         if(length(dataTmp) > 500){
           showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, "500"))
           dataTmp <- dataTmp[, 1:500]
         }else{
           hideEl(session, paste0("#", ns("errMsg")))
         }
-        noRowHeaders <- attr(dataTmp, "noRowHeaders")
         hideEl(session, paste0("#", ns("loadPivotTable")))
         
-        datatable(dataTmp, extensions = c("Scroller", "FixedColumns"), 
-                  selection = if(isEditable) "multiple" else "none", editable = isEditable,
+        ret <- datatable(dataTmp, extensions = c("Scroller", "FixedColumns"), 
+                  selection = if(isEditableTable) "multiple" else "none", editable = isEditableTable,
                   container = DTbuildColHeaderContainer(names(dataTmp), 
                                                         noRowHeaders, 
                                                         unlist(setIndexAliases[names(dataTmp)[seq_len(noRowHeaders)]], 
@@ -971,6 +984,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                                                     logical(1L), USE.NAMES = FALSE)) - 1L))), rownames = FALSE) %>%
           formatRound(seq(noRowHeaders + 1, length(dataTmp)), 
                       digits = roundPrecision)
+        if(!isHeatmap){
+          return(ret)
+        }
+        return(formatStyle(ret, seq(noRowHeaders + 1, length(dataTmp)),
+                           backgroundColor = styleInterval(brks, clrs)))
       })
       
       if(isInput){
