@@ -1237,7 +1237,6 @@
         "val51": "Der Titel ist erforderlich.",
         "val52": "Der Befehl ist erforderlich.",
         "val53": "Der Name der Ausgabedatei ist erforderlich.",
-        "val54": "Sie müssen Aliase für Ihre Auswahl definieren, wenn nur der Elementtext des Symbols mit GAMS kommuniziert wird.",
         "val55": "Es darf nur ein Element im Dropdownmenü auswählbar sein, wenn nur der Elementtext mit GAMS kommuniziert wird.",
         "val56": "Ein Anhang mit diesem Dateinamen existiert bereits!",
         "val57": "Der Dateiname enthält ungültige Zeichen. Anhänge in Unterverzeichnissen werden nicht unterstützt!",
@@ -1316,8 +1315,8 @@
         },
         "default": "Standardauswahl",
         "multiple": "Sollen mehrere Elemente auswählbar sein?",
-        "clearValue": "Nur Elementtext des Symbols mit GAMS kommunizieren? Erfordert Aliase für Wahlmöglichkeiten",
-        "clearValueTooltip": "Bewirkt, dass das Elementlabel ein leerer String ist. Dies wird nicht unterstützt, wenn keine Aliase definiert sind! - Dokumentation öffnen",
+        "clearValue": "Als Elementtext mit GAMS kommunizieren",
+        "clearValueTooltip": "Bewirkt, dass das Elementlabel ein leerer String ist. - Dokumentation öffnen",
         "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
       },
       "checkbox":{
