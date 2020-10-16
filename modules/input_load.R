@@ -127,7 +127,12 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
                                             colValue, drop = FALSE], use.names = FALSE)
             if(length(dataTmp) && length(dataTmp)){
               if(identical(modelIn[[i]]$type, "dropdown")){
-                dataTmp <- strsplit(dataTmp, "||", fixed = TRUE)[[1]][1]
+                dataTmp <- strsplit(dataTmp, "||", fixed = TRUE)[[1]]
+                if(isTRUE(modelIn[[i]]$dropdown$clearValue)){
+                  dataTmp <- dataTmp[2]
+                }else{
+                  dataTmp <- dataTmp[1]
+                }
               }
               modelInputData[[i]] <<- dataTmp
               inputVerified <- TRUE
