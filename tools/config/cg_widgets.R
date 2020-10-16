@@ -163,13 +163,12 @@ validateWidgetConfig <- function(widgetJSON){
            
          },
          checkbox = {
-           if(!is.logical(widgetJSON$value)){
-             return(lang$adminMode$widgets$validate$val12)
-           }
            if(isTRUE(widgetJSON$value)){
              rv$widgetConfig$value <<- 1L
-           }else{
+           }else if(isFALSE(widgetJSON$value)){
              rv$widgetConfig$value <<- 0L
+           }else if(!(identical(widgetJSON$value, 1L) || identical(widgetJSON$value, 0L))){
+             return(lang$adminMode$widgets$validate$val12)
            }
          },
          date = {

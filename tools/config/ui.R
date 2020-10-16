@@ -150,25 +150,11 @@ body_admin <- dashboardBody({
                     tags$div(class = "space"),
                     tags$label("for" = "db_remove_orphans_wrapper", lang$adminMode$database$remove),
                     tags$div(id = "db_remove_orphans_wrapper", lang$adminMode$database$removeOrphansWrapper,
-                             HTML(paste0('<br><button type="button" class="btn btn-default"', 
-                                         ' onclick="Miro.confirmModalShow(\'', lang$adminMode$database$removeOrphansDialogTitle, 
-                                         '\', \'', lang$adminMode$database$removeOrphansDialogDesc,
-                                         '\', \'', lang$adminMode$database$removeOrphansDialogCancel, '\', ',
-                                         '\'', lang$adminMode$database$removeOrphansDialogConfirm, 
-                                         '\', \'Shiny.setInputValue(\\\'removeDbOrphans\\\', 1, {priority: \\\'event\\\'});\')">',
-                                         lang$adminMode$database$removeOrphansDialogBtn, '</button>'
-                             ))
+                             tags$div(actionButton("removeDbOrphans", lang$adminMode$database$removeOrphansDialogBtn))
                     ),
                     tags$div(class = "space"),
                     tags$div(id = "db_remove_wrapper", lang$adminMode$database$removeWrapper,
-                             HTML(paste0('<br><button type="button" class="btn btn-default"', 
-                                         ' onclick="Miro.confirmModalShow(\'', lang$adminMode$database$removeDialogTitle, 
-                                         '\', \'', lang$adminMode$database$removeDialogDesc,
-                                         '\', \'', lang$adminMode$database$removeDialogCancel, '\', ',
-                                         '\'', lang$adminMode$database$removeDialogConfirm, 
-                                         '\', \'Shiny.setInputValue(\\\'removeDbTables\\\', 1, {priority: \\\'event\\\'});\')">',
-                                         lang$adminMode$database$removeDialogBtn, '</button>'
-                             ))
+                             tags$div(actionButton("removeDbTables", lang$adminMode$database$removeDialogBtn))
                     )
                 )
               )
