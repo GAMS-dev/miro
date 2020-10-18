@@ -101,11 +101,12 @@ getInputDatasetRaw <- function(id){
     stop("No valid input data found.", call. = FALSE)
   }
 }
-pivotData <- function(i, tabData){
-  if(isEmptyInput[i]){
+pivotData <- function(i, tabData, force = FALSE){
+  if(isEmptyInput[i] && !force){
     return(list(data = tabData, colnames = attr(modelInTemplate[[i]], "aliases")))
   }
   pivotIdx <- match(modelIn[[i]]$pivotCols[[1]], names(modelIn[[i]]$headers))[[1L]]
+  attrTmp <- attr(modelInTemplate[[i]], "aliases")[-c(pivotIdx, length(modelInTemplate[[i]]))]
   if(tryCatch({
     tabData <- pivot_wider(tabData, names_from = !!pivotIdx, 
                            values_from = !!length(tabData))
@@ -114,10 +115,13 @@ pivotData <- function(i, tabData){
   error = function(e){
     TRUE
   })){
+    if(force){
+      return(list(data = tabData[-c(pivotIdx, length(modelInTemplate[[i]]))],
+                  colnames = attrTmp))
+    }
     return(list(data = tabData, colnames = attr(modelInTemplate[[i]], "aliases")))
   }
   
-  attrTmp <- attr(modelInTemplate[[i]], "aliases")[-c(pivotIdx, length(modelInTemplate[[i]]))]
   attrTmp <- c(attrTmp, 
                names(tabData)[seq(length(attrTmp) + 1L, 
                                   length(tabData))])
@@ -230,7 +234,7 @@ lapply(modelInTabularData, function(sheet){
     return()
   }
   if(length(colsWithDep[[i]])){
-    dataModelIn[[i]] <- reactive({
+    dataModelIn[[i]] <<- reactive({
       if(identical(modelIn[[i]]$type, "hot")){
         hotInit[[i]] <<- TRUE
       }
@@ -305,7 +309,7 @@ lapply(modelInTabularData, function(sheet){
       return(data)
     })
   }else{
-    dataModelIn[[i]] <- reactive({
+    dataModelIn[[i]] <<- reactive({
       rv[["in_" %+% i]]
       if(identical(modelIn[[i]]$type, "hot")){
         hotInit[[i]] <<- TRUE
@@ -346,6 +350,10 @@ lapply(modelInTabularData, function(sheet){
   }
   if(identical(modelIn[[i]]$type, "hot")){
     # rendering handsontables for input data 
+    if(length(modelIn[[i]]$pivotCols)){
+      noDomains  <- sum(vapply(modelIn[[i]]$headers, function(header){
+        identical(header$type, "string")}, logical(1L), USE.NAMES = FALSE)) - 1L
+    }
     output[[paste0("in_", i)]] <- renderRHandsontable({
       noCheck[i] <<- TRUE
       isPivoted <- FALSE
@@ -353,10 +361,9 @@ lapply(modelInTabularData, function(sheet){
       
       if(length(modelIn[[i]]$pivotCols)){
         isPivoted <- TRUE
-        tabData  <- pivotData(i, tabData)
+        tabData  <- pivotData(i, tabData, force = TRUE)
         colnames <- tabData$colnames
-        tabData  <- mutate_if(tabData$data, is.numeric, as.character) %>%
-          replace(is.na(.), "")
+        tabData  <- tabData$data
       }else{
         colnames <- attr(modelInputData[[i]], "aliases")
         if(!length(colnames)){
@@ -381,7 +388,7 @@ lapply(modelInTabularData, function(sheet){
       
       ht <- rhandsontable(tabData, height = hotOptions$height, 
                           rowHeaders = if(isTRUE(modelIn[[i]]$hideIndexCol)) NULL else rownames(tabData),
-                          colHeaders = colnames, useTypes = !isPivoted,
+                          colHeaders = colnames, useTypes = TRUE,
                           width = hotOptions$width, search = hotOptions$search, 
                           readOnly = if(isTRUE(modelIn[[i]]$readonly)) TRUE else NULL, 
                           selectCallback = TRUE, digits = NA, 
@@ -393,16 +400,48 @@ lapply(modelInTabularData, function(sheet){
                       stretchH = hotOptions$stretchH,
                       overflow = hotOptions$overflow)
       if(isTRUE(hotOptions$contextMenu$enabled)){
-        ht <- hot_context_menu(ht, allowRowEdit = if(isRo) FALSE else hotOptions$contextMenu$allowRowEdit, 
-                               allowColEdit = isPivoted, 
-                               allowReadOnly = hotOptions$contextMenu$allowReadOnly)
+        if(isPivoted && !isRo){
+          ht <- hot_context_menu(ht, allowRowEdit = hotOptions$contextMenu$allowRowEdit,
+                                 allowColEdit = FALSE,
+                                 customOpts = getHotCustomColOptions(noDomains))
+        }else{
+          ht <- hot_context_menu(ht, allowRowEdit = if(isRo) FALSE else hotOptions$contextMenu$allowRowEdit,
+                                 allowColEdit = FALSE,
+                                 allowReadOnly = hotOptions$contextMenu$allowReadOnly)
+        }
       }
       ht <- hot_cols(ht, columnSorting = if(isPivoted) FALSE else hotOptions$columnSorting, 
                      manualColumnMove = hotOptions$manualColumnMove, 
                      manualColumnResize = hotOptions$manualColumnResize, 
                      colWidths = hotOptions$colWidths, 
                      fixedColumnsLeft = hotOptions$fixedColumnsLeft)
-      
+      for(dropdownCol in names(modelIn[[i]]$dropdownCols)){
+        colSourceConfig <- modelIn[[i]]$dropdownCols[[dropdownCol]]
+        k <- match(colSourceConfig$symbol, names(modelIn))
+        source <- NULL
+        if(length(colSourceConfig$static)){
+          source <- colSourceConfig$static
+        }else if(length(rv[["in_" %+% k]]) && !isEmptyInput[k] &&
+                 (modelIn[[k]]$type == "hot" && 
+                  !is.null(input[["in_" %+% k]]) || 
+                  (length(rv[[paste0("wasModified_", k)]]) && !is.null(tableContent[[k]])) ||
+                  identical(modelIn[[k]]$type, "custom") && length(modelInputDataVisible[[k]]))){
+          tryCatch({
+            source <- unique(getInputDataset(k)[[colSourceConfig$colId]])
+          }, error = function(e){
+            flog.error("Some problem occurred attempting to fetch values for table: '%s' " %+%
+                         "(forward dependency on dataset: '%s'). Error message: %s.", 
+                       modelInAlias[id], modelInAlias[k], conditionMessage(e))
+          })
+        }else if(length(modelInputData[[k]][[1]]) && !is.na(modelInputData[[k]][[1]][1])
+                 && isEmptyInput[k]){
+          source <- unique(modelInputData[[k]][[colSourceConfig$colId]])
+        }
+        if(length(source)){
+          ht <- hot_col(ht, match(dropdownCol, names(modelIn[[i]]$headers)),
+                        type = colSourceConfig$type, source = source)
+        }
+      }
       if(length(colsReadonly))
         ht <- hot_col(ht, colsReadonly, readOnly = TRUE)
       if(identical(modelIn[[i]]$heatmap, TRUE))
