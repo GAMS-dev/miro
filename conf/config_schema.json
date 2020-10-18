@@ -936,6 +936,39 @@
                         "minLength":1
                       }
                     },
+                    "dropdownCols":{
+                      "description":"Only for default tables: columns whose values should be enum/dropdown",
+                      "type":"object",
+                       "additionalProperties":{  
+                          "type":"object",
+                          "properties":{
+                            "colType":{
+                              "description": "Column type (default is 'autocomplete')",
+                              "type":"string",
+                              "enum":["autocomplete", "dropdown"]
+                            },
+                            "static":{
+                              "description": "Arrays of static choices allowed for this column",
+                              "type":["array", "string"],
+                              "minLength":1,
+                              "items":{
+                                "type":"string",
+                                "minLength":1
+                              }
+                            },
+                            "symbol":{
+                              "description": "Symbol to fetch choices from",
+                              "type":"string",
+                              "minLength":1
+                            },
+                            "column":{
+                              "description": "Column (of symbol) to fetch choices from",
+                              "type":"string",
+                              "minLength":1
+                            }
+                          }
+                       }
+                    },
                     "options":{
                       "$ref": "#/definitions/miroPivotOptions"
                     }
