@@ -948,45 +948,35 @@
                     "dropdownCols":{
                       "description":"Columns where only certain values are allowed to be selected (only supported for default tables)",
                       "type":"object",
-                      "additionalProperties":{
-                        "type":"object",
-                        "minProperties":1,
-                        "oneOf":[
-                         {
+                       "additionalProperties":{  
+                          "type":"object",
                           "properties":{
+                            "colType":{
+                              "description": "Column type (default is 'autocomplete')",
+                              "type":"string",
+                              "enum":["autocomplete", "dropdown"]
+                            },
+                            "static":{
+                              "description": "Arrays of static choices allowed for this column",
+                              "type":["array", "string"],
+                              "minLength":1,
+                              "items":{
+                                "type":"string",
+                                "minLength":1
+                              }
+                            },
                             "symbol":{
-                               "description":"Input symbol to fetch choices from",
-                               "type":"string",
-                               "minLength": 1
+                              "description": "Symbol to fetch choices from",
+                              "type":"string",
+                              "minLength":1
                             },
                             "column":{
-                               "description":"Column to fetch choices from",
-                               "type":"string",
-                               "minLength": 1
+                              "description": "Column (of symbol) to fetch choices from",
+                              "type":"string",
+                              "minLength":1
                             }
-                          },
-                          "additionalProperties": false,
-                          "required": ["symbol", "column"]
-                         },
-                         {
-                           "properties":{
-                            "static":{
-                             "description":"Static choices",
-                             "type":["array", "string"],
-                              "minLength":1,
-                              "minItems":1,
-                              "uniqueItems":true,
-                              "items":{  
-                                 "type":"string",
-                                 "minLength":1
-                              }
-                            }
-                          },
-                          "additionalProperties": false,
-                          "required": ["static"]
-                         }
-                        ]
-                      }
+                          }
+                       }
                     },
                     "options":{
                       "$ref": "#/definitions/miroPivotOptions"
