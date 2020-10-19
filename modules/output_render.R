@@ -22,7 +22,7 @@ renderOutputData <- function(rendererEnv, views){
           rendererData <- scenData[["scen_1_"]][c(additionalOutputIds,
                                                   additionalInputIds + length(modelOut))]
           names(rendererData) <- c(names(modelOut)[additionalOutputIds], 
-                                   names(modelIn)[additionalInputIds])
+                                   modelInFileNames[additionalInputIds])
         }else{
           additionalOutputIds <- c(i, additionalOutputIds)
           rendererData <- scenData[["scen_1_"]][additionalOutputIds]
