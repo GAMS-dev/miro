@@ -53,9 +53,6 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
                                 if(length(scalarTmp)){
                                   if(length(scalarTmp) == 2 && !is.na(nchar(scalarTmp[[2]][1])) && 
                                      nchar(scalarTmp[[2]][1])){
-                                    if(scalarSymbols$symnames[[i]] %in% private$textOnlySymbols){
-                                      return(as.character(scalarTmp[[2]])[1])
-                                    }
                                     return(paste0(as.character(scalarTmp[[1]])[1], "||", 
                                                   as.character(scalarTmp[[2]])[1]))
                                   }
@@ -249,17 +246,14 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
           dim     <- 1L
           v       <- matrix(1L)
           symVal  <- symVals[[j]]
-          if(symName %in% names(private$dropdownAliases)){
+          if(symName %in% names(private$dropdownAliases) &&
+             !isTRUE(private$dropdownAliases[[symName]]$clearValue)){
             aliasId <- match(symVal, private$dropdownAliases[[symName]]$choices)
             if(is.na(aliasId)){
               uels    <- list(symVal[1])
               te      <- paste0(symVal[-1], collapse = "||")
             }else{
-              if(isTRUE(private$dropdownAliases[[symName]]$clearValue)){
-                uels    <- list("")
-              }else{
-                uels    <- list(symVal[1])
-              }
+              uels    <- list(symVal[1])
               te      <- private$dropdownAliases[[symName]]$aliases[[aliasId]]
             }
           }else if(symName %in% private$textOnlySymbols){ 
@@ -438,15 +432,18 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     names(dflist) <- seq_along(dflist)
     symDF <- tibble::as_tibble(dflist)
     symDF <- dplyr::mutate_if(symDF, is.factor, as.character)
+    if(symName %in% private$textOnlySymbols){
+      symDF <- symDF[, c(2, 1)]
+    }
     if(length(names)){
       names(symDF) <- names
     }
     if(symName %in% names(private$dropdownAliases) && length(symDF) == 2L){
-      aliasId <- match(symDF[[2L]], private$dropdownAliases[[symName]]$aliases)
-      hasChoices <- !is.na(aliasId)
+      choiceId <- match(symDF[[1L]], private$dropdownAliases[[symName]]$choices)
+      hasChoices <- !is.na(choiceId)
       if(any(hasChoices)){
-        symChoices <- private$dropdownAliases[[symName]]$choices[aliasId[hasChoices]]
-        symDF[which(hasChoices), 1L] <- symChoices
+        symAliases <- private$dropdownAliases[[symName]]$aliases[choiceId[hasChoices]]
+        symDF[which(hasChoices), 2L] <- symAliases
       }
     }
     return(symDF)

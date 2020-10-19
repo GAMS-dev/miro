@@ -1238,7 +1238,6 @@
         "val51": "The title is required.",
         "val52": "The command is required.",
         "val53": "The output filename is required.",
-        "val54": "You need to define aliases for your choices if only the element text is communicated with GAMS.",
         "val55": "Only one item can be selectable in the dropdown menu if only the element text is communicated with GAMS.",
         "val56": "An attachment with this file name already exists!",
         "val57": "The file name contains invalid characters. Attachments in subdirectories are not supported!",
@@ -1317,8 +1316,8 @@
         },
         "default": "Default value",
         "multiple": "Should multiple items be selectable?",
-        "clearValue": "Only communicate element text of symbol with GAMS? Requires aliases for choices.",
-        "clearValueTooltip": "Causes element label to be an empty string. This is not supported if no aliases are defined! - Open documentation",
+        "clearValue": "Communicate as element text with GAMS",
+        "clearValueTooltip": "Causes element label to be an empty string. - Open documentation",
         "hcube": "Should element be expanded automatically in Hypercube Mode?"
       },
       "checkbox":{

@@ -4828,10 +4828,6 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "val54": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "val55": {
                   "type": "string",
                   "minLength": 1

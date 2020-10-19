@@ -152,9 +152,6 @@ validateWidgetConfig <- function(widgetJSON){
               isTRUE(input$dd_choice_dep_selector)){
              return(lang$adminMode$widgets$validate$val11)
            }
-           if(isTRUE(widgetJSON$clearValue) && !length(widgetJSON$aliases)){
-             return(lang$adminMode$widgets$validate$val54)
-           }
            if(isTRUE(widgetJSON$clearValue) && isTRUE(widgetJSON$multiple)){
              return(lang$adminMode$widgets$validate$val55)
            }
