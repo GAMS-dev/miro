@@ -488,7 +488,7 @@ $offExternalInput
                                        </li>
                                     </ul>
                                     </div>
-                                    <h6 id="dropdown-option-clearvalue" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Only communicate element text of symbol with GAMS?</h6>
+                                    <h6 id="dropdown-option-clearvalue" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Communicate as element text with GAMS?</h6>
                                     <div class="expanded"><p></p>
 									<div class="callout-block callout-success" style="margin-top:10px;">
                                        <div class="icon-holder">
@@ -496,10 +496,11 @@ $offExternalInput
                                        </div><!--//icon-holder-->
                                        <div class="content">
                                            <b class="callout-title">Tip:</b>
-                                            <p>This option is intended for the use of singleton sets to define compile-time variables in the GAMS model. Using singleton sets instead of command line parameters has the essential advantage that their information is not lost at any time, e.g. during GDX export. Read more about this topic <a href="./model.html#command-line">here</a>.</p>
+                                            <p>This option is intended for the use of singleton sets to define compile-time variables in the GAMS model. Using singleton sets instead of command line parameters has the advantage that their information is not lost at any time, e.g. during GDX export. Read more about this topic <a href="./model.html#command-line">here</a>.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
-                                    <p>Singleton sets can have an element label and an element text. When configured as a dropdown menu, both components are communicated with GAMS. If this option is activated, the element label of the selected choice is communicated as an empty string (i.e. only the element text is considered). Because of this, the UEL order is preserved.</p> 
+                                    <p>Singleton sets can have an element label and an element text. If the set is configured as a dropdown menu, both components will be communicated with GAMS by default.</p>
+                                    <p>If this option is activated, the choice of the dropdown menu will become the element text of the set, whereas the label will be set to the empty string. This allows for the communication of strings between MIRO and GAMS while preserving the UEL order.</p> 
 									<p>Migrating a singleton set into a compile time variable can be done using the <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset">$eval.set</a> method. Since the variable should be filled by the element text, the attribute <i>TE</i> has to be used: <code class = "language-gams">$eval.Set VARNAME SETID.TE</code>.</p> 
                                     <p>Note that aliases for the dropdown menu choices must be configured to use this option!</p>
                                     </div>
@@ -583,7 +584,7 @@ $offExternalInput
                                 <div class="section-block" id = "widget-multidropdown-options">
                                   <h3 class="block-title">Available options</h3>
                                     <p>The available options of a multidropdown menu are identical to those of a <a href = "./widgets.html#widget-dropdown-options" class = "scrollto">single dropdown menu</a>. 
-                                    The only exception is that the option to <a href = "#dropdown-option-clearvalue" class = "scrollto">communicate only the element text of the symbol with GAMS</a> cannot be set for a multi-dropdown menu. </p>
+                                    The only exception is that the option to <a href = "#dropdown-option-clearvalue" class = "scrollto">communicate the value as element text with GAMS</a> cannot be set for a multi-dropdown menu. </p>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widget-multidropdown-json">
                                   <h3 class="block-title">JSON example</h3>
@@ -799,7 +800,7 @@ $offExternalInput
                                     <div class="expanded"><p>A placeholder is a text that is displayed in the text box as long as no input has been made by the user. 
                                     This is primarily for orientation purposes. A placeholder is optional.</p>
                                     </div>
-                                    <h6 id="textbox-option-clearvalue" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Only communicate element text of symbol with GAMS?</h6>
+                                    <h6 id="textbox-option-clearvalue" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Communicate as element text with GAMS?</h6>
                                     <div class="expanded"><p></p>
 									<div class="callout-block callout-success" style="margin-top:10px;">
                                        <div class="icon-holder">
@@ -807,7 +808,7 @@ $offExternalInput
                                        </div><!--//icon-holder-->
                                        <div class="content">
                                            <b class="callout-title">Tip:</b>
-                                            <p>This option is intended for the use of singleton sets to define compile-time variables in the GAMS model. Using singleton sets instead of command line parameters has the essential advantage that their information is not lost at any time, e.g. during GDX export. Read more about this topic <a href="./model.html#command-line">here</a>.</p>
+                                            <p>This option is intended for the use of singleton sets to define compile-time variables in the GAMS model. Using singleton sets instead of command line parameters has the advantage that their information is not lost at any time, e.g. during GDX export. Read more about this topic <a href="./model.html#command-line">here</a>.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                     <p>Singleton sets can have an element label and an element text. When configured as a text input, both components can be communicated with GAMS by using a double pipe ('||') as separator:</p>

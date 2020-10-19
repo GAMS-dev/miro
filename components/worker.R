@@ -807,8 +807,8 @@ Worker <- R6Class("Worker", public = list(
       
       dataFilesToFetch <- metadata$modelDataFiles
       
-      requestBody <- list(model = metadata$modelName,
-                          arguments = paste0("pf=", tolower(metadata$modelName), ".pf"), 
+      requestBody <- list(model = metadata$modelNameRaw,
+                          arguments = paste0("pf=", metadata$modelName, ".pf"), 
                           namespace = metadata$namespace)
       
       gamsArgs <- c(if(length(metadata$extraClArgs)) metadata$extraClArgs, 
@@ -832,7 +832,7 @@ Worker <- R6Class("Worker", public = list(
         if(metadata$hiddenLogFile){
           requestBody$stream_entries <- metadata$miroLogFile
         }
-        requestBody$stdout_filename <- paste0(metadata$modelName, ".log")
+        requestBody$stdout_filename <- paste0(metadata$modelNameRaw, ".log")
       }
       pfFilePath <- gmsFilePath(file.path(workDir, paste0(tolower(metadata$modelName), ".pf")))
       writeLines(c(pfFileContent, gamsArgs), pfFilePath)
@@ -1146,7 +1146,8 @@ Worker <- R6Class("Worker", public = list(
     if(timeout){
       return(-100L)
     }
-    for(text_entity in c(paste0(private$metadata$modelName, ".log"), private$metadata$text_entities)){
+    for(text_entity in c(paste0(private$metadata$modelNameRaw, ".log"),
+                         private$metadata$text_entities)){
       tryCatch(private$readRemoteTextEntity(text_entity, jID, workDir = workDir),
                error = function(e){
                  warning(sprintf("Problems fetching text entity: '%s'. Error message: '%s'.", 
