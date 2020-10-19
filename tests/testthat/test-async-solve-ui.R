@@ -13,6 +13,7 @@ testDir <- file.path(getwd(), "..")
 createTestDb()
 
 modelToTest <- "transport"
+modelToTestUpper <- paste0(toupper(substr(modelToTest, 1, 1)), substring(modelToTest, 2))
 testModelDir <- file.path(testDir, "model", modelToTest)
 modelDataPath <- file.path(testModelDir, paste0("data_", modelToTest))
 configJSONFileName <- file.path(testModelDir, paste0("conf_", modelToTest),
@@ -24,8 +25,8 @@ file.move(file.path(testModelDir, paste0(modelToTest, ".gms")),
 file.move(file.path(testModelDir, paste0(modelToTest, "_files.txt")),
           file.path(testModelDir, paste0("bk_", modelToTest, "_files.txt")))
 file.copy(file.path(testModelDir, paste0("bk_", modelToTest, ".gms")),
-          file.path(testModelDir, "trAnsport.gms"))
-modelToTest <- paste0(toupper(substr(modelToTest, 1, 1)), substring(modelToTest, 2))
+          file.path(testModelDir, paste0(modelToTestUpper, ".gms")))
+modelToTest <- modelToTestUpper
 Sys.setenv(MIRO_MODEL_PATH = file.path(testModelDir, paste0(modelToTest, ".gms")))
 Sys.setenv(MIRO_MODE="base")
 Sys.setenv(MIRO_REMOTE_EXEC = "true")
@@ -55,6 +56,8 @@ test_that("Solve asynchronously with GAMS MIRO Engine works",
 file.rename(file.path(dirname(configJSONFileName), paste0(tolower(modelToTest), "_tmp.json")),
             file.path(dirname(configJSONFileName), paste0(tolower(modelToTest), ".json")))
 
+unlink(file.path(testModelDir, paste0(modelToTestUpper, ".gms")),
+       recursive = TRUE, force = FALSE)
 file.move(file.path(testModelDir, paste0("bk_", tolower(modelToTest), ".gms")),
           file.path(testModelDir, paste0(tolower(modelToTest), ".gms")))
 file.move(file.path(testModelDir, paste0("bk_", tolower(modelToTest), "_files.txt")),
