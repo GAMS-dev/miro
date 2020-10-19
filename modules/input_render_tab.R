@@ -402,6 +402,9 @@ lapply(modelInTabularData, function(sheet){
     })
     observe({
       input[[paste0("in_", i)]]
+      if(is.null(input[[paste0("in_", i)]])){
+        return()
+      }
       if(is.null(isolate(rv[[paste0("in_", i)]])) && !isEmptyInput[i]){
         modelInputData[[i]] <<- getVisibleTabData(i, "hot")
         isolate(rv[[paste0("in_", i)]] <- 1L)
