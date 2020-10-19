@@ -98,6 +98,13 @@ prepareModelRun <- function(async = FALSE){
   if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
     return(NULL)
   }
+  lapply(seq_along(dataTmp), function(i){
+    if(is.null(dataTmp[[i]])){
+      scenData[["scen_1_"]][[i + length(modelOut)]] <<- scenDataTemplate[[i + length(modelOut)]]
+    }else{
+      scenData[["scen_1_"]][[i + length(modelOut)]] <<- dataTmp[[i]]
+    }
+  })
   pfFileContent <- NULL
   inputData <- DataInstance$new(modelInFileNames, fileExchange = config$fileExchange,
                                 gdxio = gdxio, csvDelim = config$csvDelim)
@@ -141,18 +148,17 @@ prepareModelRun <- function(async = FALSE){
         pfGMSOpt      <- pfGMSOpt[!is.na(pfGMSOpt)]
         pfFileContent <<- c(pfGMSPar, pfGMSOpt)
         # remove those rows from scalars file that are compile time variables
-        scenData[["scen_1_"]][[id + length(modelOut)]] <<- dataTmp[[id]][!(DDParIdx | GMSOptIdx), ]
+        inputData$push(names(dataTmp)[[id]], dataTmp[[id]][!(DDParIdx | GMSOptIdx), ])
       }else{
-        scenData[["scen_1_"]][[id + length(modelOut)]] <<- dataTmp[[id]]
+        inputData$push(names(dataTmp)[[id]], dataTmp[[id]])
       }
-      rm(GMSOptValues, DDParValues)
     }else if(identical(modelIn[[names(dataTmp)[[id]]]]$type, "dropdown") &&
              names(dataTmp)[[id]] %in% modelInTabularDataBase){
-      scenData[["scen_1_"]][[id + length(modelOut)]] <<- ddToTibble(dataTmp[[id]][[1L]], modelIn[[names(dataTmp)[[id]]]])
+      inputData$push(names(dataTmp)[[id]],
+                     ddToTibble(dataTmp[[id]][[1L]], modelIn[[names(dataTmp)[[id]]]]))
     }else{
-      scenData[["scen_1_"]][[id + length(modelOut)]] <<- dataTmp[[id]]
+      inputData$push(names(dataTmp)[[id]], dataTmp[[id]])
     }
-    inputData$push(names(dataTmp)[[id]], scenData[["scen_1_"]][[id + length(modelOut)]])
   })
   if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
     return(NULL)

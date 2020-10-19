@@ -230,6 +230,19 @@ observeEvent(virtualActionButton(
       if(!is.null(errMsg)){
         return(NULL)
       }
+      # save input data 
+      saveInputDb <- FALSE
+      source("./modules/input_save.R", local = TRUE)
+      if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
+        return(NULL)
+      }
+      lapply(seq_along(dataTmp), function(i){
+        if(is.null(dataTmp[[i]])){
+          scenData[["scen_1_"]][[i + length(modelOut)]] <<- scenDataTemplate[[i + length(modelOut)]]
+        }else{
+          scenData[["scen_1_"]][[i + length(modelOut)]] <<- dataTmp[[i]]
+        }
+      })
       scalarIdTmp <- match(scalarsFileName, 
                            tolower(names(scenInputData)))[[1L]]
       jobResults <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, workDir = tmpdir, 
@@ -237,7 +250,9 @@ observeEvent(virtualActionButton(
                                  scalarsFileHeaders = scalarsFileHeaders, fileName = MIROGdxOutName,
                                  templates = modelOutTemplate, method = config$fileExchange, 
                                  csvDelim = config$csvDelim, hiddenOutputScalars = config$hiddenOutputScalars)
-      noOutputData <<- FALSE
+      if(isFALSE(jobResults$noTabularData)){
+        noOutputData <<- FALSE
+      }
     }, error = function(e){
       flog.error("Problems reading job output data. Error message: '%s'.", conditionMessage(e))
       errMsg <<- lang$errMsg$readOutput$desc
@@ -255,7 +270,7 @@ observeEvent(virtualActionButton(
                                             scalarData[["scen_1_"]])
     }
     if(!is.null(jobResults$tabular)){
-      scenData[["scen_1_"]] <<- jobResults$tabular
+      scenData[["scen_1_"]][seq_along(modelOut)] <<- jobResults$tabular
     }
     if(config$saveTraceFile){
       tryCatch({
