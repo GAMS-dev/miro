@@ -1,17 +1,6 @@
 {
   "miroLogFile": "miro.log",
   "inputWidgets": {
-    "f": {
-      "widgetType": "slider",
-      "alias": "freight in dollars per case per thousand miles",
-      "min": 1,
-      "max": 500,
-      "default": 100,
-      "step": 1,
-      "ticks": true,
-      "noHcube": false,
-      "label": "freight in dollars per case per thousand miles"
-    },
     "mins": {
       "widgetType": "slider",
       "alias": "minimum shipment (MIP- and MINLP-only)",
@@ -99,11 +88,10 @@
     }
   },
   "overwriteSheetOrder": {
-    "input": ["_widgets", "a", "b", "d", "ilocdata", "jlocdata"],
+    "input": ["_scalars", "_widgets", "a", "b", "d", "ilocdata", "jlocdata"],
     "output": ["schedule", "_scalars_out"]
   },
   "pageTitle": "A transportation problem",
-  "defaultScenName": "default",
   "overwriteAliases": {
     "a": {
       "newAlias": "Capacity"
