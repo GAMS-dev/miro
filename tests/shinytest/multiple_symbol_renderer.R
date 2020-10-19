@@ -1,8 +1,27 @@
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("multiple_symbol_renderer")
-
+Sys.sleep(2L)
+expect_identical(app$getAllValues()$input[["in_1"]]$data[[1]], list("f", "freight in dollars per case per thousand miles", "NA"))
+app$setInputs(btImport = "click")
+Sys.sleep(1)
+app$setInputs(btLoadScenConfirm = "click")
+Sys.sleep(2L)
 app$setInputs(sidebarMenuId = "outputData")
+Sys.sleep(2)
+customRendererPath <- app$getAllValues()$output[["tab_1-custom-path"]]
+expect_true(file.exists(file.path(customRendererPath, "model_transport_customRenderer_trnsport_custom.R")))
+flowData <- jsonlite::fromJSON(app$getAllValues()$output[["tab_1-custom-trnsport"]])$x$calls$args[[4]][[1]]
+expect_identical(flowData$dyn$value, list(0L, 275L, 275L, 300L, 50L, 0L))
+expect_equal(flowData$static$lng1, c(-87.62318, -73.93524, -95.69531, -87.62318, -73.93524, -95.69531), tolerance=1e-3)
 app$setInputs(outputTableView = "click")
 app$snapshot(items = list(input = "tab_1-custom-trnsport_center"), screenshot = TRUE)
 expect_error(app$findElement("a[data-value='outputTabset1_2']")$click())
+app$setInputs(sidebarMenuId = "inputData")
+app$setInputs(inputTabset ="inputTabset_2")
+app$setInputs(dropdown_9 = "mip")
+app$setInputs(btSolve = "click")
+Sys.sleep(6L)
+app$setInputs(outputTableView = "click")
+expect_identical(jsonlite::fromJSON(app$getAllValues()$output[["tab_1-custom-trnsport"]])$x$calls$args[[4]][[1]]$dyn$value,
+                 list(0L, 325L, 275L, 300L, 0L, 0L))
 app$stop()
