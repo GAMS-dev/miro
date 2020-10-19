@@ -1205,9 +1205,8 @@ if(is.null(errMsg)){
     }
     return(FALSE)
   }, logical(1L), USE.NAMES = FALSE)
-    
-  scenDataTemplate <- c(modelOutTemplate, modelInTemplate)
-  scenDataTemplate <- scenDataTemplate[!vapply(scenDataTemplate, is.null, logical(1L))]
+  
+  scenDataTemplate <- c(modelOutTemplate, modelInTemplate[match(inputDsNames, names(modelIn))])
   
   # get column types for tabular datasets
   for(i in seq_along(modelIn)){
