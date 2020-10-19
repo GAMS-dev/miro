@@ -2,7 +2,7 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                          templates, errMsg = NULL, method = "csv", csvDelim = ",", 
                          hiddenOutputScalars = character(0L),
                          fileName = character(0L), DDPar = character(0L), GMSOpt = character(0L)){
-  ret <- list(tabular = NULL, scalar = NULL)
+  ret <- list(tabular = NULL, scalar = NULL, noTabularData = TRUE)
   
   if(identical(method, "xls")){
     xlsPath <- nativeFileEnc(file.path(workDir, fileName))
@@ -122,13 +122,15 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
           # fetch only those scalar data that are not marked as hidden and remove the data fetched from scalar dataset
           removeRows       <- tolower(ret$scalar[[1]]) %in% tolower(hiddenOutputScalars)
           ret$tabular[[i]] <<- ret$scalar[!removeRows, ]
+          if(!length(ret$tabular[[i]])){
+            ret$tabular[[i]] <<- templates[[i]]
+          }else if(ret$noTabularData){
+            ret$noTabularData <<- FALSE
+          }
         }, error = function(e){
           stop(sprintf("Problems removing hidden rows from scalar dataframe. Error message: %s.", e), call. = FALSE)
         })
       }else{
-        ret$tabular[[i]] <<- templates[[i]]
-      }
-      if(!length(ret$tabular[[i]])){
         ret$tabular[[i]] <<- templates[[i]]
       }
     }else{
@@ -139,6 +141,9 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                    ret$tabular[[i]] <<- read_delim(file.path(workDir, names(metaData)[[i]] %+% '.csv'), 
                                                    csvDelim, col_types = metaData[[i]]$colTypes, 
                                                    col_names = TRUE)
+                   if(ret$noTabularData){
+                     ret$noTabularData <<- FALSE
+                   }
                  }else{
                    ret$tabular[[i]] <<- templates[[i]]
                    return()
@@ -158,6 +163,9 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                                            return("numeric")
                                          }, character(1L), USE.NAMES = FALSE), 
                                 col_names = TRUE))
+                   if(ret$noTabularData){
+                     ret$noTabularData <<- FALSE
+                   }
                  }else{
                    ret$tabular[[i]] <<- templates[[i]]
                    return()
@@ -171,6 +179,11 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                    if(!inherits(ret$tabular[[i]], "data.frame")){
                      ret$tabular[[i]] <<- ddToTibble(ret$tabular[[i]], metaData[[i]])
                    }
+                   if(!length(ret$tabular[[i]])){
+                     ret$tabular[[i]] <<- templates[[i]]
+                   }else if(ret$noTabularData){
+                     ret$noTabularData <<- FALSE
+                   }
                  }, error = function(e){
                    if(grepl("Compression library not found", 
                             conditionMessage(e), 
@@ -179,9 +192,6 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                    }
                    ret$tabular[[i]] <<- templates[[i]]
                  })
-                 if(!length(ret$tabular[[i]])){
-                   ret$tabular[[i]] <<- templates[[i]]
-                 }
                })
       }, error = function(e) {
         stop(sprintf("Model file: '%s' could not be read. Error message: %s", 
