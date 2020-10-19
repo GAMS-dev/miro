@@ -988,6 +988,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           return(ret)
         }
         return(formatStyle(ret, seq(noRowHeaders + 1, length(dataTmp)),
+                           color = "#000",
                            backgroundColor = styleInterval(brks, clrs)))
       })
       
