@@ -10,7 +10,7 @@ jsonlite::write_json(configNew, file.path(jsonPath, "transport.json"),
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("input_table_dropdowncols_test")
 
-app$snapshot(items = list(output = "errorMessages"), 
+app$snapshot(items = list(output = "errorMessages"),
              screenshot = TRUE)
 app$stop()
 
@@ -89,4 +89,18 @@ app$setInputs(inputTabset = "inputTabset_3")
 colDef <- jsonlite::fromJSON(app$getAllValues()$output[["in_3"]])$x$columns
 expect_identical(colDef$type, c("text", "dropdown", "numeric"))
 expect_identical(colDef$source, list(NULL, c("Seattle", "San-Diego"), NULL))
+app$setInputs(btSave = "click")
+Sys.sleep(1)
+app$findElement(".modal-footer .bt-gms-confirm")$click()
+Sys.sleep(2)
+app$findElement("#btRemove1")$click()
+Sys.sleep(0.5)
+app$findElement(".modal-footer .bt-gms-confirm")$click()
+Sys.sleep(0.5)
+app$setInputs(btImport = "click")
+Sys.sleep(1)
+app$setInputs(btLoadScenConfirm = "click")
+Sys.sleep(2)
+expect_identical(as.character(app$getAllValues()$output$inputDataTitle$html),
+                 "New Scenario")
 app$stop()
