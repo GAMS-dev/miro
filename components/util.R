@@ -755,11 +755,16 @@ genSpinner <- function(id = NULL, hidden = FALSE, absolute = TRUE, externalStyle
   )
 }
 checkboxInput_MIRO <- function(inputId, label, value = FALSE){
+  inputTag <- tags$input(id = inputId, type = "checkbox")
+  if (!is.null(value) && value)
+    inputTag$attribs$checked <- "checked"
   tags$div(class = "shiny-input-container",
            tags$label(class = "cb-label", "for" = inputId, label),
            tags$div(
-             tags$label(class = "checkbox-material", 
-                        checkboxInput(inputId, label = NULL, value)
+             tags$label(class = "checkbox-material",
+                        tags$div(class = "form-group", 
+                                 tags$div(class = "checkbox",
+                                          tags$label(inputTag, tags$span())))
              ))
   )
 }
