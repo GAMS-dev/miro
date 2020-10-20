@@ -77,7 +77,7 @@
          "pivotRenderer":{
            "description":"Sepcify the default renderer.",
             "type":"string",
-            "enum": ["table", "line", "bar", "stackedbar", "radar"]
+            "enum": ["table", "heatmap", "line", "bar", "stackedbar", "radar"]
          },
          "emptyUEL": {
            "description":"UEL that identifies a missing value (defaults to -, must not be empty string).",
