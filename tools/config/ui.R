@@ -373,7 +373,7 @@ body_admin <- dashboardBody({
                                                    height = 400)),
                              tags$div(id = "preview-content-miropivot", style = "display:none; overflow:auto;text-align:left;",
                                       renderDataUI("preview_output_miropivot", type = "miropivot",
-                                                   height = 400)),
+                                                   height = 400, customOptions = list(enableHideEmptyCols = TRUE))),
                              tags$div(id = "preview-content-pivot", style = "display:none; overflow:auto;",
                                       renderDataUI("preview_output_pivot", type = "pivot",
                                                    height = 400)),
@@ -626,7 +626,7 @@ body_admin <- dashboardBody({
                                                      symAlias <- modelInRaw[[name]]$alias
                                                    }
                                                    if(!name %in% names(configJSON$overwriteHeaderAliases) ||
-                                                      length(modelInRaw[[name]]$headers) != length(inputSymHeaders[[name]])){
+                                                      length(dataContract$inputSymbols[[name]]$headers) != length(inputSymHeaders[[name]])){
                                                      symHeaders <- names(inputSymHeaders[[name]])
                                                    }else{
                                                      symHeaders <- configJSON$overwriteHeaderAliases[[name]]$newHeaders
@@ -664,7 +664,7 @@ body_admin <- dashboardBody({
                                                    }
                                                    symHeaders <- configJSON$overwriteHeaderAliases[[name]]$newHeaders
                                                    if(!name %in% names(configJSON$overwriteHeaderAliases) ||
-                                                      length(symHeaders) != length(modelOut[[name]]$headers)){
+                                                      length(symHeaders) != length(dataContract$outputSymbols[[name]]$headers)){
                                                      symHeaders <- outputSymHeaders[[name]]
                                                    }
                                                    
@@ -1054,7 +1054,8 @@ body_admin <- dashboardBody({
                                       DTOutput("dt_preview"),
                                       renderDataUI("inputTable_pivot", type = "miropivot", height = 400,
                                                    showNoDataTxt = FALSE,
-                                                   customOptions = list(enablePersistentViews = FALSE)),
+                                                   customOptions = list(enablePersistentViews = FALSE,
+                                                                        enableHideEmptyCols = TRUE)),
                                       rHandsontableOutput("hot_preview"))
                     )
                 )
