@@ -27,10 +27,10 @@ createArray <- function(session, arrayID, label, plotlyChartType = "", autoCreat
 </div>'))
 }
 checkLength <- function(configuredWithThisTool = FALSE, el = NULL, alt = NULL){
-    if(isTRUE(configuredWithThisTool) && length(el))
-      return(el)
-    else
-      return(alt)
+  if(isTRUE(configuredWithThisTool) && length(el))
+    return(el)
+  else
+    return(alt)
 }
 checkTRUE <- function(configuredWithThisTool = FALSE, el = NULL){
   if(isTRUE(configuredWithThisTool))
@@ -157,3 +157,20 @@ Validator <- R6Class("Validator", public = list(
   validData = list(),
   data = list()
 ))
+getMIROPivotOptions <- function(currentConfig, prefix = ""){
+  tagList(
+    checkboxInput_MIRO(paste0(prefix, "enableHideEmptyCols"),
+                       lang$adminMode$graphs$miroPivotOptions$hideEmptyColsSwitch,
+                       value = isTRUE(currentConfig$options$enableHideEmptyCols)),
+    conditionalPanel(paste0("input.", prefix, "enableHideEmptyCols===true"),
+                     tags$div(class = "form-group shiny-input-container",
+                              tags$label(class = "control-label", "for" = paste0(prefix, "emptyUEL"),
+                                         lang$adminMode$graphs$miroPivotOptions$emptyUEL),
+                              tags$input(id = paste0(prefix, "emptyUEL"), class = "form-control must-not-be-empty",
+                                         type = "text",
+                                         value = if(length(currentConfig$options$emptyUEL))
+                                           currentConfig$options$emptyUEL else "-"))),
+    tags$div(id = "miroPivotInfoMsg", class="config-message", 
+             style = "display:block;",
+             lang$adminMode$graphs$miroPivotOptions$infoMsg))
+}

@@ -262,9 +262,7 @@ getSymbolHotOptions <- function(){
                          })
              ),
     conditionalPanel(condition = "input.inputTable_type==='pivot'",
-                     tags$div(class="config-message", 
-                              style = "display:block;",
-                              lang$adminMode$graphs$miroPivotOptions$infoMsg),
+                     getMIROPivotOptions(rv$tableWidgetConfig, prefix = "inputpivot_"),
                      tags$div(class="config-message", 
                               style = "display:block;",
                               lang$adminMode$graphs$miroPivotOptions$infoMsgDummyData)),
@@ -610,13 +608,23 @@ observeEvent({rv$refreshInputTableType
         inputPivotRendererEnv[[el]]$destroy()
       }
     }
+    pivotOptions <- list()
+    
+    if(currentTableSymbolName %in% inputSymMultiDimChoices &&
+       currentTableSymbolName %in% names(configJSON$inputWidgets) &&
+       length(configJSON$inputWidgets[[currentTableSymbolName]][["options"]])){
+      pivotOptions <- configJSON$inputWidgets[[currentTableSymbolName]][["options"]]
+    }
+    pivotOptions$input <- TRUE
+    pivotOptions$enableHideEmptyCols <- TRUE
+    pivotOptions$emptyUEL <- rv$tableWidgetConfig$options$emptyUEL
     callModule(renderData, "inputTable_pivot", type = "miropivot", 
                data = createTableData(currentTableSymbolName, createColNames = TRUE)$data, rendererEnv = inputPivotRendererEnv,
                customOptions = c(list("_metadata_" = list(headers = modelIn[[currentTableSymbolName]]$headers,
                                                           symtype = modelIn[[currentTableSymbolName]]$symtype,
                                                           symname = currentTableSymbolName), 
                                       resetOnInit = TRUE), 
-                                 rv$tableWidgetConfig$options),
+                                 pivotOptions),
                roundPrecision = 2, modelDir = modelDir)
   }else{
     rv$tableWidgetConfig$tableType <- "default"
@@ -698,7 +706,22 @@ validateTableConfig <- function(configJSON){
   }
   return("")
 }
-
+observeEvent(input$inputpivot_enableHideEmptyCols, {
+  if(isTRUE(input$inputpivot_enableHideEmptyCols)){
+    showEl(session, "#inputTable_pivot-miroPivot-hideEmptyCols")
+  }else{
+    updateCheckboxInput(session, "inputTable_pivot-miroPivot-hideEmptyCols", value = FALSE)
+    hideEl(session, "#inputTable_pivot-miroPivot-hideEmptyCols")
+  }
+})
+observeEvent(input$inputpivot_emptyUEL, {
+  if(identical(input$inputpivot_emptyUEL, "")){
+    rv$tableWidgetConfig$options$emptyUEL <- NULL
+  }else{
+    rv$tableWidgetConfig$options$emptyUEL <- input$inputpivot_emptyUEL
+  }
+  rv$refreshInputTableType <- rv$refreshInputTableType + 1L
+})
 
 #  =====================================================================
 #          SAVE JSON (global settings are saved automatically)
@@ -748,8 +771,12 @@ observeEvent(virtualActionButton(input$saveTableConfirm, rv$saveTableConfirm), {
                         tableType = "pivot",
                         options = list(
                           aggregationFunction = input[["inputTable_pivot-miroPivot-aggregationFunction"]],
-                          pivotRenderer = input[["inputTable_pivot-miroPivot-pivotRenderer"]]
+                          pivotRenderer = input[["inputTable_pivot-miroPivot-pivotRenderer"]],
+                          enableHideEmptyCols= isTRUE(input$inputpivot_enableHideEmptyCols)
                         ))
+      if(length(rv$tableWidgetConfig$options$emptyUEL)){
+        newConfig$options$emptyUEL <- rv$tableWidgetConfig$options$emptyUEL
+      }
       for(indexEl in list(c("rows", "rowIndexList"))){
         indexVal <- input[[paste0("inputTable_pivot-miroPivot-", indexEl[[2]])]]
         if(length(indexVal)){

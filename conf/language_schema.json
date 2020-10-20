@@ -6724,12 +6724,20 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "hideEmptyColsSwitch": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "emptyUEL": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "infoMsgDummyData": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 2
+              "minProperties": 4
             },
             "datatableOptions": {
               "type": "object",
