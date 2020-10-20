@@ -80,8 +80,9 @@
             "enum": ["table", "line", "bar", "stackedbar", "radar"]
          },
          "emptyUEL": {
-           "description":"UEL that identifies an empty column (defaults to - ).",
-           "type": "boolean"
+           "description":"UEL that identifies a missing value (defaults to -, must not be empty string).",
+           "type": "string",
+           "minLength": 1
          },
          "enableHideEmptyCols": {
            "description":"Enable button that allows to hide empty columns.",
