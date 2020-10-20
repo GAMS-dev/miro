@@ -275,7 +275,10 @@ lapply(modelInTabularData, function(sheet){
           if(!is.null(configGraphsIn[[i]])){
             enableEl(session, "#btGraphIn")
           }
-          isEmptyInput[i] <<- FALSE
+          if(!identical(names(modelIn)[i], scalarsFileName) ||
+             any(!is.na(modelInputData[[i]][[3]]))){
+            isEmptyInput[i] <<- FALSE
+          }
         }
         modelInputDataVisible[[i]] <<- data
       }else{
@@ -289,7 +292,10 @@ lapply(modelInTabularData, function(sheet){
           if(!is.null(configGraphsIn[[i]])){
             enableEl(session, "#btGraphIn")
           }
-          isEmptyInput[i] <<- FALSE
+          if(!identical(names(modelIn)[i], scalarsFileName) ||
+             any(!is.na(modelInputData[[i]][[3]]))){
+            isEmptyInput[i] <<- FALSE
+          }
         }
         tableContent[[i]] <<- data
       }
@@ -305,7 +311,10 @@ lapply(modelInTabularData, function(sheet){
           if(!is.null(configGraphsIn[[i]])){
             enableEl(session, "#btGraphIn")
           }
-          isEmptyInput[i] <<- FALSE
+          if(!identical(names(modelIn)[i], scalarsFileName) ||
+             any(!is.na(modelInputData[[i]][[3]]))){
+            isEmptyInput[i] <<- FALSE
+          }
         }else{
           modelInputData[[i]][1, ] <<- NA
           modelInputData[[i]] <- mutate_if(modelInputData[[i]], is.character, 
@@ -323,7 +332,10 @@ lapply(modelInTabularData, function(sheet){
         if(!is.null(configGraphsIn[[i]])){
           enableEl(session, "#btGraphIn")
         }
-        isEmptyInput[i] <<- FALSE
+        if(!identical(names(modelIn)[i], scalarsFileName) ||
+           any(!is.na(modelInputData[[i]][[3]]))){
+          isEmptyInput[i] <<- FALSE
+        }
       }else{
         if(!is.null(configGraphsIn[[i]]) &&
            length(inputTabs[[tabSheetMap$input[[i]]]]) == 1L){
@@ -402,6 +414,9 @@ lapply(modelInTabularData, function(sheet){
     })
     observe({
       input[[paste0("in_", i)]]
+      if(is.null(input[[paste0("in_", i)]])){
+        return()
+      }
       if(is.null(isolate(rv[[paste0("in_", i)]])) && !isEmptyInput[i]){
         modelInputData[[i]] <<- getVisibleTabData(i, "hot")
         isolate(rv[[paste0("in_", i)]] <- 1L)

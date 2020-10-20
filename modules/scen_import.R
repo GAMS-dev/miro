@@ -185,6 +185,19 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     return(NULL)
   }
   errMsg <- NULL
+  # save input data 
+  saveInputDb <- FALSE
+  source("./modules/input_save.R", local = TRUE)
+  if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
+    return(NULL)
+  }
+  lapply(seq_along(dataTmp), function(i){
+    if(is.null(dataTmp[[i]])){
+      scenData[["scen_1_"]][[i + length(modelOut)]] <<- scenDataTemplate[[i]]
+    }else{
+      scenData[["scen_1_"]][[i + length(modelOut)]] <<- dataTmp[[i]]
+    }
+  })
   if(LAUNCHHCUBEMODE){
     noOutputData <<- TRUE
   }else{
@@ -205,16 +218,15 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     if(is.null(showErrorMsg(lang$errMsg$GAMSOutput$title, errMsg))){
       return()
     }
-    if(any(vapply(outputData$tabular, function(el){length(el) > 0L}, logical(1L), USE.NAMES = FALSE))){
-      scenData[["scen_1_"]] <<- outputData$tabular
-      if(!is.null(outputData$scalar)){
-        scalarData[["scen_1_"]] <<- outputData$scalar
-      }
+    scenData[["scen_1_"]][seq_along(modelOut)] <<- outputData$tabular
+    if(isFALSE(outputData$noTabularData)){
+      scalarData[["scen_1_"]] <<- outputData$scalar
       renderOutputData(rendererEnv, views)
       noOutputData <<- FALSE
     }else{
       noOutputData <<- TRUE
     }
+    
     scalarIdTmp <- match(scalarsFileName, tolower(names(scenInputData)))[[1L]]
     if(!is.na(scalarIdTmp)){
       scalarData[["scen_1_"]] <<- bind_rows(scenInputData[[scalarIdTmp]], scalarData[["scen_1_"]])

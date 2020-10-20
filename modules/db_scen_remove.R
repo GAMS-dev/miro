@@ -2,9 +2,7 @@
 closeScenario <- function(clearMeta = TRUE){
   # remove output data
   errMsg <- NULL
-  lapply(seq_along(modelOut), function(i){
-    scenData[["scen_1_"]][[i]] <<- scenDataTemplate[[i]]
-  })
+  scenData[["scen_1_"]] <<- scenDataTemplate
   # clear scalar data
   scalarData[["scen_1_"]] <<- data.frame()
   traceData <<- data.frame()
