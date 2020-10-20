@@ -721,6 +721,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     }
   }
   # run GAMS
+  errMsg <- NULL
   tryCatch({
     jobSid <- NULL
     if(length(activeScen) && length(activeScen$getSid())){
