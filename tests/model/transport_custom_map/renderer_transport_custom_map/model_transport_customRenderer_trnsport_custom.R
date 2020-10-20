@@ -5,8 +5,8 @@ trnsport1Output <- function(id, height = NULL, options = NULL, path = NULL){
   if(is.null(height)){
     height <- 800
   }
-  
-  leaflet::leafletOutput(ns("trnsport"), height = height)
+  tagList(textOutput(ns("path")),
+          leaflet::leafletOutput(ns("trnsport")))
 }
 
 renderTrnsport1 <- function(input, output, session, data, options = NULL, path = NULL, ...){
@@ -34,5 +34,8 @@ renderTrnsport1 <- function(input, output, session, data, options = NULL, path =
                                  maxThickness = 12, 
                                  layerId = paste0("From ", data$i, " to ", data$j),
                                  popup = leaflet.minicharts::popupArgs())
+  output$path <- renderText({
+    path
+  })
   output$trnsport <- leaflet::renderLeaflet(map)
 }

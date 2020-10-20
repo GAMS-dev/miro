@@ -1001,7 +1001,8 @@ if(!is.null(errMsg)){
           forceScenImport <- identical(Sys.getenv("MIRO_FORCE_SCEN_IMPORT"), "true")
           if(!forceScenImport){
             currentDataHashesDf  <- db$importDataset("_sys__data_hashes",
-                                                     tibble("model", modelName))
+                                                     tibble("model",
+                                                            db$getModelNameDb()))
             currentDataHashes <- list()
             if(length(currentDataHashesDf) && nrow(currentDataHashesDf)){
               currentDataHashes <- currentDataHashesDf[["hash"]]
@@ -1093,9 +1094,10 @@ if(!is.null(errMsg)){
           }
         }
         if(debugMode && !forceScenImport && !identical(currentDataHashes, newDataHashes)){
-          db$deleteRows("_sys__data_hashes", "model", modelName)
+          db$deleteRows("_sys__data_hashes", "model",
+                        db$getModelNameDb())
           db$exportDataset("_sys__data_hashes",
-                           tibble(model = modelName,
+                           tibble(model = db$getModelNameDb(),
                                   filename = names(newDataHashes),
                                   hash = unlist(newDataHashes, use.names = FALSE)))
         }

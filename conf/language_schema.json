@@ -4853,7 +4853,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 58
+              "minProperties": 57
             },
             "widgetOptions": {
               "type": "object",

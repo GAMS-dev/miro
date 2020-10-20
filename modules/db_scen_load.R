@@ -354,6 +354,14 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
           }
         }
       })
+      lapply(length(modelOut) + seq_along(modelInFileNames), function(i){
+        if(!nrow(scenDataTmp[[1]][[i]])){
+          scenData[["scen_1_"]][[i]] <<- scenDataTemplate[[i]]
+        }else{
+          scenData[["scen_1_"]][[i]] <<- scenDataTmp[[1]][[i]]
+          attr(scenData[["scen_1_"]][[i]], "aliases") <<- attr(modelInTemplate[[i - length(modelOut)]], "aliases")
+        }
+      })
       
       if(noOutput){
         noOutputData <<- TRUE
