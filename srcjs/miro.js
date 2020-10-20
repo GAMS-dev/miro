@@ -151,9 +151,7 @@ export async function jumpToLogMark(id) {
   const el = $(`#mlogMark_${id}`);
   if (el !== undefined) {
     el[0].scrollIntoView();
-    el.animate({ backgroundColor: 'yellow' }, 400)
-      .delay(1000)
-      .animate({ backgroundColor: 'transparent' }, 400);
+    el.fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
   }
 }
 
