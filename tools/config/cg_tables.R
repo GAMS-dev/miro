@@ -589,6 +589,7 @@ observe({
 # })
 observeEvent({rv$refreshInputTableType
   input$inputTable_type}, {
+  labelTmp <-rv$tableWidgetConfig$label
   if(identical(input$inputTable_type, "bigdata")){
     rv$tableWidgetConfig$tableType <- "bigdata"
     hideEl(session, "#pivotColsRestriction")
@@ -599,6 +600,9 @@ observeEvent({rv$refreshInputTableType
       readonly     = input$table_readonly,
       pivotCols    = input$table_pivotCols
     )
+    if(length(labelTmp)){
+      rv$tableWidgetConfig$label <- labelTmp
+    }
   }else if(identical(input$inputTable_type, "pivot")){
     rv$tableWidgetConfig$tableType <- "pivot"
     hideEl(session, "#pivotColsRestriction")
@@ -638,6 +642,9 @@ observeEvent({rv$refreshInputTableType
       hideIndexCol = input$table_hideIndexCol,
       heatmap      = input$table_heatmap
     )
+    if(length(labelTmp)){
+      rv$tableWidgetConfig$label <- labelTmp
+    }
     if(!identical(rv$tableWidgetConfig$pivotCols, "_") && 
        (isTRUE(rv$tableWidgetConfig$readonly) || isTRUE(rv$tableWidgetConfig$heatmap))){
       showEl(session, "#pivotColsRestriction")
@@ -774,6 +781,9 @@ observeEvent(virtualActionButton(input$saveTableConfirm, rv$saveTableConfirm), {
                           pivotRenderer = input[["inputTable_pivot-miroPivot-pivotRenderer"]],
                           enableHideEmptyCols= isTRUE(input$inputpivot_enableHideEmptyCols)
                         ))
+      if(length(rv$tableWidgetConfig$label)){
+        newConfig$label <- rv$tableWidgetConfig$label
+      }
       if(length(rv$tableWidgetConfig$options$emptyUEL)){
         newConfig$options$emptyUEL <- rv$tableWidgetConfig$options$emptyUEL
       }
