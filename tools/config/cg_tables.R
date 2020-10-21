@@ -591,6 +591,7 @@ observe({
 # })
 observeEvent({rv$refreshInputTableType
   input$inputTable_type}, {
+  labelTmp <-rv$tableWidgetConfig$label
   if(identical(input$inputTable_type, "bigdata")){
     rv$tableWidgetConfig$tableType <- "bigdata"
     hideEl(session, "#pivotColsRestriction")
@@ -601,6 +602,9 @@ observeEvent({rv$refreshInputTableType
       readonly     = input$table_readonly,
       pivotCols    = input$table_pivotCols
     )
+    if(length(labelTmp)){
+      rv$tableWidgetConfig$label <- labelTmp
+    }
   }else if(identical(input$inputTable_type, "pivot")){
     rv$tableWidgetConfig$tableType <- "pivot"
     hideEl(session, "#pivotColsRestriction")
@@ -630,6 +634,9 @@ observeEvent({rv$refreshInputTableType
       hideIndexCol = input$table_hideIndexCol,
       heatmap      = input$table_heatmap
     )
+    if(length(labelTmp)){
+      rv$tableWidgetConfig$label <- labelTmp
+    }
     if(!identical(rv$tableWidgetConfig$pivotCols, "_") && 
        (isTRUE(rv$tableWidgetConfig$readonly) || isTRUE(rv$tableWidgetConfig$heatmap))){
       showEl(session, "#pivotColsRestriction")
@@ -750,6 +757,9 @@ observeEvent(virtualActionButton(input$saveTableConfirm, rv$saveTableConfirm), {
                           aggregationFunction = input[["inputTable_pivot-miroPivot-aggregationFunction"]],
                           pivotRenderer = input[["inputTable_pivot-miroPivot-pivotRenderer"]]
                         ))
+      if(length(rv$tableWidgetConfig$label)){
+        newConfig$label <- rv$tableWidgetConfig$label
+      }
       for(indexEl in list(c("rows", "rowIndexList"))){
         indexVal <- input[[paste0("inputTable_pivot-miroPivot-", indexEl[[2]])]]
         if(length(indexVal)){
