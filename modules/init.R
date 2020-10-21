@@ -410,6 +410,10 @@ if(is.null(errMsg)){
         modelIn[[i]]$pivotCols  <- widgetConfig$pivotCols
         widgetConfig$pivotCols  <- NULL
       }
+      if(!is.null(widgetConfig[["colWidths"]])){
+        modelIn[[i]]$colWidths  <- widgetConfig$colWidths
+        widgetConfig$colWidths  <- NULL
+      }
       if(length(widgetConfig$readonlyCols)){
         for(col in widgetConfig$readonlyCols){
           if(col %in% names(modelIn[[i]]$headers)){
@@ -420,7 +424,6 @@ if(is.null(errMsg)){
             break
           }
         }
-        
       }
     }
   }

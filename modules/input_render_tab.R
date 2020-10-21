@@ -425,7 +425,8 @@ lapply(modelInTabularData, function(sheet){
       ht <- hot_cols(ht, columnSorting = if(isPivoted) FALSE else hotOptions$columnSorting, 
                      manualColumnMove = hotOptions$manualColumnMove, 
                      manualColumnResize = hotOptions$manualColumnResize, 
-                     colWidths = hotOptions$colWidths, 
+                     colWidths = if(length(modelIn[[i]]$colWidths))
+                       modelIn[[i]]$colWidths else hotOptions$colWidths, 
                      fixedColumnsLeft = hotOptions$fixedColumnsLeft)
       for(dropdownCol in names(modelIn[[i]]$dropdownCols)){
         colSourceConfig <- modelIn[[i]]$dropdownCols[[dropdownCol]]
