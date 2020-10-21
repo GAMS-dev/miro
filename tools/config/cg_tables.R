@@ -722,6 +722,9 @@ observeEvent(input$inputpivot_enableHideEmptyCols, {
   }
 })
 observeEvent(input$inputpivot_emptyUEL, {
+  if(!identical(input$inputTable_type, "pivot")){
+    return()
+  }
   if(identical(input$inputpivot_emptyUEL, "")){
     rv$tableWidgetConfig$options$emptyUEL <- NULL
   }else{
