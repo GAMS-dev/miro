@@ -927,6 +927,14 @@
                         "description":"Hide indexing column?",
                         "type":"boolean"
                     },
+                    "colWidths":{
+                        "description":"Width of columns.",
+                         "type":[  
+                            "string",
+                            "integer"
+                         ],
+                         "exclusiveMinimum":0
+                    },
                     "readonlyCols":{
                       "description":"Either true or false for certain columns of table to be readonly",
                       "type":["array", "string", "null"],
