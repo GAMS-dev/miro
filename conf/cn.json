@@ -722,6 +722,23 @@
     "datatable":{
       "addRowPos": ["在选择上面添加一行", "在选择下面增加一行"],
       "addRowPosNoneSelected": ["在第一行之上增加一行", "在最后一行下面添加一行"]
+    },
+    "handsontable":{
+      "newCol":{
+        "nameLeft": "向左插入列",
+        "nameRight": "向右插入列",
+        "prompt": "输入新列的名称"
+      },
+      "renameCol":{
+        "name": "重命名列",
+        "prompt": "为该列输入一个新的名称"
+      },
+      "removeCol":{
+        "name": "删除栏",
+        "namePlural": "删除栏",
+        "prompt1": "你确定要删除",
+        "prompt2": "这两列？这不能被撤消！"
+      }
     }
   },
   "errMsg":{

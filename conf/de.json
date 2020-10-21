@@ -722,6 +722,23 @@
     "datatable":{
       "addRowPos": ["Zeile oberhalb der Auswahl hinzufügen", "Zeile unterhalb der Auswahl hinzufügen"],
       "addRowPosNoneSelected": ["Über der ersten Zeile hinzufügen", "Unter der letzten Zeile hinzufügen"]
+    },
+    "handsontable":{
+      "newCol":{
+        "nameLeft": "Spalte links einfügen",
+        "nameRight": "Spalte rechts einfügen",
+        "prompt": "Geben Sie einen Namen für die neue Spalte ein"
+      },
+      "renameCol":{
+        "name": "Spalte umbenennen",
+        "prompt": "Geben Sie einen neuen Namen für die Spalte ein"
+      },
+      "removeCol":{
+        "name": "Spalte entfernen",
+        "namePlural": "Spalten entfernen",
+        "prompt1": "Sind Sie sicher, dass Sie die Spalte(n):",
+        "prompt2": "entfernen möchten? Dies kann nicht rückgängig gemacht werden!"
+      }
     }
   },
   "errMsg":{
