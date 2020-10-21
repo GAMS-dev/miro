@@ -28,7 +28,9 @@ if(length(modelIn)){
   saveInputDb <- TRUE
   source("./modules/input_save.R", local = TRUE)
   lapply(seq_along(dataTmp), function(i){
-    if(!is.null(dataTmp[[i]])){
+    if(is.null(dataTmp[[i]])){
+      scenData[[scenIdLong]][[i + length(modelOut)]] <<- scenDataTemplate[[i + length(modelOut)]]
+    }else{
       scenData[[scenIdLong]][[i + length(modelOut)]] <<- dataTmp[[i]]
     }
   })

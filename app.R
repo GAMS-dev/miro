@@ -877,7 +877,6 @@ if(!is.null(errMsg)){
              HTML("<br>"),
              verbatimTextOutput("errorMessages"),
              if(length(inconsistentTableNames)){
-               actionButton("removeDbTablesPre", lang$adminMode$database$remove)
                tagList(
                  tags$div(id = "db_remove_wrapper",
                           if(!exists("lang") || is.null(lang$adminMode$database$removeInconsistent)){
@@ -885,21 +884,21 @@ if(!is.null(errMsg)){
                           }else{
                             lang$adminMode$database$removeInconsistent
                           },
-                          actionButton("removeInconsistentDbTables", 
-                                       "Delete inconsistent database tables")
+                          tags$div(actionButton("removeInconsistentDbTables", 
+                                       "Delete inconsistent database tables"))
                  ),
-                 tags$div(id = "db_remove_wrapper",
+                 tags$div(id = "db_remove_wrapper",style="margin-top:20px;",
                           if(!exists("lang") || is.null(lang$adminMode$database$removeWrapper)){
                             "You want to remove all the tables that belong to your model (e.g. because the schema changed)?"
                           }else{
                             lang$adminMode$database$removeWrapper
                           },
-                          actionButton("removeDbTablesPre", 
+                          tags$div(actionButton("removeDbTables", 
                                        if(!exists("lang") || is.null(lang$adminMode$database$removeDialogBtn)){
                                          "Delete all database tables"
                                        }else{
                                          lang$adminMode$database$removeDialogBtn
-                                       })
+                                       }))
                  )
                )
              },
@@ -927,7 +926,7 @@ if(!is.null(errMsg)){
                                         is.null(lang$adminMode$database$cannotBeUndone)){
                                        "Are you sure that you want to delete all inconsistent database tables? This can not be undone! You might want to save the database first before proceeding."
                                      }else{
-                                       paste0(lang$adminMode$database$removeInconsistentConfirm, lang$adminMode$database$cannotBeUndone)
+                                       paste(lang$adminMode$database$removeInconsistentConfirm, lang$adminMode$database$cannotBeUndone)
                                      }, footer = tagList(
                                 modalButton(removeDbTabLang$cancel),
                                 actionButton("removeInconsistentDbTablesConfirm", label = removeDbTabLang$confirm, 
@@ -944,13 +943,6 @@ if(!is.null(errMsg)){
         })
         removeModal()
         showHideEl(session, "#removeSuccess", 3000L)
-      })
-      observeEvent(input$removeDbTablesPre, {
-        showModal(modalDialog(title = removeDbTabLang$title,
-                              removeDbTabLang$desc, footer = tagList(
-                                modalButton(removeDbTabLang$cancel),
-                                actionButton("removeDbTables", label = removeDbTabLang$confirm, 
-                                             class = "bt-highlight-1"))))
       })
       source(file.path("tools", "config", "db_management.R"), local = TRUE)
     }
@@ -1009,7 +1001,8 @@ if(!is.null(errMsg)){
           forceScenImport <- identical(Sys.getenv("MIRO_FORCE_SCEN_IMPORT"), "true")
           if(!forceScenImport){
             currentDataHashesDf  <- db$importDataset("_sys__data_hashes",
-                                                     tibble("model", modelName))
+                                                     tibble("model",
+                                                            db$getModelNameDb()))
             currentDataHashes <- list()
             if(length(currentDataHashesDf) && nrow(currentDataHashesDf)){
               currentDataHashes <- currentDataHashesDf[["hash"]]
@@ -1101,9 +1094,10 @@ if(!is.null(errMsg)){
           }
         }
         if(debugMode && !forceScenImport && !identical(currentDataHashes, newDataHashes)){
-          db$deleteRows("_sys__data_hashes", "model", modelName)
+          db$deleteRows("_sys__data_hashes", "model",
+                        db$getModelNameDb())
           db$exportDataset("_sys__data_hashes",
-                           tibble(model = modelName,
+                           tibble(model = db$getModelNameDb(),
                                   filename = names(newDataHashes),
                                   hash = unlist(newDataHashes, use.names = FALSE)))
         }
@@ -1250,12 +1244,13 @@ if(!is.null(errMsg)){
                                              vapply(config$outputAttachments, "[[", character(1L), "filename", USE.NAMES = FALSE)),
                                            MIROGdxInName = MIROGdxInName,
                                            clArgs = GAMSClArgs, 
-                                           text_entities = c(paste0(modelName, ".lst"), 
+                                           text_entities = c(paste0(modelNameRaw, ".lst"), 
                                                              if(config$activateModules$miroLogFile) config$miroLogFile),
                                            miroLogFile = config$miroLogFile,
                                            extraClArgs = config$extraClArgs, 
                                            saveTraceFile = config$saveTraceFile,
-                                           modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
+                                           modelGmsName = modelGmsName, modelNameRaw = modelNameRaw,
+                                           gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
                                            timeout = 10L, serverOS = getOS(), modelData = modelData,
                                            rememberMeFileName = rememberMeFileName,
                                            hiddenLogFile = !config$activateModules$logFile), 

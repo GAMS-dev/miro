@@ -499,7 +499,7 @@
                       ]
                     },
                     "clearValue":{
-                      "description":"Whether to clear the value (set to empty string) when communicating with GAMS. This will not mess up the UEL order. Only relevant for singleton sets!",
+                      "description":"Whether to communicate value as element text when writing/reading from/to GDX. This will not mess up the UEL order.",
                       "type":"boolean"
                     }
                   },
@@ -803,7 +803,7 @@
                      "minLength":1
                    },
                    "clearValue":{
-                      "description":"Whether to communicate only element text with GAMS. This will not mess up the UEL order.",
+                      "description":"Whether to communicate value as element text when writing/reading from/to GDX. This will not mess up the UEL order.",
                       "type":"boolean"
                    }
                  },

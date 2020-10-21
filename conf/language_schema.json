@@ -4816,10 +4816,6 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "val54": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "val55": {
                   "type": "string",
                   "minLength": 1
@@ -4845,7 +4841,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 58
+              "minProperties": 57
             },
             "widgetOptions": {
               "type": "object",
@@ -5620,19 +5616,7 @@
               "type": "string",
               "minLength": 1
             },
-            "removeOrphansDialogTitle": {
-              "type": "string",
-              "minLength": 1
-            },
             "removeOrphansDialogDesc": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeOrphansDialogCancel": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeOrphansDialogConfirm": {
               "type": "string",
               "minLength": 1
             },
@@ -5652,10 +5636,6 @@
               "type": "string",
               "minLength": 1
             },
-            "removeConfirm": {
-              "type": "string",
-              "minLength": 1
-            },
             "removeCheck": {
               "type": "string",
               "minLength": 1
@@ -5665,10 +5645,6 @@
               "minLength": 1
             },
             "cancel": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeOrphans": {
               "type": "string",
               "minLength": 1
             },
@@ -5705,7 +5681,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 42
+          "minProperties": 37
         },
         "graphs": {
           "type": "object",
