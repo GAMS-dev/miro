@@ -2658,9 +2658,73 @@
             }
           },
           "minProperties": 2
+        },
+        "handsontable": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "newCol": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "nameLeft": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "nameRight": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "prompt": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 3
+            },
+            "renameCol": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "prompt": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 2
+            },
+            "removeCol": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "namePlural": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "prompt1": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "prompt2": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 4
+            }
+          },
+          "minProperties": 3
         }
       },
-      "minProperties": 2
+      "minProperties": 3
     },
     "progressBar": {
       "description": "language specific objects of progressbars of the UI",

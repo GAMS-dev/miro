@@ -93,19 +93,20 @@ isBadScenName <- function(scenName){
 switchTab <- function(session, id){
   session$sendCustomMessage("gms-switchTab", id)
 }
+toJSString <- function(string){
+  return(toJSON(string, auto_unbox = TRUE))
+}
 getHotCustomColOptions <- function(noDomains){
   setNames(
-    list(list(name = "Insert column left",
-              callback = JS("function(key, normalizedSelection){
-  let newHdr = prompt('Enter a name for the new column');
+    list(list(name = lang$renderers$handsontable$newCol$nameLeft,
+              callback = JS(paste0("function(key, normalizedSelection){
+  let newHdr = prompt(", toJSString(lang$renderers$handsontable$newCol$prompt), ");
   let currentHeaders = this.getColHeader();
   const newParams = this.params;
   if ( newHdr == null ) {
    return false;
   }
   let i = 1;
-  console.log(currentHeaders)
-  console.log(newHdr)
   while ( currentHeaders.find(function (el) {
    return el === newHdr;
   })) {
@@ -130,12 +131,12 @@ getHotCustomColOptions <- function(noDomains){
   if (isSelectedByCorner) {
     this.selectAll();
   }
-}"),
+}")),
               disabled = JS(paste0("function(){
                                 return this.getSelectedLast()[1]<=", noDomains - 1L, ";}"))),
-         list(name = "Insert column right",
-              callback = JS("function(key, normalizedSelection){
-  let newHdr = prompt('Enter a name for the new column');
+         list(name = lang$renderers$handsontable$newCol$nameRight,
+              callback = JS(paste0("function(key, normalizedSelection){
+  let newHdr = prompt(", toJSString(lang$renderers$handsontable$newCol$prompt), ");
   let currentHeaders = this.getColHeader();
   const newParams = this.params;
   if ( newHdr == null ) {
@@ -171,14 +172,14 @@ getHotCustomColOptions <- function(noDomains){
   if (isSelectedByCorner) {
     this.selectAll();
   }
-}"),
+}")),
               disabled = JS(paste0("function(){
                                 return this.getSelectedLast()[1]<=", noDomains - 2L, ";}"))),
-         list(name = "Rename column",
-              callback = JS("function(){
+         list(name = lang$renderers$handsontable$renameCol$name,
+              callback = JS(paste0("function(){
 const ind = this.getSelectedLast()[1];
 let currentHeaders = this.getColHeader();
-let newHdr = prompt('Enter a new name for the column', currentHeaders[ind]);
+let newHdr = prompt(", toJSString(lang$renderers$handsontable$renameCol$prompt), ", currentHeaders[ind]);
 if ( newHdr == null ) {
  return false;
 }
@@ -202,14 +203,14 @@ setTimeout(function () {
     params: that.params
   });
 }, 90);
-}"),
+}")),
               disabled = JS(paste0("function(){
 const selection = this.getSelected();
 if (selection && selection.length > 1) {
    return true;
 }
 return this.getSelectedLast()[1]<=", noDomains - 1L, ";}"))),
-         list(name = JS("function(){
+         list(name = JS(paste0("function(){
   const selection = this.getSelected();
   let pluralForm = 0;
 
@@ -225,16 +226,25 @@ return this.getSelectedLast()[1]<=", noDomains - 1L, ";}"))),
     }
   }
   if (pluralForm) {
-    return 'Remove columns';
+    return ", toJSString(lang$renderers$handsontable$removeCol$namePlural), ";
   }
-  return 'Remove column';
-}"),
-              callback = JS("function(){
+  return ", toJSString(lang$renderers$handsontable$removeCol$name), ";
+}")),
+              callback = JS(paste0("function(){
   let selections = this.getSelected();
-  if(!Array.isArray(selections) || selections.length === 0){
+  if (!Array.isArray(selections) || selections.length === 0) {
     return;
   }
   const newParams = this.params;
+  const colsToRemove = selections.map((selection) => {
+    return newParams.colHeaders.slice(selection[1], selection[3] + 1);
+  }).filter((current, index, self) => {
+    return self.indexOf(current) === index;
+  });
+  if (!confirm(", toJSString(lang$renderers$handsontable$removeCol$prompt1),
+                                   "+colsToRemove.toString()+", toJSString(lang$renderers$handsontable$removeCol$prompt2), ")) {
+    return;
+  }
   
   // get [startCol, endCol] pairs and sort by startCol
   selections = selections.map((selection) => {
@@ -270,7 +280,7 @@ return this.getSelectedLast()[1]<=", noDomains - 1L, ";}"))),
   newParams.columns.splice(rngStart - offset, rngDistance + 1);
   newParams.colHeaders.splice(rngStart - offset, rngDistance + 1);
   this.updateSettings(newParams);
-}"),
+}")),
               disabled = JS(paste0("function(){
 return this.getSelectedLast()[1]<=", noDomains - 1L, ";}")))),
     c("column_left", "column_right", "rename_column", "remove_column"))
