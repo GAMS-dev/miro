@@ -303,9 +303,9 @@ if(is.null(errMsg)){
             next
           }
           pivotColId <- NULL
-          if(length(widgetConfig$pivotCols) && any(widgetConfig$dropdownCols %in% widgetConfig$pivotCols)){
+          if(length(widgetConfig$pivotCols) && any(colNames %in% widgetConfig$pivotCols)){
             errMsg <- paste(errMsg, sprintf("The column: '%s' of the GAMS symbol: '%s': cannot be declared both as a pivot column and a drop-down column!", 
-                                            paste(widgetConfig$dropdownCols[widgetConfig$dropdownCols %in% widgetConfig$pivotCols], collapse = "', '"),
+                                            paste(colNames[colNames %in% widgetConfig$pivotCols], collapse = "', '"),
                                             names(modelIn)[i]),
                             sep = "\n")
           }
@@ -335,6 +335,13 @@ if(is.null(errMsg)){
                length(config$inputWidgets[[dataSource$symbol]]$pivotCols)){
               pivotColId <- match(config$inputWidgets[[dataSource$symbol]]$pivotCols[1],
                                   names(modelIn[[dataSource$symbol]]$headers))
+              if(identical(colId, pivotColId)){
+                errMsg <<- paste(errMsg, sprintf("The column: '%s' of GAMS symbol: '%s' is defined as data source for symbol: '%s'. However, this data source is a pivoted column and can therefore not be used!", 
+                                                 dataSource$column, dataSource$symbol, names(modelIn)[i]),
+                                 sep = "\n")
+                hasErr <<- TRUE
+                return(NULL)
+              }
               if(!is.na(pivotColId) && pivotColId <= colId){
                 # need to adjust id in case column before is pivoted
                 colId <- colId - 1L
