@@ -1689,6 +1689,21 @@ observeEvent(input$chart_xdata, {
   }
   rv$graphConfig$graph$xdata <<- input$chart_xdata
 })
+observeEvent(input$miropivot_enableHideEmptyCols, {
+  if(isTRUE(input$miropivot_enableHideEmptyCols)){
+    showEl(session, "#preview_output_miropivot-miroPivot-hideEmptyCols")
+  }else{
+    updateCheckboxInput(session, "preview_output_miropivot-miroPivot-hideEmptyCols", value = FALSE)
+    hideEl(session, "#preview_output_miropivot-miroPivot-hideEmptyCols")
+  }
+})
+observeEvent(input$miropivot_emptyUEL, {
+  if(identical(input$miropivot_emptyUEL, "")){
+    rv$graphConfig$graph$options$emptyUEL <- NULL
+  }else{
+    rv$graphConfig$graph$options$emptyUEL <- input$miropivot_emptyUEL
+  }
+})
 observeEvent(input$add_array_el, {
   chart_id    <- input$add_array_el[1]
   chart_label <- input$add_array_el[2]
@@ -2443,10 +2458,8 @@ observeEvent({
       allDataAvailable <<- TRUE
     }else if(identical(chartTool, "miropivot")){
       # make sure pivot table is refreshed when changing symbol
-      insertUI(selector = "#tool_options", 
-               tags$div(id = "miroPivotInfoMsg", class="config-message", 
-                        style = "display:block;",
-                        lang$adminMode$graphs$miroPivotOptions$infoMsg),
+      insertUI(selector = "#tool_options",
+               getMIROPivotOptions(currentGraphConfig, prefix = "miropivot_"),
                where = "beforeEnd")
       rv$graphConfig$graph$symname <- activeSymbol$name
       allDataAvailable <<- TRUE
@@ -3561,11 +3574,14 @@ observe({
           miroPivotRendererEnv[[el]]$destroy()
         }
       }
+      miropivotOptions <- currentGraphConfig$options
+      miropivotOptions$emptyUEL <- rv$graphConfig$graph$options$emptyUEL
+      miropivotOptions$enableHideEmptyCols <- TRUE
       callModule(renderData, "preview_output_miropivot", type = "miropivot", 
                  data = data, rendererEnv = miroPivotRendererEnv,
                  customOptions = c(list("_metadata_" = metadata, 
                                       resetOnInit = TRUE), 
-                                   currentGraphConfig$options),
+                                   miropivotOptions),
                  roundPrecision = 2, modelDir = modelDir)
       showEl(session, "#preview-content-miropivot")
       hideEl(session, "#preview-content-pivot")
@@ -3700,8 +3716,12 @@ observeEvent(rv$saveGraphConfirm, {
     configJSON$dataRendering[[activeSymbol$name]]$pivottable <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$options <<- list(
       aggregationFunction = input[["preview_output_miropivot-miroPivot-aggregationFunction"]],
-      pivotRenderer =input[["preview_output_miropivot-miroPivot-pivotRenderer"]]
+      pivotRenderer = input[["preview_output_miropivot-miroPivot-pivotRenderer"]],
+      enableHideEmptyCols = isTRUE(input$miropivot_enableHideEmptyCols)
     )
+    if(length(rv$graphConfig$graph$options$emptyUEL)){
+      configJSON$dataRendering[[activeSymbol$name]]$options$emptyUEL <<- rv$graphConfig$graph$options$emptyUEL
+    }
     for(indexEl in list(c("rows", "rowIndexList"))){
       indexVal <- input[[paste0("preview_output_miropivot-miroPivot-", indexEl[[2]])]]
       if(length(indexVal)){

@@ -61,6 +61,17 @@
                 <div class="doc-body row">
                     <div class="doc-content col-md-9 col-12 order-1">
                         <div class="content-inner">
+                            <section id="v13" class="doc-section">
+                              <h2 class="section-title" style="display:inline-block">GAMS MIRO 1.3</h2> <div style="display:inline-block; padding-left:15px;">(xxxx-xx-xx)</div>
+                                 <div class="section-block">
+                                    <h3>Minor new features and improvements</h3>
+                                    <ul>
+                                      <li><a href="./charts.html#pivot-chart">MIRO Pivot Tables</a>: Add option to export charts as PNG.</li>
+                                      <li><a href="./charts.html#pivot-chart">MIRO Pivot Tables</a>: Add option to visualize data as heatmap.</li>
+                                      <li><a href="./charts.html#pivot-chart">MIRO Pivot Tables</a>: Add option to hide empty columns.</li>
+                                    </ul>
+                                 </div>
+                            </section>
                             <section id="v12" class="doc-section">
                               <h2 class="section-title" style="display:inline-block">GAMS MIRO 1.2</h2> <div style="display:inline-block; padding-left:15px;">(2020-10-05)</div>
                                  <div class="section-block">
@@ -72,6 +83,9 @@
                                       <li>Fix issues with remote execution on GAMS Engine and uppercase letters in main GMS file.</li>
                                       <li>Fix issue in Configuration Mode (valuebox configuration) where the user gets an error when clicking on <i>save</i> twice.</li>
                                       <li>When removing database tables, show only one dialog instead of two.</li>
+                                      <li>Fix issue in the MIRO Pivot renderer where filter dropdown would be irresponsive after loading view with unknown filters.</li>
+                                      <li>Fix issue in the MIRO Pivot renderer where table/charts would be rendered more often than necessary.</li>
+                                      <li>MIRO Pivot renderer: Change the settings of bar charts so that they always start at 0, and of line charts so that they have no interpolation.</li>
                                       <li>Fix issue that caused MIRO to crash when loading app with default scalars table on first tab.</li>
                                       <li>Fix issue that caused multiple symbols in custom renderers not to work properly.</li>
                                       <li>Fix issue that caused path to custom renderer function not to be passed correctly.</li>
@@ -377,6 +391,8 @@
                     <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
                         <div id="doc-nav" class="doc-nav">
                             <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                                <a class="nav-link scrollto" href="#v13">GAMS MIRO 1.3</a>
+                                <a class="nav-link scrollto" href="#v12">GAMS MIRO 1.2</a>
                                 <a class="nav-link scrollto" href="#v11">GAMS MIRO 1.1</a>
                                 <a class="nav-link scrollto" href="#v10">GAMS MIRO 1.0</a>
                                 <a class="nav-link scrollto" href="#v06">GAMS MIRO 0.6 (BETA)</a>

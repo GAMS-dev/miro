@@ -2446,6 +2446,10 @@
               "type": "string",
               "minLength": 1
             },
+            "btDownloadPng": {
+              "type": "string",
+              "minLength": 1
+            },
             "btLoadView": {
               "type": "string",
               "minLength": 1
@@ -2463,6 +2467,10 @@
               "minLength": 1
             },
             "btRemoveRows": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cbHideEmptyCols": {
               "type": "string",
               "minLength": 1
             },
@@ -2604,6 +2612,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "heatmap": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "bar": {
                   "type": "string",
                   "minLength": 1
@@ -2621,10 +2633,10 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 5
+              "minProperties": 6
             }
           },
-          "minProperties": 27
+          "minProperties": 29
         },
         "datatable": {
           "type": "object",
@@ -6712,12 +6724,20 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "hideEmptyColsSwitch": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "emptyUEL": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "infoMsgDummyData": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 2
+              "minProperties": 4
             },
             "datatableOptions": {
               "type": "object",

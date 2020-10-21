@@ -882,13 +882,13 @@ dowVSindex(d,'index fund')     = fund(d);
                             <section id="pivot-chart" class="doc-section">
                                 <h2 class="section-title">Pivot table</h2>
                                 <div class="section-block">
-                                  <p>MIRO comes with a powerful pivot table renderer that allows you to filter, aggregate and pivot data. In addition to a table, the MIRO pivot table renderer also supports the visualization of data in the form of charts (line chart, bar chart etc.). Each slice, or "view" of data can be exported as a CSV file by clicking the <img class="img-fluid" src="assets/images/configuration_mode/miropivot_exportview_btn.png" width="25" height="25" align="middle" alt="Export as CSV" /> button.</p>
+                                  <p>MIRO comes with a powerful pivot table renderer that allows you to filter, aggregate and pivot data. In addition to a table, the MIRO pivot table renderer also supports the visualization of data in the form of a heatmap or as chart (line chart, bar chart, etc.). Each slice, or "view" of data can be exported by clicking the <img class="img-fluid" src="assets/images/configuration_mode/miropivot_exportview_btn.png" width="25" height="25" align="middle" alt="Export as CSV/PNG" /> button. If you are currently viewing a chart, the view is exported as a PNG file; if you are viewing a table or heatmap, the data is exported as a CSV file.</p>
                                   <p>The MIRO pivot table renderer allows you to store "views" - the current representation of the data - to the database and load it together with the scenario data. Simply click the <img class="img-fluid" src="assets/images/configuration_mode/miropivot_addview_btn.png" width="25" height="25" align="middle" alt="Add view" /> button and assign a name to the view. When you save the scenario, all your views are automatically stored as well. Load a view by first clicking on the "Load view" button and then selecting which view to load.</p>
                                   <div class="section-block">
                                       <img class="img-fluid" src="assets/images/configuration_mode/miropivot_loadview_btn.png" alt="Load views"/>
                                   </div>
                                   <h3 class="block-title">Configuration</h3>
-                                    <p>You can specify the default view as well as the default renderer (table/chart) of the pivot table renderer in the Configuration Mode. Note that unlike other charting tools, you configure the MIRO pivot table directly in the preview on the right. Drag and drop the domains where you want them to be and click on "Save". The symbol is loaded in MIRO with the same view that you have set up in the Configuration Mode.</p>
+                                    <p>You can specify the default view as well as the default renderer (table/chart) of the pivot table renderer in the Configuration Mode. Note that unlike other charting tools, you configure most of the MIRO pivot table directly in the preview on the right. Drag and drop the domains where you want them to be and click on "Save". The symbol is loaded in MIRO with the same view that you have set up in the Configuration Mode.</p>
                                     <p>Example: Model <i>Transport</i>, parameter <i>shipment quantities in cases</i></p>
                                     <p>For an example in GAMS, see the <a href="#map-chart" class="scrollto">map example</a>.</p>
                                     <div class="section-block">
@@ -916,6 +916,58 @@ dowVSindex(d,'index fund')     = fund(d);
 }
                                     </code></pre>
                                 </div><!--//section-block-->
+                                <div class="section-block">
+                                  <p>In addition to the configuration of the default view, there is also the possibility to activate a switch that allows to hide <i>empty</i> columns. This is especially useful if you use the MIRO Pivot Table for a <i>data cube</i>. A <i>data cube</i> is a collection of GAMS parameters that are combined to form a large cube. For example, if you have location information in the two parameters: <code class="language-gams">ilocData(i,locHdr)</code> and <code class="language-gams">jlocData(j,locHdr)</code>, you can combine them into a cube with four dimensions: one dimension to store the name of the GAMS symbols: <code class="language-gams">symname</code> and the three dimensions <code class="language-gams">i</code>, <code class="language-gams">j</code> and <code class="language-gams">locHdr</code>. Note that the dimension <code class="language-gams">i</code> is missing in the parameter <code class="language-gams">jlocData</code> and vice versa. So we end up with a sparse cube:</p>
+                                  <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                              <th>symname</th>
+                                              <th>i</th>
+                                              <th>j</th>
+                                              <th>locHdr</th>
+                                              <th>value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                              <td>ilocData</td>
+                                              <td>Seattle</td>
+                                              <td>-</td>
+                                              <td>lat</td>
+                                              <td>47.61</td>
+                                            </tr>
+                                            <tr>
+                                              <td>ilocData</td>
+                                              <td>Seattle</td>
+                                              <td>-</td>
+                                              <td>lng</td>
+                                              <td>-122.33</td>
+                                            </tr>
+                                            <tr>
+                                              <td>jlocData</td>
+                                              <td>-</td>
+                                              <td>New-York</td>
+                                              <td>lat</td>
+                                              <td>40.73</td>
+                                            </tr>
+                                            <tr>
+                                              <td>jlocData</td>
+                                              <td>-</td>
+                                              <td>New-York</td>
+                                              <td>lng</td>
+                                              <td>-73.94</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <p>You probably noticed that in this example missing dimensions in a symbol are filled with <kbd>-</kbd>. But we could have chosen any other UEL to indicate missing values. If you would visualize the data of this parameter with the MIRO Pivot Table, you might not want to see columns containing only <kbd>-</kbd>. Therefore, the MIRO Pivot Table has the options to hide these <i> empty</i> columns:</p>
+                                <div class="section-block">
+                                    <img class="img-fluid" src="assets/images/configuration_mode/miropivot_empty_col_visible.png" alt="MIRO Pivot Table with empty column visible"/>
+                                </div>
+                                <div class="section-block">
+                                    <img class="img-fluid" src="assets/images/configuration_mode/miropivot_empty_col_hidden.png" alt="MIRO Pivot Table with empty column hidden"/>
+                                </div>
                             </section>
                             <section id="gantt-chart" class="doc-section">
                                 <h2 class="section-title">Gantt chart</h2>

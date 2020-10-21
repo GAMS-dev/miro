@@ -77,7 +77,16 @@
          "pivotRenderer":{
            "description":"Sepcify the default renderer.",
             "type":"string",
-            "enum": ["table", "line", "bar", "stackedbar", "radar"]
+            "enum": ["table", "heatmap", "line", "bar", "stackedbar", "radar"]
+         },
+         "emptyUEL": {
+           "description":"UEL that identifies a missing value (defaults to -, must not be empty string).",
+           "type": "string",
+           "minLength": 1
+         },
+         "enableHideEmptyCols": {
+           "description":"Enable button that allows to hide empty columns.",
+           "type": "boolean"
          },
          "enablePersistentViews": {
            "description":"Enable persistent views.",
@@ -937,7 +946,7 @@
                       }
                     },
                     "dropdownCols":{
-                      "description":"Only for default tables: columns whose values should be enum/dropdown",
+                      "description":"Columns where only certain values are allowed to be selected (only supported for default tables)",
                       "type":"object",
                        "additionalProperties":{  
                           "type":"object",
