@@ -620,6 +620,13 @@ function addArrayDataElWrapper(arrayID, defaults, symbol, cnt = 1) {
 }
 
 $(document).ready(() => {
+  $(document).on('change', '.must-not-be-empty', function () {
+    if ($(this).val() === '') {
+      $(this).css({ borderColor: '#F39619' });
+    } else {
+      $(this).css({ borderColor: '' });
+    }
+  });
   Shiny.addCustomMessageHandler('gms-setScalarOutputs', (scalarDataRaw) => {
     const scalarData = scalarDataRaw;
 

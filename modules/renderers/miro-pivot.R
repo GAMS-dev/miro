@@ -93,6 +93,14 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                                             title = lang$renderers$miroPivot$btNewView),
                                downloadButton(ns("downloadCsv"), label = NULL,
                                               title = lang$renderers$miroPivot$btDownloadCsv),
+                               tags$a(id = ns("downloadPng"),
+                                      class = "btn btn-default bt-export-canvas",
+                                      download = "chart.png",
+                                      href = "#",
+                                      `data-canvasid` = ns("pivotChart"),
+                                      tags$i(class = "fa fa-download"),
+                                      title = lang$renderers$miroPivot$btDownloadPng,
+                                      style = "display:none;"),
                                tags$div(class="dropdown", style = "margin-top:10px;",
                                         tags$button(class="btn btn-default dropdown-toggle btn-dropdown",
                                                     type = "button", id = ns("toggleViewButton"),
@@ -122,14 +130,17 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
            fluidRow(style = "margin:0", 
                     column(width = 2L,
                            selectInput(ns("pivotRenderer"), "", 
-                                       setNames(c("table", "bar", "stackedbar", "line", "radar"),
+                                       setNames(c("table", "heatmap", "bar", "stackedbar", "line", "radar"),
                                                 c(lang$renderers$miroPivot$renderer$table,
+                                                  lang$renderers$miroPivot$renderer$heatmap,
                                                   lang$renderers$miroPivot$renderer$bar,
                                                   lang$renderers$miroPivot$renderer$stackedbar,
                                                   lang$renderers$miroPivot$renderer$line,
                                                   lang$renderers$miroPivot$renderer$radar)),
                                        selected = if(length(options$pivotRenderer))
-                                         options$pivotRenderer else "table")),
+                                         options$pivotRenderer else "table"),
+                           if(isTRUE(options$enableHideEmptyCols))
+                              checkboxInput_MIRO(ns("hideEmptyCols"), lang$renderers$miroPivot$cbHideEmptyCols)),
                     column(width = 6L, style = "padding: 1em;",
                            tags$ul(id = ns("colIndexList"), class="drop-index-list vertical-index-list",
                                    genIndexList(indices$cols))),
@@ -142,10 +153,10 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                            style = "min-height: 400px;",
                            if(isTRUE(options[["_input_"]])){
                              tags$div(style = "margin-bottom:2px;",
-                               actionButton(ns("btAddRow"), lang$renderers$miroPivot$btAddRow),
-                               actionButton(ns("btRemoveRows"), lang$renderers$miroPivot$btRemoveRows, class = "bt-remove"),
-                               actionButton(ns("enableEdit"), lang$renderers$miroPivot$btEnableEdit,
-                                            style = "display:none")
+                                      actionButton(ns("btAddRow"), lang$renderers$miroPivot$btAddRow),
+                                      actionButton(ns("btRemoveRows"), lang$renderers$miroPivot$btRemoveRows, class = "bt-remove"),
+                                      actionButton(ns("enableEdit"), lang$renderers$miroPivot$btEnableEdit,
+                                                   style = "display:none")
                              )
                            },
                            tags$div(id = ns("errMsg"), class = "gmsalert gmsalert-error", 
@@ -517,7 +528,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           allowEmpty <- optionId %in% c("aggregations", "cols")
           if(initData && (allowEmpty || length(currentView[[optionId]][[filterIndex]]))){
             currentFilterVal <- currentView[[optionId]][[filterIndex]]
-            if(!identical(isolate(input[[paste0("filter_", filterIndex)]]), currentFilterVal))
+            if(currentFilterVal %in% filterElements[[filterIndex]] &&
+               !identical(isolate(input[[paste0("filter_", filterIndex)]]), currentFilterVal))
               noUpdateFilterEl[[filterIndex]] <<- TRUE
           }else{
             currentFilterVal <- isolate(input[[paste0("filter_", filterIndex)]])
@@ -602,19 +614,31 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           input[[paste0("filter_", filterIndex)]]
         }), if(bigData) 2000 else 500)
         rendererEnv[[ns(paste0("filter_", filterIndex))]] <- observe({
+          isInitialized <- TRUE
+          if(!initData && !filterIndex %in% rendererEnv[[ns("filtersInitialized")]]){
+            isInitialized <- FALSE
+            if(length(rendererEnv[[ns("filtersInitialized")]])){
+              rendererEnv[[ns("filtersInitialized")]] <- c(filterIndex,
+                                                           rendererEnv[[ns("filtersInitialized")]])
+            }else{
+              rendererEnv[[ns("filtersInitialized")]] <- filterIndex
+            }
+          }
           if(is.null(throttledFilters[[filterIndex]]())){
-            if(!filterIndex %in% isolate(c(input$aggregationIndexList, input$colIndexList))){
+            if(!isInitialized || 
+               !filterIndex %in% isolate(c(input$aggregationIndexList,
+                                           input$colIndexList))){
               return()
             }
           }
-          if(isFALSE(noUpdateFilterEl[[filterIndex]])){
-            isolate({
-              newVal <- updateFilter() + 1L
-              updateFilter(newVal)
-            })
-          }else{
+          if(!isFALSE(noUpdateFilterEl[[filterIndex]])){
             noUpdateFilterEl[[filterIndex]] <<- FALSE
+            return()
           }
+          isolate({
+            newVal <- updateFilter() + 1L
+            updateFilter(newVal)
+          })
         })
       })
       
@@ -833,7 +857,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if(noError){
           hideEl(session, paste0("#", ns("errMsg")))
         }
-        labels <- do.call(paste, c(dataTmp[seq_len(rowHeaderLen)], list(sep = ".")))
+        if(isTRUE(options$enableHideEmptyCols) && isTRUE(input$hideEmptyCols)){
+          labels <- do.call(paste, c(dataTmp[which(vapply(dataTmp[seq_len(rowHeaderLen)],
+                                                          function(x) !identical(as.character(unique(x)),
+                                                                                 if(length(options$emptyUEL))
+                                                                                   options$emptyUEL else "-"),
+                                                          logical(1L), USE.NAMES = FALSE))],
+                                     list(sep = ".")))
+        }else{
+          labels <- do.call(paste, c(dataTmp[seq_len(rowHeaderLen)], list(sep = ".")))
+        }
         if(!length(labels)){
           labels <- "value"
         }
@@ -873,14 +906,32 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
           initRenderer <<- FALSE
         }
+        isEditableTable <- isEditable
+        isHeatmap <- FALSE
         if(!identical(pivotRenderer, "table")){
-          return()
+          if(!identical(pivotRenderer, "heatmap")){
+            showEl(session, paste0("#", ns("downloadPng")))
+            hideEl(session, paste0("#", ns("downloadCsv")))
+            return()
+          }
+          isHeatmap <- TRUE
+          isEditableTable <- FALSE
         }
+        hideEl(session, paste0("#", ns("downloadPng")))
+        showEl(session, paste0("#", ns("downloadCsv")))
+        
         changeHeightEl(session, paste0("#", ns("pivotChart")), 1, 500)
         showEl(session, paste0("#", ns("loadPivotTable")))
         dataTmp <- dataToRender()
         if(!length(dataTmp)){
           return()
+        }
+        noRowHeaders <- attr(dataTmp, "noRowHeaders")
+        if(isHeatmap){
+          brks <- quantile(dataTmp[-seq_len(noRowHeaders)],
+                           probs = seq(.05, .95, .05), na.rm = TRUE)
+          clrs <- round(seq(255, 40, length.out = length(brks) + 1), 0) %>%
+            {paste0("rgb(255,", ., ",", ., ")")}
         }
         if(length(dataTmp) > 500){
           showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, "500"))
@@ -888,11 +939,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }else{
           hideEl(session, paste0("#", ns("errMsg")))
         }
-        noRowHeaders <- attr(dataTmp, "noRowHeaders")
         hideEl(session, paste0("#", ns("loadPivotTable")))
         
-        datatable(dataTmp, extensions = c("Scroller", "FixedColumns", if(noRowHeaders > 5L) "Buttons"), 
-                  selection = if(isEditable) "multiple" else "none", editable = isEditable,
+        ret <- datatable(dataTmp, extensions = c("Scroller", "FixedColumns"), 
+                  selection = if(isEditableTable) "multiple" else "none", editable = isEditableTable,
                   container = DTbuildColHeaderContainer(names(dataTmp), 
                                                         noRowHeaders, 
                                                         unlist(setIndexAliases[names(dataTmp)[seq_len(noRowHeaders)]], 
@@ -924,10 +974,22 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
 }")),
                                  scrollY = 400, scrollX = TRUE, scrollCollapse = TRUE,
                                  scroller = list(loadingIndicator = FALSE), dom = 'Bfrtip',
-                                 buttons = if(noRowHeaders > 5L) I("colvis"),
-                                 fixedColumns = list(leftColumns = noRowHeaders)), rownames = FALSE) %>%
+                                 fixedColumns = list(leftColumns = noRowHeaders),
+                                 columnDefs = if(isTRUE(options$enableHideEmptyCols) && isTRUE(input$hideEmptyCols))
+                                   list(list(visible = FALSE,
+                                             targets = which(vapply(dataTmp[seq_len(noRowHeaders)],
+                                                                    function(x) identical(as.character(unique(x)),
+                                                                                          if(length(options$emptyUEL))
+                                                                                            options$emptyUEL else "-"),
+                                                                    logical(1L), USE.NAMES = FALSE)) - 1L))), rownames = FALSE) %>%
           formatRound(seq(noRowHeaders + 1, length(dataTmp)), 
                       digits = roundPrecision)
+        if(!isHeatmap){
+          return(ret)
+        }
+        return(formatStyle(ret, seq(noRowHeaders + 1, length(dataTmp)),
+                           color = "#000",
+                           backgroundColor = styleInterval(brks, clrs)))
       })
       
       if(isInput){

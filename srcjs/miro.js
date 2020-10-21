@@ -267,6 +267,10 @@ $(document).ready(() => {
       $('.pvtFilterBox').hide();
     }
   });
+  $(document).on('click', '.bt-export-canvas', function () {
+    const data = document.getElementById(this.dataset.canvasid).toDataURL('image/png');
+    this.href = data;
+  });
   $('.sidebar-toggle').click(() => {
     rerenderHot(400);
   });
