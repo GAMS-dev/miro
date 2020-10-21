@@ -850,14 +850,6 @@ observeEvent(input$deleteTableWidgetConfirm, {
     }
     currentTableSymbolName <<- character(0L)
   }else{
-    if(currentTableSymbolName %in% inputSymMultiDimChoices){
-      currentTableSymbolID <- match(currentTableSymbolName, tableSymbols[[names(tableSymbols)[[1]]]])
-      names(tableSymbols)[[currentTableSymbolID]] <<- inputSymMultiDimChoices[[currentTableSymbolID]]
-    }else if(currentTableSymbolName %in% outputSymMultiDimChoices){
-      currentTableSymbolID <- match(currentTableSymbolName, tableSymbols[[names(tableSymbols)[[2]]]])
-      names(tableSymbols)[[currentTableSymbolID]] <<- outputSymMultiDimChoices[[currentTableSymbolID]]
-    }
-    updateSelectInput(session, "table_symbol", choices = tableSymbols)
     rv$reset_table_input <- rv$reset_table_input + 1L
   }
 })
