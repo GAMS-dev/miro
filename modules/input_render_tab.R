@@ -451,7 +451,8 @@ lapply(modelInTabularData, function(sheet){
         }
         if(length(source)){
           ht <- hot_col(ht, match(dropdownCol, names(modelIn[[i]]$headers)),
-                        type = colSourceConfig$type, source = source)
+                        type = colSourceConfig$type, source = I(source), strict = TRUE,
+                        allowInvalid = FALSE)
         }
       }
       if(length(colsReadonly))
