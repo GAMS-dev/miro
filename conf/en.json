@@ -681,6 +681,23 @@
     "datatable":{
       "addRowPos": ["Add row above selection", "Add row below selection"],
       "addRowPosNoneSelected": ["Add above first row", "Add below last row"]
+    },
+    "handsontable":{
+      "newCol":{
+        "nameLeft": "Insert column left",
+        "nameRight": "Insert column right",
+        "prompt": "Enter a name for the new column"
+      },
+      "renameCol":{
+        "name": "Rename column",
+        "prompt": "Enter a new name for the column"
+      },
+      "removeCol":{
+        "name": "Remove column",
+        "namePlural": "Remove columns",
+        "prompt1": "Are you sure you want to remove the column(s):",
+        "prompt2": "? This cannot be undone!"
+      }
     }
   },
   "progressBar":{  
