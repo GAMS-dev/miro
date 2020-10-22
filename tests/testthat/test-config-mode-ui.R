@@ -14,7 +14,7 @@ Sys.setenv(MIRO_DB_PATH = testDir)
 Sys.setenv(MIRO_MODEL_PATH = file.path(testDir, "model", "pickstock_configuration",
                                        "pickstock_configuration.gms"))
 Sys.setenv(MIRO_MODE = "config")
-configJSONPath <- file.path(getwd(), "..", "model", "pickstock_configuration", "conf_pickstock_configuration")
+configJSONPath <- file.path(testDir, "model", "pickstock_configuration", "conf_pickstock_configuration")
 file.copy(file.path(configJSONPath,"pickstock_configuration_expected.json"),
           file.path(configJSONPath,"pickstock_configuration.json"), overwrite = TRUE)
 
