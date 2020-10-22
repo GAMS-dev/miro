@@ -237,8 +237,11 @@ return this.getSelectedLast()[1]<=", noDomains - 1L, ";}"))),
   }
   const newParams = this.params;
   const colsToRemove = selections.map((selection) => {
+    if (selection[3] < selection[1]) {
+      return newParams.colHeaders.slice(selection[3], selection[1] + 1);
+    }
     return newParams.colHeaders.slice(selection[1], selection[3] + 1);
-  }).filter((current, index, self) => {
+  }).flat().filter((current, index, self) => {
     return self.indexOf(current) === index;
   });
   if (!confirm(", toJSString(lang$renderers$handsontable$removeCol$prompt1),
@@ -248,7 +251,10 @@ return this.getSelectedLast()[1]<=", noDomains - 1L, ";}"))),
   
   // get [startCol, endCol] pairs and sort by startCol
   selections = selections.map((selection) => {
-    return [selection[1], selection[3]]
+    if (selection[3] < selection[1]) {
+      return [selection[3], selection[1]];
+    }
+    return [selection[1], selection[3]];
   }).sort((a, b) => {
     return a[0] - b[0]
   });
