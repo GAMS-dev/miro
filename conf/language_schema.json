@@ -2446,6 +2446,10 @@
               "type": "string",
               "minLength": 1
             },
+            "btDownloadPng": {
+              "type": "string",
+              "minLength": 1
+            },
             "btLoadView": {
               "type": "string",
               "minLength": 1
@@ -2463,6 +2467,10 @@
               "minLength": 1
             },
             "btRemoveRows": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cbHideEmptyCols": {
               "type": "string",
               "minLength": 1
             },
@@ -2624,7 +2632,7 @@
               "minProperties": 5
             }
           },
-          "minProperties": 27
+          "minProperties": 29
         },
         "datatable": {
           "type": "object",
@@ -2650,9 +2658,73 @@
             }
           },
           "minProperties": 2
+        },
+        "handsontable": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "newCol": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "nameLeft": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "nameRight": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "prompt": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 3
+            },
+            "renameCol": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "prompt": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 2
+            },
+            "removeCol": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "namePlural": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "prompt1": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "prompt2": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 4
+            }
+          },
+          "minProperties": 3
         }
       },
-      "minProperties": 2
+      "minProperties": 3
     },
     "progressBar": {
       "description": "language specific objects of progressbars of the UI",
@@ -4816,10 +4888,6 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "val54": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "val55": {
                   "type": "string",
                   "minLength": 1
@@ -4845,7 +4913,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 58
+              "minProperties": 57
             },
             "widgetOptions": {
               "type": "object",
@@ -5620,19 +5688,7 @@
               "type": "string",
               "minLength": 1
             },
-            "removeOrphansDialogTitle": {
-              "type": "string",
-              "minLength": 1
-            },
             "removeOrphansDialogDesc": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeOrphansDialogCancel": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeOrphansDialogConfirm": {
               "type": "string",
               "minLength": 1
             },
@@ -5652,10 +5708,6 @@
               "type": "string",
               "minLength": 1
             },
-            "removeConfirm": {
-              "type": "string",
-              "minLength": 1
-            },
             "removeCheck": {
               "type": "string",
               "minLength": 1
@@ -5665,10 +5717,6 @@
               "minLength": 1
             },
             "cancel": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeOrphans": {
               "type": "string",
               "minLength": 1
             },
@@ -5705,7 +5753,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 42
+          "minProperties": 37
         },
         "graphs": {
           "type": "object",

@@ -143,6 +143,15 @@
             "type":"string",
             "enum": ["table", "line", "bar", "stackedbar", "radar"]
          },
+         "emptyUEL": {
+           "description":"UEL that identifies a missing value (defaults to -, must not be empty string).",
+           "type": "string",
+           "minLength": 1
+         },
+         "enableHideEmptyCols": {
+           "description":"Enable button that allows to hide empty columns.",
+           "type": "boolean"
+         },
          "enablePersistentViews": {
            "description":"Enable persistent views.",
            "type": "boolean"
@@ -563,7 +572,7 @@
                       ]
                     },
                     "clearValue":{
-                      "description":"Whether to clear the value (set to empty string) when communicating with GAMS. This will not mess up the UEL order. Only relevant for singleton sets!",
+                      "description":"Whether to communicate value as element text when writing/reading from/to GDX. This will not mess up the UEL order.",
                       "type":"boolean"
                     }
                   },
@@ -867,7 +876,7 @@
                      "minLength":1
                    },
                    "clearValue":{
-                      "description":"Whether to communicate only element text with GAMS. This will not mess up the UEL order.",
+                      "description":"Whether to communicate value as element text when writing/reading from/to GDX. This will not mess up the UEL order.",
                       "type":"boolean"
                    }
                  },
@@ -982,6 +991,14 @@
                         "description":"Hide indexing column?",
                         "type":"boolean"
                     },
+                    "colWidths":{
+                        "description":"Width of columns.",
+                         "type":[  
+                            "string",
+                            "integer"
+                         ],
+                         "exclusiveMinimum":0
+                    },
                     "readonlyCols":{
                       "description":"Either true or false for certain columns of table to be readonly",
                       "type":["array", "string", "null"],
@@ -999,6 +1016,39 @@
                         "type":"string",
                         "minLength":1
                       }
+                    },
+                    "dropdownCols":{
+                      "description":"Columns where only certain values are allowed to be selected (only supported for default tables)",
+                      "type":"object",
+                       "additionalProperties":{  
+                          "type":"object",
+                          "properties":{
+                            "colType":{
+                              "description": "Column type (default is 'autocomplete')",
+                              "type":"string",
+                              "enum":["autocomplete", "dropdown"]
+                            },
+                            "static":{
+                              "description": "Arrays of static choices allowed for this column",
+                              "type":["array", "string"],
+                              "minLength":1,
+                              "items":{
+                                "type":"string",
+                                "minLength":1
+                              }
+                            },
+                            "symbol":{
+                              "description": "Symbol to fetch choices from",
+                              "type":"string",
+                              "minLength":1
+                            },
+                            "column":{
+                              "description": "Column (of symbol) to fetch choices from",
+                              "type":"string",
+                              "minLength":1
+                            }
+                          }
+                       }
                     },
                     "options":{
                       "$ref": "#/definitions/miroPivotOptions"
@@ -1762,7 +1812,7 @@
                "description":"Height of handsontable.",
                "type":"integer",
                "exclusiveMinimum":0,
-               "default":700
+               "default":600
             },
             "width":{  
                "description":"Width of handsontable.",

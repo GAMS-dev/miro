@@ -6,6 +6,7 @@ library("shinytest")
 
 source("global.R")
 source(file.path("tests", "util.R"))
+source(file.path("components", "js_util.R"))
 source(file.path("components", "util.R"))
 
 if(!dependenciesInstalled()){

@@ -152,9 +152,6 @@ validateWidgetConfig <- function(widgetJSON){
               isTRUE(input$dd_choice_dep_selector)){
              return(lang$adminMode$widgets$validate$val11)
            }
-           if(isTRUE(widgetJSON$clearValue) && !length(widgetJSON$aliases)){
-             return(lang$adminMode$widgets$validate$val54)
-           }
            if(isTRUE(widgetJSON$clearValue) && isTRUE(widgetJSON$multiple)){
              return(lang$adminMode$widgets$validate$val55)
            }
@@ -163,13 +160,12 @@ validateWidgetConfig <- function(widgetJSON){
            
          },
          checkbox = {
-           if(!is.logical(widgetJSON$value)){
-             return(lang$adminMode$widgets$validate$val12)
-           }
            if(isTRUE(widgetJSON$value)){
              rv$widgetConfig$value <<- 1L
-           }else{
+           }else if(isFALSE(widgetJSON$value)){
              rv$widgetConfig$value <<- 0L
+           }else if(!(identical(widgetJSON$value, 1L) || identical(widgetJSON$value, 0L))){
+             return(lang$adminMode$widgets$validate$val12)
            }
          },
          date = {

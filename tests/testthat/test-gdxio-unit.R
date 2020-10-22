@@ -198,6 +198,7 @@ test_that("Writing of singleton set with data from dropdown and clearValue=TRUE 
                      scalarsFileName, scalarsOutName, 
                      scalarEquationsName, 
                      scalarEquationsOutName,
+                     textOnlySymbols = "sub_i",
                      list(sub_i = list(aliases = c("test", "bla"), 
                                        choices = c("seattle", "san-diego"),
                                        clearValue = TRUE)))
@@ -216,15 +217,15 @@ test_that("Writing of singleton set with data from dropdown and clearValue=TRUE 
                                                           'beta (MINLP-only)'),
                               `vapply(...)` = c('seattle||test', NA_character_, NA_character_,
                                                 NA_character_)))
-  expect_identical(gdxio$rgdx(filePath, "sub_i"), tibble::tibble(`1` = "seattle",
-                                                                 `2` = "test"))
+  expect_identical(gdxio$rgdx(filePath, "sub_i"), tibble::tibble(`2` = "seattle",
+                                                                 `1` = "test"))
 })
 
 test_that("Reading / writing of textOnlySymbols works", {
-  gdxio <- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", "bin"), 
-                     c(modelInRaw, modelOut), 
-                     scalarsFileName, scalarsOutName, 
-                     scalarEquationsName, 
+  gdxio <- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", "bin"),
+                     c(modelInRaw, modelOut),
+                     scalarsFileName, scalarsOutName,
+                     scalarEquationsName,
                      scalarEquationsOutName,
                      list(),
                      textOnlySymbols = c("sub_i"))
@@ -236,7 +237,7 @@ test_that("Reading / writing of textOnlySymbols works", {
   filePath <- filePathEnc
   on.exit(unlink(filePath), add = TRUE)
   gdxio$wgdx(filePath, data)
-  expect_equal(gdxio$rgdx(filePath, scalarsFileName), 
+  expect_equal(gdxio$rgdx(filePath, scalarsFileName),
                tibble::tibble(`scalarSymbols$symnames` = c('sub_i', 'f', 'mins', 'beta'),
                               `scalarSymbols$symtext` = c('sub_i', 'freight in dollars per case per thousand miles',
                                                           'minimum shipment (MIP- and MINLP-only)',
@@ -253,6 +254,6 @@ test_that("Reading/writing unicode characters work", {
   filePath <- filePathEnc4
   on.exit(unlink(filePath), add = TRUE)
   gdxio$wgdx(filePath, data)
-  expect_identical(gdxio$rgdx(filePathEnc4, "i"), 
+  expect_identical(gdxio$rgdx(filePathEnc4, "i"),
                    setData)
 })

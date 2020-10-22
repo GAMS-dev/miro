@@ -205,9 +205,11 @@ if(is.null(errMsg)){
           modelIn[[el_l]]$noImport <- widgetConfig$noImport
           widgetConfig$noImport    <- NULL
         }
-        if(isTRUE(widgetConfig$clearValue) && !identical(widgetType, "dropdown")){
+        if(isTRUE(widgetConfig$clearValue)){
           config$textOnlySymbols <- c(config$textOnlySymbols, el)
-          widgetConfig$clearValue  <- NULL
+          if(!identical(widgetType, "dropdown")){
+            widgetConfig$clearValue  <- NULL
+          }
         }
         config$inputWidgets[[el]]     <- NULL
         modelIn[[el_l]][[widgetType]] <- widgetConfig
@@ -292,6 +294,69 @@ if(is.null(errMsg)){
               names(config$dataRendering) <- names(modelIn)[i]
             }
           }
+        }else if(!is.null(widgetConfig$dropdownCols)){
+          colNames <- names(widgetConfig$dropdownCols)
+          if(any(!colNames %in% names(modelIn[[i]]$headers))){
+            errMsg <- paste(errMsg, sprintf("GAMS symbol: '%s': Invalid column name(s): '%s' in configuration for dropdown columns.", 
+                                            names(modelIn)[i], paste(colNames[!colNames %in% names(modelIn[[i]]$headers)], collapse = "', '")),
+                            sep = "\n")
+            next
+          }
+          pivotColId <- NULL
+          if(length(widgetConfig$pivotCols) && any(colNames %in% widgetConfig$pivotCols)){
+            errMsg <- paste(errMsg, sprintf("The column: '%s' of the GAMS symbol: '%s': cannot be declared both as a pivot column and a drop-down column!", 
+                                            paste(colNames[colNames %in% widgetConfig$pivotCols], collapse = "', '"),
+                                            names(modelIn)[i]),
+                            sep = "\n")
+          }
+          hasErr <- FALSE
+          widgetConfig$dropdownCols <- lapply(widgetConfig$dropdownCols, function(dataSource){
+            if(length(dataSource$static)){
+              return(list(static = dataSource$static,
+                          type = if(identical(dataSource$colType, "dropdown"))
+                            "dropdown" else "autocomplete"))
+            }
+            if(!dataSource$symbol %in% names(modelIn)){
+              errMsg <<- paste(errMsg, sprintf("The GAMS symbol: '%s' defined as data source for symbol: '%s' does not exist in data contract!", 
+                                              dataSource$symbol, names(modelIn)[i]),
+                              sep = "\n")
+              hasErr <<- TRUE
+              return(NULL)
+            }
+            colId <- match(dataSource$column, names(modelIn[[dataSource$symbol]]$headers))
+            if(is.na(colId)){
+              errMsg <<- paste(errMsg, sprintf("The GAMS symbol: '%s' defined as data source for symbol: '%s' does not have a column named: '%s'!", 
+                                               dataSource$symbol, names(modelIn)[i], dataSource$column),
+                               sep = "\n")
+              hasErr <<- TRUE
+              return(NULL)
+            }
+            if(length(config$inputWidgets[[dataSource$symbol]]) &&
+               length(config$inputWidgets[[dataSource$symbol]]$pivotCols)){
+              pivotColId <- match(config$inputWidgets[[dataSource$symbol]]$pivotCols[1],
+                                  names(modelIn[[dataSource$symbol]]$headers))
+              if(identical(colId, pivotColId)){
+                errMsg <<- paste(errMsg, sprintf("The column: '%s' of GAMS symbol: '%s' is defined as data source for symbol: '%s'. However, this data source is a pivoted column and can therefore not be used!", 
+                                                 dataSource$column, dataSource$symbol, names(modelIn)[i]),
+                                 sep = "\n")
+                hasErr <<- TRUE
+                return(NULL)
+              }
+              if(!is.na(pivotColId) && pivotColId <= colId){
+                # need to adjust id in case column before is pivoted
+                colId <- colId - 1L
+              }
+            }
+            return(list(symbol = dataSource$symbol, colId = colId,
+                        type = if(identical(dataSource$colType, "dropdown"))
+                          "dropdown" else "autocomplete"))
+          })
+          if(hasErr){
+            next
+          }
+          list(j = list(symbol = 1, column = 1))
+          modelIn[[i]]$dropdownCols <- widgetConfig$dropdownCols
+          widgetConfig$dropdownCols <- NULL
         }
       }
       if(!is.null(widgetConfig$alias)){
@@ -306,9 +371,11 @@ if(is.null(errMsg)){
         modelIn[[i]]$noImport <- widgetConfig$noImport
         widgetConfig$noImport  <- NULL
       }
-      if(isTRUE(widgetConfig$clearValue) && !identical(widgetType, "dropdown")){
+      if(isTRUE(widgetConfig$clearValue)){
         config$textOnlySymbols <- c(config$textOnlySymbols, el)
-        widgetConfig$clearValue  <- NULL
+        if(!identical(widgetType, "dropdown")){
+          widgetConfig$clearValue  <- NULL
+        }
       }
       if(!is.null(widgetConfig$rendererName)){
         modelIn[[i]]$rendererName <- widgetConfig$rendererName
@@ -343,6 +410,10 @@ if(is.null(errMsg)){
         modelIn[[i]]$pivotCols  <- widgetConfig$pivotCols
         widgetConfig$pivotCols  <- NULL
       }
+      if(!is.null(widgetConfig[["colWidths"]])){
+        modelIn[[i]]$colWidths  <- widgetConfig$colWidths
+        widgetConfig$colWidths  <- NULL
+      }
       if(length(widgetConfig$readonlyCols)){
         for(col in widgetConfig$readonlyCols){
           if(col %in% names(modelIn[[i]]$headers)){
@@ -353,7 +424,6 @@ if(is.null(errMsg)){
             break
           }
         }
-        
       }
     }
   }
@@ -1201,9 +1271,8 @@ if(is.null(errMsg)){
     }
     return(FALSE)
   }, logical(1L), USE.NAMES = FALSE)
-    
-  scenDataTemplate <- c(modelOutTemplate, modelInTemplate)
-  scenDataTemplate <- scenDataTemplate[!vapply(scenDataTemplate, is.null, logical(1L))]
+  
+  scenDataTemplate <- c(modelOutTemplate, modelInTemplate[match(inputDsNames, names(modelIn))])
   
   # get column types for tabular datasets
   for(i in seq_along(modelIn)){

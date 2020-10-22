@@ -64,6 +64,26 @@
                             <section id="v12" class="doc-section">
                               <h2 class="section-title" style="display:inline-block">GAMS MIRO 1.2</h2> <div style="display:inline-block; padding-left:15px;">(2020-10-05)</div>
                                  <div class="section-block">
+                                    <h5 style="display:inline-block">GAMS MIRO 1.2.1</h5><div style="display:inline-block; padding-left:15px;"> (2020-10-22)</div>
+                                    <ul>
+                                      <li>Add option to configure a custom icon for a valuebox by adding a new choice to the dropdown menu.</li>
+                                      <li>Improve readability of symbol configuration in Configuration Mode.</li>
+                                      <li>Fix issue where import of data from GDX for a dropdown with clearValue option set to TRUE did not work.</li>
+                                      <li>Fix issues with remote execution on GAMS Engine and uppercase letters in main GMS file.</li>
+                                      <li>Fix issue in Configuration Mode (valuebox configuration) where the user gets an error when clicking on <i>save</i> twice.</li>
+                                      <li>When removing database tables, show only one dialog instead of two.</li>
+                                      <li>Fix issue in the MIRO Pivot renderer where filter dropdown would be irresponsive after loading view with unknown filters.</li>
+                                      <li>Fix issue in the MIRO Pivot renderer where table/charts would be rendered more often than necessary.</li>
+                                      <li>MIRO Pivot renderer: Change the settings of bar charts so that they always start at 0, and of line charts so that they have no interpolation.</li>
+                                      <li>Fix issue that caused MIRO to crash when loading app with default scalars table on first tab.</li>
+                                      <li>Fix issue that caused multiple symbols in custom renderers not to work properly.</li>
+                                      <li>Fix issue that caused path to custom renderer function not to be passed correctly.</li>
+                                      <li>Fix issue in Configuration Mode that caused MIRO to crash in some situations when resetting a table configuration for a symbol.</li>
+                                      <li>Fix issue in Configuration Mode that caused label of tables not to be applied in certain situations.</li>
+                                      <li>Numbers in default input tables with pivoted columns are now formatted correctly.</li>
+                                    </ul>
+                                 </div>
+                                 <div class="section-block">
                                     <h3>Breaking changes</h3>
                                     <ul>
                                       <li>Additional packages in custom renderers are now installed in the MIRO workspace. These packages are no longer attached because this could lead to conflicts with packages required by MIRO. Read <a href="./customize.html#additional-r-packages">here</a> for more details.</li>
