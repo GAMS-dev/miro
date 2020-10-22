@@ -1,5 +1,5 @@
 {
   "output": {
-
+    "errorMessages": "\nThe column: 'i' of the GAMS symbol: 'd': cannot be declared both as a pivot column and a drop-down column!"
   }
 }
