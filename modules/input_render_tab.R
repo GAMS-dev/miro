@@ -21,13 +21,14 @@ getVisibleTabData <- function(id, type){
     if(length(data) < length(modelIn[[id]]$headers) - 1L){
       return(modelInTemplate[[id]])
     }
-    return(fixColTypes(select(pivot_longer(data, 
-                                           cols = seq(length(modelIn[[id]]$headers) - 1L, 
-                                                      length(data)),
-                                           names_to = modelIn[[id]]$pivotCols[[1]], 
-                                           values_to = names(modelIn[[id]]$headers)[length(modelIn[[id]]$headers)],
-                                           values_drop_na = TRUE), !!!names(modelIn[[id]]$headers)),
-                       modelIn[[id]]$colTypes))
+    pivotedColIds <- seq(length(modelIn[[id]]$headers) - 1L, 
+                         length(data))
+    return(select(pivot_longer(suppressWarnings(
+      mutate_at(data, tidyselect::all_of(pivotedColIds), as.numeric)), 
+      cols = pivotedColIds,
+      names_to = modelIn[[id]]$pivotCols[[1]], 
+      values_to = names(modelIn[[id]]$headers)[length(modelIn[[id]]$headers)],
+      values_drop_na = TRUE), !!!names(modelIn[[id]]$headers)))
   }
   return(data)
 } 
