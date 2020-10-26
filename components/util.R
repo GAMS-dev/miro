@@ -1445,7 +1445,7 @@ nativeFileEnc <- function(path){
   return(path)
 }
 htmlIdEnc <- function(string){
-  paste0("i", stri_replace_all(base64_enc(string), c("-", "_", "."), fixed = c("=", "/", "+"),
+  paste0("i", stri_replace_all(base64_enc(string), c("", "-", "_", "."), fixed = c("\n", "=", "/", "+"),
                                vectorize_all = FALSE))
 }
 htmlIdDec <- function(string){
