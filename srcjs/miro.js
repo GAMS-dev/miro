@@ -155,6 +155,16 @@ export async function jumpToLogMark(id) {
   }
 }
 
+export function resetDropdownFilter(that) {
+  const dropdown = $(that).parent().children('ul');
+  const filter = dropdown.children('input')[0];
+  if (filter.value === '') {
+    return;
+  }
+  filter.value = '';
+  $(dropdown).children('li').show();
+}
+
 export function filterMiroDropdown(that) {
   const filterTxt = that.value.toLowerCase();
   $(that).siblings('li').each(function () {

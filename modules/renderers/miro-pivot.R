@@ -104,6 +104,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                                tags$div(class="dropdown", style = "margin-top:10px;",
                                         tags$button(class="btn btn-default dropdown-toggle btn-dropdown",
                                                     type = "button", id = ns("toggleViewButton"),
+                                                    onclick = "Miro.resetDropdownFilter(this)",
                                                     `data-toggle`="dropdown", `aria-haspopup`="true",
                                                     `aria-expanded` = "false", style = "width:100%",
                                                     lang$renderers$miroPivot$btLoadView, tags$span(
