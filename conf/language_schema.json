@@ -2438,6 +2438,17 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "dropdownFilter": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "placeholder": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 1
+        },
         "miroPivot": {
           "type": "object",
           "additionalProperties": false,
@@ -2728,7 +2739,7 @@
           "minProperties": 3
         }
       },
-      "minProperties": 3
+      "minProperties": 4
     },
     "progressBar": {
       "description": "language specific objects of progressbars of the UI",

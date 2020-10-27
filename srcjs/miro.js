@@ -155,6 +155,27 @@ export async function jumpToLogMark(id) {
   }
 }
 
+export function resetDropdownFilter(that) {
+  const dropdown = $(that).parent().children('ul');
+  const filter = dropdown.children('input')[0];
+  if (filter.value === '') {
+    return;
+  }
+  filter.value = '';
+  $(dropdown).children('li').show();
+}
+
+export function filterMiroDropdown(that) {
+  const filterTxt = that.value.toLowerCase();
+  $(that).siblings('li').each(function () {
+    if (this.children[0].textContent.toLowerCase().indexOf(filterTxt) > -1) {
+      this.style.display = '';
+    } else {
+      this.style.display = 'none';
+    }
+  });
+}
+
 $(document).ready(() => {
   $('#toolCategories').on('click', '.category-btn', function () {
     const catId = this.dataset.cat;
