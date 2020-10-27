@@ -627,7 +627,10 @@
     }
   },
   "renderers":{
-    "miroPivot":{
+      "dropdownFilter":{
+        "placeholder": "Search..."
+      },
+     "miroPivot":{
       "btDownloadCsv": "Download CSV",
       "btDownloadPng": "Download PNG",
       "btLoadView": "Load view",

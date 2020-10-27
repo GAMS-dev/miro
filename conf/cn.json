@@ -668,6 +668,9 @@
     }
   },
   "renderers":{
+    "dropdownFilter":{
+      "placeholder": "搜索..."
+    },
     "miroPivot":{
       "btDownloadCsv": "下载CSV",
       "btDownloadPng": "下载PNG",

@@ -83,7 +83,11 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
                                        tags$i(class = "fa fa-angle-double-right",
                                               `aria-hide` = "true")),
                                 tags$ul(class = "dropdown-menu maxTabsDropdown",
-                                        ddLiTagList))))
+                                        c(list(tags$input(type = "text",
+                                                          placeholder = lang$renderers$dropdownFilter$placeholder,
+                                                          class = "form-control miro-dropdown-filter",
+                                                          onkeyup = "Miro.filterMiroDropdown(this)")),
+                                          ddLiTagList)))))
   }
   
   tabNavList <- tags$ul(class = ulClass, id = id, style = if(hideTabs) "display:none",

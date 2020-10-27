@@ -22,7 +22,7 @@ genIndexList <- function(indexList) {
   }))
 }
 createBootstrapDropdownChoices <- function(el, eventId, deleteEventId = NULL){
-  tags$li(id = paste0(eventId, "_", el$id), style = "display:flex;position:relative;",
+  tags$li(id = paste0(eventId, "_", el$id), class = "dropdown-item-wrapper",
           tags$a(class="dropdown-item", role = "button", el$alias, 
                  style = "width: 100%",
                  onClick = paste0("Shiny.setInputValue('", eventId, "','",
@@ -397,7 +397,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                            ns("savedViews"), ns("deleteView"))
           })
           insertUI(paste0("#", ns("savedViewsDD")), 
-                   c(list(createBootstrapDropdownChoices(list(id = "iZGVmYXVsdA--", 
+                   c(list(tags$input(type = "text",
+                                     placeholder = lang$renderers$dropdownFilter$placeholder,
+                                     class = "form-control miro-dropdown-filter",
+                                     onkeyup = "Miro.filterMiroDropdown(this)"),
+                          createBootstrapDropdownChoices(list(id = "iZGVmYXVsdA--", 
                                                               alias = lang$renderers$miroPivot$defaultViewName), 
                                                          ns("savedViews"))),
                      viewChoices), 
