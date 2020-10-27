@@ -1,5 +1,11 @@
-{  
-  "nav":{  
+{
+  "general":{
+    "modal":{
+      "okButton": "OK",
+      "cancelButton": "Cancel"
+    }
+  },
+  "nav":{
     "scalarAliases":{
       "scalars": "Scalars",
       "scalarsOut": "Output Scalars",
