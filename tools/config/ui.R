@@ -78,7 +78,6 @@ body_admin <- dashboardBody({
     tags$head(
       tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
       tags$link(type = "text/css", rel = "stylesheet", href = "bootstrap-colorpicker.min.css"),
-      tags$script(src = "autoNumeric.min.js", type = "application/javascript"),
       tags$script(src = "showdown.min.js", type = "application/javascript"),
       tags$script(src = "mathjax-extension.js", type = "application/javascript"),
       tags$script(src = "bootstrap-colorpicker.min.js", type = "application/javascript"),
