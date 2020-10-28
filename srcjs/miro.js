@@ -1,5 +1,7 @@
 /* global $:false Shiny: false Selectize:false */
 
+import AutoNumeric from 'autonumeric';
+
 import {
   sleep, changeActiveButtons, switchTabInTabset, removeModal,
   switchTab, isInputEl, rerenderDygraph, rerenderHot, showHideEl, scrollDown,
@@ -601,14 +603,14 @@ ${data.data}</div>` : data.data);
       return $(scope).find('.miro-auto-numeric');
     },
     getValue(el) {
-      return parseFloat($(el).autoNumeric('get'));
+      return $(el).data('autoNumeric').getNumericString();
     },
     setValue(el, value) {
-      $(el).autoNumeric('set', value);
+      $(el).data('autoNumeric').set(value);
     },
     receiveMessage(el, data) {
       if (Object.prototype.hasOwnProperty.call(data, 'value')) {
-        $(el).autoNumeric('set', data.value);
+        $(el).data('autoNumeric').set(data.value);
       }
     },
     subscribe(el, callback) {
@@ -623,10 +625,10 @@ ${data.data}</div>` : data.data);
       };
     },
     initialize(el) {
-      $(el).autoNumeric('init');
+      $(el).data('autoNumeric', new AutoNumeric(el));
     },
     unsubscribe(el) {
-      $(el).autoNumeric('destroy');
+      $(el).data('autoNumeric').remove();
     },
   });
   Shiny.inputBindings.register(autoNumericBinding);

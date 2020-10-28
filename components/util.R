@@ -709,12 +709,13 @@ autoNumericInput <- function(id, label = NULL, value = NULL, min = NULL, max = N
   HTML(paste0('<div class="form-group shiny-input-container">\n
     <label for="', id, '">', label, '</label>\n
       <input id="', id, '" type="text" class="form-control miro-auto-numeric" value="', value, 
-              '"', if(length(min)) paste0(' data-minimum-value="', min, '"'), 
+              '" data-override-min-max-limits="invalid"',
+              if(length(min)) paste0(' data-minimum-value="', min, '"'), 
               if(length(max)) paste0(' data-maximum-value="', max, '"'), 
               if(length(sign)) paste0(' data-currency-symbol="', sign, '"'), 
               if(length(decimalCharacter)) paste0(' data-decimal-character="', decimalCharacter, '"'), 
               if(length(digitGroupSeparator)) paste0(' data-digit-group-separator="', digitGroupSeparator, '"'), 
-              if(length(decimal)) paste0(' data-decimal-places-override="', decimal, '"'), ' />\n
+              if(length(decimal)) paste0(' data-decimal-places="', decimal, '"'), ' />\n
     </div>'))
 }
 filterDf <- function(df, filterCondition){
