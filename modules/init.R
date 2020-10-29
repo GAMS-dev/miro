@@ -415,6 +415,11 @@ if(is.null(errMsg)){
         widgetConfig$colWidths  <- NULL
       }
       if(length(widgetConfig$readonlyCols)){
+        colsArePivoted <- widgetConfig$readonlyCols %in% modelIn[[i]]$pivotCols
+        if(any(colsArePivoted)){
+          modelIn[[i]]$pivotColIsReadonly  <- TRUE
+          widgetConfig$readonlyCols <- widgetConfig$readonlyCols[!colsArePivoted]
+        }
         for(col in widgetConfig$readonlyCols){
           if(col %in% names(modelIn[[i]]$headers)){
             modelIn[[i]]$headers[[col]]$readonly <- TRUE

@@ -413,7 +413,7 @@ lapply(modelInTabularData, function(sheet){
                       stretchH = hotOptions$stretchH,
                       overflow = hotOptions$overflow)
       if(isTRUE(hotOptions$contextMenu$enabled)){
-        if(isPivoted && !isRo){
+        if(isPivoted && !isRo && !isTRUE(modelIn[[i]]$pivotColIsReadonly)){
           ht <- hot_context_menu(ht, allowRowEdit = hotOptions$contextMenu$allowRowEdit,
                                  allowColEdit = FALSE,
                                  customOpts = getHotCustomColOptions(noDomains))
