@@ -110,7 +110,8 @@ pivotData <- function(i, tabData, force = FALSE){
   attrTmp <- attr(modelInTemplate[[i]], "aliases")[-c(pivotIdx, length(modelInTemplate[[i]]))]
   if(tryCatch({
     tabData <- pivot_wider(tabData, names_from = !!pivotIdx, 
-                           values_from = !!length(tabData))
+                           values_from = !!length(tabData),
+                           names_sort = isTRUE(modelIn[[i]]$sortPivotCols))
     FALSE
   },
   error = function(e){

@@ -414,6 +414,10 @@ if(is.null(errMsg)){
         modelIn[[i]]$colWidths  <- widgetConfig$colWidths
         widgetConfig$colWidths  <- NULL
       }
+      if(!is.null(widgetConfig[["sortPivotCols"]])){
+        modelIn[[i]]$sortPivotCols  <- widgetConfig$sortPivotCols
+        widgetConfig$sortPivotCols  <- NULL
+      }
       if(length(widgetConfig$readonlyCols)){
         colsArePivoted <- widgetConfig$readonlyCols %in% modelIn[[i]]$pivotCols
         if(any(colsArePivoted)){

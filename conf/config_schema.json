@@ -953,6 +953,10 @@
                         "minLength":1
                       }
                     },
+                    "sortPivotCols":{
+                      "description":"Whether pivoted columns should be sorted alphabetically",
+                        "type":"boolean"
+                    },
                     "dropdownCols":{
                       "description":"Columns where only certain values are allowed to be selected (only supported for default tables)",
                       "type":"object",
