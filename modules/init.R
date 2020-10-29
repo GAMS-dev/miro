@@ -1160,7 +1160,7 @@ if(is.null(errMsg)){
                  sum(vapply(modelIn[[i]]$headers, 
                             function(header) identical(header$type, "numeric"), 
                             logical(1L), USE.NAMES = FALSE)) > 1L){
-          errMsg <<- paste(errMsg, sprintf("You may only pivot symbols that have at least a dimension of 2 and have at most 1 value column (symbol: '%s').", 
+          errMsg <<- paste(errMsg, sprintf("You may only pivot symbols that have at least 2 dimensions and have at most 1 value column (symbol: '%s').", 
                                            modelInAlias[i]))
         }
       }
