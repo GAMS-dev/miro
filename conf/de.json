@@ -1,4 +1,10 @@
 {  
+  "general":{
+    "modal":{
+      "okButton": "OK",
+      "cancelButton": "Abbrechen"
+    }
+  },
   "nav":{  
     "scalarAliases":{
       "scalars": "Skalare",

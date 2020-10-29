@@ -100,78 +100,86 @@ getHotCustomColOptions <- function(noDomains){
   setNames(
     list(list(name = lang$renderers$handsontable$newCol$nameLeft,
               callback = JS(paste0("function(key, normalizedSelection){
-  let newHdr = prompt(", toJSString(lang$renderers$handsontable$newCol$prompt), ");
-  let currentHeaders = this.getColHeader();
-  const newParams = this.params;
-  if ( newHdr == null ) {
-   return false;
-  }
-  let i = 1;
-  while ( currentHeaders.find(function (el) {
-   return el === newHdr;
-  })) {
-    newHdr += i;
-    i++;
-  }
-  const isSelectedByCorner = this.selection.isSelectedByCorner();
-  let columnLeft = 0;
-  
-  if (!isSelectedByCorner) {
-    const latestSelection = normalizedSelection[Math.max(normalizedSelection.length - 1, 0)];
-  
-    columnLeft = latestSelection.start.col;
-  }
-  newParams.columns.splice(columnLeft,0,{type:'numeric',numericFormat:{pattern:'0.00'}});
-  newParams.colHeaders.splice(columnLeft,0,newHdr);
-  for (let row = 0; row < newParams.data.length; row++) {
-    newParams.data[row].splice(columnLeft, 0, null);
-  }
-  this.updateSettings(newParams);
-  
-  if (isSelectedByCorner) {
-    this.selectAll();
-  }
+  Miro.modal(", toJSString(lang$renderers$handsontable$newCol$prompt), ",",
+                                   toJSString(lang$general$modal$okButton),
+                                   ",", toJSString(lang$general$modal$cancelButton),
+                                   ",'',function(newHdr, hot, key, normalizedSelection){
+    let currentHeaders = hot.getColHeader();
+    const newParams = hot.params;
+    if ( newHdr == null || newHdr === '') {
+     return false;
+    }
+    let i = 1;
+    while ( currentHeaders.find(function (el) {
+     return el === newHdr;
+    })) {
+      newHdr += i;
+      i++;
+    }
+    const isSelectedByCorner = hot.selection.isSelectedByCorner();
+    let columnLeft = 0;
+    
+    if (!isSelectedByCorner) {
+      const latestSelection = normalizedSelection[Math.max(normalizedSelection.length - 1, 0)];
+    
+      columnLeft = latestSelection.start.col;
+    }
+    newParams.columns.splice(columnLeft,0,{type:'numeric',numericFormat:{pattern:'0.00'}});
+    newParams.colHeaders.splice(columnLeft,0,newHdr);
+    for (let row = 0; row < newParams.data.length; row++) {
+      newParams.data[row].splice(columnLeft, 0, null);
+    }
+    hot.updateSettings(newParams);
+    
+    if (isSelectedByCorner) {
+      hot.selectAll();
+    }
+  }, this, key, normalizedSelection);
 }")),
               disabled = JS(paste0("function(){
                                 return this.getSelectedLast()[1]<=", noDomains - 1L, ";}"))),
          list(name = lang$renderers$handsontable$newCol$nameRight,
               callback = JS(paste0("function(key, normalizedSelection){
-  let newHdr = prompt(", toJSString(lang$renderers$handsontable$newCol$prompt), ");
-  let currentHeaders = this.getColHeader();
-  const newParams = this.params;
-  if ( newHdr == null ) {
-   return false;
-  }
-  let i = 1;
-  while ( currentHeaders.find(function (el) {
-   return el === newHdr;
-  })) {
-    newHdr += i;
-    i++;
-  }
-  const isSelectedByCorner = this.selection.isSelectedByCorner();
-  let columnRight = 0;
+  Miro.modal(", toJSString(lang$renderers$handsontable$newCol$prompt), ",",
+                                   toJSString(lang$general$modal$okButton),
+                                   ",", toJSString(lang$general$modal$cancelButton),
+                                   ",'',function(newHdr, hot, key, normalizedSelection){
+    let currentHeaders = hot.getColHeader();
+    const newParams = hot.params;
+    if ( newHdr == null || newHdr === '' ) {
+     return false;
+    }
+    let i = 1;
+    while ( currentHeaders.find(function (el) {
+     return el === newHdr;
+    })) {
+      newHdr += i;
+      i++;
+    }
+    const isSelectedByCorner = hot.selection.isSelectedByCorner();
+    let columnRight = 0;
+    
+    if (isSelectedByCorner) {
+      columnRight = hot.countCols();
   
-  if (isSelectedByCorner) {
-    columnRight = this.countCols();
-
-  } else {
-    const latestSelection = normalizedSelection[Math.max(normalizedSelection.length - 1, 0)];
-    const selectedColumn = latestSelection?.end?.col;
-
-    // If there is no selection we have clicked on the corner and there is no data.
-    columnRight = typeof selectedColumn !== 'undefined' ? selectedColumn + 1 : 0;
-  }
-  newParams.columns.splice(columnRight,0,{type:'numeric',numericFormat:{pattern:'0.00'}});
-  newParams.colHeaders.splice(columnRight,0,newHdr);
-  for (let row = 0; row < newParams.data.length; row++) {
-    newParams.data[row].splice(columnRight, 0, null);
-  }
-  this.updateSettings(newParams);
+    } else {
+      const latestSelection = normalizedSelection[Math.max(normalizedSelection.length - 1, 0)];
+      const selectedColumn = latestSelection?.end?.col;
   
-  if (isSelectedByCorner) {
-    this.selectAll();
-  }
+      // If there is no selection we have clicked on the corner and there is no data.
+      columnRight = typeof selectedColumn !== 'undefined' ? selectedColumn + 1 : 0;
+    }
+    newParams.columns.splice(columnRight,0,{type:'numeric',numericFormat:{pattern:'0.00'}});
+    newParams.colHeaders.splice(columnRight,0,newHdr);
+    for (let row = 0; row < newParams.data.length; row++) {
+      newParams.data[row].splice(columnRight, 0, null);
+    }
+    hot.updateSettings(newParams);
+    
+    if (isSelectedByCorner) {
+      hot.selectAll();
+    }
+ }, this, key, normalizedSelection);
 }")),
               disabled = JS(paste0("function(){
                                 return this.getSelectedLast()[1]<=", noDomains - 2L, ";}"))),
@@ -179,30 +187,37 @@ getHotCustomColOptions <- function(noDomains){
               callback = JS(paste0("function(){
 const ind = this.getSelectedLast()[1];
 let currentHeaders = this.getColHeader();
-let newHdr = prompt(", toJSString(lang$renderers$handsontable$renameCol$prompt), ", currentHeaders[ind]);
-if ( newHdr == null ) {
- return false;
-}
-let i = 1;
-while ( currentHeaders.find(function (el) {
- return el === newHdr;
-})) {
-newHdr += i;
-i++;
-}
-currentHeaders.splice(ind, 1, newHdr);
-const that = this;
-setTimeout(function () {
-  that.updateSettings({
-     colHeaders: currentHeaders
-  });
-  that.params.colHeaders = that.getColHeader();
-  Shiny.onInputChange(that.rootElement.id, {
-    data: that.getData(),
-    changes: { event: 'afterCreateCol', ind: ind, ct: 1 },
-    params: that.params
-  });
-}, 90);
+Miro.modal(", toJSString(lang$renderers$handsontable$renameCol$prompt), ",",
+                                   toJSString(lang$general$modal$okButton),
+                                   ",", toJSString(lang$general$modal$cancelButton),
+                                   ",currentHeaders[ind],function(newHdr, hot, ind){
+  let currentHeaders = hot.getColHeader();
+  if ( newHdr == null || newHdr === '' ) {
+   return false;
+  }
+  if ( newHdr === currentHeaders[ind] ) {
+   return true;
+  }
+  let i = 1;
+  while ( currentHeaders.find(function (el) {
+   return el === newHdr;
+  })) {
+  newHdr += i;
+  i++;
+  }
+  currentHeaders.splice(ind, 1, newHdr);
+  setTimeout(function () {
+    hot.updateSettings({
+       colHeaders: currentHeaders
+    });
+    hot.params.colHeaders = hot.getColHeader();
+    Shiny.onInputChange(hot.rootElement.id, {
+      data: hot.getData(),
+      changes: { event: 'afterCreateCol', ind: ind, ct: 1 },
+      params: hot.params
+    });
+  }, 90);
+}, this, ind);
 }")),
               disabled = JS(paste0("function(){
 const selection = this.getSelected();
@@ -244,11 +259,12 @@ return this.getSelectedLast()[1]<=", noDomains - 1L, ";}"))),
   }).flat().filter((current, index, self) => {
     return self.indexOf(current) === index;
   });
-  if (!confirm(", toJSString(lang$renderers$handsontable$removeCol$prompt1),
-                                   "+colsToRemove.toString()+", toJSString(lang$renderers$handsontable$removeCol$prompt2), ")) {
-    return;
-  }
-  
+  Miro.modal(", toJSString(lang$renderers$handsontable$removeCol$prompt1),
+                                   "+' '+colsToRemove.join(', ')+",
+                                   toJSString(lang$renderers$handsontable$removeCol$prompt2), ",",
+                                   toJSString(lang$general$modal$okButton),
+                                   ",", toJSString(lang$general$modal$cancelButton),
+                                   ",undefined,function(hot, selections, newParams){
   // get [startCol, endCol] pairs and sort by startCol
   selections = selections.map((selection) => {
     if (selection[3] < selection[1]) {
@@ -285,7 +301,8 @@ return this.getSelectedLast()[1]<=", noDomains - 1L, ";}"))),
   }
   newParams.columns.splice(rngStart - offset, rngDistance + 1);
   newParams.colHeaders.splice(rngStart - offset, rngDistance + 1);
-  this.updateSettings(newParams);
+  hot.updateSettings(newParams);
+}, this, selections, newParams);
 }")),
               disabled = JS(paste0("function(){
 return this.getSelectedLast()[1]<=", noDomains - 1L, ";}")))),
