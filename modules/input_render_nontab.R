@@ -185,7 +185,7 @@ lapply(seq_along(modelIn), function(id){
            })
            observe({
              value <- as.numeric(getSelected[[id]]())
-             if(!is.null(value) && !identical(value, isolate(input[["numeric_" %+% id]]))){
+             if(length(value) && !identical(value, isolate(input[["numeric_" %+% id]]))){
                noCheck[id] <<- TRUE
                updateNumericInput(session, "numeric_" %+% id, value = value)
              }
