@@ -231,16 +231,12 @@ observeEvent(virtualActionButton(
         return(NULL)
       }
       # save input data 
-      saveInputDb <- FALSE
-      source("./modules/input_save.R", local = TRUE)
-      if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
-        return(NULL)
-      }
-      lapply(seq_along(dataTmp), function(i){
-        if(is.null(dataTmp[[i]])){
-          scenData[["scen_1_"]][[i + length(modelOut)]] <<- scenDataTemplate[[i + length(modelOut)]]
+      idxMap <- match(modelInFileNames, names(scenInputData))
+      lapply(seq_along(modelInFileNames), function(i){
+        if(is.na(idxMap[i]) || is.null(scenInputData[[idxMap[i]]])){
+          scenData[["scen_1_"]][[i + length(modelOut)]] <<- scenDataTemplate[[i]]
         }else{
-          scenData[["scen_1_"]][[i + length(modelOut)]] <<- dataTmp[[i]]
+          scenData[["scen_1_"]][[i + length(modelOut)]] <<- scenInputData[[idxMap[i]]]
         }
       })
       scalarIdTmp <- match(scalarsFileName, 
