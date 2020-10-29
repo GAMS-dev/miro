@@ -260,7 +260,7 @@ return this.getSelectedLast()[1]<=", noDomains - 1L, ";}"))),
     return self.indexOf(current) === index;
   });
   Miro.modal(", toJSString(lang$renderers$handsontable$removeCol$prompt1),
-                                   "+colsToRemove.toString()+",
+                                   "+' '+colsToRemove.join(', ')+",
                                    toJSString(lang$renderers$handsontable$removeCol$prompt2), ",",
                                    toJSString(lang$general$modal$okButton),
                                    ",", toJSString(lang$general$modal$cancelButton),
