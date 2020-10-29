@@ -389,7 +389,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       
       if(!isFALSE(options$enablePersistentViews)){
         updateViewList <- function(){
-          removeUI(paste0("#", ns("savedViewsDD"), " li"), multiple = TRUE)
+          removeUI(paste0("#", ns("savedViewsDD"), " .dropdown-item-wrapper"), multiple = TRUE)
           
           viewChoices <- lapply(sort(views$getIds(session)), function(viewId){
             createBootstrapDropdownChoices(list(id = htmlIdEnc(viewId), 
@@ -399,7 +399,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           insertUI(paste0("#", ns("savedViewsDD")), 
                    c(list(tags$input(type = "text",
                                      placeholder = lang$renderers$dropdownFilter$placeholder,
-                                     class = "form-control miro-dropdown-filter",
+                                     class = "form-control miro-dropdown-filter dropdown-item-wrapper",
                                      onkeyup = "Miro.filterMiroDropdown(this)"),
                           createBootstrapDropdownChoices(list(id = "iZGVmYXVsdA--", 
                                                               alias = lang$renderers$miroPivot$defaultViewName), 
