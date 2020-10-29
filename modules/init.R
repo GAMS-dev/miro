@@ -414,7 +414,16 @@ if(is.null(errMsg)){
         modelIn[[i]]$colWidths  <- widgetConfig$colWidths
         widgetConfig$colWidths  <- NULL
       }
+      if(!is.null(widgetConfig[["sortPivotCols"]])){
+        modelIn[[i]]$sortPivotCols  <- widgetConfig$sortPivotCols
+        widgetConfig$sortPivotCols  <- NULL
+      }
       if(length(widgetConfig$readonlyCols)){
+        colsArePivoted <- widgetConfig$readonlyCols %in% modelIn[[i]]$pivotCols
+        if(any(colsArePivoted)){
+          modelIn[[i]]$pivotColIsReadonly  <- TRUE
+          widgetConfig$readonlyCols <- widgetConfig$readonlyCols[!colsArePivoted]
+        }
         for(col in widgetConfig$readonlyCols){
           if(col %in% names(modelIn[[i]]$headers)){
             modelIn[[i]]$headers[[col]]$readonly <- TRUE
@@ -1160,7 +1169,7 @@ if(is.null(errMsg)){
                  sum(vapply(modelIn[[i]]$headers, 
                             function(header) identical(header$type, "numeric"), 
                             logical(1L), USE.NAMES = FALSE)) > 1L){
-          errMsg <<- paste(errMsg, sprintf("You may only pivot symbols that have at least a dimension of 2 and have at most 1 value column (symbol: '%s').", 
+          errMsg <<- paste(errMsg, sprintf("You may only pivot symbols that have at least 2 dimensions and have at most 1 value column (symbol: '%s').", 
                                            modelInAlias[i]))
         }
       }
