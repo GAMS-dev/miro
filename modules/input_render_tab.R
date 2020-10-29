@@ -449,6 +449,7 @@ lapply(modelInTabularData, function(sheet){
           })
         }else if(length(modelInputData[[k]][[1]]) && !is.na(modelInputData[[k]][[1]][1])
                  && isEmptyInput[k]){
+          force(input[["in_" %+% k]])
           source <- unique(modelInputData[[k]][[colSourceConfig$colId]])
         }
         if(length(source)){

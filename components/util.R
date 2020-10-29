@@ -1344,23 +1344,26 @@ getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NUL
   if(is.null(idsToDisplay)){
     idsToDisplay <- seq_along(names)
   }
+  if(mergeScalars){
+    scalarWidgetIds <- setdiff(widgetIds, widgetIdsMultiDim)
+    scalarTabId <- match(scalarsFileName, names)
+    if(is.na(scalarTabId)){
+      scalarTabId <- integer()
+    }
+    scalarIds <- c(scalarTabId, scalarWidgetIds)
+    scalarIds <- scalarIds[scalarIds %in% idsToDisplay]
+    if(length(scalarIds) > 0L){
+      tabs[[1L]]      <-  0L
+      tabTitles[[1L]] <-  scalarsTabName
+      if(length(scalarTabId)){
+        tabSheetMap[[match(scalarsFileName, names)]] <- 1L
+      }
+      idsToDisplay <- setdiff(idsToDisplay, scalarIds)
+      j <- 2L
+    }
+  }
   for(i in idsToDisplay){
     if(isAssigned[i]){
-      next
-    }
-    if(mergeScalars && i %in% widgetIds){
-      if(i %in% widgetIdsMultiDim){
-        tabTitles[[j]]   <-  aliases[i]
-        tabSheetMap[[i]] <- j
-        tabs[[j]]        <-  i
-        j <- j + 1L
-      }
-      if(!scalarAssigned){
-        scalarAssigned <- TRUE
-        tabTitles[[j]] <-  scalarsTabName
-        tabs[[j]]      <-  0L
-        j <- j + 1L
-      }
       next
     }
     if(length(groups)){
@@ -1390,28 +1393,10 @@ getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NUL
         }
         tabs[[j]]      <-  groupMemberIds
         tabSheetMap[groupMemberIds] <- j
-        if(isTRUE(groups[[groupId]][["sameTab"]])){
-          for(groupMemberId in groupMemberIds){
-            tabSheetMap[[groupMemberId]] <- tabSheetMap[[groupMemberId]]
-          }
-        }else{
+        if(!isTRUE(groups[[groupId]][["sameTab"]])){
           for(k in seq_along(groupMemberIds)){
             groupMemberId <- groupMemberIds[k]
             tabSheetMap[[groupMemberId]] <- c(tabSheetMap[[groupMemberId]], k)
-          }
-        }
-        if(mergeScalars){
-          groupScalarId <- match(scalarsFileName, names[groupMemberIds])
-          if(!is.na(groupScalarId)){
-            if(scalarAssigned){
-              if(length(groupMemberIds) <= 1L){
-                next
-              }
-              groupMemberIds <- groupMemberIds[-groupScalarId]
-            }else{
-              groupMemberIds[groupScalarId] <- 0L
-              scalarAssigned <- TRUE
-            }
           }
         }
         if(isTRUE(groups[[groupId]][["sameTab"]])){
@@ -1426,13 +1411,6 @@ getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NUL
     }
     sheetId <- i
     tabSheetMap[[sheetId]] <- j
-    if(mergeScalars && identical(names[i], scalarsFileName)){
-      if(scalarAssigned){
-        next
-      }
-      sheetId <- 0L
-      scalarAssigned <- TRUE
-    }
     tabs[[j]]      <-  sheetId
     
     tabTitles[[j]] <-  aliases[[i]]
@@ -1451,7 +1429,7 @@ nativeFileEnc <- function(path){
   return(path)
 }
 htmlIdEnc <- function(string){
-  paste0("i", stri_replace_all(base64_enc(string), c("-", "_", "."), fixed = c("=", "/", "+"),
+  paste0("i", stri_replace_all(base64_enc(string), c("", "-", "_", "."), fixed = c("\n", "=", "/", "+"),
                                vectorize_all = FALSE))
 }
 htmlIdDec <- function(string){
