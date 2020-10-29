@@ -110,7 +110,8 @@ pivotData <- function(i, tabData, force = FALSE){
   attrTmp <- attr(modelInTemplate[[i]], "aliases")[-c(pivotIdx, length(modelInTemplate[[i]]))]
   if(tryCatch({
     tabData <- pivot_wider(tabData, names_from = !!pivotIdx, 
-                           values_from = !!length(tabData))
+                           values_from = !!length(tabData),
+                           names_sort = isTRUE(modelIn[[i]]$sortPivotCols))
     FALSE
   },
   error = function(e){
@@ -413,7 +414,7 @@ lapply(modelInTabularData, function(sheet){
                       stretchH = hotOptions$stretchH,
                       overflow = hotOptions$overflow)
       if(isTRUE(hotOptions$contextMenu$enabled)){
-        if(isPivoted && !isRo){
+        if(isPivoted && !isRo && !isTRUE(modelIn[[i]]$pivotColIsReadonly)){
           ht <- hot_context_menu(ht, allowRowEdit = hotOptions$contextMenu$allowRowEdit,
                                  allowColEdit = FALSE,
                                  customOpts = getHotCustomColOptions(noDomains))
