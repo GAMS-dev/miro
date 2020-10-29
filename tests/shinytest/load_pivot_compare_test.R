@@ -59,7 +59,7 @@ expect_options(app$getValue("selLoadScen"),
                c(scenToSelect, paste0("4_", currentUser)))
 app$setInputs(btLoadScenConfirm = "click")
 Sys.sleep(1)
-app$setInputs(contentScen_0 = "contentScen_0_3")
+app$setInputs(contentScen_0 = "contentScen_0_4")
 Sys.sleep(0.5)
 app$setInputs("tab_0_3-miroPivot-pivotRenderer" = "stackedbar")
 Sys.sleep(0.5)
