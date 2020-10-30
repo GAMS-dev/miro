@@ -19,6 +19,9 @@ closeScenario <- function(clearMeta = TRUE){
                hotInit[i]        <<- FALSE
                isEmptyInput[i]   <<- TRUE
              },
+             custom = {
+               hotInit[i]        <<- FALSE
+             },
              slider = {
                if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
                  if(length(modelIn[[i]]$slider$default))
