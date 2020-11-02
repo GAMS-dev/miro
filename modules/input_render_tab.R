@@ -719,21 +719,19 @@ lapply(modelInTabularData, function(sheet){
       })
     })
     observe({
-      if(length(rv[["in_" %+% i]]) && length(modelInputDataVisible[[i]])){
-        if(is.null(modelInputDataVisible[[i]]())){
-          return()
-        }
-        if(hotInit[[i]]){
-          isolate({
-            if(is.null(rv[[paste0("wasModified_", i)]])){
-              rv[[paste0("wasModified_", i)]] <- 1
-            }else{
-              rv[[paste0("wasModified_", i)]] <- rv[[paste0("wasModified_", i)]] + 1L
-            }
-          })
-        }else{
-          hotInit[[i]] <<- TRUE
-        }
+      if(is.null(force(modelInputDataVisible[[i]]()))){
+        return()
+      }
+      if(hotInit[[i]]){
+        isolate({
+          if(is.null(rv[[paste0("wasModified_", i)]])){
+            rv[[paste0("wasModified_", i)]] <- 1
+          }else{
+            rv[[paste0("wasModified_", i)]] <- rv[[paste0("wasModified_", i)]] + 1L
+          }
+        })
+      }else{
+        hotInit[[i]] <<- TRUE
       }
     })
   }

@@ -1312,7 +1312,7 @@ sanitizeFn <- function(filename) {
   filename <- gsub("[/\\\\\\?%*:|\"<>]", "", filename)
   return(stringi::stri_trim_left(filename, pattern = "[^\\.]"))
 }
-genWidgetGroups <- function(widgetNames, widgetGroups, widgetTabName, aggregateWidgets = FALSE){
+genWidgetGroups <- function(widgetNames, widgetGroups, widgetTabName, aggregateWidgets = FALSE, inputGroups = NULL){
   newWidgetGroups <- NULL
   if(length(widgetGroups)){
     newWidgetGroups <- lapply(widgetGroups, function(widgetGroup){
@@ -1327,8 +1327,11 @@ genWidgetGroups <- function(widgetNames, widgetGroups, widgetTabName, aggregateW
     })
   }
   if(length(widgetNames)){
-    return(c(list(list(name = widgetTabName, members = widgetNames, sameTab = aggregateWidgets)), 
-             newWidgetGroups))
+    widgetNames <- widgetNames[!widgetNames %in% unlist(lapply(inputGroups, "[[", "members"))]
+    if(length(widgetNames)){
+      return(c(list(list(name = widgetTabName, members = widgetNames, sameTab = aggregateWidgets)), 
+               newWidgetGroups))
+    }
   }
   return(newWidgetGroups)
 }
@@ -1368,7 +1371,7 @@ getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NUL
     }
     if(length(groups)){
       groupId <- vapply(seq_along(groups), 
-                        function(gId){ 
+                        function(gId){
                           if(names[i] %in% groups[[gId]]$members)
                             return(gId)
                           else
@@ -1379,7 +1382,7 @@ getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NUL
           warningMsgTmp <- sprintf("Dataset: '%s' appears in more than one group. Only the first group will be used.", 
                                    aliases[i])
           warning(warningMsgTmp)
-          warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
+          groupId <- groupId[1]
         }
         groupMemberIds      <- match(groups[[groupId]]$members, names)
         groupMemberIds      <- groupMemberIds[groupMemberIds %in% idsToDisplay]
@@ -1388,7 +1391,6 @@ getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NUL
                                    paste(groups[[groupId]]$members[is.na(groupMemberIds)], collapse = "', '"),
                                    groups[[groupId]]$name)
           warning(warningMsgTmp)
-          warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
           groupMemberIds <- groupMemberIds[!is.na(groupMemberIds)]
         }
         tabs[[j]]      <-  groupMemberIds

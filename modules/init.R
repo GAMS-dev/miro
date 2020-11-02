@@ -694,7 +694,8 @@ if(is.null(errMsg)){
                           genWidgetGroups(names(modelIn)[widgetIds], 
                                           config$inputWidgetGroups, 
                                           lang$nav$inputScreen$widgetTabTitle, 
-                                          aggregateWidgets = isTRUE(config$aggregateWidgets)))
+                                          aggregateWidgets = isTRUE(config$aggregateWidgets),
+                                          inputGroups = config$inputGroups))
   inputTabs    <- getTabs(names(modelIn), modelInAlias, config$inputGroups,
                           idsToDisplay = inputSheetIdsToDisplay, widgetIds = widgetIds)
   inputTabTitles <- inputTabs$tabTitles
