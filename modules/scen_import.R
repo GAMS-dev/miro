@@ -149,7 +149,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
                                                             scalarsFileName)]
   
   # extract scalar sheets
-  if(length(modelIn) > length(modelInTabularData)){
+  if(length(modelIn) > length(modelInTabularData)  || !scalarsFileName %in% names(modelIn)){
     # atleast one scalar input element that is not in tabular form
     i <- match(tolower(scalarsFileName), tolower(datasetsToFetch))[[1]]
     if(!is.na(i)){
