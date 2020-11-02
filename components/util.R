@@ -1373,7 +1373,7 @@ getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NUL
           warningMsgTmp <- sprintf("Dataset: '%s' appears in more than one group. Only the first group will be used.", 
                                    aliases[i])
           warning(warningMsgTmp)
-          warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
+          groupId <- groupId[1]
         }
         groupMemberIds      <- match(groups[[groupId]]$members, names)
         groupMemberIds      <- groupMemberIds[groupMemberIds %in% idsToDisplay]
@@ -1382,7 +1382,6 @@ getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NUL
                                    paste(groups[[groupId]]$members[is.na(groupMemberIds)], collapse = "', '"),
                                    groups[[groupId]]$name)
           warning(warningMsgTmp)
-          warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
           groupMemberIds <- groupMemberIds[!is.na(groupMemberIds)]
         }
         tabs[[j]]      <-  groupMemberIds
