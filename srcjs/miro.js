@@ -178,6 +178,43 @@ export function filterMiroDropdown(that) {
   });
 }
 
+export function modal(msg, okButton, cancelButton,
+  value, callback, ...callbackArgs) {
+  Shiny.modal.show({
+    html: `<div id="shiny-modal" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-body">
+         ${value == null ? `<label>${msg}</label>` : `<div class="form-group shiny-input-container">
+            <label class="control-label" for="miroPromptInput">${msg}</label>
+            <input id="miroPromptInput" type="text" class="form-control" value="${value}"/>
+          </div>`}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">${cancelButton}</button>
+        <button id="miroModalConfirmButton" type="button" class="btn btn-default bt-highlight-1 bt-gms-confirm">${okButton}</button>
+      </div>
+    </div>
+  </div>
+  <script>$('#shiny-modal').modal().focus();</script>
+</div>`,
+  });
+  if (value == null) {
+    $('#miroModalConfirmButton').click(() => {
+      if (callback(...callbackArgs) !== false) {
+        $('#shiny-modal').modal('hide');
+      }
+    });
+  } else {
+    $('#miroModalConfirmButton').click(() => {
+      if (callback(document.getElementById('miroPromptInput').value,
+        ...callbackArgs) !== false) {
+        $('#shiny-modal').modal('hide');
+      }
+    });
+  }
+}
+
 $(document).ready(() => {
   $('#toolCategories').on('click', '.category-btn', function () {
     const catId = this.dataset.cat;

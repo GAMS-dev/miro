@@ -142,6 +142,17 @@ test_that("genWidgetGroups works", {
                                    widgetTabName = "Widgets", aggregateWidgets = FALSE),
                    list(list(name = "Widgets", members = c("e", "f"), sameTab = FALSE),
                         list(name = "Widgets 1", members = c("a", "c"))))
+  expect_identical(genWidgetGroups(c("a","c","e","f"), list(list(name = "Widgets 1", members = c("a", "c"))), 
+                                   widgetTabName = "Widgets", aggregateWidgets = FALSE,
+                                   inputGroups = list(list(name = "A", members = c("x", "y")),
+                                                      list(names = "B", members = c("e", "z")))),
+                   list(list(name = "Widgets", members = c("f"), sameTab = FALSE),
+                        list(name = "Widgets 1", members = c("a", "c"))))
+  expect_identical(genWidgetGroups(c("a","c","e","f"), list(list(name = "Widgets 1", members = c("a", "c"))), 
+                                   widgetTabName = "Widgets", aggregateWidgets = FALSE,
+                                   inputGroups = list(list(name = "A", members = c("x", "y")),
+                                                      list(names = "B", members = c("e", "f")))),
+                   list(list(name = "Widgets 1", members = c("a", "c"))))
 })
 test_that("getTabs works", {
   expect_identical(getTabs(c("a", "b", "c", "d"), c("A", "B", "C", "D"), 
