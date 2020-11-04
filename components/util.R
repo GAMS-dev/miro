@@ -1129,6 +1129,10 @@ file.copy2 <- function(from, to){
   }
   return(TRUE)
 }
+# credits: R-core@R-Porject.org (documentation of Sys.readlink)
+is.symlink <- function(paths){
+  isTRUE(nzchar(Sys.readlink(paths), keepNA=TRUE))
+}
 createDirIfNonExistent <- function(dirs){
   nonExistingDirs <- !dir.exists(dirname(dirs))
   if(any(nonExistingDirs)){
