@@ -117,9 +117,15 @@ Views <- R6Class("Views",
                                      }, character(1L), USE.NAMES = FALSE)))
                      })))
                    },
-                   getJSON = function(views = NULL){
+                   getJSON = function(views = NULL, scenId = NULL){
                      if(is.null(views)){
-                       return(toJSON(private$sandboxViewConf, auto_unbox = TRUE, null = "null"))
+                       if(is.null(scenId)){
+                         return(toJSON(private$sandboxViewConf, auto_unbox = TRUE, null = "null"))
+                       }
+                       if(scenId %in% names(private$scenViewConf)){
+                         return(toJSON(private$scenViewConf[[as.character(scenId)]],
+                                       auto_unbox = TRUE, null = "null"))
+                       }
                      }
                      stopifnot(is.list(views))
                      selectedViews <- list()
