@@ -43,13 +43,17 @@ Attachments <- R6Class("Attachments",
                          getIds = function(){
                            self$getMetadata()[["name"]]
                          },
-                         getMetadata = function(){
+                         getMetadata = function(scenId = NULL){
                            # Fetches list of attachments
                            # 
                            # Args:
+                           #   scenId: The id of the scenario or NULL for the sandbox scenario
                            #
                            # Returns:
                            #   tibble with columns name and execPerm
+                           if(!is.null(scenId)){
+                             return(private$fetchDataFromDb(scenId))
+                           }
                            attachmentNames    <- basename(private$localAttachments$filePaths)
                            attachmentExecPerm <- private$localAttachments$execPerm
                            if(!length(private$sid)){
@@ -212,7 +216,7 @@ Attachments <- R6Class("Attachments",
                            invisible(self)
                          },
                          download = function(filePath, fileNames = NULL, 
-                                             fullPath = FALSE, allExecPerm = FALSE){
+                                             fullPath = FALSE, allExecPerm = FALSE, scenId = NULL){
                            # Fetches attachment data from db
                            # 
                            # Args:
@@ -222,6 +226,7 @@ Attachments <- R6Class("Attachments",
                            #   fileNames:     character vector with names of the files to download (optional)
                            #   fullPath:      whether filePath includes file name + extension or not (optional)
                            #   allExecPerm:   whether to download all files with execution permission (optional)
+                           #   scenId:        id of scenario to download data from, NULL to use sandbox scenario (optional)
                            #
                            # Returns:
                            #   filepaths of downloaded files
@@ -254,112 +259,118 @@ Attachments <- R6Class("Attachments",
                            }
                            
                            localPaths <- character(0L)
-                           
-                           if(allExecPerm){
-                             if(any(private$localAttachments$execPerm)){
-                               localPaths <- private$localAttachments$filePaths[private$localAttachments$execPerm]
-                               localPathNeedsRelocation <- dirname(localPaths) != fileDir
-                               
-                               if(any(localPathNeedsRelocation)){
-                                 if(fullPath){
-                                   toDir <- filePaths
-                                 }else{
-                                   toDir <- file.path(fileDir, basename(localPaths[localPathNeedsRelocation]))
-                                 }
-                                 file.copy(localPaths[localPathNeedsRelocation], 
-                                           toDir, 
-                                           overwrite = TRUE)
-                               }
-                               if(allExecPerm){
-                                 private$attachmentsToClean <- c(private$attachmentsToClean, localPaths)
-                               }
-                             }
-                           }else{
-                             stopifnot(is.character(fileNames))
-                             if(length(fileNames) < 1L){
-                               return(invisible(self))
-                             }
-                             
-                             isLocalAttachment <- fileNames %in% basename(private$localAttachments$filePaths)
-                             localPaths <- filePaths[isLocalAttachment]
-                             
-                             if(length(localPaths)){
-                               localPathId <- match(basename(private$localAttachments$filePaths), fileNames)
-                               localPathId <- localPathId[!is.na(localPathId)]
-                               
-                               if(length(localPathId)){
-                                 localPathNeedsRelocation <- private$localAttachments$filePaths[localPathId] != filePaths
-                               }else{
-                                 localPathNeedsRelocation <- FALSE
-                               }
-                               
-                               if(any(localPathNeedsRelocation)){
-                                 if(fullPath){
-                                   toDir <- filePaths
-                                 }else{
-                                   toDir <- file.path(fileDir, basename(private$localAttachments$filePaths[localPathNeedsRelocation]))
-                                 }
-                                 file.copy(private$localAttachments$filePaths[localPathNeedsRelocation], 
-                                           toDir,
-                                           overwrite = TRUE)
-                               }
-                               
-                               if(allExecPerm){
-                                 private$attachmentsToClean <- c(private$attachmentsToClean, localPaths)
-                               }
-                               if(length(localPaths) == length(filePaths)){
-                                 return(filePaths)
-                               }
-                               
-                               fileNames <- fileNames[!isLocalAttachment]
-                               filePaths <- filePaths[!isLocalAttachment]
-                             }
-                           }
-                           
-                           if(!length(private$sid)){
-                             return(localPaths)
-                           }
-                           
+                           remotePaths <- character(0L)
                            unmodifiedData <- TRUE
-                           if(length(private$attachmentsUpdateExec$name) ||
-                              length(private$attachmentsToRemove)){
-                             unmodifiedData <- FALSE
-                             fileNames <- self$getMetadata()
-                             execPerm  <- fileNames[["execPerm"]]
-                             fileNames <- fileNames[["name"]]
-                             if(length(private$attachmentsUpdateExec$name)){
-                               updateExecId <- match(private$attachmentsUpdateExec$name, fileNames)
-                               execPerm[updateExecId] <- private$attachmentsUpdateExec$execPerm
+                           
+                           if(is.null(scenId)){
+                             if(allExecPerm){
+                               if(any(private$localAttachments$execPerm)){
+                                 localPaths <- private$localAttachments$filePaths[private$localAttachments$execPerm]
+                                 localPathNeedsRelocation <- dirname(localPaths) != fileDir
+                                 
+                                 if(any(localPathNeedsRelocation)){
+                                   if(fullPath){
+                                     toDir <- filePaths
+                                   }else{
+                                     toDir <- file.path(fileDir, basename(localPaths[localPathNeedsRelocation]))
+                                   }
+                                   file.copy(localPaths[localPathNeedsRelocation], 
+                                             toDir, 
+                                             overwrite = TRUE)
+                                 }
+                                 if(allExecPerm){
+                                   private$attachmentsToClean <- c(private$attachmentsToClean, localPaths)
+                                 }
+                               }
+                             }else{
+                               stopifnot(is.character(fileNames))
+                               if(length(fileNames) < 1L){
+                                 return(invisible(self))
+                               }
+                               
+                               isLocalAttachment <- fileNames %in% basename(private$localAttachments$filePaths)
+                               localPaths <- filePaths[isLocalAttachment]
+                               if(length(localPaths)){
+                                 localPathId <- match(fileNames, basename(private$localAttachments$filePaths))
+                                 localPathId <- localPathId[!is.na(localPathId)]
+                                 
+                                 if(length(localPathId)){
+                                   if(fullPath){
+                                     localPathNeedsRelocation <- private$localAttachments$filePaths[localPathId] != filePaths
+                                   }else{
+                                     localPathNeedsRelocation <- dirname(private$localAttachments$filePaths[localPathId]) != fileDir
+                                   }
+                                 }else{
+                                   localPathNeedsRelocation <- FALSE
+                                 }
+                                 
+                                 if(any(localPathNeedsRelocation)){
+                                   if(fullPath){
+                                     toDir <- filePaths
+                                   }else{
+                                     toDir <- file.path(fileDir, basename(private$localAttachments$filePaths[localPathNeedsRelocation]))
+                                   }
+                                   file.copy(private$localAttachments$filePaths[localPathNeedsRelocation], 
+                                             toDir,
+                                             overwrite = TRUE)
+                                 }
+                                 
+                                 if(allExecPerm){
+                                   private$attachmentsToClean <- c(private$attachmentsToClean, localPaths)
+                                 }
+                                 if(length(localPaths) == length(filePaths)){
+                                   return(filePaths)
+                                 }
+                                 
+                                 fileNames <- fileNames[!isLocalAttachment]
+                                 filePaths <- filePaths[!isLocalAttachment]
+                               }
                              }
-                             fileNames <- fileNames[execPerm == TRUE]
-                             if(length(private$attachmentsToRemove)){
-                               fileNames <- fileNames[!fileNames %in% setdiff(private$attachmentsToRemove,
-                                                                              basename(private$localAttachments$filePaths))]
-                             }
-                             if(!length(fileNames)){
+                             
+                             if(!length(private$sid)){
                                return(localPaths)
                              }
+                             
+                             if(length(private$attachmentsUpdateExec$name) ||
+                                length(private$attachmentsToRemove)){
+                               unmodifiedData <- FALSE
+                               fileNames <- self$getMetadata()
+                               execPerm  <- fileNames[["execPerm"]]
+                               fileNames <- fileNames[["name"]]
+                               if(length(private$attachmentsUpdateExec$name)){
+                                 updateExecId <- match(private$attachmentsUpdateExec$name, fileNames)
+                                 execPerm[updateExecId] <- private$attachmentsUpdateExec$execPerm
+                               }
+                               fileNames <- fileNames[execPerm == TRUE]
+                               if(length(private$attachmentsToRemove)){
+                                 fileNames <- fileNames[!fileNames %in% setdiff(private$attachmentsToRemove,
+                                                                                basename(private$localAttachments$filePaths))]
+                               }
+                               if(!length(fileNames)){
+                                 return(localPaths)
+                               }
+                             }
                            }
+                           
                            data <- private$db$importDataset(private$tabName,
                                                             if(allExecPerm && unmodifiedData)
                                                               tibble("execPerm", if(inherits(private$conn, "PqConnection")) TRUE else 1)
                                                             else
                                                               tibble(rep.int("fileName", length(fileNames)), fileNames),
                                                             colNames = c("fileName", "fileContent"), innerSepAND = FALSE,
-                                                            subsetSids = private$sid)
+                                                            subsetSids = if(is.null(scenId)) private$sid else scenId)
                            if(length(data)){
                              if(allExecPerm){
-                               filePaths <- file.path(filePath, data[["fileName"]])
+                               remotePaths <- file.path(filePath, data[["fileName"]])
                              }else{
-                               filePaths <- filePaths[match(data[["fileName"]], fileNames)]
+                               remotePaths <- filePaths[match(data[["fileName"]], fileNames)]
                              }
-                             Map(writeBin, data[["fileContent"]], filePaths)
-                             if(allExecPerm){
-                               private$attachmentsToClean <- c(private$attachmentsToClean, filePaths)
+                             Map(writeBin, data[["fileContent"]], remotePaths)
+                             if(allExecPerm && is.null(scenId)){
+                               private$attachmentsToClean <- c(private$attachmentsToClean, remotePaths)
                              }
                            }
-                           
-                           return(c(filePaths, localPaths))
+                           return(c(remotePaths, localPaths))
                          },
                          setExecPerm = function(session, fileNames, execPerm){
                            # Sets execute permission for particular attachment
