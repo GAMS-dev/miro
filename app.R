@@ -979,7 +979,7 @@ if(!is.null(errMsg)){
     }else if(isFALSE(file.info(miroDataDir)$isdir)){
       miroDataFilesRaw <- basename(miroDataDir)
       miroDataDir <- dirname(miroDataDir)
-      removeDataFile <- TRUE
+      removeDataFile <- FALSE
     }else{
       miroDataFilesRaw <- list.files(miroDataDir)
     }
