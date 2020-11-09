@@ -972,12 +972,14 @@ if(!is.null(errMsg)){
       setWinProgressBar(pb, 0.6, label= "Importing new data")
     }
     miroDataDir   <- Sys.getenv("MIRO_DATA_DIR")
+    removeDataFile <- !debugMode
     if(identical(miroDataDir, "")){
       miroDataDir   <- file.path(currentModelDir, paste0(miroDataDirPrefix, modelName))
       miroDataFilesRaw <- list.files(miroDataDir)
     }else if(isFALSE(file.info(miroDataDir)$isdir)){
       miroDataFilesRaw <- basename(miroDataDir)
       miroDataDir <- dirname(miroDataDir)
+      removeDataFile <- TRUE
     }else{
       miroDataFilesRaw <- list.files(miroDataDir)
     }
@@ -1124,8 +1126,8 @@ if(!is.null(errMsg)){
           }else{
             newScen$save(c(dataOut, dataIn))
           }
-          if(!debugMode && !file.remove(file.path(miroDataDir, miroDataFile))){
-            flog.info("Could not remove file: '%s'.", miroDataFile)
+          if(removeDataFile && !file.remove(file.path(miroDataDir, miroDataFiles[i]))){
+            flog.info("Could not remove file: '%s'.", miroDataFiles[i])
           }
           if(miroStoreDataOnly){
             write("\n", stderr())
