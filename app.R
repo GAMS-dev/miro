@@ -976,7 +976,7 @@ if(!is.null(errMsg)){
       miroDataDir   <- file.path(currentModelDir, paste0(miroDataDirPrefix, modelName))
       miroDataFilesRaw <- list.files(miroDataDir)
     }else if(isFALSE(file.info(miroDataDir)$isdir)){
-      miroDataFilesRaw <- miroDataDir
+      miroDataFilesRaw <- basename(miroDataDir)
       miroDataDir <- dirname(miroDataDir)
     }else{
       miroDataFilesRaw <- list.files(miroDataDir)
