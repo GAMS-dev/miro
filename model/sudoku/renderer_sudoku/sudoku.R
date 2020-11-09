@@ -6,7 +6,6 @@ sudokuOutput <- function(id, height, options, path){
 renderSudoku <- function(input, output, session, data, options = NULL, path = NULL, ...){
   force(data)
   dataTmp <- data
-  initRenderer <- TRUE
   if(length(data) && nrow(data)){
     dataTmp     <- dataTmp[-1L]
     if(isTRUE(options$isInput)){
@@ -55,11 +54,10 @@ renderSudoku <- function(input, output, session, data, options = NULL, path = NU
     hot_col(1:9, valign = "htMiddle htCenter"))
   if(isTRUE(options$isInput)){
     return(reactive({
-        dataTmp <- hot_to_r(input$sudoku) %>% mutate_all(as.integer)
-        if(initRenderer){
-          initRenderer <<- FALSE
+        if(is.null(input$sudoku)){
           return(NULL)
         }
+        dataTmp <- hot_to_r(input$sudoku) %>% mutate_all(as.integer)
         if(length(dataTmp) && nrow(dataTmp) == 9L){
             return(bind_cols(row = paste0("row", 1:9), dataTmp))
         }else{
