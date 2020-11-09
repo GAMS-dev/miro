@@ -18,7 +18,8 @@ if(!identical(loadMode, "scen")){
                                   modelName = modelName, errMsg = lang$errMsg$GAMSInput$badInputData,
                                   scalarsFileHeaders = scalarsFileHeaders,
                                   templates = modelInTemplateTmp, method = loadMode,
-                                  fileName = loadModeFileName, DDPar = DDPar, GMSOpt = GMSOpt)$tabular
+                                  fileName = loadModeFileName, DDPar = DDPar, GMSOpt = GMSOpt,
+                                  dfClArgs = dfClArgs)$tabular
     if(!length(scenInputData)){
       return()
     }

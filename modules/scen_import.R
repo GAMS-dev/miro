@@ -69,6 +69,8 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   on.exit(suppressWarnings(prog$close()))
   prog$set(message = lang$progressBar$importScen$title, value = 0.1)
   
+  dfClArgs <- NULL
+  
   if(identical(fileType, "miroscen") && useGdx){
     resetWidgetsOnClose <<- FALSE
     if(!closeScenario(clearMeta = TRUE)){
@@ -82,14 +84,15 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     })){
       return()
     }
-    if(!tryCatch(loadMiroScen(input$localInput$datapath, activeScen, attachments, views,
-                              names(modelIn)),
-                 error = function(e){
-                   showHideEl(session, "#importScenError", 4000L)
-                   flog.info("Problems reading miroscen file. Error message: '%s'.",
-                             conditionMessage(e))
-                   return(FALSE)
-                 })){
+    dfClArgs <- tryCatch(loadMiroScen(input$localInput$datapath, activeScen, attachments, views,
+                                      names(modelIn)),
+                         error = function(e){
+                           showHideEl(session, "#importScenError", 4000L)
+                           flog.info("Problems reading miroscen file. Error message: '%s'.",
+                                     conditionMessage(e))
+                           return(FALSE)
+                         })
+    if(isFALSE(dfClArgs)){
       return()
     }
     loadModeFileName <- "data.gdx"

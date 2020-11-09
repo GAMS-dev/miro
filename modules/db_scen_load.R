@@ -324,6 +324,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     loadMode  <-  "scen"
     newInputCount <- 0L
     datasetsToFetch <- names(modelIn)
+    dfClArgs <- NULL
     source("./modules/input_load.R", local = TRUE)
     if(is.null(errMsg) && isFALSE(suppressCloseModalLocal)){
       removeModal()

@@ -24,7 +24,7 @@ validateMiroScen <- function(path) {
                             "uid", "last_modified",
                             "time_created")
   metadata <- suppressWarnings(fromJSON(file.path(tmpd, "metadata.json"),
-                                        simplifyDataFrame = FALSE, simplifyVector = FALSE))
+                                        simplifyDataFrame = TRUE, simplifyVector = FALSE))
   if(!length(names(metadata)) || any(!requiredMetadataKeys %in% names(metadata))){
     stop_custom("error_badformat", "Bad miroscen file. Invalid metadata.json file.", call. = FALSE)
   }
@@ -39,7 +39,7 @@ validateMiroScen <- function(path) {
                 call. = FALSE)
   }
   if(length(metadata[["cl_args"]])){
-    dfClArgs <- as_tibble(data.table::rbindlist(metadata[["cl_args"]]))
+    dfClArgs <- as_tibble(metadata[["cl_args"]])
     if(length(dfClArgs) != 2L){
       stop_custom("error_badformat", "Invalid command line arguments format in miroscen file.",
                   call. = FALSE)
@@ -50,7 +50,7 @@ validateMiroScen <- function(path) {
     }
   }
   if(length(metadata[["attachments"]])){
-    dfAttachMeta <- as_tibble(data.table::rbindlist(metadata[["attachments"]]))
+    dfAttachMeta <- as_tibble(metadata[["attachments"]])
     if(length(dfClArgs) != 2L || any(is.na(as.logical(dfAttachMeta[[2]])))){
       stop_custom("error_badformat", "Invalid attachment metadata format in miroscen file.",
                   call. = FALSE)
@@ -82,14 +82,15 @@ loadMiroScen <- function(path, activeScen, attachments, views, inputNames, exdir
     stop_custom("error_symlinks", "Symlinks detected in miroscen file.", call. = FALSE)
   }
   metadata <- suppressWarnings(fromJSON(file.path(tmpd, "metadata.json"),
-                                        simplifyDataFrame = FALSE, simplifyVector = FALSE))
+                                        simplifyDataFrame = TRUE, simplifyVector = FALSE))
+  dfClArgs <- NULL
   if(length(metadata[["cl_args"]])){
-    dfClArgs <- as_tibble(data.table::rbindlist(metadata[["cl_args"]]))
+    dfClArgs <- as_tibble(metadata[["cl_args"]]) %>% add_column(description = "", .after = 1)
     clArgIds <- match(dfClArgs[[1]], inputNames)
     if(any(is.na(clArgIds))){
       flog.info("Command line argument(s): '%s' found in miroscen file is not part of app configuration. They were ignored.",
                 dfClArgs[[1]][is.na(clArgIds)])
-      dfClArgs <- dfClArgs[!is.na(clArgIds), ] %>% add_column(description = "")
+      dfClArgs <- dfClArgs[!is.na(clArgIds), ]
     }
   }
   activeScen$updateMetadata(newName = as.character(metadata[["scen_name"]]),
@@ -97,7 +98,7 @@ loadMiroScen <- function(path, activeScen, attachments, views, inputNames, exdir
   views$addConf(safeFromJSON(read_file(file.path(tmpd, "views.json")),
                              simplifyDataFrame = FALSE, simplifyVector = FALSE))
   if(length(metadata[["attachments"]])){
-    attachmentMetadata <- as_tibble(data.table::rbindlist(metadata[["attachments"]]))
+    attachmentMetadata <- as_tibble(metadata[["attachments"]])
     if(length(attachmentMetadata[[1]])){
       if(!dir.create(file.path(tmpd, "attachments"))){
         stop(sprintf("Could not create (temporary) directory: %s", file.path(tmpd, "attachments")),
@@ -128,7 +129,7 @@ loadMiroScen <- function(path, activeScen, attachments, views, inputNames, exdir
                                     file.path(dirname(path), "data.gdx")),
                 call. = FALSE)
   }
-  return(invisible(TRUE))
+  return(dfClArgs)
 }
 generateMiroScen <- function(path, metadata, data, attachments, views, scenId = NULL) {
   tmpd <- file.path(tempdir(check = TRUE), "miroscen")

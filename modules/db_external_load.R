@@ -125,6 +125,7 @@ observeEvent(input$btImportExternal, {
   overwriteInput <- TRUE
   datasetsToFetch <- datasetsToImport[!vapply(scenInputData, is.null, 
                                               logical(1L), USE.NAMES = FALSE)]
+  dfClArgs <- NULL
   source("./modules/input_load.R", local = TRUE)
   showErrorMsg(lang$errMsg$fetchDataset$title, errMsg)
   markUnsaved()

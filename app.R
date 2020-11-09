@@ -1024,6 +1024,7 @@ if(!is.null(errMsg)){
 
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
+          dfClArgs <- NULL
           if(debugMode && !forceScenImport){
             dataHash <- digest::digest(file = file.path(miroDataDir, miroDataFile),
                                        algo = "sha1", serialize = FALSE)
@@ -1081,14 +1082,15 @@ if(!is.null(errMsg)){
             })){
               next
             }
-            if(!tryCatch(loadMiroScen(file.path(miroDataDir, miroDataFile),
-                                      newScen, attachments, views,
-                                      names(modelIn), exdir = tmpDir),
-                         error = function(e){
-                           flog.info("Problems reading miroscen file. Error message: '%s'.",
-                                     conditionMessage(e))
-                           return(FALSE)
-                         })){
+            dfClArgs <- tryCatch(loadMiroScen(file.path(miroDataDir, miroDataFile),
+                                              newScen, attachments, views,
+                                              names(modelIn), exdir = tmpDir),
+                                 error = function(e){
+                                   flog.info("Problems reading miroscen file. Error message: '%s'.",
+                                             conditionMessage(e))
+                                   return(FALSE)
+                                 })
+            if(isFALSE(dfClArgs)){
               next
             }
             miroDataFile <- "data.gdx"
@@ -1117,7 +1119,8 @@ if(!is.null(errMsg)){
                                   modelName = modelName, errMsg = lang$errMsg$GAMSInput$badInputData,
                                   scalarsFileHeaders = scalarsFileHeaders,
                                   templates = modelInTemplateTmp, method = method,
-                                  fileName = miroDataFile, DDPar = DDPar, GMSOpt = GMSOpt)$tabular
+                                  fileName = miroDataFile, DDPar = DDPar, GMSOpt = GMSOpt,
+                                  dfClArgs = dfClArgs)$tabular
           if(!scalarsFileName %in% names(metaDataTmp) && length(c(DDPar, GMSOpt))){
             # additional command line parameters that are not GAMS symbols
             scalarsTemplate <- tibble(a = character(0L), b = character(0L), c = character(0L))
