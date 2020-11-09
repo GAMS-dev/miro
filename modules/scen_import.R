@@ -1,4 +1,13 @@
-# load input data from excel sheet
+# load input data from local file
+observeEvent(input$localInput, {
+  if(useGdx &&
+     identical(tolower(tools::file_ext(basename(input$localInput$datapath))),
+               "miroscen")){
+    hideEl(session, "#localInputSelectManually")
+  }else{
+    showEl(session, "#localInputSelectManually")
+  }
+})
 observeEvent(input$btImportLocal, {
   if(identical(config$activateModules$loadLocal, FALSE)){
     flog.error("Try to load local data even though the loadLocal module is disabled! This is most likely because the user is trying to tamper with the app!")
@@ -60,7 +69,33 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   on.exit(suppressWarnings(prog$close()))
   prog$set(message = lang$progressBar$importScen$title, value = 0.1)
   
-  if(identical(fileType, "gdx") && useGdx){
+  if(identical(fileType, "miroscen") && useGdx){
+    resetWidgetsOnClose <<- FALSE
+    if(!closeScenario(clearMeta = TRUE)){
+      showHideEl(session, "#importScenError", 4000L)
+      return()
+    }
+    if(!tryCatch(validateMiroScen(input$localInput$datapath), error = function(e){
+      flog.info("Invalid miroscen file. Error message: '%s'.", conditionMessage(e))
+      showHideEl(session, "#importScenInvalidFile", 4000L)
+      return(FALSE)
+    })){
+      return()
+    }
+    if(!tryCatch(loadMiroScen(input$localInput$datapath, activeScen, attachments, views,
+                              names(modelIn)),
+                 error = function(e){
+                   showHideEl(session, "#importScenError", 4000L)
+                   flog.info("Problems reading miroscen file. Error message: '%s'.",
+                             conditionMessage(e))
+                   return(FALSE)
+                 })){
+      return()
+    }
+    loadModeFileName <- "data.gdx"
+    loadMode <- "gdx"
+    datasetsToFetch <- names(modelIn)
+  }else if(identical(fileType, "gdx") && useGdx){
     loadMode <- "gdx"
     datasetsToFetch <- names(modelIn)
   }else if(identical(fileType, "zip")){
@@ -139,7 +174,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   }else{
     removeModal()
     showErrorMsg(lang$errMsg$invalidFileType$title, 
-                 sprintf(lang$errMsg$invalidFileType$desc, paste0(c("xls", "xlsx", "csv", if(useGdx) "gdx"),
+                 sprintf(lang$errMsg$invalidFileType$desc, paste0(c("xls", "xlsx", "csv", if(useGdx) c("miroscen", "gdx")),
                                                                   collapse = ",")))
     flog.info("Invalid file type: '%s' attempted to be imported. Import interrupted.", fileType)
     return()
@@ -149,13 +184,14 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
                                                             scalarsFileName)]
   
   # extract scalar sheets
-  if(length(modelIn) > length(modelInTabularData)  || !scalarsFileName %in% names(modelIn)){
+  if(!identical(loadMode, "gdx") &&
+     (length(modelIn) > length(modelInTabularData)  || !scalarsFileName %in% names(modelIn))){
     # atleast one scalar input element that is not in tabular form
-    i <- match(tolower(scalarsFileName), tolower(datasetsToFetch))[[1]]
+    i <- match(scalarsFileName, tolower(datasetsToFetch))[[1]]
     if(!is.na(i)){
       # scalar table in workbook
       # add scalar datasets (e.g. slider/dropdown)
-      if(tolower(scalarsFileName) %in% tolower(modelInTabularData)){
+      if(scalarsFileName %in% tolower(modelInTabularData)){
         # scalars is also amongst tabular data
         datasetsToFetch <- c(datasetsToFetch, names(modelIn)[!(names(modelIn) %in% modelInTabularData)])
       }else{
@@ -180,7 +216,14 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   })
   
   source("./modules/input_load.R", local = TRUE)
-  markUnsaved()
+  if(identical(fileType, "miroscen")){
+    scenMetaData[["scen_1_"]] <<- activeScen$
+      getMetadata(lang$nav$excelExport$metadataSheet)
+    # update scenario name
+    rv$activeSname  <<- activeScen$getScenName()
+  }else{
+    markUnsaved()
+  }
   if(!is.null(errMsg)){
     return(NULL)
   }

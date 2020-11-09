@@ -88,7 +88,7 @@ HcubeImport <- R6Class("HcubeImport",
                              filePaths <- utils::unzip(zipFilePath, 
                                                        exdir = gsub("/?$", "", 
                                                                     private$workDir))
-                             if(any(Sys.readlink(filePaths) != "")){
+                             if(any(is.symlink(filePaths))){
                                stop("zip archive contains symlinks.", call. = FALSE)
                              }
                            }

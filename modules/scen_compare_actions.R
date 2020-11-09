@@ -159,6 +159,10 @@ output[["scenExportHandler"]] <- downloadHandler(
     
     if(identical(exportFileType, "gdx")){
       return(gdxio$wgdx(file, data, squeezeZeros = "n"))
+    }else if(identical(exportFileType, "miroscen")){
+      
+      return(generateMiroScen(file, scenMetaData[[scenIdLong]],
+                              data, attachments, views, scenId))
     }else if(identical(exportFileType, "csv")){
       if(length(data) == 0L){
         return(readr::write_csv(tibble(), file))

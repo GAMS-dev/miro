@@ -82,7 +82,8 @@ installedPackages <<- installed.packages()[, "Package"]
 # vector of required files
 filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./components/gdxio.R", 
                     "./components/json.R", "./components/scenario_metadata.R", "./components/views.R",
-                    "./components/attachments.R", "./components/load_scen_data.R",
+                    "./components/attachments.R", "./components/miroscenio.R",
+                    "./components/load_scen_data.R",
                     "./components/data_instance.R", "./components/worker.R", 
                     "./components/dataio.R", "./components/hcube_data_instance.R", 
                     "./components/miro_tabsetpanel.R", "./modules/render_data.R", 
@@ -122,12 +123,12 @@ if(is.null(errMsg)){
   # set maximum upload size
   options(shiny.maxRequestSize = maxUploadSize*1024^2)
   # get model path and name
-  modelPath    <- getModelPath(modelPath, "MIRO_MODEL_PATH")
-  modelNameRaw <- modelPath[[4]]
-  modelName    <- modelPath[[3]]
+  modelPath    <<- getModelPath(modelPath, "MIRO_MODEL_PATH")
+  modelNameRaw <<- modelPath[[4]]
+  modelName    <<- modelPath[[3]]
   modelName    <<- modelName
-  modelGmsName <- modelPath[[2]]
-  modelPath    <- modelPath[[1]]
+  modelGmsName <<- modelPath[[2]]
+  modelPath    <<- modelPath[[1]]
 }
 
 if(is.null(errMsg)){
@@ -328,7 +329,7 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
         modelFiles <- c(modelFiles, paste0("renderer_", modelName))
       }
       if(is.null(errMsg) && identical(Sys.getenv("MIRO_TEST_DEPLOY"), "true")){
-        modelPath <- file.path(tmpFileDir, modelName, "test_deploy")
+        modelPath <<- file.path(tmpFileDir, modelName, "test_deploy")
         if(dir.exists(modelPath) && 
            unlink(modelPath, recursive = TRUE, force = TRUE) != 0L){
           errMsg <- sprintf("Problems removing temporary directory: '%s'. No write permissions?",
@@ -973,10 +974,15 @@ if(!is.null(errMsg)){
     miroDataDir   <- Sys.getenv("MIRO_DATA_DIR")
     if(identical(miroDataDir, "")){
       miroDataDir   <- file.path(currentModelDir, paste0(miroDataDirPrefix, modelName))
+      miroDataFilesRaw <- list.files(miroDataDir)
+    }else if(isFALSE(file.info(miroDataDir)$isdir)){
+      miroDataFilesRaw <- miroDataDir
+      miroDataDir <- dirname(miroDataDir)
+    }else{
+      miroDataFilesRaw <- list.files(miroDataDir)
     }
-    miroDataFilesRaw <- list.files(miroDataDir)
     dataFileExt   <- tolower(tools::file_ext(miroDataFilesRaw))
-    miroDataFiles <- miroDataFilesRaw[dataFileExt %in% c(if(useGdx) "gdx", "xlsx", "xls", "zip")]
+    miroDataFiles <- miroDataFilesRaw[dataFileExt %in% c(if(useGdx) c("gdx", "miroscen"), "xlsx", "xls", "zip")]
     dataFileExt   <- tolower(tools::file_ext(miroDataFiles))
     newScen <- NULL
     tryCatch({
@@ -1048,21 +1054,60 @@ if(!is.null(errMsg)){
             method <- dataFileExt[i]
             tmpDir <- miroDataDir
           }
-          scenName <- tools::file_path_sans_ext(miroDataFile)
-          viewDataId <- match(paste0(tolower(scenName), "_views.json"),
-                              tolower(miroDataFilesRaw))
-          views <- NULL
-          if(!is.na(viewDataId)){
-            flog.debug("Found view data for scenario: %s.", scenName)
+          if(dataFileExt[i] == "miroscen"){
+            method <- "gdx"
+            tmpDir <- tempdir(check = TRUE)
             views <- Views$new(names(modelIn),
                                names(modelOut),
                                inputDsNames)
-            views$addConf(fromJSON(read_file(file.path(miroDataDir, miroDataFilesRaw[viewDataId])),
-                                   simplifyDataFrame = FALSE, simplifyVector = FALSE))
+            attachments <- Attachments$new(db, list(maxSize = attachMaxFileSize, maxNo = attachMaxNo,
+                                                    forbiddenFNames = c(if(identical(config$fileExchange, "gdx")) 
+                                                      c(MIROGdxInName, MIROGdxOutName) else 
+                                                        paste0(c(names(modelOut), inputDsNames), ".csv"),
+                                                      paste0(modelName, c(".log", ".lst")))),
+                                           tmpDir,
+                                           names(modelIn),
+                                           names(modelOut),
+                                           inputDsNames)
+            newScen <- Scenario$new(db = db, sname = "unnamed", isNewScen = TRUE,
+                                    readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
+                                    execPerm = c(uidAdmin, ugroups), uid = uidAdmin,
+                                    views = views, attachments = attachments)
+            if(!tryCatch(validateMiroScen(file.path(miroDataDir, miroDataFile)), error = function(e){
+              flog.error("Invalid miroscen file. Error message: '%s'.", conditionMessage(e))
+              return(FALSE)
+            })){
+              next
+            }
+            if(!tryCatch(loadMiroScen(file.path(miroDataDir, miroDataFile),
+                                      newScen, attachments, views,
+                                      names(modelIn), exdir = tmpDir),
+                         error = function(e){
+                           flog.info("Problems reading miroscen file. Error message: '%s'.",
+                                     conditionMessage(e))
+                           return(FALSE)
+                         })){
+              next
+            }
+            miroDataFile <- "data.gdx"
+          }else{
+            scenName <- tools::file_path_sans_ext(miroDataFile)
+            viewDataId <- match(paste0(tolower(scenName), "_views.json"),
+                                tolower(miroDataFilesRaw))
+            views <- NULL
+            if(!is.na(viewDataId)){
+              flog.debug("Found view data for scenario: %s.", scenName)
+              views <- Views$new(names(modelIn),
+                                 names(modelOut),
+                                 inputDsNames)
+              views$addConf(safeFromJSON(read_file(file.path(miroDataDir, miroDataFilesRaw[viewDataId])),
+                                         simplifyDataFrame = FALSE, simplifyVector = FALSE))
+            }
+            newScen <- Scenario$new(db = db, sname = scenName, isNewScen = TRUE,
+                                    readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
+                                    execPerm = c(uidAdmin, ugroups), uid = uidAdmin, views = views)
           }
-          newScen <- Scenario$new(db = db, sname = scenName, isNewScen = TRUE,
-                                  readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
-                                  execPerm = c(uidAdmin, ugroups), uid = uidAdmin, views = views)
+          
           dataOut <- loadScenData(scalarsOutName, modelOut, tmpDir, modelName, scalarsFileHeaders,
                                   modelOutTemplate, method = method, fileName = miroDataFile)$tabular
           dataIn  <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp,
@@ -1810,9 +1855,10 @@ if(!is.null(errMsg)){
       
       observeEvent(input$btExportScen, {
         if(useGdx && !LAUNCHHCUBEMODE){
-          exportTypes <- c(gdx = "gdx", xlsx = "xls", csv = "csv")
+          
+          exportTypes <- setNames(c("miroscen", "gdx", "csv", "xls"), lang$nav$fileExport$fileTypes)
         }else{
-          exportTypes <- c(csv = "csv", xlsx = "xls")
+          exportTypes <- setNames(c("csv", "xls"), lang$nav$fileExport$fileTypes[-1:2])
         }
         if(length(datasetsRemoteExport)){
           exportTypes <- c(exportTypes, setNames(names(datasetsRemoteExport), 
@@ -1834,6 +1880,7 @@ if(!is.null(errMsg)){
                xls = exportFileType <<- "xlsx",
                gdx = exportFileType <<- "gdx",
                csv = exportFileType <<- "csv",
+               miroscen = exportFileType <<- "miroscen",
                flog.warn("Unknown export file type: '%s'.", input$exportFileType))
       })
       hideEl(session, "#loading-screen")
