@@ -161,6 +161,14 @@
                                     </div><!--//section-block-->
 
                                     <div class="section-block">
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> Why does my model not work in Hypercube Mode?</h3>
+                                        <div class="answer">
+                                            <p>Currently, when executing Hypercube jobs locally (without <a href="https://gams.com/engine">GAMS Engine</a>), your model must be prepared to work with <span class="code"><a href="./deployment.html#local-multi-user">idir</a></span>. MIRO creates a local working directory for each scenario and executes your model from this directory, while referring to the main <span class="code">gms</span> file via <span class="code">idir1</span>.</p>
+                                            <p>You can debug your model by submitting a Hypercube job, navigating to the directory of your Hypercube job (<span class="code">C:\Users\&lt;username&gt;\.miro\hcube_jobs\&lt;modelname&gt;\1</span> on Windows, <span class="code">~/.miro/hcube_jobs/&lt;modelname&gt;/1</span> on macOS/Linux) and executing the file <span class="code">jobsubmission.gms</span> file from GAMS Studio.</p>
+                                        </div>
+                                    </div><!--//section-block-->
+
+                                    <div class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What happens when using input data which results in infeasible or unbounded results?</h3>
                                         <div class="answer">
                                           In GAMS MIRO both the log and the lst file of the current GAMS model run can be displayed. Any information about infeasibilities and unboundness is also visible here. 
