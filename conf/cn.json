@@ -1,4 +1,10 @@
 {
+  "general":{
+    "modal":{
+      "okButton": "确定",
+      "cancelButton": "取消"
+    }
+  },
   "nav":{
     "scalarAliases":{
       "scalars":"标量",

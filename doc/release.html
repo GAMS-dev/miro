@@ -64,6 +64,21 @@
                             <section id="v12" class="doc-section">
                               <h2 class="section-title" style="display:inline-block">GAMS MIRO 1.2</h2> <div style="display:inline-block; padding-left:15px;">(2020-10-05)</div>
                                  <div class="section-block">
+                                    <h5 style="display:inline-block">GAMS MIRO 1.2.2</h5><div style="display:inline-block; padding-left:15px;"> (2020-11-10)</div>
+                                    <ul>
+                                      <li>Fix issue with views whose names are longer than 54 characters.</li>
+                                      <li>Fix issue with scenario comparison when scalars table and widgets are in separate input groups.</li>
+                                      <li>Fix issue where dialogs for adding/renaming columns in standard input tables did not work in the integrated browser.</li>
+                                      <li>MIRO Pivot: Improve layout if there are many views (> 15).</li>
+                                      <li>Fix a race condition that could cause stale input data to be sent to custom renderer functions.</li>
+                                      <li>Fix issue when column in default input table was both pivoted and declared as readonly.</li>
+                                      <li>Fix issue with input widgets being part of input groups.</li>
+                                      <li>Fix a rare case where scalars were not imported when importing data from local files.</li>
+                                      <li>Force the Tab Comparison Mode the default comparison mode in Hypercube Mode because the scenarios selected for comparison will be loaded in this mode (this overwrites the <i>defCompMode</i> setting).</li>
+                                      <li>Fix issue where downloading attachments did not work properly in certain situations.</li>
+                                    </ul>
+                                 </div>
+                                 <div class="section-block">
                                     <h5 style="display:inline-block">GAMS MIRO 1.2.1</h5><div style="display:inline-block; padding-left:15px;"> (2020-10-22)</div>
                                     <ul>
                                       <li>Add option to configure a custom icon for a valuebox by adding a new choice to the dropdown menu.</li>

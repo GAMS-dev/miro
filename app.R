@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "1.2.1"
+MIROVersion <- "1.2.2"
 APIVersion  <- "1"
-MIRORDate   <- "Oct 22 2020"
+MIRORDate   <- "Nov 10 2020"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -686,6 +686,8 @@ if(is.null(errMsg)){
       errMsg <- paste(msg, errMsgTmp, sep = '\n')
     }
     errMsg <- installAndRequirePackages(c("digest"), installedPackages, RLibPath, CRANMirror, miroWorkspace)
+    # scenarios in Hcube mode are loaded in tab view, so make tab view default compare mode
+    config$defCompMode <- "tab"
     source("./components/db_hcubeimport.R")
     source("./components/db_hcubeload.R")
   }

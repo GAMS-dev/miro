@@ -149,7 +149,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
                                                             scalarsFileName)]
   
   # extract scalar sheets
-  if(length(modelIn) > length(modelInTabularData)){
+  if(length(modelIn) > length(modelInTabularData)  || !scalarsFileName %in% names(modelIn)){
     # atleast one scalar input element that is not in tabular form
     i <- match(tolower(scalarsFileName), tolower(datasetsToFetch))[[1]]
     if(!is.na(i)){
@@ -185,17 +185,13 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     return(NULL)
   }
   errMsg <- NULL
-  # save input data 
-  saveInputDb <- FALSE
-  source("./modules/input_save.R", local = TRUE)
-  if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
-    return(NULL)
-  }
-  lapply(seq_along(dataTmp), function(i){
-    if(is.null(dataTmp[[i]])){
+  # save input data
+  idxMap <- match(modelInFileNames, names(scenInputData))
+  lapply(seq_along(modelInFileNames), function(i){
+    if(is.na(idxMap[i]) || is.null(scenInputData[[idxMap[i]]])){
       scenData[["scen_1_"]][[i + length(modelOut)]] <<- scenDataTemplate[[i]]
     }else{
-      scenData[["scen_1_"]][[i + length(modelOut)]] <<- dataTmp[[i]]
+      scenData[["scen_1_"]][[i + length(modelOut)]] <<- scenInputData[[idxMap[i]]]
     }
   })
   if(LAUNCHHCUBEMODE){

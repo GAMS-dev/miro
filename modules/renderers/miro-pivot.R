@@ -23,8 +23,7 @@ genIndexList <- function(indexList) {
 }
 createBootstrapDropdownChoices <- function(el, eventId, deleteEventId = NULL){
   tags$li(id = paste0(eventId, "_", el$id), style = "display:flex;position:relative;",
-          tags$a(class="dropdown-item", role = "button", el$alias, 
-                 style = "width: 100%",
+          tags$a(class="dropdown-item view-dropdown-item", role = "button", el$alias, 
                  onClick = paste0("Shiny.setInputValue('", eventId, "','",
                                   el$id, "',{priority:\'event\'});")),
           if(!is.null(deleteEventId))
@@ -100,7 +99,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                                                     `aria-expanded` = "false", style = "width:100%",
                                                     lang$renderers$miroPivot$btLoadView, tags$span(
                                                       class = "caret btn-dropdown-caret")),
-                                        tags$ul(id = ns("savedViewsDD"), class = "dropdown-menu btn-dropdown-menu",
+                                        tags$ul(id = ns("savedViewsDD"), class = "dropdown-menu btn-dropdown-menu view-dropdown-wrapper",
                                                 `aria-labelledby` = ns("toggleViewButton"),
                                         ))
                              )

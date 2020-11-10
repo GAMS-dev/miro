@@ -5,6 +5,29 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "general": {
+      "description": "General language settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "modal": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "okButton": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cancelButton": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 2
+        }
+      },
+      "minProperties": 1
+    },
     "nav": {
       "description": "language specific objects when navigating through the UI",
       "type": "object",
@@ -7941,5 +7964,5 @@
       "minProperties": 7
     }
   },
-  "minProperties": 5
+  "minProperties": 6
 }

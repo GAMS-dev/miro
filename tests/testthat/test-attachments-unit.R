@@ -137,7 +137,7 @@ test_that("Overwriting attachments work", {
   unlink(file.path(workDir, c("scalars.csv", "asd.csv")))
 })
 
-test_that("Updating attachments work", {
+test_that("Updating attachments works", {
   fakeSessionIn1 <- FakeSession$new("in_1")
   fakeSessionScen3Out2 <- FakeSession$new("tab_3_2")
   
@@ -154,4 +154,10 @@ test_that("Updating attachments work", {
   expect_false(any(file.exists(file.path(workDir, c("_scalars.csv", "bad-views2.json")))))
   expect_true(file.exists(file.path(workDir, c("scalars.csv"))))
   unlink(file.path(workDir, c("_scalars.csv", "bad-views2.json", "scalars.csv")))
+})
+
+test_that("Download multiple attachments works", {
+  expect_identical(length(attachments$download(workDir, fileNames = c("_scalars.csv", "scalars.csv"))), 2L)
+  expect_true(file.exists(file.path(workDir, c("_scalars.csv"))))
+  unlink(file.path(workDir, c("_scalars.csv", "scalars.csv")))
 })
