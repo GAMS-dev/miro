@@ -290,8 +290,8 @@
                                     <div id="import-data"  class="section-block">
                                         <h3 class="block-title">Import data</h3>
                                         <p>A GAMS MIRO app is quite useful if there is data to be visualized, e.g. in the form of tables, diagrams or other charts. This applies to output data as well as input data.
-                                        Input data that is to be visualized in MIRO can be imported either from existing scenarios in the database or via a local file (currently, this can be either a gdx container or an Excel spreadsheet).
-                                        To import such data, click on the <i>Load data</i> button in the navigation bar. The following dialog pops up:</p>
+                                        Input data that is to be visualized in MIRO can be imported either from existing scenarios in the database or via a local file (currently, this can be a MIROSCEN file, a GDX container, an Excel spreadsheet, or CSV files). A MIROSCEN file is a special file format used by MIRO to export and import a complete MIRO scenario. In contrast to other supported file formats like GDX, Excel or CSV, a MIROSCEN file includes <a href = "#scenario-metadata" class = "scrollto">metadata</a> such as tags, <a href="#metadata-views" class="scrollto">views</a>, <a href="#file-attachments" class="scrollto">attachments</a> etc.</p>
+                                        <p>To import such data, click on the <i>Load data</i> button in the navigation bar. The following dialog pops up:</p>
                                             <div class="row">
                                                 <div class="col-md-6">
                                                       <img class="img-fluid" src="assets/images/import-db.png" alt="Database import" />
@@ -317,7 +317,7 @@
                                                 <p>Every time you start a MIRO app in <a href = "./model.html#development-mode">development mode</a> (via GAMS Studio or the command line), the data relevant to MIRO is extracted from your model and stored in the MIRO database as a special scenario named <i>default</i>.</p>
                                             </div><!--//content-->
                                         </div><!--//callout-block-->
-                                        <p>To import a file from your local machine, either in the form of a gdx container, an Excel spreadsheet or a CSV file, select the menu item <i>Local</i> and click on </i>browse</i>. Navigate to the directory where your file resides and select it.
+                                        <p>To import a file from your local machine, either in the form of a miroscen file, a GDX container, an Excel spreadsheet or a CSV file, select the menu item <i>Local</i> and click on </i>browse</i>. Navigate to the directory where your file resides and select it.
                                         Confirm the data import with a click on <i>import</i>. If you started with an empty sheet, a new, unnamed scenario is now shown in the interface. To save it, click on <i>Save as</i> and give it a name.</p>
                                         <div style="outline: solid 1px black; outline-offset: 5px; margin:20px 0px">
                                             <h6 id = "excel-import-rules" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Excel spreadsheet - import rules</h6>
@@ -358,7 +358,7 @@
                                         </div>
                                         <p>Please refer to the chapter about <a href="./hypercube.html#scenario-selection">scenario selection</a> in Hypercube Mode to learn how to retrieve the hash value of a Hypercube scenario.</p>
                                         <p id = "startup-import"><b>Import multiple scenarios on startup</b>
-                                        <br>In addition to the options mentioned above, which can be accessed directly from MIRO, (multiple) scenarios can also be imported automatically when starting an application. To do this, the scenarios to be imported (GDX, CSV or Excel files) must be put in the folder <span class="code">data_&lt;modelname&gt;</span> (located in the model directory). With the next start of MIRO, those scenarios are imported automatically. Note that in development mode MIRO skips the import of files that have not changed since the last start.</p>
+                                        <br>In addition to the options mentioned above, which can be accessed directly from MIRO, (multiple) scenarios can also be imported automatically when starting an application. To do this, the scenarios to be imported (MIROSCEN, GDX, CSV or Excel files) must be put in the folder <span class="code">data_&lt;modelname&gt;</span> (located in the model directory). With the next start of MIRO, those scenarios are imported automatically. Note that in development mode MIRO skips the import of files that have not changed since the last start.</p>
                                         <p>In addition to scenario data, <a href="#metadata-views" class="scrollto">views</a> can also be imported together with the scenario data. Simply place the JSON file with the view data here as well. The file has to be named <span class="code">&lt;scenarioName&gt;_views.json</span>. For example if you want to provide data in the form of a GDX file and views for a scenario with the name <span class="code">my_scenario</span>, you have to place both <span class="code">my_scenario.gdx</span> and <span class="code">my_scenario_views.json</span> into the <span class="code">data_&lt;modelname&gt;</span> directory.</p>
                                     </div><!--//section-block-->
                                     <div id="data-manipulation"  class="section-block">
@@ -438,7 +438,7 @@
                                             Also, if your sandbox scenario contains <a href = "#file-attachments" class = "scrollto">attachments</a> or you have defined <a href = "#access-permissions" class = "scrollto">user access permissions</a>, you can adopt these settings for the scenario to be saved. 
                                             </li>
                                             <li><b>Export</b>
-                                            <br>Download of the scenario data in the form of a gdx container, as an Excel spreadsheet or as CSV files.</li>
+                                            <br>Download of the scenario data in the form of a MIROSCEN file, a GDX container, as an Excel spreadsheet or as CSV files.</li>
                                             <li><b>Delete</b>
                                             <br>Delete the scenario from the database.</li>
                                             </ul>
@@ -577,7 +577,7 @@
                                             <li>The MIRO user interface can be seen as a sandbox. Data that is loaded into the interface is therefore located in this sandbox as a <i>sandbox scenario</i>.</li>
                                             <li>Scenarios from the database can be loaded into the sandbox. The data of the sandbox scenario can be modified. Data modifications can come from local files or can be entered manually.
                                             A click on <i>save</i> overwrites the original scenario in the database with the modified data. Alternatively, a new scenario can be created using <i>save as</i>. The original scenario in the database remains unchanged then.</li>
-                                            <li>A sandbox scenario can also be initially created as an empty scenario independent of the database and then filled with data (GDX, Excel, CSV). A scenario created in this way initially does not have a name. 
+                                            <li>A sandbox scenario can also be initially created as an empty scenario independent of the database and then filled with data (MIROSCEN, GDX, Excel, CSV). A scenario created in this way initially does not have a name. 
                                             As long as a scenario is unnamed, i.e. it is not saved in the database with an individual name, the data is shown exclusively in the interface and gets lost if the MIRO application is closed.</li>
                                             <li><a href = "#file-attachments" class = "scrollto">Attachments</a> are part of a scenario. If attachments are added to a sandbox scenario, they are included when saving this scenario.</li>
                                             <ul></p>
@@ -603,7 +603,7 @@
                                         <h3 class="block-title">Attachments</h3>
                                         With the <i>attachments</i> option, you can attach files to the (sandbox) scenario you currently have open. These can be files of any format.
                                         MIRO distinguishes between attachments that can be seen and read by your GAMS model and files that can not be seen.
-                                        For example, if you want to provide data to your model that doesn't need to be visible/modifiable in the UI (e.g. in the form of a gdx container or Excel files), attachments that your model can read are what you are looking for.
+                                        For example, if you want to provide data to your model that doesn't need to be visible/modifiable in the UI (e.g. in the form of a GDX container or Excel files), attachments that your model can read are what you are looking for.
                                         In case you just want to add some report about a particular scenario, which is irrelevant for the GAMS model, you should not allow the model to read this file. Note that all files that you allow your model to read need to be first downloaded into the working directory before GAMS is executed.
                                         Thus, it is advisable to select only those files to be readable that are actually relevant for the optimization run.</p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
