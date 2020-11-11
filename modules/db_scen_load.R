@@ -125,7 +125,13 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
     names(sidListTmp)[1:4] <- db$getScenMetaColnames()[c('sid', 'uid', 'sname', 'stime')]
     uiSidList <- db$formatScenList(filter(sidListTmp, `_sid` %in% uiSidListTmp),
                                    stimeIdentifier, desc = TRUE)
-    uiSidList <- uiSidList[!duplicated(uiSidList)]
+    if(LAUNCHHCUBEMODE){
+      # Hypercube scenarios are not part of dbSidList
+      dbSidList <- c(dbSidList, uiSidList)
+      dbSidList <- dbSidList[!duplicated(dbSidList)]
+    }else{
+      uiSidList <- uiSidList[!duplicated(uiSidList)]
+    }
   }
   showLoadScenDialog(dbSidList, uiSidList, isInSplitView, dbTagList = dbTagList)
   if(maxNoScenExceeded)
