@@ -83,21 +83,20 @@ class InputArray {
                     }
                   }
                 }
-                if (typeof v[4] === 'undefined') {
+                if (typeof v[4] === 'undefined' || !choices.includes(v[4])) {
                   [selected] = choices;
                 } else {
                   [,,,, selected] = v;
                 }
-
                 labelID = selected;
                 [label] = aliases;
+                this.addLabelEl(elID, selected);
                 for (let i = 1; i < elID; i++) {
                   const labelEl = $(`#${k}${i}`);
                   if (labelEl.length) {
                     labelEl[0].selectize.disable();
                   }
                 }
-                this.addLabelEl(elID, selected);
               } else {
                 [,, choices, aliases, selected] = v;
                 if (selected == null) {

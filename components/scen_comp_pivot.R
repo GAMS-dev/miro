@@ -27,12 +27,26 @@ renderScenPivotCompare <- function(scenData, scenNames, rendererEnv,
                                                symtype = ioConfig$modelOut[[sheetName]]$symtype))
     }else{
       scenTableId <- length(outputDsNames) + scenTableId
-      graphOptions <- list(resetOnInit = TRUE,
-                           "_metadata_" = list(symname = sheetName,
-                                               headers = c(list("_scenName" = list(alias = lang$renderers$miroPivot$pivotCompScenColName,
-                                                                                   type = "string")),
-                                                           ioConfig$modelIn[[sheetName]]$headers),
-                                               symtype = ioConfig$modelIn[[sheetName]]$symtype))
+      if(!sheetName %in% names(ioConfig$modelIn[[sheetName]]) && identical(sheetName, scalarsFileName)){
+        graphOptions <- list(resetOnInit = TRUE,
+                             "_metadata_" = list(symname = sheetName,
+                                                 headers = c(list("_scenName" = list(alias = lang$renderers$miroPivot$pivotCompScenColName,
+                                                                                     type = "string")),
+                                                             list(scalar = list(alias = lang$nav$scalarAliases$cols$name,
+                                                                                type = "string"),
+                                                                  description = list(alias = lang$nav$scalarAliases$cols$desc,
+                                                                                     type = "string"),
+                                                                  value = list(alias = lang$nav$scalarAliases$cols$value,
+                                                                               type = "string"))),
+                                                 symtype = "set"))
+      }else{
+        graphOptions <- list(resetOnInit = TRUE,
+                             "_metadata_" = list(symname = sheetName,
+                                                 headers = c(list("_scenName" = list(alias = lang$renderers$miroPivot$pivotCompScenColName,
+                                                                                     type = "string")),
+                                                             ioConfig$modelIn[[sheetName]]$headers),
+                                                 symtype = ioConfig$modelIn[[sheetName]]$symtype))
+      }
     }
     tryCatch({
       dataToRender <- lapply(scenData, "[[", scenTableId)
