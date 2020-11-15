@@ -51,7 +51,7 @@ validateMiroScen <- function(path) {
   }
   if(length(metadata[["attachments"]])){
     dfAttachMeta <- as_tibble(metadata[["attachments"]])
-    if(length(dfClArgs) != 2L || any(is.na(as.logical(dfAttachMeta[[2]])))){
+    if(length(dfAttachMeta) != 2L || any(is.na(as.logical(dfAttachMeta[[2]])))){
       stop_custom("error_badformat", "Invalid attachment metadata format in miroscen file.",
                   call. = FALSE)
     }
