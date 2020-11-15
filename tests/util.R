@@ -24,6 +24,17 @@ expect_download_size <- function(app, id, filename, tolerance = 100){
   }
 }
 
+expect_files_in_zip <- function(app, id, files){
+  url <- app$findElement(paste0("#", id))$getAttribute("href")
+  req <- httr::GET(url)
+  tempFiles <- file.path(tempdir(check = TRUE), "shinytest-download")
+  on.exit(unlink(tempFiles))
+  writeBin(req$content, tempFiles)
+  filesInZip <- zip::zip_list(tempFiles)$filename
+  expect_identical(length(filesInZip), length(files))
+  expect_true(all(files %in% filesInZip))
+}
+
 createTestDb <- function(dbPath = file.path(getwd(), "..", "miro.sqlite3")){
   if(file.exists(dbPath)){
     if(unlink(dbPath, force = TRUE)){
