@@ -79,7 +79,6 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
       identical(input$btSplitView, "pivotView")){
     currentMode <- "pivot"
     sidsLoadedInPivotMode <- sidsInPivotComp[!is.na(sidsInPivotComp) & sidsInPivotComp != 0]
-    scenMetaDb <<- scenMetaDb[!as.character(scenMetaDb[[1]]) %in% sidsLoadedInPivotMode, ]
     if(length(sidsLoadedInPivotMode)){
       uiSidListTmp <- sidsLoadedInPivotMode
     }else{
@@ -120,17 +119,26 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
   # by default, put most recently saved scenario first
   dbSidList <- db$formatScenList(scenMetaDbSubset, stimeIdentifier, desc = TRUE)
   if(!is.null(uiSidListTmp)){
-    sidListTmp <- bind_rows(scenMetaData[vapply(scenMetaData, function(el) !is.null(el[[1]]), 
-                                                logical(1L), USE.NAMES = FALSE)])
-    names(sidListTmp)[1:4] <- db$getScenMetaColnames()[c('sid', 'uid', 'sname', 'stime')]
-    uiSidList <- db$formatScenList(filter(sidListTmp, `_sid` %in% uiSidListTmp),
-                                   stimeIdentifier, desc = TRUE)
     if(LAUNCHHCUBEMODE){
       # Hypercube scenarios are not part of dbSidList
+      sidListTmp <- bind_rows(scenMetaData[vapply(scenMetaData, function(el) !is.null(el[[1]]), 
+                                                  logical(1L), USE.NAMES = FALSE)])
+      if(length(sidListTmp)){
+        names(sidListTmp)[1:4] <- db$getScenMetaColnames()[c('sid', 'uid', 'sname', 'stime')]
+        uiSidList <- db$formatScenList(filter(sidListTmp, `_sid` %in% uiSidListTmp),
+                                       stimeIdentifier, desc = TRUE)
+      }else{
+        uiSidList <- NULL
+      }
       dbSidList <- c(dbSidList, uiSidList)
       dbSidList <- dbSidList[!duplicated(dbSidList)]
+    }else if(isInSplitView){
+      uiSidList <- db$formatScenList(scenMetaDb[scenMetaDb[[1]] %in% sidsLoadedInOtherModes, ],
+                                     stimeIdentifier, desc = TRUE)
     }else{
-      uiSidList <- uiSidList[!duplicated(uiSidList)]
+      uiSidList <- vapply(uiSidListTmp, function(i){
+        dbSidList[startsWith(dbSidList, paste0(i, "_"))][1]},
+        character(1L), USE.NAMES = FALSE)
     }
   }
   showLoadScenDialog(dbSidList, uiSidList, isInSplitView, dbTagList = dbTagList)
