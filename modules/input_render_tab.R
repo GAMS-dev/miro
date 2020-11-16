@@ -1,5 +1,6 @@
 # render tabular datasets
 proxy <- vector("list", length(modelIn))
+skipObs <- vector("list", length(modelIn))
 
 getVisibleTabData <- function(id, type){
   if(identical(type, "hot")){
@@ -712,6 +713,8 @@ lapply(modelInTabularData, function(sheet){
                                                   rendererEnv = rendererEnv[[paste0("input_", i)]],
                                                   attachments = attachments,
                                                   views = views)
+        isolate(rv[[paste0("reinit_", i)]] <- isFALSE(rv[[paste0("reinit_", i)]]))
+        skipObs[[i]] <<- TRUE
       }, error = function(e){
         flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
                    modelInAlias[[i]], e)
@@ -719,7 +722,9 @@ lapply(modelInTabularData, function(sheet){
       })
     })
     observe({
-      if(is.null(force(modelInputDataVisible[[i]]()))){
+      force(rv[[paste0("reinit_", i)]])
+      if(is.null(force(modelInputDataVisible[[i]]())) || isTRUE(skipObs[[i]])){
+        skipObs[[i]] <<- FALSE
         return()
       }
       if(hotInit[[i]]){
