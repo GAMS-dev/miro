@@ -726,6 +726,10 @@
         "stackedbar": "堆积柱形图",
         "radar": "雷达图",
         "line": "折线图"
+      },
+      "invalidFilters":{
+        "title": "由于数据中不存在这些值，因此无法应用某些过滤器。",
+        "message": "过滤器：'%s'，无效值：'%s'。"
       }
     },
     "datatable":{

@@ -726,6 +726,10 @@
         "stackedbar": "Gestapeltes Balkendiagramm",
         "radar": "Radardiagramm",
         "line": "Liniendiagramm"
+      },
+      "invalidFilters":{
+        "title": "Einige Filter konnten nicht angewendet werden, weil die Werte in den Daten nicht vorhanden sind.",
+        "message": "Filter: '%s', ungültige Werte: '%s'."
       }
     },
     "datatable":{
