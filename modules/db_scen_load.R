@@ -437,7 +437,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
           return(paste0(scenOwner, ": "))
         }, character(1L), USE.NAMES = FALSE), metadataFull[[3]])
         renderScenPivotCompare(scenData[scenIdsLong], scenNamesToCompare, 
-                               rendererEnv, views, roundPrecision)
+                               rendererEnv, views, roundPrecision,
+                               config$pivotCompSettings)
       }else{
         sidsToLoadVector <- match(sidsInPivotCompTmp, metadataFull[[1]])
         sidsToLoadVector <- sidsToLoadVector[!is.na(sidsToLoadVector)]
@@ -448,7 +449,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
           return(paste0(scenOwner, ": "))
         }, character(1L), USE.NAMES = FALSE), metadataFull[["_sname"]][sidsToLoadVector])
         renderScenPivotCompare(scenDataTmp, scenNamesToCompare, 
-                               rendererEnv, views, roundPrecision)
+                               rendererEnv, views, roundPrecision,
+                               config$pivotCompSettings)
       }
       hideEl(session, "#pivotCompBtWrapper")
       showEl(session, "#pivotCompScenWrapper")

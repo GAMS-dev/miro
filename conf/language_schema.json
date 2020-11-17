@@ -6826,6 +6826,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "pivotCompHideEmptyColsSwitch": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "emptyUEL": {
                   "type": "string",
                   "minLength": 1
@@ -6835,7 +6839,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 4
+              "minProperties": 5
             },
             "datatableOptions": {
               "type": "object",
