@@ -69,10 +69,12 @@ Worker <- R6Class("Worker", public = list(
     
     private$metadata$namespace <- namespace
     
-    ret <- GET(url = paste0(url, "/namespaces/", namespace, "/permissions/me"), 
+    ret <- GET(url = paste0(private$metadata$url, "/namespaces/", namespace, "/permissions/me"), 
                 add_headers(Authorization = private$authHeader,
                             Timestamp = as.character(Sys.time(), usetz = TRUE)), 
                 timeout(10L))
+    if(identical(status_code(ret), 404L))
+      stop(444L, call. = FALSE)
     if(identical(status_code(ret), 401L))
       stop(401L, call. = FALSE)
     
@@ -93,7 +95,7 @@ Worker <- R6Class("Worker", public = list(
         if(permissionLevel < 5L)
           stop(403L, call. = FALSE)
         if(rememberMeFlag){
-          private$saveLoginCredentials(url, username, 
+          private$saveLoginCredentials(private$metadata$url, username, 
                                        namespace, 
                                        useRegistered)
         }
@@ -102,7 +104,7 @@ Worker <- R6Class("Worker", public = list(
       if(permissionLevel < 7L)
         stop(403L, call. = FALSE)
       if(rememberMeFlag){
-        private$saveLoginCredentials(url, username, 
+        private$saveLoginCredentials(private$metadata$url, username, 
                                      namespace, 
                                      useRegistered)
       }
@@ -1430,12 +1432,31 @@ Worker <- R6Class("Worker", public = list(
       return(FALSE)
     }
     if(tryCatch({
-      ret <- HEAD(private$metadata$url, timeout(10L))$url
+      if(endsWith(private$metadata$url, "/api")){
+        ret <- GET(paste0(private$metadata$url, "/version"), timeout(10L))
+        if(!"gams_version" %in% names(content(ret, type = "application/json", 
+                                              encoding = "utf-8"))){
+          stop("Not a GAMS Engine server", call. = FALSE)
+        }
+      }else{
+        ret <- GET(paste0(private$metadata$url, "/api/version"), timeout(10L))
+        if("gams_version" %in% names(content(ret, type = "application/json", 
+                                             encoding = "utf-8"))){
+          private$metadata$url <- paste0(private$metadata$url, "/api")
+        }else{
+          ret <- GET(paste0(private$metadata$url, "/version"), timeout(10L))
+          if(!"gams_version" %in% names(content(ret, type = "application/json", 
+                                                encoding = "utf-8"))){
+            stop("Not a GAMS Engine server", call. = FALSE)
+          }
+        }
+      }
+      ret <- ret$url
       FALSE
     }, error = function(e){
       flog.debug("Could not connect to provided URL. Error message: '%s'.",
                  conditionMessage(e))
-      return(TRUE)
+      stop(404L, call. = FALSE)
     })){
       return(FALSE)
     }
