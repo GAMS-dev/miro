@@ -1,5 +1,5 @@
 Views <- R6Class("Views",
-                inherit = ScenarioMetadata,
+                 inherit = ScenarioMetadata,
                  public = list(
                    getDuplicatedViews = function(){
                      return(private$duplicatedViews)
@@ -7,15 +7,14 @@ Views <- R6Class("Views",
                    getInvalidViews = function(){
                      return(private$invalidViews)
                    },
-                   cleanConf = function(viewConf, sandbox = TRUE, removeDuplicates = FALSE){
+                   cleanConf = function(viewConf, sandbox = TRUE, removeDuplicates = FALSE, scenId = "1"){
                      if(!length(viewConf)){
                        return(list())
                      }
                      stopifnot(is.list(viewConf), length(names(viewConf)) != 0)
                      cleanViewConf <- viewConf
-                     if(!sandbox){
-                       return(cleanViewConf)
-                     }
+                     scenId <- as.character(scenId)
+                     
                      invalidViews <- !names(cleanViewConf) %in% c(private$outputSymbols,
                                                                   private$tabularInputSymbols)
                      if(any(invalidViews)){
@@ -34,11 +33,11 @@ Views <- R6Class("Views",
                          next
                        }
                        if(removeDuplicates){
-                         if(!length(private$sandboxViewConf[[symbolName]])){
+                         if(!length(private$scenViewConf[[scenId]][[symbolName]])){
                            next
                          }
                          duplicatedIds <- names(cleanViewConf[[symbolName]]) %in%
-                           names(private$sandboxViewConf[[symbolName]])
+                           names(private$scenViewConf[[scenId]][[symbolName]])
                          if(any(duplicatedIds)){
                            private$duplicatedViews[[symbolName]] <- names(cleanViewConf[[symbolName]])[duplicatedIds]
                            cleanViewConf[[symbolName]][duplicatedIds] <- NULL
@@ -47,10 +46,10 @@ Views <- R6Class("Views",
                      }
                      return(cleanViewConf)
                    },
-                   loadConf = function(viewConf, sandbox = TRUE){
+                   loadConf = function(viewConf, sandbox = TRUE, scenIds = NULL){
                      if(!is_tibble(viewConf) || length(viewConf) < 4L || nrow(viewConf) == 0){
                        if(sandbox){
-                         private$sandboxViewConf <- list()
+                         private$scenViewConf[["1"]] <- list()
                        }
                        return(invisible(self))
                      }
@@ -85,31 +84,37 @@ Views <- R6Class("Views",
                        return(retTmp)
                      })
                      if(sandbox){
-                       private$sandboxViewConf <- viewConfTmp[[1]]
+                       private$scenViewConf[["1"]] <- viewConfTmp[[1]]
                        return(invisible(self))
                      }
-                     names(viewConfTmp) <- uniqueSids
-                     private$scenViewConf <- viewConfTmp
+                     scenIds <- as.character(scenIds)
+                     for(i in seq_along(scenIds)){
+                       private$scenViewConf[[scenIds[i]]] <- viewConfTmp[[i]]
+                     }
                      return(invisible(self))
                    },
                    duplicateSandboxConf = function(scenId){
-                     private$scenViewConf[[as.character(scenId)]] <- private$sandboxViewConf
+                     private$scenViewConf[[as.character(scenId)]] <- private$scenViewConf[["1"]]
                      return(invisible(self))
                    },
-                   addConf = function(viewConf){
-                     private$sandboxViewConf <- modifyList(private$sandboxViewConf,
-                                                           self$cleanConf(viewConf, TRUE, TRUE))
-                     private$markUnsaved()
+                   addConf = function(viewConf, scenId = "1"){
+                     scenId <- as.character(scenId)
+                     private$scenViewConf[[scenId]] <- modifyList(private$scenViewConf[[scenId]],
+                                                                  self$cleanConf(viewConf, TRUE, TRUE))
+                     if(identical(scenId, "1")){
+                       private$markUnsaved()
+                     }
                      lapply(names(viewConf), function(symName){
-                       if(symName %in% names(private$updateCallbacks)){
-                         private$updateCallbacks[[symName]]()
+                       if(symName %in% names(private$updateCallbacks[[scenId]])){
+                         private$updateCallbacks[[scenId]][[symName]]()
                        }
                      })
                      return(invisible(self))
                    },
-                   getConf = function(){
-                     return(dplyr::bind_rows(lapply(names(private$sandboxViewConf), function(symName){
-                       symbolConf <- private$sandboxViewConf[[symName]]
+                   getConf = function(scenId = "1"){
+                     scenId <- as.character(scenId)
+                     return(dplyr::bind_rows(lapply(names(private$scenViewConf[[scenId]]), function(symName){
+                       symbolConf <- private$scenViewConf[[scenId]][[symName]]
                        return(tibble(symName = rep.int(symName, length(symbolConf)),
                                      id = names(symbolConf),
                                      data = vapply(symbolConf, function(viewConf){
@@ -117,29 +122,31 @@ Views <- R6Class("Views",
                                      }, character(1L), USE.NAMES = FALSE)))
                      })))
                    },
-                   getJSON = function(views = NULL){
+                   getJSON = function(views = NULL, scenId = "1"){
+                     scenId <- as.character(scenId)
                      if(is.null(views)){
-                       return(toJSON(private$sandboxViewConf, auto_unbox = TRUE, null = "null"))
+                       return(toJSON(private$scenViewConf[[scenId]], auto_unbox = TRUE, null = "null"))
                      }
                      stopifnot(is.list(views))
                      selectedViews <- list()
                      for(view in views){
-                       if(view[1] %in% names(private$sandboxViewConf) &&
-                          view[2] %in% names(private$sandboxViewConf[[view[1]]])){
-                         selectedViews[[view[1]]][[view[2]]] <- private$sandboxViewConf[[view[1]]][[view[2]]]
+                       if(view[1] %in% names(private$scenViewConf[[scenId]]) &&
+                          view[2] %in% names(private$scenViewConf[[scenId]][[view[1]]])){
+                         selectedViews[[view[1]]][[view[2]]] <- private$scenViewConf[[scenId]][[view[1]]][[view[2]]]
                        }
                      }
                      return(toJSON(selectedViews, auto_unbox = TRUE, null = "null"))
                    },
-                   getSummary = function(tabularInputSymConfig, tabularOutputSymConfig){
+                   getSummary = function(tabularInputSymConfig, tabularOutputSymConfig, scenId = "1"){
+                     scenId <- as.character(scenId)
                      if(!length(private$symbolAliases)){
                        private$symbolAliases <- vapply(c(tabularOutputSymConfig,
                                                          tabularInputSymConfig[match(private$tabularInputSymbols,
                                                                                      names(tabularInputSymConfig))]),
                                                        "[[", character(1L), "alias", USE.NAMES = FALSE)
                      }
-                     symData <- lapply(names(private$sandboxViewConf), function(symName){
-                       ids <- names(private$sandboxViewConf[[symName]])
+                     symData <- lapply(names(private$scenViewConf[[scenId]]), function(symName){
+                       ids <- names(private$scenViewConf[[scenId]][[symName]])
                        return(list(rep.int(symName, length(ids)), ids))
                      })
                      viewsMetadata <- list(symName = NULL, symAlias = NULL, id = NULL)
@@ -161,36 +168,42 @@ Views <- R6Class("Views",
                      viewsMetadata[["id"]] <- viewsMetadata[["id"]][sortedSymIds]
                      return(viewsMetadata)
                    },
-                   removeConf = function(viewsToRemove){
+                   removeConf = function(viewsToRemove, scenId = "1"){
+                     scenId <- as.character(scenId)
                      if(!is.list(viewsToRemove) || !length(viewsToRemove)){
                        return(invisible(self))
                      }
                      lapply(viewsToRemove, function(viewToRemove){
-                       private$removeView(viewToRemove[1], viewToRemove[2])
+                       private$removeView(viewToRemove[1], viewToRemove[2], scenId)
                      })
-                     private$markUnsaved()
+                     if(identical(scenId, "1")){
+                       private$markUnsaved()
+                     }
                      
                      lapply(unique(vapply(viewsToRemove, "[[", character(1L), 1,
                                           USE.NAMES = FALSE)),
                             function(symName){
-                              if(symName %in% names(private$updateCallbacks)){
-                                private$updateCallbacks[[symName]]()
+                              if(symName %in% names(private$updateCallbacks[[scenId]])){
+                                private$updateCallbacks[[scenId]][[symName]]()
                               }
                             })
                      return(invisible(self))
                    },
-                   clearConf = function(){
-                     viewsToRemove <- names(private$sandboxViewConf)
+                   clearConf = function(scenId = "1"){
+                     scenId <- as.character(scenId)
+                     viewsToRemove <- names(private$scenViewConf[[scenId]])
                      if(!length(viewsToRemove)){
                        return(invisible(self))
                      }
-                     private$sandboxViewConf <- list()
+                     private$scenViewConf[[scenId]] <- list()
                      
-                     private$markUnsaved()
+                     if(identical(scenId, "1")){
+                       private$markUnsaved()
+                     }
                      lapply(viewsToRemove,
                             function(symName){
-                              if(symName %in% names(private$updateCallbacks)){
-                                private$updateCallbacks[[symName]]()
+                              if(symName %in% names(private$updateCallbacks[[scenId]])){
+                                private$updateCallbacks[[scenId]][[symName]]()
                               }
                             })
                      return(invisible(self))
@@ -202,25 +215,23 @@ Views <- R6Class("Views",
                        stop("Can not modify views in comparison mode.", call. = FALSE)
                      }
                      private$markUnsaved()
-                     if(!symName %in% names(private$sandboxViewConf)){
-                       private$sandboxViewConf[[symName]] <- list()
+                     if(!symName %in% names(private$scenViewConf[["1"]])){
+                       private$scenViewConf[["1"]][[symName]] <- list()
                      }
-                     private$sandboxViewConf[[symName]][[id]] <- viewConf
+                     private$scenViewConf[["1"]][[symName]][[id]] <- viewConf
                      return(invisible(self))
                    },
                    getIds = function(session){
                      symName <- private$getSymbolName(session)
-                     if(length(symName) == 2){
-                       if(!length(private$scenViewConf) ||
-                          !symName[[2]] %in% names(private$scenViewConf)){
-                         return(character())
-                       }
-                       return(names(private$scenViewConf[[symName[[2]]]][[symName[[1]]]]))
+                     if(length(symName) != 2){
+                       symName <- c(symName, "1")
                      }
-                     if(!symName %in% names(private$sandboxViewConf)){
+                     if(!length(private$scenViewConf) ||
+                        !symName[[2]] %in% names(private$scenViewConf) ||
+                        !symName[[1]] %in% names(private$scenViewConf[[symName[[2]]]])){
                        return(character())
                      }
-                     return(names(private$sandboxViewConf[[symName]]))
+                     return(names(private$scenViewConf[[symName[[2]]]][[symName[[1]]]]))
                    },
                    get = function(session, id = NULL){
                      if(length(id)){
@@ -228,23 +239,18 @@ Views <- R6Class("Views",
                      }
                      symName <- private$getSymbolName(session)
                      viewConfTmp <- NULL
-                     if(length(symName) == 2){
-                       if(!length(private$scenViewConf) ||
-                          !symName[[2]] %in% names(private$scenViewConf)){
-                         return()
-                       }
-                       viewConfTmp <- private$scenViewConf[[symName[[2]]]]
-                       if(!symName[[1]] %in% names(viewConfTmp)){
-                         return()
-                       }
-                       viewConfTmp <-viewConfTmp[[symName[[1]]]]
-                     }else{
-                       if(symName %in% names(private$sandboxViewConf)){
-                         viewConfTmp <- private$sandboxViewConf[[symName]]
-                       }else{
-                         return()
-                       }
+                     if(length(symName) != 2){
+                       symName <- c(symName, "1")
                      }
+                     if(!length(private$scenViewConf) ||
+                        !symName[[2]] %in% names(private$scenViewConf)){
+                       return()
+                     }
+                     viewConfTmp <- private$scenViewConf[[symName[[2]]]]
+                     if(!symName[[1]] %in% names(viewConfTmp)){
+                       return()
+                     }
+                     viewConfTmp <- viewConfTmp[[symName[[1]]]]
                      if(length(id)){
                        if(id %in% names(viewConfTmp)){
                          return(viewConfTmp[[id]])
@@ -261,31 +267,30 @@ Views <- R6Class("Views",
                        stop("Can not modify views in comparison mode.", call. = FALSE)
                      }
                      private$markUnsaved()
-                     if(symName %in% names(private$sandboxViewConf) &&
-                        id %in% names(private$sandboxViewConf[[symName]])){
-                       private$sandboxViewConf[[symName]][[id]] <- NULL
+                     if(symName %in% names(private$scenViewConf[["1"]]) &&
+                        id %in% names(private$scenViewConf[["1"]][[symName]])){
+                       private$scenViewConf[["1"]][[symName]][[id]] <- NULL
                        return(invisible(self))
                      }
                      stop(sprintf("View with id: %s does not exist, so it could not be removed.", id),
                           call. = FALSE)
                    }),
                  private = list(
-                   sandboxViewConf = list(),
-                   scenViewConf = list(),
+                   scenViewConf = list("1" = list()),
                    symbolAliases = NULL,
                    duplicatedViews = NULL,
                    invalidViews = NULL,
                    rv = NULL,
-                   removeView = function(symName, id){
-                     if(!symName %in% names(private$sandboxViewConf)){
+                   removeView = function(symName, id, scenId = "1"){
+                     if(!symName %in% names(private$scenViewConf[[scenId]])){
                        stop(sprintf("Could not remove view for symbol: %s as no views exist for this symbol.", symName),
                             call. = FALSE)
                      }
-                     if(!id %in% names(private$sandboxViewConf[[symName]])){
+                     if(!id %in% names(private$scenViewConf[[scenId]][[symName]])){
                        stop(sprintf("Could not remove view: %s for symbol: %s as no view with this id exists", id, symName),
                             call. = FALSE)
                      }
-                     private$sandboxViewConf[[symName]][[id]] <- NULL
+                     private$scenViewConf[[scenId]][[symName]][[id]] <- NULL
                      return(invisible(self))
                    }
                  )

@@ -273,8 +273,21 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
                                       msgProgress = lang$progressBar$loadScenDb)
       scriptDataTmp <- db$loadScriptResults(sidsToLoadVector,
                                             msgProgress = lang$progressBar$loadScenDb)
+      if(isInSolveMode){
+        viewsSids <- 1L
+      }else{
+        if(!isInSplitView){
+          viewsSids   <- which(!occupiedSidSlots)[seq_along(sidsToLoadVector)] + 3
+        }else{
+          if(loadInLeftBoxSplit){
+            viewsSids   <- 2L
+          }else{
+            viewsSids   <- 3L
+          }
+        }
+      }
       views$loadConf(db$importDataset(tableName = dbSchema$tabName[["_scenViews"]], 
-                                      subsetSids = sidsToLoadVector), isInSolveMode)
+                                      subsetSids = sidsToLoadVector), isInSolveMode, viewsSids)
     }, error = function(e){
       flog.error("Some error occurred loading scenarios: '%s' from database. Error message: %s.", 
                  paste(sidsToLoad, collapse = ", "), e)

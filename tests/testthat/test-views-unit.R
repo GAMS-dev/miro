@@ -21,14 +21,16 @@ FakeSession <- R6Class("FakeSession", public = list(
 views <- Views$new(c("in1", "widget1", "widget2", "in2"), c("out1", "out2", "out3"), c("in1", "in2"))
 
 test_that("Loading/Unloading configuration works", {
-  testViewData <- tibble("_sid" = c(1, 1, 1, 2, 3), 
-                         symName = c("in1", "in1", "in3", "in2", "out2"),
-                         id = c("view1", "view2", "view3", "view4", "view5"),
+  testViewData <- tibble("_sid" = c(1, 1, 1, 5, 6, 7, 7), 
+                         symName = c("in1", "in1", "in3", "in2", "out2", "out2", "out2"),
+                         id = c("view1", "view2", "view3", "view4", "view5", "view5", "view6"),
                          data = c('{"rows":["bla","blubb"]}', '{"cols":["bla","blubb"]}',
                                   '{"rows":["ayaya","dudud"]}', '{"filter":["bla","blubb"]}',
-                                  '{"aggregations":["gagaga","blubb"]}'))
+                                  '{"aggregations":["gagaga","blubb"]}',
+                                  '{"aggregations":["gagaga","blubb"]}',
+                                  '{"filter":["bla","blubb"]}'))
   expect_error(views$loadConf(testViewData))
-  expect_error(views$loadConf(testViewData, sandbox = FALSE), NA)
+  expect_error(views$loadConf(testViewData, sandbox = FALSE, scenIds = c(1,2,3,0)), NA)
   expect_error(views$loadConf(testViewData[1:3, ]), NA)
   expect_output(views$loadConf(testViewData[1:3, ]))
   expect_identical(views$getConf(), testViewData[1:3, -1])
@@ -65,9 +67,14 @@ test_that("Adding configuration works", {
 
 test_that("Removing configuration works", {
   fakeSessionIn1 <- FakeSession$new("in_1")
+  fakeSessionScen0Out2 <- FakeSession$new("tab_0_2")
   
   expect_error(views$removeConf(list(c("in1", "view1"))), NA)
+  expect_error(views$removeConf(list(c("out2", "view1")), scenId = "0"))
+  expect_error(views$get(fakeSessionScen0Out2, "view5"), NA)
+  expect_error(views$removeConf(list(c("out2", "view5")), scenId = "0"), NA)
   expect_error(views$get(fakeSessionIn1, "view1"))
+  expect_error(views$get(fakeSessionScen0Out2, "view5"))
   expect_identical(views$get(fakeSessionIn1, "view2"),
                    list(cols = list("bla","blubb")))
 })
@@ -80,6 +87,10 @@ test_that("Adding configuration works", {
                           id = c("view2", "view3"),
                           data = c('{"cols":["bla","blubb"]}',
                                    '{"rows":["ayaya","dudud"]}')))
+  expect_identical(views$getConf(scenId = "0"),
+                   tibble(symName = c("out2"),
+                          id = c("view6"),
+                          data = c('{"filter":["bla","blubb"]}')))
   expect_output(views$addConf(list(in10 = list(new1 = list(a = "b"),
                                                view2 = list(b = "c")))))
   expect_identical(views$getInvalidViews(), "in10")
@@ -89,6 +100,8 @@ test_that("Adding configuration works", {
   expect_identical(views$getInvalidViews(), NULL)
   expect_identical(views$getDuplicatedViews(),
                    list(in1 = "view2"))
+  expect_error(views$addConf(list(in1 = list(new3 = list(a = "b"),
+                                             new4 = list(b = "c"))), scenId = "0"), NA)
   expect_identical(views$getConf(),
                    tibble(symName = c("in1", "in1", "in3", "out3"),
                           id = c("view2", "new1", "view3", "bla"),
@@ -96,6 +109,12 @@ test_that("Adding configuration works", {
                                    '{"a":"b"}',
                                    '{"rows":["ayaya","dudud"]}',
                                    '{"cols":["bla","bli","blubb"]}')))
+  expect_identical(views$getConf(scenId = "0"),
+                   tibble(symName = c("out2", "in1", "in1"),
+                          id = c("view6", "new3", "new4"),
+                          data = c('{"filter":["bla","blubb"]}',
+                                   '{"a":"b"}',
+                                   '{"b":"c"}')))
 })
 
 test_that("Get Configuration JSON works", {
@@ -110,6 +129,9 @@ test_that("Get Configuration JSON works", {
                              class = "json"))
   expect_identical(views$getJSON(list(c("in1", "new1"), c("in3", "view3"), c("in4", "nono"))),
                    structure('{"in1":{"new1":{"a":"b"}},"in3":{"view3":{"rows":["ayaya","dudud"]}}}',
+                             class = "json"))
+  expect_identical(views$getJSON(scenId = "0"),
+                   structure('{"out2":{"view6":{"filter":["bla","blubb"]}},"in1":{"new3":{"a":"b"},"new4":{"b":"c"}}}',
                              class = "json"))
 })
 
@@ -186,6 +208,14 @@ test_that("Getting views summary works", {
                         symAlias = c("output 1", "output 2", "output 2",
                                      "output 3", "input 1", "input 1", "input 2", "in3"),
                         id = c("new1", "new1", "new2", "bla", "view2", "view1", "burriko", "view3")))
+  expect_identical(views$getSummary(list(in1 = list(alias = "input 1"),
+                                         in2 = list(alias = "input 2")),
+                                    list(out1 = list(alias = "output 1"),
+                                         out2 = list(alias = "output 2"),
+                                         out3 = list(alias = "output 3")), scenId = "0"),
+                   list(symName = c("out2", "in1", "in1"),
+                        symAlias = c("output 2", "input 1", "input 1"),
+                        id = c("view6", "new3", "new4")))
 })
 
 test_that("Duplicating sandbox configuration works", {
@@ -202,5 +232,8 @@ test_that("Duplicating sandbox configuration works", {
 test_that("Clearing configuration works", {
   expect_error(views$clearConf(), NA)
   expect_identical(views$getConf(),
+                   tibble())
+  expect_error(views$clearConf(scenId = "0"), NA)
+  expect_identical(views$getConf(scenId = "0"),
                    tibble())
 })

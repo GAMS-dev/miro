@@ -65,6 +65,7 @@ observeEvent(input[["btScenClose"]],{
   occupiedSidSlots[scenId - 3]<<- FALSE
   rv$scenId                   <<- scenId
   sidCompOrder                <<- sidCompOrder[-which(sidCompOrder == scenId)]
+  views$clearConf(scenId)
   if(!numberScenTabs){
     showEl(session, "#no-scen")
   }else if(numberScenTabs == 1){
