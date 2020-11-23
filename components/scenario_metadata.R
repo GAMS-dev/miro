@@ -12,7 +12,7 @@ ScenarioMetadata <- R6Class("ScenarioMetadata",
                                 if(length(symName) == 2){
                                   stop("Cannot register callbacks in comparison mode.", call. = FALSE)
                                 }
-                                private$updateCallbacks[[symName]] <- callback
+                                private$updateCallbacks[["1"]][[symName]] <- callback
                               },
                               isReadonly = function(session){
                                 if(length(private$getSymbolName(session)) == 2){
@@ -25,7 +25,7 @@ ScenarioMetadata <- R6Class("ScenarioMetadata",
                               tabularInputSymbols = NULL,
                               outputSymbols = NULL,
                               rv = NULL,
-                              updateCallbacks = list(),
+                              updateCallbacks = list("1" = list()),
                               getSymbolName = function(session){
                                 id <- strsplit(session$ns(""), "-", fixed = TRUE)[[1]]
                                 if(identical(id[1], "data")){

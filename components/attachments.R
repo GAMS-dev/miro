@@ -103,7 +103,7 @@ Attachments <- R6Class("Attachments",
                                            "File already exists", call. = FALSE)
                              }else if(is.na(pathIsDir) && is.null(fullPath) &&
                                       identical(tools::file_path_sans_ext(basename(filePaths)),
-                                                 basename(filePaths))){
+                                                basename(filePaths))){
                                fullPath <- FALSE
                              }
                            }else if(isFALSE(overwrite) && any(!is.na(pathIsDir))){
@@ -178,7 +178,7 @@ Attachments <- R6Class("Attachments",
                                            "Some of the files already exist and overwrite is set to FALSE", call. = FALSE)
                              existingFileNames <- existingFileNames[!existingFileNames %in% fileNames]
                              private$.remove(fileNames[fnToOverwrite], 
-                                            removeLocal = FALSE)
+                                             removeLocal = FALSE)
                            }
                            
                            if(length(existingFileNames) + length(filePaths) > private$config[["maxNo"]]){
@@ -210,8 +210,8 @@ Attachments <- R6Class("Attachments",
                            private$localAttachments$execPerm  <- c(private$localAttachments$execPerm, execPerm)
                            
                            private$markUnsaved()
-                           lapply(names(private$updateCallbacks), function(symName){
-                             private$updateCallbacks[[symName]]()
+                           lapply(names(private$updateCallbacks[["1"]]), function(symName){
+                             private$updateCallbacks[["1"]][[symName]]()
                            })
                            invisible(self)
                          },
@@ -425,8 +425,8 @@ Attachments <- R6Class("Attachments",
                              fileNames <- fileNames[!is.na(localFileIds)]
                              if(!length(fileNames)){
                                private$markUnsaved()
-                               lapply(names(private$updateCallbacks), function(symName){
-                                 private$updateCallbacks[[symName]]()
+                               lapply(names(private$updateCallbacks[["1"]]), function(symName){
+                                 private$updateCallbacks[["1"]][[symName]]()
                                })
                                return(invisible(self))
                              }
@@ -468,8 +468,8 @@ Attachments <- R6Class("Attachments",
                            private$localAttachments$execPerm[localFileIds]  <- execPerm
                            
                            private$markUnsaved()
-                           lapply(names(private$updateCallbacks), function(symName){
-                             private$updateCallbacks[[symName]]()
+                           lapply(names(private$updateCallbacks[["1"]]), function(symName){
+                             private$updateCallbacks[["1"]][[symName]]()
                            })
                            
                            invisible(self)
@@ -499,8 +499,8 @@ Attachments <- R6Class("Attachments",
                            private$.remove(fileNames, removeLocal)
                            
                            private$markUnsaved()
-                           lapply(names(private$updateCallbacks), function(symName){
-                             private$updateCallbacks[[symName]]()
+                           lapply(names(private$updateCallbacks[["1"]]), function(symName){
+                             private$updateCallbacks[["1"]][[symName]]()
                            })
                            return(invisible(self))
                          },

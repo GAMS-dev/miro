@@ -117,6 +117,7 @@ observeEvent(input$btScenSplit1_close, {
   scalarData[[scenIdLong]]                           <<- list(NULL)
   scenMetaData[[scenIdLong]]                         <<- list(NULL)
   sidsInSplitComp[1]                                 <<- 0L
+  views$clearConf("2")
   
   # show button and hide content
   hideEl(session, "#scenSplit1_content")
@@ -135,6 +136,7 @@ observeEvent(input$btScenSplit2_close, {
   scalarData[[scenIdLong]]                           <<- list(NULL)
   scenMetaData[[scenIdLong]]                         <<- list(NULL)
   sidsInSplitComp[2]                                 <<- 0L
+  views$clearConf("3")
   
   # show button and hide content
   hideEl(session, "#scenSplit2_content")
