@@ -636,6 +636,14 @@
                                               <p>Views can also be <a href="#startup-import" class = "scrollto">imported automatically</a> when a MIRO application is started by placing the JSON file(s) in the folder data_&lt;modelname&gt;. Note that views are always tied to a scenario. If you want to store views for a scenario called "my-scenario", you would have a GDX file called <kbd>my-scenario.gdx</kbd> as well as a views file called <kbd>my-scenario_views.json</kbd> inside the data_&lt;modelname&gt; directory. So the file name of the views must start with the name of the scenario you want to attach them to and end with <kbd>_views.json</kbd>.</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
+                                        <p>To get a more intuitive understanding of what a view is, the following videos give an example that leads through the most important aspects. With the <a href="./charts.html#pivot-chart">pivot table</a> renderer, we can filter and aggregate input and output data by dragging and dropping domains. The video below shows how a few actions draw a bar chart of the distances between canning plants and markets. By clicking the <code>Add View</code> button we can attach a view to the current scenario. This allows us to return to a configuration later in our analysis.</p>
+                                        <div class="section-block" style="text-align:left;padding-top:0pt;">
+                                            <img class="img-fluid gifplayer" style= "max-height:200pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/pivot_views_add.gif" alt="Create and export view" />
+                                        </div>
+                                        <p>We can import, download, and remove views by navigating to the <i>Scenario</i> &rarr; <i>Edit metadata</i> &rarr; <i>Views</i> dialog. By clicking the <i>Export</i> button, the selected views are saved in the <i>Download</i> folder as a JSON file that we can use to share them with others.</p>
+                                        <div class="section-block" style="text-align:left;padding-top:0pt;">
+                                            <img class="img-fluid gifplayer" style= "max-height:200pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/pivot_views_import.gif" alt="Import view" />
+                                        </div>
                                     </div>
                                     <div id="access-permissions"  class="section-block">
                                         <h3 class="block-title">Access permissions</h3>
@@ -772,6 +780,11 @@
     <script type="text/javascript" src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"></script>
     <script type="text/javascript" src="assets/plugins/markjs/jquery.mark.min.js"></script>
     <script type="text/javascript" src="assets/js/main.js"></script>
+    <!-- gifplayer plugin -->
+    <script type="text/javascript" src="assets/js/gifplayer.js"></script>
+    <script>
+        $('.gifplayer').gifplayer();
+    </script>
     <script type = "application/javascript">
        if (navigator.appVersion.indexOf("Mac")!==-1){
          $('#startMIRO a[href="#macos"]').tab('show')
