@@ -208,11 +208,6 @@ test_that("Callback functions work", {
 })
 
 test_that("Getting views summary works", {
-  views$getSummary(list(in1 = list(alias = "input 1"),
-                        in2 = list(alias = "input 2")),
-                   list(out1 = list(alias = "output 1"),
-                        out2 = list(alias = "output 2"),
-                        out3 = list(alias = "output 3")))
   expect_output(views$getSummary(list(in1 = list(alias = "input 1"),
                                       in2 = list(alias = "input 2")),
                                  list(out1 = list(alias = "output 1"),
@@ -244,8 +239,8 @@ test_that("Getting views summary works", {
                    list(symName = c("out1", "out2", "out2", "out3", "in1", "in1",
                                     "in2", "in3", "_pivotcomp_out1", "_pivotcomp_out1", "_pivotcomp_out2"),
                         symAlias = c("output 1", "output 2", "output 2",
-                                     "output 3", "input 1", "input 1", "input 2", "in3", "Pivot Compare: output 1",
-                                     "Pivot Compare: output 1", "Pivot Compare: output 2"),
+                                     "output 3", "input 1", "input 1", "input 2", "in3", "Pivot Comparison: output 1",
+                                     "Pivot Comparison: output 1", "Pivot Comparison: output 2"),
                         id = c("new1", "new1", "new2", "bla", "view2", "view1", "burriko", "view3", "pivot1", "pivot2",
                                "pivot3")))
   expect_identical(views$getSummary(list(in1 = list(alias = "input 1"),
@@ -256,6 +251,12 @@ test_that("Getting views summary works", {
                    list(symName = c("out2", "in1", "in1"),
                         symAlias = c("output 2", "input 1", "input 1"),
                         id = c("view6", "new3", "new4")))
+  expect_identical(views$getSummary(list(in1 = list(alias = "input 1"),
+                                         in2 = list(alias = "input 2")),
+                                    list(out1 = list(alias = "output 1"),
+                                         out2 = list(alias = "output 2"),
+                                         out3 = list(alias = "output 3")), scenId = "10"),
+                   list(symName = NULL, symAlias = NULL, id = NULL))
 })
 
 test_that("Duplicating sandbox configuration works", {

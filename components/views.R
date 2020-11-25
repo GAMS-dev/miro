@@ -153,7 +153,9 @@ Views <- R6Class("Views",
                      viewsMetadata <- list(symName = NULL, symAlias = NULL, id = NULL)
                      viewsMetadata[["symName"]] <- unlist(lapply(symData, "[[", 1L), use.names = FALSE)
                      viewsMetadata[["id"]]  <- unlist(lapply(symData, "[[", 2L), use.names = FALSE)
-                     
+                     if(!length(viewsMetadata[["symName"]])){
+                       return(list(symName = NULL, symAlias = NULL, id = NULL))
+                     }
                      symIds     <- match(viewsMetadata[["symName"]],
                                          private$getValidSymNames())
                      viewsMetadata[["symAlias"]] <- private$symbolAliases[symIds]
