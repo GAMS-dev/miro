@@ -21,7 +21,7 @@ renderScenPivotCompare <- function(scenData, scenNames, rendererEnv,
       scenTableId <- match(sheetName, outputDsNames)
       graphOptions <- list(resetOnInit = TRUE,
                            "_metadata_" = list(symname = sheetName,
-                                               headers = c(list("_scenName" = list(alias = lang$renderers$miroPivot$pivotCompScenColName,
+                                               headers = c(list("_scenName" = list(alias = lang$nav$scen$pivot$scenColName,
                                                                                    type = "string")),
                                                            ioConfig$modelOut[[sheetName]]$headers),
                                                symtype = ioConfig$modelOut[[sheetName]]$symtype))
@@ -30,7 +30,7 @@ renderScenPivotCompare <- function(scenData, scenNames, rendererEnv,
       if(!sheetName %in% names(ioConfig$modelIn[[sheetName]]) && identical(sheetName, scalarsFileName)){
         graphOptions <- list(resetOnInit = TRUE,
                              "_metadata_" = list(symname = sheetName,
-                                                 headers = c(list("_scenName" = list(alias = lang$renderers$miroPivot$pivotCompScenColName,
+                                                 headers = c(list("_scenName" = list(alias = lang$nav$scen$pivot$scenColName,
                                                                                      type = "string")),
                                                              list(scalar = list(alias = lang$nav$scalarAliases$cols$name,
                                                                                 type = "string"),
@@ -42,7 +42,7 @@ renderScenPivotCompare <- function(scenData, scenNames, rendererEnv,
       }else{
         graphOptions <- list(resetOnInit = TRUE,
                              "_metadata_" = list(symname = sheetName,
-                                                 headers = c(list("_scenName" = list(alias = lang$renderers$miroPivot$pivotCompScenColName,
+                                                 headers = c(list("_scenName" = list(alias = lang$nav$scen$pivot$scenColName,
                                                                                      type = "string")),
                                                              ioConfig$modelIn[[sheetName]]$headers),
                                                  symtype = ioConfig$modelIn[[sheetName]]$symtype))
