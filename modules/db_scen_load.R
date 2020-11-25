@@ -245,12 +245,12 @@ observeEvent(input$btRefreshComp, {
 # load scenario confirmed
 observeEvent(input$btLoadScenConfirm, {
   flog.debug("Confirm load scenario button clicked.")
+  sandboxScenId <- NULL
   if(identical(isolate(input$sidebarMenuId), "scenarios") &&
      identical(isolate(input$tabsetLoadScen), "loadScenUI")){
     scenSelected <- isolate(input$selLoadScenUI)
   }else{
     scenSelected <- isolate(input$selLoadScen)
-    sandboxScenId <- NULL
     if(!LAUNCHHCUBEMODE){
       if(is.null(input$btSplitView) && identical(config$defCompMode, "pivot") ||
          identical(input$btSplitView, "pivotView")){
