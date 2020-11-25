@@ -1141,21 +1141,22 @@ Worker <- R6Class("Worker", public = list(
                  write_disk(resultsPath), 
                  add_headers(Authorization = private$authHeader,
                              Timestamp = as.character(Sys.time(), usetz = TRUE)),
-                 timeout(1000L)),
+                 timeout(36000)),
       error = function(e){
         timeout <<- TRUE
       })
     if(timeout){
       return(-100L)
     }
-    for(text_entity in c(paste0(private$metadata$modelNameRaw, ".log"),
-                         private$metadata$text_entities)){
-      tryCatch(private$readRemoteTextEntity(text_entity, jID, workDir = workDir),
-               error = function(e){
-                 warning(sprintf("Problems fetching text entity: '%s'. Error message: '%s'.", 
-                                 text_entity, conditionMessage(e)))
-               })
-    }
+    tryCatch(private$validateAPIResponse(
+      DELETE(url = paste0(private$metadata$url, "/jobs/", jID, "/result"),
+             add_headers(Authorization = private$authHeader,
+                         Timestamp = as.character(Sys.time(), usetz = TRUE)),
+             timeout(4L))),
+      error = function(e){
+        warning(sprintf("Problems removing job results of job: '%s'. Error message: '%s'.", 
+                        jID, conditionMessage(e)))
+      })
     
     if(identical(status_code(ret), 200L)){
       unzip(resultsPath, exdir = workDir)
