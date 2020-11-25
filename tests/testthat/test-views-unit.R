@@ -18,6 +18,8 @@ FakeSession <- R6Class("FakeSession", public = list(
   id = NULL
 ))
 
+lang <<- list(nav = list(scen = list(pivot = list(viewPrefix = "Pivot Comparison:"))))
+
 views <- Views$new(c("in1", "widget1", "widget2", "in2"), c("out1", "out2", "out3"), c("in1", "in2"))
 
 test_that("Loading/Unloading configuration works", {
