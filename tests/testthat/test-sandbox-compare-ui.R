@@ -22,7 +22,7 @@ file.copy2(file.path(testDir, "data", "transport.gdx"),
            file.path(modelDataPath, "default3.gdx"))
 file.copy2(file.path(testDir, "data", "transport.gdx"),
            file.path(modelDataPath, "default4.gdx"))
-test_that("Loading scenarios works",
+test_that("Loading sandbox scenarios works",
           expect_pass(testApp(file.path(testDir, ".."), "sandbox_compare_test",
                               compareImages = FALSE)))
 unlink(modelDataPath, recursive = TRUE, force = TRUE)
