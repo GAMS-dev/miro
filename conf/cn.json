@@ -96,7 +96,7 @@
     "scen":{
       "noScen":"未选择任何场景",
       "btLoad": "加载",
-      "scenNameSandboxSuffix": " (Sandbox)",
+      "scenNameSandboxSuffix": "(沙盒)",
       "tooltips":{
         "btExport":"导出场景",
         "btTableView":"切换视图",

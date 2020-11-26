@@ -96,7 +96,7 @@
     "scen":{  
       "noScen":"Kein Szenario ausgewählt",
       "btLoad":"Laden",
-      "scenNameSandboxSuffix": " (Sandbox)",
+      "scenNameSandboxSuffix": "(Sandbox)",
       "tooltips":{  
         "btExport":"Exportiere Szenariodaten",
         "btTableView":"Ansicht wechseln",
