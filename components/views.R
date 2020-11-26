@@ -18,6 +18,10 @@ Views <- R6Class("Views",
                      invalidViews <- !names(cleanViewConf) %in% private$getValidSymNames()
                      if(any(invalidViews)){
                        private$invalidViews <- names(cleanViewConf)[invalidViews]
+                       private$invalidViews[startsWith(private$invalidViews, "_pivotcomp_")] <-
+                         substring(private$invalidViews[startsWith(private$invalidViews, "_pivotcomp_")],
+                                   12)
+                       private$invalidViews <- unique(private$invalidViews)
                        flog.info("Invalid view configs found. Symbol(s): %s do not exist.",
                                  private$invalidViews)
                        cleanViewConf <- cleanViewConf[!invalidViews]

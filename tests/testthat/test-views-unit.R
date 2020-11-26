@@ -100,7 +100,8 @@ test_that("Adding configuration works", {
                           id = c("view6"),
                           data = c('{"filter":["bla","blubb"]}')))
   expect_output(views$addConf(list(in10 = list(new1 = list(a = "b"),
-                                               view2 = list(b = "c")))))
+                                               view2 = list(b = "c")),
+                                   `_pivotcomp_in10` = list(bla = list(u = "i")))))
   expect_identical(views$getInvalidViews(), "in10")
   expect_error(views$addConf(list(in1 = list(new1 = list(a = "b"),
                                              view2 = list(b = "c")),
