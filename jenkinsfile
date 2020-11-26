@@ -1,0 +1,311 @@
+pipeline {
+    agent none
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '4'))
+        parallelsAlwaysFailFast()
+        disableConcurrentBuilds()
+        gitLabConnection('GAMS GitLab')
+        gitlabBuilds(builds: ['build', 'test'])
+    }
+
+    stages {
+        stage('Skip build check') {
+            agent { label 'docker' }
+            steps {
+                catchError {
+                    sh '''#!/bin/bash -xe
+                        COMMIT_AUTHOR=$(git show -s --format=%an $GIT_COMMIT)
+                        if [ "$COMMIT_AUTHOR" = "jenkins" ]; then
+                            echo "Skipping build";
+                            exit 1
+                        fi
+                    '''
+                }
+                step([$class: 'WsCleanup'])
+            }
+            post {
+                failure {
+                    script {currentBuild.result = 'ABORTED'}
+                    error('Aborting build')
+                }
+            }
+        }
+        stage('Build') {
+            parallel {
+                stage ('linux') {
+                    agent { label 'docker' }
+                    steps {
+                        sh '''
+                               yarn install --non-interactive
+                               ./build/scripts/update-licenses.sh
+                               yarn dist
+                        '''
+                        script{
+                            if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
+                                sh '''
+                                    yarn docker-build
+                                '''
+                            }
+                        }
+                        sshagent(['a2576ca5-f8e0-4e28-9d42-b0c5603b213d']) {
+                            sh '''#!/bin/bash
+                               git status
+                               git add ./main.js ./package.json ./scripts/globals.R
+                               git status
+                               git config user.name 'jenkins'
+                               git config user.email 'jenkins@berlin.noreply.gams.com'
+                               git checkout -B $BRANCH_NAME
+                               git commit -m "[Jenkins CI] Update version number and package list" || {
+                                 true
+                               } && {
+                                   set +x
+                                   export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+                                   git push origin HEAD:$BRANCH_NAME
+                                   set -x
+                               }
+                               git status
+                               git add ./LICENSE_Launcher.txt
+                               git status
+                               git commit -m "[Jenkins CI] Update third-party licenses" || {
+                                 true
+                               } && {
+                                   set +x
+                                   export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+                                   git push origin HEAD:$BRANCH_NAME
+                                   set -x
+                               }
+                            '''
+                        }
+                    }
+                }
+                stage ('windowsX64') {
+                    agent { label 'windowsX64' }
+                    steps {
+                        withCredentials([certificate(aliasVariable: '', credentialsId: '302df092-b329-47b9-8f7a-605da075126d', keystoreVariable: 'WIN_CERT_FILE', 
+                            passwordVariable: 'CSC_KEY_PASSWORD')]) {
+                                bat '''
+                                   yarn install --non-interactive
+                                '''
+                                bat '''
+                                   copy %WIN_CERT_FILE% cert.p12
+                                   set CSC_LINK=cert.p12
+                                   echo %CSC_LINK%
+                                   yarn dist
+                                '''
+                            }
+                    }
+                }
+                stage ('macos') {
+                    agent { label 'macos' }
+                    steps {
+                        gitlabCommitStatus(name: 'build') {
+                            sh '''
+                               yarn install --non-interactive
+                            '''
+                            withCredentials([usernamePassword(credentialsId: '4568bda5-894f-4fa1-b9c5-a8d42f6e61ac', passwordVariable: 'APPLEIDPASS', usernameVariable: 'APPLEID'),
+                                string(credentialsId: '2e590f95-5e30-4101-93be-31a1b7402da4', variable: 'MACOS_KEYCHAIN_PASSWD')]) {
+                                sh '''
+                                   security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWD}
+                                   yarn dist
+                                '''
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Test') {
+            parallel {
+                stage ('windowsX64') {
+                    agent { label 'windowsX64' }
+                    options {
+                        skipDefaultCheckout()
+                    }
+                    steps {
+                        withCredentials([file(credentialsId: 'MIRO_TEST_GAMS_LICE', variable: 'MIRO_TEST_GAMS_LICE'),
+                                         usernamePassword(credentialsId: '9753687d-1cfe-473d-a4be-eb0273f82ff8', passwordVariable: 'ENGINE_PASSWORD', usernameVariable: 'ENGINE_USER'),
+                                         usernamePassword(credentialsId: '26442d03-76b8-4cc0-b614-9e9fcdb44a88', passwordVariable: 'MIRO_REPORTER_PASS', usernameVariable: 'MIRO_REPORTER_USER')]) {
+                            withEnv(['ENGINE_NS=tests', 'ENGINE_URL=https://miro.gams.com/engine/api', 'MIRO_REPORTER_URL=https://miro.gams.com/miro-perf/']) {
+                                bat '''
+                                   yarn test gams_sys_dir="%GAMS_CORE_PATH%"
+                                '''
+                            }
+                        }
+                        junit allowEmptyResults: true, testResults: 'src/test-out.xml'
+                    }
+                }
+                stage ('macos') {
+                    agent { label 'macos' }
+                    options {
+                        skipDefaultCheckout()
+                    }
+                    steps {
+                        gitlabCommitStatus(name: 'test') {
+                            withCredentials([file(credentialsId: 'MIRO_TEST_GAMS_LICE', variable: 'MIRO_TEST_GAMS_LICE'),
+                                             usernamePassword(credentialsId: '9753687d-1cfe-473d-a4be-eb0273f82ff8', passwordVariable: 'ENGINE_PASSWORD', usernameVariable: 'ENGINE_USER'),
+                                             usernamePassword(credentialsId: '26442d03-76b8-4cc0-b614-9e9fcdb44a88', passwordVariable: 'MIRO_REPORTER_PASS', usernameVariable: 'MIRO_REPORTER_USER')]) {
+                                withEnv(['ENGINE_NS=tests', 'ENGINE_URL=https://miro.gams.com/engine/api', 'MIRO_REPORTER_URL=https://miro.gams.com/miro-perf/', 'LC_ALL=en_US.UTF-8']) {
+                                    sh '''
+                                       yarn test gams_sys_dir=${GAMS_CORE_PATH}
+                                    '''
+                                }
+                            }
+                            junit allowEmptyResults: true, testResults: 'src/test-out.xml'
+                        }
+                        script {
+                            if (currentBuild.result == 'UNSTABLE') {
+                                updateGitlabCommitStatus name: 'test', state: 'failed'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            parallel {
+                stage ('linux') {
+                    agent { label 'docker' }
+                    options {
+                        skipDefaultCheckout()
+                    }
+                    steps {
+                        script{
+                            if (env.BRANCH_NAME == 'master' && currentBuild.currentResult == "SUCCESS") {
+                                withCredentials([usernamePassword(credentialsId: 'dockerhub_login', passwordVariable: 'hub_pass', usernameVariable: 'hub_user')]){
+                                    sh '''
+                                        docker login hub.gams.com:443 --username="${hub_user}" --password="${hub_pass}"
+                                        yarn docker-publish
+                                    '''
+                                }
+                            } else if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
+                                withCredentials([usernamePassword(credentialsId: 'dockerhub_login', passwordVariable: 'hub_pass', usernameVariable: 'hub_user')]){
+                                    sh '''
+                                        docker login hub.gams.com:443 --username="${hub_user}" --password="${hub_pass}"
+                                        yarn docker-publish-unstable
+                                    '''
+                                }
+                            }
+                        }
+                        archiveArtifacts artifacts: 'dist/*.AppImage', fingerprint: true
+                    }
+                }
+                stage ('windowsX64') {
+                    agent { label 'windowsX64' }
+                    options {
+                        skipDefaultCheckout()
+                    }
+                    steps {
+                        archiveArtifacts artifacts: 'dist/*.exe', fingerprint: true
+                    }
+                }
+                stage ('macos') {
+                    agent { label 'macos' }
+                    options {
+                        skipDefaultCheckout()
+                    }
+                    steps {
+                        archiveArtifacts artifacts: 'dist/*.dmg', fingerprint: true
+                    }
+                }
+            }
+        }
+        stage('Deploy to CloudFront') {
+            agent { label 'master' }
+            when {
+                expression { return currentBuild.currentResult == "SUCCESS" }
+                branch 'master'
+            }
+            options {
+                skipDefaultCheckout()
+            }
+            steps {
+                sh '''
+                    rm -rf artifacts
+                    mkdir -p artifacts
+                '''
+                copyArtifacts filter: '**/*.AppImage, **/*.dmg, **/*.exe', fingerprintArtifacts: true, projectName: '${JOB_NAME}', selector: specific('${BUILD_NUMBER}'), target: 'artifacts'
+                withCredentials([string(credentialsId: 'b994bcd8-e2fe-4e97-9950-d7149bb51479', variable: 'S3_URL'),
+                    usernamePassword(credentialsId: '3582cc15-1a25-4121-9fc5-8f7242f21dc7', passwordVariable: 'S3_SECRET_KEY', usernameVariable: 'S3_ACCESS_KEY')]) {
+                    sh '''#!/bin/bash -xe
+                        ## change to artifact location
+                        pushd artifacts/dist > /dev/null
+
+                        ## get MIRO version information for artifact and tag name
+                        MIRO_VERSION=$(find * -name '*.AppImage'|grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+')
+                        MIRO_VERSION_MAJOR=$(echo $MIRO_VERSION | cut -f1 -d".")
+                        MIRO_VERSION_MINOR=$(echo $MIRO_VERSION | cut -f2 -d".")
+                        MIRO_VERSION_PATCH=$(echo $MIRO_VERSION | cut -f3 -d".")
+
+                        FOLDER_NAME="${MIRO_VERSION_MAJOR}.${MIRO_VERSION_MINOR}"
+
+                        mkdir -p $FOLDER_NAME
+
+                        ## move artifacts to correct location
+                        mkdir -p $FOLDER_NAME/linux
+                        mv *.AppImage $FOLDER_NAME/linux/GAMS-MIRO-${MIRO_VERSION_MAJOR}.${MIRO_VERSION_MINOR}.${MIRO_VERSION_PATCH}.AppImage
+
+                        mkdir -p $FOLDER_NAME/macosx
+                        mv *.dmg $FOLDER_NAME/macosx/GAMS-MIRO-${MIRO_VERSION_MAJOR}.${MIRO_VERSION_MINOR}.${MIRO_VERSION_PATCH}.dmg
+
+                        mkdir -p $FOLDER_NAME/windows
+                        mv *.exe $FOLDER_NAME/windows/GAMS-MIRO-Setup-${MIRO_VERSION_MAJOR}.${MIRO_VERSION_MINOR}.${MIRO_VERSION_PATCH}.exe
+
+                        ## S3 upload to gams.com
+                        s3cmd sync --acl-public ./ ${S3_URL} --access_key=${S3_ACCESS_KEY} --secret_key=${S3_SECRET_KEY}
+
+                        ## S3 content listing
+                        s3cmd ls -r ${S3_URL} --access_key=${S3_ACCESS_KEY} --secret_key=${S3_SECRET_KEY}
+
+                        popd > /dev/null
+                    '''
+                }
+            }
+        }
+        stage('Update documentation'){
+            agent { label 'docker' }
+            when {
+                expression { return currentBuild.currentResult == "SUCCESS" }
+                branch 'master'
+            }
+            steps {
+                sshagent(['a2576ca5-f8e0-4e28-9d42-b0c5603b213d']) {
+                    sh '''#!/bin/bash -xe
+                        MIRO_VERSION_FULL=$(grep -e '"version": .*' package.json |cut -f4 -d"\\"")
+                        pushd src > /dev/null
+                           MIRO_RELEASE_DATE=$(grep -m 1 -e 'MIRORDate' app.R | cut -f2 -d'"' | xargs -0 date +%Y-%m-%d -d )
+                        popd > /dev/null
+
+                        git config user.name 'jenkins'
+                        git config user.email 'jenkins@berlin.noreply.gams.com'
+                        git checkout -B $BRANCH_NAME
+
+                        git tag -a v${MIRO_VERSION_FULL} -m "version ${MIRO_VERSION_FULL}" || {
+                            git push origin :refs/tags/v${MIRO_VERSION_FULL}
+                            git tag -fa v${MIRO_VERSION_FULL} -m "version ${MIRO_VERSION_FULL}"
+                        }
+                        git push origin HEAD:$BRANCH_NAME || true
+                        git push origin v${MIRO_VERSION_FULL} || {
+                            git push origin :refs/tags/v${MIRO_VERSION_FULL}
+                            git push origin v${MIRO_VERSION_FULL}
+                        }
+
+                        git clone git@git.gams.com:smann/new.gams.com.git --single-branch
+                        pushd new.gams.com > /dev/null
+                        ls -la
+                        sed -i -e 's/^\\( *miro_release *= *\\).*/\\1"'"${MIRO_VERSION_FULL}"'"/' ./config.toml
+                        sed -i -e 's/^\\( *miro_release_date *= *\\).*/\\1'"${MIRO_RELEASE_DATE}"'/' ./config.toml
+                        git add config.toml
+                        git status
+                        git config user.name 'jenkins'
+                        git config user.email 'jenkins@berlin.noreply.gams.com'
+                        git commit -m "[Jenkins CI] Update MIRO version" && {
+                            git push origin HEAD:$BRANCH_NAME || true
+                        }
+                        popd > /dev/null
+                    '''
+                }
+            }
+        }
+    }
+}
