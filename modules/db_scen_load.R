@@ -256,7 +256,7 @@ observeEvent(input$btLoadScenConfirm, {
          identical(input$btSplitView, "pivotView")){
         scenSelected <- c("sandbox", scenSelected)
       }else{
-        sandboxScenIdTmp <- startsWith(scenSelected, "0_")
+        sandboxScenIdTmp <- startsWith(scenSelected, "-19_")
         if(any(sandboxScenIdTmp)){
           sandboxScenId <- which(sandboxScenIdTmp)[1]
         }
