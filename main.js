@@ -17,12 +17,12 @@ const miroVersion = '1.2.99';
 const miroRelease = 'Oct 5 2020';
 const libVersion = '1.1';
 const exampleAppsData = require('./components/example-apps.js')(miroVersion, requiredAPIVersion);
-const LangParser = require('./components/LangParser.js');
-const AppDataStore = require('./AppDataStore');
-const ConfigManager = require('./ConfigManager');
-const MiroDb = require('./MiroDb');
-const unzip = util.promisify(require('./Unzip'));
-const { randomPort, waitFor, isNull, isFalse } = require('./helpers');
+const LangParser = require('./components/LangParser');
+const AppDataStore = require('./components/AppDataStore');
+const ConfigManager = require('./components/ConfigManager');
+const MiroDb = require('./components/MiroDb');
+const unzip = util.promisify(require('./components/Unzip'));
+const { randomPort, waitFor, isNull, isFalse } = require('./components/helpers');
 
 const isMac = process.platform === 'darwin';
 const DEVELOPMENT_MODE = !app.isPackaged;

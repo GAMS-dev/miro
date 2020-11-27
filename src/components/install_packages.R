@@ -41,10 +41,8 @@ installAndRequirePackages <- function(requiredPackages, installedPackages, RLibP
         print(paste0("Installing: ", package[1]))
         if(length(package) == 1L){
           if(package %in% c("DBI", "chartjs")){
-            # those are not submodules
-            remotes::install_github(paste0("GAMS-dev/miro_desktop/r-src/", package),
-                                    dependencies = FALSE,
-                                    INSTALL_opts = '--no-multiarch')
+            install.packages(file.path("..", "r-src", package), repos = NULL, type="source",
+              dependencies = FALSE, INSTALL_opts = "--no-multiarch")
           }else{
             remotes::install_github(paste0("GAMS-dev/", if(identical(package, "gdxrrwMIRO")) "gdxrrw-miro" else package),
                                     dependencies = FALSE,

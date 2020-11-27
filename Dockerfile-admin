@@ -8,7 +8,7 @@ maintainer="fproske@gams.com"
 
 
 # copy MIRO admin app to the image
-COPY admin /home/miro/admin/
+COPY server/admin /home/miro/admin/
 
 WORKDIR /home/miro/admin
 

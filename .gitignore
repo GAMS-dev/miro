@@ -22,5 +22,5 @@ node_modules/
 dist/
 build/lib_devel
 .env
-/r
+r
 version

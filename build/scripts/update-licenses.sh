@@ -16,10 +16,10 @@ GAMS MIRO as a whole is distributed under GPL-3 (GNU GENERAL PUBLIC LICENSE vers
 The entire source code is available at: https://github.com/GAMS-dev/miro
 
 GAMS MIRO includes other open source software components. The following
-is a list of the components used for the Electron app to launch
+is a list of the components used for the MIRO Desktop Electron app to launch
 GAMS MIRO applications.
 Third-party software used in the R/Shiny part of GAMS MIRO can be found
-in a sepeare LICENSE filed located in src/LICENSE.
+in a sepeare LICENSE filed located in src/LICENSE or online at: https://gams.com/miro/license.html
 
 
 EOL
@@ -28,7 +28,7 @@ cat >>$LICENSE_FILE <<EOL
 
 
 EOL
-cat GPL-3.txt>>$LICENSE_FILE
+cat scripts/GPL-3.txt>>$LICENSE_FILE
 
 cat >allowed-licenses <<EOL
 (BSD-2-Clause OR MIT OR Apache-2.0)
