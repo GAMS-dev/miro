@@ -90,6 +90,7 @@ expect_chartjs("tab_0_3-miroPivot-pivotChart",
                  "default.Seattle",
                  "default3.San-Diego",
                  "default3.Seattle"))
+# click refresh button in pivot compare mode
 expect_true(app$waitFor("$('.box-title:visible button').eq(1).click();true;", timeout = 50))
 Sys.sleep(3)
 app$setInputs("tab_0_3-miroPivot-pivotRenderer" = "stackedbar")
@@ -103,4 +104,12 @@ expect_chartjs("tab_0_3-miroPivot-pivotChart",
                  "default3.San-Diego",
                  "default3.Seattle"))
 
+app$findElement(".btSplitView button")$click()
+app$findElements(".btSplitView a[data-view='tab']")[[1]]$click()
+Sys.sleep(0.5)
+expect_true(app$waitFor("$('#tab_5_8-scalarBoxes h3:contains(\"102\")').length>0", timeout = 50))
+# click refresh button in tab compare mode
+expect_true(app$waitFor("$('.scen-button:visible').eq(0).click();true;", timeout = 50))
+Sys.sleep(2)
+expect_true(app$waitFor("$('#tab_5_8-scalarBoxes h3:contains(\"22\")').length>0", timeout = 50))
 app$stop()
