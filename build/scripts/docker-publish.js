@@ -17,7 +17,7 @@ if ( clArgs[0] === '--unstable' ) {
     let miroVersion = 'unstable';
 
     if ( !unstableImages ) {
-        miroVersion = fs.readFileSync('version', 'utf8').trim();
+        miroVersion = JSON.parse(fs.readFileSync('package.json', 'utf8'))['version'].trim();
         try {
             const subproc =  execa('docker', [ 'tag', 'gamsmiro-ui', 'hub.gams.com/gamsmiro-ui' ]);
             subproc.stderr.pipe(process.stderr);
@@ -42,6 +42,10 @@ if ( clArgs[0] === '--unstable' ) {
         subprocAdmin.stderr.pipe(process.stderr);
         subprocAdmin.stdout.pipe(process.stderr);
         await subprocAdmin;
+        const subprocCi =  execa('docker', [ 'tag', 'gamsmiro-ci', `hub.gams.com/gamsmiro-ci:${miroVersion}` ]);
+        subprocCi.stderr.pipe(process.stderr);
+        subprocCi.stdout.pipe(process.stderr);
+        await subprocCi;
     } catch (e) {
         console.log(`Problems tagging docker image. Error message: ${e.message}`);
         process.exit(1);
@@ -72,6 +76,10 @@ if ( clArgs[0] === '--unstable' ) {
         subprocAdmin.stderr.pipe(process.stderr);
         subprocAdmin.stdout.pipe(process.stderr);
         await subprocAdmin;
+        const subprocCi =  execa('docker', [ 'push', `hub.gams.com/gamsmiro-ci:${miroVersion}` ]);
+        subprocCi.stderr.pipe(process.stderr);
+        subprocCi.stdout.pipe(process.stderr);
+        await subprocCi;
     } catch (e) {
         console.log(`Problems pushing docker image. Error message: ${e.message}`);
         process.exit(1);

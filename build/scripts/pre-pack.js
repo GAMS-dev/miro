@@ -118,6 +118,11 @@ const tryInstallRPackages = async (attempt = 0) => {
             subprocAdmin.stderr.pipe(process.stderr);
             subprocAdmin.stdout.pipe(process.stderr);
             await subprocAdmin;
+            const subprocCi =  execa('docker', [ 'build', '-t', 'gamsmiro-ci', '.' ],
+                {cwd: path.join('.', 'ci')});
+            subprocCi.stderr.pipe(process.stderr);
+            subprocCi.stdout.pipe(process.stderr);
+            await subprocCi;
         } catch (e) {
             console.log(`Problems building Docker images. Error message: ${e.message}`);
             process.exit(1);
