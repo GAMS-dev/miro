@@ -1,0 +1,180 @@
+#!/bin/bash
+
+install (){
+    [ -f .env ] || {
+        echo "No env file found. Please report to GAMS!"
+        exit 1
+    }
+    if ! grep -q "GMS_MIRO_ENGINE_HOST" .env; then
+        read -p 'Please enter GAMS MIRO Engine host: ' ENGINE_HOST
+        [ -z ${ENGINE_HOST} ] && {
+            echo "Invalid GAMS MIRO Engine host!"
+            exit 1
+        }
+        echo "GMS_MIRO_ENGINE_HOST=${ENGINE_HOST}">>.env
+    fi
+    if ! grep -q "GMS_MIRO_ENGINE_USER" .env; then
+        read -p 'Please enter GAMS MIRO Engine username (at least inviter role required): ' ENGINE_USER
+        [ -z ${ENGINE_USER} ] && {
+            echo "Invalid GAMS MIRO Engine username!"
+            exit 1
+        }
+        echo "GMS_MIRO_ENGINE_USER=${ENGINE_USER}">>.env
+    fi
+    if ! grep -q "GMS_MIRO_ENGINE_PWD" .env; then
+        read -sp 'Please enter the password of this user: ' ENGINE_PASS
+        [ -z ${ENGINE_PASS} ] && {
+            echo "Invalid GAMS MIRO Engine password!"
+            exit 1
+        }
+        echo
+        echo "GMS_MIRO_ENGINE_PWD=${ENGINE_PASS}">>.env
+    fi
+    if ! grep -q "GMS_MIRO_ENGINE_NS" .env; then
+        read -p 'Please enter namespace where this user is inviter on: ' ENGINE_NS
+        [ -z ${ENGINE_NS} ] && {
+            echo "Invalid GAMS MIRO Engine namespace!"
+            exit 1
+        }
+        echo "GMS_MIRO_ENGINE_NS=${ENGINE_NS}">>.env
+    fi
+
+    echo "You can change the GAMS MIRO Engine credentials at any time by modifying the \".env\" file."
+
+    echo "Installing GAMS MIRO server. Please wait..."
+
+    pull_images
+
+    [ -d ./logs ] || mkdir logs
+    chown -R 1000:1000 logs || {
+        echo "Could not change ownership of directory \"logs\". Check your permissions."
+        exit 1
+    }
+
+    [ -d ./data ] || mkdir data
+    cp -a data_raw/. data/ || {
+        echo "Failed to copy data files from \"data_raw\" to \"data\". Check your permissions."
+        exit 1
+    }
+    chown -R 1000:1000 data || {
+        echo "Could not change ownership of directory \"data\". Check your permissions."
+        exit 1
+    }
+
+    [ -d ./models ] || mkdir models
+    chown -R 1000:1000 models || {
+        echo "Could not change ownership of directory \"models\". Check your permissions."
+        exit 1
+    }
+
+    echo "GAMS MIRO server installed successfully! Use 'miro-compose start' to start now."
+    return 0
+}
+
+build (){
+    echo "Building custom MIRO Docker image"
+    docker build -t hub.gams.com/gamsmiro-ui:latest -f Dockerfile-extend-miro .
+}
+
+pull_images (){
+    echo "Pulling Docker images for GAMS MIRO Server"
+    docker-compose -f docker-compose.yml pull || exit 1
+}
+
+start (){
+    echo "Starting GAMS MIRO server"
+    docker-compose -f docker-compose.yml up -d || exit 1
+    echo "GAMS MIRO server started."
+}
+
+stop_proxies (){
+    local orphaned_adminc=$(docker container ls -f "network=miroserver-network" -f "ancestor=hub.gams.com/gamsmiro-admin" --format "{{.ID}}")
+    [ -z "${orphaned_adminc}" ] || {
+        docker stop ${orphaned_adminc}
+        docker rm ${orphaned_adminc}
+    }
+    
+    local orphaned_uic=$(docker container ls -f "network=miroserver-network" -f "ancestor=hub.gams.com/gamsmiro-ui" --format "{{.ID}}")
+    [ -z "${orphaned_uic}" ] || {
+        docker stop ${orphaned_uic}
+        docker rm ${orphaned_uic}
+    }
+}
+
+stop (){
+    echo "Stopping GAMS MIRO server"
+    stop_proxies
+    docker-compose -f docker-compose.yml down || exit 1
+    echo "GAMS MIRO server stopped."
+}
+
+restart (){
+    echo "Restarting GAMS MIRO server"
+    export COMPOSE_IGNORE_ORPHANS=True
+    docker-compose -f docker-compose.yml restart || exit 1
+    echo "GAMS MIRO server restarted."
+}
+
+uninstall (){
+    echo "Uninstalling GAMS MIRO server"
+    read -p 'Are you sure you want to remove all data of GAMS MIRO server? This cannot be undone! (yes)' uninstall_confirm
+    [ ${uninstall_confirm} != "yes" ] && {
+        echo "Uninstalling GAMS MIRO Server was interrupted."
+        exit 0
+    }
+    stop
+    docker-compose -f docker-compose.yml down -v || exit 1
+    rm -rf data models || {
+        echo "Could not remove \"data\" and/or \"models\" directory. Check your permissions"
+        exit 1
+    }
+    echo "GAMS MIRO server uninstalled."
+}
+
+case "$1" in
+        stop)
+            stop
+            exit 0
+            ;;
+
+        uninstall)
+            uninstall
+            exit 0
+            ;;
+
+        restart)
+            restart
+            exit 0
+            ;;
+
+        start)
+            start
+            exit 0
+            ;;
+
+        install)
+            install
+            exit 0
+          ;;
+
+        build)
+            build
+            exit 0
+          ;;
+
+        pull)
+            pull_images
+            exit 0
+            ;;
+
+        update)
+            echo "Updating GAMS MIRO Server"
+            pull_images
+            start
+            exit 0
+            ;;
+
+        *)
+            echo $"Usage: $0 install|build|start|stop|restart|pull|update|uninstall"
+            exit 1
+esac
