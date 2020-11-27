@@ -44,6 +44,10 @@ To start the application, run the following command from an R console:
 ```
 shiny::runApp(launch.browser=TRUE)
 ```
+or directly from the command line:
+```
+R -e "shiny::runApp(launch.browser=TRUE)"
+```
 
 ## Build Javascript/CSS
 We use Node.JS, npm and webpack to lint, bundle and minify Javascript and compile Less to CSS. You can install npm from [here](https://www.npmjs.com/get-npm). 
