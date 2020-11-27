@@ -65,9 +65,20 @@ pipeline {
                                    set -x
                                }
                                git status
-                               git add ./LICENSE_Launcher.txt
+                               git add ./LICENSE
                                git status
                                git commit -m "[Jenkins CI] Update third-party licenses" || {
+                                 true
+                               } && {
+                                   set +x
+                                   export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+                                   git push origin HEAD:$BRANCH_NAME
+                                   set -x
+                               }
+                               git status
+                               git add ./src/conf/language_schema.json
+                               git status
+                               git commit -m "[Jenkins CI] Update language schema" || {
                                  true
                                } && {
                                    set +x
