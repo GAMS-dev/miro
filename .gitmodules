@@ -1,4 +1,4 @@
-[submodule "shinyproxy"]
+[submodule "server/shinyproxy"]
 	path = server/shinyproxy
 	url = https://github.com/GAMS-dev/shinyproxy.git
 	branch = v2.1
