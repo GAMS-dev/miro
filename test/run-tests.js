@@ -36,7 +36,7 @@ if (typeof process.argv[2] === 'string' && process.argv[2].startsWith('gams_sys_
         if ( process.platform === 'win32' ) {
             rPath = path.join(__dirname, '..', 'r', 'bin', 'Rscript');
         }
-        const subproc =  execa(rPath, [ path.join(__dirname, '..', 'src', 'run_tests.R') ],
+        const subproc =  execa(rPath, [ path.join(__dirname, '..', 'src', 'tests', 'testthat.R') ],
             { env: { 'LIB_PATH': path.join(__dirname, '..', 'r', 'library'), 'GAMS_SYS_DIR': gamsSysDir},
             cwd: path.join(__dirname, '..', 'src')});
         subproc.stderr.pipe(process.stderr);

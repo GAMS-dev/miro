@@ -1,3 +1,9 @@
+RLibPath <- Sys.getenv("LIB_PATH")
+if(!identical(RLibPath, "")) {
+  .libPaths( c( RLibPath, .libPaths()) )
+}
+print(sessionInfo())
+
 library("testthat")
 library("stringi")
 library("tibble")
@@ -13,5 +19,10 @@ if(!dependenciesInstalled()){
   installDependencies()
 }
 
-#test_file("tests/testthat/test-gdxio-uni.R")
-test_dir("tests/testthat")
+reporter <- MultiReporter$new(list(
+    ProgressReporter$new(),
+    JunitReporter$new(file = "test-out.xml")
+))
+
+#test_file("tests/testthat/test-gdxio-unit.R")
+test_dir("tests/testthat", reporter = reporter)
