@@ -1,17 +1,16 @@
-'use strict'
 const { ipcRenderer, shell } = require('electron');
 const querystring = require('querystring');
 const $ = require('jquery');
 
 const globals = querystring.parse(global.location.search);
 
-$('#btClose').text(globals['btClose']);
+$('#btClose').text(globals.btClose);
 
 $('#btClose').on('click', () => {
-    ipcRenderer.send('close-window', 'about');
+  ipcRenderer.send('close-window', 'about');
 });
 
-const miroRelease = globals['miroRelease'];
+const { miroRelease } = globals;
 const copyrightYear = miroRelease.substr(miroRelease.length - 4);
 
 const aboutText = `<b>GAMS MIRO v.${globals['?miroVersion']}</b>&nbsp;&nbsp;<sup>(__HASH__)</sup><br/><br/>\

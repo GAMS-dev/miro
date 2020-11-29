@@ -1,21 +1,21 @@
-'use strict'
-const path = require("path");
-const fs = require("fs");
-const util = require("util");
-const yauzl = require("yauzl");
-const Transform = require("stream").Transform;
+const path = require('path');
+const fs = require('fs');
+const yauzl = require('yauzl');
+const { Transform } = require('stream');
 
 function mkdirp(dir, cb) {
-  if (dir === ".") return cb();
-  fs.stat(dir, function(err) {
+  if (dir === '.') return cb();
+  fs.stat(dir, (err) => {
     if (err == null) return cb(); // already exists
 
-    var parent = path.dirname(dir);
-    mkdirp(parent, function() {
-      process.stdout.write(dir.replace(/\/$/, "") + "/\n");
+    const parent = path.dirname(dir);
+    mkdirp(parent, () => {
+      process.stdout.write(`${dir.replace(/\/$/, '')}/\n`);
       fs.mkdir(dir, cb);
     });
+    return true;
   });
+  return true;
 }
 
 function unzip(zipname, destdir, callback) {
@@ -23,66 +23,68 @@ function unzip(zipname, destdir, callback) {
     if (err) throw err;
 
     // track when we've closed all our file handles
-    var handleCount = 0;
+    let handleCount = 0;
     function incrementHandleCount() {
-      handleCount++;
+      handleCount += 1;
     }
     function decrementHandleCount() {
-      handleCount--;
+      handleCount -= 1;
       if (handleCount === 0) {
-        console.log("all input and output handles closed");
+        process.stdout.write('all input and output handles closed');
       }
     }
 
     incrementHandleCount();
-    zipfile.on("close", function() {
-      console.log("closed input file");
+    zipfile.on('close', () => {
+      process.stdout.write('closed input file');
       decrementHandleCount();
     });
 
     zipfile.readEntry();
-    zipfile.on("entry", function(entry) {
+    zipfile.on('entry', (entry) => {
       if (/\/$/.test(entry.fileName)) {
         // directory file names end with '/'
-        mkdirp(path.join(destdir, entry.fileName), function() {
-          if (err) throw err;
+        mkdirp(path.join(destdir, entry.fileName), (e) => {
+          if (e) throw e;
           zipfile.readEntry();
         });
       } else {
         // ensure parent directory exists
-        mkdirp(path.join(destdir, path.dirname(entry.fileName)), function() {
-          zipfile.openReadStream(entry, function(err, readStream) {
-            if (err) throw err;
+        mkdirp(path.join(destdir, path.dirname(entry.fileName)), () => {
+          zipfile.openReadStream(entry, (e, readStream) => {
+            if (e) throw e;
             // report progress through large files
-            var byteCount = 0;
-            var totalBytes = entry.uncompressedSize;
-            var lastReportedString = byteCount + "/" + totalBytes + "  0%";
-            process.stdout.write(entry.fileName + "..." + lastReportedString);
+            let byteCount = 0;
+            const totalBytes = entry.uncompressedSize;
+            let lastReportedString = `${byteCount}/${totalBytes}  0%`;
+            process.stdout.write(`${entry.fileName}...${lastReportedString}`);
             function reportString(msg) {
-              var clearString = "";
-              for (var i = 0; i < lastReportedString.length; i++) {
-                clearString += "\b";
+              let clearString = '';
+              for (let i = 0; i < lastReportedString.length; i += 1) {
+                clearString += '\b';
                 if (i >= msg.length) {
-                  clearString += " \b";
+                  clearString += ' \b';
                 }
               }
               process.stdout.write(clearString + msg);
               lastReportedString = msg;
             }
             // report progress at 60Hz
-            var progressInterval = setInterval(function() {
-              reportString(byteCount + "/" + totalBytes + "  " + ((byteCount / totalBytes * 100) | 0) + "%");
+            const progressInterval = setInterval(() => {
+              reportString(`${byteCount}/${totalBytes}  ${((byteCount / totalBytes) * 100) || 0}%`);
             }, 1000 / 60);
-            var filter = new Transform();
-            filter._transform = function(chunk, encoding, cb) {
+            const filter = new Transform();
+            // eslint-disable-next-line no-underscore-dangle
+            filter._transform = (chunk, encoding, cb) => {
               byteCount += chunk.length;
               cb(null, chunk);
             };
-            filter._flush = function(cb) {
+            // eslint-disable-next-line no-underscore-dangle
+            filter._flush = (cb) => {
               clearInterval(progressInterval);
-              reportString("");
+              reportString('');
               // delete the "..."
-              process.stdout.write("\b \b\b \b\b \b\n");
+              process.stdout.write('\b \b\b \b\b \b\n');
               cb();
               zipfile.readEntry();
             };
@@ -90,14 +92,14 @@ function unzip(zipname, destdir, callback) {
             // pump file contents
             const writeStream = fs.createWriteStream(path.join(destdir, entry.fileName));
             incrementHandleCount();
-            writeStream.on("close", decrementHandleCount);
+            writeStream.on('close', decrementHandleCount);
             readStream.pipe(filter).pipe(writeStream);
           });
         });
       }
     });
-    zipfile.once("end", callback);
+    zipfile.once('end', callback);
   }
-  yauzl.open(zipname, {lazyEntries: true}, handleZipFile);
+  yauzl.open(zipname, { lazyEntries: true }, handleZipFile);
 }
-module.exports = unzip
+module.exports = unzip;
