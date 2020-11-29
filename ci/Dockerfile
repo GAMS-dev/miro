@@ -25,6 +25,15 @@ RUN R -e "install.packages(c('testthat', 'shinytest', 'xml2'));"
 # need to install Rcpp, plogr, BH again as we removed header files in miroui image
 RUN R -e "install.packages(c('Rcpp', 'plogr', 'BH', 'RSQLite'))"
 
+# install nodejs, yarn and eslint
+RUN apt-get update && apt-get install -y curl
+RUN curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+RUN apt-get install -y nodejs
+RUN wget --quiet -O - /tmp/pubkey.gpg https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+RUN apt-get update && apt-get install -y yarn
+RUN yarn global add eslint
+
 RUN groupadd -g 1001 miroci && \
     useradd -r -u 1001 -g miroci miroci
 
