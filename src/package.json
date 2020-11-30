@@ -1,0 +1,62 @@
+{
+  "name": "gams-miro",
+  "version": "1.0.0",
+  "description": "GAMS MIRO",
+  "main": "miro.js",
+  "scripts": {
+    "build": "webpack --progress --mode=production",
+    "watch": "webpack --progress --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.gams.com:fproske/gmswebui.git"
+  },
+  "author": "GAMS Development Corp.",
+  "license": "GPL-3.0",
+  "browserslist": {
+    "production": [
+      ">0.25%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": []
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.11.4",
+    "@babel/node": "^7.10.5",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/preset-env": "^7.11.0",
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.1.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "css-loader": "^3.6.0",
+    "eslint": "^7.7.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-loader": "^4.0.2",
+    "eslint-plugin-import": "^2.22.0",
+    "file-loader": "^6.0.0",
+    "less": "^3.12.2",
+    "less-loader": "^6.2.0",
+    "mini-css-extract-plugin": "^0.9.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.4",
+    "remove-files-webpack-plugin": "^1.4.3",
+    "style-loader": "^1.2.1",
+    "terser-webpack-plugin": "^3.1.0",
+    "uglify-js": "^3.10.2",
+    "url-loader": "^4.1.0",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
+  },
+  "dependencies": {
+    "autonumeric": "^4.6.0",
+    "core-js": "^3.6.5",
+    "jquery": "^3.5.1",
+    "jquery-slimscroll": "^1.3.8",
+    "regenerator-runtime": "^0.13.7"
+  }
+}

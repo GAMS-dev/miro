@@ -1,0 +1,18 @@
+dependencies:
+  - name: Moment.js
+    version: 2.0.13
+    src: htmlwidgets/lib/Moment.js-2.0.13
+    script:
+      - moment-with-locales.min.js
+  - name: Chart.js
+    version: 2.9.3
+    src: htmlwidgets/lib/Chart.js-2.9.3
+    script:
+      - Chart.min.js
+      - plugins/chartjs-plugin-dragdata.min.js
+  - name: chartjs
+    version: 0.3.3
+    src: htmlwidgets
+    stylesheet:
+      - chartjs.css
+

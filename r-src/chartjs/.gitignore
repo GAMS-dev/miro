@@ -1,0 +1,11 @@
+.Rproj.user
+.Rhistory
+.RData
+.DS_Store
+.Rprofile
+inst/doc
+libs/*
+*.tar.gz
+inst/*.html
+inst/rsconnect
+rsconnect
