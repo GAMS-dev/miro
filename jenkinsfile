@@ -5,8 +5,6 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '4'))
         parallelsAlwaysFailFast()
         disableConcurrentBuilds()
-        gitLabConnection('GAMS GitLab')
-        gitlabBuilds(builds: ['build', 'test'])
     }
     parameters {
         booleanParam(
@@ -120,17 +118,15 @@ pipeline {
                 stage ('macos') {
                     agent { label 'macos' }
                     steps {
-                        gitlabCommitStatus(name: 'build') {
+                        sh '''
+                           yarn install --non-interactive
+                        '''
+                        withCredentials([usernamePassword(credentialsId: '4568bda5-894f-4fa1-b9c5-a8d42f6e61ac', passwordVariable: 'APPLEIDPASS', usernameVariable: 'APPLEID'),
+                            string(credentialsId: '2e590f95-5e30-4101-93be-31a1b7402da4', variable: 'MACOS_KEYCHAIN_PASSWD')]) {
                             sh '''
-                               yarn install --non-interactive
+                               security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWD}
+                               yarn dist
                             '''
-                            withCredentials([usernamePassword(credentialsId: '4568bda5-894f-4fa1-b9c5-a8d42f6e61ac', passwordVariable: 'APPLEIDPASS', usernameVariable: 'APPLEID'),
-                                string(credentialsId: '2e590f95-5e30-4101-93be-31a1b7402da4', variable: 'MACOS_KEYCHAIN_PASSWD')]) {
-                                sh '''
-                                   security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWD}
-                                   yarn dist
-                                '''
-                            }
                         }
                     }
                 }
@@ -165,18 +161,16 @@ pipeline {
                         skipDefaultCheckout()
                     }
                     steps {
-                        gitlabCommitStatus(name: 'test') {
-                            withCredentials([file(credentialsId: 'MIRO_TEST_GAMS_LICE', variable: 'MIRO_TEST_GAMS_LICE'),
-                                             usernamePassword(credentialsId: '9753687d-1cfe-473d-a4be-eb0273f82ff8', passwordVariable: 'ENGINE_PASSWORD', usernameVariable: 'ENGINE_USER'),
-                                             usernamePassword(credentialsId: '26442d03-76b8-4cc0-b614-9e9fcdb44a88', passwordVariable: 'MIRO_REPORTER_PASS', usernameVariable: 'MIRO_REPORTER_USER')]) {
-                                withEnv(['ENGINE_NS=tests', 'ENGINE_URL=https://miro.gams.com/engine/api', 'MIRO_REPORTER_URL=https://miro.gams.com/miro-perf/', 'LC_ALL=en_US.UTF-8']) {
-                                    sh '''
-                                       yarn test gams_sys_dir=${GAMS_CORE_PATH}
-                                    '''
-                                }
+                        withCredentials([file(credentialsId: 'MIRO_TEST_GAMS_LICE', variable: 'MIRO_TEST_GAMS_LICE'),
+                                         usernamePassword(credentialsId: '9753687d-1cfe-473d-a4be-eb0273f82ff8', passwordVariable: 'ENGINE_PASSWORD', usernameVariable: 'ENGINE_USER'),
+                                         usernamePassword(credentialsId: '26442d03-76b8-4cc0-b614-9e9fcdb44a88', passwordVariable: 'MIRO_REPORTER_PASS', usernameVariable: 'MIRO_REPORTER_USER')]) {
+                            withEnv(['ENGINE_NS=tests', 'ENGINE_URL=https://miro.gams.com/engine/api', 'MIRO_REPORTER_URL=https://miro.gams.com/miro-perf/', 'LC_ALL=en_US.UTF-8']) {
+                                sh '''
+                                   yarn test gams_sys_dir=${GAMS_CORE_PATH}
+                                '''
                             }
-                            junit allowEmptyResults: true, testResults: 'src/test-out.xml'
                         }
+                        junit allowEmptyResults: true, testResults: 'src/test-out.xml'
                         script {
                             if (currentBuild.result == 'UNSTABLE') {
                                 updateGitlabCommitStatus name: 'test', state: 'failed'
