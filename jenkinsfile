@@ -8,6 +8,12 @@ pipeline {
         gitLabConnection('GAMS GitLab')
         gitlabBuilds(builds: ['build', 'test'])
     }
+    parameters {
+        booleanParam(
+            defaultValue: false,
+            description: 'Run tests? (Will always run on rc, develop and master)',
+            name: 'RUN_TESTS')
+    }
 
     stages {
         stage('Skip build check') {
@@ -131,6 +137,9 @@ pipeline {
             }
         }
         stage('Test') {
+            when {
+                expression { params.RUN_TESTS || env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'rc' || env.BRANCH_NAME == 'develop' }
+            }
             parallel {
                 stage ('windowsX64') {
                     agent { label 'windowsX64' }
