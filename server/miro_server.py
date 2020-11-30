@@ -49,7 +49,7 @@ class MiroServer(object):
     self.__compose_env['COMPOSE_PROJECT_NAME'] = 'miro_server'
     self.__compose_env['COMPOSE_IGNORE_ORPHANS'] = 'True'
 
-    with open('package.json', 'r') as f:
+    with open(os.path.join('..', 'package.json'), 'r') as f:
       self.__version_string = json.loads(f.read())['version'].strip()
 
     getattr(self, args.command)()
