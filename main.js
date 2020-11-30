@@ -15,7 +15,7 @@ const installRPackages = require('./components/install-r.js');
 
 const requiredAPIVersion = 1;
 const miroVersion = '1.2.99';
-const miroRelease = 'Oct 5 2020';
+const miroRelease = 'Nov 16 2020';
 const libVersion = '1.1';
 const exampleAppsData = require('./components/example-apps.js')(miroVersion, requiredAPIVersion);
 const LangParser = require('./components/LangParser');
