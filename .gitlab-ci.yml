@@ -12,7 +12,7 @@ test:
   artifacts:
     when: always
     reports:
-      junit: src/test-out.xml
+      junit: src/tests/testthat/test-out.xml
   rules:
     - if: $CI_MERGE_REQUEST_TITLE =~ /^Draft:/
       when: manual
