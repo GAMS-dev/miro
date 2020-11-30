@@ -6,10 +6,15 @@ test:
     - linux
   before_script:
     - source /etc/profile.d/ci.sh
+    - yarn install --cache-folder .yarn
   script:
-    - eslint .
+    - yarn run eslint .
     - mchecklic
     - mtestall
+  cache:
+    paths:
+      - node_modules/
+      - .yarn
   artifacts:
     when: always
     reports:
