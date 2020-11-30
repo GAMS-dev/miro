@@ -9,7 +9,7 @@ if [ -d "dist" ]; then
     # on jenkins r and dist don't exist yet when this script is run
     MORE_DIR_EXCL="--exclude dist --exclude r"
 fi
-npm-license-crawler ${MORE_DIR_EXCL}--exclude build --exclude src --exclude admin --exclude r-src --dependencies --production --csv licenses.csv > /dev/null
+npm-license-crawler ${MORE_DIR_EXCL}--exclude build --exclude src --exclude server --exclude r-src --dependencies --production --csv licenses.csv > /dev/null
 cat >$LICENSE_FILE <<EOL
 GAMS MIRO as a whole is distributed under GPL-3 (GNU GENERAL PUBLIC LICENSE version 3). A copy of this license is included below.
 
