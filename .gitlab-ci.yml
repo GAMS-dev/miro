@@ -7,7 +7,6 @@ test:
   before_script:
     - source /etc/profile.d/ci.sh
   script :
-    - yarn run eslint .
     - mchecklic
     - mtestall
   artifacts:
