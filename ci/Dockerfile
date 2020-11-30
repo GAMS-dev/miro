@@ -24,8 +24,8 @@ RUN R -e "install.packages(c('testthat', 'shinytest', 'xml2'));"
 
 # need to install Rcpp, plogr, BH again as we removed header files in miroui image
 RUN mkdir /home/miro/r
-COPY ../r/library_src /home/miro/r/library_src
-COPY install_pkg.R /home/miro/r/install_pkg.R
+COPY r/library_src /home/miro/r/library_src
+COPY ci/install_pkg.R /home/miro/r/install_pkg.R
 RUN Rscript /home/miro/r/install_pkg.R
 RUN rm -rf /home/miro/r
 
@@ -49,6 +49,6 @@ RUN R -e "library(shinytest);installDependencies()"
 
 RUN mkdir /home/miroci/ci
 WORKDIR /home/miroci/ci
-COPY run.sh /etc/profile.d/ci.sh
+COPY ci/run.sh /etc/profile.d/ci.sh
 
 ENV GAMS_SYS_DIR=/opt/gams
