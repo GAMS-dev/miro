@@ -3,7 +3,7 @@
 FROM ubuntu:xenial
 
 LABEL com.gamsmiro.vendor="GAMS Development Corp."\
-com.gamsmiro.version="1.1.99"\
+com.gamsmiro.version="1.2.99"\
 com.gamsmiro.license="GPL-3.0"\
 com.gamsmiro.description="GAMS MIRO Docker image"\
 maintainer="rschuchmann@gams.com"
