@@ -6,9 +6,8 @@ test:
     - linux
   before_script:
     - source /etc/profile.d/ci.sh
-    - export PATH="/home/miroci/.yarn/bin:$PATH"
   script:
-    - yarn run eslint .
+    - eslint .
     - mchecklic
     - mtestall
   artifacts:
