@@ -6,7 +6,7 @@ test:
     - linux
   before_script:
     - source /etc/profile.d/ci.sh
-    - export PATH="$(yarn global bin):$PATH"
+    - export PATH="/home/miroci/.yarn/bin:$PATH"
   script:
     - yarn run eslint .
     - mchecklic
