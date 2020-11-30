@@ -6,7 +6,9 @@ test:
     - linux
   before_script:
     - source /etc/profile.d/ci.sh
-  script :
+    - export PATH="$(yarn global bin):$PATH"
+  script:
+    - yarn run eslint .
     - mchecklic
     - mtestall
   artifacts:
