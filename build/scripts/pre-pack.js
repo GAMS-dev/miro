@@ -98,10 +98,11 @@ const tryInstallRPackages = async (attempt = 0) => {
     if (process.platform === 'darwin' && !rExists) {
       try {
         const subproc = execa(path.join('.', 'build', 'scripts', 'get-r-mac.sh'),
-          { shell: true,
+          {
+            shell: true,
             env: {
               R_BASE_VERSION: buildConfig.rVersion,
-            }
+            },
           });
         subproc.stderr.pipe(process.stderr);
         subproc.stdout.pipe(process.stderr);
@@ -137,7 +138,7 @@ const tryInstallRPackages = async (attempt = 0) => {
         '--build-arg', `GAMS_MINOR=${buildConfig.gamsVersion.split('.')[1]}`,
         '--build-arg', `GAMS_MAINT=${buildConfig.gamsVersion.split('.')[2]}`,
         '-t', 'gamsmiro-ci', '.'],
-        { cwd: path.join('.', 'ci') });
+      { cwd: path.join('.', 'ci') });
       subprocCi.stderr.pipe(process.stderr);
       subprocCi.stdout.pipe(process.stderr);
       await subprocCi;
