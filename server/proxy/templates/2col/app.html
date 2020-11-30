@@ -1,0 +1,77 @@
+<!--
+
+    ShinyProxy
+
+    Copyright (C) 2016-2018 Open Analytics
+
+    ===========================================================================
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the Apache License as published by
+    The Apache Software Foundation, either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    Apache License for more details.
+
+    You should have received a copy of the Apache License
+    along with this program.  If not, see <http://www.apache.org/licenses/>
+
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head lang="en">
+	<title th:text="${appTitle}"></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GAMS MIRO Server">
+    <meta name="author" content="GAMS Development Corp.">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'sha256-7OHl+N4x5fOFpDONCYMkrPAiY0tKpkbJejeafx/FRc4=' 'sha256-3futFiTc6Kh07aZE8JGPOdYvZZ1KN6tzHxeKOx/Kq0c=';" />
+
+
+    <link rel="stylesheet" media="screen" th:href="@{${bootstrapCss}}" />
+    <link rel="stylesheet" media="screen" th:href="@{/assets/css/styles.css}"/>
+        <script th:src="@{${jqueryJs}}"></script>
+        <script th:src="@{${bootstrapJs}}"></script>
+</head>
+<body>
+    <div id="navbarHandle" style="height:5px;width:100%;"><div class="navbar-handle"></div></div>
+    <div class="loading-screen"><div id="loadAppError" class="load-app-error">An error has occurred loading your app. Please try again later.</div>
+       <div id="loadingAnimation" class="lds-ellipsis" style="position:relative;top:50%;left:50%">
+       <div></div><div></div><div></div><div></div></div></div>
+    <div id="navbarWrapper" style="display:none;position:absolute;">
+        <div th:replace="../fragments/navbar :: navbar"></div>
+    </div>
+    <iframe id="shinyframe" th:src="${container}" width="100%" frameBorder="0"></iframe>    
+	<script type="text/javascript" th:inline="javascript">
+		function setShinyframeHeight() {
+			$('#shinyframe').css('height', ($(window).height() - 15) +'px');
+		}
+		window.addEventListener("load", setShinyframeHeight);
+		window.addEventListener("resize",  setShinyframeHeight);
+		$("#navbarHandle").hover(function() {
+            $("#navbarWrapper").show()
+        });
+        $("#navbarWrapper").mouseleave(function() {
+            $(this).hide()
+        });
+		$(window).on('load', function() {
+			var source = $("#shinyframe").attr("src");
+			if (source == "") {
+				$(".loading-screen").show();
+				$.post(window.location.pathname + window.location.search, function(response) {
+					$("#shinyframe").attr("src", response.containerPath);
+					$(".loading-screen").delay(1000).fadeOut(500);
+				}).fail(function(request) {
+					console.log(request.responseText);
+                    $("#loadingAnimation").hide();
+                    $("#loadAppError").show();
+				});
+			}
+		});
+	</script>
+</body>
+</html>

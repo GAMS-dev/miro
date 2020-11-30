@@ -1,0 +1,15 @@
+FROM hub.gams.com/gamsmiro-ui
+
+USER root
+
+COPY additional_packages .
+
+RUN R -e "packageList=trimws(readLines('additional_packages'));\
+packageList=packageList[packageList!=''];\
+for(packageToInstall in packageList){install.packages(packageToInstall,repos='https://cloud.r-project.org/')}"
+
+USER miro
+
+EXPOSE 3838
+
+CMD ["R", "-e", "shiny::runApp('/home/miro/app', port = 3838, host = '0.0.0.0')"]

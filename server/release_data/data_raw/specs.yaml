@@ -1,0 +1,12 @@
+specs:
+- accessGroups:
+  - admins
+  containerEnv:
+    MIRO_ADMIN_IMAGE: 'true'
+  containerVolumes:
+  - :/home/miro/admin/models
+  - :/home/miro/admin/data
+  description: MIRO Server Admin Panel
+  displayName: Admin
+  id: admin
+  logoURL: ~

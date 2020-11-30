@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="utf-8">
+      <meta http-equiv="Content-Security-Policy" content="script-src 'self';">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link href="bootstrap.min.css" rel="stylesheet">
+      {{ headContent() }}
+      <!--[if lt IE 9]>
+      <script src="shared/selectize/js/es5-shim.min.js"></script>
+      <![endif]-->
+      <script src="shared/selectize/js/selectize.min.js"></script>
+      <link href="selectize.bootstrap3.css" rel="stylesheet">
+      <link href="fontawesome.min.css" rel="stylesheet">
+      <link id="theme-style" rel="stylesheet" href="styles.css">
+      <title>MIRO Server Admin Panel</title>
+      <script type="text/javascript" src="bootstrap.min.js"></script>
+  </head>
+  <body>
+    <div class="site-wrapper">
+      <div id="overlayScreen">
+      </div>
+      <div id="loading-screen" style="display:none;"><div class="lds-ellipsis" style="position:relative;top:50%;left:50%">
+         <div></div><div></div><div></div><div></div></div></div>
+      <header id="header" class="sub-header">
+        <div class="container">
+          <div class="row header-items">
+            <div class="text-md-center header-text-wrapper">
+                <h3 class="header-text"><p class="header-text" id="title">Admin Panel</p></h3>
+            </div>
+          </div>
+        </div>
+      </header>    
+      <div class="container">
+          <div id="appsWrapper" class="app-wrapper row">
+            <div id="addAppWrapper" class="col-xxl-3 col-lg-4 col-sm-6 col-12">
+                <div id="addAppBox" class="add-app-box app-box-fixed-height">
+                   <div style="height:200px;">
+                       <p class="add-app-box-logo">
+                      </p>
+                   </div>
+                   <div>
+                     <div class="add-app-box-title"></div>
+                     <div class="add-app-box-desc"></div>
+                   </div>
+                  <a class="btn-add-app" id="addApp"><i class="fas fa-plus-circle"></i></a>
+                </div>
+            </div>
+          </div>
+      </div>
+
+      <script type="text/javascript" src="model_update.js"></script>
+    </div><!--site-wrapper-->
+    <div id="loginModal" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Please log in</h4>
+          </div>
+          <div class="modal-body">
+            <div class="gmsalert gmsalert-error" id="loginError" style="position:relative">Wrong username or password</div>
+            <div id="loginLoadingIndicator" style="display:none;text-align:center;">
+              <div class="space"></div>
+              <div class="lds-ellipsis" style="top:50%;left:50%;z-index:1;margin-left:-32px;margin-top:-32px;display:block;">
+                <div class="gen-spinner"></div>
+                <div class="gen-spinner"></div>
+                <div class="gen-spinner"></div>
+                <div class="gen-spinner"></div>
+              </div>
+            </div>
+            <div id="loginFormWrapper">
+              <div class="space"></div>
+              <div class="form-group shiny-input-container">
+                <label class="control-label" for="loginUser">User</label>
+                <input id="loginUser" type="text" class="form-control" value=""/>
+              </div>
+              <div class="form-group shiny-input-container">
+                <label class="control-label" for="loginPassword">Password</label>
+                <input id="loginPassword" type="password" class="form-control" value=""/>
+              </div>
+              <div class="small-space"></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="btLogin" class="btn btn-default bt-highlight-1 bt-gms-confirm" type="button">Login</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
