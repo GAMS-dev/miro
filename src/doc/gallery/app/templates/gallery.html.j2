@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
+<head>
+    <title>GAMS MIRO - Gallery</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GAMS MIRO documentation">
+    <meta name="author" content="GAMS Development Corp.">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <!-- FontAwesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/bootstrap/css/bootstrap.min.css') }}">
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/prism/prism.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/lightbox/dist/ekko-lightbox.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/elegant_font/css/style.css') }}">
+    <!-- Spectrum ColorPicker plugin -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/spectrum/spectrum.css') }}">
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <!-- Cookie consent by https://cookieconsent.osano.com -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
+    <script>
+    window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#000"
+        },
+        "button": {
+          "background": "#F39619"
+        }
+      }
+    })});
+    </script>
+    <!--#include virtual="/wheader.html" -->
+</head>
+
+<body class="body-orange">
+<div id="loading-screen" style="display:none;"><div class="lds-ellipsis" style="position:relative;top:50%;left:50%">
+<div></div><div></div><div></div><div></div></div></div>
+    
+    <!--#include virtual="/wbody.html" -->
+    <div class="page-wrapper">
+
+        <!-- ******Header****** -->
+        <header id="header" class="sub-header">
+            <div class="container">
+                <div class="branding">
+                    <h1 class="logo">
+                        <a href="https://www.gams.com/miro/index.html">
+                          <img class="img-fluid" style="height:50px;" src="{{ url_for('static', filename='images/logo.svg') }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/logo.png') }}'" alt="GAMS MIRO"/>
+                        </a>
+                    </h1>
+                </div><!--//branding-->
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="https://www.gams.com/miro/index.html">Home</a></li>
+                    <li class="breadcrumb-item active">GAMS MIRO gallery</li>
+                </ol>
+            </div><!--//container-->
+        </header><!--//header-->
+        <div class="doc-wrapper">
+            <div class="container">
+                <div class="row justify-content-end search-box-wrapper">
+                    <div class="float-right">
+                        <input class="form-control search-box" id="miroSearch" type="text" placeholder="Search" aria-label="Search">
+                        <ul id="miroSearchResults" class="list-group">
+                        </ul>
+                    </div>
+                </div>
+                <div id="doc-header" class="doc-header text-center">
+                    <h1 class="doc-title"><span aria-hidden="true" class="icon fas fa-chart-area"></span> GAMS MIRO gallery</h1>
+                </div><!--//doc-header-->
+                <div class="doc-body row">
+                    <div class="doc-content col-md-12 col-12 order-1">
+                        <div class="content-inner">     
+                            <section id="gallery" class="doc-section">
+                                <div class="section-block" id="configure-graphs">
+                                  <p>This gallery should give you an insight into what is possible with MIRO. But also interesting GAMS models / problems to solve shall be addressed here.</p>
+                                  <p>Just try out the MIRO applications (base mode only) directly in your browser! </p>
+                                  <div id="gallery-wrapper" class="cards-section text-center cards-wrapper row" style="background:white;">
+                                      {% for app in apps %}
+                                          <div class="item col-lg-4 col-6">
+                                             <div class="item-inner app-container">
+                                                 <div style="height:200px;">
+                                                     <img class="img-fluid" style= "max-height:180px; display: block; margin:auto;" src="{{ url_for('static', filename='images/gallery/' + app.id + '.png') }}" alt="{{app.title}} logo" />
+                                                 </div>
+                                                 <div>
+                                                 <h3 class="title" style="text-align:left;margin-top:15pt;">{{app.title}}</h3>
+                                                 <p class="intro" style="text-align:left;">{{app.desc}}</p>
+                                                 <p style="right: 0;position: absolute;bottom: 0;margin: 15px;"><i class="intro">by {{app.author}}</i></p>
+                                                 </div>
+                                                 <a class="link" href="https://miro.gams.com/gallery/app_direct/{{app.id}}/"><span></span></a>
+                                             </div><!--//item-inner-->
+                                             <div class="upvote-custom"><button class="btn btn-upvote" data-id="{{ app.id }}"><i class="fas fa-thumbs-up"></i><span id="{{ app.id }}_noupvotes" class="no-upvotes">({{ app.upvotes }})</span></button></div>
+                                         </div><!--//item-->
+                                      {% endfor %}
+                                 </div><!--//cards-wrapper-->
+                                 <div class="callout-block callout-success">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-thumbs-up"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">You want to share your MIRO app with others?</b>
+                                            <p>In order to show the different applications of MIRO, we want to permanently expand our gallery. If you have configured a MIRO app and would like to share it with others, you are welcome to do so here!
+                                            <br><br>
+                                            <button type="button" class="btn confirm-btn" data-toggle="modal" data-target="#addAppModal">Submit your own app now!</button></p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                </div><!--//section-block-->
+                            </section>
+                        </div><!--//content-inner-->
+                    </div><!--//doc-content-->
+                </div><!--//doc-body-->
+            </div><!--//container-->
+        </div><!--//doc-wrapper-->
+        <div class="modal fade modal-custom" id="addAppModal" tabindex="-1" role="dialog" aria-labelledby="addAppModalLabel" aria-hidden="true">
+          <div class="vertical-outer">
+          <div class="modal-dialog vertical-inner" role="document">
+            <div class="modal-content modal-content-custom">
+              <div class="modal-header">
+                <h5 class="modal-title" id="addAppModalLabel">Submit app</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                  <form id="newAppForm" enctype="multipart/form-data">
+                        <div class="statusMsg">
+                        </div>
+                        <div class="form-group">
+                            <label for="app-data">Miro App (.miroapp file)</label>
+                            <input type="file" class="form-control" id="newAppData" name="app-data" accept=".miroapp" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="app-title">App title</label>
+                            <input type="text" id="newAppTitle" placeholder="Enter app title" name="app-title" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="app-desc">App description</label>
+                            <input type="text" id="newAppDesc" name="app-desc" placeholder="Enter app description" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="app-desc">Author</label>
+                            <input type="text" id="newAppAuthor" name="app-author" placeholder="Enter name of the author" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="app-desc">E-mail</label>
+                            <input type="text" id="newAppEmail" name="app-mail" placeholder="Enter E-mail address" required />
+                        </div>
+                        <input type="submit" id="btAddNewApp" class="btn confirm-btn" name="submitButton" value="Submit app">
+                 </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+    </div><!--//page-wrapper-->
+    <script type="text/javascript" src="{{ url_for('static', filename='plugins/jquery-3.3.1.min.js') }}"></script>
+    <!--#include virtual="/footer.html" -->
+
+
+    <!-- Main Javascript -->
+    <script type="text/javascript" src="{{ url_for('static', filename='plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='plugins/prism/min/prism-min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='plugins/lightbox/dist/ekko-lightbox.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='plugins/stickyfill/dist/stickyfill.min.js') }}"></script>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script type="text/javascript">
+        $('.app-container').on('click', function(e) {
+            $('#loading-screen').show();
+        });
+        $('.btn-upvote').on('click', function(e) {
+            this.disabled = true;
+            var appId = this.dataset.id;
+            $.post( "api/vote-up", { id: appId })
+              .done(function( data ) {
+                var noUpvotesEl = $('#' + appId + '_noupvotes');
+                var noUpvotes = noUpvotesEl.text();
+                noUpvotes = parseInt(noUpvotes.substring(1, noUpvotes.length - 1), 10) + 1;
+                $('#' + appId + '_noupvotes').text('(' + noUpvotes + ')');
+              });
+        });
+        $("#newAppForm").on('submit', function(e){
+            e.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: 'api/add-app',
+                data: new FormData(this),
+                dataType: 'json',
+                contentType: false,
+                cache: false,
+                processData:false,
+                beforeSend: function(){
+                    $('.submitBtn').attr("disabled","disabled");
+                    $('#newAppForm').css("opacity",".5");
+                },
+                success: function(response){
+                    $('.statusMsg').html('');
+                    if(response.status == 0){
+                        $('#newAppForm')[0].reset();
+                        $('.statusMsg').html('<p class="alert alert-success">'+response.message+'</p>');
+                    }else{
+                        $('.statusMsg').html('<p class="alert alert-danger">'+response.message+'</p>');
+                    }
+                    $('#newAppForm').css("opacity","");
+                    $(".submitBtn").removeAttr("disabled");
+                },
+                error: function(req, err) { 
+                    $('.statusMsg').html('<p class="alert alert-danger">An unexpected error has occurred. Please try again later or contact miro@gams.com if this error persists.</p>');
+                }  
+            });
+        });
+    </script>
+</body>
+</html>
