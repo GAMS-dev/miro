@@ -124,25 +124,6 @@ class MiroServer(object):
 
 
   def push(self):
-    parser = argparse.ArgumentParser(
-        description='Pushes GAMS MIRO Server images to hub.gams.com')
-    parser.add_argument('--password', '-p', help='Password')
-    parser.add_argument('--username', '-u', help='Username')
-
-    args = parser.parse_args(sys.argv[2:])
-
-    docker_login_args = ['docker', 'login', 'hub.gams.com']
-
-    if args.username is not None:
-      if args.password is None:
-        print('You must specify both username and password!')
-        exit(1)
-
-      docker_login_args.extend(['-u', args.username, '-p', args.password])
-
-
-    subprocess.check_call(docker_login_args)
-
     for image in [('gamsmiro-sproxy', 'gamsmiro-sproxy'),
                   ('gamsmiro-proxy', 'gamsmiro-proxy')]:
       self.push_image(*image)
