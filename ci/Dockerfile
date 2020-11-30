@@ -23,7 +23,11 @@ RUN wget https://d37drm4t2jghv5.cloudfront.net/distributions/${GAMS_MAJOR}.${GAM
 RUN R -e "install.packages(c('testthat', 'shinytest', 'xml2'));"
 
 # need to install Rcpp, plogr, BH again as we removed header files in miroui image
-RUN R -e "install.packages(c('Rcpp', 'plogr', 'BH', 'RSQLite'))"
+RUN mkdir /home/miro/r
+COPY ../r/library_src /home/miro/r/library_src
+COPY install_pkg.R /home/miro/r/install_pkg.R
+RUN Rscript /home/miro/r/install_pkg.R
+RUN rm -rf /home/miro/r
 
 # install nodejs, yarn and eslint
 RUN apt-get update && apt-get install -y curl
