@@ -20,7 +20,7 @@ if(!dependenciesInstalled()){
 }
 
 reporter <- MultiReporter$new(list(
-    ProgressReporter$new(),
+    ProgressReporter$new(max_failures = 100),
     JunitReporter$new(file = "test-out.xml")
 ))
 
