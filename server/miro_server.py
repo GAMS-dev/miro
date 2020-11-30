@@ -12,6 +12,7 @@ import random
 import re
 import platform
 import string
+import json
 from distutils.dir_util import copy_tree
 
 ZIP_IGNORE_FILES = ['.DS_Store']
@@ -48,8 +49,8 @@ class MiroServer(object):
     self.__compose_env['COMPOSE_PROJECT_NAME'] = 'miro_server'
     self.__compose_env['COMPOSE_IGNORE_ORPHANS'] = 'True'
 
-    with open('version', 'r') as f:
-      self.__version_string = f.read().strip()
+    with open('package.json', 'r') as f:
+      self.__version_string = json.loads(f.read())['version'].strip()
 
     getattr(self, args.command)()
 
