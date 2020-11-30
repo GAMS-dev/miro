@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-export PATH="/home/miroci/ci/node_modules/.bin:$PATH"
-
 function mchecklic () {
     pushd src > /dev/null
       Rscript scripts/checkLicense.R || {
