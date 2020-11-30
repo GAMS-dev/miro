@@ -13,6 +13,8 @@ if (!fs.existsSync(path.join('.', 'r'))) {
 }
 const buildDocker = process.argv[2] === '--docker';
 
+const buildConfig = JSON.parse(fs.readFileSync('build-config.json'));
+
 const tryInstallRPackages = async (attempt = 0) => {
   if (attempt === 3) {
     process.exit(1);
@@ -46,7 +48,7 @@ const tryInstallRPackages = async (attempt = 0) => {
     try {
       console.log('Installing R...');
       const file = fs.createWriteStream(path.join('r', 'latest_r.exe'));
-      https.get('https://cloud.r-project.org/bin/windows/base/R-4.0.2-win.exe', (response) => {
+      https.get(`https://cloud.r-project.org/bin/windows/base/R-${buildConfig.rVersion}-win.exe`, (response) => {
         response.pipe(file);
 
         file.on('finish', () => {
@@ -95,7 +97,12 @@ const tryInstallRPackages = async (attempt = 0) => {
   } else {
     if (process.platform === 'darwin' && !rExists) {
       try {
-        const subproc = execa(path.join('.', 'build', 'scripts', 'get-r-mac.sh'), { shell: true });
+        const subproc = execa(path.join('.', 'build', 'scripts', 'get-r-mac.sh'),
+          { shell: true,
+            env: {
+              R_BASE_VERSION: buildConfig.rVersion,
+            }
+          });
         subproc.stderr.pipe(process.stderr);
         subproc.stdout.pipe(process.stderr);
         await subproc;
@@ -115,7 +122,9 @@ const tryInstallRPackages = async (attempt = 0) => {
     try {
       console.log('Building Docker images...');
       // `gamsmiro-ui:${process.env.npm_package_version}`
-      const subproc = execa('docker', ['build', '-t', 'gamsmiro-ui', '.']);
+      const subproc = execa('docker', ['build',
+        '--build-arg', `R_BASE_VERSION=${buildConfig.rVersion}`,
+        '-t', 'gamsmiro-ui', '.']);
       subproc.stderr.pipe(process.stderr);
       subproc.stdout.pipe(process.stderr);
       await subproc;
@@ -123,7 +132,11 @@ const tryInstallRPackages = async (attempt = 0) => {
       subprocAdmin.stderr.pipe(process.stderr);
       subprocAdmin.stdout.pipe(process.stderr);
       await subprocAdmin;
-      const subprocCi = execa('docker', ['build', '-t', 'gamsmiro-ci', '.'],
+      const subprocCi = execa('docker', ['build',
+        '--build-arg', `GAMS_MAJOR=${buildConfig.gamsVersion.split('.')[0]}`,
+        '--build-arg', `GAMS_MINOR=${buildConfig.gamsVersion.split('.')[1]}`,
+        '--build-arg', `GAMS_MAINT=${buildConfig.gamsVersion.split('.')[2]}`,
+        '-t', 'gamsmiro-ci', '.'],
         { cwd: path.join('.', 'ci') });
       subprocCi.stderr.pipe(process.stderr);
       subprocCi.stdout.pipe(process.stderr);

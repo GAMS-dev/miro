@@ -6,14 +6,15 @@ test:
     - linux
   before_script:
     - source /etc/profile.d/ci.sh
-  script :
+    - export PATH="/home/miroci/.yarn/bin:$PATH"
+  script:
     - yarn run eslint .
     - mchecklic
     - mtestall
   artifacts:
     when: always
     reports:
-      junit: src/test-out.xml
+      junit: src/tests/testthat/test-out.xml
   rules:
     - if: $CI_MERGE_REQUEST_TITLE =~ /^Draft:/
       when: manual
