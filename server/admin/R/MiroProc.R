@@ -16,7 +16,8 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
   getTablesToRemove = function(){
     return(private$tablesToRemove)
   },
-  run = function(appId, modelName, miroVersion, appDir, dataDir, successCallback){
+  run = function(appId, modelName, miroVersion, appDir, dataDir,
+    progressSelector, successCallback){
     private$tablesToRemove <- NULL
     private$errorRaised <- FALSE
     private$stdErr <- ""
@@ -84,8 +85,9 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
                 if(is.na(progress)){
                     flog.warn("Bad progress message received from MIRO: %s", line)
                 }else{
-                    private$session$sendCustomMessage("onAddAppProgress", 
-                        if(progress >= 100) -1 else progress)
+                    private$session$sendCustomMessage("onProgress", 
+                        list(selector = progressSelector,
+                          progress = if(progress >= 100) -1 else progress))
                 }
             }
         }

@@ -1,4 +1,5 @@
 miroAppValidator <- MiroAppValidator$new()
+miroscenParser   <- MiroscenParser$new()
 modelConfig      <- ModelConfig$new(file.path("data", "specs.yaml"))
 engineClient     <- EngineClient$new()
 db               <- MiroDb$new(list(host = Sys.getenv("MIRO_DB_HOST", "localhost"),
@@ -136,7 +137,8 @@ server <- function(input, output, session){
             extractAppData(isolate(input$miroAppFile$datapath), appId,
                         logoPath)
 
-            miroProc$run(appId, modelName, miroAppValidator$getMIROVersion(), appDir, dataDir, function(){
+            miroProc$run(appId, modelName, miroAppValidator$getMIROVersion(),
+                appDir, dataDir, progressSelector = "#addAppProgress", function(){
                 tryCatch({
                     engineClient$registerModel(appId, modelName, appDir, overwrite = TRUE)
                     flog.debug("New MIRO app: %s registered at Engine.", modelName)
@@ -258,6 +260,37 @@ server <- function(input, output, session){
                     conditionMessage(e))
             flog.info(errMsg)
             session$sendCustomMessage("onError", list(requestType = "updateOrder", message = errMsg))
+        })
+    })
+    observeEvent(input$miroDataFiles, {
+        if(loginRequired(session, isLoggedIn)){
+            return()
+        }
+        tryCatch({
+            dataPath  <- input$miroDataFiles$datapath
+            modelName <- miroscenParser$getModelName(dataPath)
+            appId     <- modelName[[1]]
+            modelName <- modelName[[2]]
+            appConfig <- modelConfig$getAppConfigFull(appId)
+            appModelName <- tools::file_path_sans_ext(basename(
+                    appConfig$containerEnv[["MIRO_MODEL_PATH"]]))
+            if(!identical(modelName, appModelName)){
+                flog.warn("The main gms file name in the MIRO scenario is different from the one uploaded to MIRO server (MIRO scen: %s, App: %s).",
+                    modelName, appModelName)
+            }
+            miroProc$run(appId, appModelName,
+                appConfig$containerEnv[["MIRO_VERSION_STRING"]],
+                file.path(getwd(), MIRO_MODEL_DIR, appId), dataPath,
+                progressSelector = "#loadingScreenProgress", function(){
+                    flog.info("MIRO scenario added for app: %s.", appId)
+                    session$sendCustomMessage("onSuccess", 
+                        list(requestType = "addScen"))
+            })
+        }, error = function(e){
+            errMsg <- sprintf("Invalid miroscen file uploaded. Error message: %s", 
+                    conditionMessage(e))
+            flog.info(errMsg)
+            session$sendCustomMessage("onError", list(requestType = "addScen", message = errMsg))
         })
     })
 }
