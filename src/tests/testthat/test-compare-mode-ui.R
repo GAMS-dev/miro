@@ -18,7 +18,7 @@ test_that("Default compare mode works",
 modelDataPath <- file.path(testModelPath, "data_transport")
 
 file.copy2(file.path(testDir, "data", "transport.gdx"),
-           file.path(modelDataPath, "default.gdx"))
+           file.path(modelDataPath, "default1.gdx"))
 file.copy2(file.path(testDir, "data", "transport.gdx"),
            file.path(modelDataPath, "default2.gdx"))
 file.copy2(file.path(testDir, "data", "transport.gdx"),
