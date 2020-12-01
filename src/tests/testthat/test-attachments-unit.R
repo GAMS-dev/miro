@@ -64,9 +64,10 @@ test_that("Adding attachments work", {
   file.move(c(file.path("data", "_scalars.csv"), file.path("data", "bad-views2.json")),
             c(file.path(testDir, "data", "_scalars.csv"),
               file.path(testDir, "data", "bad-views2.json")))
-  expect_identical(attachments$getIds(), c("_scalars.csv", "bad-views2.json"))
+  expect_true(all(attachments$getIds() %in% c("_scalars.csv", "bad-views2.json")))
+  expect_identical(length(attachments$getIds()), 2L)
   expect_identical(callbackCounter, 2L)
-  
+
   expect_error(attachments$add(session = NULL, file.path(testDir, "data", "bad-views.json"),
                                fileNames = NULL, overwrite = FALSE, execPerm = NULL), class = "error_max_size")
   expect_error(attachments$add(session = fakeSessionScen3Out2, file.path(testDir, "data", "_scalars.csv"),
@@ -74,7 +75,7 @@ test_that("Adding attachments work", {
   expect_error(attachments$add(session = fakeSessionIn1, file.path(testDir, "data", "_scalars.csv"),
                                fileNames = NULL, overwrite = FALSE, execPerm = NULL), class = "error_duplicate_files")
   expect_identical(callbackCounter, 2L)
-  
+
   file.copy(file.path(testDir, "data", "_scalars.csv"),
             file.path("data", "_scalars.csv"))
   expect_error(attachments$add(session = NULL, file.path(testDir, "data", "_scalars.csv"),
@@ -82,9 +83,9 @@ test_that("Adding attachments work", {
   expect_identical(callbackCounter, 3L)
   file.move(file.path("data", "_scalars.csv"),
             file.path(testDir, "data", "_scalars.csv"))
-  expect_identical(attachments$getMetadata(),
-                   tibble(name = c("_scalars.csv", "bad-views2.json", "scalars.csv"),
-                          execPerm = c(TRUE, TRUE, FALSE)))
+  expect_equal(attachments$getMetadata(),
+               tibble(name = c("_scalars.csv", "bad-views2.json", "scalars.csv"),
+                      execPerm = c(TRUE, TRUE, FALSE)))
   expect_true(all(file.exists(file.path(workDir, c("_scalars.csv", "bad-views2.json",
                                                    file.path("_miro_attach_", "scalars.csv"))))))
   expect_error(attachments$add(session = NULL, file.path(testDir, "data", "bad-views3.json"),
@@ -110,13 +111,13 @@ test_that("Saving/downloading attachments work", {
   expect_error(attachments$save(workDir, "scalars.csv"), NA)
   expect_true(file.exists(file.path(workDir, "scalars.csv")))
   expect_identical(readBin(file.path(workDir, "scalars.csv"), "raw"), as.raw(0x73))
-  
+
   expect_error(attachments$save(file.path(workDir, "asd.csv"), "scalars.csv"), NA)
   expect_true(file.exists(file.path(workDir, "asd.csv")))
   expect_identical(readBin(file.path(workDir, "asd.csv"), "raw"), as.raw(0x73))
-  
+
   unlink(file.path(workDir, c("_scalars.csv", "bad-views2.json", "scalars.csv")))
-  
+
   expect_error(attachments$download(workDir, allExecPerm = TRUE), NA)
   expect_true(all(file.exists(file.path(workDir, c("_scalars.csv", "bad-views2.json")))))
   expect_false(file.exists(file.path(workDir, c("scalars.csv"))))
@@ -140,7 +141,7 @@ test_that("Overwriting attachments work", {
 test_that("Updating attachments works", {
   fakeSessionIn1 <- FakeSession$new("in_1")
   fakeSessionScen3Out2 <- FakeSession$new("tab_3_2")
-  
+
   expect_error(attachments$setExecPerm(session = fakeSessionIn1,
                                        c("_scalars.csv", "bad-views2.json"), FALSE), NA)
   expect_error(attachments$setExecPerm(session = fakeSessionScen3Out2,
@@ -150,7 +151,7 @@ test_that("Updating attachments works", {
   expect_error(attachments$remove(session = NULL, "_scalars.csv"), NA)
   expect_error(attachments$remove(session = NULL, "_scalars.csv"), class = "error_file_not_found")
   expect_error(attachments$download(workDir, allExecPerm = TRUE), NA)
-  
+
   expect_false(any(file.exists(file.path(workDir, c("_scalars.csv", "bad-views2.json")))))
   expect_true(file.exists(file.path(workDir, c("scalars.csv"))))
   unlink(file.path(workDir, c("_scalars.csv", "bad-views2.json", "scalars.csv")))
