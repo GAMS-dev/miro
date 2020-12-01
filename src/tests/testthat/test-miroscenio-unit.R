@@ -22,7 +22,7 @@ viewsDummy <- list(addConf = function(conf){
   expect_identical(conf$bla[[1]], "asd")
 },
 getJSON = function(views = NULL, scenId = NULL){
-  if(is.null(scenId)){
+  if(identical(scenId, "1")){
     return('{"bla":["asd"]}')
   }
   return('{"bla":["def"]}')
