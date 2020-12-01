@@ -2,7 +2,7 @@ const {
   app, BrowserWindow, Menu, TouchBar, ipcMain, dialog, session,
 } = require('electron');
 
-const { TouchBarButton } = TouchBar;
+const { TouchBarButton, TouchBarSpacer } = TouchBar;
 const path = require('path');
 const fs = require('fs-extra');
 const yauzl = require('yauzl');
@@ -19,13 +19,18 @@ const miroRelease = 'Nov 16 2020';
 const libVersion = '1.1';
 const exampleAppsData = require('./components/example-apps.js')(miroVersion, requiredAPIVersion);
 const LangParser = require('./components/LangParser');
+const addModelData = require('./components/import-data');
+const addMiroscen = require('./components/miroscen-parser');
 const AppDataStore = require('./components/AppDataStore');
 const ConfigManager = require('./components/ConfigManager');
 const MiroDb = require('./components/MiroDb');
 const unzip = util.promisify(require('./components/Unzip'));
 const {
-  randomPort, waitFor, isNull, isFalse, kill,
+  randomPort, waitFor, isNull, kill,
 } = require('./components/helpers');
+const {
+  getAppDbPath,
+} = require('./components/util');
 
 const isMac = process.platform === 'darwin';
 const DEVELOPMENT_MODE = !app.isPackaged;
@@ -122,8 +127,6 @@ function showErrorMsg(optionsTmp) {
     dialog.showMessageBoxSync(mainWindow, options);
   }
 }
-
-const getAppDbPath = (appDbPath) => ((appDbPath === '' || appDbPath == null) ? path.join(app.getPath('home'), '.miro') : appDbPath);
 
 /*
 MIT License
@@ -610,6 +613,55 @@ ${path.join(miroResourcePath, 'examples')} to: ${appDataPath}. Error mesage: ${e
   }
   return null;
 }
+async function addMiroscenFile(filePath) {
+  let miroscenPath = filePath;
+  if (!miroscenPath) {
+    miroscenPath = dialog.showOpenDialogSync(mainWindow, {
+      title: lang.dialogNewScenFilesHdr,
+      message: lang.dialogNewScenFilesMsg,
+      buttonLabel: lang.dialogNewScenFilesBtn,
+      properties: ['openFile'],
+      filters: [
+        { name: lang.dialogNewScenFilesFilter, extensions: ['miroscen'] },
+      ],
+    });
+    if (!miroscenPath || miroscenPath.length === 0) {
+      return;
+    }
+    [miroscenPath] = miroscenPath;
+  }
+  if (miroscenPath) {
+    if (!miroscenPath.toLowerCase().endsWith('.miroscen')) {
+      log.debug('Incorrect file type discovered when trying to add MIRO scenario.');
+      showErrorMsg({
+        type: 'error',
+        title: lang.main.ErrorNewScenHdr,
+        message: `${lang.main.ErrorNewScenMsg}Incorrect file type`,
+      });
+      return;
+    }
+    mainWindow.send('toggle-loading-screen-progress', 'show');
+    try {
+      await addMiroscen(miroscenPath, mainWindow, {
+        rpath: await configData.get('rpath'),
+        libPath,
+        miroResourcePath,
+        miroWorkspaceDir,
+        logpath: await configData.get('logpath'),
+        appDataPath,
+      }, appsData, miroProcesses);
+    } catch (e) {
+      log.info(`Problems adding MIRO scenario. Error message: ${e.toString()}.`);
+      showErrorMsg({
+        type: 'error',
+        title: lang.main.ErrorNewScenHdr,
+        message: lang.main.ErrorNewScenMsg + e.toString(),
+      });
+    } finally {
+      mainWindow.send('toggle-loading-screen-progress', 'hide');
+    }
+  }
+}
 function activateEditMode(openNewAppForm = false, scrollToBottom = false) {
   log.debug(`Activating edit mode. Open 'new app' form: ${openNewAppForm}.`);
   if (mainWindow) {
@@ -618,7 +670,7 @@ function activateEditMode(openNewAppForm = false, scrollToBottom = false) {
 }
 
 const btAddApp = new TouchBarButton({
-  label: '➕ Add MIRO app',
+  label: lang.menu.addApp,
   backgroundColor: '#F39619',
   click: () => {
     log.debug('Add new MIRO app button clicked on TouchBar.');
@@ -626,31 +678,48 @@ const btAddApp = new TouchBarButton({
   },
 });
 const btManageApps = new TouchBarButton({
-  label: '⚙️ Edit apps',
+  label: lang.menu.editApp,
   click: () => {
     log.debug('Edit apps button clicked on TouchBar.');
     activateEditMode();
+  },
+});
+const btAddMiroscen = new TouchBarButton({
+  label: lang.menu.addMiroScen,
+  backgroundColor: '#F39619',
+  click: async () => {
+    log.debug('Add new MIRO scenario button clicked on TouchBar.');
+    await addMiroscenFile();
   },
 });
 const mainWindowTouchBar = new TouchBar({
   items: [
     btAddApp,
     btManageApps,
+    new TouchBarSpacer({ size: 'large' }),
+    btAddMiroscen,
   ],
 });
 const dockMenu = Menu.buildFromTemplate([
   {
-    label: '➕ Add MIRO app',
+    label: lang.menu.addApp,
     click: () => {
       log.debug('Add new MIRO app button clicked in dock menu.');
       activateEditMode(true, true);
     },
   },
   {
-    label: '⚙️ Edit apps',
+    label: lang.menu.editApp,
     click: () => {
       log.debug('Edit apps button clicked in dock menu.');
       activateEditMode();
+    },
+  },
+  {
+    label: lang.menu.addMiroScen,
+    click: async () => {
+      log.debug('Add new MIRO scenario button clicked in dock menu.');
+      await addMiroscenFile();
     },
   },
 ]);
@@ -808,20 +877,25 @@ if (!miroDevelopMode) {
   if (!gotTheLock) {
     app.quit();
   } else {
-    app.on('second-instance', (event, argv) => {
+    app.on('second-instance', async (event, argv) => {
       log.debug('Second MIRO instance launched.');
       if (mainWindow) {
         if (mainWindow.isMinimized()) mainWindow.restore();
         mainWindow.focus();
         if (process.platform === 'win32'
           && argv.length >= 2 && !DEVELOPMENT_MODE && !miroDevelopMode) {
-          const newMiroAppPath = argv[argv.length - 1];
-          if (newMiroAppPath.startsWith('--')) {
+          const associatedFile = argv[argv.length - 1];
+          if (associatedFile.startsWith('--')) {
             return;
           }
-          log.debug(`MIRO launcher opened by double clicking MIRO app at path: ${newMiroAppPath}.`);
+          if (associatedFile.toLowerCase().endsWith('.miroscen')) {
+            log.debug(`MIRO launcher opened by double clicking MIRO scenario file at path: ${associatedFile}.`);
+            await addMiroscenFile(associatedFile);
+            return;
+          }
+          log.debug(`MIRO launcher opened by double clicking MIRO app at path: ${associatedFile}.`);
           activateEditMode(false, true);
-          validateMIROApp([newMiroAppPath]);
+          validateMIROApp([associatedFile]);
         }
       }
     });
@@ -1343,116 +1417,22 @@ ipcMain.on('add-app', async (e, newApp) => {
     }
     await unzip(appConf.path, appDir);
 
-    const rpath = await configData.get('rpath');
-    if (!rpath) {
-      log.info('No R path set.');
-      throw new Error('404');
-    }
-    let restartRProc;
-    const runRProc = async function fRunRProc() {
-      restartRProc = false;
-      const internalPid = miroProcesses.length;
-      miroProcesses[internalPid] = execa(path.join(rpath, 'bin', 'R'),
-        ['--no-echo', '--no-restore', '--vanilla', '-f', path.join(miroResourcePath, 'start-shiny.R')],
-        {
-          env: {
-            R_HOME_DIR: rpath,
-            RE_SHINY_PATH: miroResourcePath,
-            R_LIBS: libPath,
-            R_LIBS_USER: libPath,
-            R_LIBS_SITE: libPath,
-            R_LIB_PATHS: libPath,
-            MIRO_NO_DEBUG: 'true',
-            MIRO_FORCE_SCEN_IMPORT: 'true',
-            MIRO_USE_TMP: !isFalse(appConf.usetmpdir),
-            MIRO_WS_PATH: miroWorkspaceDir,
-            MIRO_DB_PATH: getAppDbPath(appConf.dbpath),
-            MIRO_BUILD: 'false',
-            MIRO_BUILD_ARCHIVE: 'false',
-            MIRO_LOG_PATH: await configData.get('logpath'),
-            MIRO_POPULATE_DB: 'true',
-            LAUNCHINBROWSER: 'true',
-            MIRO_REMOTE_EXEC: 'false',
-            MIRO_VERSION_STRING: appConf.miroversion,
-            MIRO_MODE: appConf.modesAvailable.includes('base') ? 'base' : 'hcube',
-            MIRO_MODEL_PATH: path.join(appDir, `${appConf.id}.gms`),
-          },
-          stdout: 'pipe',
-          stderr: 'pipe',
-          cleanup: false,
-        });
-      mainWindow.setProgressBar(0);
-      // eslint-disable-next-line no-restricted-syntax
-      for await (const data of miroProcesses[internalPid].stderr) {
-        const msg = data.toString();
-        log.debug(msg);
-        if (msg.startsWith('merr:::')) {
-          log.debug(`MIRO error message received: ${msg}`);
-          // MIRO error
-          const error = msg.trim().split(':::');
-          if (error[1] === '409') {
-            if (error.length < 3) {
-              log.error('MIRO signalled that there are inconsistent tables but no data was provided.');
-              throw new Error('merr:::409');
-            }
-            // split and decode base64 encoded table names
-            const datasetsToRemove = error[2].split(',').map((el) => Buffer.from(el, 'base64').toString());
-            log.debug(`Datasets to be removed are: '${datasetsToRemove.join("','")}'`);
+    await addModelData(
+      {
+        rpath: await configData.get('rpath'),
+        libPath,
+        miroResourcePath,
+        miroWorkspaceDir,
+        dbpath: getAppDbPath(appConf.dbpath),
+        logpath: await configData.get('logpath'),
+        appDir,
+      },
+      appConf.id,
+      appConf.modesAvailable.includes('base') ? 'base' : 'hcube',
+      appConf.miroversion,
+      miroProcesses, mainWindow,
+    );
 
-            const tablesToRemove = datasetsToRemove.map((el) => `${MiroDb.escapeAppId(appConf.id)}_${el}`);
-            log.debug(`Inconsistent tables to be removed are: '${tablesToRemove.join("','")}'`);
-
-            const deleteInconsistentDbTables = dialog.showMessageBoxSync(mainWindow, {
-              type: 'info',
-              title: lang.main.ErrorInconsistentDbTablesHdr,
-              message: String.format(lang.main.ErrorInconsistentDbTablesMsg, datasetsToRemove),
-              buttons: [lang.main.BtnCancel, lang.main.BtnOk],
-            }) === 1;
-            if (deleteInconsistentDbTables) {
-              log.debug('Request to remove inconsistent tables received.');
-              try {
-                const miroDb = new MiroDb(path.join(getAppDbPath(appConf.dbpath),
-                  'miro.sqlite3'));
-                try {
-                  miroDb.removeTables(tablesToRemove);
-                  log.debug('Inconsistent tables removed.');
-                  restartRProc = true;
-                } finally {
-                  miroDb.close();
-                }
-              } catch (err) {
-                log.error(`Problems removing inconsistent database tables. Error message: ${err.message}`);
-                throw err;
-              }
-            } else {
-              throw new Error('suppress');
-            }
-          } else {
-            throw new Error(msg);
-          }
-        } else if (msg.startsWith('mprog:::')) {
-          // MIRO progress
-          const progress = parseInt(msg.substring(8), 10);
-          if (!Number.isNaN(progress)) {
-            mainWindow.setProgressBar(progress >= 100 ? -1 : progress / 100);
-          }
-          mainWindow.send('add-app-progress', progress);
-        }
-      }
-      try {
-        await miroProcesses[internalPid];
-        mainWindow.setProgressBar(-1);
-      } catch (err) {
-        if (!restartRProc) {
-          log.error(`Problems storing data: ${err}. Stdout: ${err.stdout}, Stderr: ${err.stderr}`);
-          throw err;
-        }
-      }
-    };
-    await runRProc();
-    if (restartRProc) {
-      await runRProc();
-    }
     delete appConf.path;
     if (appConf.logoNeedsMove) {
       const newLogoPath = path.join(`static_${appConf.id}`,
@@ -1751,7 +1731,10 @@ app.on('ready', async () => {
     callback(false);
   });
   applicationMenu = menu(addExampleApps,
-    activateEditMode, createSettingsWindow, openCheckUpdateWindow,
+    activateEditMode,
+    addMiroscenFile,
+    createSettingsWindow,
+    openCheckUpdateWindow,
     openAboutDialog);
   Menu.setApplicationMenu(applicationMenu);
 
