@@ -23,7 +23,11 @@ RUN wget https://d37drm4t2jghv5.cloudfront.net/distributions/${GAMS_MAJOR}.${GAM
 RUN R -e "install.packages(c('testthat', 'shinytest', 'xml2'));"
 
 # need to install Rcpp, plogr, BH again as we removed header files in miroui image
-RUN R -e "install.packages(c('Rcpp', 'plogr', 'BH', 'RSQLite'))"
+RUN mkdir /home/miro/r
+COPY r/library_src /home/miro/r/library_src
+COPY ci/install_pkg.R /home/miro/r/install_pkg.R
+RUN Rscript /home/miro/r/install_pkg.R
+RUN rm -rf /home/miro/r
 
 # install nodejs, yarn and eslint
 RUN apt-get update && apt-get install -y curl
@@ -32,7 +36,6 @@ RUN apt-get install -y nodejs
 RUN wget --quiet -O - /tmp/pubkey.gpg https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update && apt-get install -y yarn
-RUN yarn global add eslint
 
 RUN groupadd -g 1001 miroci && \
     useradd -r -u 1001 -g miroci miroci
@@ -46,6 +49,6 @@ RUN R -e "library(shinytest);installDependencies()"
 
 RUN mkdir /home/miroci/ci
 WORKDIR /home/miroci/ci
-COPY run.sh /etc/profile.d/ci.sh
+COPY ci/run.sh /etc/profile.d/ci.sh
 
 ENV GAMS_SYS_DIR=/opt/gams

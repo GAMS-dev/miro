@@ -65,8 +65,8 @@ app$setInputs("tab_0_3-miroPivot-pivotRenderer" = "stackedbar")
 Sys.sleep(0.5)
 expect_chartjs("tab_0_3-miroPivot-pivotChart",
                c(600, 350, 600, 350, 600, 350),
-               c("default.San-Diego",
-                 "default.Seattle",
+               c("default1.San-Diego",
+                 "default1.Seattle",
                  "default3.San-Diego",
                  "default3.Seattle",
                  "default4.San-Diego",
@@ -83,8 +83,8 @@ app$setInputs("tab_0_3-miroPivot-pivotRenderer" = "stackedbar")
 Sys.sleep(0.5)
 expect_chartjs("tab_0_3-miroPivot-pivotChart",
                c(600, 350, 600, 350),
-               c("default.San-Diego",
-                 "default.Seattle",
+               c("default1.San-Diego",
+                 "default1.Seattle",
                  "default2.San-Diego",
                  "default2.Seattle"))
 app$findElements("#scen-pivot-view .box-title button")[[1]]$click()

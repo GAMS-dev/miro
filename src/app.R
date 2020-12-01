@@ -93,14 +93,7 @@ LAUNCHHCUBEMODE <<- FALSE
 if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
   pb <- winProgressBar(title = "Loading GAMS MIRO", label = "Loading required packages",
                        min = 0, max = 1, initial = 0, width = 300)
-  setWinProgressBar(pb, 0.1)
-}else{
-  pb <- txtProgressBar(file = stderr())
-}
-if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
   setWinProgressBar(pb, 0.3, label= "Initializing GAMS MIRO")
-}else{
-  setTxtProgressBar(pb, 0.3)
 }
 if(is.null(errMsg)){
   # include custom functions and modules
@@ -833,11 +826,9 @@ if(!is.null(errMsg)){
   }
   if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
     setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
-  }else{
-    setTxtProgressBar(pb, 1)
+    close(pb)
+    pb <- NULL
   }
-  close(pb)
-  pb <- NULL
   ui_initError <- fluidPage(
     tags$head(
       if(!is.list(config) || !is.character(config$theme)){
@@ -1123,11 +1114,9 @@ if(!is.null(errMsg)){
   
   if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
     setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
-  }else{
-    setTxtProgressBar(pb, 1)
+    close(pb)
+    pb <- NULL
   }
-  close(pb)
-  pb <- NULL
   if(LAUNCHCONFIGMODE){
     source("./tools/config/server.R", local = TRUE)
     source("./tools/config/ui.R", local = TRUE)
