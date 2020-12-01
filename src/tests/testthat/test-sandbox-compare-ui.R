@@ -15,7 +15,7 @@ file.copy2(file.path(testModelPath, "conf_transport", "transport.json"),
 modelDataPath <- file.path(testModelPath, "data_transport")
 
 file.copy2(file.path(testDir, "data", "transport.gdx"),
-           file.path(modelDataPath, "default.gdx"))
+           file.path(modelDataPath, "default1.gdx"))
 file.copy2(file.path(testDir, "data", "transport.gdx"),
            file.path(modelDataPath, "default2.gdx"))
 file.copy2(file.path(testDir, "data", "transport.gdx"),
@@ -30,4 +30,4 @@ unlink(modelDataPath, recursive = TRUE, force = TRUE)
 file.move(file.path(testModelPath, "conf_transport", "transport_copy.json"),
           file.path(testModelPath, "conf_transport", "transport.json"))
 
-#Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))
+Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE"))

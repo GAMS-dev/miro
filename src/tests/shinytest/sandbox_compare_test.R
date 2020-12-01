@@ -49,7 +49,7 @@ Sys.sleep(1)
 app$setInputs(contentScen_2 = "contentScen_2_3")
 Sys.sleep(1)
 expect_true(app$waitFor("$('#tab_2_8-scalarBoxes h3:contains(\"22\")').length>0", timeout = 50))
-expect_true(app$waitFor("$('#title_2').text()==='default (Sandbox)'", timeout = 50))
+expect_true(app$waitFor("$('#title_2').text()==='default1 (Sandbox)'", timeout = 50))
 
 app$setInputs(btEditMeta = "click")
 Sys.sleep(1)
@@ -57,7 +57,7 @@ app$setInputs(editMetaName = "bliblablub")
 app$setInputs(btUpdateMeta = "click")
 Sys.sleep(1)
 
-expect_true(app$waitFor("$('#title_2').text()==='default (Sandbox)'", timeout = 50))
+expect_true(app$waitFor("$('#title_2').text()==='default1 (Sandbox)'", timeout = 50))
 app$findElement("#refreshSandbox_2 button")$click()
 Sys.sleep(1)
 expect_true(app$waitFor("$('#title_2').text()==='bliblablub (Sandbox)'", timeout = 50))
@@ -86,8 +86,8 @@ expect_chartjs("tab_0_3-miroPivot-pivotChart",
                c(600, 350, 600, 350, 600, 350),
                c("bliblablub (Sandbox).San-Diego",
                  "bliblablub (Sandbox).Seattle",
-                 "default.San-Diego",
-                 "default.Seattle",
+                 "default1.San-Diego",
+                 "default1.Seattle",
                  "default3.San-Diego",
                  "default3.Seattle"))
 # click refresh button in pivot compare mode
@@ -99,8 +99,8 @@ expect_chartjs("tab_0_3-miroPivot-pivotChart",
                c(600, 200, 600, 350, 600, 350),
                c("bliblablub (Sandbox).San-Diego",
                  "bliblablub (Sandbox).Seattle",
-                 "default.San-Diego",
-                 "default.Seattle",
+                 "default1.San-Diego",
+                 "default1.Seattle",
                  "default3.San-Diego",
                  "default3.Seattle"))
 
