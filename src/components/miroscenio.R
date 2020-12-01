@@ -169,7 +169,7 @@ generateMiroScen <- function(path, metadata, data, attachments, views, scenId = 
                                                       usetz = TRUE, tz = "GMT"))
   write_json(metadataContent, file.path(tmpd, "metadata.json"),
              auto_unbox = TRUE, null = "null")
-  write_file(views$getJSON(NULL, scenId),
+  write_file(views$getJSON(NULL, if(length(scenId)) scenId else "1"),
              file.path(tmpd, "views.json"))
   gdxio$wgdx(file.path(tmpd, "data.gdx"), data, squeezeZeros = "n")
   return(zipMiro(path, files = c("metadata.json", "data.gdx",
