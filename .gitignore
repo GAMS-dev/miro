@@ -19,9 +19,8 @@ logs
 *.sqlite3
 .matplotlib
 node_modules/
-dist/
-build/lib_devel
-.env
+./dist/
+./build/lib_devel
 venv
-r
-version
+./r/
+
