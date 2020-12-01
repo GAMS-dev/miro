@@ -23,8 +23,8 @@ app$findElement('#editMetaUI a[data-value="Attachments"]')$click()
 Sys.sleep(1)
 attachmentList <- app$findElements(".attachment-line")
 expect_identical(length(attachmentList), 2L)
-expect_identical(attachmentList[[1]]$findElement(".checkbox input")$getAttribute("checked"), NULL)
-expect_identical(attachmentList[[2]]$findElement(".checkbox input")$getAttribute("checked"), "true")
+expect_identical(attachmentList[[1]]$findElement(".checkbox input")$getAttribute("checked"), "true")
+expect_identical(attachmentList[[2]]$findElement(".checkbox input")$getAttribute("checked"), NULL)
 app$findElement('#editMetaUI a[data-value="General options"]')$click()
 Sys.sleep(1)
 expect_identical(app$getValue("editMetaName"), "Test Scenario")
@@ -39,6 +39,6 @@ Sys.sleep(0.5)
 expect_true(app$waitFor("$('#shiny-modal .gmsalert-error').is(':hidden');", 50))
 expect_true(app$waitFor("$('#shiny-modal .choose-input').is(':hidden');", 50))
 expect_files_in_zip(app, "scenExportHandler", c("data.gdx", "metadata.json", "views.json",
-                                                "attachments/", "attachments/_scalars.csv",
+                                                "attachments/", "attachments/scalars.csv",
                                                 "attachments/bad1.miroscen"))
 app$stop()
