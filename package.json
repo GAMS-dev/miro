@@ -42,12 +42,20 @@
       "!electron-builder.env",
       "!src/**"
     ],
-    "fileAssociations": {
-      "ext": "miroapp",
-      "name": "MIRO App",
-      "description": "MIRO Application",
-      "mimeType": "application/miro"
-    },
+    "fileAssociations": [
+      {
+        "ext": "miroapp",
+        "name": "MIRO App",
+        "description": "MIRO Application",
+        "mimeType": "application/miro"
+      },
+      {
+        "ext": "miroscen",
+        "name": "MIRO Scenario",
+        "description": "MIRO Scenario",
+        "mimeType": "application/miro"
+      }
+    ],
     "mac": {
       "extraResources": [
         "r"
