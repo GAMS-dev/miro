@@ -97,7 +97,7 @@ class AppDataStore extends Store {
   }
 
   isUniqueId(id) {
-    if (this.apps.filter((t) => t.id === id).length) {
+    if (this.apps.filter((t) => t.id.toLowerCase() === id.toLowerCase()).length) {
       return false;
     }
     return true;
