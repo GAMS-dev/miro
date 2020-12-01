@@ -2667,25 +2667,25 @@
                   "minLength": 1
                 }
               },
-              "invalidFilters": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "title": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "message": {
-                    "type": "string",
-                    "minLength": 1
-                  }
-                },
-                "minProperties": 2
-              },
               "minProperties": 6
+            },
+            "invalidFilters": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "message": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 2
             }
           },
-          "minProperties": 29
+          "minProperties": 30
         },
         "datatable": {
           "type": "object",
