@@ -13,7 +13,7 @@ function mchecklic () {
 
 function mtestall () {
     pushd src > /dev/null
-      Rscript run_tests.R || {
+      Rscript tests/testthat.R --stop || {
         echo "Error running tests"
         popd > /dev/null
         return 1

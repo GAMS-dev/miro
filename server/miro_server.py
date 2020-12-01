@@ -12,6 +12,7 @@ import random
 import re
 import platform
 import string
+import json
 from distutils.dir_util import copy_tree
 
 ZIP_IGNORE_FILES = ['.DS_Store']
@@ -48,8 +49,8 @@ class MiroServer(object):
     self.__compose_env['COMPOSE_PROJECT_NAME'] = 'miro_server'
     self.__compose_env['COMPOSE_IGNORE_ORPHANS'] = 'True'
 
-    with open('version', 'r') as f:
-      self.__version_string = f.read().strip()
+    with open(os.path.join('..', 'package.json'), 'r') as f:
+      self.__version_string = json.loads(f.read())['version'].strip()
 
     getattr(self, args.command)()
 
@@ -123,25 +124,6 @@ class MiroServer(object):
 
 
   def push(self):
-    parser = argparse.ArgumentParser(
-        description='Pushes GAMS MIRO Server images to hub.gams.com')
-    parser.add_argument('--password', '-p', help='Password')
-    parser.add_argument('--username', '-u', help='Username')
-
-    args = parser.parse_args(sys.argv[2:])
-
-    docker_login_args = ['docker', 'login', 'hub.gams.com']
-
-    if args.username is not None:
-      if args.password is None:
-        print('You must specify both username and password!')
-        exit(1)
-
-      docker_login_args.extend(['-u', args.username, '-p', args.password])
-
-
-    subprocess.check_call(docker_login_args)
-
     for image in [('gamsmiro-sproxy', 'gamsmiro-sproxy'),
                   ('gamsmiro-proxy', 'gamsmiro-proxy')]:
       self.push_image(*image)

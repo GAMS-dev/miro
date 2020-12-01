@@ -5,8 +5,12 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '4'))
         parallelsAlwaysFailFast()
         disableConcurrentBuilds()
-        gitLabConnection('GAMS GitLab')
-        gitlabBuilds(builds: ['build', 'test'])
+    }
+    parameters {
+        booleanParam(
+            defaultValue: false,
+            description: 'Run tests? (Will always run on rc, develop and master)',
+            name: 'RUN_TESTS')
     }
 
     stages {
@@ -43,7 +47,7 @@ pipeline {
                         '''
                         script{
                             if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
-                                sh '''
+                                sh '''#!/bin/bash -xe
                                     yarn docker-build
                                     ## build MIRO server images
                                     pushd server > /dev/null
@@ -53,7 +57,7 @@ pipeline {
                             }
                         }
                         sshagent(['a2576ca5-f8e0-4e28-9d42-b0c5603b213d']) {
-                            sh '''#!/bin/bash
+                            sh '''#!/bin/bash -xe
                                git status
                                git add ./main.js ./package.json ./scripts/globals.R ./Dockerfile ./Dockerfile-admin
                                git status
@@ -114,23 +118,24 @@ pipeline {
                 stage ('macos') {
                     agent { label 'macos' }
                     steps {
-                        gitlabCommitStatus(name: 'build') {
+                        sh '''
+                           yarn install --non-interactive
+                        '''
+                        withCredentials([usernamePassword(credentialsId: '4568bda5-894f-4fa1-b9c5-a8d42f6e61ac', passwordVariable: 'APPLEIDPASS', usernameVariable: 'APPLEID'),
+                            string(credentialsId: '2e590f95-5e30-4101-93be-31a1b7402da4', variable: 'MACOS_KEYCHAIN_PASSWD')]) {
                             sh '''
-                               yarn install --non-interactive
+                               security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWD}
+                               yarn dist
                             '''
-                            withCredentials([usernamePassword(credentialsId: '4568bda5-894f-4fa1-b9c5-a8d42f6e61ac', passwordVariable: 'APPLEIDPASS', usernameVariable: 'APPLEID'),
-                                string(credentialsId: '2e590f95-5e30-4101-93be-31a1b7402da4', variable: 'MACOS_KEYCHAIN_PASSWD')]) {
-                                sh '''
-                                   security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWD}
-                                   yarn dist
-                                '''
-                            }
                         }
                     }
                 }
             }
         }
         stage('Test') {
+            when {
+                expression { params.RUN_TESTS || env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'rc' || env.BRANCH_NAME == 'develop' }
+            }
             parallel {
                 stage ('windowsX64') {
                     agent { label 'windowsX64' }
@@ -156,18 +161,16 @@ pipeline {
                         skipDefaultCheckout()
                     }
                     steps {
-                        gitlabCommitStatus(name: 'test') {
-                            withCredentials([file(credentialsId: 'MIRO_TEST_GAMS_LICE', variable: 'MIRO_TEST_GAMS_LICE'),
-                                             usernamePassword(credentialsId: '9753687d-1cfe-473d-a4be-eb0273f82ff8', passwordVariable: 'ENGINE_PASSWORD', usernameVariable: 'ENGINE_USER'),
-                                             usernamePassword(credentialsId: '26442d03-76b8-4cc0-b614-9e9fcdb44a88', passwordVariable: 'MIRO_REPORTER_PASS', usernameVariable: 'MIRO_REPORTER_USER')]) {
-                                withEnv(['ENGINE_NS=tests', 'ENGINE_URL=https://miro.gams.com/engine/api', 'MIRO_REPORTER_URL=https://miro.gams.com/miro-perf/', 'LC_ALL=en_US.UTF-8']) {
-                                    sh '''
-                                       yarn test gams_sys_dir=${GAMS_CORE_PATH}
-                                    '''
-                                }
+                        withCredentials([file(credentialsId: 'MIRO_TEST_GAMS_LICE', variable: 'MIRO_TEST_GAMS_LICE'),
+                                         usernamePassword(credentialsId: '9753687d-1cfe-473d-a4be-eb0273f82ff8', passwordVariable: 'ENGINE_PASSWORD', usernameVariable: 'ENGINE_USER'),
+                                         usernamePassword(credentialsId: '26442d03-76b8-4cc0-b614-9e9fcdb44a88', passwordVariable: 'MIRO_REPORTER_PASS', usernameVariable: 'MIRO_REPORTER_USER')]) {
+                            withEnv(['ENGINE_NS=tests', 'ENGINE_URL=https://miro.gams.com/engine/api', 'MIRO_REPORTER_URL=https://miro.gams.com/miro-perf/', 'LC_ALL=en_US.UTF-8']) {
+                                sh '''
+                                   yarn test gams_sys_dir=${GAMS_CORE_PATH}
+                                '''
                             }
-                            junit allowEmptyResults: true, testResults: 'src/test-out.xml'
                         }
+                        junit allowEmptyResults: true, testResults: 'src/test-out.xml'
                         script {
                             if (currentBuild.result == 'UNSTABLE') {
                                 updateGitlabCommitStatus name: 'test', state: 'failed'
@@ -188,7 +191,7 @@ pipeline {
                         script{
                             if (env.BRANCH_NAME == 'master' && currentBuild.currentResult == "SUCCESS") {
                                 withCredentials([usernamePassword(credentialsId: 'dockerhub_login', passwordVariable: 'hub_pass', usernameVariable: 'hub_user')]){
-                                    sh '''
+                                    sh '''#!/bin/bash -xe
                                         docker login hub.gams.com:443 --username="${hub_user}" --password="${hub_pass}"
                                         yarn docker-publish
                                         ## build MIRO server images

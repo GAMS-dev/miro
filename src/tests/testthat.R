@@ -20,9 +20,11 @@ if(!dependenciesInstalled()){
 }
 
 reporter <- MultiReporter$new(list(
-    ProgressReporter$new(),
+    ProgressReporter$new(max_failures = 100),
     JunitReporter$new(file = "test-out.xml")
 ))
 
-#test_file("tests/testthat/test-gdxio-unit.R")
-test_dir("tests/testthat", reporter = reporter)
+stopOnFailure <- identical(commandArgs(trailingOnly=TRUE), "--stop")
+
+#test_file("tests/testthat/test-attachments-unit.R", reporter = reporter)
+test_dir("tests/testthat", reporter = reporter, stop_on_failure = stopOnFailure)
