@@ -564,12 +564,12 @@ ${data.data}</div>` : data.data);
     const tbody = $tbody[0];
     $tbody.children('tr').remove();
 
-    for (let i = 0; i < noNewRows; i++) {
+    for (let i = 0; i < noNewRows; i += 1) {
       const tr = document.createElement('tr');
       tr.onclick = function () {
         $(this).toggleClass('selected');
       };
-      for (let j = 0; j < noCols; j++) {
+      for (let j = 0; j < noCols; j += 1) {
         const td = document.createElement('td');
         if (j === 0 && valCol != null) {
           td.dataset.val = btoa(data.data[valCol][i]);

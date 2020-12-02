@@ -291,26 +291,32 @@ pipeline {
                 branch 'master'
             }
             steps {
-                sshagent(['a2576ca5-f8e0-4e28-9d42-b0c5603b213d']) {
+                sshagent(['a2576ca5-f8e0-4e28-9d42-b0c5603b213d', 'ssh_newgamscom']) {
                     sh '''#!/bin/bash -xe
                         MIRO_VERSION_FULL=$(grep -e '"version": .*' package.json |cut -f4 -d"\\"")
                         pushd src > /dev/null
                            MIRO_RELEASE_DATE=$(grep -m 1 -e 'MIRORDate' app.R | cut -f2 -d'"' | xargs -0 date +%Y-%m-%d -d )
+                           ./scripts/fix_docs.sh
                         popd > /dev/null
 
                         git config user.name 'jenkins'
                         git config user.email 'jenkins@berlin.noreply.gams.com'
                         git checkout -B $BRANCH_NAME
 
+                        git add ./src/doc/release.html ./src/doc/index.html
+                        git commit -m "[Jenkins CI] Update documentation" && {
+                            git push origin HEAD:$BRANCH_NAME || true
+                        }
                         git tag -a v${MIRO_VERSION_FULL} -m "version ${MIRO_VERSION_FULL}" || {
                             git push origin :refs/tags/v${MIRO_VERSION_FULL}
                             git tag -fa v${MIRO_VERSION_FULL} -m "version ${MIRO_VERSION_FULL}"
                         }
-                        git push origin HEAD:$BRANCH_NAME || true
                         git push origin v${MIRO_VERSION_FULL} || {
                             git push origin :refs/tags/v${MIRO_VERSION_FULL}
                             git push origin v${MIRO_VERSION_FULL}
                         }
+
+                        rsync -rlptvz -e "ssh -o StrictHostKeyChecking=no" src/doc/* ubuntu@new.gams.com:/var/www/html/new.gams.com/public_html/miro
 
                         git clone git@git.gams.com:smann/new.gams.com.git --single-branch
                         pushd new.gams.com > /dev/null
@@ -322,7 +328,7 @@ pipeline {
                         git config user.name 'jenkins'
                         git config user.email 'jenkins@berlin.noreply.gams.com'
                         git commit -m "[Jenkins CI] Update MIRO version" && {
-                            git push origin HEAD:$BRANCH_NAME || true
+                            git push origin HEAD:master || true
                         }
                         popd > /dev/null
                     '''
