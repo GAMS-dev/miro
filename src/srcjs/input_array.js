@@ -75,7 +75,7 @@ class InputArray {
                   this.isDisabled = true;
                   $(`#${this.arrayID}_wrapper .btn-add-array-el`).prop('disabled', true);
                 }
-                for (let i = 0; i < v[2].length; i++) {
+                for (let i = 0; i < v[2].length; i += 1) {
                   if (this.elInArray.indexOf(v[2][i]) === -1) {
                     choices.push(v[2][i]);
                     if (typeof v[3] !== 'undefined') {
@@ -91,7 +91,7 @@ class InputArray {
                 labelID = selected;
                 [label] = aliases;
                 this.addLabelEl(elID, selected);
-                for (let i = 1; i < elID; i++) {
+                for (let i = 1; i < elID; i += 1) {
                   const labelEl = $(`#${k}${i}`);
                   if (labelEl.length) {
                     labelEl[0].selectize.disable();
@@ -305,7 +305,7 @@ class InputArray {
                 if (options.updateTxtWithLabel.length) {
                   const alias = $(`#${k}${htmlID}`).text();
                   if (typeof (alias) !== 'undefined') {
-                    for (let i = 0; i < options.updateTxtWithLabel.length; i++) {
+                    for (let i = 0; i < options.updateTxtWithLabel.length; i += 1) {
                       $(options.updateTxtWithLabel[i]).val(alias);
                     }
                   }
@@ -401,9 +401,11 @@ class InputArray {
         selected = [selected];
       }
       if (choices) {
+        /* eslint-disable no-plusplus */
         for (let i = 0, itemLen = choices.length; i < itemLen;
           optionsHTML += `<option value="${choices[i]}"${$.inArray(choices[i], selected) !== -1 ? ' selected' : ''
           }>${aliases[i++]}</option>\n`);
+        /* eslint-enable no-plusplus */
       }
       return (`<div class="config-array-err" id="${id}_err" style="display:none;"></div>\
 <div class="form-group">\n\
