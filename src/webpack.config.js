@@ -21,7 +21,8 @@ module.exports = (env, argv) => ({
       miro_admin: [ 'babel-polyfill', './srcjs/miro_admin.js' ]
     },
     optimization: {
-      minimizer: [new TerserJSPlugin({sourceMap: true,}), new OptimizeCSSAssetsPlugin({})],
+      minimize: true,
+      minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
     },
     devtool: 'source-map',
     output: {
@@ -39,7 +40,8 @@ module.exports = (env, argv) => ({
             test: [{
               folder: path.resolve(__dirname, "www"),
               method: (filePath) => {
-                  return new RegExp(/skin_.+\.js(\.map)?$/, 'm').test(filePath);
+                  return new RegExp(/skin_.+\.js(\.map)?$/, 'm').test(filePath) ||
+                    filePath.endsWith('.js.LICENSE.txt');
               }
             }]
           }
@@ -81,6 +83,9 @@ module.exports = (env, argv) => ({
             use: [
               {
                 loader: MiniCssExtractPlugin.loader,
+                options: {
+                  publicPath: ''
+                }
               },
               {
                 loader: 'css-loader',
