@@ -108,7 +108,7 @@ expect_identical(app$waitFor("$('#miroLogFile')[0].textContent.length == 0", tim
 app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
 app$findElement(".btSolve .dropdown-toggle")$click()
 app$findElement(".sidebar-menu a[onclick*='Solve model']")$click()
-Sys.sleep(35)
+Sys.sleep(40)
 expect_error(app$findElement("#outputTableView")$click(), NA)
 app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
 app$findElement(".btSolve .dropdown-toggle")$click()
