@@ -230,6 +230,7 @@ observeEvent(input$btRefreshComp, {
     flog.debug("Refresh sandbox scenario in pivot compare mode clicked.")
     loadIntoSandbox <<- FALSE
     sidsToLoad  <<- list("sandbox", as.list(sidsInPivotComp[!is.na(sidsInPivotComp) & sidsInPivotComp != 0]))
+    showEl(session, "#loading-screen")
     rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
     return()
   }else if(input$btRefreshComp %in% c(2L, 3L)){
@@ -318,6 +319,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   }
   if(is.null(input$btSplitView) && identical(config$defCompMode, "pivot") ||
      identical(input$btSplitView, "pivotView")){
+    on.exit(hideEl(session, "#loading-screen"), add = TRUE)
     isInPivotComp <- TRUE
   }else{
     isInPivotComp <- FALSE
