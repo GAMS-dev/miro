@@ -283,7 +283,8 @@
       "nsNotFound": "The namespace you entered could not be found.",
       "invalidCred": "The credentials you entered are invalid.",
       "insuffPerm": "You don't have sufficient permissions to execute the model.",
-      "invalidProtocol": "The protocol you specified is invalid. Only HTTPS supported."
+      "invalidProtocol": "The protocol you specified is invalid. Only HTTPS supported.",
+      "contentNotFoundError": "The desired content could not be found."
     },
     "dialogRemoteLogout": {
       "title": "Logout",

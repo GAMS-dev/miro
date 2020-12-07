@@ -283,7 +283,8 @@
       "nsNotFound": "Der von Ihnen angegebene Namensraum konnte nicht gefunden werden.",
       "invalidCred": "Die von Ihnen eingegebenen Zugangsdaten sind ungültig.",
       "insuffPerm": "Sie haben nicht genügend Berechtigungen, um das Modell auszuführen.",
-      "invalidProtocol": "Das von Ihnen angegebene Protokoll ist ungültig. Nur HTTPS wird unterstützt."
+      "invalidProtocol": "Das von Ihnen angegebene Protokoll ist ungültig. Nur HTTPS wird unterstützt.",
+      "contentNotFoundError": "Der gewünschte Inhalt konnte nicht gefunden werden."
     },
     "dialogRemoteLogout": {
       "title": "Ausloggen",

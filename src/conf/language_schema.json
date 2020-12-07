@@ -1115,9 +1115,13 @@
             "invalidProtocol": {
               "type": "string",
               "minLength": 1
+            },
+            "contentNotFoundError": {
+              "type": "string",
+              "minLength": 1
             }
           },
-          "minProperties": 15
+          "minProperties": 16
         },
         "dialogRemoteLogout": {
           "type": "object",

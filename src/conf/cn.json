@@ -283,7 +283,8 @@
       "nsNotFound": "找不到该命名空间。",
       "invalidCred": "该密匙无效",
       "insuffPerm": "没有足够的权限来执行该模型。",
-      "invalidProtocol": "指定的协议无效，仅支持HTTPS。"
+      "invalidProtocol": "指定的协议无效，仅支持HTTPS。",
+      "contentNotFoundError": "找不到所请求的内容。"
     },
     "dialogRemoteLogout": {
       "title": "退出",
