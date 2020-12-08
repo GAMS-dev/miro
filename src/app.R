@@ -1177,6 +1177,7 @@ if(!is.null(errMsg)){
         enableEl(session, "#btCompareScen")
       }
       isInCompareMode    <- FALSE
+      isInRefreshMode    <- FALSE
       isInSolveMode      <- TRUE
       modelStatus        <- NULL
       

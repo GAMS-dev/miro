@@ -231,6 +231,7 @@ observeEvent(input$btRefreshComp, {
     loadIntoSandbox <<- FALSE
     sidsToLoad  <<- list("sandbox", as.list(sidsInPivotComp[!is.na(sidsInPivotComp) & sidsInPivotComp != 0]))
     showEl(session, "#loading-screen")
+    isInRefreshMode <<- TRUE
     rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
     return()
   }else if(input$btRefreshComp %in% c(2L, 3L)){
@@ -255,6 +256,7 @@ observeEvent(input$btLoadScenConfirm, {
     if(!LAUNCHHCUBEMODE){
       if(is.null(input$btSplitView) && identical(config$defCompMode, "pivot") ||
          identical(input$btSplitView, "pivotView")){
+        isInRefreshMode <<- FALSE
         scenSelected <- c("sandbox", scenSelected)
       }else{
         sandboxScenIdTmp <- startsWith(scenSelected, "-19_")
@@ -319,7 +321,9 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   }
   if(is.null(input$btSplitView) && identical(config$defCompMode, "pivot") ||
      identical(input$btSplitView, "pivotView")){
-    on.exit(hideEl(session, "#loading-screen"), add = TRUE)
+    if(isInRefreshMode){
+      on.exit(hideEl(session, "#loading-screen"), add = TRUE)
+    }
     isInPivotComp <- TRUE
   }else{
     isInPivotComp <- FALSE
@@ -562,7 +566,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
           return(paste0(scenOwner, ": "))
         }, character(1L), USE.NAMES = FALSE), metadataFull[[3]])
         renderScenPivotCompare(scenData[scenIdsLong], scenNamesToCompare, 
-                               rendererEnv, views, roundPrecision)
+                               rendererEnv, views, roundPrecision, resetViews = isFALSE(isInRefreshMode))
       }else{
         sidsToLoadVector <- match(sidsInPivotCompTmp, metadataFull[[1]])
         sidsToLoadVector <- sidsToLoadVector[!is.na(sidsToLoadVector)]
@@ -573,7 +577,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
           return(paste0(scenOwner, ": "))
         }, character(1L), USE.NAMES = FALSE), metadataFull[["_sname"]][sidsToLoadVector])
         renderScenPivotCompare(scenDataTmp, scenNamesToCompare, 
-                               rendererEnv, views, roundPrecision)
+                               rendererEnv, views, roundPrecision, resetViews = isFALSE(isInRefreshMode))
       }
       hideEl(session, "#pivotCompBtWrapper")
       showEl(session, "#pivotCompScenWrapper")

@@ -1,5 +1,5 @@
 renderScenPivotCompare <- function(scenData, scenNames, rendererEnv,
-                                   views, roundPrecision = 2L){
+                                   views, roundPrecision = 2L, resetViews = TRUE){
   scenIdLong     <- "scen_0_"
   outputDsNames  <- names(ioConfig$modelOut)
   scenTableNamesToDisplay <- tolower(ioConfig$scenTableNamesToDisplay)
@@ -19,7 +19,7 @@ renderScenPivotCompare <- function(scenData, scenNames, rendererEnv,
     scenTableId <- match(sheetName, ioConfig$inputDsNames)
     if(is.na(scenTableId)){
       scenTableId <- match(sheetName, outputDsNames)
-      graphOptions <- list(resetOnInit = TRUE,
+      graphOptions <- list(resetOnInit = resetViews,
                            "_metadata_" = list(symname = sheetName,
                                                headers = c(list("_scenName" = list(alias = lang$nav$scen$pivot$scenColName,
                                                                                    type = "string")),
@@ -28,7 +28,7 @@ renderScenPivotCompare <- function(scenData, scenNames, rendererEnv,
     }else{
       scenTableId <- length(outputDsNames) + scenTableId
       if(!sheetName %in% names(ioConfig$modelIn[[sheetName]]) && identical(sheetName, scalarsFileName)){
-        graphOptions <- list(resetOnInit = TRUE,
+        graphOptions <- list(resetOnInit = resetViews,
                              "_metadata_" = list(symname = sheetName,
                                                  headers = c(list("_scenName" = list(alias = lang$nav$scen$pivot$scenColName,
                                                                                      type = "string")),
@@ -40,7 +40,7 @@ renderScenPivotCompare <- function(scenData, scenNames, rendererEnv,
                                                                                type = "string"))),
                                                  symtype = "set"))
       }else{
-        graphOptions <- list(resetOnInit = TRUE,
+        graphOptions <- list(resetOnInit = resetViews,
                              "_metadata_" = list(symname = sheetName,
                                                  headers = c(list("_scenName" = list(alias = lang$nav$scen$pivot$scenColName,
                                                                                      type = "string")),
