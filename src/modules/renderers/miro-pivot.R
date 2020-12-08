@@ -124,9 +124,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                            tags$ul(id = ns("aggregationIndexList"), class="drop-index-list aggregation-index-list",
                                    genIndexList(indices$aggregations)),
                            selectInput(ns("aggregationFunction"), label = NULL, 
-                                       choices = aggregationFunctions,
-                                       selected = if(length(options$aggregationFunction)) 
-                                         options$aggregationFunction else aggregationFunctions[[1]]))),
+                                       choices = c()))),
            fluidRow(style = "margin:0", 
                     column(width = 2L,
                            selectInput(ns("pivotRenderer"), "", 
@@ -202,7 +200,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       initFilter <- TRUE
       initData <- TRUE
       initRenderer <- TRUE
-      initInterface <- TRUE
+      resetFilters <- isTRUE(options$resetOnInit)
+      
       numericCols <- vapply(data, class, character(1L), USE.NAMES = FALSE) %in% c("numeric", "integer")
       if(sum(numericCols) > 1L){
         # data is already pivoted
@@ -345,41 +344,39 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             newView$domainFilter <- domainFilterDomains[[1]]
           }
         }
-        if(initInterface){
-          # we need to update aggregation functions in case the symbol type is not available when rendering the UI
-          # (e.g. in Configuration Mode)
-          if(length(options[["aggregationFunction"]]) &&
-             options[["aggregationFunction"]] %in% aggregationFunctions){
-            updateSelectInput(session, "aggregationFunction", choices = aggregationFunctions, 
-                              selected = options[["aggregationFunction"]])
-          }else{
-            updateSelectInput(session, "aggregationFunction", choices = aggregationFunctions, 
-                              selected = aggregationFunctions[[1]])
-          }
+        if(length(options[["aggregationFunction"]]) &&
+           options[["aggregationFunction"]] %in% aggregationFunctions){
+          updateSelectInput(session, "aggregationFunction",
+                            selected = options[["aggregationFunction"]])
         }else{
-          if(length(options[["aggregationFunction"]]) &&
-             options[["aggregationFunction"]] %in% aggregationFunctions){
-            updateSelectInput(session, "aggregationFunction",
-                              selected = options[["aggregationFunction"]])
-          }else{
-            updateSelectInput(session, "aggregationFunction",
-                              selected = aggregationFunctions[[1]])
-          }
-          initFilter <<- TRUE
-          initData   <<- TRUE
-          initRenderer <<- TRUE
-          options$resetOnInit <<- TRUE
-          noUpdateFilterEl[] <<- FALSE
-          isolate({
-            if(identical(currentFilters(), newView)){
-              newVal <- updateFilter() + 1L
-              updateFilter(newVal)
-            }
-          })
+          updateSelectInput(session, "aggregationFunction",
+                            selected = aggregationFunctions[[1]])
         }
+        initFilter <<- TRUE
+        initData   <<- TRUE
+        initRenderer <<- TRUE
+        options$resetOnInit <<- TRUE
+        noUpdateFilterEl[] <<- FALSE
+        isolate({
+          if(identical(currentFilters(), newView)){
+            newVal <- updateFilter() + 1L
+            updateFilter(newVal)
+          }
+        })
       }
       
-      if(isTRUE(options$resetOnInit)){
+      if(identical(input$aggregationFunction, "")){
+        # interface has not been initialised, do it now
+        resetFilters <- TRUE
+        if(length(options[["aggregationFunction"]]) &&
+           options[["aggregationFunction"]] %in% aggregationFunctions){
+          updateSelectInput(session, "aggregationFunction", choices = aggregationFunctions, 
+                            selected = options[["aggregationFunction"]])
+        }else{
+          updateSelectInput(session, "aggregationFunction", choices = aggregationFunctions, 
+                            selected = aggregationFunctions[[1]])
+        }
+      }else if(isTRUE(options$resetOnInit)){
         resetView(options, options[["domainFilter"]]$domains)
       }
       
@@ -530,7 +527,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         getFilterDropdowns <- function(filterIndex, optionId = "filter"){
           allowEmpty <- optionId %in% c("aggregations", "cols")
-          if(initData && isTRUE(options$resetOnInit) &&
+          if(initData && resetFilters &&
              (allowEmpty || length(currentView[[optionId]][[filterIndex]]))){
             currentFilterVal <- currentView[[optionId]][[filterIndex]]
             if(length(currentFilterVal) && currentFilterVal %in% filterElements[[filterIndex]] &&
@@ -694,7 +691,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }else if(filterIndex %in% colFilterIndexList){
             optionId <- "cols"
           }
-          if(initFilter && isTRUE(options$resetOnInit) &&
+          if(initFilter && resetFilters &&
              (optionId %in% c("aggregations", "cols") || 
                             length(currentView[[optionId]][[filterIndex]]))){
             filterVal <- currentView[[optionId]][[filterIndex]]
@@ -734,7 +731,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         dataTmp <- filteredData()$data
         rowIndexList <- input$rowIndexList
         initData   <<- FALSE
-        initInterface <<- FALSE
         if(!length(dataTmp)){
           return()
         }
