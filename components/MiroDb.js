@@ -23,7 +23,7 @@ class MiroDb {
   removeTables(tablesToRemove) {
     try {
       this.db.pragma('foreign_keys = OFF');
-      Object.keys(tablesToRemove).forEach((tableToRemove) => {
+      tablesToRemove.forEach((tableToRemove) => {
         this.db.prepare(`DROP TABLE IF EXISTS ${MiroDb.escapeIdentifier(tableToRemove)}`)
           .run();
       });
