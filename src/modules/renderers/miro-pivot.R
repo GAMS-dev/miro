@@ -530,7 +530,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         getFilterDropdowns <- function(filterIndex, optionId = "filter"){
           allowEmpty <- optionId %in% c("aggregations", "cols")
-          if(initData && (allowEmpty || length(currentView[[optionId]][[filterIndex]]))){
+          if(initData && isTRUE(options$resetOnInit) &&
+             (allowEmpty || length(currentView[[optionId]][[filterIndex]]))){
             currentFilterVal <- currentView[[optionId]][[filterIndex]]
             if(length(currentFilterVal) && currentFilterVal %in% filterElements[[filterIndex]] &&
                !identical(isolate(input[[paste0("filter_", filterIndex)]]), currentFilterVal))
@@ -693,7 +694,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }else if(filterIndex %in% colFilterIndexList){
             optionId <- "cols"
           }
-          if(initFilter && (optionId %in% c("aggregations", "cols") || 
+          if(initFilter && isTRUE(options$resetOnInit) &&
+             (optionId %in% c("aggregations", "cols") || 
                             length(currentView[[optionId]][[filterIndex]]))){
             filterVal <- currentView[[optionId]][[filterIndex]]
           }else{
