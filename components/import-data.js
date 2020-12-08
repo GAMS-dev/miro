@@ -49,7 +49,7 @@ async function addModelData(paths, modelName, miroMode, miroVersion, miroProcess
     windowObj.setProgressBar(0);
     // eslint-disable-next-line no-restricted-syntax
     for await (const data of miroProcesses[internalPid].stderr) {
-      const msg = data.toString();
+      const msg = data.toString().trim();
       log.debug(msg);
       if (msg.startsWith('merr:::')) {
         log.debug(`MIRO error message received: ${msg}`);
