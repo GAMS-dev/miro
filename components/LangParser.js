@@ -447,10 +447,6 @@ const schema = {
           type: 'string',
           minLength: 1,
         },
-        dialogNewAppFilesFilter: {
-          type: 'string',
-          minLength: 1,
-        },
         dialogNewScenFilesHdr: {
           type: 'string',
           minLength: 1,
@@ -475,7 +471,7 @@ const schema = {
         'errInvalidDbPathMsg', 'dialogSelectAppLogoHdr', 'dialogSelectAppLogoMsg', 'dialogSelectAppLogoBtn',
         'dialogSelectAppLogoFilter', 'dialogSelectDbPathHdr', 'dialogSelectDbPathMsg', 'dialogSelectDbPathBtn',
         'dialogErrHdr', 'dialogErrMsg', 'dialogNewAppFilesHdr', 'dialogNewAppFilesMsg', 'dialogNewAppFilesBtn',
-        'dialogNewAppFilesFilter', 'dialogNewScenFilesHdr', 'dialogNewScenFilesMsg', 'dialogNewScenFilesBtn', 'dialogNewScenFilesFilter',
+        'dialogNewScenFilesHdr', 'dialogNewScenFilesMsg', 'dialogNewScenFilesBtn', 'dialogNewScenFilesFilter',
       ],
     },
     menu: {
