@@ -102,7 +102,7 @@ let libPath = isMac && !DEVELOPMENT_MODE
   : path.join(appRootDir, 'r', 'library');
 
 const miroResourcePath = DEVELOPMENT_MODE ? path.join(app.getAppPath(), 'src')
-  : path.join(process.resourcesPath, 'miro');
+  : path.join(process.resourcesPath, 'src');
 
 log.info(`MIRO launcher is being started (rootDir: ${appRootDir}, pid: ${process.pid}, \
 platform: ${process.platform}, arch: ${process.arch}, \
