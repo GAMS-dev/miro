@@ -4,6 +4,12 @@ getSelectizeOptions <- function(app, selector){
   options <- app$getDebugLog("browser")$message
   return(rev(substr(options, 1, nchar(options) -4)))
 }
+getSelectizeAliases <- function(app, selector){
+  app$getDebugLog("browser")
+  app$waitFor(paste0("var options=$('", selector, "')[0].selectize.options;for(key in options){console.log(options[key].label)};true"))
+  options <- app$getDebugLog("browser")$message
+  return(rev(substr(options, 1, nchar(options) -4)))
+}
 
 expect_download_size <- function(app, id, filename, tolerance = 100){
   url <- app$findElement(paste0("#", id))$getAttribute("href")
