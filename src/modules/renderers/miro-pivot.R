@@ -356,6 +356,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                             selected = aggregationFunctions[[1]])
         }
         initFilter <<- TRUE
+        resetFilters <<- TRUE
         initData   <<- TRUE
         initRenderer <<- TRUE
         options$resetOnInit <<- TRUE
