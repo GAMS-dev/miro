@@ -308,7 +308,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                              "#7efee0", "#00ffc5", "#c28eb1", "#6c3a5c", 
                              "#df7192", "#8b1e3f", "#95D86B", "#3E721D")
       
-      resetView <- function(options, domainFilterDomains){
+      resetView <- function(options, domainFilterDomains, interfaceInitialized = FALSE){
         unassignedSetIndices <- setNames(setIndices, 
                                          setIndexAliases)
         
@@ -344,6 +344,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             newView$domainFilter <- domainFilterDomains[[1]]
           }
         }
+        if(!interfaceInitialized){
+          return()
+        }
         if(length(options[["aggregationFunction"]]) &&
            options[["aggregationFunction"]] %in% aggregationFunctions){
           updateSelectInput(session, "aggregationFunction",
@@ -365,7 +368,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         })
       }
       
-      if(identical(input$aggregationFunction, "")){
+      if(is.null(input$aggregationFunction) || identical(input$aggregationFunction, "")){
         # interface has not been initialised, do it now
         resetFilters <- TRUE
         if(length(options[["aggregationFunction"]]) &&
@@ -375,6 +378,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }else{
           updateSelectInput(session, "aggregationFunction", choices = aggregationFunctions, 
                             selected = aggregationFunctions[[1]])
+        }
+        if(isTRUE(options$resetOnInit)){
+          resetView(options, options[["domainFilter"]]$domains, interfaceInitialized = FALSE)
         }
       }else if(isTRUE(options$resetOnInit)){
         resetView(options, options[["domainFilter"]]$domains)
