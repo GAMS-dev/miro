@@ -944,13 +944,25 @@ function createMainWindow(showRunningApps = false) {
     appLoaded = true;
     if (process.platform === 'win32'
       && process.argv.length >= 2 && !DEVELOPMENT_MODE) {
-      log.debug(`MIRO launcher opened by double clicking MIRO app at path: ${process.argv[1]}.`);
+      const associatedFile = process.argv[1];
+      if (associatedFile.toLowerCase().endsWith('.miroscen')) {
+        log.debug(`MIRO launcher opened by double clicking MIRO scenario file at path: ${associatedFile}.`);
+        await addMiroscenFile(associatedFile);
+        return;
+      }
+      log.debug(`MIRO launcher opened by double clicking MIRO app at path: ${associatedFile}.`);
       activateEditMode(false, true);
-      validateMIROApp([process.argv[1]]);
+      validateMIROApp([associatedFile]);
     } else if (fileToOpen) {
+      const associatedFile = fileToOpen;
+      if (associatedFile.toLowerCase().endsWith('.miroscen')) {
+        log.debug(`MIRO launcher opened by double clicking MIRO scenario file at path: ${associatedFile}.`);
+        await addMiroscenFile(associatedFile);
+        return;
+      }
       activateEditMode(false, true);
-      log.debug(`MIRO launcher opened by double clicking MIRO app at path: ${fileToOpen}.`);
-      validateMIROApp([fileToOpen]);
+      log.debug(`MIRO launcher opened by double clicking MIRO app at path: ${associatedFile}.`);
+      validateMIROApp([associatedFile]);
     }
   });
   mainWindow.setTouchBar(mainWindowTouchBar);
@@ -1677,11 +1689,18 @@ ipcMain.on('close-window', (e, id) => {
 });
 
 app.on('will-finish-launching', () => {
-  app.on('open-file', (e, filePath) => {
+  app.on('open-file', async (e, filePath) => {
     e.preventDefault();
     if (appLoaded) {
+      const associatedFile = filePath;
+      if (associatedFile.toLowerCase().endsWith('.miroscen')) {
+        log.debug(`MIRO scenario file at path: ${associatedFile} opened.`);
+        await addMiroscenFile(associatedFile);
+        return;
+      }
+      log.debug(`MIRO application file at path: ${associatedFile} opened.`);
       activateEditMode(false, true);
-      validateMIROApp([filePath]);
+      validateMIROApp([associatedFile]);
       return;
     }
     fileToOpen = filePath;
