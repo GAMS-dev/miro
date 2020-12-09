@@ -74,7 +74,7 @@
                                 <div class="section-block" id="sbs-create-app">
                                     <h3>Create an app bundle</h3>
                                     <b id="model-assembly-file">The model assembly file:</b><br>
-                                    <p>Before you export your app bundle, MIRO needs to know about the files that belong to your model. This is primarily the main model file, but also all files necessary to calculate all inputs and outputs, e.g. files that are included in the model. To tell MIRO about these files, create a text file in the root directory of your model called <span class="code">&lt;modelname&gt;_files.txt</span> or use <i>GAMS Studio</i> to create this file for you. For the latter you can select in the menu <i>MIRO</i> under <i>create model assembly</i> those folders and files which are needed. If you select a folder, all files in it will be included. If you want to use only single files of a folder, you have to expand the folder and select the corresponding file(s). 
+                                    <p>Before you export your app bundle, MIRO needs to know about the files that belong to your model. This is primarily the main model file, but also all files necessary to calculate all inputs and outputs, e.g. files that are included in the model. To tell MIRO about these files, create a text file in the root directory of your model called <span class="code">&lt;modelname&gt;_files.txt</span> or use <i>GAMS Studio</i> to create this file for you. For the latter go to <i>MIRO</i> &rarr; <i>Assembly and Deploy</i>. In the <i>Assembly File</i> section you can select those folders and files which are needed. If you select a folder, all files in it will be included. If you want to use only single files of a folder, you have to expand the folder and select the corresponding file(s). 
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" style="max-height:350pt" src="assets/images/deployment/model-assembly.png" alt="create model assembly file" />
                                     </div>
@@ -101,7 +101,7 @@ inc/inc2.inc
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" style="max-height:350pt" src="assets/images/deployment/deploy.png" alt="Deploy MIRO model" />
                                     </div>
-                                    <p>In GAMS Studio, select <i>Deploy</i> and specify which MIRO modes you want to support in your MIRO app (Base Mode/Hypercube Mode or both). If the Base Mode is selected, you also need to decide how your model shall be executed (<i>execution environment</i>). There are three options:</p>
+                                    <p>In GAMS Studio, select <i>Assembly and Deploy</i>. In the <i>Deploy Configuration</i> section specify which MIRO modes you want to support in your MIRO app (Base Mode/Hypercube Mode or both). If the Base Mode is selected, you also need to decide how your model shall be executed (<i>execution environment</i>). There are three options:</p>
                                         <ol>
                                             <li> Multi-user: This option allows your app to be used by multiple users simultaneously. Your model files are extracted at a random location, which is different for each user, and your model is executed from there.</li>
                                             <li> Single-user: Your model is executed inside the model directory. No extraction of your model files is required, but this means that you can NOT have multiple users accessing your MIRO app at the same time.</li>
@@ -114,7 +114,7 @@ inc/inc2.inc
                                           </div><!--//icon-holder-->
                                           <div class="content">
                                               <b class="callout-title">Advice</b>
-                                              <p>We advise you to test your MIRO app before distributing it. GAMS Studio offers an option <i>test deployment</i>. This simulates how your end users will experience the MIRO app (e.g. for the <i>Base Mode</i> MIRO is launched in the specified execution environment). In particular, you should check whether you forgot to include important files in the model assembly <span class="code">&lt;modelname&gt;_files.txt</span>.</p>
+                                              <p>We advise you to test your MIRO app before distributing it. GAMS Studio offers an option <i>test deployment</i>. This simulates how your end users will experience the MIRO app (e.g. for the <i>Base Mode</i> MIRO is launched in the specified execution environment). In particular, you should check whether you forgot to include important files in the <a href="#model-assembly-file" class="scrollto">model assembly file</a>.</p>
                                           </div><!--//content-->
                                       </div><!--//callout-block-->
                                     <h6>Bundling data with your app</h6>
