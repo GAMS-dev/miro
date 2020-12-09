@@ -253,7 +253,7 @@ observeEvent(input$btLoadScenConfirm, {
     scenSelected <- isolate(input$selLoadScenUI)
   }else{
     scenSelected <- isolate(input$selLoadScen)
-    if(!LAUNCHHCUBEMODE){
+    if(!isInSolveMode && !LAUNCHHCUBEMODE){
       if(is.null(input$btSplitView) && identical(config$defCompMode, "pivot") ||
          identical(input$btSplitView, "pivotView")){
         isInRefreshMode <<- FALSE
