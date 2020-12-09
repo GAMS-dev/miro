@@ -20,7 +20,6 @@ if(is.null(scalarData[[scenIdLong]]) || !nrow(scalarData[[scenIdLong]])){
     }else{
       scenData[[scenIdLong]][[idxScalarOut]] <<- scenDataTemplate[[idxScalarOut]]
     }
-    scalarData[[scenIdLong]] <<- tibble()
   }
 }
 if(length(modelIn)){

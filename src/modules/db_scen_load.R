@@ -357,6 +357,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         sandboxId <- sandboxId[!is.na(sandboxId)][1]
         sidsToLoadVector <- sidsToLoadVector[-sandboxId]
         sidsToLoad[[sandboxId]] <<- -19L
+        saveOutput <- TRUE
         source("./modules/scen_save.R", local = TRUE)
         scenDataTmp <- list(scenData[["scen_1_"]])
         views$duplicateSandboxConf(viewsSids[sandboxId])
