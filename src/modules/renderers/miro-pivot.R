@@ -368,13 +368,12 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
         })
       }
-      
+      if(isTRUE(options$resetOnInit)){
+        resetView(options, options[["domainFilter"]]$domains, interfaceInitialized = FALSE)
+      }
       if(is.null(input$aggregationFunction) || identical(input$aggregationFunction, "")){
         # interface has not been initialised, do it now
         resetFilters <- TRUE
-        if(isTRUE(options$resetOnInit)){
-          resetView(options, options[["domainFilter"]]$domains, interfaceInitialized = FALSE)
-        }
         if(length(options[["aggregationFunction"]]) &&
            options[["aggregationFunction"]] %in% aggregationFunctions){
           updateSelectInput(session, "aggregationFunction", choices = aggregationFunctions, 
@@ -383,8 +382,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           updateSelectInput(session, "aggregationFunction", choices = aggregationFunctions, 
                             selected = aggregationFunctions[[1]])
         }
-      }else if(isTRUE(options$resetOnInit)){
-        resetView(options, options[["domainFilter"]]$domains)
       }
       
       setIndexAliases <- as.list(setIndexAliases)
