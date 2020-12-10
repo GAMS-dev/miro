@@ -402,7 +402,7 @@ getHcubeHashLookupTable <- function(hashLookupResults){
   }
 }
 showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel = FALSE, 
-                               dbTagList = NULL){
+                               dbTagList = NULL, baseScenName = NULL){
   tabPanelUI <- NULL
   tabPanelDB <- NULL
   if(isInSplitView && length(uiScenList)){
@@ -418,6 +418,14 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
     tabPanelDB <- tabPanel(lang$nav$dialogLoadScen$tabDB, icon = icon("database"),
                            value = "loadScenDb",
                            tags$div(class = "space"),
+                           if(length(baseScenName)){
+                             tagList(
+                               tags$div(tags$label(class = "label-base-scen",
+                                                   lang$nav$dialogLoadScen$baseScenLabel),
+                                        tags$span(class = "label label-default base-scen", baseScenName)
+                               ),
+                               tags$div(class = "small-space"))
+                           },
                            selectInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen, 
                                        dbScenList, 
                                        selected = if(isInSplitView) NULL else unname(uiScenList),

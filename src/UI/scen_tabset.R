@@ -78,6 +78,10 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                }
                                if(pivotCompare){
                                  graphConfig <- list(outType = "miroPivot")
+                                 if(isTRUE(config$pivotCompSettings$enableHideEmptyCols)){
+                                   graphConfig$options$enableHideEmptyCols <- TRUE
+                                   graphConfig$options$emptyUEL <- config$pivotCompSettings$emptyUEL
+                                 }
                                }
                                tabContent <- NULL
                                tabId <- match(sheetName, 
@@ -198,7 +202,7 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
   }
 }
 generateScenarioTabsetMulti <- function(scenId, noData = vector("logical", length(scenTableNamesToDisplay)), 
-                                        scenCounter = scenId){
+                                        scenCounter = scenId, showRefreshButton = FALSE){
   tryCatch({
     scenTabset <- generateScenarioTabset(scenId, noData, scenCounter = scenCounter,
                                          createdDynamically = TRUE)
@@ -211,9 +215,22 @@ generateScenarioTabsetMulti <- function(scenId, noData = vector("logical", lengt
            tags$div(class="scen-header", 
                     tags$div(class = "scen-date-wrapper", textOutput("date_" %+% scenId, inline = TRUE)),
                     tags$div(class = "scen-buttons-wrapper",
+                             if(isTRUE(showRefreshButton)){
+                               tags$div(title = lang$nav$scen$tooltips$btRefresh, class = "scen-button-tt",
+                                        id = paste0("refreshSandbox_", scenId),
+                                        tags$button(class = "btn btn-default scen-button", 
+                                                    type = "button", 
+                                                    onclick = paste0("Shiny.setInputValue('btRefreshComp',",
+                                                                     scenId, ",{priority:'event'})"),
+                                                    tags$i(class = "fas fa-sync-alt",
+                                                           role = "presentation",
+                                                           `aria-label` = lang$nav$scen$tooltips$btRefresh))
+                               )
+                             },
                              tags$div(title = lang$nav$scen$tooltips$btExport, class = "scen-button-tt",
                                       HTML(paste0('<button type="button" class="btn btn-default scen-button" 
-onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\'})"><i class="fas fa-download" role="presentation" aria-label="Download"></i></button>'))
+onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\'})"><i class="fas fa-download" role="presentation" aria-label="',
+                                                  lang$nav$scen$tooltips$btExport, '"></i></button>'))
                              ),
                              tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
                                       tags$button(class = "btn btn-default scen-button", 
@@ -222,7 +239,7 @@ onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\
                                                                    scenId, ",{priority:'event'})"),
                                                   tags$i(class = "fa fa-chart-bar",
                                                          role = "presentation",
-                                                         `aria-label` = "Table view"))
+                                                         `aria-label` = lang$nav$scen$tooltips$btTableView))
                                       )
                     )
                     
@@ -244,9 +261,20 @@ generateScenarioTabsetSplit <- function(scenId){
     tags$div(class="scen-header", 
              tags$div(class = "scen-date-wrapper", textOutput("date_" %+% scenId, inline = TRUE)),
              tags$div(class = "scen-buttons-wrapper",
+                      tags$div(title = lang$nav$scen$tooltips$btRefresh, class = "scen-button-tt",
+                               id = paste0("refreshSandbox_", scenId), style = "display:none",
+                               tags$button(class = "btn btn-default scen-button", 
+                                           type = "button", 
+                                           onclick = paste0("Shiny.setInputValue('btRefreshComp',",
+                                                            scenId, ",{priority:'event'})"),
+                                           tags$i(class = "fas fa-sync-alt",
+                                                  role = "presentation",
+                                                  `aria-label` = lang$nav$scen$tooltips$btRefresh))
+                      ),
                       tags$div(title = lang$nav$scen$tooltips$btExport, class = "scen-button-tt",
                                HTML(paste0('<button type="button" class="btn btn-default scen-button" 
-onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\'})"><i class="fas fa-download" role="presentation" aria-label="Download"></i></button>'))
+onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\'})"><i class="fas fa-download" role="presentation" aria-label="',
+                                           lang$nav$scen$tooltips$btExport, '"></i></button>'))
                       ),
                       tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
                                tags$button(class = "btn btn-default scen-button", 
@@ -255,7 +283,7 @@ onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\
                                                             scenId, ",{priority:'event'})"),
                                            tags$i(class = "fa fa-chart-bar",
                                                   role = "presentation",
-                                                  `aria-label` = "Table view"))
+                                                  `aria-label` = lang$nav$scen$tooltips$btTableView))
                       )
              )
              
@@ -269,10 +297,15 @@ generateScenarioTabsetPivot <- function(){
   fluidRow(
     tags$div(id = "scen-pivot-view", style = if(!identical(config$defCompMode, "pivot")) "display:none;",
              box(width = 12L, solidHeader = TRUE, status="primary", title = 
-                   tagList(HTML(paste0('<button class="btn btn-default bt-icon action-button" ',
+                   tagList(HTML(paste0('<button title="', lang$nav$scen$tooltips$btAddPivot,
+                                       '" class="btn btn-default bt-icon action-button" ',
                                        'type="button" onclick="Shiny.setInputValue(\'btLoadScen\',1,{priority: \'event\'})">', 
-                                       '<i class="fas fa-folder-plus"></i></i></button>')), 
-                           tags$div(style = "float: right;", 
+                                       '<i class="fas fa-folder-plus" aria-label="', lang$nav$scen$tooltips$btAddPivot, '"></i></i></button>',
+                                       '<button title="', lang$nav$scen$tooltips$btRefresh,
+                                       '" style="margin-left:30px;" class="btn btn-default bt-icon action-button" ',
+                                       'type="button" onclick="Shiny.setInputValue(\'btRefreshComp\',0,{priority: \'event\'})">', 
+                                       '<i class="fas fa-sync-alt" aria-label="', lang$nav$scen$tooltips$btRefresh, '"></i></i></button>')), 
+                           tags$div(style = "float: right;", title = lang$nav$scen$tooltips$btClosePivot,
                                     actionButton(inputId = "btScenPivot_close", 
                                                  class = "bt-icon",
                                                  icon = icon("times"), 

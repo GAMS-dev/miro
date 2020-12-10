@@ -96,20 +96,28 @@
     "scen":{  
       "noScen":"No scenarios selected",
       "btLoad":"Load",
+      "scenNameSandboxSuffix": "(Sandbox)",
       "tooltips":{  
         "btExport":"export scenario",
         "btTableView":"switch view",
         "btSymbolLink": "Use as input data",
         "btClose":"close scenario",
+        "btClosePivot": "close",
+        "btAddPivot": "add scenarios",
+        "btRefresh": "refresh",
         "btDownloadTmpFiles":"temporary files",
         "inputSheet":"model input",
         "outputSheet":"model output",
         "load":"Load saved scenario",
-        "loadActive":"Load active scenario"
+        "loadActive":"Load sandbox scenario"
       },
       "split":{
         "load":"Load scenario",
-        "loadActive": "Load active"
+        "loadActive": "Load sandbox"
+      },
+      "pivot":{
+        "scenColName": "Scenario",
+        "viewPrefix": "Pivot Comparison:"
       }
     },
     "hcubeImport":{
@@ -275,7 +283,8 @@
       "nsNotFound": "The namespace you entered could not be found.",
       "invalidCred": "The credentials you entered are invalid.",
       "insuffPerm": "You don't have sufficient permissions to execute the model.",
-      "invalidProtocol": "The protocol you specified is invalid. Only HTTPS supported."
+      "invalidProtocol": "The protocol you specified is invalid. Only HTTPS supported.",
+      "contentNotFoundError": "The desired content could not be found."
     },
     "dialogRemoteLogout": {
       "title": "Logout",
@@ -384,6 +393,7 @@
       "descNoScen":"No saved scenarios could be found.",
       "selLoadScen":"Select the scenario(s) that you want to load",
       "selTags": "Show only scenarios with tag(s):",
+      "baseScenLabel": "Base scenario:",
       "titleDataError":"Data corrupted",
       "descDataError":"The scenario data seems to be corrupted. Loading failed.",
       "maxNoScenExceeded": "The maximum number of scenarios that can be displayed has been exceeded. Only a subset is displayed.",
@@ -659,7 +669,6 @@
       "newViewLabel": "Please choose a name for the view.",
       "newViewBtCancel": "Cancel",
       "newViewBtSave": "Save",
-      "pivotCompScenColName": "Scenario",
       "errUniqueViewName": "The view name you entered already exists. Please choose another name.",
       "duplicateRecordTitle": "Duplicate record",
       "duplicateRecordDesc": "The record you entered already exists.",
@@ -689,6 +698,10 @@
         "stackedbar": "Stacked bar chart",
         "radar": "Radar chart",
         "line": "Line chart"
+      },
+      "invalidFilters":{
+        "title": "Some filters could not be applied because the values are not present in the data.",
+        "message": "Filter: '%s', invalid values: '%s'."
       }
     },
     "datatable":{
@@ -1715,6 +1728,7 @@
       "miroPivotOptions":{
         "infoMsg": "Please use directly the preview on the right side to configure the default view.",
         "hideEmptyColsSwitch": "Activate switch to hide empty columns",
+        "pivotCompHideEmptyColsSwitch": "Pivot Compare Mode: Activate switch to hide empty columns",
         "emptyUEL": "UEL, which indicates a missing value (must not be empty string)",
         "infoMsgDummyData": "Currently the preview uses dummy data. This means that the filters will have dummy values. If you want to change these, you have to edit the JSON configuration file manually."
       },

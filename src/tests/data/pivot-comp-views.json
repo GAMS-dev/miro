@@ -1,0 +1,1 @@
+{"a":{"<script>alert('asd')<\/script>":{"aggregationFunction":"sum","pivotRenderer":"table","domainFilter":{"default":null},"filter":{"i":"San-Diego"}}},"_pivotcomp_a":{"<script>alert('asd')<\/script>":{"aggregationFunction":"sum","pivotRenderer":"bar","domainFilter":{"default":null},"filter":{"i":"Seattle"},"cols":{"_scenName":null}}}}

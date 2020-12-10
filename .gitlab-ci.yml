@@ -11,6 +11,7 @@ test:
     - yarn run eslint .
     - mchecklic
     - mtestall
+  interruptible: true
   cache:
     paths:
       - node_modules/

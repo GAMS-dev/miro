@@ -199,6 +199,23 @@
          ],
          "default":"split"
       },
+      "pivotCompSettings":{
+        "description":"Settings related to the Pivot Comparison Mode",
+         "type":"object",
+         "additionalProperties":false,
+         "properties":{
+           "enableHideEmptyCols":{
+            "description": "Enable the switch to hide empty columns",
+            "type":"boolean",
+            "default":false
+          },
+          "emptyUEL": {
+             "description":"UEL that identifies a missing value (defaults to -, must not be empty string).",
+             "type": "string",
+             "minLength": 1
+           }
+         }
+      },
       "activateModules":{  
          "description":"Activate/deactivate certain modules",
          "type":"object",

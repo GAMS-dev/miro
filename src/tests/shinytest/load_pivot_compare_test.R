@@ -71,7 +71,7 @@ expect_chartjs("tab_0_3-miroPivot-pivotChart",
                  "default3.Seattle",
                  "default4.San-Diego",
                  "default4.Seattle"))
-
+expect_error(app$setInputs(`tab_0_3-miroPivot-hideEmptyCols` = TRUE), NA)
 app$findElements("#scen-pivot-view .box-title button")[[1]]$click()
 Sys.sleep(0.5)
 expect_options(app$getValue("selLoadScen"),
@@ -118,7 +118,7 @@ Sys.sleep(0.5)
 app$findElement("#btLoadScen")$click()
 Sys.sleep(0.5)
 expect_options(getSelectizeOptions(app, "#selLoadScen"),
-               paste0(c("2_", "4_"), currentUser))
+               paste0(c("2_", "4_", "-19_"), currentUser))
 app$findElement("button[data-dismiss='modal']")$click()
 Sys.sleep(0.5)
 

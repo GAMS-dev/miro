@@ -80,6 +80,8 @@ observeEvent({
     flog.info("Could not retrieve job log. Return code: '%s'.", logContent)
     if(logContent == 401L || logContent == 403L){
       return(showElReplaceTxt(session, containerID, lang$nav$dialogRemoteLogin$insuffPerm))
+    }else if(logContent == 404L){
+      return(showElReplaceTxt(session, containerID, lang$nav$dialogRemoteLogin$contentNotFoundError))
     }else{
       return(showElReplaceTxt(session, containerID, lang$errMsg$unknownError))
     }
@@ -125,6 +127,8 @@ observeEvent(input$loadTextEntityChunk, {
     flog.info("Could not retrieve job log. Return code: '%s'.", logContent)
     if(logContent == 401L || logContent == 403L){
       return(showElReplaceTxt(session, containerID, lang$nav$dialogRemoteLogin$insuffPerm))
+    }else if(logContent == 404L){
+      return(showElReplaceTxt(session, containerID, lang$nav$dialogRemoteLogin$contentNotFoundError))
     }else{
       return(showElReplaceTxt(session, containerID, lang$errMsg$unknownError))
     }
