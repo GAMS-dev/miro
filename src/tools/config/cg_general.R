@@ -169,7 +169,8 @@ observeEvent({input$pivotcomp_emptyUEL
       rv$generalConfig$pivotCompSettings$emptyUEL <- input$pivotcomp_emptyUEL
     }
   }else{
-    rv$generalConfig$pivotCompSettings <- NULL
+    configJSON$pivotCompSettings <<- NULL
+    rv$generalConfig$pivotCompSettings <<- NULL
   }
 })
 observeEvent(input$general_act_upload, {
