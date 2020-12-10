@@ -36,8 +36,8 @@
       "splitView":"拆分视图",
       "pivotView": "Pivot view",
       "tabView":"标签视图",
-      "compareStart":"比较模式",
-      "compareStop":"停止比较",
+      "compareStart":"选项卡同步",
+      "compareStop":"停止同步",
       "download":"下载输出",
       "interrupt":"停止"
     },

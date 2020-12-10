@@ -228,7 +228,7 @@
                                         You can add a <a href="./customize.html#miro-log">custom log</a> here too.
                                       </li>
                                       <li><span class="fa-li"><i class="fas fa-copy"></i></span><b>Compare scenarios:</b><br/>
-                                        Module for the comparison of results / scenarios in a split view mode or a multi-scenario comparison mode.
+                                        Module for the comparison of results / scenarios in a split view mode or two different multi-scenario comparison modes.
                                       </li>
                                     </ol>
                                     <p>In addition, the buttons for loading input data and for starting a GAMS run are located here:</p>
@@ -470,11 +470,10 @@
                                         </div>
                                             <div id="compare-split"  class="section-block">
                                             <h5 class="block-title">Split view</h5>
-                                            <p>If two scenarios are to be compared, the split-screen view is particularly suitable. Here the data of two scenarios can be compared directly next to each other. </p>
+                                            <p>If two scenarios are to be compared, the split-screen view is particularly suitable. Here the data of two scenarios can be compared side by side.</p>
                                             <div class="section-block" style="text-align:center;">
                                                   <img class="img-fluid" src="assets/images/batch_img/split_screen_mode.png" alt="Integrated scenario comparison - split view" />
                                             </div>
-                                            <p>If you are in the split view, you can load scenarios you want to compare.</p> 
                                             <div class="section-block" style="text-align:center;">
                                                   <img class="img-fluid" src="assets/images/compare_split.png" alt="Split view" />
                                             </div>
@@ -483,7 +482,7 @@
                                               <li>Load scenario:<br>
                                               Load saved scenario data from the database.
                                               </li>
-                                              <li>Load active:<br>
+                                              <li>Load sandbox:<br>
                                               Load the sandbox scenario which is opened in the Input / Output section.
                                               </li>
                                             </ul>
@@ -501,7 +500,7 @@
                                             <h5 class="block-title">Tab view</h5>
                                             <p>Scenarios can also be loaded into tabs (as you know it from e.g. your internet browser). This allows to compare more than two scenarios including their graphics. </p>
                                             <div class="section-block" style="text-align:center;">
-                                                  <img class="img-fluid" src="assets/images/batch_img/tab_view2.png" alt="compare scenarios in tab view" />
+                                                  <img class="img-fluid" src="assets/images/compare_tab.png" alt="compare scenarios in tab view" />
                                             </div>
                                             <div class="callout-block callout-success">
                                               <div class="icon-holder">
@@ -513,10 +512,10 @@
                                               </div><!--//content-->
                                             </div><!--//callout-block-->
                                         </div>
-                                        <div id="comparison-mode"  class="section-block">
-                                            <h5 class="block-title">Comparison mode</h5>
-                                            <p>The comparison mode makes comparing scenarios more convenient. It can be used in both the split view and the tab view.
-                                            As soon as this option is activated via the <i>Comparison mode</i> button in the navigation bar, the switch to another dataset of a scenario is also performed for all other open scenarios.
+                                        <div id="synchronize-tabs"  class="section-block">
+                                            <h5 id="comparison-mode"  class="block-title">Synchronize tabs</h5>
+                                            <p>The <i>synchronize tabs</i> option makes comparing scenarios more convenient. It can be used in both the split view and the tab view.
+                                            As soon as this option is activated via the <i>synchronize tabs</i> button in the navigation bar, the switch to another dataset of a scenario is also performed for all other open scenarios.
                                             This means that if you change the dataset to be displayed in one scenario (e.g. switch from 'Price' to 'absolute error' in the image above), the view also changes for all the other scenario(s) loaded in the comparison mode.</p>
                                             <div class="callout-block callout-success">
                                               <div class="icon-holder">
@@ -747,7 +746,7 @@
                                           <a class="nav-link scrollto" href="#compare-pivot">Pivot view</a>
                                           <a class="nav-link scrollto" href="#compare-split">Split view</a>
                                           <a class="nav-link scrollto" href="#compare-tab">Tab view</a>
-                                          <a class="nav-link scrollto" href="#comparison-mode">Comparison mode</a>
+                                          <a class="nav-link scrollto" href="#synchronize-tabs">Synchronize tabs</a>
                                         </nav>
                                       </nav><!--//nav-->
                                     <a class="nav-link scrollto" href="#data-concept">Data concept</a>
