@@ -36,8 +36,8 @@
       "splitView":"Split view",
       "pivotView": "Pivot view",
       "tabView":"Tab view",
-      "compareStart":"Compare mode",
-      "compareStop":"Stop compare",
+      "compareStart":"Synchronize tabs",
+      "compareStop":"Stop synchronization",
       "download":"Download output",
       "interrupt":"Stop"
     },
