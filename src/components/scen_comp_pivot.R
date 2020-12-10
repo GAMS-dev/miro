@@ -1,5 +1,5 @@
 renderScenPivotCompare <- function(scenData, scenNames, rendererEnv,
-                                   views, roundPrecision = 2L){
+                                   views, roundPrecision = 2L, settings = NULL){
   scenIdLong     <- "scen_0_"
   outputDsNames  <- names(ioConfig$modelOut)
   scenTableNamesToDisplay <- tolower(ioConfig$scenTableNamesToDisplay)
@@ -47,6 +47,10 @@ renderScenPivotCompare <- function(scenData, scenNames, rendererEnv,
                                                              ioConfig$modelIn[[sheetName]]$headers),
                                                  symtype = ioConfig$modelIn[[sheetName]]$symtype))
       }
+    }
+    if(isTRUE(settings$enableHideEmptyCols)){
+      graphOptions$enableHideEmptyCols <- TRUE
+      graphOptions$emptyUEL <- settings$emptyUEL
     }
     tryCatch({
       dataToRender <- lapply(scenData, "[[", scenTableId)

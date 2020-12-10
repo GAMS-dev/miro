@@ -523,6 +523,9 @@ body_admin <- dashboardBody({
                                                                         selected = if(length(configJSON$defCompMode)) configJSON$defCompMode else config$defCompMode
                                                             )),
                                                    tags$div(class = "option-wrapper",
+                                                            getMIROPivotOptions(configJSON$pivotCompSettings, prefix = "pivotcomp_",
+                                                                                pivotComp = TRUE)),
+                                                   tags$div(class = "option-wrapper",
                                                             tags$label(class = "cb-label", "for" = "general_auto",
                                                                        lang$adminMode$general$auto$label),
                                                             tags$div(

@@ -796,6 +796,10 @@
   "autoGenInputGraphs": false,
   "theme": "dark",
   "defCompMode": "tab",
+  "pivotCompSettings":{
+    "enableHideEmptyCols": true,
+    "emptyUEL": "&"
+  },
   "symbolLinks": [
     {
       "source": "pricemerge",
