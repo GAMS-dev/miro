@@ -735,6 +735,10 @@
         "stackedbar": "Gestapeltes Balkendiagramm",
         "radar": "Radardiagramm",
         "line": "Liniendiagramm"
+      },
+      "invalidFilters":{
+        "title": "Einige Filter konnten nicht angewendet werden, weil die Werte in den Daten nicht vorhanden sind.",
+        "message": "Filter: '%s', ungültige Werte: '%s'."
       }
     },
     "datatable":{
@@ -1720,6 +1724,7 @@
       "miroPivotOptions":{
          "infoMsg": "Bitte benutzen Sie direkt die Vorschau auf der rechten Seite, um die Standardansicht zu konfigurieren.",
          "hideEmptyColsSwitch": "Schalter zum Ausblenden leerer Spalten aktivieren",
+         "pivotCompHideEmptyColsSwitch": "Pivot-Vergleichsmodus: Schalter zum Ausblenden leerer Spalten aktivieren",
          "emptyUEL": "UEL, die einen fehlenden Wert anzeigt (darf kein leerer String sein)",
          "infoMsgDummyData": "Derzeit verwendet die Vorschau Dummy-Daten. Das bedeutet, dass die Filter Dummy-Werte haben werden. Wenn Sie diese ändern möchten, müssen Sie die JSON-Konfigurationsdatei manuell bearbeiten."
       },

@@ -161,6 +161,18 @@ observeEvent(input$general_args, ignoreNULL = FALSE, {
 observeEvent(input$general_scen, {
   rv$generalConfig$defCompMode <<- input$general_scen
 })
+observeEvent({input$pivotcomp_emptyUEL
+  input$pivotcomp_enableHideEmptyCols}, {
+  if(isTRUE(input$pivotcomp_enableHideEmptyCols)){
+    rv$generalConfig$pivotCompSettings <- list(enableHideEmptyCols = TRUE)
+    if(length(input$pivotcomp_emptyUEL) && !identical(input$pivotcomp_emptyUEL, "")){
+      rv$generalConfig$pivotCompSettings$emptyUEL <- input$pivotcomp_emptyUEL
+    }
+  }else{
+    configJSON$pivotCompSettings <<- NULL
+    rv$generalConfig$pivotCompSettings <<- NULL
+  }
+})
 observeEvent(input$general_act_upload, {
   rv$generalConfig$activateModules$loadLocal <<- input$general_act_upload
 })

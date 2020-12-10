@@ -262,7 +262,7 @@ getSymbolHotOptions <- function(){
                          })
              ),
     conditionalPanel(condition = "input.inputTable_type==='pivot'",
-                     getMIROPivotOptions(rv$tableWidgetConfig, prefix = "inputpivot_"),
+                     getMIROPivotOptions(rv$tableWidgetConfig$options, prefix = "inputpivot_"),
                      tags$div(class="config-message", 
                               style = "display:block;",
                               lang$adminMode$graphs$miroPivotOptions$infoMsgDummyData)),

@@ -68,6 +68,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
     setNames("count", lang$renderers$miroPivot$aggregationFunctions$count)
   
   tags$div(id = ns("container"),
+           tags$div(id = ns("customError"), class = "gmsalert gmsalert-error"),
            if(length(options$domainFilter$domains)){
              fluidRow(style = "margin:0",
                       do.call(tabsetPanel, 
@@ -529,18 +530,33 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           aggregationIndexList <- isolate(input$aggregationIndexList)
           colIndexList <- isolate(input$colIndexList)
         }
+        invalidFilters <- NULL
         getFilterDropdowns <- function(filterIndex, optionId = "filter"){
           allowEmpty <- optionId %in% c("aggregations", "cols")
           if(initData && resetFilters &&
              (allowEmpty || length(currentView[[optionId]][[filterIndex]]))){
             currentFilterVal <- currentView[[optionId]][[filterIndex]]
-            if(length(currentFilterVal) && currentFilterVal %in% filterElements[[filterIndex]] &&
-               !identical(isolate(input[[paste0("filter_", filterIndex)]]), currentFilterVal))
-              noUpdateFilterEl[[filterIndex]] <<- TRUE
+            if(length(currentFilterVal)){
+              availableFilterVal <- currentFilterVal %in% filterElements[[filterIndex]]
+              if(all(availableFilterVal)){
+                if(!identical(isolate(input[[paste0("filter_", filterIndex)]]), currentFilterVal)){
+                  noUpdateFilterEl[[filterIndex]] <<- TRUE
+                }
+              }else{
+                invalidFiterValues <- paste(currentFilterVal[!availableFilterVal], collapse = "', '")
+                flog.debug("View with invalid filter value(s): '%s' for domain: '%s' loaded.",
+                           invalidFiterValues, filterIndex)
+                invalidFilters <<- paste(invalidFilters, sprintf(lang$renderers$miroPivot$invalidFilters$message,
+                                                                 setIndexAliases[[filterIndex]], invalidFiterValues),
+                                         sep = " ")
+              }
+            }else{
+              availableFilterVal <- logical(0L)
+            }
           }else{
             currentFilterVal <- isolate(input[[paste0("filter_", filterIndex)]])
+            availableFilterVal <- currentFilterVal %in% filterElements[[filterIndex]]
           }
-          availableFilterVal <- currentFilterVal %in% filterElements[[filterIndex]]
           if(any(availableFilterVal)) {
             selectedFilterVal <- currentFilterVal[availableFilterVal]
           }else{
@@ -583,6 +599,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                  aggregations = lapply(aggregationIndexList, getFilterDropdowns,
                                                        optionId = "aggregations"),
                                  cols = lapply(colIndexList, getFilterDropdowns, optionId = "cols")))
+        if(length(invalidFilters)){
+          showHideEl(session, paste0("#", ns("customError")), 7000L,
+                     msg = paste0(lang$renderers$miroPivot$invalidFilters$title,
+                                  invalidFilters))
+        }
       })
       
       

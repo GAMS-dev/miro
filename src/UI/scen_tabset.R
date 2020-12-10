@@ -78,6 +78,10 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                }
                                if(pivotCompare){
                                  graphConfig <- list(outType = "miroPivot")
+                                 if(isTRUE(config$pivotCompSettings$enableHideEmptyCols)){
+                                   graphConfig$options$enableHideEmptyCols <- TRUE
+                                   graphConfig$options$emptyUEL <- config$pivotCompSettings$emptyUEL
+                                 }
                                }
                                tabContent <- NULL
                                tabId <- match(sheetName, 

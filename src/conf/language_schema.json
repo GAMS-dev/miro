@@ -2703,9 +2703,24 @@
                 }
               },
               "minProperties": 6
+            },
+            "invalidFilters": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "message": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 2
             }
           },
-          "minProperties": 28
+          "minProperties": 29
         },
         "datatable": {
           "type": "object",
@@ -6861,6 +6876,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "pivotCompHideEmptyColsSwitch": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "emptyUEL": {
                   "type": "string",
                   "minLength": 1
@@ -6870,7 +6889,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 4
+              "minProperties": 5
             },
             "datatableOptions": {
               "type": "object",

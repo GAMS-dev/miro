@@ -2459,7 +2459,7 @@ observeEvent({
     }else if(identical(chartTool, "miropivot")){
       # make sure pivot table is refreshed when changing symbol
       insertUI(selector = "#tool_options",
-               getMIROPivotOptions(currentGraphConfig, prefix = "miropivot_"),
+               getMIROPivotOptions(currentGraphConfig$options, prefix = "miropivot_"),
                where = "beforeEnd")
       rv$graphConfig$graph$symname <- activeSymbol$name
       allDataAvailable <<- TRUE

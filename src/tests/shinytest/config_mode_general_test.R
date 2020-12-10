@@ -18,6 +18,7 @@ expect_identical(configRaw$activateModules$logFile, configNew$activateModules$lo
 expect_identical(configRaw$activateModules$lstFile, configNew$activateModules$lstFile)
 expect_identical(configRaw$miroLogFile, configNew$miroLogFile)
 expect_identical(configRaw$defCompMode, configNew$defCompMode)
+expect_identical(configRaw$pivotCompSettings, list(enableHideEmptyCols = TRUE, emptyUEL = "&"))
 expect_identical(configRaw$autoGenInputGraphs, configNew$autoGenInputGraphs)
 expect_identical(configRaw$roundingDecimals, configNew$roundingDecimals)
 

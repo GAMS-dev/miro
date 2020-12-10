@@ -694,6 +694,10 @@
         "stackedbar": "Stacked bar chart",
         "radar": "Radar chart",
         "line": "Line chart"
+      },
+      "invalidFilters":{
+        "title": "Some filters could not be applied because the values are not present in the data.",
+        "message": "Filter: '%s', invalid values: '%s'."
       }
     },
     "datatable":{
@@ -1720,6 +1724,7 @@
       "miroPivotOptions":{
         "infoMsg": "Please use directly the preview on the right side to configure the default view.",
         "hideEmptyColsSwitch": "Activate switch to hide empty columns",
+        "pivotCompHideEmptyColsSwitch": "Pivot Compare Mode: Activate switch to hide empty columns",
         "emptyUEL": "UEL, which indicates a missing value (must not be empty string)",
         "infoMsgDummyData": "Currently the preview uses dummy data. This means that the filters will have dummy values. If you want to change these, you have to edit the JSON configuration file manually."
       },
