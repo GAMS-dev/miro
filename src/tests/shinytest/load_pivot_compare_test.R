@@ -118,7 +118,7 @@ Sys.sleep(0.5)
 app$findElement("#btLoadScen")$click()
 Sys.sleep(0.5)
 expect_options(getSelectizeOptions(app, "#selLoadScen"),
-               paste0(c("2_", "4_"), currentUser))
+               paste0(c("2_", "4_", "-19_"), currentUser))
 app$findElement("button[data-dismiss='modal']")$click()
 Sys.sleep(0.5)
 

@@ -96,20 +96,28 @@
     "scen":{
       "noScen":"未选择任何场景",
       "btLoad": "加载",
+      "scenNameSandboxSuffix": "(沙盒)",
       "tooltips":{
         "btExport":"导出场景",
         "btTableView":"切换视图",
 		"btSymbolLink": "作为输入数据",									
         "btClose":"关闭场景",
+        "btClosePivot": "关闭",
+        "btAddPivot": "添加场景",
+        "btRefresh": "刷新",
         "btDownloadTmpFiles":"临时文件",
         "inputSheet":"模型输入",
         "outputSheet":"模型输出",
         "load":"加载已有的场景",
-        "loadActive":"加载活跃的场景"
+        "loadActive":"加载沙盒场景"
       },
       "split":{
         "load":"加载场景",
-        "loadActive":"加载活跃的场景"
+        "loadActive":"加载沙盒场景"
+      },
+      "pivot":{
+        "scenColName": "场景选项",
+        "viewPrefix": "枢轴比较："
       }
     },
     "hcubeImport":{
@@ -275,7 +283,8 @@
       "nsNotFound": "找不到该命名空间。",
       "invalidCred": "该密匙无效",
       "insuffPerm": "没有足够的权限来执行该模型。",
-      "invalidProtocol": "指定的协议无效，仅支持HTTPS。"
+      "invalidProtocol": "指定的协议无效，仅支持HTTPS。",
+      "contentNotFoundError": "找不到所请求的内容。"
     },
     "dialogRemoteLogout": {
       "title": "退出",
@@ -384,6 +393,7 @@
       "descNoScen":"未找到任何保存过的场景。",
       "selLoadScen":"选择要加载的场景",
       "selTags":"仅显示带标签的场景:",
+      "baseScenLabel": "基地场景:",
       "titleDataError":"数据已损坏",
       "descDataError":"场景数据似乎已损坏，加载失败。",
       "maxNoScenExceeded":"已超出可显示场景数的上限，仅显示一个子集。",
@@ -696,7 +706,6 @@
       "newViewLabel": "请为该视图选择一个名称。",
       "newViewBtCancel": "取消",
       "newViewBtSave": "保存",
-      "pivotCompScenColName": "场景选项",
       "errUniqueViewName": "您输入的视图名称已经存在。请选择其他名称。",
       "duplicateRecordTitle": "双重记录",
       "duplicateRecordDesc": "您输入的记录已经存在。",

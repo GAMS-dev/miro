@@ -381,6 +381,10 @@
               "type": "string",
               "minLength": 1
             },
+            "scenNameSandboxSuffix": {
+              "type": "string",
+              "minLength": 1
+            },
             "tooltips": {
               "type": "object",
               "additionalProperties": false,
@@ -398,6 +402,18 @@
                   "minLength": 1
                 },
                 "btClose": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btClosePivot": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btAddPivot": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btRefresh": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -422,7 +438,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 9
+              "minProperties": 12
             },
             "split": {
               "type": "object",
@@ -438,9 +454,24 @@
                 }
               },
               "minProperties": 2
+            },
+            "pivot": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "scenColName": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "viewPrefix": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 2
             }
           },
-          "minProperties": 4
+          "minProperties": 6
         },
         "hcubeImport": {
           "type": "object",
@@ -1084,9 +1115,13 @@
             "invalidProtocol": {
               "type": "string",
               "minLength": 1
+            },
+            "contentNotFoundError": {
+              "type": "string",
+              "minLength": 1
             }
           },
-          "minProperties": 15
+          "minProperties": 16
         },
         "dialogRemoteLogout": {
           "type": "object",
@@ -1494,6 +1529,10 @@
               "type": "string",
               "minLength": 1
             },
+            "baseScenLabel": {
+              "type": "string",
+              "minLength": 1
+            },
             "titleDataError": {
               "type": "string",
               "minLength": 1
@@ -1543,7 +1582,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 19
+          "minProperties": 20
         },
         "dialogNewCol": {
           "type": "object",
@@ -2548,10 +2587,6 @@
               "type": "string",
               "minLength": 1
             },
-            "pivotCompScenColName": {
-              "type": "string",
-              "minLength": 1
-            },
             "errUniqueViewName": {
               "type": "string",
               "minLength": 1
@@ -2685,7 +2720,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 30
+          "minProperties": 29
         },
         "datatable": {
           "type": "object",
