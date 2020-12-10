@@ -231,7 +231,6 @@ observeEvent(input$btRefreshComp, {
     loadIntoSandbox <<- FALSE
     sidsToLoad  <<- list("sandbox", as.list(sidsInPivotComp[!is.na(sidsInPivotComp) & sidsInPivotComp != 0]))
     showEl(session, "#loading-screen")
-    isInRefreshMode <<- TRUE
     rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
     return()
   }else if(input$btRefreshComp %in% c(2L, 3L)){
@@ -256,7 +255,6 @@ observeEvent(input$btLoadScenConfirm, {
     if(!isInSolveMode && !LAUNCHHCUBEMODE){
       if(is.null(input$btSplitView) && identical(config$defCompMode, "pivot") ||
          identical(input$btSplitView, "pivotView")){
-        isInRefreshMode <<- FALSE
         scenSelected <- c("sandbox", scenSelected)
       }else{
         sandboxScenIdTmp <- startsWith(scenSelected, "-19_")
@@ -583,6 +581,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       hideEl(session, "#pivotCompBtWrapper")
       showEl(session, "#pivotCompScenWrapper")
       switchTab(session, "scenComp")
+      isInRefreshMode <<- TRUE
       sidsInPivotComp <<- as.integer(sidsInPivotCompTmp)
       removeModal()
       flog.debug("Scenarios: '%s' loaded and rendered in scenario comparison mode (pivot view).", 
