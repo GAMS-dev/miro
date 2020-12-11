@@ -1623,6 +1623,7 @@
         "previewError": "No scalar indices found in your data.",
         "xdata": "What index do you want to plot on the x-axis?",
         "ydata": "Add data series",
+        "ydataGeneral": "Dimension selected. Further options related to y-data can be set under 'General'",
         "color": "Select the domain to be grouped for plotting.",
         "dyEvent": "Add event line",
         "dyLimit": "Add limit line",

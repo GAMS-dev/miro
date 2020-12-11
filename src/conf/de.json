@@ -1623,6 +1623,7 @@
         "previewError": "Keine skalaren Indizes in Ihren Daten gefunden.",
         "xdata": "Welchen Index möchten Sie auf der x-Achse zeichnen?",
         "ydata": "Datenreihe hinzufügen",
+        "ydataGeneral": "Dimension ausgewählt. Weitere y-data bezogenen Optionen können unter 'Allgemein' eingestellt werden.",
         "color": "Wählen Sie die Domäne aus, die für das Plotten gruppiert werden soll.",
         "dyEvent": "Ereignislinie hinzufügen",
         "dyLimit": "Limitlinie hinzufügen",

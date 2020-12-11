@@ -3051,9 +3051,25 @@ getDygraphsOptions <- reactive({
                          selected = rv$graphConfig$graph$xdata),
              getDyaxisOptions("dxAxis", names(indices[1]))),
     tags$div(class="cat-body cat-body-28", style="display:none;",
-             createArray(session, "dy_ydata", lang$adminMode$graphs$dygraphsOptions$ydata,
-                         autoCreate = !isTRUE(configuredWithThisTool),
-                         class_outer="array-wrapper-outer-graph", hr = FALSE)),
+             if(!length(indices[activeSymbol$indexTypes == "numeric"]) > 1L){
+               selectInput("chart_color", tags$div(lang$adminMode$graphs$dygraphsOptions$color, 
+                                                   tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#group-domain", 
+                                                          tags$span(class="fas fa-info-circle", class="info-icon",
+                                                                    role = "presentation",
+                                                                    `aria-label` = "More information"), target="_blank")),
+                           choices = c("_", indices[activeSymbol$indexTypes == "string"]), selected = rv$graphConfig$graph$color)
+             },
+             conditionalPanel(
+               condition = "input.chart_color == 'undefined' || input.chart_color==='_'",
+               createArray(session, "dy_ydata", lang$adminMode$graphs$dygraphsOptions$ydata,
+                           autoCreate = !isTRUE(configuredWithThisTool),
+                           class_outer="array-wrapper-outer-graph", hr = FALSE)
+             ),
+             conditionalPanel(
+               condition = "input.chart_color != 'undefined' && input.chart_color !== '_'",
+               tags$div(class = "shiny-input-container config-message", style="display:block;", lang$adminMode$graphs$dygraphsOptions$ydataGeneral)
+             )
+    ),
     tags$div(class="cat-body cat-body-54", style="display:none;",
              tags$div(id = "left_dyAxis", class = "shiny-input-container",
                       style = if(!axisOptionsGlobal[["y"]] > 0L)
@@ -3066,11 +3082,6 @@ getDygraphsOptions <- reactive({
                       optionSection(lang$adminMode$graphs$axisOptions$rightAxis, 
                                     getDyaxisOptions("dyAxis2", names(scalarIndices)[1])))),
     tags$div(class="cat-body cat-body-29", style="display:none;",
-             selectInput("chart_color", tags$div(lang$adminMode$graphs$dygraphsOptions$color, tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#group-domain", 
-                                                                                            tags$span(class="fas fa-info-circle", class="info-icon",
-                                                                                                      role = "presentation",
-                                                                                                      `aria-label` = "More information"), target="_blank")),
-                         choices = c("_", indices), selected = rv$graphConfig$graph$color),
              getFilterOptions()),
     if(length(configScalars) && nrow(configScalars)){
       tagList(

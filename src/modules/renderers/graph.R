@@ -364,7 +364,6 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
             }
             p <<- dygraph(xts_data, main = options$title, periodicity = NULL, group = NULL, 
                           elementId = NULL)
-            p <<- dySeries(p, axis = options$ydata[[1]]$yaxis)
           }else{
             idxVector <- match(tolower(names(options$ydata)), tolower(names(data)))
             dataColId <- 1L
