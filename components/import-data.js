@@ -102,7 +102,7 @@ async function addModelData(paths, modelName, miroMode, miroVersion, miroProcess
           if (dialog.showMessageBoxSync(windowObj, {
             type: 'info',
             title: global.lang.main.ErrorDataImportHdr,
-            message: global.lang.main.ErrorDataImportMsg,
+            message: String.format(global.lang.main.ErrorDataImportMsg, error[2]),
             buttons: [global.lang.main.BtnCancel, global.lang.main.BtnOverwrite],
           }) === 1) {
             log.debug('Overwriting scenario was confirmed');

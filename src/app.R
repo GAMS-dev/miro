@@ -1100,11 +1100,11 @@ if(!is.null(errMsg)){
                                     readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
                                     execPerm = c(uidAdmin, ugroups), uid = uidAdmin, views = views)
           }
-          if(!overwriteScenToImport && db$checkSnameExists(newScen$getScenName())){
+          if(!overwriteScenToImport && db$checkSnameExists(newScen$getScenName(), newScen$getScenUid())){
             flog.info("Scenario: %s already exists and overwrite is set to FALSE. Skipping...",
                       newScen$getScenName())
             stop_custom("error_file_exists",
-                        "Scenario already exists", call. = FALSE)
+                        newScen$getScenName(), call. = FALSE)
           }
           
           dataOut <- loadScenData(scalarsOutName, modelOut, tmpDir, modelName, scalarsFileHeaders,
@@ -1153,7 +1153,7 @@ if(!is.null(errMsg)){
       if(miroStoreDataOnly){
         flog.info("Scenario already exists and overwrite is set to FALSE. Aborting...")
         write("\n", stderr())
-        write("merr:::418", stderr())
+        write(paste0("merr:::418:::", conditionMessage(e)), stderr())
         if(interactive())
           stop()
         quit("no", 1L)

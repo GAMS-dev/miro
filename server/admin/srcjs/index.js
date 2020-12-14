@@ -568,7 +568,7 @@ you want to add. Do you want to remove all inconsistent data? The datasets to be
     $('#loadingScreenProgressWrapper').hide();
     $('#loadingScreenProgress').css('width', '0%').attr('aria-valuenow', '0');
     bootbox.confirm({
-      message: `The scenario: '${scenName}' already exists. Do you want to overwrite it?`,
+      message: `A scenario: '${scenName}' already exists. Do you want to overwrite it?`,
       centerVertical: true,
       callback: (removeScenConfirmed) => {
         if (!removeScenConfirmed) {
