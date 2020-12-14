@@ -23,9 +23,6 @@
 [submodule "r-src/leaflet"]
 	path = r-src/leaflet
 	url = https://github.com/GAMS-dev/leaflet.git
-[submodule "r-src/RSQLite"]
-	path = r-src/RSQLite
-	url = https://github.com/GAMS-dev/RSQLite.git
 [submodule "r-src/rhandsontable"]
 	path = r-src/rhandsontable
 	url = https://github.com/GAMS-dev/rhandsontable.git
@@ -35,10 +32,6 @@
 [submodule "r-src/gdxrrwMIRO"]
 	path = r-src/gdxrrwMIRO
 	url = https://github.com/GAMS-dev/gdxrrw-miro.git
-[submodule "r-src/RPostgres"]
-	path = r-src/RPostgres
-	url = https://github.com/GAMS-dev/RPostgres.git
-	branch = master
 [submodule "r-src/miro.util"]
 	path = r-src/miro.util
 	url = https://github.com/GAMS-dev/miro.util.git
