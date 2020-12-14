@@ -124,24 +124,6 @@ function exitOverlayMode() {
   }
 }
 
-function isMiroApp(event) {
-  if (event.dataTransfer.items) {
-    for (let i = 0; i < event.dataTransfer.items.length; i += 1) {
-      if (event.dataTransfer.items[i].kind === 'file'
-        && event.dataTransfer.items[i].getAsFile().name.endsWith('.miroapp')) {
-        return true;
-      }
-    }
-  } else {
-    for (let i = 0; i < event.dataTransfer.files.length; i += 1) {
-      if (event.dataTransfer.files[i].name.endsWith('.miroapp')) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 function registerSelectizeInputs() {
   $('select').selectize({
     create: true,
@@ -274,10 +256,8 @@ $appsWrapper.on('drop', '.app-logo', (e) => {
   $('.btn-save-changes').attr('disabled', true);
   $('#btAddApp').attr('disabled', true);
 });
-$appsWrapper.on('dragenter', '#addAppBox', (e) => {
-  if (isMiroApp(e.originalEvent)) {
-    expandAddAppForm();
-  }
+$appsWrapper.on('dragenter', '#addAppBox', () => {
+  expandAddAppForm();
 });
 $appsWrapper.on('dragover', '#addAppBox', (e) => {
   e.preventDefault();
