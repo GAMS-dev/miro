@@ -112,6 +112,8 @@ these components are included below):
 - lambda.r https://github.com/zatonovo/lambda.r or https://cran.r-project.org/web/packages/lambda.r/index.html
 - futile.options https://github.com/cran/futile.options or https://cran.r-project.org/web/packages/futile.options/index.html
 - zoo https://github.com/cran/zoo or https://cran.r-project.org/web/packages/zoo/index.html
+- bit https://github.com/truecluster/bit or https://cran.r-project.org/web/packages/bit/index.html
+- bit64 https://github.com/truecluster/bit64 or https://cran.r-project.org/web/packages/bit64/index.html
 - RSQLite https://github.com/r-dbi/RSQLite or https://cran.r-project.org/web/packages/RSQLite/index.html
 - memoise https://github.com/r-lib/memoise https://cran.r-project.org/web/packages/memoise/index.html
 - gdxrrwMIRO https://github.com/GAMS-dev/gdxrrw-miro
@@ -1082,6 +1084,8 @@ Library.
         - RGraphics, Copyright (c) 	Paul Murrell
         - lifecycle, Copyright (c) 	Lionel Henry [aut, cre], RStudio [cph]
         - backports, Copyright (c)  Michel Lang [cre, aut], R Core Team [aut]
+        - bit, Copyright (c) Jens Oehlschlägel [aut, cre], Brian Ripley [ctb]
+        - bit64, Copyright (c) Jens Oehlschlägel [aut, cre], Leonardo Silvestri [ctb]
         - vctrs, Copyright (c)  Hadley Wickham [aut, cre], Lionel Henry [aut], Davis Vaughan [aut], RStudio [cph]
         - ellipsis, Copyright (c)  Hadley Wickham [aut, cre], RStudio [cph]
         - withr, Copyright (c) Jim Hester [aut, cre], Kirill Müller [aut], Kevin Ushey [aut], Hadley Wickham [aut], Winston Chang [aut], Richard Cotton [ctb], RStudio [cph]

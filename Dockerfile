@@ -1,6 +1,6 @@
 ## largely based on rocker r-base image (GPL >= 2.0)
 
-FROM ubuntu:xenial
+FROM ubuntu:focal
 
 LABEL com.gamsmiro.vendor="GAMS Development Corp."\
 com.gamsmiro.version="1.2.99"\
@@ -21,17 +21,16 @@ RUN mkdir -p $APP
 RUN chown -R miro /home/miro
 
 RUN apt-get update \ 
-    && apt-get upgrade -y \
-	&& apt-get install -y --no-install-recommends \
-		ed \
-		less \
-		locales \
-		vim-tiny \
-		wget \
-		ca-certificates \
-		apt-transport-https \
-		gsfonts \
-	&& rm -rf /var/lib/apt/lists/*
+    && apt-get install -y --no-install-recommends \
+        software-properties-common \
+        dirmngr \
+        ed \
+        less \
+        locales \
+        vim-tiny \
+        wget \
+        ca-certificates \
+    && add-apt-repository --enable-source --yes "ppa:marutter/rrutter4.0"
 
 ## Configure default locale, see https://github.com/rocker-org/rocker/issues/19
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
@@ -40,9 +39,8 @@ RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
 
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
-
-RUN echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran40/" > /etc/apt/sources.list.d/cran.list
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+ENV DEBIAN_FRONTEND noninteractive
+ENV TZ UTC
 
 
 ## Now install R 
@@ -70,12 +68,7 @@ RUN apt-get update && apt-get install -y \
     sudo \
     libcurl4-gnutls-dev \
     libv8-dev \
-    libpq-dev \
-    python3.8 \
-    python3-pip
-
-RUN pip3 install --upgrade pip
-RUN pip3 install numpy==1.14.5 pandas==0.23.1 matplotlib==2.2.2
+    libpq-dev
 
 # install custom packages
 RUN mkdir /home/miro/r

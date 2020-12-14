@@ -93,8 +93,10 @@ leaflet.minicharts, 0.6.0
 xts, 0.12-0
 dygraphs, 1.1.1.6
 future, 1.18.0
+bit, 4.0.4
+bit64, 4.0.5
 miro.util
 rhandsontable
 sortable
 chartjs
-RSQLite
+RSQLite, 2.2.1
