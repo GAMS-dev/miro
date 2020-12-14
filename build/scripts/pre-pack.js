@@ -133,14 +133,16 @@ const tryInstallRPackages = async (attempt = 0) => {
       subprocAdmin.stderr.pipe(process.stderr);
       subprocAdmin.stdout.pipe(process.stderr);
       await subprocAdmin;
-      const subprocCi = execa('docker', ['build',
-        '--build-arg', `GAMS_MAJOR=${buildConfig.gamsVersion.split('.')[0]}`,
-        '--build-arg', `GAMS_MINOR=${buildConfig.gamsVersion.split('.')[1]}`,
-        '--build-arg', `GAMS_MAINT=${buildConfig.gamsVersion.split('.')[2]}`,
-        '-t', 'gamsmiro-ci', '-f', 'ci/Dockerfile', '.']);
-      subprocCi.stderr.pipe(process.stderr);
-      subprocCi.stdout.pipe(process.stderr);
-      await subprocCi;
+      if (process.argv[3] === '--ci') {
+        const subprocCi = execa('docker', ['build',
+          '--build-arg', `GAMS_MAJOR=${buildConfig.gamsVersion.split('.')[0]}`,
+          '--build-arg', `GAMS_MINOR=${buildConfig.gamsVersion.split('.')[1]}`,
+          '--build-arg', `GAMS_MAINT=${buildConfig.gamsVersion.split('.')[2]}`,
+          '-t', 'gamsmiro-ci', '-f', 'ci/Dockerfile', '.']);
+        subprocCi.stderr.pipe(process.stderr);
+        subprocCi.stdout.pipe(process.stderr);
+        await subprocCi;
+      }
     } catch (e) {
       console.log(`Problems building Docker images. Error message: ${e.message}`);
       process.exit(1);
