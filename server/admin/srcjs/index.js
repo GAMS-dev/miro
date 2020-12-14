@@ -124,6 +124,24 @@ function exitOverlayMode() {
   }
 }
 
+function isMiroApp(event) {
+  if (event.dataTransfer.items) {
+    for (let i = 0; i < event.dataTransfer.items.length; i += 1) {
+      if (event.dataTransfer.items[i].kind === 'file'
+        && event.dataTransfer.items[i].getAsFile().name.endsWith('.miroapp')) {
+        return true;
+      }
+    }
+  } else {
+    for (let i = 0; i < event.dataTransfer.files.length; i += 1) {
+      if (event.dataTransfer.files[i].name.endsWith('.miroapp')) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 function registerSelectizeInputs() {
   $('select').selectize({
     create: true,
@@ -256,8 +274,10 @@ $appsWrapper.on('drop', '.app-logo', (e) => {
   $('.btn-save-changes').attr('disabled', true);
   $('#btAddApp').attr('disabled', true);
 });
-$appsWrapper.on('dragenter', '#addAppBox', () => {
-  expandAddAppForm();
+$appsWrapper.on('dragenter', '#addAppBox', (e) => {
+  if (isMiroApp(e.originalEvent)) {
+    expandAddAppForm();
+  }
 });
 $appsWrapper.on('dragover', '#addAppBox', (e) => {
   e.preventDefault();
@@ -561,6 +581,26 @@ you want to add. Do you want to remove all inconsistent data? The datasets to be
           return;
         }
         sendAddRequest(true);
+      },
+    });
+  });
+  Shiny.addCustomMessageHandler('onScenarioExists', (scenName) => {
+    $('#loadingScreenProgressWrapper').hide();
+    $('#loadingScreenProgress').css('width', '0%').attr('aria-valuenow', '0');
+    bootbox.confirm({
+      message: `The scenario: '${scenName}' already exists. Do you want to overwrite it?`,
+      centerVertical: true,
+      callback: (removeScenConfirmed) => {
+        if (!removeScenConfirmed) {
+          return;
+        }
+        $('#loadingScreenProgress').css('width', '10%').attr('aria-valuenow', '10');
+        $('#loadingScreenProgressWrapper').show();
+        Shiny.setInputValue('addMiroscen', {
+          overwrite: true,
+        }, {
+          priority: 'event',
+        });
       },
     });
   });
