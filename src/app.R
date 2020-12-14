@@ -1010,7 +1010,7 @@ if(!is.null(errMsg)){
             newDataHashes <- currentDataHashes
           }
         }
-
+        overwriteScenToImport <- !identical(Sys.getenv("MIRO_OVERWRITE_SCEN_IMPORT"), "false")
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
           dfClArgs <- NULL
@@ -1100,6 +1100,12 @@ if(!is.null(errMsg)){
                                     readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
                                     execPerm = c(uidAdmin, ugroups), uid = uidAdmin, views = views)
           }
+          if(!overwriteScenToImport && db$checkSnameExists(newScen$getScenName())){
+            flog.info("Scenario: %s already exists and overwrite is set to FALSE. Skipping...",
+                      newScen$getScenName())
+            stop_custom("error_file_exists",
+                        "Scenario already exists", call. = FALSE)
+          }
           
           dataOut <- loadScenData(scalarsOutName, modelOut, tmpDir, modelName, scalarsFileHeaders,
                                   modelOutTemplate, method = method, fileName = miroDataFile)$tabular
@@ -1143,6 +1149,16 @@ if(!is.null(errMsg)){
                                   hash = unlist(newDataHashes, use.names = FALSE)))
         }
       }
+    }, error_file_exists = function(e){
+      if(miroStoreDataOnly){
+        flog.info("Scenario already exists and overwrite is set to FALSE. Aborting...")
+        write("\n", stderr())
+        write("merr:::418", stderr())
+        if(interactive())
+          stop()
+        quit("no", 1L)
+      }
+      gc()
     }, error = function(e){
       flog.error("Problems saving MIRO data to database. Error message: '%s'.",
                  conditionMessage(e))

@@ -296,6 +296,18 @@ const schema = {
           type: 'string',
           minLength: 1,
         },
+        ErrorDataImportHdr: {
+          type: 'string',
+          minLength: 1,
+        },
+        ErrorDataImportMsg: {
+          type: 'string',
+          minLength: 1,
+        },
+        BtnOverwrite: {
+          type: 'string',
+          minLength: 1,
+        },
       },
       required: ['ErrorUnexpectedHdr', 'ErrorUnexpectedMsg', 'ErrorUnexpectedMsg2', 'BtnCancel', 'BtnOk', 'BtnRemove', 'ErrorInvalidHdr',
         'ErrorInvalidMsg', 'ErrorInvalidTwoMsg', 'ErrorInvalidThreeMsg', 'ErrorAPIHdr', 'ErrorAPIMsg', 'ErrorVersionMsg', 'ErrorReadMsg',
@@ -305,7 +317,8 @@ const schema = {
         'ErrorInstallPerm3Msg', 'ErrorInstallPerm4Msg', 'ErrorInstallPermBtnYes', 'ErrorInstallPermBtnNo', 'ErrorWritePerm2Msg', 'ErrorNoWritePermMsg',
         'ErrorInvalidPathHdr', 'ErrorInvalidPathMsg', 'ErrorInvalidPathMsgMac', 'ErrorInvalidPathMsg2', 'ErrorNewScenHdr', 'ErrorNewScenMsg',
         'ErrorNewScenNoApp', 'ErrorMessage', 'SuccessUpdateHdr', 'SuccessUpdateMsg', 'ErrorUnexpectedWriteMsg', 'DeleteMsg', 'DeleteDataMsg',
-        'ErrorInit', 'ErrorRInstallHdr', 'ErrorRInstallMsg', 'ErrorModelPathHdr', 'ErrorModelPathMsg', 'ErrorRNotFoundHdr', 'ErrorRNotFoundMsg', 'ErrorInconsistentDbTablesHdr', 'ErrorInconsistentDbTablesMsg'],
+        'ErrorInit', 'ErrorRInstallHdr', 'ErrorRInstallMsg', 'ErrorModelPathHdr', 'ErrorModelPathMsg', 'ErrorRNotFoundHdr', 'ErrorRNotFoundMsg', 'ErrorInconsistentDbTablesHdr', 'ErrorInconsistentDbTablesMsg',
+        'ErrorDataImportHdr', 'ErrorDataImportMsg', 'BtnOverwrite'],
     },
     general: {
       type: 'object',
@@ -886,6 +899,9 @@ const en = {
     BtnRemove: 'Remove',
     ErrorInconsistentDbTablesHdr: 'Inconsistent data',
     ErrorInconsistentDbTablesMsg: "Your database contains records that are inconsistent with the new version of the MIRO application you want to add. Do you want to remove all inconsistent data? The records to be removed are: '{0}'.",
+    ErrorDataImportHdr: 'Scenario exists',
+    ErrorDataImportMsg: 'A scenario with the same name already exists. Do you want to overwrite it?',
+    BtnOverwrite: 'Overwrite',
   },
   general: {
     title: 'MIRO Library',
@@ -1086,6 +1102,9 @@ const de = {
     BtnRemove: 'Entfernen',
     ErrorInconsistentDbTablesHdr: 'Inkonsistente Daten',
     ErrorInconsistentDbTablesMsg: "Ihre Datenbank enthält Datensätze, die mit der neuen Version der MIRO-Anwendung, die Sie hinzufügen möchten, nicht konsistent sind. Möchten Sie alle inkonsistenten Daten entfernen? Die zu entfernenden Datensätze sind: '{0}'.",
+    ErrorDataImportHdr: 'Szenario existiert bereits',
+    ErrorDataImportMsg: 'Es existiert bereits ein Szenario mit demselben Namen. Möchten Sie es überschreiben?',
+    BtnOverwrite: 'Überschreiben',
   },
   general: {
     title: 'MIRO Bibliothek',
@@ -1285,6 +1304,9 @@ const cn = {
     BtnRemove: '删除',
     ErrorInconsistentDbTablesHdr: '数据不一致',
     ErrorInconsistentDbTablesMsg: "您的数据库中包含的记录与您要添加的MIRO应用程序的新版本不一致。你想删除所有不一致的数据吗？需要删除的记录有： '{0}'.",
+    ErrorDataImportHdr: '情景已经存在',
+    ErrorDataImportMsg: '已经有一个同名的情景存在。你想覆盖它吗？',
+    BtnOverwrite: '覆写',
   },
   general: {
     title: 'MIRO库',

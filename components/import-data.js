@@ -13,6 +13,10 @@ async function addModelData(paths, modelName, miroMode, miroVersion, miroProcess
     throw new Error('404');
   }
   let restartRProc;
+  let overwriteData = false;
+  if (progressEvent === 'add-app-progress') {
+    overwriteData = true;
+  }
   const runRProc = async function fRunRProc() {
     restartRProc = false;
     const internalPid = miroProcesses.length;
@@ -29,6 +33,7 @@ async function addModelData(paths, modelName, miroMode, miroVersion, miroProcess
           R_LIB_PATHS: paths.libPath,
           MIRO_NO_DEBUG: 'true',
           MIRO_FORCE_SCEN_IMPORT: 'true',
+          MIRO_OVERWRITE_SCEN_IMPORT: overwriteData,
           MIRO_WS_PATH: paths.miroWorkspaceDir,
           MIRO_DB_PATH: paths.dbpath,
           MIRO_BUILD: 'false',
@@ -89,6 +94,20 @@ async function addModelData(paths, modelName, miroMode, miroVersion, miroProcess
               log.error(`Problems removing inconsistent database tables. Error message: ${err.message}`);
               throw err;
             }
+          } else {
+            throw new Error('suppress');
+          }
+        } else if (error[1] === '418') {
+          log.info('MIRO signalled that the scenario already exists.');
+          if (dialog.showMessageBoxSync(windowObj, {
+            type: 'info',
+            title: global.lang.main.ErrorDataImportHdr,
+            message: global.lang.main.ErrorDataImportMsg,
+            buttons: [global.lang.main.BtnCancel, global.lang.main.BtnOverwrite],
+          }) === 1) {
+            log.debug('Overwriting scenario was confirmed');
+            overwriteData = true;
+            restartRProc = true;
           } else {
             throw new Error('suppress');
           }

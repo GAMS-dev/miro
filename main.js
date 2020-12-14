@@ -658,6 +658,7 @@ async function addMiroscenFile(filePath) {
         message: lang.main.ErrorNewScenMsg + e.toString(),
       });
     } finally {
+      mainWindow.setProgressBar(-1);
       mainWindow.send('toggle-loading-screen-progress', 'hide');
     }
   }

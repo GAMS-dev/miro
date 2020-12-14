@@ -67,13 +67,15 @@ function addMiroscen(scenFilePath, windowObj, paths, appsData, miroProcesses) {
           miroProcesses, windowObj, scenFilePath, 'loading-screen-progress',
         );
       } catch (err) {
-        log.warn(`Problems parsing miroscen file. Error message: ${err.message};`);
-        dialog.showMessageBox(windowObj, {
-          type: 'error',
-          title: global.lang.main.ErrorNewScenHdr,
-          message: global.lang.main.ErrorNewScenMsg + err.message,
-          buttons: [global.lang.main.BtnOk],
-        });
+        if (err.message !== 'suppress') {
+          log.warn(`Problems parsing miroscen file. Error message: ${err.message};`);
+          dialog.showMessageBox(windowObj, {
+            type: 'error',
+            title: global.lang.main.ErrorNewScenHdr,
+            message: global.lang.main.ErrorNewScenMsg + err.message,
+            buttons: [global.lang.main.BtnOk],
+          });
+        }
       }
       resolve(true);
     };
