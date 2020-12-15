@@ -11,8 +11,8 @@ ARG GAMS_MAINT=0
 
 USER root
 
-RUN apt-get install -y --no-install-recommends \
-      libxml2-dev wget
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      libxml2-dev wget curl gpg-agent
 
 RUN wget https://d37drm4t2jghv5.cloudfront.net/distributions/${GAMS_MAJOR}.${GAMS_MINOR}.${GAMS_MAINT}/linux/linux_x64_64_sfx.exe && \
     chmod a+x linux_x64_64_sfx.exe && \
@@ -30,10 +30,7 @@ RUN Rscript /home/miro/r/install_pkg.R
 RUN rm -rf /home/miro/r
 
 # install nodejs, yarn and eslint
-RUN apt-get update && apt-get install -y curl
-RUN curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-RUN apt-get install -y nodejs
-RUN wget --quiet -O - /tmp/pubkey.gpg https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update && apt-get install -y yarn
 
