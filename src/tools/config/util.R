@@ -157,6 +157,9 @@ Validator <- R6Class("Validator", public = list(
   validData = list(),
   data = list()
 ))
+setInputValue <- function(session, id, value){
+  session$sendCustomMessage("gms-setInputValue", list(id = id, value = value))
+}
 getMIROPivotOptions <- function(currentConfig, prefix = "", pivotComp = FALSE){
   tagList(
     checkboxInput_MIRO(paste0(prefix, "enableHideEmptyCols"),

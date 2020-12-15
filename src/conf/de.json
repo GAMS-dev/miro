@@ -1561,7 +1561,7 @@
       "chartOptions":{
         "xdata": "Was soll auf der x-Achse dargestellt werden?",
         "ydata": "Datenreihe hinzufügen",
-        "color": "Wählen Sie die Domäne aus, die für das Plotten gruppiert werden soll. Farben sind nur gültig, wenn keine Linien- oder Markierungsfarben gesetzt sind.",
+        "color": "Soll eine Dimension des Symbols gepivoted (für das Plotten gruppiert) werden? Daraus resultierende Farben sind nur gültig, wenn keine anderen Linien- oder Markierungsfarben gesetzt sind.",
         "symbol": "Wählen Sie eine Dimension aus, um sie verschiedenen Symbolen zuzuordnen. Es darf kein Markersymbol gesetzt werden.",
         "options":{
           "title": "Optionen",
@@ -1623,8 +1623,8 @@
         "previewError": "Keine skalaren Indizes in Ihren Daten gefunden.",
         "xdata": "Welchen Index möchten Sie auf der x-Achse zeichnen?",
         "ydata": "Datenreihe hinzufügen",
-        "ydataGeneral": "Dimension ausgewählt. Weitere y-data bezogenen Optionen können unter 'Allgemein' eingestellt werden.",
-        "color": "Wählen Sie die Domäne aus, die für das Plotten gruppiert werden soll.",
+        "ydataGeneral": "Dimension zum pivoten ausgewählt. Weitere y-data bezogenen Optionen können unter 'Allgemein' eingestellt werden.",
+        "color": "Soll eine Dimension des Symbols gepivoted (für das Plotten gruppiert) werden?",
         "dyEvent": "Ereignislinie hinzufügen",
         "dyLimit": "Limitlinie hinzufügen",
         "dyAnnotation": "Annotation hinzufügen",
