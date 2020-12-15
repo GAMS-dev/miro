@@ -6,7 +6,7 @@ pipeline {
         parallelsAlwaysFailFast()
         disableConcurrentBuilds()
     }
-    parameters [
+    parameters {[
         booleanParam(
             defaultValue: false,
             description: 'Run tests? (Will always run on rc, develop and master)',
@@ -15,7 +15,7 @@ pipeline {
             defaultValue: false,
             description: 'Build CI image?',
             name: 'BUILD_CI')
-    ]
+    ]}
 
     stages {
         stage('Skip build check') {
