@@ -4,6 +4,7 @@ const isMac = process.platform === 'darwin';
 
 module.exports = (addExampleAppsCallback,
   activateEditCallback,
+  addMiroscenCallback,
   showSettingsCallback,
   openCheckUpdateWindow,
   openAboutDialog) => {
@@ -65,6 +66,12 @@ module.exports = (addExampleAppsCallback,
           accelerator: 'CmdOrCtrl+E',
           click: async () => {
             await activateEditCallback();
+          },
+        },
+        {
+          label: lang.addMiroScen,
+          click: async () => {
+            await addMiroscenCallback();
           },
         },
         {

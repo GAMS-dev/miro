@@ -1,0 +1,11 @@
+const { app } = require('electron');
+const path = require('path');
+
+const getAppDbPath = (appDbPath) => ((appDbPath === '' || appDbPath == null) ? path.join(app.getPath('home'), '.miro') : appDbPath);
+const isFalse = (val) => val === 'false'
+        || val === false || val === 0;
+
+module.exports = {
+  getAppDbPath,
+  isFalse,
+};

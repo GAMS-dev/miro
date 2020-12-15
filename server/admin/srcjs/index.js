@@ -267,29 +267,37 @@ $appsWrapper.on('change', '.input-app-logo', () => {
   $('.btn-save-changes').attr('disabled', true);
   $('#btAddApp').attr('disabled', true);
 });
-$appsWrapper.on('dragover', '.drag-drop-area', (e) => {
+$(document).on('dragover', '.drag-drop-area', (e) => {
   e.preventDefault();
   e.stopPropagation();
 });
-$appsWrapper.on('dragenter', '.drag-drop-area', function (e) {
+$(document).on('dragenter', '.drag-drop-area', function (e) {
   if (reorderAppsMode) {
     return;
   }
   e.preventDefault();
   e.stopPropagation();
-  dragAddAppCounter++;
+  dragAddAppCounter += 1;
   $(this).addClass('drag-drop-area-dragover');
 });
-$appsWrapper.on('dragleave', '.drag-drop-area', function (e) {
+$(document).on('dragleave', '.drag-drop-area', function (e) {
   if (reorderAppsMode) {
     return;
   }
   e.preventDefault();
   e.stopPropagation();
-  dragAddAppCounter--;
+  dragAddAppCounter -= 1;
   if (dragAddAppCounter === 0) {
     $(this).removeClass('drag-drop-area-dragover');
   }
+});
+$(document).on('drop', '#miroDataFilesWrapper', function (e) {
+  e.preventDefault();
+  e.stopPropagation();
+  dragAddAppCounter = 0;
+  $('#loadingScreenProgress').css('width', '10%').attr('aria-valuenow', '10');
+  $('#loadingScreenProgressWrapper').show();
+  $(this).removeClass('drag-drop-area-dragover');
 });
 $appsWrapper.on('drop', '#newAppFiles', function (e) {
   if (reorderAppsMode) {
@@ -315,7 +323,7 @@ $appsWrapper.on('dragenter', '.app-box-draggable', function (e) {
   }
   e.preventDefault();
   e.stopPropagation();
-  dragAddAppCounter++;
+  dragAddAppCounter += 1;
   $(this).addClass('drag-drop-area-dragover');
 });
 $appsWrapper.on('dragover', '.app-box-draggable', (e) => {
@@ -328,7 +336,7 @@ $appsWrapper.on('dragleave', '.app-box-draggable', function (e) {
   }
   e.preventDefault();
   e.stopPropagation();
-  dragAddAppCounter--;
+  dragAddAppCounter -= 1;
   if (dragAddAppCounter === 0) {
     $(this).removeClass('drag-drop-area-dragover');
   }
@@ -504,6 +512,10 @@ $(document).ready(() => {
       $('#addAppSpinner').hide();
       $('#addAppProgress').css('width', '0%').attr('aria-valuenow', '0');
       $('#btAddApp').attr('disabled', false);
+    } else if (data.requestType === 'addScen') {
+      $('#loadingScreenProgressWrapper').hide();
+      $('#loadingScreenProgress').css('width', '0%').attr('aria-valuenow', '0');
+      return;
     } else if (data.requestType === 'updateOrder') {
       if (Array.isArray(currentConfigList)) {
         const idxFrom = currentConfigList.findIndex((el) => el.id === data.idFrom);
@@ -527,12 +539,14 @@ $(document).ready(() => {
       });
     }
   });
-  Shiny.addCustomMessageHandler('onAddAppProgress', (progress) => {
-    if (progress === -1) {
-      $('#addAppProgress').css('width', '0%').attr('aria-valuenow', '0');
-      $('#addAppSpinner').hide();
+  Shiny.addCustomMessageHandler('onProgress', (data) => {
+    if (data.progress === -1) {
+      $(data.selector).css('width', '0%').attr('aria-valuenow', '0');
+      if (data.selector === '#addAppProgress') {
+        $('#addAppSpinner').hide();
+      }
     } else {
-      $('#addAppProgress').css('width', `${progress}%`).attr('aria-valuenow', progress);
+      $(data.selector).css('width', `${data.progress}%`).attr('aria-valuenow', data.progress);
     }
   });
   Shiny.addCustomMessageHandler('onInconsistentDbTables', (data) => {
@@ -547,6 +561,26 @@ you want to add. Do you want to remove all inconsistent data? The datasets to be
           return;
         }
         sendAddRequest(true);
+      },
+    });
+  });
+  Shiny.addCustomMessageHandler('onScenarioExists', (scenName) => {
+    $('#loadingScreenProgressWrapper').hide();
+    $('#loadingScreenProgress').css('width', '0%').attr('aria-valuenow', '0');
+    bootbox.confirm({
+      message: `A scenario: '${scenName}' already exists. Do you want to overwrite it?`,
+      centerVertical: true,
+      callback: (removeScenConfirmed) => {
+        if (!removeScenConfirmed) {
+          return;
+        }
+        $('#loadingScreenProgress').css('width', '10%').attr('aria-valuenow', '10');
+        $('#loadingScreenProgressWrapper').show();
+        Shiny.setInputValue('addMiroscen', {
+          overwrite: true,
+        }, {
+          priority: 'event',
+        });
       },
     });
   });
@@ -597,6 +631,9 @@ you want to add. Do you want to remove all inconsistent data? The datasets to be
       $('#loginLoadingIndicator').hide();
       $('#loginError').show();
       return;
+    } else if (e.requestType === 'addScen') {
+      $('#loadingScreenProgressWrapper').hide();
+      $('#loadingScreenProgress').css('width', '0%').attr('aria-valuenow', '0');
     }
     bootbox.alert({
       title: 'Error',

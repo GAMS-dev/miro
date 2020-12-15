@@ -271,11 +271,11 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                                                                  accept = c("application/vnd.ms-excel", 
                                                                             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
                                                                             "application/zip", "text/csv", ".xlsx", ".csv", ".xls", ".zip",
-                                                                            ".gdx"))
+                                                                            ".gdx", ".miroscen"))
                                                 )
                                               ),
                                               fluidRow(
-                                                div(class= "choose-input", 
+                                                div(id = "localInputSelectManually", class= "choose-input",
                                                     column(6,
                                                            tags$label(class = "checkbox-material flex-design", 
                                                                       'for'= "cbSelectManuallyLoc", 
@@ -655,10 +655,13 @@ showScenExportDialog <- function(id, exportTypes){
     tags$div(class = "gmsalert gmsalert-error", id = "exportNoDsSelected", 
              lang$nav$dialogExportScen$noDsSelected),
     selectInput("exportFileType", lang$nav$dialogExportScen$desc, exportTypes),
+    tags$div(`data-display-if` = "input.exportFileType !== 'miroscen'",
+             class = "gmsalert gmsalert-error", style = "position:relative;",
+             lang$nav$fileExport$infoDataOnly),
     tags$div(style = "display:none;",
              numericInput("scenExportId", NULL, id)
     ),
-    div(class= "choose-input", 
+    div(class= "choose-input", `data-display-if` = "input.exportFileType !== 'miroscen'",
         column(6,
                tags$label(class = "checkbox-material flex-design", 
                           'for'= "cbSelectManuallyExp", 

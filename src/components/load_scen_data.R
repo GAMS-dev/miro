@@ -1,7 +1,8 @@
 loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileHeaders,
                          templates, errMsg = NULL, method = "csv", csvDelim = ",", 
                          hiddenOutputScalars = character(0L),
-                         fileName = character(0L), DDPar = character(0L), GMSOpt = character(0L)){
+                         fileName = character(0L), DDPar = character(0L), GMSOpt = character(0L),
+                         dfClArgs = NULL){
   ret <- list(tabular = NULL, scalar = NULL, noTabularData = TRUE)
   
   if(identical(method, "xls")){
@@ -93,6 +94,9 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
     stop(sprintf("File: '%s' could not be read (model: '%s'). Error message: %s.", 
                  scalarsName, modelName, e), call. = FALSE)
   })
+  if(length(dfClArgs) == 3L){
+    ret$scalar <- dplyr::bind_rows(ret$scalar, setNames(dfClArgs, names(ret$scalar)))
+  }
   if(length(ret$scalar)){
     if(!identical(length(ret$scalar), 3L)){
       flog.warn("Invalid scalar data attempted to be read (number of headers of table does not match 3).")

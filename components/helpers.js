@@ -44,9 +44,6 @@ const waitFor = (milliseconds) => new Promise((resolve) => {
   setTimeout(resolve, milliseconds);
 });
 
-const isFalse = (val) => val === 'false'
-  || val === false || val === 0;
-
 const kill = (pid, signal = 'SIGTERM') => new Promise((resolve, reject) => treeKill(pid, signal, (killErr) => {
   if (killErr) return reject(killErr);
   return resolve({ pid });
@@ -56,6 +53,5 @@ module.exports = {
   waitFor,
   randomPort,
   isNull,
-  isFalse,
   kill,
 };

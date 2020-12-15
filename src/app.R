@@ -82,7 +82,8 @@ installedPackages <<- installed.packages()[, "Package"]
 # vector of required files
 filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./components/gdxio.R", 
                     "./components/json.R", "./components/scenario_metadata.R", "./components/views.R",
-                    "./components/attachments.R", "./components/load_scen_data.R",
+                    "./components/attachments.R", "./components/miroscenio.R",
+                    "./components/load_scen_data.R",
                     "./components/data_instance.R", "./components/worker.R", 
                     "./components/dataio.R", "./components/hcube_data_instance.R", 
                     "./components/miro_tabsetpanel.R", "./modules/render_data.R", 
@@ -115,12 +116,12 @@ if(is.null(errMsg)){
   # set maximum upload size
   options(shiny.maxRequestSize = maxUploadSize*1024^2)
   # get model path and name
-  modelPath    <- getModelPath(modelPath, "MIRO_MODEL_PATH")
-  modelNameRaw <- modelPath[[4]]
-  modelName    <- modelPath[[3]]
+  modelPath    <<- getModelPath(modelPath, "MIRO_MODEL_PATH")
+  modelNameRaw <<- modelPath[[4]]
+  modelName    <<- modelPath[[3]]
   modelName    <<- modelName
-  modelGmsName <- modelPath[[2]]
-  modelPath    <- modelPath[[1]]
+  modelGmsName <<- modelPath[[2]]
+  modelPath    <<- modelPath[[1]]
 }
 
 if(is.null(errMsg)){
@@ -321,7 +322,7 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
         modelFiles <- c(modelFiles, paste0("renderer_", modelName))
       }
       if(is.null(errMsg) && identical(Sys.getenv("MIRO_TEST_DEPLOY"), "true")){
-        modelPath <- file.path(tmpFileDir, modelName, "test_deploy")
+        modelPath <<- file.path(tmpFileDir, modelName, "test_deploy")
         if(dir.exists(modelPath) && 
            unlink(modelPath, recursive = TRUE, force = TRUE) != 0L){
           errMsg <- sprintf("Problems removing temporary directory: '%s'. No write permissions?",
@@ -960,12 +961,19 @@ if(!is.null(errMsg)){
       setWinProgressBar(pb, 0.6, label= "Importing new data")
     }
     miroDataDir   <- Sys.getenv("MIRO_DATA_DIR")
+    removeDataFile <- !debugMode
     if(identical(miroDataDir, "")){
       miroDataDir   <- file.path(currentModelDir, paste0(miroDataDirPrefix, modelName))
+      miroDataFilesRaw <- list.files(miroDataDir)
+    }else if(isFALSE(file.info(miroDataDir)$isdir)){
+      miroDataFilesRaw <- basename(miroDataDir)
+      miroDataDir <- dirname(miroDataDir)
+      removeDataFile <- FALSE
+    }else{
+      miroDataFilesRaw <- list.files(miroDataDir)
     }
-    miroDataFilesRaw <- list.files(miroDataDir)
     dataFileExt   <- tolower(tools::file_ext(miroDataFilesRaw))
-    miroDataFiles <- miroDataFilesRaw[dataFileExt %in% c(if(useGdx) "gdx", "xlsx", "xls", "zip")]
+    miroDataFiles <- miroDataFilesRaw[dataFileExt %in% c(if(useGdx) c("gdx", "miroscen"), "xlsx", "xls", "zip")]
     dataFileExt   <- tolower(tools::file_ext(miroDataFiles))
     newScen <- NULL
     tryCatch({
@@ -1002,9 +1010,10 @@ if(!is.null(errMsg)){
             newDataHashes <- currentDataHashes
           }
         }
-
+        overwriteScenToImport <- !identical(Sys.getenv("MIRO_OVERWRITE_SCEN_IMPORT"), "false")
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
+          dfClArgs <- NULL
           if(debugMode && !forceScenImport){
             dataHash <- digest::digest(file = file.path(miroDataDir, miroDataFile),
                                        algo = "sha1", serialize = FALSE)
@@ -1037,21 +1046,67 @@ if(!is.null(errMsg)){
             method <- dataFileExt[i]
             tmpDir <- miroDataDir
           }
-          scenName <- tools::file_path_sans_ext(miroDataFile)
-          viewDataId <- match(paste0(tolower(scenName), "_views.json"),
-                              tolower(miroDataFilesRaw))
-          views <- NULL
-          if(!is.na(viewDataId)){
-            flog.debug("Found view data for scenario: %s.", scenName)
+          if(dataFileExt[i] == "miroscen"){
+            method <- "gdx"
+            tmpDir <- tempdir(check = TRUE)
             views <- Views$new(names(modelIn),
                                names(modelOut),
                                inputDsNames)
-            views$addConf(fromJSON(read_file(file.path(miroDataDir, miroDataFilesRaw[viewDataId])),
-                                   simplifyDataFrame = FALSE, simplifyVector = FALSE))
+            attachments <- Attachments$new(db, list(maxSize = attachMaxFileSize, maxNo = attachMaxNo,
+                                                    forbiddenFNames = c(if(identical(config$fileExchange, "gdx")) 
+                                                      c(MIROGdxInName, MIROGdxOutName) else 
+                                                        paste0(c(names(modelOut), inputDsNames), ".csv"),
+                                                      paste0(modelName, c(".log", ".lst")))),
+                                           tmpDir,
+                                           names(modelIn),
+                                           names(modelOut),
+                                           inputDsNames)
+            newScen <- Scenario$new(db = db, sname = "unnamed", isNewScen = TRUE,
+                                    readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
+                                    execPerm = c(uidAdmin, ugroups), uid = uidAdmin,
+                                    views = views, attachments = attachments)
+            if(!tryCatch(validateMiroScen(file.path(miroDataDir, miroDataFile)), error = function(e){
+              flog.error("Invalid miroscen file. Error message: '%s'.", conditionMessage(e))
+              return(FALSE)
+            })){
+              next
+            }
+            dfClArgs <- tryCatch(loadMiroScen(file.path(miroDataDir, miroDataFile),
+                                              newScen, attachments, views,
+                                              names(modelIn), exdir = tmpDir),
+                                 error = function(e){
+                                   flog.info("Problems reading miroscen file. Error message: '%s'.",
+                                             conditionMessage(e))
+                                   return(FALSE)
+                                 })
+            if(isFALSE(dfClArgs)){
+              next
+            }
+            miroDataFile <- "data.gdx"
+          }else{
+            scenName <- tools::file_path_sans_ext(miroDataFile)
+            viewDataId <- match(paste0(tolower(scenName), "_views.json"),
+                                tolower(miroDataFilesRaw))
+            views <- NULL
+            if(!is.na(viewDataId)){
+              flog.debug("Found view data for scenario: %s.", scenName)
+              views <- Views$new(names(modelIn),
+                                 names(modelOut),
+                                 inputDsNames)
+              views$addConf(safeFromJSON(read_file(file.path(miroDataDir, miroDataFilesRaw[viewDataId])),
+                                         simplifyDataFrame = FALSE, simplifyVector = FALSE))
+            }
+            newScen <- Scenario$new(db = db, sname = scenName, isNewScen = TRUE,
+                                    readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
+                                    execPerm = c(uidAdmin, ugroups), uid = uidAdmin, views = views)
           }
-          newScen <- Scenario$new(db = db, sname = scenName, isNewScen = TRUE,
-                                  readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
-                                  execPerm = c(uidAdmin, ugroups), uid = uidAdmin, views = views)
+          if(!overwriteScenToImport && db$checkSnameExists(newScen$getScenName(), newScen$getScenUid())){
+            flog.info("Scenario: %s already exists and overwrite is set to FALSE. Skipping...",
+                      newScen$getScenName())
+            stop_custom("error_file_exists",
+                        newScen$getScenName(), call. = FALSE)
+          }
+          
           dataOut <- loadScenData(scalarsOutName, modelOut, tmpDir, modelName, scalarsFileHeaders,
                                   modelOutTemplate, method = method, fileName = miroDataFile)$tabular
           dataIn  <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp,
@@ -1059,7 +1114,8 @@ if(!is.null(errMsg)){
                                   modelName = modelName, errMsg = lang$errMsg$GAMSInput$badInputData,
                                   scalarsFileHeaders = scalarsFileHeaders,
                                   templates = modelInTemplateTmp, method = method,
-                                  fileName = miroDataFile, DDPar = DDPar, GMSOpt = GMSOpt)$tabular
+                                  fileName = miroDataFile, DDPar = DDPar, GMSOpt = GMSOpt,
+                                  dfClArgs = dfClArgs)$tabular
           if(!scalarsFileName %in% names(metaDataTmp) && length(c(DDPar, GMSOpt))){
             # additional command line parameters that are not GAMS symbols
             scalarsTemplate <- tibble(a = character(0L), b = character(0L), c = character(0L))
@@ -1068,8 +1124,8 @@ if(!is.null(errMsg)){
           }else{
             newScen$save(c(dataOut, dataIn))
           }
-          if(!debugMode && !file.remove(file.path(miroDataDir, miroDataFile))){
-            flog.info("Could not remove file: '%s'.", miroDataFile)
+          if(removeDataFile && !file.remove(file.path(miroDataDir, miroDataFiles[i]))){
+            flog.info("Could not remove file: '%s'.", miroDataFiles[i])
           }
           if(miroStoreDataOnly){
             write("\n", stderr())
@@ -1093,6 +1149,16 @@ if(!is.null(errMsg)){
                                   hash = unlist(newDataHashes, use.names = FALSE)))
         }
       }
+    }, error_file_exists = function(e){
+      if(miroStoreDataOnly){
+        flog.info("Scenario already exists and overwrite is set to FALSE. Aborting...")
+        write("\n", stderr())
+        write(paste0("merr:::418:::", conditionMessage(e)), stderr())
+        if(interactive())
+          stop()
+        quit("no", 1L)
+      }
+      gc()
     }, error = function(e){
       flog.error("Problems saving MIRO data to database. Error message: '%s'.",
                  conditionMessage(e))
@@ -1799,9 +1865,10 @@ if(!is.null(errMsg)){
       
       observeEvent(input$btExportScen, {
         if(useGdx && !LAUNCHHCUBEMODE){
-          exportTypes <- c(gdx = "gdx", xlsx = "xls", csv = "csv")
+          
+          exportTypes <- setNames(c("miroscen", "gdx", "csv", "xls"), lang$nav$fileExport$fileTypes)
         }else{
-          exportTypes <- c(csv = "csv", xlsx = "xls")
+          exportTypes <- setNames(c("csv", "xls"), lang$nav$fileExport$fileTypes[-1:2])
         }
         if(length(datasetsRemoteExport)){
           exportTypes <- c(exportTypes, setNames(names(datasetsRemoteExport), 
@@ -1823,6 +1890,7 @@ if(!is.null(errMsg)){
                xls = exportFileType <<- "xlsx",
                gdx = exportFileType <<- "gdx",
                csv = exportFileType <<- "csv",
+               miroscen = exportFileType <<- "miroscen",
                flog.warn("Unknown export file type: '%s'.", input$exportFileType))
       })
       hideEl(session, "#loading-screen")

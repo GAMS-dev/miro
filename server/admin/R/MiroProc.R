@@ -16,7 +16,8 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
   getTablesToRemove = function(){
     return(private$tablesToRemove)
   },
-  run = function(appId, modelName, miroVersion, appDir, dataDir, successCallback){
+  run = function(appId, modelName, miroVersion, appDir, dataDir,
+    progressSelector, successCallback, overwriteScen = TRUE, requestType = "addApp"){
     private$tablesToRemove <- NULL
     private$errorRaised <- FALSE
     private$stdErr <- ""
@@ -31,6 +32,7 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
     procEnv$MIRO_VERSION_STRING <- miroVersion
     procEnv$MIRO_MODEL_PATH <- file.path(appDir, paste0(modelName, ".gms"))
     procEnv$MIRO_DATA_DIR <- dataDir
+    procEnv$MIRO_OVERWRITE_SCEN_IMPORT <- if(!identical(overwriteScen, TRUE)) "false" else "true"
 
     private$miroProc <- processx::process$new("R", c("-e", 
         paste0("shiny::runApp('", MIRO_APP_PATH, "',port=3839,host='0.0.0.0')")),
@@ -55,7 +57,7 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
                 if(error[1] == '409'){
                    if(length(error) < 2){
                     flog.error('MIRO signalled that there are inconsistent tables but no data was provided.');
-                    private$session$sendCustomMessage("onError", list(requestType = "addApp", message = "Internal error"))
+                    private$session$sendCustomMessage("onError", list(requestType = requestType, message = "Internal error"))
                     private$procObs$destroy()
                     private$procObs <- NULL
                     return()
@@ -78,14 +80,22 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
                    private$errorRaised <- TRUE
                    private$procObs$destroy()
                    private$procObs <- NULL
+               }else if(error[1] == '418'){
+                   flog.info("MIRO signalled that the scenario to import already exists.")
+                   private$session$sendCustomMessage("onScenarioExists", error[2])
+                   private$errorRaised <- TRUE
+                   private$procObs$destroy()
+                   private$procObs <- NULL
+
                }
             }else if(startsWith(line, 'mprog:::')){
                 progress <- suppressWarnings(as.integer(substring(line, 9)))
                 if(is.na(progress)){
                     flog.warn("Bad progress message received from MIRO: %s", line)
                 }else{
-                    private$session$sendCustomMessage("onAddAppProgress", 
-                        if(progress >= 100) -1 else progress)
+                    private$session$sendCustomMessage("onProgress", 
+                        list(selector = progressSelector,
+                          progress = if(progress >= 100) -1 else progress))
                 }
             }
         }
@@ -107,7 +117,7 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
                     flog.warn("MIRO process finished with exit code: %s.",
                       as.character(procExitStatus))
                     flog.error('Unexpected error when starting MIRO process. Stderr: %s', private$stdErr)
-                    private$session$sendCustomMessage("onError", list(requestType = "addApp", message = "Internal error."))
+                    private$session$sendCustomMessage("onError", list(requestType = requestType, message = "Internal error."))
                 }
                 private$miroProc <- NULL
             }

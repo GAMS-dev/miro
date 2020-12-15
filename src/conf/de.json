@@ -413,6 +413,10 @@
       "cancelButton":"Abbrechen",
       "okButton":"Ok"
     },
+    "fileExport":{
+      "fileTypes": ["MIRO Szenario (MIROSCEN)", "GAMS-Datenaustausch (GDX)", "Komma-separierte Werte (CSV)", "Microsoft Excel (XLSX)"],
+      "infoDataOnly": "Mit dem ausgewählten Dateityp werden nur Daten exportiert. Metadaten wie Anhänge, Ansichten, Tags usw. sind nicht enthalten."
+    },
     "excelExport":{  
       "metadataSheet":{  
         "title":"Metadaten",

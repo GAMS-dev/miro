@@ -114,6 +114,14 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
 
     return(invisible(self))
   },
+  getAppConfigFull = function(id){
+    for(modelConfig in private$currentModelConfigs){
+      if(identical(modelConfig$id, id)){
+        return(modelConfig)
+      }
+    }
+    stop(sprintf("A MIRO app with the id: %s does not exist.", id), call. = FALSE)
+  },
   getAppConfig = function(index){
     appConfig <- private$currentModelConfigs[[index]]
     if("logoURL" %in% names(appConfig)){

@@ -4,6 +4,12 @@ getSelectizeOptions <- function(app, selector){
   options <- app$getDebugLog("browser")$message
   return(rev(substr(options, 1, nchar(options) -4)))
 }
+getSelectizeAliases <- function(app, selector){
+  app$getDebugLog("browser")
+  app$waitFor(paste0("var options=$('", selector, "')[0].selectize.options;for(key in options){console.log(options[key].label)};true"))
+  options <- app$getDebugLog("browser")$message
+  return(rev(substr(options, 1, nchar(options) -4)))
+}
 
 expect_download_size <- function(app, id, filename, tolerance = 100){
   url <- app$findElement(paste0("#", id))$getAttribute("href")
@@ -22,6 +28,17 @@ expect_download_size <- function(app, id, filename, tolerance = 100){
   }else{
     writeBin(req$content, file.path(filePath, filename))
   }
+}
+
+expect_files_in_zip <- function(app, id, files){
+  url <- app$findElement(paste0("#", id))$getAttribute("href")
+  req <- httr::GET(url)
+  tempFiles <- file.path(tempdir(check = TRUE), "shinytest-download")
+  on.exit(unlink(tempFiles))
+  writeBin(req$content, tempFiles)
+  filesInZip <- zip::zip_list(tempFiles)$filename
+  expect_identical(length(filesInZip), length(files))
+  expect_true(all(files %in% filesInZip))
 }
 
 createTestDb <- function(dbPath = file.path(getwd(), "..", "miro.sqlite3")){

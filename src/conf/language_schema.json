@@ -1607,6 +1607,26 @@
           },
           "minProperties": 4
         },
+        "fileExport": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "fileTypes": {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 4,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "infoDataOnly": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 2
+        },
         "excelExport": {
           "type": "object",
           "additionalProperties": false,
@@ -2493,7 +2513,7 @@
           "minProperties": 1
         }
       },
-      "minProperties": 47
+      "minProperties": 48
     },
     "renderers": {
       "description": "language specific objects of renderers",

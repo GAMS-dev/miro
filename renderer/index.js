@@ -705,6 +705,23 @@ ipcRenderer.on('add-app-progress', (e, progress) => {
     $('#addAppProgress').css('width', `${progress}%`).attr('aria-valuenow', progress);
   }
 });
+ipcRenderer.on('toggle-loading-screen-progress', (e, toggle) => {
+  if (toggle === 'show') {
+    $('#loadingScreenProgress').css('width', '5%').attr('aria-valuenow', 5);
+    $('#loadingScreenProgressWrapper').show();
+    $('body').css('overflow', 'hidden');
+  } else {
+    $('#loadingScreenProgressWrapper').hide();
+    $('body').css('overflow', '');
+  }
+});
+ipcRenderer.on('loading-screen-progress', (e, progress) => {
+  $('#loadingScreenProgress').css('width', `${progress}%`).attr('aria-valuenow', progress);
+  if (progress === -1) {
+    $('#loadingScreenProgressWrapper').hide();
+    $('body').css('overflow', '');
+  }
+});
 ipcRenderer.on('activate-edit-mode', (e, openNewAppForm, scrollToBottom = false) => {
   if (openNewAppForm) {
     expandAddAppForm();

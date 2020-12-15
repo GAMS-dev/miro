@@ -413,6 +413,10 @@
       "cancelButton": "取消",
       "okButton": "确认"
     },
+    "fileExport":{
+      "fileTypes": ["MIRO场景（MIROSCEN）", "GAMS数据交换（GDX）", "逗号分隔值（CSV）", "Microsoft Excel（XLSX）"],
+      "infoDataOnly": "使用所选文件类型时，仅导出数据。 不包括元数据，例如附件，视图，标签等。"
+    },
     "excelExport":{
       "metadataSheet":{
         "title":"信息",

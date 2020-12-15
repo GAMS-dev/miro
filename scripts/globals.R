@@ -37,7 +37,8 @@ packageVersionMap <- list(c("data.table", "1.12.2"), c("backports", "1.1.9"), c(
     "1.3.1"), c("rpivotTable", "0.3.0"), c("futile.logger", "1.4.3"
     ), c("zip", "2.1.1"), c("leaflet.minicharts", "0.6.0"), c("xts", 
     "0.12-0"), c("dygraphs", "1.1.1.6"), c("future", "1.18.0"
-    ), "miro.util", "rhandsontable", "sortable", "chartjs", "RSQLite")
+    ), c("bit", "4.0.4"), c("bit64", "4.0.5"), "miro.util", "rhandsontable", 
+    "sortable", "chartjs", c("RSQLite", "2.2.1"))
 
 isMac <- Sys.info()['sysname'] == 'Darwin' || grepl("^darwin", R.version$os)
 isWindows <- .Platform$OS.type == 'windows'
@@ -51,7 +52,7 @@ if ( identical(Sys.getenv('BUILD_DOCKER'), 'true') ) {
     isWindows <- FALSE
     isLinux   <- TRUE
     packageVersionMap <- c(packageVersionMap[!vapply(packageVersionMap, function(package){
-        identical(package[1], 'RSQLite')}, logical(1L), USE.NAMES = FALSE)], list("RPostgres"))
+        identical(package[1], 'RSQLite')}, logical(1L), USE.NAMES = FALSE)], list(c("RPostgres", "1.2.1")))
 } else {
     if ( identical(RLibPath, '') ) {
         stop("Library path not specified. Use environment variable LIB_PATH to specify where libraries should be installed.", 

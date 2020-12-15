@@ -1,4 +1,5 @@
 miroAppValidator <- MiroAppValidator$new()
+miroscenParser   <- MiroscenParser$new()
 modelConfig      <- ModelConfig$new(file.path("data", "specs.yaml"))
 engineClient     <- EngineClient$new()
 db               <- MiroDb$new(list(host = Sys.getenv("MIRO_DB_HOST", "localhost"),
@@ -32,6 +33,7 @@ server <- function(input, output, session){
         if(loginRequired(session, isLoggedIn)){
             return()
         }
+        flog.info("Request to validate MIRO app received.")
         tryCatch({
             miroAppValidator$validate(input$miroAppFile$datapath)
             session$sendCustomMessage("onNewAppValidated", 
@@ -49,6 +51,7 @@ server <- function(input, output, session){
         if(loginRequired(session, isLoggedIn)){
             return()
         }
+        flog.info("Request to add app logo received.")
         tryCatch({
             miroAppValidator$setLogoFile(input$miroAppLogo$datapath)
             session$sendCustomMessage("onAddAppLogo", 
@@ -64,6 +67,7 @@ server <- function(input, output, session){
         if(loginRequired(session, isLoggedIn)){
             return()
         }
+        flog.info("Request to update app logo received.")
         tryCatch({
             session$sendCustomMessage("onAddAppLogo", 
                 list(logoB64 = getLogoB64(input$updateMiroAppLogo$datapath)));
@@ -78,6 +82,7 @@ server <- function(input, output, session){
         if(loginRequired(session, isLoggedIn)){
             return()
         }
+        flog.info("Request to add new MIRO app received.")
         tryCatch({
             if(!length(miroAppValidator$getAppTitle())){
                 flog.error("Add App request sent without the miroapp file being validated. This should never happen and is likely an attempt to tamper with the app.")
@@ -136,7 +141,9 @@ server <- function(input, output, session){
             extractAppData(isolate(input$miroAppFile$datapath), appId,
                         logoPath)
 
-            miroProc$run(appId, modelName, miroAppValidator$getMIROVersion(), appDir, dataDir, function(){
+            miroProc$run(appId, modelName, miroAppValidator$getMIROVersion(),
+                appDir, dataDir, progressSelector = "#addAppProgress",
+                overwriteScen = TRUE, requestType = "addApp", function(){
                 tryCatch({
                     engineClient$registerModel(appId, modelName, appDir, overwrite = TRUE)
                     flog.debug("New MIRO app: %s registered at Engine.", modelName)
@@ -166,6 +173,7 @@ server <- function(input, output, session){
         if(loginRequired(session, isLoggedIn)){
             return()
         }
+        flog.info("Request to delete MIRO app received.")
         tryCatch({
             appIndex <- suppressWarnings(as.integer(input$deleteApp$index))
             if(length(appIndex) != 1 || is.na(appIndex)){
@@ -201,6 +209,7 @@ server <- function(input, output, session){
         if(loginRequired(session, isLoggedIn)){
             return()
         }
+        flog.info("Request to update MIRO app received.")
         tryCatch({
             appIndex <- suppressWarnings(as.integer(input$updateApp$index))
             if(is.na(appIndex)){
@@ -240,6 +249,7 @@ server <- function(input, output, session){
         if(loginRequired(session, isLoggedIn)){
             return()
         }
+        flog.info("Request to update MIRO app order received.")
         tryCatch({
             idFrom <- input$updateAppOrder$idFrom
             idTo   <- input$updateAppOrder$idTo
@@ -259,5 +269,44 @@ server <- function(input, output, session){
             flog.info(errMsg)
             session$sendCustomMessage("onError", list(requestType = "updateOrder", message = errMsg))
         })
+    })
+    addMiroscen <- function(dataPath, overwriteExisting = FALSE){
+        tryCatch({
+            modelName <- miroscenParser$getModelName(dataPath)
+            appId     <- modelName[[1]]
+            modelName <- modelName[[2]]
+            appConfig <- modelConfig$getAppConfigFull(appId)
+            appModelName <- tools::file_path_sans_ext(basename(
+                    appConfig$containerEnv[["MIRO_MODEL_PATH"]]))
+            if(!identical(modelName, appModelName)){
+                flog.warn("The main gms file name in the MIRO scenario is different from the one uploaded to MIRO server (MIRO scen: %s, App: %s).",
+                    modelName, appModelName)
+            }
+            miroProc$run(appId, appModelName,
+                appConfig$containerEnv[["MIRO_VERSION_STRING"]],
+                file.path(getwd(), MIRO_MODEL_DIR, appId), dataPath,
+                progressSelector = "#loadingScreenProgress",
+                requestType = "addScen", overwriteScen = overwriteExisting, function(){
+                    flog.info("MIRO scenario added for app: %s.", appId)
+                    session$sendCustomMessage("onSuccess", 
+                        list(requestType = "addScen"))
+            })
+        }, error = function(e){
+            errMsg <- sprintf("Invalid miroscen file uploaded. Error message: %s", 
+                    conditionMessage(e))
+            flog.info(errMsg)
+            session$sendCustomMessage("onError", list(requestType = "addScen", message = errMsg))
+        })
+    }
+    observeEvent(input$miroDataFiles, {
+        if(loginRequired(session, isLoggedIn)){
+            return()
+        }
+        flog.info("Request to add miroscen received (Overwrite: false).")
+        addMiroscen(input$miroDataFiles$datapath, FALSE)
+    })
+    observeEvent(input$addMiroscen, {
+        flog.info("Request to add miroscen received (Overwrite: true).")
+        addMiroscen(input$miroDataFiles$datapath, TRUE)
     })
 }

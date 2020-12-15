@@ -112,6 +112,8 @@ these components are included below):
 - lambda.r https://github.com/zatonovo/lambda.r or https://cran.r-project.org/web/packages/lambda.r/index.html
 - futile.options https://github.com/cran/futile.options or https://cran.r-project.org/web/packages/futile.options/index.html
 - zoo https://github.com/cran/zoo or https://cran.r-project.org/web/packages/zoo/index.html
+- bit https://github.com/truecluster/bit or https://cran.r-project.org/web/packages/bit/index.html
+- bit64 https://github.com/truecluster/bit64 or https://cran.r-project.org/web/packages/bit64/index.html
 - RSQLite https://github.com/r-dbi/RSQLite or https://cran.r-project.org/web/packages/RSQLite/index.html
 - memoise https://github.com/r-lib/memoise https://cran.r-project.org/web/packages/memoise/index.html
 - gdxrrwMIRO https://github.com/GAMS-dev/gdxrrw-miro
@@ -154,6 +156,7 @@ these components are included below):
 
 - ICU4C http://site.icu-project.org
 - libuv https://github.com/libuv/libuv
+- curl https://github.com/curl/curl
 
 
 jQuery license and license for included components from jQuery UI
@@ -1082,6 +1085,8 @@ Library.
         - RGraphics, Copyright (c) 	Paul Murrell
         - lifecycle, Copyright (c) 	Lionel Henry [aut, cre], RStudio [cph]
         - backports, Copyright (c)  Michel Lang [cre, aut], R Core Team [aut]
+        - bit, Copyright (c) Jens Oehlschlägel [aut, cre], Brian Ripley [ctb]
+        - bit64, Copyright (c) Jens Oehlschlägel [aut, cre], Leonardo Silvestri [ctb]
         - vctrs, Copyright (c)  Hadley Wickham [aut, cre], Lionel Henry [aut], Davis Vaughan [aut], RStudio [cph]
         - ellipsis, Copyright (c)  Hadley Wickham [aut, cre], RStudio [cph]
         - withr, Copyright (c) Jim Hester [aut, cre], Kirill Müller [aut], Kevin Ushey [aut], Hadley Wickham [aut], Winston Chang [aut], Richard Cotton [ctb], RStudio [cph]
@@ -3410,3 +3415,29 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-----------------------------------------------------------------------------
+curl (https://github.com/curl/curl)
+-----------------------------------------------------------------------------
+COPYRIGHT AND PERMISSION NOTICE
+
+Copyright (c) 1996 - 2020, Daniel Stenberg, <daniel@haxx.se>, and many
+contributors, see the THANKS file.
+
+All rights reserved.
+
+Permission to use, copy, modify, and distribute this software for any purpose
+with or without fee is hereby granted, provided that the above copyright
+notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN
+NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+OR OTHER DEALINGS IN THE SOFTWARE.
+
+Except as contained in this notice, the name of a copyright holder shall not
+be used in advertising or otherwise to promote the sale, use or other dealings
+in this Software without prior written authorization of the copyright holder.
