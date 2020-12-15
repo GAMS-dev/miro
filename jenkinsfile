@@ -6,12 +6,16 @@ pipeline {
         parallelsAlwaysFailFast()
         disableConcurrentBuilds()
     }
-    parameters {
+    parameters [
         booleanParam(
             defaultValue: false,
             description: 'Run tests? (Will always run on rc, develop and master)',
-            name: 'RUN_TESTS')
-    }
+            name: 'RUN_TESTS'),
+        booleanParam(
+            defaultValue: false,
+            description: 'Build CI image?',
+            name: 'BUILD_CI')
+    ]
 
     stages {
         stage('Skip build check') {
@@ -46,9 +50,17 @@ pipeline {
                                yarn dist
                         '''
                         script{
+                            if (params.BUILD_CI) {
+                                sh '''
+                                    yarn docker-build --ci
+                                '''
+                            } else {
+                                sh '''
+                                    yarn docker-build
+                                '''
+                            }
                             if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
                                 sh '''#!/bin/bash -xe
-                                    yarn docker-build --ci
                                     ## build MIRO server images
                                     pushd server > /dev/null
                                         python3 miro_server.py build --no-pull
@@ -189,24 +201,32 @@ pipeline {
                     }
                     steps {
                         script{
-                            if (env.BRANCH_NAME == 'master' && currentBuild.currentResult == "SUCCESS") {
-                                withCredentials([usernamePassword(credentialsId: 'dockerhub_login', passwordVariable: 'hub_pass', usernameVariable: 'hub_user')]){
-                                    sh '''#!/bin/bash -xe
-                                        docker login hub.gams.com:443 --username="${hub_user}" --password="${hub_pass}"
-                                        yarn docker-publish
-                                        ## build MIRO server images
-                                        pushd server > /dev/null
-                                            python3 miro_server.py push
-                                        popd > /dev/null
-                                    '''
-                                }
-                            } else if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
+                            if (params.BUILD_CI) {
                                 withCredentials([usernamePassword(credentialsId: 'dockerhub_login', passwordVariable: 'hub_pass', usernameVariable: 'hub_user')]){
                                     sh '''
                                         docker login hub.gams.com:443 --username="${hub_user}" --password="${hub_pass}"
-                                        yarn docker-publish-unstable
+                                        docker tag gamsmiro-ci hub.gams.com/gamsmiro-ci:latest
+                                        docker push hub.gams.com/gamsmiro-ci:latest
                                     '''
                                 }
+                            } else {
+                                withCredentials([usernamePassword(credentialsId: 'dockerhub_login', passwordVariable: 'hub_pass', usernameVariable: 'hub_user')]){
+                                    sh '''
+                                        docker login hub.gams.com:443 --username="${hub_user}" --password="${hub_pass}"
+                                    '''
+                                }
+                            }
+                            if (env.BRANCH_NAME == 'master' && currentBuild.currentResult == "SUCCESS") {
+                                sh '''#!/bin/bash -xe
+                                    ## build MIRO server images
+                                    pushd server > /dev/null
+                                        python3 miro_server.py push
+                                    popd > /dev/null
+                                '''
+                            } else if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
+                                sh '''
+                                    yarn docker-publish-unstable
+                                '''
                             }
                         }
                         archiveArtifacts artifacts: 'dist/*.AppImage', fingerprint: true

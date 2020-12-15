@@ -42,10 +42,6 @@ if (clArgs[0] === '--unstable') {
     subprocAdmin.stderr.pipe(process.stderr);
     subprocAdmin.stdout.pipe(process.stderr);
     await subprocAdmin;
-    const subprocCi = execa('docker', ['tag', 'gamsmiro-ci', 'hub.gams.com/gamsmiro-ci:latest']);
-    subprocCi.stderr.pipe(process.stderr);
-    subprocCi.stdout.pipe(process.stderr);
-    await subprocCi;
   } catch (e) {
     console.log(`Problems tagging docker image. Error message: ${e.message}`);
     process.exit(1);
@@ -76,10 +72,6 @@ if (clArgs[0] === '--unstable') {
     subprocAdmin.stderr.pipe(process.stderr);
     subprocAdmin.stdout.pipe(process.stderr);
     await subprocAdmin;
-    const subprocCi = execa('docker', ['push', 'hub.gams.com/gamsmiro-ci:latest']);
-    subprocCi.stderr.pipe(process.stderr);
-    subprocCi.stdout.pipe(process.stderr);
-    await subprocCi;
   } catch (e) {
     console.log(`Problems pushing docker image. Error message: ${e.message}`);
     process.exit(1);
