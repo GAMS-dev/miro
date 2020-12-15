@@ -10,12 +10,20 @@ ScenarioMetadata <- R6Class("ScenarioMetadata",
                               registerUpdateCallback = function(session, callback){
                                 symName <- private$getSymbolName(session)
                                 if(length(symName) == 2){
-                                  stop("Cannot register callbacks in comparison mode.", call. = FALSE)
+                                  if(!identical(symName[[2]], "1")){
+                                    stop("Cannot register callbacks in comparison mode.", call. = FALSE)
+                                  }
+                                }else{
+                                  symName <- c(symName, "1")
                                 }
-                                private$updateCallbacks[["1"]][[symName]] <- callback
+                                private$updateCallbacks[[symName[[2]]]][[symName[[1]]]] <- callback
                               },
                               isReadonly = function(session){
-                                if(length(private$getSymbolName(session)) == 2){
+                                symName <- private$getSymbolName(session)
+                                if(length(symName) == 2){
+                                  if(identical(symName[[2]], "1")){
+                                    return(FALSE)
+                                  }
                                   return(TRUE)
                                 }
                                 return(FALSE)
@@ -63,10 +71,16 @@ ScenarioMetadata <- R6Class("ScenarioMetadata",
                                     if(is.na(symId)){
                                       stop(sprintf("Invalid symbol id: %s", id[3]), call. = FALSE)
                                     }
-                                    if(symId <= length(private$outputSymbols)){
-                                      return(c(private$outputSymbols[[symId]], scenId))
+                                    prefix <- ""
+                                    if(identical(scenId, 0L)){
+                                      scenId <- "1"
+                                      prefix <- "_pivotcomp_"
                                     }
-                                    return(c(private$tabularInputSymbols[[symId - length(private$outputSymbols)]],
+                                    if(symId <= length(private$outputSymbols)){
+                                      return(c(paste0(prefix, private$outputSymbols[[symId]]), scenId))
+                                    }
+                                    return(c(paste0(prefix,
+                                                    private$tabularInputSymbols[[symId - length(private$outputSymbols)]]),
                                              scenId))
                                   }
                                 }else{

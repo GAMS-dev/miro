@@ -228,7 +228,7 @@
                                         You can add a <a href="./customize.html#miro-log">custom log</a> here too.
                                       </li>
                                       <li><span class="fa-li"><i class="fas fa-copy"></i></span><b>Compare scenarios:</b><br/>
-                                        Module for the comparison of results / scenarios in a split view mode or a multi-scenario comparison mode.
+                                        Module for the comparison of results / scenarios in a split view mode or two different multi-scenario comparison modes.
                                       </li>
                                     </ol>
                                     <p>In addition, the buttons for loading input data and for starting a GAMS run are located here:</p>
@@ -451,11 +451,13 @@
                                             There are three different types of comparison available, split view, tab view and pivot view mode.</p> 
                                             <div id="compare-pivot"  class="section-block">
                                             <h5 class="block-title">Pivot view</h5>
-                                            <p>Unlike the split view and tab view, which take your chart configuration into account, here all records are displayed as <a href="./charts.html#pivot-chart">pivot tables</a>. The data of all selected scenarios are merged into a single table with an additional "Scenario" domain.</p>
-                                            <p>You can add/remove scenarios at any time by clicking the <img class="img-fluid" src="assets/images/pivot-compare-add-btn.png" width="25" height="25" align="middle" alt="Add scenarios button" /> button in the upper left corner. To close the scenarios currently loaded in the pivot mode, click the <img class="img-fluid" src="assets/images/pivot-compare-close-btn.png" width="25" height="25" align="middle" alt="Close scenarios button" /> button in the upper right corner.</p>
+                                            <p>Unlike the split view and tab view, which take your chart configuration into account, here all records are displayed as <a href="./charts.html#pivot-chart">pivot tables</a>. Also note that the pivot comparison mode always compares the sandbox scenario with other scenarios. The sandbox scenario is therefore also called <i>base scenario</i> in this context.</p>
+                                            <p>The data of the sandbox scenario and all selected scenarios are merged into a single table with an additional domain: <i>Scenario</i>. You can add/remove scenarios at any time by clicking the <img class="img-fluid" src="assets/images/pivot-compare-add-btn.png" width="25" height="25" align="middle" alt="Add scenarios button" /> button in the upper left corner. To close the scenarios currently loaded in the pivot mode, click the <img class="img-fluid" src="assets/images/pivot-compare-close-btn.png" width="25" height="25" align="middle" alt="Close scenarios button" /> button in the upper right corner. If you have made changes to your sandbox scenario and want to update the data in the pivot view, click the <img class="img-fluid" src="assets/images/pivot-compare-refresh-btn.png" width="25" height="25" align="middle" alt="Refresh scenarios button" /> button.</p>
                                             <div class="section-block" style="text-align:center;">
                                                   <img class="img-fluid" src="assets/images/pivot_view.png" alt="compare scenarios in pivot view" />
                                             </div>
+                                            <p><a href="./start.html#metadata-views">Views</a> can also be used in pivot view mode. They are attached to the sandbox/base scenario. Thus, the scenario you currently have in your sandbox determines what views will be available to you in the pivot view scenario comparison. To save a new view, you only need to save your sandbox scenario once the new view has been added.</p>
+                                            <p>Views from the pivot comparison mode can be managed (imported/exported/deleted) just like <i>normal</i> views via the <i>Views</i> dialog in the <i>Scenario</i> &rarr; <i>Edit Metadata</i> menu. You can learn more about views <a href="./start.html#metadata-views">here</a>.</p>
                                             <div class="callout-block callout-success">
                                               <div class="icon-holder">
                                                   <i class="fas fa-thumbs-up"></i>
@@ -468,11 +470,10 @@
                                         </div>
                                             <div id="compare-split"  class="section-block">
                                             <h5 class="block-title">Split view</h5>
-                                            <p>If two scenarios are to be compared, the split-screen view is particularly suitable. Here the data of two scenarios can be compared directly next to each other. </p>
+                                            <p>If two scenarios are to be compared, the split-screen view is particularly suitable. Here the data of two scenarios can be compared side by side.</p>
                                             <div class="section-block" style="text-align:center;">
                                                   <img class="img-fluid" src="assets/images/batch_img/split_screen_mode.png" alt="Integrated scenario comparison - split view" />
                                             </div>
-                                            <p>If you are in the split view, you can load scenarios you want to compare.</p> 
                                             <div class="section-block" style="text-align:center;">
                                                   <img class="img-fluid" src="assets/images/compare_split.png" alt="Split view" />
                                             </div>
@@ -481,7 +482,7 @@
                                               <li>Load scenario:<br>
                                               Load saved scenario data from the database.
                                               </li>
-                                              <li>Load active:<br>
+                                              <li>Load sandbox:<br>
                                               Load the sandbox scenario which is opened in the Input / Output section.
                                               </li>
                                             </ul>
@@ -499,7 +500,7 @@
                                             <h5 class="block-title">Tab view</h5>
                                             <p>Scenarios can also be loaded into tabs (as you know it from e.g. your internet browser). This allows to compare more than two scenarios including their graphics. </p>
                                             <div class="section-block" style="text-align:center;">
-                                                  <img class="img-fluid" src="assets/images/batch_img/tab_view2.png" alt="compare scenarios in tab view" />
+                                                  <img class="img-fluid" src="assets/images/compare_tab.png" alt="compare scenarios in tab view" />
                                             </div>
                                             <div class="callout-block callout-success">
                                               <div class="icon-holder">
@@ -511,10 +512,10 @@
                                               </div><!--//content-->
                                             </div><!--//callout-block-->
                                         </div>
-                                        <div id="comparison-mode"  class="section-block">
-                                            <h5 class="block-title">Comparison mode</h5>
-                                            <p>The comparison mode makes comparing scenarios more convenient. It can be used in both the split view and the tab view.
-                                            As soon as this option is activated via the <i>Comparison mode</i> button in the navigation bar, the switch to another dataset of a scenario is also performed for all other open scenarios.
+                                        <div id="synchronize-tabs"  class="section-block">
+                                            <h5 id="comparison-mode"  class="block-title">Synchronize tabs</h5>
+                                            <p>The <i>synchronize tabs</i> option makes comparing scenarios more convenient. It can be used in both the split view and the tab view.
+                                            As soon as this option is activated via the <i>synchronize tabs</i> button in the navigation bar, the switch to another dataset of a scenario is also performed for all other open scenarios.
                                             This means that if you change the dataset to be displayed in one scenario (e.g. switch from 'Price' to 'absolute error' in the image above), the view also changes for all the other scenario(s) loaded in the comparison mode.</p>
                                             <div class="callout-block callout-success">
                                               <div class="icon-holder">
@@ -745,7 +746,7 @@
                                           <a class="nav-link scrollto" href="#compare-pivot">Pivot view</a>
                                           <a class="nav-link scrollto" href="#compare-split">Split view</a>
                                           <a class="nav-link scrollto" href="#compare-tab">Tab view</a>
-                                          <a class="nav-link scrollto" href="#comparison-mode">Comparison mode</a>
+                                          <a class="nav-link scrollto" href="#synchronize-tabs">Synchronize tabs</a>
                                         </nav>
                                       </nav><!--//nav-->
                                     <a class="nav-link scrollto" href="#data-concept">Data concept</a>

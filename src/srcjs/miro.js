@@ -575,6 +575,8 @@ ${data.data}</div>` : data.data);
           td.dataset.val = btoa(data.data[valCol][i]);
         }
         if (i > 0 && data.hierarchical === true
+          && Array.isArray(data.hierarchicalCols)
+          && data.hierarchicalCols.includes(j)
           && data.data[j][i] === data.data[j][i - 1]) {
           td.appendChild(document.createTextNode(''));
         } else {

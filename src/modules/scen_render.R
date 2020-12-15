@@ -14,25 +14,31 @@ if(isInSplitView){
     hideEl(session, paste0("#scenSplit", id, "_open"))
   })
 }else{
-  scenCounter <- scenCounterMultiComp
-  noData <- vapply(scenTableNamesToDisplay, function(sheetName){
-    tabData <- getScenTabData(sheetName)
-    if(identical(nrow(scenData[[scenIdLong]][[tabData$scenTableId]]), 0L)){
-      return(TRUE)
+  if(identical(isolate(rv$scenId), scenId)){
+    # not a refresh
+    scenCounter <- scenCounterMultiComp
+    noData <- vapply(scenTableNamesToDisplay, function(sheetName){
+      tabData <- getScenTabData(sheetName)
+      if(identical(nrow(scenData[[scenIdLong]][[tabData$scenTableId]]), 0L)){
+        return(TRUE)
+      }else{
+        return(FALSE)
+      }
+    }, logical(1L))
+    newScenTabPanel <- generateScenarioTabsetMulti(scenId, noData, scenCounter = scenCounter,
+                                                   showRefreshButton = identical(scenMetaData[[scenIdLong]][[1]][1], -19L))
+    # add new Scenario tab
+    insertScenTab("scenTabset", newScenTabPanel, "scen_add", "before", 
+                  scenID = scenId, scenButtonLang = c(list(tooltip = lang$nav$scen$tooltips$btClose),
+                                                      lang$nav[["dialogCloseScen"]]))
+    numberScenTabs <<- numberScenTabs + 1L
+    if(numberScenTabs == 1L){
+      hideEl(session, "#no-scen")
     }else{
-      return(FALSE)
+      enableEl(session, "#btCompareScen")
     }
-  }, logical(1L))
-  newScenTabPanel <- generateScenarioTabsetMulti(scenId, noData, scenCounter = scenCounter)
-  # add new Scenario tab
-  insertScenTab("scenTabset", newScenTabPanel, "scen_add", "before", 
-                scenID = scenId, scenButtonLang = c(list(tooltip = lang$nav$scen$tooltips$btClose),
-                                                    lang$nav[["dialogCloseScen"]]))
-  numberScenTabs <<- numberScenTabs + 1L
-  if(numberScenTabs == 1L){
-    hideEl(session, "#no-scen")
   }else{
-    enableEl(session, "#btCompareScen")
+    scenCounter <- scenId
   }
 }
 # generate title and date

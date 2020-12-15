@@ -36,8 +36,8 @@
       "splitView":"Split Screen Ansicht",
       "pivotView": "Pivot Ansicht",
       "tabView":"Tabansicht",
-      "compareStart":"Vergleichsmodus",
-      "compareStop":"Stoppe Vergleich",
+      "compareStart":"Tabs synchronisieren",
+      "compareStop":"Stoppe Synchronisation",
       "download":"Download Ergebnisse",
       "interrupt":"Stop"
     },
@@ -96,20 +96,28 @@
     "scen":{  
       "noScen":"Kein Szenario ausgewählt",
       "btLoad":"Laden",
+      "scenNameSandboxSuffix": "(Sandbox)",
       "tooltips":{  
         "btExport":"Exportiere Szenariodaten",
         "btTableView":"Ansicht wechseln",
         "btSymbolLink": "Als Eingabedaten verwenden",
         "btClose":"Szenario schließen",
+        "btClosePivot": "schließen",
+        "btAddPivot": "Szenarios hinzufügen",
+        "btRefresh": "aktualisieren",
         "btDownloadTmpFiles":"temporary files",
         "inputSheet":"Eingabedaten",
         "outputSheet":"Ausgabedaten",
         "load":"Lade gespeichertes Szenario",
-        "loadActive":"Aktives Szenario laden"
+        "loadActive":"Sandbox-Szenario laden"
       },
       "split":{
         "load":"Szenario öffnen",
-        "loadActive": "Aktives öffnen"
+        "loadActive": "Sandbox öffnen"
+      },
+      "pivot":{
+        "scenColName": "Szenario",
+        "viewPrefix": "Pivot-Vergleich:"
       }
     },
     "hcubeImport":{
@@ -275,7 +283,8 @@
       "nsNotFound": "Der von Ihnen angegebene Namensraum konnte nicht gefunden werden.",
       "invalidCred": "Die von Ihnen eingegebenen Zugangsdaten sind ungültig.",
       "insuffPerm": "Sie haben nicht genügend Berechtigungen, um das Modell auszuführen.",
-      "invalidProtocol": "Das von Ihnen angegebene Protokoll ist ungültig. Nur HTTPS wird unterstützt."
+      "invalidProtocol": "Das von Ihnen angegebene Protokoll ist ungültig. Nur HTTPS wird unterstützt.",
+      "contentNotFoundError": "Der gewünschte Inhalt konnte nicht gefunden werden."
     },
     "dialogRemoteLogout": {
       "title": "Ausloggen",
@@ -384,6 +393,7 @@
       "descNoScen":"Es konnten keine gespeicherten Szenarien gefunden werden.",
       "selLoadScen":"Wählen Sie die Szenarien, die Sie laden möchten",
       "selTags": "Zeige nur Szenarios mit den Tag(s):",
+      "baseScenLabel": "Basis-Szenario:",
       "titleDataError":"Daten beschädigt",
       "descDataError":"Die Szenariodaten scheinen beschädigt zu sein. Laden fehlgeschlagen.",
       "maxNoScenExceeded": "Die maximale Anzahl der darstellbaren Szenarien wurde überschritten. Es wird nur eine Teilmenge angezeigt.",
@@ -696,7 +706,6 @@
       "newViewLabel": "Bitte wählen Sie einen Namen für den View.",
       "newViewBtCancel": "Abbrechen",
       "newViewBtSave": "Speichern",
-      "pivotCompScenColName": "Szenario",
       "errUniqueViewName": "Der von Ihnen eingegebene Viewname existiert bereits. Bitte wählen Sie einen anderen Namen.",
       "duplicateRecordTitle": "Doppelter Datensatz",
       "duplicateRecordDesc": "Der von Ihnen eingegebene Datensatz ist bereits vorhanden.",

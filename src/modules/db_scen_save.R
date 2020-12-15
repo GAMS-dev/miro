@@ -446,6 +446,7 @@ if(config$activateModules$attachments){
     }
     session$sendCustomMessage("gms-updateTable", 
                               list(id = "currentViewsTable", hierarchical = TRUE,
+                                   hierarchicalCols = I(0),
                                    valCol = 2L,
                                    data = list(I(newViewData[["symAlias"]]),
                                                I(newViewData[["id"]]),

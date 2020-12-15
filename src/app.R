@@ -1177,6 +1177,7 @@ if(!is.null(errMsg)){
         enableEl(session, "#btCompareScen")
       }
       isInCompareMode    <- FALSE
+      isInRefreshMode    <- FALSE
       isInSolveMode      <- TRUE
       modelStatus        <- NULL
       
@@ -1760,6 +1761,7 @@ if(!is.null(errMsg)){
       observeEvent(input$btScenPivot_close, {
         showEl(session, "#pivotCompBtWrapper")
         hideEl(session, "#pivotCompScenWrapper")
+        isInRefreshMode <<- FALSE
         sidsInPivotComp[] <<- 0L
       })
       lapply(seq_len(maxNumberScenarios  + 3L), function(i){
