@@ -1924,8 +1924,8 @@
         "addLineDataEl":{
           "chartYdata": "Was soll auf der y-Achse dargestellt werden?",
           "chartYlabel": "Datenlabel (z.B. für Legende)",
-          "yaxis": "Axis position",
-          "yaxisChoices": ["left", "right"],
+          "yaxis": "Achsenposition",
+          "yaxisChoices": ["links", "rechts"],
           "color": "Linienfarbe wählen",
           "width": "Linienbreite wählen",
           "shape": "Linienform wählen",
@@ -1961,8 +1961,8 @@
         "addDyDataEl":{
           "chartYdata": "Welchen Index möchten Sie auf der y-Achse zeichnen?",
           "label": "Welches Label soll verwendet werden?",
-          "yaxis": "Axis position",
-          "yaxisChoices": ["left", "right"],
+          "yaxis": "Achsenposition",
+          "yaxisChoices": ["links", "rechts"],
           "color": "Welche Farbe sollte für diese Serie verwendet werden?",
           "stepPlot": "Willst du die Serie als Stufendiagramm darstellen?",
           "stemPlot": "Willst du die Serie als Stammplot darstellen?",
