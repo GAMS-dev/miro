@@ -40,13 +40,6 @@ const miroDevelopMode = process.env.MIRO_DEV_MODE === 'true' || miroBuildMode;
 if (!DEVELOPMENT_MODE) {
   log.transports.console.level = false;
 }
-if (!String.format) {
-  String.format = function stringFormat(format, ...args) {
-    return format.replace(/{(\d+)}/g, (match, number) => (typeof args[number] !== 'undefined'
-      ? args[number]
-      : match));
-  };
-}
 (async () => {
   try {
     if (!fs.existsSync(miroWorkspaceDir)) {
