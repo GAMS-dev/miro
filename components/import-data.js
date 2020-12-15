@@ -3,6 +3,7 @@ const {
 } = require('electron');
 const execa = require('execa');
 const path = require('path');
+const { format } = require('util');
 const log = require('electron-log');
 const MiroDb = require('./MiroDb');
 
@@ -75,7 +76,7 @@ async function addModelData(paths, modelName, miroMode, miroVersion, miroProcess
           const deleteInconsistentDbTables = dialog.showMessageBoxSync(windowObj, {
             type: 'info',
             title: global.lang.main.ErrorInconsistentDbTablesHdr,
-            message: String.format(global.lang.main.ErrorInconsistentDbTablesMsg, datasetsToRemove),
+            message: format(global.lang.main.ErrorInconsistentDbTablesMsg, datasetsToRemove),
             buttons: [global.lang.main.BtnCancel, global.lang.main.BtnOk],
           }) === 1;
           if (deleteInconsistentDbTables) {
@@ -102,7 +103,7 @@ async function addModelData(paths, modelName, miroMode, miroVersion, miroProcess
           if (dialog.showMessageBoxSync(windowObj, {
             type: 'info',
             title: global.lang.main.ErrorDataImportHdr,
-            message: String.format(global.lang.main.ErrorDataImportMsg, error[2]),
+            message: format(global.lang.main.ErrorDataImportMsg, error[2]),
             buttons: [global.lang.main.BtnCancel, global.lang.main.BtnOverwrite],
           }) === 1) {
             log.debug('Overwriting scenario was confirmed');
