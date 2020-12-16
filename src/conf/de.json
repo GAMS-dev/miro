@@ -1574,7 +1574,7 @@
       "chartOptions":{
         "xdata": "Was soll auf der x-Achse dargestellt werden?",
         "ydata": "Datenreihe hinzufügen",
-        "color": "Wählen Sie die Domäne aus, die für das Plotten gruppiert werden soll. Farben sind nur gültig, wenn keine Linien- oder Markierungsfarben gesetzt sind.",
+        "color": "Soll eine Dimension des Symbols gepivoted (für das Plotten gruppiert) werden? Daraus resultierende Farben sind nur gültig, wenn keine anderen Linien- oder Markierungsfarben gesetzt sind.",
         "symbol": "Wählen Sie eine Dimension aus, um sie verschiedenen Symbolen zuzuordnen. Es darf kein Markersymbol gesetzt werden.",
         "options":{
           "title": "Optionen",
@@ -1636,7 +1636,8 @@
         "previewError": "Keine skalaren Indizes in Ihren Daten gefunden.",
         "xdata": "Welchen Index möchten Sie auf der x-Achse zeichnen?",
         "ydata": "Datenreihe hinzufügen",
-        "color": "Wählen Sie die Domäne aus, die für das Plotten gruppiert werden soll.",
+        "ydataGeneral": "Dimension zum pivoten ausgewählt. Weitere y-data bezogenen Optionen können unter 'Allgemein' eingestellt werden.",
+        "color": "Soll eine Dimension des Symbols gepivoted (für das Plotten gruppiert) werden?",
         "dyEvent": "Ereignislinie hinzufügen",
         "dyLimit": "Limitlinie hinzufügen",
         "dyAnnotation": "Annotation hinzufügen",
@@ -1927,8 +1928,8 @@
         "addLineDataEl":{
           "chartYdata": "Was soll auf der y-Achse dargestellt werden?",
           "chartYlabel": "Datenlabel (z.B. für Legende)",
-          "yaxis": "Axis position",
-          "yaxisChoices": ["left", "right"],
+          "yaxis": "Achsenposition",
+          "yaxisChoices": ["links", "rechts"],
           "color": "Linienfarbe wählen",
           "width": "Linienbreite wählen",
           "shape": "Linienform wählen",
@@ -1964,8 +1965,8 @@
         "addDyDataEl":{
           "chartYdata": "Welchen Index möchten Sie auf der y-Achse zeichnen?",
           "label": "Welches Label soll verwendet werden?",
-          "yaxis": "Axis position",
-          "yaxisChoices": ["left", "right"],
+          "yaxis": "Achsenposition",
+          "yaxisChoices": ["links", "rechts"],
           "color": "Welche Farbe sollte für diese Serie verwendet werden?",
           "stepPlot": "Willst du die Serie als Stufendiagramm darstellen?",
           "stemPlot": "Willst du die Serie als Stammplot darstellen?",

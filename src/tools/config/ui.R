@@ -281,7 +281,7 @@ body_admin <- dashboardBody({
                                                                 tags$li(id = "categoryDygraphs3", class = "category-btn category-btn-dygraphs", `data-cat`="54",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$yaxis)),
                                                                 tags$li(id = "categoryDygraphs4", class = "category-btn category-btn-dygraphs", `data-cat`="29",
-                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$filterDomain)),
+                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$filter)),
                                                                 tags$li(id = "categoryDygraphs5", class = "category-btn category-btn-dygraphs", `data-cat`="30",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$event)),
                                                                 tags$li(id = "categoryDygraphs6", class = "category-btn category-btn-dygraphs", `data-cat`="31",

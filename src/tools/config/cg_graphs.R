@@ -1661,8 +1661,17 @@ observeEvent(input$hist_color, {
 observeEvent(input$chart_color, {
   if(identical(input$chart_color, "_")){
     rv$graphConfig$graph$color <<- NULL
+    if(input$chart_tool %in% plotlyChartTools){
+      setInputValue(session, id = "#chart_ylabel1", 
+                    value = if(isTRUE(configuredWithThisTool) && length(currentGraphConfig[["ydata"]]$value$label))
+                      currentGraphConfig[["ydata"]]$value$label 
+                    else names(activeSymbol$indices[activeSymbol$indexTypes == "numeric"])[1])
+    }
   }else{
     rv$graphConfig$graph$color <<- input$chart_color
+    if(input$chart_tool %in% plotlyChartTools){
+      setInputValue(session, id = "#chart_ylabel1", value = "")
+    }
   }
 })
 observeEvent(input$chart_symbol, {
@@ -2534,6 +2543,7 @@ getChartOptions <- reactive({
              getAxisOptions("x", names(indices)[1])
     ),
     tags$div(class="cat-body cat-body-50 cat-body-51 cat-body-52 cat-body-53", style="display:none;",
+             getColorPivotOptions(),
              createArray(session, "chart_ydata", lang$adminMode$graphs$chartOptions$ydata, isolate(input$chart_tool), 
                          autoCreate = !isTRUE(configuredWithThisTool),
                          class_outer="array-wrapper-outer-graph", hr = FALSE)
@@ -2552,7 +2562,6 @@ getChartOptions <- reactive({
              }
     ),
     tags$div(class="cat-body cat-body-5 cat-body-10 cat-body-15 cat-body-20", style="display:none;",
-             getColorPivotOptions(),
              getFilterOptions()
     ),
     tags$div(class="cat-body cat-body-6 cat-body-12 cat-body-17 cat-body-22", style="display:none;",
@@ -2852,6 +2861,7 @@ getHistOptions <- reactive({
   })
   tagList(
     tags$div(class="cat-body cat-body-23",
+             getColorPivotOptions(),
              createArray(session, "hist_xdata", lang$adminMode$graphs$histOptions$xdata,
                          autoCreate = !isTRUE(configuredWithThisTool),
                          class_outer="array-wrapper-outer-graph", hr = FALSE)),
@@ -2877,7 +2887,6 @@ getHistOptions <- reactive({
                          else
                            "vertical")),
     tags$div(class="cat-body cat-body-25", style="display:none;",
-             getColorPivotOptions(),
              getFilterOptions()),
     tags$div(class="cat-body cat-body-26", style="display:none;",
              getOptionSection()
@@ -3053,9 +3062,25 @@ getDygraphsOptions <- reactive({
                          selected = rv$graphConfig$graph$xdata),
              getDyaxisOptions("dxAxis", names(indices[1]))),
     tags$div(class="cat-body cat-body-28", style="display:none;",
-             createArray(session, "dy_ydata", lang$adminMode$graphs$dygraphsOptions$ydata,
-                         autoCreate = !isTRUE(configuredWithThisTool),
-                         class_outer="array-wrapper-outer-graph", hr = FALSE)),
+             if(!length(indices[activeSymbol$indexTypes == "numeric"]) > 1L){
+               selectInput("chart_color", tags$div(lang$adminMode$graphs$dygraphsOptions$color, 
+                                                   tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#group-domain", 
+                                                          tags$span(class="fas fa-info-circle", class="info-icon",
+                                                                    role = "presentation",
+                                                                    `aria-label` = "More information"), target="_blank")),
+                           choices = c("_", indices[activeSymbol$indexTypes == "string"]), selected = rv$graphConfig$graph$color)
+             },
+             conditionalPanel(
+               condition = "input.chart_color == null || input.chart_color==='_'",
+               createArray(session, "dy_ydata", lang$adminMode$graphs$dygraphsOptions$ydata,
+                           autoCreate = !isTRUE(configuredWithThisTool),
+                           class_outer="array-wrapper-outer-graph", hr = FALSE)
+             ),
+             conditionalPanel(
+               condition = "input.chart_color != null && input.chart_color !== '_'",
+               tags$div(class = "shiny-input-container config-message", style="display:block;", lang$adminMode$graphs$dygraphsOptions$ydataGeneral)
+             )
+    ),
     tags$div(class="cat-body cat-body-54", style="display:none;",
              tags$div(id = "left_dyAxis", class = "shiny-input-container",
                       style = if(!axisOptionsGlobal[["y"]] > 0L)
@@ -3068,11 +3093,6 @@ getDygraphsOptions <- reactive({
                       optionSection(lang$adminMode$graphs$axisOptions$rightAxis, 
                                     getDyaxisOptions("dyAxis2", names(scalarIndices)[1])))),
     tags$div(class="cat-body cat-body-29", style="display:none;",
-             selectInput("chart_color", tags$div(lang$adminMode$graphs$dygraphsOptions$color, tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#group-domain", 
-                                                                                            tags$span(class="fas fa-info-circle", class="info-icon",
-                                                                                                      role = "presentation",
-                                                                                                      `aria-label` = "More information"), target="_blank")),
-                         choices = c("_", indices), selected = rv$graphConfig$graph$color),
              getFilterOptions()),
     if(length(configScalars) && nrow(configScalars)){
       tagList(
