@@ -23,7 +23,7 @@ pipeline {
             steps {
                 catchError {
                     sh '''#!/bin/bash -xe
-                        if [ git log -1 | grep -qi '.*\\[ci skip\\].*' ]; then
+                        if git log -1 | grep -qi '.*\\[ci skip\\].*'; then
                             echo "Found [ci skip] in commit message. Aborting.";
                             exit 1
                         fi
