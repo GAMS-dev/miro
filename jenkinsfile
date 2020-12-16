@@ -21,9 +21,9 @@ pipeline {
         stage('Skip build check') {
             agent { label 'docker' }
             steps {
-                catchError {
-                    script {
-                        if ( !currentBuild.rawBuild.getCauses()[0].toString().contains('UserIdCause') ){
+                script {
+                    if ( !currentBuild.rawBuild.getCauses()[0].toString().contains('UserIdCause') ){
+                        catchError {
                           sh '''#!/bin/bash -xe
                               if git log -1 | grep -qi '.*\\[ci skip\\].*'; then
                                   echo "Found [ci skip] in commit message. Aborting.";
