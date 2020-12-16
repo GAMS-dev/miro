@@ -23,9 +23,8 @@ pipeline {
             steps {
                 catchError {
                     sh '''#!/bin/bash -xe
-                        COMMIT_AUTHOR=$(git show -s --format=%an $GIT_COMMIT)
-                        if [ "$COMMIT_AUTHOR" = "jenkins" ]; then
-                            echo "Skipping build";
+                        if [ git log -1 | grep -qi '.*\\[ci skip\\].*' ]; then
+                            echo "Found [ci skip] in commit message. Aborting.";
                             exit 1
                         fi
                     '''
@@ -76,7 +75,7 @@ pipeline {
                                git config user.name 'jenkins'
                                git config user.email 'jenkins@berlin.noreply.gams.com'
                                git checkout -B $BRANCH_NAME
-                               git commit -m "[Jenkins CI] Update version number and package list" || {
+                               git commit -m "[CI skip] Update version number and package list" || {
                                  true
                                } && {
                                    set +x
@@ -87,7 +86,7 @@ pipeline {
                                git status
                                git add ./LICENSE
                                git status
-                               git commit -m "[Jenkins CI] Update third-party licenses" || {
+                               git commit -m "[CI skip] Update third-party licenses" || {
                                  true
                                } && {
                                    set +x
@@ -98,7 +97,7 @@ pipeline {
                                git status
                                git add ./src/conf/language_schema.json
                                git status
-                               git commit -m "[Jenkins CI] Update language schema" || {
+                               git commit -m "[CI skip] Update language schema" || {
                                  true
                                } && {
                                    set +x
@@ -324,7 +323,7 @@ pipeline {
                         git checkout -B $BRANCH_NAME
 
                         git add ./src/doc/release.html ./src/doc/index.html
-                        git commit -m "[Jenkins CI] Update documentation" && {
+                        git commit -m "[CI skip] Update documentation" && {
                             git push origin HEAD:$BRANCH_NAME || true
                         }
                         git tag -a v${MIRO_VERSION_FULL} -m "version ${MIRO_VERSION_FULL}" || {
@@ -347,7 +346,7 @@ pipeline {
                         git status
                         git config user.name 'jenkins'
                         git config user.email 'jenkins@berlin.noreply.gams.com'
-                        git commit -m "[Jenkins CI] Update MIRO version" && {
+                        git commit -m "[CI skip] Update MIRO version" && {
                             git push origin HEAD:master || true
                         }
                         popd > /dev/null
