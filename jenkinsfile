@@ -22,7 +22,7 @@ pipeline {
             agent { label 'docker' }
             steps {
                 script {
-                    if ( !currentBuild.rawBuild.getCauses()[0].toString().contains('UserIdCause') ){
+                    if ( !currentBuild.getBuildCauses()[0].toString().contains('UserIdCause') ){
                         catchError {
                           sh '''#!/bin/bash -xe
                               if git log -1 | grep -qi '.*\\[ci skip\\].*'; then
