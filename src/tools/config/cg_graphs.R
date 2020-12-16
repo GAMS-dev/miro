@@ -3069,13 +3069,13 @@ getDygraphsOptions <- reactive({
                            choices = c("_", indices[activeSymbol$indexTypes == "string"]), selected = rv$graphConfig$graph$color)
              },
              conditionalPanel(
-               condition = "input.chart_color == 'undefined' || input.chart_color==='_'",
+               condition = "input.chart_color == null || input.chart_color==='_'",
                createArray(session, "dy_ydata", lang$adminMode$graphs$dygraphsOptions$ydata,
                            autoCreate = !isTRUE(configuredWithThisTool),
                            class_outer="array-wrapper-outer-graph", hr = FALSE)
              ),
              conditionalPanel(
-               condition = "input.chart_color != 'undefined' && input.chart_color !== '_'",
+               condition = "input.chart_color != null && input.chart_color !== '_'",
                tags$div(class = "shiny-input-container config-message", style="display:block;", lang$adminMode$graphs$dygraphsOptions$ydataGeneral)
              )
     ),
