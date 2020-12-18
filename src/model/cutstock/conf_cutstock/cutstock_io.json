@@ -1,0 +1,83 @@
+{
+	"modelTitle":	"Cutting Stock - A Column Generation Approach with BCH (BCHSTOCK,SEQ=349)",
+	"inputSymbols":	{
+		"_scalars":	{
+			"alias":	"Input Scalars",
+			"symnames":	["r"],
+			"symtext":	["Raw width"],
+			"symtypes":	["parameter"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		},
+		"demand_miro":	{
+			"alias":	"demand_miro",
+			"symtype":	"parameter",
+			"headers":	{
+				"i_prime":	{
+					"type":	"string",
+					"alias":	"widths numeric"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"demand_miro"
+				}
+			}
+		}
+	},
+	"outputSymbols":	{
+		"patterns_used":	{
+			"alias":	"Patterns used in solution",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"widths"
+				},
+				"p":	{
+					"type":	"string",
+					"alias":	"patterns"
+				},
+				"ptuhdr":	{
+					"type":	"string",
+					"alias":	"ptuhdr"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"Patterns used in solution"
+				}
+			}
+		},
+		"_scalars_out":	{
+			"alias":	"Output Scalars",
+			"symnames":	["width_out", "number"],
+			"symtext":	["Paper roll width", "Number of paper rolls used"],
+			"symtypes":	["parameter", "parameter"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		}
+	}
+}

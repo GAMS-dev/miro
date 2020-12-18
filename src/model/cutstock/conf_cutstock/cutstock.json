@@ -1,0 +1,97 @@
+{
+  "theme": "browser",
+  "excelIncludeMeta": true,
+  "excelIncludeEmptySheets": true,
+  "autoGenInputGraphs": true,
+  "storeLogFilesDuration": 7,
+  "defCompMode": "split",
+  "activateModules": {
+    "loadLocal": true,
+    "logFile": true,
+    "lstFile": true,
+    "attachments": true,
+    "downloadTempFiles": false
+  },
+  "aggregateWidgets": true,
+  "overwriteSheetOrder": {
+    "input": ["_widgets", "demand_miro"]
+  },
+  "overwriteAliases": {
+    "i": {
+      "newAlias": "Widths"
+    },
+    "p": {
+      "newAlias": "Patterns"
+    },
+    "_scalars": {
+      "newAlias": "Scalars"
+    },
+    "w": {
+      "newAlias": "Width"
+    },
+    "d": {
+      "newAlias": "Demand"
+    },
+    "_scalars_out": {
+      "newAlias": "Paper rolls used"
+    },
+    "supplied_m": {
+      "newAlias": "Units supplied"
+    },
+    "patterns_m": {
+      "newAlias": "Patterns used"
+    },
+    "supplied": {
+      "newAlias": "Units supplied"
+    },
+    "patterns": {
+      "newAlias": "Patterns used"
+    },
+    "demand_miro": {
+      "newAlias": "Demand"
+    },
+    "patterns_used": {
+      "newAlias": "Patterns used in solution"
+    }
+  },
+  "saveTraceFile": true,
+  "roundingDecimals": 2,
+  "dataRendering": {
+    "patterns_used": {
+      "outType": "cuttingstock",
+      "packages": ["plotly", "dplyr", "tidyr", "purrr", "RColorBrewer"],
+      "additionalData": "_scalars_out"
+    }
+  },
+  "inputWidgets": {
+    "r": {
+      "widgetType": "slider",
+      "alias": "raw width",
+      "min": 0,
+      "max": 200,
+      "default": 100,
+      "step": 1,
+      "ticks": false,
+      "noHcube": false,
+      "label": "raw width"
+    }
+  },
+  "readme": {
+    "tabTitle": "Readme",
+    "filename": "Readme.md",
+    "enableMath": true
+  },
+  "hiddenOutputSymbols": "_scalars_out",
+  "handsontable": {
+    "stretchH": "none",
+    "readonly": false,
+    "manualColumnResize": true,
+    "contextMenu": {
+      "enabled": true,
+      "allowRowEdit": true,
+      "allowColEdit": true
+    },
+    "height": 700,
+    "colWidths": 200
+  }
+}
