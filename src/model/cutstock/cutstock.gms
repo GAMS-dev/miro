@@ -33,7 +33,7 @@ Parameter
 
 $onExternalInput
 Parameter
-   r        'Raw width' / 1000 /
+   r        'Raw width' / 100 /
    demand_miro(i_prime<)  / 45 97, 36 610, 31 395, 14 211/;
 
 $offExternalInput
@@ -98,7 +98,7 @@ execute_load 'bchsol.gdx', col_info, demand_c;
 option cc < col_info;
 
 * Fill the aip data with the new patters
-loop((cc(cols),p)$(ord(cols) = ord(p) - card(i) + 1), aip(i,p) = demand_c(cols,i));
+loop((cc(cols),p)$(ord(cols) = ord(p) - card(i)), aip(i,p) = demand_c(cols,i));
 
 master.optFile = 0;
 
