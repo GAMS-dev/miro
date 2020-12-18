@@ -17,6 +17,9 @@ for(package in c('Rcpp', 'plogr', 'BH', 'RSQLite')){
           type = "source", dependencies = FALSE)
     }
 }
+# need to install reinstall V8 with static libv8 as we also want nodejs
+Sys.setenv(DOWNLOAD_STATIC_LIBV8 = 1)
+install.packages("V8", lib = RLibPath, repos = "https://cloud.r-project.org/")
 # clean up unncecessary files
 dontDisplayMe <- lapply(list.dirs(RLibPath, full.names = TRUE, recursive = FALSE), 
     function(x) {

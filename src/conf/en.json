@@ -1574,7 +1574,7 @@
       "chartOptions":{
         "xdata": "What should be plotted on the x axis?",
         "ydata": "Add data series",
-        "color": "Select the domain to be grouped for plotting. Colors are only valid, when no line or marker colors are set",
+        "color": "Should a dimension of the symbol be pivoted (grouped for plotting)? Note that resulting colors are only valid, when no other line or marker colors are set",
         "symbol": "Select a dimension to map to different symbols. No marker symbol must be set.",
         "options":{
           "title": "Options",
@@ -1636,7 +1636,8 @@
         "previewError": "No scalar indices found in your data.",
         "xdata": "What index do you want to plot on the x-axis?",
         "ydata": "Add data series",
-        "color": "Select the domain to be grouped for plotting.",
+        "ydataGeneral": "Dimension to pivot selected. Further options related to y-data can be set under 'General'",
+        "color": "Should a dimension of the symbol be pivoted (grouped for plotting)?",
         "dyEvent": "Add event line",
         "dyLimit": "Add limit line",
         "dyAnnotation": "Add annotation",

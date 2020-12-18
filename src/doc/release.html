@@ -81,9 +81,13 @@
                                       <li>Remove results from GAMS Engine after they are downloaded, freeing up resources.</li>
                                       <li>Increase timeout when downloading results from GAMS Engine to 10 hours.</li>
                                       <li>Rename <i>Compare mode</i> button to <a href="./start.html#synchronize-tabs"><i>Synchronize tabs</i></a>.</li>
+                                      <li>Move <a href="./charts.html#group-domain">group domain option</a> in graph configuration to section <i>ydata</i>.</li>
                                     </ul>
                                     <h3>Bug fixes</h3>
                                     <ul>
+                                      <li>Fix issue where views of a scenario were not loaded in tab/split comparison mode.</li>
+                                      <li>Fix memory leak with views opened in tab/split comparison mode.</li>
+                                      <li>Fix issue where the y2 (right) axis of a time series diagram was not visible when using the <a href="./charts.html#group-domain">group domain option</a>.</li>
                                       <li>Fix rare case where a confusing error message appeared in the log after solving the model.</li>
                                       <li>MIRO Pivot: Fix issue where only "count" was selectable as aggregation function for variables and equations.</li>
                                     </ul>
@@ -91,13 +95,6 @@
                             </section>
                             <section id="v12" class="doc-section">
                               <h2 class="section-title" style="display:inline-block">GAMS MIRO 1.2</h2> <div style="display:inline-block; padding-left:15px;">(2020-10-05)</div>
-                                 <div class="section-block">
-                                    <h5 style="display:inline-block">GAMS MIRO 1.2.4</h5><div style="display:inline-block; padding-left:15px;"> (xxxx-xx-xx)</div>
-                                    <ul>
-                                      <li>Fix issue where views of a scenario were not loaded in tab/split comparison mode.</li>
-                                      <li>Fix memory leak with views opened in tab/split comparison mode.</li>
-                                    </ul>
-                                 </div>
                                  <div class="section-block">
                                     <h5 style="display:inline-block">GAMS MIRO 1.2.3</h5><div style="display:inline-block; padding-left:15px;"> (2020-11-16)</div>
                                     <ul>

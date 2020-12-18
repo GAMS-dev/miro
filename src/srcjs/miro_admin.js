@@ -684,6 +684,9 @@ $(document).ready(() => {
       inputArrayFactory.destroy(arrayID);
     }
   });
+  Shiny.addCustomMessageHandler('gms-setInputValue', (data) => {
+    $(data.id).val(data.value).change();
+  });
   const colorPickerBinding = new Shiny.InputBinding();
   $.extend(colorPickerBinding, {
     find(scope) {
