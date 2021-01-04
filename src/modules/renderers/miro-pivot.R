@@ -56,7 +56,9 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
   
   indices <- getIndexLists(unassignedSetIndices, options)
   
-  aggregationFunctions <- if(identical(options[["_metadata_"]]$symtype, "parameter"))
+  aggregationFunctions <- if(identical(options[["_metadata_"]]$symtype, "set"))
+    setNames("count", lang$renderers$miroPivot$aggregationFunctions$count)
+  else
     setNames(c("sum", "count", "mean", "median", "min", "max"), 
              c(lang$renderers$miroPivot$aggregationFunctions$sum,
                lang$renderers$miroPivot$aggregationFunctions$count,
@@ -64,8 +66,6 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                lang$renderers$miroPivot$aggregationFunctions$median,
                lang$renderers$miroPivot$aggregationFunctions$min,
                lang$renderers$miroPivot$aggregationFunctions$max)) 
-  else
-    setNames("count", lang$renderers$miroPivot$aggregationFunctions$count)
   
   tags$div(id = ns("container"),
            tags$div(id = ns("customError"), class = "gmsalert gmsalert-error"),
@@ -277,7 +277,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       indices <- character(0L)
       # we need to update aggregation functions in case the symbol type is not available when rendering the UI
       # (e.g. in Configuration Mode)
-      aggregationFunctions <- if(identical(options[["_metadata_"]]$symtype, "parameter"))
+      aggregationFunctions <- if(identical(options[["_metadata_"]]$symtype, "set"))
+        setNames("count", lang$renderers$miroPivot$aggregationFunctions$count)
+      else
         setNames(c("sum", "count", "mean", "median", "min", "max"), 
                  c(lang$renderers$miroPivot$aggregationFunctions$sum,
                    lang$renderers$miroPivot$aggregationFunctions$count,
@@ -285,8 +287,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                    lang$renderers$miroPivot$aggregationFunctions$median,
                    lang$renderers$miroPivot$aggregationFunctions$min,
                    lang$renderers$miroPivot$aggregationFunctions$max)) 
-      else
-        setNames("count", lang$renderers$miroPivot$aggregationFunctions$count)
       
       customChartColors <- c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", 
                              "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00", 
