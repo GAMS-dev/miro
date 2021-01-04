@@ -295,7 +295,7 @@ observeEvent(input$btHcubeLoad, {
   isInSolveMode <<- FALSE
   loadIntoSandbox <<- FALSE
   if(isInSplitView){
-    switchCompareMode(session, "pivotView")
+    switchCompareMode(session, "tabView", length(sidsToLoad))
     isInSplitView <<- FALSE
   }
   rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
