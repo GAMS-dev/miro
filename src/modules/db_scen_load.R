@@ -121,7 +121,6 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
   }
   dbTagList <- scenMetaDb[[stagIdentifier]]
   dbTagList <- csv2Vector(dbTagList[dbTagList != ""])
-  # by default, put most recently saved scenario first
   if(!LAUNCHHCUBEMODE && identical(currentMode, "tab")){
     sandboxMeta <- tibble(`_sid` = -19L,
                           `_uid` = uid,
@@ -140,6 +139,7 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
     scenMetaDbSubset <- bind_rows(scenMetaDbSubset,
                                   sandboxMeta)
   }
+  # by default, put most recently saved scenario first
   dbSidList <- db$formatScenList(scenMetaDbSubset, stimeIdentifier, desc = TRUE)
   if(!is.null(uiSidListTmp)){
     if(LAUNCHHCUBEMODE){
@@ -534,12 +534,41 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   
   # in Hypercube mode, sids are vector not list
   if(!is.list(sidsToLoad)){
-    rowIds              <- as.integer(rv$fetchedScenarios[[1]]) %in% sidsToLoad
+    hcScenIds           <- as.integer(rv$fetchedScenarios[[1]])
+    rowIds              <- hcScenIds %in% sidsToLoad
     metadataFull        <- rv$fetchedScenarios[rowIds, 1:4]
     metDataColNames     <- db$getScenMetaColnames()
     names(metadataFull) <- metDataColNames[c("sid", "uid", "stime", "sname")]
-    metadataFull[[metDataColNames["sname"]]] <- as.character(seq.int(isolate(rv$scenId) - 3L, 
-                                                           isolate(rv$scenId) - 4L + nrow(metadataFull)))
+    tryCatch({
+      baseMetaTmp <- db$importDataset(db$getTableNameMetadata(),
+                                      tibble(metDataColNames[["scode"]], SCODEMAP[['scen']]),
+                                      colNames = metDataColNames[c("sid", "sname")],
+                                      subsetSids = hcScenIds[rowIds])
+    }, error = function(e){
+      flog.error("Some error occurred loading scenario metadata from database. Error message: %s.", 
+                 conditionMessage(e))
+      errMsg <<- lang$errMsg$loadScen$desc
+    })
+    if(is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))){
+      return()
+    }
+    if(nrow(baseMetaTmp) > 0){
+      isBaseScen <- metadataFull[[metDataColNames[["sid"]]]] %in% baseMetaTmp[[metDataColNames[["sid"]]]]
+      # make sure order of baseMetaTmp matches that of metadataFull
+      metadataFull[[metDataColNames["sname"]]][isBaseScen] <- baseMetaTmp[
+        rank(match(baseMetaTmp[[metDataColNames[["sid"]]]],
+                   metadataFull[[metDataColNames[["sid"]]]])), ][[metDataColNames[["sname"]]]]
+      metadataFull[[metDataColNames["sname"]]][!isBaseScen] <- paste0("HC (",
+                                                                      as.character(seq.int(isolate(rv$scenId) - 3L, 
+                                                                                           isolate(rv$scenId) - 4L + sum(!isBaseScen))),
+                                                                      ")")
+    }else{
+      # all scenarios are HC scenarios
+      metadataFull[[metDataColNames["sname"]]] <- paste0("HC (",
+                                                         as.character(seq.int(isolate(rv$scenId) - 3L, 
+                                                                              isolate(rv$scenId) - 4L + nrow(metadataFull))),
+                                                         ")")
+    }
   }else if(!allSidsInComp){
     metadataFull        <- scenMetaDb
   }
