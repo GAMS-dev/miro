@@ -230,12 +230,13 @@ if(is.null(errMsg)){
   }
 }
 if(is.null(errMsg)){
+  hcubeScalars <- getHcubeScalars(modelIn)
   ioConfig <<- list(modelIn = modelIn,
                     modelOut = modelOut,
                     inputDsNames = inputDsNames,
-                    hcubeScalars = getHcubeScalars(modelIn),
+                    hcubeScalars = hcubeScalars,
+                    inputDsNamesBase = inputDsNames[!inputDsNames %in% hcubeScalars],
                     scenTableNamesToDisplay = scenTableNamesToDisplay)
-  ioConfig$inputDsNamesBase <<- inputDsNames[!inputDsNames %in% ioConfig$hcubeScalars]
   if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildonly){
     errMsg <- paste(errMsg, 
                     sprintf("Can not use 'gdx' as file exchange with GAMS if gdxrrw library is not installed.\n
@@ -503,6 +504,8 @@ if(miroBuildonly){
        file = rSaveFilePath)
   
   if(identical(Sys.getenv("MIRO_COMPILE_ONLY"), "true")){
+    if(interactive())
+      stop()
     quit("no")
   }
   if(identical(Sys.getenv("MIRO_MODE"), "full")){
