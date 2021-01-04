@@ -1,13 +1,10 @@
 #!/usr/bin/env bash
 
 function mchecklic () {
-    pushd src > /dev/null
-      Rscript scripts/checkLicense.R || {
-        echo "Error checking license"
-        popd > /dev/null
-        return 1
-      }
-    popd > /dev/null
+    Rscript scripts/checkLicense.R || {
+      echo "Error checking license"
+      return 1
+    }
     return 0
 }
 

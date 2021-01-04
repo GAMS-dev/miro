@@ -319,14 +319,14 @@ pipeline {
                         MIRO_VERSION_FULL=$(grep -e '"version": .*' package.json |cut -f4 -d"\\"")
                         pushd src > /dev/null
                            MIRO_RELEASE_DATE=$(grep -m 1 -e 'MIRORDate' app.R | cut -f2 -d'"' | xargs -0 date +%Y-%m-%d -d )
-                           ./scripts/fix_docs.sh
                         popd > /dev/null
+                        ./scripts/fix_docs.sh
 
                         git config user.name 'jenkins'
                         git config user.email 'jenkins@berlin.noreply.gams.com'
                         git checkout -B $BRANCH_NAME
 
-                        git add ./src/doc/release.html ./src/doc/index.html
+                        git add ./doc/release.html ./doc/index.html
                         git commit -m "[CI skip] Update documentation" && {
                             git push origin HEAD:$BRANCH_NAME || true
                         }
@@ -339,7 +339,7 @@ pipeline {
                             git push origin v${MIRO_VERSION_FULL}
                         }
 
-                        rsync -rlptvz -e "ssh -o StrictHostKeyChecking=no" src/doc/* ubuntu@new.gams.com:/var/www/html/new.gams.com/public_html/miro
+                        rsync -rlptvz -e "ssh -o StrictHostKeyChecking=no" doc/* ubuntu@new.gams.com:/var/www/html/new.gams.com/public_html/miro
 
                         git clone git@git.gams.com:smann/new.gams.com.git --single-branch
                         pushd new.gams.com > /dev/null
