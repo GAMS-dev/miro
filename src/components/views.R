@@ -49,7 +49,7 @@ Views <- R6Class("Views",
                      }
                      return(cleanViewConf)
                    },
-                   loadConf = function(viewConf, sandbox = TRUE, scenIds = NULL){
+                   loadConf = function(viewConf, sandbox = TRUE, scenIds = NULL, sidsToLoad = NULL){
                      if(!is_tibble(viewConf) || length(viewConf) < 4L || nrow(viewConf) == 0){
                        if(sandbox){
                          private$scenViewConf[["1"]] <- list()
@@ -59,13 +59,23 @@ Views <- R6Class("Views",
                      
                      idColName  <- names(viewConf)[1]
                      sids       <- viewConf[[1]]
-                     uniqueSids <- unique(sids)
+                     if(length(scenIds) > 1L){
+                       if(length(sidsToLoad) != length(scenIds)){
+                         stop("sidsToLoad arg must be of the same length as scenIds", call. = FALSE)
+                       }
+                       uniqueSids <- sidsToLoad
+                     }else{
+                       uniqueSids <- unique(sids)
+                     }
                      if(sandbox && length(uniqueSids) > 1){
                        stop("Invalid view config for sandbox. Only single sid allowed.",
                             call. = FALSE)
                      }
                      viewConfTmp <- lapply(uniqueSids, function(sid){
                        datasetSid <- viewConf[sids == sid, ]
+                       if(!length(datasetSid) || nrow(datasetSid) == 0L){
+                         return(list())
+                       }
                        symNames <- datasetSid$symName
                        invalidSymNames <- !symNames %in% private$getValidSymNames()
                        if(any(invalidSymNames)){

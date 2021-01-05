@@ -394,7 +394,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
                                                      msgProgress = lang$progressBar$loadScenDb),
                                 scriptDataTmp, sandboxId - 1)
         views$loadConf(db$importDataset(tableName = dbSchema$tabName[["_scenViews"]], 
-                                        subsetSids = sidsToLoadVector), isInSolveMode, viewsSids)
+                                        subsetSids = sidsToLoadVector), isInSolveMode,
+                       viewsSids, sidsToLoadVector)
       }
     }, error = function(e){
       flog.error("Some error occurred loading scenarios: '%s' from database. Error message: %s.", 
