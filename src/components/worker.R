@@ -242,7 +242,7 @@ Worker <- R6Class("Worker", public = list(
       staticData$writeDisk(staticDir, fileName = private$metadata$MIROGdxInName)
     
     if(length(attachmentFilePaths)){
-      if(!dir.create(staticDir) || !all(file.copy(attachmentFilePaths, staticDir)))
+      if(!all(file.copy(attachmentFilePaths, staticDir)))
         stop(sprintf("Problems writing attachment data to: '%s'.", 
                      staticDir), call. = FALSE)
     }
