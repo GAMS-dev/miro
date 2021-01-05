@@ -621,13 +621,23 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       sidsInPivotComp <<- as.integer(sidsInPivotCompTmp)
       if(LAUNCHHCUBEMODE){
         # in Hypercube mode, save metadata of HC scenarios loaded in pivot compare mode
-        scenMetaData[["scen_0_"]] <<- db$getMetadata(sid = metadataFull[[sidIdentifier]],
-                                                     uid = metadataFull[[uidIdentifier]], 
-                                                     sname = metadataFull[[snameIdentifier]], 
-                                                     stime = metadataFull[[stimeIdentifier]],
-                                                     uidAlias = lang$nav$excelExport$metadataSheet$uid, 
-                                                     snameAlias = lang$nav$excelExport$metadataSheet$sname, 
-                                                     stimeAlias = lang$nav$excelExport$metadataSheet$stime)
+        if(allSidsInComp){
+          scenMetaData[["scen_0_"]] <<- db$getMetadata(sid = metadataFull[[1]],
+                                                       uid = metadataFull[[2]], 
+                                                       sname = metadataFull[[3]], 
+                                                       stime = metadataFull[[4]],
+                                                       uidAlias = lang$nav$excelExport$metadataSheet$uid, 
+                                                       snameAlias = lang$nav$excelExport$metadataSheet$sname, 
+                                                       stimeAlias = lang$nav$excelExport$metadataSheet$stime)
+        }else{
+          scenMetaData[["scen_0_"]] <<- db$getMetadata(sid = metadataFull[[sidIdentifier]],
+                                                       uid = metadataFull[[uidIdentifier]], 
+                                                       sname = metadataFull[[snameIdentifier]], 
+                                                       stime = metadataFull[[stimeIdentifier]],
+                                                       uidAlias = lang$nav$excelExport$metadataSheet$uid, 
+                                                       snameAlias = lang$nav$excelExport$metadataSheet$sname, 
+                                                       stimeAlias = lang$nav$excelExport$metadataSheet$stime)
+        }
       }else{
         enableEl(session, "#btClosePivotComp")
       }
