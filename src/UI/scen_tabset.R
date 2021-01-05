@@ -293,19 +293,23 @@ onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\
     )
   )
 }
-generateScenarioTabsetPivot <- function(){
+generateScenarioTabsetPivot <- function(hcubeMode = FALSE){
   fluidRow(
     tags$div(id = "scen-pivot-view", style = if(!identical(config$defCompMode, "pivot")) "display:none;",
              box(width = 12L, solidHeader = TRUE, status="primary", title = 
-                   tagList(HTML(paste0('<button title="', lang$nav$scen$tooltips$btAddPivot,
-                                       '" class="btn btn-default bt-icon action-button" ',
-                                       'type="button" onclick="Shiny.setInputValue(\'btLoadScen\',1,{priority: \'event\'})">', 
-                                       '<i class="fas fa-folder-plus" aria-label="', lang$nav$scen$tooltips$btAddPivot, '"></i></i></button>',
-                                       '<button title="', lang$nav$scen$tooltips$btRefresh,
-                                       '" style="margin-left:30px;" class="btn btn-default bt-icon action-button" ',
-                                       'type="button" onclick="Shiny.setInputValue(\'btRefreshComp\',0,{priority: \'event\'})">', 
-                                       '<i class="fas fa-sync-alt" aria-label="', lang$nav$scen$tooltips$btRefresh, '"></i></i></button>')), 
-                           tags$div(style = "float: right;", title = lang$nav$scen$tooltips$btClosePivot,
+                   tagList(tags$button(title = lang$nav$scen$tooltips$btAddPivot,
+                                       class = "btn btn-default bt-icon action-button",
+                                       onclick = "Shiny.setInputValue('btLoadScen',1,{priority: 'event'})",
+                                       tags$i(class = "fas fa-folder-plus",
+                                              `aria-label` = lang$nav$scen$tooltips$btAddPivot)),
+                           if(isFALSE(hcubeMode))
+                             tags$button(title = lang$nav$scen$tooltips$btRefresh,
+                                         style = "margin-left:10px",
+                                         class = "btn btn-default bt-icon action-button",
+                                         onclick = "Shiny.setInputValue('btRefreshComp',0,{priority: 'event'})",
+                                         tags$i(class = "fas fa-sync-alt",
+                                                `aria-label` = lang$nav$scen$tooltips$btRefresh)),
+                           tags$div(style = "float:right;", title = lang$nav$scen$tooltips$btClosePivot,
                                     actionButton(inputId = "btScenPivot_close", 
                                                  class = "bt-icon",
                                                  icon = icon("times"), 
