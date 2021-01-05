@@ -1834,6 +1834,9 @@ if(!is.null(errMsg)){
         hideEl(session, "#pivotCompScenWrapper")
         isInRefreshMode <<- FALSE
         sidsInPivotComp[] <<- 0L
+        if(LAUNCHHCUBEMODE){
+          scenMetaData[["scen_0_"]] <<- NULL
+        }
       })
       lapply(seq_len(maxNumberScenarios  + 3L), function(i){
         scenIdLong <- paste0("scen_", i, "_")

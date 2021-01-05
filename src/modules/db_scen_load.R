@@ -150,6 +150,7 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
         names(sidListTmp)[1:4] <- db$getScenMetaColnames()[c('sid', 'uid', 'sname', 'stime')]
         uiSidList <- db$formatScenList(filter(sidListTmp, `_sid` %in% uiSidListTmp),
                                        stimeIdentifier, desc = TRUE)
+        uiSidList <- uiSidList[!duplicated(uiSidList)]
       }else{
         uiSidList <- NULL
       }
@@ -159,7 +160,7 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
       uiSidList <- db$formatScenList(scenMetaDb[scenMetaDb[[1]] %in% sidsLoadedInOtherModes, ],
                                      stimeIdentifier, desc = TRUE)
     }else{
-      uiSidList <- vapply(uiSidListTmp, function(i){
+      uiSidList <- vapply(unique(uiSidListTmp), function(i){
         dbSidList[startsWith(dbSidList, paste0(i, "_"))][1]},
         character(1L), USE.NAMES = FALSE)
     }
@@ -573,6 +574,13 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   }else if(!allSidsInComp){
     metadataFull        <- scenMetaDb
   }
+  if(LAUNCHHCUBEMODE && !allSidsInComp && "scen_0_" %in% names(scenMetaData) && nrow(scenMetaData[["scen_0_"]])){
+    # need to append HC scenarios loaded in pivot compare mode
+    hcLoadedInPivot <- !scenMetaData[["scen_0_"]][[1]] %in% metadataFull[[1]]
+    hcMeta <- setNames(scenMetaData[["scen_0_"]][hcLoadedInPivot, ], c("_sid", "_uid", "_sname", "_stime"))
+    hcMeta[["_stime"]] <- as.character(hcMeta[["_stime"]])
+    metadataFull <- bind_rows(metadataFull, hcMeta)
+  }
   errMsg <- NULL
   lastImportedSid <- NULL
   idxScalarIn <- match(paste0(gsub("_", "", modelName, fixed = TRUE), 
@@ -617,6 +625,16 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       switchTab(session, "scenComp")
       isInRefreshMode <<- TRUE
       sidsInPivotComp <<- as.integer(sidsInPivotCompTmp)
+      if(LAUNCHHCUBEMODE){
+        # in Hypercube mode, save metadata of HC scenarios loaded in pivot compare mode
+        scenMetaData[["scen_0_"]] <<- db$getMetadata(sid = metadataFull[[sidIdentifier]],
+                                                     uid = metadataFull[[uidIdentifier]], 
+                                                     sname = metadataFull[[snameIdentifier]], 
+                                                     stime = metadataFull[[stimeIdentifier]],
+                                                     uidAlias = lang$nav$excelExport$metadataSheet$uid, 
+                                                     snameAlias = lang$nav$excelExport$metadataSheet$sname, 
+                                                     stimeAlias = lang$nav$excelExport$metadataSheet$stime)
+      }
       removeModal()
       flog.debug("Scenarios: '%s' loaded and rendered in scenario comparison mode (pivot view).", 
                  paste(sidsToLoad, collapse = ", "))
