@@ -288,13 +288,17 @@ observeEvent(input$btOverwriteScen, {
 })
 
 observeEvent(input$btHcubeLoad, {
-  flog.debug("Load Hypercube job scenarios to compare mode button clicked.")
+  if(identical(input$btHcubeLoad, "pivot")){
+    viewMode <- "pivotView"
+    currentCompMode <<- "pivot"
+  }else{
+    viewMode <- "tabView"
+    currentCompMode <<- "tab"
+  }
+  flog.debug("Load Hypercube job scenarios (%s) to compare mode button clicked.", viewMode)
   isInSolveMode <<- FALSE
   loadIntoSandbox <<- FALSE
-  if(isInSplitView){
-    switchCompareMode(session, "tabView", length(sidsToLoad))
-    isInSplitView <<- FALSE
-  }
+  switchCompareMode(session, viewMode, length(sidsToLoad))
   rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
 })
 

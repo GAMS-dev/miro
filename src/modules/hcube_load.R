@@ -438,7 +438,7 @@ observeEvent(input$btHcubeRemove, {
     hideEl(session, "#hcubeLoadButtons")
     hideModal(session, 2L)
   }else{
-    hideEl(session, "#btHcubeLoad")
+    hideEl(session, "#btHcubeLoadGrp")
     hideEl(session, "#hcubeLoadMethod")
     hideEl(session, "#btAnalysisConfig")
     hideEl(session, "#btHcubeDownload")

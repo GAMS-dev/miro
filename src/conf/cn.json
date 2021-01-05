@@ -34,7 +34,7 @@
       "solveHcube":"提交作业",
       "changeMode": "改变模式",
       "splitView":"拆分视图",
-      "pivotView": "Pivot view",
+      "pivotView": "枢轴检视",
       "tabView":"标签视图",
       "compareStart":"选项卡同步",
       "compareStop":"停止同步",
@@ -587,7 +587,8 @@
         "selClArgs":"指定其他参数来调用PAVER",
         "runPaverButton":"启动PAVER",
         "runScriptButton": "启动脚本",
-        "interactiveButton": "比较",
+        "interactiveButtonTab": "比较(标签视图)",
+        "interactiveButtonPivot": "比较(枢轴检视)",
         "downloadButton":"下载数据",
         "removeButton":"删除场景"
       },

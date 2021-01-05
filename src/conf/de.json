@@ -587,7 +587,8 @@
         "selClArgs": "Geben Sie zusätzliche Argumente an, mit denen Sie PAVER aufrufen möchten.",
         "runPaverButton": "Paver starten",
         "runScriptButton": "Skript starten",
-        "interactiveButton":"Vergleichen",
+        "interactiveButtonTab":"Vergleichen (Tab)",
+        "interactiveButtonPivot":"Vergleichen (Pivot)",
         "downloadButton":"Daten herunterladen",
         "removeButton": "Szenarien löschen"
       },
