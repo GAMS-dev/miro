@@ -1873,7 +1873,7 @@ if(!is.null(errMsg)){
           
           exportTypes <- setNames(c("miroscen", "gdx", "csv", "xls"), lang$nav$fileExport$fileTypes)
         }else{
-          exportTypes <- setNames(c("csv", "xls"), lang$nav$fileExport$fileTypes[-1:2])
+          exportTypes <- setNames(c("csv", "xls"), lang$nav$fileExport$fileTypes[-c(1, 2)])
         }
         if(length(datasetsRemoteExport)){
           exportTypes <- c(exportTypes, setNames(names(datasetsRemoteExport), 
