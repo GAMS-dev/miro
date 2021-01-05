@@ -230,9 +230,12 @@ if(is.null(errMsg)){
   }
 }
 if(is.null(errMsg)){
+  hcubeScalars <- getHcubeScalars(modelIn)
   ioConfig <<- list(modelIn = modelIn,
                     modelOut = modelOut,
                     inputDsNames = inputDsNames,
+                    hcubeScalars = hcubeScalars,
+                    inputDsNamesBase = inputDsNames[!inputDsNames %in% hcubeScalars],
                     scenTableNamesToDisplay = scenTableNamesToDisplay)
   if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildonly){
     errMsg <- paste(errMsg, 
@@ -501,6 +504,8 @@ if(miroBuildonly){
        file = rSaveFilePath)
   
   if(identical(Sys.getenv("MIRO_COMPILE_ONLY"), "true")){
+    if(interactive())
+      stop()
     quit("no")
   }
   if(identical(Sys.getenv("MIRO_MODE"), "full")){
@@ -690,7 +695,7 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
   local({
     orphanedTables <- NULL
     tryCatch({
-      orphanedTables <- db$getOrphanedTables(hcubeScalars = getHcubeScalars(modelIn))
+      orphanedTables <- db$getOrphanedTables(hcubeScalars = ioConfig$hcubeScalars)
     }, error = function(e){
       flog.error("Problems fetching orphaned database tables. Error message: '%s'.", e)
       errMsg <<- paste(errMsg, sprintf("Problems fetching orphaned database tables. Error message: '%s'.", 
@@ -1051,7 +1056,7 @@ if(!is.null(errMsg)){
             tmpDir <- tempdir(check = TRUE)
             views <- Views$new(names(modelIn),
                                names(modelOut),
-                               inputDsNames)
+                               ioConfig$inputDsNamesBase)
             attachments <- Attachments$new(db, list(maxSize = attachMaxFileSize, maxNo = attachMaxNo,
                                                     forbiddenFNames = c(if(identical(config$fileExchange, "gdx")) 
                                                       c(MIROGdxInName, MIROGdxOutName) else 
@@ -1060,7 +1065,7 @@ if(!is.null(errMsg)){
                                            tmpDir,
                                            names(modelIn),
                                            names(modelOut),
-                                           inputDsNames)
+                                           ioConfig$inputDsNamesBase)
             newScen <- Scenario$new(db = db, sname = "unnamed", isNewScen = TRUE,
                                     readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
                                     execPerm = c(uidAdmin, ugroups), uid = uidAdmin,
@@ -1092,7 +1097,7 @@ if(!is.null(errMsg)){
               flog.debug("Found view data for scenario: %s.", scenName)
               views <- Views$new(names(modelIn),
                                  names(modelOut),
-                                 inputDsNames)
+                                 ioConfig$inputDsNamesBase)
               views$addConf(safeFromJSON(read_file(file.path(miroDataDir, miroDataFilesRaw[viewDataId])),
                                          simplifyDataFrame = FALSE, simplifyVector = FALSE))
             }
@@ -1274,7 +1279,7 @@ if(!is.null(errMsg)){
       
       views              <- Views$new(names(modelIn),
                                       names(modelOut),
-                                      inputDsNames, rv)
+                                      ioConfig$inputDsNamesBase, rv)
       attachments        <- Attachments$new(db, list(maxSize = attachMaxFileSize, maxNo = attachMaxNo,
                                                      forbiddenFNames = c(if(identical(config$fileExchange, "gdx")) 
                                                        c(MIROGdxInName, MIROGdxOutName) else 
@@ -1283,7 +1288,7 @@ if(!is.null(errMsg)){
                                             workDir,
                                             names(modelIn),
                                             names(modelOut),
-                                            inputDsNames, rv)
+                                            ioConfig$inputDsNamesBase, rv)
       # currently active scenario (R6 object)
       activeScen         <- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
                                          isNewScen = TRUE, views = views, attachments = attachments)

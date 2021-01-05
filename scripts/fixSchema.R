@@ -1,4 +1,9 @@
-schema <- suppressWarnings(jsonlite::fromJSON("conf/language_schema.json", 
+if(identical(basename(getwd()), "src")){
+  rootDir <- ""
+}else{
+  rootDir <- "src/"
+}
+schema <- suppressWarnings(jsonlite::fromJSON(paste0(rootDir, "conf/language_schema.json"), 
                                               simplifyDataFrame = FALSE, 
                                               simplifyMatrix = FALSE))
 fixRequired <- function(schema){
@@ -22,4 +27,4 @@ fixRequired <- function(schema){
   }
   return(recurseFixRequired(schema))
 }
-jsonlite::write_json(fixRequired(schema), "conf/language_schema.json", pretty = TRUE, auto_unbox = TRUE, null = "null")
+jsonlite::write_json(fixRequired(schema), paste0(rootDir, "conf/language_schema.json"), pretty = TRUE, auto_unbox = TRUE, null = "null")
