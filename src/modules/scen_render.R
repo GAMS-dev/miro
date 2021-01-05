@@ -1,6 +1,6 @@
 # generate tab panel for new scenario
 noData <- vector("logical", length = length(scenTableNamesToDisplay))
-if(isInSplitView){
+if(identical(currentCompMode, "split")){
   scenCounter <- scenId
   # hide button and show content
   local({

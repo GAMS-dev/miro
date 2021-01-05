@@ -68,17 +68,14 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
   uiSidList <- NULL
   uiSidListTmp <- NULL
   baseScenName <- NULL
-  if(isInSplitView){
+  if(identical(currentCompMode, "split")){
     scenMetaDb <<- scenMetaDb[!as.character(scenMetaDb[[1]]) %in% sidsInSplitComp, ]
-    currentMode <- "split"
     sidsLoadedInOtherModes <- setdiff(c(sidsInComp, sidsInPivotComp), sidsInSplitComp)
     sidsLoadedInOtherModes <- sidsLoadedInOtherModes[sidsLoadedInOtherModes != 0]
     if(length(sidsLoadedInOtherModes)){
       uiSidListTmp <- sidsLoadedInOtherModes
     }
-  }else if(is.null(input$btSplitView) && identical(config$defCompMode, "pivot") ||
-      identical(input$btSplitView, "pivotView")){
-    currentMode <- "pivot"
+  }else if(identical(currentCompMode, "pivot")){
     sidsLoadedInPivotMode <- sidsInPivotComp[!is.na(sidsInPivotComp) & sidsInPivotComp != 0]
     if(!LAUNCHHCUBEMODE){
       baseScenName <- paste(if(length(rv$activeSname)) rv$activeSname else lang$nav$dialogNewScen$newScenName,
@@ -96,7 +93,6 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
     }
   }else{
     scenMetaDb <<- scenMetaDb[!as.character(scenMetaDb[[1]]) %in% sidsInComp, ]
-    currentMode <- "tab"
     sidsLoadedInOtherModes <- setdiff(c(sidsInSplitComp, sidsInPivotComp), sidsInComp)
     sidsLoadedInOtherModes <- sidsLoadedInOtherModes[sidsLoadedInOtherModes != 0 &
                                                        !is.na(sidsLoadedInOtherModes)]
@@ -121,7 +117,7 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
   }
   dbTagList <- scenMetaDb[[stagIdentifier]]
   dbTagList <- csv2Vector(dbTagList[dbTagList != ""])
-  if(!LAUNCHHCUBEMODE && identical(currentMode, "tab")){
+  if(!LAUNCHHCUBEMODE && identical(currentCompMode, "tab")){
     sandboxMeta <- tibble(`_sid` = -19L,
                           `_uid` = uid,
                           `_sname` = paste(if(length(rv$activeSname))
@@ -156,7 +152,7 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
       }
       dbSidList <- c(dbSidList, uiSidList)
       dbSidList <- dbSidList[!duplicated(dbSidList)]
-    }else if(isInSplitView){
+    }else if(identical(currentCompMode, "split")){
       uiSidList <- db$formatScenList(scenMetaDb[scenMetaDb[[1]] %in% sidsLoadedInOtherModes, ],
                                      stimeIdentifier, desc = TRUE)
     }else{
@@ -165,7 +161,8 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
         character(1L), USE.NAMES = FALSE)
     }
   }
-  showLoadScenDialog(dbSidList, uiSidList, isInSplitView, dbTagList = dbTagList, baseScenName = baseScenName)
+  showLoadScenDialog(dbSidList, uiSidList, identical(currentCompMode, "split"),
+                     dbTagList = dbTagList, baseScenName = baseScenName)
   if(maxNoScenExceeded)
     showHideEl(session, "#importScenMaxNoScen", 4000L)
 })
@@ -254,8 +251,7 @@ observeEvent(input$btLoadScenConfirm, {
   }else{
     scenSelected <- isolate(input$selLoadScen)
     if(!isInSolveMode && !LAUNCHHCUBEMODE){
-      if(is.null(input$btSplitView) && identical(config$defCompMode, "pivot") ||
-         identical(input$btSplitView, "pivotView")){
+      if(identical(currentCompMode, "pivot")){
         scenSelected <- c("sandbox", scenSelected)
       }else{
         sandboxScenIdTmp <- startsWith(scenSelected, "-19_")
@@ -318,14 +314,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       return()
     }
   }
-  if(is.null(input$btSplitView) && identical(config$defCompMode, "pivot") ||
-     identical(input$btSplitView, "pivotView")){
-    if(isInRefreshMode){
-      on.exit(hideEl(session, "#loading-screen"), add = TRUE)
-    }
-    isInPivotComp <- TRUE
-  }else{
-    isInPivotComp <- FALSE
+  if(identical(currentCompMode, "pivot") && isInRefreshMode){
+    on.exit(hideEl(session, "#loading-screen"), add = TRUE)
   }
   sidsInMem <- c(sidsInComp, sidsInSplitComp)
   if(!isInSolveMode && all(unlist(sidsToLoad, use.names = FALSE) %in% sidsInMem)){
@@ -339,9 +329,9 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       sidsToLoadVector <- unlist(sidsToLoad, use.names = FALSE)
       if(isInSolveMode){
         viewsSids <- 1L
-      }else if(isInPivotComp){
+      }else if(identical(currentCompMode, "pivot")){
         viewsSids <- 0L
-      }else if(!isInSplitView){
+      }else if(identical(currentCompMode, "tab")){
         viewsSids   <- which(!occupiedSidSlots)[seq_along(sidsToLoadVector)] + 3
       }else if(loadInLeftBoxSplit){
         viewsSids   <- 2L
@@ -586,7 +576,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   idxScalarIn <- match(paste0(gsub("_", "", modelName, fixed = TRUE), 
                               "_", scalarsFileName), scenTableNames)[[1]]
   
-  if(isInPivotComp){
+  if(identical(currentCompMode, "pivot")){
     if(!compareModeTabsetGenerated[3]){
       compareModeTabsetGenerated[3] <<- TRUE
       insertUI("#pivotCompScenWrapper", where = "afterBegin",
@@ -647,7 +637,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   }
   lapply(seq_along(scenDataTmp), function(i){
     tryCatch({
-      if(!isInSplitView){
+      if(identical(currentCompMode, "tab")){
         scenId   <- isolate(rv$scenId)
       }else{
         if(loadInLeftBoxSplit){
@@ -699,7 +689,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     })
     
     flog.debug("Scenario: '%s' loaded into UI (compare mode).", sidsToLoad[[i]])
-    if(!isInSplitView){
+    if(identical(currentCompMode, "tab")){
       lastImportedSid <<- scenId
       sidsInComp[scenId] <<- sidsToLoad[[i]]
       occupiedSidSlots[scenId - 3] <<- TRUE
@@ -717,7 +707,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   if(!is.list(sidsToLoad)){
     switchTab(session, "scenComp")
   }
-  if(!isInSplitView){
+  if(identical(currentCompMode, "tab")){
     switchTab(session, "scenComp")
     updateTabsetPanel(session, "scenTabset", selected = "scen_" %+% lastImportedSid %+% "_")
   }

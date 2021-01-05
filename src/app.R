@@ -1243,8 +1243,14 @@ if(!is.null(errMsg)){
                                    execPerm = vector("logical", attachMaxNo))
       # boolean that specifies whether input data does not match output data
       dirtyFlag          <- FALSE
-      isInSplitView      <- if(identical(config$defCompMode, "split")) TRUE else FALSE
-      if(isInSplitView){
+      if(identical(config$defCompMode, "tab")){
+        currentCompMode    <-  "tab"
+      }else if(identical(config$defCompMode, "pivot")){
+        currentCompMode    <-  "pivot"
+      }else{
+        currentCompMode    <-  "split"
+      }
+      if(identical(currentCompMode, "split")){
         enableEl(session, "#btCompareScen")
       }
       isInCompareMode    <- FALSE
@@ -1380,7 +1386,7 @@ if(!is.null(errMsg)){
                               paste0("outputTabset_", currentGroup + direction))
           }
         }else if(isolate(input$sidebarMenuId) == "scenarios"){
-          if(isInSplitView){
+          if(identical(currentCompMode, "split")){
             flog.debug("Navigated %d data tabs in split view scenario comparison view (using shortcut).", direction)
             currentScen <- 2
             currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen)]]),
