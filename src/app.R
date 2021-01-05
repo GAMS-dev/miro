@@ -1836,6 +1836,8 @@ if(!is.null(errMsg)){
         sidsInPivotComp[] <<- 0L
         if(LAUNCHHCUBEMODE){
           scenMetaData[["scen_0_"]] <<- NULL
+        }else{
+          disableEl(session, "#btClosePivotComp")
         }
       })
       lapply(seq_len(maxNumberScenarios  + 3L), function(i){

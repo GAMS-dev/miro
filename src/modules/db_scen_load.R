@@ -634,6 +634,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
                                                      uidAlias = lang$nav$excelExport$metadataSheet$uid, 
                                                      snameAlias = lang$nav$excelExport$metadataSheet$sname, 
                                                      stimeAlias = lang$nav$excelExport$metadataSheet$stime)
+      }else{
+        enableEl(session, "#btClosePivotComp")
       }
       removeModal()
       flog.debug("Scenarios: '%s' loaded and rendered in scenario comparison mode (pivot view).", 

@@ -304,6 +304,8 @@ generateScenarioTabsetPivot <- function(hcubeMode = FALSE){
                                               `aria-label` = lang$nav$scen$tooltips$btAddPivot)),
                            if(isFALSE(hcubeMode))
                              tags$button(title = lang$nav$scen$tooltips$btRefresh,
+                                         id = "btClosePivotComp",
+                                         disabled = "true",
                                          style = "margin-left:10px",
                                          class = "btn btn-default bt-icon action-button",
                                          onclick = "Shiny.setInputValue('btRefreshComp',0,{priority: 'event'})",
