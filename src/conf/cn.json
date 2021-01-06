@@ -200,6 +200,7 @@
       "desc":"请输入Hypercube作业配置的名称:",
       "tags":"请为HC作业添加标签（可选）:",
       "discardAttach": "舍弃附件？",
+      "discardViews": "抛弃观点？",
       "discardPerm": "舍弃权限？",
       "newScenName":"新建Hypercube作业",
       "badName":"请输入正确的名称。",

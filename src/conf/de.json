@@ -199,6 +199,7 @@
       "title":"Neue Hypercube-Job-Konfiguration",
       "desc":"Bitte wählen Sie einen Namen für die Hypercube-Job-Konfiguration:",
       "discardAttach": "Anhänge verwerfen?",
+      "discardViews": "Views verwerfen?",
       "discardPerm": "Berechtigungen verwerfen?",
       "tags":"Füge dem HC-Job Tag(s) hinzu (optional):",
       "badName":"Bitte wählen Sie eine gültige Bezeichnung für die neue HC-Job-Konfiguration.",
