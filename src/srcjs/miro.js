@@ -63,10 +63,10 @@ export function downloadAttachment(elId) {
 
 export function changeDDButtonEvent(elText, DDBtnID, actionID, actionVal = null) {
   $(DDBtnID).attr('onclick',
-    `Shiny.setInputValue('${actionID}',${actionVal == null ? '1' : actionVal},{priority: 'event'});`);
+    `Shiny.setInputValue('${actionID}',${actionVal == null ? 1 : actionVal},{priority: 'event'});`);
   $(DDBtnID).text(elText);
   if ($(DDBtnID).is(':enabled')) {
-    Shiny.setInputValue(actionID, actionVal == null ? '1' : actionVal, {
+    Shiny.setInputValue(actionID, actionVal == null ? 1 : actionVal, {
       priority: 'event',
     });
   }
