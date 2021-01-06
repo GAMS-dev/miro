@@ -1,9 +1,11 @@
 observeEvent(input$btSplitView, {
   switchCompareMode(session, input$btSplitView, numberScenTabs)
-  if(identical(input$btSplitView, "splitView")){
-    isInSplitView <<- TRUE
+  if(identical(input$btSplitView, "tabView")){
+    currentCompMode    <<-  "tab"
+  }else if(identical(input$btSplitView, "pivotView")){
+    currentCompMode    <<-  "pivot"
   }else{
-    isInSplitView <<- FALSE
+    currentCompMode    <<-  "split"
   }
   if(isInCompareMode){
     rv$btCompareScen <- isolate(rv$btCompareScen + 1L)
