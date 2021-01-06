@@ -357,6 +357,8 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                lang$nav$dialogImport$scenNameExistsErr),
       tags$div(id = "importScenNoDsSelected", class = "gmsalert gmsalert-error", 
                lang$nav$dialogLoadScen$noDsSelected),
+      tags$div(id = "symNotInDataSrc", class = "gmsalert gmsalert-error", 
+               lang$nav$dialogLoadScen$symNotInDataSrc),
       tags$div(id = "importScenInvalidFile", class = "gmsalert gmsalert-error", 
                lang$nav$dialogLoadScen$invalidFile),
       tags$div(id = "importScenError", class = "gmsalert gmsalert-error", 

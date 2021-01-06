@@ -399,6 +399,7 @@
       "descDataError":"Die Szenariodaten scheinen beschädigt zu sein. Laden fehlgeschlagen.",
       "maxNoScenExceeded": "Die maximale Anzahl der darstellbaren Szenarien wurde überschritten. Es wird nur eine Teilmenge angezeigt.",
       "noDsSelected": "Bitte wählen Sie den Namen des Datensatzes aus, den Sie importieren möchten.",
+      "symNotInDataSrc": "Die Datensätze, die Sie importieren möchten, konnten in den von Ihnen bereitgestellten Daten nicht gefunden werden.",
       "invalidFile": "Die von Ihnen hochgeladene Datei konnte nicht validiert werden.",
       "sortBy":"Sortieren nach:",
       "btSortNameASC":"Name (ASC)",
