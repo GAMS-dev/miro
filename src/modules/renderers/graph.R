@@ -308,7 +308,8 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                plot_bgcolor = if(length(options$plot_bgcolor)) options$plot_bgcolor else "rgba(0,0,0,0)",
                showlegend = options$showlegend, grid = pieGrid,
                legend = options$legend, bargap = options$bargap, bargroupgap = options$bargroupgap) %>%
-        config(p, staticPlot = isTRUE(options$staticPlot))}))
+        config(p, staticPlot = isTRUE(options$staticPlot), 
+               toImageButtonOptions = list(width = NULL, height = NULL))}))
   }else if(options$tool == 'dygraphs'){
     return(renderDygraph({
       if(length(filterCol) && length(input$data_filter)){
