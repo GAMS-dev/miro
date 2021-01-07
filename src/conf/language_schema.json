@@ -783,6 +783,10 @@
               "type": "string",
               "minLength": 1
             },
+            "discardViews": {
+              "type": "string",
+              "minLength": 1
+            },
             "discardPerm": {
               "type": "string",
               "minLength": 1
@@ -816,7 +820,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 12
+          "minProperties": 13
         },
         "dialogEditMeta": {
           "type": "object",
@@ -1549,6 +1553,10 @@
               "type": "string",
               "minLength": 1
             },
+            "symNotInDataSrc": {
+              "type": "string",
+              "minLength": 1
+            },
             "invalidFile": {
               "type": "string",
               "minLength": 1
@@ -1582,7 +1590,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 20
+          "minProperties": 21
         },
         "dialogNewCol": {
           "type": "object",
@@ -2292,7 +2300,11 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "interactiveButton": {
+                "interactiveButtonTab": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "interactiveButtonPivot": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -2305,7 +2317,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 24
+              "minProperties": 25
             },
             "invalidScenDialog": {
               "type": "object",

@@ -153,7 +153,8 @@ lapply(seq_along(modelIn), function(i){
              return(NULL)
            }
            value <- value[value != "_"]
-           if(names(modelIn)[[i]] %in% modelInTabularDataBase){
+           if(names(modelIn)[[i]] %in% modelInTabularDataBase ||
+              names(modelIn)[[i]] %in% ioConfig$hcubeScalars){
              # generate data frame (multi dropdown menu)
              dataTmp[[j]] <<- ddToTibble(value, modelIn[[i]])
              j <<- j + 1L

@@ -137,10 +137,16 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
        length(input$localInput$name) == 1L) {
       fileNameRaw <- tolower(tools::file_path_sans_ext(input$localInput$name))
     }
-    if(isTRUE(input$cbSelectManuallyLoc) && length(input$selInputDataLoc) == 1L){
-      if(!input$selInputDataLoc %in% names(modelInToImport)){
-        flog.error("Selected input dataset is not in list of model data to import. This looks like an attempt to tamper with the app!")
+    if(isTRUE(input$cbSelectManuallyLoc) && length(input$selInputDataLoc) > 1L){
+      if(any(!input$selInputDataLoc %in% names(modelInToImport))){
+        flog.error("Selected input dataset(s) is not in list of model data to import. This looks like an attempt to tamper with the app!")
         showHideEl(session, "#importScenNoDsSelected", 4000L)
+        return()
+      }
+      if(length(input$selInputDataLoc) > 1L &&
+         any(tolower(input$selInputDataLoc) %in% modelInTabularData)){
+        flog.debug("Local file import stopped as multiple datasets were selected and not all of them are scalar datasets.")
+        showHideEl(session, "#symNotInDataSrc", 4000L)
         return()
       }
       datasetsToFetch <- input$selInputDataLoc
@@ -151,9 +157,14 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
       showHideEl(session, "#importScenNoDsSelected", 4000L)
       return()
     }
+    if(any(tolower(datasetsToFetch) %in% modelInTabularData)){
+      fnTmp <- datasetsToFetch
+    }else{
+      fnTmp <- scalarsFileName
+    }
     if(!file.rename(input$localInput$datapath, 
                     paste0(loadModeWorkDir, .Platform$file.sep, 
-                           datasetsToFetch, ".csv"))){
+                           fnTmp, ".csv"))){
       showHideEl(session, "#importScenError", 4000L)
       return()
     }

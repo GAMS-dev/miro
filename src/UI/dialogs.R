@@ -357,6 +357,8 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                lang$nav$dialogImport$scenNameExistsErr),
       tags$div(id = "importScenNoDsSelected", class = "gmsalert gmsalert-error", 
                lang$nav$dialogLoadScen$noDsSelected),
+      tags$div(id = "symNotInDataSrc", class = "gmsalert gmsalert-error", 
+               lang$nav$dialogLoadScen$symNotInDataSrc),
       tags$div(id = "importScenInvalidFile", class = "gmsalert gmsalert-error", 
                lang$nav$dialogLoadScen$invalidFile),
       tags$div(id = "importScenError", class = "gmsalert gmsalert-error", 
@@ -912,14 +914,14 @@ showHcubeLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolvers
       },
       tags$button(id = "btHcubeDownload", class = "btn btn-default",
                   type = "button", onclick = "$('#configDownload').show();
-$('#btHcubeDownloadConfirm').show();$('#btHcubeLoad').hide();$('#hcubeLoadMethod').hide();$('#btAnalysisConfig').hide();
+$('#btHcubeDownloadConfirm').show();$('#btHcubeLoadGrp').hide();$('#hcubeLoadMethod').hide();$('#btAnalysisConfig').hide();
                           $('#btHcubeDownload').hide();$('#btHcubeRemove').hide();Shiny.bindAll();",  
                   lang$nav$hcubeMode$hcubeLoadDialog$downloadButton),
       downloadButton("btHcubeDownloadConfirm", style = "display:none", 
                      lang$nav$hcubeMode$hcubeLoadDialog$downloadButton),
       tagAppendAttributes(actionButton("btAnalysisConfig", lang$nav$hcubeMode$hcubeLoadDialog$paverButton),
                           onclick = paste0("$('#configAnalysis').show();
-$('#hcAnaButtonWrapper').show();$('#btHcubeLoad').hide();$('#hcubeLoadMethod').hide();$('#btAnalysisConfig').hide();
+$('#hcAnaButtonWrapper').show();$('#btHcubeLoadGrp').hide();$('#hcubeLoadMethod').hide();$('#btAnalysisConfig').hide();
                           $('#btHcubeDownload').hide();$('#btHcubeRemove').hide();")),
       tags$div(style = "display:none;", id = "hcAnaButtonWrapper",
                actionButton("btRunPaver", lang$nav$hcubeMode$hcubeLoadDialog$runPaverButton, 
@@ -929,8 +931,24 @@ $('#hcAnaButtonWrapper').show();$('#btHcubeLoad').hide();$('#hcubeLoadMethod').h
                             class = "bt-highlight-1 bt-gms-confirm", 
                             style = if(!length(customScripts)) "display:none;")),
       if(length(sidsToLoad) <= maxConcurentLoad)
-        actionButton("btHcubeLoad", lang$nav$hcubeMode$hcubeLoadDialog$interactiveButton, 
-                     style = "margin-left: 5px;")
+        tags$div(class = "btn-group", id = "btHcubeLoadGrp",
+                 tags$button(class = "btn btn-default", type = "button", id = "btHcubeLoad", 
+                             style = "margin:6px 0px 6px 5px;border-right:0px;",
+                             onclick = "Shiny.setInputValue('btHcubeLoad','tab',{priority:'event'});", 
+                             lang$nav$hcubeMode$hcubeLoadDialog$interactiveButtonTab),
+                 tags$button(class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
+                             style = "margin:6px 0px 6px 0;display:block;",
+                             tags$span(class = "caret"),
+                             tags$span(class = "sr-only", "toggle dropdown")),
+                 tags$ul(class = "dropdown-menu", role = "menu", style = "margin-left: 5px;",
+                         tags$li(tags$a(href = "#", onclick = paste0("Miro.changeDDButtonEvent('", 
+                                                                     htmltools::htmlEscape(lang$nav$hcubeMode$hcubeLoadDialog$interactiveButtonTab), 
+                                                                     "', '#btHcubeLoad', 'btHcubeLoad', 'tab');"),
+                                        lang$nav$hcubeMode$hcubeLoadDialog$interactiveButtonTab)),
+                         tags$li(tags$a(href = "#", onclick = paste0("Miro.changeDDButtonEvent('", 
+                                                                     htmltools::htmlEscape(lang$nav$hcubeMode$hcubeLoadDialog$interactiveButtonPivot), 
+                                                                     "', '#btHcubeLoad', 'btHcubeLoad', 'pivot');"),
+                                        lang$nav$hcubeMode$hcubeLoadDialog$interactiveButtonPivot))))
     ),
     fade = TRUE, easyClose = FALSE
   ))
