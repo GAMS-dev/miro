@@ -228,9 +228,7 @@ output[["scenExportHandler"]] <- downloadHandler(
       data <- tibble()
     }
     return(writexl::write_xlsx(data, file))
-  },
-  contentType = if(identical(exportFileType, "gdx")) "application/octet-stream" else
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  }
 )
 observeEvent(input[["scenRemoteExportHandler"]], {
   scenId <- suppressWarnings(as.integer(input[["scenExportId"]]))

@@ -1298,7 +1298,7 @@ if(!is.null(errMsg)){
       # currently active scenario (R6 object)
       activeScen         <- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
                                          isNewScen = TRUE, views = views, attachments = attachments)
-      exportFileType     <- if(useGdx) "gdx" else "xls"
+      exportFileType     <- if(useGdx) "miroscen" else "csv"
       
       # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
       sidCompOrder     <- NULL
