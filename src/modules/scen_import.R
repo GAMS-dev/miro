@@ -137,7 +137,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
        length(input$localInput$name) == 1L) {
       fileNameRaw <- tolower(tools::file_path_sans_ext(input$localInput$name))
     }
-    if(isTRUE(input$cbSelectManuallyLoc) && length(input$selInputDataLoc) > 1L){
+    if(isTRUE(input$cbSelectManuallyLoc) && length(input$selInputDataLoc) > 0L){
       if(any(!input$selInputDataLoc %in% names(modelInToImport))){
         flog.error("Selected input dataset(s) is not in list of model data to import. This looks like an attempt to tamper with the app!")
         showHideEl(session, "#importScenNoDsSelected", 4000L)
