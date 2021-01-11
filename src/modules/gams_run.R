@@ -350,12 +350,18 @@ if(LAUNCHHCUBEMODE){
                return(paste0(parPrefix, "= ", escapeGAMSCL(value), text))
              },
              date = {
-               return(paste0(parPrefix, "= ", escapeGAMSCL(
-                 as.character(input[["date_" %+% i]]))))
+               value <- as.character(isolate(input[[paste0("date_", i)]]))
+               if(is.na(value)){
+                 value <- ""
+               }
+               return(paste0(parPrefix, "= ", escapeGAMSCL(value)))
              },
              daterange = {
                value <- as.character(input[["daterange_" %+% i]])
-               
+               emptyDate <- is.na(value)
+               if(any(emptyDate)){
+                 value[emptyDate] <- ""
+               }
                return(paste0(parPrefix, "_lo= ", escapeGAMSCL(value[1]), 
                              '|"""|', parPrefix, "_up= ", escapeGAMSCL(value[2])))
              },
