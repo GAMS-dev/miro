@@ -366,7 +366,8 @@ if(LAUNCHHCUBEMODE){
                              '|"""|', parPrefix, "_up= ", escapeGAMSCL(value[2])))
              },
              checkbox = {
-               return(paste0(parPrefix, "= ", input[["cb_" %+% i]]))
+               return(paste0(parPrefix, "= ", 
+                             if(identical(isolate(input[[paste0("cb_", i)]]), TRUE)) 1L else 0L))
              },
              numericinput = {
                valueTmp <- input[["numeric_" %+% i]]
