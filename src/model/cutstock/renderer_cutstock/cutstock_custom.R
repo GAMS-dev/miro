@@ -25,17 +25,18 @@ renderCuttingstock <- function(input, output, session, data, options = NULL, pat
   data <- data %>% dplyr::mutate(total_width = times * width)
   
   # Create waste entry for every pattern
+  data$p <- factor(data$p)
   new_entries <- data.frame(
     i = rep("Waste", length(unique(data$p))),
-    p = unique(data$p),
+    p = levels(data$p),
     times = 1,
     used = purrr::map_dbl(
-      unique(data$p), ~{
+      levels(data$p), ~{
         data %>% dplyr::filter(p == .x) %>% dplyr::pull(used) %>% unique()
       }
     ),
     width = purrr::map_dbl(
-      unique(data$p), ~ {
+      levels(data$p), ~ {
         raw_width - (data %>% dplyr::filter(p == .x) %>% dplyr::pull(total_width) %>% sum())
       }
     )
@@ -49,7 +50,7 @@ renderCuttingstock <- function(input, output, session, data, options = NULL, pat
   
   # Order patterns by width of waste
   order_by <- data[data$i == "Waste", c("p", "width")]
-  patterns_order <- order(order_by$width, decreasing = TRUE)
+  patterns_order <- order(order_by$width)
   data$ylabel <- factor(paste0(data$p, ": ", data$used))
   data$ylabel <- factor(data$ylabel, levels(data$ylabel)[patterns_order])
   
