@@ -61,19 +61,35 @@
       "outType": "cuttingstock",
       "packages": ["plotly", "dplyr", "tidyr", "purrr", "RColorBrewer"],
       "additionalData": "_scalars_out"
+    },
+    "_scalars_out": {
+      "outType": "valueBox",
+      "options": [
+        {
+          "number": {
+            "description": "Paper roll width",
+            "color": "aqua",
+            "icon": {
+              "name": "_",
+              "lib": "font-awesome"
+            },
+            "round": 2
+          }
+        }
+      ]
     }
   },
   "inputWidgets": {
     "r": {
-      "widgetType": "slider",
+      "widgetType": "numericinput",
       "alias": "raw width",
+      "value": 500,
       "min": 0,
-      "max": 200,
-      "default": 100,
-      "step": 1,
-      "ticks": false,
-      "noHcube": false,
-      "label": "raw width"
+      "max": 100000,
+      "decimal": 0,
+      "decimalCharacter": ".",
+      "digitGroupSeparator": ",",
+      "label": "Raw width"
     }
   },
   "readme": {
@@ -81,7 +97,6 @@
     "filename": "Readme.md",
     "enableMath": true
   },
-  "hiddenOutputSymbols": "_scalars_out",
   "handsontable": {
     "stretchH": "none",
     "readonly": false,

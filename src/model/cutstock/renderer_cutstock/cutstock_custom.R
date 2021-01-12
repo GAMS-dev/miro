@@ -14,15 +14,9 @@ cuttingstockOutput <- function(id, height = NULL, options = NULL, path = NULL){
 renderCuttingstock <- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){ 
   
   #renderer 
-  print(data)
   raw_width <- data$`_scalars_out`[1, "value"] %>% as.numeric()
   rolls_used <- data$`_scalars_out`[2, "value"] %>% as.numeric()
   data <- data$patterns_used
-  
-  # Use the time each pattern is used as an xlabel
-  ylabel <- data %>% 
-    dplyr::filter(ptuhdr == "used") %>% 
-    dplyr::select(p, value)
   
   # Bring from wide to long
   data <- data %>% tidyr::spread(ptuhdr, value)
@@ -35,10 +29,14 @@ renderCuttingstock <- function(input, output, session, data, options = NULL, pat
     i = rep("Waste", length(unique(data$p))),
     p = unique(data$p),
     times = 1,
-    used = 1,
+    used = purrr::map_dbl(
+      unique(data$p), ~{
+        data %>% dplyr::filter(p == .x) %>% dplyr::pull(used) %>% unique()
+      }
+    ),
     width = purrr::map_dbl(
       unique(data$p), ~ {
-        raw_width - data %>% dplyr::filter(p == .x) %>% pull %>% sum()
+        raw_width - (data %>% dplyr::filter(p == .x) %>% dplyr::pull(total_width) %>% sum())
       }
     )
   )
@@ -49,24 +47,12 @@ renderCuttingstock <- function(input, output, session, data, options = NULL, pat
   # Bind original data and waste data together
   data <- rbind(data, new_entries)
   
-  # The ylabel is replaced by the number of times a pattern is used.
-  # waste_data <- data %>% dplyr::filter(i == "Waste")
-  # levels <- waste_data[order(waste_data$width), ] %>% dplyr::pull(p)
-  # labels <- waste_data[order(waste_data$width), ] %>% dplyr::pull(used)
-  # data$ylabel <- factor(data$p, 
-  #                       levels = levels,
-  #                       labels = paste0(
-  #                         labels, " "
-  #                       )
-  # )
-
-  data$ylabel <- factor(data$p,
-                        levels = unique(data$p),
-                        labels = paste0(
-                          unique(ylabel$value), " "
-                        )
-  )
-
+  # Order patterns by width of waste
+  order_by <- data[data$i == "Waste", c("p", "width")]
+  patterns_order <- order(order_by$width, decreasing = TRUE)
+  data$ylabel <- factor(paste0(data$p, ": ", data$used))
+  data$ylabel <- factor(data$ylabel, levels(data$ylabel)[patterns_order])
+  
   # Create a custom label for every width. To avoid a times hover info for
   # waste replace the label by a special label.
   data$hover_info <- paste0("Times used: ", data$times)
