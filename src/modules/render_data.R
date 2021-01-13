@@ -217,7 +217,7 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
     tryCatch({
       callModule(customRenderer, "custom", data, options = customOptions, 
                  path = customRendererDir, rendererEnv = rendererEnv, views = views,
-                 attachments = attachments)
+                 attachments = attachments, outputScalarsFull = configData)
     }, error = function(e){
       stop(sprintf("An error occured in the custom renderer function: '%s'. Error message: %s.", typeCustom, e), call. = FALSE)
     })

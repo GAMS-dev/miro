@@ -3660,7 +3660,7 @@ observe({
 }
                             
 ",
-"render", toupper(substr(nameTmp, 1, 1)), substr(nameTmp, 2, nchar(nameTmp)), " <- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){ 
+"render", toupper(substr(nameTmp, 1, 1)), substr(nameTmp, 2, nchar(nameTmp)), " <- function(input, output, session, data, outputScalarsFull, options = NULL, path = NULL, views = NULL, ...){ 
     #renderer 
 
 }")
