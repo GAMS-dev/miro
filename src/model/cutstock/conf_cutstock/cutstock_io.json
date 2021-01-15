@@ -49,13 +49,17 @@
 					"type":	"string",
 					"alias":	"patterns"
 				},
-				"ptuhdr":	{
-					"type":	"string",
-					"alias":	"ptuhdr"
-				},
-				"value":	{
+				"width":	{
 					"type":	"numeric",
-					"alias":	"Patterns used in solution"
+					"alias":	"width"
+				},
+				"times":	{
+					"type":	"numeric",
+					"alias":	"times"
+				},
+				"used":	{
+					"type":	"numeric",
+					"alias":	"used"
 				}
 			}
 		},

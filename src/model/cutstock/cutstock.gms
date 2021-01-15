@@ -33,7 +33,7 @@ Parameter
 
 $onExternalInput
 Parameter
-   r        'Raw width' / 100 /
+   r        'Raw width' / 199 /
    demand_miro(i_prime<)  / 45 97, 36 610, 31 395, 14 211/;
 
 $offExternalInput
@@ -162,6 +162,8 @@ Set ptuHdr /width,times,used/;
 $onExternalOutput
 Parameter
     patterns_used(i,p,ptuHdr) 'Patterns used in solution';
+
+Table patterns_used;
     
 Scalar width_out 'Paper roll width'
        number 'Number of paper rolls used';

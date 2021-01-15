@@ -14,12 +14,13 @@ cuttingstockOutput <- function(id, height = NULL, options = NULL, path = NULL){
 renderCuttingstock <- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){ 
   
   #renderer 
+  print(data)
   raw_width <- data$`_scalars_out`[1, "value"] %>% as.numeric()
   rolls_used <- data$`_scalars_out`[2, "value"] %>% as.numeric()
   data <- data$patterns_used
   
   # Bring from wide to long
-  data <- data %>% tidyr::spread(ptuhdr, value)
+  # data <- data %>% tidyr::spread(ptuhdr, value)
   
   # Calculate total space of pattern each width uses
   data <- data %>% dplyr::mutate(total_width = times * width)

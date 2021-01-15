@@ -67,6 +67,15 @@
       "options": [
         {
           "number": {
+            "description": "Number of paper rolls used",
+            "color": "aqua",
+            "icon": {
+              "name": "_",
+              "lib": "font-awesome"
+            },
+            "round": 2
+          },
+          "width_out": {
             "description": "Paper roll width",
             "color": "aqua",
             "icon": {
@@ -85,7 +94,6 @@
       "alias": "raw width",
       "value": 500,
       "min": 0,
-      "max": 100000,
       "decimal": 0,
       "decimalCharacter": ".",
       "digitGroupSeparator": ",",
@@ -108,5 +116,13 @@
     },
     "height": 700,
     "colWidths": 200
+  },
+  "datatable": {
+    "class": "display",
+    "filter": "bottom",
+    "rownames": false,
+    "options": {
+      "pageLength": 15
+    }
   }
 }
