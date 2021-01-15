@@ -51,11 +51,11 @@
       "newAlias": "Demand"
     },
     "patterns_used": {
-      "newAlias": "Patterns used in solution"
+      "newAlias": "Patterns used"
     }
   },
   "saveTraceFile": true,
-  "roundingDecimals": 2,
+  "roundingDecimals": 0,
   "dataRendering": {
     "patterns_used": {
       "outType": "cuttingstock",
@@ -105,6 +105,14 @@
     "filename": "Readme.md",
     "enableMath": true
   },
+  "datatable": {
+    "class": "display",
+    "filter": "bottom",
+    "rownames": false,
+    "options": {
+      "pageLength": 15
+    }
+  },
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
@@ -117,12 +125,15 @@
     "height": 700,
     "colWidths": 200
   },
-  "datatable": {
-    "class": "display",
-    "filter": "bottom",
-    "rownames": false,
-    "options": {
-      "pageLength": 15
+  "overwriteHeaderAliases": {
+    "demand_miro": {
+      "newHeaders": ["Widths", "Demand"]
+    },
+    "patterns_used": {
+      "newHeaders": ["Width identifier", "Pattern identifier", "Width", "Times in pattern", "Used"]
+    },
+    "_scalars_out": {
+      "newHeaders": ["Name", "Description", "Value"]
     }
   }
 }
