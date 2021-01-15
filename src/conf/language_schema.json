@@ -3016,6 +3016,152 @@
           "type": "string",
           "minLength": 1
         },
+        "xlsio": {
+          "description": "Errors/warnings used in xlsio class",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "warnings": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "invalidSymbols": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "skipOptionsPersistence": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "keyValueCols": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "invalidSkipEmpty": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "invalidSqueeze": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "invalidOptions": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "scalarDeclarations": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 7
+            },
+            "errors": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "badFormat": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexNoSymInfo": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexNoRangeInfo": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexInvalidRdim": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexInvalidCdim": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexInvalidDim": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexDuplicateRdim": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexDuplicateCdim": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexDuplicateIgnoreCol": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexDuplicateSkipEmpty": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexDuplicateSqueeze": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexInvalidRdimCol": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexInvalidCdimCol": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexInvalidValues": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "symbolNotFound": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "badIndexRange": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "badSymbolRange": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "badSymbolDim": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "invalidRecords": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "duplicateSymbols": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "duplicateScalars": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "duplicateScalarVE": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "invalidRange": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "invalidColRange": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 24
+            }
+          },
+          "minProperties": 2
+        },
         "fileRead": {
           "type": "object",
           "additionalProperties": false,

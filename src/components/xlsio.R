@@ -16,7 +16,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
   rInitFile = function(path){
     rFormat <- excel_format(path)
     if(is.na(rFormat)){
-      stop_custom("error_bad_format", "ERROR: File is not a valid Excel file", call. = FALSE)
+      stop_custom("error_bad_format", lang$errMsg$xlsio$errors$badFormat, call. = FALSE)
     }
     private$warnings$reset()
     private$rpath <- path
@@ -44,7 +44,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
     }
     sheetId <- match(symName, tolower(private$rSheets))
     if(is.na(sheetId)){
-      stop_custom("error_notfound", sprintf("ERROR: Symbol: '%s' not found in Excel file", symName), call. = FALSE)
+      stop_custom("error_notfound", sprintf(lang$errMsg$xlsio$errors$symbolNotFound, symName), call. = FALSE)
     }
     return(private$readInternal(path, sheet = sheetId, col_names = TRUE))
   },
@@ -180,7 +180,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       if(index$rdim > 0L){
         if(length(data) < index$rdim + if(isSetType) 0L else 1L){
           stop_custom("error_parse_index",
-                      sprintf("ERROR: Invalid range for symbol: '%s'", symName), call. = FALSE)
+                      sprintf(lang$errMsg$xlsio$errors$badSymbolRange, symName), call. = FALSE)
         }
         names(data)[seq_len(index$rdim)] <- names(private$metadata[[symName]]$headers)[seq_len(index$rdim)]
         if(index$cdim == 0L && length(data) > index$rdim){
@@ -227,7 +227,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       if(index$cdim > 0L){
         if(length(data) < index$dim - index$cdim + 1L){
           stop_custom("error_parse_index",
-                      sprintf("ERROR: Invalid range for symbol: '%s'", symName), call. = FALSE)
+                      sprintf(lang$errMsg$xlsio$errors$badSymbolRange, symName), call. = FALSE)
         }
         valColName <- names(private$metadata[[symName]]$headers)[length(private$metadata[[symName]]$headers)]
         if(index$cdim > 1L){
@@ -251,7 +251,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
         # need to pivot table that is loaded as list
         if(length(data) < index$dim){
           stop_custom("error_parse_index",
-                      sprintf("ERROR: Invalid range for symbol: '%s'", symName), call. = FALSE)
+                      sprintf(lang$errMsg$xlsio$errors$badSymbolRange, symName), call. = FALSE)
         }
         data <- tidyr::pivot_wider(data,
                                    names_from = !!length(data) - 1L, 
@@ -269,7 +269,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
         dataHdr <- names(data)[-seq_len(index$dim - 1L)]
         if(any(!tolower(dataHdr) %in% tolower(pivotedHeaders))){
           stop_custom("error_data",
-                      sprintf("ERROR: Invalid records found in symbol '%s': '%s'", symName,
+                      sprintf(lang$errMsg$xlsio$errors$invalidRecords, symName,
                               paste(dataHdr[!tolower(dataHdr) %in% tolower(pivotedHeaders)], collapse = "', '")), call. = FALSE)
         }
         colOrder <- match(tolower(pivotedHeaders), tolower(dataHdr))
@@ -286,13 +286,13 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
                              length(data))
         data <- suppressWarnings(
           mutate_at(data, numericalCols, as.numeric))
-        if(index[["squeeze"]] %in% c("1", "y")){
+        if(tolower(index[["squeeze"]]) %in% c("1", "y")){
           data[data == 0] <- NA_real_
           data <- data[rowSums(is.na(data[numericalCols])) != length(numericalCols),]
         }
       }else{
         data <- suppressWarnings(mutate_at(data, length(data), as.numeric))
-        if(index[["squeeze"]] %in% c("1", "y")){
+        if(tolower(index[["squeeze"]]) %in% c("1", "y")){
           data <- data[is.na(data[[valColName]]) | data[[valColName]] != 0,]
         }
       }
@@ -312,7 +312,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
         duplicatedSym <- duplicated(scalarsDfTmp[[1]])
         if(any(duplicatedSym)){
           stop_custom("error_data",
-                      sprintf("ERROR: Scalar(s): '%s' have been declared multiple times. Please make sure that each symbol is declared only once",
+                      sprintf(lang$errMsg$xlsio$errors$duplicateScalars,
                               paste(scalarsDfTmp[[1]][duplicateSymbols], collapse = "', '")), call. = FALSE)
         }
         noDescCol <- length(scalarsDfTmp) == 2L
@@ -343,7 +343,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
         duplicatedSym <- duplicated(scalarsDf[[1]])
         if(any(duplicatedSym)){
           stop_custom("error_data",
-                      sprintf("ERROR: Scalar variable(s)/equation(s): '%s' have been declared multiple times. Please make sure that each symbol is declared only once",
+                      sprintf(lang$errMsg$xlsio$errors$duplicateScalarVE,
                               paste(scalarsDf[[1]][duplicateSymbols], collapse = "', '")), call. = FALSE)
         }
         if(length(scalarsDf) == 6L){
@@ -380,7 +380,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       if(identical(setVals, "nodata")){
         if(length(data) < index$dim){
           stop_custom("error_data",
-                      sprintf("ERROR: Symbol '%s' has invalid dimensions", symName), call. = FALSE)
+                      sprintf(lang$errMsg$xlsio$errors$badSymbolDim, symName), call. = FALSE)
         }else if(length(data) < index$dim + 1L){
           if(symName %in% c(scalarsFileName, scalarsOutName)){
             return(data)
@@ -393,7 +393,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       }
       if(length(data) < index$dim + 1L){
         stop_custom("error_data",
-                    sprintf("ERROR: Symbol '%s' has invalid dimensions", symName), call. = FALSE)
+                    sprintf(lang$errMsg$xlsio$errors$badSymbolDim, symName), call. = FALSE)
       }
       if(identical(setVals, "yn")){
         removeRows <- is.na(data[[length(data)]]) | tolower(as.character(data[[length(data)]])) %in% c("0", "n", "no")
@@ -444,7 +444,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       symColId <- match(c("symbol", "sym", "name"), colNames)
       if(all(is.na(symColId))){
         if(!identical(colNames[2], "")){
-          stop_custom("error_parse_config", "ERROR: Could not find symbol name information in index", call. = FALSE)
+          stop_custom("error_parse_config", lang$errMsg$xlsio$errors$indexNoSymInfo, call. = FALSE)
         }
         symColId <- 2L
       }else{
@@ -455,12 +455,12 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       if(any(invalidRowIds)){
         invalidSymbols <- indexDf[[symColId]][invalidRowIds & (!is.na(indexDf[[symColId]]))]
         if(length(invalidSymbols)){
-          private$warnings$push(sprintf("WARNING: Invalid symbols in Excel file that were ignored: '%s'",
+          private$warnings$push(sprintf(lang$errMsg$xlsio$warnings$invalidSymbols,
                                         paste(invalidSymbols, collapse = "', '")))
         }
         nonEmptyInvalidRows <- is.na(indexDf[[symColId]]) & rowSums(is.na(indexDf)) != ncol(indexDf)
         if(length(nonEmptyInvalidRows)){
-          private$warnings$push("WARNING: Some non-empty rows were skipped. MIRO does not support options with persistence like 'skipEmpty'. Declare them as part of the symbol declaration instead")
+          private$warnings$push(lang$errMsg$xlsio$warnings$skipOptionsPersistence)
         }
         indexDf <- indexDf[!invalidRowIds, ]
       }
@@ -468,7 +468,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       duplicateSymbols <- duplicated(symbolsInExcel)
       
       if(any(duplicateSymbols)){
-        stop_custom("error_parse_config", sprintf("ERROR: Symbol(s): '%s' have been declared multiple times. Please make sure that each symbol is declared only once",
+        stop_custom("error_parse_config", sprintf(lang$errMsg$xlsio$errors$duplicateSymbols,
                                                   paste(symbolsInExcel[duplicateSymbols], collapse = "', '")), call. = FALSE)
       }
       
@@ -479,7 +479,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
         indexDf <- indexDf[, -seq_len(symColId - 1L)]
       }
       if(!(tolower(colNames[2]) %in% c("range", "rng") || identical(colNames[2], ""))){
-        stop_custom("error_parse_config", "ERROR: Could not find range information in index", call. = FALSE)
+        stop_custom("error_parse_config", lang$errMsg$xlsio$errors$indexNoRangeInfo, call. = FALSE)
       }
       names(indexDf)[c(1L, 2L)] <- c("symbol", "range")
       colNames <- tolower(names(indexDf))
@@ -494,7 +494,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       }
       kvArgCols <- colNames == "" 
       if(any(kvArgCols)){
-        private$warnings$push("WARNING: Key=value columns are not supported by MIRO and will be ignored. Please use column headers only.")
+        private$warnings$push(lang$errMsg$xlsio$warnings$keyValueCols)
         indexDf <- indexDf[, !kvArgCols]
         colNames <- tolower(names(indexDf))
       }
@@ -502,23 +502,23 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       if(!all(is.na(rdimColId))){
         rdimColId <- rdimColId[!is.na(rdimColId)]
         if(length(rdimColId) > 1L){
-          stop_custom("error_parse_config", "ERROR: rowdim column could not be uniquely identified", call. = FALSE)
+          stop_custom("error_parse_config", lang$errMsg$xlsio$errors$indexDuplicateRdim, call. = FALSE)
         }
         names(indexDf)[rdimColId] <- "rdim"
         tryCatch(indexDf[[rdimColId]] <- as.integer(indexDf[[rdimColId]]),
                  warning = function()
-                   stop_custom("error_parse_config", "ERROR: rowdim column is not integer", call. = FALSE))
+                   stop_custom("error_parse_config", lang$errMsg$xlsio$errors$indexInvalidRdimCol, call. = FALSE))
       }
       cdimColId <- match(c("cdim", "coldim"), colNames)
       if(!all(is.na(cdimColId))){
         cdimColId <- cdimColId[!is.na(cdimColId)]
         if(length(cdimColId) > 1L){
-          stop_custom("error_parse_config", "ERROR: coldim column could not be uniquely identified", call. = FALSE)
+          stop_custom("error_parse_config", lang$errMsg$xlsio$errors$indexDuplicateCdim, call. = FALSE)
         }
         names(indexDf)[cdimColId] <- "cdim"
         tryCatch(indexDf[[cdimColId]] <- as.integer(indexDf[[cdimColId]]),
                  warning = function()
-                   stop_custom("error_parse_config", "ERROR: coldim column is not integer", call. = FALSE))
+                   stop_custom("error_parse_config", lang$errMsg$xlsio$errors$indexInvalidCdimCol, call. = FALSE))
       }
       ignoreRowId <- match(c("ignorerows"), colNames)
       if(!all(is.na(ignoreRowId))){
@@ -528,7 +528,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       if(!all(is.na(ignoreColId))){
         ignoreColId <- ignoreColId[!is.na(ignoreColId)]
         if(length(ignoreColId) > 1L){
-          stop_custom("error_parse_config", "ERROR: ignoreColumns column could not be uniquely identified", call. = FALSE)
+          stop_custom("error_parse_config", lang$errMsg$xlsio$errors$indexDuplicateIgnoreCol, call. = FALSE)
         }
         names(indexDf)[ignoreColId] <- "ignorecols"
         indexDf[[ignoreColId]] <- as.character(indexDf[[ignoreColId]])
@@ -537,7 +537,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       if(!all(is.na(sEId))){
         sEId <- sEId[!is.na(sEId)]
         if(length(sEId) > 1L){
-          stop_custom("error_parse_config", "ERROR: skipEmpty column could not be uniquely identified", call. = FALSE)
+          stop_custom("error_parse_config", lang$errMsg$xlsio$errors$indexDuplicateSkipEmpty, call. = FALSE)
         }
         names(indexDf)[sEId] <- "se"
         indexDf[[sEId]] <- as.character(indexDf[[sEId]])
@@ -547,7 +547,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
         indexDf[valuesUndefined, "se"] <- "1"
         invalidValueOptions <- !tolower(indexDf[["se"]]) %in% c("0", "1")
         if(any(invalidValueOptions)){
-          private$warnings$push(sprintf("WARNING: skipEmpty larger than 1 not supported in MIRO (symbol(s): '%s'). Invalid values were set to 1",
+          private$warnings$push(sprintf(lang$errMsg$xlsio$warnings$invalidSkipEmpty,
                                         paste(symbolsInExcel[invalidValueOptions], collapse = "', '")))
         }
         indexDf[invalidValueOptions, "se"] <- "1"
@@ -558,7 +558,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       if(!all(is.na(sqId))){
         sqId <- sqId[!is.na(sqId)]
         if(length(sqId) > 1L){
-          stop_custom("error_parse_config", "ERROR: squeeze column could not be uniquely identified", call. = FALSE)
+          stop_custom("error_parse_config", lang$errMsg$xlsio$errors$indexDuplicateSqueeze, call. = FALSE)
         }
         names(indexDf)[sqId] <- "squeeze"
         indexDf[[sqId]] <- tolower(as.character(indexDf[[sqId]]))
@@ -568,7 +568,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
         indexDf[valuesUndefined, "squeeze"] <- "1"
         invalidValueOptions <- !tolower(indexDf[["squeeze"]]) %in% c("0", "1", "y", "n")
         if(any(invalidValueOptions)){
-          private$warnings$push(sprintf("WARNING: Invalid value for options squeeze (symbol(s): '%s'). Values were set to y",
+          private$warnings$push(sprintf(lang$errMsg$xlsio$warnings$invalidSqueeze,
                                         paste(symbolsInExcel[invalidValueOptions], collapse = "', '")))
         }
         indexDf[invalidValueOptions, "squeeze"] <- "1"
@@ -578,7 +578,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       invalidKeys <- !tolower(names(indexDf)) %in% 
         c("symbol", "range", "cdim", "rdim", "dim", "values", "ignorerows", "ignorecols", "se", "squeeze")
       if(any(invalidKeys)){
-        private$warnings$push(sprintf("WARNING: Invalid options unknown to MIRO found in index: '%s'",
+        private$warnings$push(sprintf(lang$errMsg$xlsio$warnings$invalidOptions,
                                       paste(names(indexDf)[invalidKeys], collapse = "', '")))
         indexDf <- indexDf[, !invalidKeys]
       }
@@ -596,81 +596,78 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
         }
         return(dim)
       }, integer(1L), USE.NAMES = FALSE)
-      if(any(c("cdim", "rdim") %in% names(indexDf))){
-        if("cdim" %in% names(indexDf)){
-          if("rdim" %in% names(indexDf)){
-            missingcDim <- is.na(indexDf[["cdim"]])
-            missingrDim <- is.na(indexDf[["rdim"]])
-            missingDim <- missingcDim & missingrDim
-            indexDf[missingDim, "rdim"] <- indexDf[["dim"]][missingDim] - 1L
-            indexDf[missingDim, "cdim"] <- 1L
-            
-            indexDf[missingcDim & !missingrDim, "cdim"] <- indexDf[["dim"]][missingcDim & !missingrDim] - indexDf[["rdim"]][missingcDim & !missingrDim]
-            invalidRdim <- indexDf[["cdim"]] < 0L
-            if(any(invalidRdim)){
-              stop_custom("error_parse_config", sprintf("ERROR: Symbol(s): '%s' have invalid row dimension",
-                                                        paste(symbolsInExcel[invalidRdim], collapse = "', '")), call. = FALSE)
-            }
-            
-            indexDf[!missingcDim & missingrDim, "rdim"] <- indexDf[["dim"]][!missingcDim & missingrDim] - indexDf[["cdim"]][!missingcDim & missingrDim]
-            invalidCdim <- indexDf[["rdim"]] < 0L
-            
-            if(any(invalidCdim)){
-              invalidCdimSym <- symbolsInExcel[invalidCdim]
-              if(any(tolower(invalidCdimSym) %in% private$scalars)){
-                invalidCdimSym <- invalidCdimSym[!tolower(invalidCdimSym) %in% private$scalars]
-              }
-              if(length(invalidCdimSym)){
-                stop_custom("error_parse_config", sprintf("ERROR: Symbol(s): '%s' have invalid column dimension",
-                                                          paste(invalidCdimSym, collapse = "', '")), call. = FALSE)
-              }
-            }
-            
-            invalidDim <- (indexDf[["dim"]][!missingDim] -
-                             indexDf[["cdim"]][!missingDim] -
-                             indexDf[["rdim"]][!missingDim]) != 0L
-            
-            if(any(invalidDim)){
-              stop_custom("error_parse_config", sprintf("ERROR: Symbol(s): '%s' have invalid dimension",
-                                                        paste(symbolsInExcel[!missingDim][invalidDim], collapse = "', '")), call. = FALSE)
-            }
-          }else{
-            missingcDim <- is.na(indexDf[["cdim"]])
-            indexDf[missingcDim, "rdim"]   <- indexDf[["dim"]][missingcDim] - 1L
-            indexDf[missingcDim, "cdim"]   <- 1L
-            
-            indexDf[!missingcDim, "rdim"]  <- indexDf[["dim"]][!missingcDim] - indexDf[["cdim"]][!missingcDim]
-            invalidCdim <- indexDf[["rdim"]] < 0L
-            if(any(invalidCdim)){
-              stop_custom("error_parse_config", sprintf("ERROR: Symbol(s): '%s' have invalid column dimension",
-                                                        paste(symbolsInExcel[invalidCdim], collapse = "', '")), call. = FALSE)
-            }
-          }
-        }else if("rdim" %in% names(indexDf)){
+      
+      if("cdim" %in% names(indexDf)){
+        if("rdim" %in% names(indexDf)){
+          missingcDim <- is.na(indexDf[["cdim"]])
           missingrDim <- is.na(indexDf[["rdim"]])
+          missingDim <- missingcDim & missingrDim
+          indexDf[missingDim, "rdim"] <- indexDf[["dim"]][missingDim] - 1L
+          indexDf[missingDim, "cdim"] <- 1L
           
-          indexDf[missingrDim, "rdim"]   <- indexDf[["dim"]][missingcDim] - 1L
-          indexDf[missingrDim, "cdim"]   <- 1L
-          
-          indexDf[!missingrDim, "cdim"]  <- indexDf[["dim"]][!missingrDim] - indexDf[["rdim"]][!missingrDim]
+          indexDf[missingcDim & !missingrDim, "cdim"] <- indexDf[["dim"]][missingcDim & !missingrDim] - indexDf[["rdim"]][missingcDim & !missingrDim]
           invalidRdim <- indexDf[["cdim"]] < 0L
           if(any(invalidRdim)){
-            stop_custom("error_parse_config", sprintf("ERROR: Symbol(s): '%s' have invalid row dimension",
+            stop_custom("error_parse_config", sprintf(lang$errMsg$xlsio$errors$indexInvalidRdim,
                                                       paste(symbolsInExcel[invalidRdim], collapse = "', '")), call. = FALSE)
           }
+          
+          indexDf[!missingcDim & missingrDim, "rdim"] <- indexDf[["dim"]][!missingcDim & missingrDim] - indexDf[["cdim"]][!missingcDim & missingrDim]
+          invalidCdim <- indexDf[["rdim"]] < 0L
+          
+          if(any(invalidCdim)){
+            invalidCdimSym <- symbolsInExcel[invalidCdim]
+            if(any(tolower(invalidCdimSym) %in% private$scalars)){
+              invalidCdimSym <- invalidCdimSym[!tolower(invalidCdimSym) %in% private$scalars]
+            }
+            if(length(invalidCdimSym)){
+              stop_custom("error_parse_config", sprintf(lang$errMsg$xlsio$errors$indexInvalidCdim,
+                                                        paste(invalidCdimSym, collapse = "', '")), call. = FALSE)
+            }
+          }
+          
+          invalidDim <- (indexDf[["dim"]][!missingDim] -
+                           indexDf[["cdim"]][!missingDim] -
+                           indexDf[["rdim"]][!missingDim]) != 0L
+          
+          if(any(invalidDim)){
+            stop_custom("error_parse_config", sprintf(lang$errMsg$xlsio$errors$indexInvalidDim,
+                                                      paste(symbolsInExcel[!missingDim][invalidDim], collapse = "', '")), call. = FALSE)
+          }
         }else{
-          indexDf[["cdim"]] <- indexDf[["dim"]] - 1L
-          indexDf[["cdim"]] <- 1L
+          missingcDim <- is.na(indexDf[["cdim"]])
+          indexDf[missingcDim, "rdim"]   <- indexDf[["dim"]][missingcDim] - 1L
+          indexDf[missingcDim, "cdim"]   <- 1L
+          
+          indexDf[!missingcDim, "rdim"]  <- indexDf[["dim"]][!missingcDim] - indexDf[["cdim"]][!missingcDim]
+          invalidCdim <- indexDf[["rdim"]] < 0L
+          if(any(invalidCdim)){
+            stop_custom("error_parse_config", sprintf(lang$errMsg$xlsio$errors$indexInvalidCdim,
+                                                      paste(symbolsInExcel[invalidCdim], collapse = "', '")), call. = FALSE)
+          }
+        }
+      }else if("rdim" %in% names(indexDf)){
+        missingrDim <- is.na(indexDf[["rdim"]])
+        
+        indexDf[missingrDim, "rdim"]   <- indexDf[["dim"]][missingcDim] - 1L
+        indexDf[missingrDim, "cdim"]   <- 1L
+        
+        indexDf[!missingrDim, "cdim"]  <- indexDf[["dim"]][!missingrDim] - indexDf[["rdim"]][!missingrDim]
+        invalidRdim <- indexDf[["cdim"]] < 0L
+        if(any(invalidRdim)){
+          stop_custom("error_parse_config", sprintf(lang$errMsg$xlsio$errors$indexInvalidRdim,
+                                                    paste(symbolsInExcel[invalidRdim], collapse = "', '")), call. = FALSE)
         }
       }else{
-        stop_custom("error_parse_config", "ERROR: Neither rdim nor cdim column found. Must supply at least one of the two", call. = FALSE)
+        indexDf[["cdim"]] <- indexDf[["dim"]] - 1L
+        indexDf[["cdim"]] <- 1L
       }
       if("values" %in% names(indexDf)){
         valuesUndefined <- is.na(indexDf[["values"]])
         indexDf[valuesUndefined, "values"] <- "auto"
         invalidValueOptions <- !tolower(indexDf[["values"]]) %in% c("auto", "nodata", "yn", "sparse", "dense")
         if(any(invalidValueOptions)){
-          stop_custom("error_parse_config", sprintf("ERROR: Invalid 'values' options found for symbol(s): '%s'. Possible options are: auto, nodata, yn, sparse, dense",
+          stop_custom("error_parse_config", sprintf(lang$errMsg$xlsio$errors$indexInvalidValues,
                                                     paste(symbolsInExcel[invalidValueOptions], collapse = "', '")), call. = FALSE)
         }
       }else{
@@ -679,7 +676,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       if(any(private$scalars %in% symbolsInExcel) &&
          any(c(scalarsFileName, scalarsOutName) %in% symbolsInExcel)){
         # need to throw warning if scalars both in table and declared individually
-        private$warnings$push("WARNING: Both scalar table declaration as well as declaration of individual scalars found in index. Individual declaration will be ignored if scalar is already part of table!")
+        private$warnings$push(lang$errMsg$xlsio$warnings$scalarDeclarations)
       }
       return(setNames(split(indexDf,
                             seq_len(nrow(indexDf))),
@@ -690,18 +687,18 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       return(sort(unique(unlist(lapply(rSplit, function(range){
         rangeSplit <- strsplit(range, ":", fixed = TRUE)[[1L]]
         if(length(rangeSplit) > 2L){
-          stop_custom("error_parse_config", "ERROR: Bad column range specification", call. = FALSE)
+          stop_custom("error_parse_config", lang$errMsg$xlsio$errors$invalidColRange, call. = FALSE)
         }
         if(allowLetters){
           index <- private$excelColToIndex(rangeSplit)
         }else{
           index <- suppressWarnings(as.integer(rangeSplit))
           if(any(is.na(index))){
-            stop_custom("error_parse_config", "ERROR: Bad range specification", call. = FALSE)
+            stop_custom("error_parse_config", lang$errMsg$xlsio$errors$invalidRange, call. = FALSE)
           }
         }
         if(length(index) == 2L && index[2] < index[1]){
-          stop_custom("error_parse_config", "ERROR: Bad range specification", call. = FALSE)
+          stop_custom("error_parse_config", lang$errMsg$xlsio$errors$invalidRange, call. = FALSE)
         }
         return(index)
       }), use.names = FALSE))))
@@ -712,13 +709,13 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
         rI <- suppressWarnings(as.integer(r))
         if(!any(is.na(rI))){
           if(rI < 1L){
-            stop_custom("error_parse_config", "ERROR: Bad column range specification", call. = FALSE)
+            stop_custom("error_parse_config", lang$errMsg$xlsio$errors$invalidColRange, call. = FALSE)
           }
           return(rI)
         }
         rChar <- utf8ToInt(r) - 64L
         if(length(rChar) == 0L || length(rChar) > 3L || any(rChar < 1L | rChar > 26L)){
-          stop_custom("error_parse_config", "ERROR: Bad column range specification", call. = FALSE)
+          stop_custom("error_parse_config", lang$errMsg$xlsio$errors$invalidColRange, call. = FALSE)
         }
         if(length(rChar) == 1L){
           return(rChar)

@@ -777,6 +777,43 @@
       "title":"Error reading file",
       "desc":"Some error occurred reading file: '%s'."
     },
+    "xlsio":{
+      "warnings":{
+        "invalidSymbols": "WARNING: Invalid symbols in Excel file ignored: '%s'.",
+        "skipOptionsPersistence": "WARNING: Some non-empty rows were skipped. MIRO does not support options with persistence like 'skipEmpty'. Declare them as part of the symbol declaration instead.",
+        "keyValueCols": "WARNING: Key=value columns are not supported by MIRO and will be ignored. Please use column headers only.",
+        "invalidSkipEmpty": "WARNING: skipEmpty greater than 1 is not supported in MIRO (symbol(s): '%s'). Invalid values have been set to 1.",
+        "invalidSqueeze": "WARNING: Invalid value for squeeze option (symbol(s): '%s'). Allowed values are: 1, y, 0, n. Invalid values were set to 1.",
+        "invalidOptions": "WARNING: Invalid options unknown to MIRO found in index: '%s'.",
+        "scalarDeclarations": "WARNING: Both scalar table declaration and single scalar declaration found in index. Single declaration is ignored if scalar is already part of the table!"
+      },
+      "errors":{
+        "badFormat": "ERROR: file is not a valid Excel file.",
+        "indexNoSymInfo": "ERROR: Could not find symbol name information in index.",
+        "indexNoRangeInfo": "ERROR: Could not find range information in index.",
+        "indexInvalidRdim": "ERROR: Symbol(s): '%s' have invalid row dimension.",
+        "indexInvalidCdim": "ERROR: Symbol(s): '%s' have invalid column dimensions.",
+        "indexInvalidDim": "ERROR: Symbol(s): '%s' have invalid dimension.",
+        "indexDuplicateRdim": "ERROR: rowdim column could not be uniquely identified.",
+        "indexDuplicateCdim": "ERROR: coldim column could not be uniquely identified.",
+        "indexDuplicateIgnoreCol": "ERROR: ignoreColumns column could not be uniquely identified.",
+        "indexDuplicateSkipEmpty": "ERROR: skipEmpty column could not be uniquely identified.",
+        "indexDuplicateSqueeze": "ERROR: squeeze column could not be uniquely identified.",
+        "indexInvalidRdimCol": "ERROR: rowdim column is not integer.",
+        "indexInvalidCdimCol": "ERROR: coldim column is not integer.",
+        "indexInvalidValues": "ERROR: Invalid 'values' options found for symbol(s): '%s'. Possible options are: auto, nodata, yn, sparse, dense.",
+        "symbolNotFound": "ERROR: Symbol: '%s' not found in Excel file.",
+        "badIndexRange": "ERROR: The entered index range is invalid.",
+        "badSymbolRange": "ERROR: Invalid range for symbol: '%s'.",
+        "badSymbolDim": "ERROR: Symbol '%s' has invalid dimensions.",
+        "invalidRecords": "ERROR: Invalid records found in symbol '%s': '%s'.",
+        "duplicateSymbols": "ERROR: Symbol(s): '%s' has been declared multiple times. Please make sure that each symbol is declared only once.",
+        "duplicateScalars": "ERROR: Scalar(s): '%s' have been declared multiple times. Please make sure that each symbol is declared only once.",
+        "duplicateScalarVE": "ERROR: Scalar variable(s)/equation(s): '%s' have been declared multiple times. Please make sure that each symbol is declared only once.",
+        "invalidRange": "ERROR: Invalid range specification.",
+        "invalidColRange": "ERROR: Invalid column range specification."
+      }
+    },
     "invalidFileType":{  
       "title":"Invalid file type",
       "desc":"The file you are trying to import can not be read by MIRO. Supported file types are: %s."

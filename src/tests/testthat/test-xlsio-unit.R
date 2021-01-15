@@ -2,7 +2,7 @@ context("Unit tests - XlsIO class")
 library(readxl)
 library(dplyr)
 
-
+lang <<- jsonlite::fromJSON("../../conf/en.json", simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
 source("../../components/xlsio.R")
 
 ioConfig <<- list(modelOut = list("_scalars_out" = list(symnames = c("cowf","explimitgr","big","pawat","pafod","tolcnl","tolpr","tolnwfp","betaf"),

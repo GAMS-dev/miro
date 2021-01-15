@@ -777,6 +777,43 @@
       "title":"Fehler beim Lesen von Datei",
       "desc":"Beim Lesen der Datei: '%s' ist ein Fehler aufgetreten."
     },
+    "xlsio":{
+      "warnings":{
+        "invalidSymbols": "WARNING: Ungültige Symbole in der Excel-Datei, die ignoriert wurden: '%s'.",
+        "skipOptionsPersistence": "WARNING: Einige nicht leere Zeilen wurden übersprungen. MIRO unterstützt keine Optionen mit Persistenz wie 'skipEmpty'. Deklarieren Sie sie stattdessen als Teil der Symboldeklaration.",
+        "keyValueCols": "WARNUNG: Schlüssel=Wert-Spalten werden von MIRO nicht unterstützt und werden ignoriert. Bitte verwenden Sie nur Spaltenüberschriften.",
+        "invalidSkipEmpty": "WARNING: skipEmpty größer als 1 wird in MIRO nicht unterstützt (Symbol(e): '%s'). Ungültige Werte wurden auf 1 gesetzt.",
+        "invalidSqueeze": "WARNING: Ungültiger Wert für squeeze-Option (Symbol(e): '%s'). Erlaubte Werte sind: 1, y, 0, n. Ungültige Werte wurden auf 1 gesetzt.",
+        "invalidOptions": "WARNING: Ungültige, MIRO unbekannte Optionen in Index gefunden: '%s'",
+        "scalarDeclarations": "WARNING: Sowohl skalare Tabellendeklaration als auch einzelne skalare Deklaration im Index gefunden. Einzeldeklaration wird ignoriert, wenn Skalar bereits Teil der Tabelle ist!"
+      },
+      "errors":{
+        "badFormat": "FEHLER: Datei ist keine gültige Excel-Datei.",
+        "indexNoSymInfo": "FEHLER: Konnte keine Symbolnamensinformationen im Index finden.",
+        "indexNoRangeInfo": "FEHLER: Konnte keine Bereichsinformationen im Index finden.",
+        "indexInvalidRdim": "FEHLER: Symbol(e): '%s' haben ungültige Zeilendimension.",
+        "indexInvalidCdim": "FEHLER: Symbol(e): '%s' haben ungültige Spaltendimension.",
+        "indexInvalidDim": "FEHLER: Symbol(e): '%s' haben ungültige Dimension.",
+        "indexDuplicateRdim": "FEHLER: rowdim-Spalte konnte nicht eindeutig identifiziert werden.",
+        "indexDuplicateCdim": "FEHLER: coldim-Spalte konnte nicht eindeutig identifiziert werden.",
+        "indexDuplicateIgnoreCol": "FEHLER: ignoreColumns-Spalte konnte nicht eindeutig identifiziert werden.",
+        "indexDuplicateSkipEmpty": "FEHLER: skipEmpty-Spalte konnte nicht eindeutig identifiziert werden.",
+        "indexDuplicateSqueeze": "FEHLER: squeeze-Spalte konnte nicht eindeutig identifiziert werden.",
+        "indexInvalidRdimCol": "FEHLER: rowdim-Spalte ist nicht ganzzahlig.",
+        "indexInvalidCdimCol": "FEHLER: coldim-Spalte ist nicht ganzzahlig.",
+        "indexInvalidValues": "FEHLER: Ungültige 'values'-Optionen gefunden für Symbol(e): '%s'. Mögliche Optionen sind: auto, nodata, yn, sparse, dense.",
+        "symbolNotFound": "FEHLER: Symbol: '%s' nicht in Excel-Datei gefunden.",
+        "badIndexRange": "FEHLER: Der eingegebene Indexbereich ist ungültig.",
+        "badSymbolRange": "FEHLER: Ungültiger Bereich für Symbol: '%s'.",
+        "badSymbolDim": "FEHLER: Symbol '%s' hat ungültige Abmessungen.",
+        "invalidRecords": "FEHLER: Ungültige Datensätze in Symbol '%s' gefunden: '%s'.",
+        "duplicateSymbols": "FEHLER: Symbol(e): '%s' wurde(n) mehrfach deklariert. Bitte stellen Sie sicher, dass jedes Symbol nur einmal deklariert wird.",
+        "duplicateScalars": "FEHLER: Skalar(e): '%s' wurden mehrfach deklariert. Bitte stellen Sie sicher, dass jedes Symbol nur einmal deklariert wird.",
+        "duplicateScalarVE": "FEHLER: Skalarvariable(n)/Gleichung(en): '%s' wurden mehrfach deklariert. Bitte stellen Sie sicher, dass jedes Symbol nur einmal deklariert wird.",
+        "invalidRange": "FEHLER: Ungültige Bereichsinformation.",
+        "invalidColRange": "FEHLER: Ungültige Zeilendimension."
+      }
+    },
     "invalidFileType":{  
       "title":"Ungültiger Dateityp",
       "desc":"Die Datei, die Sie zu importieren versuchen, kann von MIRO nicht gelesen werden. Unterstützte Dateitypen sind: %s."
