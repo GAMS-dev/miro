@@ -278,6 +278,10 @@ test_that("Reading scalars works", {
                    tibble(scalar = c("baseyear","repco","gr","growthq","drc","the1","lstd","trcap","twcap","twefac", "labfac"),
                           description = c("","","","","","","","","","",""),
                           value = c("1988","2.5","0.3","2.5","0.15","0.6",NA_character_,NA_character_,NA_character_,"0.5","0.5")))
+  expect_identical(xlsio$read("../data/exampleData.xlsx", "_scalars", indexRange = "scalarIndex!C12:H13", forceInit = TRUE),
+                   tibble(scalar = c("baseyear","repco","gr","growthq","drc","the1","lstd","trcap","twcap","twefac", "labfac"),
+                          description = c("","","","","","","","","","",""),
+                          value = c(NA_character_,NA_character_,NA_character_,"1988",NA_character_,NA_character_,NA_character_,NA_character_,NA_character_,NA_character_,NA_character_)))
 })
 
 test_that("Reading variables/equations works", {
@@ -318,4 +322,17 @@ test_that("Reading variables/equations works", {
                           lower = c(-Inf),
                           upper = c(Inf),
                           scale = c(NA_real_)))
+})
+
+test_that("Reading Excel without index works", {
+  expect_identical(xlsio$read("../data/exampleData.xlsx", "i11", forceInit = TRUE),
+                   tibble(uni1 = c("ship","truck","rail","barge"),
+                          uni2 = c("brussels","brussels","san francisco","san francisco"),
+                          uni3 = c("cleveland","chicago","cleveland","chicago"),
+                          text = c("text 1",NA,"text 2","no")))
+  expect_identical(xlsio$read("../data/exampleData.xlsx", "_scalars"),
+                   tibble(scalar = c("baseyear","repco","gr","growthq","drc","the1","lstd","trcap","twcap","twefac", "labfac"),
+                          description = c("","","","","","","","","","",""),
+                          value = c(NA_character_,"1e+07",NA_character_,NA_character_,"2.5",NA_character_,NA_character_,NA_character_,NA_character_,NA_character_,NA_character_)))
+  expect_error(xlsio$read("../data/exampleData.xlsx", "i10"), class = "error_notfound")
 })

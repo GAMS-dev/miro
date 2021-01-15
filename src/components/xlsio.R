@@ -14,17 +14,20 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
     return(self)
   },
   rInitFile = function(path){
-    rFormat <- excel_format(path)
+    rFormat <- excel_format(nativeFileEnc(path))
     if(is.na(rFormat)){
       stop_custom("error_bad_format", lang$errMsg$xlsio$errors$badFormat, call. = FALSE)
     }
     private$warnings$reset()
-    private$rpath <- path
+    private$rpath <- nativeFileEnc(path)
     private$rIsXlsx <- identical(rFormat, "xlsx")
-    private$rSheets <- excel_sheets(path)
+    private$rSheets <- excel_sheets(nativeFileEnc(path))
+    private$rSheetsNoIndex <- vapply(strsplit(private$rSheets, " ", fixed = TRUE),
+                                     "[[", character(1L), 1L, USE.NAMES = FALSE)
     return(self)
   },
   readIndex = function(path, indexRange = NULL, forceInit = FALSE){
+    path <- nativeFileEnc(path)
     if(forceInit || !identical(path, private$rpath)){
       self$rInitFile(path)
       private$initIndexFromFile(path, indexRange)
@@ -33,20 +36,26 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
   },
   read = function(path, symName, indexRange = NULL, forceInit = FALSE){
     self$readIndex(path, indexRange, forceInit)
-    if(symName %in% names(private$rIndex)){
+    if(length(private$rIndex) > 0L){
       if(symName %in% c(scalarsFileName, scalarsOutName)){
         return(private$readScalars(symName))
+      }
+      if(!symName %in% names(private$rIndex)){
+        stop_custom("error_notfound", sprintf(lang$errMsg$xlsio$errors$symbolNotFound, symName), call. = FALSE)
       }
       if(symName %in% c(scalarEquationsName, scalarEquationsOutName)){
         return(private$readVEScalars(symName))
       }
       return(private$readFromIndex(symName))
     }
-    sheetId <- match(symName, tolower(private$rSheets))
+    if(symName %in% c(scalarsFileName, scalarsOutName)){
+      return(private$readScalarsNoIndex(symName))
+    }
+    sheetId <- match(symName, tolower(private$rSheetsNoIndex))
     if(is.na(sheetId)){
       stop_custom("error_notfound", sprintf(lang$errMsg$xlsio$errors$symbolNotFound, symName), call. = FALSE)
     }
-    return(private$readInternal(path, sheet = sheetId, col_names = TRUE))
+    return(private$readInternal(private$rpath, sheet = sheetId, col_names = TRUE))
   },
   getWarnings = function(){
     return(private$warnings$get())
@@ -59,6 +68,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
     scalars = character(0L),
     rpath = character(0L),
     rSheets = character(0L),
+    rSheetsNoIndex = character(0L),
     rIsXlsx = TRUE,
     rSymName = NULL,
     rIndex = list(),
@@ -179,7 +189,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       
       if(index$rdim > 0L){
         if(length(data) < index$rdim + if(isSetType) 0L else 1L){
-          stop_custom("error_parse_index",
+          stop_custom("error_parse_config",
                       sprintf(lang$errMsg$xlsio$errors$badSymbolRange, symName), call. = FALSE)
         }
         names(data)[seq_len(index$rdim)] <- names(private$metadata[[symName]]$headers)[seq_len(index$rdim)]
@@ -226,7 +236,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       
       if(index$cdim > 0L){
         if(length(data) < index$dim - index$cdim + 1L){
-          stop_custom("error_parse_index",
+          stop_custom("error_parse_config",
                       sprintf(lang$errMsg$xlsio$errors$badSymbolRange, symName), call. = FALSE)
         }
         valColName <- names(private$metadata[[symName]]$headers)[length(private$metadata[[symName]]$headers)]
@@ -250,7 +260,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       }else if(private$isTable(symName)){
         # need to pivot table that is loaded as list
         if(length(data) < index$dim){
-          stop_custom("error_parse_index",
+          stop_custom("error_parse_config",
                       sprintf(lang$errMsg$xlsio$errors$badSymbolRange, symName), call. = FALSE)
         }
         data <- tidyr::pivot_wider(data,
@@ -299,7 +309,11 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       return(data)
     },
     readScalars = function(symName){
+      if(!symName %in% names(private$metadata)){
+        stop_custom("error_notfound", sprintf(lang$errMsg$xlsio$errors$symbolNotFound, symName), call. = FALSE)
+      }
       scalarsToProcess <- private$metadata[[symName]]$symnames
+      scalarsProcessed <- character(0L)
       scalarsDf <- tibble(scalar = scalarsToProcess,
                           description = private$metadata[[symName]]$symtext,
                           value = NA_character_)
@@ -321,14 +335,54 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
           noDescCol <- openRange && all(scalarsDfTmp[[3]] == "")
         }
         scalarsDf[match(scalarsDfTmp[[1]], scalarsToProcess), 3] <- scalarsDfTmp[[if(noDescCol) 2L else 3L]]
+        scalarsProcessed <- scalarsDfTmp[[1]]
       }
-      additionalScalarsToProcess <- names(private$rIndex)[names(private$rIndex) %in% setdiff(scalarsToProcess, scalarsDfTmp[[1]])]
+      additionalScalarsToProcess <- names(private$rIndex)[names(private$rIndex) %in% setdiff(scalarsToProcess, scalarsProcessed)]
       if(length(additionalScalarsToProcess)){
         scalarsDf[match(additionalScalarsToProcess,
                         scalarsToProcess), 3] <- vapply(additionalScalarsToProcess,
                                                         function(scalarToProcess){
                                                           return(private$readFromIndex(scalarToProcess))
                                                         }, character(1L), USE.NAMES = FALSE)
+      }
+      return(scalarsDf)
+    },
+    readScalarsNoIndex = function(symName){
+      if(!symName %in% names(private$metadata)){
+        stop_custom("error_notfound", sprintf(lang$errMsg$xlsio$errors$symbolNotFound,
+                                              symName), call. = FALSE)
+      }
+      scalarsToProcess <- private$metadata[[symName]]$symnames
+      scalarsProcessed <- character(0L)
+      scalarsDf <- tibble(scalar = scalarsToProcess,
+                          description = private$metadata[[symName]]$symtext,
+                          value = NA_character_)
+      
+      sheetId <- match(symName, tolower(private$rSheetsNoIndex))
+      if(!is.na(sheetId)){
+        scalarsDfTmp <- private$readInternal(private$rpath, sheet = sheetId, col_names = TRUE)
+        invalidScalars <- !scalarsDfTmp[[1]] %in% scalarsToProcess
+        if(any(invalidScalars)){
+          scalarsDfTmp <- scalarsDfTmp[!invalidScalars, ]
+        }
+        duplicatedSym <- duplicated(scalarsDfTmp[[1]])
+        if(any(duplicatedSym)){
+          stop_custom("error_data",
+                      sprintf(lang$errMsg$xlsio$errors$duplicateScalars,
+                              paste(scalarsDfTmp[[1]][duplicateSymbols], collapse = "', '")), call. = FALSE)
+        }
+        scalarsDf[match(scalarsDfTmp[[1]], scalarsToProcess), 3] <- scalarsDfTmp[[3L]]
+        scalarsProcessed <- scalarsDfTmp[[1]]
+      }
+      scalarXlsSheetIds <- match(setdiff(scalarsToProcess, scalarsProcessed), tolower(private$rSheetsNoIndex))
+      scalarXlsSheetIds <- scalarXlsSheetIds[!is.na(scalarXlsSheetIds)]
+      if(length(scalarXlsSheetIds)){
+        scalarsDf[match(tolower(private$rSheetsNoIndex)[scalarXlsSheetIds],
+                        scalarsToProcess), 3] <- vapply(scalarXlsSheetIds, function(sheetID){
+                          return(as.character(private$readInternal(private$rpath,
+                                                                   sheet = sheetID,
+                                                                   col_names = FALSE)[[1]][1]))
+                        }, character(1L), USE.NAMES = FALSE)
       }
       return(scalarsDf)
     },
