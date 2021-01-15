@@ -3788,7 +3788,7 @@
           "minProperties": 3
         }
       },
-      "minProperties": 36
+      "minProperties": 37
     },
     "adminMode": {
       "description": "language specific objects of the MIRO admin mode",
