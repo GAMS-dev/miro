@@ -233,6 +233,7 @@ if(is.null(errMsg)){
   hcubeScalars <- getHcubeScalars(modelIn)
   ioConfig <<- list(modelIn = modelIn,
                     modelOut = modelOut,
+                    modelInRaw = modelInRaw,
                     inputDsNames = inputDsNames,
                     hcubeScalars = hcubeScalars,
                     inputDsNamesBase = inputDsNames[!inputDsNames %in% hcubeScalars],
