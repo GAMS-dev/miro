@@ -650,6 +650,7 @@ ${data.data}</div>` : data.data);
     receiveMessage(el, data) {
       if (Object.prototype.hasOwnProperty.call(data, 'value')) {
         $(el).data('autoNumeric').set(data.value);
+        $(el).trigger('change');
       }
     },
     subscribe(el, callback) {
