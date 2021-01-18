@@ -2,6 +2,7 @@
   "theme": "browser",
   "excelIncludeMeta": true,
   "excelIncludeEmptySheets": true,
+  "defaultScenName": "default",
   "autoGenInputGraphs": true,
   "storeLogFilesDuration": 7,
   "defCompMode": "split",
