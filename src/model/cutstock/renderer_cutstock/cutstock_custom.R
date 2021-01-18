@@ -57,7 +57,7 @@ renderCuttingstock <- function(input, output, session, data, options = NULL, pat
   # waste replace the label by a special label.
   data$hover_info <- paste0("Times used: ", data$times)
   data[data$i == "waste", "hover_info"] <- "(Waste)"
-  data$legend <- paste0(data$i, ": ", data$width)
+  data$legend <- factor(data$width, levels = c(unique(data$width[data$i != "Waste"]), "Waste"))
   data[data$i == "Waste", "legend"] <- "Waste"
   
   # Repeat a data entry every time a width is used in a pattern

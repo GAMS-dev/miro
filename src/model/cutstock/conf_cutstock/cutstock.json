@@ -113,6 +113,17 @@
       "pageLength": 15
     }
   },
+  "overwriteHeaderAliases": {
+    "demand_miro": {
+      "newHeaders": ["Widths", "Demand"]
+    },
+    "patterns_used": {
+      "newHeaders": ["Width identifier", "Pattern identifier", "Width", "Times in pattern", "Used"]
+    },
+    "_scalars_out": {
+      "newHeaders": ["Name", "Description", "Value"]
+    }
+  },
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
@@ -124,16 +135,5 @@
     },
     "height": 700,
     "colWidths": 200
-  },
-  "overwriteHeaderAliases": {
-    "demand_miro": {
-      "newHeaders": ["Widths", "Demand"]
-    },
-    "patterns_used": {
-      "newHeaders": ["Width identifier", "Pattern identifier", "Width", "Times in pattern", "Used"]
-    },
-    "_scalars_out": {
-      "newHeaders": ["Name", "Description", "Value"]
-    }
   }
 }
