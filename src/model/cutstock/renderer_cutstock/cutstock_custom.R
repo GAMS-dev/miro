@@ -14,7 +14,6 @@ cuttingstockOutput <- function(id, height = NULL, options = NULL, path = NULL){
 renderCuttingstock <- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){ 
   
   #renderer 
-  print(data)
   raw_width <- data$`_scalars_out`[1, "value"] %>% as.numeric()
   rolls_used <- data$`_scalars_out`[2, "value"] %>% as.numeric()
   data <- data$patterns_used
@@ -52,8 +51,7 @@ renderCuttingstock <- function(input, output, session, data, options = NULL, pat
   # Order patterns by width of waste
   order_by <- data[data$i == "Waste", c("p", "width")]
   patterns_order <- order(order_by$width)
-  data$ylabel <- factor(paste0(data$p, ": ", data$used))
-  data$ylabel <- factor(data$ylabel, levels(data$ylabel)[patterns_order])
+  data$p <- factor(data$p, levels(data$p)[patterns_order])
   
   # Create a custom label for every width. To avoid a times hover info for
   # waste replace the label by a special label.
@@ -99,7 +97,7 @@ renderCuttingstock <- function(input, output, session, data, options = NULL, pat
   output$plot <- plotly::renderPlotly({
     
     # Create bars for waste first
-    fig <- plotly::plot_ly(data, x = ~width, y = ~ylabel, color = ~legend, type = "bar", 
+    fig <- plotly::plot_ly(data, x = ~width, y = ~p, color = ~legend, type = "bar", 
                            orientation = "h", hoverinfo = "text",
                            text = ~paste0(
                              "</br> Width: ", width,
@@ -114,11 +112,24 @@ renderCuttingstock <- function(input, output, session, data, options = NULL, pat
                            )
     )
     
+    # Need ticktext for y axis. Have to order by p
+    y_ticktext <- data %>% dplyr::select(p, used) %>% unique()
+    y_ticktext_vec <- y_ticktext %>% dplyr::pull(used)
+    names(y_ticktext_vec) <- y_ticktext$p
+    
+    # Change layout
     fig <- fig %>% plotly::layout(
       barmode = "stack",
       title = "Patterns used",
       xaxis = list(title = ""),
-      yaxis = list(title = ""),
+      yaxis = list(
+        title = "", 
+        tickvals = y_ticktext$p, 
+        ticktext = y_ticktext$used,
+        tickmode = "array",
+        categoryarray = levels(data$p),
+        categoryorder = "array"
+      ),
       annotations = list(
         list(
           text = paste0("Rolls used: ", rolls_used),
