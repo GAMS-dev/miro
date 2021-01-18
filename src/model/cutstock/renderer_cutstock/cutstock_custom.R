@@ -121,6 +121,9 @@ renderCuttingstock <- function(input, output, session, data, options = NULL, pat
     fig <- fig %>% plotly::layout(
       barmode = "stack",
       title = "Patterns used",
+      paper_bgcolor = "rgba(0,0,0,0)",
+      plot_bgcolor = "rgba(0,0,0,0)",
+      margin = list(b = 100),
       xaxis = list(title = ""),
       yaxis = list(
         title = "", 
