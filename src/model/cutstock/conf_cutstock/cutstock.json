@@ -18,35 +18,11 @@
     "input": ["_widgets", "demand_miro"]
   },
   "overwriteAliases": {
-    "i": {
-      "newAlias": "Widths"
-    },
-    "p": {
-      "newAlias": "Patterns"
-    },
     "_scalars": {
       "newAlias": "Scalars"
     },
-    "w": {
-      "newAlias": "Width"
-    },
-    "d": {
-      "newAlias": "Demand"
-    },
     "_scalars_out": {
       "newAlias": "Paper rolls used"
-    },
-    "supplied_m": {
-      "newAlias": "Units supplied"
-    },
-    "patterns_m": {
-      "newAlias": "Patterns used"
-    },
-    "supplied": {
-      "newAlias": "Units supplied"
-    },
-    "patterns": {
-      "newAlias": "Patterns used"
     },
     "demand_miro": {
       "newAlias": "Demand"
