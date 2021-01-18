@@ -1,6 +1,7 @@
 {
   "theme": "browser",
   "excelIncludeMeta": true,
+  "pageTitle": "Cutting Stock Problem",
   "excelIncludeEmptySheets": true,
   "defaultScenName": "default",
   "autoGenInputGraphs": true,
@@ -79,7 +80,7 @@
   },
   "readme": {
     "tabTitle": "Readme",
-    "filename": "Readme.md",
+    "filename": "README.md",
     "enableMath": true
   },
   "datatable": {
