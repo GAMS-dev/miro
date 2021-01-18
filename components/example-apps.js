@@ -71,4 +71,13 @@ requirements at markets and supplies at factories.`,
   apiversion: apiVersion,
   usetmpdir: true,
   modesAvailable: ['base'],
+},
+{
+  id: 'cutstock',
+  title: 'Cutting Stock',
+  description: 'Cutting Stock Problem',
+  miroversion: miroVersion,
+  apiversion: apiVersion,
+  usetmpdir: true,
+  modesAvailable: ['base'],
 }];
