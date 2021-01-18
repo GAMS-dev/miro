@@ -406,7 +406,7 @@ if(buildUI){
             )
     ),
     tabItem(tabName = "scenarios",
-            generateScenarioTabsetPivot(),
+            generateScenarioTabsetPivot(LAUNCHHCUBEMODE),
             tags$div(id = "scen-tab-view", style = if(identical(config$defCompMode, "tab")) "" else "display:none;",
                      tabsetPanel(id="scenTabset"),
                      tags$div(id = "no-scen", lang$nav$scen$noScen, class = "no-scen",

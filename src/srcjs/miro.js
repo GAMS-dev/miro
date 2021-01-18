@@ -61,12 +61,12 @@ export function downloadAttachment(elId) {
   }, 200);
 }
 
-export function changeDDButtonEvent(elText, DDBtnID, actionID) {
+export function changeDDButtonEvent(elText, DDBtnID, actionID, actionVal = null) {
   $(DDBtnID).attr('onclick',
-    `Shiny.setInputValue('${actionID}',1,{priority: 'event'});`);
+    `Shiny.setInputValue('${actionID}',${actionVal == null ? 1 : actionVal},{priority: 'event'});`);
   $(DDBtnID).text(elText);
   if ($(DDBtnID).is(':enabled')) {
-    Shiny.setInputValue(actionID, 1, {
+    Shiny.setInputValue(actionID, actionVal == null ? 1 : actionVal, {
       priority: 'event',
     });
   }
@@ -650,6 +650,7 @@ ${data.data}</div>` : data.data);
     receiveMessage(el, data) {
       if (Object.prototype.hasOwnProperty.call(data, 'value')) {
         $(el).data('autoNumeric').set(data.value);
+        $(el).trigger('change');
       }
     },
     subscribe(el, callback) {

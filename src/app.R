@@ -230,9 +230,12 @@ if(is.null(errMsg)){
   }
 }
 if(is.null(errMsg)){
+  hcubeScalars <- getHcubeScalars(modelIn)
   ioConfig <<- list(modelIn = modelIn,
                     modelOut = modelOut,
                     inputDsNames = inputDsNames,
+                    hcubeScalars = hcubeScalars,
+                    inputDsNamesBase = inputDsNames[!inputDsNames %in% hcubeScalars],
                     scenTableNamesToDisplay = scenTableNamesToDisplay)
   if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildonly){
     errMsg <- paste(errMsg, 
@@ -501,6 +504,8 @@ if(miroBuildonly){
        file = rSaveFilePath)
   
   if(identical(Sys.getenv("MIRO_COMPILE_ONLY"), "true")){
+    if(interactive())
+      stop()
     quit("no")
   }
   if(identical(Sys.getenv("MIRO_MODE"), "full")){
@@ -690,7 +695,7 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
   local({
     orphanedTables <- NULL
     tryCatch({
-      orphanedTables <- db$getOrphanedTables(hcubeScalars = getHcubeScalars(modelIn))
+      orphanedTables <- db$getOrphanedTables(hcubeScalars = ioConfig$hcubeScalars)
     }, error = function(e){
       flog.error("Problems fetching orphaned database tables. Error message: '%s'.", e)
       errMsg <<- paste(errMsg, sprintf("Problems fetching orphaned database tables. Error message: '%s'.", 
@@ -1051,7 +1056,7 @@ if(!is.null(errMsg)){
             tmpDir <- tempdir(check = TRUE)
             views <- Views$new(names(modelIn),
                                names(modelOut),
-                               inputDsNames)
+                               ioConfig$inputDsNamesBase)
             attachments <- Attachments$new(db, list(maxSize = attachMaxFileSize, maxNo = attachMaxNo,
                                                     forbiddenFNames = c(if(identical(config$fileExchange, "gdx")) 
                                                       c(MIROGdxInName, MIROGdxOutName) else 
@@ -1060,7 +1065,7 @@ if(!is.null(errMsg)){
                                            tmpDir,
                                            names(modelIn),
                                            names(modelOut),
-                                           inputDsNames)
+                                           ioConfig$inputDsNamesBase)
             newScen <- Scenario$new(db = db, sname = "unnamed", isNewScen = TRUE,
                                     readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
                                     execPerm = c(uidAdmin, ugroups), uid = uidAdmin,
@@ -1092,7 +1097,7 @@ if(!is.null(errMsg)){
               flog.debug("Found view data for scenario: %s.", scenName)
               views <- Views$new(names(modelIn),
                                  names(modelOut),
-                                 inputDsNames)
+                                 ioConfig$inputDsNamesBase)
               views$addConf(safeFromJSON(read_file(file.path(miroDataDir, miroDataFilesRaw[viewDataId])),
                                          simplifyDataFrame = FALSE, simplifyVector = FALSE))
             }
@@ -1238,8 +1243,14 @@ if(!is.null(errMsg)){
                                    execPerm = vector("logical", attachMaxNo))
       # boolean that specifies whether input data does not match output data
       dirtyFlag          <- FALSE
-      isInSplitView      <- if(identical(config$defCompMode, "split")) TRUE else FALSE
-      if(isInSplitView){
+      if(identical(config$defCompMode, "tab")){
+        currentCompMode    <-  "tab"
+      }else if(identical(config$defCompMode, "pivot")){
+        currentCompMode    <-  "pivot"
+      }else{
+        currentCompMode    <-  "split"
+      }
+      if(identical(currentCompMode, "split")){
         enableEl(session, "#btCompareScen")
       }
       isInCompareMode    <- FALSE
@@ -1274,7 +1285,7 @@ if(!is.null(errMsg)){
       
       views              <- Views$new(names(modelIn),
                                       names(modelOut),
-                                      inputDsNames, rv)
+                                      ioConfig$inputDsNamesBase, rv)
       attachments        <- Attachments$new(db, list(maxSize = attachMaxFileSize, maxNo = attachMaxNo,
                                                      forbiddenFNames = c(if(identical(config$fileExchange, "gdx")) 
                                                        c(MIROGdxInName, MIROGdxOutName) else 
@@ -1283,11 +1294,11 @@ if(!is.null(errMsg)){
                                             workDir,
                                             names(modelIn),
                                             names(modelOut),
-                                            inputDsNames, rv)
+                                            ioConfig$inputDsNamesBase, rv)
       # currently active scenario (R6 object)
       activeScen         <- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
                                          isNewScen = TRUE, views = views, attachments = attachments)
-      exportFileType     <- if(useGdx) "gdx" else "xls"
+      exportFileType     <- if(useGdx) "miroscen" else "csv"
       
       # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
       sidCompOrder     <- NULL
@@ -1375,7 +1386,7 @@ if(!is.null(errMsg)){
                               paste0("outputTabset_", currentGroup + direction))
           }
         }else if(isolate(input$sidebarMenuId) == "scenarios"){
-          if(isInSplitView){
+          if(identical(currentCompMode, "split")){
             flog.debug("Navigated %d data tabs in split view scenario comparison view (using shortcut).", direction)
             currentScen <- 2
             currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen)]]),
@@ -1829,6 +1840,11 @@ if(!is.null(errMsg)){
         hideEl(session, "#pivotCompScenWrapper")
         isInRefreshMode <<- FALSE
         sidsInPivotComp[] <<- 0L
+        if(LAUNCHHCUBEMODE){
+          scenMetaData[["scen_0_"]] <<- NULL
+        }else{
+          disableEl(session, "#btClosePivotComp")
+        }
       })
       lapply(seq_len(maxNumberScenarios  + 3L), function(i){
         scenIdLong <- paste0("scen_", i, "_")
@@ -1868,7 +1884,7 @@ if(!is.null(errMsg)){
           
           exportTypes <- setNames(c("miroscen", "gdx", "csv", "xls"), lang$nav$fileExport$fileTypes)
         }else{
-          exportTypes <- setNames(c("csv", "xls"), lang$nav$fileExport$fileTypes[-1:2])
+          exportTypes <- setNames(c("csv", "xls"), lang$nav$fileExport$fileTypes[-c(1, 2)])
         }
         if(length(datasetsRemoteExport)){
           exportTypes <- c(exportTypes, setNames(names(datasetsRemoteExport), 

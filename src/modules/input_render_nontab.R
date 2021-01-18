@@ -388,7 +388,10 @@ lapply(seq_along(modelIn), function(id){
              if(is.null(rv[[paste0("in_", id)]])){
                return(NULL)
              }
-             if(!length(modelInputData[[id]][[1]])){
+             if(is.numeric(modelInputData[[id]]) && length(modelInputData[[id]]) > 0L){
+               value <- sort(modelInputData[[id]])
+               modelInputData[[id]] <<- list(NULL, value, TRUE)
+             }else if(!length(modelInputData[[id]][[1]])){
                value <- isolate(input[[paste0("slider_", id)]])
                modelInputData[[id]] <<- list(NULL, value, FALSE)
              }else{

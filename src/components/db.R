@@ -263,11 +263,11 @@ Db <- R6Class("Db",
                   #BEGIN error checks
                   if(!length(sid))
                     sid <- NA_integer_
-                  stopifnot(is.integer(sid), length(sid) == 1L)
-                  stopifnot(is.character(uid), length(uid) == 1L,
-                            is.character(sname), length(sname) == 1L)
+                  stopifnot(is.integer(sid),
+                            is.character(uid),
+                            is.character(sname))
                   stime <- as.POSIXct(stime)
-                  stopifnot(inherits(stime, "POSIXct"), length(stime) == 1L)
+                  stopifnot(inherits(stime, "POSIXct"))
                   stopifnot(is.character(stag), is.character(readPerm),
                             is.character(writePerm), is.character(execPerm),
                             is.character(uidAlias), length(uidAlias) == 1L,

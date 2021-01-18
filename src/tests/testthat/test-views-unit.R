@@ -33,7 +33,8 @@ test_that("Loading/Unloading configuration works", {
                                   '{"aggregations":["gagaga","blubb"]}',
                                   '{"filter":["bla","blubb"]}'))
   expect_error(views$loadConf(testViewData))
-  expect_error(views$loadConf(testViewData, sandbox = FALSE, scenIds = c(1,2,3,4)), NA)
+  expect_error(views$loadConf(testViewData, sandbox = FALSE, scenIds = c(1,2,3,4),
+                              sidsToLoad = c(1, 5, 6, 7)), NA)
   expect_error(views$loadConf(testViewData[1:4, ]), NA)
   expect_output(views$loadConf(testViewData[1:4, ]))
   expect_identical(views$getConf(), testViewData[1:4, -1])
@@ -280,4 +281,14 @@ test_that("Clearing configuration works", {
   expect_error(views$clearConf(scenId = "4"), NA)
   expect_identical(views$getConf(scenId = "4"),
                    tibble())
+})
+
+test_that("Loading scenario with no view config and one that does have views works", {
+  testViewData <- tibble("_sid" = c(1, 1), 
+                         symName = c("in1", "in1"),
+                         id = c("view1", "view2"),
+                         data = c('{"rows":["bla","blubb"]}', '{"cols":["bla","blubb"]}'))
+  expect_error(views$loadConf(testViewData, sandbox = FALSE, scenIds = c(4, 5), sidsToLoad = c(2, 1)), NA)
+  expect_identical(views$getConf("4"), tibble())
+  expect_identical(views$getConf("5"), testViewData[, -1])
 })

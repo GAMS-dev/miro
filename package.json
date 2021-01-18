@@ -36,6 +36,7 @@
     ],
     "files": [
       "**/*",
+      "!doc/**",
       "!scripts/**",
       "!r/**",
       "!r-src/**",
@@ -88,7 +89,8 @@
     "linux": {
       "extraFiles": [
         "r/**",
-        "scripts/**"
+        "scripts/globals.R",
+        "scripts/install_source.R"
       ],
       "artifactName": "GAMS-MIRO-${version}.${ext}",
       "target": "AppImage",

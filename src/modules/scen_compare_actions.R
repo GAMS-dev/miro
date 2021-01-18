@@ -21,7 +21,7 @@ observeEvent(input[["btScenTableView"]], {
   flog.debug("Table view in scenario with id: %s for sheet: %s activated.", scenId, 
              paste0(j, collapse = ", "))
   if(isInCompareMode){
-    if(isInSplitView){
+    if(identical(currentCompMode, "split")){
       for(k in 2:3){
         for(jId in j){
           toggleEl(session, paste0("#scenTable_", k, "_", jId))
@@ -228,9 +228,7 @@ output[["scenExportHandler"]] <- downloadHandler(
       data <- tibble()
     }
     return(writexl::write_xlsx(data, file))
-  },
-  contentType = if(identical(exportFileType, "gdx")) "application/octet-stream" else
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  }
 )
 observeEvent(input[["scenRemoteExportHandler"]], {
   scenId <- suppressWarnings(as.integer(input[["scenExportId"]]))

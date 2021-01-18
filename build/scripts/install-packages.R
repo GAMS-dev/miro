@@ -304,8 +304,7 @@ local({
 })
 # fix language schmea
 fixSchemaProc = processx::run(file.path(R.home(), 'bin', 'Rscript'), 
-    c('./scripts/fixSchema.R'), error_on_status = FALSE,
-    wd = file.path(getwd(), 'src'))
+    c('./scripts/fixSchema.R'), error_on_status = FALSE)
 if(fixSchemaProc$status != 0L) {
     stop(sprintf("Something went wrong while fixing language schema.\n\nStdout: %s\n\nStderr: %s", 
         fixSchemaProc$stdout, fixSchemaProc$stderr))
