@@ -358,6 +358,8 @@
       "hcubeHashButton": "Search",
       "hcubeHashNoMatch": "No scenarios that match the hash you entered were found.",
       "selInputData":"Select datasets to load",
+      "selExcelIndexSheet": "Select index worksheet",
+      "excelIndexSheetRng": "Select index range",
       "selExternalSource": "Select external source",
       "descLocal":"Choose file with data to load",
       "newScenName": "Choose a name for the new scenario",
@@ -374,6 +376,8 @@
       "tabDatabase":"Hypercube",
       "tabBase": "Base Mode",
       "selInputData":"Select datasets to import",
+      "selExcelIndexSheet": "Select index worksheet",
+      "excelIndexSheetRng": "Select index range",
       "descLocal":"Choose file with data to import",
       "newScenName": "Choose a name for the new Hypercube job configuration",
       "badScenName": "Please specify a valid name",
@@ -428,11 +432,11 @@
         "stag": "Scenario tags",
         "readPerm": "Read permissions",
         "writePerm": "Write permissions",
-        "execPerm": "Execute permissions"
+        "execPerm": "Execute permissions",
+        "symbol": "Symbol name",
+        "desc": "Description"
       },
-      "inputPrefix":"",
       "inputSuffix":" (Input)",
-      "outputPrefix":"",
       "outputSuffix":" (Output)"
     },
     "dialogLockScen":{

@@ -1391,6 +1391,14 @@
               "type": "string",
               "minLength": 1
             },
+            "selExcelIndexSheet": {
+              "type": "string",
+              "minLength": 1
+            },
+            "excelIndexSheetRng": {
+              "type": "string",
+              "minLength": 1
+            },
             "selExternalSource": {
               "type": "string",
               "minLength": 1
@@ -1428,7 +1436,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 18
+          "minProperties": 20
         },
         "dialogImportHC": {
           "type": "object",
@@ -1451,6 +1459,14 @@
               "minLength": 1
             },
             "selInputData": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selExcelIndexSheet": {
+              "type": "string",
+              "minLength": 1
+            },
+            "excelIndexSheetRng": {
               "type": "string",
               "minLength": 1
             },
@@ -1499,7 +1515,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 16
+          "minProperties": 18
         },
         "dialogLoadScen": {
           "type": "object",
@@ -1674,28 +1690,28 @@
                 "execPerm": {
                   "type": "string",
                   "minLength": 1
+                },
+                "symbol": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "desc": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 8
-            },
-            "inputPrefix": {
-              "type": "string",
-              "minLength": 0
+              "minProperties": 10
             },
             "inputSuffix": {
               "type": "string",
               "minLength": 1
-            },
-            "outputPrefix": {
-              "type": "string",
-              "minLength": 0
             },
             "outputSuffix": {
               "type": "string",
               "minLength": 1
             }
           },
-          "minProperties": 5
+          "minProperties": 3
         },
         "dialogLockScen": {
           "type": "object",

@@ -1,12 +1,72 @@
 # load input data from local file
+observe({
+  if(!is.character(input$selExcelIndexSheet) ||
+     length(input$selExcelIndexSheet) != 1L ||
+     is.null(input$excelIndexSheetRng)){
+    return()
+  }
+  hideEl(session, "#localDataImportError")
+  if(identical(input$selExcelIndexSheet, "-")){
+    return(enableEl(session, "#btImportLocal"))
+  }
+  disableEl(session, "#btImportLocal")
+  range <- input$excelIndexSheetRng
+  if(tryCatch({
+    cellranger::as.cell_limits(range)
+    FALSE
+  }, warning = function(w){
+    flog.debug("Invalid index cell range entered while importing spreadsheet")
+    return(TRUE)
+  }, error = function(e){
+    flog.debug("Invalid index cell range entered while importing spreadsheet")
+    return(TRUE)
+  })){
+    showElReplaceTxt(session, "#localDataImportError", lang$errMsg$xlsio$errors$badIndexRange)
+    return()
+  }
+  tryCatch({
+    xlsio$readIndex(input$localInput$datapath,
+                    indexRange = paste0(input$selExcelIndexSheet, "!", range),
+                    forceInit = TRUE)
+    rWarn <- xlsio$getWarnings()
+    if(length(rWarn)){
+      showElReplaceTxt(session, "#localDataImportError", paste(rWarn, collapse = "\n"))
+    }
+    enableEl(session, "#btImportLocal")
+  }, error_parse_config = function(e){
+    flog.info("Problems parsing index sheet (local Excel import). Error message: %s", conditionMessage(e))
+    showElReplaceTxt(session, "#localDataImportError", conditionMessage(e))
+  }, error = function(e){
+    flog.warn("Problems parsing index sheet (local Excel import). Error message: %s", conditionMessage(e))
+    showElReplaceTxt(session, "#localDataImportError", lang$errMsg$unknownError)
+  })
+})
 observeEvent(input$localInput, {
-  if(useGdx &&
-     identical(tolower(tools::file_ext(basename(input$localInput$datapath))),
-               "miroscen")){
+  hideEl(session, "#localDataImportError")
+  fileExt <- tolower(tools::file_ext(basename(input$localInput$datapath)))
+  if(useGdx && identical(fileExt, "miroscen")){
     hideEl(session, "#localInputSelectManually")
   }else{
     showEl(session, "#localInputSelectManually")
   }
+  if(length(fileExt) && fileExt %in% c("xls", "xlsx")){
+    showEl(session, "#localInputExcelOptions")
+    tryCatch({
+      xlsio$rInitFile(input$localInput$datapath)
+      xlsSheets <- xlsio$getSheetNames()
+      updateSelectInput(session, "selExcelIndexSheet", choices = c("-", xlsSheets),
+                        selected = if("_index" %in% xlsSheets) "_index" else "-")
+    }, error_bad_format = function(e){
+      flog.info("Problems initializing excel file to read. Error message: %s", conditionMessage(e))
+      showElReplaceTxt(session, "#localDataImportError", conditionMessage(e))
+    }, error = function(e){
+      flog.warn("Problems initializing excel file to read. Error message: %s", conditionMessage(e))
+      showElReplaceTxt(session, "#localDataImportError", lang$errMsg$unknownError)
+    })
+    return()
+  }
+  hideEl(session, "#localInputExcelOptions")
+  enableEl(session, "#btImportLocal")
 })
 observeEvent(input$btImportLocal, {
   if(identical(config$activateModules$loadLocal, FALSE)){
@@ -170,21 +230,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     }
   }else if(fileType %in% c("xls", "xlsx")){
     loadMode <- "xls"
-    # read Excel file
-    tryCatch({
-      xlsWbNames <- excel_sheets(input$localInput$datapath)
-    }, error = function(e) {
-      flog.error("Some error occurred reading the file: '%s'. Error message: %s.", as.character(isolate(input$localInput$name)), e)
-      errMsg <<- sprintf(lang$errMsg$GAMSInput$excelRead, as.character(isolate(input$localInput$name)))
-    })
-    if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
-      return()
-    }
-    xlsWbNames <- vapply(strsplit(xlsWbNames, " ", fixed = TRUE), "[[", character(1L), 1L)
-    # extract only sheets which are also in list of input parameters
-    datasetsToFetch <- xlsWbNames[tolower(xlsWbNames) %in% 
-                                    c(modelInTabularData, scalarsFileName, 
-                                      scalarInputSym)]
+    datasetsToFetch <- names(modelIn)
   }else{
     removeModal()
     showErrorMsg(lang$errMsg$invalidFileType$title, 
@@ -229,6 +275,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     showEl(session, "#data-in_" %+% i)
   })
   
+  loadErrors <- character(0L)
   source("./modules/input_load.R", local = TRUE)
   if(identical(fileType, "miroscen")){
     scenMetaData[["scen_1_"]] <<- activeScen$
@@ -262,7 +309,8 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
                                  scalarsFileHeaders = scalarsFileHeaders,
                                  templates = modelOutTemplate, method = loadMode,
                                  hiddenOutputScalars = config$hiddenOutputScalars, 
-                                 fileName = loadModeFileName) 
+                                 fileName = loadModeFileName, xlsio = xlsio)
+      loadErrors <- c(loadErrors, outputData$errors)
     }, error = function(e){
       flog.info("Problems loading output data. Error message: %s.", 
                 conditionMessage(e))
@@ -291,5 +339,8 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     showNotification(sprintf(lang$nav$notificationNewInput$new, newInputCount))
   }else{
     showNotification(lang$nav$notificationNewInput$noNew, type = "error")
+  }
+  if(length(loadErrors)){
+    showErrorMsg(lang$errMsg$dataError$title, paste(loadErrors, collapse = "\n"))
   }
 })

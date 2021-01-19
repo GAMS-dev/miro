@@ -464,18 +464,8 @@ observeEvent(input$localInput, {
     loadMode <- "gdx"
     datasetsToFetch <- c(modelInTabularData, scalarsFileName)
   }else if(fileType %in% c("xls", "xlsx")){
-    loadMode <- "xlsx"
-    tryCatch({
-      xlsWbNames <- excel_sheets(input$localInput$datapath)
-    }, error = function(e) {
-      flog.error("Some error occurred reading the file: '%s'. Error message: %s.", 
-                 as.character(isolate(input$localInput$name)), e)
-      errMsg <<- sprintf(lang$errMsg$GAMSInput$excelRead, 
-                         as.character(isolate(input$localInput$name)))
-    })
-    xlsWbNames <- vapply(strsplit(xlsWbNames, " ", fixed = TRUE), "[[", character(1L), 1L)
-    # extract only sheets which are also in list of input parameters
-    datasetsToFetch <- xlsWbNames[tolower(xlsWbNames) %in% modelInTabularData]
+    loadMode <- "xls"
+    datasetsToFetch <- c(modelInTabularData, scalarsFileName)
   }else{
     errMsg <- lang$errMsg$GAMSInput$desc
   }
@@ -501,7 +491,7 @@ observeEvent(input$localInput, {
     configScalars <<- tibble()
   }
   tabularOutputWithData <- NULL
-  if(identical(loadMode, "gdx") || any(names(modelOut) %in% xlsWbNames)){
+  if(identical(loadMode, "gdx")){
     tryCatch({
         outputDataTmp <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, 
                                       workDir = dirname(isolate(input$localInput$datapath)), 
@@ -509,7 +499,8 @@ observeEvent(input$localInput, {
                                       scalarsFileHeaders = scalarsFileHeaders, 
                                       templates = modelOutTemplate, method = loadMode, 
                                       hiddenOutputScalars = character(0L),
-                                      fileName = basename(isolate(input$localInput$datapath)))
+                                      fileName = basename(isolate(input$localInput$datapath)),
+                                      xlsio = xlsio)
     }, error = function(e){
       flog.error("Problems loading output data. Error message: %s.", e)
       errMsg <<- lang$errMsg$readOutput$desc

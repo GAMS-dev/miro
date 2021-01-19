@@ -1,9 +1,11 @@
 XlsIO <- R6::R6Class("XlsIO", public = list(
   initialize = function(){
-    private$metadata <- c(ioConfig$modelOut, ioConfig$modelInRaw)
-    if(scalarsFileName %in% names(private$metadata)){
+    private$metadata <- c(ioConfig$modelOut, ioConfig$modelIn)
+    if(scalarsFileName %in% names(ioConfig$modelInRaw)){
+      private$metadata <- c(private$metadata, ioConfig$modelInRaw[scalarsFileName])
       private$scalars <- private$metadata[[scalarsFileName]]$symnames
       private$metadata[[scalarsFileName]]$symtype <- "set"
+      private$metadata[[scalarsFileName]]$colTypes <- "ccc"
     }else{
       private$scalars <- character(0L)
     }
@@ -80,7 +82,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
         indexName <- indexRange$sheet
       }else{
         indexName <- "_index"
-        indexRange <- "_index!A1"
+        indexRange <- private$parseCellRange("_index", "_index!A1")
       }
       if(!indexName %in% private$rSheets){
         private$rIndex <- list()
@@ -303,7 +305,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       }else{
         data <- suppressWarnings(mutate_at(data, length(data), as.numeric))
         if(tolower(index[["squeeze"]]) %in% c("1", "y")){
-          data <- data[is.na(data[[valColName]]) | data[[valColName]] != 0,]
+          data <- data[is.na(data[[length(data)]]) | data[[length(data)]] != 0,]
         }
       }
       return(data)
@@ -532,7 +534,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       if(symColId > 1L){
         indexDf <- indexDf[, -seq_len(symColId - 1L)]
       }
-      if(!(tolower(colNames[2]) %in% c("range", "rng") || identical(colNames[2], ""))){
+      if(!(tolower(names(indexDf)[2]) %in% c("range", "rng") || identical(names(indexDf)[2], ""))){
         stop_custom("error_parse_config", lang$errMsg$xlsio$errors$indexNoRangeInfo, call. = FALSE)
       }
       names(indexDf)[c(1L, 2L)] <- c("symbol", "range")
@@ -781,7 +783,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       }, integer(1L), USE.NAMES = FALSE))
     },
     parseCellRange = function(symName, range){
-      range <- trimws(range)
+      range <- trimws(range, whitespace = "[ \t\r\n\"]")
       if(range %in% c("", "!")){
         return(structure(list(ul = c(1L, 1L), lr = c(NA_integer_, NA_integer_),
                               sheet = private$rSheets[1]),
@@ -794,7 +796,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       }else if(range %in% private$rSheets){
         range <- paste0(range, "!A1")
       }
-      parsedRange <- cellranger::as.cell_limits(range)
+      parsedRange <- suppressWarnings(cellranger::as.cell_limits(range))
       if(identical(parsedRange$ul, parsedRange$lr) &&
          !symName %in% private$scalars){
         parsedRange$lr <- c(NA_integer_, NA_integer_)

@@ -2,38 +2,13 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                          templates, errMsg = NULL, method = "csv", csvDelim = ",", 
                          hiddenOutputScalars = character(0L),
                          fileName = character(0L), DDPar = character(0L), GMSOpt = character(0L),
-                         dfClArgs = NULL){
-  ret <- list(tabular = NULL, scalar = NULL, noTabularData = TRUE)
-  
+                         dfClArgs = NULL, xlsio = NULL){
+  ret <- list(tabular = NULL, scalar = NULL, noTabularData = TRUE, errors = character())
+  loadDataErrors <- CharArray$new()
   if(identical(method, "xls")){
-    xlsPath <- nativeFileEnc(file.path(workDir, fileName))
+    xlsPath <- file.path(workDir, fileName)
     if(!file.exists(xlsPath)){
       stop(sprintf("File: '%s' could not be found.", xlsPath), call. = FALSE)
-    }
-    xlsSheetNames <- tolower(excel_sheets(xlsPath))
-    xlsSheetNames <- vapply(strsplit(xlsSheetNames, " ", fixed = TRUE), 
-                            "[[", character(1L), 1L)
-    if(scalarsName %in% names(metaData)){
-      scalarXlsSheetIds <- match(metaData[[scalarsName]]$symnames, xlsSheetNames)
-      scalarXlsSheetIds <- scalarXlsSheetIds[!is.na(scalarXlsSheetIds)]
-      if(length(scalarXlsSheetIds)){
-        tryCatch({
-          scalarDataTmp <- vapply(scalarXlsSheetIds, function(sheetID){
-            data <- suppressMessages(read_excel(xlsPath, sheetID, col_names = FALSE))
-            if(length(data) != 1L){
-              stop(sprintf("Invalid length of scalar sheet: %s.", sheetID), call. = FALSE)
-            }
-            return(as.character(data[[1]][1]))
-          }, character(1L), USE.NAMES = FALSE)
-        }, error = function(e){
-          flog.info("Could not read one or more scalar sheets of spreadsheet. Please make sure to only specify the scalar's value in A1.")
-          stop("Could not read scalar sheets.", call. = FALSE)
-        })
-        scalarIds <- match(xlsSheetNames[scalarXlsSheetIds], metaData[[scalarsName]]$symnames)
-        ret$scalar <- as_tibble(list(name  = metaData[[scalarsName]]$symnames[scalarIds],
-                                     text  = metaData[[scalarsName]]$symtext[scalarIds],
-                                     value = scalarDataTmp))
-      }
     }
   }else if(identical(method, "gdx")){
     gdxPath <- file.path(workDir, fileName)
@@ -70,17 +45,8 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
              }
            },
            xls = {
-             sheetID <- match(scalarsName, xlsSheetNames)[[1]]
-             if(!is.na(sheetID)){
-               scalarTmp <- suppressMessages(
-                 read_excel(xlsPath, sheetID, 
-                            col_types = c("text", "text", "text"),
-                            col_names = TRUE))
-               if(length(ret$scalar)){
-                 ret$scalar <- bind_rows(scalarTmp, ret$scalar)
-               }else{
-                 ret$scalar <- scalarTmp
-               }
+             if(scalarsName %in% names(metaData)){
+               ret$scalar <- xlsio$read(xlsPath, scalarsName)
              }
            },
            gdx = {
@@ -154,24 +120,29 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                  }
                },
                xls = {
-                 sheetID <- match(names(metaData)[[i]], xlsSheetNames)[[1]]
-                 if(!is.na(sheetID)){
-                   headerTypes <- metaData[[i]]$colTypes
-                   ret$tabular[[i]] <<- suppressMessages(
-                     read_excel(xlsPath, sheetID, 
-                                col_types = 
-                                  vapply(seq_along(metaData[[i]]$headers), 
-                                         function(colId){
-                                           if(identical(substr(headerTypes, colId, colId), "c"))
-                                             return("text")
-                                           return("numeric")
-                                         }, character(1L), USE.NAMES = FALSE), 
-                                col_names = TRUE))
+                 if(tryCatch({
+                   ret$tabular[[i]] <<- xlsio$read(xlsPath, names(metaData)[[i]])
                    if(ret$noTabularData){
                      ret$noTabularData <<- FALSE
                    }
-                 }else{
+                   FALSE
+                 }, error_notfound = function(e){
+                   flog.debug("Symbol: %s not found in Excel spreadsheet", names(metaData)[[i]])
                    ret$tabular[[i]] <<- templates[[i]]
+                   return(TRUE)
+                 }, error_parse_config = function(e){
+                   flog.info("Symbol: %s : Problems parsing index from Excel file. Error message: %s",
+                              names(metaData)[[i]], conditionMessage(e))
+                   loadDataErrors$push(conditionMessage(e))
+                   ret$tabular[[i]] <<- templates[[i]]
+                   return(TRUE)
+                }, error_data = function(e){
+                  flog.info("Symbol: %s : Problems reading data. Error message: %s",
+                             names(metaData)[[i]], conditionMessage(e))
+                  loadDataErrors$push(conditionMessage(e))
+                  ret$tabular[[i]] <<- templates[[i]]
+                  return(TRUE)
+                })){
                    return()
                  }
                },
@@ -219,6 +190,6 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
     }
     attr(ret$tabular[[i]], "aliases") <<- attr(templates[[i]], "aliases")
   })
-  
+  ret$errors <- loadDataErrors$get()
   return(ret)
 }

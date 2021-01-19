@@ -358,6 +358,8 @@
       "hcubeHashButton":"搜索",
       "hcubeHashNoMatch":"未找到与输入的哈希值相匹配的场景。",
       "selInputData":"选择要加载的数据集",
+      "selExcelIndexSheet": "选择索引工作表",
+      "excelIndexSheetRng": "选择指数范围",
 	  "selExternalSource": "选择外部数据源",
       "descLocal":"选择要加载数据的文件",
       "newScenName":"为新场景选择一个名称",
@@ -374,6 +376,8 @@
       "tabDatabase": "Hypercube",
       "tabBase":"基本模式",
       "selInputData":"选择要导入的数据集",
+      "selExcelIndexSheet": "选择索引工作表",
+      "excelIndexSheetRng": "选择指数范围",
       "descLocal":"选择要导入数据的文件",
       "newScenName":"为新的Hypercube作业配置选择一个名称",
       "badScenName":"请指定一个有效的名称",
@@ -428,11 +432,11 @@
         "stag":"场景标签",
         "readPerm":"读取权限",
         "writePerm":"写入权限",
-        "execPerm": "执行权限"
+        "execPerm": "执行权限",
+        "symbol": "符号名称",
+        "desc": "描述"
       },
-      "inputPrefix": "",
       "inputSuffix":"（输入）",
-      "outputPrefix": "",
       "outputSuffix":"（输出）"
     },
     "dialogLockScen":{

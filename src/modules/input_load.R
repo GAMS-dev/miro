@@ -19,7 +19,10 @@ if(!identical(loadMode, "scen")){
                                   scalarsFileHeaders = scalarsFileHeaders,
                                   templates = modelInTemplateTmp, method = loadMode,
                                   fileName = loadModeFileName, DDPar = DDPar, GMSOpt = GMSOpt,
-                                  dfClArgs = dfClArgs)$tabular
+                                  dfClArgs = dfClArgs, xlsio = xlsio)$tabular
+    if(length(scenInputData$errors)){
+      loadErrors <- scenInputData$errors
+    }
     if(!length(scenInputData)){
       return()
     }

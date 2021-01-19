@@ -358,6 +358,8 @@
       "hcubeHashButton": "Suchen",
       "hcubeHashNoMatch": "Es konnten keine Szenarios gefunden werden.",
       "selInputData":"Wählen Sie die Datensätze, die Sie laden möchten",
+      "selExcelIndexSheet": "Wäheln Sie das Index-Arbeitsblatt aus",
+      "excelIndexSheetRng": "Wäheln Sie den Indexbereich",
       "selExternalSource": "Wählen Sie die externe Quelle",
       "descLocal":"Wählen Sie eine Datei mit Daten aus",
       "newScenName": "Wählen Sie einen Namen für das neue Szenario",
@@ -374,6 +376,8 @@
       "tabDatabase":"Hypercube",
       "tabBase": "Basismodus",
       "selInputData":"Wählen Sie die zu importierenden Datensätze",
+      "selExcelIndexSheet": "Wäheln Sie das Index-Arbeitsblatt aus",
+      "excelIndexSheetRng": "Wäheln Sie den Indexbereich",
       "descLocal":"Wählen Sie eine Datei mit Daten aus",
       "newScenName": "Wählen Sie einen Namen für die neue Hypercube-Job-Konfiguration.",
       "badScenName": "Bitte wählen Sie einen gültigen Namen",
@@ -428,11 +432,11 @@
         "stag": "Szenario Tags",
         "readPerm": "Leseberechtigung",
         "writePerm": "Schreibberechtigung",
-        "execPerm": "Ausführungsberechtigung"
+        "execPerm": "Ausführungsberechtigung",
+        "symbol": "Symbol-Name",
+        "desc": "Beschreibung"
       },
-      "inputPrefix":"",
       "inputSuffix":" (Eingabe)",
-      "outputPrefix":"",
       "outputSuffix":" (Ausgabe)"
     },
     "dialogLockScen":{
