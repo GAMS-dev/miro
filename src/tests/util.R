@@ -10,7 +10,13 @@ getSelectizeAliases <- function(app, selector){
   options <- app$getDebugLog("browser")$message
   return(rev(substr(options, 1, nchar(options) -4)))
 }
-
+getHotData <- function(app, id){
+  hotToR <- function(data){
+    return(suppressWarnings(as_tibble(
+      data.table::rbindlist(data$data, use.names = FALSE))))
+  }
+  return(hotToR(jsonlite::fromJSON(app$getAllValues()$output[[id]], simplifyDataFrame = FALSE, simplifyMatrix = FALSE)$x))
+}
 expect_download_size <- function(app, id, filename, tolerance = 100){
   url <- app$findElement(paste0("#", id))$getAttribute("href")
   req <- httr::GET(url)
