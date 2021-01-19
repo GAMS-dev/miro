@@ -444,7 +444,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
                       sprintf(lang$errMsg$xlsio$errors$duplicateScalars,
                               paste(scalarsDfTmp[[1]][duplicateSymbols], collapse = "', '")), call. = FALSE)
         }
-        scalarsDf[match(scalarsDfTmp[[1]], scalarsToProcess), 3] <- scalarsDfTmp[[3L]]
+        scalarsDf[match(scalarsDfTmp[[1]], scalarsToProcess), 3] <- as.character(scalarsDfTmp[[3L]])
         scalarsProcessed <- scalarsDfTmp[[1]]
       }
       scalarXlsSheetIds <- match(setdiff(scalarsToProcess, scalarsProcessed), tolower(private$rSheetsNoIndex))
