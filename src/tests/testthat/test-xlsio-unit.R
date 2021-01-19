@@ -1,6 +1,7 @@
 context("Unit tests - XlsIO class")
 library(readxl)
 library(writexl)
+library(tidyr)
 library(dplyr)
 
 lang <<- jsonlite::fromJSON("../../conf/en.json", simplifyDataFrame = FALSE, simplifyMatrix = FALSE)

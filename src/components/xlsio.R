@@ -1,13 +1,17 @@
 XlsIO <- R6::R6Class("XlsIO", public = list(
   initialize = function(){
     private$metadata <- c(ioConfig$modelOut, ioConfig$modelIn)
+    isClOptScalar <- startsWith(names(ioConfig$modelIn), prefixDDPar) | startsWith(names(ioConfig$modelIn), prefixGMSOpt)
+    if(any(isClOptScalar)){
+      private$clOptScalars <- names(ioConfig$modelIn)[isClOptScalar]
+    }
     if(scalarsFileName %in% names(ioConfig$modelInRaw)){
       private$metadata <- c(private$metadata, ioConfig$modelInRaw[scalarsFileName])
-      private$scalars <- private$metadata[[scalarsFileName]]$symnames
+      private$scalars <- c(private$metadata[[scalarsFileName]]$symnames, private$clOptScalars)
       private$metadata[[scalarsFileName]]$symtype <- "set"
       private$metadata[[scalarsFileName]]$colTypes <- "ccc"
     }else{
-      private$scalars <- character(0L)
+      private$scalars <- private$clOptScalars
     }
     if(scalarsOutName %in% names(private$metadata)){
       private$scalars <- c(private$scalars, private$metadata[[scalarsOutName]]$symnames)
@@ -139,6 +143,7 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
   private = list(
     metadata = list(),
     scalars = character(0L),
+    clOptScalars = character(0L),
     rpath = character(0L),
     rSheets = character(0L),
     rSheetsNoIndex = character(0L),
@@ -386,9 +391,14 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
         stop_custom("error_notfound", sprintf(lang$errMsg$xlsio$errors$symbolNotFound, symName), call. = FALSE)
       }
       scalarsToProcess <- private$metadata[[symName]]$symnames
+      scalarDesc <- private$metadata[[symName]]$symtext
+      if(identical(symName, scalarsFileName) && length(private$clOptScalars)){
+        scalarsToProcess <- c(scalarsToProcess, private$clOptScalars)
+        scalarDesc <- c(scalarDesc, rep.int("", length(private$clOptScalars)))
+      }
       scalarsProcessed <- character(0L)
       scalarsDf <- tibble(scalar = scalarsToProcess,
-                          description = private$metadata[[symName]]$symtext,
+                          description = scalarDesc,
                           value = NA_character_)
       if(symName %in% names(private$rIndex)){
         scalarsDfTmp <- private$readFromIndex(symName)
@@ -426,9 +436,14 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
                                               symName), call. = FALSE)
       }
       scalarsToProcess <- private$metadata[[symName]]$symnames
+      scalarDesc <- private$metadata[[symName]]$symtext
+      if(identical(symName, scalarsFileName) && length(private$clOptScalars)){
+        scalarsToProcess <- c(scalarsToProcess, private$clOptScalars)
+        scalarDesc <- c(scalarDesc, rep.int("", length(private$clOptScalars)))
+      }
       scalarsProcessed <- character(0L)
       scalarsDf <- tibble(scalar = scalarsToProcess,
-                          description = private$metadata[[symName]]$symtext,
+                          description = scalarDesc,
                           value = NA_character_)
       
       sheetId <- match(symName, tolower(private$rSheetsNoIndex))
@@ -894,10 +909,16 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
         symMeta <- private$metadata[[tolower(symName)]]
         if(tolower(symName) %in% c(scalarsFileName, scalarsOutName)){
           scalarNamesData <- tolower(data[[wsNames[idx]]][[1]])
-          scalarIds <- match(scalarNamesData, symMeta$symnames)
+          scalarNames <- symMeta$symnames
+          scalarTypes <- symMeta$symtypes
+          if(identical(tolower(symName), scalarsFileName) && length(private$clOptScalars)){
+            scalarNames <- c(scalarNames, private$clOptScalars)
+            scalarTypes <- c(scalarTypes, rep.int("set", length(private$clOptScalars)))
+          }
+          scalarIds <- match(scalarNamesData, scalarNames)
           scalarIds <- scalarIds[!is.na(scalarIds)]
-          scalarNames <- symMeta$symnames[scalarIds]
-          return(tibble(type = vapply(symMeta$symtypes[scalarIds], function(symType){
+          scalarNames <- scalarNames[scalarIds]
+          return(tibble(type = vapply(scalarTypes[scalarIds], function(symType){
             if(symType %in% c("parameter", "equation", "variable")){
               return("par")
             }
