@@ -54,15 +54,10 @@ observeEvent(input$table_type, {
 
 output$tableLabelWrapper <- renderUI({
   if(length(rv$tableWidgetConfig$label) && !identical(trimws(rv$tableWidgetConfig$label), "")){
-    tags$div(tags$div(id = "inputTableLabelToggle",
-                      icon("minus"), style = "cursor:pointer;font-weight:bold;", 
-                      onclick = "Miro.slideToggleEl({id: '#inputTableLabel',
-                      toggleIconDiv:'#inputTableLabelToggle'})",
-                      "aria-expanded" = "true", "aria-controls" = "inputTableLabelToggle"),
-             tags$div(id = "inputTableLabel",
-                      class = "readme-wrapper", style = "max-height:150px",
+    tags$div(id = "inputTableLabel",
+                      class = "readme-wrapper label-wrapper",
                       markdown(rv$tableWidgetConfig$label)
-             ))
+             )
   }
 })
 

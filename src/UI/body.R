@@ -265,15 +265,10 @@ if(buildUI){
                            {
                              tagList(
                                if(length(modelIn[[i]]$label) && !identical(trimws(modelIn[[i]]$label), "")){
-                                 tags$div(tags$div(id = paste0("tableLabelToggle_", i),
-                                                 icon("minus"), style = "cursor:pointer;font-weight:bold;", 
-                                                 onclick = paste0("Miro.slideToggleEl({id: '#tableLabel_", i, 
-                                                                  "',toggleIconDiv:'#tableLabelToggle_", i, "'})"),
-                                                 "aria-expanded" = "true", "aria-controls" = paste0("tableLabel_", i)),
-                                         tags$div(id = paste0("tableLabel_", i),
-                                                  class = "readme-wrapper", style = "max-height:150px",
+                                 tags$div(id = paste0("tableLabel_", i),
+                                                  class = "readme-wrapper label-wrapper",
                                                   markdown(modelIn[[i]]$label)
-                                         ))
+                                         )
                                },
                                tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
                                tags$div(id = paste0("data-in_", i), {
