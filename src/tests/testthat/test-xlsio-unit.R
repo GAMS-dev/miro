@@ -9,6 +9,7 @@ ioConfig <<- list(modelOut = list("_scalars_out" = list(symnames = c("cowf","exp
                                                         symtypes = c("parameter","parameter","parameter","parameter","parameter","parameter","parameter","parameter","parameter"),
                                                         symtext = c("","","","","","","","",""),
                                                         colTypes = "ccc",
+                                                        alias = "Output scalars",
                                                         headers = list(scalar = list(),
                                                                        description = list(),
                                                                        value = list())),
@@ -17,7 +18,7 @@ ioConfig <<- list(modelOut = list("_scalars_out" = list(symnames = c("cowf","exp
                                   var1a = list(symtype = "variable", colTypes = "cddddd", headers = list(uni = list(), level = list(), marginal = list(), lower = list(), upper = list(), scale = list())),
                                   var1b = list(symtype = "variable", colTypes = "cddddd", headers = list(uni = list(), level = list(), marginal = list(), lower = list(), upper = list(), scale = list())),
                                   eq1 = list(symtype = "equation", colTypes = "ccddddd", headers = list(uni1 = list(), uni2 = list(), level = list(), marginal = list(), lower = list(), upper = list(), scale = list())),
-                                  i1 = list(symtype = "set", colTypes = "cc", headers = list(uni = list(), text = list())),
+                                  i1 = list(alias = "Set i1", symtype = "set", colTypes = "cc", headers = list(uni = list(), text = list())),
                                   i1a = list(symtype = "set", colTypes = "cc", headers = list(uni = list(), text = list())),
                                   i2 = list(symtype = "set", colTypes = "cc", headers = list(uni = list(), text = list())),
                                   i3 = list(symtype = "set", colTypes = "cc", headers = list(uni = list(), text = list())),
@@ -44,9 +45,9 @@ ioConfig <<- list(modelOut = list("_scalars_out" = list(symnames = c("cowf","exp
                                                       headers = list(scalar = list(),
                                                                      description = list(),
                                                                      value = list())),
-                                    distance = list(symtype = "parameter", colTypes = "ccd", headers = list(uni1 = list(), uni2 = list(), value = list())),
+                                    distance = list(alias = "Distance", symtype = "parameter", colTypes = "ccd", headers = list(uni1 = list(), uni2 = list(), value = list())),
                                     distance2 = list(symtype = "parameter", colTypes = "ccd", headers = list(uni1 = list(), uni2 = list(), value = list())),
-                                    distance3 = list(symtype = "parameter", colTypes = "cdd", headers = list(uni = list(), dallas = list(), chicago = list())),
+                                    distance3 = list(alias = "Distance 😈 3", symtype = "parameter", colTypes = "cdd", headers = list(uni = list(), dallas = list(), chicago = list())),
                                     distance3a = list(symtype = "parameter", colTypes = "cddd", headers = list(uni = list(), dallas = list(), chicago = list(), clevelaND = list())),
                                     distance4 = list(symtype = "parameter", colTypes = "ccdd", headers = list(uni1 = list(), uni2 = list(), chicago = list(), clevelaND = list())),
                                     modedistance = list(symtype = "parameter", colTypes = "cccd",
@@ -335,4 +336,44 @@ test_that("Reading Excel without index works", {
                           description = c("","","","","","","","","","",""),
                           value = c(NA_character_,"1e+07",NA_character_,NA_character_,"2.5",NA_character_,NA_character_,NA_character_,NA_character_,NA_character_,NA_character_)))
   expect_error(xlsio$read("../data/exampleData.xlsx", "i10"), class = "error_notfound")
+})
+
+test_that("Writing Excel files works", {
+  tmpdir <- tempdir(TRUE)
+  xlsOutFileName <- file.path(tmpdir, "test.xlsx")
+  testData <- list("_scalars_out" = tibble(scalar = c("cowf","explimitgr","big"),
+                                           description = c("a", "b", "c"),
+                                           value = c(1,2,3)),
+                   i1 = tibble(uni = c("uni1", "uni2"),
+                               text = c("text1", "text2")),
+                   distance = tibble(uni1 = character(), uni2 = character(), value = numeric()),
+                   distance3 = tibble(uni = c("bla1"), dallas = 1.1, chicago = 1.2))
+  expect_error(xlsio$write(xlsOutFileName, testData, includeEmptySheets = TRUE), NA)
+  expect_identical(excel_sheets(xlsOutFileName), c("_scalars_out (Output)", "i1 (Output)", "distance (Input)", "distance3 (Input)", "_index"))
+  expect_error(xlsio$write(xlsOutFileName, testData, includeEmptySheets = FALSE), NA)
+  expect_identical(excel_sheets(xlsOutFileName), c("_scalars_out (Output)", "i1 (Output)", "distance3 (Input)", "_index"))
+  expect_identical(suppressMessages(read_excel(xlsOutFileName, "_index")),
+                   tibble(type = c("par", "par", "par", "set", "par"),
+                          symbol = c("cowf", "explimitgr", "big", "i1", "distance3"),
+                          range = c('"_scalars_out (Output)!C2"', '"_scalars_out (Output)!C3"', '"_scalars_out (Output)!C4"',
+                                    '"i1 (Output)!A2"', '"distance3 (Input)!A1"'),
+                          cDim = c(0,0,0,0,1),
+                          dim = c(0,0,0,1,2)))
+  expect_error(xlsio$write(xlsOutFileName, testData, tibble(id = 1, User = "fproske", `Scenario name` = "asd", "Time created" = "def"),
+                           includeMetadataSheet = TRUE, includeEmptySheets = FALSE), NA)
+  expect_identical(excel_sheets(xlsOutFileName), c(" Info", "_scalars_out (Output)", "i1 (Output)", "distance3 (Input)", "_index"))
+  expect_identical(suppressMessages(read_excel(xlsOutFileName, " Info")),
+                   tibble(User = c("fproske", NA, NA),
+                          `Scenario name` = c("asd", NA, NA),
+                          `Time created` = c("def", NA, NA),
+                          `...4` = c(NA, NA, NA),
+                          `...5` = c(NA, NA, NA),
+                          `Symbol name` = c(0,0,0),
+                          Description = c("Output scalars", "Distance 😈 3", "Set i1"),
+                          `...8` = c("(Output)", "(Input)", "(Output)")))
+  
+  expect_identical(xlsio$read(xlsOutFileName, "_scalars_out", forceInit = TRUE),
+                   tibble(scalar = c("cowf","explimitgr","big","pawat","pafod","tolcnl","tolpr","tolnwfp","betaf"),
+                          description = "",
+                          value = c("1","2","3",NA,NA,NA,NA,NA,NA)))
 })

@@ -64,6 +64,77 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
   },
   getSheetNames = function(){
     return(private$rSheets)
+  },
+  write = function(path, dataToWrite, metaData = NULL, includeMetadataSheet = FALSE, includeEmptySheets = TRUE){
+    if(!length(dataToWrite)){
+      return(writexl::write_xlsx(tibble(), path))
+    }
+    
+    wsNamesRaw <- names(dataToWrite)
+    
+    # remove empty datasets
+    if(isFALSE(includeEmptySheets)){
+      emptySheets <- vapply(dataToWrite, function(sheet) identical(nrow(sheet), 0L),
+                            logical(1L), USE.NAMES = FALSE)
+      dataToWrite[emptySheets] <- NULL
+      wsNamesRaw <- wsNamesRaw[!emptySheets]
+    }
+    if(!length(dataToWrite)){
+      return(writexl::write_xlsx(tibble(), path))
+    }
+    
+    wsNamesTmp <- wsNamesRaw
+    
+    isOutputSheet <- tolower(wsNamesTmp) %in% tolower(names(ioConfig$modelOut))
+    if(any(isOutputSheet)){
+      wsNamesTmp[isOutputSheet] <- paste0(wsNamesTmp[isOutputSheet],
+                                          lang$nav$excelExport$outputSuffix)
+    }
+    if(any(!isOutputSheet)){
+      wsNamesTmp[!isOutputSheet] <- paste0(wsNamesTmp[!isOutputSheet],
+                                           lang$nav$excelExport$inputSuffix)
+    }
+    # need to make sure worksheet names do not exceed 31 characters as Excel does not support longer names
+    if(any(nchar(wsNamesTmp) > 31)){
+      wsNameExceedsLength <- nchar(wsNamesTmp) > 31
+      wsNamesTmp[wsNameExceedsLength] <- paste0(substr(wsNamesTmp[wsNameExceedsLength], 1, 29), "..")
+      if(any(duplicated(wsNamesTmp))){
+        wsNameDuplicated <- duplicated(wsNamesTmp)
+        wsNamesTmp <- lapply(seq_along(wsNamesTmp), function(wsID){
+          if(wsNameDuplicated[wsID]){
+            return(paste0(substr(wsNamesTmp[wsID], 1, 29), wsID))
+          }
+          return(wsNamesTmp[wsID])
+        })
+      }
+    }
+    names(dataToWrite) <- wsNamesTmp
+    
+    dataToWrite <- c(dataToWrite,
+                     setNames(list(private$genIndexFromMetadata(wsNamesRaw,
+                                                                names(dataToWrite),
+                                                                dataToWrite)),
+                              "_index"))
+    # include metadata sheet in Excel file
+    if(isTRUE(includeMetadataSheet) && !is.null(metaData)){
+      metaData <- metaData[, -1, drop = FALSE]
+      metaData[[" "]] <- ""
+      metaData[["  "]] <- ""
+      symDesc <- bind_rows(lapply(seq_along(wsNamesRaw), function(idx){
+        tibble(description = private$metadata[[wsNamesRaw[idx]]]$alias,
+               `   ` = if(isOutputSheet[idx]) lang$nav$excelExport$outputSuffix else lang$nav$excelExport$inputSuffix)
+      }))
+      symDesc <- add_column(symDesc, symbol = xl_hyperlink(paste0("#'",
+                                                                  names(dataToWrite)[seq_along(wsNamesRaw)], "'!A1"),
+                                                           name = wsNamesRaw),
+                            .before = 1L)
+      names(symDesc)[1:2] <- lang$nav$excelExport$metadataSheet[c("symbol", "desc")]
+      metaData <- crossing(metaData, symDesc)
+      metaData[seq(2, nrow(metaData)), seq_len(length(metaData) - 3L)] <- NA
+      dataToWrite <- c(setNames(list(metaData),
+                                paste0(" ", lang$nav$excelExport$metadataSheet$title)), dataToWrite)
+    }
+    return(writexl::write_xlsx(dataToWrite, path))
   }),
   private = list(
     metadata = list(),
@@ -809,6 +880,46 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
       return(numDim > 0L &&
                (!identical(names(meta$headers)[length(meta$headers)], "value") ||
                   numDim > 1L))
+    },
+    genIndexFromMetadata = function(symbolNames, wsNames, data){
+      return(bind_rows(lapply(seq_along(symbolNames), function(idx){
+        symName <- symbolNames[idx]
+        if(tolower(symName) %in% private$scalars){
+          return(tibble(type = character(),
+                        symbol = character(),
+                        range = character(),
+                        cDim = integer(),
+                        dim = integer()))
+        }
+        symMeta <- private$metadata[[tolower(symName)]]
+        if(tolower(symName) %in% c(scalarsFileName, scalarsOutName)){
+          scalarNamesData <- tolower(data[[wsNames[idx]]][[1]])
+          scalarIds <- match(scalarNamesData, symMeta$symnames)
+          scalarIds <- scalarIds[!is.na(scalarIds)]
+          scalarNames <- symMeta$symnames[scalarIds]
+          return(tibble(type = vapply(symMeta$symtypes[scalarIds], function(symType){
+            if(symType %in% c("parameter", "equation", "variable")){
+              return("par")
+            }
+            return("set")}, character(1L), USE.NAMES = FALSE),
+            symbol = scalarNames,
+            range = paste0('"', wsNames[idx], "!C", match(scalarNames, scalarNamesData) + 1L, '"'),
+            cDim = 0L,
+            dim = 0L))
+        }
+        symDim <- stri_count_fixed(symMeta$colTypes, "c")
+        if(identical(symMeta$symtype, "set")){
+          symDim <- symDim - 1L
+          isTable <- FALSE
+        }else{
+          isTable <- private$isTable(tolower(symName))
+        }
+        return(tibble(type = if(symMeta$symtype %in% c("parameter", "equation", "variable")) "par" else "set",
+                      symbol = symName,
+                      range = paste0('"', wsNames[idx], "!A", if(isTable) '1"' else '2"'),
+                      cDim = if(isTable) 1L else 0L,
+                      dim = symDim + if(isTable) 1L else 0L))
+      })))
     }
   )
 )
