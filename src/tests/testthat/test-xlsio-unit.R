@@ -345,7 +345,6 @@ test_that("Reading Excel without index works", {
 test_that("Writing Excel files works", {
   tmpdir <- tempdir(TRUE)
   xlsOutFileName <- file.path(tmpdir, "test.xlsx")
-  print(xlsOutFileName)
   testData <- list("_scalars_out" = tibble(scalar = c("cowf","explimitgr","big"),
                                            description = c("a", "b", "c"),
                                            value = c(1,2,3)),
