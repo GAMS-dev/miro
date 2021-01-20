@@ -427,6 +427,13 @@
                                                         </tbody>
                                                     </table>
                                                   </div><!--//table-responsive-->
+                                                <h6>Reading scalars</h6>
+                                                <p>In addition to reading each scalar individually as supported by GDXXRW, MIRO also supports reading in table form. To read an entire table of scalars, you must do so using the special <kbd>_scalars</kbd>/<kbd>_scalars_out</kbd> symbols for input and output scalars, respectively. In this way MIRO reads scalars grouped in a table with 3 columns: <kbd>Scalar</kbd>, <kbd>Description</kbd>, <kbd>Value</kbd>. The <kbd>Description</kbd> column can also be omitted. Let's look at our example again:</p>
+                                                <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                                    <img class="img-fluid" style="max-height:125pt;" src="assets/images/import-wb-scalars.png" alt="Layout of individual and grouped scalars" />
+                                                </div>
+                                                <p>If we look at the corresponding index sheet again, we see that both the output scalar <kbd>total_cost</kbd> and the input scalar table <kbd>_scalars</kbd> are defined on this sheet. In this example, the table is pivoted (scalar names in the columns) and the <kbd>Description</kbd> column has been omitted.</p>
+                                                <p>Note that you can mix the declaration of table and individual scalars. Scalars that are missing from the table are appended if they are individually declared. If a scalar is found both in one of the special tables and individually declared, the scalar in the table takes precedence and the individually declared scalar is ignored.</p>
                                                 <h6 id="gdxxrw-miro-diff">Differences between GDXXRW and MIRO</h6>
                                                 <p>Below we list the important differences you need to be aware of when migrating from GDXXRW to MIRO or vice versa.</p>
                                                 <ul>
