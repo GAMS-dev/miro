@@ -132,7 +132,8 @@ XlsIO <- R6::R6Class("XlsIO", public = list(
                                                                   names(dataToWrite)[seq_along(wsNamesRaw)], "'!A1"),
                                                            name = wsNamesRaw),
                             .before = 1L)
-      names(symDesc)[1:2] <- lang$nav$excelExport$metadataSheet[c("symbol", "desc")]
+      names(symDesc)[1:2] <- c(lang$nav$excelExport$metadataSheet$symbol,
+                               lang$nav$excelExport$metadataSheet$desc)
       metaData <- crossing(metaData, symDesc)
       metaData[seq(2, nrow(metaData)), seq_len(length(metaData) - 3L)] <- NA
       dataToWrite <- c(setNames(list(metaData),
