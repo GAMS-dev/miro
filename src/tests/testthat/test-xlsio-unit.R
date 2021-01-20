@@ -44,9 +44,11 @@ ioConfig <<- list(modelOut = list("_scalars_out" = list(symnames = c("cowf","exp
                                                       symtext = c("","","","","","","","","","", ""),
                                                       symtypes = c("set","parameter","parameter","parameter","parameter","parameter","parameter","parameter","parameter","parameter","parameter"),
                                                       colTypes = "ccc",
+                                                      alias = "Input scalars",
                                                       headers = list(scalar = list(),
                                                                      description = list(),
                                                                      value = list())),
+                                    "_gmsopt_solver" = list(),
                                     distance = list(alias = "Distance", symtype = "parameter", colTypes = "ccd", headers = list(uni1 = list(), uni2 = list(), value = list())),
                                     distance2 = list(symtype = "parameter", colTypes = "ccd", headers = list(uni1 = list(), uni2 = list(), value = list())),
                                     distance3 = list(alias = "Distance 😈 3", symtype = "parameter", colTypes = "cdd", headers = list(uni = list(), dallas = list(), chicago = list())),
@@ -151,8 +153,8 @@ test_that("Test that initialising index works", {
                                                              rdim = 1L, cdim = 2L, dim = 3L, values = "auto", ignorecols = NA_character_,
                                                              ignorerows = NA_character_, se = "1", squeeze = "1"))
   expect_equal(xlsioPrivate$rIndex[["distance2"]], tibble(symbol = "distance2", range = "testIndex!A26:E31",
-                                                             rdim = 1L, cdim = 1L, dim = 2L, values = "auto", ignorerows = "27",
-                                                             ignorecols = "C, E", se = "1", squeeze = "1"))
+                                                          rdim = 1L, cdim = 1L, dim = 2L, values = "auto", ignorerows = "27",
+                                                          ignorecols = "C, E", se = "1", squeeze = "1"))
 })
 
 test_that("Index errors work", {
@@ -263,28 +265,28 @@ test_that("Reading sets works", {
 })
 
 test_that("Reading scalars works", {
-  expect_identical(xlsio$read("../data/exampleData.xlsx", "labfac", indexRange = "scalarIndex!C12:H16", forceInit = TRUE),
+  expect_identical(xlsio$read("../data/exampleData.xlsx", "labfac", indexRange = "scalarIndex!C12:H17", forceInit = TRUE),
                    "0.5")
   rWarnings <- xlsio$getWarnings()
   expect_length(rWarnings, 1L)
   expect_true(any(grepl("scalar", rWarnings, fixed = TRUE)))
   expect_identical(xlsio$read("../data/exampleData.xlsx", "growthq"), "1988")
   expect_identical(xlsio$read("../data/exampleData.xlsx", "_scalars"),
-                   tibble(scalar = c("baseyear","repco","gr","growthq","drc","the1","lstd","trcap","twcap","twefac", "labfac"),
-                          description = c("","","","","","","","","","",""),
-                          value = c("1988","2.5","0.3","2.5","0.15",NA_character_,"200","250","59.504100000000001","0.5","0.5")))
+                   tibble(scalar = c("baseyear","repco","gr","growthq","drc","the1","lstd","trcap","twcap","twefac", "labfac","_gmsopt_solver"),
+                          description = c("","","","","","","","","","","",""),
+                          value = c("1988","2.5","0.3","2.5","0.15",NA_character_,"200","250","59.504100000000001","0.5","0.5","CBC")))
   expect_identical(xlsio$read("../data/exampleData.xlsx", "_scalars_out"),
                    tibble(scalar = c("cowf","explimitgr","big","pawat","pafod","tolcnl","tolpr","tolnwfp","betaf"),
                           description = "",
                           value = c("0.5","5","4000","999999","1000","0","0","0","0.5")))
   expect_identical(xlsio$read("../data/exampleData.xlsx", "_scalars", indexRange = "scalarIndex!I21", forceInit = TRUE),
-                   tibble(scalar = c("baseyear","repco","gr","growthq","drc","the1","lstd","trcap","twcap","twefac", "labfac"),
-                          description = c("","","","","","","","","","",""),
-                          value = c("1988","2.5","0.3","2.5","0.15","0.6",NA_character_,NA_character_,NA_character_,"0.5","0.5")))
+                   tibble(scalar = c("baseyear","repco","gr","growthq","drc","the1","lstd","trcap","twcap","twefac", "labfac","_gmsopt_solver"),
+                          description = c("","","","","","","","","","","",""),
+                          value = c("1988","2.5","0.3","2.5","0.15","0.6",NA_character_,NA_character_,NA_character_,"0.5","0.5","CPLEX")))
   expect_identical(xlsio$read("../data/exampleData.xlsx", "_scalars", indexRange = "scalarIndex!C12:H13", forceInit = TRUE),
-                   tibble(scalar = c("baseyear","repco","gr","growthq","drc","the1","lstd","trcap","twcap","twefac", "labfac"),
-                          description = c("","","","","","","","","","",""),
-                          value = c(NA_character_,NA_character_,NA_character_,"1988",NA_character_,NA_character_,NA_character_,NA_character_,NA_character_,NA_character_,NA_character_)))
+                   tibble(scalar = c("baseyear","repco","gr","growthq","drc","the1","lstd","trcap","twcap","twefac", "labfac", "_gmsopt_solver"),
+                          description = c("","","","","","","","","","","",""),
+                          value = c(NA_character_,NA_character_,NA_character_,"1988",NA_character_,NA_character_,NA_character_,NA_character_,NA_character_,NA_character_,NA_character_,NA_character_)))
 })
 
 test_that("Reading variables/equations works", {
@@ -334,48 +336,100 @@ test_that("Reading Excel without index works", {
                           uni3 = c("cleveland","chicago","cleveland","chicago"),
                           text = c("text 1",NA,"text 2","no")))
   expect_identical(xlsio$read("../data/exampleData.xlsx", "_scalars"),
-                   tibble(scalar = c("baseyear","repco","gr","growthq","drc","the1","lstd","trcap","twcap","twefac", "labfac"),
-                          description = c("","","","","","","","","","",""),
-                          value = c(NA_character_,"1e+07",NA_character_,NA_character_,"2.5",NA_character_,NA_character_,NA_character_,NA_character_,NA_character_,NA_character_)))
+                   tibble(scalar = c("baseyear","repco","gr","growthq","drc","the1","lstd","trcap","twcap","twefac", "labfac","_gmsopt_solver"),
+                          description = c("","","","","","","","","","","",""),
+                          value = c(NA_character_,"1e+07",NA_character_,NA_character_,"2.5",NA_character_,NA_character_,NA_character_,NA_character_,NA_character_,NA_character_,NA_character_)))
   expect_error(xlsio$read("../data/exampleData.xlsx", "i10"), class = "error_notfound")
 })
 
 test_that("Writing Excel files works", {
   tmpdir <- tempdir(TRUE)
   xlsOutFileName <- file.path(tmpdir, "test.xlsx")
+  print(xlsOutFileName)
   testData <- list("_scalars_out" = tibble(scalar = c("cowf","explimitgr","big"),
                                            description = c("a", "b", "c"),
                                            value = c(1,2,3)),
+                   "_scalars" = tibble(scalar = c("_gmsopt_solver"),
+                                       description = c(""),
+                                       value = c("CBC")),
                    i1 = tibble(uni = c("uni1", "uni2"),
                                text = c("text1", "text2")),
                    distance = tibble(uni1 = character(), uni2 = character(), value = numeric()),
                    distance3 = tibble(uni = c("bla1"), dallas = 1.1, chicago = 1.2))
   expect_error(xlsio$write(xlsOutFileName, testData, includeEmptySheets = TRUE), NA)
-  expect_identical(excel_sheets(xlsOutFileName), c("_scalars_out (Output)", "i1 (Output)", "distance (Input)", "distance3 (Input)", "_index"))
+  expect_identical(excel_sheets(xlsOutFileName), c("_scalars_out (Output)","_scalars (Input)", "i1 (Output)", "distance (Input)", "distance3 (Input)", "_index"))
   expect_error(xlsio$write(xlsOutFileName, testData, includeEmptySheets = FALSE), NA)
-  expect_identical(excel_sheets(xlsOutFileName), c("_scalars_out (Output)", "i1 (Output)", "distance3 (Input)", "_index"))
+  expect_identical(excel_sheets(xlsOutFileName), c("_scalars_out (Output)","_scalars (Input)", "i1 (Output)", "distance3 (Input)", "_index"))
   expect_identical(suppressMessages(read_excel(xlsOutFileName, "_index")),
-                   tibble(type = c("par", "par", "par", "set", "par"),
-                          symbol = c("cowf", "explimitgr", "big", "i1", "distance3"),
+                   tibble(type = c("par", "par", "par", "set","set", "par"),
+                          symbol = c("cowf", "explimitgr", "big","_gmsopt_solver", "i1", "distance3"),
                           range = c('"_scalars_out (Output)!C2"', '"_scalars_out (Output)!C3"', '"_scalars_out (Output)!C4"',
-                                    '"i1 (Output)!A2"', '"distance3 (Input)!A1"'),
-                          cDim = c(0,0,0,0,1),
-                          dim = c(0,0,0,1,2)))
+                                    '"_scalars (Input)!C2"', '"i1 (Output)!A2"', '"distance3 (Input)!A1"'),
+                          cDim = c(0,0,0,0,0,1),
+                          dim = c(0,0,0,0,1,2)))
   expect_error(xlsio$write(xlsOutFileName, testData, tibble(id = 1, User = "fproske", `Scenario name` = "asd", "Time created" = "def"),
                            includeMetadataSheet = TRUE, includeEmptySheets = FALSE), NA)
-  expect_identical(excel_sheets(xlsOutFileName), c(" Info", "_scalars_out (Output)", "i1 (Output)", "distance3 (Input)", "_index"))
+  expect_identical(excel_sheets(xlsOutFileName), c(" Info", "_scalars_out (Output)","_scalars (Input)", "i1 (Output)", "distance3 (Input)", "_index"))
   expect_identical(suppressMessages(read_excel(xlsOutFileName, " Info")),
-                   tibble(User = c("fproske", NA, NA),
-                          `Scenario name` = c("asd", NA, NA),
-                          `Time created` = c("def", NA, NA),
-                          `...4` = c(NA, NA, NA),
-                          `...5` = c(NA, NA, NA),
-                          `Symbol name` = c(0,0,0),
-                          Description = c("Output scalars", "Distance 😈 3", "Set i1"),
-                          `...8` = c("(Output)", "(Input)", "(Output)")))
+                   tibble(User = c("fproske", NA, NA,NA),
+                          `Scenario name` = c("asd", NA, NA,NA),
+                          `Time created` = c("def", NA, NA, NA),
+                          `...4` = NA,
+                          `...5` = NA,
+                          `Symbol name` = c(0,0,0,0),
+                          Description = c("Input scalars","Output scalars", "Distance 😈 3", "Set i1"),
+                          `...8` = c("(Input)","(Output)", "(Input)", "(Output)")))
   
   expect_identical(xlsio$read(xlsOutFileName, "_scalars_out", forceInit = TRUE),
                    tibble(scalar = c("cowf","explimitgr","big","pawat","pafod","tolcnl","tolpr","tolnwfp","betaf"),
                           description = "",
                           value = c("1","2","3",NA,NA,NA,NA,NA,NA)))
 })
+
+# test example from documentation
+ioConfig <<- list(modelOut = list("_scalars_out" = list(symnames = c("total_cost"),
+                                                        symtypes = c("parameter"),
+                                                        symtext = c("Total cost"),
+                                                        colTypes = "ccc",
+                                                        alias = "Output scalars",
+                                                        headers = list(scalar = list(),
+                                                                       description = list(),
+                                                                       value = list())),
+                                  schedule = list(alias = "Schedule (results)", colTypes = "ccddddddd",
+                                                  headers = list(i = list(), j = list(),
+                                                                 lngp = list(), latp = list(), lngm = list(),
+                                                                 latm = list(), demand = list(), cap = list(),
+                                                                 quantities = list()))),
+                  modelInRaw = list("_scalars" = list(symnames = c("f","mins","beta","type"),
+                                                      symtext = c("","","",""),
+                                                      symtypes = c("parameter","parameter","parameter","set"),
+                                                      colTypes = "ccc",
+                                                      headers = list(scalar = list(),
+                                                                     description = list(),
+                                                                     value = list())),
+                                    d = list(alias = "Distance", colTypes = "ccd", headers = list(i = list(), j = list(), value = list())),
+                                    j = list(symtype = "set", alias = "Set j", colTypes = "cc", headers = list(uni = list(), text = list()))))
+xlsio <- XlsIO$new()
+
+test_that("Example from documentation works", {
+  expect_identical(xlsio$read("../data/doc_example.xlsx", "schedule", forceInit = TRUE),
+                   tibble(i = c("Seattle", "Seattle"), j = c("New-york", "Chicago"),
+                          lngp = NA_real_, latp = NA_real_, lngm = NA_real_, latm = NA_real_,
+                          demand = c(325,300), cap = c(350,350), quantities = c(50,300)))
+  expect_identical(xlsio$read("../data/doc_example.xlsx", "d"),
+                   tibble(i = c("Seattle", "Seattle", "Seattle","San-Diego","San-Diego","San-Diego"),
+                          j = c("New-york", "Chicago","Topeka","New-york", "Chicago","Topeka"),
+                          value = c(2.5,1.7,1.8,2.5,1.8,1.4)))
+  expect_identical(xlsio$read("../data/doc_example.xlsx", "j"),
+                   tibble(uni = c("New-york"),
+                          text = c("")))
+  expect_identical(xlsio$read("../data/doc_example.xlsx", "_scalars"),
+                   tibble(scalar = c("f","mins","beta","type"),
+                          description = c("","","",""),
+                          value = c("90", "100","0.95", "lp")))
+  expect_identical(xlsio$read("../data/doc_example.xlsx", "_scalars_out"),
+                   tibble(scalar = c("total_cost"),
+                          description = c("Total cost"),
+                          value = c("153.675")))
+})
+
