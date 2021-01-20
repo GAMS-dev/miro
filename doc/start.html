@@ -434,6 +434,15 @@
                                                 </div>
                                                 <p>If we look at the corresponding index sheet again, we see that both the output scalar <kbd>total_cost</kbd> and the input scalar table <kbd>_scalars</kbd> are defined on this sheet. In this example, the table is pivoted (scalar names in the columns) and the <kbd>Description</kbd> column has been omitted.</p>
                                                 <p>Note that you can mix the declaration of table and individual scalars. Scalars that are missing from the table are appended if they are individually declared. If a scalar is found both in one of the special tables and individually declared, the scalar in the table takes precedence and the individually declared scalar is ignored.</p>
+                                                <div class="callout-block callout-warning">
+                                                    <div class="icon-holder">
+                                                        <i class="fas fa-info-circle"></i>
+                                                    </div><!--//icon-holder-->
+                                                    <div class="content">
+                                                        <b class="callout-title">Note:</b>
+                                                        <p>Command line parameters/GAMS options are treated like <i>normal</i> input scalars with the special prefixes <kbd>_gmspar_</kbd> and <kbd>_gmsopt_</kbd>.</p>
+                                                    </div><!--//content-->
+                                                </div><!--//callout-block-->
                                                 <h6 id="gdxxrw-miro-diff">Differences between GDXXRW and MIRO</h6>
                                                 <p>Below we list the important differences you need to be aware of when migrating from GDXXRW to MIRO or vice versa.</p>
                                                 <ul>
