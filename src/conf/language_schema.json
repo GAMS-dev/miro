@@ -1391,6 +1391,14 @@
               "type": "string",
               "minLength": 1
             },
+            "selDecimalSep": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selDelim": {
+              "type": "string",
+              "minLength": 1
+            },
             "selExcelIndexSheet": {
               "type": "string",
               "minLength": 1
@@ -1436,7 +1444,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 20
+          "minProperties": 22
         },
         "dialogImportHC": {
           "type": "object",
@@ -1459,6 +1467,14 @@
               "minLength": 1
             },
             "selInputData": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selDecimalSep": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selDelim": {
               "type": "string",
               "minLength": 1
             },
@@ -1515,7 +1531,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 18
+          "minProperties": 20
         },
         "dialogLoadScen": {
           "type": "object",
@@ -3032,6 +3048,40 @@
           "type": "string",
           "minLength": 1
         },
+        "csvio": {
+          "description": "Errors/warnings used in csvio class",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "warnings": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ambiguousDelim": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 1
+            },
+            "errors": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "badDelim": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "duplicateCol": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 2
+            }
+          },
+          "minProperties": 2
+        },
         "xlsio": {
           "description": "Errors/warnings used in xlsio class",
           "type": "object",
@@ -3804,7 +3854,7 @@
           "minProperties": 3
         }
       },
-      "minProperties": 37
+      "minProperties": 38
     },
     "adminMode": {
       "description": "language specific objects of the MIRO admin mode",

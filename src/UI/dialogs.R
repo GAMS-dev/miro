@@ -313,6 +313,30 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                                                 )
                                               ),
                                               fluidRow(
+                                                div(id = "localInputCsvOptions", style = "display: none",
+                                                    tags$div(class = "col-sm-6", id = "csvDelimWrapper", style = "display:none;",
+                                                           selectInput("csvDelim", lang$nav[[modeDescriptor]]$selDelim, 
+                                                                       NULL, 
+                                                                       multiple = FALSE, width = "100%")
+                                                    ),
+                                                    column(6,
+                                                           selectInput("csvDecimalSep", lang$nav[[modeDescriptor]]$selDecimalSep, 
+                                                                       c(".", ","), 
+                                                                       multiple = FALSE, width = "100%")
+                                                    ),
+                                                    column(6,
+                                                           selectInput("selInputDataLocCSV", lang$nav[[modeDescriptor]]$selInputData, 
+                                                                       if(length(ioConfig$modelInRaw))
+                                                                         setNames(names(ioConfig$modelInRaw), 
+                                                                                  vapply(ioConfig$modelInRaw, function(inSym){
+                                                                                    return(inSym$alias)
+                                                                                  }, character(1L), USE.NAMES = FALSE)) else NULL, 
+                                                                       multiple = FALSE, width = "100%")
+                                                    ),
+                                                    uiOutput("csvHeaderMapping")
+                                                )
+                                              ),
+                                              fluidRow(
                                                 tags$div(style = "text-align: center;",
                                                          actionButton("btImportLocal", class = "bt-highlight-1 bt-gms-confirm",
                                                                       disabled = TRUE, lang$nav[[modeDescriptor]]$okButton)

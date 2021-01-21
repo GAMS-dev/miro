@@ -358,6 +358,8 @@
       "hcubeHashButton": "Suchen",
       "hcubeHashNoMatch": "Es konnten keine Szenarios gefunden werden.",
       "selInputData":"Wählen Sie die Datensätze, die Sie laden möchten",
+      "selDecimalSep": "Wäheln Sie das Dezimaltrennzeichen",
+      "selDelim": "Begrenzungszeichen auswählen",
       "selExcelIndexSheet": "Wäheln Sie das Index-Arbeitsblatt aus",
       "excelIndexSheetRng": "Wäheln Sie den Indexbereich",
       "selExternalSource": "Wählen Sie die externe Quelle",
@@ -376,6 +378,8 @@
       "tabDatabase":"Hypercube",
       "tabBase": "Basismodus",
       "selInputData":"Wählen Sie die zu importierenden Datensätze",
+      "selDecimalSep": "Wäheln Sie das Dezimaltrennzeichen",
+      "selDelim": "Begrenzungszeichen auswählen",
       "selExcelIndexSheet": "Wäheln Sie das Index-Arbeitsblatt aus",
       "excelIndexSheetRng": "Wäheln Sie den Indexbereich",
       "descLocal":"Wählen Sie eine Datei mit Daten aus",
@@ -780,6 +784,15 @@
     "fileRead":{  
       "title":"Fehler beim Lesen von Datei",
       "desc":"Beim Lesen der Datei: '%s' ist ein Fehler aufgetreten."
+    },
+    "csvio":{
+      "warnings":{
+        "ambiguousDelim": "WARNUNG: Das Begrenzungszeichen Ihrer Datei konnte nicht eindeutig identifiziert werden. Bitte wählen Sie es unten manuell aus."
+      },
+      "errors":{
+        "badDelim": "FEHLER: Konnte Begrenzungszeichen nicht ermitteln. Gültige Begrenzungszeichen sind: '%s'.",
+        "duplicateCol": "FEHLER: Das mehrfache Auswählen derselben Spalte wird nicht unterstützt."
+      }
     },
     "xlsio":{
       "warnings":{

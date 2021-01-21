@@ -84,7 +84,7 @@ filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./component
                     "./components/json.R", "./components/scenario_metadata.R", "./components/views.R",
                     "./components/attachments.R", "./components/miroscenio.R",
                     "./components/load_scen_data.R", "./components/localfileio.R",
-                    "./components/xlsio.R",
+                    "./components/xlsio.R", "./components/csvio.R",
                     "./components/data_instance.R", "./components/worker.R", 
                     "./components/dataio.R", "./components/hcube_data_instance.R", 
                     "./components/miro_tabsetpanel.R", "./modules/render_data.R", 
@@ -1301,9 +1301,10 @@ if(!is.null(errMsg)){
                            btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
                            btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
                            noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
-                           jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L)
+                           jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L, delimDetected = NULL)
       
       xlsio              <- XlsIO$new()
+      csvio              <- CsvIO$new()
       views              <- Views$new(names(modelIn),
                                       names(modelOut),
                                       ioConfig$inputDsNamesBase, rv)

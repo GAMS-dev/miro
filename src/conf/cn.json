@@ -351,16 +351,18 @@
     "dialogImport":{
       "title":"加载数据",
       "tabLocal": "本地",
-	  "tabExternal": "外部",							
+      "tabExternal": "外部",							
       "tabDatabase": "数据库",
       "tabHcube": "Hypercube",
       "hcubeHashDesc":"输入要加载的场景的哈希值（来自Hypercube模式），单击该场景并加载。",
       "hcubeHashButton":"搜索",
       "hcubeHashNoMatch":"未找到与输入的哈希值相匹配的场景。",
       "selInputData":"选择要加载的数据集",
+      "selDecimalSep": "选择小数点分隔符",
+      "selDelim": "选择定界符",
       "selExcelIndexSheet": "选择索引工作表",
       "excelIndexSheetRng": "选择指数范围",
-	  "selExternalSource": "选择外部数据源",
+      "selExternalSource": "选择外部数据源",
       "descLocal":"选择要加载数据的文件",
       "newScenName":"为新场景选择一个名称",
       "scenNameExistsErr":"该场景名称已存在。",
@@ -376,6 +378,8 @@
       "tabDatabase": "Hypercube",
       "tabBase":"基本模式",
       "selInputData":"选择要导入的数据集",
+      "selDecimalSep": "选择小数点分隔符",
+      "selDelim": "选择定界符",
       "selExcelIndexSheet": "选择索引工作表",
       "excelIndexSheetRng": "选择指数范围",
       "descLocal":"选择要导入数据的文件",
@@ -777,6 +781,15 @@
   "errMsg":{
     "unknownError":"出现意外错误。如果此问题仍然存在,请与系统管理员联系。",
     "permErr":"操作失败,因为没有足够的权限。",
+    "csvio":{
+      "warnings":{
+        "ambiguousDelim": "警告：文件的定界符无法唯一标识。 请在下面手动选择。"
+      },
+      "errors":{
+        "badDelim": "错误：无法确定定界符。 有效的分隔符为：'%s'。",
+        "duplicateCol": "错误：不支持同一列的多项选择。"
+      }
+    },
     "xlsio":{
       "warnings":{
         "invalidSymbols": "警告：Excel文件中的无效符号被忽略：'%s'。",

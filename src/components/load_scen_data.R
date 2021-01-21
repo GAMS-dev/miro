@@ -2,21 +2,19 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                          templates, errMsg = NULL, method = "csv", csvDelim = ",", 
                          hiddenOutputScalars = character(0L),
                          fileName = character(0L), DDPar = character(0L), GMSOpt = character(0L),
-                         dfClArgs = NULL, xlsio = NULL){
+                         dfClArgs = NULL, xlsio = NULL, csvio = NULL){
   ret <- list(tabular = NULL, scalar = NULL, noTabularData = TRUE, errors = character())
   loadDataErrors <- CharArray$new()
-  if(identical(method, "xls")){
-    xlsPath <- file.path(workDir, fileName)
-    if(!file.exists(xlsPath)){
-      stop(sprintf("File: '%s' could not be found.", xlsPath), call. = FALSE)
+  if(length(method) == 1L && method %in% c("xls", "gdx", "scsv")){
+    if(identical(method, "scsv") && is.null(csvio)){
+      return(ret)
     }
-  }else if(identical(method, "gdx")){
-    gdxPath <- file.path(workDir, fileName)
-    if(!file.exists(gdxPath)){
-      stop(sprintf("File: '%s' could not be found.", gdxPath), call. = FALSE)
+    dataFilePath <- file.path(workDir, fileName)
+    if(!file.exists(dataFilePath)){
+      stop(sprintf("File: '%s' could not be found.", dataFilePath), call. = FALSE)
     }
   }else if(!identical(method, "csv")){
-    stop(sprintf("Method ('%s') is not suported for loading data.", method), call. = FALSE)
+    stop("Method is not suported for loading data.", call. = FALSE)
   }
   if(!length(errMsg)){
     errMsg <- "Dataset: '%s' is not valid. Please check the format of the data you wish to import."
@@ -25,6 +23,13 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
   isNewGdx <- TRUE
   tryCatch({
     switch(method,
+           scsv = {
+             tryCatch({
+               ret$scalar <- csvio$read(dataFilePath, scalarsName)
+             }, error_notfound = function(e){
+               return(TRUE)
+             })
+           },
            csv = {
              if(file.exists(file.path(workDir, scalarsName %+% '.csv'))){
                ret$scalar <- read_delim(file.path(workDir, scalarsName %+% '.csv'), 
@@ -46,12 +51,12 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
            },
            xls = {
              if(scalarsName %in% names(metaData)){
-               ret$scalar <- xlsio$read(xlsPath, scalarsName)
+               ret$scalar <- xlsio$read(dataFilePath, scalarsName)
              }
            },
            gdx = {
              if(scalarsName %in% names(metaData)){
-               ret$scalar <- gdxio$rgdx(gdxPath, scalarsName, isNewGdx = isNewGdx)
+               ret$scalar <- gdxio$rgdx(dataFilePath, scalarsName, isNewGdx = isNewGdx)
                isNewGdx <- FALSE
              }
            })
@@ -106,6 +111,20 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
     }else{
       tryCatch({
         switch(method,
+               scsv = {
+                 if(tryCatch({
+                   ret$tabular[[i]] <<- csvio$read(dataFilePath, names(metaData)[[i]])
+                   if(ret$noTabularData){
+                     ret$noTabularData <<- FALSE
+                   }
+                   FALSE
+                 }, error_notfound = function(e){
+                   ret$tabular[[i]] <<- templates[[i]]
+                   return(TRUE)
+                 })){
+                   return()
+                 }
+               },
                csv = {
                  if(file.exists(file.path(workDir, names(metaData)[[i]] %+% '.csv'))){
                    ret$tabular[[i]] <<- read_delim(file.path(workDir, names(metaData)[[i]] %+% '.csv'), 
@@ -121,7 +140,7 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                },
                xls = {
                  if(tryCatch({
-                   ret$tabular[[i]] <<- xlsio$read(xlsPath, names(metaData)[[i]])
+                   ret$tabular[[i]] <<- xlsio$read(dataFilePath, names(metaData)[[i]])
                    if(ret$noTabularData){
                      ret$noTabularData <<- FALSE
                    }
@@ -148,7 +167,7 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                },
                gdx = {
                  tryCatch({
-                   ret$tabular[[i]] <<- gdxio$rgdx(gdxPath, names(metaData)[[i]], 
+                   ret$tabular[[i]] <<- gdxio$rgdx(dataFilePath, names(metaData)[[i]], 
                                                    names = names(metaData[[i]]$headers),
                                                    isNewGdx = isNewGdx)
                    if(!inherits(ret$tabular[[i]], "data.frame")){
