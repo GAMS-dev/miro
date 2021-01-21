@@ -1,21 +1,44 @@
 CsvIO <- R6::R6Class("CsvIO", inherit = LocalFileIO, public = list(
-  rInitFile = function(path){
+  rInitFile = function(path, delim = NULL){
     private$rpath <- path
+    private$rSymName <- character(0L)
     private$rHeaderRow <- TRUE
     private$rColsToRead <- NULL
     private$rColsToSkip <- NULL
     private$decimalSep <- "."
     private$rSample <- read_lines(path, n_max = 3L)
-    private$rDelim <- private$guessDelim(private$rSample)
-    if(length(private$rDelim) == 0L){
-      stop_custom("error_bad_delim", "ERROR: Could not determine delimiter of CSV file.", call. = FALSE)
+    if(is.null(delim)){
+      private$rDelim <- private$guessDelim(private$rSample)
+      if(length(private$rDelim) == 0L){
+        stop_custom("error_bad_delim",
+                    sprintf(lang$errMsg$csvio$errors$badDelim,
+                            paste(c(private$supportedDelim[private$supportedDelim != "\t"], "tab"),
+                                  collapse = "' '")), call. = FALSE)
+      }
+      if(length(private$rDelim) > 1L){
+        stop_custom("error_ambiguous_delim",
+                    "delimiter could not be uniquely identified. Please use setRDelim method to set manually", call. = FALSE)
+      }
+    }else if(!delim %in% private$supportedDelim){
+      stop_custom("error_bad_delim",
+                  sprintf(lang$errMsg$csvio$errors$badDelim,
+                          paste(c(private$supportedDelim[private$supportedDelim != "\t"], "tab"),
+                                collapse = "' '")), call. = FALSE)
+    }else{
+      private$rDelim <- delim
     }
+    
     private$rHeaders <- strsplit(private$rSample[1], private$rDelim, fixed = TRUE)[[1L]]
     return(self)
   },
-  read = function(path, symName, colsToRead = NULL, hasHeaderRow = TRUE, decimalSep = ".", forceInit = FALSE){
+  read = function(path, symName, colsToRead = NULL, hasHeaderRow = TRUE, delim = NULL, decimalSep = NULL, forceInit = FALSE){
     if(forceInit || !identical(path, private$rpath)){
-      self$rInitFile(path)
+      self$rInitFile(path, delim)
+    }else if(!is.null(delim)){
+      self$setRDelim(delim)
+    }
+    if(length(private$rSymName) && !identical(private$rSymName, symName)){
+      stop_custom("error_notfound", "Invalid symbol name", call. = FALSE)
     }
     if(identical(hasHeaderRow, FALSE)){
       private$rHeaderRow <- hasHeaderRow
@@ -23,13 +46,40 @@ CsvIO <- R6::R6Class("CsvIO", inherit = LocalFileIO, public = list(
     if(!is.null(colsToRead)){
       self$setColsToRead(colsToRead, symName)
     }
-    if(!identical(decimalSep, ".")){
+    if(!is.null(decimalSep)){
       private$decimalSep <- decimalSep
+    }
+    if(length(private$rDelim) > 1L){
+      stop_custom("error_ambiguous_delim",
+                  "delimiter could not be uniquely identified. Please use setRDelim method to set manually", call. = FALSE)
     }
     if(symName %in% c(scalarsFileName, scalarsOutName)){
       return(private$readScalars(symName))
     }
     return(private$readSymbol(symName))
+  },
+  setRSymName = function(symName){
+    private$rSymName <- symName
+    return(self)
+  },
+  setRDelim = function(delim){
+    if(delim %in% private$supportedDelim){
+      private$rDelim <- delim
+      private$rHeaders <- strsplit(private$rSample[1], private$rDelim, fixed = TRUE)[[1L]]
+    }else{
+      stop_custom("error_bad_delim",
+                  sprintf(lang$errMsg$csvio$errors$badDelim,
+                          paste(c(private$supportedDelim[private$supportedDelim != "\t"], "tab"),
+                                collapse = "' '")), call. = FALSE)
+    }
+    return(self)
+  },
+  setDecimalSep = function(decimalSep){
+    if(!decimalSep %in% c(".", ",")){
+      stop("Decimal separator not supported", call. = FALSE)
+    }
+    private$decimalSep <- decimalSep
+    return(self)
   },
   setHasHeaderRow = function(hasHeaderRow){
     stopifnot(is.logical(hasHeaderRow), length(hasHeaderRow) == 1L)
@@ -47,14 +97,21 @@ CsvIO <- R6::R6Class("CsvIO", inherit = LocalFileIO, public = list(
     private$rColsToSkip <- which(colsToSkip)
     return(self)
   },
-  getDelim = function(){
+  getRSymName = function(){
+    return(private$rSymName)
+  },
+  getRDelim = function(){
     return(private$rDelim)
   },
   getHeaders = function(){
     return(private$rHeaders)
+  },
+  getValidExtensions = function(){
+    return(c("csv", "tab", "tsv", "psv"))
   }), private = list(
     rpath = character(0L),
-    supportedDelim = c(",", ";", "|", "\t"),
+    rSymName = character(0L),
+    supportedDelim = c(",", ";", "|", "\t", ":"),
     rSample = character(0L),
     rDelim = ",",
     rHeaderRow = TRUE,
@@ -124,7 +181,7 @@ CsvIO <- R6::R6Class("CsvIO", inherit = LocalFileIO, public = list(
                     sprintf(lang$errMsg$xlsio$errors$duplicateScalars,
                             paste(scalarsDfTmp[[1]][duplicateSymbols], collapse = "', '")), call. = FALSE)
       }
-      scalarsDf[match(scalarsDfTmp[[1]], scalarsToProcess), 3] <- scalarsDfTmp[[if(noDescCol) 2L else 3L]]
+      scalarsDf[match(scalarsDfTmp[[1]], scalarsToProcess), 3] <- scalarsDfTmp[[3L]]
       return(scalarsDf)
     },
     guessDelim = function(sample){

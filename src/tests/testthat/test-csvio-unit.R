@@ -76,11 +76,14 @@ csvio <- CsvIO$new()
 csvioPrivate <- csvio$.__enclos_env__$private
 
 test_that("Initialising CSV file works", {
+  expect_error(csvio$rInitFile("../data/csvtest-ambig.csv"), class = "error_ambiguous_delim")
+  expect_identical(csvio$getRDelim(), c(",", ";"))
+  expect_identical(csvio$getHeaders(), character(0L))
   expect_error(csvio$rInitFile("../data/csvtest-2.tsv"), NA)
-  expect_identical(csvio$getDelim(), "\t")
+  expect_identical(csvio$getRDelim(), "\t")
   expect_identical(csvio$getHeaders(), c("header 1","header 2","Value","header 4"))
   expect_error(csvio$rInitFile("../data/csvtest-1.csv"), NA)
-  expect_identical(csvio$getDelim(), ";")
+  expect_identical(csvio$getRDelim(), ";")
   expect_identical(csvio$getHeaders(), c("header 1","header 2","Value","header 4"))
 })
 
@@ -100,4 +103,20 @@ test_that("Reading CSV file works", {
                           uni2 = paste0("j", 1:7),
                           chicago = NA_character_,
                           clevelaND = as.numeric(1:7)))
+  expect_error(csvio$rInitFile("../data/csvtest-ambig.csv"), class = "error_ambiguous_delim")
+  expect_error(csvio$read("../data/csvtest-ambig.csv", "specialVal"), class = "error_ambiguous_delim")
+  expect_error(csvio$setRDelim(";"), NA)
+  expect_equal(csvio$read("../data/csvtest-ambig.csv", "i1"), tibble(uni = "j1", text = "12,34"))
+  expect_equal(csvio$read("../data/csvtest-ambig.csv", "i1", delim = ","), tibble(uni = "j1;12", text = "34"))
+})
+
+test_that("Setting symbol name should prevent reading symbol with different name", {
+  expect_error(csvio$rInitFile("../data/csvtest-1.csv"), NA)
+  expect_error(csvio$setRSymName("distance"), NA)
+  expect_error(csvio$read("../data/csvtest-1.csv", "distance2"), class = "error_notfound")
+  expect_identical(csvio$read("../data/csvtest-1.csv", "distance", decimalSep = ",",
+                              colsToRead = c("header 2", "header 1", "Value")), 
+                   tibble(uni1 = paste0("i", 1:7),
+                          uni2 = paste0("j", 1:7),
+                          value = c(12.34,13.470,16.471,11,13.477,7,13.4791)))
 })
