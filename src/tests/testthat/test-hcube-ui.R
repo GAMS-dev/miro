@@ -13,12 +13,13 @@ configJSONFileName <- file.path(testModelDir, paste0("conf_", modelToTest),
 # END setup
 
 Sys.setenv(MIRO_MODEL_PATH = file.path(testModelDir, paste0(modelToTest, ".gms")))
+Sys.setenv(MIRO_MODEL_NAME = modelToTest)
 Sys.setenv(MIRO_MODE="hcube")
 
 
 #activate local upload module, deactivate 
-file.copy(configJSONFileName, file.path(dirname(configJSONFileName), 
-                                        paste0(tolower(modelToTest), "_tmp.json")), overwrite = TRUE)
+file.copy(file.path(dirname(configJSONFileName), paste0(tolower(modelToTest), "_expected.json")), 
+          file.path(dirname(configJSONFileName),paste0(tolower(modelToTest), ".json")), overwrite = TRUE)
 configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, simplifyDataFrame = FALSE, 
                                                   simplifyMatrix = FALSE))
 configJSON$activateModules$loadLocal <- TRUE
@@ -29,6 +30,13 @@ configJSON$inputWidgets[["_gmsopt_LstTitleLeftAligned"]] <- configJSON$inputWidg
 configJSON$inputWidgets[["_gmsopt_checkbox"]] <- NULL
 configJSON$outputAttachments <- list(list(filename = "dowjones2016.csv",
                                      execPerm = TRUE, throwError = FALSE))
+
+configJSON$scripts$hcube <- list(list(title = "Test analysis",
+                                      id = "script1",
+                                      command = "gams",
+                                      args = c("test_script.gms", "--testVar", "test"),
+                                      outputFile = "out.txt"))
+
 jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
 
 test_that("Hypercube mode works",
@@ -49,9 +57,5 @@ Sys.setenv(MIRO_REMOTE_EXEC = "true")
 test_that("Remote (Engine) Hypercube mode works",
           expect_pass(testApp(file.path(testDir, ".."), "hcube_engine_test",
                               compareImages = FALSE)))
-
-Sys.setenv(MIRO_REMOTE_EXEC = "true")
-file.rename(file.path(dirname(configJSONFileName), paste0(tolower(modelToTest), "_tmp.json")),
-            file.path(dirname(configJSONFileName), paste0(tolower(modelToTest), ".json")))
 
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_MODE", "MIRO_REMOTE_EXEC"))

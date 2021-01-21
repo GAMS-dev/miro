@@ -8,9 +8,8 @@ _gmspar_sliderrange$lo,slider range tab (min),7
 _gmspar_sliderrange$up,slider range tab (max),22
 _gmspar_sliderrange$step,slider range tab (step size),1
 _gmspar_sliderrange$mode,slider range tab (mode),0
-_gmsopt_checkbox,checkbox tab,1
 _gmspar_date,date widget tab,2020-07-15
-_gmspar_daterange$lo,date range tab (lower),NA
-_gmspar_daterange$up,date range tab (upper),2021-01-11
+_gmspar_daterange$lo,date range tab (lower),
+_gmspar_daterange$up,date range tab (upper),2021-01-20
 _gmspar_textinput,textinput tab,
 _gmspar_numericinput,numericinput tab,4000.56
