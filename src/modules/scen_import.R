@@ -138,14 +138,15 @@ observeEvent(input$localInput, {
   }else{
     hideEl(session, "#localInputExcelOptions")
     hideEl(session, "#localInputCsvOptions")
-    if(useGdx && fileExt %in% c("miroscen", "gdx")){
+    if(identical(fileExt, "zip") ||
+       (useGdx && fileExt %in% c("miroscen", "gdx"))){
       enableEl(session, "#btImportLocal")
       return()
     }
     disableEl(session, "#btImportLocal")
     showElReplaceTxt(session, "#localDataImportError",
                      sprintf(lang$errMsg$invalidFileType$desc,
-                             paste0(c("xls", "xlsx", csvio$getValidExtensions(),
+                             paste0(c("xls", "xlsx", "zip", csvio$getValidExtensions(),
                                       if(useGdx) c("miroscen", "gdx")),
                                     collapse = ",")))
   }
@@ -330,8 +331,9 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   }else{
     removeModal()
     showErrorMsg(lang$errMsg$invalidFileType$title, 
-                 sprintf(lang$errMsg$invalidFileType$desc, paste0(c("xls", "xlsx", csvio$getValidExtensions(), if(useGdx) c("miroscen", "gdx")),
-                                                                  collapse = ",")))
+                 sprintf(lang$errMsg$invalidFileType$desc,
+                         paste0(c("xls", "xlsx", "zip",csvio$getValidExtensions(),
+                                  if(useGdx) c("miroscen", "gdx")), collapse = ",")))
     flog.info("Invalid file type: '%s' attempted to be imported. Import interrupted.", fileType)
     return()
   }
