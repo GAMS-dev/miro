@@ -17,6 +17,10 @@ getHotData <- function(app, id){
   }
   return(hotToR(jsonlite::fromJSON(app$getAllValues()$output[[id]], simplifyDataFrame = FALSE, simplifyMatrix = FALSE)$x))
 }
+expect_options <- function(options, optionsExpected){
+  expect_true(all(options %in% optionsExpected) &&
+                identical(length(optionsExpected), length(options)))
+}
 expect_download_size <- function(app, id, filename, tolerance = 100){
   url <- app$findElement(paste0("#", id))$getAttribute("href")
   req <- httr::GET(url)
