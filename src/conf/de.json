@@ -791,7 +791,8 @@
       },
       "errors":{
         "badDelim": "FEHLER: Konnte Begrenzungszeichen nicht ermitteln. Gültige Begrenzungszeichen sind: '%s'.",
-        "duplicateCol": "FEHLER: Das mehrfache Auswählen derselben Spalte wird nicht unterstützt."
+        "duplicateCol": "FEHLER: Das mehrfache Auswählen derselben Spalte wird nicht unterstützt.",
+        "badEncoding": "Die Datei, die Sie hochgeladen haben, ist nicht UTF-8 kodiert. Andere Kodierungen als UTF-8 werden nicht unterstützt!"
       }
     },
     "xlsio":{

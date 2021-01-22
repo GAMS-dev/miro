@@ -119,6 +119,9 @@ observeEvent(input$localInput, {
     }, error_bad_delim = function(e){
       flog.info("Problems detecting delimiter. Error message: %s", conditionMessage(e))
       showElReplaceTxt(session, "#localDataImportError", conditionMessage(e))
+    }, error_bad_encoding = function(e){
+      flog.info("Invalid encoding detected. Error message: %s", conditionMessage(e))
+      showElReplaceTxt(session, "#localDataImportError", conditionMessage(e))
     }, error_ambiguous_delim = function(e){
       flog.debug("Delimiter could not be uniquely identified.")
       rv$delimDetected <- csvio$getRDelim()

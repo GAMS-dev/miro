@@ -6,7 +6,12 @@ CsvIO <- R6::R6Class("CsvIO", inherit = LocalFileIO, public = list(
     private$rColsToRead <- NULL
     private$rColsToSkip <- NULL
     private$decimalSep <- "."
-    private$rSample <- read_lines(path, n_max = 3L)
+    sampleTmp <- read_lines(path, n_max = 3L)
+    if(!all(validUTF8(sampleTmp))){
+      stop_custom("error_bad_encoding",
+                  lang$errMsg$csvio$errors$badEncoding, call. = FALSE)
+    }
+    private$rSample <- sampleTmp
     if(is.null(delim)){
       private$rDelim <- private$guessDelim(private$rSample)
       if(length(private$rDelim) == 0L){

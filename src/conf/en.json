@@ -791,7 +791,8 @@
       },
       "errors":{
         "badDelim": "ERROR: Could not determine delimiter. Valid delimiters are: '%s'.",
-        "duplicateCol": "ERROR: Multiple selection of the same column is not supported."
+        "duplicateCol": "ERROR: Multiple selection of the same column is not supported.",
+        "badEncoding": "The file you uploaded is not UTF-8 encoded. Other encodings than UTF-8 are not supported!"
       }
     },
     "xlsio":{

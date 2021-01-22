@@ -787,7 +787,8 @@
       },
       "errors":{
         "badDelim": "错误：无法确定定界符。 有效的分隔符为：'%s'。",
-        "duplicateCol": "错误：不支持同一列的多项选择。"
+        "duplicateCol": "错误：不支持同一列的多项选择。",
+        "badEncoding": "您上传的文件不是UTF-8编码的。 不支持UTF-8以外的其他编码！"
       }
     },
     "xlsio":{

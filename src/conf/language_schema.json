@@ -3075,9 +3075,13 @@
                 "duplicateCol": {
                   "type": "string",
                   "minLength": 1
+                },
+                "badEncoding": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 2
+              "minProperties": 3
             }
           },
           "minProperties": 2
