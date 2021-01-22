@@ -1301,7 +1301,7 @@ if(!is.null(errMsg)){
                            btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
                            btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
                            noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
-                           jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L, delimDetected = NULL)
+                           jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L, importCSV = 0L)
       
       xlsio              <- XlsIO$new()
       csvio              <- CsvIO$new()

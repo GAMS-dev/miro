@@ -42,13 +42,13 @@ observe({
   })
 })
 output$csvHeaderMapping <- renderUI({
-  req(rv$delimDetected, input$selInputDataLocCSV)
+  req(rv$importCSV, input$selInputDataLocCSV)
   symSelected <- input$selInputDataLocCSV
   if(!is.character(symSelected) || length(symSelected) != 1L || !symSelected %in% names(ioConfig$modelInRaw)){
     flog.error("selInputDataLocCSV has bad format. This is most likely because the user is trying to tamper with the app!")
     return(list())
   }
-  if(length(rv$delimDetected) > 1L){
+  if(length(csvio$getRDelim()) > 1L){
     req(input$csvDelim)
     csvio$setRDelim(input$csvDelim)
   }
@@ -113,7 +113,8 @@ observeEvent(input$localInput, {
       if(!is.na(symId)){
         updateSelectInput(session, "selInputDataLocCSV", selected = names(ioConfig$modelInRaw)[symId])
       }
-      rv$delimDetected <- csvio$rInitFile(input$localInput$datapath)$getRDelim()
+      csvio$rInitFile(input$localInput$datapath)
+      rv$importCSV <- rv$importCSV + 1L
       hideEl(session, "#csvDelimWrapper")
       enableEl(session, "#btImportLocal")
     }, error_bad_delim = function(e){
@@ -124,10 +125,10 @@ observeEvent(input$localInput, {
       showElReplaceTxt(session, "#localDataImportError", conditionMessage(e))
     }, error_ambiguous_delim = function(e){
       flog.debug("Delimiter could not be uniquely identified.")
-      rv$delimDetected <- csvio$getRDelim()
+      rv$importCSV <- rv$importCSV + 1L
       showElReplaceTxt(session, "#localDataImportError",
                        lang$errMsg$csvio$warnings$ambiguousDelim)
-      updateSelectInput(session, "csvDelim", choices = rv$delimDetected)
+      updateSelectInput(session, "csvDelim", choices = csvio$getRDelim())
       showEl(session, "#csvDelimWrapper")
       enableEl(session, "#btImportLocal")
     }, error = function(e){
@@ -193,7 +194,7 @@ observeEvent(input$btImportLocal, {
       return(showElReplaceTxt(session, "#localDataImportError",
                               lang$errMsg$csvio$errors$duplicateCol))
     }
-    if(length(rv$delimDetected) > 1L){
+    if(length(csvio$getRDelim) > 1L){
       csvio$setRDelim(input$csvDelim)
     }
     csvio$
