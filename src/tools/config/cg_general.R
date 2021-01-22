@@ -1,12 +1,17 @@
 rowtmp <- list()
 isolate({
   indexMap <- IdIdxMap$new(list(inputGroups = seq_along(configJSON$inputGroups),
+                                inputGroups_full  = seq_along(configJSON$inputGroups),
                                 inputWidgetGroups = seq_along(configJSON$inputWidgetGroups),
+                                inputWidgetGroups_full = seq_along(configJSON$inputWidgetGroups),
                                 outputGroups = seq_along(configJSON$outputGroups),
+                                outputGroups_full = seq_along(configJSON$outputGroups),
                                 symlink = seq_along(configJSON$symbolLinks),
                                 outputAttachments = seq_along(configJSON$outputAttachments)))
   
-  groupTemp <- list(inputGroups = list(), inputWidgetGroups = list(), outputGroups = list())
+  groupTemp <- list(inputGroups = configJSON$inputGroups,
+                    inputWidgetGroups = configJSON$inputWidgetGroups,
+                    outputGroups = configJSON$outputGroups)
   rv$generalConfig$inputGroups <- configJSON$inputGroups
   rv$generalConfig$inputWidgetGroups <- configJSON$inputWidgetGroups
   rv$generalConfig$outputGroups <- configJSON$outputGroups
@@ -190,7 +195,21 @@ observeEvent(input$general_aggregate, {
 })
 observeEvent(input$general_overwriteSheetOrderInput, {
   if(!identical(input$general_overwriteSheetOrderInput, unname(inputSymMultiDim))){
-    rv$generalConfig$overwriteSheetOrder$input <<- input$general_overwriteSheetOrderInput
+    #adjust widget ids
+    sheetOrderTmp <- input$general_overwriteSheetOrderInput
+    widgetGrps <- strsplit(sheetOrderTmp, "_widgets", fixed = TRUE)
+    i <- 0L
+    sheetOrderTmp <- vapply(widgetGrps, function(grpId){
+      if(length(grpId) < 2L){
+        if(identical(grpId, "")){
+          return("_widgets")
+        }
+        return(grpId)
+      }
+      i <<- i + 1L
+      return(paste0("_widgets", i))
+    }, character(1L), USE.NAMES = FALSE)
+    rv$generalConfig$overwriteSheetOrder$input <<- sheetOrderTmp
   }
 })
 observeEvent(input$general_overwriteSheetOrderOutput, {
@@ -310,6 +329,7 @@ observeEvent(input$add_general, {
   }
   arrayID  <- strsplit(input$add_general[3], "_")[[1]][2]
   arrayIdx <- indexMap$push(arrayID, input$add_general[1])
+  arrayIdxAll <- indexMap$push(paste0(arrayID, "_full"), input$add_general[1])
   
   if(length(input$add_general) < 3L || nchar(trimws(input$add_general[2])) < 1L){
     # name has no characters
@@ -318,6 +338,10 @@ observeEvent(input$add_general, {
       if(!length(rv$generalConfig[[arrayID]])){
         rv$generalConfig[[arrayID]] <<- NULL
       }
+      if(identical(arrayID, "inputWidgetGroups")){
+        updateSheetOrderInput(arrayIdxAll)
+      }
+      indexMap$pop(arrayID, input$add_general[1])
     }
     newName <- NULL
     showElReplaceTxt(session, paste0("#", input$add_general[3], input$add_general[1], "_err"), 
@@ -327,26 +351,17 @@ observeEvent(input$add_general, {
     if(arrayIdx <= length(rv$generalConfig[[arrayID]]) && length(rv$generalConfig[[arrayID]][[arrayIdx]])){
       rv$generalConfig[[arrayID]][[arrayIdx]]$name <- newName
       if(identical(arrayID, "inputWidgetGroups")){
-        tabId <- match(paste0("_widgets", arrayIdx), inputTabs)
-        if(!is.na(tabId)){
-          names(inputTabs)[tabId] <<- newName
-          updateSelectInput(session, "general_overwriteSheetOrderInput", 
-                            choices = inputTabs, selected = inputTabs)
-        }
+        updateSheetOrderInput(arrayIdxAll, newName)
       }
-    }else if(arrayIdx <= length(groupTemp[[arrayID]]) && 
-             length(groupTemp[[arrayID]][[arrayIdx]]$members) > 1L &&
-             !any(groupTemp[[arrayID]][[arrayIdx]]$members %in% 
+    }else if(arrayIdxAll <= length(groupTemp[[arrayID]]) && 
+             length(groupTemp[[arrayID]][[arrayIdxAll]]$members) > 1L &&
+             !any(groupTemp[[arrayID]][[arrayIdxAll]]$members %in% 
                   unlist(lapply(rv$generalConfig[[arrayID]][-arrayIdx], "[[", "members"), use.names = FALSE))){
       rv$generalConfig[[arrayID]][[arrayIdx]] <- list(name = newName, 
-                                                      members = groupTemp[[arrayID]][[arrayIdx]]$members,
-                                                      sameTab = isTRUE(groupTemp[[arrayID]][[arrayIdx]]$sameTab))
+                                                      members = groupTemp[[arrayID]][[arrayIdxAll]]$members,
+                                                      sameTab = isTRUE(groupTemp[[arrayID]][[arrayIdxAll]]$sameTab))
       if(identical(arrayID, "inputWidgetGroups")){
-        inputTabs <<- c(inputTabs, 
-                        setNames(paste0("_widgets", arrayIdx), 
-                                 newName))
-        updateSelectInput(session, "general_overwriteSheetOrderInput", 
-                          choices = inputTabs, selected = inputTabs)
+        updateSheetOrderInput(arrayIdxAll, newName)
       }
     }else{
       showElReplaceTxt(session, paste0("#group_member", 
@@ -357,10 +372,10 @@ observeEvent(input$add_general, {
     }
     hideEl(session, paste0("#", input$add_general[3], input$add_general[1], "_err"))
   }
-  if(arrayIdx > length(groupTemp[[arrayID]])){
-    groupTemp[[arrayID]][[arrayIdx]] <<- list(name = newName)
+  if(arrayIdxAll > length(groupTemp[[arrayID]])){
+    groupTemp[[arrayID]][[arrayIdxAll]] <<- list(name = newName)
   }else{
-    groupTemp[[arrayID]][[arrayIdx]]$name <<- newName
+    groupTemp[[arrayID]][[arrayIdxAll]]$name <<- newName
   }
 })
 validateSymbolLink <- function(sourceSym, targetSym, arrayId){
@@ -782,17 +797,22 @@ observeEvent(input$remove_attach, {
 })
 changeAndValidateGroupMembers <- function(arrayID, groupMembers, HTMLarrayID, minNoMembers = 2L){
   arrayIdx <- indexMap$push(arrayID, groupMembers[1])
+  arrayIdxAll <- indexMap$push(paste0(arrayID, "_full"), groupMembers[1])
   
   if(length(groupMembers) > minNoMembers && 
      !any(groupMembers[-1] %in% unlist(lapply(rv$generalConfig[[arrayID]][-arrayIdx], "[[", "members"), use.names = FALSE))){
     newMembers <- groupMembers[2:length(groupMembers)]
     if(arrayIdx <= length(rv$generalConfig[[arrayID]]) && length(rv$generalConfig[[arrayID]][[arrayIdx]])){
       rv$generalConfig[[arrayID]][[arrayIdx]]$members <- newMembers
-    }else if(arrayIdx <= length(groupTemp[[arrayID]]) && 
-             length(groupTemp[[arrayID]][[arrayIdx]]$name)){
-      rv$generalConfig[[arrayID]][[arrayIdx]] <- list(name = groupTemp[[arrayID]][[arrayIdx]]$name, 
+    }else if(arrayIdxAll <= length(groupTemp[[arrayID]]) && 
+             length(groupTemp[[arrayID]][[arrayIdxAll]]$name)){
+      newName <- groupTemp[[arrayID]][[arrayIdxAll]]$name
+      rv$generalConfig[[arrayID]][[arrayIdx]] <- list(name = newName, 
                                                       members = newMembers,
-                                                      sameTab = isTRUE(groupTemp[[arrayID]][[arrayIdx]]$sameTab))
+                                                      sameTab = isTRUE(groupTemp[[arrayID]][[arrayIdxAll]]$sameTab))
+      if(identical(arrayID, "inputWidgetGroups")){
+        updateSheetOrderInput(arrayIdxAll, newName)
+      }
     }else{
       showElReplaceTxt(session, paste0("#symbol_", arrayID, input$add_general[1], "_err"), 
                        lang$adminMode$widgets$validate$val36)
@@ -804,17 +824,39 @@ changeAndValidateGroupMembers <- function(arrayID, groupMembers, HTMLarrayID, mi
       if(!length(rv$generalConfig[[arrayID]])){
         rv$generalConfig[[arrayID]] <<- NULL
       }
+      if(identical(arrayID, "inputWidgetGroups")){
+        updateSheetOrderInput(arrayIdxAll)
+      }
+      indexMap$pop(arrayID, groupMembers[1])
     }
     newMembers <- NULL
     showElReplaceTxt(session, paste0("#", HTMLarrayID, groupMembers[1], "_err"), 
                      if(identical(minNoMembers, 2L)) lang$adminMode$widgets$validate$val37
                      else lang$adminMode$widgets$validate$val60)
   }
-  if(arrayIdx > length(groupTemp[[arrayID]])){
-    groupTemp[[arrayID]][[arrayIdx]] <<- list(members = newMembers)
+  if(arrayIdxAll > length(groupTemp[[arrayID]])){
+    groupTemp[[arrayID]][[arrayIdxAll]] <<- list(members = newMembers)
   }else{
-    groupTemp[[arrayID]][[arrayIdx]]$members <<- newMembers
+    groupTemp[[arrayID]][[arrayIdxAll]]$members <<- newMembers
   }
+}
+updateSheetOrderInput <- function(arrayIdx, newName = NULL){
+  orderItemId <- paste0("_widgets", arrayIdx)
+  orderItemIdx <- match(orderItemId, inputTabs)
+  if(is.na(orderItemIdx)){
+    if(is.null(newName)){
+      return()
+    }
+    inputTabs <<- c(inputTabs, 
+                    setNames(orderItemId, 
+                             newName))
+  }else if(is.null(newName)){
+    inputTabs <<- inputTabs[-orderItemIdx]
+  }else{
+    names(inputTabs)[orderItemIdx] <<- newName
+  }
+  updateSelectInput(session, "general_overwriteSheetOrderInput", 
+                    choices = inputTabs, selected = inputTabs)
 }
 observeEvent(input$group_memberIn, {
   changeAndValidateGroupMembers("inputGroups", input$group_memberIn, 
@@ -833,16 +875,17 @@ observeEvent(input$group_sameTabIn, {
     return()
   
   arrayIdx <- indexMap$push("inputGroups", input$group_sameTabIn[1])
+  arrayIdxAll <- indexMap$push("inputGroups_full", input$group_sameTabIn[1])
   newVal   <- isTRUE(as.logical(input$group_sameTabIn[2]))
   
   if(arrayIdx <= length(rv$generalConfig[["inputGroups"]]) &&
      length(rv$generalConfig[["inputGroups"]][[arrayIdx]])){
     rv$generalConfig[["inputGroups"]][[arrayIdx]]$sameTab <<- newVal
-  }else if(arrayIdx <= length(groupTemp[["inputGroups"]]) &&
-           length(groupTemp[["inputGroups"]][[arrayIdx]])){
-    groupTemp[["inputGroups"]][[arrayIdx]]$sameTab <<- newVal
+  }else if(arrayIdxAll <= length(groupTemp[["inputGroups"]]) &&
+           length(groupTemp[["inputGroups"]][[arrayIdxAll]])){
+    groupTemp[["inputGroups"]][[arrayIdxAll]]$sameTab <<- newVal
   }else{
-    groupTemp[["inputGroups"]][[arrayIdx]] <<- list(sameTab = newVal)
+    groupTemp[["inputGroups"]][[arrayIdxAll]] <<- list(sameTab = newVal)
   }
 })
 observeEvent(input$group_sameTabWidget, {
@@ -850,15 +893,16 @@ observeEvent(input$group_sameTabWidget, {
     return()
   
   arrayIdx <- indexMap$push("inputWidgetGroups", input$group_sameTabWidget[1])
+  arrayIdxAll <- indexMap$push("inputWidgetGroups_full", input$group_sameTabWidget[1])
   newVal   <- isTRUE(as.logical(input$group_sameTabWidget[2]))
   if(arrayIdx <= length(rv$generalConfig[["inputWidgetGroups"]]) &&
      length(rv$generalConfig[["inputWidgetGroups"]][[arrayIdx]])){
     rv$generalConfig[["inputWidgetGroups"]][[arrayIdx]]$sameTab <<- newVal
-  }else if(arrayIdx <= length(groupTemp[["inputWidgetGroups"]]) &&
-           length(groupTemp[["inputWidgetGroups"]][[arrayIdx]])){
-    groupTemp[["inputWidgetGroups"]][[arrayIdx]]$sameTab <<- newVal
+  }else if(arrayIdxAll <= length(groupTemp[["inputWidgetGroups"]]) &&
+           length(groupTemp[["inputWidgetGroups"]][[arrayIdxAll]])){
+    groupTemp[["inputWidgetGroups"]][[arrayIdxAll]]$sameTab <<- newVal
   }else{
-    groupTemp[["inputWidgetGroups"]][[arrayIdx]] <<- list(sameTab = newVal)
+    groupTemp[["inputWidgetGroups"]][[arrayIdxAll]] <<- list(sameTab = newVal)
   }
 })
 observeEvent(input$group_sameTabOut, {
@@ -866,41 +910,38 @@ observeEvent(input$group_sameTabOut, {
     return()
   
   arrayIdx <- indexMap$push("outputGroups", input$group_sameTabOut[1])
+  arrayIdxAll <- indexMap$push("outputGroups_full", input$group_sameTabWidget[1])
   newVal   <- isTRUE(as.logical(input$group_sameTabOut[2]))
   
   if(arrayIdx <= length(rv$generalConfig[["outputGroups"]]) && 
      length(rv$generalConfig[["outputGroups"]][[arrayIdx]])){
     rv$generalConfig[["outputGroups"]][[arrayIdx]]$sameTab <<- newVal
-  }else if(arrayIdx <= length(groupTemp[["outputGroups"]]) &&
-           length(groupTemp[["outputGroups"]][[arrayIdx]])){
-    groupTemp[["outputGroups"]][[arrayIdx]]$sameTab <<- newVal
+  }else if(arrayIdxAll <= length(groupTemp[["outputGroups"]]) &&
+           length(groupTemp[["outputGroups"]][[arrayIdxAll]])){
+    groupTemp[["outputGroups"]][[arrayIdxAll]]$sameTab <<- newVal
   }else{
-    groupTemp[["outputGroups"]][[arrayIdx]] <<- list(sameTab = newVal)
+    groupTemp[["outputGroups"]][[arrayIdxAll]] <<- list(sameTab = newVal)
   }
 })
 observeEvent(input$remove_general, {
   arrayID <- strsplit(input$remove_general[1], "_")[[1]][2]
   arrayIdx <- indexMap$pop(arrayID, 
                            input$remove_general[2])
-  
-  if(length(arrayIdx)){
-    if(arrayIdx <= length(rv$generalConfig[[arrayID]])){
-      rv$generalConfig[[arrayID]][[arrayIdx]] <<- NULL
-      if(!length(rv$generalConfig[[arrayID]])){
-        rv$generalConfig[[arrayID]] <<- NULL
-      }
-      if(identical(arrayID, "inputWidgetGroups")){
-        tabId <- match(paste0("_widgets", arrayIdx), inputTabs)
-        if(!is.na(tabId)){
-          inputTabs <<- inputTabs[-tabId]
-          updateSelectInput(session, "general_overwriteSheetOrderInput", 
-                            choices = inputTabs, selected = inputTabs)
-        }
-      }
+  arrayIdxAll <- indexMap$pop(paste0(arrayID, "_full"), 
+                              input$remove_general[2])
+  if(length(arrayIdx) &&
+     arrayIdx <= length(rv$generalConfig[[arrayID]])){
+    rv$generalConfig[[arrayID]][[arrayIdx]] <<- NULL
+    if(!length(rv$generalConfig[[arrayID]])){
+      rv$generalConfig[[arrayID]] <<- NULL
     }
-    if(arrayIdx <= length(groupTemp[[arrayID]])){
-      groupTemp[[arrayID]][[arrayIdx]] <<- NULL
+    if(identical(arrayID, "inputWidgetGroups")){
+      updateSheetOrderInput(arrayIdxAll)
     }
+  }
+  if(length(arrayIdxAll) &&
+     arrayIdxAll <= length(groupTemp[[arrayID]])){
+    groupTemp[[arrayID]][[arrayIdxAll]] <<- NULL
   }
 })
 observeEvent(input$btEditReadme, {
