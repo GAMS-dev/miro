@@ -285,7 +285,14 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     
     scalarSymList <- scalarSymList[!is.na(scalarSymList)]
     wgdxDotList  <- wgdxDotList[!(isScalarData | isEmptySymbol)]
-    do.call(gdxrrwMIRO::wgdx, c(nativeFileEnc(gdxName), wgdxDotList, scalarSymList, list(squeeze = squeezeZeros)))
+    tryCatch(
+      do.call(gdxrrwMIRO::wgdx, c(nativeFileEnc(gdxName), wgdxDotList, scalarSymList, list(squeeze = squeezeZeros))), error = function(e){
+        errMsg <- conditionMessage(e)
+        if(startsWith(errMsg, "GDXRRW:wgdx:GDXDupError:")){
+          stop_custom("error_duplicate_records", substr(errMsg, 25L, nchar(errMsg)))
+        }
+        stop(errMsg)
+      })
     return(invisible(self))
   }
 ), private = list(
