@@ -654,15 +654,14 @@ showEditMetaDialog <- function(metadata,
 showScenExportDialog <- function(id, exportTypes){
   showModal(modalDialog(
     title = lang$nav$dialogExportScen$title,
-    tags$div(class = "gmsalert gmsalert-error", id = "exportNoDsSelected", 
-             lang$nav$dialogExportScen$noDsSelected),
     selectInput("exportFileType", lang$nav$dialogExportScen$desc, exportTypes),
     tags$div(`data-display-if` = "input.exportFileType !== 'miroscen'",
              class = "gmsalert gmsalert-error", style = "position:relative;",
              lang$nav$fileExport$infoDataOnly),
+    tags$div(class = "gmsalert gmsalert-error", id = "scenExportError", 
+             style = "position:relative;white-space:pre-line;", lang$errMsg$unknownError),
     tags$div(style = "display:none;",
-             numericInput("scenExportId", NULL, id)
-    ),
+             numericInput("scenExportId", NULL, id)),
     div(class= "choose-input", `data-display-if` = "input.exportFileType !== 'miroscen'",
         column(6,
                tags$label(class = "checkbox-material flex-design", 
