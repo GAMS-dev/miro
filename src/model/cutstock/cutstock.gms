@@ -48,7 +48,6 @@ for j, w in enumerate(gams.get("demand_miro")):
     
 gams.set("w", widths)
 gams.set("d", demand)
-print(widths)
 $offEmbeddedCode d, w
 
 Parameter
