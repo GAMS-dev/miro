@@ -46,7 +46,7 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
   if (!is.null(id)) ulClass <- "nav nav-tabs shiny-tab-input"
   
   noTabs <- length(tabs)
-  if(noTabs > maxTabsExpanded){
+  if(noTabs > maxTabsExpanded + 1L){
     noExpandedTabs <- maxTabsExpanded
   }else{
     noExpandedTabs <- noTabs
@@ -58,7 +58,7 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
   liTagList <- lapply(expandedTabs, "[[", 1)
   divTagList <- lapply(expandedTabs, "[[", 2)
   
-  if(noTabs > maxTabsExpanded){
+  if(noTabs > maxTabsExpanded + 1L){
     if(length(ulClass)){
       ulClass <- paste(ulClass, "nav-tabs-dropdown")
     }
