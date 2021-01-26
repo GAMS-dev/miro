@@ -271,7 +271,7 @@ test_that("Duplicate records throw error (part 1)", {
   filePath <- filePathEnc
   on.exit(unlink(filePath), add = TRUE)
   
-  # FIXME: variables with duplicates does not throw an error currently
+  # FIXME: variables/equations with duplicates does not throw an error currently
   # expect_error(gdxio$wgdx(filePath, data), regexp = "seattle\\.new-york.+seattle\\.topeka",
   #              class = "error_duplicate_records")
   varData <- tibble::tibble('1' = c("seattle", "seattle", "san-diego"), '2' = c(350, 200, 600))
