@@ -1072,6 +1072,7 @@
          "type":"object",
          "additionalProperties":{  
             "type":"object",
+            "additionalProperties": false,
             "properties":{
               "class":{  
                  "description":"css classes used for styling datatable",
@@ -1092,6 +1093,19 @@
                   ],
                   "default":"bottom"
                },
+               "pivotCols":{
+                  "description":"Array of columns to pivot",
+                  "type":["array", "string"],
+                  "minLength":1,
+                  "items":{
+                    "type":"string",
+                    "minLength":1
+                  }
+                },
+                "sortPivotCols":{
+                  "description":"Whether pivoted columns should be sorted alphabetically",
+                    "type":"boolean"
+                },
                "rownames":{  
                   "description":"Boolean that specifies whether to show row names",
                   "type":"boolean",
