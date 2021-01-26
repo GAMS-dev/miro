@@ -78,7 +78,6 @@ if(identical(Sys.getenv("GMSMODELNAME"), "pickstock")){
   Sys.sleep(0.5)
   app$setInputs(btOverwriteInput = "click")
   priceData <- getHotData(app, "in_1")
-  #print(priceData)
   expect_identical(priceData[[1]][1:3], c("AAPL","AXP","BA"))
   expect_identical(priceData[[2]][1:3], c("2016-01-04","2016-01-04","2016-01-04"))
   expect_identical(priceData[[3]][1:3], c(105.349998,67.589996,140.5))
