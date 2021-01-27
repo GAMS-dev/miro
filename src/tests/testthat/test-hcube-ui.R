@@ -24,6 +24,7 @@ configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, simplifyDa
                                                   simplifyMatrix = FALSE))
 configJSON$activateModules$loadLocal <- TRUE
 configJSON$activateModules$attachments <- TRUE
+configJSON$extraClArgs <- c(configJSON$extraClArgs, "--sleep=1")
 configJSON$inputWidgets[["_gmspar_sliderrange"]]$noHcube <- FALSE
 configJSON$inputWidgets[["trainingdays"]]$noHcube <- TRUE
 configJSON$inputWidgets[["_gmsopt_LstTitleLeftAligned"]] <- configJSON$inputWidgets[["_gmsopt_checkbox"]]

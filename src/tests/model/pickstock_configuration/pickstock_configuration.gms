@@ -87,7 +87,12 @@ option optCR=0.01;
 td(d) = ord(d)<=trainingdays;
 ntd(d) = not td(d);
 
+$ifthen.test %sleep%=="true"
+$call sleep 2
+$exit
+$elseif.test not %sleep%=="true"
 solve pickStock min obj using mip;
+$endif.test
 
 fund(d)  = sum(s, price(d, s)*w.l(s));
 error(d) = abs(index(d)-fund(d));
