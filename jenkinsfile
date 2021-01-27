@@ -57,14 +57,11 @@ pipeline {
                                 sh '''
                                     yarn docker-build --ci
                                 '''
-                            } else {
-                                sh '''
-                                    yarn docker-build
-                                '''
                             }
                             if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
                                 sh '''#!/bin/bash -xe
                                     ## build MIRO server images
+                                    yarn docker-build
                                     pushd server > /dev/null
                                         python3 miro_server.py build --no-pull
                                     popd > /dev/null

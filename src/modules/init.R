@@ -1596,6 +1596,18 @@ if(is.null(errMsg)){
     el <- names(modelOut)[i]
     if(el %in% tolower(names(config$outputTables))){
       configGraphsOut[[i]]$datatable <- modifyList(config$datatable, config$outputTables[[tolower(el)]])
+      if(length(configGraphsOut[[i]]$datatable$pivotCols)){
+        if(any(!configGraphsOut[[i]]$datatable$pivotCols %in% names(modelOut[[i]]$headers))){
+          errMsg <- paste(errMsg, sprintf("Some columns you want to pivot could not be found in the symbol: '%s'.", 
+                                           modelOutAlias[i]))
+        }else if(length(modelOut[[i]]$headers) < 3L || 
+                 sum(vapply(modelOut[[i]]$headers, 
+                            function(header) identical(header$type, "numeric"), 
+                            logical(1L), USE.NAMES = FALSE)) > 1L){
+          errMsg <- paste(errMsg, sprintf("You may only pivot symbols that have at least 2 dimensions and have at most 1 value column (symbol: '%s').", 
+                                           modelOutAlias[i]))
+        }
+      }
     }else{
       configGraphsOut[[i]]$datatable <- config$datatable
     }

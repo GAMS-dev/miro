@@ -1072,6 +1072,7 @@
          "type":"object",
          "additionalProperties":{  
             "type":"object",
+            "additionalProperties": false,
             "properties":{
               "class":{  
                  "description":"css classes used for styling datatable",
@@ -1092,6 +1093,19 @@
                   ],
                   "default":"bottom"
                },
+               "pivotCols":{
+                  "description":"Array of columns to pivot",
+                  "type":["array", "string"],
+                  "minLength":1,
+                  "items":{
+                    "type":"string",
+                    "minLength":1
+                  }
+                },
+                "sortPivotCols":{
+                  "description":"Whether pivoted columns should be sorted alphabetically",
+                    "type":"boolean"
+                },
                "rownames":{  
                   "description":"Boolean that specifies whether to show row names",
                   "type":"boolean",
@@ -2125,7 +2139,7 @@
               "minLength":1
              },
              "templates":{
-               "description":"Export templates",
+               "description":"Import templates",
                "type": "array",
                "uniqueItems":true,
                "minItems":1,
@@ -2150,8 +2164,15 @@
                       "default": "REST",
                       "enum":[
                         "database",
+                        "customFunction",
                         "REST"
                       ]
+                    },
+                    "functionName":{
+                      "description":"Only relevent if source==customFunction. Name of custom R function to call (required function signature: importCustom(symbolName, ...), must return data frame with correct number/type of columns).",
+                      "type":"string",
+                      "default": "importCustom",
+                      "minLength": 1
                     },
                     "url":{
                       "description":"URL of REST API",
@@ -2278,7 +2299,7 @@
                "items":{
                  "type":"object",
                  "additionalProperties":false,
-                 "required": ["symNames", "url"],
+                 "required": ["symNames"],
                  "properties":{
                     "symNames":{
                        "description":"Names of the symbols to export",
@@ -2289,6 +2310,21 @@
                          "type":"string",
                          "minLength":1
                        }
+                    },
+                    "source":{  
+                      "description":"Type of exporter to use",
+                      "type":"string",
+                      "default": "REST",
+                      "enum":[
+                        "customFunction",
+                        "REST"
+                      ]
+                    },
+                    "functionName":{
+                      "description":"Only relevent if method==customFunction. Name of custom R function to call (required function signature: exportCustom(symbolName, data, ...) ).",
+                      "type":"string",
+                      "default": "exportCustom",
+                      "minLength": 1
                     },
                     "url":{
                        "description":"URL of REST API",

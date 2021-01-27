@@ -20,6 +20,23 @@ DataIO <- R6Class("DataIO", public = list(
       }
       data <- auth$importShared(tableName = paste0(sharedTablePrefix, "_", dsName), 
                                 keyCol = if(length(item$colSubset)) item$colSubset else character(0L))
+    }else if(identical(item$source, "customFunction")){
+      if(!length(item$functionName)){
+        stop("No function name specified for remote import", call. = FALSE)
+      }
+      tryCatch({
+        fetchFunction <- match.fun(item$functionName)
+      }, error = function(e){
+        stop(sprintf("A custom data import function: '%s' was not found. Please make sure you first define such a function.",
+                     item$functionName), call. = FALSE)
+      })
+      tryCatch({
+        remoteData <- fetchFunction(dsName)
+      }, error = function(e){
+        stop(sprintf("Problems importing data via custom import function: '%s'. Error message: %s",
+                     item$functionName, conditionMessage(e)), call. = FALSE)
+      })
+      return(private$validateData(dsName, remoteData))
     }else{
       if(!length(item$method)){
         stop("No HTTP method specified for REST API call", call. = FALSE)
@@ -46,10 +63,7 @@ DataIO <- R6Class("DataIO", public = list(
   export = function(data, item, dsName){
     stopifnot(inherits(data, "data.frame"), length(item) > 0L, is.list(item))
     
-    # at the moment support only rest endpoint
-    type <- "rest"
-    
-    switch(tolower(type),
+    switch(tolower(item$source),
            database = {
              if(is.null(auth)){
                stop("No auth object provided. Cannot connect to internal database.", 
@@ -57,6 +71,24 @@ DataIO <- R6Class("DataIO", public = list(
              }
              db$exportDataset(tableName = paste0(sharedTablePrefix, "_", dataset), 
                               data, checkColNames = TRUE)
+             return(self)
+           },
+           customfunction = {
+             if(!length(item$functionName)){
+               stop("No function name specified for remote export", call. = FALSE)
+             }
+             tryCatch({
+               exportFunction <- match.fun(item$functionName)
+             }, error = function(e){
+               stop(sprintf("A custom data export function: '%s' was not found. Please make sure you first define such a function.",
+                            item$functionName), call. = FALSE)
+             })
+             tryCatch({
+               exportFunction(dsName, data)
+             }, error = function(e){
+               stop(sprintf("Problems exporting data via custom export function: '%s'. Error message: %s",
+                            item$functionName, conditionMessage(e)), call. = FALSE)
+             })
              return(self)
            },
            rest = {
@@ -82,8 +114,8 @@ DataIO <- R6Class("DataIO", public = list(
              return(self)
            },
            {
-             stop(sprintf("Source type: '%s' not supported", 
-                          type), call. = FALSE)
+             stop(sprintf("Export method: '%s' not supported", 
+                          item$source), call. = FALSE)
            })
   }
 ), private = list(

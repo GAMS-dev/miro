@@ -339,7 +339,7 @@ if(LAUNCHHCUBEMODE){
                                                                    modelIn[[i]]$
                                                                      dropdown$choices)]))
                  if(isTRUE(modelIn[[i]]$dropdown$clearValue)){
-                   return(substring(text, 2L))
+                   return(substring(text, 6L))
                  }
                }else{
                  text <- ""
