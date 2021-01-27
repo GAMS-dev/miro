@@ -331,6 +331,8 @@ observeEvent(input$add_general, {
   arrayIdx <- indexMap$push(arrayID, input$add_general[1])
   arrayIdxAll <- indexMap$push(paste0(arrayID, "_full"), input$add_general[1])
   
+  minMembers <- if(identical(arrayID, "inputWidgetGroups")) 0L else 1L
+  
   if(length(input$add_general) < 3L || nchar(trimws(input$add_general[2])) < 1L){
     # name has no characters
     if(arrayIdx <= length(rv$generalConfig[[arrayID]])){
@@ -354,7 +356,7 @@ observeEvent(input$add_general, {
         updateSheetOrderInput(arrayIdxAll, newName)
       }
     }else if(arrayIdxAll <= length(groupTemp[[arrayID]]) && 
-             length(groupTemp[[arrayID]][[arrayIdxAll]]$members) > 1L &&
+             length(groupTemp[[arrayID]][[arrayIdxAll]]$members) > minMembers &&
              !any(groupTemp[[arrayID]][[arrayIdxAll]]$members %in% 
                   unlist(lapply(rv$generalConfig[[arrayID]][-arrayIdx], "[[", "members"), use.names = FALSE))){
       rv$generalConfig[[arrayID]][[arrayIdx]] <- list(name = newName, 
@@ -368,7 +370,7 @@ observeEvent(input$add_general, {
                                        if(identical(arrayID, "inputGroups")) "In" 
                                        else if(identical(arrayID, "inputWidgetGroups")) "Widget" else "Out", 
                                        input$add_general[1], "_err"), 
-                       lang$adminMode$widgets$validate$val37)
+                       lang$adminMode$widgets$validate[[if(minMembers == 0L) "val37a" else "val37"]])
     }
     hideEl(session, paste0("#", input$add_general[3], input$add_general[1], "_err"))
   }
@@ -831,7 +833,7 @@ changeAndValidateGroupMembers <- function(arrayID, groupMembers, HTMLarrayID, mi
     }
     newMembers <- NULL
     showElReplaceTxt(session, paste0("#", HTMLarrayID, groupMembers[1], "_err"), 
-                     if(identical(minNoMembers, 2L)) lang$adminMode$widgets$validate$val37
+                     if(identical(minNoMembers, 2L)) lang$adminMode$widgets$validate[[if(minNoMembers == 0L) "val37a" else "val37"]]
                      else lang$adminMode$widgets$validate$val60)
   }
   if(arrayIdxAll > length(groupTemp[[arrayID]])){

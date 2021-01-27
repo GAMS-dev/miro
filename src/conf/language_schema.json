@@ -4944,6 +4944,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "val37a": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "val38": {
                   "type": "string",
                   "minLength": 1
@@ -5033,7 +5037,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 57
+              "minProperties": 58
             },
             "widgetOptions": {
               "type": "object",
