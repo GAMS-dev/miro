@@ -29,6 +29,19 @@ app$setInputs(inputTabset = "inputTabset_3")
 Sys.sleep(1)
 app$setInputs(dropdown_5 = c("CPLEX"))
 
+app$findElement("#btRemoteExecLogin")$click()
+Sys.sleep(1)
+app$setInputs(remoteCredUrl = Sys.getenv("ENGINE_URL"))
+app$setInputs(remoteCredUser = Sys.getenv("ENGINE_USER"))
+app$setInputs(remoteCredPass = Sys.getenv("ENGINE_PASSWORD"))
+app$setInputs(remoteCredNs = Sys.getenv("ENGINE_NS"))
+app$setInputs(remoteCredReg = FALSE)
+app$setInputs(remoteCredRemember = FALSE)
+Sys.sleep(0.5)
+app$findElement("#shiny-modal .bt-gms-confirm")$click()
+Sys.sleep(1)
+expect_false(app$waitFor("$('#shiny-modal .btn-default').is(':visible');", timeout = 50))
+
 # 1) submit
 app$setInputs(btSolve = "click")
 Sys.sleep(2)
@@ -56,10 +69,9 @@ app$findElement('#refreshActiveJobs')$click()
 Sys.sleep(1)
 expect_error(app$findElements("#jImport_output button[onclick*='downloadJob']")[[1]]$click(), NA)
 Sys.sleep(10)
-app$findElement('#refreshActiveJobs')$click()
-Sys.sleep(1)
-expect_true(app$waitFor("$('#shiny-modal').is(':visible');", 50))
-expect_error(app$findElement("#shiny-modal #btHcubeImportNew")$click(), NA)
+if(app$waitFor("$('#shiny-modal').is(':visible');", 50)){
+  expect_error(app$findElement("#shiny-modal #btHcubeImportAll")$click(), NA)
+}
 Sys.sleep(7)
 expect_false(identical(app$waitFor("$('#jImport_output td')[2].innerText==='abcd'", timeout = 50), TRUE))
 
