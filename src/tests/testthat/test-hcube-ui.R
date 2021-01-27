@@ -25,10 +25,13 @@ configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, simplifyDa
 configJSON$activateModules$loadLocal <- TRUE
 configJSON$activateModules$attachments <- TRUE
 configJSON$extraClArgs <- c(configJSON$extraClArgs, "--sleep=1")
-if(!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")){
-  configJSON$extraClArgs <- c(configJSON$extraClArgs,
-                              paste0('license="', Sys.getenv("MIRO_TEST_GAMS_LICE"), '"'))
+gamsliceFile <- file.path(path.expand("~"), ".local", "share", "GAMS", "gamslice.txt")
+if(!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "") && !file.exists(gamsliceFile)){
+  if(!grepl("linux-gnu", R.version$os)) stop("Not on Linux")
+  file.copy2(Sys.getenv("MIRO_TEST_GAMS_LICE"), gamsliceFile)
+  on.exit(unlink(gamsliceFile), add = TRUE)
 }
+
 configJSON$inputWidgets[["_gmspar_sliderrange"]]$noHcube <- FALSE
 configJSON$inputWidgets[["trainingdays"]]$noHcube <- TRUE
 configJSON$inputWidgets[["_gmsopt_LstTitleLeftAligned"]] <- configJSON$inputWidgets[["_gmsopt_checkbox"]]
