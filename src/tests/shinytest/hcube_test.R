@@ -49,6 +49,7 @@ app$setInputs(dropdown_5 = c("CPLEX","CBC","SCIP"))
 
 #import local file for maxstock (manual)
 app$setInputs(btImport = "click")
+Sys.sleep(1)
 app$setInputs(tb_importData = "tb_importData_local")
 app$uploadFile(localInput = paste0("../data/", "pickstock_hcube_slider_values.csv"))
 Sys.sleep(1)

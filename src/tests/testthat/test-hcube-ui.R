@@ -25,6 +25,10 @@ configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, simplifyDa
 configJSON$activateModules$loadLocal <- TRUE
 configJSON$activateModules$attachments <- TRUE
 configJSON$extraClArgs <- c(configJSON$extraClArgs, "--sleep=1")
+if(!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")){
+  configJSON$extraClArgs <- c(configJSON$extraClArgs,
+                              paste0('license="', Sys.getenv("MIRO_TEST_GAMS_LICE"), '"'))
+}
 configJSON$inputWidgets[["_gmspar_sliderrange"]]$noHcube <- FALSE
 configJSON$inputWidgets[["trainingdays"]]$noHcube <- TRUE
 configJSON$inputWidgets[["_gmsopt_LstTitleLeftAligned"]] <- configJSON$inputWidgets[["_gmsopt_checkbox"]]
