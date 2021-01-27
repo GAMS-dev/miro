@@ -102,17 +102,18 @@ server_admin <- function(input, output, session){
     }
     return(TRUE)
   }, logical(1L), USE.NAMES = FALSE)]
+  inputWidgetAliases <- vapply(seq_along(configJSON$inputWidgets)[match(inputWidgets, names(configJSON$inputWidgets))], 
+                               function(widgetId){
+                                 if(length(configJSON$inputWidgets[[widgetId]]$alias)){
+                                   return(configJSON$inputWidgets[[widgetId]]$alias)
+                                 }
+                                 return(names(configJSON$inputWidgets)[widgetId])
+                               }, character(1L), USE.NAMES = FALSE)
   session$sendCustomMessage("gms-setGAMSSymbols", 
                             list(gamsSymbols = list(inSym = unname(inputSymMultiDim), 
                                                     inAlias = names(inputSymMultiDim),
                                                     inWid = inputWidgets,
-                                                    inWidAlias = vapply(seq_along(configJSON$inputWidgets)[names(configJSON$inputWidgets) %in% inputWidgets], 
-                                                                        function(widgetId){
-                                                                          if(length(configJSON$inputWidgets[[widgetId]]$alias)){
-                                                                            return(configJSON$inputWidgets[[widgetId]]$alias)
-                                                                          }
-                                                                          return(names(configJSON$inputWidgets)[widgetId])
-                                                                        }, character(1L), USE.NAMES = FALSE),
+                                                    inWidAlias = inputWidgetAliases,
                                                     outSym = names(modelOut),
                                                     outAlias = modelOutAlias),
                                  lang = lang$adminMode$graphs$js))
