@@ -1,7 +1,7 @@
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("hcube_engine_test")
 
-context("UI tests - Hypercube mode with Engine")
+context("UI tests - Hypercube Mode with Engine")
 
 #load base scenario
 Sys.sleep(3)

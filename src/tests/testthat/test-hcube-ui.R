@@ -1,4 +1,4 @@
-context("UI tests - Hypercube mode")
+context("UI tests - Hypercube Mode")
 
 testDir <- file.path(getwd(), "..")
 
@@ -25,9 +25,17 @@ configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, simplifyDa
 configJSON$activateModules$loadLocal <- TRUE
 configJSON$activateModules$attachments <- TRUE
 configJSON$extraClArgs <- c(configJSON$extraClArgs, "--sleep=1")
-gamsliceFile <- file.path(path.expand("~"), ".local", "share", "GAMS", "gamslice.txt")
+if(.Platform$OS.type == 'windows'){
+  # Windows
+  gamsliceFile <- file.path(path.expand("~"), "..", "AppData", "Local", "GAMS", "gamslice.txt")
+}else if(grepl("^darwin", R.version$os)){
+  # macOS
+  gamsliceFile <- file.path(path.expand("~"), "Library", "Application Support", "GAMS", "gamslice.txt")
+}else{
+  # Linux
+  gamsliceFile <- file.path(path.expand("~"), ".local", "share", "GAMS", "gamslice.txt")
+}
 if(!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "") && !file.exists(gamsliceFile)){
-  if(!grepl("linux-gnu", R.version$os)) stop("Not on Linux")
   file.copy2(Sys.getenv("MIRO_TEST_GAMS_LICE"), gamsliceFile)
   on.exit(unlink(gamsliceFile), add = TRUE)
 }
@@ -47,11 +55,11 @@ configJSON$scripts$hcube <- list(list(title = "Test analysis",
 
 jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
 
-test_that("Hypercube mode works",
+test_that("Hypercube Mode works",
           expect_pass(testApp(file.path(testDir, ".."), "hcube_test",
                               compareImages = FALSE)))
 
-context("UI tests - Hypercube mode Engine")
+context("UI tests - Hypercube Mode Engine")
 skip_if(identical(Sys.getenv("ENGINE_URL"), ""),
         "Skipping asynchronous solve tests as no ENGINE_URL was not set.")
 skip_if(identical(Sys.getenv("ENGINE_USER"), ""),
@@ -62,7 +70,7 @@ skip_if(identical(Sys.getenv("ENGINE_NS"), ""),
         "Skipping asynchronous solve tests as no ENGINE_NS was not set.")
 
 Sys.setenv(MIRO_REMOTE_EXEC = "true")
-test_that("Remote (Engine) Hypercube mode works",
+test_that("Remote (Engine) Hypercube Mode works",
           expect_pass(testApp(file.path(testDir, ".."), "hcube_engine_test",
                               compareImages = FALSE)))
 

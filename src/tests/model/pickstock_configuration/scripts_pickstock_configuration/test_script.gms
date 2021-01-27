@@ -33,6 +33,6 @@ $offEmbeddedCode
 $endif
 $ifThen not "%testVar%"=="test"
 File out /out.txt/;
-put out "No --test varliabe set to 'test' via analysis script!"
+put out "No --test variable set to 'test' via analysis script!"
 putclose out;
 $endif

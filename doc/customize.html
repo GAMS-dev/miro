@@ -1453,8 +1453,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
   ns &#x3C;- NS(id)
   leaflet::leafletOutput(ns(&#x22;map&#x22;), height = height)
 }
-renderTransportMap &#x3C;- function(input, output, session, data, outputScalarsFull, options = NULL, 
-                               path = NULL, views = NULL, ...){
+renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, views = NULL, outputScalarsFull = NULL, ...){
   output$map &#x3C;- leaflet::renderLeaflet(leaflet::leaflet(data))
 }</code></pre>
                                       </div><!--//code-block-->

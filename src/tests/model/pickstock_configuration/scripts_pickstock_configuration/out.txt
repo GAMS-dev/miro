@@ -1,1 +1,1 @@
-No --test varliabe set to 'test' via analysis script!
+No --test variable set to 'test' via analysis script!

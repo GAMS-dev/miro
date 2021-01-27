@@ -90,7 +90,7 @@ ntd(d) = not td(d);
 $ifthen.test %sleep%=="true"
 $call sleep 2
 $exit
-$elseif.test not %sleep%=="true"
+$else.test
 solve pickStock min obj using mip;
 $endif.test
 

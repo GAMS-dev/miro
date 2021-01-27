@@ -1,7 +1,7 @@
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("hcube_test")
 
-context("UI tests - Hypercube mode - load/import/export data")
+context("UI tests - Hypercube Mode - load/import/export data")
 
 #load base scenario
 Sys.sleep(3)
@@ -106,7 +106,7 @@ Sys.sleep(0.5)
 expect_download_size(app, "scenExportHandler", "csvExport.zip")
 
 # 1) solve manually and 2) submit
-context("UI tests - Hypercube mode - solve/discard/import")
+context("UI tests - Hypercube Mode - solve/discard/import")
 app$setInputs(inputTabset = "inputTabset_1")
 app$setInputs(inputTabset1 = "inputTabset1_1")
 app$setInputs(slider_3 = c(1,3), hcubeStep_3 = 1)
@@ -213,7 +213,7 @@ app$setInputs(btHcubeRemove = "click")
 Sys.sleep(3)
 
 #download and compare other scenarios
-context("UI tests - Hypercube mode - load/download/analyze scenarios")
+context("UI tests - Hypercube Mode - load/download/analyze scenarios")
 app$setInputs(btRemoveLine1_1 = "click")
 app$setInputs(btRemoveLine1_2 = "click")
 app$setInputs(btRemoveLine1_3 = "click")
