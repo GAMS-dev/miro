@@ -1624,6 +1624,11 @@ if(is.null(errMsg)){
     el$filename <- sanitizeFn(el$filename)
     return(el)
   })
+  if(LAUNCHHCUBEMODE && length(config$outputAttachments)){
+    warningMsgTmp <- "Output attachments are not supported and will be ignored in Hypercube Mode."
+    warning(warningMsgTmp)
+    warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
+  }
   
   installPackage    <- list()
   installPackage$plotly <- LAUNCHCONFIGMODE || any(vapply(c(configGraphsIn, configGraphsOut), 

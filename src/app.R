@@ -1308,7 +1308,7 @@ if(!is.null(errMsg)){
                                            modelDataFiles = c(if(identical(config$fileExchange, "gdx")) 
                                              c(MIROGdxInName, MIROGdxOutName) else 
                                                paste0(c(names(modelOut), inputDsNames), ".csv"), 
-                                             vapply(config$outputAttachments, "[[", character(1L), "filename", USE.NAMES = FALSE)),
+                                             if(!LAUNCHHCUBEMODE) vapply(config$outputAttachments, "[[", character(1L), "filename", USE.NAMES = FALSE)),
                                            MIROGdxInName = MIROGdxInName,
                                            clArgs = GAMSClArgs, 
                                            text_entities = c(paste0(modelNameRaw, ".lst"), 
