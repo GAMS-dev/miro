@@ -10,6 +10,9 @@ updateSelectInputNoClear <- function(session, id, choices){
                     choices = choices, 
                     selected = selected)
 }
+isNonSingletonSet <- function(symName){
+  return(length(modelInRaw[[symName]]$headers) == 2L)
+}
 
 langSpecificWidget <- list()
 langSpecificWidget$widgetOptionsInput <- setNames(c("slider", "dropdown", "checkbox", "numericinput"),
@@ -371,7 +374,7 @@ observeEvent({input$widget_symbol
     if(!currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
       showEl(session, "#noWidgetConfigMsg")
     }
-    if(length(modelInRaw[[input$widget_symbol]]$headers) == 2L){
+    if(isNonSingletonSet(input$widget_symbol)){
       widgetOptions <- langSpecificWidget$widgetOptionsSet
     }else{
       flog.error("Unknown input symbol: '%s'.", input$widget_symbol)
@@ -391,7 +394,7 @@ observeEvent({input$widget_symbol
       selectedType <- "sliderrange"
     }else if(identical(selectedType, "dropdown") && 
              (isTRUE(configJSON$inputWidgets[[currentWidgetSymbolName]]$multiple) ||
-              length(modelInRaw[[currentWidgetSymbolName]]$headers) == 2L)){
+              length(isNonSingletonSet(currentWidgetSymbolName)))){
       selectedType <- "multidropdown"
     }
     if(!selectedType %in% widgetOptions){
