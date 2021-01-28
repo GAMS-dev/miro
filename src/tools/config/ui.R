@@ -15,6 +15,7 @@ names(langSpecificUI$scen) <- lang$adminMode$general$scen$choices
 inputTabs <- c(inputSymMultiDim, 
                setNames("_widgets", 
                         lang$nav$inputScreen$widgetTabTitle))
+inputTabs <- inputTabs[!inputTabs %in% names(configJSON$inputWidgets)]
 if(length(configJSON$inputWidgetGroups)){
   inputTabs <- c(inputTabs, 
                  setNames(paste0("_widgets", seq_along(configJSON$inputWidgetGroups)), 

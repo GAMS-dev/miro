@@ -357,7 +357,7 @@ observeEvent({input$widget_symbol
     }
   }else if(any(startsWith(input$widget_symbol, c(prefixDDPar, prefixGMSOpt)))){
     currentWidgetSymbolName <<- input$widget_symbol
-    if(startsWith(currentWidgetSymbolName,prefixGMSOpt)){
+    if(startsWith(currentWidgetSymbolName, prefixGMSOpt)){
       showElReplaceTxt(session, "#optionConfigMsg", 
                        sprintf(lang$adminMode$widgets$ui$optionConfigMsg, 
                                substring(currentWidgetSymbolName, nchar(prefixGMSOpt) + 1L)))
@@ -1727,7 +1727,21 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
     hideEl(session, "#noWidgetMsg")
     noWidgetSymbols <<- FALSE
   }
+  if(isNonSingletonSet(currentWidgetSymbolName)){
+    # need to remove set from overwrite sheet order as it is no longer a widget
+    tabId <- match(currentWidgetSymbolName, inputTabs)
+    if(!is.na(tabId)){
+      inputTabs <<- inputTabs[-tabId]
+      newSheetOrder <- inputTabs
+      if(length(input$general_overwriteSheetOrderInput)){
+        newSheetOrder <- inputTabs[order(match(inputTabs, input$general_overwriteSheetOrderInput))]
+      }
+      updateSelectInput(session, "general_overwriteSheetOrderInput", 
+                        choices = newSheetOrder, selected = newSheetOrder)
+    }
+  }
   removeModal()
+  hideEl(session, "#noWidgetConfigMsg")
   showHideEl(session, "#widgetUpdateSuccess", 4000L)
   updateTabsetPanel(session, "widget_symbol_type", "gams")
 })
@@ -1748,6 +1762,20 @@ observeEvent(input$deleteWidgetConfirm, {
     updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
   }else if(currentWidgetSymbolName %in% scalarInputSymWithAliases){
     showEl(session, "#noWidgetConfigMsg")
+  }
+  if(isNonSingletonSet(currentWidgetSymbolName)){
+    # need to add set to overwrite sheet order as it is no longer a widget
+    tabId <- match(currentWidgetSymbolName, inputTabs)
+    if(is.na(tabId)){
+      inputTabs <<- c(inputTabs, 
+                      inputSymMultiDim[match(currentWidgetSymbolName, inputSymMultiDim)])
+      newSheetOrder <- inputTabs
+      if(length(input$general_overwriteSheetOrderInput)){
+        newSheetOrder <- inputTabs[order(match(inputTabs, input$general_overwriteSheetOrderInput))]
+      }
+      updateSelectInput(session, "general_overwriteSheetOrderInput", 
+                        choices = newSheetOrder, selected = newSheetOrder)
+    }
   }
   removeModal()
   showHideEl(session, "#widgetUpdateSuccess", 4000L)
