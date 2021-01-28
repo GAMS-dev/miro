@@ -125,8 +125,11 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
   getAppConfig = function(index){
     appConfig <- private$currentModelConfigs[[index]]
     if("logoURL" %in% names(appConfig)){
-        logoB64 <- getLogoB64(file.path("data", 
-          "logos", appConfig[["logoURL"]]))
+        logoB64 <- tryCatch(getLogoB64(file.path("data", 
+          "logos", appConfig[["logoURL"]])), error = function(e){
+            flog.info("Problems reading app logo. Default logo will be used. Error: %s", conditionMessage(e))
+            return(DEFAULT_LOGO_B64)
+        })
     }else{
         logoB64 <- DEFAULT_LOGO_B64
     }
