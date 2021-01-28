@@ -857,8 +857,12 @@ updateSheetOrderInput <- function(arrayIdx, newName = NULL){
   }else{
     names(inputTabs)[orderItemIdx] <<- newName
   }
+  newSheetOrder <- inputTabs
+  if(length(input$general_overwriteSheetOrderInput)){
+    newSheetOrder <- inputTabs[order(match(inputTabs, input$general_overwriteSheetOrderInput))]
+  }
   updateSelectInput(session, "general_overwriteSheetOrderInput", 
-                    choices = inputTabs, selected = inputTabs)
+                    choices = newSheetOrder, selected = newSheetOrder)
 }
 observeEvent(input$group_memberIn, {
   changeAndValidateGroupMembers("inputGroups", input$group_memberIn, 
