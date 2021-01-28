@@ -1265,10 +1265,11 @@ Worker <- R6Class("Worker", public = list(
   },
   getHcubeJobProgressRemote = function(jID){
     jobProgress <- private$validateAPIResponse(
-      GET(url = paste0(private$metadata$url, "/hypercube/", self$getPid(jID), "/status"), 
-          add_headers(Authorization = private$authHeader,
+      GET(url = paste0(private$metadata$url, "/hypercube/?hypercube_token=", self$getPid(jID)), 
+          add_headers(`X-Fields` = "finished,job_count",
+                      Authorization = private$authHeader,
                       Timestamp = as.character(Sys.time(), usetz = TRUE)), 
-          timeout(10L)))
+          timeout(10L)))$results[[1]]
     return(c(jobProgress$finished, jobProgress$job_count))
   },
   getHcubeJobStatusLocal = function(pID, jID){

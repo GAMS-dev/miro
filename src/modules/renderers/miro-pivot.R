@@ -642,7 +642,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }), if(bigData) 2000 else 500)
         rendererEnv[[ns(paste0("filter_", filterIndex))]] <- observe({
           isInitialized <- TRUE
-          if(!initData && !filterIndex %in% rendererEnv[[ns("filtersInitialized")]]){
+          if(!filterIndex %in% rendererEnv[[ns("filtersInitialized")]] &&
+             (!initData || length(throttledFilters[[filterIndex]]()))){
             isInitialized <- FALSE
             if(length(rendererEnv[[ns("filtersInitialized")]])){
               rendererEnv[[ns("filtersInitialized")]] <- c(filterIndex,

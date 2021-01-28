@@ -920,7 +920,7 @@ body_admin <- dashboardBody({
                                                               tags$div(lang$adminMode$general$downloadTempFiles$label, 
                                                                        tags$a("", title = lang$adminMode$general$ui$tooltipDocs, 
                                                                               class="info-wrapper", 
-                                                                              href="https://gams.com/miro/customize.html#allow-temp-files", 
+                                                                              href="https://gams.com/miro/customize.html#general-temp-dir", 
                                                                               tags$span(class="fas fa-info-circle", class="info-icon",
                                                                                         role = "presentation",
                                                                                         `aria-label` = "More information"), target="_blank"))),

@@ -11,12 +11,14 @@ source("../../components/gdxio.R")
 source("../../components/miroscenio.R")
 modelNameRaw <<- "Pickstock"
 
-gdxio <<- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", "bin"),
-                   c(modelInRaw, modelOut), 
-                   scalarsFileName, scalarsOutName, 
-                   scalarEquationsName, 
-                   scalarEquationsOutName,
-                   list())
+gdxio <<- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO",
+                              if(identical(tolower(Sys.info()[["sysname"]]), "windows")) 
+                                file.path("bin", "x64") else "bin"),
+                    c(modelInRaw, modelOut), 
+                    scalarsFileName, scalarsOutName, 
+                    scalarEquationsName, 
+                    scalarEquationsOutName,
+                    list())
 
 viewsDummy <- list(addConf = function(conf){
   expect_identical(conf$bla[[1]], "asd")

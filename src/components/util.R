@@ -1148,10 +1148,20 @@ hotToR <- function(data, metaData, fixType = TRUE){
   dataTmp <- suppressWarnings(as_tibble(
     data.table::rbindlist(data$data, use.names = FALSE)))
   if(length(metaData[["pivotCols"]])){
+    if(!length(dataTmp)){
+      dataTmp <- suppressMessages(
+        as_tibble(lapply(seq_len(length(metaData$headers) - 2L), function(el) character(0L)),
+                  .name_repair = "unique"))
+    }
     fixedCols <- length(metaData$headers) - 2L
     names(dataTmp) <- unlist(data$params$colHeaders)
     names(dataTmp)[1:fixedCols] <- unlist(data$params$rColHeaders)[1:fixedCols]
     return(dataTmp)
+  }
+  if(!length(dataTmp)){
+    dataTmp <- suppressMessages(
+      as_tibble(lapply(seq_along(metaData$headers),function(el) character(0L)),
+                .name_repair = "unique"))
   }
   dataTmp <- fixColTypes(dataTmp,
                          metaData$colTypes)
