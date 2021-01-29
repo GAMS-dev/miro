@@ -32,6 +32,10 @@ pipeline {
                                   echo "Found [ci skip] in commit message. Aborting.";
                                   exit 1
                               fi
+                              if ! ([ "$BRANCH_NAME" = master ] || [ "$BRANCH_NAME" = develop ] || [ "$BRANCH_NAME" = rc ]) ;  then
+                                  echo "Not on master, develop or rc. Aborting.";
+                                  exit 1
+                              fi
                           '''
                         }
                     }
