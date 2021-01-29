@@ -1,3 +1,6 @@
+def GAMS_FOR_MACOS = "/Library/Frameworks/GAMS.framework/Versions/35/Resources"
+def GAMS_FOR_WINDOWS = "C:\\GAMS\\35"
+
 pipeline {
     agent none
 
@@ -27,6 +30,10 @@ pipeline {
                           sh '''#!/bin/bash -xe
                               if git log -1 | grep -qi '.*\\[ci skip\\].*'; then
                                   echo "Found [ci skip] in commit message. Aborting.";
+                                  exit 1
+                              fi
+                              if ! ([ "$BRANCH_NAME" = master ] || [ "$BRANCH_NAME" = develop ] || [ "$BRANCH_NAME" = rc ]) ;  then
+                                  echo "Not on master, develop or rc. Aborting.";
                                   exit 1
                               fi
                           '''
@@ -154,6 +161,9 @@ pipeline {
                     options {
                         skipDefaultCheckout()
                     }
+                    environment {
+                        GAMS_CORE_PATH="${GAMS_FOR_WINDOWS}"
+                    }
                     steps {
                         withCredentials([file(credentialsId: 'MIRO_TEST_GAMS_LICE', variable: 'MIRO_TEST_GAMS_LICE'),
                                          usernamePassword(credentialsId: '9753687d-1cfe-473d-a4be-eb0273f82ff8', passwordVariable: 'ENGINE_PASSWORD', usernameVariable: 'ENGINE_USER'),
@@ -171,6 +181,9 @@ pipeline {
                     agent { label 'macos' }
                     options {
                         skipDefaultCheckout()
+                    }
+                    environment {
+                        GAMS_CORE_PATH="${GAMS_FOR_MACOS}"
                     }
                     steps {
                         withCredentials([file(credentialsId: 'MIRO_TEST_GAMS_LICE', variable: 'MIRO_TEST_GAMS_LICE'),
