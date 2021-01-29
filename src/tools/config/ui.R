@@ -15,6 +15,7 @@ names(langSpecificUI$scen) <- lang$adminMode$general$scen$choices
 inputTabs <- c(inputSymMultiDim, 
                setNames("_widgets", 
                         lang$nav$inputScreen$widgetTabTitle))
+inputTabs <- inputTabs[!inputTabs %in% inputWidgets]
 if(length(configJSON$inputWidgetGroups)){
   inputTabs <- c(inputTabs, 
                  setNames(paste0("_widgets", seq_along(configJSON$inputWidgetGroups)), 
@@ -920,7 +921,7 @@ body_admin <- dashboardBody({
                                                               tags$div(lang$adminMode$general$downloadTempFiles$label, 
                                                                        tags$a("", title = lang$adminMode$general$ui$tooltipDocs, 
                                                                               class="info-wrapper", 
-                                                                              href="https://gams.com/miro/customize.html#allow-temp-files", 
+                                                                              href="https://gams.com/miro/customize.html#general-temp-dir", 
                                                                               tags$span(class="fas fa-info-circle", class="info-icon",
                                                                                         role = "presentation",
                                                                                         `aria-label` = "More information"), target="_blank"))),

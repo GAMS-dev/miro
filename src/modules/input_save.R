@@ -83,6 +83,9 @@ lapply(seq_along(modelIn), function(i){
          date = {
            if(!is.null(isolate(input[[paste0("date_", i)]]))){
              value <- as.character(isolate(input[[paste0("date_", i)]]))
+             if(is.na(value)){
+               value <- ""
+             }
            }else if(!is.null(modelIn[[i]]$date$value)){
              value <- as.character(modelIn[[i]]$date$value)
            }else{
@@ -98,6 +101,10 @@ lapply(seq_along(modelIn), function(i){
          daterange = {
            if(!is.null(isolate(input[[paste0("daterange_", i)]]))){
              value <- as.character(isolate(input[[paste0("daterange_", i)]]))
+             emptyDate <- is.na(value)
+             if(any(emptyDate)){
+               value[emptyDate] <- ""
+             }
            }else if(!is.null(modelIn[[i]]$daterange$start) && !is.null(modelIn[[i]]$daterange$end)){
              value <- c(as.character(modelIn[[i]]$daterange$start), 
                         as.character(modelIn[[i]]$daterange$end))

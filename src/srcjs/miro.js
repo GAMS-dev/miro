@@ -650,6 +650,7 @@ ${data.data}</div>` : data.data);
     receiveMessage(el, data) {
       if (Object.prototype.hasOwnProperty.call(data, 'value')) {
         $(el).data('autoNumeric').set(data.value);
+        $(el).trigger('change');
       }
     },
     subscribe(el, callback) {
@@ -687,11 +688,6 @@ $(document).keyup((event) => {
     $('.bt-gms-confirm:visible:enabled').click();
     return;
   } // ENTER will confirm modal dialogues
-
-  if (event.keyCode === 27) {
-    $('.modal').modal('hide');
-    return;
-  } // ESC will close modal dialogues
 
   if (!event.ctrlKey || !event.altKey) {
     return;

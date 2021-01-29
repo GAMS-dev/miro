@@ -25,7 +25,7 @@ pushd src/model > /dev/null
     $ZIP_TOOL -r inscribedsquare.conf.unzip inscribedsquare_files.txt conf_inscribedsquare renderer_inscribedsquare/inscribedsquare_custom.R data_inscribedsquare README.md -x "*.DS_Store"
     cd ..
     cd tsp
-    $ZIP_TOOL -r tsp.conf.unzip tsp_files.txt conf_tsp data_tsp static_tsp README.md -x "*.DS_Store"
+    $ZIP_TOOL -r tsp.conf.unzip tsp_files.txt conf_tsp data_tsp static_tsp renderer_tsp README.md -x "*.DS_Store"
     cd ..
     cd farming
     $ZIP_TOOL -r farming.conf.unzip farming_files.txt conf_farming data_farming static_farming README.md -x "*.DS_Store"

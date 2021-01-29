@@ -1323,6 +1323,7 @@
         "val35": "Kein gültiger Widget-Typ",
         "val36": "Der Gruppenname muss mindestens 1 Zeichen lang sein.",
         "val37": "Jede Gruppe muss mindestens 2 Mitglieder haben und jedes Element darf nur in einer einzigen Gruppe erscheinen!",
+         "val37a": "Jede Gruppe muss mindestens 1 Mitglied haben und jedes Element darf nur in einer einzigen Gruppe erscheinen!",
         "val38": "Es muss mindestens ein Element ausgewählt werden!",
         "val39": "Im Namen sind keine Leerzeichen erlaubt!",
         "val40": "Kein Slider Minimum gefunden!",
