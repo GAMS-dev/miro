@@ -158,7 +158,7 @@ pipeline {
                         skipDefaultCheckout()
                     }
                     environment {
-                        GAMS_SYS_DIR="${GAMS_FOR_WINDOWS}"
+                        GAMS_CORE_PATH="${GAMS_FOR_WINDOWS}"
                     }
                     steps {
                         withCredentials([file(credentialsId: 'MIRO_TEST_GAMS_LICE', variable: 'MIRO_TEST_GAMS_LICE'),
@@ -179,7 +179,7 @@ pipeline {
                         skipDefaultCheckout()
                     }
                     environment {
-                        GAMS_SYS_DIR="${GAMS_FOR_MACOS}"
+                        GAMS_CORE_PATH="${GAMS_FOR_MACOS}"
                     }
                     steps {
                         withCredentials([file(credentialsId: 'MIRO_TEST_GAMS_LICE', variable: 'MIRO_TEST_GAMS_LICE'),
