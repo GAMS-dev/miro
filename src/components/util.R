@@ -1333,7 +1333,7 @@ genWidgetGroups <- function(widgetNames, widgetGroups, widgetTabName, aggregateW
       groupMemberIds <- match(widgetGroup$members, widgetNames)
       if(any(is.na(groupMemberIds))){
         stop(sprintf("The members: '%s' of the widget group: '%s' are not in the list of input widgets. Please fix the configuration and try again!",
-                     paste(groupMemberIds[is.na(groupMemberIds)], collapse = "', '"), widgetGroup),
+                     paste(widgetGroup$members[is.na(groupMemberIds)], collapse = "', '"), widgetGroup),
              call. = FALSE)
       }
       widgetNames <<- widgetNames[-groupMemberIds]
