@@ -329,9 +329,9 @@ test_that("Duplicate records throw error (part 2)", {
   #                           '3' = "text")
   data <- list(varData)
   names(data) <- "i10"
-  expect_error(gdxio$wgdx(filePath, data), regexp = "a\\.a\na\\.b\na\\.c\na\\.d\na\\.e\na\\.f\na\\.g\na\\.h\na\\.i\na\\.j\na\\.k\n$",
+  expect_error(gdxio$wgdx(filePath, data), regexp = "a\\.a\na\\.b\na\\.c\na\\.d\na\\.e\na\\.f\na\\.g\na\\.h\na\\.i\na\\.j\n\n \\(Only the first 10 duplicate records are displayed\\)$",
                class = "error_duplicate_records")
   names(data) <- "a12345678901234567890123456789012345678901234567890123456789012"
-  expect_error(gdxio$wgdx(filePath, data), regexp = "a\\.a\na\\.b\na\\.c\na\\.d\na\\.e\na\\.f\na\\.g\na\\.h\na\\.i\na\\.j\na\\.k\n$",
+  expect_error(gdxio$wgdx(filePath, data), regexp = "a\\.a\na\\.b\na\\.c\na\\.d\na\\.e\na\\.f\na\\.g\na\\.h\na\\.i\na\\.j\n\n \\(Only the first 10 duplicate records are displayed\\)$",
                class = "error_duplicate_records")
 })

@@ -289,7 +289,14 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       do.call(gdxrrwMIRO::wgdx, c(nativeFileEnc(gdxName), wgdxDotList, scalarSymList, list(squeeze = squeezeZeros))), error = function(e){
         errMsg <- conditionMessage(e)
         if(startsWith(errMsg, "GDXRRW:wgdx:GDXDupError:")){
-          stop_custom("error_duplicate_records", substr(errMsg, 25L, nchar(errMsg)))
+          errMsg <- stri_split_fixed(substr(errMsg, 25L, nchar(errMsg)), "\n")[[1L]]
+          if(length(errMsg) > 11L){
+            errMsg <- paste0(paste(errMsg[1:11], collapse = "\n"),
+                             "\n\n (Only the first 10 duplicate records are displayed)")
+          }else{
+            errMsg <- paste(errMsg, collapse = "\n")
+          }
+          stop_custom("error_duplicate_records", errMsg)
         }
         stop(errMsg)
       })
@@ -322,7 +329,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
   rgdxScalarVe = function(symName = NULL, sym = NULL){
     if(!length(sym)){
       sym <- gdxrrwMIRO::rgdx(private$rgdxName, list(name = symName, compress = FALSE, 
-                                                                 ts = FALSE, field = "all"),
+                                                     ts = FALSE, field = "all"),
                               squeeze = FALSE, useDomInfo = TRUE)
     }
     return(sym$val[, 2L])
@@ -417,8 +424,8 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
   },
   rgdxSet = function(symName, names = NULL){
     sym <- gdxrrwMIRO::rgdx(private$rgdxName, list(name = symName, 
-                                                               compress = FALSE, 
-                                                               ts = FALSE, te = TRUE),
+                                                   compress = FALSE, 
+                                                   ts = FALSE, te = TRUE),
                             squeeze = FALSE, useDomInfo = TRUE)
     symDim <- sym$dim
     if(length(names)){
