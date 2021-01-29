@@ -1,3 +1,6 @@
+def GAMS_FOR_MACOS = "/Library/Frameworks/GAMS.framework/Versions/35/Resources"
+def GAMS_FOR_WINDOWS = "C:\\GAMS\\35"
+
 pipeline {
     agent none
 
@@ -154,6 +157,9 @@ pipeline {
                     options {
                         skipDefaultCheckout()
                     }
+                    environment {
+                        GAMS_SYS_DIR="${GAMS_FOR_WINDOWS}"
+                    }
                     steps {
                         withCredentials([file(credentialsId: 'MIRO_TEST_GAMS_LICE', variable: 'MIRO_TEST_GAMS_LICE'),
                                          usernamePassword(credentialsId: '9753687d-1cfe-473d-a4be-eb0273f82ff8', passwordVariable: 'ENGINE_PASSWORD', usernameVariable: 'ENGINE_USER'),
@@ -171,6 +177,9 @@ pipeline {
                     agent { label 'macos' }
                     options {
                         skipDefaultCheckout()
+                    }
+                    environment {
+                        GAMS_SYS_DIR="${GAMS_FOR_MACOS}"
                     }
                     steps {
                         withCredentials([file(credentialsId: 'MIRO_TEST_GAMS_LICE', variable: 'MIRO_TEST_GAMS_LICE'),
