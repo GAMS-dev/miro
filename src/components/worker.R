@@ -1320,12 +1320,23 @@ Worker <- R6Class("Worker", public = list(
     return(list(status = status, gamsRetCode = NULL))
   },
   getRemoteHcubeResults = function(resultsPath, pID){
-    return(private$validateAPIResponse(
+    ret <- private$validateAPIResponse(
       GET(url = paste0(private$metadata$url, "/hypercube/", pID, "/result"), 
           write_disk(resultsPath, overwrite = TRUE),
           add_headers(Authorization = private$authHeader,
                       Timestamp = as.character(Sys.time(), usetz = TRUE)), 
-          timeout(private$metadata$timeout))))
+          timeout(36000)))
+    
+    tryCatch(private$validateAPIResponse(
+      DELETE(url = paste0(private$metadata$url, "/hypercube/", pID, "/result"),
+             add_headers(Authorization = private$authHeader,
+                         Timestamp = as.character(Sys.time(), usetz = TRUE)),
+             timeout(4L))),
+      error = function(e){
+        warning(sprintf("Problems removing results of Hypercube job: '%s'. Error message: '%s'.", 
+                        pID, conditionMessage(e)))
+      })
+    return(ret)
   },
   isEmptyString = function(string){
     if(!length(string) || identical(string, ""))
