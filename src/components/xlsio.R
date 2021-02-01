@@ -5,7 +5,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       stop_custom("error_bad_format", lang$errMsg$xlsio$errors$badFormat, call. = FALSE)
     }
     private$warnings$reset()
-    private$rpath <- nativeFileEnc(path)
+    private$rpath <- nativeFileEnc(file.path(dirname(path), basename(path)))
     private$rIsXlsx <- identical(rFormat, "xlsx")
     private$rSheets <- excel_sheets(nativeFileEnc(path))
     private$rSheetsNoIndex <- vapply(strsplit(private$rSheets, " ", fixed = TRUE),
