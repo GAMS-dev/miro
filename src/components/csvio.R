@@ -1,6 +1,6 @@
 CsvIO <- R6::R6Class("CsvIO", inherit = LocalFileIO, public = list(
   rInitFile = function(path, delim = NULL, needDelim = TRUE){
-    private$rpath <- path
+    private$rpath <- file.path(dirname(path), basename(path))
     private$rSymName <- character(0L)
     private$rHeaderRow <- TRUE
     private$rColsToRead <- NULL
