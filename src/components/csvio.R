@@ -1,5 +1,5 @@
 CsvIO <- R6::R6Class("CsvIO", inherit = LocalFileIO, public = list(
-  rInitFile = function(path, delim = NULL){
+  rInitFile = function(path, delim = NULL, needDelim = TRUE){
     private$rpath <- path
     private$rSymName <- character(0L)
     private$rHeaderRow <- TRUE
@@ -15,10 +15,14 @@ CsvIO <- R6::R6Class("CsvIO", inherit = LocalFileIO, public = list(
     if(is.null(delim)){
       private$rDelim <- private$guessDelim(private$rSample)
       if(length(private$rDelim) == 0L){
-        stop_custom("error_bad_delim",
-                    sprintf(lang$errMsg$csvio$errors$badDelim,
-                            paste(c(private$supportedDelim[private$supportedDelim != "\t"], "tab"),
-                                  collapse = "' '")), call. = FALSE)
+        if(needDelim){
+          stop_custom("error_bad_delim",
+                      sprintf(lang$errMsg$csvio$errors$badDelim,
+                              paste(c(private$supportedDelim[private$supportedDelim != "\t"], "tab"),
+                                    collapse = "' '")), call. = FALSE)
+        }else{
+          private$rDelim <- private$supportedDelim[1]
+        }
       }
       if(length(private$rDelim) > 1L){
         stop_custom("error_ambiguous_delim",

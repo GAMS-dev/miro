@@ -327,10 +327,10 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                                                     column(6,
                                                            selectInput("selInputDataLocCSV", lang$nav[[modeDescriptor]]$selInputData, 
                                                                        if(length(ioConfig$modelInRaw))
-                                                                         setNames(names(ioConfig$modelInRaw), 
+                                                                         c(setNames(names(ioConfig$modelInRaw), 
                                                                                   vapply(ioConfig$modelInRaw, function(inSym){
                                                                                     return(inSym$alias)
-                                                                                  }, character(1L), USE.NAMES = FALSE)) else NULL, 
+                                                                                  }, character(1L), USE.NAMES = FALSE)), if(length(ioConfig$hcubeScalars)) setNames(ioConfig$hcubeScalars, vapply(ioConfig$hcubeScalars, function(hcubeScalar){ return(ioConfig$modelIn[[hcubeScalar]]$alias)}, character(1L), USE.NAMES = FALSE))) else NULL, 
                                                                        multiple = FALSE, width = "100%")
                                                     ),
                                                     uiOutput("csvHeaderMapping")

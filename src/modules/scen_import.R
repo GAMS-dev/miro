@@ -44,7 +44,9 @@ observe({
 output$csvHeaderMapping <- renderUI({
   req(rv$importCSV, input$selInputDataLocCSV)
   symSelected <- input$selInputDataLocCSV
-  if(!is.character(symSelected) || length(symSelected) != 1L || !symSelected %in% names(ioConfig$modelInRaw)){
+  if(!is.character(symSelected) ||
+     length(symSelected) != 1L ||
+     !symSelected %in% c(names(ioConfig$modelInRaw), ioConfig$hcubeScalars)){
     flog.error("selInputDataLocCSV has bad format. This is most likely because the user is trying to tamper with the app!")
     return(list())
   }
@@ -52,7 +54,11 @@ output$csvHeaderMapping <- renderUI({
     req(input$csvDelim)
     csvio$setRDelim(input$csvDelim)
   }
-  symHeaders <- ioConfig$modelInRaw[[symSelected]]$headers
+  if(symSelected %in% ioConfig$hcubeScalars){
+    symHeaders <- ioConfig$modelIn[[symSelected]]$headers
+  }else{
+    symHeaders <- ioConfig$modelInRaw[[symSelected]]$headers
+  }
   csvHeaders <- csvio$getHeaders()
   return(lapply(seq_along(symHeaders), function(hdrIdx){
     column(6L,
@@ -83,7 +89,7 @@ observeEvent(input$localInput, {
     hideEl(session, "#localInputCsvOptions")
     disableEl(session, "#btImportLocal")
     tryCatch({
-      xlsio$rInitFile(input$localInput$datapath)
+      xlsio$rInitFile(input$localInput$datapath, needDelim = FALSE)
       xlsSheets <- xlsio$getSheetNames()
       updateSelectInput(session, "selExcelIndexSheet", choices = c("-", xlsSheets),
                         selected = if("_index" %in% xlsSheets) "_index" else "-")
@@ -109,11 +115,12 @@ observeEvent(input$localInput, {
     }
     tryCatch({
       symId <- match(tolower(tools::file_path_sans_ext(input$localInput$name)),
-                     names(ioConfig$modelInRaw))
+                     c(names(ioConfig$modelInRaw), ioConfig$hcubeScalars))
       if(!is.na(symId)){
-        updateSelectInput(session, "selInputDataLocCSV", selected = names(ioConfig$modelInRaw)[symId])
+        updateSelectInput(session, "selInputDataLocCSV",
+                          selected = c(names(ioConfig$modelInRaw), ioConfig$hcubeScalars)[symId])
       }
-      csvio$rInitFile(input$localInput$datapath)
+      csvio$rInitFile(input$localInput$datapath, needDelim = FALSE)
       rv$importCSV <- rv$importCSV + 1L
       hideEl(session, "#csvDelimWrapper")
       enableEl(session, "#btImportLocal")
@@ -186,9 +193,15 @@ observeEvent(input$btImportLocal, {
         return()
       }
     }
-    colsToRead <- vapply(seq_along(ioConfig$modelInRaw[[symToFetch]]$headers), function(hdrIdx){
-      return(input[[paste0("csvInputHdr_", hdrIdx)]])
-    }, character(1L), USE.NAMES = FALSE)
+    if(symToFetch %in% ioConfig$hcubeScalars){
+      colsToRead <- vapply(seq_along(ioConfig$modelIn[[symToFetch]]$headers), function(hdrIdx){
+        return(input[[paste0("csvInputHdr_", hdrIdx)]])
+      }, character(1L), USE.NAMES = FALSE)
+    }else{
+      colsToRead <- vapply(seq_along(ioConfig$modelInRaw[[symToFetch]]$headers), function(hdrIdx){
+        return(input[[paste0("csvInputHdr_", hdrIdx)]])
+      }, character(1L), USE.NAMES = FALSE)
+    }
     if(any(duplicated(colsToRead[colsToRead != "-"]))){
       flog.info("Duplicate columns to read detected when uploading CSV file.")
       return(showElReplaceTxt(session, "#localDataImportError",
