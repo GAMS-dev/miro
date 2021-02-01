@@ -110,9 +110,9 @@ if(is.null(errMsg)){
     modelOut[[scalarsOutName]]$headers[[2]]$alias <- lang$nav$scalarAliases$cols$desc
     modelOut[[scalarsOutName]]$headers[[3]]$alias <- lang$nav$scalarAliases$cols$value
   }
+  invalidAliases <- integer(0L)
   if(length(config[["overwriteAliases"]])){
     overwriteSymNames <- names(config[["overwriteAliases"]])
-    invalidAliases <- integer(0L)
     for (idx in seq_along(config[["overwriteAliases"]])){
       i <- match(overwriteSymNames[idx], names(modelIn))
       if(is.na(i)){
@@ -132,9 +132,9 @@ if(is.null(errMsg)){
     }
     config[["overwriteAliases"]] <- NULL
   }
+  invalidHeaderAliases <- integer(0L)
   if(length(config[["overwriteHeaderAliases"]])){
     overwriteSymNames <- names(config[["overwriteHeaderAliases"]])
-    invalidHeaderAliases <- integer(0L)
     for (idx in seq_along(config[["overwriteHeaderAliases"]])){
       i <- match(names(config[["overwriteHeaderAliases"]])[[idx]], names(modelIn))
       if(is.na(i)){
