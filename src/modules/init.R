@@ -251,7 +251,7 @@ if(is.null(errMsg)){
       }else if(LAUNCHCONFIGMODE){
         invalidWidgetsToRender <- c(invalidWidgetsToRender, el)
       }else{
-        errMsgTmp <- paste0("'", el, "' was defined to be an input widget, but is not part of the data contract! Start the Configuration Mode to recofigure your app.")
+        errMsgTmp <- paste0("'", el, "' was defined to be an input widget, but is not part of the data contract! Start the Configuration Mode to reconfigure your app.")
         errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
       }
     }else{
@@ -1523,7 +1523,7 @@ if(is.null(errMsg)){
                 warning(errMsgTmp)
                 next
               }
-              errMsg <- paste(errMsg, paste0(errMsgTmp, " Start the Configuration Mode to recofigure your app."), sep = "\n")
+              errMsg <- paste(errMsg, paste0(errMsgTmp, " Start the Configuration Mode to reconfigure your app."), sep = "\n")
               next
             }
           }else if(identical(configGraphsOut[[i]]$outType, "valueBox")){
@@ -1577,7 +1577,7 @@ if(is.null(errMsg)){
             warning(errMsgTmp)
             next
           }
-          errMsg <- paste(errMsg, paste0(errMsgTmp, " Start the Configuration Mode to recofigure your app."), sep = "\n")
+          errMsg <- paste(errMsg, paste0(errMsgTmp, " Start the Configuration Mode to reconfigure your app."), sep = "\n")
           next
         }
       }else if(identical(configGraphsIn[[i]]$outType, "valueBox")){
