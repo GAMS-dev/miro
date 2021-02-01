@@ -88,6 +88,7 @@
                                       <li>In a <a href="./customize.html#custom-renderers">custom renderer</a>, the values of all output scalars can now be accessed via the argument <kbd>outputScalarsFull</kbd>.</li>
                                       <li>It is now possible to pivot columns in output tables as well.</li>
                                       <li>Show "More..." tab only if there are at least 2 tabs in this group.</li>
+                                      <li>Custom aliases for GAMS symbols as well as symbol domains are now automatically removed when the Configuration Mode is started and the symbols for these custom aliases are no longer part of the data contract.</li>
                                       <li>Results of Hypercube jobs solved on <a href="https://www.gams.com/engine/" target="_blank">GAMS Engine</a> are now deleted after download.</li>
                                     </ul>
                                     <h3>Bug fixes</h3>
@@ -109,6 +110,8 @@
                                       <li>Date and date range widgets without selected date return an empty string now instead of NA.</li>
                                       <li>Fix checkbox return value to be 1/0 instead of TRUE/FALSE in Hypercube Mode.</li>
                                       <li>Fix job status and import of Hypercube jobs when using <a href="https://www.gams.com/engine" target="_blank">GAMS Engine</a> in Hypercube Mode.</li>
+                                      <li>Fixed an issue where numericinput would send wrong values in certain situatios.</li>
+                                      <li>Fix issue where custom R packages were installed every time MIRO was restarted.</li>
                                     </ul>
                                  </div>
                             </section>
