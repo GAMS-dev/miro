@@ -850,7 +850,13 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       }, integer(1L), USE.NAMES = FALSE))
     },
     parseCellRange = function(symName, range){
-      range <- trimws(range, whitespace = "[ \t\r\n\"]")
+      rangeTmp <- trimws(range, whitespace = "\"")
+      if(nchar(rangeTmp) == nchar(range) - 2L){
+        # element was quoted
+        range <- rangeTmp
+      }else{
+        range <- trimws(range)
+      }
       if(range %in% c("", "!")){
         return(structure(list(ul = c(1L, 1L), lr = c(NA_integer_, NA_integer_),
                               sheet = private$rSheets[1]),
