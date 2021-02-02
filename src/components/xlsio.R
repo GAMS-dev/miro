@@ -240,6 +240,9 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       }
       
       if(symName %in% private$scalars){
+        if(!length(data)){
+          return(NA_character_)
+        }
         return(data[[1]])
       }
       
@@ -250,7 +253,10 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         }
         names(data)[seq_len(index$rdim)] <- names(private$metadata[[symName]]$headers)[seq_len(index$rdim)]
         if(index$cdim == 0L && length(data) > index$rdim){
-          names(data)[length(data)] <- names(private$metadata[[symName]]$headers)[length(data)]
+          newColName <- names(private$metadata[[symName]]$headers)[length(data)]
+          if(!is.na(newColName)){
+            names(data)[length(data)] <- newColName
+          }
         }
       }
       # remove empty rows and columns
