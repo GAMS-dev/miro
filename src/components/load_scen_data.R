@@ -24,11 +24,13 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
   tryCatch({
     switch(method,
            scsv = {
-             tryCatch({
-               ret$scalar <- csvio$read(dataFilePath, scalarsName)
-             }, error_notfound = function(e){
-               return(TRUE)
-             })
+             if(scalarsName %in% names(metaData)){
+               tryCatch({
+                 ret$scalar <- csvio$read(dataFilePath, scalarsName)
+               }, error_notfound = function(e){
+                 return(TRUE)
+               })
+             }
            },
            csv = {
              if(file.exists(file.path(workDir, scalarsName %+% '.csv'))){
