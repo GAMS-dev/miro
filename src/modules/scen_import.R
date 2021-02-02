@@ -89,7 +89,7 @@ observeEvent(input$localInput, {
     hideEl(session, "#localInputCsvOptions")
     disableEl(session, "#btImportLocal")
     tryCatch({
-      xlsio$rInitFile(input$localInput$datapath, needDelim = FALSE)
+      xlsio$rInitFile(input$localInput$datapath)
       xlsSheets <- xlsio$getSheetNames()
       updateSelectInput(session, "selExcelIndexSheet", choices = c("-", xlsSheets),
                         selected = if("_index" %in% xlsSheets) "_index" else "-")
