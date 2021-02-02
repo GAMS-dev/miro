@@ -325,12 +325,11 @@ if(LAUNCHHCUBEMODE){
                  convertNumeric <- FALSE
                }
                value <- input[["dropdown_" %+% i]]
-               value <- value[value != "_"]
                
-               if(!length(value)){
+               if(names(modelIn)[i] %in% c(GMSOpt, DDPar) &&
+                  all(value %in% CLARG_MISSING_VALUES)){
                  return(NA)
                }
-               
                if(!names(modelIn)[i] %in% c(DDPar, GMSOpt) && 
                   length(modelIn[[i]]$dropdown$aliases)){
                  text <- paste0('|"""|--HCUBE_SCALART_', names(modelIn)[i], 
@@ -383,9 +382,13 @@ if(LAUNCHHCUBEMODE){
              },
              textinput = {
                val <- input[["text_" %+% i]]
-               if(!length(val) || !nchar(val))
+               if(length(val) != 1L){
                  val <- ""
-               
+               }
+               if(names(modelIn)[i] %in% c(GMSOpt, DDPar) &&
+                  val %in% CLARG_MISSING_VALUES){
+                 return(NA)
+               }
                return(paste0(parPrefix, "= ", escapeGAMSCL(val)))
              },
              dt =,
