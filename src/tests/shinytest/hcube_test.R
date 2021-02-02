@@ -53,9 +53,12 @@ Sys.sleep(1)
 app$setInputs(tb_importData = "tb_importData_local")
 app$uploadFile(localInput = paste0("../data/", "pickstock_hcube_slider_values.csv"))
 Sys.sleep(1)
-app$setInputs(cbSelectManuallyLoc = "click")
-app$setInputs(selInputDataLoc = c("maxstock"))
+app$setInputs(selInputDataLocCSV = "_scalars")
+Sys.sleep(0.5)
 app$findElement("#btImportLocal")$click()
+Sys.sleep(1)
+if(app$waitFor("$('#shiny-modal #btOverwriteInput').is(':visible');", timeout = 50))
+  app$findElement("#btOverwriteInput")$click()
 Sys.sleep(4)
 
 #check some widget configurations
@@ -241,7 +244,6 @@ Sys.sleep(1)
 app$findElement("#shiny-modal #btHcubeLoadGrp #btHcubeLoad")$click()
 Sys.sleep(12)
 expect_error(app$findElements("#shiny-tab-scenarios #scen-tab-view #scenTabset li")[[1]]$click(), NA)
-
 #analysis script
 app$findElement("#sidebarItemExpanded a[data-value='loadResults']")$click()
 Sys.sleep(0.5)
