@@ -709,6 +709,9 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         }
         dim <- stri_count_fixed(private$metadata[[symName]]$colTypes, "c")
         if(identical(private$metadata[[symName]]$symtype, "set")){
+          if(dim == 1L){
+            return(dim)
+          }
           return(dim - 1L)
         }
         if(private$isTable(symName)){
@@ -847,7 +850,13 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       }, integer(1L), USE.NAMES = FALSE))
     },
     parseCellRange = function(symName, range){
-      range <- trimws(range, whitespace = "[ \t\r\n\"]")
+      rangeTmp <- trimws(range, whitespace = "\"")
+      if(nchar(rangeTmp) == nchar(range) - 2L){
+        # element was quoted
+        range <- rangeTmp
+      }else{
+        range <- trimws(range)
+      }
       if(range %in% c("", "!")){
         return(structure(list(ul = c(1L, 1L), lr = c(NA_integer_, NA_integer_),
                               sheet = private$rSheets[1]),
@@ -901,7 +910,9 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         }
         symDim <- stri_count_fixed(symMeta$colTypes, "c")
         if(identical(symMeta$symtype, "set")){
-          symDim <- symDim - 1L
+          if(symDim > 1L){
+            symDim <- symDim - 1L
+          }
           isTable <- FALSE
         }else{
           isTable <- private$isTable(tolower(symName))

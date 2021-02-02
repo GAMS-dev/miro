@@ -26,7 +26,7 @@ observe({
   }
   tryCatch({
     xlsio$readIndex(input$localInput$datapath,
-                    indexRange = paste0(input$selExcelIndexSheet, "!", range),
+                    indexRange = paste0('"', input$selExcelIndexSheet, "!", range, '"'),
                     forceInit = TRUE)
     rWarn <- xlsio$getWarnings()
     if(length(rWarn)){
