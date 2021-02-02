@@ -21,7 +21,13 @@ LocalFileIO <- R6::R6Class("LocalFileIO", public = list(
       }else{
         scalarsTmp <- scalarMeta[[1]]$symnames
       }
-      private$metadata <- c(private$metadata, scalarMeta)
+      scalarMetaId <- match(scalarsFileName, names(private$metadata))
+      if(is.na(scalarMetaId)){
+        # no scalars sheet in metadata
+        private$metadata <- c(private$metadata, scalarMeta)
+      }else{
+        private$metadata <- c(private$metadata[-scalarMetaId], scalarMeta)
+      }
       private$scalars <- c(scalarsTmp, private$clOptScalars)
     }else{
       private$scalars <- private$clOptScalars
