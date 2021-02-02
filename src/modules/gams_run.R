@@ -384,7 +384,7 @@ if(LAUNCHHCUBEMODE){
              textinput = {
                val <- input[["text_" %+% i]]
                if(!length(val) || !nchar(val))
-                 return(NA)
+                 val <- ""
                
                return(paste0(parPrefix, "= ", escapeGAMSCL(val)))
              },
