@@ -379,7 +379,7 @@ test_that("Writing Excel files works", {
                           `Symbol name` = c(0,0,0,0),
                           Description = c("Input scalars","Output scalars", "Distance 😈 3", "Set i1"),
                           `...8` = c("(Input)","(Output)", "(Input)", "(Output)")))
-  
+
   expect_identical(xlsio$read(xlsOutFileName, "_scalars_out", forceInit = TRUE),
                    tibble(scalar = c("cowf","explimitgr","big","pawat","pafod","tolcnl","tolpr","tolnwfp","betaf"),
                           description = "",
@@ -433,3 +433,35 @@ test_that("Example from documentation works", {
                           value = c("153.675")))
 })
 
+# test xlsio in for special/Hypercube scalar
+ioConfig <<- list(modelIn = list(mins = list(slider = list(default = c(1L, 2L), single = TRUE),
+                                             type = "slider"),
+                                 type = list(dropdown = list(), symtype = "set",
+                                             colTypes = "c",
+                                             headers = list(type = list(alias = "model type")))),
+                  hcubeScalars = "type",
+                  modelInRaw = list("_scalars" = list(symnames = c("f","mins","beta","type"),
+                                                      symtext = c("","","",""),
+                                                      symtypes = c("parameter","parameter","parameter","set"),
+                                                      colTypes = "ccc",
+                                                      headers = list(scalar = list(),
+                                                                     description = list(),
+                                                                     value = list()))))
+LAUNCHHCUBEMODE <- TRUE
+xlsio <- XlsIO$new()
+
+test_that("Xlsio works properly for special/Hypercube scalars", {
+  tmpdir <- tempdir(TRUE)
+  xlsOutFileName <- file.path(tmpdir, "test.xlsx")
+  testData <- list("_scalars" = tibble(scalar = c("mins$lo","mins$up", "mins$step", "beta"),
+                                       description = c(""),
+                                       value = c("1", "4", "0.5", "12.34")),
+                   type = tibble(type = c("lp", "mip")))
+  expect_error(xlsio$write(xlsOutFileName, testData, includeEmptySheets = FALSE), NA)
+  expect_identical(xlsio$read(xlsOutFileName, "type", forceInit = TRUE),
+                   tibble(type = c("lp","mip"), text = ""))
+  expect_identical(xlsio$read(xlsOutFileName, "_scalars", forceInit = TRUE),
+                   tibble(scalar = c("f", "mins$lo","mins$up", "mins$step", "beta"),
+                          description = "",
+                          value = c(NA_character_, "1", "4", "0.5", "12.34")))
+})
