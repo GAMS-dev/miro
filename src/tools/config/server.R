@@ -85,6 +85,13 @@ allInputSymHeaders <- allInputSymHeaders[!duplicated(allInputSymHeaders)]
 configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, 
                                                   simplifyDataFrame = FALSE, 
                                                   simplifyMatrix = FALSE))
+# remove invalid symbols from overwriteAliases and overwriteHeaderAliases
+if(length(invalidAliases)){
+  configJSON[["overwriteAliases"]][invalidAliases] <- NULL
+}
+if(length(invalidHeaderAliases)){
+  configJSON[["overwriteHeaderAliases"]][invalidHeaderAliases] <- NULL
+}
 source(file.path("components", "md_parser.R"), local = TRUE)
 markdownParser <- MarkdownParser$new()
 

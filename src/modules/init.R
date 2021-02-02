@@ -110,6 +110,7 @@ if(is.null(errMsg)){
     modelOut[[scalarsOutName]]$headers[[2]]$alias <- lang$nav$scalarAliases$cols$desc
     modelOut[[scalarsOutName]]$headers[[3]]$alias <- lang$nav$scalarAliases$cols$value
   }
+  invalidAliases <- integer(0L)
   if(length(config[["overwriteAliases"]])){
     overwriteSymNames <- names(config[["overwriteAliases"]])
     for (idx in seq_along(config[["overwriteAliases"]])){
@@ -117,9 +118,11 @@ if(is.null(errMsg)){
       if(is.na(i)){
         i <- match(overwriteSymNames[idx], names(modelOut))
         if(is.na(i)){
-          if(!LAUNCHCONFIGMODE)
-            warning(sprintf("The alias of symbol: '%s' was selected to be overwritten. However, this symbol could not be found.", 
-                            overwriteSymNames[idx]))
+          if(LAUNCHCONFIGMODE){
+            invalidAliases <- c(invalidAliases, idx)
+          }
+          warning(sprintf("The alias of symbol: '%s' was selected to be overwritten. However, this symbol could not be found.", 
+                          overwriteSymNames[idx]))
           next
         }
         modelOut[[i]]$alias <- config[["overwriteAliases"]][[idx]][["newAlias"]]
@@ -129,6 +132,7 @@ if(is.null(errMsg)){
     }
     config[["overwriteAliases"]] <- NULL
   }
+  invalidHeaderAliases <- integer(0L)
   if(length(config[["overwriteHeaderAliases"]])){
     overwriteSymNames <- names(config[["overwriteHeaderAliases"]])
     for (idx in seq_along(config[["overwriteHeaderAliases"]])){
@@ -137,9 +141,11 @@ if(is.null(errMsg)){
         i <- match(overwriteSymNames[idx], names(modelOut))
         newHeaders <- config[["overwriteHeaderAliases"]][[idx]][["newHeaders"]]
         if(is.na(i)){
-          if(!LAUNCHCONFIGMODE)
-            warning(sprintf("The headers of symbol: '%s' were selected to be overwritten. However, this symbol could not be found.", 
-                            overwriteSymNames[idx]))
+          if(LAUNCHCONFIGMODE){
+            invalidHeaderAliases <- c(invalidHeaderAliases, idx)
+          }
+          warning(sprintf("The headers of symbol: '%s' were selected to be overwritten. However, this symbol could not be found.", 
+                          overwriteSymNames[idx]))
           next
         }
         if(length(modelOut[[i]]$headers) != length(newHeaders)){
@@ -245,7 +251,7 @@ if(is.null(errMsg)){
       }else if(LAUNCHCONFIGMODE){
         invalidWidgetsToRender <- c(invalidWidgetsToRender, el)
       }else{
-        errMsgTmp <- paste0("'", el, "' was defined to be an input widget, but is not part of the data contract!")
+        errMsgTmp <- paste0("'", el, "' was defined to be an input widget, but is not part of the data contract! Start the Configuration Mode to reconfigure your app.")
         errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
       }
     }else{
@@ -1513,8 +1519,13 @@ if(is.null(errMsg)){
           if(identical(configGraphsOut[[i]]$outType, "miroPivot")){
             validGraphConfig <- validateGraphConfig(configGraphsOut[[i]])
             if(!identical(validGraphConfig, TRUE)){
-              errMsg <- paste(errMsg, paste0("Invalid graph config for symbol '", names(modelOut)[i], 
-                                             "': ", validGraphConfig), sep = "\n")
+              errMsgTmp <- paste0("Invalid graph config for symbol '", names(modelOut)[i], 
+                                  "': ", validGraphConfig, ".")
+              if(LAUNCHCONFIGMODE){
+                warning(errMsgTmp)
+                next
+              }
+              errMsg <- paste(errMsg, paste0(errMsgTmp, " Start the Configuration Mode to reconfigure your app."), sep = "\n")
               next
             }
           }else if(identical(configGraphsOut[[i]]$outType, "valueBox")){
@@ -1562,8 +1573,13 @@ if(is.null(errMsg)){
       if(identical(configGraphsIn[[i]]$outType, "miroPivot")){
         validGraphConfig <- validateGraphConfig(configGraphsIn[[i]])
         if(!identical(validGraphConfig, TRUE)){
-          errMsg <- paste(errMsg, paste0("Invalid graph config for symbol '", names(modelIn)[i], 
-                                         "': ", validGraphConfig), sep = "\n")
+          errMsgTmp <- paste0("Invalid graph config for symbol '", names(modelIn)[i], 
+                              "': ", validGraphConfig, ".")
+          if(LAUNCHCONFIGMODE){
+            warning(errMsgTmp)
+            next
+          }
+          errMsg <- paste(errMsg, paste0(errMsgTmp, " Start the Configuration Mode to reconfigure your app."), sep = "\n")
           next
         }
       }else if(identical(configGraphsIn[[i]]$outType, "valueBox")){

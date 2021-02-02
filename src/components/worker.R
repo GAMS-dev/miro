@@ -382,6 +382,14 @@ Worker <- R6Class("Worker", public = list(
                                                    SCODEMAP[['scen']]), 
                                                c('=', if(jobHist) '>=' else '<', '=')),
                                         orderBy = private$dbColNames[['time']], orderAsc = FALSE)
+    
+    # TODO: allow import of jobs solved via Engine if in local mode and vice versa...
+    if(private$remote){
+      jobList <- filter(jobList, grepl("-", !!sym(private$dbColNames[['pid']]), fixed = TRUE))
+    }else{
+      jobList <- filter(jobList, !grepl("-", !!sym(private$dbColNames[['pid']]), fixed = TRUE))
+    }
+    
     if(jobHist)
       return(list(jobList = jobList, newCompleted = FALSE))
     
@@ -506,6 +514,15 @@ Worker <- R6Class("Worker", public = list(
     jIDChar <- as.character(jID)
     if(length(private$fJobRes[[jIDChar]]) && resolved(private$fJobRes[[jIDChar]])){
       if(private$hcube){
+        tryCatch(private$validateAPIResponse(
+          DELETE(url = paste0(private$metadata$url, "/hypercube/", self$getPid(jID), "/result"),
+                 add_headers(Authorization = private$authHeader,
+                             Timestamp = as.character(Sys.time(), usetz = TRUE)),
+                 timeout(private$metadata$timeout))),
+          error = function(e){
+            warning(sprintf("Problems removing results of Hypercube job: '%s'. Error message: '%s'.", 
+                            jIDChar, conditionMessage(e)))
+          })
         if(!file.exists(private$jobResultsFile[[jIDChar]])){
           file.rename(paste0(private$jobResultsFile[[jIDChar]], ".dl"), 
                       private$jobResultsFile[[jIDChar]])
@@ -1325,7 +1342,7 @@ Worker <- R6Class("Worker", public = list(
           write_disk(resultsPath, overwrite = TRUE),
           add_headers(Authorization = private$authHeader,
                       Timestamp = as.character(Sys.time(), usetz = TRUE)), 
-          timeout(private$metadata$timeout))))
+          timeout(36000))))
   },
   isEmptyString = function(string){
     if(!length(string) || identical(string, ""))

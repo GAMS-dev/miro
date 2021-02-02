@@ -1,4 +1,4 @@
-/* global $:false jQuery:false Shiny: false */
+/* global $:false Shiny: false */
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import bootbox from 'bootbox';
@@ -12,16 +12,6 @@ function escapeHtml(unsafe) {
     .replace(/'/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
-
-// credits to Paolo Bergantino @https://stackoverflow.com/questions/698301/is-there-a-native-jquery-function-to-switch-elements
-jQuery.fn.swapWith = function (to) {
-  return this.each(function () {
-    const copyTo = $(to).clone(true);
-    const copyFrom = $(this).clone(true);
-    $(to).replaceWith(copyFrom);
-    $(this).replaceWith(copyTo);
-  });
-};
 
 const $overlay = $('#overlayScreen');
 const $loadingScreen = $('#loading-screen');
@@ -113,10 +103,7 @@ function sendRemoveRequest(index, removeData) {
 
 function exitOverlayMode() {
   if ($('#expandedAddAppWrapper').is(':visible')) {
-    Shiny.unbindAll(document.getElementById('addAppWrapper'));
     $('#addAppWrapper').html(addAppWrapperHTML);
-  } else if (currentAppId) {
-    Shiny.unbindAll(document.getElementById(`appBox_${currentAppId}`));
   }
   if ($overlay.is(':visible')) {
     $overlay.hide();
@@ -132,10 +119,8 @@ function registerSelectizeInputs() {
 }
 
 function refreshConfigList() {
-  exitOverlayMode();
   currentAppId = null;
   currentAppLogo = null;
-  $appsWrapper.empty();
   const appsList = currentConfigList.reduce((html, configData, indexRaw) => {
     const appNameSafe = escapeHtml(configData.alias);
     const descSave = escapeHtml(configData.desc);
@@ -179,8 +164,11 @@ function refreshConfigList() {
       </div>
     </div>`;
   }, '');
+  Shiny.unbindAll(document.getElementById('appsWrapper'));
   $appsWrapper.html(`${appsList}<div id="addAppWrapper" class="col-xxl-3 col-lg-4 col-sm-6 col-12">${addAppWrapperHTML}</div>`);
   registerSelectizeInputs();
+  exitOverlayMode();
+  Shiny.bindAll(document.getElementById('appsWrapper'));
 }
 
 function expandAddAppForm() {
@@ -515,15 +503,6 @@ $(document).ready(() => {
     } else if (data.requestType === 'addScen') {
       $('#loadingScreenProgressWrapper').hide();
       $('#loadingScreenProgress').css('width', '0%').attr('aria-valuenow', '0');
-      return;
-    } else if (data.requestType === 'updateOrder') {
-      if (Array.isArray(currentConfigList)) {
-        const idxFrom = currentConfigList.findIndex((el) => el.id === data.idFrom);
-        const idxTo = currentConfigList.findIndex((el) => el.id === data.idTo);
-        [currentConfigList[idxFrom],
-          currentConfigList[idxTo]] = [currentConfigList[idxTo], currentConfigList[idxFrom]];
-      }
-      $(`#${data.idFromRaw}`).parent().swapWith($(`#${data.idToRaw}`).parent());
       return;
     }
     if (Array.isArray(data.configList)) {
