@@ -192,8 +192,15 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                      names(metaData)[[i]], e), call. = FALSE)
       })
       if(!identical(length(ret$tabular[[i]]), length(metaData[[i]]$headers))){
-        flog.warn("Invalid data attempted to be read (number of headers of table does not match io_config schema).")
-        stop(sprintf(errMsg, names(metaData)[i]), call. = FALSE)
+        if(identical(metaData[[i]]$symtype, "set") &&
+           length(metaData[[i]]$headers) == 1L &&
+           length(ret$tabular[[i]]) == 2L){
+          # multi-dropdown with single column
+          ret$tabular[[i]] <<- ret$tabular[[i]][-2]
+        }else{
+          flog.warn("Invalid data attempted to be read (number of headers of table does not match io_config schema).")
+          stop(sprintf(errMsg, names(metaData)[i]), call. = FALSE)
+        }
       }
       ret$tabular[[i]] <<- fixColTypes(ret$tabular[[i]],  metaData[[i]]$colTypes)
       names(ret$tabular[[i]]) <<- names(metaData[[i]]$headers)
