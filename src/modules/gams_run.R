@@ -123,7 +123,7 @@ prepareModelRun <- function(async = FALSE){
       if(nrow(DDParValues) || nrow(GMSOptValues)){
         pfGMSPar      <- vapply(seq_along(DDParValues[[1]]), 
                                 function(i){
-                                  if(DDParValues[[3]][i] %in% c("_", "system.empty", "")) 
+                                  if(DDParValues[[3]][i] %in% CLARG_MISSING_VALUES)
                                     return(NA_character_)
                                   symbolTmp <- substring(DDParValues[[1]][i], 
                                                          nchar(prefixDDPar) + 1L)
@@ -139,7 +139,7 @@ prepareModelRun <- function(async = FALSE){
         # do not write '_' in pf file (no selection)
         pfGMSOpt      <- vapply(seq_along(GMSOptValues[[1]]), 
                                 function(i){
-                                  if(!GMSOptValues[[3]][i] %in% c("_", "system.empty", "")) 
+                                  if(!GMSOptValues[[3]][i] %in% CLARG_MISSING_VALUES) 
                                     paste0(substring(GMSOptValues[[1]][i], nchar(prefixGMSOpt) + 1L), '=', 
                                            escapeGAMSCL(GMSOptValues[[3]][i]))
                                   else
@@ -209,9 +209,13 @@ if(LAUNCHHCUBEMODE){
              slider = {
                value <- input[["slider_" %+% i]]
                if(length(value) > 1){
-                 if(identical(modelIn[[i]]$slider$double, TRUE)
-                    && !identical(input[["hcubeMode_" %+% i]], TRUE)){
+                 if(identical(modelIn[[i]]$slider$double, TRUE)){
                    # double slider in single run mode
+                   if (!identical(input[["hcubeMode_" %+% i]], TRUE)){
+                     return(1L)
+                   }
+                 }else if(!identical(modelIn[[i]]$slider$single, TRUE)){
+                   # double slider in single run mode and noHcube=TRUE
                    return(1L)
                  }
                  
@@ -295,9 +299,12 @@ if(LAUNCHHCUBEMODE){
              slider = {
                value <- input[["slider_" %+% i]]
                if(length(value) > 1){
-                 if(identical(modelIn[[i]]$slider$double, TRUE)
-                    && !identical(input[["hcubeMode_" %+% i]], TRUE)){
+                 if(identical(modelIn[[i]]$slider$double, TRUE)){
                    # double slider in single run mode
+                   return(paste0(parPrefix, "_lo= ", value[1], 
+                                 '|"""|', parPrefix, "_up= ", value[2]))
+                 }else if(!identical(modelIn[[i]]$slider$single, TRUE)){
+                   # double slider in base mode with noHcube=FALSE
                    return(paste0(parPrefix, "_lo= ", value[1], 
                                  '|"""|', parPrefix, "_up= ", value[2]))
                  }
@@ -325,12 +332,11 @@ if(LAUNCHHCUBEMODE){
                  convertNumeric <- FALSE
                }
                value <- input[["dropdown_" %+% i]]
-               value <- value[value != "_"]
                
-               if(!length(value)){
+               if(names(modelIn)[i] %in% c(GMSOpt, DDPar) &&
+                  all(value %in% CLARG_MISSING_VALUES)){
                  return(NA)
                }
-               
                if(!names(modelIn)[i] %in% c(DDPar, GMSOpt) && 
                   length(modelIn[[i]]$dropdown$aliases)){
                  text <- paste0('|"""|--HCUBE_SCALART_', names(modelIn)[i], 
@@ -383,9 +389,13 @@ if(LAUNCHHCUBEMODE){
              },
              textinput = {
                val <- input[["text_" %+% i]]
-               if(!length(val) || !nchar(val))
+               if(length(val) != 1L){
                  val <- ""
-               
+               }
+               if(names(modelIn)[i] %in% c(GMSOpt, DDPar) &&
+                  val %in% CLARG_MISSING_VALUES){
+                 return(NA)
+               }
                return(paste0(parPrefix, "= ", escapeGAMSCL(val)))
              },
              dt =,
