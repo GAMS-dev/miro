@@ -134,7 +134,8 @@ lapply(seq_along(modelIn), function(i){
            addScalarVal(scalar, description, value)
          },
          numericinput = {
-           if(!is.null(isolate(input[[paste0("numeric_", i)]]))){
+           if(length(isolate(input[[paste0("numeric_", i)]])) == 1L &&
+              !identical(isolate(input[[paste0("numeric_", i)]]), "")){
              value <- isolate(input[[paste0("numeric_", i)]])
            }else if(!is.null(modelIn[[i]]$numericinput$value)){
              value <- modelIn[[i]]$numericinput$value

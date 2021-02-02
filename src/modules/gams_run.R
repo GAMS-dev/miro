@@ -371,7 +371,7 @@ if(LAUNCHHCUBEMODE){
              },
              numericinput = {
                valueTmp <- input[["numeric_" %+% i]]
-               if(length(valueTmp) != 1L){
+               if(length(valueTmp) != 1L || identical(valueTmp, "")){
                  # user removed input
                  if(length(modelIn[[i]]$numericinput$value) == 1L){
                    valueTmp <- modelIn[[i]]$numericinput$value
