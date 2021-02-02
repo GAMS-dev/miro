@@ -209,9 +209,13 @@ if(LAUNCHHCUBEMODE){
              slider = {
                value <- input[["slider_" %+% i]]
                if(length(value) > 1){
-                 if(identical(modelIn[[i]]$slider$double, TRUE)
-                    && !identical(input[["hcubeMode_" %+% i]], TRUE)){
+                 if(identical(modelIn[[i]]$slider$double, TRUE)){
                    # double slider in single run mode
+                   if (!identical(input[["hcubeMode_" %+% i]], TRUE)){
+                     return(1L)
+                   }
+                 }else if(!identical(modelIn[[i]]$slider$single, TRUE)){
+                   # double slider in single run mode and noHcube=TRUE
                    return(1L)
                  }
                  
@@ -295,9 +299,12 @@ if(LAUNCHHCUBEMODE){
              slider = {
                value <- input[["slider_" %+% i]]
                if(length(value) > 1){
-                 if(identical(modelIn[[i]]$slider$double, TRUE)
-                    && !identical(input[["hcubeMode_" %+% i]], TRUE)){
+                 if(identical(modelIn[[i]]$slider$double, TRUE)){
                    # double slider in single run mode
+                   return(paste0(parPrefix, "_lo= ", value[1], 
+                                 '|"""|', parPrefix, "_up= ", value[2]))
+                 }else if(!identical(modelIn[[i]]$slider$single, TRUE)){
+                   # double slider in base mode with noHcube=FALSE
                    return(paste0(parPrefix, "_lo= ", value[1], 
                                  '|"""|', parPrefix, "_up= ", value[2]))
                  }
