@@ -786,6 +786,7 @@
         "ambiguousDelim": "警告：文件的定界符无法唯一标识。 请在下面手动选择。"
       },
       "errors":{
+        "noColsSelected": "错误：您必须至少选择一列来导入。",
         "badDelim": "错误：无法确定定界符。 有效的分隔符为：'%s'。",
         "duplicateCol": "错误：不支持同一列的多项选择。",
         "badEncoding": "您上传的文件不是UTF-8编码的。 不支持UTF-8以外的其他编码！"

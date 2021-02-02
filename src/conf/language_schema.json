@@ -3068,6 +3068,10 @@
               "type": "object",
               "additionalProperties": false,
               "properties": {
+                "noColsSelected": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "badDelim": {
                   "type": "string",
                   "minLength": 1
@@ -3081,7 +3085,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 3
+              "minProperties": 4
             }
           },
           "minProperties": 2

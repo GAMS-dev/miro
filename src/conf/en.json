@@ -790,6 +790,7 @@
         "ambiguousDelim": "WARNING: The delimiter of your file could not be identified uniquely. Please select manually below."
       },
       "errors":{
+        "noColsSelected": "ERROR: You must select at least one column to import.",
         "badDelim": "ERROR: Could not determine delimiter. Valid delimiters are: '%s'.",
         "duplicateCol": "ERROR: Multiple selection of the same column is not supported.",
         "badEncoding": "The file you uploaded is not UTF-8 encoded. Other encodings than UTF-8 are not supported!"

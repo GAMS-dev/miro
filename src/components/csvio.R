@@ -21,7 +21,9 @@ CsvIO <- R6::R6Class("CsvIO", inherit = LocalFileIO, public = list(
                               paste(c(private$supportedDelim[private$supportedDelim != "\t"], "tab"),
                                     collapse = "' '")), call. = FALSE)
         }else{
-          private$rDelim <- private$supportedDelim[1]
+          private$rDelim <- character(0L)
+          private$rHeaders <- private$rSample[1]
+          return(self)
         }
       }
       if(length(private$rDelim) > 1L){
@@ -145,14 +147,28 @@ CsvIO <- R6::R6Class("CsvIO", inherit = LocalFileIO, public = list(
         }
         colTypes <- paste(colTypes, collapse = "")
       }
-      data <- suppressWarnings(
-        read_delim(private$rpath, 
-                   private$rDelim,
-                   col_types = colTypes, 
-                   col_names = private$rHeaderRow,
-                   progress = FALSE,
-                   skip_empty_rows = TRUE,
-                   locale = locale(decimal_mark = private$decimalSep)))
+      if(length(private$rDelim)){
+        data <- suppressWarnings(
+          read_delim(private$rpath, 
+                     private$rDelim,
+                     col_types = colTypes, 
+                     col_names = private$rHeaderRow,
+                     progress = FALSE,
+                     skip_empty_rows = TRUE,
+                     locale = locale(decimal_mark = private$decimalSep)))
+      }else{
+        data <- read_lines(private$rpath,
+                           progress = FALSE,
+                           skip_empty_rows = TRUE,
+                           locale = locale(decimal_mark = private$decimalSep))
+        if(private$rHeaderRow){
+          hdrTmp <- data[1]
+          data <- as_tibble(data[-1])
+          names(data) <- hdrTmp
+        }else{
+          data <- as_tibble(data)
+        }
+      }
       symHeaders <- names(private$metadata[[symName]]$headers)
       if(needReorder){
         data <- data[, colOrder]

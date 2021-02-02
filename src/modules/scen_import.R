@@ -210,6 +210,11 @@ observeEvent(input$btImportLocal, {
     if(length(csvio$getRDelim) > 1L){
       csvio$setRDelim(input$csvDelim)
     }
+    if(all(colsToRead == "-")){
+      flog.info("No columns to import have been selected.")
+      return(showElReplaceTxt(session, "#localDataImportError",
+                              lang$errMsg$csvio$errors$noColsSelected))
+    }
     csvio$
       setRSymName(symToFetch)$
       setDecimalSep(decimalSep)$
