@@ -357,7 +357,7 @@ if(LAUNCHHCUBEMODE){
              },
              date = {
                value <- as.character(isolate(input[[paste0("date_", i)]]))
-               if(is.na(value)){
+               if(length(value) != 1L || is.na(value)){
                  value <- ""
                }
                return(paste0(parPrefix, "= ", escapeGAMSCL(value)))
