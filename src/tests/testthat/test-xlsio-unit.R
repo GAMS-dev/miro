@@ -4,7 +4,7 @@ library(writexl)
 library(tidyr)
 library(dplyr)
 
-LAUNCHHCUBEMODE <- FALSE
+LAUNCHHCUBEMODE <<- FALSE
 lang <<- jsonlite::fromJSON("../../conf/en.json", simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
 source("../../components/localfileio.R")
 source("../../components/xlsio.R")
@@ -448,7 +448,7 @@ ioConfig <<- list(modelIn = list(mins = list(slider = list(default = c(1L, 2L), 
                                                       headers = list(scalar = list(),
                                                                      description = list(),
                                                                      value = list()))))
-LAUNCHHCUBEMODE <- TRUE
+LAUNCHHCUBEMODE <<- TRUE
 xlsio <- XlsIO$new()
 
 test_that("Xlsio works properly for special/Hypercube scalars", {
