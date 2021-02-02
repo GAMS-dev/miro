@@ -4,6 +4,7 @@ library(writexl)
 library(tidyr)
 library(dplyr)
 
+LAUNCHHCUBEMODE <- FALSE
 lang <<- jsonlite::fromJSON("../../conf/en.json", simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
 source("../../components/localfileio.R")
 source("../../components/xlsio.R")
