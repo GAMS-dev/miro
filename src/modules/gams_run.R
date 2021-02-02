@@ -123,7 +123,7 @@ prepareModelRun <- function(async = FALSE){
       if(nrow(DDParValues) || nrow(GMSOptValues)){
         pfGMSPar      <- vapply(seq_along(DDParValues[[1]]), 
                                 function(i){
-                                  if(DDParValues[[3]][i] %in% c("_", "system.empty", "")) 
+                                  if(DDParValues[[3]][i] %in% CLARG_MISSING_VALUES)
                                     return(NA_character_)
                                   symbolTmp <- substring(DDParValues[[1]][i], 
                                                          nchar(prefixDDPar) + 1L)
@@ -139,7 +139,7 @@ prepareModelRun <- function(async = FALSE){
         # do not write '_' in pf file (no selection)
         pfGMSOpt      <- vapply(seq_along(GMSOptValues[[1]]), 
                                 function(i){
-                                  if(!GMSOptValues[[3]][i] %in% c("_", "system.empty", "")) 
+                                  if(!GMSOptValues[[3]][i] %in% CLARG_MISSING_VALUES) 
                                     paste0(substring(GMSOptValues[[1]][i], nchar(prefixGMSOpt) + 1L), '=', 
                                            escapeGAMSCL(GMSOptValues[[3]][i]))
                                   else
