@@ -276,25 +276,29 @@ Sys.sleep(0.5)
 expect_true(app$waitFor("$('#configAnalysis div[data-value*=\"tabsetAnalysisMethodScript\"]').is(':visible');", 50))
 app$setInputs(selHcubeAnalysisScript = "script1")
 Sys.sleep(0.5)
-app$setInputs(btRunHcubeScript = "click")
-expect_true(app$waitFor("$('#shiny-tab-hcubeAnalyze').is(':visible');", 15000))
-expect_true(app$waitFor(paste0("$('#", hash1, "', window.parent.frames[0].document).is(':visible');"), 50))
-expect_true(app$waitFor(paste0("$('#", hash2, "', window.parent.frames[0].document).is(':visible');"), 50))
-expect_true(app$waitFor(paste0("$('#", hash3, "', window.parent.frames[0].document).is(':visible');"), 50))
-expect_true(any(
-  app$waitFor(paste0("$('#", hash1, " #maxstock', window.parent.frames[0].document)[0].textContent==='maxstock: 1.0'"), 50),
-  app$waitFor(paste0("$('#", hash1, " #maxstock', window.parent.frames[0].document)[0].textContent==='maxstock: 2.0'"), 50),
-  app$waitFor(paste0("$('#", hash1, " #maxstock', window.parent.frames[0].document)[0].textContent==='maxstock: 3.0'"), 50)
-))
-expect_true(any(
-  app$waitFor(paste0("$('#", hash2, " #maxstock', window.parent.frames[0].document)[0].textContent==='maxstock: 1.0'"), 50),
-  app$waitFor(paste0("$('#", hash2, " #maxstock', window.parent.frames[0].document)[0].textContent==='maxstock: 2.0'"), 50),
-  app$waitFor(paste0("$('#", hash2, " #maxstock', window.parent.frames[0].document)[0].textContent==='maxstock: 3.0'"), 50)
-))
-expect_true(any(
-  app$waitFor(paste0("$('#", hash3, " #maxstock', window.parent.frames[0].document)[0].textContent==='maxstock: 1.0'"), 50),
-  app$waitFor(paste0("$('#", hash3, " #maxstock', window.parent.frames[0].document)[0].textContent==='maxstock: 2.0'"), 50),
-  app$waitFor(paste0("$('#", hash3, " #maxstock', window.parent.frames[0].document)[0].textContent==='maxstock: 3.0'"), 50)
-))
+if(!grepl("^darwin", R.version$os)){
+  # FIXME: Run this also on macOS soon as issue products/3557 is closed. 
+  # Currently, GAMS can't handle running embedded code when curdir is longer than 128 characters
+  app$setInputs(btRunHcubeScript = "click")
+  expect_true(app$waitFor("$('#shiny-tab-hcubeAnalyze').is(':visible');", 15000))
+  expect_true(app$waitFor(paste0("$('#", hash1, "', window.parent.frames[0].document).is(':visible');"), 50))
+  expect_true(app$waitFor(paste0("$('#", hash2, "', window.parent.frames[0].document).is(':visible');"), 50))
+  expect_true(app$waitFor(paste0("$('#", hash3, "', window.parent.frames[0].document).is(':visible');"), 50))
+  expect_true(any(
+    app$waitFor(paste0("$('#", hash1, " #maxstock', window.parent.frames[0].document)[0].textContent==='maxstock: 1.0'"), 50),
+    app$waitFor(paste0("$('#", hash1, " #maxstock', window.parent.frames[0].document)[0].textContent==='maxstock: 2.0'"), 50),
+    app$waitFor(paste0("$('#", hash1, " #maxstock', window.parent.frames[0].document)[0].textContent==='maxstock: 3.0'"), 50)
+  ))
+  expect_true(any(
+    app$waitFor(paste0("$('#", hash2, " #maxstock', window.parent.frames[0].document)[0].textContent==='maxstock: 1.0'"), 50),
+    app$waitFor(paste0("$('#", hash2, " #maxstock', window.parent.frames[0].document)[0].textContent==='maxstock: 2.0'"), 50),
+    app$waitFor(paste0("$('#", hash2, " #maxstock', window.parent.frames[0].document)[0].textContent==='maxstock: 3.0'"), 50)
+  ))
+  expect_true(any(
+    app$waitFor(paste0("$('#", hash3, " #maxstock', window.parent.frames[0].document)[0].textContent==='maxstock: 1.0'"), 50),
+    app$waitFor(paste0("$('#", hash3, " #maxstock', window.parent.frames[0].document)[0].textContent==='maxstock: 2.0'"), 50),
+    app$waitFor(paste0("$('#", hash3, " #maxstock', window.parent.frames[0].document)[0].textContent==='maxstock: 3.0'"), 50)
+  ))
+}
 
 app$stop()
