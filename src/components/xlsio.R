@@ -10,6 +10,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
     private$rSheets <- excel_sheets(nativeFileEnc(path))
     private$rSheetsNoIndex <- vapply(strsplit(private$rSheets, " ", fixed = TRUE),
                                      "[[", character(1L), 1L, USE.NAMES = FALSE)
+    private$rIndex <- list()
     return(self)
   },
   readIndex = function(path, indexRange = NULL, forceInit = FALSE){
