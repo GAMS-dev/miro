@@ -33,6 +33,9 @@ pushd src/model > /dev/null
     cd cpack
     $ZIP_TOOL -r cpack.conf.unzip cpack_files.txt conf_cpack data_cpack static_cpack README.md -x "*.DS_Store"
     cd ..
+    cd cutstock
+    $ZIP_TOOL -r cutstock.conf.unzip cutstock_files.txt conf_cutstock data_cutstock renderer_cutstock README.md -x "*.DS_Store"
+    cd ..
     rm -rf miro_lib || true
     mkdir miro_lib
     cp mirolib.glb miro_lib
@@ -50,6 +53,8 @@ pushd src/model > /dev/null
     cp farming/farming.gms miro_lib
     mv cpack/cpack.conf.unzip miro_lib
     cp cpack/cpack.gms miro_lib
+    mv cutstock/cutstock.conf.unzip miro_lib
+    cp cutstock/cutstock.gms miro_lib
     $ZIP_TOOL -r miroDemoApps.zip miro_lib -x "*.DS_Store"
 popd > /dev/null
 

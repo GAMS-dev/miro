@@ -54,3 +54,10 @@ Files = cpack.gms,cpack.conf.unzip
 2 = cpack
 3 = gms
 4 = Packing identical size circles in the unit circle
+
+*$*$*$
+Files = cutstock.gms,cutstock.conf.unzip
+1 = 008
+2 = cutstock
+3 = gms
+4 = Cutting Stock Problem
