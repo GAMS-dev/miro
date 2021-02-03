@@ -357,7 +357,7 @@
       "hcubeHashDesc":"输入要加载的场景的哈希值（来自Hypercube模式），单击该场景并加载。",
       "hcubeHashButton":"搜索",
       "hcubeHashNoMatch":"未找到与输入的哈希值相匹配的场景。",
-      "selInputData":"选择要加载的输入数据,
+      "selInputData":"选择要加载的输入数据",
       "selDecimalSep": "选择小数点分隔符",
       "selDelim": "选择定界符",
       "selExcelIndexSheet": "选择索引工作表",
