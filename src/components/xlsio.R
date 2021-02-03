@@ -57,11 +57,12 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
     wsNamesRaw <- names(dataToWrite)
     
     # remove empty datasets
+    emptySheets <- vapply(dataToWrite, function(sheet) identical(nrow(sheet), 0L),
+                          logical(1L), USE.NAMES = FALSE)
     if(isFALSE(includeEmptySheets)){
-      emptySheets <- vapply(dataToWrite, function(sheet) identical(nrow(sheet), 0L),
-                            logical(1L), USE.NAMES = FALSE)
       dataToWrite[emptySheets] <- NULL
       wsNamesRaw <- wsNamesRaw[!emptySheets]
+      emptySheets <- FALSE
     }
     if(!length(dataToWrite)){
       return(writexl::write_xlsx(tibble(), path))
@@ -95,8 +96,8 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
     names(dataToWrite) <- wsNamesTmp
     
     dataToWrite <- c(dataToWrite,
-                     setNames(list(private$genIndexFromMetadata(wsNamesRaw,
-                                                                names(dataToWrite),
+                     setNames(list(private$genIndexFromMetadata(wsNamesRaw[!emptySheets],
+                                                                names(dataToWrite)[!emptySheets],
                                                                 dataToWrite)),
                               "_index"))
     # include metadata sheet in Excel file

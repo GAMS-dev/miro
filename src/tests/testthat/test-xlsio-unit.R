@@ -359,6 +359,13 @@ test_that("Writing Excel files works", {
                    distance3 = tibble(uni = c("bla1"), dallas = 1.1, chicago = 1.2))
   expect_error(xlsio$write(xlsOutFileName, testData, includeEmptySheets = TRUE), NA)
   expect_identical(excel_sheets(xlsOutFileName), c("_scalars_out (Output)","_scalars (Input)", "i1 (Output)", "distance (Input)", "distance3 (Input)", "_index"))
+  expect_identical(suppressMessages(read_excel(xlsOutFileName, "_index")),
+                   tibble(type = c("par", "par", "par", "set","set", "par"),
+                          symbol = c("cowf", "explimitgr", "big","_gmsopt_solver", "i1", "distance3"),
+                          range = c('"_scalars_out (Output)!C2"', '"_scalars_out (Output)!C3"', '"_scalars_out (Output)!C4"',
+                                    '"_scalars (Input)!C2"', '"i1 (Output)!A2"', '"distance3 (Input)!A1"'),
+                          cDim = c(0,0,0,0,0,1),
+                          dim = c(0,0,0,0,1,2)))
   expect_error(xlsio$write(xlsOutFileName, testData, includeEmptySheets = FALSE), NA)
   expect_identical(excel_sheets(xlsOutFileName), c("_scalars_out (Output)","_scalars (Input)", "i1 (Output)", "distance3 (Input)", "_index"))
   expect_identical(suppressMessages(read_excel(xlsOutFileName, "_index")),
