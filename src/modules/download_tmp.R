@@ -28,7 +28,12 @@ output$btDownloadTmpConfirm <- downloadHandler(
   filename = function(){
     isolate(input$selectDownloadTmp)
   },content = function(file) {
+    fileNames <- list.files(workDir, pattern = ".+\\..+$")
     fileName <- isolate(input$selectDownloadTmp)
+    if(!fileName %in% fileNames){
+      flog.error("File name supplied (%s) that is not in current directory. This should never happen and is likely an attempt to tamper with the app!", if(length(fileName) == 1L) fileName else "")
+      return(downloadHandlerError(file, "Invalid  filename"))
+    }
     flog.debug("Download of file: '%s' confirmed.", fileName)
     file.copy(file.path(workDir, fileName), file)
   }
