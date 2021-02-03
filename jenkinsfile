@@ -40,7 +40,6 @@ pipeline {
                         }
                     }
                 }
-                step([$class: 'WsCleanup'])
             }
             post {
                 failure {
