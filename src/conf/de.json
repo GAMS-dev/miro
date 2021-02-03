@@ -357,7 +357,7 @@
       "hcubeHashDesc": "Geben Sie hier den Hash-Wert des Szenarios ein, welches Sie aus dem Hypercube-Modus laden möchten. Klicken Sie dann einfach auf das Szenario, um es zu laden.",
       "hcubeHashButton": "Suchen",
       "hcubeHashNoMatch": "Es konnten keine Szenarios gefunden werden.",
-      "selInputData":"Wählen Sie die Datensätze, die Sie laden möchten",
+      "selInputData":"Wählen Sie die Eingabedaten, die Sie laden möchten",
       "selDecimalSep": "Wählen Sie das Dezimaltrennzeichen",
       "selDelim": "Begrenzungszeichen auswählen",
       "selExcelIndexSheet": "Wählen Sie das Index-Arbeitsblatt aus",

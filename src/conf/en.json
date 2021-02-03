@@ -357,7 +357,7 @@
       "hcubeHashDesc": "Enter the hash value of the scenario you wish to load from the Hypercube Mode. Then simply click on the scenario to load it.",
       "hcubeHashButton": "Search",
       "hcubeHashNoMatch": "No scenarios that match the hash you entered were found.",
-      "selInputData":"Select datasets to load",
+      "selInputData":"Select input datasets to load",
       "selDecimalSep": "Select decimal separator",
       "selDelim": "Select delimiter",
       "selExcelIndexSheet": "Select index worksheet",
