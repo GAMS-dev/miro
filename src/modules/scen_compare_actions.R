@@ -202,46 +202,10 @@ output[["scenExportHandler"]] <- downloadHandler(
       return(suppressWarnings(zip::zipr(file, list.files(tmpDir, full.names = TRUE), 
                                         recurse = FALSE, include_directories = FALSE)))
     }
-    
-    if(length(data)){
-      wsNamesTmp                 <- c(if(length(outputDataToExport)) paste0(lang$nav$excelExport$outputPrefix, 
-                                                                            outputDataToExport, 
-                                                                            lang$nav$excelExport$outputSuffix), 
-                                      if(length(inputDataToExport)) paste0(lang$nav$excelExport$inputPrefix, 
-                                                                           inputDataToExport, 
-                                                                           lang$nav$excelExport$inputSuffix))
-      if(any(nchar(wsNamesTmp) > 31)){
-        wsNameExceedsLength <- nchar(wsNamesTmp) > 31
-        wsNamesTmp[wsNameExceedsLength] <- paste0(substr(wsNamesTmp[wsNameExceedsLength], 1, 29), "..")
-        if(any(duplicated(wsNamesTmp))){
-          wsNameDuplicated <- duplicated(wsNamesTmp)
-          wsNamesTmp <- lapply(seq_along(wsNamesTmp), function(wsID){
-            if(wsNameDuplicated[wsID]){
-              return(paste0(substr(wsNamesTmp[wsID], 1, 29), wsID))
-            }
-            return(wsNamesTmp[wsID])
-          })
-        }
-      }
-      names(data) <- wsNamesTmp
-    }
-    
-    # remove empty datasets
-    if(!config$excelIncludeEmptySheets)
-      data[vapply(data, function(sheet) identical(nrow(sheet), 0L), logical(1L))] <- NULL
-    
-    # include metadata sheet in Excel file
-    if(config$excelIncludeMeta && 
-       !is.null(scenMetaData[[scenIdLong]])){
-      metadata <- list(scenMetaData[[scenIdLong]][, -1, drop = FALSE])
-      names(metadata) <- lang$nav$excelExport$metadataSheet$title
-      data <- c(metadata, data)
-    }
-    if(!length(data)){
-      data <- tibble()
-    }
     removeModal()
-    return(writexl::write_xlsx(data, file))
+    return(xlsio$write(file, data, scenMetaData[[scenIdLong]],
+                       includeMetadataSheet = config$excelIncludeMeta,
+                       includeEmptySheets = config$excelIncludeEmptySheets))
   }
 )
 observeEvent(input[["scenRemoteExportHandler"]], {

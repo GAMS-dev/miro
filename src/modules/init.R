@@ -867,8 +867,10 @@ if(is.null(errMsg)){
              }
              if(identical(modelIn[[i]]$symtype, "set")){
                modelIn[[i]]$headers <<- modelInRaw[[name]]$headers
+               modelIn[[i]]$symtype <<- "set"
                return(name)
              }else if(isTRUE(modelIn[[i]]$dropdown$multiple)){
+               modelIn[[i]]$symtype <<- "set"
                modelIn[[i]]$headers <<- list(list(type = "string", 
                                                   alias = modelIn[[i]]$alias))
                names(modelIn[[i]]$headers) <<- names(modelIn)[[i]]

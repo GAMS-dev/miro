@@ -117,6 +117,8 @@ server_admin <- function(input, output, session){
                        saveWidgetConfirm = 0L, updateLeafletGroups = 0L, 
                        saveTableConfirm = 0L, widgetTableConfig = list(), table_symbol = 0L,
                        reset_table_input = 0L, refreshOptions = 0L, refreshInputTableType = 0L)
+
+  xlsio <- XlsIO$new()
   session$sendCustomMessage("gms-setGAMSSymbols", 
                             list(gamsSymbols = list(inSym = unname(inputSymMultiDim), 
                                                     inAlias = names(inputSymMultiDim),

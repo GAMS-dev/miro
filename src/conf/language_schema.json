@@ -1391,6 +1391,22 @@
               "type": "string",
               "minLength": 1
             },
+            "selDecimalSep": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selDelim": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selExcelIndexSheet": {
+              "type": "string",
+              "minLength": 1
+            },
+            "excelIndexSheetRng": {
+              "type": "string",
+              "minLength": 1
+            },
             "selExternalSource": {
               "type": "string",
               "minLength": 1
@@ -1428,7 +1444,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 18
+          "minProperties": 22
         },
         "dialogImportHC": {
           "type": "object",
@@ -1451,6 +1467,22 @@
               "minLength": 1
             },
             "selInputData": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selDecimalSep": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selDelim": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selExcelIndexSheet": {
+              "type": "string",
+              "minLength": 1
+            },
+            "excelIndexSheetRng": {
               "type": "string",
               "minLength": 1
             },
@@ -1499,7 +1531,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 16
+          "minProperties": 20
         },
         "dialogLoadScen": {
           "type": "object",
@@ -1674,28 +1706,28 @@
                 "execPerm": {
                   "type": "string",
                   "minLength": 1
+                },
+                "symbol": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "desc": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 8
-            },
-            "inputPrefix": {
-              "type": "string",
-              "minLength": 0
+              "minProperties": 10
             },
             "inputSuffix": {
               "type": "string",
               "minLength": 1
-            },
-            "outputPrefix": {
-              "type": "string",
-              "minLength": 0
             },
             "outputSuffix": {
               "type": "string",
               "minLength": 1
             }
           },
-          "minProperties": 5
+          "minProperties": 3
         },
         "dialogLockScen": {
           "type": "object",
@@ -3016,6 +3048,194 @@
           "type": "string",
           "minLength": 1
         },
+        "csvio": {
+          "description": "Errors/warnings used in csvio class",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "warnings": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ambiguousDelim": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 1
+            },
+            "errors": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "noColsSelected": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "badDelim": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "duplicateCol": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "badEncoding": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 4
+            }
+          },
+          "minProperties": 2
+        },
+        "xlsio": {
+          "description": "Errors/warnings used in xlsio class",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "warnings": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "invalidSymbols": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "skipOptionsPersistence": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "keyValueCols": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "invalidSkipEmpty": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "invalidSqueeze": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "invalidOptions": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "scalarDeclarations": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 7
+            },
+            "errors": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "badFormat": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexNoSymInfo": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexNoRangeInfo": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexInvalidRdim": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexInvalidCdim": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexInvalidDim": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexDuplicateRdim": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexDuplicateCdim": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexDuplicateIgnoreCol": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexDuplicateSkipEmpty": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexDuplicateSqueeze": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexInvalidRdimCol": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexInvalidCdimCol": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexInvalidValues": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "symbolNotFound": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "badIndexRange": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "badSymbolRange": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "badSymbolDim": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "invalidRecords": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "duplicateSymbols": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "duplicateScalars": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "duplicateScalarVE": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "invalidRange": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "invalidColRange": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 24
+            }
+          },
+          "minProperties": 2
+        },
         "fileRead": {
           "type": "object",
           "additionalProperties": false,
@@ -3642,7 +3862,7 @@
           "minProperties": 3
         }
       },
-      "minProperties": 36
+      "minProperties": 38
     },
     "adminMode": {
       "description": "language specific objects of the MIRO admin mode",

@@ -322,17 +322,20 @@
                                         <div style="outline: solid 1px black; outline-offset: 5px; margin:20px 0px">
                                             <h6 id = "excel-import-rules" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Excel spreadsheet - import rules</h6>
                                             <div class="section-block" style="display:none">
-                                                <p>If you want to use data from a spreadsheet, this spreadsheet must meet certain criteria regarding the format in which the data is provided:</p>
+                                                <p>If you want to import data from a spreadsheet, it must either contain an index sheet describing the layout of your data, or it must meet certain criteria regarding the format in which the data is provided.</p>
+                                                <h4>Workbook without index sheet</h4>
+                                                <p>If you do not want to create an index sheet, your Excel file must meet strict requirements:</p>
                                                 <ul>
-                                                  <li>Only one GAMS symbol file per sheet is allowed.</li>
-                                                  <li>The name of a sheet must be identical with the symbol name</li>
-                                                  <li>The first line must contain the column headings. The names of the column headers will be ignored.</li>
+                                                  <li>Only one GAMS symbol per worksheet</li>
+                                                  <li>The name of a sheet must be identical to the symbol name</li>
+                                                  <li>The first line must contain the column headers. The names of the column headers are ignored.</li>
+                                                  <li>All symbols must be in list view (no columns may be pivoted). The only exceptions to this rule are <a href="model.html#table-miro">tables</a>, where the last column must be pivoted.</li>
                                                   <br>The image below shows a valid spreadsheet for the transport model:
                                                   <div class="section-block" style="display:block; margin:auto;">
                                                       <img class="img-fluid" style="max-height:175pt;" src="assets/images/import_excel_file.png" alt="Valid Excel file" />
                                                   </div>
                                                   <br>For scalars there are 2 possibilities:<br> 
-                                                  <li>Either all scalar values are combined in one tab named "_scalars" or "_scalars_out" (separate sheets for input and output scalars). These tables must have 3 columns: scalar name, scalar description and scalar value.</li>
+                                                  <li>Either all scalar values are combined in one tab named <kbd>_scalars</kbd> or <kbd>_scalars_out</kbd> (separate sheets for input and output scalars). These tables must have 3 columns: <i>scalar</i>, <i>description</i> and <i>value</i>.</li>
                                                   <div class="section-block" style="display:block; margin:auto;">
                                                       <img class="img-fluid" style="max-height:175pt;" src="assets/images/import_excel_scalars.png" alt="All scalars in one sheet" />
                                                   </div>
@@ -340,11 +343,122 @@
                                                   <div class="section-block" style="display:block; margin:auto;">
                                                       <img class="img-fluid" style="max-height:175pt;" src="assets/images/import_excel_scalars_sep.png" alt="Separate sheets per scalar" />
                                                   </div>
-                                                  <li>If you want to import command line parameters/GAMS options, the symbol name must be preceded by "_gmspar_" or "_gmsopt_" (see screenshot above).</li>
-                                                  <li>To import scalar output variables and/or equations, the sheet name must be "_scalarsve_out". The table has to have 7 columns: symbol name, symbol description, level, marginal, lower, upper, scale.</li>
+                                                  <li>If you want to import command line parameters/GAMS options, the symbol name must be preceded by <kbd>_gmspar_</kbd> or <kbd>_gmsopt_</kbd> (see screenshot above).</li>
+                                                  <li>To import scalar output variables and/or equations, the sheet name must be <kbd>_scalarsve_out</kbd>. The table has to have 7 columns: <i>scalar</i>, <i>description</i>, <i>level</i>, <i>marginal</i>, <i>lower</i>, <i>upper</i>, <i>scale</i>.</li>
                                                   <div class="section-block" style="display:block; margin:auto;">
                                                       <img class="img-fluid" style="max-height:175pt;" src="assets/images/import_excel_vareq.png" alt="Scalar variable / equation" />
                                                   </div>
+                                                </ul>
+                                                <h4>Workbook with index sheet</h4>
+                                                <p>If you want more flexibility, you must create an index sheet that describes your layout. If you are already familiar with <a href="https://www.gams.com/latest/docs/T_GDXXRW.html" target="_blank">GDXXRW</a>, this will already be familiar to you. You can skip most of this chapter, but be aware of the differences between GDXXRW and MIRO that we list <a href="#gdxxrw-miro-diff" class="scrollto">below</a>. We encourage everyone to read the documentation of GDXXRW, especially the chapter about <a href="https://www.gams.com/latest/docs/T_GDXXRW.html#GDXXRW_EXAMPLES_READ_SPREADSHEET_INDEX" target="_blank">the index option</a>, as it covers the topic in much greater detail than we will do here.</p>
+                                                <p>When the layout of your data differs from the default layout described above, you need to tell MIRO where to find what. This can be achieved by a so-called index. Here you list all the GAMS symbols that are included in your workbook as well as the layout they are in.</p>
+                                                <div class="callout-block callout-warning">
+                                                    <div class="icon-holder">
+                                                        <i class="fas fa-info-circle"></i>
+                                                    </div><!--//icon-holder-->
+                                                    <div class="content">
+                                                        <b class="callout-title">Note:</b>
+                                                        <p>Unlike GDXXRW, MIRO already knows a lot about your data from the <a href="model.html#data-contract">GAMS/MIRO data contract</a>. This means that information such as the dimensions of your symbols is known to MIRO and does not need to be specified again.</p>
+                                                    </div><!--//content-->
+                                                </div><!--//callout-block-->
+                                                <p>The first three columns of the index range have a fixed interpretation: dataType, symbol identifier and dataRange. Even though MIRO does not need and ignores the dataType information, it is a good practice to specify it because it allows your worksheet to be read by both MIRO and GDXXRW.</p>
+                                                <p>The fourth and subsequent columns can be used for additional options. The column heading indicates the option name and the cell contents indicate the option value. Note that although GDXXRW allows options also in a comma-separated option=value format, MIRO does not support this.</p>
+                                                <p>Let's look at an example:</p>
+                                                <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                                    <img class="img-fluid" style="max-height:200pt;" src="assets/images/import-wb-index.png" alt="Example of index sheet" />
+                                                </div>
+                                                <p>The first thing you may notice is the name of the index sheet: <kbd>_index</kbd>. Although the index could be on any sheet and in any range, MIRO can automatically recognize it if the sheet is named <kbd>_index</kbd> and the index table starts in the upper left corner: <i>A1</i>. The most important information MIRO requires is the symbol name, range (columns <i>B</i> and <i>C</i>) and one of <kbd>rDim</kbd> (row dimension) or <kbd>cDim</kbd> (column dimension). If neither <kbd>rDim</kbd> nor <kbd>cDim</kbd> is supplied, MIRO will assume a default of <i>1</i> for <kbd>cDim</kbd>. This means that the last column is pivoted as is the case for the parameter <kbd>d</kbd>:</p>
+                                                <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                                    <img class="img-fluid" style="max-height:125pt;" src="assets/images/import-wb-d.png" alt="Layout of parameter d" />
+                                                </div>
+                                                <p>You can see that the last column (index <kbd>j</kbd>) is pivoted. Also note that we can ignore rows and columns via the <kbd>ignoreRows</kbd> and <kbd>ignoreColumns</kbd> options. In this example, we want to ignore the row <i>16</i> because it does not belong to the data for <kbd>d</kbd>, but for the set <kbd>j</kbd>, which is also read from the same range (<i>sheet1!L15:N16</i>). This brings us to the next option: <kbd>values</kbd>. Each tuple in a set can have associated text. To read a set from a spreadsheet, the <kbd>values</kbd> option is used to indicate whether there is data, and if so, whether the data should be interpreted as associated text or as an indicator of whether or not the tuple should be included in the set. In our example here, we use the <i>YN</i> option, which specifies that only tuples that have a data cell that is not empty and does not contain <i>0</i>, <i>N</i>, or <i>No</i> will be included. This means that in our example <i>j</i> only the tuple <i>New-York</i> is read. MIRO supports all options GDXXRW supports: <i>auto</i>, <i>noData</i>, <i>YN</i>, <i>sparse</i> and <i>dense</i>. See the <a href="https://www.gams.com/latest/docs/T_GDXXRW.html#GDXXRW_EXAMPLES_READ_SPREADSHEET_SET_DATATEXT" target="_blank">related section of the GDXXRW documentation</a> for more information on the other options. Below you find a list of all options supported by MIRO.</p>
+                                                <p></p>
+                                                <h6>Supported options</h6>
+                                                <div class="table-responsive">
+                                                    <table class="table table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                              <th>Option</th>
+                                                              <th>Description</th>
+                                                              <th>Allowed values</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                              <td>range</td>
+                                                              <td>Excel range: Open and closed ranges are supported. It must be of the form <i>SheetName!TopLeft:BottomRight</i>. If the sheet name is omitted, the first sheet in the workbook is used by default. If the <i>BottomRight</i> corner is omitted, the data is read until <span class="code"><kbd>skipEmpty</kbd>+1</span> empty rows/columns are found. If range is omitted, an open range with left upper corner A1 is assumed.</td>
+                                                              <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                              <td>rDim</td>
+                                                              <td>Row dimension: the number of columns in the data range that will be used to define the labels for the rows. The first rDim columns of the data range will be used for the labels.</td>
+                                                              <td><i>0..dim</i></td>
+                                                            </tr>
+                                                            <tr>
+                                                              <td>cDim</td>
+                                                              <td>Column dimension: the number of rows in the data range that will be used to define the labels for the columns. The first cDim rows of the data range will be used for labels.</td>
+                                                              <td><i>0..dim</i></td>
+                                                            </tr>
+                                                            <tr>
+                                                              <td>values</td>
+                                                              <td>How set data is handled. See the related section of the <a href="https://www.gams.com/latest/docs/T_GDXXRW.html#GDXXRW_EXAMPLES_READ_SPREADSHEET_SET_DATATEXT" target="_blank">GDXXRW documentation</a> for more details.</td>
+                                                              <td><i>auto</i>, <i>noData</i>, <i>YN</i>, <i>sparse</i>, <i>dense</i></td>
+                                                            </tr>
+                                                            <tr>
+                                                              <td>ignoreRows</td>
+                                                              <td>Rows to ignore</td>
+                                                              <td><i>comma-separated list of positive integers</i></td>
+                                                            </tr>
+                                                            <tr>
+                                                              <td>ignoreColumns</td>
+                                                              <td>Columns to ignore</td>
+                                                              <td><i>comma-separated list of positive integers or column letters</i></td>
+                                                            </tr>
+                                                            <tr>
+                                                              <td>skipEmpty</td>
+                                                              <td>When reading an open range, controls how many empty rows or columns signal the end of the range</td>
+                                                              <td><i>0</i>, <i>1</i></td>
+                                                            </tr>
+                                                            <tr>
+                                                              <td>squeeze</td>
+                                                              <td>Controls whether zeros are squeezed out/removed</td>
+                                                              <td><i>y</i>, <i>1</i>, <i>n</i>, <i>0</i></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                  </div><!--//table-responsive-->
+                                                <h6>Reading scalars</h6>
+                                                <p>In addition to reading each scalar individually as supported by GDXXRW, MIRO also supports reading in table form. To read an entire table of scalars, you must do so using the special <kbd>_scalars</kbd>/<kbd>_scalars_out</kbd> symbols for input and output scalars, respectively. In this way MIRO reads scalars grouped in a table with 3 columns: <kbd>Scalar</kbd>, <kbd>Description</kbd>, <kbd>Value</kbd>. The <kbd>Description</kbd> column can also be omitted. Let's look at our example again:</p>
+                                                <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                                    <img class="img-fluid" style="max-height:125pt;" src="assets/images/import-wb-scalars.png" alt="Layout of individual and grouped scalars" />
+                                                </div>
+                                                <p>If we look at the corresponding index sheet again, we see that both the output scalar <kbd>total_cost</kbd> and the input scalar table <kbd>_scalars</kbd> are defined on this sheet. In this example, the table is pivoted (scalar names in the columns) and the <kbd>Description</kbd> column has been omitted.</p>
+                                                <p>Note that you can mix the declaration of table and individual scalars. Scalars that are missing from the table are appended if they are individually declared. If a scalar is found both in one of the special tables and individually declared, the scalar in the table takes precedence and the individually declared scalar is ignored.</p>
+                                                <div class="callout-block callout-warning">
+                                                    <div class="icon-holder">
+                                                        <i class="fas fa-info-circle"></i>
+                                                    </div><!--//icon-holder-->
+                                                    <div class="content">
+                                                        <b class="callout-title">Note:</b>
+                                                        <p>Command line parameters/GAMS options are treated like <i>normal</i> input scalars with the special prefixes <kbd>_gmspar_</kbd> and <kbd>_gmsopt_</kbd>.</p>
+                                                    </div><!--//content-->
+                                                </div><!--//callout-block-->
+                                                <h6 id="gdxxrw-miro-diff">Differences between GDXXRW and MIRO</h6>
+                                                <p>Below we list the important differences you need to be aware of when migrating from GDXXRW to MIRO or vice versa.</p>
+                                                <ul>
+                                                    <li>Global options are not supported by MIRO: all options are symbol-specific and must be part of the symbol declaration row</li>
+                                                    <li>The only special values supported by MIRO are: +Inf and -Inf. Eps, YES, NO, NA, Undef, etc. are not properly recognized when used in MIRO</li>
+                                                    <li>Acronyms are not supported</li>
+                                                    <li>The only options supported by MIRO are: rDim, cDim, dim, values, ignoreRows, ignoreColumns, skipEmpty, squeeze</li>
+                                                    <li>Option=value columns are not supported and will be skipped. Please specify the option names as column headers and the values as cell contents.</li>
+                                                    <li><i>skipEmpty</i> must be specified for each symbol individually. The state of this option is not transferred to the next symbols as with GDXXRW.</li>
+                                                    <li>Named ranges are not supported.</li>
+                                                    <li>Ranges with <i>..</i> instead of <i>:</i> as separator between <i>TopLeft</i> and <i>BottomRight</i> corner are not supported.</li>
+                                                    <li><i>skipEmpty</i> > 1 is not supported i.e. only values <i>0</i> and <i>1</i> can be used</li>
+                                                    <li>It is possible to read variables/equations with MIRO. They are treated like normal parameters, with an additional dimension that must contain at least one of the following elements: <kbd>level</kbd>, <kbd>marginal</kbd>, <kbd>upper</kbd>, <kbd>lower</kbd> and <kbd>scale</kbd>. These do not all have to be assigned, i.e. you can skip some.</li>
+                                                    <li>When reading scalars, you can either declare them individually as in GDXXRW, or you can use the special symbol names <kbd>_scalars</kbd>/<kbd>_scalars_out</kbd> to read input/output scalars grouped in a table with 3 columns: <kbd>Scalar</kbd>, <kbd>Description</kbd>, <kbd>Value</kbd>. The <kbd>Description</kbd> column can be omitted. You can also mix declaration of individual scalars and scalar tables. Scalars that are missing in the scalar table are appended if they are declared individually. If an individually declared scalar is also in a scalar table, the individually declared scalar is ignored.</li>
+                                                    <li>In tables/variables/equations, if squeeze=1, empty cells and NA are indistinguishable</li>
+                                                    <li>Output scalar variables and equations must be in a single table named <kbd>_scalarsve_out</kbd> with dimensions: <kbd>scalar</kbd>, <kbd>description</kbd>, <kbd>type</kbd>, where type must not contain any elements other than: <kbd>level</kbd>, <kbd>marginal</kbd>, <kbd>upper</kbd>, <kbd>lower</kbd>, <kbd>scale</kbd>. Please note that the <kbd>Description</kbd> dimension must be present (unlike the <kbd>_scalars</kbd>/<kbd>_scalars_out</kbd> tables), but is ignored when MIRO imports it.</li>
                                                 </ul>
                                             </div>
                                         </div>

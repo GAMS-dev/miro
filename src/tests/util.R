@@ -10,6 +10,17 @@ getSelectizeAliases <- function(app, selector){
   options <- app$getDebugLog("browser")$message
   return(rev(substr(options, 1, nchar(options) -4)))
 }
+getHotData <- function(app, id){
+  hotToR <- function(data){
+    return(suppressWarnings(as_tibble(
+      data.table::rbindlist(data$data, use.names = FALSE))))
+  }
+  return(hotToR(jsonlite::fromJSON(app$getAllValues()$output[[id]], simplifyDataFrame = FALSE, simplifyMatrix = FALSE)$x))
+}
+expect_options <- function(options, optionsExpected){
+  expect_true(all(options %in% optionsExpected) &&
+                identical(length(optionsExpected), length(options)))
+}
 addSelectizeOption <- function(app, selector, value, alias = value){
   return(app$waitFor(paste0("$('", selector, "')[0].selectize.addOption({value:'", value, "',label: '", alias, "'});true;"), timeout = 50))
 }

@@ -1,10 +1,6 @@
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("load_pivot_compare_test")
 
-expect_options <- function(options, optionsExpected){
-  expect_true(all(options %in% optionsExpected) &&
-                identical(length(optionsExpected), length(options)))
-}
 expect_chartjs <- function(id, data, labels){
   chartjsData <- jsonlite::fromJSON(app$getAllValues()$output[[id]])$x$data
   expect_equal(chartjsData$datasets$data[[1]], data)

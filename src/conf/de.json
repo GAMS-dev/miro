@@ -357,7 +357,11 @@
       "hcubeHashDesc": "Geben Sie hier den Hash-Wert des Szenarios ein, welches Sie aus dem Hypercube-Modus laden möchten. Klicken Sie dann einfach auf das Szenario, um es zu laden.",
       "hcubeHashButton": "Suchen",
       "hcubeHashNoMatch": "Es konnten keine Szenarios gefunden werden.",
-      "selInputData":"Wählen Sie die Datensätze, die Sie laden möchten",
+      "selInputData":"Wählen Sie die Eingabedaten, die Sie laden möchten",
+      "selDecimalSep": "Wählen Sie das Dezimaltrennzeichen",
+      "selDelim": "Begrenzungszeichen auswählen",
+      "selExcelIndexSheet": "Wählen Sie das Index-Arbeitsblatt aus",
+      "excelIndexSheetRng": "Wählen Sie den Indexbereich",
       "selExternalSource": "Wählen Sie die externe Quelle",
       "descLocal":"Wählen Sie eine Datei mit Daten aus",
       "newScenName": "Wählen Sie einen Namen für das neue Szenario",
@@ -374,6 +378,10 @@
       "tabDatabase":"Hypercube",
       "tabBase": "Basismodus",
       "selInputData":"Wählen Sie die zu importierenden Datensätze",
+      "selDecimalSep": "Wählen Sie das Dezimaltrennzeichen",
+      "selDelim": "Begrenzungszeichen auswählen",
+      "selExcelIndexSheet": "Wählen Sie das Index-Arbeitsblatt aus",
+      "excelIndexSheetRng": "Wählen Sie den Indexbereich",
       "descLocal":"Wählen Sie eine Datei mit Daten aus",
       "newScenName": "Wählen Sie einen Namen für die neue Hypercube-Job-Konfiguration.",
       "badScenName": "Bitte wählen Sie einen gültigen Namen",
@@ -428,11 +436,11 @@
         "stag": "Szenario Tags",
         "readPerm": "Leseberechtigung",
         "writePerm": "Schreibberechtigung",
-        "execPerm": "Ausführungsberechtigung"
+        "execPerm": "Ausführungsberechtigung",
+        "symbol": "Symbol-Name",
+        "desc": "Beschreibung"
       },
-      "inputPrefix":"",
       "inputSuffix":" (Eingabe)",
-      "outputPrefix":"",
       "outputSuffix":" (Ausgabe)"
     },
     "dialogLockScen":{
@@ -776,6 +784,54 @@
     "fileRead":{  
       "title":"Fehler beim Lesen von Datei",
       "desc":"Beim Lesen der Datei: '%s' ist ein Fehler aufgetreten."
+    },
+    "csvio":{
+      "warnings":{
+        "ambiguousDelim": "WARNUNG: Das Begrenzungszeichen Ihrer Datei konnte nicht eindeutig identifiziert werden. Bitte wählen Sie es unten manuell aus."
+      },
+      "errors":{
+        "noColsSelected": "ERROR: Sie müssen mindestens eine Spalte zum Importieren auswählen.",
+        "badDelim": "FEHLER: Konnte Begrenzungszeichen nicht ermitteln. Gültige Begrenzungszeichen sind: '%s'.",
+        "duplicateCol": "FEHLER: Das mehrfache Auswählen derselben Spalte wird nicht unterstützt.",
+        "badEncoding": "Die Datei, die Sie hochgeladen haben, ist nicht UTF-8 kodiert. Andere Kodierungen als UTF-8 werden nicht unterstützt!"
+      }
+    },
+    "xlsio":{
+      "warnings":{
+        "invalidSymbols": "WARNUNG: Ungültige Symbole in der Excel-Datei, die ignoriert wurden: '%s'.",
+        "skipOptionsPersistence": "WARNUNG: Einige nicht leere Zeilen wurden übersprungen. MIRO unterstützt keine Optionen mit Persistenz wie 'skipEmpty'. Deklarieren Sie sie stattdessen als Teil der Symboldeklaration.",
+        "keyValueCols": "WARNUNG: Schlüssel=Wert-Spalten werden von MIRO nicht unterstützt und werden ignoriert. Bitte verwenden Sie nur Spaltenüberschriften.",
+        "invalidSkipEmpty": "WARNUNG: skipEmpty größer als 1 wird in MIRO nicht unterstützt (Symbol(e): '%s'). Ungültige Werte wurden auf 1 gesetzt.",
+        "invalidSqueeze": "WARNUNG: Ungültiger Wert für squeeze-Option (Symbol(e): '%s'). Erlaubte Werte sind: 1, y, 0, n. Ungültige Werte wurden auf 1 gesetzt.",
+        "invalidOptions": "WARNUNG: Ungültige, MIRO unbekannte Optionen in Index gefunden: '%s'",
+        "scalarDeclarations": "WARNUNG: Sowohl skalare Tabellendeklaration als auch einzelne skalare Deklaration im Index gefunden. Einzeldeklaration wird ignoriert, wenn Skalar bereits Teil der Tabelle ist!"
+      },
+      "errors":{
+        "badFormat": "FEHLER: Datei ist keine gültige Excel-Datei.",
+        "indexNoSymInfo": "FEHLER: Konnte keine Symbolnamensinformationen im Index finden.",
+        "indexNoRangeInfo": "FEHLER: Konnte keine Bereichsinformationen im Index finden.",
+        "indexInvalidRdim": "FEHLER: Symbol(e): '%s' haben ungültige Zeilendimension.",
+        "indexInvalidCdim": "FEHLER: Symbol(e): '%s' haben ungültige Spaltendimension.",
+        "indexInvalidDim": "FEHLER: Symbol(e): '%s' haben ungültige Dimension.",
+        "indexDuplicateRdim": "FEHLER: rowdim-Spalte konnte nicht eindeutig identifiziert werden.",
+        "indexDuplicateCdim": "FEHLER: coldim-Spalte konnte nicht eindeutig identifiziert werden.",
+        "indexDuplicateIgnoreCol": "FEHLER: ignoreColumns-Spalte konnte nicht eindeutig identifiziert werden.",
+        "indexDuplicateSkipEmpty": "FEHLER: skipEmpty-Spalte konnte nicht eindeutig identifiziert werden.",
+        "indexDuplicateSqueeze": "FEHLER: squeeze-Spalte konnte nicht eindeutig identifiziert werden.",
+        "indexInvalidRdimCol": "FEHLER: rowdim-Spalte ist nicht ganzzahlig.",
+        "indexInvalidCdimCol": "FEHLER: coldim-Spalte ist nicht ganzzahlig.",
+        "indexInvalidValues": "FEHLER: Ungültige 'values'-Optionen gefunden für Symbol(e): '%s'. Mögliche Optionen sind: auto, nodata, yn, sparse, dense.",
+        "symbolNotFound": "FEHLER: Symbol: '%s' nicht in Excel-Datei gefunden.",
+        "badIndexRange": "FEHLER: Der eingegebene Indexbereich ist ungültig.",
+        "badSymbolRange": "FEHLER: Ungültiger Bereich für Symbol: '%s'.",
+        "badSymbolDim": "FEHLER: Symbol '%s' hat ungültige Abmessungen.",
+        "invalidRecords": "FEHLER: Ungültige Datensätze in Symbol '%s' gefunden: '%s'.",
+        "duplicateSymbols": "FEHLER: Symbol(e): '%s' wurde(n) mehrfach deklariert. Bitte stellen Sie sicher, dass jedes Symbol nur einmal deklariert wird.",
+        "duplicateScalars": "FEHLER: Skalar(e): '%s' wurden mehrfach deklariert. Bitte stellen Sie sicher, dass jedes Symbol nur einmal deklariert wird.",
+        "duplicateScalarVE": "FEHLER: Skalarvariable(n)/Gleichung(en): '%s' wurden mehrfach deklariert. Bitte stellen Sie sicher, dass jedes Symbol nur einmal deklariert wird.",
+        "invalidRange": "FEHLER: Ungültige Bereichsinformation.",
+        "invalidColRange": "FEHLER: Ungültige Zeilendimension."
+      }
     },
     "invalidFileType":{  
       "title":"Ungültiger Dateityp",

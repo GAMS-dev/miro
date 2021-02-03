@@ -19,7 +19,11 @@ if(!identical(loadMode, "scen")){
                                   scalarsFileHeaders = scalarsFileHeaders,
                                   templates = modelInTemplateTmp, method = loadMode,
                                   fileName = loadModeFileName, DDPar = DDPar, GMSOpt = GMSOpt,
-                                  dfClArgs = dfClArgs)$tabular
+                                  dfClArgs = dfClArgs, xlsio = xlsio, csvio = csvio)
+    if(length(scenInputData$errors)){
+      loadErrors <- scenInputData$errors
+    }
+    scenInputData <- scenInputData$tabular
     if(!length(scenInputData)){
       return()
     }
@@ -82,11 +86,7 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
       }else{
         # single dropdown, slider or date
         
-        # get row names that need to be extracted from scalar table
-        rowName <- tolower(names(modelIn)[[i]])
-        # get column name of ID and value column
-        colId    <- scalarsFileHeaders[1]
-        colValue <- scalarsFileHeaders[3]
+        scalarName <- tolower(names(modelIn)[[i]])
         
         # check whether scalar dataset has already been imported
         if(is.null(scalarDataset)){
@@ -101,22 +101,22 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
           # double slider has two scalar values saved
           if((modelIn[[i]]$type == "slider" && length(modelIn[[i]]$slider$default) > 1) || 
              (modelIn[[i]]$type == "daterange")){
-            dataTmp <- scalarDataset[tolower(scalarDataset[[colId]]) %in% 
-                                       paste0(rowName, c("$lo", "$up")), ][[colValue]]
+            dataTmp <- scalarDataset[[3]][tolower(scalarDataset[[1]]) %in% 
+                                            paste0(scalarName, c("$lo", "$up"))]
             if(identical(modelIn[[i]]$type, "slider")){
               dataTmp <- as.numeric(dataTmp)
             }
-            if(!is.null(dataTmp) && length(dataTmp)){
+            if(length(dataTmp) && !all(is.na(dataTmp))){
               modelInputData[[i]]      <<- dataTmp
               
               if(isTRUE(modelIn[[i]]$slider$single) ||
                  isTRUE(modelIn[[i]]$slider$double)){
-                modelInputDataHcubeTmp  <- scalarDataset[tolower(scalarDataset[[colId]]) %in% 
-                                                           paste0(rowName, "$step"), ][[colValue]]
+                modelInputDataHcubeTmp  <- scalarDataset[[3]][tolower(scalarDataset[[1]]) ==
+                                                                paste0(scalarName, "$step")]
                 if(isTRUE(modelIn[[i]]$slider$double)){
                   modelInputDataHcubeTmp <- c(modelInputDataHcubeTmp, 
-                                              scalarDataset[tolower(scalarDataset[[colId]]) %in% 
-                                                              paste0(rowName, "$mode"), ][[colValue]])
+                                              scalarDataset[[3]][tolower(scalarDataset[[1]]) ==
+                                                                   paste0(scalarName, "$mode")])
                 }
                 modelInputDataHcube[[i]] <<- as.numeric(modelInputDataHcubeTmp)
               }
@@ -124,9 +124,8 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
               newInputCount <<- newInputCount + 1
             }
           }else{
-            dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[colId]]) == rowName, 
-                                            colValue, drop = FALSE], use.names = FALSE)
-            if(length(dataTmp) && length(dataTmp)){
+            dataTmp <- scalarDataset[[3]][tolower(scalarDataset[[1]]) == scalarName]
+            if(length(dataTmp) && !all(is.na(dataTmp))){
               if(identical(modelIn[[i]]$type, "dropdown")){
                 dataTmp <- strsplit(dataTmp, "||", fixed = TRUE)[[1]][1]
               }
