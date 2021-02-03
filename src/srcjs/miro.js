@@ -689,11 +689,6 @@ $(document).keyup((event) => {
     return;
   } // ENTER will confirm modal dialogues
 
-  if (event.keyCode === 27) {
-    $('.modal').modal('hide');
-    return;
-  } // ESC will close modal dialogues
-
   if (!event.ctrlKey || !event.altKey) {
     return;
   }

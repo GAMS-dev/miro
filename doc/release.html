@@ -85,6 +85,11 @@
                                       <li>When comparing base scenarios in Hypercube Mode, they now get the names assigned to them in Base Mode.</li>
                                       <li>When comparing scenarios generated in Hypercube Mode, they now get the names: <kbd>HC (1)</kbd>, <kbd>HC (2)</kbd> etc.</li>
                                       <li>Add a dropdown button to select between Tab and Pivot comparison modes when comparing scenarios in Hypercube Mode.</li>
+                                      <li>In a <a href="./customize.html#custom-renderers">custom renderer</a>, the values of all output scalars can now be accessed via the argument <kbd>outputScalarsFull</kbd>.</li>
+                                      <li>It is now possible to pivot columns in output tables as well.</li>
+                                      <li>Show "More..." tab only if there are at least 2 tabs in this group.</li>
+                                      <li>Custom aliases for GAMS symbols as well as symbol domains are now automatically removed when the Configuration Mode is started and the symbols for these custom aliases are no longer part of the data contract.</li>
+                                      <li>Results of Hypercube jobs solved on <a href="https://www.gams.com/engine/" target="_blank">GAMS Engine</a> are now deleted after download.</li>
                                     </ul>
                                     <h3>Bug fixes</h3>
                                     <ul>
@@ -95,10 +100,18 @@
                                       <li>MIRO Pivot: Fix issue where only "count" was selectable as aggregation function for variables and equations.</li>
                                       <li>Fix incorrect switch to pivot view when comparing scenarios in Hypercube Mode and the current mode is split view. Now switches to tab view correctly.</li>
                                       <li>Fix issue with solving Hypercube jobs with attachments.</li>
+                                      <li>Fix issue with solving Hypercube jobs with the <a href="./widgets.html#dropdown-option-clearvalue">clearValue</a> option.</li>
                                       <li>The pivot comparison mode is now better integrated into the Hypercube Mode.</li>
                                       <li>Fix issue when importing/exporting slider and dropdown data from Hypercube job configurations.</li>
                                       <li>Fix import of a single scalar from CSV file.</li>
+                                      <li>Fix issue where a numeric input widget would send wrong values in certain situations.</li>
+                                      <li>Configuration Mode: When adding a new input widget group, the group name was not added to the list of input tabs used to set the tab order.</li>
+                                      <li>Fix issue in Configuration Mode where the wrong widgets ended up in a widget group in certain situations.</li>
+                                      <li>Date and date range widgets without selected date return an empty string now instead of NA.</li>
+                                      <li>Fix checkbox return value to be 1/0 instead of TRUE/FALSE in Hypercube Mode.</li>
+                                      <li>Fix job status and import of Hypercube jobs when using <a href="https://www.gams.com/engine" target="_blank">GAMS Engine</a> in Hypercube Mode.</li>
                                       <li>Fixed an issue where numericinput would send wrong values in certain situatios.</li>
+                                      <li>Fix issue where custom R packages were installed every time MIRO was restarted.</li>
                                     </ul>
                                  </div>
                             </section>

@@ -10,6 +10,12 @@ getSelectizeAliases <- function(app, selector){
   options <- app$getDebugLog("browser")$message
   return(rev(substr(options, 1, nchar(options) -4)))
 }
+addSelectizeOption <- function(app, selector, value, alias = value){
+  return(app$waitFor(paste0("$('", selector, "')[0].selectize.addOption({value:'", value, "',label: '", alias, "'});true;"), timeout = 50))
+}
+selectSelectizeOption <- function(app, selector, value){
+  return(app$waitFor(paste0("$('", selector, "')[0].selectize.addItem('", value, "');true;"), timeout = 50))
+}
 
 expect_download_size <- function(app, id, filename, tolerance = 100){
   url <- app$findElement(paste0("#", id))$getAttribute("href")

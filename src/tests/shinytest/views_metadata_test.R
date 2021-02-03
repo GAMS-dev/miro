@@ -21,6 +21,7 @@ expect_true(app$waitFor("$('#viewsInvalidDataError').is(':visible');", timeout =
 app$uploadFile(file_addViews = "../data/bad-views2.json")
 expect_true(app$waitFor("$('#viewsInvalidDataError').is(':visible');", timeout = 50))
 app$uploadFile(file_addViews = "../data/good-views.json")
+Sys.sleep(0.5)
 expect_error(app$findElement("#currentViewsTable tbody tr"), NA)
 expect_true(app$waitFor("$('#viewsCustomError')[0].innerText.includes('idontexist')",
                         timeout = 50))

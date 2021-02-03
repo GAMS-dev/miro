@@ -468,7 +468,7 @@ $call [...] gams "[...]\transport.gms" --HCUBE_SCALARV_mins=20 --HCUBE_SCALARV_b
                                                </div><!--//icon-holder-->
                                                <div class="content">
                                                    <b class="callout-title">Note:</b>
-                                                   <p>The GAMS options and double-dash parameters associated with a scenario are stored in MIRO's internal database. However, the information about them is lost when a scenario is exported as a GDX file. We therefore recommend using singleton sets instead of command line parameters. Both the element label and the element text of a set can be migrated to compile time variables using the Dollar Control Options 
+                                                   <p>The GAMS options and double-dash parameters associated with a scenario are stored in MIRO's internal database. However, the information about them is lost when a scenario is exported as a GDX file. This is especially relevant in Hypercube Mode, where data exchange is done via GDX files. We therefore recommend using singleton sets instead of command line parameters. Both the element label and the element text of a set can be migrated to compile time variables using the Dollar Control Options 
                                            <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset" target = "__blank">eval.Set</a>, 
                                            <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalglobalset" target = "__blank">evalGlobal.Set</a>, 
                                            and <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevallocalset" target = "__blank">evalLocal.Set</a>.</p>
@@ -555,6 +555,15 @@ $offExternalInput
                                           <li>Double-dash parameters</li>
                                           <li>GAMS options</li>
                                         </ul>
+                                        <div class="callout-block callout-warning">
+                                               <div class="icon-holder">
+                                                   <i class="fas fa-info-circle"></i>
+                                               </div><!--//icon-holder-->
+                                               <div class="content">
+                                                   <b class="callout-title">Note:</b>
+                                                   <p>A scenario originating from a Hypercube job has no information about GAMS options and double-dash parameters (read more <a href="./model.html#command-line">here</a>). Therefore, a filter for these compile-time variables can only be applied to Base Mode scenarios.</p>
+                                           </div><!--//content-->
+                                        </div><!--//callout-block-->
                                         <p>In addition to these scenario-specific filters, scenario metadata such as the optionally defined job tags and the creation date can also be used in a database query. You can combine any of these filters with the logical operators <i>AND</i> and <i>OR</i> (see figure below).</p>
                                         <div class="section-block" style="text-align:center;">
                                             <img class="img-fluid" src="assets/images/batch_img/hcube_db_query.png" alt="Filtered database search" />

@@ -10,6 +10,9 @@ updateSelectInputNoClear <- function(session, id, choices){
                     choices = choices, 
                     selected = selected)
 }
+isNonSingletonSet <- function(symName){
+  return(length(modelInRaw[[symName]]$headers) == 2L)
+}
 
 langSpecificWidget <- list()
 langSpecificWidget$widgetOptionsInput <- setNames(c("slider", "dropdown", "checkbox", "numericinput"),
@@ -354,7 +357,7 @@ observeEvent({input$widget_symbol
     }
   }else if(any(startsWith(input$widget_symbol, c(prefixDDPar, prefixGMSOpt)))){
     currentWidgetSymbolName <<- input$widget_symbol
-    if(startsWith(currentWidgetSymbolName,prefixGMSOpt)){
+    if(startsWith(currentWidgetSymbolName, prefixGMSOpt)){
       showElReplaceTxt(session, "#optionConfigMsg", 
                        sprintf(lang$adminMode$widgets$ui$optionConfigMsg, 
                                substring(currentWidgetSymbolName, nchar(prefixGMSOpt) + 1L)))
@@ -371,7 +374,7 @@ observeEvent({input$widget_symbol
     if(!currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
       showEl(session, "#noWidgetConfigMsg")
     }
-    if(length(modelInRaw[[input$widget_symbol]]$headers) == 2L){
+    if(isNonSingletonSet(input$widget_symbol)){
       widgetOptions <- langSpecificWidget$widgetOptionsSet
     }else{
       flog.error("Unknown input symbol: '%s'.", input$widget_symbol)
@@ -391,7 +394,7 @@ observeEvent({input$widget_symbol
       selectedType <- "sliderrange"
     }else if(identical(selectedType, "dropdown") && 
              (isTRUE(configJSON$inputWidgets[[currentWidgetSymbolName]]$multiple) ||
-              length(modelInRaw[[currentWidgetSymbolName]]$headers) == 2L)){
+              length(isNonSingletonSet(currentWidgetSymbolName)))){
       selectedType <- "multidropdown"
     }
     if(!selectedType %in% widgetOptions){
@@ -1724,7 +1727,21 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
     hideEl(session, "#noWidgetMsg")
     noWidgetSymbols <<- FALSE
   }
+  if(isNonSingletonSet(currentWidgetSymbolName)){
+    # need to remove set from overwrite sheet order as it is no longer a widget
+    tabId <- match(currentWidgetSymbolName, inputTabs)
+    if(!is.na(tabId)){
+      inputTabs <<- inputTabs[-tabId]
+      newSheetOrder <- inputTabs
+      if(length(input$general_overwriteSheetOrderInput)){
+        newSheetOrder <- inputTabs[order(match(inputTabs, input$general_overwriteSheetOrderInput))]
+      }
+      updateSelectInput(session, "general_overwriteSheetOrderInput", 
+                        choices = newSheetOrder, selected = newSheetOrder)
+    }
+  }
   removeModal()
+  hideEl(session, "#noWidgetConfigMsg")
   showHideEl(session, "#widgetUpdateSuccess", 4000L)
   updateTabsetPanel(session, "widget_symbol_type", "gams")
 })
@@ -1745,6 +1762,20 @@ observeEvent(input$deleteWidgetConfirm, {
     updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
   }else if(currentWidgetSymbolName %in% scalarInputSymWithAliases){
     showEl(session, "#noWidgetConfigMsg")
+  }
+  if(isNonSingletonSet(currentWidgetSymbolName)){
+    # need to add set to overwrite sheet order as it is no longer a widget
+    tabId <- match(currentWidgetSymbolName, inputTabs)
+    if(is.na(tabId)){
+      inputTabs <<- c(inputTabs, 
+                      inputSymMultiDim[match(currentWidgetSymbolName, inputSymMultiDim)])
+      newSheetOrder <- inputTabs
+      if(length(input$general_overwriteSheetOrderInput)){
+        newSheetOrder <- inputTabs[order(match(inputTabs, input$general_overwriteSheetOrderInput))]
+      }
+      updateSelectInput(session, "general_overwriteSheetOrderInput", 
+                        choices = newSheetOrder, selected = newSheetOrder)
+    }
   }
   removeModal()
   showHideEl(session, "#widgetUpdateSuccess", 4000L)

@@ -33,7 +33,7 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     if(!length(logoPath) || !file.exists(logoPath)){
         stop("App logo does not exist.", call. = FALSE)
     }
-    private$logoFile <- paste0("app_logo.", tools::file_ext(logoPath))
+    private$logoFile <- logoPath
     private$logoB64  <- getLogoB64(logoPath)
     return(invisible(self))
   },
