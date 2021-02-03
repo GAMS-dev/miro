@@ -193,7 +193,7 @@ observeEvent({input$table_symbol
                                      tableType = "bigdata",
                                      label = currentConfig$label,
                                      readonly =  checkLength(configuredTable, currentConfig[["readonly"]], FALSE),
-                                     pivotCols = checkLength(configuredTable, currentConfig$pivotCols, "_"))
+                                     pivotCols = checkLength(configuredTable, currentConfig[["pivotCols"]], "_"))
       }else{
         rv$tableWidgetConfig <- list(widgetType = "table",
                                      tableType = "default",
@@ -212,12 +212,23 @@ observeEvent({input$table_symbol
         rv$refreshInputTableType <- rv$refreshInputTableType + 1L
       }
     }else if(currentTableSymbolName %in% outputSymMultiDimChoices){
+      pivotCols <<- NULL
+      if(length(outputSymHeaders[[currentTableSymbolName]]) > 2L){
+        numericHeaders <- vapply(modelOut[[currentTableSymbolName]]$headers, 
+                                 function(header) identical(header$type, "numeric"), 
+                                 logical(1L), USE.NAMES = FALSE)
+        if(sum(numericHeaders) <= 1L){
+          pivotCols <<- setNames(names(modelOut[[currentTableSymbolName]]$headers)[!numericHeaders],
+                                 outputSymHeaders[[currentTableSymbolName]][!numericHeaders])
+        }
+      }
       if(currentTableSymbolName %in% names(configJSON$outputTables)){
         currentConfig <- configJSON$outputTables[[currentTableSymbolName]]
         configuredTable <<- TRUE
       }else{
         configuredTable <<- FALSE
       }
+      rv$tableWidgetConfig$pivotCols          <<- checkLength(configuredTable, currentConfig$pivotCols, "_")
       rv$tableWidgetConfig$class              <<- checkLength(configuredTable, currentConfig$class,              "display")
       rv$tableWidgetConfig$filter             <<- checkLength(configuredTable, currentConfig$filter,             "bottom")
       rv$tableWidgetConfig$options$pageLength <<- checkLength(configuredTable, currentConfig$options$pageLength, 15L)
@@ -263,12 +274,12 @@ getSymbolHotOptions <- function(){
                               lang$adminMode$graphs$miroPivotOptions$infoMsgDummyData)),
     conditionalPanel(condition = "input.inputTable_type!=='pivot'",
                      checkboxInput_MIRO("table_readonly", lang$adminMode$widgets$table$readonly, value = rv$tableWidgetConfig$readonly),
-                     conditionalPanel(condition = paste0("true===", if(length(pivotCols)) "true" else "false"),
-                                      tags$div(class="option-wrapper",
-                                               selectInput("table_pivotCols", lang$adminMode$widgets$table$pivotCols, 
-                                                           choices = c(`_` = "_", pivotCols), 
-                                                           selected = if(length(rv$tableWidgetConfig$pivotCols)) rv$tableWidgetConfig$pivotCols else "_"))
-                     )),
+                     if(length(pivotCols))
+                       tags$div(class="option-wrapper",
+                                selectInput("table_pivotCols", lang$adminMode$widgets$table$pivotCols, 
+                                            choices = c(`_` = "_", pivotCols), 
+                                            selected = if(length(rv$tableWidgetConfig$pivotCols)) rv$tableWidgetConfig$pivotCols else "_"))
+    ),
     conditionalPanel(condition = "input.inputTable_type==='default' && (input.table_pivotCols==null || input.table_pivotCols==='_')",
                      tags$div(class="option-wrapper",
                               selectInput("table_readonlyCols", lang$adminMode$widgets$table$readonlyCols, 
@@ -289,6 +300,10 @@ getSymbolHotOptions <- function(){
 getOutputTableOptions <- reactive({
   tagList(
     tags$div(class="shiny-input-container option-wrapper", style = "max-width:400px;",
+             if(length(pivotCols))
+               selectInput("outputTable_pivotCols", lang$adminMode$widgets$table$pivotCols, 
+                           choices = c(`_` = "_", pivotCols), 
+                           selected = if(length(rv$tableWidgetConfig$pivotCols)) rv$tableWidgetConfig$pivotCols else "_"),
              selectInput("outputTable_class", lang$adminMode$tables$dt$class$label, 
                          choices = langSpecificTable$class, 
                          selected = rv$tableWidgetConfig$class),
@@ -317,6 +332,9 @@ getOutputTableOptions <- reactive({
   )
 })
 
+observeEvent(input$outputTable_pivotCols, {
+  rv$tableWidgetConfig$pivotCols <<- input$outputTable_pivotCols
+})
 observeEvent(input$outputTable_class, {
   rv$tableWidgetConfig$class <<- input$outputTable_class
 })
@@ -448,11 +466,16 @@ output$outputTable_preview <- renderDT({
   data <- createTableData(input$table_symbol, "_")
   
   headersTmp <- unname(data$headers)
-  data <- data$data
+  data <- as_tibble(data$data)
   showEl(session, "#outputTable_preview")
   dtOptions <- rv$tableWidgetConfig
   dtOptions$editable <- FALSE
-  dtOptions$colnames <- headersTmp
+  attr(data, "aliases") <- headersTmp
+  if(identical(dtOptions$pivotCols, "_")){
+    dtOptions$pivotCols <- NULL
+  }else{
+    names(data) <- names(modelOut[[input$table_symbol]]$headers)
+  }
   return(renderDTable(data, dtOptions, render = FALSE))
 })
 
@@ -815,6 +838,9 @@ observeEvent(virtualActionButton(input$saveTableConfirm, rv$saveTableConfirm), {
     }
   }else if(currentTableSymbolName %in% outputSymMultiDimChoices){
     configJSON$outputTables[[currentTableSymbolName]] <<- rv$tableWidgetConfig
+    if(identical(configJSON$outputTables[[currentTableSymbolName]]$pivotCols, "_")){
+      configJSON$outputTables[[currentTableSymbolName]]$pivotCols <<- NULL
+    }
     if(isTRUE(input$outputTable_noGraph)){
       configJSON$dataRendering[[currentTableSymbolName]] <<- rv$tableWidgetConfig
       configJSON$dataRendering[[currentTableSymbolName]]$outType <<- "datatable"

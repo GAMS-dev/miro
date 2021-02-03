@@ -8,7 +8,9 @@ filePathEnc2 <- nativeFileEnc(file.path(getwd(), "dätä/test_gdxio.gdx"))
 filePathEnc3 <- nativeFileEnc(file.path(getwd(), "dätä/tests_gdxioeq.gdx"))
 filePathEnc4 <- nativeFileEnc(file.path(getwd(), "dätä/tests_gdxiouni.gdx"))
 
-gdxio <- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", "bin"), c(modelInRaw, modelOut), 
+gdxio <- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO",
+                             if(identical(tolower(Sys.info()[["sysname"]]), "windows")) 
+                               file.path("bin", "x64") else "bin"), c(modelInRaw, modelOut), 
                    scalarsFileName, scalarsOutName, 
                    scalarEquationsName, 
                    scalarEquationsOutName,

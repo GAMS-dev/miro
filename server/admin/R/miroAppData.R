@@ -1,3 +1,7 @@
+getLogoName <- function(appId, logoFile){
+    return(paste0(appId, "_logo.", tools::file_ext(logoFile)))
+}
+
 extractAppData <- function(miroAppPath, appId, logoFile = NULL){
     modelPath <- file.path(MIRO_MODEL_DIR, appId)
     dataPath  <- file.path(MIRO_DATA_DIR, paste0("data_", appId))
@@ -19,18 +23,18 @@ extractAppData <- function(miroAppPath, appId, logoFile = NULL){
     addAppLogo(appId, logoFile)
 }
 
-addAppLogo <- function(appId, logoFile = NULL, newLogoName = NULL){
+addAppLogo <- function(appId, logoFile = NULL){
     logoDir <- file.path(MIRO_DATA_DIR, "logos")
     modelPath <- file.path(MIRO_MODEL_DIR, appId)
     if(length(logoFile)){
-        if(length(newLogoName)){
+        if(startsWith(logoFile, "/")){
             logoPath <- logoFile
         }else{
             logoPath <- file.path(modelPath, logoFile)
-            newLogoName <- basename(logoFile)
         }
+        newLogoName <- getLogoName(appId, logoFile)
         if(!file.exists(logoPath)){
-            stop("Logo does not exist.", call. = FALSE)
+            stop(sprintf("Logo: %s does not exist.", logoPath), call. = FALSE)
         }
         file.copy2(logoPath,
             file.path(logoDir, newLogoName))

@@ -339,7 +339,7 @@ if(LAUNCHHCUBEMODE){
                                                                    modelIn[[i]]$
                                                                      dropdown$choices)]))
                  if(isTRUE(modelIn[[i]]$dropdown$clearValue)){
-                   return(substring(text, 2L))
+                   return(substring(text, 6L))
                  }
                }else{
                  text <- ""
@@ -350,17 +350,24 @@ if(LAUNCHHCUBEMODE){
                return(paste0(parPrefix, "= ", escapeGAMSCL(value), text))
              },
              date = {
-               return(paste0(parPrefix, "= ", escapeGAMSCL(
-                 as.character(input[["date_" %+% i]]))))
+               value <- as.character(isolate(input[[paste0("date_", i)]]))
+               if(is.na(value)){
+                 value <- ""
+               }
+               return(paste0(parPrefix, "= ", escapeGAMSCL(value)))
              },
              daterange = {
                value <- as.character(input[["daterange_" %+% i]])
-               
+               emptyDate <- is.na(value)
+               if(any(emptyDate)){
+                 value[emptyDate] <- ""
+               }
                return(paste0(parPrefix, "_lo= ", escapeGAMSCL(value[1]), 
                              '|"""|', parPrefix, "_up= ", escapeGAMSCL(value[2])))
              },
              checkbox = {
-               return(paste0(parPrefix, "= ", input[["cb_" %+% i]]))
+               return(paste0(parPrefix, "= ", 
+                             if(identical(isolate(input[[paste0("cb_", i)]]), TRUE)) 1L else 0L))
              },
              numericinput = {
                valueTmp <- input[["numeric_" %+% i]]

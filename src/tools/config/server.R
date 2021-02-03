@@ -85,8 +85,29 @@ allInputSymHeaders <- allInputSymHeaders[!duplicated(allInputSymHeaders)]
 configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, 
                                                   simplifyDataFrame = FALSE, 
                                                   simplifyMatrix = FALSE))
+# remove invalid symbols from overwriteAliases and overwriteHeaderAliases
+if(length(invalidAliases)){
+  configJSON[["overwriteAliases"]][invalidAliases] <- NULL
+}
+if(length(invalidHeaderAliases)){
+  configJSON[["overwriteHeaderAliases"]][invalidHeaderAliases] <- NULL
+}
 source(file.path("components", "md_parser.R"), local = TRUE)
 markdownParser <- MarkdownParser$new()
+
+inputWidgets <- names(modelIn)[vapply(modelIn, function(el){
+  if(el$type %in% c("hot", "dt", "custom")){
+    return(FALSE)
+  }
+  return(TRUE)
+}, logical(1L), USE.NAMES = FALSE)]
+inputWidgetAliases <- vapply(seq_along(configJSON$inputWidgets)[match(inputWidgets, names(configJSON$inputWidgets))], 
+                             function(widgetId){
+                               if(length(configJSON$inputWidgets[[widgetId]]$alias)){
+                                 return(configJSON$inputWidgets[[widgetId]]$alias)
+                               }
+                               return(names(configJSON$inputWidgets)[widgetId])
+                             }, character(1L), USE.NAMES = FALSE)
 
 server_admin <- function(input, output, session){
   rv <- reactiveValues(plotly_type = 0L, saveGraphConfirm = 0L, resetRE = 0L,
@@ -96,23 +117,11 @@ server_admin <- function(input, output, session){
                        saveWidgetConfirm = 0L, updateLeafletGroups = 0L, 
                        saveTableConfirm = 0L, widgetTableConfig = list(), table_symbol = 0L,
                        reset_table_input = 0L, refreshOptions = 0L, refreshInputTableType = 0L)
-  inputWidgets <- names(modelIn)[vapply(modelIn, function(el){
-    if(el$type %in% c("hot", "dt", "custom")){
-      return(FALSE)
-    }
-    return(TRUE)
-  }, logical(1L), USE.NAMES = FALSE)]
   session$sendCustomMessage("gms-setGAMSSymbols", 
                             list(gamsSymbols = list(inSym = unname(inputSymMultiDim), 
                                                     inAlias = names(inputSymMultiDim),
                                                     inWid = inputWidgets,
-                                                    inWidAlias = vapply(seq_along(configJSON$inputWidgets)[names(configJSON$inputWidgets) %in% inputWidgets], 
-                                                                        function(widgetId){
-                                                                          if(length(configJSON$inputWidgets[[widgetId]]$alias)){
-                                                                            return(configJSON$inputWidgets[[widgetId]]$alias)
-                                                                          }
-                                                                          return(names(configJSON$inputWidgets)[widgetId])
-                                                                        }, character(1L), USE.NAMES = FALSE),
+                                                    inWidAlias = inputWidgetAliases,
                                                     outSym = names(modelOut),
                                                     outAlias = modelOutAlias),
                                  lang = lang$adminMode$graphs$js))

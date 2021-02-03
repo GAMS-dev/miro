@@ -107,7 +107,7 @@ server <- function(input, output, session){
             logoPath <- miroAppValidator$getLogoFile()
             logoURL  <- "default_logo.png"
             if(length(logoPath)){
-                logoURL <- basename(logoPath)
+                logoURL <- getLogoName(appId, logoPath)
             }else{
                 logoPath <- NULL
             }
@@ -223,9 +223,8 @@ server <- function(input, output, session){
                 if(!length(logoPath)){
                     stop("Logo file not found.", call. = FALSE)
                 }
-                newLogoName <- paste0("app_logo.", tools::file_ext(logoPath))
-                addAppLogo(appId, logoPath,
-                    newLogoName = newLogoName)
+                newLogoName <- getLogoName(appId, logoPath)
+                addAppLogo(appId, logoPath)
             }
             
             modelConfig$update(appIndex, list(displayName = input$updateApp$title,
@@ -259,10 +258,7 @@ server <- function(input, output, session){
             flog.info("Apps: %s and %s swapped positions.", idFrom, idTo)
             session$sendCustomMessage("onSuccess", 
                     list(requestType = "updateOrder", 
-                        idFrom = idFrom,
-                        idTo = idFrom,
-                        idFromRaw = input$updateAppOrder$idFromRaw, 
-                        idToRaw = input$updateAppOrder$idToRaw))
+                        configList = modelConfig$getConfigList()))
         }, error = function(e){
             errMsg <- sprintf("Problems reordering apps. Error message: %s", 
                     conditionMessage(e))

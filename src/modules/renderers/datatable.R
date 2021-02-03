@@ -9,7 +9,17 @@ renderDTable <- function(data, options, roundPrecision = 2, render = TRUE){
   #
   # Returns:
   #   DT object or renderDT object with data and options specified
-  if(length(attr(data, "aliases"))){
+  if(length(options$pivotCols)){
+    pivotIdx <- match(options$pivotCols[[1]], names(data))[1]
+    aliasesTmp <- attr(data, "aliases")[-c(pivotIdx, length(data))]
+    data <- pivot_wider(data, names_from = !!pivotIdx, 
+                        values_from = !!length(data),
+                        names_sort = isTRUE(options$sortPivotCols))
+    options[["pivotCols"]] <- NULL
+    if(length(aliasesTmp)){
+      names(data)[seq_along(aliasesTmp)] <- aliasesTmp
+    }
+  }else if(length(attr(data, "aliases"))){
     names(data) <- attr(data, "aliases")
   }
   
