@@ -135,7 +135,6 @@ output[["scenExportHandler"]] <- downloadHandler(
         data[[scalarOutIdx]] <- filterScalars(scalarData[[scenIdLong]], modelOut[[scalarsOutName]], "output")
       }
     }
-    removeModal()
     
     if(length(data)){
       names(data) <- c(names(modelOut), inputDsNames)
@@ -147,7 +146,7 @@ output[["scenExportHandler"]] <- downloadHandler(
       
       if(!length(outputDataToExport) && !length(inputDataToExport)){
         flog.info("No datasets selected. Nothing will be exported.")
-        showHideEl(session, "#exportNoDsSelected", 4000L)
+        showElReplaceTxt(session, "#scenExportError", lang$nav$dialogExportScen$noDsSelected)
         return(downloadHandlerError(file, lang$nav$dialogExportScen$noDsSelected))
       }
       data <- data[names(data) %in% c(outputDataToExport, inputDataToExport)]
@@ -159,12 +158,26 @@ output[["scenExportHandler"]] <- downloadHandler(
     prog$set(value = 0.2)
     
     if(identical(exportFileType, "gdx")){
-      return(gdxio$wgdx(file, data, squeezeZeros = "n"))
+      tryCatch({
+        gdxio$wgdx(file, data, squeezeZeros = "n")
+        removeModal()
+      }, error_duplicate_records = function(e){
+        flog.info("Duplicate records found when writing GDX file: %s", conditionMessage(e))
+        showElReplaceTxt(session, "#scenExportError", conditionMessage(e))
+      })
+      return()
     }else if(identical(exportFileType, "miroscen")){
-      
-      return(generateMiroScen(file, scenMetaData[[scenIdLong]],
-                              data, attachments, views, scenId))
+      tryCatch({
+        generateMiroScen(file, scenMetaData[[scenIdLong]],
+                         data, attachments, views, scenId)
+        removeModal()
+      }, error_duplicate_records = function(e){
+        flog.info("Duplicate records found when writing GDX file: %s", conditionMessage(e))
+        showElReplaceTxt(session, "#scenExportError", conditionMessage(e))
+      })
+      return()
     }else if(identical(exportFileType, "csv")){
+      removeModal()
       if(length(data) == 0L){
         return(readr::write_csv(tibble(), file))
       }else if(length(data) == 1L){
@@ -189,12 +202,14 @@ output[["scenExportHandler"]] <- downloadHandler(
       return(suppressWarnings(zip::zipr(file, list.files(tmpDir, full.names = TRUE), 
                                         recurse = FALSE, include_directories = FALSE)))
     }
+    removeModal()
     return(xlsio$write(file, data, scenMetaData[[scenIdLong]],
                        includeMetadataSheet = config$excelIncludeMeta,
                        includeEmptySheets = config$excelIncludeEmptySheets))
   }
 )
 observeEvent(input[["scenRemoteExportHandler"]], {
+  hideEl(session, "#scenExportError")
   scenId <- suppressWarnings(as.integer(input[["scenExportId"]]))
   if(is.na(scenId) || scenId < 1L){
     flog.error("Problems exporting scenario with ID: '%s'. This looks like an attempt to tamper with the app!", 
@@ -217,7 +232,7 @@ observeEvent(input[["scenRemoteExportHandler"]], {
       dsToExport <- dsToExport[dsToExport %in% input$selDataToExport]
       if(!length(dsToExport)){
         flog.info("No datasets selected. Nothing will be exported.")
-        showHideEl(session, "#exportNoDsSelected", 4000L)
+        showElReplaceTxt(session, "#scenExportError", lang$nav$dialogExportScen$noDsSelected)
         return()
       }
     }

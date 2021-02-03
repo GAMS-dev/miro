@@ -750,9 +750,13 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
       jobSid <- activeScen$getSid()
     }
     worker$run(dataModelRun$inputData, dataModelRun$pfFileContent, jobSid)
+  }, error_duplicate_records = function(e){
+    flog.info("Problems writing GDX file. Duplicate records found: %s", conditionMessage(e))
+    errMsg <<- conditionMessage(e)
   }, error = function(e) {
+    flog.error("GAMS did not execute successfully. Error message: %s.",
+               conditionMessage(e))
     errMsg <<- lang$errMsg$gamsExec$desc
-    flog.error("GAMS did not execute successfully (model: '%s'). Error message: %s.", modelName, e)
   })
   if(is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))){
     return(NULL)
