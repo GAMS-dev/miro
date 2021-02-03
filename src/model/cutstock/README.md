@@ -36,5 +36,5 @@ subject to
 $$ \sum_{p \in P} a_{i, p} x_p  \geq  d_i&nbsp;&nbsp;&nbsp;&nbsp;\forall i \in I $$
 
 ### Results:
-Output tab 'patterns used' in the shows the different patterns and the used amount. Equal paper roll widths are shown in the same color. Waste is shown in white. In the example below, pattern 2, consisting of 4 paper rolls of width 31 and 2 paper rolls of width 36 with a waste of 3, is cut a total of 49 times. 
+The output tab 'Patterns used' shows the different patterns and the quantity used. Equal paper roll widths are shown in the same color. The waste is shown in white. In the following example, pattern 2, consisting of 4 paper rolls of width 31 and 2 paper rolls of width 36 with a waste of 3, is cut a total of 49 times. 
 <img class="center-block" style="max-height:225pt;margin: 25pt auto;" src="static_cutstock/readme_output.png">
