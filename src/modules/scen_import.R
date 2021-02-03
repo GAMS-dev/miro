@@ -91,8 +91,14 @@ observeEvent(input$localInput, {
     tryCatch({
       xlsio$rInitFile(input$localInput$datapath)
       xlsSheets <- xlsio$getSheetNames()
+      if("_index" %in% xlsSheets){
+        selectedIndex <- "_index"
+      }else{
+        selectedIndex <- "-"
+        enableEl(session, "#btImportLocal")
+      }
       updateSelectInput(session, "selExcelIndexSheet", choices = c("-", xlsSheets),
-                        selected = if("_index" %in% xlsSheets) "_index" else "-")
+                        selected = selectedIndex)
     }, error_bad_format = function(e){
       flog.info("Problems initializing excel file to read. Error message: %s", conditionMessage(e))
       showElReplaceTxt(session, "#localDataImportError", conditionMessage(e))
