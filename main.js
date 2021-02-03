@@ -1396,6 +1396,8 @@ ipcMain.on('settings-select-new-path', async (e, id, defaultPath) => {
             });
         }
       }
+    } else {
+      settingsWindow.webContents.send('settings-new-path-selected', id, pathSelected[0]);
     }
   }
 });
