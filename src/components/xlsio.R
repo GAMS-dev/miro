@@ -163,12 +163,20 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       }
       
       if("ignorerows" %in% names(index) && !is.na(index$ignorerows)){
-        rowsToIgnore <- private$rangeToIndex(index$ignorerows, allowLetters = FALSE)
+        rowsToIgnore <- tryCatch(private$rangeToIndex(index$ignorerows, allowLetters = FALSE),
+                                 error_parse_config = function(e){
+                                   stop_custom("error_parse_config",
+                                               sprintf(lang$errMsg$xlsio$errors$badSymbolRange, symName), call. = FALSE)
+                                 })
       }else{
         rowsToIgnore <- integer(0L)
       }
       if("ignorecols" %in% names(index) && !is.na(index$ignorecols)){
-        colsToIgnore <- private$rangeToIndex(index$ignorecols, allowLetters = TRUE)
+        colsToIgnore <- tryCatch(private$rangeToIndex(index$ignorecols, allowLetters = TRUE),
+                                 error_parse_config = function(e){
+                                   stop_custom("error_parse_config",
+                                               sprintf(lang$errMsg$xlsio$errors$badSymbolRange, symName), call. = FALSE)
+                                 })
       }else{
         colsToIgnore <- integer(0L)
       }
