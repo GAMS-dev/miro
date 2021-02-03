@@ -351,14 +351,18 @@
     "dialogImport":{
       "title":"加载数据",
       "tabLocal": "本地",
-	  "tabExternal": "外部",							
+      "tabExternal": "外部",							
       "tabDatabase": "数据库",
       "tabHcube": "Hypercube",
       "hcubeHashDesc":"输入要加载的场景的哈希值（来自Hypercube模式），单击该场景并加载。",
       "hcubeHashButton":"搜索",
       "hcubeHashNoMatch":"未找到与输入的哈希值相匹配的场景。",
-      "selInputData":"选择要加载的数据集",
-	  "selExternalSource": "选择外部数据源",
+      "selInputData":"选择要加载的输入数据",
+      "selDecimalSep": "选择小数点分隔符",
+      "selDelim": "选择定界符",
+      "selExcelIndexSheet": "选择索引工作表",
+      "excelIndexSheetRng": "选择指数范围",
+      "selExternalSource": "选择外部数据源",
       "descLocal":"选择要加载数据的文件",
       "newScenName":"为新场景选择一个名称",
       "scenNameExistsErr":"该场景名称已存在。",
@@ -374,6 +378,10 @@
       "tabDatabase": "Hypercube",
       "tabBase":"基本模式",
       "selInputData":"选择要导入的数据集",
+      "selDecimalSep": "选择小数点分隔符",
+      "selDelim": "选择定界符",
+      "selExcelIndexSheet": "选择索引工作表",
+      "excelIndexSheetRng": "选择指数范围",
       "descLocal":"选择要导入数据的文件",
       "newScenName":"为新的Hypercube作业配置选择一个名称",
       "badScenName":"请指定一个有效的名称",
@@ -428,11 +436,11 @@
         "stag":"场景标签",
         "readPerm":"读取权限",
         "writePerm":"写入权限",
-        "execPerm": "执行权限"
+        "execPerm": "执行权限",
+        "symbol": "符号名称",
+        "desc": "描述"
       },
-      "inputPrefix": "",
       "inputSuffix":"（输入）",
-      "outputPrefix": "",
       "outputSuffix":"（输出）"
     },
     "dialogLockScen":{
@@ -773,6 +781,54 @@
   "errMsg":{
     "unknownError":"出现意外错误。如果此问题仍然存在,请与系统管理员联系。",
     "permErr":"操作失败,因为没有足够的权限。",
+    "csvio":{
+      "warnings":{
+        "ambiguousDelim": "警告：文件的定界符无法唯一标识。 请在下面手动选择。"
+      },
+      "errors":{
+        "noColsSelected": "错误：您必须至少选择一列来导入。",
+        "badDelim": "错误：无法确定定界符。 有效的分隔符为：'%s'。",
+        "duplicateCol": "错误：不支持同一列的多项选择。",
+        "badEncoding": "您上传的文件不是UTF-8编码的。 不支持UTF-8以外的其他编码！"
+      }
+    },
+    "xlsio":{
+      "warnings":{
+        "invalidSymbols": "警告：Excel文件中的无效符号被忽略：'%s'。",
+        "skipOptionsPersistence": "警告：一些非空行被跳过。MIRO不支持像'skipEmpty'这样具有持久性的选项。请将它们声明为符号声明的一部分。",
+        "keyValueCols": "警告：MIRO不支持键=值列，它们将被忽略。 请仅使用列标题。",
+        "invalidSkipEmpty": "警告：MIRO不支持大于1的 skipEmpty (符号：'%s')。无效值已被设置为1。",
+        "invalidSqueeze": "警告：挤压选项的值无效（符号：'%s'）。 允许值为：1，y，0，n。 无效值设置为1。",
+        "invalidOptions": "警告：MIRO未知的无效选项在索引'%s'中找到。",
+        "scalarDeclarations": "警告：在索引中发现标量表声明和单个标量声明。如果标量已经是表的一部分，单个声明将被忽略。"
+      },
+      "errors":{
+        "badFormat": "错误：文件不是有效的Excel文件。",
+        "indexNoSymInfo": "错误：在索引中找不到符号名称信息。",
+        "indexNoRangeInfo": "错误：在索引中找不到范围信息。",
+        "indexInvalidRdim": "错误：符号：'%s'具有无效的行尺寸。",
+        "indexInvalidCdim": "错误：符号：'%s'具有无效的列尺寸。",
+        "indexInvalidDim": "错误：符号：'%s'的尺寸无效。",
+        "indexDuplicateRdim": "错误：无法唯一标识rowdim列。",
+        "indexDuplicateCdim": "错误：无法唯一识别coldim列。",
+        "indexDuplicateIgnoreCol": "错误：不能唯一地标识ignoreColumns列。",
+        "indexDuplicateSkipEmpty": "错误：无法唯一标识skipEmpty列。",
+        "indexDuplicateSqueeze": "错误：无法唯一识别squeeze列。",
+        "indexInvalidRdimCol": "错误：rowdim列不是整数。",
+        "indexInvalidCdimCol": "错误：coldim列不是整数。",
+        "indexInvalidValues": "错误：发现符号（%s）的无效“值”选项。 可能的选项是：auto，nodata，yn，sparse，dense。",
+        "symbolNotFound": "错误：符号：在Excel文件中找不到'%s'。",
+        "badIndexRange": "错误：输入的索引范围无效。",
+        "badSymbolRange": "错误：符号'%s'的范围无效。",
+        "badSymbolDim": "错误：符号'%s'具有无效的尺寸。",
+        "invalidRecords": "错误：在符号'%s'中找到无效的记录：'%s'。",
+        "duplicateSymbols": "错误：符号：'%s'已被多次声明。 请确保每个符号仅声明一次。",
+        "duplicateScalars": "错误：标量：'%s'已被声明多次。 请确保每个符号仅声明一次。",
+        "duplicateScalarVE": "错误：标量变量/等式：'%s'已被声明多次。 请确保每个符号仅声明一次。",
+        "invalidRange": "错误：范围规格无效。",
+        "invalidColRange": "错误：无效的列范围规范。"
+      }
+    },
     "fileRead":{
       "title":"读取文件时出错",
       "desc":"读取以下文件时出现错误：'%s'。"

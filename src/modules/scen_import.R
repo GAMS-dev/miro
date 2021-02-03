@@ -1,11 +1,168 @@
 # load input data from local file
+observe({
+  if(!is.character(input$selExcelIndexSheet) ||
+     length(input$selExcelIndexSheet) != 1L ||
+     is.null(input$excelIndexSheetRng)){
+    return()
+  }
+  hideEl(session, "#localDataImportError")
+  if(identical(input$selExcelIndexSheet, "-")){
+    return(enableEl(session, "#btImportLocal"))
+  }
+  disableEl(session, "#btImportLocal")
+  range <- input$excelIndexSheetRng
+  if(tryCatch({
+    cellranger::as.cell_limits(range)
+    FALSE
+  }, warning = function(w){
+    flog.debug("Invalid index cell range entered while importing spreadsheet")
+    return(TRUE)
+  }, error = function(e){
+    flog.debug("Invalid index cell range entered while importing spreadsheet")
+    return(TRUE)
+  })){
+    showElReplaceTxt(session, "#localDataImportError", lang$errMsg$xlsio$errors$badIndexRange)
+    return()
+  }
+  tryCatch({
+    xlsio$readIndex(input$localInput$datapath,
+                    indexRange = paste0('"', input$selExcelIndexSheet, "!", range, '"'),
+                    forceInit = TRUE)
+    rWarn <- xlsio$getWarnings()
+    if(length(rWarn)){
+      showElReplaceTxt(session, "#localDataImportError", paste(rWarn, collapse = "\n"))
+    }
+    enableEl(session, "#btImportLocal")
+  }, error_parse_config = function(e){
+    flog.info("Problems parsing index sheet (local Excel import). Error message: %s", conditionMessage(e))
+    showElReplaceTxt(session, "#localDataImportError", conditionMessage(e))
+  }, error = function(e){
+    flog.warn("Problems parsing index sheet (local Excel import). Error message: %s", conditionMessage(e))
+    showElReplaceTxt(session, "#localDataImportError", lang$errMsg$unknownError)
+  })
+})
+output$csvHeaderMapping <- renderUI({
+  req(rv$importCSV, input$selInputDataLocCSV)
+  symSelected <- input$selInputDataLocCSV
+  if(!is.character(symSelected) ||
+     length(symSelected) != 1L ||
+     !symSelected %in% c(names(ioConfig$modelInRaw), ioConfig$hcubeScalars)){
+    flog.error("selInputDataLocCSV has bad format. This is most likely because the user is trying to tamper with the app!")
+    return(list())
+  }
+  if(length(csvio$getRDelim()) > 1L){
+    req(input$csvDelim)
+    csvio$setRDelim(input$csvDelim)
+  }
+  if(symSelected %in% ioConfig$hcubeScalars){
+    symHeaders <- ioConfig$modelIn[[symSelected]]$headers
+  }else{
+    symHeaders <- ioConfig$modelInRaw[[symSelected]]$headers
+  }
+  csvHeaders <- csvio$getHeaders()
+  return(lapply(seq_along(symHeaders), function(hdrIdx){
+    column(6L,
+           selectInput(paste0("csvInputHdr_", hdrIdx),
+                       label = symHeaders[[hdrIdx]]$alias,
+                       choices = c("-", csvHeaders),
+                       selected = if(hdrIdx > length(csvHeaders)) "-" else csvHeaders[hdrIdx])
+           )
+  }))
+})
 observeEvent(input$localInput, {
-  if(useGdx &&
-     identical(tolower(tools::file_ext(basename(input$localInput$datapath))),
-               "miroscen")){
+  hideEl(session, "#localDataImportError")
+  fileExt <- tolower(tools::file_ext(basename(input$localInput$datapath)))
+  if(length(fileExt) != 1L){
+    flog.error("Bad file extension format. This looks like an attempt to tamper with the app!")
+    return(showElReplaceTxt(session, "#localDataImportError", lang$errMsg$unknownError))
+  }
+  flog.debug("New local file with extension: %s uploaded", fileExt)
+  if(useGdx && identical(fileExt, "miroscen")){
+    hideEl(session, "#localInputSelectManually")
+  }else if(fileExt %in% csvio$getValidExtensions()){
     hideEl(session, "#localInputSelectManually")
   }else{
     showEl(session, "#localInputSelectManually")
+  }
+  if(fileExt %in% c("xls", "xlsx")){
+    showEl(session, "#localInputExcelOptions")
+    hideEl(session, "#localInputCsvOptions")
+    disableEl(session, "#btImportLocal")
+    tryCatch({
+      xlsio$rInitFile(input$localInput$datapath)
+      xlsSheets <- xlsio$getSheetNames()
+      if("_index" %in% xlsSheets){
+        selectedIndex <- "_index"
+      }else{
+        selectedIndex <- "-"
+        enableEl(session, "#btImportLocal")
+      }
+      updateSelectInput(session, "selExcelIndexSheet", choices = c("-", xlsSheets),
+                        selected = selectedIndex)
+    }, error_bad_format = function(e){
+      flog.info("Problems initializing excel file to read. Error message: %s", conditionMessage(e))
+      showElReplaceTxt(session, "#localDataImportError", conditionMessage(e))
+    }, error = function(e){
+      flog.warn("Problems initializing excel file to read. Error message: %s", conditionMessage(e))
+      showElReplaceTxt(session, "#localDataImportError", lang$errMsg$unknownError)
+    })
+    return()
+  }else if(fileExt %in% csvio$getValidExtensions()){
+    hideEl(session, "#localInputExcelOptions")
+    showEl(session, "#localInputCsvOptions")
+    disableEl(session, "#btImportLocal")
+    if(!length(modelInToImport)){
+      return()
+    }
+    if(!identical(length(input$selInputDataLocCSV), 1L)){
+      showHideEl(session, "#importScenError", 4000L)
+      flog.error("selInputDataLocCSV has invalid format. This looks like an attempt to tamper with the app!")
+      return()
+    }
+    tryCatch({
+      symId <- match(tolower(tools::file_path_sans_ext(input$localInput$name)),
+                     c(names(ioConfig$modelInRaw), ioConfig$hcubeScalars))
+      if(!is.na(symId)){
+        updateSelectInput(session, "selInputDataLocCSV",
+                          selected = c(names(ioConfig$modelInRaw), ioConfig$hcubeScalars)[symId])
+      }
+      csvio$rInitFile(input$localInput$datapath, needDelim = FALSE)
+      rv$importCSV <- rv$importCSV + 1L
+      hideEl(session, "#csvDelimWrapper")
+      enableEl(session, "#btImportLocal")
+    }, error_bad_delim = function(e){
+      flog.info("Problems detecting delimiter. Error message: %s", conditionMessage(e))
+      showElReplaceTxt(session, "#localDataImportError", conditionMessage(e))
+    }, error_bad_encoding = function(e){
+      flog.info("Invalid encoding detected. Error message: %s", conditionMessage(e))
+      showElReplaceTxt(session, "#localDataImportError", conditionMessage(e))
+    }, error_ambiguous_delim = function(e){
+      flog.debug("Delimiter could not be uniquely identified.")
+      rv$importCSV <- rv$importCSV + 1L
+      showElReplaceTxt(session, "#localDataImportError",
+                       lang$errMsg$csvio$warnings$ambiguousDelim)
+      updateSelectInput(session, "csvDelim", choices = csvio$getRDelim())
+      showEl(session, "#csvDelimWrapper")
+      enableEl(session, "#btImportLocal")
+    }, error = function(e){
+      flog.warn("Problems initializing delimited value file. Error message: %s", conditionMessage(e))
+      showElReplaceTxt(session, "#localDataImportError", lang$errMsg$unknownError)
+    })
+    return()
+  }else{
+    hideEl(session, "#localInputExcelOptions")
+    hideEl(session, "#localInputCsvOptions")
+    if(identical(fileExt, "zip") ||
+       (useGdx && fileExt %in% c("miroscen", "gdx"))){
+      enableEl(session, "#btImportLocal")
+      return()
+    }
+    disableEl(session, "#btImportLocal")
+    showElReplaceTxt(session, "#localDataImportError",
+                     sprintf(lang$errMsg$invalidFileType$desc,
+                             paste0(c("xls", "xlsx", "zip", csvio$getValidExtensions(),
+                                      if(useGdx) c("miroscen", "gdx")),
+                                    collapse = ",")))
   }
 })
 observeEvent(input$btImportLocal, {
@@ -14,16 +171,71 @@ observeEvent(input$btImportLocal, {
     return()
   }
   flog.debug("Load local data button clicked.")
-  errMsg <- NULL
   
-  # check whether current input datasets are empty
-  if(input$cbSelectManuallyLoc && length(input$selInputDataLoc)){
-    idsToFetch <- match(tolower(input$selInputDataLoc), names(modelIn))
-    # remove NAs
-    idsToFetch <- idsToFetch[!is.na(idsToFetch)]
-  }else{
-    idsToFetch <- seq_along(modelIn)
+  fileExt <- tolower(tools::file_ext(basename(input$localInput$datapath)))
+  if(length(fileExt) != 1L){
+    flog.error("Bad file extension format. This looks like an attempt to tamper with the app!")
+    return(showElReplaceTxt(session, "#localDataImportError", lang$errMsg$unknownError))
   }
+  if(fileExt %in% csvio$getValidExtensions()){
+    decimalSep <- input$csvDecimalSep
+    if(!is.character(decimalSep) || length(decimalSep) != 1L){
+      flog.error("csvDecimalSep has bad format. This is most likely because the user is trying to tamper with the app!")
+      showHideEl(session, "#importScenError", 4000L)
+      return()
+    }
+    symToFetch <- input$selInputDataLocCSV
+    idsToFetch <- match(symToFetch, names(modelIn))
+    if(!identical(length(idsToFetch), 1L) ||
+       is.na(idsToFetch)){
+      if(identical(symToFetch, scalarsFileName)){
+        # all scalars
+        idsToFetch <- seq_along(modelIn)[vapply(modelIn, function(inSym){
+          return(is.null(inSym$headers))
+        }, logical(1L), USE.NAMES = FALSE)]
+      }else{
+        flog.error("selInputDataLocCSV has invalid format. This looks like an attempt to tamper with the app!")
+        showElReplaceTxt(session, "#localDataImportError", lang$errMsg$unknownError)
+        return()
+      }
+    }
+    if(symToFetch %in% ioConfig$hcubeScalars){
+      colsToRead <- vapply(seq_along(ioConfig$modelIn[[symToFetch]]$headers), function(hdrIdx){
+        return(input[[paste0("csvInputHdr_", hdrIdx)]])
+      }, character(1L), USE.NAMES = FALSE)
+    }else{
+      colsToRead <- vapply(seq_along(ioConfig$modelInRaw[[symToFetch]]$headers), function(hdrIdx){
+        return(input[[paste0("csvInputHdr_", hdrIdx)]])
+      }, character(1L), USE.NAMES = FALSE)
+    }
+    if(any(duplicated(colsToRead[colsToRead != "-"]))){
+      flog.info("Duplicate columns to read detected when uploading CSV file.")
+      return(showElReplaceTxt(session, "#localDataImportError",
+                              lang$errMsg$csvio$errors$duplicateCol))
+    }
+    if(length(csvio$getRDelim) > 1L){
+      csvio$setRDelim(input$csvDelim)
+    }
+    if(all(colsToRead == "-")){
+      flog.info("No columns to import have been selected.")
+      return(showElReplaceTxt(session, "#localDataImportError",
+                              lang$errMsg$csvio$errors$noColsSelected))
+    }
+    csvio$
+      setRSymName(symToFetch)$
+      setDecimalSep(decimalSep)$
+      setColsToRead(colsToRead, symToFetch)
+  }else{
+    # check whether current input datasets are empty
+    if(input$cbSelectManuallyLoc && length(input$selInputDataLoc)){
+      idsToFetch <- match(tolower(input$selInputDataLoc), names(modelIn))
+      # remove NAs
+      idsToFetch <- idsToFetch[!is.na(idsToFetch)]
+    }else{
+      idsToFetch <- seq_along(modelIn)
+    }
+  }
+  
   datasetsImported <- vapply(idsToFetch, function(i){
     if(length(isolate(rv[[paste0("in_", i)]]))){
       return(TRUE)
@@ -130,66 +342,23 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     datasetsToFetch <- substr(csvFiles$validFileNames, 1L, 
                               nchar(csvFiles$validFileNames) - 4L)
     loadModeWorkDir <- csvFiles$tmpDir
-  }else if(identical(fileType, "csv")){
-    loadMode <- "csv"
-    fileNameRaw <- character(0L)
-    if(is.character(input$localInput$name) && 
-       length(input$localInput$name) == 1L) {
-      fileNameRaw <- tolower(tools::file_path_sans_ext(input$localInput$name))
-    }
-    if(isTRUE(input$cbSelectManuallyLoc) && length(input$selInputDataLoc) > 0L){
-      if(any(!input$selInputDataLoc %in% names(modelInToImport))){
-        flog.error("Selected input dataset(s) is not in list of model data to import. This looks like an attempt to tamper with the app!")
-        showHideEl(session, "#importScenNoDsSelected", 4000L)
-        return()
-      }
-      if(length(input$selInputDataLoc) > 1L &&
-         any(tolower(input$selInputDataLoc) %in% modelInTabularData)){
-        flog.debug("Local file import stopped as multiple datasets were selected and not all of them are scalar datasets.")
-        showHideEl(session, "#symNotInDataSrc", 4000L)
-        return()
-      }
-      datasetsToFetch <- input$selInputDataLoc
-    }else if(length(fileNameRaw) && fileNameRaw %in% c(modelInTabularData, scalarsFileName)){
-      datasetsToFetch <- fileNameRaw
-    }else{
-      flog.debug("Local file import stopped as no datasheet was specified (must be specified when uploading csv files).")
-      showHideEl(session, "#importScenNoDsSelected", 4000L)
-      return()
-    }
-    if(any(tolower(datasetsToFetch) %in% modelInTabularData)){
-      fnTmp <- datasetsToFetch
-    }else{
-      fnTmp <- scalarsFileName
-    }
-    if(!file.rename(input$localInput$datapath, 
-                    paste0(loadModeWorkDir, .Platform$file.sep, 
-                           fnTmp, ".csv"))){
+  }else if(fileType %in% csvio$getValidExtensions()){
+    loadMode <- "scsv"
+    datasetsToFetch <- csvio$getRSymName()
+    if(!identical(input$selInputDataLocCSV, datasetsToFetch)){
+      flog.error("selInputDataLocCSV has invalid format. This looks like an attempt to tamper with the app!")
       showHideEl(session, "#importScenError", 4000L)
       return()
     }
   }else if(fileType %in% c("xls", "xlsx")){
     loadMode <- "xls"
-    # read Excel file
-    tryCatch({
-      xlsWbNames <- excel_sheets(input$localInput$datapath)
-    }, error = function(e) {
-      flog.error("Some error occurred reading the file: '%s'. Error message: %s.", as.character(isolate(input$localInput$name)), e)
-      errMsg <<- sprintf(lang$errMsg$GAMSInput$excelRead, as.character(isolate(input$localInput$name)))
-    })
-    if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
-      return()
-    }
-    xlsWbNames <- vapply(strsplit(xlsWbNames, " ", fixed = TRUE), "[[", character(1L), 1L)
-    # extract only sheets which are also in list of input parameters
-    datasetsToFetch <- xlsWbNames[tolower(xlsWbNames) %in% 
-                                    c(modelInTabularData, scalarsFileName, 
-                                      scalarInputSym)]
+    datasetsToFetch <- names(modelIn)
   }else{
     removeModal()
     showErrorMsg(lang$errMsg$invalidFileType$title, 
-                 sprintf(lang$errMsg$invalidFileType$desc, paste0(c("xls", "xlsx", "csv", if(useGdx) c("miroscen", "gdx")),
-                                                                  collapse = ",")))
+                 sprintf(lang$errMsg$invalidFileType$desc,
+                         paste0(c("xls", "xlsx", "zip",csvio$getValidExtensions(),
+                                  if(useGdx) c("miroscen", "gdx")), collapse = ",")))
     flog.info("Invalid file type: '%s' attempted to be imported. Import interrupted.", fileType)
     return()
   }
@@ -229,6 +398,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     showEl(session, "#data-in_" %+% i)
   })
   
+  loadErrors <- character(0L)
   source("./modules/input_load.R", local = TRUE)
   if(identical(fileType, "miroscen")){
     scenMetaData[["scen_1_"]] <<- activeScen$
@@ -262,7 +432,8 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
                                  scalarsFileHeaders = scalarsFileHeaders,
                                  templates = modelOutTemplate, method = loadMode,
                                  hiddenOutputScalars = config$hiddenOutputScalars, 
-                                 fileName = loadModeFileName) 
+                                 fileName = loadModeFileName, xlsio = xlsio)
+      loadErrors <- c(loadErrors, outputData$errors)
     }, error = function(e){
       flog.info("Problems loading output data. Error message: %s.", 
                 conditionMessage(e))
@@ -291,5 +462,8 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     showNotification(sprintf(lang$nav$notificationNewInput$new, newInputCount))
   }else{
     showNotification(lang$nav$notificationNewInput$noNew, type = "error")
+  }
+  if(length(loadErrors)){
+    showErrorMsg(lang$errMsg$dataError$title, paste(loadErrors, collapse = "\n"))
   }
 })

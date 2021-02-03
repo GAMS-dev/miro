@@ -83,7 +83,7 @@ lapply(seq_along(modelIn), function(i){
          date = {
            if(!is.null(isolate(input[[paste0("date_", i)]]))){
              value <- as.character(isolate(input[[paste0("date_", i)]]))
-             if(is.na(value)){
+             if(length(value) != 1L || is.na(value)){
                value <- ""
              }
            }else if(!is.null(modelIn[[i]]$date$value)){
@@ -99,7 +99,7 @@ lapply(seq_along(modelIn), function(i){
            addScalarVal(scalar, description, value)
          },
          daterange = {
-           if(!is.null(isolate(input[[paste0("daterange_", i)]]))){
+           if(length(isolate(input[[paste0("daterange_", i)]]))){
              value <- as.character(isolate(input[[paste0("daterange_", i)]]))
              emptyDate <- is.na(value)
              if(any(emptyDate)){
@@ -134,7 +134,8 @@ lapply(seq_along(modelIn), function(i){
            addScalarVal(scalar, description, value)
          },
          numericinput = {
-           if(!is.null(isolate(input[[paste0("numeric_", i)]]))){
+           if(length(isolate(input[[paste0("numeric_", i)]])) == 1L &&
+              !identical(isolate(input[[paste0("numeric_", i)]]), "")){
              value <- isolate(input[[paste0("numeric_", i)]])
            }else if(!is.null(modelIn[[i]]$numericinput$value)){
              value <- modelIn[[i]]$numericinput$value

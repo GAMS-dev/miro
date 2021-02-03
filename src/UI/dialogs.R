@@ -271,7 +271,25 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                                                                  accept = c("application/vnd.ms-excel", 
                                                                             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
                                                                             "application/zip", "text/csv", ".xlsx", ".csv", ".xls", ".zip",
-                                                                            ".gdx", ".miroscen"))
+                                                                            ".gdx", ".miroscen")),
+                                                       tags$div(class = "gmsalert gmsalert-error", id = "localDataImportError", 
+                                                                style = "position:relative;white-space:pre-line;", lang$errMsg$unknownError)
+                                                )
+                                              ),
+                                              fluidRow(
+                                                div(id = "localInputExcelOptions", style = "display: none",
+                                                    column(6,
+                                                           selectInput("selExcelIndexSheet", lang$nav[[modeDescriptor]]$selExcelIndexSheet, 
+                                                                       "-", 
+                                                                       multiple = FALSE, width = "100%")
+                                                    ),
+                                                    column(6,
+                                                           conditionalPanel(
+                                                             condition = "input.selExcelIndexSheet !== '-'",
+                                                             textInput("excelIndexSheetRng", lang$nav[[modeDescriptor]]$excelIndexSheetRng,
+                                                                       "A1")
+                                                           )
+                                                    ),
                                                 )
                                               ),
                                               fluidRow(
@@ -295,9 +313,33 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                                                 )
                                               ),
                                               fluidRow(
+                                                div(id = "localInputCsvOptions", style = "display: none",
+                                                    tags$div(class = "col-sm-6", id = "csvDelimWrapper", style = "display:none;",
+                                                           selectInput("csvDelim", lang$nav[[modeDescriptor]]$selDelim, 
+                                                                       NULL, 
+                                                                       multiple = FALSE, width = "100%")
+                                                    ),
+                                                    column(6,
+                                                           selectInput("csvDecimalSep", lang$nav[[modeDescriptor]]$selDecimalSep, 
+                                                                       c(".", ","), 
+                                                                       multiple = FALSE, width = "100%")
+                                                    ),
+                                                    column(6,
+                                                           selectInput("selInputDataLocCSV", lang$nav[[modeDescriptor]]$selInputData, 
+                                                                       if(length(ioConfig$modelInRaw))
+                                                                         c(setNames(names(ioConfig$modelInRaw), 
+                                                                                  vapply(ioConfig$modelInRaw, function(inSym){
+                                                                                    return(inSym$alias)
+                                                                                  }, character(1L), USE.NAMES = FALSE)), if(length(ioConfig$hcubeScalars)) setNames(ioConfig$hcubeScalars, vapply(ioConfig$hcubeScalars, function(hcubeScalar){ return(ioConfig$modelIn[[hcubeScalar]]$alias)}, character(1L), USE.NAMES = FALSE))) else NULL, 
+                                                                       multiple = FALSE, width = "100%")
+                                                    ),
+                                                    uiOutput("csvHeaderMapping")
+                                                )
+                                              ),
+                                              fluidRow(
                                                 tags$div(style = "text-align: center;",
-                                                         actionButton("btImportLocal", class = "bt-highlight-1 bt-gms-confirm", 
-                                                                      lang$nav[[modeDescriptor]]$okButton)
+                                                         actionButton("btImportLocal", class = "bt-highlight-1 bt-gms-confirm",
+                                                                      disabled = TRUE, lang$nav[[modeDescriptor]]$okButton)
                                                 )
                                               )
                                      ),

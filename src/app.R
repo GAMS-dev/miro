@@ -83,7 +83,8 @@ installedPackages <<- installed.packages()[, "Package"]
 filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./components/gdxio.R", 
                     "./components/json.R", "./components/scenario_metadata.R", "./components/views.R",
                     "./components/attachments.R", "./components/miroscenio.R",
-                    "./components/load_scen_data.R",
+                    "./components/load_scen_data.R", "./components/localfileio.R",
+                    "./components/xlsio.R", "./components/csvio.R",
                     "./components/data_instance.R", "./components/worker.R", 
                     "./components/dataio.R", "./components/hcube_data_instance.R", 
                     "./components/miro_tabsetpanel.R", "./modules/render_data.R", 
@@ -233,6 +234,7 @@ if(is.null(errMsg)){
   hcubeScalars <- getHcubeScalars(modelIn)
   ioConfig <<- list(modelIn = modelIn,
                     modelOut = modelOut,
+                    modelInRaw = modelInRaw,
                     inputDsNames = inputDsNames,
                     hcubeScalars = hcubeScalars,
                     inputDsNamesBase = inputDsNames[!inputDsNames %in% hcubeScalars],
@@ -1017,6 +1019,9 @@ if(!is.null(errMsg)){
           }
         }
         overwriteScenToImport <- !identical(Sys.getenv("MIRO_OVERWRITE_SCEN_IMPORT"), "false")
+        xlsio <- NULL
+        attachments <- NULL
+        
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
           dfClArgs <- NULL
@@ -1034,6 +1039,10 @@ if(!is.null(errMsg)){
           if(dataFileExt[i] %in% c("xls", "xlsx")){
             method <- "xls"
             tmpDir <- miroDataDir
+            if(is.null(xlsio)){
+              xlsio <- XlsIO$new()
+            }
+            xlsio$readIndex(file.path(tmpDir, miroDataFile))
           }else if(dataFileExt[i] == "zip"){
             method <- "csv"
             tmpDir <- tryCatch(
@@ -1058,15 +1067,18 @@ if(!is.null(errMsg)){
             views <- Views$new(names(modelIn),
                                names(modelOut),
                                ioConfig$inputDsNamesBase)
-            attachments <- Attachments$new(db, list(maxSize = attachMaxFileSize, maxNo = attachMaxNo,
-                                                    forbiddenFNames = c(if(identical(config$fileExchange, "gdx")) 
-                                                      c(MIROGdxInName, MIROGdxOutName) else 
-                                                        paste0(c(names(modelOut), inputDsNames), ".csv"),
-                                                      paste0(modelName, c(".log", ".lst")))),
-                                           tmpDir,
-                                           names(modelIn),
-                                           names(modelOut),
-                                           ioConfig$inputDsNamesBase)
+            if(is.null(attachments)){
+              attachments <- Attachments$new(db, list(maxSize = attachMaxFileSize, maxNo = attachMaxNo,
+                                                      forbiddenFNames = c(if(identical(config$fileExchange, "gdx")) 
+                                                        c(MIROGdxInName, MIROGdxOutName) else 
+                                                          paste0(c(names(modelOut), inputDsNames), ".csv"),
+                                                        paste0(modelName, c(".log", ".lst")))),
+                                             tmpDir,
+                                             names(modelIn),
+                                             names(modelOut),
+                                             ioConfig$inputDsNamesBase)
+            }
+            
             newScen <- Scenario$new(db = db, sname = "unnamed", isNewScen = TRUE,
                                     readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
                                     execPerm = c(uidAdmin, ugroups), uid = uidAdmin,
@@ -1114,14 +1126,22 @@ if(!is.null(errMsg)){
           }
           
           dataOut <- loadScenData(scalarsOutName, modelOut, tmpDir, modelName, scalarsFileHeaders,
-                                  modelOutTemplate, method = method, fileName = miroDataFile)$tabular
+                                  modelOutTemplate, method = method, fileName = miroDataFile, xlsio = xlsio)$tabular
+          if(length(dataOut$errors)){
+            flog.warn("Some problems occurred while reading output data: %s",
+                      paste(dataOut$errors, collapse = ", "))
+          }
           dataIn  <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp,
                                   workDir = tmpDir,
                                   modelName = modelName, errMsg = lang$errMsg$GAMSInput$badInputData,
                                   scalarsFileHeaders = scalarsFileHeaders,
                                   templates = modelInTemplateTmp, method = method,
                                   fileName = miroDataFile, DDPar = DDPar, GMSOpt = GMSOpt,
-                                  dfClArgs = dfClArgs)$tabular
+                                  dfClArgs = dfClArgs, xlsio = xlsio)$tabular
+          if(length(dataIn$errors)){
+            flog.warn("Some problems occurred while reading input data: %s",
+                      paste(dataIn$errors, collapse = ", "))
+          }
           if(!scalarsFileName %in% names(metaDataTmp) && length(c(DDPar, GMSOpt))){
             # additional command line parameters that are not GAMS symbols
             scalarsTemplate <- tibble(a = character(0L), b = character(0L), c = character(0L))
@@ -1282,8 +1302,10 @@ if(!is.null(errMsg)){
                            btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
                            btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
                            noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
-                           jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L)
+                           jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L, importCSV = 0L)
       
+      xlsio              <- XlsIO$new()
+      csvio              <- CsvIO$new()
       views              <- Views$new(names(modelIn),
                                       names(modelOut),
                                       ioConfig$inputDsNamesBase, rv)

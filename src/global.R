@@ -74,6 +74,10 @@ modelDir <- "model"
 prefixDDPar  <- "_gmspar_"
 prefixGMSOpt <- "_gmsopt_"
 
+# strings that indicate the value of a command line parameter should not 
+# be communicated with GAMS (will be unset)
+CLARG_MISSING_VALUES <- c("_", "system.empty", "")
+
 miroLanguage <- Sys.getenv("MIRO_LANG", "en")
 # get maximum number of lines to read for files
 maxSizeToRead <- 5e5

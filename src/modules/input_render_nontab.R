@@ -39,7 +39,13 @@ getScalarValue <- function(data, operator){
     return(scalarVal)
   }
 }
-
+isValidDropdownVal <- function(value){
+  if(is.null(value) || all(is.na(value)) ||
+     identical(value, "")){
+    return(FALSE)
+  }
+  return(TRUE)
+}
 getData     <- vector(mode = "list", length = length(modelInWithDep))
 getSelected <- vector(mode = "list", length = length(modelIn))
 inputInitialized <- vector(mode = "logical", length = length(modelInWithDep))
@@ -258,7 +264,8 @@ lapply(seq_along(modelIn), function(id){
              # observe changes of dropdown menu data
              observe({
                value <- getSelected[[id]]()
-               if(!is.null(value) && !identical(value, isolate(input[["dropdown_" %+% id]]))){
+               if(isValidDropdownVal(value) &&
+                  !identical(value, isolate(input[[paste0("dropdown_", id)]]))){
                  noCheck[id] <<- TRUE
                  updateSelectInput(session, "dropdown_" %+% id, selected = value)
                }
@@ -375,7 +382,7 @@ lapply(seq_along(modelIn), function(id){
              # observe changes of dropdown default value
              observe({
                value <- getSelected[[id]]()
-               if(!is.null(value) && !identical(value, selectedDepEl[[id]])){
+               if(isValidDropdownVal(value) && !identical(value, selectedDepEl[[id]])){
                  noCheck[id] <<- TRUE
                  updateSelectInput(session, paste0("dropdown_", id), selected = value)
                }
