@@ -28,7 +28,7 @@ configJSON$activateModules$attachments <- TRUE
 configJSON$extraClArgs <- c(configJSON$extraClArgs, "--sleep=1")
 if(.Platform$OS.type == 'windows'){
   # Windows
-  gamsliceFile <- file.path(path.expand("~"), "..", "AppData", "Local", "GAMS", "gamslice.txt")
+  gamsliceFile <- file.path(path.expand("~"), "GAMS", "gamslice.txt")
 }else if(grepl("^darwin", R.version$os)){
   # macOS
   gamsliceFile <- file.path(path.expand("~"), "Library", "Application Support", "GAMS", "gamslice.txt")
