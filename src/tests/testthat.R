@@ -4,6 +4,9 @@ if(!identical(RLibPath, "")) {
 }
 print(sessionInfo())
 
+print(.libPaths())
+print(path.expand("~"))
+
 library("testthat")
 library("stringi")
 library("tibble")
