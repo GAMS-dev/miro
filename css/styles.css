@@ -949,3 +949,23 @@ a:hover {
 .about-text {
   font-size:10pt;
 }
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #e2e3e8;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #848991;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: darken(#848991, 10%); 
+}
+@media (prefers-color-scheme: dark) {
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #292D33;
+  }
+}

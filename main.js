@@ -108,9 +108,6 @@ let aboutDialogWindow;
 let fileToOpen;
 let appLoaded = false;
 
-// enable overlay scrollbar
-app.commandLine.appendSwitch('--enable-features', 'OverlayScrollbar');
-
 function showErrorMsg(optionsTmp) {
   if (mainWindow) {
     const options = optionsTmp;

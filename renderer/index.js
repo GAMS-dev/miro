@@ -38,6 +38,11 @@ const $overlay = $('#overlayScreen');
 const $body = $('body');
 
 // credits to Paolo Bergantino @https://stackoverflow.com/questions/698301/is-there-a-native-jquery-function-to-switch-elements
+
+if (process.platform !== 'darwin') {
+  $body.addClass('custom-scrollbar');
+}
+
 jQuery.fn.swapWith = function swapWithOuter(to) {
   return this.each(function swapWithInner() {
     const copyTo = $(to).clone(true);
