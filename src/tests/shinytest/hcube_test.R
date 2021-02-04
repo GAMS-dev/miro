@@ -160,7 +160,7 @@ Sys.sleep(3)
 #check job history
 app$findElement("#btShowHistory")$click()
 Sys.sleep(3)
-expect_true(app$waitFor("$('#shiny-modal tr').length===3", timeout = 50))
+expect_true(app$waitFor("$('#shiny-modal tr td')[2].textContent==='4upload,manual submission,test'", timeout = 50))
 app$findElement("#shiny-modal .btn-default")$click()
 Sys.sleep(1)
 
