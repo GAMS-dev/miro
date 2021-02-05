@@ -1577,9 +1577,11 @@ observeEvent(input$date_separator, {
 observeEvent(input$text_placeholder, {
   rv$widgetConfig$placeholder <<- input$text_placeholder
 })
-observeEvent(input$numericinput_value, {
-  if(!is.numeric(input$numericinput_value))
+observeEvent(input$numericinput_value, ignoreNULL = FALSE, {
+  if(!is.numeric(input$numericinput_value)){
+    rv$widgetConfig$value <<- NULL
     return()
+  }
   rv$widgetConfig$value <<- input$numericinput_value
 })
 observeEvent(input$numericinput_min, ignoreNULL = FALSE, {
