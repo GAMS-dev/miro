@@ -81,7 +81,7 @@ if(is.null(errMsg)){
   modelOut          <- config[["outputSymbols"]]
   names(modelOut)   <- tolower(names(modelOut))
   
-  #TODO: Update API version when dataContract is used elsewhere than in Configuration mode
+  #TODO: Update API version when dataContract is used elsewhere than in Configuration Mode
   dataContract      <- list(inputSymbols = config[["inputSymbols"]],
                             outputSymbols = config[["outputSymbols"]])
   
@@ -89,7 +89,7 @@ if(is.null(errMsg)){
   config[["outputSymbols"]] <- NULL
   
   if(LAUNCHHCUBEMODE && !length(modelIn)){
-    errMsg <- "Can not launch Hypercube mode without having input data defined! Please define input data and try again."
+    errMsg <- "Can not launch Hypercube Mode without having input data defined! Please define input data and try again."
   }
   
   if(!length(config$pageTitle) || nchar(config$pageTitle) == 0L){
@@ -630,8 +630,9 @@ if(is.null(errMsg)){
     }
   })
   
-  # Hypercube mode configuration
+  # Hypercube Mode configuration
   if(LAUNCHHCUBEMODE){
+    hasExpandedWidgets <- FALSE
     scalarSymbolsBase <- lapply(seq_along(modelIn), function(i){
       if(!isTRUE(modelIn[[i]]$noHcube)){
         switch(modelIn[[i]]$type,
@@ -652,12 +653,13 @@ if(is.null(errMsg)){
                  modelIn[[i]]$dropdown$multiple <<- TRUE
                  modelIn[[i]]$dropdown$checkbox <<- TRUE
                  modelIn[[i]]$checkbox <<- NULL
+                 hasExpandedWidgets <<- TRUE
                  return(names(modelIn)[i])
                },
                dropdown = {
                  if(!isTRUE(modelIn[[i]]$dropdown$multiple)){
                    if(identical(modelIn[[i]]$symtype, "set")){
-                     warningMsgTmp <- sprintf("The dataset: '%s' is a set configured as a single dropdown menu. Single dropdown menus for sets are not expanded in Hypercube mode! Use singleton set instead.", 
+                     warningMsgTmp <- sprintf("The dataset: '%s' is a set configured as a single dropdown menu. Single dropdown menus for sets are not expanded in Hypercube Mode! Use singleton set instead.", 
                                               names(modelIn)[i])
                      warning(warningMsgTmp)
                      warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
@@ -666,6 +668,7 @@ if(is.null(errMsg)){
                      modelIn[[i]]$dropdown$single   <<- TRUE
                      modelIn[[i]]$dropdown$multiple <<- TRUE
                    }
+                   hasExpandedWidgets <<- TRUE
                    return(names(modelIn)[i])
                  }
                },
@@ -676,12 +679,13 @@ if(is.null(errMsg)){
                  }else{
                    modelIn[[i]]$slider$double <<- TRUE
                  }
+                 hasExpandedWidgets <<- TRUE
                },
                date =,
                daterange = ,
                textinput = ,
                numericinput = {
-                 warningMsgTmp <- sprintf("The dataset: '%s' uses a widget that is not supported in Hypercube mode.
+                 warningMsgTmp <- sprintf("The dataset: '%s' uses a widget that is not supported in Hypercube Mode.
                                    Thus, it will not be transformed and stays static.", 
                                           names(modelIn)[i])
                  warning(warningMsgTmp)
@@ -689,6 +693,9 @@ if(is.null(errMsg)){
                })
       }
     })
+    if(!hasExpandedWidgets){
+      errMsg <- "Can not launch Hypercube Mode without having scalar input widgets configured! Please configure widgets via the Configuration Mode and try again."
+    }
   }else{
     scalarSymbolsBase <- character(0L)
   }
