@@ -732,6 +732,7 @@ function createSettingsWindow() {
     frame: false,
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
       enableRemoteModule: false,
     },
   });
@@ -775,6 +776,7 @@ function openAboutDialog() {
     frame: false,
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
       enableRemoteModule: false,
     },
   });
@@ -816,6 +818,7 @@ function openCheckUpdateWindow() {
     frame: false,
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
       enableRemoteModule: false,
     },
   });
@@ -910,6 +913,7 @@ function createMainWindow(showRunningApps = false) {
     icon: process.platform === 'linux' ? path.join(__dirname, 'static', 'icon_64x64.png') : undefined,
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
       enableRemoteModule: false,
     },
   });
