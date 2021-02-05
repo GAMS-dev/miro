@@ -1789,11 +1789,6 @@ if(!is.null(errMsg)){
             return(FALSE)
           }
         }, logical(1), USE.NAMES = FALSE)
-        if(all(datasetsImported)){
-          addClassEl(session, "#btSolve", "glow-animation")
-        }else{
-          removeClassEl(session, "#btSolve", "glow-animation")
-        }
       })
       # UI elements (modalDialogs)
       source("./UI/dialogs.R", local = TRUE)

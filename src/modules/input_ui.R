@@ -1,8 +1,6 @@
 # generate modalDialog used to import input data
 observeEvent(input$btImport, {
   flog.debug("%s: Import input data button clicked.", uid)
-  #disable button animation
-  removeClassEl(session, "#btImport", "glow-animation")
   isInSolveMode <<- TRUE
   dbTagList     <- NULL
   maxNoScenExceeded <- FALSE
