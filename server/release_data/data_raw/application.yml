@@ -1,0 +1,52 @@
+proxy:
+  title: GAMS MIRO
+  template-path: ./templates/2col
+  favicon-path: ./favicon.ico
+  model-dir: ${GMS_MIRO_MODEL_DIR}
+  data-dir: ${GMS_MIRO_DATADIR}
+  miro-lang: en
+  super-admin: admin
+  super-admin-password: ${GMS_MIRO_SA_PWD}
+  port: 8080
+  heartbeat-rate: 10000
+  heartbeat-timeout: 120000
+  admin-groups: admins
+  container-log-path: /logs/container-logs
+  authentication: none 
+  users:
+  - name: admin
+    password: admin
+    groups: admins, users
+  - name: user
+    password: user
+    groups: users
+  database:
+    host: miroserver-db
+    port: 5432
+    name: ${GMS_MIRO_DATABASE}
+    username: ${GMS_MIRO_DATABASE_USER}
+    password: ${GMS_MIRO_DATABASE_PWD}
+  engine:
+    host: ${GMS_MIRO_ENGINE_HOST}
+    ns: ${GMS_MIRO_ENGINE_NS}
+    user: ${GMS_MIRO_ENGINE_USER}
+    password: ${GMS_MIRO_ENGINE_PWD}
+  docker:
+    url: http://dockerproxy:2375
+    internal-networking: true
+    container-network: miroserver-network
+    miro-image-name: ${GMS_MIRO_UI_IMAGE}
+    admin-image-name: ${GMS_MIRO_ADMIN_IMAGE}
+logging:
+  file:
+    /logs/miroproxy.log
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+   
+server:
+  servlet:
+    context-path: /

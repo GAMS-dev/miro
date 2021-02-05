@@ -120,7 +120,7 @@
                                         <b>Skip model execution</b>:</br>
                                         <p>In the MIRO menu of GAMS Studio there is the entry "Skip model execution". If this option is activated, the model is not executed before MIRO is started, but MIRO is called directly instead. This can be helpful if the model takes a long time to be solved. </p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                            <img class="img-fluid" style = "max-height:160pt;" src="assets/images/studio/skip_model_execution.png" alt="Skip model execution" />
+                                            <img class="img-fluid" style = "max-height:150pt;" src="assets/images/studio/skip_model_execution.png" alt="Skip model execution" />
                                         </div>
                                         <p>But: This option should be used with caution!</br> 
                                         If the model execution is skipped, the GAMS/MIRO data contract is not created or renewed. This means that changes made in the model are not communicated to MIRO. If you have a model that takes a long time to be solved and you don't want to run through it in order to launch MIRO, you can simply set the GAMS option <a href = "https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOaction" target = "_blank"><i>a=c</i></a> (action=compile) instead of the option "Skip model execution". This will only compile the model which is sufficient to update the data contract. Note that in this case a new default scenario is created, but it contains only input data and no output data.</p>
@@ -228,7 +228,7 @@
                                         You can add a <a href="./customize.html#miro-log">custom log</a> here too.
                                       </li>
                                       <li><span class="fa-li"><i class="fas fa-copy"></i></span><b>Compare scenarios:</b><br/>
-                                        Module for the comparison of results / scenarios in a split view mode or a multi-scenario comparison mode.
+                                        Module for the comparison of results / scenarios in a split view mode or two different multi-scenario comparison modes.
                                       </li>
                                     </ol>
                                     <p>In addition, the buttons for loading input data and for starting a GAMS run are located here:</p>
@@ -290,8 +290,8 @@
                                     <div id="import-data"  class="section-block">
                                         <h3 class="block-title">Import data</h3>
                                         <p>A GAMS MIRO app is quite useful if there is data to be visualized, e.g. in the form of tables, diagrams or other charts. This applies to output data as well as input data.
-                                        Input data that is to be visualized in MIRO can be imported either from existing scenarios in the database or via a local file (currently, this can be either a gdx container or an Excel spreadsheet).
-                                        To import such data, click on the <i>Load data</i> button in the navigation bar. The following dialog pops up:</p>
+                                        Input data that is to be visualized in MIRO can be imported either from existing scenarios in the database or via a local file (currently, this can be a MIROSCEN file, a GDX container, an Excel spreadsheet, or CSV files). A MIROSCEN file is a special file format used by MIRO to export and import a complete MIRO scenario. In contrast to other supported file formats like GDX, Excel or CSV, a MIROSCEN file includes <a href = "#scenario-metadata" class = "scrollto">metadata</a> such as tags, <a href="#metadata-views" class="scrollto">views</a>, <a href="#file-attachments" class="scrollto">attachments</a> etc.</p>
+                                        <p>To import such data, click on the <i>Load data</i> button in the navigation bar. The following dialog pops up:</p>
                                             <div class="row">
                                                 <div class="col-md-6">
                                                       <img class="img-fluid" src="assets/images/import-db.png" alt="Database import" />
@@ -317,22 +317,34 @@
                                                 <p>Every time you start a MIRO app in <a href = "./model.html#development-mode">development mode</a> (via GAMS Studio or the command line), the data relevant to MIRO is extracted from your model and stored in the MIRO database as a special scenario named <i>default</i>.</p>
                                             </div><!--//content-->
                                         </div><!--//callout-block-->
-                                        <p>To import a file from your local machine, either in the form of a gdx container, an Excel spreadsheet or a CSV file, select the menu item <i>Local</i> and click on </i>browse</i>. Navigate to the directory where your file resides and select it.
+                                        <p>To import a file from your local machine, either in the form of a MIROSCEN file, a GDX container, an Excel spreadsheet or a CSV file, select the menu item <i>Local</i> and click on </i>browse</i>. Navigate to the directory where your file resides and select it.
                                         Confirm the data import with a click on <i>import</i>. If you started with an empty sheet, a new, unnamed scenario is now shown in the interface. To save it, click on <i>Save as</i> and give it a name.</p>
+                                        <div class="callout-block callout-success">
+                                          <div class="icon-holder">
+                                            <i class="fas fa-thumbs-up"></i>
+                                           </div><!--//icon-holder-->
+                                           <div class="content">
+                                             <b class="callout-title">Note:</b>
+                                             <p>When importing CSV data, delimiters other than the comma are also supported. The currently supported delimiters are: <kbd>,</kbd> <kbd>tab</kbd> <kbd>;</kbd> <kbd>|</kbd> <kbd>:</kbd>.</p>
+                                           </div><!--//content-->
+                                        </div><!--//callout-block--> 
                                         <div style="outline: solid 1px black; outline-offset: 5px; margin:20px 0px">
                                             <h6 id = "excel-import-rules" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Excel spreadsheet - import rules</h6>
                                             <div class="section-block" style="display:none">
-                                                <p>If you want to use data from a spreadsheet, this spreadsheet must meet certain criteria regarding the format in which the data is provided:</p>
+                                                <p>If you want to import data from a spreadsheet, it must either contain an index sheet describing the layout of your data, or it must meet certain criteria regarding the format in which the data is provided.</p>
+                                                <h4>Workbook without index sheet</h4>
+                                                <p>If you do not want to create an index sheet, your Excel file must meet strict requirements:</p>
                                                 <ul>
-                                                  <li>Only one GAMS symbol file per sheet is allowed.</li>
-                                                  <li>The name of a sheet must be identical with the symbol name</li>
-                                                  <li>The first line must contain the column headings. The names of the column headers will be ignored.</li>
+                                                  <li>Only one GAMS symbol per worksheet</li>
+                                                  <li>The name of a sheet must be identical to the symbol name</li>
+                                                  <li>The first line must contain the column headers. The names of the column headers are ignored.</li>
+                                                  <li>All symbols must be in list view (no columns may be pivoted). The only exceptions to this rule are <a href="model.html#table-miro">tables</a>, where the last column must be pivoted.</li>
                                                   <br>The image below shows a valid spreadsheet for the transport model:
                                                   <div class="section-block" style="display:block; margin:auto;">
                                                       <img class="img-fluid" style="max-height:175pt;" src="assets/images/import_excel_file.png" alt="Valid Excel file" />
                                                   </div>
                                                   <br>For scalars there are 2 possibilities:<br> 
-                                                  <li>Either all scalar values are combined in one tab named "_scalars" or "_scalars_out" (separate sheets for input and output scalars). These tables must have 3 columns: scalar name, scalar description and scalar value.</li>
+                                                  <li>Either all scalar values are combined in one tab named <kbd>_scalars</kbd> or <kbd>_scalars_out</kbd> (separate sheets for input and output scalars). These tables must have 3 columns: <i>scalar</i>, <i>description</i> and <i>value</i>.</li>
                                                   <div class="section-block" style="display:block; margin:auto;">
                                                       <img class="img-fluid" style="max-height:175pt;" src="assets/images/import_excel_scalars.png" alt="All scalars in one sheet" />
                                                   </div>
@@ -340,11 +352,122 @@
                                                   <div class="section-block" style="display:block; margin:auto;">
                                                       <img class="img-fluid" style="max-height:175pt;" src="assets/images/import_excel_scalars_sep.png" alt="Separate sheets per scalar" />
                                                   </div>
-                                                  <li>If you want to import command line parameters/GAMS options, the symbol name must be preceded by "_gmspar_" or "_gmsopt_" (see screenshot above).</li>
-                                                  <li>To import scalar output variables and/or equations, the sheet name must be "_scalarsve_out". The table has to have 7 columns: symbol name, symbol description, level, marginal, lower, upper, scale.</li>
+                                                  <li>If you want to import command line parameters/GAMS options, the symbol name must be preceded by <kbd>_gmspar_</kbd> or <kbd>_gmsopt_</kbd> (see screenshot above).</li>
+                                                  <li>To import scalar output variables and/or equations, the sheet name must be <kbd>_scalarsve_out</kbd>. The table has to have 7 columns: <i>scalar</i>, <i>description</i>, <i>level</i>, <i>marginal</i>, <i>lower</i>, <i>upper</i>, <i>scale</i>.</li>
                                                   <div class="section-block" style="display:block; margin:auto;">
                                                       <img class="img-fluid" style="max-height:175pt;" src="assets/images/import_excel_vareq.png" alt="Scalar variable / equation" />
                                                   </div>
+                                                </ul>
+                                                <h4>Workbook with index sheet</h4>
+                                                <p>If you want more flexibility, you must create an index sheet that describes your layout. If you are already familiar with <a href="https://www.gams.com/latest/docs/T_GDXXRW.html" target="_blank">GDXXRW</a>, this will already be familiar to you. You can skip most of this chapter, but be aware of the differences between GDXXRW and MIRO that we list <a href="#gdxxrw-miro-diff" class="scrollto">below</a>. We encourage everyone to read the documentation of GDXXRW, especially the chapter about <a href="https://www.gams.com/latest/docs/T_GDXXRW.html#GDXXRW_EXAMPLES_READ_SPREADSHEET_INDEX" target="_blank">the index option</a>, as it covers the topic in much greater detail than we will do here.</p>
+                                                <p>When the layout of your data differs from the default layout described above, you need to tell MIRO where to find what. This can be achieved by a so-called index. Here you list all the GAMS symbols that are included in your workbook as well as the layout they are in.</p>
+                                                <div class="callout-block callout-warning">
+                                                    <div class="icon-holder">
+                                                        <i class="fas fa-info-circle"></i>
+                                                    </div><!--//icon-holder-->
+                                                    <div class="content">
+                                                        <b class="callout-title">Note:</b>
+                                                        <p>Unlike GDXXRW, MIRO already knows a lot about your data from the <a href="model.html#data-contract">GAMS/MIRO data contract</a>. This means that information such as the dimensions of your symbols is known to MIRO and does not need to be specified again.</p>
+                                                    </div><!--//content-->
+                                                </div><!--//callout-block-->
+                                                <p>The first three columns of the index range have a fixed interpretation: dataType, symbol identifier and dataRange. Even though MIRO does not need and ignores the dataType information, it is a good practice to specify it because it allows your worksheet to be read by both MIRO and GDXXRW.</p>
+                                                <p>The fourth and subsequent columns can be used for additional options. The column heading indicates the option name and the cell contents indicate the option value. Note that although GDXXRW allows options also in a comma-separated option=value format, MIRO does not support this.</p>
+                                                <p>Let's look at an example:</p>
+                                                <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                                    <img class="img-fluid" style="max-height:200pt;" src="assets/images/import-wb-index.png" alt="Example of index sheet" />
+                                                </div>
+                                                <p>The first thing you may notice is the name of the index sheet: <kbd>_index</kbd>. Although the index could be on any sheet and in any range, MIRO can automatically recognize it if the sheet is named <kbd>_index</kbd> and the index table starts in the upper left corner: <i>A1</i>. The most important information MIRO requires is the symbol name, range (columns <i>B</i> and <i>C</i>) and one of <kbd>rDim</kbd> (row dimension) or <kbd>cDim</kbd> (column dimension). If neither <kbd>rDim</kbd> nor <kbd>cDim</kbd> is supplied, MIRO will assume a default of <i>1</i> for <kbd>cDim</kbd>. This means that the last column is pivoted as is the case for the parameter <kbd>d</kbd>:</p>
+                                                <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                                    <img class="img-fluid" style="max-height:125pt;" src="assets/images/import-wb-d.png" alt="Layout of parameter d" />
+                                                </div>
+                                                <p>You can see that the last column (index <kbd>j</kbd>) is pivoted. Also note that we can ignore rows and columns via the <kbd>ignoreRows</kbd> and <kbd>ignoreColumns</kbd> options. In this example, we want to ignore the row <i>16</i> because it does not belong to the data for <kbd>d</kbd>, but for the set <kbd>j</kbd>, which is also read from the same range (<i>sheet1!L15:N16</i>). This brings us to the next option: <kbd>values</kbd>. Each tuple in a set can have associated text. To read a set from a spreadsheet, the <kbd>values</kbd> option is used to indicate whether there is data, and if so, whether the data should be interpreted as associated text or as an indicator of whether or not the tuple should be included in the set. In our example here, we use the <i>YN</i> option, which specifies that only tuples that have a data cell that is not empty and does not contain <i>0</i>, <i>N</i>, or <i>No</i> will be included. This means that in our example <i>j</i> only the tuple <i>New-York</i> is read. MIRO supports all options GDXXRW supports: <i>auto</i>, <i>noData</i>, <i>YN</i>, <i>sparse</i> and <i>dense</i>. See the <a href="https://www.gams.com/latest/docs/T_GDXXRW.html#GDXXRW_EXAMPLES_READ_SPREADSHEET_SET_DATATEXT" target="_blank">related section of the GDXXRW documentation</a> for more information on the other options. Below you find a list of all options supported by MIRO.</p>
+                                                <p></p>
+                                                <h6>Supported options</h6>
+                                                <div class="table-responsive">
+                                                    <table class="table table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                              <th>Option</th>
+                                                              <th>Description</th>
+                                                              <th>Allowed values</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                              <td>range</td>
+                                                              <td>Excel range: Open and closed ranges are supported. It must be of the form <i>SheetName!TopLeft:BottomRight</i>. If the sheet name is omitted, the first sheet in the workbook is used by default. If the <i>BottomRight</i> corner is omitted, the data is read until <span class="code"><kbd>skipEmpty</kbd>+1</span> empty rows/columns are found. If range is omitted, an open range with left upper corner A1 is assumed.</td>
+                                                              <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                              <td>rDim</td>
+                                                              <td>Row dimension: the number of columns in the data range that will be used to define the labels for the rows. The first rDim columns of the data range will be used for the labels.</td>
+                                                              <td><i>0..dim</i></td>
+                                                            </tr>
+                                                            <tr>
+                                                              <td>cDim</td>
+                                                              <td>Column dimension: the number of rows in the data range that will be used to define the labels for the columns. The first cDim rows of the data range will be used for labels.</td>
+                                                              <td><i>0..dim</i></td>
+                                                            </tr>
+                                                            <tr>
+                                                              <td>values</td>
+                                                              <td>How set data is handled. See the related section of the <a href="https://www.gams.com/latest/docs/T_GDXXRW.html#GDXXRW_EXAMPLES_READ_SPREADSHEET_SET_DATATEXT" target="_blank">GDXXRW documentation</a> for more details.</td>
+                                                              <td><i>auto</i>, <i>noData</i>, <i>YN</i>, <i>sparse</i>, <i>dense</i></td>
+                                                            </tr>
+                                                            <tr>
+                                                              <td>ignoreRows</td>
+                                                              <td>Rows to ignore</td>
+                                                              <td><i>comma-separated list of positive integers</i></td>
+                                                            </tr>
+                                                            <tr>
+                                                              <td>ignoreColumns</td>
+                                                              <td>Columns to ignore</td>
+                                                              <td><i>comma-separated list of positive integers or column letters</i></td>
+                                                            </tr>
+                                                            <tr>
+                                                              <td>skipEmpty</td>
+                                                              <td>When reading an open range, controls how many empty rows or columns signal the end of the range</td>
+                                                              <td><i>0</i>, <i>1</i></td>
+                                                            </tr>
+                                                            <tr>
+                                                              <td>squeeze</td>
+                                                              <td>Controls whether zeros are squeezed out/removed</td>
+                                                              <td><i>y</i>, <i>1</i>, <i>n</i>, <i>0</i></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                  </div><!--//table-responsive-->
+                                                <h6>Reading scalars</h6>
+                                                <p>In addition to reading each scalar individually as supported by GDXXRW, MIRO also supports reading in table form. To read an entire table of scalars, you must do so using the special <kbd>_scalars</kbd>/<kbd>_scalars_out</kbd> symbols for input and output scalars, respectively. In this way MIRO reads scalars grouped in a table with 3 columns: <kbd>Scalar</kbd>, <kbd>Description</kbd>, <kbd>Value</kbd>. The <kbd>Description</kbd> column can also be omitted. Let's look at our example again:</p>
+                                                <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                                    <img class="img-fluid" style="max-height:125pt;" src="assets/images/import-wb-scalars.png" alt="Layout of individual and grouped scalars" />
+                                                </div>
+                                                <p>If we look at the corresponding index sheet again, we see that both the output scalar <kbd>total_cost</kbd> and the input scalar table <kbd>_scalars</kbd> are defined on this sheet. In this example, the table is pivoted (scalar names in the columns) and the <kbd>Description</kbd> column has been omitted.</p>
+                                                <p>Note that you can mix the declaration of table and individual scalars. Scalars that are missing from the table are appended if they are individually declared. If a scalar is found both in one of the special tables and individually declared, the scalar in the table takes precedence and the individually declared scalar is ignored.</p>
+                                                <div class="callout-block callout-warning">
+                                                    <div class="icon-holder">
+                                                        <i class="fas fa-info-circle"></i>
+                                                    </div><!--//icon-holder-->
+                                                    <div class="content">
+                                                        <b class="callout-title">Note:</b>
+                                                        <p>Command line parameters/GAMS options are treated like <i>normal</i> input scalars with the special prefixes <kbd>_gmspar_</kbd> and <kbd>_gmsopt_</kbd>.</p>
+                                                    </div><!--//content-->
+                                                </div><!--//callout-block-->
+                                                <h6 id="gdxxrw-miro-diff">Differences between GDXXRW and MIRO</h6>
+                                                <p>Below we list the important differences you need to be aware of when migrating from GDXXRW to MIRO or vice versa.</p>
+                                                <ul>
+                                                    <li>Global options are not supported by MIRO: all options are symbol-specific and must be part of the symbol declaration row</li>
+                                                    <li>The only special values supported by MIRO are: +Inf and -Inf. Eps, YES, NO, NA, Undef, etc. are not properly recognized when used in MIRO</li>
+                                                    <li>Acronyms are not supported</li>
+                                                    <li>The only options supported by MIRO are: rDim, cDim, dim, values, ignoreRows, ignoreColumns, skipEmpty, squeeze</li>
+                                                    <li>Option=value columns are not supported and will be skipped. Please specify the option names as column headers and the values as cell contents.</li>
+                                                    <li><i>skipEmpty</i> must be specified for each symbol individually. The state of this option is not transferred to the next symbols as with GDXXRW.</li>
+                                                    <li>Named ranges are not supported.</li>
+                                                    <li>Ranges with <i>..</i> instead of <i>:</i> as separator between <i>TopLeft</i> and <i>BottomRight</i> corner are not supported.</li>
+                                                    <li><i>skipEmpty</i> > 1 is not supported i.e. only values <i>0</i> and <i>1</i> can be used</li>
+                                                    <li>It is possible to read variables/equations with MIRO. They are treated like normal parameters, with an additional dimension that must contain at least one of the following elements: <kbd>level</kbd>, <kbd>marginal</kbd>, <kbd>upper</kbd>, <kbd>lower</kbd> and <kbd>scale</kbd>. These do not all have to be assigned, i.e. you can skip some.</li>
+                                                    <li>When reading scalars, you can either declare them individually as in GDXXRW, or you can use the special symbol names <kbd>_scalars</kbd>/<kbd>_scalars_out</kbd> to read input/output scalars grouped in a table with 3 columns: <kbd>Scalar</kbd>, <kbd>Description</kbd>, <kbd>Value</kbd>. The <kbd>Description</kbd> column can be omitted. You can also mix declaration of individual scalars and scalar tables. Scalars that are missing in the scalar table are appended if they are declared individually. If an individually declared scalar is also in a scalar table, the individually declared scalar is ignored.</li>
+                                                    <li>In tables/variables/equations, if squeeze=1, empty cells and NA are indistinguishable</li>
+                                                    <li>Output scalar variables and equations must be in a single table named <kbd>_scalarsve_out</kbd> with dimensions: <kbd>scalar</kbd>, <kbd>description</kbd>, <kbd>type</kbd>, where type must not contain any elements other than: <kbd>level</kbd>, <kbd>marginal</kbd>, <kbd>upper</kbd>, <kbd>lower</kbd>, <kbd>scale</kbd>. Please note that the <kbd>Description</kbd> dimension must be present (unlike the <kbd>_scalars</kbd>/<kbd>_scalars_out</kbd> tables), but is ignored when MIRO imports it.</li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -358,7 +481,7 @@
                                         </div>
                                         <p>Please refer to the chapter about <a href="./hypercube.html#scenario-selection">scenario selection</a> in Hypercube Mode to learn how to retrieve the hash value of a Hypercube scenario.</p>
                                         <p id = "startup-import"><b>Import multiple scenarios on startup</b>
-                                        <br>In addition to the options mentioned above, which can be accessed directly from MIRO, (multiple) scenarios can also be imported automatically when starting an application. To do this, the scenarios to be imported (GDX, CSV or Excel files) must be put in the folder <span class="code">data_&lt;modelname&gt;</span> (located in the model directory). With the next start of MIRO, those scenarios are imported automatically. Note that in development mode MIRO skips the import of files that have not changed since the last start.</p>
+                                        <br>In addition to the options mentioned above, which can be accessed directly from MIRO, (multiple) scenarios can also be imported automatically when starting an application. To do this, the scenarios to be imported (MIROSCEN, GDX, CSV or Excel files) must be put in the folder <span class="code">data_&lt;modelname&gt;</span> (located in the model directory). With the next start of MIRO, those scenarios are imported automatically. Note that in development mode MIRO skips the import of files that have not changed since the last start.</p>
                                         <p>In addition to scenario data, <a href="#metadata-views" class="scrollto">views</a> can also be imported together with the scenario data. Simply place the JSON file with the view data here as well. The file has to be named <span class="code">&lt;scenarioName&gt;_views.json</span>. For example if you want to provide data in the form of a GDX file and views for a scenario with the name <span class="code">my_scenario</span>, you have to place both <span class="code">my_scenario.gdx</span> and <span class="code">my_scenario_views.json</span> into the <span class="code">data_&lt;modelname&gt;</span> directory.</p>
                                     </div><!--//section-block-->
                                     <div id="data-manipulation"  class="section-block">
@@ -438,7 +561,7 @@
                                             Also, if your sandbox scenario contains <a href = "#file-attachments" class = "scrollto">attachments</a> or you have defined <a href = "#access-permissions" class = "scrollto">user access permissions</a>, you can adopt these settings for the scenario to be saved. 
                                             </li>
                                             <li><b>Export</b>
-                                            <br>Download of the scenario data in the form of a gdx container, as an Excel spreadsheet or as CSV files.</li>
+                                            <br>Download of the scenario data in the form of a MIROSCEN file, a GDX container, as an Excel spreadsheet or as CSV files.</li>
                                             <li><b>Delete</b>
                                             <br>Delete the scenario from the database.</li>
                                             </ul>
@@ -451,11 +574,13 @@
                                             There are three different types of comparison available, split view, tab view and pivot view mode.</p> 
                                             <div id="compare-pivot"  class="section-block">
                                             <h5 class="block-title">Pivot view</h5>
-                                            <p>Unlike the split view and tab view, which take your chart configuration into account, here all records are displayed as <a href="./charts.html#pivot-chart">pivot tables</a>. The data of all selected scenarios are merged into a single table with an additional "Scenario" domain.</p>
-                                            <p>You can add/remove scenarios at any time by clicking the <img class="img-fluid" src="assets/images/pivot-compare-add-btn.png" width="25" height="25" align="middle" alt="Add scenarios button" /> button in the upper left corner. To close the scenarios currently loaded in the pivot mode, click the <img class="img-fluid" src="assets/images/pivot-compare-close-btn.png" width="25" height="25" align="middle" alt="Close scenarios button" /> button in the upper right corner.</p>
+                                            <p>Unlike the split view and tab view, which take your chart configuration into account, here all records are displayed as <a href="./charts.html#pivot-chart">pivot tables</a>. Also note that the pivot comparison mode always compares the sandbox scenario with other scenarios. The sandbox scenario is therefore also called <i>base scenario</i> in this context.</p>
+                                            <p>The data of the sandbox scenario and all selected scenarios are merged into a single table with an additional domain: <i>Scenario</i>. You can add/remove scenarios at any time by clicking the <img class="img-fluid" src="assets/images/pivot-compare-add-btn.png" width="25" height="25" align="middle" alt="Add scenarios button" /> button in the upper left corner. To close the scenarios currently loaded in the pivot mode, click the <img class="img-fluid" src="assets/images/pivot-compare-close-btn.png" width="25" height="25" align="middle" alt="Close scenarios button" /> button in the upper right corner. If you have made changes to your sandbox scenario and want to update the data in the pivot view, click the <img class="img-fluid" src="assets/images/pivot-compare-refresh-btn.png" width="25" height="25" align="middle" alt="Refresh scenarios button" /> button.</p>
                                             <div class="section-block" style="text-align:center;">
                                                   <img class="img-fluid" src="assets/images/pivot_view.png" alt="compare scenarios in pivot view" />
                                             </div>
+                                            <p><a href="./start.html#metadata-views">Views</a> can also be used in pivot view mode. They are attached to the sandbox/base scenario. Thus, the scenario you currently have in your sandbox determines what views will be available to you in the pivot view scenario comparison. To save a new view, you only need to save your sandbox scenario once the new view has been added.</p>
+                                            <p>Views from the pivot comparison mode can be managed (imported/exported/deleted) just like <i>normal</i> views via the <i>Views</i> dialog in the <i>Scenario</i> &rarr; <i>Edit Metadata</i> menu. You can learn more about views <a href="./start.html#metadata-views">here</a>.</p>
                                             <div class="callout-block callout-success">
                                               <div class="icon-holder">
                                                   <i class="fas fa-thumbs-up"></i>
@@ -468,11 +593,10 @@
                                         </div>
                                             <div id="compare-split"  class="section-block">
                                             <h5 class="block-title">Split view</h5>
-                                            <p>If two scenarios are to be compared, the split-screen view is particularly suitable. Here the data of two scenarios can be compared directly next to each other. </p>
+                                            <p>If two scenarios are to be compared, the split-screen view is particularly suitable. Here the data of two scenarios can be compared side by side.</p>
                                             <div class="section-block" style="text-align:center;">
                                                   <img class="img-fluid" src="assets/images/batch_img/split_screen_mode.png" alt="Integrated scenario comparison - split view" />
                                             </div>
-                                            <p>If you are in the split view, you can load scenarios you want to compare.</p> 
                                             <div class="section-block" style="text-align:center;">
                                                   <img class="img-fluid" src="assets/images/compare_split.png" alt="Split view" />
                                             </div>
@@ -481,7 +605,7 @@
                                               <li>Load scenario:<br>
                                               Load saved scenario data from the database.
                                               </li>
-                                              <li>Load active:<br>
+                                              <li>Load sandbox:<br>
                                               Load the sandbox scenario which is opened in the Input / Output section.
                                               </li>
                                             </ul>
@@ -499,7 +623,7 @@
                                             <h5 class="block-title">Tab view</h5>
                                             <p>Scenarios can also be loaded into tabs (as you know it from e.g. your internet browser). This allows to compare more than two scenarios including their graphics. </p>
                                             <div class="section-block" style="text-align:center;">
-                                                  <img class="img-fluid" src="assets/images/batch_img/tab_view2.png" alt="compare scenarios in tab view" />
+                                                  <img class="img-fluid" src="assets/images/compare_tab.png" alt="compare scenarios in tab view" />
                                             </div>
                                             <div class="callout-block callout-success">
                                               <div class="icon-holder">
@@ -511,10 +635,10 @@
                                               </div><!--//content-->
                                             </div><!--//callout-block-->
                                         </div>
-                                        <div id="comparison-mode"  class="section-block">
-                                            <h5 class="block-title">Comparison mode</h5>
-                                            <p>The comparison mode makes comparing scenarios more convenient. It can be used in both the split view and the tab view.
-                                            As soon as this option is activated via the <i>Comparison mode</i> button in the navigation bar, the switch to another dataset of a scenario is also performed for all other open scenarios.
+                                        <div id="synchronize-tabs"  class="section-block">
+                                            <h5 id="comparison-mode"  class="block-title">Synchronize tabs</h5>
+                                            <p>The <i>synchronize tabs</i> option makes comparing scenarios more convenient. It can be used in both the split view and the tab view.
+                                            As soon as this option is activated via the <i>synchronize tabs</i> button in the navigation bar, the switch to another dataset of a scenario is also performed for all other open scenarios.
                                             This means that if you change the dataset to be displayed in one scenario (e.g. switch from 'Price' to 'absolute error' in the image above), the view also changes for all the other scenario(s) loaded in the comparison mode.</p>
                                             <div class="callout-block callout-success">
                                               <div class="icon-holder">
@@ -603,7 +727,7 @@
                                         <h3 class="block-title">Attachments</h3>
                                         With the <i>attachments</i> option, you can attach files to the (sandbox) scenario you currently have open. These can be files of any format.
                                         MIRO distinguishes between attachments that can be seen and read by your GAMS model and files that can not be seen.
-                                        For example, if you want to provide data to your model that doesn't need to be visible/modifiable in the UI (e.g. in the form of a gdx container or Excel files), attachments that your model can read are what you are looking for.
+                                        For example, if you want to provide data to your model that doesn't need to be visible/modifiable in the UI (e.g. in the form of a GDX container or Excel files), attachments that your model can read are what you are looking for.
                                         In case you just want to add some report about a particular scenario, which is irrelevant for the GAMS model, you should not allow the model to read this file. Note that all files that you allow your model to read need to be first downloaded into the working directory before GAMS is executed.
                                         Thus, it is advisable to select only those files to be readable that are actually relevant for the optimization run.</p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
@@ -636,6 +760,14 @@
                                               <p>Views can also be <a href="#startup-import" class = "scrollto">imported automatically</a> when a MIRO application is started by placing the JSON file(s) in the folder data_&lt;modelname&gt;. Note that views are always tied to a scenario. If you want to store views for a scenario called "my-scenario", you would have a GDX file called <kbd>my-scenario.gdx</kbd> as well as a views file called <kbd>my-scenario_views.json</kbd> inside the data_&lt;modelname&gt; directory. So the file name of the views must start with the name of the scenario you want to attach them to and end with <kbd>_views.json</kbd>.</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
+                                        <p>To get a more intuitive understanding of what a view is, the following videos give an example that leads through the most important aspects. With the <a href="./charts.html#pivot-chart">pivot table</a> renderer, we can filter and aggregate input and output data by dragging and dropping domains. The video below shows how a few actions draw a bar chart of the distances between canning plants and markets. By clicking the <code>Add View</code> button we can attach a view to the current scenario. This allows us to return to a configuration later in our analysis.</p>
+                                        <div class="section-block" style="text-align:left;padding-top:0pt;">
+                                            <img class="img-fluid gifplayer" style= "max-height:200pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/pivot_views_add.gif" alt="Create and export view" />
+                                        </div>
+                                        <p>We can import, download, and remove views by navigating to the <i>Scenario</i> &rarr; <i>Edit metadata</i> &rarr; <i>Views</i> dialog. By clicking the <i>Export</i> button, the selected views are saved in the <i>Download</i> folder as a JSON file that we can use to share them with others.</p>
+                                        <div class="section-block" style="text-align:left;padding-top:0pt;">
+                                            <img class="img-fluid gifplayer" style= "max-height:200pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/pivot_views_import.gif" alt="Import view" />
+                                        </div>
                                     </div>
                                     <div id="access-permissions"  class="section-block">
                                         <h3 class="block-title">Access permissions</h3>
@@ -737,7 +869,7 @@
                                           <a class="nav-link scrollto" href="#compare-pivot">Pivot view</a>
                                           <a class="nav-link scrollto" href="#compare-split">Split view</a>
                                           <a class="nav-link scrollto" href="#compare-tab">Tab view</a>
-                                          <a class="nav-link scrollto" href="#comparison-mode">Comparison mode</a>
+                                          <a class="nav-link scrollto" href="#synchronize-tabs">Synchronize tabs</a>
                                         </nav>
                                       </nav><!--//nav-->
                                     <a class="nav-link scrollto" href="#data-concept">Data concept</a>
@@ -772,6 +904,11 @@
     <script type="text/javascript" src="assets/plugins/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js"></script>
     <script type="text/javascript" src="assets/plugins/markjs/jquery.mark.min.js"></script>
     <script type="text/javascript" src="assets/js/main.js"></script>
+    <!-- gifplayer plugin -->
+    <script type="text/javascript" src="assets/js/gifplayer.js"></script>
+    <script>
+        $('.gifplayer').gifplayer();
+    </script>
     <script type = "application/javascript">
        if (navigator.appVersion.indexOf("Mac")!==-1){
          $('#startMIRO a[href="#macos"]').tab('show')

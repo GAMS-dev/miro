@@ -1,0 +1,120 @@
+{
+  "theme": "browser",
+  "excelIncludeMeta": true,
+  "pageTitle": "Cutting Stock Problem",
+  "excelIncludeEmptySheets": true,
+  "defaultScenName": "default",
+  "autoGenInputGraphs": true,
+  "storeLogFilesDuration": 7,
+  "defCompMode": "split",
+  "activateModules": {
+    "loadLocal": true,
+    "logFile": true,
+    "lstFile": true,
+    "attachments": true,
+    "downloadTempFiles": false
+  },
+  "aggregateWidgets": true,
+  "overwriteSheetOrder": {
+    "input": ["_widgets1", "demand_miro"]
+  },
+  "overwriteAliases": {
+    "_scalars": {
+      "newAlias": "Scalars"
+    },
+    "_scalars_out": {
+      "newAlias": "Paper rolls used"
+    },
+    "demand_miro": {
+      "newAlias": "Demand"
+    },
+    "patterns_used": {
+      "newAlias": "Patterns used"
+    }
+  },
+  "saveTraceFile": true,
+  "roundingDecimals": 0,
+  "dataRendering": {
+    "patterns_used": {
+      "outType": "cuttingstock",
+      "packages": ["plotly", "dplyr", "tidyr", "purrr", "RColorBrewer"],
+      "additionalData": "_scalars_out"
+    },
+    "_scalars_out": {
+      "outType": "valueBox",
+      "options": [
+        {
+          "number": {
+            "description": "Number of paper rolls used",
+            "color": "aqua",
+            "icon": {
+              "name": "_",
+              "lib": "font-awesome"
+            },
+            "round": 2
+          },
+          "width_out": {
+            "description": "Paper roll width",
+            "color": "aqua",
+            "icon": {
+              "name": "_",
+              "lib": "font-awesome"
+            },
+            "round": 2
+          }
+        }
+      ]
+    }
+  },
+  "inputWidgetGroups":[{
+    "name": "Raw width",
+    "members": ["r"]
+  }],
+  "inputWidgets": {
+    "r": {
+      "widgetType": "numericinput",
+      "alias": "raw width",
+      "value": 500,
+      "min": 0,
+      "decimal": 0,
+      "decimalCharacter": ".",
+      "digitGroupSeparator": ","
+    }
+  },
+  "readme": {
+    "tabTitle": "Readme",
+    "filename": "README.md",
+    "enableMath": true
+  },
+  "datatable": {
+    "class": "display",
+    "filter": "bottom",
+    "rownames": false,
+    "options": {
+      "pageLength": 15
+    }
+  },
+  "overwriteHeaderAliases": {
+    "demand_miro": {
+      "newHeaders": ["Widths", "Demand"]
+    },
+    "patterns_used": {
+      "newHeaders": ["Width identifier", "Pattern identifier", "Width", "Times in pattern", "Used"]
+    },
+    "_scalars_out": {
+      "newHeaders": ["Name", "Description", "Value"]
+    }
+  },
+  "handsontable": {
+    "stretchH": "none",
+    "readonly": false,
+    "manualColumnResize": true,
+    "contextMenu": {
+      "enabled": true,
+      "allowRowEdit": true,
+      "allowColEdit": true
+    },
+    "height": 700,
+    "colWidths": 200
+  }
+}

@@ -106,13 +106,13 @@
                                           "Slice & dice" the database to fetch those scenarios you are interested in.
                                           </li>
                                         <li><span class="fa-li"><i class="fas fa-copy"></i></span><b>Compare scenarios:</b><br/>
-                                        Module known from the MIRO Base Mode for the comparison of scenarios in split-screen or tab view.
+                                        Module known from the MIRO Base Mode for the comparison of scenarios in split-, tab- and pivot view.
                                         </li>
                                         <li><span class="fa-li"><i class="fas fa-chart-pie"></i></span><b>Analyze scenarios:</b><br/>
                                           Scenario analyses with custom scripts or with the integrated performance analysis tool PAVER.
                                         </li><br>
                                         <li><span class="fa-li"><i class="fas fa-square"></i></span><b>Load data:</b><br/>
-                                          Loading input data for a Hypercube job. This can be an Excel spreadsheet or existing data from the database.
+                                          Loading input data for a Hypercube job. This can be a GDX container, an Excel spreadsheet or existing data from the database.
                                         </li>
                                         <li><span style="color: #F39619;" class="fa-li"><i class="fas fa-square"></i></span><b>Submit jobs:</b><br/>
                                         Submission of a new Hypercube job.
@@ -468,7 +468,7 @@ $call [...] gams "[...]\transport.gms" --HCUBE_SCALARV_mins=20 --HCUBE_SCALARV_b
                                                </div><!--//icon-holder-->
                                                <div class="content">
                                                    <b class="callout-title">Note:</b>
-                                                   <p>The GAMS options and double-dash parameters associated with a scenario are stored in MIRO's internal database. However, the information about them is lost when a scenario is exported as a GDX file. We therefore recommend using singleton sets instead of command line parameters. Both the element label and the element text of a set can be migrated to compile time variables using the Dollar Control Options 
+                                                   <p>The GAMS options and double-dash parameters associated with a scenario are stored in MIRO's internal database. However, the information about them is lost when a scenario is exported as a GDX file. This is especially relevant in Hypercube Mode, where data exchange is done via GDX files. We therefore recommend using singleton sets instead of command line parameters. Both the element label and the element text of a set can be migrated to compile time variables using the Dollar Control Options 
                                            <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset" target = "__blank">eval.Set</a>, 
                                            <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalglobalset" target = "__blank">evalGlobal.Set</a>, 
                                            and <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevallocalset" target = "__blank">evalLocal.Set</a>.</p>
@@ -555,6 +555,15 @@ $offExternalInput
                                           <li>Double-dash parameters</li>
                                           <li>GAMS options</li>
                                         </ul>
+                                        <div class="callout-block callout-warning">
+                                               <div class="icon-holder">
+                                                   <i class="fas fa-info-circle"></i>
+                                               </div><!--//icon-holder-->
+                                               <div class="content">
+                                                   <b class="callout-title">Note:</b>
+                                                   <p>A scenario originating from a Hypercube job has no information about GAMS options and double-dash parameters (read more <a href="./model.html#command-line">here</a>). Therefore, a filter for these compile-time variables can only be applied to Base Mode scenarios.</p>
+                                           </div><!--//content-->
+                                        </div><!--//callout-block-->
                                         <p>In addition to these scenario-specific filters, scenario metadata such as the optionally defined job tags and the creation date can also be used in a database query. You can combine any of these filters with the logical operators <i>AND</i> and <i>OR</i> (see figure below).</p>
                                         <div class="section-block" style="text-align:center;">
                                             <img class="img-fluid" src="assets/images/batch_img/hcube_db_query.png" alt="Filtered database search" />
@@ -584,7 +593,7 @@ $offExternalInput
                                         An interface is available for your own scenario analysis. Also, the automated performance analysis tool <i>PAVER</i> is integrated.
                                         </li>
                                         <li><b>Compare: </b><br/>
-                                        Interactive scenario comparison: Compare different scenarios directly in split view or tab view. Best suited for a small number of scenarios to compare (maximum number of scenarios allowed: 10).
+                                        Interactive scenario comparison: Compare different scenarios directly in split-, tab- or pivot view. Best suited for a small number of scenarios to compare (maximum number of scenarios allowed: 10).
                                         </li>
                                         </ul>
                                         <p>The various analysis methods are described in detail below:</p>
@@ -593,7 +602,7 @@ $offExternalInput
                                         <h3 class="block-title">Internal Analysis</h3>
                                         <div  id="internal-compare"  class="section-block">
                                             <h6>Scenario comparison:</h6>
-                                            <p>The scenario comparison module is used to directly compare the input and output data for a small number of scenarios. The scenario comparison module is pretty much identical to the one in the <a href="./start.html#scenario-comparison">Base Mode</a>: This means that the charts you configured in the Base Mode will also work in the Hypercube Mode. However, there are some subtle differences: A scenario that resulted from a Hypercube job does not have a name assigned (the name is the 256-bit SHA-2 hash). As the hash values are hard to distinguish for the human eye, MIRO will assign a number to each scenario you import. This number is simply a counter that increments every time you load a new scenario and resets when you close the current session. You might be interested in seeing two scenarios that you find particularly important, side by side: all you need to do is remember the numbers that were assigned to those two scenarios and switch to the split view comparison mode. If you load a scenario here, you will notice that there is a new <i>local</i> tab. Here you can choose any of the scenarios that is already opened in the tab view comparison mode:
+                                            <p>The scenario comparison module is used to directly compare the input and output data for a small number of scenarios. It is pretty much identical to the one in the <a href="./start.html#scenario-comparison">Base Mode</a>: This means that the charts you configured in the Base Mode will also work in the Hypercube Mode. However, there are some subtle differences: A scenario that resulted from a Hypercube job does not have a name assigned (the name is the 256-bit SHA-2 hash). As the hash values are hard to distinguish for the human eye, MIRO will assign a number to each scenario you import. This number is simply a counter that increments every time you load a new scenario and resets when you close the current session. You might be interested in seeing two scenarios that you find particularly important, side by side: all you need to do is remember the numbers that were assigned to those two scenarios and switch to the split view comparison mode. If you load a scenario here, you will notice that there is a new <i>local</i> tab. Here you can choose any of the scenarios that is already opened in the tab view comparison mode:
                                             <div class="section-block" style="text-align:center;">
                                                <img class="img-fluid" style="display:block; margin:auto; max-height:250px;" src="assets/images/batch_img/hcube-splitcomp-load.png" alt="Load Hypercube scenarios into split view comparison mode" />
                                             </div>

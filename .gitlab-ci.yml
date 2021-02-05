@@ -1,0 +1,26 @@
+image:
+  name: hub.gams.com:443/gamsmiro-ci:latest
+
+test:
+  tags:
+    - linux
+  before_script:
+    - source /etc/profile.d/ci.sh
+    - yarn install --cache-folder .yarn
+  script:
+    - yarn run eslint .
+    - mchecklic
+    - mtestall
+  interruptible: true
+  cache:
+    paths:
+      - node_modules/
+      - .yarn
+  artifacts:
+    when: always
+    reports:
+      junit: src/tests/testthat/test-out.xml
+  rules:
+    - if: $CI_MERGE_REQUEST_TITLE =~ /^Draft:/
+      when: manual
+    - if: $CI_MERGE_REQUEST_ID

@@ -1,0 +1,44 @@
+[submodule "server/shinyproxy"]
+	path = server/shinyproxy
+	url = https://github.com/GAMS-dev/shinyproxy.git
+	branch = v2.1
+[submodule "r-src/shiny"]
+	path = r-src/shiny
+	url = https://github.com/GAMS-dev/shiny.git
+[submodule "r-src/shinydashboard"]
+	path = r-src/shinydashboard
+	url = https://github.com/GAMS-dev/shinydashboard.git
+[submodule "r-src/plotly"]
+	path = r-src/plotly
+	url = https://github.com/GAMS-dev/plotly.git
+[submodule "r-src/crosstalk"]
+	path = r-src/crosstalk
+	url = https://github.com/GAMS-dev/crosstalk.git
+[submodule "r-src/DT"]
+	path = r-src/DT
+	url = https://github.com/GAMS-dev/DT.git
+[submodule "r-src/httr"]
+	path = r-src/httr
+	url = https://github.com/GAMS-dev/httr.git
+[submodule "r-src/leaflet"]
+	path = r-src/leaflet
+	url = https://github.com/GAMS-dev/leaflet.git
+[submodule "r-src/rhandsontable"]
+	path = r-src/rhandsontable
+	url = https://github.com/GAMS-dev/rhandsontable.git
+[submodule "r-src/timevis"]
+	path = r-src/timevis
+	url = https://github.com/GAMS-dev/timevis.git
+[submodule "r-src/gdxrrwMIRO"]
+	path = r-src/gdxrrwMIRO
+	url = https://github.com/GAMS-dev/gdxrrw-miro.git
+[submodule "r-src/miro.util"]
+	path = r-src/miro.util
+	url = https://github.com/GAMS-dev/miro.util.git
+[submodule "r-src/jsonlite"]
+	path = r-src/jsonlite
+	url = https://github.com/GAMS-dev/jsonlite.git
+[submodule "r-src/sortable"]
+	path = r-src/sortable
+	url = https://github.com/GAMS-dev/sortable.git
+	branch = master

@@ -1,0 +1,9 @@
+{
+  "input": {
+    "dropdown_5": [
+      "CPLEX",
+      "CBC",
+      "SCIP"
+    ]
+  }
+}

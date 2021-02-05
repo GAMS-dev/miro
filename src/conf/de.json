@@ -1,0 +1,2058 @@
+{  
+  "general":{
+    "modal":{
+      "okButton": "OK",
+      "cancelButton": "Abbrechen"
+    }
+  },
+  "nav":{  
+    "scalarAliases":{
+      "scalars": "Skalare",
+      "scalarsOut": "Ergebnisskalare",
+      "cols":{
+        "name": "Skalarname",
+        "desc": "Skalarbeschreibung",
+        "value": "Skalarwert"
+      }
+    },
+    "sidebarMenu":{  
+      "inputScreen":"Eingabedaten",
+      "outputScreen":"Ergebnisse",
+      "gams":"GAMS Interaktion",
+      "scen":"Szenarien vergleichen",
+      "hcube":{
+        "configureRun": "Hypercube-Job konfigurieren",
+        "import": "Jobs importieren",
+        "load": "Szenarien laden",
+        "analyze": "Szenarienanalyse"
+      }
+    },
+    "sidebarButtons":{  
+      "importInput":"Daten laden",
+      "solve":"Modell lösen",
+      "submitJob": "Job senden",
+      "solveHcube":"Jobs absenden",
+      "changeMode": "Modus Ändern",
+      "splitView":"Split Screen Ansicht",
+      "pivotView": "Pivot Ansicht",
+      "tabView":"Tabansicht",
+      "compareStart":"Tabs synchronisieren",
+      "compareStop":"Stoppe Synchronisation",
+      "download":"Download Ergebnisse",
+      "interrupt":"Stop"
+    },
+    "header":{
+      "remoteExec":{
+        "login": "Einloggen",
+        "logout": "Ausloggen"
+      },
+      "scenario":{
+        "title":"Szenario",
+        "titleHC": "HC-Job",
+        "edit":"Metadaten bearbeiten",
+        "save":"Speichern",
+        "saveAs":"Speichern unter",
+        "export": "Exportieren",
+        "delete":"Löschen"
+      },
+      "help":{
+        "title": "Hilfe",
+        "doc": "Dokumentation",
+        "forum": "GAMS World Forum",
+        "about": "Über"
+      },
+      "tooltips":{
+        "switchToHcube": "Wechsel zum Hypercube Modus"
+      }
+    },
+    "inputScreen":{  
+      "btCollapsedTabs": "Mehr",
+      "noDataDep":"Bitte zuerst alle Daten importieren, auf denen dieses Element basiert.",
+      "widgetTabTitle": "Eingabe-Widgets",
+      "dirtyFlag": "Das Szenario enthält Ausgabedaten, die möglicherweise nicht mehr zu den modifizierten Eingabedaten passen."
+    },
+    "gams":{  
+      "boxModelStatus":{  
+        "title":"Modellstatus"
+      },
+      "boxGamsOutput":{  
+        "title":"GAMS Ausgabe",
+        "tabCurrent": "Aktueller Job",
+        "tabJobList": "Jobliste",
+        "gamsOutputTabset":{  
+          "logFile":"Log-Datei",
+          "lstFile":"Listing-Datei",
+          "miroLogFile":"MIRO Log-Datei",
+          "logUpdate":"Aktualisieren"
+        }
+      }
+    },
+    "outputScreen":{  
+      "boxResults":{  
+        "title":"Ergebnisse",
+        "noData":"Keine Daten"
+      }
+    },
+    "scen":{  
+      "noScen":"Kein Szenario ausgewählt",
+      "btLoad":"Laden",
+      "scenNameSandboxSuffix": "(Sandbox)",
+      "tooltips":{  
+        "btExport":"Exportiere Szenariodaten",
+        "btTableView":"Ansicht wechseln",
+        "btSymbolLink": "Als Eingabedaten verwenden",
+        "btClose":"Szenario schließen",
+        "btClosePivot": "schließen",
+        "btAddPivot": "Szenarios hinzufügen",
+        "btRefresh": "aktualisieren",
+        "btDownloadTmpFiles":"temporary files",
+        "inputSheet":"Eingabedaten",
+        "outputSheet":"Ausgabedaten",
+        "load":"Lade gespeichertes Szenario",
+        "loadActive":"Sandbox-Szenario laden"
+      },
+      "split":{
+        "load":"Szenario öffnen",
+        "loadActive": "Sandbox öffnen"
+      },
+      "pivot":{
+        "scenColName": "Szenario",
+        "viewPrefix": "Pivot-Vergleich:"
+      }
+    },
+    "hcubeImport":{
+      "title":"Importiere Jobs",
+      "btManualImport": "Manueller Import",
+      "btShowHistory": "Verlauf anzeigen"
+    },
+    "hcubeLoad":{
+      "title":"Lade Szenarien",
+      "noData":"Für die von Ihnen abgesetzte Datenbankabfrage konnten keine Daten gefunden werden.",
+      "showHashButton": "Hash anzeigen",
+      "msgOnlyOneHash": "Bitte wählen Sie nur ein Szenario aus.",
+      "msgNoHashFound": "Für das ausgewählte Szenario wurde kein Hash gefunden. Anscheinend wurde das Szenario nicht im Hypercube-Modus gelöst.",
+      "chooseSelectedButton":"Markierte auswählen",
+      "chooseCurrentButton":"Aktuelle Seite auswählen",
+      "chooseAllButton":"Wähle alle",
+      "orButton": "ODER",
+      "andButton": "UND",
+      "queryButton": "Ergebnisse abrufen",
+      "showHashDialog":{
+        "title": "Szenario Hash",
+        "desc": "Das ausgewählte Szenario hat den folgenden Hash. Damit können Sie es im Basismodus importieren."
+      },
+      "metaColAliases":{
+        "uid":"Eigentümer",
+        "stime":"Erstellungsdatum",
+        "stag": "Job-Tags"
+      }
+    },
+    "hcubeAnalyze":{
+      "title":"Szenarioanalyse",
+      "loadMsg":"Bitte warten Sie, bis die Ergebnisse berechnet sind. Dies kann eine Weile dauern.",
+      "failMsg":"Beim Ausführen von Paver ist ein Fehler aufgetreten.",
+      "duplicatesMsg": "Paver hat eine doppelte Instanz gefunden: '%s'. Achten Sie darauf, dass Sie keine Duplikate auswählen.",
+	    "btCancel": "Abbrechen",
+	    "btNew": "Szenarien auswählen"
+    },
+    "gamsModelStatus":{  
+      "submission": "Modell wird übermittelt",
+      "queued": "Modell in der Warteschlange",
+      "exec":"Modell wird gelöst",
+      "collection": "Ergebnisse werden übermittelt",
+      "success":"Das Modell wurde erfolgreich gelöst.",
+      "error":"Beim Lösen des GAMS-Modells ist ein Fehler aufgetreten: "
+    },
+    "notificationNewInput":{  
+      "new":"%s Datensätze importiert.",
+      "noNew":"Keine neuen Datensätze importiert."
+    },
+    "dialogExportScen":{
+      "title": "Szenario exportieren",
+      "desc": "Wählen Sie einen Dateityp aus",
+      "cbSelectManually":"Datensätze manuell auswählen",
+      "selDatasets":"Wählen Sie die zu exportierenden Datensätze",
+      "noDsSelected": "Sie haben keine Datensätze zum Exportieren ausgewählt.",
+      "cancelButton": "Abbrechen",
+      "okButton": "Exportieren"
+    },
+    "dialogSaveSuccess":{  
+      "title":"Erfolgreich",
+      "desc":" Datensätze wurden erfolgreich gespeichert."
+    },
+    "dialogNewScen":{  
+      "title":"Neues Szenario",
+      "desc":"Bitte wählen Sie einen Namen für das Szenario:",
+      "discardAttach": "Anhänge verwerfen?",
+      "discardViews": "Views verwerfen?",
+      "discardPerm": "Berechtigungen verwerfen?",
+      "tags":"Füge dem Szenario Tag(s) hinzu (optional):",
+      "badName":"Bitte wählen Sie eine gültige Bezeichnung für das neue Szenario.",
+      "newScenName":"Neues Szenario",
+      "scenExists":"Der von Ihnen gewählte Szenarioname existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
+      "btNewName":"Anderen Namen wählen",
+      "btOverwrite":"Überschreiben",
+      "cancelButton":"Abbrechen",
+      "okButton":"Ok"
+    },
+    "dialogNewHCJob":{  
+      "title":"Neue Hypercube-Job-Konfiguration",
+      "desc":"Bitte wählen Sie einen Namen für die Hypercube-Job-Konfiguration:",
+      "discardAttach": "Anhänge verwerfen?",
+      "discardViews": "Views verwerfen?",
+      "discardPerm": "Berechtigungen verwerfen?",
+      "tags":"Füge dem HC-Job Tag(s) hinzu (optional):",
+      "badName":"Bitte wählen Sie eine gültige Bezeichnung für die neue HC-Job-Konfiguration.",
+      "newScenName":"Neue HC-Job-Konfiguration",
+      "scenExists":"Der von Ihnen gewählte HC-Job-Name existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
+      "btNewName":"Anderen Namen wählen",
+      "btOverwrite":"Überschreiben",
+      "cancelButton":"Abbrechen",
+      "okButton":"Ok"
+    },
+    "dialogEditMeta":{
+      "title":"Metadaten bearbeiten",
+      "categoryGeneral": "Allgemeine Optionen",
+      "categoryAttachments": "Anhänge",
+      "categoryViews": "Views",
+      "categoryAccessPerm": "Zugriffsberechtigungen",
+      "newName": "New name",
+      "badName": "Der von Ihnen gewählte Name ist ungültig (entweder zu lang oder zu kurz). Bitte wählen Sie einen anderen Namen.",
+      "newTags":"Neue Tags",
+      "scenExists":"Es existiert bereits ein Szenario mit dem von Ihnen gewählten Namen.",
+      "emptyPerm": "Szenario Zugriffsrechte dürfen nicht leer sein!",
+      "incapOwner": "Du kannst dem Besitzer seine Zugriffsberechtigungen nicht entziehen.",
+      "attachmentsAdd": "Anhänge hinzufügen",
+      "attachmentsExecPerm": "Modell erlauben, diese Datei zu lesen",
+      "attachSuccess": "Anhänge wurden erfolgreich aktualisiert",
+      "attachMaxSizeError": "Die maximale Anhanggröße von %s Byte wurde überschritten.",
+      "attachMaxNoError":"Die maximale Anzahl an Anhängen wurde erreicht. Bevor neue Anhänge hochgeladen werden können, müssen zunächst alte Anhänge gelöscht werden.",
+      "attachDuplicateError": "Ein Anhang mit diesem Namen existiert bereits. Bitte wählen Sie einen anderen Namen und versuchen es anschließend erneut.",
+      "attachForbiddenFnameError": "Ein Anhang, den Sie hochladen möchten, verwendet einen verbotenen Dateinamen. Bitte wählen Sie einen anderen Dateinamen und versuchen Sie es erneut.",
+      "viewsSuccess": "Die Views wurden erfolgreich aktualisiert.",
+      "viewsInvalidData": "Die Daten, die Sie hochladen, sind keine gültigen View-Daten. Bitte stellen Sie sicher, dass die Datei eine JSON-Datei ist und die Syntax korrekt ist.",
+      "viewsDuplicateError": "Die folgenden Views wurden nicht importiert, da für dieses Symbol bereits einen View mit dem gleichen Namen existiert: '%s'.",
+      "viewsInvalidError": "Einige der Views, die Sie zu importieren versuchten, wurden nicht importiert, da sie für Symbole definiert sind, die nicht existieren: '%s'.",
+      "viewsNoneSelected": "Keine Views ausgewählt. Wählen Sie Views aus, indem Sie auf die Zeile klicken.",
+      "noViewData": "Keine Views",
+      "selectAllViews": "Alle auswählen",
+      "selectNoViews": "Keine auswählen",
+      "viewsAdd": "Views hinzufügen",
+      "viewsTableHeaderSymbol": "Symbol",
+      "viewsTableHeaderId": "Name",
+      "viewsDownload": "Views downloaden",
+      "viewsRemove": "Views entfernen",
+      "errMsg": "Beim aktualisieren der Metadaten ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
+      "cancelButton":"Schließen",
+      "okButton":"Metadaten aktualisieren"
+    },
+    "dialogEditMetaHC":{
+      "title":"Metadaten bearbeiten",
+      "categoryGeneral": "Allgemeine Optionen",
+      "categoryAttachments": "Anhänge",
+      "categoryViews": "Views",
+      "categoryAccessPerm": "Zugriffsberechtigungen",
+      "newName": "New name",
+      "badName": "Der von Ihnen gewählte Name ist ungültig (entweder zu lang oder zu kurz). Bitte wählen Sie einen anderen Namen.",
+      "newTags":"Neue Tags",
+      "emptyPerm": "Job-Zugriffsrechte dürfen nicht leer sein!",
+      "incapOwner": "Du kannst dem Besitzer seine Zugriffsberechtigungen nicht entziehen.",
+      "scenExists":"Es existiert bereits eine Hypercube-Job-Konfiguration mit dem von Ihnen gewählten Namen.",
+      "attachmentsAdd": "Anhänge hinzufügen",
+      "attachmentsExecPerm": "Modell erlauben, diese Datei zu lesen",
+      "attachSuccess": "Anhänge wurden erfolgreich aktualisiert",
+      "attachMaxSizeError": "Die maximale Anhanggröße von %s Byte wurde überschritten.",
+      "attachMaxNoError":"Die maximale Anzahl an Anhängen wurde erreicht. Bevor neue Anhänge hochgeladen werden können, müssen zunächst alte Anhänge gelöscht werden.",
+      "attachDuplicateError": "Ein Anhang mit diesem Namen existiert bereits. Bitte wählen Sie einen anderen Namen und versuchen es anschließend erneut.",
+      "attachForbiddenFnameError": "Ein Anhang, den Sie hochladen möchten, verwendet einen verbotenen Dateinamen. Bitte wählen Sie einen anderen Dateinamen und versuchen Sie es erneut.",
+      "errMsg": "Beim aktualisieren der Metadaten ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
+      "cancelButton":"Schließen",
+      "okButton":"Metadaten aktualisieren"
+    },
+    "dialogRemoteLogin": {
+      "title": "Login erforderlich",
+      "desc": "Bitte geben Sie Ihre Zugangsdaten unten ein:",
+      "url": "GAMS Engine URL",
+      "username": "Benutzername",
+      "password": "Passwort",
+      "namespace": "Namensraum",
+      "cancelButton":"Abbrechen",
+      "useRegistered": "Ist Ihr Modell im Namensraum registriert?",
+      "remember": "Login speichern",
+      "okButton": "Ok",
+      "hostNotFound": "GAMS Engine konnte unter der angegebenen URL nicht erreicht werden.",
+      "nsNotFound": "Der von Ihnen angegebene Namensraum konnte nicht gefunden werden.",
+      "invalidCred": "Die von Ihnen eingegebenen Zugangsdaten sind ungültig.",
+      "insuffPerm": "Sie haben nicht genügend Berechtigungen, um das Modell auszuführen.",
+      "invalidProtocol": "Das von Ihnen angegebene Protokoll ist ungültig. Nur HTTPS wird unterstützt.",
+      "contentNotFoundError": "Der gewünschte Inhalt konnte nicht gefunden werden."
+    },
+    "dialogRemoteLogout": {
+      "title": "Ausloggen",
+      "desc": "Sind Sie sicher, dass Sie sich ausloggen möchten?",
+      "cancelButton":"Abbrechen",
+      "okButton": "Ausloggen"
+    },
+    "dialogDeleteScen":{  
+      "title":"Szenario löschen",
+      "desc":"Sind Sie sicher, dass Sie das ausgewählte Szenario löschen möchten?",
+      "cancelButton":"Abbrechen",
+      "okButton":"Ja",
+      "removeFromUI":{  
+        "title":"Szenario aus Sandbox entfernen",
+        "desc":"Möchten Sie das Szenario aus der Sandbox entfernen? Ungespeicherte Daten gehen dadurch verloren!",
+        "cancelButton": "Abbrechen",
+        "okButton":"Szenario schließen"
+      }
+    },
+    "dialogDeleteHCJob":{  
+      "title":"Hypercube-Job löschen",
+      "desc":"Sind Sie sicher, dass Sie die ausgewählte Hypercube-Job-Konfiguration löschen möchten?",
+      "cancelButton":"Abbrechen",
+      "okButton":"Ja",
+      "removeFromUI":{  
+        "title":"Hypercube-Job aus Sandbox entfernen",
+        "desc":"Möchten Sie die Hypercube-Job-Konfiguration aus der Sandbox entfernen? Ungespeicherte Daten gehen dadurch verloren!",
+        "cancelButton": "Abbrechen",
+        "okButton":"Szenario schließen"
+      }
+    },
+    "dialogRemoveScen":{  
+      "title":"Szenario schließen",
+      "desc":"Sind Sie sicher, dass Sie das Szenario schließen möchten? Ungespeicherte Daten gehen dadurch verloren!",
+      "cancelButton":"Abbrechen",
+      "okButton":"Schließen"
+    },
+    "dialogRemoveHCJob":{  
+      "title":"Hypercube-Job schließen",
+      "desc":"Sind Sie sicher, dass Sie die aktive Hypercube-Job-Konfiguration schließen möchten? Ungespeicherte Daten gehen dadurch verloren!",
+      "cancelButton":"No",
+      "okButton":"Yes"
+    },
+    "dialogCloseScen":{  
+      "title":"Szenario schließen",
+      "desc":"Sind Sie sicher, dass Sie das ausgewählte Szenario schließen möchten?",
+      "cancelButton":"Nein",
+      "okButton":"Ja"
+    },
+    "dialogExistingOutput":{  
+      "title":"Es existieren Ausgabedaten",
+      "desc":"Das Szenario, das Sie sichern wollen, enthält Ausgabedaten, die möglicherweise nicht zu den Eingabedaten passen. Möchten Sie die Ausgabedaten verwerfen?",
+      "cancelButton"    : "Abbrechen",
+      "saveOutputButton":"Ausgabedaten speichern",
+      "discardOutputButton":"Ausgabedaten verwerfen"
+    },
+    "dialogSaveScen":{  
+      "title":"Szenario speichern",
+      "desc":"Sind Sie sicher, dass Sie das ausgewählte Szenario in der Datenbank speichern möchten?",
+      "cancelButton":"Nein",
+      "okButton":"Ja"
+    },
+    "dialogImport":{  
+      "title":"Daten laden",
+      "tabLocal":"Lokal",
+      "tabExternal": "Extern",
+      "tabDatabase":"Datenbank",
+      "tabHcube":"Hypercube",
+      "hcubeHashDesc": "Geben Sie hier den Hash-Wert des Szenarios ein, welches Sie aus dem Hypercube-Modus laden möchten. Klicken Sie dann einfach auf das Szenario, um es zu laden.",
+      "hcubeHashButton": "Suchen",
+      "hcubeHashNoMatch": "Es konnten keine Szenarios gefunden werden.",
+      "selInputData":"Wählen Sie die Eingabedaten, die Sie laden möchten",
+      "selDecimalSep": "Wählen Sie das Dezimaltrennzeichen",
+      "selDelim": "Begrenzungszeichen auswählen",
+      "selExcelIndexSheet": "Wählen Sie das Index-Arbeitsblatt aus",
+      "excelIndexSheetRng": "Wählen Sie den Indexbereich",
+      "selExternalSource": "Wählen Sie die externe Quelle",
+      "descLocal":"Wählen Sie eine Datei mit Daten aus",
+      "newScenName": "Wählen Sie einen Namen für das neue Szenario",
+      "scenNameExistsErr": "Der von Ihnen gewählte Szenarioname existiert bereits.",
+      "descOverwriteInput":"Sie haben bereits Eingabedaten geladen. Sind Sie sicher, dass Sie diese Daten überschreiben wollen?",
+      "cbSelectManually":"Datensätze manuell auswählen",
+      "overwriteWarning":"Bereits importierte Datensätze werden überschrieben!",
+      "okButton":"Laden",
+      "cancelButton":"Abbrechen"
+    },
+    "dialogImportHC":{  
+      "title":"Daten importieren",
+      "tabLocal":"Lokal",
+      "tabDatabase":"Hypercube",
+      "tabBase": "Basismodus",
+      "selInputData":"Wählen Sie die zu importierenden Datensätze",
+      "selDecimalSep": "Wählen Sie das Dezimaltrennzeichen",
+      "selDelim": "Begrenzungszeichen auswählen",
+      "selExcelIndexSheet": "Wählen Sie das Index-Arbeitsblatt aus",
+      "excelIndexSheetRng": "Wählen Sie den Indexbereich",
+      "descLocal":"Wählen Sie eine Datei mit Daten aus",
+      "newScenName": "Wählen Sie einen Namen für die neue Hypercube-Job-Konfiguration.",
+      "badScenName": "Bitte wählen Sie einen gültigen Namen",
+      "scenNameExists":"Der von Ihnen gewählte Name existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
+      "descOverwriteInput":"Sie haben bereits Eingabedaten geladen. Sind Sie sicher, dass Sie diese Daten überschreiben wollen?",
+      "cbSelectManually":"Datensätze manuell auswählen",
+      "overwriteWarning":"Bereits importierte Datensätze werden überschrieben!",
+      "okButton":"Importieren",
+      "cancelButton":"Abbrechen",
+      "overwriteButton": "Existierende Daten überschreiben",
+      "newNameButton": "Neuer Name"
+    },
+    "dialogLoadScen":{  
+      "title":"Szenario laden",
+      "tabDB": "Datenbank",
+      "tabUI": "Lokal",
+      "titleNoScen":"Keine Szenarien gefunden",
+      "descNoScen":"Es konnten keine gespeicherten Szenarien gefunden werden.",
+      "selLoadScen":"Wählen Sie die Szenarien, die Sie laden möchten",
+      "selTags": "Zeige nur Szenarios mit den Tag(s):",
+      "baseScenLabel": "Basis-Szenario:",
+      "titleDataError":"Daten beschädigt",
+      "descDataError":"Die Szenariodaten scheinen beschädigt zu sein. Laden fehlgeschlagen.",
+      "maxNoScenExceeded": "Die maximale Anzahl der darstellbaren Szenarien wurde überschritten. Es wird nur eine Teilmenge angezeigt.",
+      "noDsSelected": "Bitte wählen Sie den Namen des Datensatzes aus, den Sie importieren möchten.",
+      "symNotInDataSrc": "Die Datensätze, die Sie importieren möchten, konnten in den von Ihnen bereitgestellten Daten nicht gefunden werden.",
+      "invalidFile": "Die von Ihnen hochgeladene Datei konnte nicht validiert werden.",
+      "sortBy":"Sortieren nach:",
+      "btSortNameASC":"Name (ASC)",
+      "btSortTimeASC":"Zeit (ASC)",
+      "btSortNameDESC":"Name (DESC)",
+      "btSortTimeDESC":"Zeit (DESC)",
+      "cancelButton":"Nein",
+      "okButton":"Importieren"
+    },
+    "dialogNewCol":{  
+      "title":"Neue Spalte",
+      "desc":"Bitte wählen Sie einen Namen für die neue Spalte:",
+      "cancelButton":"Abbrechen",
+      "okButton":"Ok"
+    },
+    "fileExport":{
+      "fileTypes": ["MIRO Szenario (MIROSCEN)", "GAMS-Datenaustausch (GDX)", "Komma-separierte Werte (CSV)", "Microsoft Excel (XLSX)"],
+      "infoDataOnly": "Mit dem ausgewählten Dateityp werden nur Daten exportiert. Metadaten wie Anhänge, Ansichten, Tags usw. sind nicht enthalten."
+    },
+    "excelExport":{  
+      "metadataSheet":{  
+        "title":"Metadaten",
+        "uid":"Benutzer",
+        "sname":"Szenarioname",
+        "stime":"Erstellungsdatum",
+        "stag": "Szenario Tags",
+        "readPerm": "Leseberechtigung",
+        "writePerm": "Schreibberechtigung",
+        "execPerm": "Ausführungsberechtigung",
+        "symbol": "Symbol-Name",
+        "desc": "Beschreibung"
+      },
+      "inputSuffix":" (Eingabe)",
+      "outputSuffix":" (Ausgabe)"
+    },
+    "dialogLockScen":{
+      "title":"Szenario gesperrt",
+      "desc":"Das Szenario, welches Sie laden möchten, wird derzeit vom Benutzer: '%s' bearbeitet."
+    },
+    "dialogReadonly":{
+      "title": "Keine Schreibberechtigung",
+      "desc": "Sie habe keine Schreibrechte für dieses Szenario. Möchten Sie es stattdessen als neues Szenario speichern?",
+      "okButton": "Speichern als",
+      "cancelButton": "Abbrechen"
+    },
+    "dialogReadonlyHC":{
+      "title": "Keine Schreibberechtigung",
+      "desc": "Sie habe keine Schreibrechte für diese Hypercube-Job-Konfiguration. Möchten Sie sie stattdessen als neue Konfiguration speichern?",
+      "okButton": "Speichern als",
+      "cancelButton": "Abbrechen"
+    },
+    "dialogNoExecPerm":{
+      "title": "Keine Ausführungsrechte",
+      "desc": "Für dieses Szenario haben Sie keine Ausführungsberechtigungen."
+    },
+    "dialogNoExecPermHC":{
+      "title": "Keine Ausführungsrechte",
+      "desc": "Für diese Hypercube-Job-Konfiguration haben Sie keine Ausführungsrechte."
+    },
+    "dialogDownloadTmp":{
+      "title": "Temporäre Dateien laden",
+      "desc": "Wählen Sie die zu ladende Datei aus",
+      "noFiles": "Es konnten keine Dateien gefunden werden",
+      "downloadZipButton":"Alle Dateien als zip laden",
+      "downloadButton":"Datei laden",
+      "cancelButton":"Abbrechen"
+    },
+    "dialogJobSubmission":{
+      "title": "Job senden",
+      "desc": "Einen neuen Job zum asynchronen Lösen senden.",
+      "jobName": "Geben Sie einen Namen für Ihren Job an (optional)",
+      "descWait": "Bitte warten Sie, während der Job gesendet wird...",
+      "badName": "Bitte wählen Sie einen gültigen Namen für den neuen Job.",
+      "cancelButton":"Abbrechen",
+      "okButton": "Senden",
+      "successMsg": "Ihr Job wurde erfolgreich gesendet. Sie können die Ergebnisse abrufen, sobald der Job gelöst wurde."
+    },
+    "dialogHcube":{
+      "title": "Hypercube-Konfiguration",
+      "desc": "Sie haben %d Szenarien zum Lösen im Hypercube-Modus ausgewählt. Von diesen sind bereits %d Szenarien gelöst worden.",
+      "descSolveAgain": "Möchten Sie alle Szenarien wieder lösen oder nur die, die noch nicht gelöst sind?",
+      "descJobSubmission": "Bitte warten Sie, während der Job gesendet wird...",
+      "newTags": "Weisen Sie dem Auftrag einen oder mehrere Tags zu:",
+      "manualSwitch": "Job manuell verarbeiten?",
+      "cancelButton":"Abbrechen",
+      "processAllButton": "Alle Verarbeiten",
+      "processUnsolvedButton": "Nur die ungelösten verarbeiten",
+      "successMsg": "Ihr Hypercube-Job wurde erfolgreich übermittelt. Sie können die Ergebnisse abrufen, sobald der Auftrag ausgeführt wurde.",
+      "waitTime": "Bitte warten Sie einige Sekunden bevor Sie einen neuen Auftrag ausführen.",
+      "waitDialog":{
+        "title": "Hypercube-Job wird konfiguriert",
+        "desc": "Bitte warten Sie, während der Hypercube-Job konfiguriert wird."
+      },
+      "exceedMaxNoDialog":{
+        "title": "Maximale Anzahl Szenarien überschritten",
+        "desc": "Sie haben %e Szenarien für ihren Bacthlauf gewählt. Dies überschreitet die maximale Anzahl von %d Szenarien pro Hypercube-Job. Bitte reduzieren Sie die Anzahl Szenarien und versuchen es erneut."
+      },
+      "noScenSelectedDialog":{
+        "title": "Keine Szenarien ausgewählt",
+        "desc": "Sie müssen zunächst mindestens ein Szenario zum Lösen konfigurieren."
+      },
+      "badStepSizeDialog":{
+        "title": "Falsche Schrittweite",
+        "desc": "Die von Ihnen gewählt Schrittweite ist ungültig. Bitte wählen Sie zunächst eine Gültige Schrittweite und versuchen es anschließend erneut."
+      }
+    },
+    "importJobsDialog":{
+      "title": "Derzeit aktive Jobs",
+      "noJobs": "Zur Zeit sind keine Jobs aktiv.",
+      "noJobsHist": "Es konnten keine verworfenen oder importierten Jobs gefunden werden.",
+      "discardSuccess": "Job wurde verworfen",
+      "importSuccess": "Job wurde erfolgreich importiert",
+      "maxDownloads": "Die maximale Anzahl paralleler Downloads ist erreicht.",
+      "jobNotFound": "Der Job wurde auf GAMS Engine nicht gefunden.",
+      "accessDenied": "Zugriff verweigert",
+      "histTitle": "Jobverlauf",
+      "status":{
+        "downloading": "Ergebnisse werden heruntergeladen",
+        "downloaded": "Heruntergeladen",
+        "running": "Laufend",
+        "imported": "Importiert",
+        "completed": "Abgeschlossen",
+        "corrupted": "Beschädigt",
+        "discarded": "Verworfen"
+      },
+      "ttips":{
+        "importedManual": "Der Job wurde manuell importiert.",
+        "discardedCorrupted": "Der Job war beschädigt.",
+        "discardedActive": "Der Job war noch aktiv.",
+        "discardedScheduled": "Der Job wurde eingeplant.",
+        "discardedCompleted": "Der Job war abgeschlossen.",
+        "corruptedNoDir": "Das Arbeitsverzeichnis des Jobs konnte nicht gefunden werden.",
+        "corruptedNoProcess": "Der Job ist beendet, aber es wurden keine Ergebnisse gefunden.",
+        "corruptedManual": "Der manuelle Import ist fehlgeschlagen."
+      },
+      "header":{
+        "owner": "Eigentümer",
+        "date": "Übermittlungsdatum",
+        "name": "Job Name",
+        "tags": "Job Tags",
+        "status": "Status",
+        "action": "Aktion"
+      },
+      "buttons":{
+        "import": "Importieren",
+        "download": "Ergebnisse herunterladen",
+        "log": "Log-Datei anzeigen",
+        "progress": "Fortschritt anzeigen",
+        "discard": "Verwerfen"
+      },
+      "discardConfirm":{
+        "title": "Verwerfen bestätigen",
+        "desc": "Sind Sie sicher, dass Sie den ausgewählten Job verwerfen möchten? Laufende Aufträge werden gestoppt.",
+        "cancelButton": "Abbrechen",
+        "confirmButton": "Bestätigen"
+      }
+    },
+    "newCompletedJobsDialog":{
+      "title": "Neue abgeschlossene Aufträge",
+      "desc": "Einige Ihrer Jobs sind gelöst worden und stehen nun zum Import bereit.",
+      "cancelButton": "Abbrechen",
+      "okButton": "Jobs anzeigen"
+    },
+    "hcubeMode":{
+      "sliderAllCombinations": "Alle Kombinationen?",
+      "stepsize": "Schrittweite",
+      "checkboxAliases":["Nein", "Ja"],
+      "hcubeLoadDialog":{
+        "title": "Aktion auswählen",
+        "selectMethod": "Was möchtest du mit den ausgewählten Szenarien machen?",
+        "selExportType": "Wählen Sie einen Dateityp aus",
+        "maxScenWarning1": "Sie können nur bis zu: '%d' gleichzeitig für den Vergleich im interaktiven Modus laden.", 
+        "maxScenWarning2": " Wählen Sie weniger Szenarien aus oder verwenden Sie das Paver Modul zum Vergleich.",
+        "cancelButton": "Abbrechen",
+        "paverButton": "Analysieren",
+        "selAnalysisScript": "Wählen Sie das Skript aus, das Sie ausführen möchten.",
+        "tabScript": "Skripte",
+        "tabPaver": "PAVER",
+        "delTrace":"Hinweis: Die vorhandenen Trace-Dateien im aktuellen Arbeitsverzeichnis werden beim Start von Paver gelöscht.",
+        "tooManySolvers":"Die von Ihnen gewählten Attribute ergeben zu viele zu vergleichende Szenarien (maximal: %s Szenarien können verglichen werden). Bitte reduzieren Sie die Anzahl an Szenarien.",
+        "noTrc": "Für mindestens eines der ausgewählten Szenarien konnten keine Trace-Daten gefunden werden.",
+        "analysisRunScriptRunning": "Derzeit läuft eine Analyse. Bitte warten Sie, bis diese Analyse abgeschlossen ist oder unterbrechen Sie sie.",
+        "removeConfirm": "Sind Sie sicher, dass Sie die %s ausgewählten Szenarien löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden!",
+        "removeSuccess": "Die ausgewählten Szenarien wurden erfolgreich gelöscht.",
+        "selPaverAttribs":"Bitte wählen Sie die Attribute, welche Sie vergleichen möchten:",
+        "selIgnoreAttribs": "Wählen Sie Attribute aus, die ignoriert werden sollen:",
+        "selClArgs": "Geben Sie zusätzliche Argumente an, mit denen Sie PAVER aufrufen möchten.",
+        "runPaverButton": "Paver starten",
+        "runScriptButton": "Skript starten",
+        "interactiveButtonTab":"Vergleichen (Tab)",
+        "interactiveButtonPivot":"Vergleichen (Pivot)",
+        "downloadButton":"Daten herunterladen",
+        "removeButton": "Szenarien löschen"
+      },
+      "invalidScenDialog":{
+        "title":"Ungültige Szenarien",
+        "desc": "%d der Szenarien, die Sie hochladen möchten, sind ungültig (%s). Wollen Sie dennoch fortfahren?",
+        "okButton": "Fortfahren",
+        "cancelButton": "Abbrechen"
+      },
+      "duplicatedScenDialog":{
+        "title":"Duplizierte Szenarien gefunden",
+        "allDuplicated": "Alle Szenarien, die Sie importieren möchten, sind bereits in der Datenbank mit dem/den Tag(s):'%s' vorhanden. Wollen Sie trotzdem weitermachen?",
+        "someDuplicated":"%d der zu importierenden Szenarien existiert bereits in der Datenbank mit dem/den Tag(s):'%s'. Möchten Sie trotzdem fortfahren oder nur die Szenarien importieren, die noch nicht existieren?",
+        "cancelButton":"Abbrechen",
+        "importNewButton": "Nur neue importieren",
+        "importAllButton": "Alle importieren"
+      },
+      "manualJobImportDialog":{
+        "title": "Manueller Hypercube-Job-Import",
+        "uploadZip":"Laden Sie hier eine Zip-Datei mit den Ergebnissen hoch.",
+        "hcubeTags":"Job Tags (kommasepariert)",
+        "uploadButton":"Importieren",
+        "cancelButton": "Abbrechen"
+      },
+      "showLogFileDialog":{
+        "title": "Log-Datei",
+        "noContent": "Die Log-Datei konnte nicht aufgerufen werden oder enthält keine Daten.",
+        "fileSize": "Die Log-Datei enthält zu viele Daten, um angezeigt zu werden.",
+        "cancelButton": "Abbrechen"
+      },
+      "showJobProgressDialog":{
+        "title": "Jobfortschritt",
+        "cancelButton": "Abbrechen"
+      },
+      "jobsCompletedDialog":{
+        "title": "Erfolgreich abgeschlossene Jobs",
+        "desc": "Hypercube-Jobs wurden erfolgreich abgeschlossen und sind nun bereit für den Import."
+      }
+    },
+    "dialogPaverInUse":{
+      "title": "Paver wird bereits verwendet",
+      "desc": "Bitte warten Sie, bis der Prozess beendet ist.",
+      "closeButton": "Schließen"
+    },
+    "scriptOutput": {
+      "runButton": "Skript ausführen",
+      "interruptButton": "Skript abbrechen",
+      "errMsg": {
+        "noScript": "Skriptdatei konnte nicht gefunden werden.",
+        "noOutput": "Skript-Ausgabedatei konnte nicht gefunden werden.",
+        "timeout": "Skript-Timeout abgelaufen.",
+        "crash": "Das Skript ist abgestürzt."
+      }
+    },
+    "hot":{
+      "search": "Suche:"
+    }
+  },
+  "progressBar":{  
+    "renderOutput":{  
+      "title":"Rendern der Grafiken",
+      "progress":"Rendern von Grafik "
+    },
+    "prepRun":{
+      "title":"Optimierungslauf wird vorbereitet",
+      "sendInput":"Senden der Eingabedaten",
+      "downloadAttach": "Laden der Anhänge"
+    },
+    "importScen":{
+      "title": "Szenario wird importiert",
+      "downloadResults": "Ergebnisse werden heruntergeladen",
+      "renderInput": "Eingabedaten werden gerendert",
+      "renderOutput": "Ausgabedaten werden gerendert"
+    },
+    "exportScen":{
+      "title": "Szenario wird exportiert",
+      "exportDs": "Datensatz %s von %s wird exportiert"
+    },
+    "loadScenDb":{  
+      "title":"Laden von Szenariodaten aus der Datenbank",
+      "progress":"Laden von Datensatz "
+    },
+    "saveScenDb":{  
+      "title":"Speichern von Szenariodaten in der Datenbank ",
+      "attachments": "Speichern von Anhängen",
+      "progress":"Speichern von Datensatz "
+    },
+    "hcubeImport":{
+      "title": "Hypercube-Job wird importiert",
+      "refresh": "Aktualisieren",
+      "unzip": "Extrahieren des Archivs",
+      "zipValidation": "Validierung des Archivs",
+      "scenValidation": "Validierung der Szenariodaten",
+      "duplicateCheck": "Prüfung auf doppelte Szenarien",
+      "scenRead": "Lesen der Szenariodaten",
+      "dbUpload": "Hochladen der Szenarien in die Datenbank",
+      "success": "Import erfolgreich"
+    }
+  },
+  "renderers":{
+    "dropdownFilter":{
+      "placeholder": "Suchen..."
+    },
+    "miroPivot":{
+      "btDownloadCsv": "CSV herunterladen",
+      "btDownloadPng": "PNG herunterladen",
+      "btLoadView": "View laden",
+      "btNewView": "View hinzufügen",
+      "btEnableEdit": "Bearbeitung aktivieren",
+      "btAddRow": "Zeile hinzufügen",
+      "btRemoveRows": "Zeilen entfernen",
+      "cbHideEmptyCols": "Leere Spalten ausblenden",
+      "aggregateLabel": "aggregieren",
+      "filterLabel": "filtern",
+      "allPlaceholder": "Alle",
+      "defaultViewName": "Standardeinstellung",
+      "colTruncationWarning": "Die Daten wurden auf die ersten %s Spalten gekürzt.",
+      "rowTruncationWarning": "Die Daten wurden auf die ersten %s Zeilen gekürzt.",
+      "newViewTitle": "Neuer view",
+      "newViewLabel": "Bitte wählen Sie einen Namen für den View.",
+      "newViewBtCancel": "Abbrechen",
+      "newViewBtSave": "Speichern",
+      "errUniqueViewName": "Der von Ihnen eingegebene Viewname existiert bereits. Bitte wählen Sie einen anderen Namen.",
+      "duplicateRecordTitle": "Doppelter Datensatz",
+      "duplicateRecordDesc": "Der von Ihnen eingegebene Datensatz ist bereits vorhanden.",
+      "errPivotDuplicate": "Die Daten enthalten doppelte Datensätze und können daher nicht gepivoted werden.",
+      "errPivot": "Die Daten konnten nicht gepivoted werden. Dies könnte daran liegen, dass Ihre Daten zu groß sind.",
+      "errorTitle": "Fehler",
+      "duplicateRecordError": "Der Datensatz: '%s' existiert bereits. Bitte entfernen Sie ihn und versuchen Sie es erneut.",
+      "dialogAddRow":{
+        "title": "Neue Zeile hinzufügen",
+        "btCancel": "Abbrechen",
+        "invalidKeysError": "Die von Ihnen eingegebenen Elemente sind ungültig. Bitte beachten Sie, dass die Elemente aus mindestens einem druckbaren Zeichen bestehen müssen.",
+        "invalidValuesError": "Die von Ihnen eingegebenen Daten sind ungültig. Stellen Sie sicher, dass die von Ihnen eingegebenen Werte numerisch sind.",
+        "unknownError": "Beim Versuch, die neuen Daten hinzuzufügen, ist ein unerwarteter Fehler aufgetreten."
+      },
+      "aggregationFunctions":{
+        "sum": "Summe",
+        "count": "Anzahl",
+        "median": "Median",
+        "mean": "Durchschnitt",
+        "min": "Min",
+        "max": "Max"
+      },
+      "renderer":{
+        "table": "Tabelle",
+        "heatmap": "Heatmap",
+        "bar": "Balkendiagramm",
+        "stackedbar": "Gestapeltes Balkendiagramm",
+        "radar": "Radardiagramm",
+        "line": "Liniendiagramm"
+      },
+      "invalidFilters":{
+        "title": "Einige Filter konnten nicht angewendet werden, weil die Werte in den Daten nicht vorhanden sind.",
+        "message": "Filter: '%s', ungültige Werte: '%s'."
+      }
+    },
+    "datatable":{
+      "addRowPos": ["Zeile oberhalb der Auswahl hinzufügen", "Zeile unterhalb der Auswahl hinzufügen"],
+      "addRowPosNoneSelected": ["Über der ersten Zeile hinzufügen", "Unter der letzten Zeile hinzufügen"]
+    },
+    "handsontable":{
+      "newCol":{
+        "nameLeft": "Spalte links einfügen",
+        "nameRight": "Spalte rechts einfügen",
+        "prompt": "Geben Sie einen Namen für die neue Spalte ein"
+      },
+      "renameCol":{
+        "name": "Spalte umbenennen",
+        "prompt": "Geben Sie einen neuen Namen für die Spalte ein"
+      },
+      "removeCol":{
+        "name": "Spalte entfernen",
+        "namePlural": "Spalten entfernen",
+        "prompt1": "Sind Sie sicher, dass Sie die Spalte(n):",
+        "prompt2": "entfernen möchten? Dies kann nicht rückgängig gemacht werden!"
+      }
+    }
+  },
+  "errMsg":{
+    "unknownError": "Ein unerwarteter Fehler ist aufgetreten. Wenn dieses Problem weiterhin besteht, wenden Sie sich an einen Systemadministrator.",
+    "permErr": "Die Operation ist fehlgeschlagen, weil Sie nicht über ausreichende Berechtigungen verfügen.",
+    "fileRead":{  
+      "title":"Fehler beim Lesen von Datei",
+      "desc":"Beim Lesen der Datei: '%s' ist ein Fehler aufgetreten."
+    },
+    "csvio":{
+      "warnings":{
+        "ambiguousDelim": "WARNUNG: Das Begrenzungszeichen Ihrer Datei konnte nicht eindeutig identifiziert werden. Bitte wählen Sie es unten manuell aus."
+      },
+      "errors":{
+        "noColsSelected": "ERROR: Sie müssen mindestens eine Spalte zum Importieren auswählen.",
+        "badDelim": "FEHLER: Konnte Begrenzungszeichen nicht ermitteln. Gültige Begrenzungszeichen sind: '%s'.",
+        "duplicateCol": "FEHLER: Das mehrfache Auswählen derselben Spalte wird nicht unterstützt.",
+        "badEncoding": "Die Datei, die Sie hochgeladen haben, ist nicht UTF-8 kodiert. Andere Kodierungen als UTF-8 werden nicht unterstützt!"
+      }
+    },
+    "xlsio":{
+      "warnings":{
+        "invalidSymbols": "WARNUNG: Ungültige Symbole in der Excel-Datei, die ignoriert wurden: '%s'.",
+        "skipOptionsPersistence": "WARNUNG: Einige nicht leere Zeilen wurden übersprungen. MIRO unterstützt keine Optionen mit Persistenz wie 'skipEmpty'. Deklarieren Sie sie stattdessen als Teil der Symboldeklaration.",
+        "keyValueCols": "WARNUNG: Schlüssel=Wert-Spalten werden von MIRO nicht unterstützt und werden ignoriert. Bitte verwenden Sie nur Spaltenüberschriften.",
+        "invalidSkipEmpty": "WARNUNG: skipEmpty größer als 1 wird in MIRO nicht unterstützt (Symbol(e): '%s'). Ungültige Werte wurden auf 1 gesetzt.",
+        "invalidSqueeze": "WARNUNG: Ungültiger Wert für squeeze-Option (Symbol(e): '%s'). Erlaubte Werte sind: 1, y, 0, n. Ungültige Werte wurden auf 1 gesetzt.",
+        "invalidOptions": "WARNUNG: Ungültige, MIRO unbekannte Optionen in Index gefunden: '%s'",
+        "scalarDeclarations": "WARNUNG: Sowohl skalare Tabellendeklaration als auch einzelne skalare Deklaration im Index gefunden. Einzeldeklaration wird ignoriert, wenn Skalar bereits Teil der Tabelle ist!"
+      },
+      "errors":{
+        "badFormat": "FEHLER: Datei ist keine gültige Excel-Datei.",
+        "indexNoSymInfo": "FEHLER: Konnte keine Symbolnamensinformationen im Index finden.",
+        "indexNoRangeInfo": "FEHLER: Konnte keine Bereichsinformationen im Index finden.",
+        "indexInvalidRdim": "FEHLER: Symbol(e): '%s' haben ungültige Zeilendimension.",
+        "indexInvalidCdim": "FEHLER: Symbol(e): '%s' haben ungültige Spaltendimension.",
+        "indexInvalidDim": "FEHLER: Symbol(e): '%s' haben ungültige Dimension.",
+        "indexDuplicateRdim": "FEHLER: rowdim-Spalte konnte nicht eindeutig identifiziert werden.",
+        "indexDuplicateCdim": "FEHLER: coldim-Spalte konnte nicht eindeutig identifiziert werden.",
+        "indexDuplicateIgnoreCol": "FEHLER: ignoreColumns-Spalte konnte nicht eindeutig identifiziert werden.",
+        "indexDuplicateSkipEmpty": "FEHLER: skipEmpty-Spalte konnte nicht eindeutig identifiziert werden.",
+        "indexDuplicateSqueeze": "FEHLER: squeeze-Spalte konnte nicht eindeutig identifiziert werden.",
+        "indexInvalidRdimCol": "FEHLER: rowdim-Spalte ist nicht ganzzahlig.",
+        "indexInvalidCdimCol": "FEHLER: coldim-Spalte ist nicht ganzzahlig.",
+        "indexInvalidValues": "FEHLER: Ungültige 'values'-Optionen gefunden für Symbol(e): '%s'. Mögliche Optionen sind: auto, nodata, yn, sparse, dense.",
+        "symbolNotFound": "FEHLER: Symbol: '%s' nicht in Excel-Datei gefunden.",
+        "badIndexRange": "FEHLER: Der eingegebene Indexbereich ist ungültig.",
+        "badSymbolRange": "FEHLER: Ungültiger Bereich für Symbol: '%s'.",
+        "badSymbolDim": "FEHLER: Symbol '%s' hat ungültige Abmessungen.",
+        "invalidRecords": "FEHLER: Ungültige Datensätze in Symbol '%s' gefunden: '%s'.",
+        "duplicateSymbols": "FEHLER: Symbol(e): '%s' wurde(n) mehrfach deklariert. Bitte stellen Sie sicher, dass jedes Symbol nur einmal deklariert wird.",
+        "duplicateScalars": "FEHLER: Skalar(e): '%s' wurden mehrfach deklariert. Bitte stellen Sie sicher, dass jedes Symbol nur einmal deklariert wird.",
+        "duplicateScalarVE": "FEHLER: Skalarvariable(n)/Gleichung(en): '%s' wurden mehrfach deklariert. Bitte stellen Sie sicher, dass jedes Symbol nur einmal deklariert wird.",
+        "invalidRange": "FEHLER: Ungültige Bereichsinformation.",
+        "invalidColRange": "FEHLER: Ungültige Zeilendimension."
+      }
+    },
+    "invalidFileType":{  
+      "title":"Ungültiger Dateityp",
+      "desc":"Die Datei, die Sie zu importieren versuchen, kann von MIRO nicht gelesen werden. Unterstützte Dateitypen sind: %s."
+    },
+    "fileWrite":{  
+      "title":"Fehler beim Schreiben von Datei",
+      "desc":"Beim Schreiben der Datei: '%s' ist ein Fehler aufgetreten."
+    },
+    "initErrors":{  
+      "title":"Es sind Fehler aufgetreten",
+      "desc":"Bitte beheben Sie die nachfolgend aufgeführten Fehler und starten Sie MIRO neu.",
+      "okButton": "Ok"
+    },
+    "fetchScenData":{  
+      "title":"Fehler beim Lesen der Szenariodaten",
+      "desc":"Die Szenario-Metadaten konnten nicht geladen werden."
+    },
+    "renderSlider":{  
+      "title":"Falsche Daten für den Schieberegler",
+      "desc":"Szenario-Metadaten konnten nicht abgerufen werden."
+    },
+    "saveInput":{  
+      "title":"Fehler beim Speichern der Daten",
+      "desc":"Beim Speichern der Daten in die Datenbank ist ein Fehler aufgetreten."
+    },
+    "readOutput":{  
+      "title":"Fehler beim Lesen der Ergebnisse",
+      "desc":"Beim Lesen der Ergebnisse von GAMS ist ein Fehler aufgetreten."
+    },
+    "dataError":{  
+      "title":"Fehler in den Daten",
+      "desc":"Ein Datenfehler ist aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt."
+    },
+    "ddLenMismatch":{  
+      "title":"Anzahl der Aliase und Werte stimmt nicht überein",
+      "desc":"Die Anzahl der Aliase für das Dropdown-Menü: '%s' stimmt nicht mit der Anzahl der Werte überein."
+    },
+    "fetchDataset": {
+      "title" : "Fehler beim Lesen der Daten",
+      "desc": "Beim Lesen des Datensatzes: '%s' aus der Datenbank ist ein Fehler aufgetreten.",
+      "badColName" : "Die Spalte(n): '%s' konnten im Datensatz : '%s' nicht gefunden werden.",
+      "noData":"Datensatz: '%s' konnte nicht geladen werden. Bitte stellen Sie sicher, dass der Datensatz Daten enthält."
+    },
+    "GAMSInput":{  
+      "title":"Fehler beim Schreiben der GAMS Eingabedaten",
+      "desc":"Beim Schreiben der GAMS Eingabedaten sind Fehler aufgetreten:",
+      "excelRead":"Beim Lesen der Datei: '%s' ist ein Fehler aufgetreten.",
+      "badColName" : "Die Spalte(n): '%s' konnten im Datensatz : '%s' nicht gefunden werden.",
+      "noData":"Datensatz: '%s' konnte nicht geladen werden. Bitte stellen Sie sicher, dass der Datensatz Daten enthält.",
+      "badInputData":"Die GAMS Eingabedaten: '%s' sind ungültig. Bitte überprüfen Sie das Format der Daten, die Sie importieren möchten.",
+      "writeCsv":"Beim Schreiben der csv-Datei: '%s' ist ein Fehler aufgetreten."
+    },
+    "GAMSOutput":{  
+      "title":"Fehler beim Lesen der Ergebnisse",
+      "badOutputData":"Der Datensatz: '%s' ist ungültig. Bitte überprüfen Sie das Format der Ausgabedaten."
+    },
+    "gamsExec":{  
+      "title":"Fehler beim Ausführen von GAMS",
+      "desc":"Konnte GAMS nicht ausführen. Haben Sie vergessen, den GAMS-Installationspfad anzugeben?"
+    },
+    "jobRunning":{
+      "title":"Aktiver Job",
+      "desc": "Ein GAMS-Job läuft derzeit. Sie müssen diesen Job stoppen oder warten, bis er beendet ist, bevor Sie einen anderen Job ausführen können."
+    },
+    "unzipProcessRunning":{
+      "title": "MIRO beschäftigt",
+      "desc": "MIRO ist beschäftigt, die Modelldateien in Ihrem Arbeitsbereich zu extrahieren. Bitte warten Sie und versuchen Sie es dann erneut."
+    },
+    "gamsTerm":{  
+      "title":"Fehler beim Beenden von gams.exe",
+      "desc":"Bei dem Beenden von GAMS ist ein Fehler aufgetreten."
+    },
+    "readLog":{  
+      "title":"Fehler beim Lesen der log-Datei",
+      "desc":"Beim Lesen der GAMS log-Datei ist ein Fehler aufgetreten."
+    },
+    "readLst":{  
+      "title":"Fehler beim Lesen der listing-Datei",
+      "desc":"Beim Lesen der GAMS listing-Datei ist ein Fehler aufgetreten.",
+      "fileSize":"Die lst-Datei, die sie versuchen zu lesen ist zu groß, um hier dargestellt zu werden. Bitte laden Sie die Datei herunter, um sie zu öffnen.",
+      "fileNotFound": "Die lst-Datei konnte nicht gefunden werden."
+    },
+    "saveScen":{  
+      "title":"Fehler beim Speichern des Szenarien",
+      "desc":"Beim Speichern des Szenarien ist ein Fehler aufgetreten."
+    },
+    "loadScen":{  
+      "title":"Fehler beim Laden der Szenarien",
+      "desc":"Beim Laden der ausgewählten Szenarien ist ein Fehler aufgetreten."
+    },
+    "deleteScen":{  
+      "title":"Fehler beim Löschen des Szenarien",
+      "desc":"Beim Löschen des Szenarien ist ein Fehler aufgetreten. Falls dieses Problem bestehen bleibt, kontaktieren Sie bitte den Administrator."
+    },
+    "renderTable":{  
+      "title":"Fehler beim Darstellen der Tabelle",
+      "desc":"Beim Darstellen der Daten: '%s' ist ein Fehler aufgetreten."
+    },
+    "renderGraph":{  
+      "title":"Fehler beim Darstellen der Grafik",
+      "desc":"Beim Darstellen der Grafik: '%s' ist ein Fehler aufgetreten."
+    },
+    "blankScenName":{  
+      "title":"Kein Name gewählt",
+      "desc":"Bitte wählen Sie für das Szenario, das Sie speichern möchten, einen gültigen Namen."
+    },
+    "maxScen":{
+      "title":"Maximale Anzahl an Szenarien erreicht",
+      "desc":"Sie haben die maximale Anzahl von Szenarien erreicht, die Sie gleichzeitig laden können. Bitte entfernen Sie zuerst einige Szenarien, bevor Sie neue importieren."
+    },
+    "lockScen":{
+      "title":"Fehler beim Setzen/Löschen der Szenarienperre",
+      "desc":"Beim Setzen oder Löschen der Szenarienperre ist ein Fehler aufgetreten."
+    },
+    "hcubeImport":{
+      "extract":{
+        "title": "Fehler beim Extrahieren des Archivs",
+        "desc": "Probleme beim Extrahieren des Archivs. Bitte stellen Sie sicher, dass Sie eine gültige Zip-Datei hochladen.",
+        "invalidFiles": "Das Archiv, das Sie zu importieren versuchen, enthält ungültige Dateien. Nur Trace-, CSV- und GDX-Dateien erlaubt!"
+      },
+      "scenRead":{
+        "title": "Fehler beim Lesen von Dateien",
+        "desc": "Probleme beim Lesen von Szenariodaten. Wenn dieses Problem weiterhin besteht, wenden Sie sich bitte an den Systemadministrator."
+      },
+      "invalidJob":{
+        "title": "Ungültiger Hypercube-Job",
+        "desc": "Es gibt keine gültigen Szenarien in Ihrem Archiv. Bitte laden Sie gültige Hypercube-Jobdaten hoch."
+      },
+      "duplicateFetch":{
+        "title": "Datenbankfehler",
+        "desc" : "Probleme beim Abrufen existierender Szenarien aus der Datenbank. Wenn dieses Problem weiterhin besteht, wenden Sie sich bitte an den Systemadministrator."
+      },
+      "dbUpload":{
+        "title": "Datenbankfehler",
+        "desc": "Probleme beim Hochladen der Szenarien in die Datenbank. Bitte versuchen Sie es später noch einmal."
+      }
+    },
+    "hcubeLaunch":{
+      "hcubeRunning": "Der Hypercube-Modus läuft bereits.",
+      "launchError": "Beim Versuch, den Hypercube-Modus zu starten, ist ein Fehler aufgetreten. Wenn dieses Problem weiterhin besteht, wenden Sie sich bitte an den Systemadministrator."
+    },
+    "paverFileLoad":{  
+      "desc":"Daten für diese Kategorie konnten nicht geladen werden."
+    },
+    "paverExec":{  
+      "title":"Fehler beim Ausführen von Python",
+      "desc":"Bei der Ausführung von Python ist ein Fehler aufgetreten."
+    },
+    "paverTerm":{  
+      "title":"Fehler beim Beenden von Python",
+      "desc":"Bei dem Beenden von Python ist ein Fehler aufgetreten."
+    },
+    "saveGAMSLog":{
+      "title": "Fehler beim Speichern von GAMS log/lst-Dateien",
+      "noFileAccess": "Auf eine oder mehrere GAMS-Ausgabedateien (.log/.lst) konnte nicht zugegriffen werden.",
+      "fileSizeExceeded": "Eine oder mehrere GAMS-Ausgabedateien (.log/.lst) überschreiten die maximal zulässige Dateigröße."
+    },
+    "saveAttachments": {
+      "title": "Probleme beim Speichern von Anhängen",
+      "noFileAccess": "Die Anhänge: '%s' konnten nicht gespeichert werden, da die Dateien nicht zugänglich sind.",
+      "fileSizeExceeded": "Die Anhänge: '%s' konnten nicht gespeichert werden, da sie die maximal zulässige Größe überschreiten."
+    }
+  },
+  "adminMode":{
+    "invalidSymbolsDialog":{
+      "title": "Ungültige Konfiguration",
+      "desc": "Einige Grafiken und/oder Widgets wurden für Symbole konfiguriert, die nicht mehr Teil Ihres GAMS/MIRO-Datenvertrags oder ausgeblendet sind. Wollen Sie diese aus Ihrer Konfiguration entfernen? Beachten Sie, dass dies nicht rückgängig gemacht werden kann! Grafische Konfiguration für ungültige(s) Symbol(e): '%s'. Widget-Konfiguration für ungültige(s) Symbol(e): '%s'.",
+      "msgSuccess": "Ungültige Konfiguration wurde erfolgreich entfernt",
+      "btRemoveWidgets": "Ungültige Widgets entfernen",
+      "btRemoveGraphs": "Ungültige Grafiken entfernen", 
+      "btCancel": "Abbrechen"
+    },
+    "uiR":{
+      "adminPanel": "GAMS MIRO Administrationsoberfläche",
+      "general": "Allgemeine Einstellungen",
+      "table": "Tabellen konfigurieren",
+      "widgets": "Widgets konfigurieren",
+      "graphs": "Graphen konfigurieren",
+      "database": "Datenbankverwaltung",
+      "custom":{
+        "skeleton": "Grundgerüst:",
+        "steps": "Schritte:",
+        "li1": "Erstellen Sie ein Verzeichnis renderer_%s in Ihrem Modellverzeichnis mit einer Datei %s_custom.R darin.",
+        "li2": "Kopiere den obenstehenden Code und füge ihn in die Datei %s_custom.R ein.",
+        "li3a": "Schreibe deinen eigenen Renderer! Für eine detaillierte Beschreibung, wie man einen solchen benutzerdefinierten Renderer schreibt, siehe ",
+        "li3b": "hier",
+        "description1": "Das nächste Mal, wenn die Applikation nach einem Klick auf speichern gestartet wird, sucht MIRO nach einer benutzerdefinierten Rendererfunktion in der Datei %s_custom.R. Wird diese nicht gefunden, startet die Anwendung nicht! Vergewissere dich also immer, dass du die benutzerdefinierte Rendererfunktion korrekt eingebunden hast. Es ist immer eine gute Idee, zunächst einen von MIRO isolierten Renderer zu entwickeln und ihn, sobald du mit dem Ergebnis zufrieden bist, in die MIRO-Anwendung zu integrieren.",
+        "description2": "Beachte:",
+        "description3": "Wenn deine Anwendung aus dem oben genannten Grund nicht startet, kannst du den konfigurierten Renderer hier jederzeit löschen."
+      }
+    },
+    "general":{
+      "ui":{
+        "title":"Allgemeine Einstellungen",
+        "tabInterface": "Benutzeroberfläche",
+        "tabSymbols": "Symbol-Konfiguration",
+        "tabModules": "Module",
+        "tabScripts": "Analyseskripte",
+        "headerGeneral": "Allgemein",
+        "headerLogo": "Logo",
+        "headerSymbolDisplay": "Symboldarstellung",
+        "headerTabGrouping": "Tab-Gruppierung",
+        "headerTabSymlinks": "Ergebnisse als Eingabedaten verwenden",
+        "headerInputGroups": "Eingabegruppen",
+        "headerInputWidgetGroups": "Widget-Gruppen",
+        "headerOutputGroups": "Ausgabegruppen",
+        "headerSymbolNaming": "Benennung",
+        "headerSymbolGrouping": "Reihenfolge",
+        "headerBaseScripts": "Basismodus",
+        "headerOutputAttach": "Ergebnis-Anhänge",
+        "baseScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte aus, die im Ausgabeabschnitt angezeigt werden",
+        "headerHcubeScripts": "Hypercube-Modus",
+        "hcubeScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte für mehrere Szenarien auf einmal aus",
+        "headerScenData": "Szenario & Daten",
+        "headerComputation": "Berechnung",
+        "tooltipDocs": "Dokumentation öffnen"
+      },
+      "modalDialog":{
+        "title": "Fehler beim Kopieren des Bildes", 
+        "content": "Es ist ein Problem beim Kopieren von Bildern aufgetreten. Wenn dieses Problem weiterhin besteht, wenden Sie sich bitte an einen Systemadministrator."
+      },
+      "language":{
+        "label": "Sprache",
+        "choices": ["Englisch", "Deutsch", "Chinesisch"]
+      },
+      "theme":{
+        "label": "Zu verwendendes Farbschema",
+        "choices": ["System/Browser Einstellungen", "Heller Modus", "Dunkler Modus"]
+      },
+      "pageTitle":{
+        "label": "Titel der Applikation (im Browser Tab sichtbar)"
+      },
+      "scen":{
+        "label": "Standard-Szenarienvergleichsmodus",
+        "choices": ["Geteilter Bildschirm (geeignet für 2 Szenarien zum Vergleichen)", "Registerkartenansicht (geeignet für > 2 Szenarien zum Vergleichen)",
+        "Pivot-Ansicht (geeignet für > 2 Szenarien zum Vergleichen)"]
+      },
+      "defaultScenName":{
+        "checkbox": "Soll ein Standardszenario definiert werden, welches beim Start geladen wird?",
+        "tooltip": "Erlaubt es Ihnen, Tabellen und Widgets beim Start von MIRO mit Daten vorzufüllen",
+        "label": "Name des Standardszenarios"
+      },
+      "args":{
+        "label": "Zusätzliche Kommandozeilenparameter an, mit denen GAMS aufgerufen werden soll"
+      },
+      "groups":{
+        "input": "Eingabesymbole in Gruppen einteilen",
+        "widgets": "Eingabe-Widgets in Gruppen einteilen",
+        "output": "Ausgabesymbole in Gruppen einteilen"
+      },
+      "symlinks":{
+        "label": "Symbolverknüpfungen festlegen (Ergebnisse, die als Eingabedaten verwendet werden können)"
+      },
+      "scripts":{
+        "base": "Spezifizieren Sie individuelle Analyseskripte für den Basismodus.",
+        "hcube": "Spezifizieren Sie individuelle Analyseskripte für den Hypercube-Modus."
+      },
+      "outputAttach": {
+        "label": "Neue Anlage hinzufügen"
+      },
+      "overwriteSheetOrder":{
+        "input": "Legen Sie die Reihenfolge fest, in welcher die Eingabesymbole angezeigt werden sollen (Drag & Drop).",
+        "output": "Legen Sie die Reihenfolge fest, in welcher die Ausgabesymbole angezeigt werden sollen (Drag & Drop)."
+      },
+      "overwriteSymbolAliases":{
+        "label": "Symbol-Aliase festlegen",
+        "input": "Eingabesymbole",
+        "output": "Ausgabesymbole"
+      },
+      "overwriteSymbolHeaders":{
+        "label": "Spaltenüberschriften festlegen"
+      },
+      "hiddenOutputSymbols":{
+        "label": "Symbole, die nicht angezeigt werden sollen, aber in Diagrammen usw. verwendet werden können."
+      },
+      "hiddenOutputScalars":{
+        "label": "Skalare, die nicht in der Outputskalartabelle angezeigt werden sollen, aber in Grafiken usw. verwendet werden können."
+      },
+      "pivotcolor":{
+        "label": "Hintergrundfarbe der Zeilen- und Spaltenüberschriften in Pivot-Tabellen."
+      },
+      "mirologfile":{
+        "label": "Geben Sie den Namen der MIRO Log-Datei ein (falls verfügbar). Mindestens 3 Zeichen."
+      },
+      "readme":{
+        "label": "README Datei",
+        "readmeTooltip": "Eine README-Datei wird im Eingabebereich als individuelle Startseite angezeigt",
+        "useReadme": "README-Datei einbinden",
+        "tabTitle": "README Reitertitel",
+        "fileName": "README-Dateiname",
+        "enableMath": "Mathematischen Schriftsatz aktivieren?",
+        "btEdit": "README bearbeiten",
+        "dialogEdit": {
+          "title": "README Editor",
+          "reamdeHeader": "Markdown content",
+          "markdownHeader": "Readme preview",
+          "msgErrSave": "Probleme beim Schreiben der README-Datei. Prüfen Sie, ob Sie ausreichende Schreibrechte in Ihrem Modell-Verzeichnis haben.",
+          "btCancel": "Abbrechen",
+          "btSave": "Speichern"
+        }
+      },
+      "saveDuration":{
+        "label": "Speicherdauer für GAMS Log und lst Dateien in der Datenbank (in Tagen)."
+      },
+      "decimal":{
+        "label": "Anzahl der Dezimalstellen für das Runden von numerischen Werten (globale Option).",
+        "tooltip": "Wirkt sich auf alle Ausgabetabellen, Eingabetabellen mit großen Datenmengen und die Tabelle für Laden von Szenarien im Hypercube-Modus aus. - Dokumentation öffnen."
+      },
+      "logo":{
+        "header": "Logo Vorschau:",
+        "label": "Laden Sie ein eigenes Logo für Ihre MIRO-App hoch: png/jpg-Datei (bestes Format: 4,6:1 oder 230*50px)",
+        "placeholder": "Keine Datei ausgewählt"
+      }, 
+      "actScen":{
+        "title" :"Szenarien speichern, löschen und vergleichen",
+        "label": "Szenario-Funktionalität aktivieren"
+      },
+      "actStrict":{
+        "label": "App im Striktmodus starten? Dies führt dazu, dass Fehlermeldungen ausgegeben werden, anstatt möglicherweise fehlerhafte Benutzereingaben zu akzeptieren."
+      },
+      "actUpload":{
+        "title": "Ermöglicht es dem Benutzer, lokale Daten für GAMS-Läufe zu verwenden",
+        "label": "Lokales Daten-Upload-Modul aktivieren?"
+      },
+      "actShareScen":{
+        "label": "Szenario-Sharing zwischen verschiedenen Benutzern aktivieren"
+      },
+      "actLog":{
+        "label": "Log Datei in der Benutzeroberfläche anzeigen"
+      },
+      "actLst":{
+        "label": "Listing (lst) Datei in der Benutzeroberfläche anzeigen"
+      },
+      "actAttach":{
+        "title": "Können Dateien in jedem Format sein. MIRO unterscheidet zwei Arten von Anhängen: Anhänge, die von Ihrem GAMS-Modell gesehen und gelesen werden können und Dateien, die nicht sichtbar sind.",
+        "label": "Sollen Benutzer Anhänge zu Szenarien hinzufügen dürfen?"
+      },
+      "aggregate":{
+        "title": "Wenn nicht aktiviert, wird jedes Input-Widget in einem separaten Tab angezeigt.",
+        "label": "Sollen alle Eingabe-Widgets (Schieberegler, Dropdown-Menü, etc.) in einem einzigen Tab zusammengefasst werden?"
+      },
+      "parent":{
+        "label": "Übergeordnetes Verzeichnis des Modellordners in Modellläufe mitaufnehmen (z.B. weil mehrere Modelle Dateien teilen)?"
+      },
+      "meta":{
+        "title": "Metadaten enthalten Informationen über den Benutzernamen, den Szenarionamen und den Erstellungszeitpunkt des Szenarios",
+        "label": "Ein Metadatenblatt in die Excel-Datei aufnehmen (beim Export eines Szenarios)?"
+      },
+      "empty":{
+        "title": "Blätter können leer sein, z.B. wenn das exportierte Szenario nur Eingabedaten enthält.",
+        "label": "Leere Blätter in die Excel-Datei aufnehmen?"
+      },
+      "downloadTempFiles":{
+        "label": "Zugriff auf das temporäre Verzeichnis erlauben?"
+      },
+      "saveTrace":{
+        "title": "Für die Leistungsanalyse mit dem integrierten Analysetool PAVER muss diese Option aktiviert sein.",
+        "label": "Trace-Datei bei jedem GAMS-Lauf speichern (Hypercube-Modus)"
+      },
+      "auto":{
+        "label": "Automatisch Grafik für jedes Eingabesymbol generieren (Pivot-Tool)"
+      }
+    },
+    "tables":{
+      "ui":{
+        "title": "Tabelleneinstellungen",
+        "input": "Eingabetabellen",
+        "output": "Ausgabetabellen",
+        "symbol": "Symboltabellen",
+        "resetTable": "Zurücksetzen",
+        "saveTable": "Speichern",
+		"inputSymbols": "Eingabesymbole",
+        "outputSymbols": "Ausgabesymbole"
+      },
+      "hot":{
+        "height": "Höhe der Eingabetabellen (in px)",
+        "readonly": "Bearbeitung von Tabellen verbieten? Wenn aktiviert, können Tabellen vom Benutzer nicht geändert werden.",
+        "stretch": "Strecken von Tabellenspalten.",
+        "stretchChoices": ["Nicht strecken", "Letzte Spalte strecken", "Alle Spalten strecken"],
+        "colwidth": "Breite einer einzelnen (nicht gestreckten) Spalte. Für den Standardwert leer lassen oder auf 0 setzen.",
+        "resize": "Manuelle Anpassung der Spaltenbreite aktivieren.",
+        "enable": "Kontextmenü der Tabelle aktivieren (erreichbar über rechte Maustaste).",
+        "contextRowedit": "Zeilenbearbeitung aktivieren",
+        "contextColedit": "Spaltenbearbeitung aktivieren"
+      },
+      "dt":{
+        "class":{
+          "label":"Tabellenstil",
+          "choices": ["Display", "Spaltenrand", "kompakt", "hover", "kein wrap", "order-column", "Zeilenrand", "Streifen"]
+        },
+        "filter":{
+          "label":"Spaltenfilter anzeigen",
+          "choices": ["Keine Spaltenfilter", "Position: unten", "Position: oben"]
+        },
+        "pagelength":{
+          "label":"Anzahl der anzuzeigenden Zeilen pro Seite"
+        },
+        "decimals":{
+          "label":"Anzahl der anzuzeigenden Dezimalstellen"
+        },
+        "rownames":{
+          "label":"Zeilennummern anzeigen?"
+        },
+        "colReorder":{
+          "label":"Neuordnung von Spalten erlaubt?"
+        },
+        "buttons":{
+          "title": "Wenn ein Symbol mehrere Tabellenseiten enthält, wirkt sich die Verwendung eines Export-Buttons nur auf die aktuell sichtbare Tabellenseite aus!",
+          "choices": ["Zwischenablage", "csv", "Excel", "pdf", "Druck", "Spalten-Sichtbarkeit"],
+          "select": "Wählen Sie zu verwendende Buttons aus. Hinweis: Eine Buttonfunktion wirkt sich stets nur auf die sichtbare Tabellenseite aus."
+        }
+      },
+      "symbol":{
+        "removeDialog":{
+          "title": "Bitte bestätigwen",
+          "message": "Sind Sie sicher, dass Sie die bestehende Konfiguration für dieses Symbol zurücksetzen wollen? Dies kann nicht rückgängig gemacht werden!",
+          "cancel": "Abbrechen",
+          "confirm": "Bestätigen"
+        },
+		"noGraph": "Zeige nur die Tabelle und keine Grafik für dieses Symbol",
+        "saveJson":{
+          "warnTitle": "Daten existieren",
+          "warnContent": "Für das Symbol '%s' soll laut Konfiguration keine Grafik angezeigt werden. Es existiert bereits eine Grafikkonfiguration für dieses Symbol. Möchten Sie diese Konfiguration überschreiben? Das kann nicht rückgängig gemacht werden!",
+          "cancel": "Abbrechen",
+          "overwrite": "Überschreiben"
+        }
+      }
+    },
+    "widgets":{
+      "ui":{
+        "title":"Eingabe-Widgets konfigurieren",
+        "widgetUpdateSuccess": "Die Widget-Konfiguration wurde erfolgreich aktualisiert",
+        "widgetTableUpdateSuccess": "Die Tabellenkonfiguration wurde erfolgreich aktualisiert",
+        "gams": "Symbol",
+        "go": "Neue GAMS Option",
+        "dd": "Neuer double-dash Parameter",
+        "choices": ["Symbol", "Neue GAMS-Option", "Neuer Double-Dash-Parameter"],
+        "noSymbolMsg": "Es wurde kein GAMS symbol für die Verwendung mit MIRO markiert",
+        "noWidgetMsg": "Es wurde noch kein Widget konfiguriert",
+        "noWidgetConfigMsg": "Derzeit ist kein Widget für dieses Symbol konfiguriert",
+        "optionConfigMsg": "Info: Das von Ihnen gewählte Symbol ist eine GAMS-Option: %s",
+        "doubledashConfigMsg": "Info: Das von Ihnen gewählte Symbol ist ein Double-Dash-Parameter: %s",
+        "tableWidget": "Tabellen können angepasst werden unter '",
+        "inputSymbol": "Wählen Sie ein Eingabesymbol",
+        "widgetGo": "Name der GAMS Option (z.B.'LP' oder 'OptCR')",
+        "widgetDd": "Name des Double-Dash-Parameters (ohne '--')",
+        "inputSymbolTooltip": "Wählen Sie ein Eingabesymbol, für welches ein Widget konfiguriert werden soll",
+        "tableTooltip": "Wählen Sie das Eingabesymbol, dessen Tabelle sie konfigurieren möchten",
+        "widgetGoTooltip": "Name der GAMS Option (z.B.'LP' oder 'OptCR')",
+        "widgetDdTooltip": "Name des Double-Dash-Parameters (ohne '--')",
+        "widgetType": "Wählen Sie ein Widget",
+        "alias": "Beschriftung für den Reiter des Elements (keine Live-Vorschau)",
+        "pivotColsRestriction": "Hinweis: Es ist nicht möglich, Spalten in der Symboltabelle hinzuzufügen oder zu löschen, wenn sie schreibgeschützt ist oder als Heatmap dargestellt wird.",
+		"notConfigurable": "Die in Ihrer JSON-Datei gefundene Widgetkonfiguration wird derzeit für den ausgewählten Symboltyp im Konfigurationsmodus nicht unterstützt! Dies bedeutet nicht, dass die Konfiguration ungültig ist. Symbol: '%s'; Konfiguriertes Widget: '%s'"
+      },
+      "validate":{
+        "val1": "Der Alias des Elements darf nicht leer sein!",
+        "val2": "Der Name des Double-Dash-Parameters darf nicht leer sein!",
+        "val3": "Der Name der GAMS-Option darf nicht leer sein!",
+        "val6": "Der Standardwert ist ungültig!",
+        "val7": "Der Standardwert muss eine Zahl im Bereich[min, max] sein!",
+        "val8": "Der Tick-Identifikator muss ein Boolean sein!",
+        "val9": "Die Schrittweite muss eine Zahl sein!",
+        "val10": "Dein Dropdown-Menü muss die gleiche Anzahl von Aliasen haben wie die Auswahl oder gar keine Aliase!",
+        "val11": "Der Standardwert muss eine der von Ihnen angegebenen Optionen sein!",
+        "val12": "Der Wert muss ein boolescher Wert sein!",
+        "val13": "Standarddatum ist ungültig!",
+        "val14": "Das früheste Datum ist ungültig!",
+        "val15": "Das späteste Datum ist ungültig!",
+        "val16": "Das Standarddatum muss nach dem Startdatum liegen!",
+        "val17": "Das Standarddatum muss vor dem Enddatum liegen!",
+        "val18": "Das früheste muss vor dem spätesten Datum liegen!",
+        "val19": "Die Mindestlänge für das benutzerdefinierte Datumsformat ist 1!",
+        "val20": "Startdatum ist ungültig!",
+        "val21": "Enddatum ist ungültig!",
+        "val22": "Das früheste Datum ist ungültig!",
+        "val23": "Das späteste Datum ist ungültig!",
+        "val24": "Das Startdatum muss nach dem Mindestdatum liegen!",
+        "val25": "Das Enddatum muss vor dem späteste Datum liegen!",
+        "val26": "Das Startdatum muss nach dem frühesten Datum liegen!",
+        "val27": "Das Enddatum muss vor dem spätesten Datum liegen!",
+        "val28": "Das früheste muss vor dem spätesten Datum liegen!",
+        "val29": "Die Mindestlänge für das benutzerdefinierte Datumsformat ist 1!",
+        "val30": "Das Startdatum muss vor dem Enddatum liegen!",
+        "val31": "Das früheste muss vor dem spätesten Datum liegen!",
+        "val32": "Der Nur-Lese-Identifikator muss ein boolscher Wert sein!",
+        "val33": "Der Heatmap-Identifikator muss ein boolscher Wert sein!",
+        "val34": "Einige Spalten, die Sie als schreibgeschützt ausgewählt haben, existieren nicht in dem aktuell ausgewählten Symbol!",
+        "val35": "Kein gültiger Widget-Typ",
+        "val36": "Der Gruppenname muss mindestens 1 Zeichen lang sein.",
+        "val37": "Jede Gruppe muss mindestens 2 Mitglieder haben und jedes Element darf nur in einer einzigen Gruppe erscheinen!",
+         "val37a": "Jede Gruppe muss mindestens 1 Mitglied haben und jedes Element darf nur in einer einzigen Gruppe erscheinen!",
+        "val38": "Es muss mindestens ein Element ausgewählt werden!",
+        "val39": "Im Namen sind keine Leerzeichen erlaubt!",
+        "val40": "Kein Slider Minimum gefunden!",
+        "val41": "Kein Slider Maximum gefunden!",
+        "val42": "Der Minimalwert muss kleiner sein als der Maximalwert!",
+        "val43": "Bei einem Doppelslider müssen 2 Standardwerte angegeben werden!",
+        "val44": "Es muss ein Seperator angegeben werden!",
+        "val45": "Der Name des Kommandozeilenparameters muss mindestens 1 Zeichen lang sein.",
+        "val46": "Bitte geben Sie Kommandozeilenargumente und -werte separat an.",
+        "val47": "Quell- und Zielsymbol müssen die gleiche Dimension haben!",
+        "val48": "Die minimale Schrittweite darf nicht kleiner als Null sein.",
+        "val49": "Die Skriptkennung darf nicht leer sein und nur alphanumerische Zeichen enthalten!",
+        "val50": "Die Skriptkennung muss eindeutig sein!",
+        "val51": "Der Titel ist erforderlich.",
+        "val52": "Der Befehl ist erforderlich.",
+        "val53": "Der Name der Ausgabedatei ist erforderlich.",
+        "val55": "Es darf nur ein Element im Dropdownmenü auswählbar sein, wenn nur der Elementtext mit GAMS kommuniziert wird.",
+        "val56": "Ein Anhang mit diesem Dateinamen existiert bereits!",
+        "val57": "Der Dateiname enthält ungültige Zeichen. Anhänge in Unterverzeichnissen werden nicht unterstützt!",
+        "val58": "Das Dezimaltrennzeichen und das Tausender-Trennzeichen dürfen nicht identisch sein!",
+        "val59": "Das GAMS-Symbol: %s ist als Tabelle deklariert. Dies bewirkt, dass die letzte Spalte in MIRO gepivoted wird. MIRO-Pivot kann nicht mit bereits gepivoteten Symbolen verwendet werden. Bitte deklarieren Sie das Symbol stattdessen als Parameter.",
+        "val60": "Jedes Gruppenmitglied darf nur in einer einzigen Gruppe auftreten!"
+      },
+      "widgetOptions":{
+        "slider": "Schieberegler",
+        "sliderrange": "Schiebereglerbereich",
+        "checkbox": "Kontrollkästchen",
+        "dropdown": "Dropdown-Menü",
+        "table": "Tabelle",
+        "date": "Datum",
+        "daterange": "Datumsbereich",
+        "text": "Textfeld",
+        "numericinput": "Numerische Eingabe"
+      },
+      "table":{
+        "label": "Label (Markdown wird unterstützt)",
+        "type": "Wählen Sie die Art der Tabelle, die Sie verwenden möchten",
+        "typeChoices": ["Standard", "Big Data-Tabelle", "Pivot-Tabelle"],
+        "hideIndexCol": "Indexierungsspalte ausblenden?",
+        "readonly": "Soll die Tabelle schreibgeschützt sein?",
+        "readonlyCols": "Wählen Sie Spalten aus, die schreibgeschützt sein sollen",
+        "pivotCols": "Wählen Sie eine Spalte, die pivotiert werden soll",
+        "heatmap": "Die Tabelle in eine Heatmap wandeln?"
+      },
+      "slider":{
+        "label": "Wählen Sie eine Widget-Beschriftung",
+        "minlabel": "Minimalwert",
+        "maxlabel": "Maximalwert",
+        "defaultlabel": "Standardwert",
+        "min": "Setzen Sie einen statischen Minimalwert",
+        "max": "Setzen Sie einen statischen Maximalwert",
+        "default": "Setzen Sie einen statischen Standardwert",
+        "dep": "Wählen Sie Symbol und Domäne aus, von denen der Wert abgeleitet werden soll",
+        "depOp":{
+          "label": "Operator auswählen",
+          "choices": ["Minimum", "Maximum", "Anzahl", "Mittel", "Median", "Varianz", "Standardabweichung"]
+        },
+        "depSelector": "Statischer Wert?",
+        "step": "Schrittweite (auch Dezimalstellen möglich)",
+        "minStep": "Minimale Schrittweite",
+        "minStepTooltip": "Nur relevant im Hypercube-Modus. Wenn leer, wird die Schrittweite genommen. - Dokumentation öffnen",
+        "ticks": "Markierungen Anzeigen?",
+        "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
+      },
+      "sliderrange":{
+        "label": "Wählen Sie eine Widget-Beschriftung",
+        "minlabel": "Minimalwert",
+        "maxlabel": "Maximalwert",
+        "min": "Wählen Sie einen Minimalwert",
+        "dep": "Wählen Sie Symbol und Domäne aus, von denen der Wert abgeleitet werden soll",
+        "depOp":{
+          "label": "Operator auswählen",
+          "choices": ["Minimum", "Maximum", "Anzahl", "Mittel", "Median", "Varianz", "Standardabweichung"]
+        },
+        "depSelector": "Statischer Wert?",
+        "max": "Wählen Sie einen Maximalwert",
+        "default1": "Unterer Standardwert",
+        "default2": "Oberer Standardwert",
+        "step": "Schrittweite (auch Dezimalstellen möglich)",
+        "ticks": "Markierungen Anzeigen?",
+        "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
+      },
+      "dropdown":{
+        "label": "Wählen Sie eine Widget-Beschriftung",
+        "choices": "Auswahlmöglichkeiten",
+        "choicesAlias": "Aliase für Wahlmöglichkeiten (optional)",
+        "choiceDep":{
+          "label": "Wählen Sie Symbol und Domäne aus, von denen die Auswahlmöglichkeiten abgeleitet werden sollen",
+          "depChoices": ["Alle"],
+          "type": "Soll dieses Dropdown-Menü zum Filtern anderer Tabellen verwendet werden?",
+          "selector": "Statische Auswahlmöglichkeiten?"
+        },
+        "default": "Standardauswahl",
+        "multiple": "Sollen mehrere Elemente auswählbar sein?",
+        "clearValue": "Als Elementtext mit GAMS kommunizieren",
+        "clearValueTooltip": "Bewirkt, dass das Elementlabel ein leerer String ist. - Dokumentation öffnen",
+        "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
+      },
+      "checkbox":{
+        "label": "Wählen Sie eine Widget-Beschriftung",
+        "default": "Standardwert",
+        "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
+      },
+      "date":{
+        "label": "Wählen Sie eine Widget-Beschriftung",
+        "defaultlabel": "Standarddatum",
+        "default": "Standarddatum auswählen",
+        "defOff": "Aktuelles Datum benutzen",
+        "minlabel": "Frühestes Datum",
+        "min": "Frühestes Datum auswählen",
+        "minOff": "Kein frühestes Datum?",
+        "maxlabel": "Spätestes Datum",
+        "max": "Spätestes Datum auswählen",
+        "maxOff": "Kein spätestes Datum?",
+        "format": "Wie soll das Datum formatiert werden?",
+        "formatCustom": "Geben Sie ein benutzerdefiniertes Datumsformat ein",
+        "formatCustomSelector": "Benutzerdefiniertes Datumsformat?",
+        "startview":{
+          "label": "Welcher Datumsbereich soll standardmäßig angezeigt werden?",
+          "choices": ["Monat", "Jahr", "Dekade"]
+        },
+        "weekstart":{
+          "label": "An welchem Tag soll eine Woche beginnen?",
+          "choices": ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"]
+        },
+        "daysDisabled": "Wählen Sie Wochentage aus, die Sie deaktivieren möchten",
+        "autoclose": "Soll der Datepicker automatisch geschlossen werden, wenn ein Datum ausgewählt wurde?",
+        "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
+      },
+      "daterange":{
+        "label": "Wählen Sie eine Widget-Beschriftung",
+        "defaultStart": "Wählen Sie das Standardstartdatum",
+        "startOff": "Aktuelles Datum verwenden",
+        "defaultEnd": "Wählen Sie das Standard-Enddatum",
+        "endOff": "Aktuelles Datum verwenden",
+        "min": "Wählen Sie das früheste zulässige Datum",
+        "minOff": "Kein frühestes Datum?",
+        "max": "Wählen Sie das späteste zulässige Datum",
+        "defaultStartlabel": "Standard Startdatum",
+        "defaultEndlabel": "Standard Enddatum",
+        "minlabel": "Frühestes Datum",
+        "maxlabel": "Spätestes Datum",
+        "maxOff": "Kein spätestes Datum?",
+        "format": "Wählen Sie, wie das Datum formatiert werden soll.",
+        "formatCustom": "Geben Sie ein benutzerdefiniertes Datumsformat ein",
+        "formatCustomSelector": "Benutzerdefiniertes Datumsformat?",
+        "startview":{
+          "label": "Welcher Datumsbereich wird standardmäßig angezeigt?",
+          "choices": ["Monat", "Jahr", "Dekade"]
+        },
+        "weekstart":{
+          "label": "An welchem Tag soll eine Woche beginnen?",
+          "choices": ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"]
+        },
+        "separator": "Wählen Sie das Trennzeichen zwischen Start- und Enddatumswahlschalter",
+        "autoclose": "Soll der Datepicker automatisch geschlossen werden, wenn ein Datumsbereich ausgewählt wurde?",
+        "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
+      },
+      "textinput":{
+        "label": "Wählen Sie eine Widget-Beschriftung",
+        "value": "Wählen Sie einen Standardwert",
+        "placeholder": "Wählen Sie einen Platzhalter",
+        "clearValue": "Als Elementtext mit GAMS kommunizieren",
+        "clearValueTooltip": "Bewirkt, dass das Elementlabel ein leerer String ist. - Dokumentation öffnen"
+      },
+      "numericinput":{
+        "label": "Wählen Sie eine Widget-Beschriftung",
+        "value": "Standardwert (optional)",
+        "min": "Minimalwert (optional)",
+        "max": "Maximalwert (optional)",
+        "decimal": "Anzahl Dezimalstellen (optional)",
+        "sign": "Soll ein Währungssymbol angezeigt werden (optional)?",
+        "decimalCharacter": "Zu verwendendes Dezimaltrennzeichen)",
+		"decimalCharacterChoices": [", (Komma)", ". (Punkt)", "· (Mittelpunkt)", "٫ (Arabischer Dezimaltrenner)", "⎖ (Dezimaltrennzeichen-Schlüsselsymbol)"],
+        "digitGroupSeparator": "Zu verwendendes Tausender-Trennzeichen",
+		"digitGroupSeparatorChoices": [", (Komma)", ". (Punkt)", " (Leerzeichen)", "(Kein Trennzeichen)", "' (Apostroph)","٬ (Arabischer Tausendertrenner)", "˙ (Punkt oben)"]
+      },
+      "removeDialog":{
+        "title": "Bitte bestätigen",
+        "message": "Sind Sie sicher, dass Sie die bestehende Konfiguration für dieses Symbol löschen wollen? Das kann nicht rückgängig gemacht werden!",
+        "cancel": "Abbrechen",
+        "confirm": "Bestätigen"
+      }
+    },
+    "database":{
+      "title": "Datenbankverwaltung",
+      "removeSuccess": "Datenbanktabellen erfolgreich entfernt",
+      "restoreSuccess": "Daten erfolgreich wiederhergestellt",
+      "restoreNoData": "Es wurden keine CSV-Dateien im Archiv gefunden. Nichts wurde wiederhergestellt.",
+      "restoreInvalidData": "Mindestens eine der Tabellen ist ungültig. Nichts wurde wiederhergestellt.",
+      "maxRowError": "Die maximale Anzahl der zu exportierenden Zeilen wurde für mindestens 1 Tabelle überschritten. Bitte sichern Sie die Datenbank manuell!",
+      "backup": "Datenbanksicherung",
+      "backupWrapper": "Sie möchten ein Backup der Datenbank erstellen? Klicken Sie auf die Schaltfläche unten, um ein Zip-Archiv mit allen in CSV-Dateien gespeicherten Datenbanktabellen zu erhalten. Beachten Sie, dass es schneller ist, Ihre Datenbank mit dem nativen Sicherungswerkzeug Ihres DBMS zu sichern. Das bedeutet, dass Sie bei großen Datenbanken Ihre Datenbank manuell sichern sollten!",
+      "dbSaveAll": "Datenbanktabellen speichern",
+      "restore": "Datenbank wiederherstellen",
+      "restoreWrapper": "Sie wollen die Datenbank mit Daten aus einer bestehenden Zip-Datei wiederherstellen? Bitte wählen Sie die Datei aus, die Sie für die Wiederherstellung der Datenbank verwenden möchten.",
+      "restoreDb": "Wiederherstellen",
+      "remove": "Daten löschen",
+      "removeWrapper": "Sie wollen alle Tabellen entfernen, die zu dem Modell gehören (z.B. weil sich das Schema geändert hat)?",
+      "removeDialogBtn": "Alle Datenbanktabellen löschen",
+      "removeDialogTitle": "Datenbanktabellen entfernen",
+      "removeDialogDesc": "Sind Sie sicher, dass Sie alle zum Modell gehörenden Datenbanktabellen löschen wollen? Das kann nicht rückgängig gemacht werden! Möglicherweise möchten Sie zuerst die Datenbank speichern, bevor Sie fortfahren.",
+      "removeDialogCancel": "Abbrechen",
+      "removeDialogConfirm": "Tabellen entfernen",
+      "removeOrphansWrapper": "Sie wollen alle verwaisten Tabellen, die zu dem Modell gehören, entfernen?",
+      "removeOrphansDialogBtn": "Alle verwaisten Datenbanktabellen löschen",
+      "removeOrphansDialogDesc": "Sind Sie sicher, dass Sie alle verwaisten Datenbanktabellen, die zu Ihrem Modell gehören, löschen wollen? Das kann nicht rückgängig gemacht werden! Möglicherweise möchten Sie die Datenbank zuerst speichern, bevor Sie fortfahren.",
+      "removeInconsistent": "Wollen Sie alle inkonsistenten Datenbanktabellen löschen?",
+      "removeInconsistentConfirm": "Sind Sie sicher, dass Sie alle inkonsistenten Datenbanktabellen, die zu dem Modell gehören, löschen wollen?",
+      "cannotBeUndone": "Das kann nicht rückgängig gemacht werden! Möglicherweise möchten Sie die Datenbank zuerst speichern, bevor Sie fortfahren.",
+      "removeTitle": "Datenbanktabellen entfernen",
+      "removeCheck": "Alle Tabellen entfernen?",
+      "confirm": "Bestätigen",
+      "cancel": "Abbrechen",
+      "removeOrphansCheck": "Alle verwaisten Tabellen entfernen?",
+      "removeOrphansTitle": "Verwaiste Datenbanktabellen löschen",
+      "saveMsg": "Datenbank wird gespeichert...",
+      "compressMsg": "Dateien komprimieren...",
+      "decompressMsg": "Dateien dekomprimieren...",
+      "validateMsg": "Dateien validieren...",
+      "uploadMsg": "Dateien hochladen...",
+      "finishedMsg": "Beendet..."
+    },
+    "graphs":{
+      "toolCategories": {
+        "main": "Haupt",
+        "general": "Allgemein",
+        "xaxis": "X Achse",
+        "yaxis": "Y Achse",
+        "ydata": "Y Daten",
+        "filterDomain": "Filter & Domäne",
+        "filter": "Filter",
+        "animation": "Animation",
+        "bars": "Bars",
+        "histogram": "Histogramm",
+        "event": "Event (x Achse)",
+        "limit": "Limit (y Achse)",
+        "annotation": "Annotation",
+        "shading": "Schattierung",
+        "rangeSelector": "Bereichswähler",
+        "highlight": "Highlighting",
+        "legend": "Legende",
+        "markers": "Markierungen",
+        "flows": "Flüsse",
+        "minicharts": "Minicharts",
+        "groupsLayers": "Gruppen & Ebenen",
+        "data": "Daten"
+      },
+      "ui":{
+        "title": "Graphen konfigurieren",
+        "graphUpdateSuccess": "Die Grafikkonfiguration wurde erfolgreich aktualisiert",
+        "localInput": "Laden Sie eine GDX-Datei oder eine Excel-Tabelle mit Daten hoch, die für Vorschauzwecke verwendet werden",
+        "gamsSymbols": "GAMS Symbol",
+        "input": "Eingabesymbole",
+        "output": "Ausgbesymbole",
+        "chartTitle": "Wählen Sie einen Titel für Ihre Grafik",
+        "height": "Wählen Sie eine Höhe für Ihre Grafik (px) (keine Live-Vorschau)",
+        "tool": "Charttyp",
+        "choices": ["Kreisdiagramm", "Balkendiagramm", "Streudiagramm", "Liniendiagramm", "Blasendiagramm", "Histogramm", "Zeitreihen-Diagramm", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle und Pivot-Charts", "Wertebox für skalare Werte", "Eigener Renderer"],
+        "deleteGraph": "Löschen",
+        "saveGraph": "Speichern",
+        "toggleFullscreen": "Vollbild wechseln"
+      },
+      "graphOptions":{
+        "pie": "Kreisdiagramm",
+        "bar": "Balkendiagramm",
+        "scatter": "Streudiagramm",
+        "line": "Liniendiagramm",
+        "bubble": "Blasendiagramm",
+        "hist": "Histogramm",
+        "dygraphs": "Zeitreihen-Diagramm",
+        "leaflet": "Kartendiagramm",
+        "timevis": "Gantt-Diagramm",
+        "miropivot": "Pivot-Tabelle und Pivot-Charts",
+        "valuebox": "Wertebox für skalare Werte",
+        "custom": "Eigener Renderer"
+      },
+      "validate":{
+        "val1": "Der Bereich für die x-Achse konnte nicht eingestellt werden. Überprüfen Sie das korrekte Datenformat!",
+        "pieValues": "Das ausgewählte Symbol hat zu viele Werte, um als Kuchendiagramm angezeigt zu werden. Die maximale Anzahl der Werte, die in einem Kuchendiagramm dargestellt werden können, beträgt 100.",
+        "tableNeeded": "Ein Symbol, das als Karte konfiguriert werden soll, muss als GAMS-Tabelle deklariert werden (table statement), da mehrere Wertespalten benötigt werden (z.B. Breiten- und Längengradangaben)."
+      },
+      "errMsg":{
+        "errTitle1": "Keine gültigen Daten",
+        "errContent1": "Es wurden keine gültigen Datensätze gefunden. Bitte laden Sie eine korrekt formatierte Excel- oder gdx-Datei mit Daten hoch.",
+        "scalarConfig": "Eigabeskalare können in folgender Kategorie konfiguriert werden: '"
+      },
+      "updateToolScalars": ["Wertebox für skalare Werte"],
+      "updateToolNoScalars": ["Kreisdiagramm", "Balkendiagramm", "Streudiagramm", "Liniendiagramm", "Blasendiagramm", "Histogramm", "Zeitreihen-Diagramm", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle und Pivot-Charts", "Eigener Renderer"],
+      "axisOptions":{
+        "leftAxis": "linke Achse",
+        "rightAxis": "rechte Achse",
+        "title": "Achsenbeschriftung",
+        "labelOnlyTitle": "Achsenbeschriftung (%s Achse)",
+        "showgrid": "Gitter anzeigen",
+        "zeroline": "Nulllinie anzeigen",
+        "showticklabels": "Markerbeschriftung anzeigen",
+        "range": "Achsbereich einstellen. Das Format muss dem Datenformat entsprechen. Wenn nicht angegeben, wird ein Standard verwendet.",
+        "rangeFrom": "Bereichsanfang",
+        "rangeTo": "Bereichsende",
+        "animationDataFormatSelector": "Daten im Datumsformat?",
+        "categoryorder": "Achsenreihenfolge",
+        "categoryorderChoices": ["trace", "category ascending", "category descending", "total ascending", "total descending", "min ascending", "min descending", "max ascending", "max descending", "sum ascending", "sum descending", "mean ascending", "mean descending", "median ascending", "median descending"],
+        "scaleRatioCheck": "Achsen mit festem Verhältnis?",
+        "scaleRatio": "Skalierungsverhältnis (y/x)"
+      },
+      "chartOptions":{
+        "xdata": "Was soll auf der x-Achse dargestellt werden?",
+        "ydata": "Datenreihe hinzufügen",
+        "color": "Soll eine Dimension des Symbols gepivoted (für das Plotten gruppiert) werden? Daraus resultierende Farben sind nur gültig, wenn keine anderen Linien- oder Markierungsfarben gesetzt sind.",
+        "symbol": "Wählen Sie eine Dimension aus, um sie verschiedenen Symbolen zuzuordnen. Es darf kein Markersymbol gesetzt werden.",
+        "options":{
+          "title": "Optionen",
+          "paperBgColor": "Welche Hintergrundfarbe soll das Papier haben?",
+          "plotBgColor": "Welche Hintergrundfarbe soll das Diagramm haben?",
+          "showlegend": "Legende zeigen?",
+          "staticPlot": "Einen statischen Plot rendern?",
+          "fixedHeight": "Charthöhe fixieren (px) - leer lassen oder 0 für Standardhöhe",
+          "fixedWidth": "Chartbreite fixieren (px) - leer lassen oder 0 für Standardbreite",
+          "outType": "Grafik- und Datentabelle im geteilten Bildschirm anzeigen? (keine Live-Vorschau)"
+        }
+      },
+      "barOptions":{
+        "mode": "Barmodus wählen",
+        "choicesMode": ["Gruppe", "Stapel"],
+        "orientation": "Orientierung",
+        "choicesOrientation": ["vertikal", "horizontal"],
+        "width": "Domäne, anhand derer verschiedene Balkenbreiten ausgewählt werden"
+      },
+      "valueboxOptions":{
+        "width": "Maximale Anzahl an Boxen je Reihe (keine Vorschau)",
+        "color": "Wählen Sie die Farbe der Wertebox aus",
+        "colorChoices": ["rot", "gelb", "aqua", "blau", "hellblau", "grün", "marineblau", "blaugrün", "oliv", "limette", "orange", "fuchsia", "lila", "kastanienbraun", "schwarz"],
+        "icon": "Geben Sie ein Symbol für die Wertebox an.",
+        "valueboxIconChoices": ["_", "Münzen", "Brieftasche", "Dollar", "Euro", "Yen", "Won", "Shekel","Rupie", "Rubel", "Pfund", "Lira", "Benutzer", "Mehrere Benutzer", "Plus", "Minus", "Ausrufezeichen", "Fragezeichen", "Abspielen", "Haken", "Haus", "Zahnrad", "Asterisk", "Verbot", "Herz", "Blatt", "Glühbirne", "Smile", "Stern"],
+        "desc": "Beschreibender Text",
+        "round": "Anzahl der Dezimalstellen (Rundung)"
+      },
+      "animationOptions":{
+        "title": "Animationsoptionen",
+        "frame": "Bilder pro Sekunde",
+        "transition": "Dauer des sanften Übergangs zwischen den Bildern (in Millisekunden).",
+        "easing": "Art des Übergangs",
+        "easingChoices": ["linear", "quadratisch", "kubisch", "sin", "exp", "Kreis", "elastisch", "zurück", "springend", "linear-in", "quad-in", "kubisch-in", "sin-in", "exp-in", "circle-in", "elastic-in", "back-in", "bounce-in", "linear-out", "quad-out", "kubisch-out","sin-out", "exp-out", "circle-out", "elastic-out", "back-out", "bounce-out", "linear-in-out", "quad-in-out", "kubisch-in-out", "sin-in-out", "exp-in-out", "circle-in-out", "elastic-in-out", "back-in-out", "bounce-in-out"],
+        "redraw": "Triggern eines Neuzeichnung der Diagramms nach Abschluss des Übergangs? (Dies kann die Leistung erheblich beeinträchtigen, kann aber notwendig sein, um grafische Elemente zu aktualisieren, die nicht animiert werden können.)",
+        "mode": "Wie sollen neue animierte Aufrufe mit aktuell laufenden Animationen interagieren?",
+        "modeChoices": ["sofort", "als nächstes", "nach allem"],
+        "noAnimation": "Keine Domäne für eine Animation ausgewählt (Kategorie: Y Daten)."
+      },
+      "animationSliderOptions":{
+        "hide": "Entfernen des Animationsschiebereglers?",
+        "label": "Beschriftung, die auf dem Schieberegler erscheinen soll",
+        "prefix": "Präfix der Beschriftung",
+        "fontColor": "Welche Farbe soll für die Beschriftung des Schiebereglers verwendet werden?"
+      },
+      "histOptions":{
+        "xdata": "Datenreihe hinzufügen",
+        "norm": "Art der zu verwendenden Normalisierung",
+        "normChoices": ["Anzahl der Ereignisse", "Prozentsatz der Ereignisse", "Anzahl der Ereignisse/ Klassen n-Intervallgröße"],
+        "nbins": "Anzahl der Klassen",
+        "barmode": "Wie sollen die Balken angezeigt werden?",
+        "alpha": "Deckkraft der Balken (nur gültig, wenn keine Balkenfarben gesetzt sind)",
+        "cumulative": "Die kumulierte Verteilung anzeigen?",
+        "horizontal": "Ausrichtung der Balken",
+        "orientationChoices": ["vertikal", "horizontal"],
+        "barmodeChoices": ["überlagern", "gesttapelt", "gruppiert", "relativ"]
+      },
+      "dygraphsOptions":{
+        "previewError": "Keine skalaren Indizes in Ihren Daten gefunden.",
+        "xdata": "Welchen Index möchten Sie auf der x-Achse zeichnen?",
+        "ydata": "Datenreihe hinzufügen",
+        "ydataGeneral": "Dimension zum pivoten ausgewählt. Weitere y-data bezogenen Optionen können unter 'Allgemein' eingestellt werden.",
+        "color": "Soll eine Dimension des Symbols gepivoted (für das Plotten gruppiert) werden?",
+        "dyEvent": "Ereignislinie hinzufügen",
+        "dyLimit": "Limitlinie hinzufügen",
+        "dyAnnotation": "Annotation hinzufügen",
+        "dyShading": "Schattierung hinzufügen",
+        "rngSelOpts":{
+          "title": "Optionen für den Bereichswahlschalter",
+          "activate": "Willst du einen Bereichswahlschalter sehen?",
+          "height": "Wie hoch sollte er sein (in px)?",
+          "retainDateWindow": "Soll der aktuelle Datumsbereich beibehalten werden, wenn die Grafik neu gezeichnet wird?",
+          "keepMouseZoom": "Willst du immer noch mit der Maus zoomen können?",
+          "fillColor": "Welche Füllfarbe sollte verwendet werden?",
+          "strokeColor": "Welche Strichfarbe sollte verwendet werden?"
+        },
+        "generalOpts":{
+          "title": "Allgemeine Optionen",
+          "logscale": "Y-Achse in Log-Skala anzeigen?",
+          "drawGrid": "Sollen Gitterlinien angezeigt werden?",
+          "stepPlot": "Willst du ein Stufendiagramm?",
+          "stemPlot": "Willst du eine Stammplot?",
+          "fillGraph": "Soll der Bereich unter der Grafik ausgefüllt werden?",
+          "fillAlpha": "Transparenz für gefüllte Regionen",
+          "drawPoints": "Sollen Punkte gezeichnet werden?",
+          "pointShape": "Welche Form sollen Punkte haben?",
+          "pointShapeChoices": ["Punkt", "Dreieck", "Quadrat", "Diamant", "Fünfeck", "Sechseck", "Kreis", "Stern", "Plus", "ex"],
+          "pointSize": "Welche Größe sollten die Punkte haben?"
+        },
+        "axisOptions":{
+          "title": "Bezeichnung",
+          "independentTicks": "Unabhängige Markierungen",
+          "logscale": "Y-Achse in Log-Skala anzeigen?",
+          "drawGrid": "Sollen Gitterlinien angezeigt werden?",
+          "gridLineColor": "Gitterlinienfarbe",
+          "gridLineWidth": "Gitterlinienbreite",
+          "axisLineColor": "Achsenlinienfarbe",
+          "axisLineWidth": "Achsenlinienbreite",
+          "axisLabelFontSize": "Schriftgröße der Achsenbeschriftung",
+          "valueRange": "Achsbereich einstellen. Das Format muss dem Datenformat entsprechen. Wenn nicht angegeben, wird ein Standard verwendet.",
+          "valueRangeFrom": "Bereichsanfang",
+          "valueRangeTo": "Bereichsende"
+        },
+        "highOpts":{
+          "title": "Hervorhebungsoptionen",
+          "activate": "Möchten Sie Hervorhebungseffekte sehen?",
+          "circleSize": "Wie groß soll der Kreis sein (in px)?",
+          "seriesBackgroundAlpha": "Wählen Sie die Deckkraft des Hintergrunds",
+          "strokeWidth": "Breite der hervorgehobenen Linien",
+          "strokeBorderWidth": "Einen Rahmen um hervorgehobene Linien zeichnen",
+          "strokeBorderColor": "Rahmenfarbe der hervorgehobenen Linien",
+          "hideOnMouseOut": "Hervorhebungseffekte ausblenden, wenn die Maus aus dem Diagramm bewegt wird?"
+        },
+        "legend":{
+          "title": "Legendenoptionen",
+          "activate": "Soll eine Legende angezeigt werden?",
+          "show": "Wie soll die Legende angezeigt werden?",
+          "showChoices": ["automatisch", "immer", "beim Überfahren mit der Maus", "folgen"],
+          "width": "Breite der Legende (in px)",
+          "showZeroValues": "Nullwerte in der Legende anzeigen",
+          "labelsSeparateLines": "Einträge in getrennten Zeilen anzeigen?",
+          "hideOnMouseOut": "Legende ausblenden, wenn die Maus aus dem Diagramm bewegt wird?"
+        }
+      },
+      "leafletOptions":{
+        "markers": "Markierungen hinzufügen",
+        "flows": "Flows hinzufügen",
+        "minicharts": "Charts hinzufügen",
+        "hideGroups": "Wählen Sie Gruppen aus, die beim Start ausgeblendet werden sollen",
+        "layer":{
+          "title": "Optionen für die Ebenensteuerung",
+          "baseGroups": "Welche Basisgruppen sollen auswählbar sein?",
+          "overlayGroups": "Welche Overlay-Gruppen sollen auswählbar sein?",
+          "position": "Sollen Gitterlinien angezeigt werden?",
+          "positionChoices": ["Oben rechts", "Unten rechts", "Unten links", "Oben links"],
+          "collapsed": "Soll das Ebenenauswahlmenü eingeklappt sein?"
+        }
+      },
+      "timevisOptions":{
+        "series": "Datenreihe hinzufügen",
+        "custom": "Fügen Sie einen vertikalen Balken zu einem Zeitpunkt hinzu, der vom Benutzer gezogen werden kann (keine Vorschau verfügbar)",
+        "options":{
+          "title": "Gantt-Diagramm-Optionen",
+          "showZoom": "Buttons: 'Zoom In' / 'Zoom Out' hinzufügen? Gezoomt werden kann alternativ per ctrl + Mausrad",
+          "zoomFactor": "Zoomfaktor? Wenn Sie mit einem Zoomfaktor von 1 aus 20 Tagen herauszoomen, werden 40 Tage angezeigt. Keine Vorschau verfügbar.",
+          "fit": "Alle Daten auf der Timeline anpassen, wenn die Timeline initialisiert wird? Andernfalls wird die Zeitachse so eingestellt, dass sie das aktuelle Datum anzeigt.",
+          "editable": "Elementbearbeitung aktivieren?",
+          "multiselect": "Mehrfachauswahl von Elementen aktivieren (Strg+Klick, Umschalt+Klick)?",
+          "showCurrentTime": "Einen vertikalen Balken zur aktuellen Zeit anzeigen?"
+        }
+      },
+      "miroPivotOptions":{
+         "infoMsg": "Bitte benutzen Sie direkt die Vorschau auf der rechten Seite, um die Standardansicht zu konfigurieren.",
+         "hideEmptyColsSwitch": "Schalter zum Ausblenden leerer Spalten aktivieren",
+         "pivotCompHideEmptyColsSwitch": "Pivot-Vergleichsmodus: Schalter zum Ausblenden leerer Spalten aktivieren",
+         "emptyUEL": "UEL, die einen fehlenden Wert anzeigt (darf kein leerer String sein)",
+         "infoMsgDummyData": "Derzeit verwendet die Vorschau Dummy-Daten. Das bedeutet, dass die Filter Dummy-Werte haben werden. Wenn Sie diese ändern möchten, müssen Sie die JSON-Konfigurationsdatei manuell bearbeiten."
+      },
+      "datatableOptions":{
+        "infoMsg": "Tabellen können angepasst werden unter '"
+      },
+      "pivotOptions":{
+        "rows": "Zeilen der Pivot-Tabelle vorab füllen",
+        "cols": "Spalten der Pivot-Tabelle vorab füllen",
+        "aggregator": "Zu verwendender Aggregator",
+        "aggregatorChoices": ["Anzahl","Anzahl eindeutiger Werte","Liste eindeutiger Werte", "Summe", "Ganzzahlige Summe", "Mittelwert", "Median", "Stichprobenvarianz", "Stichprobenstandardabweichung", "Minimum", "Maximum", "Erster", "Letzter", "Summe über Summe","80% Obergrenze", "80% Untergrenze", "Summe als Bruchteil der Gesamtzahl", "Summe als Bruchteil der Zeilen", "Summe als Bruchteil der Spalten", "Anzahl als Bruchteil der Gesamtzahl", "Anzahl als Bruchteil der Zeilen", "Anzahl als Bruchteil der Spalten"],
+        "vals": "Name der zu aggregierenden Spalte",
+        "renderer": "Name des ausgewählten Renderers.",
+        "rendererChoices": ["Tabelle", "Tabellenbalkendiagramm", "Heatmap", "Zeilen-Wärmekarte", "Spalten-Heatmap", "Treemap", "Horizontales Balkendiagramm", "Horizontal gestapeltes Balkendiagramm", "Balkendiagramm", "Gestapeltes Balkendiagramm", "Liniendiagramm", "Flächendiagramm"],
+        "options":{
+          "title": "Pivot-Tabellen-Optionen",
+          "locale": "Lokalisierungsoptionen. Ein Wechsel von'en' in eine andere Sprache führt zum Verlust der Konfiguration der verwendeten Grafik.",
+          "localeChoices": ["cs", "da", "de", "en", "es", "fr", "it", "nl", "pl", "pt", "ru", "sq", "tr", "zh"],
+          "subtotals": "Soll das Zwischensummen-Plugin verwendet werden? Beispiele finden Sie unter: "
+        }
+      },
+      "customOptions":{
+        "name": "Name der benutzerdefinierten Rendererfunktion (ohne Leerzeichen)",
+        "packages": "Benötigte Pakete für den Renderer",
+        "additionalData": "Zusätzliche Datensätze, die mit dem benutzerdefinierten Renderer kommuniziert werden sollen"
+      },
+      "filterOptions":{
+        "filter": "Soll eine Dimension des Symbols in einem Dropdownmenü filterbar sein??",
+        "dimension": "Welche Dimension soll filterbar sein?",
+        "label": "Welche Bezeichnung soll verwendet werden? (keine live Vorschau verfügbar)",
+        "placeholder": "Nach Element filtern",
+        "multiple": "Sollen mehrere Elemente gleichzeitig als Filter auswählbar sein? (für das Dropdownmenü mit Einzelauswahl ist keine live Vorschau verfügbar)",
+        "date": "Die Daten in der zu filternden Spalte enthalten Daten (Zeiten). Keine Live-Vorschau verfügbar!"
+      },
+      "saveJson":{
+        "warnTitle": "Daten existieren",
+        "warnContent": "Für das Symbol '%s' existiert bereits eine Grafikkonfiguration. Möchten Sie diese Konfiguration überschreiben? Das kann nicht rückgängig gemacht werden!",
+        "cancel": "Abbrechen",
+        "overwrite": "Überschreiben"
+      },
+      "removeDialog":{
+        "title": "Bitte bestätigen",
+        "message": "Sind Sie sicher, dass Sie die bestehende Grafikkonfiguration für dieses Symbol löschen wollen? Das kann nicht rückgängig gemacht werden!",
+        "cancel": "Abbrechen",
+        "confirm": "Bestätigen"
+      },
+      "js":{
+        "addInputGroup":{
+          "symbolInputgroups": "Name der Eingabegruppe",
+          "symbolWidgetgroups": "Name der Eingabe-Widget-Gruppe",
+          "groupMemberIn": "Gruppenmitglieder auswählen",
+          "groupMemberWidget": "Gruppenmitglieder auswählen",
+          "groupSameTabIn": "Alle Symbole nebeneinander in demselben Tab anzeigen?",
+          "groupSameTabWidget": "Alle Widgets nebeneinander in demselben Tab anzeigen?"
+        },
+        "addOutputGroup":{
+          "symbolOutputgroups": "Name der Ausgabegruppe?",
+          "groupMemberOut": "Gruppenmitglieder auswählen",
+          "groupSameTabOut": "Alle Symbole nebeneinander in demselben Tab anzeigen?"
+        },
+        "addSymlink":{
+          "source": "Name des Ausgabesymbols",
+          "target": "Name des Eingabesymbols, auf das verwiesen werden soll"
+        },
+        "addScript":{
+          "id": "Eindeutige Skriptkennung (alphanumerisch)",
+          "title": "Skript-Alias (wird in der Benutzeroberfläche angezeigt)",
+          "cmd": "Auszuführender Befehl",
+          "args": "Argumente für den Befehl",
+          "outFile": "Name der Ausgabedatei (inklusive Dateiendung)",
+          "timeout": "Timeout (Sekunden, -1 für unendlich)"
+        },
+        "addOutAttach":{
+          "file": "Name der anzuhängenden Datei",
+          "exec": "Modell erlauben, diese Datei zu lesen?",
+          "error": "Soll ein Fehler angezeigt werden, wenn die Datei nicht gefunden wird?"
+        },
+        "addDyEvent":{
+          "dyDyEventCheck": "Statisches Ereignis?",
+          "dyDyEventTrue": "Legen Sie ein Datum für das Ereignis fest (jjjjj-mm-tt)",
+          "dyDyEventFalse": "Welches Symbol soll verwendet werden?",
+          "label": "Welche Bezeichnung soll verwendet werden?",
+          "labelLoc": "Position für die Bezeichnung",
+          "labelLocChoices": ["oben", "unten"],
+          "color": "Welche Farbe sollte die Ereignislinie haben?",
+          "strokePattern": "Art des Strichmusters",
+          "strokePatternChoices": ["gestrichelt", "gepunktet", "gestrichpunktet", "durchgezogen"]
+        },
+        "addDyLimit":{
+          "dyDyLimitCheck": "Statischen Grenzwert verwenden?",
+          "dyDyLimitTrue": "Numerischen Grenzwert festlegen",
+          "dyDyLimitFalse": "Welches Symbol soll verwendet werden?",
+          "limit": "Legen Sie den numerischen Grenzwert fest",
+          "label": "Welche Bezeichnung soll verwendet werden?",
+          "labelLoc": "Position für die Bezeichnung",
+          "labelLocChoices": ["links", "rechts"],
+          "color": "Welche Farbe sollte die Grenzwertlinie haben?",
+          "strokePattern": "Art des Strichmusters",
+          "strokePatternChoices": ["gestrichelt", "gepunktet", "gestrichpunktet", "durchgezogen"]
+        },
+        "addDyAnnotation":{
+          "dyDyAnnotation": "Was soll beschriftet werden?",
+          "text": "Welcher Text soll verwendet werden?",
+          "tooltip": "Welcher Tooltip sollte verwendet werden?",
+          "width": "Geben Sie die Breite der Beschriftung an",
+          "height": "Geben Sie die Höhe der Beschriftung an",
+          "attachAtBottom": "Soll die Annotation an der x-Achse fixiert werden?"
+        },
+        "addDyShading":{
+          "dyDyShadingCheck": "Statische Untergrenze verwenden?",
+          "dyDyShadingTrue": "Geben Sie die untere Grenze für die Schattierung an.",
+          "dyDyShadingFalse": "Welches Symbol soll als untere Grenze für die Schattierung verwendet werden?",
+          "dyDyShadingUpCheck": "Statische Obergrenze verwenden?",
+          "dyDyShadingUpTrue": "Geben Sie die obere Grenze für die Schattierung an.",
+          "dyDyShadingUpFalse": "Welches Symbol soll als obere Grenze für die Schattierung verwendet werden?",
+          "axis": "Achse wählen, auf die die Schattierung angewendet werden soll",
+          "axisChoices": ["x-Achse", "y-Achse"],
+          "color": "Welche Farbe soll die Schattierung haben?"
+        },
+        "addLeafletMarkers":{
+          "leafletMarkers": "Spalte mit Breitengraddaten auswählen",
+          "lng": "Spalte mit Längengraddaten auswählen",
+          "groupName": "Wählen Sie einen Gruppennamen für diese Marker",
+          "label": "Wählen Sie ein Label",
+          "iconOptions": "Icon options",
+          "icon": "Icon to use",
+          "iconChoices": ["Kreis", "Offener Kreis", "Kreispunkt", "Quadrat", "X", "Benutzer", "Mehrere Benutzer", "Plus", "Minus", "Ausrufezeichen", "Fragezeichen", "Abspielen", "Haken", "Haus", "Zahnrad", "Asterisk", "Verbot", "Herz", "Blatt", "Glühbirne", "Smile", "Stern"],
+          "iconColor": "Icon color",
+          "markerColor": "Marker color",
+          "markerColorChoices": ["red", "darkred", "lightred", "orange", "beige", "green", "darkgreen", "lightgreen", "blue", "darkblue", "lightblue", "purple", "darkpurple", "pink", "cadetblue", "white", "gray", "lightgray", "black"],
+          "options": "Label-Optionen",
+          "labelPermanent": "Label nur beim überfahren zeigen?",
+          "labelcolor": "Wählen Sie eine Schriftfarbe für das Label",
+          "labelbgcolor": "Wählen Sie eine Hintergrundfarbe für das Label",
+          "labelsize": "Wählen Sie eine Schriftgröße für das Label (in px)"
+        },
+        "addLeafletFlows":{
+          "leafletFlows": "Wählen Sie die Breitenangaben aus, von denen der Fluss ausgeht",
+          "lng": "Wählen Sie die Längenangaben aus, von denen der Fluss ausgeht",
+          "lat1": "Wählen Sie die Breitenangaben, bei denen der Fluss endet",
+          "lng1": "Wählen Sie Längenangaben, bei denen der Fluss endet",
+          "flow": "Strömungsdaten auswählen",
+          "time": "Zeitdaten auswählen",
+          "label": "Wählen Sie eine Bezeichnung",
+          "labelTooltip": "Eine geeignete Konfiguration für ein Label ist die Angabe des Absenders und des Empfängers für jeden Fluss - Dokumentation öffnen",
+          "options": "Zusätzliche Optionen",
+          "color": "Wählen Sie eine Farbe",
+          "minThickness": "Wählen Sie die Mindestdicke",
+          "maxThickness": "Wählen Sie die maximale Dicke"
+        },
+        "addLeafletMinicharts":{
+          "leafletMinicharts": "Wählen Sie Breitengrad-Daten aus, bei denen die Mini-Diagramme geplottet werden soll",
+          "lng": "Wählen Sie Längengrad-Daten aus, bei denen die Mini-Diagramme geplottet werden soll",
+          "chartdata": "Diagrammdaten auswählen",
+          "time": "Zeitdaten auswählen",
+          "type": "Diagrammtyp auswählen",
+          "typeChoices": ["Balkendiagramm", "Tortendiagramm", "Polarflächendiagramm", "Polar-Radius-Diagramm", "automatisch"],
+          "options": "Zusätzliche Chart-Optionen",
+          "width": "Wählen Sie die maximale Breite der erstellten Elemente",
+          "height": "Wählen Sie die maximale Höhe der erstellten Elemente",
+          "opacity": "Deckkraft des Diagramms?",
+          "showlabels": "Sollen Werte über den Diagrammen angezeigt werden?",
+          "transitionTime": "Wählen Sie die Dauer der Übergänge, wenn eine Eigenschaft eines Diagramms aktualisiert wird (in Millisekunden)",
+          "layerId": "Ebenen-ID auswählen",
+          "legend": "Soll eine Legende (Datenspaltennamen) sichtbar sein?",
+          "legendPosition": "Legendenposition",
+          "legendPositionChoices": ["oben rechts", "topleft", "unten rechts", "unten links"]
+        },
+        "addPieDataEl":{
+          "chartValues": "Werte",
+          "chartLabels": "Bezeichnung",
+          "holeSize": "Größe des Donutlochs",
+          "chartName": "Bezeichnung des Elements (nur relevant, wenn mehrere Tortendiagramme angezeigt werden)"
+        },
+        "addBarDataEl":{
+          "chartYdatabar": "Was soll auf der y-Achse dargestellt werden?",
+          "chartYlabel": "Datenlabel (z.B. für Legende)",
+          "color": "Balkenfarbe auswählen (Farbe für die automatische Auswahl löschen)",
+          "lineWidth": "Balkenumrandungsbreite wählen",
+          "lineColor": "Balkenumrandungsfarbe wählen"
+        },
+        "addScatterDataEl":{
+          "chartYdata": "Was soll auf der y-Achse dargestellt werden?",
+          "chartYlabel": "Datenlabel (z.B. für Legende)",
+          "yaxis": "Achsenposition",
+          "yaxisChoices": ["links", "rechts"],
+          "symbol": "Markersymbol auswählen",
+          "symbolChoices": ["_", "Kreis", "Kreis ungefüllt", "Quadrat", "Quadrat ungefüllt", "Diamant","Diamant ungefüllt", "Kreuz", "Kreuz ungefüllt","x", "x ungefüllt", "Dreieck-oben","Dreieck-oben ungefüllt","Dreieck-unten", "Dreieck-unten ungefüllt","Pentagon", "Pentagon ungefüllt", "Hexagon","Hexagon ungefüllt", "Octagon", "Octagon ungefüllt", "Stern", "Stern ungefüllt", "Hexagram","Hexagram ungefüllt", "asterisk", "asterisk ungefüllt", "hash", "hash ungefüllt", "line horizontal", "line horizontal ungefüllt", "line vertikal", "line vertikal ungefüllt"],
+          "color": "Markerfarbe auswählen",
+          "size": "Markergröße auswählen",
+          "lineWidth": "Markerumriss-Breite wählen",
+          "lineColor": "Markerumriss-Farbe auswählen",
+          "legend": "Legende zeigen? (diese Option kann durch die globale Legende-zeigen-Option überschrieben werden)",
+          "frame": "Eine Datendimension für die Animation verwenden (als Frames)?"
+        },
+        "addLineDataEl":{
+          "chartYdata": "Was soll auf der y-Achse dargestellt werden?",
+          "chartYlabel": "Datenlabel (z.B. für Legende)",
+          "yaxis": "Achsenposition",
+          "yaxisChoices": ["links", "rechts"],
+          "color": "Linienfarbe wählen",
+          "width": "Linienbreite wählen",
+          "shape": "Linienform wählen",
+          "shapeChoices": ["linear", "spline", "hv", "vh", "hvh", "vhv"],
+          "dash": "Wählen Sie den Strichtyp der Linie",
+          "dashChoices": ["durchgezogen", "gepunktet", "gestrichelt", "gestrichelt (lange Linie)", "gestrichpunktet", "gestrichpunktet (lange Linie)"],
+          "fill": "Flächendiagramm ausfüllen?",
+          "fillChoices": ["keine", "zu Null y", "zu Null x", "zu nächster y", "zu nächster x", "zu sich selbst", "zu nächster"],
+          "legend": "Legende zeigen? (diese Option kann durch die globale Legende-zeigen-Option überschrieben werden)",
+          "frame": "Eine Datendimension für die Animation verwenden (als Frames)?"
+        },
+        "addBubbleDataEl":{
+          "chartYdata": "Was soll auf der y-Achse dargestellt werden?",
+          "chartYlabel": "Datenlabel (z.B. für Legende)",
+          "symbol": "Markersymbol auswählen",
+          "colorCheck": "Statische Farbe verwenden?",
+          "colorCheckTrue": "Markerfarbe auswählen",
+          "colorCheckFalse": "Wählen Sie eine Domäne aus, von der die Farbe abhängen soll.",
+          "size": "Markergröße wählen",
+          "sizemode": "Woran soll die Größe bemessen werden?",
+          "sizemodeChoices": ["area", "diameter"],
+          "maxsize": "Maximale Markergröße wählen (optional)",
+          "lineWidth": "Markerumriss-Breite wählen",
+          "lineColor": "Markerumriss-Farbe auswählen",
+          "legend": "Legende zeigen? (diese Option kann durch die globale Legende-zeigen-Option überschrieben werden)",
+          "frame": "Eine Datendimension für die Animation verwenden (als Frames)?"
+        },
+        "addHistDataEl":{
+          "histXdata": "Was soll dargestellt werden?",
+          "label": "Welches Label soll verwendet werden?",
+          "color": "Balkenfarbe auswählen"
+        },
+        "addDyDataEl":{
+          "chartYdata": "Welchen Index möchten Sie auf der y-Achse zeichnen?",
+          "label": "Welches Label soll verwendet werden?",
+          "yaxis": "Achsenposition",
+          "yaxisChoices": ["links", "rechts"],
+          "color": "Welche Farbe sollte für diese Serie verwendet werden?",
+          "stepPlot": "Willst du die Serie als Stufendiagramm darstellen?",
+          "stemPlot": "Willst du die Serie als Stammplot darstellen?",
+          "fillGraph": "Soll der Bereich unter der Grafik ausgefüllt werden?",
+          "drawPoints": "Sollen Punkte gezeichnet werden?",
+          "pointShape": "Welche Form sollen Punkte haben?",
+          "pointShapeChoices": ["Punkt", "Dreieck", "Quadrat", "Diamant", "Pentagon", "Hexagon", "Kreis", "Stern", "Plus", "ex"],
+          "pointSize": "Welche Größe sollten die Punkte haben?"
+        },
+        "addTimevisDataEl":{
+          "timevisSeries": "Inhalt der Elemente?",
+          "start": "Das Startdatum der Elemente?",
+          "end": "Das Enddatum der Elemente?",
+          "type": "Typ der Elemente? Hinweis: Typen Kasten und Punkt benötigen nur ein Startdatum, Typen Bereich und Hintergrund benötigen sowohl ein Start- als auch ein Enddatum.",
+          "typeChoices": ["Kasten", "Punkt", "Bereich", "Hintergrund"],
+          "title": "Einen Titel für jedes Element hinzufügen, der angezeigt wird, wenn mit der Maus darüber gefahren wird?",
+          "group": "Gruppen-ID. Wenn eine Gruppen-ID definiert wird, werden alle Elemente mit der gleichen Gruppe auf einer Zeile platziert.",
+          "subgroup": "Subgruppen-ID. Gruppiert alle Elemente innerhalb einer Gruppe pro Untergruppe und positioniert sie auf gleicher Höhe, anstatt sie übereinander zu stapeln.",
+          "grouptitle": "Einen Titel für jede Gruppe hinzufügen, der angezeigt wird, wenn mit der Maus darüber gefahren wird?",
+          "subgrouporder": "Ordnen Sie die Untergruppen nach einem Feldnamen an. Standardmäßig sind die Gruppen nach dem Prinzip erstes Kommen - erstes Erscheinen geordnet."
+        },
+        "addCustomTimeEl":{
+          "timevisCustom": "Datum/Uhrzeit, das hinzugefügt werden soll",
+          "placeholder": "z.B. 2016-08-21"
+        }
+      }
+    }
+  }
+}

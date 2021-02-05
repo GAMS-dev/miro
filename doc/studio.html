@@ -64,7 +64,7 @@
                             <section id="studio-introduction" class="doc-section">
                                 <h2 class="section-title">Introduction</h2>
                                 <div class="section-block">
-                                    <p>In this section we show you how to use <a href="https://www.gams.com/latest/docs/T_STUDIO.html">GAMS Studio</a> for the development of your MIRO apps. The new integrated development environment for GAMS has built-in functionality of the most important interactions with MIRO. In this section we only give an overview of these. Different aspects are explained in more detail in corresponding linked chapters.</p>
+                                    <p>In this section we show you how to use <a href="https://www.gams.com/latest/docs/T_STUDIO.html">GAMS Studio</a> for the development and deployment of your MIRO apps. The new integrated development environment for GAMS has built-in functionality of the most important interactions with MIRO. In this section we only give an overview of these. Different aspects are explained in more detail in corresponding linked chapters.</p>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
                             <section id="studio-general" class="doc-section">
@@ -78,7 +78,7 @@
                                 </div>
                                 <div  id="studio-main-file"  class="section-block">
                                     <h3 class="block-title">Main file in Studio</h3>
-                                    <p>GAMS Studio is not executing the file currently visible in the editor, but the file which is set as main file in the corresponding group in the <a href="https://www.gams.com/latest/docs/T_STUDIO.html#STUDIO_PROJECT_EXPLORER" target="_blank">project explorer</a>. Make sure that the model you want to use for MIRO is marked as the main file. If this is not the case, you can change it by right clicking on the file in the project explorer &rarr; <i>set as main file</i>:
+                                    <p>GAMS Studio is not executing the file currently visible in the editor, but the file which is set as main file in the corresponding group in the <a href="https://www.gams.com/latest/docs/T_STUDIO.html#STUDIO_PROJECT_EXPLORER" target="_blank">project explorer</a>. Make sure that the model you want to use for MIRO is marked as the <i>main file</i>. If this is not the case, you can change it by right clicking on the file in the project explorer &rarr; <i>set as main file</i>:
                                     <div class="section-block" style="display:block; margin:auto;">
                                         <img class="img-fluid" style = "max-height:200pt;" src="assets/images/studio/studio_main_file.png" alt="Set as main file in Studio" />
                                     </div></p>
@@ -95,7 +95,7 @@
                                     <h3 class="block-title">MIRO interaction</h3>
                                     <p>All interaction between GAMS Studio and MIRO can be found in the MIRO menu:</p>
                                     <div class="section-block" style="display:block; margin:auto;">
-                                        <img class="img-fluid" style="max-height: 160pt;" src="assets/images/studio/menu.png" alt="MIRO menu in GAMS Studio" />
+                                        <img class="img-fluid" style="max-height: 150pt;" src="assets/images/studio/menu.png" alt="MIRO menu in GAMS Studio" />
                                     </div>
                                 </div>
                             </section><!--//doc-section-->
@@ -103,7 +103,7 @@
                                 <h2 class="section-title">Run Base Mode<a title="Go to chapter" class=" info-wrapper" href="./start.html#start-miro"><i class="icon fa fa-external-link-alt info-icon"></i></a></h2>
                                 <div class="section-block">
                                     <div class="section-block" style="display:block; margin:auto;">
-                                        <img class="img-fluid" style = "max-height:160pt;" src="assets/images/studio/launch-miro-btn.png" alt="Launch MIRO Base Mode" />
+                                        <img class="img-fluid" style = "max-height:150pt;" src="assets/images/studio/launch-miro-btn.png" alt="Launch MIRO Base Mode" />
                                     </div>
                                     <p>This option starts the MIRO Base Mode. In the Base Mode, you can supply your models with input data, generate, display and save the results of your optimization as well as compare different scenarios with each other, everything visually supported by various plotting tools. 
                                     </p>
@@ -116,7 +116,7 @@
                                 <h2 class="section-title">Run Hypercube Mode<a title="Go to chapter" class=" info-wrapper" href="./hypercube.html#hypercube-overview"><i class="icon fa fa-external-link-alt info-icon"></i></a></h2>
                                 <div class="section-block">
                                     <div class="section-block" style="display:block; margin:auto;">
-                                        <img class="img-fluid" style="max-height: 160pt;" src="assets/images/studio/hcube_studio.png" alt="Launch MIRO Hypercube Mode" />
+                                        <img class="img-fluid" style="max-height: 150pt;" src="assets/images/studio/hcube_studio.png" alt="Launch MIRO Hypercube Mode" />
                                     </div>
                                     <p>This option starts the MIRO Hypercube Mode. In this mode, you can automatically solve scenarios with several different parameterizations at once.
                                     </p>
@@ -130,7 +130,7 @@
                                 <h2 class="section-title">Run Configuration Mode<a title="Go to chapter" class=" info-wrapper" href="./customize.html#configurationMode"><i class="icon fa fa-external-link-alt info-icon"></i></a></h2>
                                 <div class="section-block">
                                     <div class="section-block" style="display:block; margin:auto;">
-                                        <img class="img-fluid" style="max-height: 160pt;" src="assets/images/studio/start_studio.png" alt="Launch MIRO Configuration Mode" />
+                                        <img class="img-fluid" style="max-height: 150pt;" src="assets/images/studio/start_studio.png" alt="Launch MIRO Configuration Mode" />
                                     </div>
                                     <p>This option starts the MIRO Configuration Mode. Here, you can create plots and widgets or change certain settings with a few mouse clicks, visually supported by a live preview. 
                                     </p>
@@ -144,7 +144,7 @@
                                 <div class="section-block">
                                     <p>In the MIRO menu of GAMS Studio there is the entry "Skip model execution". If this option is activated, the model is not executed before MIRO is started, but MIRO is called directly instead. This can be helpful if the model takes a long time to be solved. </p>
                                     <div class="section-block" style="display:block; margin:auto;">
-                                        <img class="img-fluid" style = "max-height:160pt;" src="assets/images/studio/skip_model_execution.png" alt="Skip model execution" />
+                                        <img class="img-fluid" style = "max-height:150pt;" src="assets/images/studio/skip_model_execution.png" alt="Skip model execution" />
                                     </div>
                                     <p>But: This option should be used with caution!</br> 
                                     If the model execution is skipped, the GAMS/MIRO <a href="./start.html#data-concept">data contract</a> is not created or refreshed. This means that changes made in the model are not communicated to MIRO. If you have a model that takes a long time to be solved and you don't want to run through it in order to launch MIRO, you can simply set the GAMS option <a href = "https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOaction" target = "_blank"><i>a=c</i></a> (action=compile) instead of the option "Skip model execution". This will only compile the model which is sufficient to update the data contract. Note that in this case a new default scenario is created, but it contains only the data that is available after the compilation phase (most of the time only input data).</p>
@@ -153,9 +153,9 @@
                             <section id="studio-create-assembly" class="doc-section">
                                 <h2 class="section-title">Create model assembly<a title="Go to chapter" class=" info-wrapper" href="./deployment.html#sbs-create-app"><i class="icon fa fa-external-link-alt info-icon"></i></a></h2>
                                 <div class="section-block">
-                                    <p>If you use the Hypercube Mode or want to deploy a fully configured app, MIRO needs to know about the files that belong to your model. This is primarily the main model file, but also all files necessary to calculate all inputs and outputs, e.g. files that are included in the model. To tell MIRO about these files, go to <i>create model assembly</i> and select those folders and files which are needed. If you select a folder, all files in it will be included. If you want to use only single files of a folder, you have to expand the folder and select the corresponding file(s). When you are finished, click on <i>create</i>.</p>
+                                    <p>If you use the Hypercube Mode or want to <a href="#studio-deploy" class="scrollto">deploy</a> a fully configured app, MIRO needs to know about the files that belong to your model. This is primarily the main model file, but also all files necessary to calculate all inputs and outputs, e.g. files that are included in the model. To tell MIRO about these files, go to <i>Assembly and Deploy</i>. In the <i>Assembly File</i> section select those folders and files which are needed. If you select a folder, all files in it will be included. If you want to use only single files of a folder, you have to expand the folder and select the corresponding file(s). When you are finished, click on <i>create</i>.</p>
                                     <div class="section-block" style="text-align:center;">
-                                        <img class="img-fluid" style="max-height:315pt" src="assets/images/deployment/model-assembly.png" alt="create model assembly file" />
+                                        <img class="img-fluid" style="max-height:350pt" src="assets/images/deployment/model-assembly.png" alt="create model assembly file" />
                                     </div>
                                     <div class="callout-block callout-warning">
                                         <div class="icon-holder">
@@ -173,9 +173,9 @@
                                 <div class="section-block">
                                     <p>When the MIRO app is completely configured it can be deployed, i.e. exported and installed so that it can be easily shared with end users. No further changes to the model or the configuration can be made once it is deployed.</p>
                                     <div class="section-block" style="text-align:center;">
-                                        <img class="img-fluid" style="max-height:265pt" src="assets/images/deployment/deploy.png" alt="Deploy MIRO model" />
+                                        <img class="img-fluid" style="max-height:350pt" src="assets/images/deployment/deploy.png" alt="Deploy MIRO model" />
                                     </div>
-                                    <p>In GAMS Studio, select <i>Deploy</i> and specify which MIRO modes you want to support in your MIRO app (Base Mode/Hypercube Mode or both). If the Base Mode is selected, you also need to decide how your model shall be executed (<i>execution environment</i>). There are three options:</p>
+                                    <p>In GAMS Studio, select <i>Assembly and Deploy</i>. In the <i>Deploy Configuration</i> section specify which MIRO modes you want to support in your MIRO app (Base Mode/Hypercube Mode or both). If the Base Mode is selected, you also need to decide how your model shall be executed (<i>execution environment</i>). There are three options:</p>
                                         <ol>
                                             <li> Multi-user: This option allows your app to be used by multiple users simultaneously. Your model files are extracted at a random location, which is different for each user, and your model is executed from there.</li>
                                             <li> Single-user: Your model is executed inside the model directory. No extraction of your model files is required, but this means that you can NOT have multiple users accessing your MIRO app at the same time.</li>

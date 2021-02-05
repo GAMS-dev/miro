@@ -1,0 +1,5 @@
+scalar,description,value
+maxstock$lo,maximum number of stocks to select (min),3
+maxstock$up,maximum number of stocks to select (max),13
+maxstock$step,maximum number of stocks to select (step size),3
+trainingdays,number of days for training (min),45
