@@ -516,8 +516,8 @@ if(miroBuildonly){
     Sys.setenv(MIRO_USE_TMP = "true")
     Sys.setenv(MIRO_BUILD_ARCHIVE = "true")
     Sys.setenv(MIRO_MODE = "hcube")
-    buildProcHcube <- processx::process$new(file.path(R.home(), 'bin', 'Rscript'), 
-                                            c('--vanilla', './app.R'),
+    buildProcHcube <- processx::process$new(file.path(R.home(), 'bin', 'R'), 
+                                            c('--no-echo', '--no-restore', '--vanilla', '-f', './app.R'),
                                             stderr = "|")
     Sys.setenv(MIRO_COMPILE_ONLY = "")
     Sys.setenv(MIRO_MODE = "full")
