@@ -34,7 +34,7 @@ pushd src/model > /dev/null
     $ZIP_TOOL -r cpack.conf.unzip cpack_files.txt conf_cpack data_cpack static_cpack README.md -x "*.DS_Store"
     cd ..
     cd cutstock
-    $ZIP_TOOL -r cutstock.conf.unzip cutstock_files.txt conf_cutstock data_cutstock renderer_cutstock README.md -x "*.DS_Store"
+    $ZIP_TOOL -r cutstock.conf.unzip cutstock_files.txt conf_cutstock data_cutstock renderer_cutstock static_cutstock README.md -x "*.DS_Store"
     cd ..
     rm -rf miro_lib || true
     mkdir miro_lib

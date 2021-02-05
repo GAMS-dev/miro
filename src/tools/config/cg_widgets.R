@@ -1297,9 +1297,9 @@ observeEvent({input$widget_type
          numericinput = {
            rv$widgetConfig <- list(widgetType = "numericinput",
                                    alias = widgetAlias,
-                                   value = if(length(currentConfig$value)) currentConfig$value else 2L,
-                                   min = if(length(currentConfig$min)) currentConfig$min else 0L,
-                                   max = if(length(currentConfig$max)) currentConfig$max else 10L,
+                                   value = if(length(currentConfig$value)) currentConfig$value,
+                                   min = if(length(currentConfig$min)) currentConfig$min,
+                                   max = if(length(currentConfig$max)) currentConfig$max,
                                    decimal = if(length(currentConfig[["decimal"]])) currentConfig[["decimal"]] else 0L,
                                    decimalCharacter = if(length(currentConfig[["decimalCharacter"]])) currentConfig[["decimalCharacter"]] else ".",
                                    digitGroupSeparator = if(length(currentConfig[["digitGroupSeparator"]])) currentConfig[["digitGroupSeparator"]] else ",",
@@ -1316,14 +1316,14 @@ observeEvent({input$widget_type
                       tags$div(class = "shiny-input-container two-col-wrapper",
                                tags$div(class = "two-col-left",
                                         numericInput("numericinput_min", lang$adminMode$widgets$numericinput$min, 
-                                                     value = if(is.numeric(rv$widgetConfig$min)) rv$widgetConfig$min else 0L)),
+                                                     value = if(is.numeric(rv$widgetConfig$min)) rv$widgetConfig$min)),
                                tags$div(class = "two-col-right",
                                         numericInput("numericinput_max", lang$adminMode$widgets$numericinput$max, 
-                                                     value = if(is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max else 0L))),
+                                                     value = if(is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max))),
                       tags$div(class="shiny-input-container two-col-wrapper",
                                tags$div(class = "two-col-left",
                                         numericInput("numericinput_value", lang$adminMode$widgets$numericinput$value, 
-                                                     value = if(is.numeric(rv$widgetConfig$value)) rv$widgetConfig$value else 0L)),
+                                                     value = if(is.numeric(rv$widgetConfig$value)) rv$widgetConfig$value)),
                                tags$div(class = "two-col-right",
                                         numericInput("numericinput_decimal", lang$adminMode$widgets$numericinput$decimal, 
                                                      min = 0, 
@@ -1577,9 +1577,11 @@ observeEvent(input$date_separator, {
 observeEvent(input$text_placeholder, {
   rv$widgetConfig$placeholder <<- input$text_placeholder
 })
-observeEvent(input$numericinput_value, {
-  if(!is.numeric(input$numericinput_value))
+observeEvent(input$numericinput_value, ignoreNULL = FALSE, {
+  if(!is.numeric(input$numericinput_value)){
+    rv$widgetConfig$value <<- NULL
     return()
+  }
   rv$widgetConfig$value <<- input$numericinput_value
 })
 observeEvent(input$numericinput_min, ignoreNULL = FALSE, {

@@ -26,9 +26,13 @@ configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, simplifyDa
 configJSON$activateModules$loadLocal <- TRUE
 configJSON$activateModules$attachments <- TRUE
 configJSON$extraClArgs <- c(configJSON$extraClArgs, "--sleep=1")
+if(!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")){
+  configJSON$extraClArgs <- c(configJSON$extraClArgs,
+                              paste0('license="', Sys.getenv("MIRO_TEST_GAMS_LICE"), '"'))
+}
 if(.Platform$OS.type == 'windows'){
   # Windows
-  gamsliceFile <- file.path(path.expand("~"), "..", "AppData", "Local", "GAMS", "gamslice.txt")
+  gamsliceFile <- file.path(path.expand("~"), "GAMS", "gamslice.txt")
 }else if(grepl("^darwin", R.version$os)){
   # macOS
   gamsliceFile <- file.path(path.expand("~"), "Library", "Application Support", "GAMS", "gamslice.txt")

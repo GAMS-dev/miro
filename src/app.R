@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "1.2.99"
+MIROVersion <- "1.3.0"
 APIVersion  <- "1"
-MIRORDate   <- "Nov 16 2020"
+MIRORDate   <- "Feb 05 2021"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -516,8 +516,8 @@ if(miroBuildonly){
     Sys.setenv(MIRO_USE_TMP = "true")
     Sys.setenv(MIRO_BUILD_ARCHIVE = "true")
     Sys.setenv(MIRO_MODE = "hcube")
-    buildProcHcube <- processx::process$new(file.path(R.home(), 'bin', 'Rscript'), 
-                                            c('--vanilla', './app.R'),
+    buildProcHcube <- processx::process$new(file.path(R.home(), 'bin', 'R'), 
+                                            c('--no-echo', '--no-restore', '--vanilla', '-f', './app.R'),
                                             stderr = "|")
     Sys.setenv(MIRO_COMPILE_ONLY = "")
     Sys.setenv(MIRO_MODE = "full")
@@ -542,8 +542,24 @@ if(miroBuildonly){
     }
   }
   tryCatch({
-    zipMiro(file.path(currentModelDir, paste0(modelNameRaw, ".miroapp")), 
+    # create metadata file
+    tmpd <- tempdir(check = TRUE)
+    metadataContent <- list(version = 1L,
+                            api_version = APIVersion,
+                            miro_version = MIROVersion,
+                            main_gms_name = modelGmsName,
+                            timestamp = as.character(as.POSIXlt(Sys.time(), tz = "UTC"), usetz = TRUE),
+                            host_os = getOS(),
+                            modes_included = Sys.getenv("MIRO_MODE"),
+                            use_temp_dir = useTempDir)
+    appMetadataFile <- file.path(tmpd, "miroapp.json")
+    write_json(metadataContent, appMetadataFile,
+               auto_unbox = TRUE, null = "null")
+    # assemble MIROAPP
+    miroAppPath <- file.path(currentModelDir, paste0(modelNameRaw, ".miroapp"))
+    zipMiro(miroAppPath, 
             c(modelFiles, basename(rSaveFilePath)), currentModelDir)
+    zipr_append(miroAppPath, appMetadataFile, mode = "cherry-pick")
   }, error = function(e){
     stop(sprintf("Problems creating app bundle. Error message: '%s'.", 
                  conditionMessage(e)), call. = FALSE)
@@ -1773,11 +1789,6 @@ if(!is.null(errMsg)){
             return(FALSE)
           }
         }, logical(1), USE.NAMES = FALSE)
-        if(all(datasetsImported)){
-          addClassEl(session, "#btSolve", "glow-animation")
-        }else{
-          removeClassEl(session, "#btSolve", "glow-animation")
-        }
       })
       # UI elements (modalDialogs)
       source("./UI/dialogs.R", local = TRUE)
@@ -1903,9 +1914,13 @@ if(!is.null(errMsg)){
       source("./modules/scen_compare.R", local = TRUE)
       
       observeEvent(input$btExportScen, {
+        stopifnot(is.integer(input$btExportScen), length(input$btExportScen) == 1L)
         if(useGdx && !LAUNCHHCUBEMODE){
-          
           exportTypes <- setNames(c("miroscen", "gdx", "csv", "xls"), lang$nav$fileExport$fileTypes)
+          if(input$btExportScen > 1L){
+            # remove miroscen option in comparison Mode (currently not supported)
+            exportTypes <- exportTypes[-1]
+          }
         }else{
           exportTypes <- setNames(c("csv", "xls"), lang$nav$fileExport$fileTypes[-c(1, 2)])
         }

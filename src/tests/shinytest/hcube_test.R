@@ -278,8 +278,8 @@ Sys.sleep(0.5)
 expect_true(app$waitFor("$('#configAnalysis div[data-value*=\"tabsetAnalysisMethodScript\"]').is(':visible');", 50))
 app$setInputs(selHcubeAnalysisScript = "script1")
 Sys.sleep(0.5)
-if(!grepl("^darwin", R.version$os)){
-  # FIXME: Run this also on macOS soon as issue products/3557 is closed. 
+if(grepl("linux-gnu", R.version$os)){
+  # FIXME: Run this also on Windws/macOS as soon as issue products/3557 is closed. 
   # Currently, GAMS can't handle running embedded code when curdir is longer than 128 characters
   app$setInputs(btRunHcubeScript = "click")
   expect_true(app$waitFor("$('#shiny-tab-hcubeAnalyze').is(':visible');", 15000))

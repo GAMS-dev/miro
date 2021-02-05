@@ -8,6 +8,7 @@ To add a new sample model, you need to do the following:
 1. edit the file `mirolib.glb` which is in this directory and add your model there
 1. edit the `/scripts/create_miro_lib.sh` script (from the root of this repository), which is responsible for packaging the applications during the build process so that they end up in the [MIRO documentation](https://www.gams.com/miro/).
 1. edit the `/components/example-apps.js` file (from the root of this repository) that defines the metadata of all the sample models in the MIRO library.
+1. add your model to the `/build/scripts/install-packages.R` file (last 'for' loop).
 
 # Adding the example model to the MIRO gallery
 If you want your example model to be visible in the [MIRO Gallery](https://miro.gams.com), you need to place the image you want to use as logo in the directory `/doc/gallery/data/logos`. Please note that the gallery currently only supports `png` files and the logo must have the same name as your app.

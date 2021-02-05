@@ -14,8 +14,8 @@ const menu = require('./components/menu.js');
 const installRPackages = require('./components/install-r.js');
 
 const requiredAPIVersion = 1;
-const miroVersion = '1.2.99';
-const miroRelease = 'Nov 16 2020';
+const miroVersion = '1.3.0';
+const miroRelease = 'Feb 05 2021';
 const libVersion = '1.1';
 const exampleAppsData = require('./components/example-apps.js')(miroVersion, requiredAPIVersion);
 const LangParser = require('./components/LangParser');
@@ -107,9 +107,6 @@ let checkForUpdateWindow;
 let aboutDialogWindow;
 let fileToOpen;
 let appLoaded = false;
-
-// enable overlay scrollbar
-app.commandLine.appendSwitch('--enable-features', 'OverlayScrollbar');
 
 function showErrorMsg(optionsTmp) {
   if (mainWindow) {
@@ -735,6 +732,7 @@ function createSettingsWindow() {
     frame: false,
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
       enableRemoteModule: false,
     },
   });
@@ -778,6 +776,7 @@ function openAboutDialog() {
     frame: false,
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
       enableRemoteModule: false,
     },
   });
@@ -819,6 +818,7 @@ function openCheckUpdateWindow() {
     frame: false,
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
       enableRemoteModule: false,
     },
   });
@@ -913,6 +913,7 @@ function createMainWindow(showRunningApps = false) {
     icon: process.platform === 'linux' ? path.join(__dirname, 'static', 'icon_64x64.png') : undefined,
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false,
       enableRemoteModule: false,
     },
   });
@@ -1396,6 +1397,8 @@ ipcMain.on('settings-select-new-path', async (e, id, defaultPath) => {
             });
         }
       }
+    } else {
+      settingsWindow.webContents.send('settings-new-path-selected', id, pathSelected[0]);
     }
   }
 });
@@ -1755,7 +1758,11 @@ app.on('ready', async () => {
   Menu.setApplicationMenu(applicationMenu);
 
   if (miroDevelopMode) {
-    mainWindow = new BrowserWindow({ show: false, width: 0, height: 0 });
+    mainWindow = new BrowserWindow({ show: false, width: 0, height: 0, webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+      enableRemoteModule: false,
+    }});
     mainWindow.hide();
     const modelPath = process.env.MIRO_MODEL_PATH;
     await searchLibPath(true);
