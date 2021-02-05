@@ -607,7 +607,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
       }
     }
     if(any(is.na(match(config$overwriteSheetOrder$input, names(modelIn))))){
-      errMsg <- paste(errMsg, "Some of the input elements in the 'overwriteSheetOrder' option are not defined in the data model!",
+      errMsg <- paste(errMsg, "Some of the input elements in the 'overwriteSheetOrder' option are not defined in the data contract!",
                       sep = "\n")
     }else{
       appendSheetIds <- NULL
