@@ -542,8 +542,25 @@ if(miroBuildonly){
     }
   }
   tryCatch({
-    zipMiro(file.path(currentModelDir, paste0(modelNameRaw, ".miroapp")), 
+    # create metadata file
+    tmpd <- tempdir(check = TRUE)
+    metadataContent <- list(version = 1L,
+                            api_version = APIVersion,
+                            miro_version = MIROVersion,
+                            main_gms_name = modelGmsName,
+                            timestamp = as.character(as.POSIXlt(Sys.time(), tz = "UTC"), usetz = TRUE),
+                            uid = uid,
+                            host_os = getOS(),
+                            modes_included = Sys.getenv("MIRO_MODE"),
+                            use_temp_dir = useTempDir)
+    appMetadataFile <- file.path(tmpd, "miroapp.json")
+    write_json(metadataContent, appMetadataFile,
+               auto_unbox = TRUE, null = "null")
+    # assemble MIROAPP
+    miroAppPath <- file.path(currentModelDir, paste0(modelNameRaw, ".miroapp"))
+    zipMiro(miroAppPath, 
             c(modelFiles, basename(rSaveFilePath)), currentModelDir)
+    zipr_append(miroAppPath, appMetadataFile, mode = "cherry-pick")
   }, error = function(e){
     stop(sprintf("Problems creating app bundle. Error message: '%s'.", 
                  conditionMessage(e)), call. = FALSE)
