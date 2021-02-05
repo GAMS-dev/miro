@@ -120,7 +120,7 @@ getDtOptions <- reactive({
                          selected = if(length(configJSON$datatable$filter)) configJSON$datatable$filter else config$datatable$filter
              )),
     tags$div(style = "max-width:400px;",
-             numericInput("dt_pagelength", lang$adminMode$tables$dt$pagelength$label, 
+             numericInput("dt_pagelength", lang$adminMode$tables$dt$pagelength$label, min = 1L, 
                           value = if(length(configJSON$datatable$options$pageLength)) configJSON$datatable$options$pageLength 
                           else config$datatable$options$pageLength)),
     tags$div(class = "shiny-input-container",
@@ -310,9 +310,9 @@ getOutputTableOptions <- reactive({
              selectInput("outputTable_filter", lang$adminMode$tables$dt$filter$label, 
                          choices = langSpecificTable$filter,
                          selected = rv$tableWidgetConfig$filter),
-             numericInput("outputTable_pagelength", lang$adminMode$tables$dt$pagelength$label, 
+             numericInput("outputTable_pagelength", lang$adminMode$tables$dt$pagelength$label, min = 1L, 
                           value = rv$tableWidgetConfig$options$pageLength),
-             numericInput("outputTable_decimals", lang$adminMode$tables$dt$decimals$label, 
+             numericInput("outputTable_decimals", lang$adminMode$tables$dt$decimals$label, min = 0L, 
                           value = rv$tableWidgetConfig$options$decimals),
              checkboxInput_MIRO("outputTable_rownames", lang$adminMode$tables$dt$rownames$label,
                                 value = rv$tableWidgetConfig$rownames),
