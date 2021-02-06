@@ -230,6 +230,7 @@ pipeline {
                             }
                             if (env.BRANCH_NAME == 'master' && currentBuild.currentResult == "SUCCESS") {
                                 sh '''#!/bin/bash -xe
+                                    yarn docker-publish
                                     ## build MIRO server images
                                     pushd server > /dev/null
                                         python3 miro_server.py push
