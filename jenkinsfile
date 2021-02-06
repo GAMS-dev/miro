@@ -359,7 +359,7 @@ pipeline {
                         git status
                         git config user.name 'jenkins'
                         git config user.email 'jenkins@berlin.noreply.gams.com'
-                        git commit -m "[CI skip] Update MIRO version" && {
+                        git commit -m "Update MIRO version" && {
                             git push origin HEAD:master || true
                         }
                         popd > /dev/null
