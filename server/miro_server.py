@@ -73,6 +73,25 @@ class MiroServer(object):
       mvn_executable = 'mvn'
       if platform.system() == 'Windows':
         mvn_executable = 'mvn.cmd'
+      subprocess.check_call([mvn_executable, '-U', 'clean', 'install', '-f', os.path.join('containerproxy', 'pom.xml'), '-DskipTests'])
+      artifact_path = glob.glob(os.path.join('containerproxy', 'target', 'containerproxy-*.jar'))
+      if len(artifact_path) == 0:
+        print("Something went wrong building containerproxy artifact. Check whether Maven is correctly installed.")
+        exit(1)
+
+      cp_version = artifact_path[0].split('-')[1].split('.jar')[0]
+
+      # move containerproxy artifact to local maven repo
+      # so it can be used when building shinyproxy
+      if not os.path.exists('local-maven-repo'):
+        os.makedir('local-maven-repo')
+
+      subprocess.check_call([mvn_executable, 'org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file',
+        '-Dfile=' + artifact_path[0],
+        '-DgroupId=eu.openanalytics', '-DartifactId=eu.openanalytics.containerproxy',
+        '-Dversion=' + cp_version, '-Dpackaging=jar',
+        '-DlocalRepositoryPath=' + os.path.join(os.getcwd(), 'local-maven-repo')])
+
       subprocess.check_call([mvn_executable, '-U', 'clean', 'install', '-f', os.path.join('shinyproxy', 'pom.xml')])
       artifact_path = glob.glob(os.path.join('shinyproxy', 'target', 'shinyproxy-*.jar'))
 
