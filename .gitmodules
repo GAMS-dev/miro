@@ -42,3 +42,6 @@
 	path = r-src/sortable
 	url = https://github.com/GAMS-dev/sortable.git
 	branch = master
+[submodule "server/containerproxy"]
+	path = server/containerproxy
+	url = https://github.com/GAMS-dev/containerproxy.git
