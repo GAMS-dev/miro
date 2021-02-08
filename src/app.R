@@ -784,17 +784,20 @@ if(is.null(errMsg)){
     namespace <- Sys.getenv("MIRO_ENGINE_NAMESPACE")
     engineUid <- uid
     if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")){
-      engineUid <- "anonymous"
+      userCredentials <- list(username = Sys.getenv("MIRO_ENGINE_ANONYMOUS_USER", "anonymous"),
+                              password = Sys.getenv("MIRO_ENGINE_ANONYMOUS_PASS"),
+                              useBearer = FALSE)
+    }else{
+      userCredentials <- list(username = uid,
+                              password = Sys.getenv("SHINYPROXY_WEBSERVICE_ACCESS_TOKEN"),
+                              useBearer = TRUE)
     }
-    userCredentials <- db$getUserCredentials(uid = engineUid, namespace = namespace)
     credConfig <- list(url = Sys.getenv("MIRO_ENGINE_HOST"), 
-                       username = userCredentials$username[1],
-                       password = userCredentials$password[1],
+                       username = userCredentials$username,
+                       password = userCredentials$password,
                        namespace = namespace,
                        useRegistered = TRUE,
-                       registerUser = TRUE,
-                       adminCredentials = list(username = Sys.getenv("MIRO_ENGINE_ADMIN_USER"), 
-                                               password = Sys.getenv("MIRO_ENGINE_ADMIN_PASS")))
+                       useBearer = userCredentials$useBearer)
   }else if(config$activateModules$remoteExecution){
     tryCatch({
       if(file.exists(file.path(miroWorkspace, "pinned_pub_keys"))){

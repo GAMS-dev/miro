@@ -25,8 +25,7 @@ Worker <- R6Class("Worker", public = list(
     unlink(private$metadata$rememberMeFileName, force = TRUE)
   },
   setCredentials = function(url, username, password, namespace,
-                            useRegistered, registerUser = FALSE,
-                            adminCredentials = NULL){
+                            useRegistered, useBearer = FALSE){
     engineUrl <- trimws(url, which = "right", whitespace = "/")
     if(!endsWith(engineUrl, "/api")){
       engineUrl <- paste0(engineUrl, "/api")
@@ -36,16 +35,8 @@ Worker <- R6Class("Worker", public = list(
     private$metadata$useRegistered <- useRegistered
     private$metadata$password  <- password
     private$metadata$namespace <- namespace
-    if(registerUser){
-      private$authHeader <- private$buildAuthHeader()
-      authenticationStatus <- private$checkAuthenticationStatus()
-      if(identical(authenticationStatus, 401L)){
-        private$registerUser(adminCredentials)
-      }else if(!identical(authenticationStatus, 200L)){
-        flog.fatal("Could not check authentication status. Return code from remote executor: %s.", 
-                   authenticationStatus)
-        stop()
-      }
+    if(useBearer){
+      private$authHeader <- private$buildAuthHeader(FALSE)
     }else{
       private$authHeader <- private$buildAuthHeader(TRUE)
     }
@@ -1493,30 +1484,6 @@ Worker <- R6Class("Worker", public = list(
                             add_headers(Authorization = private$authHeader,
                                         Timestamp = as.character(Sys.time(), usetz = TRUE)),
                             timeout(10L))))
-  },
-  registerUser = function(adminCredentials){
-    invitationToken <- private$validateAPIResponse(
-      POST(paste0(private$metadata$url, "/users/invitation"),
-           body = list(namespace_permissions = 
-                         paste0("1@", private$metadata$namespace)),
-           add_headers(Authorization = paste0("Basic ", 
-                                              base64_encode(charToRaw(
-                                                paste0(adminCredentials$username, 
-                                                       ":", adminCredentials$password)))),
-                       Timestamp = as.character(Sys.time(), usetz = TRUE)),
-           timeout(10L)))$invitation_token
-    private$validateAPIResponse(
-      POST(paste0(private$metadata$url, "/users"),
-           body = list(username = private$metadata$username,
-                       password = private$metadata$password,
-                       invitation_code = invitationToken),
-           add_headers(Authorization = paste0("Basic ", 
-                                              base64_encode(charToRaw(
-                                                paste0(adminCredentials$username, 
-                                                       ":", adminCredentials$password)))),
-                       Timestamp = as.character(Sys.time(), usetz = TRUE)),
-           timeout(10L)))
-    return(invisible(self))
   },
   resolveRemoteURL = function(url){
     url <- trimws(url, "right", whitespace = "/")

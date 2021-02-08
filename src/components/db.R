@@ -1183,20 +1183,6 @@ Db <- R6Class("Db",
                   
                   return(invisible(self))
                 },
-                getUserCredentials = function(uid, namespace, usersTable = "_sys_users"){
-                  credentials <- NULL
-                  tryCatch({
-                    credentials <- self$importDataset(usersTable, 
-                                                      tibble("uid", uid), limit = 1L)
-                    if(!length(credentials) || nrow(credentials) < 1L){
-                      credentials <- private$generateUserCredentials(usersTable, uid, namespace)
-                    }
-                  }, error = function(e){
-                    stop(sprintf("Db: An error occurred while fetching user data from the database (Db.getUserCredentials, " %+% 
-                                   "table: '%s'). Error message: %s.", usersTable, e), call. = FALSE)
-                  })
-                  return(credentials)
-                },
                 finalize = function(){
                   DBI::dbDisconnect(private$conn)
                   flog.debug("Db: Database connection ended as Db object was gced.")
