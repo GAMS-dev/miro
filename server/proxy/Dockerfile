@@ -6,7 +6,7 @@ RUN addgroup -g 1000 -S miro && \
 WORKDIR /home/miroproxy/
 
 
-COPY shinyproxy-2.1.0.jar shinyproxy.jar
+COPY shinyproxy-2.4.3.jar shinyproxy.jar
 COPY favicon.ico boot.sh ./
 RUN chmod +x boot.sh
 COPY templates templates
