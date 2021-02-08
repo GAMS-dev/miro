@@ -13,23 +13,6 @@ install (){
         }
         echo "GMS_MIRO_ENGINE_HOST=${ENGINE_HOST}">>.env
     fi
-    if ! grep -q "GMS_MIRO_ENGINE_USER" .env; then
-        read -p 'Please enter GAMS MIRO Engine username (at least inviter role required): ' ENGINE_USER
-        [ -z ${ENGINE_USER} ] && {
-            echo "Invalid GAMS MIRO Engine username!"
-            exit 1
-        }
-        echo "GMS_MIRO_ENGINE_USER=${ENGINE_USER}">>.env
-    fi
-    if ! grep -q "GMS_MIRO_ENGINE_PWD" .env; then
-        read -sp 'Please enter the password of this user: ' ENGINE_PASS
-        [ -z ${ENGINE_PASS} ] && {
-            echo "Invalid GAMS MIRO Engine password!"
-            exit 1
-        }
-        echo
-        echo "GMS_MIRO_ENGINE_PWD=${ENGINE_PASS}">>.env
-    fi
     if ! grep -q "GMS_MIRO_ENGINE_NS" .env; then
         read -p 'Please enter namespace where this user is inviter on: ' ENGINE_NS
         [ -z ${ENGINE_NS} ] && {

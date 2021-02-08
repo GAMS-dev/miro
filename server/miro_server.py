@@ -31,6 +31,11 @@ def gen_password(length):
     k=length))
 
 
+def gen_env_file(env_path):
+  with open(env_path, 'w') as f:
+    f.write(f'GMS_MIRO_DATABASE_PWD={gen_password(40)}\nGMS_MIRO_ANONYMOUS_SA_PWD={gen_password(40)}\nGMS_MIRO_ENGINE_ANONYMOUS_USER=miro_server_anonymous\nGMS_MIRO_ENGINE_ANONYMOUS_PWD={gen_password(40)}\n')
+
+
 class MiroServer(object):
   def __init__(self):
     parser = argparse.ArgumentParser(prog='miro_server.py',
@@ -102,8 +107,7 @@ class MiroServer(object):
       os.rename(artifact_path[0], os.path.join('proxy', os.path.basename(artifact_path[0])))
 
     if not os.path.isfile('.env'):
-      with open('.env', 'w') as f:
-        f.write(f'GMS_MIRO_DATABASE_PWD={gen_password(30)}\nGMS_MIRO_SA_PWD={gen_password(20)}\n')
+      gen_env_file('.env')
 
     if not args.no_pull:
       subprocess.check_call(['docker', 'login', 'hub.gams.com'])
@@ -175,12 +179,8 @@ class MiroServer(object):
       python_binary = 'python'
 
     copy_tree('release_data', 'release')
-    
-    env_file_content = f'GMS_MIRO_DATABASE_PWD={gen_password(40)}\nGMS_MIRO_SA_PWD={gen_password(30)}\n'
 
-    with open(os.path.join('release', '.env'), 'w') as f:
-      f.write(env_file_content)
-
+    gen_env_file(os.path.join('release', '.env'))
 
     answers = ['y', 'Y', 'n', 'N', '']
     yes_answers = ['y', 'Y']

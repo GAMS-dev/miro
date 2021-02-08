@@ -38,8 +38,7 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
     return(invisible(self))
   }), private = list(
   getAuthHeader = function(){
-    return(paste0("Basic ", jsonlite::base64_enc(charToRaw(
-            paste0(ENGINE_ADMIN_USER, ":", ENGINE_ADMIN_PWD)))))
+    return(paste0("Bearer ", ENGINE_TOKEN))
   },
   getErrorMessage = function(ret){
     return(tryCatch(content(ret, type = "application/json", encoding = "utf-8")[["message"]], 
