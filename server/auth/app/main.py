@@ -1,0 +1,78 @@
+from typing import Optional
+
+from fastapi import FastAPI, Response, status
+from fastapi.logger import logger
+from pydantic import BaseModel
+import requests
+import logging
+from pydantic import BaseSettings
+
+gunicorn_logger = logging.getLogger('gunicorn.error')
+logger.handlers = gunicorn_logger.handlers
+logger.setLevel(gunicorn_logger.level)
+
+
+class Settings(BaseSettings):
+    engine_url: str
+    engine_ns: str
+    session_timeout: int = 3600*5
+
+
+settings = Settings()
+
+
+class AuthRequest(BaseModel):
+    username: str
+    password: str
+
+
+app = FastAPI()
+
+
+@app.post("/login", status_code=200)
+async def login(auth_request: AuthRequest, response: Response):
+    logger.info("Login request received for user: %s.", auth_request.username)
+    try:
+        r = requests.post(f"{settings.engine_url}/auth", auth=(
+            auth_request.username, auth_request.password),
+            data={"expires_in": settings.session_timeout})
+        if r.status_code != 200:
+            logger.info("Invalid return code (%s) when requesting token from GAMS Engine",
+                        str(r.status_code), settings.engine_ns)
+            response.status_code = r.status_code
+            return r.json()
+        token = r.json()["token"]
+    except requests.exceptions.ConnectionError:
+        logger.info("ConnectionError when requesting token from GAMS Engine.")
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"message": "Internal server error"}
+    except:
+        logger.exception(
+            "Internal error when requesting token from GAMS Engine")
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"message": "Internal server error"}
+
+    try:
+        r = requests.get(
+            f"{settings.engine_url}/namespaces/{settings.engine_ns}/permissions/me",
+            auth=(auth_request.username, auth_request.password))
+        if r.status_code != 200:
+            logger.info("Invalid return code (%s) when requesting permissions for namespace: %s",
+                        str(r.status_code), settings.engine_ns)
+            response.status_code = r.status_code
+            return r.json()
+        is_admin = r.json()["permission"] == 7
+    except requests.exceptions.ConnectionError:
+        logger.info(
+            "ConnectionError when requesting permissions for namespace: %s.", settings.engine_ns)
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"message": "Internal server error"}
+    except:
+        logger.exception(
+            "Internal error when requesting permissions for namespace: %s.", settings.engine_ns)
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"message": "Internal server error"}
+
+    logger.info("User: %s successfully logged in (is_admin:%s).",
+                auth_request.username, str(is_admin))
+    return {"token": token, "roles": "admins" if is_admin else "users"}

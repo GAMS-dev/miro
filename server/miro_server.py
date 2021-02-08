@@ -144,7 +144,8 @@ class MiroServer(object):
 
   def push(self):
     for image in [('gamsmiro-sproxy', 'gamsmiro-sproxy'),
-                  ('gamsmiro-proxy', 'gamsmiro-proxy')]:
+                  ('gamsmiro-proxy', 'gamsmiro-proxy'),
+                  ('gamsmiro-auth', 'gamsmiro-auth')]:
       self.push_image(*image)
 
 

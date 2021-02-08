@@ -8,6 +8,18 @@ services:
     image: hub.gams.com/gamsmiro-ui
     restart: "no"
     command: /bin/true
+  auth:
+    image: gamsmiro-auth
+    build: ./auth/
+    environment:
+      ENGINE_URL: ${GMS_MIRO_ENGINE_HOST}
+      ENGINE_NS: ${GMS_MIRO_ENGINE_NS}
+      SESSION_TIMEOUT: 18000
+    restart: always
+    ports:
+      - 80
+    networks:
+      - gamsmiro-network
   dockerproxy:
     image: gamsmiro-sproxy
     build: ./docker-socket-proxy/
