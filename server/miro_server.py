@@ -89,7 +89,7 @@ class MiroServer(object):
       # move containerproxy artifact to local maven repo
       # so it can be used when building shinyproxy
       if not os.path.exists('local-maven-repo'):
-        os.makedir('local-maven-repo')
+        os.mkdir('local-maven-repo')
 
       subprocess.check_call([mvn_executable, 'org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file',
         '-Dfile=' + artifact_path[0],
