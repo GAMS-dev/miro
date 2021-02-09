@@ -1,3 +1,4 @@
+options(shiny.maxRequestSize = 500*1024^2)
 miroAppValidator <- MiroAppValidator$new()
 miroscenParser   <- MiroscenParser$new()
 modelConfig      <- ModelConfig$new(file.path("data", "specs.yaml"))
