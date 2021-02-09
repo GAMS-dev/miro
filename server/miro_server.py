@@ -124,14 +124,16 @@ class MiroServer(object):
     parser = argparse.ArgumentParser(
           description='Releases GAMS MIRO Server')
 
+    parser.add_argument('-f', '--force', help='Overwrite release if it exists', 
+      action='store_true')
+
     args = parser.parse_args(sys.argv[2:])
 
     release_zip_filename = 'miro_server.zip'
 
     if os.path.isfile(release_zip_filename):
-      remove_previous_release = input('Release file already exists. Remove it? [y/N]\n')
-      if remove_previous_release != 'y':
-        print('Release was interrupted.')
+      if not args.force:
+        print('Previous release exists and --force was not set.')
         exit(0)
       os.remove(release_zip_filename)
 
@@ -148,18 +150,6 @@ class MiroServer(object):
     copy_tree('release_data', 'release')
 
     gen_env_file(os.path.join('release', '.env'))
-
-    answers = ['y', 'Y', 'n', 'N', '']
-    yes_answers = ['y', 'Y']
-
-    release_windows = input('Do you want to release MIRO Server for a Windows Server? [y/N]: ').strip()
-    while release_windows not in answers:
-        release_windows = input('Do you want to release MIRO Server for a Windows Server? [y/N]: ').strip()
-
-    if release_windows in yes_answers:
-      os.remove(os.path.join('release', 'miro-compose'))
-    else:
-      os.remove(os.path.join('release', 'miro-compose.ps1'))
 
     shutil.copy('LICENSE', os.path.join('release', 'LICENSE'))
 
