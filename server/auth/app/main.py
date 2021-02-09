@@ -61,7 +61,16 @@ async def login(auth_request: AuthRequest, response: Response):
                         str(r.status_code), settings.engine_ns)
             response.status_code = r.status_code
             return r.json()
-        is_admin = r.json()["permission"] == 7
+
+        namespace_permissions = r.json()["permission"]
+
+        if namespace_permissions & 1 != 1:
+            logger.info("User '%s' has no execute permissions on namespace: %s",
+                        auth_request.username, settings.engine_ns)
+            response.status_code = status.HTTP_403_FORBIDDEN
+            return {"message": "Unauthorized access"}
+
+        is_admin = namespace_permissions == 7
     except requests.exceptions.ConnectionError:
         logger.info(
             "ConnectionError when requesting permissions for namespace: %s.", settings.engine_ns)
