@@ -25,7 +25,7 @@ Worker <- R6Class("Worker", public = list(
     unlink(private$metadata$rememberMeFileName, force = TRUE)
   },
   setCredentials = function(url, username, password, namespace,
-                            useRegistered, useBearer = FALSE){
+                            useRegistered, useBearer = TRUE){
     engineUrl <- trimws(url, which = "right", whitespace = "/")
     if(!endsWith(engineUrl, "/api")){
       engineUrl <- paste0(engineUrl, "/api")
@@ -35,11 +35,8 @@ Worker <- R6Class("Worker", public = list(
     private$metadata$useRegistered <- useRegistered
     private$metadata$password  <- password
     private$metadata$namespace <- namespace
-    if(useBearer){
-      private$authHeader <- private$buildAuthHeader(FALSE)
-    }else{
-      private$authHeader <- private$buildAuthHeader(TRUE)
-    }
+    
+    private$authHeader <- private$buildAuthHeader(useBearer)
     return(invisible(self))
   },
   login = function(url, username, password, namespace, 
