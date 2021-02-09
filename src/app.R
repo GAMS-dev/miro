@@ -781,8 +781,6 @@ if(is.null(errMsg)){
                                modelName)
   credConfig <- NULL
   if(isShinyProxy){
-    namespace <- Sys.getenv("MIRO_ENGINE_NAMESPACE")
-    engineUid <- uid
     if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")){
       userCredentials <- list(username = Sys.getenv("MIRO_ENGINE_ANONYMOUS_USER", "anonymous"),
                               password = Sys.getenv("MIRO_ENGINE_ANONYMOUS_PASS"),
@@ -795,7 +793,7 @@ if(is.null(errMsg)){
     credConfig <- list(url = Sys.getenv("MIRO_ENGINE_HOST"), 
                        username = userCredentials$username,
                        password = userCredentials$password,
-                       namespace = namespace,
+                       namespace = Sys.getenv("MIRO_ENGINE_NAMESPACE"),
                        useRegistered = TRUE,
                        useBearer = userCredentials$useBearer)
   }else if(config$activateModules$remoteExecution){
