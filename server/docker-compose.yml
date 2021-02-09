@@ -16,8 +16,6 @@ services:
       ENGINE_NS: ${GMS_MIRO_ENGINE_NS}
       SESSION_TIMEOUT: 18000
     restart: always
-    ports:
-      - 80
     networks:
       - gamsmiro-network
   dockerproxy:
