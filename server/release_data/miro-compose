@@ -1,9 +1,12 @@
 #!/bin/bash
 
+os=`uname`
+
 install (){
     [ -f .env ] || {
-        echo "No env file found. Please report to GAMS!"
-        exit 1
+        local db_password=$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 40 ; echo)
+        printf "A new master password for your MIRO Server database was generated: ${db_password}\nPlease keep this password in a safe place.\n"
+        printf "GMS_MIRO_DATABASE_PWD=${db_password}\nGMS_MIRO_ENGINE_ANONYMOUS_USER=ENTER_USERNAME_HERE\nGMS_MIRO_ENGINE_ANONYMOUS_PWD=ENTER_PASSWORD_HERE\n" > .env
     }
     if ! grep -q "GMS_MIRO_ENGINE_HOST" .env; then
         read -p 'Please enter GAMS MIRO Engine host: ' ENGINE_HOST
@@ -14,7 +17,7 @@ install (){
         echo "GMS_MIRO_ENGINE_HOST=${ENGINE_HOST}">>.env
     fi
     if ! grep -q "GMS_MIRO_ENGINE_NS" .env; then
-        read -p 'Please enter namespace where this user is inviter on: ' ENGINE_NS
+        read -p 'Please specify the namespace to be connected to MIRO Server: ' ENGINE_NS
         [ -z ${ENGINE_NS} ] && {
             echo "Invalid GAMS MIRO Engine namespace!"
             exit 1
@@ -22,35 +25,41 @@ install (){
         echo "GMS_MIRO_ENGINE_NS=${ENGINE_NS}">>.env
     fi
 
-    echo "You can change the GAMS MIRO Engine credentials at any time by modifying the \".env\" file."
+    printf "You can change the GAMS Engine connection info at any time by modifying the \".env\" file.\nNote that MIRO Server must be restarted for these changes to take effect.\n"
 
-    echo "Installing GAMS MIRO server. Please wait..."
+    printf "Installing GAMS MIRO server. Please wait...\n\n\n"
 
     pull_images
 
     [ -d ./logs ] || mkdir logs
-    chown -R 1000:1000 logs || {
-        echo "Could not change ownership of directory \"logs\". Check your permissions."
-        exit 1
-    }
+    if [ "$os" != "Darwin" ]; then
+        chown -R 1000:1000 logs || {
+            echo "Could not change ownership of directory \"logs\". Check your permissions."
+            exit 1
+        }
+    fi
 
     [ -d ./data ] || mkdir data
     cp -a data_raw/. data/ || {
         echo "Failed to copy data files from \"data_raw\" to \"data\". Check your permissions."
         exit 1
     }
-    chown -R 1000:1000 data || {
-        echo "Could not change ownership of directory \"data\". Check your permissions."
-        exit 1
-    }
+    if [ "$os" != "Darwin" ]; then
+        chown -R 1000:1000 data || {
+            echo "Could not change ownership of directory \"data\". Check your permissions."
+            exit 1
+        }
+    fi
 
     [ -d ./models ] || mkdir models
-    chown -R 1000:1000 models || {
-        echo "Could not change ownership of directory \"models\". Check your permissions."
-        exit 1
-    }
+    if [ "$os" != "Darwin" ]; then
+        chown -R 1000:1000 models || {
+            echo "Could not change ownership of directory \"models\". Check your permissions."
+            exit 1
+        }
+    fi
 
-    echo "GAMS MIRO server installed successfully! Use 'miro-compose start' to start now."
+    printf "GAMS MIRO server installed successfully!\nUse './miro-compose start' to start now."
     return 0
 }
 

@@ -149,8 +149,6 @@ class MiroServer(object):
 
     copy_tree('release_data', 'release')
 
-    gen_env_file(os.path.join('release', '.env'))
-
     shutil.copy('LICENSE', os.path.join('release', 'LICENSE'))
 
     release_zip_file = zipfile.ZipFile(release_zip_filename, 'w', zipfile.ZIP_DEFLATED)
