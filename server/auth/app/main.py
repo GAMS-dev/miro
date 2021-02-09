@@ -84,4 +84,4 @@ async def login(auth_request: AuthRequest, response: Response):
 
     logger.info("User: %s successfully logged in (is_admin:%s).",
                 auth_request.username, str(is_admin))
-    return {"token": token, "roles": "admins" if is_admin else "users"}
+    return {"token": token, "roles": ["admins", "users"] if is_admin else ["users"]}
