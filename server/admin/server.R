@@ -32,7 +32,7 @@ initCallback <- function(session, modelConfigList){
         engineClient$setAppsNotOnMIRO(modelListEngine[appIdsNotOnMIROServer])
         errors$appsNotOnMIRO <- I(engineClient$getAppsNotOnMIRO())
         flog.info("Some apps that are registered on Engine are not registered on MIRO Server: '%s'.",
-            paste(appsNotOnMIROServer, collapse = "', '"))
+            paste(errors$appsNotOnMIRO, collapse = "', '"))
     }
 
     if(length(errors)){
