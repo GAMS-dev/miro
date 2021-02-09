@@ -68,7 +68,7 @@ class MiroServer(object):
       help='Module to build',
       choices=['dockerproxy', 'proxy'])
 
-    parser.add_argument('--no-pull', help='Do not pull images from hub.gams.com', 
+    parser.add_argument('--pull', help='Pull images from hub.gams.com', 
       action='store_true')
 
     args = parser.parse_args(sys.argv[2:])
@@ -76,7 +76,7 @@ class MiroServer(object):
     if not os.path.isfile('.env'):
       gen_env_file('.env')
 
-    if not args.no_pull:
+    if args.pull:
       subprocess.check_call(['docker', 'login', 'hub.gams.com'])
       subprocess.check_call(['docker-compose', 'pull'], env=self.__compose_env)
 
