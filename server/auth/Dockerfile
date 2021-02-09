@@ -25,7 +25,7 @@ RUN chown -R auth:auth $APP
 
 ENV PYTHONPATH=$APP
 
-EXPOSE 80
+EXPOSE 1234
 
 USER auth
 WORKDIR $APP

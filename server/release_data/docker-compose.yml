@@ -11,6 +11,7 @@ services:
   auth:
     image: hub.gams.com/gamsmiro-auth:latest
     environment:
+      PORT: 1234
       ENGINE_URL: ${GMS_MIRO_ENGINE_HOST}
       ENGINE_NS: ${GMS_MIRO_ENGINE_NS}
       SESSION_TIMEOUT: 18000
