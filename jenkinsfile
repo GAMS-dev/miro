@@ -77,7 +77,7 @@ pipeline {
                                 ## build MIRO server images
                                 yarn docker-build
                                 pushd server > /dev/null
-                                    python3 miro_server.py build --no-pull --shinyproxy
+                                    python3 miro_server.py build --no-pull
                                 popd > /dev/null
                             '''
                         }

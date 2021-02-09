@@ -70,41 +70,8 @@ class MiroServer(object):
 
     parser.add_argument('--no-pull', help='Do not pull images from hub.gams.com', 
       action='store_true')
-    parser.add_argument('--shinyproxy', '-sp', action='store_true', help='Build shinyproxy from source.')
 
     args = parser.parse_args(sys.argv[2:])
-
-    if args.shinyproxy or len(glob.glob(os.path.join('proxy', 'shinyproxy-*.jar'))) == 0:
-      mvn_executable = 'mvn'
-      if platform.system() == 'Windows':
-        mvn_executable = 'mvn.cmd'
-      subprocess.check_call([mvn_executable, '-U', 'clean', 'install', '-f', os.path.join('containerproxy', 'pom.xml'), '-DskipTests'])
-      artifact_path = glob.glob(os.path.join('containerproxy', 'target', 'containerproxy-*.jar'))
-      if len(artifact_path) == 0:
-        print("Something went wrong building containerproxy artifact. Check whether Maven is correctly installed.")
-        exit(1)
-
-      cp_version = artifact_path[0].split('-')[1].split('.jar')[0]
-
-      # move containerproxy artifact to local maven repo
-      # so it can be used when building shinyproxy
-      if not os.path.exists('local-maven-repo'):
-        os.mkdir('local-maven-repo')
-
-      subprocess.check_call([mvn_executable, 'org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file',
-        '-Dfile=' + artifact_path[0],
-        '-DgroupId=eu.openanalytics', '-DartifactId=eu.openanalytics.containerproxy',
-        '-Dversion=' + cp_version, '-Dpackaging=jar',
-        '-DlocalRepositoryPath=' + os.path.join(os.getcwd(), 'local-maven-repo')])
-
-      subprocess.check_call([mvn_executable, '-U', 'clean', 'install', '-f', os.path.join('shinyproxy', 'pom.xml')])
-      artifact_path = glob.glob(os.path.join('shinyproxy', 'target', 'shinyproxy-*.jar'))
-
-      if len(artifact_path) == 0:
-        print("Something went wrong building shinyproxy artifact. Check whether Maven is correctly installed.")
-        exit(1)
-
-      os.rename(artifact_path[0], os.path.join('proxy', os.path.basename(artifact_path[0])))
 
     if not os.path.isfile('.env'):
       gen_env_file('.env')
