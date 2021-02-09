@@ -487,6 +487,22 @@ $(document).ready(() => {
     $overlay.hide();
     refreshConfigList();
   });
+  Shiny.addCustomMessageHandler('onInitErrors', (data) => {
+    let errorMessage;
+    if (data.appsNotOnEngine) {
+      errorMessage = `Some apps registered on MIRO Server were not found on GAMS Engine: '${data.appsNotOnEngine.join("', '")}'\n`;
+    }
+    if (data.appsNotOnMIRO) {
+      errorMessage = `Some models registered on GAMS Engine are not found on MIRO Server: '${data.appsNotOnMIRO.join("', '")}'\n`;
+    }
+    if (errorMessage) {
+      bootbox.alert({
+        title: 'Discrepancy with GAMS Engine',
+        message: errorMessage,
+        centerVertical: true,
+      });
+    }
+  });
   Shiny.addCustomMessageHandler('onLoginRequired', (e) => { // eslint-disable-line no-unused-vars
     $loadingScreen.fadeOut(200);
     openLoginForm();

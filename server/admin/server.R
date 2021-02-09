@@ -9,26 +9,66 @@ db               <- MiroDb$new(list(host = Sys.getenv("MIRO_DB_HOST", "localhost
     password = Sys.getenv("MIRO_DB_PASSWORD")))
 DEFAULT_LOGO_B64 <<- getLogoB64(file.path("www", "default_logo.png"))
 
+initCallback <- function(session, modelConfigList){
+    modelListEngine <- engineClient$getModelList()
+    modelListSp <- vapply(modelConfigList, function(modelObj){
+        return(modelObj[["id"]])
+    }, character(1L), USE.NAMES = FALSE)
+
+    errors <- list()
+
+    appIdsNotOnEngine <- !modelListSp %in% modelListEngine
+
+    if(any(appIdsNotOnEngine)){
+        engineClient$setAppsNotOnEngine(modelListSp[appIdsNotOnEngine])
+        errors$appsNotOnEngine <- I(engineClient$getAppsNotOnEngine())
+        flog.info("Some apps are not registered on Engine: '%s'. They will be marked CORRUPTED!",
+            paste(errors$appsNotOnEngine, collapse = "', '"))
+    }
+
+    appIdsNotOnMIROServer <- !modelListEngine %in% modelListSp
+
+    if(any(appIdsNotOnMIROServer)){
+        engineClient$setAppsNotOnMIRO(modelListEngine[appIdsNotOnMIROServer])
+        errors$appsNotOnMIRO <- I(engineClient$getAppsNotOnMIRO())
+        flog.info("Some apps that are registered on Engine are not registered on MIRO Server: '%s'.",
+            paste(appsNotOnMIROServer, collapse = "', '"))
+    }
+
+    if(length(errors)){
+        session$sendCustomMessage("onInitErrors", errors)
+    }
+}
+
 server <- function(input, output, session){
     isLoggedIn <- FALSE
     miroProc   <- MiroProc$new(session)
 
+    modelConfigList <- modelConfig$getConfigList()
+
     session$sendCustomMessage("onInit", list(loginRequired = LOGIN_REQUIRED,
-        configList = modelConfig$getConfigList(), 
+        configList = modelConfigList, 
         groupList = modelConfig$getAccessGroupUnion()))
 
-    observeEvent(input$loginRequest, {
-        if(identical(input$loginRequest$user, USERNAME) && 
-            identical(input$loginRequest$password, PASSWORD)){
-            flog.info("User: %s successfully logged in.", USERNAME)
-            isLoggedIn <<- TRUE
-            session$sendCustomMessage("onLoginSuccessful", 1)
-            return()
-        }
-        flog.info("Wrong log in attempt.")
-        session$sendCustomMessage("onError", list(requestType = "loginRequest", 
-            message = "Wrong username or password."))
-    })
+    if(LOGIN_REQUIRED){
+        observeEvent(input$loginRequest, {
+            if(engineClient$loginUser(input$loginRequest$user,
+                input$loginRequest$password)){
+                flog.info("User: %s successfully logged in.", USERNAME)
+                isLoggedIn <<- TRUE
+                session$sendCustomMessage("onLoginSuccessful", 1)
+                initCallback(session, modelConfigList)
+                return()
+            }
+            flog.info("Wrong log in attempt.")
+            session$sendCustomMessage("onError", list(requestType = "loginRequest", 
+                message = "Wrong username or password."))
+        })
+    }else{
+        engineClient$setAuthHeader(ENGINE_TOKEN)
+        initCallback(session, modelConfigList)
+    }
+
     observeEvent(input$miroAppFile, {
         if(loginRequired(session, isLoggedIn)){
             return()
@@ -145,7 +185,7 @@ server <- function(input, output, session){
                 appDir, dataDir, progressSelector = "#addAppProgress",
                 overwriteScen = TRUE, requestType = "addApp", function(){
                 tryCatch({
-                    engineClient$registerModel(appId, modelName, appDir, overwrite = TRUE)
+                    engineClient$registerModel(appId, paste0(modelName, ".gms"), appDir, overwrite = TRUE)
                     flog.debug("New MIRO app: %s registered at Engine.", modelName)
 
                     modelConfig$add(newAppConfig)
@@ -189,7 +229,7 @@ server <- function(input, output, session){
 
             removeAppData(appIndex, modelConfig$getAppLogo(appIndex))
 
-            engineClient$deregisterModel(modelConfig$getModelName(appIndex))
+            engineClient$deregisterModel(appId)
 
             modelConfig$remove(appIndex)
 
