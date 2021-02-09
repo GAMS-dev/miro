@@ -9,9 +9,9 @@ install (){
         printf "GMS_MIRO_DATABASE_PWD=${db_password}\nGMS_MIRO_ENGINE_ANONYMOUS_USER=ENTER_USERNAME_HERE\nGMS_MIRO_ENGINE_ANONYMOUS_PWD=ENTER_PASSWORD_HERE\n" > .env
     }
     if ! grep -q "GMS_MIRO_ENGINE_HOST" .env; then
-        read -p 'Please enter GAMS MIRO Engine host: ' ENGINE_HOST
+        read -p 'Please enter GAMS Engine host: ' ENGINE_HOST
         [ -z ${ENGINE_HOST} ] && {
-            echo "Invalid GAMS MIRO Engine host!"
+            echo "Invalid GAMS Engine host!"
             exit 1
         }
         echo "GMS_MIRO_ENGINE_HOST=${ENGINE_HOST}">>.env
@@ -19,7 +19,7 @@ install (){
     if ! grep -q "GMS_MIRO_ENGINE_NS" .env; then
         read -p 'Please specify the namespace to be connected to MIRO Server: ' ENGINE_NS
         [ -z ${ENGINE_NS} ] && {
-            echo "Invalid GAMS MIRO Engine namespace!"
+            echo "Invalid GAMS Engine namespace!"
             exit 1
         }
         echo "GMS_MIRO_ENGINE_NS=${ENGINE_NS}">>.env
@@ -59,7 +59,7 @@ install (){
         }
     fi
 
-    printf "GAMS MIRO server installed successfully!\nUse './miro-compose start' to start now."
+    printf "GAMS MIRO server installed successfully!\nUse './miro-compose start' to start now.\n"
     return 0
 }
 

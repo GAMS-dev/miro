@@ -8,9 +8,9 @@ function install
     }
 
     if (!(type .env | Select-String -Pattern "GMS_MIRO_ENGINE_HOST" -SimpleMatch)) {
-        $ENGINE_HOST = Read-Host -Prompt "Please enter GAMS MIRO Engine host: "
+        $ENGINE_HOST = Read-Host -Prompt "Please enter GAMS Engine host: "
         if (!$ENGINE_HOST) {
-            "Invalid GAMS MIRO Engine host!"
+            "Invalid GAMS Engine host!"
             exit 1
         }
         Add-Content -Value "GMS_MIRO_ENGINE_HOST=$ENGINE_HOST" .env
@@ -18,13 +18,13 @@ function install
     if (!(type .env | Select-String -Pattern "GMS_MIRO_ENGINE_NS" -SimpleMatch)) {
         $ENGINE_NS = Read-Host -Prompt "Please enter namespace where this user is inviter on: "
         if (!$ENGINE_NS) {
-            "Invalid GAMS MIRO Engine namespace!"
+            "Invalid GAMS Engine namespace!"
             exit 1
         }
         Add-Content -Value "GMS_MIRO_ENGINE_NS=$ENGINE_NS" .env
     }
 
-    'You can change the GAMS MIRO Engine credentials at any time by modifying the ".env" file.'
+    'You can change the GAMS Engine credentials at any time by modifying the ".env" file.'
 
     "Installing GAMS MIRO server. Please wait..."
 
