@@ -1,25 +1,28 @@
 proxy:
-  title: GAMS MIRO
+  title: GAMS MIRO Server
   template-path: ./templates/2col
   favicon-path: ./favicon.ico
   model-dir: ${GMS_MIRO_MODEL_DIR}
   data-dir: ${GMS_MIRO_DATADIR}
   miro-lang: en
   super-admin: admin
-  super-admin-password: ${GMS_MIRO_SA_PWD}
+  super-admin-password: ${GMS_MIRO_ANONYMOUS_SA_PWD}
   port: 8080
   heartbeat-rate: 10000
   heartbeat-timeout: 120000
   admin-groups: admins
   container-log-path: /logs/container-logs
-  authentication: none 
+  api-version: 1
+  authentication: webservice
+  webservice:
+    authentication-url: http://auth/login
+    authentication-request-body: '{"username": "%s", "password": "%s"}'
+    authentication-response-token: '$.token'
+    authentication-response-roles: '$.roles'
   users:
   - name: admin
     password: admin
-    groups: admins, users
-  - name: user
-    password: user
-    groups: users
+    groups: admins
   database:
     host: miroserver-db
     port: 5432
@@ -29,8 +32,8 @@ proxy:
   engine:
     host: ${GMS_MIRO_ENGINE_HOST}
     ns: ${GMS_MIRO_ENGINE_NS}
-    user: ${GMS_MIRO_ENGINE_USER}
-    password: ${GMS_MIRO_ENGINE_PWD}
+    anonymous-user: ${GMS_MIRO_ANONYMOUS_USER}
+    anonymous-pwd: ${GMS_MIRO_ANONYMOUS_PWD}
   docker:
     url: http://dockerproxy:2375
     internal-networking: true
