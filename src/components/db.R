@@ -133,11 +133,6 @@ Db <- R6Class("Db",
                   colNames <- private$dbSchema$colNames
                   colTypes <- private$dbSchema$colTypes
                   headers <- colNames
-                  numericTypes <- c("float", "real", 
-                                    "numeric", "double",
-                                    "double precision",
-                                    "int", "integer",
-                                    "smallint", "bigint")
                   
                   badTables <- vapply(private$tableNamesScenario, function(tabName){
                     tabNameRaw  <- tolower(gsub("^[^_]+_", "", tabName))
@@ -166,7 +161,7 @@ Db <- R6Class("Db",
                       errMsgTmp <- paste(errMsg, sprintf("Database table headers ('%s') are different from those in current configuration ('%s').\nPlease fix the database schema or change your GAMS model!\n",
                                                          paste(tabColNames, collapse = "', '"),
                                                          paste(confHeaders, collapse = "', '")))
-                      if(!identical(length(tabColNames), length(confHeaders))){
+                      if(!identical(colTypeVectorToString(tabColTypes), colTypes[[tabNameRaw]])){
                         errMsg <<- errMsgTmp
                         return(tabNameRaw)
                       }
