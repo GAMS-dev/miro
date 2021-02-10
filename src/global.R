@@ -138,6 +138,7 @@ TIMEVIS_MAX_EVENTS <- 50L
 SERVER_SHUTDOWN_DELAY <- 600L
 
 JOBSTATUSMAP <- c(
+  'queued' = -2L,
   'running' = -1L,
   'completed' = 0L,
   'downloaded' = 1L,

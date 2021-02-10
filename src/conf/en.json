@@ -527,6 +527,7 @@
       "status":{
         "downloading": "Downloading results",
         "downloaded": "Downloaded",
+        "queued": "Queued",
         "running": "Running",
         "imported": "Imported",
         "completed": "Completed",

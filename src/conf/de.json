@@ -527,6 +527,7 @@
       "status":{
         "downloading": "Ergebnisse werden heruntergeladen",
         "downloaded": "Heruntergeladen",
+        "queued": "In der Warteschlange",
         "running": "Laufend",
         "imported": "Importiert",
         "completed": "Abgeschlossen",

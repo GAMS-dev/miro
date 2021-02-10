@@ -527,6 +527,7 @@
         "status":{
           "downloading": "正在下载结果",
           "downloaded": "已下载",
+          "queued": "排队",
           "running": "正在求解",
           "imported": "已导入",
           "completed": "已完成",

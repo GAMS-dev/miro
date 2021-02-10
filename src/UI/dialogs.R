@@ -1085,7 +1085,9 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, hcubeMode = TRUE, showLogFi
                                 tags$td(
                                   hcubeMeta[[10]][i]
                                 ),
-                              if(identical(jStatus, JOBSTATUSMAP[['running']])){
+                              if(identical(jStatus, JOBSTATUSMAP[['queued']])){
+                                tags$td(lang$nav$importJobsDialog$status$queued)
+                              }else if(identical(jStatus, JOBSTATUSMAP[['running']])){
                                 tags$td(lang$nav$importJobsDialog$status$running)
                               }else if(identical(jStatus, JOBSTATUSMAP[['completed']])){
                                 tags$td(tags$div(lang$nav$importJobsDialog$status$completed), 

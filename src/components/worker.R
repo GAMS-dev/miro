@@ -1162,7 +1162,7 @@ Worker <- R6Class("Worker", public = list(
     GET(paste0(private$metadata$url, "/jobs/", jID),
         add_headers(Authorization = private$authHeader,
                     Timestamp = as.character(Sys.time(), usetz = TRUE),
-                    "X-Fields" = "process_status"),
+                    "X-Fields" = "process_status,status"),
         timeout(2L))
   },
   interruptLocal = function(hardKill = FALSE, process = NULL){
@@ -1381,44 +1381,47 @@ Worker <- R6Class("Worker", public = list(
   getJobStatus = function(pID, jID = NULL){
     if(private$hcube)
       return(private$getHcubeJobStatus(pID, jID))
-    gamsRetCode <- tryCatch(private$getGAMSRetCode(pID),
-                            error = function(e){
-                              errMsg <- conditionMessage(e)
-                              if(errMsg == 405L){
-                                return(-405L)
-                              }else if(errMsg == 404L){
-                                return(-404L)
-                              }else if(errMsg == -404L){
-                                stop(404L, call. = FALSE)
-                              }else{
-                                stop(errMsg, call. = FALSE)
-                              }
-                            })
-    
-    if(length(gamsRetCode)){
-      if(gamsRetCode %in% c(-404L, -405L)){
-        status <- JOBSTATUSMAP[['corrupted(noProcess)']]
-        gamsRetCode <- NULL
-      }else{
-        status <- JOBSTATUSMAP[['completed']]
+    req(private$remote)
+    return(tryCatch({
+      statusInfo <- private$validateAPIResponse(
+        private$getRemoteStatus(pID))
+      if(identical(statusInfo$status, 10L)){
+        # job finished successfully
+        return(list(status = JOBSTATUSMAP[['completed']],
+                    gamsRetCode = statusInfo$process_status))
       }
-    }else{
-      status <- JOBSTATUSMAP[['running']]
-    }
-    return(list(status = status, gamsRetCode = gamsRetCode))
+      if(identical(statusInfo$status, 0L)){
+        # job queued
+        return(list(status = JOBSTATUSMAP[['queued']],
+                    gamsRetCode = NULL))
+      }
+      if(statusInfo$status %in% c(-3, -1)){
+        # job cancelled or corrupted
+        return(list(status = JOBSTATUSMAP[['corrupted']],
+                    gamsRetCode = NULL))
+      }
+      return(list(status = JOBSTATUSMAP[['running']],
+                  gamsRetCode = NULL))
+    }, error = function(e){
+      errMsg <- conditionMessage(e)
+      if(errMsg == 405L){
+        return(list(status = JOBSTATUSMAP[['corrupted(noProcess)']],
+                    gamsRetCode = NULL))
+      }else if(errMsg == 404L){
+        return(list(status = JOBSTATUSMAP[['corrupted(noProcess)']],
+                    gamsRetCode = NULL))
+      }else if(errMsg == -404L){
+        stop(404L, call. = FALSE)
+      }else{
+        stop(errMsg, call. = FALSE)
+      }
+    }))
   },
   getHcubeJobStatus = function(pID, jID ){
     if(private$remote)
       return(private$getHcubeJobStatusRemote(pID, jID))
     
     return(private$getHcubeJobStatusLocal(pID, jID))
-  },
-  getGAMSRetCode = function(pID){
-    if(private$remote){
-      return(private$validateAPIResponse(
-        private$getRemoteStatus(pID))$process_status)
-    }
-    return("")
   },
   validateAPIResponse = function(response){
     if(status_code(response) >= 300L){
