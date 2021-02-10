@@ -289,28 +289,27 @@ Attachments <- R6Class("Attachments",
                                }
                                
                                isLocalAttachment <- fileNames %in% basename(private$localAttachments$filePaths)
-                               localPaths <- filePaths[isLocalAttachment]
-                               if(length(localPaths)){
+                               if(any(isLocalAttachment)){
                                  localPathId <- match(fileNames, basename(private$localAttachments$filePaths))
                                  localPathId <- localPathId[!is.na(localPathId)]
                                  
                                  if(length(localPathId)){
+                                   localPaths <- private$localAttachments$filePaths[localPathId]
                                    if(fullPath){
-                                     localPathNeedsRelocation <- private$localAttachments$filePaths[localPathId] != filePaths
+                                     localPathNeedsRelocation <- localPaths != filePaths
                                    }else{
-                                     localPathNeedsRelocation <- dirname(private$localAttachments$filePaths[localPathId]) != fileDir
+                                     localPathNeedsRelocation <- dirname(localPaths) != fileDir
                                    }
                                  }else{
                                    localPathNeedsRelocation <- FALSE
                                  }
-                                 
                                  if(any(localPathNeedsRelocation)){
                                    if(fullPath){
                                      toDir <- filePaths
                                    }else{
-                                     toDir <- file.path(fileDir, basename(private$localAttachments$filePaths[localPathNeedsRelocation]))
+                                     toDir <- file.path(fileDir, basename(localPaths[localPathNeedsRelocation]))
                                    }
-                                   file.copy(private$localAttachments$filePaths[localPathNeedsRelocation], 
+                                   file.copy(localPaths[localPathNeedsRelocation], 
                                              toDir,
                                              overwrite = TRUE)
                                  }
