@@ -1971,8 +1971,7 @@ if(!is.null(errMsg)){
           db$removeExpiredAttachments(paste0(modelName, c(".log", ".lst")), 
                                       config$storeLogFilesDuration)
         }
-        activeScen <<- NULL
-        gc()
+        activeScen$finalize()
         if(!interactive() && !isShinyProxy){
           tryCatch({
             if(length(unzipModelFilesProcess) && 
