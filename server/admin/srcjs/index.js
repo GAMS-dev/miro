@@ -547,6 +547,7 @@ $(document).ready(() => {
     }
   });
   Shiny.addCustomMessageHandler('onInconsistentDbTables', (data) => {
+    $('#loadingScreenProgressWrapper').hide();
     bootbox.confirm({
       message: `Your database contains records that are inconsistent with the new version of the MIRO application \
 you want to add. Do you want to remove all inconsistent data? The datasets to be removed are: '${data.datasetsToRemove.join("', '")}'.`,
