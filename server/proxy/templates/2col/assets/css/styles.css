@@ -394,7 +394,7 @@ select {
   text-decoration: none;
 }
 .branding .logo img {
-  height:100px;
+  max-height:100px;
 }
 .branding .text-highlight {
   color: #fff;
