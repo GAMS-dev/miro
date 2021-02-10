@@ -63,7 +63,7 @@
             </div><!--//container-->
         </header><!--//header-->
 
-        <section class="cards-section text-center" style="min-height:80vh;">
+        <section class="cards-section text-center">
             <div class="container">
 		<div th:if="${@authenticationBackend.name != 'social'}">
 			<form class="form-signin" th:action="@{/login}" method="POST">
