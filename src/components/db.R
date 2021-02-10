@@ -145,9 +145,9 @@ Db <- R6Class("Db",
                     if(!is.null(confHeaders) && dbExistsTable(private$conn, tabName)){
                       tryCatch({
                         if(inherits(private$conn, "PqConnection")){
-                          query <- SQL(paste0("SELECT column_name,data_type  FROM information_schema.columns 
-                                            WHERE table_name = ", 
-                                              dbQuoteString(private$conn, tabName), ";"))
+                          query <- SQL(paste0("SELECT ordinal_position,column_name,data_type FROM information_schema.columns WHERE table_name = ", 
+                                              dbQuoteString(private$conn, tabName),
+                                              " ORDER BY ordinal_position;"))
                           tabInfo     <- dbGetQuery(private$conn, query)
                           tabColNames <- tabInfo$column_name[-1L]
                           tabColTypes <- tabInfo$data_type[-1L]
@@ -169,7 +169,8 @@ Db <- R6Class("Db",
                       if(!identical(length(tabColNames), length(confHeaders))){
                         errMsg <<- errMsgTmp
                         return(tabNameRaw)
-                      }else if(any(is.na(match(confHeaders, tabColNames)))){
+                      }
+                      if(any(confHeaders != tabColNames)){
                         errMsg <<- errMsgTmp
                         return(tabNameRaw)
                       }
