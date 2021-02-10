@@ -332,6 +332,9 @@ Worker <- R6Class("Worker", public = list(
             flog.error("Problems removing Hypercube job workspace: '%s'.", hcubeJobDir)
           }
         }
+        if(private$remote){
+          private$removeJobResults(pID)
+        }
       }
     }
     
@@ -502,15 +505,7 @@ Worker <- R6Class("Worker", public = list(
     jIDChar <- as.character(jID)
     if(length(private$fJobRes[[jIDChar]]) && resolved(private$fJobRes[[jIDChar]])){
       if(private$hcube){
-        tryCatch(private$validateAPIResponse(
-          DELETE(url = paste0(private$metadata$url, "/hypercube/", self$getPid(jID), "/result"),
-                 add_headers(Authorization = private$authHeader,
-                             Timestamp = as.character(Sys.time(), usetz = TRUE)),
-                 timeout(private$metadata$timeout))),
-          error = function(e){
-            warning(sprintf("Problems removing results of Hypercube job: '%s'. Error message: '%s'.", 
-                            jIDChar, conditionMessage(e)))
-          })
+        private$removeJobResults(self$getPid(jID))
         if(!file.exists(private$jobResultsFile[[jIDChar]])){
           file.rename(paste0(private$jobResultsFile[[jIDChar]], ".dl"), 
                       private$jobResultsFile[[jIDChar]])
@@ -1154,15 +1149,7 @@ Worker <- R6Class("Worker", public = list(
     if(timeout){
       return(-100L)
     }
-    tryCatch(private$validateAPIResponse(
-      DELETE(url = paste0(private$metadata$url, "/jobs/", jID, "/result"),
-             add_headers(Authorization = private$authHeader,
-                         Timestamp = as.character(Sys.time(), usetz = TRUE)),
-             timeout(4L))),
-      error = function(e){
-        warning(sprintf("Problems removing job results of job: '%s'. Error message: '%s'.", 
-                        jID, conditionMessage(e)))
-      })
+    private$removeJobResults(jID)
     
     if(identical(status_code(ret), 200L)){
       unzip(resultsPath, exdir = workDir)
@@ -1247,6 +1234,20 @@ Worker <- R6Class("Worker", public = list(
                   Timestamp = as.character(Sys.time(), usetz = TRUE)),
       timeout(10L)))
     return(0L)
+  },
+  removeJobResults = function(jID){
+    tryCatch(private$validateAPIResponse(
+      DELETE(url = paste0(private$metadata$url,
+                          if(private$hcube) "/hypercube/" else "/jobs/",
+                          jID, "/result"),
+             add_headers(Authorization = private$authHeader,
+                         Timestamp = as.character(Sys.time(), usetz = TRUE)),
+             timeout(private$metadata$timeout))),
+      error = function(e){
+        warning(sprintf("Problems removing results of job: '%s'. Error message: '%s'.", 
+                        jID, conditionMessage(e)))
+      })
+    return(invisible(self))
   },
   getHcubeJobProgressLocal = function(jID){
     logFilePath <- file.path(hcubeDirName, 
