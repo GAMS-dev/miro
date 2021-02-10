@@ -1,5 +1,4 @@
-﻿l, 
-body {
+﻿body {
     background-color: #e2e3e8;
     font-family: "montserratlight",sans-serif;
     margin: 0px;
@@ -393,6 +392,9 @@ select {
 }
 .branding .logo a {
   text-decoration: none;
+}
+.branding .logo img {
+  height:100px;
 }
 .branding .text-highlight {
   color: #fff;
