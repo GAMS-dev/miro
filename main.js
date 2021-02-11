@@ -1758,11 +1758,16 @@ app.on('ready', async () => {
   Menu.setApplicationMenu(applicationMenu);
 
   if (miroDevelopMode) {
-    mainWindow = new BrowserWindow({ show: false, width: 0, height: 0, webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      enableRemoteModule: false,
-    }});
+    mainWindow = new BrowserWindow({
+      show: false,
+      width: 0,
+      height: 0,
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false,
+        enableRemoteModule: false,
+      },
+    });
     mainWindow.hide();
     const modelPath = process.env.MIRO_MODEL_PATH;
     await searchLibPath(true);
