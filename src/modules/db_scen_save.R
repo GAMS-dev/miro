@@ -61,8 +61,7 @@ observeEvent(virtualActionButton(rv$btSaveAs), {
   if(length(activeScen)){
     currentTags <- activeScen$getStags()
   }
-  showNewScenDialog(tmpScenName, scenTags = currentTags, 
-                    showDiscardButtons = length(activeScen$getSid()) > 0L,
+  showNewScenDialog(tmpScenName, scenTags = currentTags,
                     discardPermDefault = !identical(activeScen$getScenUid(), uid))
 })
 

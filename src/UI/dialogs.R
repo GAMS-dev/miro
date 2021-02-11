@@ -64,8 +64,7 @@ showLoginDialog <- function(cred, forwardOnSuccess = NULL){
 }
 
 showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm", 
-                              scenTags = character(0L), showDiscardButtons = TRUE,
-                              discardPermDefault = FALSE){
+                              scenTags = character(0L), discardPermDefault = FALSE){
   if(LAUNCHHCUBEMODE){
     modeDescriptor <- "dialogNewHCJob"
   }else{
@@ -81,19 +80,18 @@ showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm",
                             multiple = TRUE, options = list(
                               'create' = TRUE,
                               'persist' = FALSE)),
-             if(isTRUE(showDiscardButtons))
-               fluidRow(
-                 column(4L,
-                        checkboxInput_MIRO("newScenDiscardAttach", 
-                                           lang$nav[[modeDescriptor]]$discardAttach)),
-                 column(4L,
-                        checkboxInput_MIRO("newScenDiscardViews", 
-                                           lang$nav[[modeDescriptor]]$discardViews)),
-                 column(4L,
-                        checkboxInput_MIRO("newScenDiscardPerm",
-                                           lang$nav[[modeDescriptor]]$discardPerm,
-                                           isTRUE(discardPermDefault)))
-               )
+             fluidRow(
+               column(4L,
+                      checkboxInput_MIRO("newScenDiscardAttach", 
+                                         lang$nav[[modeDescriptor]]$discardAttach)),
+               column(4L,
+                      checkboxInput_MIRO("newScenDiscardViews", 
+                                         lang$nav[[modeDescriptor]]$discardViews)),
+               column(4L,
+                      checkboxInput_MIRO("newScenDiscardPerm",
+                                         lang$nav[[modeDescriptor]]$discardPerm,
+                                         isTRUE(discardPermDefault)))
+             )
     ),
     tags$div(id = "badScenarioName", class = "gmsalert gmsalert-error", 
              lang$nav[[modeDescriptor]]$badName),
@@ -327,9 +325,9 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                                               fluidRow(
                                                 div(id = "localInputCsvOptions", style = "display: none",
                                                     tags$div(class = "col-sm-6", id = "csvDelimWrapper", style = "display:none;",
-                                                           selectInput("csvDelim", lang$nav[[modeDescriptor]]$selDelim, 
-                                                                       NULL, 
-                                                                       multiple = FALSE, width = "100%")
+                                                             selectInput("csvDelim", lang$nav[[modeDescriptor]]$selDelim, 
+                                                                         NULL, 
+                                                                         multiple = FALSE, width = "100%")
                                                     ),
                                                     column(6,
                                                            selectInput("csvDecimalSep", lang$nav[[modeDescriptor]]$selDecimalSep, 
@@ -340,9 +338,9 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                                                            selectInput("selInputDataLocCSV", lang$nav[[modeDescriptor]]$selInputData, 
                                                                        if(length(ioConfig$modelInRaw))
                                                                          c(setNames(names(ioConfig$modelInRaw), 
-                                                                                  vapply(ioConfig$modelInRaw, function(inSym){
-                                                                                    return(inSym$alias)
-                                                                                  }, character(1L), USE.NAMES = FALSE)), if(length(ioConfig$hcubeScalars)) setNames(ioConfig$hcubeScalars, vapply(ioConfig$hcubeScalars, function(hcubeScalar){ return(ioConfig$modelIn[[hcubeScalar]]$alias)}, character(1L), USE.NAMES = FALSE))) else NULL, 
+                                                                                    vapply(ioConfig$modelInRaw, function(inSym){
+                                                                                      return(inSym$alias)
+                                                                                    }, character(1L), USE.NAMES = FALSE)), if(length(ioConfig$hcubeScalars)) setNames(ioConfig$hcubeScalars, vapply(ioConfig$hcubeScalars, function(hcubeScalar){ return(ioConfig$modelIn[[hcubeScalar]]$alias)}, character(1L), USE.NAMES = FALSE))) else NULL, 
                                                                        multiple = FALSE, width = "100%")
                                                     ),
                                                     uiOutput("csvHeaderMapping")
@@ -379,20 +377,20 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                                             HTML(paste0('<div class="small-space"></div>
 <input class="form-control" id="hcHashLookup" style="width:95%;font-size:10pt;"/>
                                                          <div class="space"></div>')),
-                                            HTML(paste0('<div class="small-space"></div>
+HTML(paste0('<div class="small-space"></div>
                                                            <div style="text-align:center;">
                                                               <button class="btn btn-default bt-highlight-1" type="button" 
                                                                       onclick="Miro.validateHcubeHash()">',
-                                                        htmltools::htmlEscape(lang$nav[[modeDescriptor]]$hcubeHashButton), 
-                                                        '</button></div>')),
-                                            genSpinner("hcHashLookup_load", absolute = TRUE, hidden = TRUE),
-                                            tags$div(style = "max-height: 500px;overflow:auto;",
-                                                     uiOutput("hcHashLookupResults")
-                                            )
+            htmltools::htmlEscape(lang$nav[[modeDescriptor]]$hcubeHashButton), 
+            '</button></div>')),
+genSpinner("hcHashLookup_load", absolute = TRUE, hidden = TRUE),
+tags$div(style = "max-height: 500px;overflow:auto;",
+         uiOutput("hcHashLookupResults")
+)
                                           )
                                    )
                                  ),
-                                 icon = icon("cube")
+icon = icon("cube")
     )
   }
   
@@ -969,41 +967,41 @@ showHcubeLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolvers
                   type = "button", onclick = "$('#configDownload').show();
 $('#btHcubeDownloadConfirm').show();$('#btHcubeLoadGrp').hide();$('#hcubeLoadMethod').hide();$('#btAnalysisConfig').hide();
                           $('#btHcubeDownload').hide();$('#btHcubeRemove').hide();Shiny.bindAll();",  
-                  lang$nav$hcubeMode$hcubeLoadDialog$downloadButton),
-      downloadButton("btHcubeDownloadConfirm", style = "display:none", 
-                     lang$nav$hcubeMode$hcubeLoadDialog$downloadButton),
-      tagAppendAttributes(actionButton("btAnalysisConfig", lang$nav$hcubeMode$hcubeLoadDialog$paverButton),
-                          onclick = paste0("$('#configAnalysis').show();
+lang$nav$hcubeMode$hcubeLoadDialog$downloadButton),
+downloadButton("btHcubeDownloadConfirm", style = "display:none", 
+               lang$nav$hcubeMode$hcubeLoadDialog$downloadButton),
+tagAppendAttributes(actionButton("btAnalysisConfig", lang$nav$hcubeMode$hcubeLoadDialog$paverButton),
+                    onclick = paste0("$('#configAnalysis').show();
 $('#hcAnaButtonWrapper').show();$('#btHcubeLoadGrp').hide();$('#hcubeLoadMethod').hide();$('#btAnalysisConfig').hide();
                           $('#btHcubeDownload').hide();$('#btHcubeRemove').hide();")),
-      tags$div(style = "display:none;", id = "hcAnaButtonWrapper",
-               actionButton("btRunPaver", lang$nav$hcubeMode$hcubeLoadDialog$runPaverButton, 
-                            class = "bt-highlight-1 bt-gms-confirm", 
-                            style = if(length(customScripts)) "display:none;"),
-               actionButton("btRunHcubeScript", lang$nav$hcubeMode$hcubeLoadDialog$runScriptButton, 
-                            class = "bt-highlight-1 bt-gms-confirm", 
-                            style = if(!length(customScripts)) "display:none;")),
-      if(length(sidsToLoad) <= maxConcurentLoad)
-        tags$div(class = "btn-group", id = "btHcubeLoadGrp",
-                 tags$button(class = "btn btn-default", type = "button", id = "btHcubeLoad", 
-                             style = "margin:6px 0px 6px 5px;border-right:0px;",
-                             onclick = "Shiny.setInputValue('btHcubeLoad','tab',{priority:'event'});", 
-                             lang$nav$hcubeMode$hcubeLoadDialog$interactiveButtonTab),
-                 tags$button(class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
-                             style = "margin:6px 0px 6px 0;display:block;",
-                             tags$span(class = "caret"),
-                             tags$span(class = "sr-only", "toggle dropdown")),
-                 tags$ul(class = "dropdown-menu", role = "menu", style = "margin-left: 5px;",
-                         tags$li(tags$a(href = "#", onclick = paste0("Miro.changeDDButtonEvent('", 
-                                                                     htmltools::htmlEscape(lang$nav$hcubeMode$hcubeLoadDialog$interactiveButtonTab), 
-                                                                     "', '#btHcubeLoad', 'btHcubeLoad', 'tab');"),
-                                        lang$nav$hcubeMode$hcubeLoadDialog$interactiveButtonTab)),
-                         tags$li(tags$a(href = "#", onclick = paste0("Miro.changeDDButtonEvent('", 
-                                                                     htmltools::htmlEscape(lang$nav$hcubeMode$hcubeLoadDialog$interactiveButtonPivot), 
-                                                                     "', '#btHcubeLoad', 'btHcubeLoad', 'pivot');"),
-                                        lang$nav$hcubeMode$hcubeLoadDialog$interactiveButtonPivot))))
+tags$div(style = "display:none;", id = "hcAnaButtonWrapper",
+         actionButton("btRunPaver", lang$nav$hcubeMode$hcubeLoadDialog$runPaverButton, 
+                      class = "bt-highlight-1 bt-gms-confirm", 
+                      style = if(length(customScripts)) "display:none;"),
+         actionButton("btRunHcubeScript", lang$nav$hcubeMode$hcubeLoadDialog$runScriptButton, 
+                      class = "bt-highlight-1 bt-gms-confirm", 
+                      style = if(!length(customScripts)) "display:none;")),
+if(length(sidsToLoad) <= maxConcurentLoad)
+  tags$div(class = "btn-group", id = "btHcubeLoadGrp",
+           tags$button(class = "btn btn-default", type = "button", id = "btHcubeLoad", 
+                       style = "margin:6px 0px 6px 5px;border-right:0px;",
+                       onclick = "Shiny.setInputValue('btHcubeLoad','tab',{priority:'event'});", 
+                       lang$nav$hcubeMode$hcubeLoadDialog$interactiveButtonTab),
+           tags$button(class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
+                       style = "margin:6px 0px 6px 0;display:block;",
+                       tags$span(class = "caret"),
+                       tags$span(class = "sr-only", "toggle dropdown")),
+           tags$ul(class = "dropdown-menu", role = "menu", style = "margin-left: 5px;",
+                   tags$li(tags$a(href = "#", onclick = paste0("Miro.changeDDButtonEvent('", 
+                                                               htmltools::htmlEscape(lang$nav$hcubeMode$hcubeLoadDialog$interactiveButtonTab), 
+                                                               "', '#btHcubeLoad', 'btHcubeLoad', 'tab');"),
+                                  lang$nav$hcubeMode$hcubeLoadDialog$interactiveButtonTab)),
+                   tags$li(tags$a(href = "#", onclick = paste0("Miro.changeDDButtonEvent('", 
+                                                               htmltools::htmlEscape(lang$nav$hcubeMode$hcubeLoadDialog$interactiveButtonPivot), 
+                                                               "', '#btHcubeLoad', 'btHcubeLoad', 'pivot');"),
+                                  lang$nav$hcubeMode$hcubeLoadDialog$interactiveButtonPivot))))
     ),
-    fade = TRUE, easyClose = FALSE
+fade = TRUE, easyClose = FALSE
   ))
 }
 # Hypercube job import module
