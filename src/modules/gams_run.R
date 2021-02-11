@@ -176,7 +176,7 @@ prepareModelRun <- function(async = FALSE){
   if(is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))){
     return(NULL)
   }
-  return(list(inputData = inputData, pfFileContent = pfFileContent, dataTmp = if(!async) dataTmp))
+  return(list(inputData = inputData, pfFileContent = pfFileContent))
 }
 if(LAUNCHHCUBEMODE){
   idsToSolve <- NULL
@@ -568,9 +568,9 @@ if(LAUNCHHCUBEMODE){
     if(!is.null(GAMSResults$scalar)){
       scalarData[["scen_1_"]] <<- GAMSResults$scalar
     }
-    scalarIdTmp <- match(scalarsFileName, tolower(names(dataTmp)))[[1L]]
+    scalarIdTmp <- match(scalarsFileName, tolower(inputDsNames))[[1L]]
     if(!is.na(scalarIdTmp)){
-      scalarData[["scen_1_"]] <<- bind_rows(dataTmp[[scalarIdTmp]], scalarData[["scen_1_"]])
+      scalarData[["scen_1_"]] <<- bind_rows(scenData[["scen_1_"]][[scalarIdTmp]], scalarData[["scen_1_"]])
     }
     if(!is.null(GAMSResults$tabular)){
       scenData[["scen_1_"]][seq_along(modelOut)] <<- GAMSResults$tabular
@@ -781,7 +781,6 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   if(is.null(dataModelRun)){
     return(NULL)
   }
-  dataTmp <- dataModelRun$dataTmp
   if(any(config$activateModules$logFile,
          config$activateModules$miroLogFile)){
     if(config$activateModules$logFile){
