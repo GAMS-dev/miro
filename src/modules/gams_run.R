@@ -570,7 +570,8 @@ if(LAUNCHHCUBEMODE){
     }
     scalarIdTmp <- match(scalarsFileName, tolower(inputDsNames))[[1L]]
     if(!is.na(scalarIdTmp)){
-      scalarData[["scen_1_"]] <<- bind_rows(scenData[["scen_1_"]][[scalarIdTmp]], scalarData[["scen_1_"]])
+      scalarData[["scen_1_"]] <<- bind_rows(scenData[["scen_1_"]][[scalarIdTmp + length(modelOut)]],
+                                            scalarData[["scen_1_"]])
     }
     if(!is.null(GAMSResults$tabular)){
       scenData[["scen_1_"]][seq_along(modelOut)] <<- GAMSResults$tabular
