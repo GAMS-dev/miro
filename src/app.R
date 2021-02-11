@@ -1281,6 +1281,7 @@ if(!is.null(errMsg)){
                                    execPerm = vector("logical", attachMaxNo))
       # boolean that specifies whether input data does not match output data
       dirtyFlag          <- FALSE
+      inconsistentOutput <- FALSE
       if(identical(config$defCompMode, "tab")){
         currentCompMode    <-  "tab"
       }else if(identical(config$defCompMode, "pivot")){
@@ -1758,6 +1759,7 @@ if(!is.null(errMsg)){
         nameSuffix <- ""
         if(rv$unsavedFlag){
           nameSuffix <- " (*)"
+          inconsistentOutput <<- TRUE
         }
         if(is.null(activeScen) || !length(activeScen$getSid())){
           if(length(rv$activeSname)){

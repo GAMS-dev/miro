@@ -125,6 +125,7 @@ closeScenario <- function(clearMeta = TRUE){
   }
   
   markSaved()
+  inconsistentOutput <<- TRUE
   noOutputData      <<- TRUE
   if(!is.null(errMsg)){
     invisible(FALSE)

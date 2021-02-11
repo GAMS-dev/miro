@@ -293,6 +293,12 @@
       "cancelButton":"取消",
       "okButton": "退出"
     },
+    "dialogInconsistentOutput":{
+      "title": "输出数据不一致",
+      "desc": "输出数据可能与当前加载到沙箱中的输入数据不一致。 您仍然要导入结果吗？",
+      "okButton": "进口",
+      "cancelButton": "取消"
+    },
     "dialogDeleteScen":{
       "title":"删除场景",
       "desc":"确定要从数据库中删除该场景吗？",

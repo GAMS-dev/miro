@@ -592,6 +592,27 @@ if(LAUNCHHCUBEMODE){
                   conditionMessage(e))
       })
   }
+  observeEvent(input$btLoadInconsistentOutput, {
+    removeModal()
+    
+    errMsg <- NULL
+    tryCatch({
+      loadOutputData()
+    }, error = function(e){
+      flog.error("Problems loading output data. Error message: %s.", e)
+      errMsg <<- lang$errMsg$readOutput$desc
+    })
+    if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
+      return(htmltools::htmlEscape(statusText))
+    }
+    
+    #select first tab in current run tabset
+    switchTab(session, "output")
+    updateTabsetPanel(session, "scenTabset",
+                      selected = "results.current")
+    renderOutputData(rendererEnv, views)
+    markUnsaved()
+  })
   observeEvent(virtualActionButton(input$btSubmitJob, rv$btSubmitJob), {
     flog.debug("Submit new asynchronous job button clicked.")
     jobNameTmp <- character(1L)
@@ -779,6 +800,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   }
   # run GAMS
   errMsg <- NULL
+  inconsistentOutput <<- FALSE
   tryCatch({
     jobSid <- NULL
     if(length(activeScen) && length(activeScen$getSid())){
@@ -964,6 +986,11 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
         # run terminated successfully
         statusText <- lang$nav$gamsModelStatus$success
         
+        if(inconsistentOutput){
+          showInconsistentOutputDialog()
+          return(statusText)
+        }
+        
         errMsg <- NULL
         tryCatch({
           loadOutputData()
@@ -984,7 +1011,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
       }
     }
     # print model status
-    return(htmltools::htmlEscape(statusText))
+    return(statusText)
   })
   # refresh even when modelStatus message is hidden (i.e. user is on another tab)
   outputOptions(output, "modelStatus", suspendWhenHidden = FALSE)

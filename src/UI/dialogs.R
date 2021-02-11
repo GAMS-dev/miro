@@ -15,6 +15,18 @@ showReadonlyDialog <- function(){
   ))
 }
 
+showInconsistentOutputDialog <- function(){
+  showModal(modalDialog(
+    title = lang$nav$dialogInconsistentOutput$title,
+    lang$nav$dialogInconsistentOutput$desc,
+    footer = tagList(
+      modalButton(lang$nav$dialogInconsistentOutput$cancelButton),
+      actionButton("btLoadInconsistentOutput", label = lang$nav$dialogInconsistentOutput$okButton, 
+                   class = "bt-highlight-1 bt-gms-confirm")),
+    fade = TRUE, easyClose = FALSE
+  ))
+}
+
 showLoginDialog <- function(cred, forwardOnSuccess = NULL){
   showModal(modalDialog(
     title = lang$nav$dialogRemoteLogin$title,

@@ -293,6 +293,12 @@
       "cancelButton":"Abbrechen",
       "okButton": "Ausloggen"
     },
+    "dialogInconsistentOutput":{
+      "title": "Inkonsistente Ausgangsdaten",
+      "desc": "Die Ausgabedaten passen möglicherweise nicht zu den Eingabedaten, die derzeit in Ihrer Sandbox geladen sind. Möchten Sie die Ergebnisse trotzdem importieren?",
+      "okButton": "Importieren",
+      "cancelButton": "Abbrechen"
+    },
     "dialogDeleteScen":{  
       "title":"Szenario löschen",
       "desc":"Sind Sie sicher, dass Sie das ausgewählte Szenario löschen möchten?",
