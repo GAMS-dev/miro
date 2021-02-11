@@ -557,6 +557,41 @@ if(LAUNCHHCUBEMODE){
     },
     contentType = "application/zip")
 }else{
+  loadOutputData <- function(){
+    storeGAMSOutputFiles(workDir)
+    
+    GAMSResults <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, workDir = workDir, 
+                                modelName = modelName, errMsg = lang$errMsg$GAMSOutput$badOutputData,
+                                scalarsFileHeaders = scalarsFileHeaders, fileName = MIROGdxOutName,
+                                templates = modelOutTemplate, method = config$fileExchange, 
+                                csvDelim = config$csvDelim, hiddenOutputScalars = config$hiddenOutputScalars)
+    if(!is.null(GAMSResults$scalar)){
+      scalarData[["scen_1_"]] <<- GAMSResults$scalar
+    }
+    scalarIdTmp <- match(scalarsFileName, tolower(names(dataTmp)))[[1L]]
+    if(!is.na(scalarIdTmp)){
+      scalarData[["scen_1_"]] <<- bind_rows(dataTmp[[scalarIdTmp]], scalarData[["scen_1_"]])
+    }
+    if(!is.null(GAMSResults$tabular)){
+      scenData[["scen_1_"]][seq_along(modelOut)] <<- GAMSResults$tabular
+    }
+    if(config$saveTraceFile){
+      tryCatch({
+        traceData <<- readTraceData(file.path(workDir, 
+                                              paste0(tableNameTracePrefix,
+                                                     modelName, ".trc")), 
+                                    traceColNames)
+      }, error = function(e){
+        flog.info("Problems loading trace data. Error message: %s.", e)
+      })
+    }
+    tryCatch(
+      worker$updateJobStatus(JOBSTATUSMAP['imported']), 
+      error = function(e){
+        flog.warn("Failed to update job status. Error message: '%s'.", 
+                  conditionMessage(e))
+      })
+  }
   observeEvent(virtualActionButton(input$btSubmitJob, rv$btSubmitJob), {
     flog.debug("Submit new asynchronous job button clicked.")
     jobNameTmp <- character(1L)
@@ -929,15 +964,9 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
         # run terminated successfully
         statusText <- lang$nav$gamsModelStatus$success
         
-        storeGAMSOutputFiles(workDir)
-        
         errMsg <- NULL
         tryCatch({
-          GAMSResults <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, workDir = workDir, 
-                                      modelName = modelName, errMsg = lang$errMsg$GAMSOutput$badOutputData,
-                                      scalarsFileHeaders = scalarsFileHeaders, fileName = MIROGdxOutName,
-                                      templates = modelOutTemplate, method = config$fileExchange, 
-                                      csvDelim = config$csvDelim, hiddenOutputScalars = config$hiddenOutputScalars)
+          loadOutputData()
         }, error = function(e){
           flog.error("Problems loading output data. Error message: %s.", e)
           errMsg <<- lang$errMsg$readOutput$desc
@@ -945,35 +974,6 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
         if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
           return(htmltools::htmlEscape(statusText))
         }
-        if(!is.null(GAMSResults$scalar)){
-          scalarData[["scen_1_"]] <<- GAMSResults$scalar
-        }
-        scalarIdTmp <- match(scalarsFileName, tolower(names(dataTmp)))[[1L]]
-        if(!is.na(scalarIdTmp)){
-          scalarData[["scen_1_"]] <<- bind_rows(dataTmp[[scalarIdTmp]], scalarData[["scen_1_"]])
-        }
-        if(!is.null(GAMSResults$tabular)){
-          scenData[["scen_1_"]][seq_along(modelOut)] <<- GAMSResults$tabular
-        }
-        if(config$saveTraceFile){
-          tryCatch({
-            traceData <<- readTraceData(file.path(workDir, 
-                                                  paste0(tableNameTracePrefix,
-                                                         modelName, ".trc")), 
-                                        traceColNames)
-          }, error = function(e){
-            flog.info("Problems loading trace data. Error message: %s.", e)
-          })
-        }
-        tryCatch(
-          worker$updateJobStatus(JOBSTATUSMAP['imported']), 
-          error = function(e){
-            flog.warn("Failed to update job status. Error message: '%s'.", 
-                      conditionMessage(e))
-          })
-        
-        
-        GAMSResults <- NULL
         #select first tab in current run tabset
         switchTab(session, "output")
         updateTabsetPanel(session, "scenTabset",
