@@ -55,7 +55,7 @@ server <- function(input, output, session){
         observeEvent(input$loginRequest, {
             if(engineClient$loginUser(input$loginRequest$user,
                 input$loginRequest$password)){
-                flog.info("User: %s successfully logged in.", USERNAME)
+                flog.info("User: %s successfully logged in.", input$loginRequest$user)
                 isLoggedIn <<- TRUE
                 session$sendCustomMessage("onLoginSuccessful", 1)
                 initCallback(session, modelConfigList)
