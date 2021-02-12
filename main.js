@@ -1439,6 +1439,7 @@ ipcMain.on('add-app', async (e, newApp) => {
       appConf.id,
       appConf.modesAvailable.includes('base') ? 'base' : 'hcube',
       appConf.miroversion,
+      appConf.usetmpdir,
       miroProcesses, mainWindow,
     );
 

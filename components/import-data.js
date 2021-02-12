@@ -7,8 +7,8 @@ const { format } = require('util');
 const log = require('electron-log');
 const MiroDb = require('./MiroDb');
 
-async function addModelData(paths, modelName, miroMode, miroVersion, miroProcesses, windowObj,
-  dataDir, progressEvent = 'add-app-progress') {
+async function addModelData(paths, modelName, miroMode, miroVersion, usetmpdir,
+  miroProcesses, windowObj, dataDir, progressEvent = 'add-app-progress') {
   if (!paths.rpath) {
     log.info('No R path set.');
     throw new Error('404');
@@ -34,6 +34,7 @@ async function addModelData(paths, modelName, miroMode, miroVersion, miroProcess
           R_LIB_PATHS: paths.libPath,
           MIRO_NO_DEBUG: 'true',
           MIRO_FORCE_SCEN_IMPORT: 'true',
+          MIRO_USE_TMP: usetmpdir !== 'false' || miroMode === 'hcube',
           MIRO_OVERWRITE_SCEN_IMPORT: overwriteData,
           MIRO_WS_PATH: paths.miroWorkspaceDir,
           MIRO_DB_PATH: paths.dbpath,
