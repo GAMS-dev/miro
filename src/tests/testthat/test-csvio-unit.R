@@ -107,8 +107,8 @@ test_that("Reading CSV file works", {
   expect_error(csvio$rInitFile("../data/csvtest-ambig.csv"), class = "error_ambiguous_delim")
   expect_error(csvio$read("../data/csvtest-ambig.csv", "specialVal"), class = "error_ambiguous_delim")
   expect_error(csvio$setRDelim(";"), NA)
-  expect_equal(csvio$read("../data/csvtest-ambig.csv", "i1"), tibble(uni = "j1", text = "12,34"))
-  expect_equal(csvio$read("../data/csvtest-ambig.csv", "i1", delim = ","), tibble(uni = "j1;12", text = "34"))
+  expect_equal(csvio$read("../data/csvtest-ambig.csv", "i1")[], tibble(uni = "j1", text = "12,34"))
+  expect_equal(csvio$read("../data/csvtest-ambig.csv", "i1", delim = ",")[], tibble(uni = "j1;12", text = "34"))
 })
 
 test_that("Setting symbol name should prevent reading symbol with different name", {
