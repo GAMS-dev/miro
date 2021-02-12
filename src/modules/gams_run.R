@@ -785,7 +785,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   if(any(config$activateModules$logFile,
          config$activateModules$miroLogFile)){
     if(config$activateModules$logFile){
-      logFilePath <- file.path(workDir, modelName %+% ".log")
+      logFilePath <- file.path(workDir, modelNameRaw %+% ".log")
       logContainerId <- "#logStatus"
     }else{
       logFilePath <- file.path(workDir, config$miroLogFile)

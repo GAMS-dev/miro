@@ -64,6 +64,7 @@ function addMiroscen(scenFilePath, windowObj, paths, appsData, miroProcesses) {
           modelName,
           'base',
           miroVersion,
+          appsData.getAppConfigValue(modelName, 'usetmpdir'),
           miroProcesses, windowObj, scenFilePath, 'loading-screen-progress',
         );
       } catch (err) {

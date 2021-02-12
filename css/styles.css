@@ -400,7 +400,7 @@ a:hover {
     border: none;
     color: #494d55;
 }
-.confirm-btn:hover {
+.confirm-btn:hover:enabled {
     background: #e18d0f;
     color: #494d55;
 }

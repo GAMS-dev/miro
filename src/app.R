@@ -1089,7 +1089,7 @@ if(!is.null(errMsg)){
                                                       forbiddenFNames = c(if(identical(config$fileExchange, "gdx")) 
                                                         c(MIROGdxInName, MIROGdxOutName) else 
                                                           paste0(c(names(modelOut), inputDsNames), ".csv"),
-                                                        paste0(modelName, c(".log", ".lst")))),
+                                                        paste0(modelNameRaw, c(".log", ".lst")))),
                                              tmpDir,
                                              names(modelIn),
                                              names(modelOut),
@@ -1331,7 +1331,7 @@ if(!is.null(errMsg)){
                                                      forbiddenFNames = c(if(identical(config$fileExchange, "gdx")) 
                                                        c(MIROGdxInName, MIROGdxOutName) else 
                                                          paste0(c(names(modelOut), inputDsNames), ".csv"),
-                                                                         paste0(modelName, c(".log", ".lst")))),
+                                                                         paste0(modelNameRaw, c(".log", ".lst")))),
                                             workDir,
                                             names(modelIn),
                                             names(modelOut),
@@ -1970,7 +1970,7 @@ if(!is.null(errMsg)){
         }
         if(config$activateModules$attachments && 
            config$storeLogFilesDuration > 0L){
-          db$removeExpiredAttachments(paste0(modelName, c(".log", ".lst")), 
+          db$removeExpiredAttachments(paste0(modelNameRaw, c(".log", ".lst")), 
                                       config$storeLogFilesDuration)
         }
         activeScen$finalize()
