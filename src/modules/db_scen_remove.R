@@ -125,6 +125,7 @@ closeScenario <- function(clearMeta = TRUE){
   }
   
   markSaved()
+  clearLogs(session)
   inconsistentOutput <<- TRUE
   noOutputData      <<- TRUE
   if(!is.null(errMsg)){
