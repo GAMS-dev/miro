@@ -14,7 +14,7 @@ const menu = require('./components/menu.js');
 const installRPackages = require('./components/install-r.js');
 
 const requiredAPIVersion = 1;
-const miroVersion = '1.3.0';
+const miroVersion = '1.3.99';
 const miroRelease = 'Feb 05 2021';
 const libVersion = '1.1';
 const exampleAppsData = require('./components/example-apps.js')(miroVersion, requiredAPIVersion);
