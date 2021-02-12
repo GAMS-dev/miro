@@ -1007,7 +1007,11 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   }
   if(config$activateModules$remoteExecution)
     updateTabsetPanel(session, "jobListPanel", selected = "current")
-  updateTabsetPanel(session, "logFileTabsset", selected = "log")
+  if(config$activateModules$logFile){
+    updateTabsetPanel(session, "logFileTabsset", selected = "log")
+  }else if(config$activateModules$miroLogFile){
+    updateTabsetPanel(session, "logFileTabsset", selected = "mirolog")
+  }
   
   #activate Interrupt button as GAMS is running now
   updateActionButton(session, "btInterrupt", icon = character(0L))

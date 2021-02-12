@@ -559,7 +559,7 @@ if(buildUI){
           }
         }else if(config$activateModules$miroLogFile){
           logTabsetList$log <- tabPanel(title=tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile),
-                                        value = "log",
+                                        value = "mirolog",
                                         tags$div(id = "logStatusContainer",
                                                  class = "shiny-text-output noplaceholder pre-style-div"),
                                         checkboxInput("logUpdate", 
