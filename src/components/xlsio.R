@@ -122,6 +122,9 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
                                 paste0(" ", lang$nav$excelExport$metadataSheet$title)), dataToWrite)
     }
     return(writexl::write_xlsx(dataToWrite, path))
+  },
+  getValidExtensions = function(){
+    return(c("xls", "xlsx", "xlsm"))
   }),
   private = list(
     rpath = character(0L),

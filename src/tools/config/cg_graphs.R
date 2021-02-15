@@ -463,7 +463,7 @@ observeEvent(input$localInput, {
   if(identical(fileType, "gdx") && useGdx){
     loadMode <- "gdx"
     datasetsToFetch <- c(modelInTabularData, scalarsFileName)
-  }else if(fileType %in% c("xls", "xlsx")){
+  }else if(fileType %in% xlsio$getValidExtensions()){
     loadMode <- "xls"
     datasetsToFetch <- c(modelInTabularData, scalarsFileName)
   }else{

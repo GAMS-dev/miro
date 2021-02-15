@@ -190,7 +190,7 @@ body_admin <- dashboardBody({
                                                                     multiple = FALSE,
                                                                     accept = c("application/vnd.ms-excel", 
                                                                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
-                                                                               ".xlsx", ".gdx"))))
+                                                                               ".xlsx", ".xls", ".xlsm", ".gdx"))))
                                       ),
                              tags$div(id = "preview_wrapper", style = "display:none;",
                                       tags$div(class = "two-col-wrapper",

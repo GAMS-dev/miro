@@ -84,7 +84,7 @@ observeEvent(input$localInput, {
   }else{
     showEl(session, "#localInputSelectManually")
   }
-  if(fileExt %in% c("xls", "xlsx")){
+  if(fileExt %in% xlsio$getValidExtensions()){
     showEl(session, "#localInputExcelOptions")
     hideEl(session, "#localInputCsvOptions")
     disableEl(session, "#btImportLocal")
@@ -160,7 +160,7 @@ observeEvent(input$localInput, {
     disableEl(session, "#btImportLocal")
     showElReplaceTxt(session, "#localDataImportError",
                      sprintf(lang$errMsg$invalidFileType$desc,
-                             paste0(c("xls", "xlsx", "zip", csvio$getValidExtensions(),
+                             paste0(c("zip", xlsio$getValidExtensions(), csvio$getValidExtensions(),
                                       if(useGdx) c("miroscen", "gdx")),
                                     collapse = ",")))
   }
@@ -350,14 +350,14 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
       showHideEl(session, "#importScenError", 4000L)
       return()
     }
-  }else if(fileType %in% c("xls", "xlsx")){
+  }else if(fileType %in% xlsio$getValidExtensions()){
     loadMode <- "xls"
     datasetsToFetch <- names(modelIn)
   }else{
     removeModal()
     showErrorMsg(lang$errMsg$invalidFileType$title, 
                  sprintf(lang$errMsg$invalidFileType$desc,
-                         paste0(c("xls", "xlsx", "zip",csvio$getValidExtensions(),
+                         paste0(c( "zip", xlsio$getValidExtensions(),csvio$getValidExtensions(),
                                   if(useGdx) c("miroscen", "gdx")), collapse = ",")))
     flog.info("Invalid file type: '%s' attempted to be imported. Import interrupted.", fileType)
     return()
