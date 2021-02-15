@@ -268,10 +268,23 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
             names(data)[length(data)] <- newColName
           }
         }
+        emptyRows <- which(rowSums(is.na(data[seq_len(index$rdim)])) == index$rdim)
+      }else{
+        emptyRows <- integer(0L)
       }
+      
+      if(index$cdim > 1L){
+        hdrTmp <- private$getColHeaders(symName, rangeInfo)
+        if(length(hdrTmp) > length(data)){
+          data <- data[seq_along(hdrTmp)]
+        }
+        names(data) <- hdrTmp
+        emptyCols <- which(names(data) == rep.int("\U2024", index$cdim - 1L))
+      }else{
+        emptyCols <- which(names(data) == "")
+      }
+      
       # remove empty rows and columns
-      emptyCols <- which(names(data) == "")
-      emptyRows <- which(rowSums(is.na(data)) == ncol(data))
       if(length(emptyCols)){
         if(rangeInfo$isOpenRange && identical(index$se, "0")){
           emptyCols <- seq(emptyCols[1], length(data))
@@ -313,7 +326,6 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         }
         valColName <- names(private$metadata[[symName]]$headers)[length(private$metadata[[symName]]$headers)]
         if(index$cdim > 1L){
-          names(data) <- private$getColHeaders(symName, rangeInfo)
           if(private$isTable(symName)){
             data <- tidyr::pivot_longer(data, -seq_len(index$dim - index$cdim), 
                                         names_to = c(names(private$metadata[[symName]]$headers)[seq(index$dim - index$cdim + 1L, index$dim - 1L)],
@@ -546,6 +558,8 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       index <- private$rIndex[[symName]]
       headerData <- private$readInternal(private$rpath, range = rangeInfo$headerRange,
                                          col_names = FALSE, col_types = "text")
+      # TODO: use na argument of readxl when  https://github.com/tidyverse/readxl/issues/572 is closed
+      headerData[is.na(headerData)] <- ""
       colsToIgnore <- rangeInfo$colsToIgnore - rangeInfo$headerRange$ul[2] + 1L
       if(length(colsToIgnore)){
         colsToIgnore <- colsToIgnore[colsToIgnore < 1 | colsToIgnore > length(headerData)]

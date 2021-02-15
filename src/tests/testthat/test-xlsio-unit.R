@@ -36,6 +36,7 @@ ioConfig <<- list(modelOut = list("_scalars_out" = list(symnames = c("cowf","exp
                                   i7 = list(symtype = "set", colTypes = "cc", headers = list(uni = list(), text = list())),
                                   i8 = list(symtype = "set", colTypes = "cc", headers = list(uni = list(), text = list())),
                                   i9 = list(symtype = "set", colTypes = "cc", headers = list(uni = list(), text = list())),
+                                  i9a = list(symtype = "set", colTypes = "cc", headers = list(uni = list(), text = list())),
                                   i10 = list(symtype = "set", colTypes = "ccc", headers = list(uni1 = list(), uni2 = list(), text = list())),
                                   i11 = list(symtype = "set", colTypes = "cccc", headers = list(uni1 = list(), uni2 = list(), uni3 = list(), text = list())),
                                   i11sparse = list(symtype = "set", colTypes = "cccc", headers = list(uni1 = list(), uni2 = list(), uni3 = list(), text = list())),
@@ -59,6 +60,9 @@ ioConfig <<- list(modelOut = list("_scalars_out" = list(symnames = c("cowf","exp
                                     modedistance = list(symtype = "parameter", colTypes = "cccd",
                                                         headers = list(uni1 = list(), uni2 = list(), uni3 = list(),
                                                                        value = list())),
+                                    modedistancea = list(symtype = "parameter", colTypes = "cccd",
+                                                         headers = list(uni1 = list(), uni2 = list(), uni3 = list(),
+                                                                        value = list())),
                                     modedistanceset = list(symtype = "set", colTypes = "cccc",
                                                            headers = list(uni1 = list(), uni2 = list(), uni3 = list(),
                                                                           text = list())),
@@ -179,6 +183,11 @@ test_that("Reading parameters works", {
                           uni2 = c("brussels","brussels","san francisco","san francisco","san francisco","san francisco","san francisco","san francisco"),
                           uni3 = c("cleveland","chicago","cleveland","chicago","cleveland","chicago","cleveland","chicago"),
                           value = c(5000,6000,2200,2000,2200,2000,2800,2800)))
+  expect_identical(xlsio$read("../data/exampleData.xlsx", "modedistancea", indexRange = "index!A1"),
+                   tibble(uni1 = c("ship","truck"),
+                          uni2 = c("brussels","brussels"),
+                          uni3 = c("cleveland","cleveland"),
+                          value = c(100,200)))
   expect_identical(xlsio$read("../data/exampleData.xlsx", "distance2", indexRange = "index!A1"),
                    tibble(uni1 = c("ship", "truck", "rail", "barge"),
                           uni2 = c("brussels","san francisco","san francisco","san francisco"),
@@ -207,6 +216,9 @@ test_that("Reading sets works", {
                    tibble(uni1 = c("brussels","brussels","san francisco","san francisco"),
                           uni2 = c("cleveland","chicago","cleveland","chicago"),
                           text = c("","","","")))
+  expect_identical(xlsio$read("../data/exampleData.xlsx", "i9a"),
+                   tibble(uni = c("ship","ship","truck","truck"),
+                          text = c("brussels", "cleveland", "brussels", "cleveland")))
   expect_identical(xlsio$read("../data/exampleData.xlsx", "j4"),
                    tibble(uni = c("brussels","san francisco","boston"),
                           text = c("","","")))
