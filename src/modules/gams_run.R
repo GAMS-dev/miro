@@ -801,7 +801,12 @@ output$modelStatus <- renderUI({
     logfileObs <- NULL
     logfile <- NULL
     if(config$activateModules$miroLogFile){
-      setContent(session, "#logStatusContainer", renderMiroLogContent())
+      if(config$activateModules$logFile){
+        containerId <- "#miroLogContainer"
+      }else{
+        containerId <- "#logStatusContainer"
+      }
+      setContent(session, containerId, renderMiroLogContent())
     }
   }
   
