@@ -278,7 +278,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       
       if(index$cdim > 1L){
         hdrTmp <- private$getColHeaders(symName, rangeInfo)
-        if(length(hdrTmp) > length(data)){
+        if(length(data) > length(hdrTmp)){
           data <- data[seq_along(hdrTmp)]
         }
         names(data) <- hdrTmp
