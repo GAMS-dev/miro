@@ -788,7 +788,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       }else if("rdim" %in% names(indexDf)){
         missingrDim <- is.na(indexDf[["rdim"]])
         
-        indexDf[missingrDim, "rdim"]   <- indexDf[["dim"]][missingcDim] - 1L
+        indexDf[missingrDim, "rdim"]   <- indexDf[["dim"]][missingrDim] - 1L
         indexDf[missingrDim, "cdim"]   <- 1L
         
         indexDf[!missingrDim, "cdim"]  <- indexDf[["dim"]][!missingrDim] - indexDf[["rdim"]][!missingrDim]
