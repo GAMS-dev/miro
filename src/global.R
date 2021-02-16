@@ -129,7 +129,7 @@ tableNameAttachPrefix <- "_sys_attach_"
 tableNameViewsPrefix <- "_sys_views_"
 tableNameScriptsPrefix <- "_sys_scripts_"
 attachAllowExec       <- TRUE
-attachMaxFileSize     <- 1e7
+attachMaxFileSize     <- 5e7
 attachMaxNo           <- 7L
 
 TIMEVIS_MAX_EVENTS <- 50L
