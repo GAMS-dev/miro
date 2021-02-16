@@ -30,6 +30,7 @@ const {
 } = require('./components/helpers');
 const {
   getAppDbPath,
+  isFalse,
 } = require('./components/util');
 
 const isMac = process.platform === 'darwin';
@@ -217,7 +218,7 @@ developMode: ${miroDevelopMode}.`);
         R_LIB_PATHS: libPath,
         MIRO_NO_DEBUG: !miroDevelopMode,
         MIRO_FORCE_SCEN_IMPORT: miroDevelopMode && appData.forceScenImport,
-        MIRO_USE_TMP: appData.usetmpdir !== 'false' || appData.mode === 'hcube',
+        MIRO_USE_TMP: !isFalse(appData.usetmpdir) || appData.mode === 'hcube',
         MIRO_WS_PATH: miroWorkspaceDir,
         MIRO_DB_PATH: dbPath,
         MIRO_BUILD: miroBuildMode,
@@ -1759,11 +1760,16 @@ app.on('ready', async () => {
   Menu.setApplicationMenu(applicationMenu);
 
   if (miroDevelopMode) {
-    mainWindow = new BrowserWindow({ show: false, width: 0, height: 0, webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      enableRemoteModule: false,
-    }});
+    mainWindow = new BrowserWindow({
+      show: false,
+      width: 0,
+      height: 0,
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false,
+        enableRemoteModule: false,
+      },
+    });
     mainWindow.hide();
     const modelPath = process.env.MIRO_MODEL_PATH;
     await searchLibPath(true);
@@ -1789,7 +1795,7 @@ app.on('ready', async () => {
       id: path.basename(modelPath, 'gms'),
       modelPath,
       mode: process.env.MIRO_MODE,
-      usetmpdir: process.env.MIRO_USE_TMP ? process.env.MIRO_USE_TMP : false,
+      usetmpdir: process.env.MIRO_USE_TMP ? process.env.MIRO_USE_TMP === 'true' : false,
       apiversion: requiredAPIVersion,
       miroversion: miroVersion,
       forceScenImport: process.env.MIRO_FORCE_SCEN_IMPORT === 'true',

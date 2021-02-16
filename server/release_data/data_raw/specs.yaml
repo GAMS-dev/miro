@@ -2,7 +2,7 @@ specs:
 - accessGroups:
   - admins
   containerEnv:
-    MIRO_ADMIN_IMAGE: 'true'
+    MIRO_API_VERSION: '1'
   containerVolumes:
   - :/home/miro/admin/models
   - :/home/miro/admin/data

@@ -25,6 +25,9 @@ expect_error(app$findElement("#outputTableView")$click())
 app$setInputs(btUpdateMeta = "click")
 Sys.sleep(1)
 
+#should not have switched to input section as no MIRO log errors
+expect_error(app$findElement("#btRemove1")$click())
+app$findElement("a[data-value='inputData']")$click()
 app$findElement("#btRemove1")$click()
 Sys.sleep(0.5)
 app$findElement(".modal-footer .bt-gms-confirm")$click()

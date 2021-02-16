@@ -384,6 +384,12 @@ ${data.data}</div>` : data.data);
   Shiny.addCustomMessageHandler('gms-showElReplaceTxt', (data) => {
     $(data.id).text(data.txt).show();
   });
+  Shiny.addCustomMessageHandler('gms-setContent', (data) => {
+    $(data.selector).html(data.content);
+  });
+  Shiny.addCustomMessageHandler('gms-setTextContent', (data) => {
+    $(data.selector).text(data.content);
+  });
   Shiny.addCustomMessageHandler('gms-showLogContent', (data) => {
     $(data.id).text(data.content);
     if (data.chunkCount <= 1) {

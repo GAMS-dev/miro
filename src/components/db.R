@@ -133,11 +133,6 @@ Db <- R6Class("Db",
                   colNames <- private$dbSchema$colNames
                   colTypes <- private$dbSchema$colTypes
                   headers <- colNames
-                  numericTypes <- c("float", "real", 
-                                    "numeric", "double",
-                                    "double precision",
-                                    "int", "integer",
-                                    "smallint", "bigint")
                   
                   badTables <- vapply(private$tableNamesScenario, function(tabName){
                     tabNameRaw  <- tolower(gsub("^[^_]+_", "", tabName))
@@ -145,9 +140,9 @@ Db <- R6Class("Db",
                     if(!is.null(confHeaders) && dbExistsTable(private$conn, tabName)){
                       tryCatch({
                         if(inherits(private$conn, "PqConnection")){
-                          query <- SQL(paste0("SELECT column_name,data_type  FROM information_schema.columns 
-                                            WHERE table_name = ", 
-                                              dbQuoteString(private$conn, tabName), ";"))
+                          query <- SQL(paste0("SELECT ordinal_position,column_name,data_type FROM information_schema.columns WHERE table_name = ", 
+                                              dbQuoteString(private$conn, tabName),
+                                              " ORDER BY ordinal_position;"))
                           tabInfo     <- dbGetQuery(private$conn, query)
                           tabColNames <- tabInfo$column_name[-1L]
                           tabColTypes <- tabInfo$data_type[-1L]
@@ -166,10 +161,11 @@ Db <- R6Class("Db",
                       errMsgTmp <- paste(errMsg, sprintf("Database table headers ('%s') are different from those in current configuration ('%s').\nPlease fix the database schema or change your GAMS model!\n",
                                                          paste(tabColNames, collapse = "', '"),
                                                          paste(confHeaders, collapse = "', '")))
-                      if(!identical(length(tabColNames), length(confHeaders))){
+                      if(!identical(colTypeVectorToString(tabColTypes), colTypes[[tabNameRaw]])){
                         errMsg <<- errMsgTmp
                         return(tabNameRaw)
-                      }else if(any(is.na(match(confHeaders, tabColNames)))){
+                      }
+                      if(any(confHeaders != tabColNames)){
                         errMsg <<- errMsgTmp
                         return(tabNameRaw)
                       }
@@ -1182,20 +1178,6 @@ Db <- R6Class("Db",
                   }
                   
                   return(invisible(self))
-                },
-                getUserCredentials = function(uid, namespace, usersTable = "_sys_users"){
-                  credentials <- NULL
-                  tryCatch({
-                    credentials <- self$importDataset(usersTable, 
-                                                      tibble("uid", uid), limit = 1L)
-                    if(!length(credentials) || nrow(credentials) < 1L){
-                      credentials <- private$generateUserCredentials(usersTable, uid, namespace)
-                    }
-                  }, error = function(e){
-                    stop(sprintf("Db: An error occurred while fetching user data from the database (Db.getUserCredentials, " %+% 
-                                   "table: '%s'). Error message: %s.", usersTable, e), call. = FALSE)
-                  })
-                  return(credentials)
                 },
                 finalize = function(){
                   DBI::dbDisconnect(private$conn)

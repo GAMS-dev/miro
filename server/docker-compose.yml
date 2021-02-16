@@ -8,6 +8,17 @@ services:
     image: hub.gams.com/gamsmiro-ui
     restart: "no"
     command: /bin/true
+  auth:
+    image: gamsmiro-auth
+    build: ./auth/
+    environment:
+      PORT: 1234
+      ENGINE_URL: ${GMS_MIRO_ENGINE_HOST}
+      ENGINE_NS: ${GMS_MIRO_ENGINE_NS}
+      SESSION_TIMEOUT: 18000
+    restart: always
+    networks:
+      - gamsmiro-network
   dockerproxy:
     image: gamsmiro-sproxy
     build: ./docker-socket-proxy/
@@ -37,7 +48,9 @@ services:
         - miroserver-db
   proxy:
     image: gamsmiro-proxy
-    build: ./proxy/
+    build:
+      context: ./
+      dockerfile: ./proxy/Dockerfile
     ports:
       - 8080:8080
     volumes:
@@ -53,11 +66,10 @@ services:
       GMS_MIRO_ADMIN_IMAGE: hub.gams.com/gamsmiro-admin
       GMS_MIRO_MODEL_DIR: ${PWD}/models
       GMS_MIRO_DATADIR: ${PWD}/data
-      GMS_MIRO_SA_PWD: ${GMS_MIRO_SA_PWD}
       GMS_MIRO_ENGINE_HOST: ${GMS_MIRO_ENGINE_HOST}
-      GMS_MIRO_ENGINE_USER: ${GMS_MIRO_ENGINE_USER}
-      GMS_MIRO_ENGINE_PWD: ${GMS_MIRO_ENGINE_PWD}
       GMS_MIRO_ENGINE_NS: ${GMS_MIRO_ENGINE_NS}
+      GMS_MIRO_ENGINE_ANONYMOUS_USER: ${GMS_MIRO_ENGINE_ANONYMOUS_USER}
+      GMS_MIRO_ENGINE_ANONYMOUS_PWD: ${GMS_MIRO_ENGINE_ANONYMOUS_PWD}
     networks: 
       - gamsmiro-network
       - gamsmiro-internal-network

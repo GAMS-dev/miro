@@ -8,6 +8,16 @@ services:
     image: hub.gams.com/gamsmiro-ui:latest
     restart: "no"
     command: /bin/true
+  auth:
+    image: hub.gams.com/gamsmiro-auth:latest
+    environment:
+      PORT: 1234
+      ENGINE_URL: ${GMS_MIRO_ENGINE_HOST}
+      ENGINE_NS: ${GMS_MIRO_ENGINE_NS}
+      SESSION_TIMEOUT: 18000
+    restart: always
+    networks:
+      - gamsmiro-network
   dockerproxy:
     image: hub.gams.com/gamsmiro-sproxy:latest
     environment:
@@ -51,11 +61,10 @@ services:
       GMS_MIRO_ADMIN_IMAGE: hub.gams.com/gamsmiro-admin
       GMS_MIRO_MODEL_DIR: ${PWD}/models
       GMS_MIRO_DATADIR: ${PWD}/data
-      GMS_MIRO_SA_PWD: ${GMS_MIRO_SA_PWD}
       GMS_MIRO_ENGINE_HOST: ${GMS_MIRO_ENGINE_HOST}
-      GMS_MIRO_ENGINE_USER: ${GMS_MIRO_ENGINE_USER}
-      GMS_MIRO_ENGINE_PWD: ${GMS_MIRO_ENGINE_PWD}
       GMS_MIRO_ENGINE_NS: ${GMS_MIRO_ENGINE_NS}
+      GMS_MIRO_ENGINE_ANONYMOUS_USER: ${GMS_MIRO_ENGINE_ANONYMOUS_USER}
+      GMS_MIRO_ENGINE_ANONYMOUS_PWD: ${GMS_MIRO_ENGINE_ANONYMOUS_PWD}
     networks: 
       - gamsmiro-network
       - gamsmiro-internal-network
@@ -66,7 +75,6 @@ volumes:
 networks:
   gamsmiro-network:
     name: miroserver-network
-    driver: bridge
   gamsmiro-internal-network:
     internal: true
 

@@ -4,6 +4,12 @@ showEl <- function(session, id){
 showElReplaceTxt <- function(session, id, txt){
   session$sendCustomMessage("gms-showElReplaceTxt", list(id = id, txt = htmltools::htmlEscape(txt)))
 }
+setContent <- function(session, selector, htmlContent){
+  session$sendCustomMessage("gms-setContent", list(selector = selector, content = htmlContent))
+}
+setTextContent <- function(session, selector, htmlContent){
+  session$sendCustomMessage("gms-setTextContent", list(selector = selector, content = htmlContent))
+}
 switchCompareMode <- function(session, mode, numberScenTabs){
   if(identical(mode, "pivotView")){
     hideEl(session, "#scen-split-view")

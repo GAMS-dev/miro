@@ -31,6 +31,11 @@ def gen_password(length):
     k=length))
 
 
+def gen_env_file(env_path):
+  with open(env_path, 'w') as f:
+    f.write(f'GMS_MIRO_DATABASE_PWD={gen_password(40)}\nGMS_MIRO_ENGINE_ANONYMOUS_USER=miro_server_anonymous\nGMS_MIRO_ENGINE_ANONYMOUS_PWD={gen_password(40)}\n')
+
+
 class MiroServer(object):
   def __init__(self):
     parser = argparse.ArgumentParser(prog='miro_server.py',
@@ -63,30 +68,15 @@ class MiroServer(object):
       help='Module to build',
       choices=['dockerproxy', 'proxy'])
 
-    parser.add_argument('--no-pull', help='Do not pull images from hub.gams.com', 
+    parser.add_argument('--pull', help='Pull images from hub.gams.com', 
       action='store_true')
-    parser.add_argument('--shinyproxy', '-sp', action='store_true', help='Build shinyproxy from source.')
 
     args = parser.parse_args(sys.argv[2:])
 
-    if args.shinyproxy or len(glob.glob(os.path.join('proxy', 'shinyproxy-*.jar'))) == 0:
-      mvn_executable = 'mvn'
-      if platform.system() == 'Windows':
-        mvn_executable = 'mvn.cmd'
-      subprocess.check_call([mvn_executable, '-U', 'clean', 'install', '-f', os.path.join('shinyproxy', 'pom.xml')])
-      artifact_path = glob.glob(os.path.join('shinyproxy', 'target', 'shinyproxy-*.jar'))
-
-      if len(artifact_path) == 0:
-        print("Something went wrong building shinyproxy artifact. Check whether Maven is correctly installed.")
-        exit(1)
-
-      os.rename(artifact_path[0], os.path.join('proxy', os.path.basename(artifact_path[0])))
-
     if not os.path.isfile('.env'):
-      with open('.env', 'w') as f:
-        f.write(f'GMS_MIRO_DATABASE_PWD={gen_password(30)}\nGMS_MIRO_SA_PWD={gen_password(20)}\n')
+      gen_env_file('.env')
 
-    if not args.no_pull:
+    if args.pull:
       subprocess.check_call(['docker', 'login', 'hub.gams.com'])
       subprocess.check_call(['docker-compose', 'pull'], env=self.__compose_env)
 
@@ -125,7 +115,8 @@ class MiroServer(object):
 
   def push(self):
     for image in [('gamsmiro-sproxy', 'gamsmiro-sproxy'),
-                  ('gamsmiro-proxy', 'gamsmiro-proxy')]:
+                  ('gamsmiro-proxy', 'gamsmiro-proxy'),
+                  ('gamsmiro-auth', 'gamsmiro-auth')]:
       self.push_image(*image)
 
 
@@ -133,14 +124,16 @@ class MiroServer(object):
     parser = argparse.ArgumentParser(
           description='Releases GAMS MIRO Server')
 
+    parser.add_argument('-f', '--force', help='Overwrite release if it exists', 
+      action='store_true')
+
     args = parser.parse_args(sys.argv[2:])
 
     release_zip_filename = 'miro_server.zip'
 
     if os.path.isfile(release_zip_filename):
-      remove_previous_release = input('Release file already exists. Remove it? [y/N]\n')
-      if remove_previous_release != 'y':
-        print('Release was interrupted.')
+      if not args.force:
+        print('Previous release exists and --force was not set.')
         exit(0)
       os.remove(release_zip_filename)
 
@@ -155,24 +148,6 @@ class MiroServer(object):
       python_binary = 'python'
 
     copy_tree('release_data', 'release')
-    
-    env_file_content = f'GMS_MIRO_DATABASE_PWD={gen_password(40)}\nGMS_MIRO_SA_PWD={gen_password(30)}\n'
-
-    with open(os.path.join('release', '.env'), 'w') as f:
-      f.write(env_file_content)
-
-
-    answers = ['y', 'Y', 'n', 'N', '']
-    yes_answers = ['y', 'Y']
-
-    release_windows = input('Do you want to release MIRO Server for a Windows Server? [y/N]: ').strip()
-    while release_windows not in answers:
-        release_windows = input('Do you want to release MIRO Server for a Windows Server? [y/N]: ').strip()
-
-    if release_windows in yes_answers:
-      os.remove(os.path.join('release', 'miro-compose'))
-    else:
-      os.remove(os.path.join('release', 'miro-compose.ps1'))
 
     shutil.copy('LICENSE', os.path.join('release', 'LICENSE'))
 

@@ -1219,6 +1219,29 @@
           },
           "minProperties": 4
         },
+        "dialogInconsistentOutput": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "desc": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cancelButton": {
+              "type": "string",
+              "minLength": 1
+            },
+            "okButton": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 4
+        },
         "dialogDeleteScen": {
           "type": "object",
           "additionalProperties": false,
@@ -2053,6 +2076,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "queued": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "running": {
                   "type": "string",
                   "minLength": 1
@@ -2074,7 +2101,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 7
+              "minProperties": 8
             },
             "ttips": {
               "type": "object",
@@ -2557,7 +2584,7 @@
           "minProperties": 1
         }
       },
-      "minProperties": 48
+      "minProperties": 49
     },
     "renderers": {
       "description": "language specific objects of renderers",

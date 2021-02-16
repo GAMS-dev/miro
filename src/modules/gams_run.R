@@ -1,4 +1,13 @@
 # run GAMS
+clearLogs <- function(session){
+  if(config$activateModules$logFile ||
+     config$activateModules$miroLogFile){
+    emptyEl(session, "#logStatusContainer")
+  }
+  rv$refreshLogs <- NULL
+  emptyEl(session, "#modelStatus")
+  hideEl(session, ".input-validation-error")
+}
 storeGAMSOutputFiles <- function(workDir){
   if(config$activateModules$attachments && 
      !is.null(activeScen) && 
@@ -176,7 +185,7 @@ prepareModelRun <- function(async = FALSE){
   if(is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))){
     return(NULL)
   }
-  return(list(inputData = inputData, pfFileContent = pfFileContent, dataTmp = if(!async) dataTmp))
+  return(list(inputData = inputData, pfFileContent = pfFileContent))
 }
 if(LAUNCHHCUBEMODE){
   idsToSolve <- NULL
@@ -557,6 +566,63 @@ if(LAUNCHHCUBEMODE){
     },
     contentType = "application/zip")
 }else{
+  loadOutputData <- function(){
+    storeGAMSOutputFiles(workDir)
+    
+    GAMSResults <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, workDir = workDir, 
+                                modelName = modelName, errMsg = lang$errMsg$GAMSOutput$badOutputData,
+                                scalarsFileHeaders = scalarsFileHeaders, fileName = MIROGdxOutName,
+                                templates = modelOutTemplate, method = config$fileExchange, 
+                                csvDelim = config$csvDelim, hiddenOutputScalars = config$hiddenOutputScalars)
+    if(!is.null(GAMSResults$scalar)){
+      scalarData[["scen_1_"]] <<- GAMSResults$scalar
+    }
+    scalarIdTmp <- match(scalarsFileName, tolower(inputDsNames))[[1L]]
+    if(!is.na(scalarIdTmp)){
+      scalarData[["scen_1_"]] <<- bind_rows(scenData[["scen_1_"]][[scalarIdTmp + length(modelOut)]],
+                                            scalarData[["scen_1_"]])
+    }
+    if(!is.null(GAMSResults$tabular)){
+      scenData[["scen_1_"]][seq_along(modelOut)] <<- GAMSResults$tabular
+    }
+    if(config$saveTraceFile){
+      tryCatch({
+        traceData <<- readTraceData(file.path(workDir, 
+                                              paste0(tableNameTracePrefix,
+                                                     modelName, ".trc")), 
+                                    traceColNames)
+      }, error = function(e){
+        flog.info("Problems loading trace data. Error message: %s.", e)
+      })
+    }
+    tryCatch(
+      worker$updateJobStatus(JOBSTATUSMAP['imported']), 
+      error = function(e){
+        flog.warn("Failed to update job status. Error message: '%s'.", 
+                  conditionMessage(e))
+      })
+  }
+  observeEvent(input$btLoadInconsistentOutput, {
+    removeModal()
+    
+    errMsg <- NULL
+    tryCatch({
+      loadOutputData()
+    }, error = function(e){
+      flog.error("Problems loading output data. Error message: %s.", e)
+      errMsg <<- lang$errMsg$readOutput$desc
+    })
+    if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
+      return(htmltools::htmlEscape(statusText))
+    }
+    
+    #select first tab in current run tabset
+    switchTab(session, "output")
+    updateTabsetPanel(session, "scenTabset",
+                      selected = "results.current")
+    renderOutputData(rendererEnv, views)
+    markUnsaved()
+  })
   observeEvent(virtualActionButton(input$btSubmitJob, rv$btSubmitJob), {
     flog.debug("Submit new asynchronous job button clicked.")
     jobNameTmp <- character(1L)
@@ -625,9 +691,208 @@ if(LAUNCHHCUBEMODE){
   })
 }
 
-logObs <- NULL
+if(config$activateModules$lstFile){
+  output$listFileContainer <- renderText({
+    req(rv$refreshLogs)
+    errMsg <- NULL
+    tryCatch({
+      fileSize <- file.size(file.path(workDir, modelNameRaw %+% ".lst"))
+      if(is.na(fileSize))
+        stop("Could not access listing file", call. = FALSE)
+      if(fileSize > maxSizeToRead){
+        lang$errMsg$readLst$fileSize
+      }else if(file.exists(file.path(workDir, modelNameRaw %+% ".lst"))){
+        read_file(file.path(workDir, modelNameRaw %+% ".lst"))
+      }else{
+        lang$errMsg$readLst$fileNotFound
+      }
+    }, error = function(e) {
+      flog.warn("GAMS listing file could not be read (model: '%s'). Error message: %s.", 
+                modelName, e)
+      showErrorMsg(lang$errMsg$readLst$title, errMsg)
+      return("")
+    })
+  })
+}
+if(config$activateModules$miroLogFile){
+  renderMiroLogContent <- function(){
+    miroLogAnnotations <<- NULL
+    miroLogContent <- ""
+    miroLogPath <- file.path(workDir, config$miroLogFile)
+    tryCatch({
+      if(file.exists(miroLogPath)[1]){
+        inputScalarsTmp <- NULL
+        if(scalarsFileName %in% names(modelIn))
+          inputScalarsTmp  <- modelIn[[scalarsFileName]]$symnames
+        miroLogContent     <- parseMiroLog(session, miroLogPath, 
+                                           names(modelIn), inputScalarsTmp)
+        miroLogAnnotations <<- miroLogContent$annotations
+        miroLogContent <- miroLogContent$content
+      }
+    }, error = function(e){
+      flog.warn("MIRO log file could not be read. Error message: '%s'.", e)
+    })
+    return(HTML(paste(miroLogContent, collapse = "\n")))
+  }
+  if(config$activateModules$logFile){
+    output$miroLogContainer <- renderUI({
+      req(rv$refreshLogs)
+      return(renderMiroLogContent())
+    })
+  }
+}
+
+if(config$activateModules$logFile ||
+   config$activateModules$miroLogFile){
+  logfileObs <- NULL
+  logfile <- NULL
+  if(config$activateModules$logFile){
+    logFilePath <- file.path(workDir, modelNameRaw %+% ".log")
+  }else{
+    logFilePath <- file.path(workDir, config$miroLogFile)
+  }
+  if(config$activateModules$attachments && 
+     config$storeLogFilesDuration > 0L &&
+     !is.null(activeScen)){
+    if(!config$activateModules$logFile){
+      logFilePath <- NULL
+    }
+  }else{
+    logFilePath <- NULL
+  }
+  
+  logObs <- observe({
+    req(rv$triggerAsyncProcObserver)
+    
+    logText    <- NULL
+    try(logText <- logfile(), silent = TRUE)
+    
+    if(!length(logText)) return()
+    
+    if(!is.null(logFilePath)){
+      write_file(logText, logFilePath, append = TRUE)
+    }
+    appendEl(session, "#logStatusContainer", logText, 
+             scroll = identical(isolate(input$logUpdate), TRUE))
+  })
+}
+
+output$modelStatus <- renderUI({
+  req(rv$triggerAsyncProcObserver)
+  
+  currModelStat <- modelStatus()
+  if(is.null(currModelStat)){
+    return(lang$nav$gamsModelStatus$exec)
+  }else if(identical(currModelStat, "s")){
+    return(lang$nav$gamsModelStatus$submission)
+  }else if(identical(currModelStat, "q")){
+    return(lang$nav$gamsModelStatus$queued)
+  }else if(identical(currModelStat, "d")){
+    return(lang$nav$gamsModelStatus$collection)
+  }
+  modelStatusObs$destroy()
+  modelStatus <<- NULL
+  enableEl(session, "#btSolve")
+  disableEl(session, "#btInterrupt")
+  
+  if(config$activateModules$logFile ||
+     config$activateModules$miroLogFile){
+    logfileObs$destroy()
+    logfileObs <- NULL
+    logfile <- NULL
+    if(config$activateModules$miroLogFile){
+      if(config$activateModules$logFile){
+        containerId <- "#miroLogContainer"
+      }else{
+        containerId <- "#logStatusContainer"
+      }
+      setContent(session, containerId, renderMiroLogContent())
+    }
+  }
+  
+  if(currModelStat < 0){
+    returnCodeText <- GAMSReturnCodeMap[as.character(currModelStat)]
+    if(is.na(returnCodeText)){
+      returnCodeText <- as.character(currModelStat)
+    }
+    statusText <- lang$nav$gamsModelStatus$error %+% returnCodeText
+    flog.debug("GAMS model was not solved successfully (model: '%s'). Model status: %s.", 
+               modelName, statusText)
+    return(htmltools::htmlEscape(statusText))
+  }
+  isolate({
+    if(is.null(rv$refreshLogs)){
+      rv$refreshLogs <- 1L
+    }else{
+      rv$refreshLogs <- rv$refreshLogs + 1L
+    }
+  })
+  
+  if(currModelStat != 0){
+    returnCodeText <- GAMSReturnCodeMap[as.character(currModelStat)]
+    if(is.na(returnCodeText)){
+      returnCodeText <- as.character(currModelStat)
+    }
+    statusText <- lang$nav$gamsModelStatus$error %+% returnCodeText
+    if(config$activateModules$miroLogFile && length(miroLogAnnotations)){
+      session$sendCustomMessage("gms-showValidationErrors", miroLogAnnotations)
+      valIdHead <- match(names(miroLogAnnotations)[[1L]], names(modelIn))
+      if(length(valIdHead) && !is.na(valIdHead)){
+        valTabId <- 0L
+        inputTabId <- tabSheetMap$input[[valIdHead]]
+        updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", inputTabId[1]))
+        if(length(inputTabId) > 1L){
+          updateTabsetPanel(session, paste0("inputTabset", inputTabId[1]), 
+                            paste0("inputTabset", inputTabId[1], "_", 
+                                   inputTabId[2]))
+        }
+      }
+    }
+    flog.debug("GAMS model was not solved successfully (model: '%s'). Model status: %s.", 
+               modelName, statusText)
+    tryCatch(
+      worker$updateJobStatus(JOBSTATUSMAP['imported']), 
+      error = function(e){
+        flog.warn("Failed to update job status. Error message: '%s'.", 
+                  conditionMessage(e))
+      })
+  }else{
+    # run terminated successfully
+    statusText <- lang$nav$gamsModelStatus$success
+    
+    if(inconsistentOutput){
+      showInconsistentOutputDialog()
+      return(statusText)
+    }
+    
+    errMsg <- NULL
+    tryCatch({
+      loadOutputData()
+    }, error = function(e){
+      flog.error("Problems loading output data. Error message: %s.", e)
+      errMsg <<- lang$errMsg$readOutput$desc
+    })
+    if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
+      return(htmltools::htmlEscape(statusText))
+    }
+    #select first tab in current run tabset
+    switchTab(session, "output")
+    updateTabsetPanel(session, "scenTabset",
+                      selected = "results.current")
+    isolate(renderOutputData(rendererEnv, views))
+    
+    markUnsaved()
+  }
+  return(statusText)
+})
+# refresh even when modelStatus message is hidden (i.e. user is on another tab)
+outputOptions(output, "modelStatus", suspendWhenHidden = FALSE)
+
+
 observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   flog.debug("Solve button clicked (model: '%s').", modelName)
+  
+  clearLogs(session)
   
   if(length(modelStatus)){
     showErrorMsg(lang$errMsg$jobRunning$title, 
@@ -725,25 +990,9 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   if(is.null(dataModelRun)){
     return(NULL)
   }
-  dataTmp <- dataModelRun$dataTmp
-  if(any(config$activateModules$logFile,
-         config$activateModules$miroLogFile)){
-    if(config$activateModules$logFile){
-      logFilePath <- file.path(workDir, modelNameRaw %+% ".log")
-      logContainerId <- "#logStatus"
-    }else{
-      logFilePath <- file.path(workDir, config$miroLogFile)
-      logContainerId <- "#miroLogFile"
-    }
-    if(config$activateModules$attachments && 
-       config$storeLogFilesDuration > 0L && !is.null(activeScen)){
-      if(!identical(unlink(logFilePath, force = TRUE), 0L)){
-        flog.warn("Could not remove log file: '%s'.", logFilePath)
-      }
-    }
-  }
   # run GAMS
   errMsg <- NULL
+  inconsistentOutput <<- FALSE
   tryCatch({
     jobSid <- NULL
     if(length(activeScen) && length(activeScen$getSid())){
@@ -763,231 +1012,52 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   }
   if(config$activateModules$remoteExecution)
     updateTabsetPanel(session, "jobListPanel", selected = "current")
-  updateTabsetPanel(session, "logFileTabsset", selected = "log")
+  if(config$activateModules$logFile){
+    updateTabsetPanel(session, "logFileTabsset", selected = "log")
+  }else if(config$activateModules$miroLogFile){
+    updateTabsetPanel(session, "logFileTabsset", selected = "mirolog")
+  }
   
   #activate Interrupt button as GAMS is running now
   updateActionButton(session, "btInterrupt", icon = character(0L))
   enableEl(session, "#btInterrupt")
   switchTab(session, "gamsinter")
-  # read log file
-  if(any(config$activateModules$logFile,
-         config$activateModules$miroLogFile)){
-    tryCatch({
-      logfile <- worker$getReactiveLog(session)
-      logfileObs <- logfile$obs
-      logfile <- logfile$re
-    }, error = function(e) {
-      flog.error("GAMS log file could not be read (model: '%s'). Error message: %s.", modelName, e)
-      errMsg <<- lang$errMsg$readLog$desc
-    })
-    showErrorMsg(lang$errMsg$readLog$title, errMsg)
+  
+  if(!is.null(logFilePath) &&
+     !identical(unlink(logFilePath, force = TRUE), 0L)){
+    flog.warn("Could not remove log file: '%s'.", logFilePath)
   }
+  
   errMsg <- NULL
   tryCatch({
     modelStatusRE  <- worker$getReactiveStatus(session)
-    modelStatusObs <- modelStatusRE$obs
+    modelStatusObs <<- modelStatusRE$obs
     modelStatus    <<- modelStatusRE$re
   }, error = function(e) {
-    flog.error("GAMS status could not be retrieved (model: '%s'). Error message: %s.", modelName, e)
+    flog.error("GAMS status could not be retrieved. Error message: %s.",
+               conditionMessage(e))
+    errMsg <<- lang$errMsg$readLog$desc
+  })
+  
+  if(is.null(showErrorMsg(lang$errMsg$readLog$title, errMsg))){
+    return()
+  }
+  
+  tryCatch({
+    logRE       <- worker$getReactiveLog(session)
+    logfileObs  <<- logRE$obs
+    logfile     <<- logRE$re
+  }, error = function(e) {
+    flog.error("GAMS log file could not be read (model: '%s'). Error message: %s.", modelName, e)
     errMsg <<- lang$errMsg$readLog$desc
   })
   showErrorMsg(lang$errMsg$readLog$title, errMsg)
   
-  if(any(config$activateModules$logFile,
-         config$activateModules$miroLogFile)){
-    if(config$activateModules$attachments && 
-       config$storeLogFilesDuration > 0L && !is.null(activeScen)){
-      if(!config$activateModules$logFile){
-        logFilePath <- NULL
-      }
-    }else{
-      logFilePath <- NULL
-    }
-    emptyEl(session, logContainerId)
-    logObs <<- observe({
-      logText    <- NULL
-      try(logText <- logfile(), silent = TRUE)
-      if(!length(logText)) return()
-      if(!is.null(logFilePath)){
-        write_file(logText, logFilePath, append = TRUE)
-      }
-      return(appendEl(session, logContainerId, logText, 
-                      scroll = identical(isolate(input$logUpdate), TRUE)))
-    })
+  if(is.null(rv$triggerAsyncProcObserver)){
+    rv$triggerAsyncProcObserver <- 1L
+  }else{
+    rv$triggerAsyncProcObserver <- rv$triggerAsyncProcObserver + 1L
   }
-  # reset listing file when new solve is started
-  output$listFile <- renderText("")
-  emptyEl(session, "#miroLogFile")
-  hideEl(session, ".input-validation-error")
-  # print model status
-  output$modelStatus <- renderUI({
-    currModelStat <- modelStatus()
-    if(is.null(currModelStat)){
-      statusText <- lang$nav$gamsModelStatus$exec
-    }else if(identical(currModelStat, "s")){
-      statusText <- lang$nav$gamsModelStatus$submission
-    }else if(identical(currModelStat, "q")){
-      statusText <- lang$nav$gamsModelStatus$queued
-    }else if(identical(currModelStat, "d")){
-      statusText <- lang$nav$gamsModelStatus$collection
-    }else{
-      modelStatusObs$destroy()
-      modelStatus <<- NULL
-      enableEl(session, "#btSolve")
-      disableEl(session, "#btInterrupt")
-      
-      if(any(config$activateModules$logFile, config$activateModules$miroLogFile)){
-        logfileObs$destroy()
-        logfileObs <- NULL
-        logObs$destroy()
-        logfile <- NULL
-      }
-      
-      if(currModelStat < 0){
-        returnCodeText <- GAMSReturnCodeMap[as.character(currModelStat)]
-        if(is.na(returnCodeText)){
-          returnCodeText <- as.character(currModelStat)
-        }
-        statusText <- lang$nav$gamsModelStatus$error %+% returnCodeText
-        flog.debug("GAMS model was not solved successfully (model: '%s'). Model status: %s.", 
-                   modelName, statusText)
-        return(htmltools::htmlEscape(statusText))
-      }
-      
-      if(config$activateModules$lstFile){
-        errMsg <- NULL
-        tryCatch({
-          fileSize <- file.size(file.path(workDir, modelNameRaw %+% ".lst"))
-          if(is.na(fileSize))
-            stop("Could not access listing file", call. = FALSE)
-          if(fileSize > maxSizeToRead){
-            output$listFile <- renderText(lang$errMsg$readLst$fileSize)
-          }else { 
-            output$listFile <- renderText({
-              if(file.exists(file.path(workDir, modelNameRaw %+% ".lst"))){
-                read_file(file.path(workDir, modelNameRaw %+% ".lst"))
-              }else{
-                lang$errMsg$readLst$fileNotFound
-              }
-            })
-          }
-        }, error = function(e) {
-          errMsg <<- lang$errMsg$readLst$desc
-          flog.warn("GAMS listing file could not be read (model: '%s'). Error message: %s.", 
-                    modelName, e)
-        })
-        showErrorMsg(lang$errMsg$readLst$title, errMsg)
-      }
-      if(config$activateModules$miroLogFile){
-        miroLogContent <- ""
-        miroLogPath <- file.path(workDir, config$miroLogFile)
-        miroLogAnnotations <- ""
-        tryCatch({
-          if(file.exists(miroLogPath)[1]){
-            inputScalarsTmp <- NULL
-            if(scalarsFileName %in% names(modelIn))
-              inputScalarsTmp  <- modelIn[[scalarsFileName]]$symnames
-            miroLogContent     <- parseMiroLog(session, miroLogPath, 
-                                               names(modelIn), inputScalarsTmp)
-            miroLogAnnotations <- miroLogContent$annotations
-            miroLogContent <- miroLogContent$content
-          }
-        }, error = function(e){
-          flog.warn("MIRO log file could not be read. Error message: '%s'.", e)
-        })
-        output$miroLogFile <- renderUI(HTML(paste(miroLogContent, collapse = "\n")))
-      }
-      if(currModelStat != 0){
-        returnCodeText <- GAMSReturnCodeMap[as.character(currModelStat)]
-        if(is.na(returnCodeText)){
-          returnCodeText <- as.character(currModelStat)
-        }
-        statusText <- lang$nav$gamsModelStatus$error %+% returnCodeText
-        if(config$activateModules$miroLogFile && length(miroLogAnnotations)){
-          session$sendCustomMessage("gms-showValidationErrors", miroLogAnnotations)
-          valIdHead <- match(names(miroLogAnnotations)[[1L]], names(modelIn))
-          if(length(valIdHead) && !is.na(valIdHead)){
-            valTabId <- 0L
-            inputTabId <- tabSheetMap$input[[valIdHead]]
-            updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", inputTabId[1]))
-            if(length(inputTabId) > 1L){
-              updateTabsetPanel(session, paste0("inputTabset", inputTabId[1]), 
-                                paste0("inputTabset", inputTabId[1], "_", 
-                                       inputTabId[2]))
-            }
-          }
-        }
-        flog.debug("GAMS model was not solved successfully (model: '%s'). Model status: %s.", 
-                   modelName, statusText)
-        tryCatch(
-          worker$updateJobStatus(JOBSTATUSMAP['imported']), 
-          error = function(e){
-            flog.warn("Failed to update job status. Error message: '%s'.", 
-                      conditionMessage(e))
-          })
-      }else{
-        # run terminated successfully
-        statusText <- lang$nav$gamsModelStatus$success
-        
-        storeGAMSOutputFiles(workDir)
-        
-        errMsg <- NULL
-        tryCatch({
-          GAMSResults <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, workDir = workDir, 
-                                      modelName = modelName, errMsg = lang$errMsg$GAMSOutput$badOutputData,
-                                      scalarsFileHeaders = scalarsFileHeaders, fileName = MIROGdxOutName,
-                                      templates = modelOutTemplate, method = config$fileExchange, 
-                                      csvDelim = config$csvDelim, hiddenOutputScalars = config$hiddenOutputScalars)
-        }, error = function(e){
-          flog.error("Problems loading output data. Error message: %s.", e)
-          errMsg <<- lang$errMsg$readOutput$desc
-        })
-        if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
-          return(htmltools::htmlEscape(statusText))
-        }
-        if(!is.null(GAMSResults$scalar)){
-          scalarData[["scen_1_"]] <<- GAMSResults$scalar
-        }
-        scalarIdTmp <- match(scalarsFileName, tolower(names(dataTmp)))[[1L]]
-        if(!is.na(scalarIdTmp)){
-          scalarData[["scen_1_"]] <<- bind_rows(dataTmp[[scalarIdTmp]], scalarData[["scen_1_"]])
-        }
-        if(!is.null(GAMSResults$tabular)){
-          scenData[["scen_1_"]][seq_along(modelOut)] <<- GAMSResults$tabular
-        }
-        if(config$saveTraceFile){
-          tryCatch({
-            traceData <<- readTraceData(file.path(workDir, 
-                                                  paste0(tableNameTracePrefix,
-                                                         modelName, ".trc")), 
-                                        traceColNames)
-          }, error = function(e){
-            flog.info("Problems loading trace data. Error message: %s.", e)
-          })
-        }
-        tryCatch(
-          worker$updateJobStatus(JOBSTATUSMAP['imported']), 
-          error = function(e){
-            flog.warn("Failed to update job status. Error message: '%s'.", 
-                      conditionMessage(e))
-          })
-        
-        
-        GAMSResults <- NULL
-        #select first tab in current run tabset
-        switchTab(session, "output")
-        updateTabsetPanel(session, "scenTabset",
-                          selected = "results.current")
-        isolate(renderOutputData(rendererEnv, views))
-        
-        markUnsaved()
-      }
-    }
-    # print model status
-    return(htmltools::htmlEscape(statusText))
-  })
-  # refresh even when modelStatus message is hidden (i.e. user is on another tab)
-  outputOptions(output, "modelStatus", suspendWhenHidden = FALSE)
 })
 if(!isShinyProxy && config$activateModules$remoteExecution){
   observeEvent(input$btRemoteExecLogin, {

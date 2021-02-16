@@ -25,8 +25,8 @@ Worker <- R6Class("Worker", public = list(
     unlink(private$metadata$rememberMeFileName, force = TRUE)
   },
   setCredentials = function(url, username, password, namespace,
-                            useRegistered, registerUser = FALSE,
-                            adminCredentials = NULL){
+                            useRegistered, useBearer = TRUE,
+                            refreshToken = FALSE){
     engineUrl <- trimws(url, which = "right", whitespace = "/")
     if(!endsWith(engineUrl, "/api")){
       engineUrl <- paste0(engineUrl, "/api")
@@ -36,18 +36,18 @@ Worker <- R6Class("Worker", public = list(
     private$metadata$useRegistered <- useRegistered
     private$metadata$password  <- password
     private$metadata$namespace <- namespace
-    if(registerUser){
-      private$authHeader <- private$buildAuthHeader()
-      authenticationStatus <- private$checkAuthenticationStatus()
-      if(identical(authenticationStatus, 401L)){
-        private$registerUser(adminCredentials)
-      }else if(!identical(authenticationStatus, 200L)){
-        flog.fatal("Could not check authentication status. Return code from remote executor: %s.", 
-                   authenticationStatus)
-        stop()
-      }
-    }else{
-      private$authHeader <- private$buildAuthHeader(TRUE)
+    
+    private$authHeader <- private$buildAuthHeader(useBearer)
+    
+    if(refreshToken){
+      future({
+        library(httr)
+        library(jsonlite)
+        private$saveLoginCredentials(private$metadata$url,
+                                     private$metadata$username,
+                                     private$metadata$namespace,
+                                     private$metadata$useRegistered)
+      }, globals = list(private = private))
     }
     return(invisible(self))
   },
@@ -344,6 +344,9 @@ Worker <- R6Class("Worker", public = list(
             flog.error("Problems removing Hypercube job workspace: '%s'.", hcubeJobDir)
           }
         }
+        if(private$remote){
+          private$removeJobResults(pID)
+        }
       }
     }
     
@@ -514,15 +517,7 @@ Worker <- R6Class("Worker", public = list(
     jIDChar <- as.character(jID)
     if(length(private$fJobRes[[jIDChar]]) && resolved(private$fJobRes[[jIDChar]])){
       if(private$hcube){
-        tryCatch(private$validateAPIResponse(
-          DELETE(url = paste0(private$metadata$url, "/hypercube/", self$getPid(jID), "/result"),
-                 add_headers(Authorization = private$authHeader,
-                             Timestamp = as.character(Sys.time(), usetz = TRUE)),
-                 timeout(private$metadata$timeout))),
-          error = function(e){
-            warning(sprintf("Problems removing results of Hypercube job: '%s'. Error message: '%s'.", 
-                            jIDChar, conditionMessage(e)))
-          })
+        private$removeJobResults(self$getPid(jID))
         if(!file.exists(private$jobResultsFile[[jIDChar]])){
           file.rename(paste0(private$jobResultsFile[[jIDChar]], ".dl"), 
                       private$jobResultsFile[[jIDChar]])
@@ -826,7 +821,8 @@ Worker <- R6Class("Worker", public = list(
       
       dataFilesToFetch <- metadata$modelDataFiles
       
-      requestBody <- list(model = metadata$modelNameRaw,
+      requestBody <- list(model = metadata$modelName,
+                          run = metadata$modelGmsName,
                           arguments = paste0("pf=", metadata$modelName, ".pf"), 
                           namespace = metadata$namespace)
       
@@ -1165,15 +1161,7 @@ Worker <- R6Class("Worker", public = list(
     if(timeout){
       return(-100L)
     }
-    tryCatch(private$validateAPIResponse(
-      DELETE(url = paste0(private$metadata$url, "/jobs/", jID, "/result"),
-             add_headers(Authorization = private$authHeader,
-                         Timestamp = as.character(Sys.time(), usetz = TRUE)),
-             timeout(4L))),
-      error = function(e){
-        warning(sprintf("Problems removing job results of job: '%s'. Error message: '%s'.", 
-                        jID, conditionMessage(e)))
-      })
+    private$removeJobResults(jID)
     
     if(identical(status_code(ret), 200L)){
       unzip(resultsPath, exdir = workDir)
@@ -1186,7 +1174,7 @@ Worker <- R6Class("Worker", public = list(
     GET(paste0(private$metadata$url, "/jobs/", jID),
         add_headers(Authorization = private$authHeader,
                     Timestamp = as.character(Sys.time(), usetz = TRUE),
-                    "X-Fields" = "process_status"),
+                    "X-Fields" = "process_status,status"),
         timeout(2L))
   },
   interruptLocal = function(hardKill = FALSE, process = NULL){
@@ -1258,6 +1246,20 @@ Worker <- R6Class("Worker", public = list(
                   Timestamp = as.character(Sys.time(), usetz = TRUE)),
       timeout(10L)))
     return(0L)
+  },
+  removeJobResults = function(jID){
+    tryCatch(private$validateAPIResponse(
+      DELETE(url = paste0(private$metadata$url,
+                          if(private$hcube) "/hypercube/" else "/jobs/",
+                          jID, "/result"),
+             add_headers(Authorization = private$authHeader,
+                         Timestamp = as.character(Sys.time(), usetz = TRUE)),
+             timeout(private$metadata$timeout))),
+      error = function(e){
+        warning(sprintf("Problems removing results of job: '%s'. Error message: '%s'.", 
+                        jID, conditionMessage(e)))
+      })
+    return(invisible(self))
   },
   getHcubeJobProgressLocal = function(jID){
     logFilePath <- file.path(hcubeDirName, 
@@ -1359,8 +1361,10 @@ Worker <- R6Class("Worker", public = list(
                            ":", private$metadata$password)))))
   },
   saveLoginCredentials = function(url, username, namespace, useRegistered){
+    # create token that expires in a week
     sessionToken <- private$validateAPIResponse(POST(
       url = paste0(url, "/auth/"), 
+      body = list(expires_in = 604800),
       add_headers(Authorization = private$authHeader,
                   Timestamp = as.character(Sys.time(), usetz = TRUE)), 
       timeout(2L)))$token
@@ -1391,44 +1395,47 @@ Worker <- R6Class("Worker", public = list(
   getJobStatus = function(pID, jID = NULL){
     if(private$hcube)
       return(private$getHcubeJobStatus(pID, jID))
-    gamsRetCode <- tryCatch(private$getGAMSRetCode(pID),
-                            error = function(e){
-                              errMsg <- conditionMessage(e)
-                              if(errMsg == 405L){
-                                return(-405L)
-                              }else if(errMsg == 404L){
-                                return(-404L)
-                              }else if(errMsg == -404L){
-                                stop(404L, call. = FALSE)
-                              }else{
-                                stop(errMsg, call. = FALSE)
-                              }
-                            })
-    
-    if(length(gamsRetCode)){
-      if(gamsRetCode %in% c(-404L, -405L)){
-        status <- JOBSTATUSMAP[['corrupted(noProcess)']]
-        gamsRetCode <- NULL
-      }else{
-        status <- JOBSTATUSMAP[['completed']]
+    req(private$remote)
+    return(tryCatch({
+      statusInfo <- private$validateAPIResponse(
+        private$getRemoteStatus(pID))
+      if(identical(statusInfo$status, 10L)){
+        # job finished successfully
+        return(list(status = JOBSTATUSMAP[['completed']],
+                    gamsRetCode = statusInfo$process_status))
       }
-    }else{
-      status <- JOBSTATUSMAP[['running']]
-    }
-    return(list(status = status, gamsRetCode = gamsRetCode))
+      if(identical(statusInfo$status, 0L)){
+        # job queued
+        return(list(status = JOBSTATUSMAP[['queued']],
+                    gamsRetCode = NULL))
+      }
+      if(statusInfo$status %in% c(-3, -1)){
+        # job cancelled or corrupted
+        return(list(status = JOBSTATUSMAP[['corrupted']],
+                    gamsRetCode = NULL))
+      }
+      return(list(status = JOBSTATUSMAP[['running']],
+                  gamsRetCode = NULL))
+    }, error = function(e){
+      errMsg <- conditionMessage(e)
+      if(errMsg == 405L){
+        return(list(status = JOBSTATUSMAP[['corrupted(noProcess)']],
+                    gamsRetCode = NULL))
+      }else if(errMsg == 404L){
+        return(list(status = JOBSTATUSMAP[['corrupted(noProcess)']],
+                    gamsRetCode = NULL))
+      }else if(errMsg == -404L){
+        stop(404L, call. = FALSE)
+      }else{
+        stop(errMsg, call. = FALSE)
+      }
+    }))
   },
   getHcubeJobStatus = function(pID, jID ){
     if(private$remote)
       return(private$getHcubeJobStatusRemote(pID, jID))
     
     return(private$getHcubeJobStatusLocal(pID, jID))
-  },
-  getGAMSRetCode = function(pID){
-    if(private$remote){
-      return(private$validateAPIResponse(
-        private$getRemoteStatus(pID))$process_status)
-    }
-    return("")
   },
   validateAPIResponse = function(response){
     if(status_code(response) >= 300L){
@@ -1493,30 +1500,6 @@ Worker <- R6Class("Worker", public = list(
                             add_headers(Authorization = private$authHeader,
                                         Timestamp = as.character(Sys.time(), usetz = TRUE)),
                             timeout(10L))))
-  },
-  registerUser = function(adminCredentials){
-    invitationToken <- private$validateAPIResponse(
-      POST(paste0(private$metadata$url, "/users/invitation"),
-           body = list(namespace_permissions = 
-                         paste0("1@", private$metadata$namespace)),
-           add_headers(Authorization = paste0("Basic ", 
-                                              base64_encode(charToRaw(
-                                                paste0(adminCredentials$username, 
-                                                       ":", adminCredentials$password)))),
-                       Timestamp = as.character(Sys.time(), usetz = TRUE)),
-           timeout(10L)))$invitation_token
-    private$validateAPIResponse(
-      POST(paste0(private$metadata$url, "/users"),
-           body = list(username = private$metadata$username,
-                       password = private$metadata$password,
-                       invitation_code = invitationToken),
-           add_headers(Authorization = paste0("Basic ", 
-                                              base64_encode(charToRaw(
-                                                paste0(adminCredentials$username, 
-                                                       ":", adminCredentials$password)))),
-                       Timestamp = as.character(Sys.time(), usetz = TRUE)),
-           timeout(10L)))
-    return(invisible(self))
   },
   resolveRemoteURL = function(url){
     url <- trimws(url, "right", whitespace = "/")

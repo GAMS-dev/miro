@@ -129,7 +129,7 @@ tableNameAttachPrefix <- "_sys_attach_"
 tableNameViewsPrefix <- "_sys_views_"
 tableNameScriptsPrefix <- "_sys_scripts_"
 attachAllowExec       <- TRUE
-attachMaxFileSize     <- 1e7
+attachMaxFileSize     <- 5e7
 attachMaxNo           <- 7L
 
 TIMEVIS_MAX_EVENTS <- 50L
@@ -138,6 +138,7 @@ TIMEVIS_MAX_EVENTS <- 50L
 SERVER_SHUTDOWN_DELAY <- 600L
 
 JOBSTATUSMAP <- c(
+  'queued' = -2L,
   'running' = -1L,
   'completed' = 0L,
   'downloaded' = 1L,

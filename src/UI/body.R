@@ -546,21 +546,30 @@ if(buildUI){
         if(config$activateModules$logFile){
           logTabsetList$log <- tabPanel(title=tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile),
                                         value = "log",
-                                        tags$pre(id = "logStatus", class = "shiny-text-output noplaceholder"),
+                                        tags$pre(id = "logStatusContainer",
+                                                 class = "shiny-text-output noplaceholder"),
+                                        checkboxInput("logUpdate", 
+                                                      label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
+                                                      value = TRUE))
+          if(config$activateModules$miroLogFile){
+            logTabsetList$miroLog <- tabPanel(title = tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$miroLogFile),
+                                              value = "mirolog",
+                                              tagAppendAttributes(class = "shiny-text-output noplaceholder pre-style-div",
+                                                                  uiOutput("miroLogContainer")))
+          }
+        }else if(config$activateModules$miroLogFile){
+          logTabsetList$log <- tabPanel(title=tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile),
+                                        value = "mirolog",
+                                        tags$div(id = "logStatusContainer",
+                                                 class = "shiny-text-output noplaceholder pre-style-div"),
                                         checkboxInput("logUpdate", 
                                                       label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
                                                       value = TRUE))
         }
-        if(config$activateModules$miroLogFile){
-          logTabsetList$miroLog <- tabPanel(title = tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$miroLogFile),
-                                            value = "mirolog",
-                                            tagAppendAttributes(class = "shiny-text-output noplaceholder pre-style-div",
-                                                                uiOutput("miroLogFile")))
-        }
         if(config$activateModules$lstFile){
           logTabsetList$lst <- tabPanel(title = tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile),
                                         value = "listfile",
-                                        verbatimTextOutput("listFile"))
+                                        verbatimTextOutput("listFileContainer"))
         }
         logTabsetList <- unname(logTabsetList)
         logTabsetList$id <- "logFileTabsset"

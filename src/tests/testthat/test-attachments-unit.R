@@ -40,7 +40,7 @@ workDir <- tempdir()
 
 attachments <- Attachments$new(db, list(maxSize = 200, maxNo = 3,
                                         forbiddenFNames = c(MIROGdxInName, MIROGdxOutName,
-                                                            paste0(modelNameRaw, c(".log", ".lst")))),
+                                                            paste0(modelName, c(".log", ".lst")))),
                                workDir,
                                c("in1", "widget1", "widget2", "in2"),
                                c("out1", "out2", "out3"), c("in1", "in2"))

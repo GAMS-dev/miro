@@ -161,9 +161,9 @@ if(is.null(errMsg)){
       errMsg <- paste(errMsg, "No user groups specified (shinyproxy).", sep = "\n")
     }
     if(!identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true") && 
-       any(!grepl("^[a-zA-Z0-9][a-zA-Z0-9!%\\(\\)\\-~]{3,19}$", c(uid, ugroups), perl = TRUE))){
+       any(!grepl("^[a-zA-Z0-9][a-zA-Z0-9!%\\(\\)\\-_~]{3,69}$", c(uid, ugroups), perl = TRUE))){
       errMsg <- paste(errMsg, 
-                      "Invalid user ID or user group specified. The following rules apply for user IDs and groups:\n- must be at least 4 and not more than 20 characters long\n- must start with a number or letter (upper or lowercase) {a-z}, {A-Z}, {0-9}\n- may container numbers, letters and the following additional characters: {!%()-~}",
+                      "Invalid user ID or user group specified. The following rules apply for user IDs and groups:\n- must be at least 4 and not more than 70 characters long\n- must start with a number or letter (upper or lowercase) {a-z}, {A-Z}, {0-9}\n- may container numbers, letters and the following additional characters: {!%()-_~}",
                       sep = "\n")
     }
   }else{
@@ -781,20 +781,21 @@ if(is.null(errMsg)){
                                modelName)
   credConfig <- NULL
   if(isShinyProxy){
-    namespace <- Sys.getenv("MIRO_ENGINE_NAMESPACE")
-    engineUid <- uid
     if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")){
-      engineUid <- "anonymous"
+      userCredentials <- list(username = Sys.getenv("MIRO_ENGINE_ANONYMOUS_USER", "anonymous"),
+                              password = Sys.getenv("MIRO_ENGINE_ANONYMOUS_PASS"),
+                              useBearer = FALSE)
+    }else{
+      userCredentials <- list(username = uid,
+                              password = Sys.getenv("SHINYPROXY_WEBSERVICE_ACCESS_TOKEN"),
+                              useBearer = TRUE)
     }
-    userCredentials <- db$getUserCredentials(uid = engineUid, namespace = namespace)
     credConfig <- list(url = Sys.getenv("MIRO_ENGINE_HOST"), 
-                       username = userCredentials$username[1],
-                       password = userCredentials$password[1],
-                       namespace = namespace,
+                       username = userCredentials$username,
+                       password = userCredentials$password,
+                       namespace = Sys.getenv("MIRO_ENGINE_NAMESPACE"),
                        useRegistered = TRUE,
-                       registerUser = TRUE,
-                       adminCredentials = list(username = Sys.getenv("MIRO_ENGINE_ADMIN_USER"), 
-                                               password = Sys.getenv("MIRO_ENGINE_ADMIN_PASS")))
+                       useBearer = userCredentials$useBearer)
   }else if(config$activateModules$remoteExecution){
     tryCatch({
       if(file.exists(file.path(miroWorkspace, "pinned_pub_keys"))){
@@ -827,7 +828,8 @@ if(is.null(errMsg)){
                            username = credConfigTmp$username,
                            password = credConfigTmp$password,
                            namespace = credConfigTmp$namespace,
-                           useRegistered = credConfigTmp$reg)
+                           useRegistered = credConfigTmp$reg,
+                           refreshToken = TRUE)
       }
     }, error = function(e){
       errMsg <<- "Problems reading JSON file: '%s'. Please make sure you have sufficient access permissions."
@@ -1280,6 +1282,7 @@ if(!is.null(errMsg)){
                                    execPerm = vector("logical", attachMaxNo))
       # boolean that specifies whether input data does not match output data
       dirtyFlag          <- FALSE
+      inconsistentOutput <- FALSE
       if(identical(config$defCompMode, "tab")){
         currentCompMode    <-  "tab"
       }else if(identical(config$defCompMode, "pivot")){
@@ -1294,6 +1297,8 @@ if(!is.null(errMsg)){
       isInRefreshMode    <- FALSE
       isInSolveMode      <- TRUE
       modelStatus        <- NULL
+      modelStatusObs     <- NULL
+      miroLogAnnotations <- NULL
       
       compareModeTabsetGenerated <- vector("logical", 3L)
       
@@ -1318,7 +1323,8 @@ if(!is.null(errMsg)){
                            btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
                            btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
                            noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
-                           jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L, importCSV = 0L)
+                           jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L, importCSV = 0L,
+                           refreshLogs = NULL, triggerAsyncProcObserver = NULL)
       
       xlsio              <- XlsIO$new()
       csvio              <- CsvIO$new()
@@ -1727,6 +1733,7 @@ if(!is.null(errMsg)){
             showEl(session, "#dirtyFlagIconO")
           }
           rv$unsavedFlag <<- TRUE
+          inconsistentOutput <<- TRUE
         }, priority = 1000L)
       })
       
@@ -1970,8 +1977,7 @@ if(!is.null(errMsg)){
           db$removeExpiredAttachments(paste0(modelNameRaw, c(".log", ".lst")), 
                                       config$storeLogFilesDuration)
         }
-        activeScen <<- NULL
-        gc()
+        activeScen$finalize()
         if(!interactive() && !isShinyProxy){
           tryCatch({
             if(length(unzipModelFilesProcess) && 

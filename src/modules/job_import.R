@@ -246,13 +246,17 @@ observeEvent(virtualActionButton(
       })
       scalarIdTmp <- match(scalarsFileName, 
                            tolower(names(scenInputData)))[[1L]]
-      jobResults <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, workDir = tmpdir, 
-                                 modelName = modelName, errMsg = lang$errMsg$GAMSOutput$badOutputData,
-                                 scalarsFileHeaders = scalarsFileHeaders, fileName = MIROGdxOutName,
-                                 templates = modelOutTemplate, method = config$fileExchange, 
-                                 csvDelim = config$csvDelim, hiddenOutputScalars = config$hiddenOutputScalars)
-      if(isFALSE(jobResults$noTabularData)){
-        noOutputData <<- FALSE
+      if(file.exists(file.path(tmpdir, MIROGdxOutName))){
+        jobResults <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, workDir = tmpdir, 
+                                   modelName = modelName, errMsg = lang$errMsg$GAMSOutput$badOutputData,
+                                   scalarsFileHeaders = scalarsFileHeaders, fileName = MIROGdxOutName,
+                                   templates = modelOutTemplate, method = config$fileExchange, 
+                                   csvDelim = config$csvDelim, hiddenOutputScalars = config$hiddenOutputScalars)
+        if(isFALSE(jobResults$noTabularData)){
+          noOutputData <<- FALSE
+        }
+      }else{
+        jobResults <- list()
       }
     }, error = function(e){
       flog.error("Problems reading job output data. Error message: '%s'.", conditionMessage(e))

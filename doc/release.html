@@ -66,8 +66,16 @@
                                  <div class="section-block">
                                     <h5 style="display:inline-block">GAMS MIRO 1.3.1</h5><div style="display:inline-block; padding-left:15px;">(xxxx-xx-xx)</div>
                                     <ul>
+                                      <li>Fix issue with downloading attachmets from sandbox in certain situations.</li>
+                                      <li>Fix issue with detecting inconsistent database tables when running on MIRO Server.</li>
+                                      <li>Jobs that failed to produce any output (e.g. due to a GAMS compilation error) can now still be downloaded when run on MIRO Server.</li>
+                                      <li>Remove job results from GAMS Engine when job is discarded via job list.</li>
+                                      <li>Jobs that are queued and not yet running are now shown as such in the job list.</li>
+                                      <li>If the sandbox is changed while a (synchronous) job is running, a warning is now displayed before the results are imported into the sandbox.</li>
                                       <li>Fix issue when importing apps deployed with the "single user" or "local multi-user" option into the MIRO library.</li>
                                       <li>Fix issue with attaching the log file of a model containing uppercase letters on case-sensitive file systems.</li>
+                                      <li>Closing a scenario now clears <a href="./customize.html#miro-log">MIRO log errors</a> and the GAMS interaction section.</li>
+                                      <li>Increase maximum size for attachments to 50MB.</li>
                                     </ul>
                                  </div>
                                  <div class="section-block">

@@ -149,7 +149,7 @@ function refreshConfigList() {
               <p title="${descSave}" id="staticAppDesc_${index}" class="app-desc app-desc-fixed app-item-desc">${descSave}</p>
               <textarea id="appDesc_${index}" rows="3" name="desc" class="app-desc editable" style="margin-bottom:1rem;width:100%;display:none;" placeholder="${appDescPlaceholder}">${descSave}</textarea>
               <div id="appGroupsWrapper_${index}" style="display:none;">
-                <label for="newAppGroups">${appGroupsPlaceholder}</label>
+                <label for="appGroups_${index}">${appGroupsPlaceholder}</label>
                 <select id="appGroups_${index}" multiple>${groupOptions}</select>
                 <div style="height:1rem"></div>
               </div>
@@ -214,8 +214,10 @@ function expandAddAppForm() {
                         <div>
                         <input id="newAppName" type="text" required="required" name="alias" class="app-title editable h3-style" style="margin-top:15pt;width:100%;" placeholder="${appNamePlaceholder}">
                         <textarea id="newAppDesc" rows="3" name="desc" class="app-desc editable" style="margin-bottom: 1rem;width: 100%;" placeholder="${appDescPlaceholder}"></textarea>
-                        <label for="newAppGroups">${appGroupsPlaceholder}</label>
-                        <select id="newAppGroups" style="margin-bottom: 1rem;width: 100%;" multiple>${groupOptions}</select>
+                        <div style="display:none">
+                          <label for="newAppGroups">${appGroupsPlaceholder}</label>
+                          <select id="newAppGroups" style="margin-bottom: 1rem;width: 100%;" multiple>${groupOptions}</select>
+                        </div>
                         <div style="height:1rem"></div>
                         </div>
                         <div style = "text-align:right;">
@@ -385,7 +387,7 @@ $appsWrapper.on('click', '.app-box', function (e) {
     $(`#staticAppTitle_${appIndex}`).hide();
     $(`#appDesc_${appIndex}`).show();
     $(`#staticAppDesc_${appIndex}`).hide();
-    $(`#appGroupsWrapper_${appIndex}`).show();
+    // $(`#appGroupsWrapper_${appIndex}`).show();
     Shiny.bindAll(document.getElementById(`appBox_${appID}`));
   }
   $(`#appBox_${appID} .edit-bt-group`).slideDown(200);
@@ -487,6 +489,22 @@ $(document).ready(() => {
     $overlay.hide();
     refreshConfigList();
   });
+  Shiny.addCustomMessageHandler('onInitErrors', (data) => {
+    let errorMessage;
+    if (data.appsNotOnEngine) {
+      errorMessage = `Some apps registered on MIRO Server were not found on GAMS Engine: '${data.appsNotOnEngine.join("', '")}'\n`;
+    }
+    if (data.appsNotOnMIRO) {
+      errorMessage = `Some models registered on GAMS Engine are not found on MIRO Server: '${data.appsNotOnMIRO.join("', '")}'\n`;
+    }
+    if (errorMessage) {
+      bootbox.alert({
+        title: 'Discrepancy with GAMS Engine',
+        message: errorMessage,
+        centerVertical: true,
+      });
+    }
+  });
   Shiny.addCustomMessageHandler('onLoginRequired', (e) => { // eslint-disable-line no-unused-vars
     $loadingScreen.fadeOut(200);
     openLoginForm();
@@ -529,6 +547,7 @@ $(document).ready(() => {
     }
   });
   Shiny.addCustomMessageHandler('onInconsistentDbTables', (data) => {
+    $('#loadingScreenProgressWrapper').hide();
     bootbox.confirm({
       message: `Your database contains records that are inconsistent with the new version of the MIRO application \
 you want to add. Do you want to remove all inconsistent data? The datasets to be removed are: '${data.datasetsToRemove.join("', '")}'.`,

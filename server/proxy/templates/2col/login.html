@@ -2,7 +2,7 @@
 
     ContainerProxy
 
-    Copyright (C) 2016-2018 Open Analytics
+    Copyright (C) 2016-2020 Open Analytics
 
     ===========================================================================
 
@@ -55,19 +55,18 @@
             <div class="container">
                 <div class="branding">
                     <h1 class="logo">
-                      <img class="img-fluid" style="height:50px;" src="assets/img/logo.png" alt="Logo"/>
+                      <img class="img-fluid" src="assets/img/logo.png" alt="Logo"/>
                     </h1>
                 </div><!--//branding-->
                 <div class="tagline">
-                    <p style="font-size:10pt">Please note that GAMS MIRO Server is currently in the beta phase. Not suited for use in production!</p>
                 </div><!--//tagline-->
             </div><!--//container-->
         </header><!--//header-->
 
-        <section class="cards-section text-center" style="min-height:80vh;">
+        <section class="cards-section text-center">
             <div class="container">
 		<div th:if="${@authenticationBackend.name != 'social'}">
-			<form class="form-signin" action="login" method="POST">
+			<form class="form-signin" th:action="@{/login}" method="POST">
 				<h2 class="form-signin-heading">Please sign in</h2>
 				<div class="alert alert-danger" th:if="${error}">
 	  				<strong>Could not sign in!</strong><br/><span th:text="${error}"></span>

@@ -293,6 +293,12 @@
       "cancelButton":"Cancel",
       "okButton": "Logout"
     },
+    "dialogInconsistentOutput":{
+      "title": "Inconsistent output data",
+      "desc": "The output data may not be consistent with the input data currently loaded in your sandbox. Do you still want to import the results?",
+      "okButton": "Import",
+      "cancelButton": "Cancel"
+    },
     "dialogDeleteScen":{  
       "title":"Delete scenario",
       "desc":"Are you sure you want to delete the selected scenario from the database?",
@@ -527,6 +533,7 @@
       "status":{
         "downloading": "Downloading results",
         "downloaded": "Downloaded",
+        "queued": "Queued",
         "running": "Running",
         "imported": "Imported",
         "completed": "Completed",

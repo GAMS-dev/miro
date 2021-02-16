@@ -777,7 +777,14 @@ hasValidHeaderTypes <- function(headersData, headerTypes){
       return(identical(substr(headerTypes, i, i), "c"))
     }
   }, logical(1L), USE.NAMES = FALSE)))
-} 
+}
+colTypeVectorToString <- function(colTypeVector){
+  colTypeVectorLc <- tolower(colTypeVector)
+  ret <- vector("character", length(colTypeVectorLc))
+  ret[colTypeVectorLc == "text"] <- "c"
+  ret[colTypeVectorLc == "double precision"] <- "d"
+  return(paste(ret, collapse = ""))
+}
 fixColTypes <- function(data, colTypes){
   stopifnot(identical(length(data), nchar(colTypes)))
   
