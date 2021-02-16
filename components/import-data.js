@@ -6,6 +6,9 @@ const path = require('path');
 const { format } = require('util');
 const log = require('electron-log');
 const MiroDb = require('./MiroDb');
+const {
+  isFalse,
+} = require('./util');
 
 async function addModelData(paths, modelName, miroMode, miroVersion, usetmpdir,
   miroProcesses, windowObj, dataDir, progressEvent = 'add-app-progress') {
@@ -34,7 +37,7 @@ async function addModelData(paths, modelName, miroMode, miroVersion, usetmpdir,
           R_LIB_PATHS: paths.libPath,
           MIRO_NO_DEBUG: 'true',
           MIRO_FORCE_SCEN_IMPORT: 'true',
-          MIRO_USE_TMP: usetmpdir !== false || miroMode === 'hcube',
+          MIRO_USE_TMP: !isFalse(usetmpdir) || miroMode === 'hcube',
           MIRO_OVERWRITE_SCEN_IMPORT: overwriteData,
           MIRO_WS_PATH: paths.miroWorkspaceDir,
           MIRO_DB_PATH: paths.dbpath,

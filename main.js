@@ -30,6 +30,7 @@ const {
 } = require('./components/helpers');
 const {
   getAppDbPath,
+  isFalse,
 } = require('./components/util');
 
 const isMac = process.platform === 'darwin';
@@ -217,7 +218,7 @@ developMode: ${miroDevelopMode}.`);
         R_LIB_PATHS: libPath,
         MIRO_NO_DEBUG: !miroDevelopMode,
         MIRO_FORCE_SCEN_IMPORT: miroDevelopMode && appData.forceScenImport,
-        MIRO_USE_TMP: appData.usetmpdir !== false || appData.mode === 'hcube',
+        MIRO_USE_TMP: !isFalse(appData.usetmpdir) || appData.mode === 'hcube',
         MIRO_WS_PATH: miroWorkspaceDir,
         MIRO_DB_PATH: dbPath,
         MIRO_BUILD: miroBuildMode,
