@@ -352,7 +352,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     }
   }else if(fileType %in% xlsio$getValidExtensions()){
     loadMode <- "xls"
-    datasetsToFetch <- names(modelIn)
+    datasetsToFetch <- xlsio$getSymbolNames()
   }else{
     removeModal()
     showErrorMsg(lang$errMsg$invalidFileType$title, 

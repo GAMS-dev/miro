@@ -21,6 +21,17 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
     }
     return(self)
   },
+  getSymbolNames = function(){
+    if(length(private$rIndex)){
+      symNamesTmp <- names(private$rIndex)
+      if(scalarsFileName %in% symNamesTmp){
+        symNamesTmp <- c(symNamesTmp, private$scalars)
+      }
+      symNamesTmp <- symNamesTmp[symNamesTmp %in% names(ioConfig$modelIn)]
+      return(symNamesTmp)
+    }
+    return(names(ioConfig$modelIn))
+  },
   read = function(path, symName, indexRange = NULL, forceInit = FALSE){
     self$readIndex(path, indexRange, forceInit)
     if(length(private$rIndex) > 0L){
