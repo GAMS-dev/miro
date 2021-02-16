@@ -1794,7 +1794,7 @@ app.on('ready', async () => {
       id: path.basename(modelPath, 'gms'),
       modelPath,
       mode: process.env.MIRO_MODE,
-      usetmpdir: process.env.MIRO_USE_TMP ? process.env.MIRO_USE_TMP : false,
+      usetmpdir: process.env.MIRO_USE_TMP ? process.env.MIRO_USE_TMP === 'true' : false,
       apiversion: requiredAPIVersion,
       miroversion: miroVersion,
       forceScenImport: process.env.MIRO_FORCE_SCEN_IMPORT === 'true',
