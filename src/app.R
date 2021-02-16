@@ -1733,6 +1733,7 @@ if(!is.null(errMsg)){
             showEl(session, "#dirtyFlagIconO")
           }
           rv$unsavedFlag <<- TRUE
+          inconsistentOutput <<- TRUE
         }, priority = 1000L)
       })
       
@@ -1763,7 +1764,6 @@ if(!is.null(errMsg)){
         nameSuffix <- ""
         if(rv$unsavedFlag){
           nameSuffix <- " (*)"
-          inconsistentOutput <<- TRUE
         }
         if(is.null(activeScen) || !length(activeScen$getSid())){
           if(length(rv$activeSname)){
