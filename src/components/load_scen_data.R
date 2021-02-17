@@ -147,6 +147,10 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                      ret$noTabularData <<- FALSE
                    }
                    FALSE
+                 }, error_no_data = function(e){
+                   flog.debug("Symbol: %s contains no data", names(metaData)[[i]])
+                   ret$tabular[[i]] <<- templates[[i]]
+                   return(TRUE)
                  }, error_notfound = function(e){
                    flog.debug("Symbol: %s not found in Excel spreadsheet", names(metaData)[[i]])
                    ret$tabular[[i]] <<- templates[[i]]

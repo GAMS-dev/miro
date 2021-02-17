@@ -238,9 +238,6 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         data <- private$readInternal(private$rpath, range = rangeInfo$range,
                                      col_names = index$dim > 0L && index$cdim > 0L,
                                      na = private$naList, col_types = "text")
-        if(isSetType && (!nrow(data) || rowSums(is.na(data))[[1]] == ncol(data))){
-          data[1, ] <- ""
-        }
       }
       colsToIgnore <- rangeInfo$colsToIgnore - rangeInfo$range$ul[2] + 1L
       
@@ -272,8 +269,13 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       
       if(index$rdim > 0L){
         if(length(data) < index$rdim + if(isSetType) 0L else 1L){
-          stop_custom("error_parse_config",
-                      sprintf(lang$errMsg$xlsio$errors$badSymbolRange, symName), call. = FALSE)
+          if(nrow(data) > 0L){
+            stop_custom("error_parse_config",
+                        sprintf(lang$errMsg$xlsio$errors$badSymbolRange, symName), call. = FALSE)
+          }else{
+            stop_custom("error_no_data",
+                        sprintf("No data for symbol: %s", symName), call. = FALSE)
+          }
         }
         names(data)[seq_len(index$rdim)] <- names(private$metadata[[symName]]$headers)[seq_len(index$rdim)]
         if(index$cdim == 0L && length(data) > index$rdim){
