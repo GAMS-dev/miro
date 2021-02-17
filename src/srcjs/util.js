@@ -1,7 +1,25 @@
-/* global $:false HTMLWidgets:false */
+/* global $:false HTMLWidgets:false Chart:false */
 
 export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function changeChartjsTheme(dark = false) {
+  if (typeof Chart === 'undefined') {
+    return;
+  }
+  if (dark) {
+    Chart.defaults.global.defaultFontColor = 'white';
+  } else {
+    Chart.defaults.global.defaultFontColor = '#666';
+  }
+  Chart.helpers.each(Chart.instances, (instance) => {
+    instance.chart.update();
+  });
+}
+
+export function changeTheme(dark = false) {
+  changeChartjsTheme(dark);
 }
 
 export function changeActiveButtons(tabId) {

@@ -5,6 +5,7 @@ import AutoNumeric from 'autonumeric';
 import {
   sleep, changeActiveButtons, switchTabInTabset, removeModal,
   switchTab, isInputEl, rerenderDygraph, rerenderHot, showHideEl, scrollDown,
+  changeTheme,
 } from './util';
 
 export function changeTab(object, idActive, idRefer) {
@@ -216,6 +217,10 @@ export function modal(msg, okButton, cancelButton,
 }
 
 $(document).ready(() => {
+  changeTheme(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    changeTheme(e.matches);
+  });
   $('#toolCategories').on('click', '.category-btn', function () {
     const catId = this.dataset.cat;
     const catBody = $(`.cat-body-${catId}`);
