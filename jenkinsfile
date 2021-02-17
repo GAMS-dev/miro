@@ -73,13 +73,6 @@ pipeline {
                                     popd > /dev/null
                                 '''
                             }
-                            sh '''#!/bin/bash -xe
-                                ## build MIRO server images
-                                yarn docker-build
-                                pushd server > /dev/null
-                                    python3 miro_server.py build
-                                popd > /dev/null
-                            '''
                         }
                         sshagent(['a2576ca5-f8e0-4e28-9d42-b0c5603b213d']) {
                             sh '''#!/bin/bash -xe
@@ -248,13 +241,6 @@ pipeline {
                                     yarn docker-publish-unstable
                                 '''
                             }
-                            sh '''#!/bin/bash -xe
-                                yarn docker-publish-unstable
-                                ## build MIRO server images
-                                pushd server > /dev/null
-                                    python3 miro_server.py push
-                                popd > /dev/null
-                            '''
                         }
                         archiveArtifacts artifacts: 'dist/*.AppImage', fingerprint: true
                     }
