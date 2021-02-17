@@ -238,6 +238,9 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         data <- private$readInternal(private$rpath, range = rangeInfo$range,
                                      col_names = index$dim > 0L && index$cdim > 0L,
                                      na = private$naList, col_types = "text")
+        if(isSetType && index$cdim > 0L && (!nrow(data) || rowSums(is.na(data))[[1]] == ncol(data))){
+          data[1, ] <- ""
+        }
       }
       colsToIgnore <- rangeInfo$colsToIgnore - rangeInfo$range$ul[2] + 1L
       
