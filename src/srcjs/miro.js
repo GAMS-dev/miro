@@ -218,9 +218,12 @@ export function modal(msg, okButton, cancelButton,
 
 $(document).ready(() => {
   changeTheme(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    changeTheme(e.matches);
-  });
+  if (typeof window.matchMedia('(prefers-color-scheme: dark)').addEventListener !== 'undefined') {
+    // browser supports listening to matchMedia change
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      changeTheme(e.matches);
+    });
+  }
   $('#toolCategories').on('click', '.category-btn', function () {
     const catId = this.dataset.cat;
     const catBody = $(`.cat-body-${catId}`);
