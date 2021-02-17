@@ -1,6 +1,6 @@
 Rversion <- "4.0.2"
-CRANMirrors <- c('https://cloud.r-project.org/',
-    'https://ftp.fau.de/cran/',
+CRANMirrors <- c('https://ftp.fau.de/cran/',
+    'https://cloud.r-project.org/',
     'https://stat.ethz.ch/CRAN/')
 
 RLibPath <- Sys.getenv('LIB_PATH')
