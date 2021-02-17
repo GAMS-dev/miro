@@ -4,8 +4,12 @@ if(!identical(RLibPath, "")) {
 }
 print(sessionInfo())
 
+print("Library paths:")
 print(.libPaths())
+print("Home directory:")
 print(path.expand("~"))
+print("Working directory:")
+print(getwd())
 
 library("testthat")
 library("stringi")
