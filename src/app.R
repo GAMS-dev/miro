@@ -999,7 +999,7 @@ if(!is.null(errMsg)){
       miroDataFilesRaw <- list.files(miroDataDir)
     }
     dataFileExt   <- tolower(tools::file_ext(miroDataFilesRaw))
-    miroDataFiles <- miroDataFilesRaw[dataFileExt %in% c(if(useGdx) c("gdx", "miroscen"), "xlsx", "xls", "zip")]
+    miroDataFiles <- miroDataFilesRaw[dataFileExt %in% c(if(useGdx) c("gdx", "miroscen"), "xlsx", "xlsm", "xls", "zip")]
     dataFileExt   <- tolower(tools::file_ext(miroDataFiles))
     newScen <- NULL
     tryCatch({
@@ -1054,7 +1054,7 @@ if(!is.null(errMsg)){
             newDataHashes[[miroDataFile]] <- dataHash
           }
           flog.info("New data: '%s' is stored in the database. Please wait until the import is finished.", miroDataFile)
-          if(dataFileExt[i] %in% c("xls", "xlsx")){
+          if(dataFileExt[i] %in% c("xls", "xlsx", "xlsm")){
             method <- "xls"
             tmpDir <- miroDataDir
             if(is.null(xlsio)){

@@ -21,6 +21,17 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
     }
     return(self)
   },
+  getSymbolNames = function(){
+    if(length(private$rIndex)){
+      symNamesTmp <- names(private$rIndex)
+      if(scalarsFileName %in% symNamesTmp){
+        symNamesTmp <- c(symNamesTmp, private$scalars)
+      }
+      symNamesTmp <- symNamesTmp[symNamesTmp %in% names(ioConfig$modelIn)]
+      return(symNamesTmp)
+    }
+    return(names(ioConfig$modelIn))
+  },
   read = function(path, symName, indexRange = NULL, forceInit = FALSE){
     self$readIndex(path, indexRange, forceInit)
     if(length(private$rIndex) > 0L){
@@ -122,6 +133,9 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
                                 paste0(" ", lang$nav$excelExport$metadataSheet$title)), dataToWrite)
     }
     return(writexl::write_xlsx(dataToWrite, path))
+  },
+  getValidExtensions = function(){
+    return(c("xls", "xlsx", "xlsm"))
   }),
   private = list(
     rpath = character(0L),
@@ -268,10 +282,23 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
             names(data)[length(data)] <- newColName
           }
         }
+        emptyRows <- which(rowSums(is.na(data[seq_len(index$rdim)])) == index$rdim)
+      }else{
+        emptyRows <- integer(0L)
       }
+      
+      if(index$cdim > 1L){
+        hdrTmp <- private$getColHeaders(symName, rangeInfo)
+        if(length(data) > length(hdrTmp)){
+          data <- data[seq_along(hdrTmp)]
+        }
+        names(data) <- hdrTmp
+        emptyCols <- which(names(data) == rep.int("\U2024", index$cdim - 1L))
+      }else{
+        emptyCols <- which(names(data) == "")
+      }
+      
       # remove empty rows and columns
-      emptyCols <- which(names(data) == "")
-      emptyRows <- which(rowSums(is.na(data)) == ncol(data))
       if(length(emptyCols)){
         if(rangeInfo$isOpenRange && identical(index$se, "0")){
           emptyCols <- seq(emptyCols[1], length(data))
@@ -313,7 +340,6 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
         }
         valColName <- names(private$metadata[[symName]]$headers)[length(private$metadata[[symName]]$headers)]
         if(index$cdim > 1L){
-          names(data) <- private$getColHeaders(symName, rangeInfo)
           if(private$isTable(symName)){
             data <- tidyr::pivot_longer(data, -seq_len(index$dim - index$cdim), 
                                         names_to = c(names(private$metadata[[symName]]$headers)[seq(index$dim - index$cdim + 1L, index$dim - 1L)],
@@ -546,6 +572,8 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       index <- private$rIndex[[symName]]
       headerData <- private$readInternal(private$rpath, range = rangeInfo$headerRange,
                                          col_names = FALSE, col_types = "text")
+      # TODO: use na argument of readxl when  https://github.com/tidyverse/readxl/issues/572 is closed
+      headerData[is.na(headerData)] <- ""
       colsToIgnore <- rangeInfo$colsToIgnore - rangeInfo$headerRange$ul[2] + 1L
       if(length(colsToIgnore)){
         colsToIgnore <- colsToIgnore[colsToIgnore < 1 | colsToIgnore > length(headerData)]
@@ -788,7 +816,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       }else if("rdim" %in% names(indexDf)){
         missingrDim <- is.na(indexDf[["rdim"]])
         
-        indexDf[missingrDim, "rdim"]   <- indexDf[["dim"]][missingcDim] - 1L
+        indexDf[missingrDim, "rdim"]   <- indexDf[["dim"]][missingrDim] - 1L
         indexDf[missingrDim, "cdim"]   <- 1L
         
         indexDf[!missingrDim, "cdim"]  <- indexDf[["dim"]][!missingrDim] - indexDf[["rdim"]][!missingrDim]

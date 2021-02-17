@@ -280,7 +280,7 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                                                                  multiple = FALSE,
                                                                  accept = c("application/vnd.ms-excel", 
                                                                             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
-                                                                            "application/zip", "text/csv", ".xlsx", ".csv", ".xls", ".zip",
+                                                                            "application/zip", "text/csv", ".xlsx", ".xlsm", ".csv", ".xls", ".zip",
                                                                             ".gdx", ".miroscen")),
                                                        tags$div(class = "gmsalert gmsalert-error", id = "localDataImportError", 
                                                                 style = "position:relative;white-space:pre-line;", lang$errMsg$unknownError)
