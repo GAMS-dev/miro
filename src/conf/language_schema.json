@@ -138,10 +138,6 @@
               "type": "string",
               "minLength": 1
             },
-            "changeMode": {
-              "type": "string",
-              "minLength": 1
-            },
             "splitView": {
               "type": "string",
               "minLength": 1
@@ -171,7 +167,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 12
+          "minProperties": 11
         },
         "header": {
           "type": "object",

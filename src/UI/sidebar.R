@@ -16,14 +16,22 @@ if(LAUNCHHCUBEMODE){
                 tags$div(class = "btn-group btSplitView", style = "width:100%",
                          tags$button(class = "btn btn-default bt-highlight-2 dropdown-toggle", `data-toggle` = "dropdown",
                                      style = "width:85%;display:block;margin: 6px 5px 6px 15px;",
-                                     "Change mode", tags$span(class = "caret"),
+                                     tags$span(id = "btSelectCompareMode",
+                                               if(identical(config$defCompMode, "tab")){
+                                                 lang$nav$sidebarButtons$tabView
+                                               }else if(identical(config$defCompMode, "pivot")){
+                                                 lang$nav$sidebarButtons$pivotView
+                                               }else{
+                                                 lang$nav$sidebarButtons$splitView
+                                               }), tags$span(class = "caret"),
                                      tags$span(class = "sr-only", "toggle dropdown")),
                          tags$ul(class = "dropdown-menu dropdown-sidebar", role = "menu", style = "margin:6px 0px 6px 15px;position:relative;width:85%;",
-                                 tags$li(tags$a(href = "#", onclick = "Shiny.setInputValue('btSplitView','splitView',{priority:'event'});",
+                                 tags$li(tags$a(href = "#", onclick = paste0("Miro.changeDDButtonEvent('", htmltools::htmlEscape(lang$nav$sidebarButtons$splitView), "','#btSelectCompareMode','btSplitView','splitView',false);"),
                                                 "data-view" = "split", lang$nav$sidebarButtons$splitView)),
-                                 tags$li(tags$a(href = "#", onclick = "Shiny.setInputValue('btSplitView','pivotView',{priority:'event'});",
+                                 tags$li(tags$a(href = "#", onclick = paste0("Miro.changeDDButtonEvent('", htmltools::htmlEscape(lang$nav$sidebarButtons$pivotView), "','#btSelectCompareMode','btSplitView','pivotView',false);"),
                                                 "data-view" = "pivot", lang$nav$sidebarButtons$pivotView)),
-                                 tags$li(tags$a(href = "#", onclick = "Shiny.setInputValue('btSplitView','tabView',{priority:'event'});",
+                                 tags$li(tags$a(href = "#",
+                                                onclick = paste0("Miro.changeDDButtonEvent('", htmltools::htmlEscape(lang$nav$sidebarButtons$tabView), "','#btSelectCompareMode','btSplitView','tabView',false);"),
                                                 "data-view" = "tab", lang$nav$sidebarButtons$tabView)))),
                 tagAppendAttributes(actionButton("btCompareScen", 
                                                  class = "bt-highlight-3", 
@@ -72,14 +80,22 @@ if(LAUNCHHCUBEMODE){
                   tags$div(class = "btn-group btSplitView", style = "width:100%",
                            tags$button(class = "btn btn-default bt-highlight-2 dropdown-toggle", `data-toggle` = "dropdown",
                                        style = "width:85%;display:block;margin: 6px 5px 6px 15px;",
-                                       lang$nav$sidebarButtons$changeMode, tags$span(class = "caret"),
+                                       tags$span(id = "btSelectCompareMode",
+                                                 if(identical(config$defCompMode, "tab")){
+                                                   lang$nav$sidebarButtons$tabView
+                                                 }else if(identical(config$defCompMode, "pivot")){
+                                                   lang$nav$sidebarButtons$pivotView
+                                                 }else{
+                                                   lang$nav$sidebarButtons$splitView
+                                                 }), tags$span(class = "caret"),
                                        tags$span(class = "sr-only", "toggle dropdown")),
                            tags$ul(class = "dropdown-menu dropdown-sidebar", role = "menu", style = "margin:6px 0px 6px 15px;position:relative;width:85%;",
-                                   tags$li(tags$a(href = "#", onclick = "Shiny.setInputValue('btSplitView','splitView',{priority:'event'});",
+                                   tags$li(tags$a(href = "#", onclick = paste0("Miro.changeDDButtonEvent('", htmltools::htmlEscape(lang$nav$sidebarButtons$splitView), "','#btSelectCompareMode','btSplitView','splitView',false);"),
                                                   "data-view" = "split", lang$nav$sidebarButtons$splitView)),
-                                   tags$li(tags$a(href = "#", onclick = "Shiny.setInputValue('btSplitView','pivotView',{priority:'event'});",
+                                   tags$li(tags$a(href = "#", onclick = paste0("Miro.changeDDButtonEvent('", htmltools::htmlEscape(lang$nav$sidebarButtons$pivotView), "','#btSelectCompareMode','btSplitView','pivotView',false);"),
                                                   "data-view" = "pivot", lang$nav$sidebarButtons$pivotView)),
-                                   tags$li(tags$a(href = "#", onclick = "Shiny.setInputValue('btSplitView','tabView',{priority:'event'});",
+                                   tags$li(tags$a(href = "#",
+                                                  onclick = paste0("Miro.changeDDButtonEvent('", htmltools::htmlEscape(lang$nav$sidebarButtons$tabView), "','#btSelectCompareMode','btSplitView','tabView',false);"),
                                                   "data-view" = "tab", lang$nav$sidebarButtons$tabView)))),
                   actionButton("btCompareScen", class = "bt-highlight-3", lang$nav$sidebarButtons$compareStart, 
                                width = "85%", style = "display:block;", 

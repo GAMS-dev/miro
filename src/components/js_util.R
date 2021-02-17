@@ -19,6 +19,7 @@ switchCompareMode <- function(session, mode, numberScenTabs){
     session$sendCustomMessage("gms-setAttrib",
                               list(selector = "#btCompareScen",
                                    attr = "data-noshow", val = "true"))
+    setTextContent(session, "#btSelectCompareMode", lang$nav$sidebarButtons$pivotView)
     return()
   }
   showEl(session, "#btCompareScen")
@@ -30,6 +31,7 @@ switchCompareMode <- function(session, mode, numberScenTabs){
     showEl(session, "#scen-split-view")
     hideEl(session, "#scen-tab-view")
     hideEl(session, "#scen-pivot-view")
+    setTextContent(session, "#btSelectCompareMode", lang$nav$sidebarButtons$splitView)
   }else{
     if(numberScenTabs < 2){
       disableEl(session, "#btCompareScen")
@@ -39,6 +41,7 @@ switchCompareMode <- function(session, mode, numberScenTabs){
     hideEl(session, "#scen-split-view")
     showEl(session, "#scen-tab-view")
     hideEl(session, "#scen-pivot-view")
+    setTextContent(session, "#btSelectCompareMode", lang$nav$sidebarButtons$tabView)
   }
 }
 hideEl <- function(session, id){
