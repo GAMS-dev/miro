@@ -75,7 +75,7 @@ ioConfig <<- list(modelOut = list("_scalars_out" = list(symnames = c("cowf","exp
                                     modedistancesetdense = list(symtype = "set", colTypes = "cccc",
                                                                 headers = list(uni1 = list(), uni2 = list(), uni3 = list(),
                                                                                text = list())),
-                                    specialVal = list(symtype = "parameter", colTypes = "cd",
+                                    specialval = list(symtype = "parameter", colTypes = "cd",
                                                       headers = list(uni = list(),
                                                                      value = list()))))
 
@@ -192,7 +192,7 @@ test_that("Reading parameters works", {
                    tibble(uni1 = c("ship", "truck", "rail", "barge"),
                           uni2 = c("brussels","san francisco","san francisco","san francisco"),
                           value = c(5000,2200,2200,2800)))
-  expect_identical(xlsio$read("../data/exampleData.xlsx", "specialVal"),
+  expect_identical(xlsio$read("../data/exampleData.xlsx", "specialval"),
                    tibble(uni = c("v2", "v3", "v4", "v11", "v12", "v13", "v14", "v15", "v16", "v17", "v18"),
                           value = c(Inf,-Inf,Inf,NA,770,NA,3,NA,NA,NA,NA)))
 })

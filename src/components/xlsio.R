@@ -619,6 +619,7 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
       }else{
         symColId <- symColId[!is.na(symColId)][1]
       }
+      indexDf[[symColId]] <- tolower(indexDf[[symColId]])
       symbolsInExcel <- match(indexDf[[symColId]], c(names(private$metadata), private$scalars))
       invalidRowIds <- is.na(symbolsInExcel)
       if(any(invalidRowIds)){
