@@ -351,7 +351,8 @@ pipeline {
 
                         rsync -rlptvz -e "ssh -o StrictHostKeyChecking=no" doc/* ubuntu@new.gams.com:/var/www/html/new.gams.com/public_html/miro
 
-                        git clone git@git.gams.com:smann/new.gams.com.git --single-branch
+                        rm -rf new.gams.com
+                        git clone git@git.gams.com:smann/new.gams.com.git --branch master --single-branch --depth 1
                         pushd new.gams.com > /dev/null
                         ls -la
                         sed -i -e 's/^\\( *miro_release *= *\\).*/\\1"'"${MIRO_VERSION_FULL}"'"/' ./config.toml
