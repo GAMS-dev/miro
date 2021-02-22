@@ -1012,7 +1012,7 @@
       "btCancel": "Cancel"
     },
     "uiR":{
-      "adminPanel": "GAMS MIRO admin panel",
+      "configMode": "GAMS MIRO Konfigurationsmodus",
       "general": "General settings",
       "table": "Configure tables",
       "widgets": "Configure widgets",

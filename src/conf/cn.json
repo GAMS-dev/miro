@@ -1012,7 +1012,7 @@
       "btCancel": "取消"
     },
     "uiR":{
-      "adminPanel": "GAMS MIRO管理面板",
+      "configMode": "GAMS MIRO配置模式",
       "general": "通用设置",
       "table": "图表设置",
       "widgets": "配置小部件",

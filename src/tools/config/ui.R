@@ -57,7 +57,7 @@ header_admin <- dashboardHeader(
                                       htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\');">',
                                       lang$nav$header$help$about, '</a>')
                   )))),
-  title=paste0(lang$adminMode$uiR$adminPanel," (", modelName, ")"), disable = FALSE)
+  title=paste0(lang$adminMode$uiR$configMode," (", modelName, ")"), disable = FALSE)
 
 sidebar_admin <- dashboardSidebar(
   sidebarMenu(id="sidebarMenuId",
