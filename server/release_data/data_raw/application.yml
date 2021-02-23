@@ -49,5 +49,7 @@ spring:
       max-request-size: 200MB
    
 server:
+  forward-headers-strategy: native
   servlet:
+    session.timeout: 0
     context-path: /
