@@ -3999,6 +3999,9 @@ observeEvent(rv$saveGraphConfirm, {
     configJSON$dataRendering[[activeSymbol$name]]$graph <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$height <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$pivottable <<- NULL
+    if(!length(configJSON$dataRendering[[activeSymbol$name]]$options)){
+      configJSON$dataRendering[[activeSymbol$name]]$options <<- NULL
+    }
     customRendererName <- paste0("mirorenderer_", tolower(activeSymbol$name))
     if(identical(configJSON$dataRendering[[activeSymbol$name]]$outType,
                  customRendererName)){
