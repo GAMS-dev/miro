@@ -95,6 +95,14 @@ body_admin <- dashboardBody({
 }
 .main-header .logo {
                              background-image: url("gams_logo.png");
+}
+.shiny-output-error, .shiny-output-error:before{
+visibility:visible;
+}
+.custom-renderer-boilerplate {
+white-space:pre-wrap;
+font-family: Menlo,Monaco,Consolas,Courier New,monospace;
+font-size: 12px;
 }')))),
     HTML('<!-- Creates modal dialog for confirm messages -->
        <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -327,6 +335,8 @@ body_admin <- dashboardBody({
                                                                 #custom 
                                                                 tags$li(id = "categoryCustom1", class = "category-btn category-btn-custom", `data-cat`="48",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$main)),
+                                                                tags$li(id = "categoryCustom2", class = "category-btn category-btn-custom", `data-cat`="48a",
+                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$advanced)),
                                                                 #valuebox 
                                                                 tags$li(id = "categoryValuebox1", class = "category-btn category-btn-valuebox", `data-cat`="49",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$main))
@@ -385,19 +395,10 @@ body_admin <- dashboardBody({
                                                                         col = "a"), 
                                                    height = 400)),
                              tags$div(id = "preview-content-custom", style = "display:none; overflow:auto;text-align:left;",
-                                      tags$h4(paste0(modelName,"_custom.R ", lang$adminMode$uiR$custom$skeleton)),
-                                      verbatimTextOutput("preview_output_custom"),
-                                      tags$h4(lang$adminMode$uiR$custom$steps),
-                                      tags$ol(
-                                        tags$li(sprintf(lang$adminMode$uiR$custom$li1, modelName, modelName)), 
-                                        tags$li(sprintf(lang$adminMode$uiR$custom$li2, modelName)), 
-                                        tags$li(lang$adminMode$uiR$custom$li3a, 
-                                                tags$a(href = "https://gams.com/miro/customize.html#custom-renderers", 
-                                                       lang$adminMode$uiR$custom$li3b, target = "_blank"),".")
-                                      ),
-                                      tags$div(sprintf(lang$adminMode$uiR$custom$description1, modelName)),
-                                      tags$h4(lang$adminMode$uiR$custom$description2),
-                                      tags$div(lang$adminMode$uiR$custom$description3)
+                                      tags$button(class = "btn btn-default", type = "button",
+                                                  onclick = "Shiny.setInputValue('btUpdateCustomRendererOutput',1,{priority:'event'});", 
+                                                  lang$adminMode$graphs$customOptions$btUpdate),
+                                      uiOutput("preview_custom_renderer")
                              ),
                              if(scalarsOutName %in% names(modelOut)){
                                tags$div(id = "preview-content-valuebox", style = "display:none;text-align:left",
