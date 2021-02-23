@@ -1944,7 +1944,6 @@ observeEvent(input$customExternalSymbol, {
     rendererToLoad <- rendererFunctionName
   }else{
     rendererFunctionName <- input$customExternalSymbol
-    print(rendererFunctionName)
     currentRendererSymname <- gsub("^mirocustom\\_", "", rendererFunctionName)
     if(currentRendererSymname %in% c(unname(inputSymMultiDimChoices),
                                      unname(outputSymMultiDimChoices))){
