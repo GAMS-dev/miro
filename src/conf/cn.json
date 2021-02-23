@@ -1812,7 +1812,6 @@
         "btUpdate": "更新",
         "externalRenderer": "从另一个符号使用渲染器",
         "symNotFoundSuffix": "（找不到符号）",
-        "symNotFoundSuffix": "",
         "options": "传递给渲染器功能的其他选项",
         "packages": "绘制器所需的软件包",
         "additionalData": "应传递给自定义渲染器的其他数据集"
