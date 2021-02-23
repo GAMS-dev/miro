@@ -618,7 +618,7 @@ if(is.null(errMsg)){
   }
   if(LAUNCHCONFIGMODE){
     requiredPackages <- c(requiredPackages, "plotly", "xts", "dygraphs", "leaflet", "chartjs", "sortable",
-                          "leaflet.minicharts", "timevis")
+                          "leaflet.minicharts", "timevis", "shinyAce")
   }else{
     requiredPackages <- c(requiredPackages, 
                           if(identical(installPackage$plotly, TRUE)) "plotly",
