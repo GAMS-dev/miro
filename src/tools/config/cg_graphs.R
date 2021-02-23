@@ -4,6 +4,7 @@ activeSymbolName <- character(0L)
 customRendererEnv <- new.env(parent = emptyenv())
 skipLoadRenderer <- TRUE
 invalidCustomRender <- FALSE
+rendererFromExternalSymbol <- FALSE
 
 existingRendererFiles <- tools::file_path_sans_ext(list.files(
   path = customRendererDir,
@@ -1938,7 +1939,7 @@ observeEvent(input$customExternalSymbol, {
     skipLoadRenderer <<- FALSE
     return()
   }
-  codeReadonly <- FALSE
+  rendererFromExternalSymbol <<- FALSE
   if(identical(input$customExternalSymbol, "-")){
     rendererFunctionName <- paste0("mirorenderer_", activeSymbolName)
     rendererToLoad <- rendererFunctionName
@@ -1948,7 +1949,7 @@ observeEvent(input$customExternalSymbol, {
     if(currentRendererSymname %in% c(unname(inputSymMultiDimChoices),
                                      unname(outputSymMultiDimChoices))){
       # renderer uses code from other (existent) symbol
-      codeReadonly <- TRUE
+      rendererFromExternalSymbol <<- TRUE
       rendererToLoad <- rendererFunctionName
     }else{
       # renderer from nonexistent symbol
@@ -1959,10 +1960,8 @@ observeEvent(input$customExternalSymbol, {
   rv$graphConfig$outType <- rendererFunctionName
   tryCatch({
     rendererFunctions <- getRendererFunctions(rendererToLoad)
-    updateAceEditor(session, "customOutputFunction", value = rendererFunctions$output,
-                    readOnly = codeReadonly)
-    updateAceEditor(session, "customRenderFunction", value = rendererFunctions$renderer,
-                    readOnly = codeReadonly)
+    updateAceEditor(session, "customOutputFunction", value = rendererFunctions$output)
+    updateAceEditor(session, "customRenderFunction", value = rendererFunctions$renderer)
     session$sendCustomMessage("gms-shinySetInputValue", list(id = "btUpdateCustomRendererOutput",
                                                              val = 1L,
                                                              timeout = 500L))
@@ -3513,7 +3512,7 @@ getCustomOptions <- reactive({
     
     names(externalRendererFiles)[externalRendererFilesInvalid] <- paste(externalRendererFiles[externalRendererFilesInvalid], lang$adminMode$graphs$customOptions$symNotFoundSuffix)
     
-    codeReadonly <- FALSE
+    rendererFromExternalSymbol <<- FALSE
     
     rv$graphConfig$outType <- rendererNameTmp
     
@@ -3525,7 +3524,7 @@ getCustomOptions <- reactive({
           rv$graphConfig$outType <- paste0("mirorenderer_", tolower(activeSymbol$name))
         }else{
           # renderer uses code from other (existent) symbol
-          codeReadonly <- TRUE
+          rendererFromExternalSymbol <<- TRUE
         }
       }
       tryCatch({
@@ -3553,7 +3552,6 @@ getCustomOptions <- reactive({
                value = rendererFunctions$output,
                debounce = 100,
                mode = "r",
-               readOnly = codeReadonly,
                minLines = 1,
                maxLines = 30,
                autoScrollEditorIntoView = TRUE,
@@ -3568,7 +3566,6 @@ getCustomOptions <- reactive({
                value = rendererFunctions$renderer,
                debounce = 100,
                mode = "r",
-               readOnly = codeReadonly,
                minLines = 1,
                maxLines = 30,
                autoScrollEditorIntoView = TRUE,
@@ -4003,6 +4000,9 @@ observeEvent(rv$saveGraphConfirm, {
       configJSON$dataRendering[[activeSymbol$name]]$options <<- NULL
     }
     customRendererName <- paste0("mirorenderer_", tolower(activeSymbol$name))
+    if(rendererFromExternalSymbol){
+      customRendererName <- configJSON$dataRendering[[activeSymbol$name]]$outType
+    }
     if(identical(configJSON$dataRendering[[activeSymbol$name]]$outType,
                  customRendererName)){
       if(!dir.exists(customRendererDir) && !dir.create(customRendererDir)){
