@@ -1944,7 +1944,7 @@ observeEvent(input$customExternalSymbol, {
     rendererToLoad <- rendererFunctionName
   }else{
     rendererFunctionName <- input$customExternalSymbol
-    currentRendererSymname <- gsub("^mirocustom\\_", "", rendererFunctionName)
+    currentRendererSymname <- gsub("^mirorenderer\\_", "", rendererFunctionName)
     if(currentRendererSymname %in% c(unname(inputSymMultiDimChoices),
                                      unname(outputSymMultiDimChoices))){
       # renderer uses code from other (existent) symbol
@@ -3503,7 +3503,7 @@ getCustomOptions <- reactive({
       skipLoadRenderer <<- TRUE
     }
     
-    externalRendererSymbols <- gsub("^mirocustom\\_", "", externalRendererFiles)
+    externalRendererSymbols <- gsub("^mirorenderer\\_", "", externalRendererFiles)
     
     names(externalRendererFiles) <- externalRendererSymbols
     
