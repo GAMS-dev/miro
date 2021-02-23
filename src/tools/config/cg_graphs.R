@@ -3889,9 +3889,9 @@ observe({
       local({
         customRendererFunction <- eval(parse(text = isolate(paste0(
           customRendererFunctionName(),
-          " <- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){",
+          " <- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){\n",
           input$customRenderFunction,
-          "}"))))
+          "\n}"))))
         callModule(customRendererFunction, "preview_output_custom",
                    data, options = rv$graphConfig$options, 
                    path = customRendererDir, rendererEnv = customRendererEnv,
@@ -4011,12 +4011,12 @@ observeEvent(rv$saveGraphConfirm, {
         customOutputFunctionName(),
         " <- function(id, height = NULL, options = NULL, path = NULL){\n    ns <- NS(id)\n",
         isolate(input$customOutputFunction),
-        "}"
+        "\n}\n"
       ), "\n", paste0(
         customRendererFunctionName(),
-        " <- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){",
+        " <- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){\n",
         input$customRenderFunction,
-        "}"), 
+        "\n}\n"), 
       file = file.path(customRendererDir, paste0(customRendererName, ".R")))
       if(!customRendererName %in% existingRendererFiles){
         existingRendererFiles <<- c(existingRendererFiles, customRendererName)
