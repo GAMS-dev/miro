@@ -335,6 +335,7 @@ pipeline {
                         git config user.name 'jenkins'
                         git config user.email 'jenkins@berlin.noreply.gams.com'
                         git checkout -B $BRANCH_NAME
+                        git pull
 
                         git add ./doc/release.html ./doc/index.html
                         git commit -m "[CI skip] Update documentation" && {
