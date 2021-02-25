@@ -66,7 +66,7 @@ dbSchema <- list(tabName = c(`_scenMeta` = "_sys_metadata_transport", `_scenLock
                                  b = c("k", "value"),
                                  d = c("i", 
                                        "j", "value"),
-                                 ilocdata = c("i", "lat", "lng"),
+                                 ilocdata = c("i", "lng", "lat"),
                                  `_scalars` = c("scalar", "description", "value"
                                  )),
                  colTypes = c(`_scenMeta` = "iccTcccci", `_scenLock` = "ciT", 
@@ -142,11 +142,32 @@ for(dbType in dbTypes){
     expect_identical(dbReadTable(conn, "transport_b")[-1],
                      data.frame(k = c("New-york", "Chicago", "Topeka"),
                                 value = c(325, 300, 275)))
-    migrationConfig <- list(results = list(oldTableName  = "schedule",
-                                           colNames = c("i", "j", "lngp", "latp", "lngm", "latm", "cap", 
-                                                        "demand", "quantities", "-")),
-                            a = list(oldTableName = "a", colNames = c("i", "-", "value")),
-                            b = list(oldTableName = "b", colNames = c("j", "value")))
+    migrationConfig <- list(a = list(oldTableName = "a", colNames = c("-", "-", "value")))
+    expect_error(dbMigrator$migrateDb(migrationConfig,
+                                      forceRemove = FALSE), class = "error_data_loss", regex = "forceRemove")
+    expect_error(dbMigrator$migrateDb(migrationConfig,
+                                      forceRemove = TRUE), NA)
+    expect_identical(dbReadTable(conn, "transport_a")[-1],
+                     data.frame(i = NA_character_,
+                                j = NA_character_,
+                                value = c(350, 600)))
+    # swap columns
+    migrationConfig <- list(ilocdata = list(oldTableName = "ilocdata",
+                                            colNames = c("i", "lat", "lng")))
+    expect_error(dbMigrator$migrateDb(migrationConfig,
+                                      forceRemove = FALSE), NA)
+    expect_identical(dbReadTable(conn, "transport_ilocdata")[-1],
+                     data.frame(i = c("Seattle", "San-Diego"),
+                                lng = c(47.608013, 32.715736),
+                                lat = c(-122.335167, -117.161087)))
+    migrationConfig <- list(ilocdata = list(oldTableName = "ilocdata",
+                                            colNames = c("i", "lat", "lng")))
+    expect_error(dbMigrator$migrateDb(migrationConfig,
+                                      forceRemove = FALSE), NA)
+    expect_identical(dbReadTable(conn, "transport_ilocdata")[-1],
+                     data.frame(i = c("Seattle", "San-Diego"),
+                                lng = c(-122.335167, -117.161087),
+                                lat = c(47.608013, 32.715736)))
   })
 }
 

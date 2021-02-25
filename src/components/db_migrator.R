@@ -98,6 +98,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
         stop_custom("error_data_loss", "The database migration you specified will lead to loss of data but forceRemove was not set.", call.= FALSE)
       }
       self$removeTablesModel(private$orphanedTables[tablesToRemove])
+      private$orphanedTables <- private$orphanedTables[!tablesToRemove]
     }
     
     tablesToRename <- newTableNames[newTableNames != oldTableNames]
@@ -143,14 +144,14 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
           private$dropColumns(tableName, currentLayout$colNames[colsToRemove])
         }
         currentColNames <- migrationLayout$colNames
-        colsToRename <- currentColNames != newColNames
-        newNamesExist <- currentColNames[colsToRename] %in% newColNames
+        colsToRename <- currentColNames == currentLayout$colNames & currentColNames != newColNames
+        newNamesExist <- colsToRename & currentColNames %in% newColNames
         
         currentColNamesTmp <- currentColNames
         currentColNamesTmp[newNamesExist] <- paste0("_", currentColNamesTmp[newNamesExist])
         for(colIdToRename in which(newNamesExist)){
           flog.debug("Renaming columns: %s to: %s (table: %s)",
-                     paste(currentColNamesTmp[colIdToRename], collapse = ", "),
+                     paste(currentColNames[colIdToRename], collapse = ", "),
                      paste(currentColNamesTmp[colIdToRename], collapse = ", "),
                      tableName)
           private$renameColumn(tableName,
