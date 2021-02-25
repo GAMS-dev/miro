@@ -3,7 +3,7 @@ Db <- R6Class("Db",
               public = list(
                 initialize        = function(uid, dbConf, dbSchema, slocktimeLimit, modelName,
                                              traceColNames = NULL, hcubeActive = FALSE,
-                                             ugroups = character(0L)){
+                                             ugroups = character(0L), forceNew = FALSE){
                   # Initialize database class
                   #
                   # Args:
@@ -15,9 +15,10 @@ Db <- R6Class("Db",
                   #   slocktimeLimit:      maximum duration a lock is allowed to persist
                   #   hcubeActive:         boolean that specifies whether Hypercube mode is currently active
                   #   ugroups:             user group(s) (optional)
+                  #   forceNew:            force creating new db object even if one already exists
                   
                   #BEGIN error checks 
-                  if(is.null(private$info$isInitialized)){
+                  if(is.null(private$info$isInitialized) || forceNew){
                     private$info$isInitialized <- 1L
                   }else{
                     flog.error("Db: Tried to create more than one Db object.")
