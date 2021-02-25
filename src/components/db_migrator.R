@@ -10,8 +10,12 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     private$inconsistentTables <- private$getInconsistentTablesInternal()
     return(invisible(self))
   },
-  getOrphanedTables = function(){
-    return(private$orphanedTables)
+  getOrphanedTablesInfo = function(){
+    tabInfo <- lapply(private$orphanedTables, function(tableName){
+      return(private$getTableInfo(tableName))
+    })
+    names(tabInfo) <- private$orphanedTables
+    return(tabInfo)
   },
   getInconsistentTables = function(){
     return(private$inconsistentTables)
@@ -178,7 +182,8 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
         return()
       }
       
-      if(identical(sum(colsToAdd), length(newColNames) - min(which(colsToAdd)) + 1L)){
+      if(any(colsToAdd) &&
+         identical(sum(colsToAdd), length(newColNames) - min(which(colsToAdd)) + 1L)){
         # all columns to add are at the end
         flog.debug("Adding column(s): %s to the end of table: %s",
                    newColNames[colsToAdd], tableName)
@@ -432,11 +437,6 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
                                             names(migrationConfig)[i]),
                     call. = FALSE)
       }
-      if(any(duplicated(migrationConfig[[i]]$colNames[migrationConfig[[i]]$colNames != "-"]))){
-        stop_custom("error_config", sprintf("Invalid migration config: duplicated column names for table: %s",
-                                            names(migrationConfig)[i]),
-                    call. = FALSE)
-      }
     }
     return(invisible(self))
   },
@@ -521,6 +521,9 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
       return(NA_character_)
     }, character(1L), USE.NAMES = FALSE)
     badTables <- badTables[!is.na(badTables)]
-    return(list(names = badTables, headers = headers[names(headers) %in% badTables], errMsg = errMsg))
+    return(list(names = badTables,
+                headers = headers[names(headers) %in% badTables],
+                headerTypes = colTypes[names(colTypes) %in% badTables],
+                errMsg = errMsg))
   }
 ))

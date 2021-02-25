@@ -65,14 +65,14 @@ dbSchema <- list(tabName = c(`_scenMeta` = "_sys_metadata_transport", `_scenLock
                                  a = c("i", "j", "value"),
                                  b = c("k", "value"),
                                  d = c("i", 
-                                       "j", "value"),
+                                       "j", "k", "value"),
                                  ilocdata = c("i", "lng", "lat"),
                                  `_scalars` = c("scalar", "description", "value"
                                  )),
                  colTypes = c(`_scenMeta` = "iccTcccci", `_scenLock` = "ciT", 
                               `_scenTrc` = "cccccdidddddiiiddddddc", `_scenAttach` = "icclbT", 
                               `_scenScripts` = "icc", `_jobMeta` = "iciTcciiic", results = "ccdddddddd", 
-                              `_scalars_out` = "ccc", a = "ccd", b = "cd", d = "ccd", ilocdata = "cdd", 
+                              `_scalars_out` = "ccc", a = "ccd", b = "cd", d = "cccd", ilocdata = "cdd", 
                               `_scalars` = "ccc"))
 
 if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
@@ -114,6 +114,26 @@ for(dbType in dbTypes){
   
   populateDb(procEnv)
   dbMigrator <- DbMigrator$new(db)
+  
+  test_that(paste0("Validating migration config works (", dbType, ")"), {
+    migrationConfig <- list(results = list(oldTableName  = "schedule1",
+                                           colNames = c("i", "j", "lngp", "latp", "lngm", "latm", "cap", 
+                                                        "demand", "quantities", "-")))
+    expect_error(dbMigrator$migrateDb(migrationConfig,
+                                      forceRemove = FALSE), class = "error_config", regex = "schedule1")
+    migrationConfig <- list(results = list(oldTableName  = "schedule",
+                                           colNames = c("i", "j", "lngp", "latp", "lngm", "latm", "cap", 
+                                                        "demand", "quantities", "-")),
+                            a = list(oldTableName = "schedule", colNames = c("i", "-", "demand")))
+    expect_error(dbMigrator$migrateDb(migrationConfig,
+                                      forceRemove = FALSE), class = "error_config", regex = "duplicate")
+    migrationConfig <- list(a = list(oldTableName = "a", colNames = c("i", "-", "demand", "-")))
+    expect_error(dbMigrator$migrateDb(migrationConfig,
+                                      forceRemove = FALSE), class = "error_config", regex = "Length of column names")
+    migrationConfig <- list(aa = list(oldTableName = "a", colNames = c("i", "-", "demand", "-")))
+    expect_error(dbMigrator$migrateDb(migrationConfig,
+                                      forceRemove = FALSE), class = "error_config", regex = "aa")
+  })
   
   test_that(paste0("Migrating tables works (", dbType, ")"), {
     migrationConfig <- list(results = list(oldTableName  = "schedule",
@@ -168,6 +188,18 @@ for(dbType in dbTypes){
                      data.frame(i = c("Seattle", "San-Diego"),
                                 lng = c(-122.335167, -117.161087),
                                 lat = c(47.608013, 32.715736)))
+    migrationConfig <- list(d = list(oldTableName = "d",
+                                     colNames = c("i", "j", "j", "value")))
+    expect_error(dbMigrator$migrateDb(migrationConfig,
+                                      forceRemove = FALSE), NA)
+    expect_identical(dbReadTable(conn, "transport_d")[-1],
+                     data.frame(i = c("Seattle", "Seattle", "Seattle",
+                                      "San-Diego", "San-Diego", "San-Diego"),
+                                j = c("New-york", "Chicago", "Topeka",
+                                      "New-york", "Chicago", "Topeka"),
+                                k = c("New-york", "Chicago", "Topeka",
+                                      "New-york", "Chicago", "Topeka"),
+                                value = c(2.5, 1.7, 1.8, 2.5, 1.8, 1.4)))
   })
 }
 
