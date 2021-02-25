@@ -6,6 +6,8 @@ library(RSQLite)
 source("../../components/db.R")
 source("../../components/db_migrator.R")
 
+ioConfig <<- list(hcubeScalars = character())
+
 miroAppPath <- file.path(getwd(), "..", "..")
 
 populateDb <- function(procEnv){
