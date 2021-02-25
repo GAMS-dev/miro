@@ -148,7 +148,6 @@ for(dbType in dbTypes){
                             a = list(oldTableName = "a", colNames = c("i", "-", "value")),
                             b = list(oldTableName = "b", colNames = c("j", "value")))
   })
-  db$finalize()
 }
 
 
