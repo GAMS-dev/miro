@@ -3722,7 +3722,7 @@ output$customOutputBoilerplate <- renderText({
 output$customRenderBoilerplate <- renderText({
   paste0(
     customRendererFunctionName(),
-    " <- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){"
+    " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){"
   )
 })
 output[["preview_custom_renderer"]] <- renderUI({
@@ -3890,7 +3890,7 @@ observe({
       local({
         customRendererFunction <- eval(parse(text = isolate(paste0(
           customRendererFunctionName(),
-          " <- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){\n",
+          " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){\n",
           input$customRenderFunction,
           "\n}"))))
         callModule(customRendererFunction, "preview_output_custom",
@@ -4021,7 +4021,7 @@ observeEvent(rv$saveGraphConfirm, {
         "\n}\n"
       ), "\n", paste0(
         customRendererFunctionName(),
-        " <- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){\n",
+        " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){\n",
         input$customRenderFunction,
         "\n}\n"), 
       file = file.path(customRendererDir, paste0(customRendererName, ".R")))
