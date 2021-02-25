@@ -329,6 +329,11 @@ if(is.null(errMsg)){
               hasErr <<- TRUE
               return(NULL)
             }
+            if(identical(dataSource$symbol, names(modelIn)[i])){
+              errMsg <<- paste(errMsg, sprintf("The GAMS symbol: '%s' has a data source (dropdown column) defined on itself!", names(modelIn)[i]), sep = "\n")
+              hasErr <<- TRUE
+              return(NULL)
+            }
             colId <- match(dataSource$column, names(modelIn[[dataSource$symbol]]$headers))
             if(is.na(colId)){
               errMsg <<- paste(errMsg, sprintf("The GAMS symbol: '%s' defined as data source for symbol: '%s' does not have a column named: '%s'!", 
