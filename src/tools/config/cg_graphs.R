@@ -3514,7 +3514,11 @@ getCustomOptions <- reactive({
     
     rendererFromExternalSymbol <<- FALSE
     
-    rv$graphConfig$outType <- rendererNameTmp
+    if(length(rendererNameTmp)){
+      rv$graphConfig$outType <- rendererNameTmp
+    }else{
+      rv$graphConfig$outType <- paste0("mirorenderer_", tolower(activeSymbol$name))
+    }
     
     if(length(rendererNameTmp) &&
        rendererNameTmp %in% existingRendererFiles){
