@@ -7,18 +7,42 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     private$tablePrefixLen <- nchar(private$modelNameDb) + 2L
     private$dbSchema <- db$getDbSchema()
     private$orphanedTables <- private$getOrphanedTablesInternal(ioConfig$hcubeScalars)
-    private$inconsistentTables <- private$getInconsistentTablesInternal()
     return(invisible(self))
   },
   getOrphanedTablesInfo = function(){
     tabInfo <- lapply(private$orphanedTables, function(tableName){
       return(private$getTableInfo(tableName))
     })
-    names(tabInfo) <- private$orphanedTables
+    names(tabInfo) <- vapply(private$orphanedTables, private$getSymName, character(1L), USE.NAMES = FALSE)
     return(tabInfo)
   },
-  getInconsistentTables = function(){
-    return(private$inconsistentTables)
+  getInconsistentTablesInfo = function(){
+    colNames <- private$dbSchema$colNames
+    colTypes <- private$dbSchema$colTypes
+    
+    badTables <- lapply(private$tableNamesScenario, function(tabName){
+      symName <- private$getSymName(tabName)
+      tabInfo <- list(tabName = symName,
+                      colNames = colNames[[symName]],
+                      colTypes = colTypes[[symName]])
+      confHeaders <- tabInfo$colNames
+      
+      if(!is.null(confHeaders)){
+        if(!dbExistsTable(private$conn, tabName)){
+          return(tabInfo)
+        }
+        currentTabInfo <- private$getTableInfo(tabName)
+        tabColNames <- currentTabInfo$colNames
+        tabColTypes <- currentTabInfo$colTypes
+        if(!identical(colTypeVectorToString(tabColTypes), colTypes[[symName]]) ||
+           any(confHeaders != tabColNames)){
+          return(c(tabInfo, list(currentColNames = tabColNames,
+                                 currentColTypes = tabColTypes)))
+        }
+      }
+      return(NA)
+    })
+    return(badTables[!is.na(badTables)])
   },
   getTableNamesModel = function(){
     if(inherits(private$conn, "PqConnection")){
@@ -86,14 +110,16 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
   },
   migrateDb = function(migrationConfig, forceRemove = FALSE, callback = NULL){
     oldTableNames <- vapply(migrationConfig, "[[", character(1L), "oldTableName", USE.NAMES = FALSE)
+    migrationConfig <- migrationConfig[oldTableNames != "-"]
+    oldTableNames <- oldTableNames[oldTableNames != "-"]
     
     # prefix model name
-    oldTableNames <- paste0(private$modelNameDb, "_", oldTableNames)
-    names(migrationConfig) <- paste0(private$modelNameDb, "_", names(migrationConfig))
-    
-    migrationConfig <- migrationConfig[oldTableNames != "-"]
-    private$validateMigrationConfig(migrationConfig)
-    newTableNames <- names(migrationConfig)
+    if(length(oldTableNames)){
+      oldTableNames <- paste0(private$modelNameDb, "_", oldTableNames)
+      names(migrationConfig) <- paste0(private$modelNameDb, "_", names(migrationConfig))
+      private$validateMigrationConfig(migrationConfig)
+      newTableNames <- names(migrationConfig)
+    }
     
     tablesToRemove <- !private$orphanedTables %in% oldTableNames
     
@@ -104,27 +130,28 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
       self$removeTablesModel(private$orphanedTables[tablesToRemove])
       private$orphanedTables <- private$orphanedTables[!tablesToRemove]
     }
-    
-    tablesToRename <- newTableNames[newTableNames != oldTableNames]
-    
-    newTableNamesExist <- tablesToRename %in% private$existingTables
-    
-    if(any(!tablesToRename[newTableNamesExist] %in% oldTableNames)){
-      stop_custom("error_config", sprintf("Invalid migration config: Can't rename table(s): %s as they already exist",
-                                          tablesToRename[newTableNamesExist]),
-                  call. = FALSE)
-    }
-    
-    for(tableToRename in tablesToRename[newTableNamesExist]){
-      private$renameTable(paste0(private$modelNameDb, "_",
-                                 migrationConfig[[tableToRename]]$oldTableName),
-                          paste0("_", tableToRename))
-    }
-    
-    for(tableToRename in tablesToRename){
-      private$renameTable(paste0(private$modelNameDb, "_",
-                                 migrationConfig[[tableToRename]]$oldTableName),
-                          tableToRename)
+    if(length(oldTableNames)){
+      tablesToRename <- newTableNames[newTableNames != oldTableNames]
+      
+      newTableNamesExist <- tablesToRename %in% private$existingTables
+      
+      if(any(!tablesToRename[newTableNamesExist] %in% oldTableNames)){
+        stop_custom("error_config", sprintf("Invalid migration config: Can't rename table(s): %s as they already exist",
+                                            tablesToRename[newTableNamesExist]),
+                    call. = FALSE)
+      }
+      
+      for(tableToRename in tablesToRename[newTableNamesExist]){
+        private$renameTable(paste0(private$modelNameDb, "_",
+                                   migrationConfig[[tableToRename]]$oldTableName),
+                            paste0("_", tableToRename))
+      }
+      
+      for(tableToRename in tablesToRename){
+        private$renameTable(paste0(private$modelNameDb, "_",
+                                   migrationConfig[[tableToRename]]$oldTableName),
+                            tableToRename)
+      }
     }
     
     lapply(names(migrationConfig), function(tableName){
@@ -209,7 +236,6 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
   dbSchema = NULL,
   modelNameDb = NULL,
   tablePrefixLen = NULL,
-  inconsistentTables = NULL,
   orphanedTables = NULL,
   existingTables = NULL,
   getCreateIndexQuery = function(tableName){
@@ -489,44 +515,5 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
                         dbQuoteIdentifier(private$conn, tableName), ");"))
     tabInfo     <- dbGetQuery(private$conn, query)
     return(list(colNames = tabInfo$name[-1], colTypes = tabInfo$type[-1]))
-  },
-  getInconsistentTablesInternal = function(){
-    errMsg  <- NULL
-    colNames <- private$dbSchema$colNames
-    colTypes <- private$dbSchema$colTypes
-    headers <- colNames
-    
-    badTables <- vapply(private$tableNamesScenario, function(tabName){
-      tabNameRaw <- private$getSymName(tabName)
-      confHeaders <- colNames[[tabNameRaw]]
-      
-      if(!is.null(confHeaders) && dbExistsTable(private$conn, tabName)){
-        tryCatch({
-          tabInfo <- private$getTableInfo(tabName)
-          tabColNames <- tabInfo$colNames
-          tabColTypes <- tabInfo$colTypes
-        }, error = function(e){
-          stop(sprintf("Db: An error occurred while fetching table headers from database (Db.getInconsistentTables, table: '%s').\nError message: '%s'.",
-                       tabName, e), call. = FALSE)
-        })
-        errMsgTmp <- paste(errMsg, sprintf("Database table headers ('%s') are different from those in current configuration ('%s').\nPlease fix the database schema or change your GAMS model!\n",
-                                           paste(tabColNames, collapse = "', '"),
-                                           paste(confHeaders, collapse = "', '")))
-        if(!identical(colTypeVectorToString(tabColTypes), colTypes[[tabNameRaw]])){
-          errMsg <<- errMsgTmp
-          return(tabNameRaw)
-        }
-        if(any(confHeaders != tabColNames)){
-          errMsg <<- errMsgTmp
-          return(tabNameRaw)
-        }
-      }
-      return(NA_character_)
-    }, character(1L), USE.NAMES = FALSE)
-    badTables <- badTables[!is.na(badTables)]
-    return(list(names = badTables,
-                headers = headers[names(headers) %in% badTables],
-                headerTypes = colTypes[names(colTypes) %in% badTables],
-                errMsg = errMsg))
   }
 ))
