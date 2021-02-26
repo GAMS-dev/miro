@@ -3705,11 +3705,19 @@ getRendererFunctions <- function(rendererName){
     # This command is super confusing. It gets the body of the function and puts it
     # into a string without adding the curly braces {}.
     funOutputBody <- deparse(body(eval(parse(text = funOutputStr))))
-    funOutputBody <- paste0(funOutputBody[seq(3L, length(funOutputBody) - 1)],
-                            collapse = "\n")
+    if(length(funOutputBody) > 3L){
+      funOutputBody <- paste0(funOutputBody[seq(3L, length(funOutputBody) - 1)],
+                              collapse = "\n")
+    }else{
+      funOutputBody <- ""
+    }
     funRenderBody <- deparse(body(eval(parse(text = funRenderStr))))
-    funRenderBody <- paste0(funRenderBody[seq(2L, length(funRenderBody) - 1)],
-                            collapse = "\n")
+    if(length(funRenderBody) > 2L){
+      funRenderBody <- paste0(funRenderBody[seq(2L, length(funRenderBody) - 1)],
+                              collapse = "\n")
+    }else{
+      funRenderBody <- ""
+    }
     return(list(output = funOutputBody, renderer = funRenderBody))
   })
 }
