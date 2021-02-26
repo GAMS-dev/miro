@@ -84,7 +84,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     }
     return(invisible(self))
   },
-  migrateDb = function(migrationConfig, forceRemove = FALSE){
+  migrateDb = function(migrationConfig, forceRemove = FALSE, callback = NULL){
     oldTableNames <- vapply(migrationConfig, "[[", character(1L), "oldTableName", USE.NAMES = FALSE)
     
     # prefix model name
@@ -129,6 +129,9 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     
     lapply(names(migrationConfig), function(tableName){
       # first see if we can take shortcuts
+      if(!is.null(callback)){
+        callback()
+      }
       currentLayout <- private$getTableInfo(tableName)
       migrationLayout <- migrationConfig[[tableName]]
       
