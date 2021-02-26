@@ -818,7 +818,7 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
         write("merr:::409", stderr())
       }
       if(isShinyProxy){
-        quit("no", 0L)
+        quit("no", 10L)
       }
       migApp <<- shinyApp(ui = uiDbMig, server = serverDbMig)
     }

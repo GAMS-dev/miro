@@ -1,12 +1,13 @@
 migrationUI <- function(id, inconsistentTablesInfo, orphanedTablesInfo) {
   ns <- NS(id)
-  tags$div(class = "container",
+  tags$div(class = "container", style = "font-size:12pt;",
            tags$div(id = ns("migrationSuccess"), class = "gmsalert gmsalert-success",
                     lang$nav$migrationModule$successMsg),
            tags$div(id = ns("dataMigrationErrors"), class = "gmsalert gmsalert-error",
-                    style = "white-space: pre-wrap;"),
+                    style = "white-space:pre-wrap;"),
            tags$p(lang$nav$migrationModule$desc),
-           tags$b(lang$nav$migrationModule$backupWarning),
+           tags$div(style = "text-align:center;margin-bottom:20px;",
+                    tags$b(lang$nav$migrationModule$backupWarning)),
            lapply(seq_along(inconsistentTablesInfo), function(i){
              tableInfo <- inconsistentTablesInfo[[i]]
              if(length(tableInfo$currentColNames)){
@@ -21,7 +22,7 @@ migrationUI <- function(id, inconsistentTablesInfo, orphanedTablesInfo) {
                return(NULL)
              }
              colClass <- paste0("col-xs-", floor(12/(length(tableInfo$colNames) + 1L)))
-             tags$div(class = "row", style = "border-bottom: 5px solid #000;",
+             tags$div(class = "row", style = "border-top: 5px solid #000;padding:20px 0;",
                       tags$div(class = colClass,
                                selectInput(ns(paste0("dbMigrateTable_", i)),
                                            sprintf(lang$nav$migrationModule$selectTableToMap,
