@@ -57,7 +57,9 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
   indices <- getIndexLists(unassignedSetIndices, options)
   
   aggregationFunctions <- if(identical(options[["_metadata_"]]$symtype, "set"))
-    setNames("count", lang$renderers$miroPivot$aggregationFunctions$count)
+    setNames(c("count", "min"),
+             c(lang$renderers$miroPivot$aggregationFunctions$count,
+               lang$renderers$miroPivot$aggregationFunctions$min))
   else
     setNames(c("sum", "count", "mean", "median", "min", "max"), 
              c(lang$renderers$miroPivot$aggregationFunctions$sum,
@@ -278,7 +280,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       # we need to update aggregation functions in case the symbol type is not available when rendering the UI
       # (e.g. in Configuration Mode)
       aggregationFunctions <- if(identical(options[["_metadata_"]]$symtype, "set"))
-        setNames("count", lang$renderers$miroPivot$aggregationFunctions$count)
+        setNames(c("count", "min"),
+                 c(lang$renderers$miroPivot$aggregationFunctions$count,
+                   lang$renderers$miroPivot$aggregationFunctions$min))
       else
         setNames(c("sum", "count", "mean", "median", "min", "max"), 
                  c(lang$renderers$miroPivot$aggregationFunctions$sum,
@@ -779,19 +783,17 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             disableEl(session, paste0("#", ns("btAddRow")))
             disableEl(session, paste0("#", ns("btRemoveRows")))
           }
-          if(identical(options[["_metadata_"]]$symtype, "parameter")){
-            aggregationFunctionTmp <- input$aggregationFunction
-            if(is.null(aggregationFunction)){
-              aggregationFunction <- aggregationFunctionTmp
-            }
-            if(length(aggregationFunction) != 1L ||
-               !aggregationFunction %in% c("sum", "count", "min", "max", "mean", "median")){
-              flog.warn("Attempt to tamper with the app detected! User entered: '%s' as aggregation function.",
-                        aggregationFunction)
-              stop("Attempt to tamper with the app detected!", call. = FALSE)
-            }
-          }else{
-            aggregationFunction <- "count"
+          aggregationFunctionTmp <- input$aggregationFunction
+          if(is.null(aggregationFunction)){
+            aggregationFunction <- aggregationFunctionTmp
+          }
+          if(identical(aggregationFunction, "")){
+            aggregationFunction <- aggregationFunctions[[1]]
+          }else if(length(aggregationFunction) != 1L ||
+             !aggregationFunction %in% c("sum", "count", "min", "max", "mean", "median")){
+            flog.warn("Attempt to tamper with the app detected! User entered: '%s' as aggregation function.",
+                      aggregationFunction)
+            stop("Attempt to tamper with the app detected!", call. = FALSE)
           }
           if(!identical(valueColName, "value")){
             names(dataTmp)[length(dataTmp)] <- "value"
