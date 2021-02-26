@@ -661,6 +661,28 @@
     },
     "hot":{
       "search": "Search:"
+    },
+    "migrationModule": {
+      "title": "Database migration",
+      "desc": "We have determined that your GAMS/MIRO data contract has changed in a way that is incompatible with your app's current database layout. Please specify how your data should be migrated.",
+      "backupWarning": "We strongly recommend that you backup your database before migration.",
+      "successMsg": "Your data has been migrated successfully!",
+      "selectTableToMap": "Select table for symbol: '%s'",
+      "btCancelMigration": "Cancel",
+      "btConfirmMigration": "Confirm migration",
+      "errDuplicateTables": "Table(s): '%s' cannot be duplicated!",
+      "dialogConfirmDataLoss": {
+        "title": "Warning: Loss of data",
+        "descTables": "Attention: The following tables are removed with your current migration configuration: '%s'!",
+        "descTableCols": "Attention. The column(s): '%s' of the table: '%s' are removed with your current migration configuration!",
+        "cbConfirmDataLoss": "I confirm",
+        "btCancel": "Cancel",
+        "btConfirm": "Remove data"
+      },
+      "progress":{
+        "title": "Migrating data",
+        "desc": "Migrating table %s/%s"
+      }
     }
   },
   "renderers":{

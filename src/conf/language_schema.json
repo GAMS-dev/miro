@@ -2578,9 +2578,94 @@
             }
           },
           "minProperties": 1
+        },
+        "migrationModule": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "desc": {
+              "type": "string",
+              "minLength": 1
+            },
+            "backupWarning": {
+              "type": "string",
+              "minLength": 1
+            },
+            "successMsg": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selectTableToMap": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btCancelMigration": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btConfirmMigration": {
+              "type": "string",
+              "minLength": 1
+            },
+            "errDuplicateTables": {
+              "type": "string",
+              "minLength": 1
+            },
+            "dialogConfirmDataLoss": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "descTables": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "descTableCols": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbConfirmDataLoss": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btCancel": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btConfirm": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 6
+            },
+            "progress": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "desc": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 2
+            }
+          },
+          "minProperties": 10
         }
       },
-      "minProperties": 49
+      "minProperties": 50
     },
     "renderers": {
       "description": "language specific objects of renderers",

@@ -661,6 +661,28 @@
     },
     "hot":{
       "search": "Suche:"
+    },
+    "migrationModule": {
+      "title": "Datenbankmigration",
+      "desc": "Wir haben festgestellt, dass sich Ihr GAMS/MIRO-Datenvertrag auf eine Weise geändert hat, die mit dem aktuellen Datenbanklayout Ihrer App nicht kompatibel ist. Bitte geben Sie an, wie Ihre Daten migriert werden sollen.",
+      "backupWarning": "Wir empfehlen Ihnen dringend, vor der Migration ein Backup Ihrer Datenbank zu erstellen.",
+      "successMsg": "Ihre Daten wurden erfolgreich migriert!",
+      "selectTableToMap": "Tabelle für Symbol: '%s' auswählen",
+      "btCancelMigration": "Abbrechen",
+      "btConfirmMigration": "Migration bestätigen",
+      "errDuplicateTables": "Tabelle(n): '%s' können nicht dupliziert werden!",
+      "dialogConfirmDataLoss": {
+        "title": "Warnung: Verlust von Daten",
+        "descTables": "Achtung! Die folgenden Tabellen werden mit Ihrer aktuellen Migrationskonfiguration entfernt: '%s'!",
+        "descTableCols": "Achtung! Die Spalte(n): '%s' der Tabelle: '%s' werden mit Ihrer aktuellen Migrationskonfiguration entfernt!",
+        "cbConfirmDataLoss": "Ich bestätige",
+        "btCancel": "Abbrechen",
+        "btConfirm": "Daten entfernen"
+      },
+      "progress":{
+        "title": "Migriere Daten",
+        "desc": "Migriere Tabelle %s/%s"
+      }
     }
   },
   "progressBar":{  

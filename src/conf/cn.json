@@ -661,6 +661,28 @@
     },
     "hot":{
       "search": "搜索："
+    },
+    "migrationModule": {
+      "title": "数据库迁移",
+      "desc": "我们确定您的GAMS / MIRO数据合同已以与您的应用程序当前数据库布局不兼容的方式进行了更改。 请指定您的数据应如何迁移。",
+      "backupWarning": "强烈建议您在迁移之前备份数据库。",
+      "successMsg": "您的数据已成功迁移！",
+      "selectTableToMap": "选择符号 “%s“的表格",
+      "btCancelMigration": "取消",
+      "btConfirmMigration": "确认迁移",
+      "errDuplicateTables": "表：'%s'不能重复！",
+      "dialogConfirmDataLoss": {
+        "title": "警告：数据丢失",
+        "descTables": "注意：使用当前的迁移配置，将删除以下表格：'％s'！",
+        "descTableCols": "注意力。 您当前的迁移配置将删除表“%s”中的列“%s”！",
+        "cbConfirmDataLoss": "我确定",
+        "btCancel": "取消",
+        "btConfirm": "删除资料"
+      },
+      "progress":{
+        "title": "数据正在迁移",
+        "desc": "表%s/%s正在迁移"
+      }
     }
   },
   "progressBar":{
