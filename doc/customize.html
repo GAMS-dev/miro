@@ -1415,7 +1415,7 @@ renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path
   ns &#x3C;- NS(id)
 }
 
-render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){
+render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){
 }
                                         </code></pre>
                                     </div><!--//code-block-->
@@ -1425,7 +1425,7 @@ render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, session, data, op
                                         <pre><code class="language-r">transportMapOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
   ns &#x3C;- NS(id)
 }
-renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){
+renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){
 }</code></pre>
                                     </div><!--//code-block-->
                                     <div class="callout-block callout-warning">
@@ -1453,7 +1453,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
   ns &#x3C;- NS(id)
   leaflet::leafletOutput(ns(&#x22;map&#x22;), height = height)
 }
-renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, views = NULL, outputScalarsFull = NULL, ...){
+renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){
   output$map &#x3C;- leaflet::renderLeaflet(leaflet::leaflet(data))
 }</code></pre>
                                       </div><!--//code-block-->
@@ -1506,7 +1506,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
     leaflet::leafletOutput(ns(&#x22;map&#x22;))
   )
 }
-renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, views = NULL, ...){
+renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){
   output$title &#x3C;- renderText(options$title)
   output$map   &#x3C;- leaflet::renderLeaflet(leaflet::leaflet(data) %&#x3E;%
                                            leaflet::addTiles() %&#x3E;%
