@@ -243,7 +243,7 @@ if(is.null(errMsg)){
     errMsg <- paste(errMsg, 
                     sprintf("Can not use 'gdx' as file exchange with GAMS if gdxrrw library is not installed.\n
 Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw-miro) installation in your R library: '%s'.", .libPaths()[1]),
-                    sep = "\n")
+sep = "\n")
   }
   GAMSClArgs <- c(paste0("execMode=", gamsExecMode),
                   paste0('IDCGDXOutput="', MIROGdxOutName, '"'))
@@ -334,7 +334,7 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
                             modelPath)
         }
         if(is.null(errMsg) && any(!file.copy2(file.path(currentModelDir, modelFiles), 
-                                             file.path(modelPath, modelFiles)))){
+                                              file.path(modelPath, modelFiles)))){
           errMsg <- sprintf("Problems copying files from: '%s' to: '%s'. No write permissions?",
                             currentModelDir, modelPath)
         }
@@ -412,13 +412,13 @@ if(is.null(errMsg) && debugMode){
   listOfCustomRenderers <- Set$new()
   requiredPackagesCR <<- NULL
   
-  if(!LAUNCHCONFIGMODE){
-    for(customRendererConfig in c(configGraphsOut, configGraphsIn, config$inputWidgets)){
-      # check whether non standard renderers were defined in graph config
-      if(!is.null(customRendererConfig$rendererName)){
-        customRendererConfig$outType <- customRendererConfig$rendererName
-      }
-      if(any(is.na(match(tolower(customRendererConfig$outType), standardRenderers)))){
+  for(customRendererConfig in c(configGraphsOut, configGraphsIn, config$inputWidgets)){
+    # check whether non standard renderers were defined in graph config
+    if(!is.null(customRendererConfig$rendererName)){
+      customRendererConfig$outType <- customRendererConfig$rendererName
+    }
+    if(any(is.na(match(tolower(customRendererConfig$outType), standardRenderers)))){
+      if(!LAUNCHCONFIGMODE){
         customRendererName <- "render" %+% toupper(substr(customRendererConfig$outType, 1, 1)) %+% 
           substr(customRendererConfig$outType, 2, nchar(customRendererConfig$outType))
         customRendererOutput <- customRendererConfig$outType %+% "Output"
@@ -440,10 +440,10 @@ if(is.null(errMsg) && debugMode){
                            sprintf("No output function for custom renderer function: '%s' was found. Please make sure you define such a function.", 
                                    customRendererName), sep = "\n")
         })
-        # find packages to install and install them
-        if(length(customRendererConfig$packages)){
-          requiredPackagesCR <- c(requiredPackagesCR, customRendererConfig$packages)
-        }
+      }
+      # find packages to install and install them
+      if(length(customRendererConfig$packages)){
+        requiredPackagesCR <- c(requiredPackagesCR, customRendererConfig$packages)
       }
     }
   }
@@ -724,7 +724,7 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
       msg <- sprintf("There are orphaned tables in your database: '%s'.\n
 This could be caused because you used a different database schema in the past (e.g. due to different inputs and/or outputs). 
 Note that you can remove orphaned database tables using the configuration mode ('Database management' section).",
-                     paste(orphanedTables, collapse = "', '"))
+paste(orphanedTables, collapse = "', '"))
       flog.warn(msg)
     }
     inconsistentTables <- NULL
@@ -744,11 +744,11 @@ Note that you can remove orphaned database tables using the configuration mode (
                                         "_", inconsistentTables$names)
       flog.error(sprintf("There are tables in your database that do not match the current database schema of your model.\n
 Those tables are: '%s'.\nError message: '%s'.",
-                         paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg))
+paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg))
       msg <- paste(errMsg, sprintf("There are tables in your database that do not match the current database schema of your model.\n
 Those tables are: '%s'.\nError message: '%s'.",
-                                   paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg),
-                   collapse = "\n")
+paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg),
+collapse = "\n")
       errMsg <<- paste(errMsg, msg, sep = "\n")
       if(miroStoreDataOnly){
         write("\n", stderr())
@@ -768,9 +768,9 @@ if(is.null(errMsg)){
       gdxio <<- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", 
                                     if(identical(tolower(Sys.info()[["sysname"]]), "windows")) 
                                       file.path("bin", "x64") else "bin"), 
-        c(modelInRaw, modelOut), scalarsFileName,
-        scalarsOutName, scalarEquationsName, scalarEquationsOutName,
-        dropdownAliases, config$textOnlySymbols)
+                          c(modelInRaw, modelOut), scalarsFileName,
+                          scalarsOutName, scalarEquationsName, scalarEquationsOutName,
+                          dropdownAliases, config$textOnlySymbols)
     }
   }, error = function(e){
     flog.error(e)
@@ -903,7 +903,7 @@ if(!is.null(errMsg)){
                             lang$adminMode$database$removeInconsistent
                           },
                           tags$div(actionButton("removeInconsistentDbTables", 
-                                       "Delete inconsistent database tables"))
+                                                "Delete inconsistent database tables"))
                  ),
                  tags$div(id = "db_remove_wrapper",style="margin-top:20px;",
                           if(!exists("lang") || is.null(lang$adminMode$database$removeWrapper)){
@@ -912,11 +912,11 @@ if(!is.null(errMsg)){
                             lang$adminMode$database$removeWrapper
                           },
                           tags$div(actionButton("removeDbTables", 
-                                       if(!exists("lang") || is.null(lang$adminMode$database$removeDialogBtn)){
-                                         "Delete all database tables"
-                                       }else{
-                                         lang$adminMode$database$removeDialogBtn
-                                       }))
+                                                if(!exists("lang") || is.null(lang$adminMode$database$removeDialogBtn)){
+                                                  "Delete all database tables"
+                                                }else{
+                                                  lang$adminMode$database$removeDialogBtn
+                                                }))
                  )
                )
              },
@@ -940,12 +940,12 @@ if(!is.null(errMsg)){
       }
       observeEvent(input$removeInconsistentDbTables, {
         showModal(modalDialog(title = removeDbTabLang$title,
-                                     if(!exists("lang") || is.null(lang$adminMode$database$removeInconsistentConfirm) || 
-                                        is.null(lang$adminMode$database$cannotBeUndone)){
-                                       "Are you sure that you want to delete all inconsistent database tables? This can not be undone! You might want to save the database first before proceeding."
-                                     }else{
-                                       paste(lang$adminMode$database$removeInconsistentConfirm, lang$adminMode$database$cannotBeUndone)
-                                     }, footer = tagList(
+                              if(!exists("lang") || is.null(lang$adminMode$database$removeInconsistentConfirm) || 
+                                 is.null(lang$adminMode$database$cannotBeUndone)){
+                                "Are you sure that you want to delete all inconsistent database tables? This can not be undone! You might want to save the database first before proceeding."
+                              }else{
+                                paste(lang$adminMode$database$removeInconsistentConfirm, lang$adminMode$database$cannotBeUndone)
+                              }, footer = tagList(
                                 modalButton(removeDbTabLang$cancel),
                                 actionButton("removeInconsistentDbTablesConfirm", label = removeDbTabLang$confirm, 
                                              class = "bt-highlight-1"))))
@@ -1019,7 +1019,7 @@ if(!is.null(errMsg)){
         inputIdsTmp        <- inputIdsTmp[!is.na(inputIdsTmp)]
         metaDataTmp        <- metaDataTmp[inputIdsTmp]
         modelInTemplateTmp <- modelInTemplateTmp[inputIdsTmp]
-
+        
         tmpDirToRemove     <- character(0L)
         
         if(debugMode){
@@ -1335,7 +1335,7 @@ if(!is.null(errMsg)){
                                                      forbiddenFNames = c(if(identical(config$fileExchange, "gdx")) 
                                                        c(MIROGdxInName, MIROGdxOutName) else 
                                                          paste0(c(names(modelOut), inputDsNames), ".csv"),
-                                                                         paste0(modelNameRaw, c(".log", ".lst")))),
+                                                       paste0(modelNameRaw, c(".log", ".lst")))),
                                             workDir,
                                             names(modelIn),
                                             names(modelOut),
