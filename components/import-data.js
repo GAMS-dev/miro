@@ -1,64 +1,54 @@
 const {
-  dialog,
+  dialog, BrowserWindow,
 } = require('electron');
-const execa = require('execa');
 const path = require('path');
 const { format } = require('util');
 const log = require('electron-log');
-const MiroDb = require('./MiroDb');
-const {
-  isFalse,
-} = require('./util');
 
-async function addModelData(paths, modelName, miroMode, miroVersion, usetmpdir,
-  miroProcesses, windowObj, dataDir, progressEvent = 'add-app-progress') {
-  if (!paths.rpath) {
-    log.info('No R path set.');
-    throw new Error('404');
-  }
+async function addModelData(miroProcessManager, paths, modelName,
+  miroMode, miroVersion, usetmpdir,
+  windowObj, dataDir, progressEvent = 'add-app-progress') {
   let restartRProc;
   let overwriteData = false;
+  let migrationWizardWindow;
   if (progressEvent === 'add-app-progress') {
     overwriteData = true;
   }
   const runRProc = async function fRunRProc() {
     restartRProc = false;
-    const internalPid = miroProcesses.length;
-    const miroProcessesRef = miroProcesses;
-    miroProcessesRef[internalPid] = execa(path.join(paths.rpath, 'bin', 'R'),
-      ['--no-echo', '--no-restore', '--vanilla', '-f', path.join(paths.miroResourcePath, 'start-shiny.R')],
-      {
-        env: {
-          R_HOME_DIR: paths.rpath,
-          RE_SHINY_PATH: paths.miroResourcePath,
-          R_LIBS: paths.libPath,
-          R_LIBS_USER: paths.libPath,
-          R_LIBS_SITE: paths.libPath,
-          R_LIB_PATHS: paths.libPath,
-          MIRO_NO_DEBUG: 'true',
-          MIRO_FORCE_SCEN_IMPORT: 'true',
-          MIRO_USE_TMP: !isFalse(usetmpdir) || miroMode === 'hcube',
-          MIRO_OVERWRITE_SCEN_IMPORT: overwriteData,
-          MIRO_WS_PATH: paths.miroWorkspaceDir,
-          MIRO_DB_PATH: paths.dbpath,
-          MIRO_BUILD: 'false',
-          MIRO_BUILD_ARCHIVE: 'false',
-          MIRO_LOG_PATH: paths.logpath,
-          MIRO_POPULATE_DB: 'true',
-          LAUNCHINBROWSER: 'true',
-          MIRO_REMOTE_EXEC: 'false',
-          MIRO_VERSION_STRING: miroVersion,
-          MIRO_MODE: miroMode,
-          MIRO_MODEL_PATH: path.join(paths.appDir, `${modelName}.gms`),
-          MIRO_DATA_DIR: dataDir || '',
-        },
-        stdout: 'pipe',
-        stderr: 'pipe',
-        cleanup: false,
-      });
+    const procPid = await miroProcessManager.createNewMiroProc({
+      id: modelName.toLowerCase(),
+      miroversion: miroVersion,
+      mode: miroMode,
+      usetmpdir: usetmpdir,
+      dbpath: paths.dbpath,
+      allowMultiple: true,
+      customEnv: {
+        MIRO_NO_DEBUG: 'true',
+        MIRO_FORCE_SCEN_IMPORT: 'true',
+        MIRO_BUILD: 'false',
+        MIRO_BUILD_ARCHIVE: 'false',
+        MIRO_OVERWRITE_SCEN_IMPORT: overwriteData,
+        MIRO_POPULATE_DB: 'true',
+        LAUNCHINBROWSER: 'false',
+        MIRO_REMOTE_EXEC: 'false',
+        MIRO_MODEL_PATH: path.join(paths.appDir, `${modelName}.gms`),
+        MIRO_DATA_DIR: dataDir || '',
+      },
+      stdOut: 'pipe',
+      stdErr: 'pipe'
+    }, paths.libPath);
+
+    if (procPid == null) {
+      log.error(`Unknown error while storing data.`);
+      throw new Error();
+    }
+
+    const miroProc = miroProcessManager.getProc(procPid);
+
     windowObj.setProgressBar(0);
     // eslint-disable-next-line no-restricted-syntax
-    for await (const data of miroProcesses[internalPid].stderr) {
+    for await (const data of miroProc.stderr) {
       const msg = data.toString().trim();
       log.debug(msg);
       if (msg.startsWith('merr:::')) {
@@ -66,42 +56,38 @@ async function addModelData(paths, modelName, miroMode, miroVersion, usetmpdir,
         // MIRO error
         const error = msg.trim().split(':::');
         if (error[1] === '409') {
-          if (error.length < 3) {
-            log.error('MIRO signalled that there are inconsistent tables but no data was provided.');
-            throw new Error('merr:::409');
-          }
-          // split and decode base64 encoded table names
-          const datasetsToRemove = error[2].split(',').map((el) => Buffer.from(el, 'base64').toString());
-          log.debug(`Datasets to be removed are: '${datasetsToRemove.join("','")}'`);
-
-          const tablesToRemove = datasetsToRemove.map((el) => `${MiroDb.escapeAppId(modelName)}_${el}`);
-          log.debug(`Inconsistent tables to be removed are: '${tablesToRemove.join("','")}'`);
-
-          const deleteInconsistentDbTables = dialog.showMessageBoxSync(windowObj, {
-            type: 'info',
-            title: global.lang.main.ErrorInconsistentDbTablesHdr,
-            message: format(global.lang.main.ErrorInconsistentDbTablesMsg, datasetsToRemove),
-            buttons: [global.lang.main.BtnCancel, global.lang.main.BtnOk],
-          }) === 1;
-          if (deleteInconsistentDbTables) {
-            log.debug('Request to remove inconsistent tables received.');
-            try {
-              const miroDb = new MiroDb(path.join(paths.dbpath,
-                'miro.sqlite3'));
-              try {
-                miroDb.removeTables(tablesToRemove);
-                log.debug('Inconsistent tables removed.');
-                restartRProc = true;
-              } finally {
-                miroDb.close();
-              }
-            } catch (err) {
-              log.error(`Problems removing inconsistent database tables. Error message: ${err.message}`);
-              throw err;
-            }
-          } else {
-            throw new Error('suppress');
-          }
+          log.debug('MIRO signalled that database needs to be migrated. Waiting for user to migrate database.');
+          miroProcessManager.waitForResponse(procPid,
+            async (event) => {
+              log.info(event);
+            }, null,
+            (url) => {
+              log.debug(`Database migration wizard for app: ${modelName.toLowerCase()} being opened in launcher.`);
+              migrationWizardWindow = new BrowserWindow({
+                width: 800,
+                height: 600,
+                minWidth: 800,
+                minHeight: 600,
+                show: false,
+                webPreferences: {
+                  nodeIntegration: false,
+                  contextIsolation: true,
+                },
+              });
+              migrationWizardWindow.loadURL(url, { extraHeaders: 'pragma: no-cache\n' });
+              migrationWizardWindow.on('close', (e) => {
+                e.preventDefault();
+                log.debug(`Database migration wizard for app: ${modelName.toLowerCase()} closed.`);
+                migrationWizardWindow.destroy();
+                migrationWizardWindow = null;
+              });
+              migrationWizardWindow.once('ready-to-show', () => {
+                migrationWizardWindow.show();
+                migrationWizardWindow.maximize();
+                log.debug(`Window for database migration wizard for app: ${modelName.toLowerCase()} created.`);
+              });
+            });
+          restartRProc = true;
         } else if (error[1] === '418') {
           log.info('MIRO signalled that the scenario already exists.');
           if (dialog.showMessageBoxSync(windowObj, {
@@ -131,12 +117,20 @@ async function addModelData(paths, modelName, miroMode, miroVersion, usetmpdir,
       }
     }
     try {
-      await miroProcesses[internalPid];
+      await miroProc;
       windowObj.setProgressBar(-1);
     } catch (err) {
-      if (!restartRProc) {
+      if (restartRProc) {
+        log.debug('Migration process was interrupted.');
+        throw new Error('suppress');
+      } else {
         log.error(`Problems storing data: ${err.toString()}. Stdout: ${err.stdout}, Stderr: ${err.stderr}`);
         throw new Error(err);
+      }
+    } finally {
+      if (migrationWizardWindow) {
+        migrationWizardWindow.destroy();
+        migrationWizardWindow = null;
       }
     }
   };
