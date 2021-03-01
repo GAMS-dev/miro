@@ -880,19 +880,6 @@ if(!is.null(errMsg)){
     )
   )
   server_initError <- function(input, output, session){
-    if(length(inconsistentTableNames)){
-      if(!exists("lang") || is.null(lang$adminMode$database$removeDialogTitle)){
-        removeDbTabLang <- list(title = "Remove database tables",
-                                desc = "Are you sure that you want to delete all database tables? This can not be undone! You might want to save the database first before proceeding.",
-                                cancel = "Cancel",
-                                confirm = "")
-      }else{
-        removeDbTabLang <- list(title = lang$adminMode$database$removeDialogTitle,
-                                desc = lang$adminMode$database$removeDialogDesc,
-                                cancel = lang$adminMode$database$removeDialogCancel,
-                                confirm = lang$adminMode$database$removeDialogConfirm)
-      }
-    }
     output$errorMessages <- renderText(
       errMsg
     )
@@ -1129,7 +1116,7 @@ if(!is.null(errMsg)){
         write(paste0("merr:::418:::", conditionMessage(e)), stderr())
         if(interactive())
           stop()
-        quit("no", 1L)
+        quit("no", 0L)
       }
       gc()
     }, error = function(e){
