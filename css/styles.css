@@ -514,6 +514,11 @@ a:hover {
   max-height: 50vh;
   overflow: auto;
 }
+@media (prefers-color-scheme: dark) {
+  .log-file-container {
+    color: #fff;
+  }
+}
 .step-wrapper {
     text-align: left;
     margin-top: 15px;
