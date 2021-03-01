@@ -76,13 +76,23 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     }
     return(dbGetQuery(private$conn, query)[[1L]])
   },
+  backupDatabase = function(fileName){
+    if(inherits(private$conn, "PqConnection")){
+      stop("Not implemented!", call. = FALSE)
+    }
+    query <- SQL(paste0("VACUUM INTO ", dbQuoteString(private$conn, fileName)))
+    flog.trace("Running query: %s", query)
+    dbExecute(private$conn, query)
+    flog.info("Database backed up to: '%s'", fileName)
+    return(invisible(self))
+  },
   removeTablesModel = function(tableNames = NULL){
     stopifnot(is.null(tableNames) || is.character(tableNames))
     
     removeAllTables <- FALSE
     if(!length(tableNames)){
       removeAllTables <- TRUE
-      tableNames <- private$getTableNamesModel()
+      tableNames <- self$getTableNamesModel()
     }
     
     if(inherits(private$conn, "PqConnection")){
@@ -104,7 +114,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     # turn foreign key usage on again
     dbExecute(private$conn, "PRAGMA foreign_keys = ON;")
     if(removeAllTables){
-      self$deleteRows("_sys__data_hashes", "model", private$modelNameDb)
+      private$db$deleteRows("_sys__data_hashes", "model", private$modelNameDb)
     }
     return(invisible(self))
   },

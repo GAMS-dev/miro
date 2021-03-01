@@ -811,8 +811,10 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
       quit("no", 1L)
     })
     if(length(inconsistentTablesInfo[!isNewTable]) || length(orphanedTablesInfo)){
-      source("./tools/dbmig/server.R", local = TRUE)
-      source("./tools/dbmig/ui.R", local = TRUE)
+      source("./tools/db_migration/modules/bt_delete_database.R", local = TRUE)
+      source("./tools/db_migration/modules/form_db_migration.R", local = TRUE)
+      source("./tools/db_migration/server.R", local = TRUE)
+      source("./tools/db_migration/ui.R", local = TRUE)
       if(miroStoreDataOnly){
         write("\n", stderr())
         write("merr:::409", stderr())
@@ -1155,6 +1157,7 @@ if(!is.null(errMsg)){
     pb <- NULL
   }
   if(LAUNCHCONFIGMODE){
+    source("./tools/db_migration/modules/bt_delete_database.R", local = TRUE)
     source("./tools/config/server.R", local = TRUE)
     source("./tools/config/ui.R", local = TRUE)
     shinyApp(ui = ui_admin, server = server_admin)

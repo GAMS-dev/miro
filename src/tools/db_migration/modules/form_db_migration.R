@@ -1,4 +1,68 @@
-migrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo) {
+dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
+                            includeRemoveAllButton = FALSE) {
+  ns <- NS(id)
+  tags$div(class = "container", style = "font-size:12pt;",
+           tags$div(id = ns("migrationSuccess"), class = "gmsalert gmsalert-success",
+                    lang$nav$migrationModule$successMsg),
+           tags$div(id = ns("dataMigrationErrors"), class = "gmsalert gmsalert-error",
+                    style = "white-space:pre-wrap;"),
+           tags$p(lang$nav$migrationModule$desc),
+           tags$div(style = "text-align:center;margin-bottom:20px;",
+                    tags$b(lang$nav$migrationModule$backupWarning)),
+           lapply(seq_along(inconsistentTablesInfo), function(i){
+             tableInfo <- inconsistentTablesInfo[[i]]
+             if(length(tableInfo$currentColNames)){
+               tableMapping <- tableInfo$tabName
+               textCols <- tableInfo$currentColNames[tolower(tableInfo$currentColTypes) == "text"]
+               numericCols <- tableInfo$currentColNames[!tableInfo$currentColNames %in% textCols]
+               colTypes <- strsplit(tableInfo$colTypes, "", fixed = TRUE)[[1]]
+             }else{
+               tableMapping <- c("-", names(orphanedTablesInfo))
+             }
+             if(!length(tableMapping)){
+               return(NULL)
+             }
+             colClass <- paste0("col-xs-", floor(12/(length(tableInfo$colNames) + 1L)))
+             tags$div(class = "row", style = "border-top: 5px solid #000;padding:20px 0;",
+                      tags$h3(style="text-align:center;",
+                              sprintf(lang$nav$migrationModule$labelSymbol,
+                                      tableInfo$tabName)),
+                      tags$div(class = colClass,
+                               selectInput(ns(paste0("dbMigrateTable_", i)),
+                                           lang$nav$migrationModule$selectTableToMap,
+                                           tableMapping)),
+                      lapply(seq_along(tableInfo$colNames), function(j){
+                        if(length(tableInfo$currentColNames)){
+                          if(identical(colTypes[j], "c")){
+                            colChoices <- c("-", textCols)
+                          }else{
+                            colChoices <- c("-", numericCols)
+                          }
+                        }else{
+                          colChoices <- "-"
+                        }
+                        tags$div(class = colClass,
+                                 selectInput(ns(paste0("dbMigrateTable_", i, "_", j)),
+                                             tableInfo$colNames[j],
+                                             colChoices,
+                                             selected = if(tableInfo$colNames[j] %in% colChoices)
+                                               tableInfo$colNames[j] else "-"
+                                 ))
+                      })
+             )
+           }),
+           tags$div(class = "row",
+                    actionButton(ns("btCancelMigration"),
+                                 lang$nav$migrationModule$btCancelMigration),
+                    if(includeRemoveAllButton)
+                      removeDbTablesButton(ns("removeAllButton")),
+                    actionButton(ns("btConfirmMigration"), class = "bt-highlight-1",
+                                 lang$nav$migrationModule$btConfirmMigration)
+           ))
+}
+
+dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
+                              includeRemoveAllButton = FALSE) {
   moduleServer(
     id,
     function(input, output, session) {
@@ -93,6 +157,7 @@ migrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo) {
           return(migrationConfig)
         })
       })
+      
       showDataLossConfirmationDialog <- function(errMsg){
         isolate(confirmDataLoss(FALSE))
         showModal(modalDialog(
@@ -129,7 +194,8 @@ migrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo) {
         tryCatch({
           dbMigrator$migrateDb(getMigrationConfig(),
                                forceRemove = TRUE, callback = updateProgress)
-          showEl(session, paste0("#", session$ns("migrationSuccess")))
+          showElReplaceTxt(session, paste0("#", session$ns("migrationSuccess")),
+                           lang$nav$migrationModule$successMsg)
           returnCode(0L)
         }, error = function(e){
           flog.error("Problems migrating database. Error message: %s", conditionMessage(e))
@@ -168,30 +234,11 @@ migrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo) {
       observeEvent(input$btCancelMigration, {
         returnCode(1L)
       })
+      if(includeRemoveAllButton){
+        removeDbTablesServer("removeAllButton", errorContainerId = session$ns("dataMigrationErrors"),
+                             successContainerId = session$ns("migrationSuccess"), returnCode)
+      }
       return(returnCode)
     }
   )
-}
-
-serverDbMig <- function(session, input, output){
-  returnCode <- migrationServer("migration", inconsistentTablesInfo, orphanedTablesInfo)
-  
-  successTimeoutExpired <- FALSE
-  observe({
-    if(length(returnCode())){
-      if(identical(returnCode(), 0L)){
-        invalidateLater(4000)
-        if(successTimeoutExpired){
-          stopApp(returnCode())
-        }else{
-          successTimeoutExpired <<- TRUE
-        }
-      }else{
-        stopApp(returnCode())
-      }
-    }
-  })
-  session$onSessionEnded(function() {
-    stopApp(1L)
-  })
 }

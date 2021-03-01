@@ -1,4 +1,6 @@
 source(file.path("tools", "config", "util.R"))
+source("./components/db_migrator.R")
+dbMigrator <- DbMigrator$new(db)
 
 appDisconnected <- FALSE
 configJSONFileName <- paste0(currentModelDir, .Platform$file.sep, "conf_", modelName, 
