@@ -242,7 +242,9 @@ dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
         })
       })
       observeEvent(input$btCancelMigration, {
-        returnCode(1L)
+        if(is.null(returnCode())){
+          returnCode(1L)
+        }
       })
       if(includeRemoveAllButton){
         removeDbTablesServer("removeAllButton", errorContainerId = session$ns("dataMigrationErrors"),
