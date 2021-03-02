@@ -190,6 +190,8 @@ dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
         }
       })
       observeEvent(input$btConfirmDataLoss, {
+        disableEl(session, paste0("#", session$ns("btCancelMigration")))
+        on.exit(enableEl(session, paste0("#", session$ns("btCancelMigration"))))
         req(input$cbConfirmDataLoss)
         progress <- shiny::Progress$new()
         on.exit(progress$close())
@@ -214,9 +216,11 @@ dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
         })
       })
       observeEvent(input$btConfirmMigration, {
-        hideEl(session, "#dataMigrationErrors")
+        hideEl(session, paste0("#", session$ns("dataMigrationErrors")))
+        disableEl(session, paste0("#", session$ns("btCancelMigration")))
+        on.exit(enableEl(session, paste0("#", session$ns("btCancelMigration"))))
         progress <- shiny::Progress$new()
-        on.exit(progress$close())
+        on.exit(progress$close(), add = TRUE)
         progress$set(message = lang$nav$migrationModule$progress$title, value = 0)
         updateProgress <- function(){
           progress$inc(1/length(inconsistentTablesInfo),
