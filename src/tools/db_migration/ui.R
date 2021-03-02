@@ -5,7 +5,7 @@ uiDbMig <- fluidPage(
   ),
   tagList(
     tags$head(tags$title(lang$nav$migrationModule$title)),
-    h2(style = "text-align:center", lang$nav$migrationModule$title)
+    h1(style = "text-align:center", lang$nav$migrationModule$title)
   ),
   dbMigrationForm("migration", inconsistentTablesInfo, orphanedTablesInfo,
                   includeRemoveAllButton = TRUE)

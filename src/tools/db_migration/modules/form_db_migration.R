@@ -8,7 +8,8 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
                     style = "white-space:pre-wrap;"),
            tags$p(lang$nav$migrationModule$desc),
            tags$div(style = "text-align:center;margin-bottom:20px;",
-                    tags$b(lang$nav$migrationModule$backupWarning)),
+                    tags$b(style = "border: 2px solid #d11a2a;padding: 6px 12px;",
+                           lang$nav$migrationModule$backupWarning)),
            lapply(seq_along(inconsistentTablesInfo), function(i){
              tableInfo <- inconsistentTablesInfo[[i]]
              if(length(tableInfo$currentColNames)){
@@ -22,9 +23,17 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
              if(!length(tableMapping)){
                return(NULL)
              }
+             if(tableInfo$tabName %in% names(modelOut)){
+               tableMeta <- modelOut[[tableInfo$tabName]]
+             }else if(tableInfo$tabName %in% names(modelInRaw)){
+               tableMeta <- modelInRaw[[tableInfo$tabName]]
+             }else{
+               tableMeta <- list()
+             }
              colClass <- paste0("col-xs-", floor(12/(length(tableInfo$colNames) + 1L)))
              tags$div(class = "row", style = "border-top: 5px solid #000;padding:20px 0;",
                       tags$h3(style="text-align:center;",
+                              title = tableMeta$alias,
                               sprintf(lang$nav$migrationModule$labelSymbol,
                                       tableInfo$tabName)),
                       tags$div(class = colClass,
@@ -43,7 +52,8 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
                         }
                         tags$div(class = colClass,
                                  selectInput(ns(paste0("dbMigrateTable_", i, "_", j)),
-                                             tableInfo$colNames[j],
+                                             tags$span(title = tableMeta$headers[[j]]$alias,
+                                                       tableInfo$colNames[j]),
                                              colChoices,
                                              selected = if(tableInfo$colNames[j] %in% colChoices)
                                                tableInfo$colNames[j] else "-"
