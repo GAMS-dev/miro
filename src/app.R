@@ -981,7 +981,7 @@ if(!is.null(errMsg)){
   
   shinyApp(ui = ui_initError, server = server_initError)
 }else{
-  uidAdmin <<- Sys.getenv("MIRO_ADMIN_USER", uid)
+  uidAdmin <<- if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) "admin" else uid
   local({
     if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
       setWinProgressBar(pb, 0.6, label= "Importing new data")
