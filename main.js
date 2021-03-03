@@ -470,9 +470,9 @@ async function addMiroscenFile(filePath) {
     try {
       await addMiroscen(miroProcessManager,
         miroscenPath, mainWindow, {
-        libPath,
-        appDataPath,
-      }, appsData);
+          libPath,
+          appDataPath,
+        }, appsData);
     } catch (e) {
       log.info(`Problems adding MIRO scenario. Error message: ${e.toString()}.`);
       showErrorMsg({
@@ -615,13 +615,13 @@ function openAboutDialog() {
   });
   aboutDialogWindow.loadFile(path.join(__dirname,
     'renderer', 'about.html'),
-    {
-      query: {
-        miroVersion,
-        miroRelease,
-        btClose: lang.update.btClose,
-      },
-    });
+  {
+    query: {
+      miroVersion,
+      miroRelease,
+      btClose: lang.update.btClose,
+    },
+  });
   aboutDialogWindow.once('ready-to-show', async () => {
     log.debug('About dialog ready to show.');
     aboutDialogWindow.show();
@@ -857,7 +857,7 @@ ${requiredAPIVersion}.`);
     return;
   }
 
-  const onErrorStartup = async (appID) => {
+  const onErrorStartup = async (appID, e) => {
     log.warn(`Error during startup of MIRO app with ID: ${appID}.`);
 
     if (mainWindow && !miroDevelopMode) {
@@ -865,7 +865,7 @@ ${requiredAPIVersion}.`);
       showErrorMsg({
         type: 'error',
         title: lang.main.ErrorUnexpectedHdr,
-        message: message || lang.main.ErrorUnexpectedMsg,
+        message: e.message || lang.main.ErrorUnexpectedMsg,
       });
     }
     if (miroDevelopMode) {
@@ -889,7 +889,7 @@ Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
         message: lang.main.ErrorUnexpectedMsg,
       });
     }
-  }
+  };
 
   const onSuccess = (url) => {
     if (configData.getSync('launchExternal') === true) {
@@ -943,7 +943,6 @@ Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
       } catch (e) {
         // continue regardless of error
       }
-
     });
     miroAppWindows[appID].once('ready-to-show', () => {
       miroAppWindows[appID].show();
@@ -953,7 +952,7 @@ Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
         mainWindow.send('hide-loading-screen', appID, true);
       }
     });
-  }
+  };
 
   const onProcessFinished = async (appID) => {
     log.debug(`Process of MIRO app: ${appID} ended.`);
