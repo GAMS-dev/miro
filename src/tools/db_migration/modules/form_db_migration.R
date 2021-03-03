@@ -1,82 +1,99 @@
 dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
-                            includeRemoveAllButton = FALSE) {
+                            standalone = TRUE) {
   ns <- NS(id)
-  tags$div(class = "container", style = "font-size:12pt;",
-           tags$div(id = ns("migrationSuccess"), class = "gmsalert gmsalert-success",
-                    lang$nav$migrationModule$successMsg),
-           tags$div(id = ns("dataMigrationErrors"), class = "gmsalert gmsalert-error",
-                    style = "white-space:pre-wrap;"),
-           tags$p(lang$nav$migrationModule$desc),
-           tags$div(style = "text-align:center;margin-bottom:20px;",
-                    tags$b(style = "border: 2px solid #d11a2a;padding: 6px 12px;",
-                           lang$nav$migrationModule$backupWarning)),
-           lapply(seq_along(inconsistentTablesInfo), function(i){
-             tableInfo <- inconsistentTablesInfo[[i]]
-             if(length(tableInfo$currentColNames)){
-               tableMapping <- tableInfo$tabName
-               textCols <- tableInfo$currentColNames[tolower(tableInfo$currentColTypes) == "text"]
-               numericCols <- tableInfo$currentColNames[!tableInfo$currentColNames %in% textCols]
-               colTypes <- strsplit(tableInfo$colTypes, "", fixed = TRUE)[[1]]
-             }else{
-               tableMapping <- c("-", names(orphanedTablesInfo))
-             }
-             if(!length(tableMapping)){
-               return(NULL)
-             }
-             if(tableInfo$tabName %in% names(modelOut)){
-               tableMeta <- modelOut[[tableInfo$tabName]]
-             }else if(tableInfo$tabName %in% names(modelInRaw)){
-               tableMeta <- modelInRaw[[tableInfo$tabName]]
-             }else{
-               tableMeta <- list()
-             }
-             colClass <- paste0("col-xs-", floor(12/(length(tableInfo$colNames) + 1L)))
-             tags$div(class = "row", style = "border-top: 5px solid #000;padding:20px 0;",
-                      tags$h3(style="text-align:center;",
-                              title = tableMeta$alias,
-                              sprintf(lang$nav$migrationModule$labelSymbol,
-                                      tableInfo$tabName)),
-                      tags$div(class = colClass,
-                               selectInput(ns(paste0("dbMigrateTable_", i)),
-                                           lang$nav$migrationModule$selectTableToMap,
-                                           tableMapping)),
-                      lapply(seq_along(tableInfo$colNames), function(j){
-                        if(length(tableInfo$currentColNames)){
-                          if(identical(colTypes[j], "c")){
-                            colChoices <- c("-", textCols)
-                          }else{
-                            colChoices <- c("-", numericCols)
-                          }
-                        }else{
-                          colChoices <- "-"
-                        }
-                        tags$div(class = colClass,
-                                 selectInput(ns(paste0("dbMigrateTable_", i, "_", j)),
-                                             tags$span(title = tableMeta$headers[[j]]$alias,
-                                                       tableInfo$colNames[j]),
-                                             colChoices,
-                                             selected = if(tableInfo$colNames[j] %in% colChoices)
-                                               tableInfo$colNames[j] else "-"
-                                 ))
-                      })
-             )
-           }),
-           tags$div(class = "row",
-                    actionButton(ns("btCancelMigration"),
-                                 lang$nav$migrationModule$btCancelMigration),
-                    if(includeRemoveAllButton)
-                      removeDbTablesButton(ns("removeAllButton")),
-                    actionButton(ns("btConfirmMigration"), class = "bt-highlight-1",
-                                 lang$nav$migrationModule$btConfirmMigration)
-           ))
+  tagList(
+    if(!standalone)
+      tags$div(id = ns("dataLossDialog"), class = "container", style = "display:none",
+               tags$h5(lang$nav$migrationModule$dialogConfirmDataLoss$title),
+               tags$div(id = ns("dataLossDialogMsg")),
+               checkboxInput_MIRO(ns("cbConfirmDataLoss"),
+                                  lang$nav$migrationModule$dialogConfirmDataLoss$cbConfirmDataLoss),
+               actionButton(ns("btCancelDataLoss"),
+                            lang$nav$migrationModule$dialogConfirmDataLoss$btCancel),
+               tagAppendAttributes(actionButton(ns("btConfirmDataLoss"), class = "bt-highlight-1",
+                                                lang$nav$migrationModule$dialogConfirmDataLoss$btConfirm),
+                                   `disabled` = "true")),
+    tags$div(id = ns("migFormContainer"), class = "container", style = "font-size:12pt;",
+             tags$div(id = ns("migrationSuccess"), class = "gmsalert gmsalert-success",
+                      lang$nav$migrationModule$successMsg),
+             tags$div(id = ns("dataMigrationErrors"), class = "gmsalert gmsalert-error",
+                      style = "white-space:pre-wrap;"),
+             tags$p(lang$nav$migrationModule$desc),
+             tags$div(style = "text-align:center;margin-bottom:20px;",
+                      tags$b(style = "border: 2px solid #d11a2a;padding: 6px 12px;",
+                             lang$nav$migrationModule$backupWarning)),
+             lapply(seq_along(inconsistentTablesInfo), function(i){
+               tableInfo <- inconsistentTablesInfo[[i]]
+               if(length(tableInfo$currentColNames)){
+                 tableMapping <- tableInfo$tabName
+                 textCols <- tableInfo$currentColNames[tolower(tableInfo$currentColTypes) == "text"]
+                 numericCols <- tableInfo$currentColNames[!tableInfo$currentColNames %in% textCols]
+                 colTypes <- strsplit(tableInfo$colTypes, "", fixed = TRUE)[[1]]
+               }else{
+                 tableMapping <- c("-", names(orphanedTablesInfo))
+               }
+               if(!length(tableMapping)){
+                 return(NULL)
+               }
+               if(tableInfo$tabName %in% names(modelOut)){
+                 tableMeta <- modelOut[[tableInfo$tabName]]
+               }else if(tableInfo$tabName %in% names(modelInRaw)){
+                 tableMeta <- modelInRaw[[tableInfo$tabName]]
+               }else{
+                 tableMeta <- list()
+               }
+               colClass <- floor(12/(length(tableInfo$colNames) + 1L))
+               colClass <- paste0("col-", colClass, " col-xs-", colClass)
+               tagList(
+                 tags$div(class = "row", style = "padding-top:20px;border-top:5px solid #000;text-align:center;",
+                          tags$h3(title = tableMeta$alias,
+                                  sprintf(lang$nav$migrationModule$labelSymbol,
+                                          tableInfo$tabName))
+                 ),
+                 tags$div(class = "row", style = "padding:20px 0;",
+                          tags$div(class = colClass,
+                                   selectInput(ns(paste0("dbMigrateTable_", i)),
+                                               lang$nav$migrationModule$selectTableToMap,
+                                               tableMapping)),
+                          lapply(seq_along(tableInfo$colNames), function(j){
+                            if(length(tableInfo$currentColNames)){
+                              if(identical(colTypes[j], "c")){
+                                colChoices <- c("-", textCols)
+                              }else{
+                                colChoices <- c("-", numericCols)
+                              }
+                            }else{
+                              colChoices <- "-"
+                            }
+                            tags$div(class = colClass,
+                                     selectInput(ns(paste0("dbMigrateTable_", i, "_", j)),
+                                                 tags$span(title = tableMeta$headers[[j]]$alias,
+                                                           tableInfo$colNames[j]),
+                                                 colChoices,
+                                                 selected = if(tableInfo$colNames[j] %in% colChoices)
+                                                   tableInfo$colNames[j] else "-"
+                                     ))
+                          })
+                 )
+               )
+             }),
+             tags$div(class = "row",
+                      if(standalone)
+                        tagList(
+                          actionButton(ns("btCancelMigration"),
+                                       lang$nav$migrationModule$btCancelMigration),
+                          removeDbTablesButton(ns("removeAllButton"))
+                        ),
+                      actionButton(ns("btConfirmMigration"), class = "bt-highlight-1",
+                                   lang$nav$migrationModule$btConfirmMigration)
+             )))
 }
 
 dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
-                              includeRemoveAllButton = FALSE) {
+                              standalone = TRUE) {
   moduleServer(
     id,
     function(input, output, session) {
-      returnCode <- reactiveVal(NULL)
       lapply(seq_along(inconsistentTablesInfo), function(i){
         tableInfo <- inconsistentTablesInfo[[i]]
         if(length(tableInfo$currentColNames)){
@@ -168,20 +185,6 @@ dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
         })
       })
       
-      showDataLossConfirmationDialog <- function(errMsg){
-        isolate(confirmDataLoss(FALSE))
-        showModal(modalDialog(
-          title = lang$nav$migrationModule$dialogConfirmDataLoss$title,
-          errMsg,
-          checkboxInput_MIRO(session$ns("cbConfirmDataLoss"),
-                             lang$nav$migrationModule$dialogConfirmDataLoss$cbConfirmDataLoss),
-          footer = tagList(
-            modalButton(lang$nav$migrationModule$dialogConfirmDataLoss$btCancel),
-            tagAppendAttributes(actionButton(session$ns("btConfirmDataLoss"), class = "bt-highlight-1",
-                                             lang$nav$migrationModule$dialogConfirmDataLoss$btConfirm),
-                                `disabled` = "true")
-          )))
-      }
       observe({
         if(isTRUE(input$cbConfirmDataLoss)){
           enableEl(session, paste0("#", session$ns("btConfirmDataLoss")))
@@ -189,49 +192,113 @@ dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
           disableEl(session, paste0("#", session$ns("btConfirmDataLoss")))
         }
       })
-      observeEvent(input$btConfirmDataLoss, {
-        disableEl(session, paste0("#", session$ns("btCancelMigration")))
-        on.exit(enableEl(session, paste0("#", session$ns("btCancelMigration"))))
-        req(input$cbConfirmDataLoss)
-        progress <- shiny::Progress$new()
-        on.exit(progress$close())
-        progress$set(message = lang$nav$migrationModule$progress$title, value = 0)
-        updateProgress <- function(){
-          progress$inc(1/length(inconsistentTablesInfo),
-                       detail = sprintf(lang$nav$migrationModule$progress$desc,
-                                        progress$getValue() + 1L, length(inconsistentTablesInfo)))
+      if(standalone){
+        returnCode <- reactiveVal(NULL)
+        showDataLossConfirmationDialog <- function(errMsg){
+          isolate(confirmDataLoss(FALSE))
+          showModal(modalDialog(
+            title = lang$nav$migrationModule$dialogConfirmDataLoss$title,
+            errMsg,
+            checkboxInput_MIRO(session$ns("cbConfirmDataLoss"),
+                               lang$nav$migrationModule$dialogConfirmDataLoss$cbConfirmDataLoss),
+            footer = tagList(
+              modalButton(lang$nav$migrationModule$dialogConfirmDataLoss$btCancel),
+              tagAppendAttributes(actionButton(session$ns("btConfirmDataLoss"), class = "bt-highlight-1",
+                                               lang$nav$migrationModule$dialogConfirmDataLoss$btConfirm),
+                                  `disabled` = "true")
+            )))
         }
-        removeModal()
+        observeEvent(input$btConfirmDataLoss, {
+          disableEl(session, paste0("#", session$ns("btCancelMigration")))
+          on.exit(enableEl(session, paste0("#", session$ns("btCancelMigration"))))
+          req(input$cbConfirmDataLoss)
+          progress <- shiny::Progress$new()
+          on.exit(progress$close())
+          progress$set(message = lang$nav$migrationModule$progress$title, value = 0)
+          updateProgress <- function(){
+            progress$inc(1/length(inconsistentTablesInfo),
+                         detail = sprintf(lang$nav$migrationModule$progress$desc,
+                                          progress$getValue() + 1L, length(inconsistentTablesInfo)))
+          }
+          removeModal()
+          confirmDataLoss(TRUE)
+          tryCatch({
+            dbMigrator$migrateDb(getMigrationConfig(),
+                                 forceRemove = TRUE, callback = updateProgress)
+            showElReplaceTxt(session, paste0("#", session$ns("migrationSuccess")),
+                             lang$nav$migrationModule$successMsg)
+            returnCode(0L)
+          }, error = function(e){
+            flog.error("Problems migrating database. Error message: %s", conditionMessage(e))
+            showHideEl(session, paste0("#", session$ns("dataMigrationErrors")),
+                       4000L, lang$errMsg$unknownError)
+          })
+        })
+        observeEvent(input$btConfirmMigration, {
+          hideEl(session, paste0("#", session$ns("dataMigrationErrors")))
+          disableEl(session, paste0("#", session$ns("btCancelMigration")))
+          on.exit(enableEl(session, paste0("#", session$ns("btCancelMigration"))))
+          progress <- shiny::Progress$new()
+          on.exit(progress$close(), add = TRUE)
+          progress$set(message = lang$nav$migrationModule$progress$title, value = 0)
+          updateProgress <- function(){
+            progress$inc(1/length(inconsistentTablesInfo),
+                         detail = sprintf(lang$nav$migrationModule$progress$title,
+                                          progress$getValue() + 1L, length(inconsistentTablesInfo)))
+          }
+          tryCatch({
+            dbMigrator$migrateDb(getMigrationConfig(),
+                                 forceRemove = FALSE, callback = updateProgress)
+            showEl(session, paste0("#", session$ns("migrationSuccess")))
+            returnCode(0L)
+          }, error_data_loss = function(e){
+            flog.info("Migrating data with current config will lead to loss of data: %s. Confirmation required.", conditionMessage(e))
+            showDataLossConfirmationDialog(conditionMessage(e))
+          }, error_bad_settings = function(e){
+            flog.info("Bad settings: %s", conditionMessage(e))
+            showHideEl(session, paste0("#", session$ns("dataMigrationErrors")),
+                       4000L, conditionMessage(e))
+          }, error = function(e){
+            flog.error("Problems migrating database. Error message: %s", conditionMessage(e))
+            showHideEl(session, paste0("#", session$ns("dataMigrationErrors")),
+                       4000L, lang$errMsg$unknownError)
+          })
+        })
+        observeEvent(input$btCancelMigration, {
+          if(is.null(returnCode())){
+            returnCode(1L)
+          }
+        })
+        removeDbTablesServer("removeAllButton", errorContainerId = session$ns("dataMigrationErrors"),
+                             successContainerId = session$ns("migrationSuccess"), returnCode)
+        return(returnCode)
+      }
+      migrationConfig <- reactiveVal(NULL)
+      showDataLossConfirmationDialog <- function(errMsg){
+        isolate(confirmDataLoss(FALSE))
+        showElReplaceTxt(session, paste0("#", session$ns("dataLossDialogMsg")), errMsg)
+        hideEl(session, paste0("#", session$ns("migFormContainer")))
+        showEl(session, paste0("#", session$ns("dataLossDialog")))
+      }
+      observeEvent(input$btCancelDataLoss, {
+        hideEl(session, paste0("#", session$ns("dataLossDialog")))
+        showEl(session, paste0("#", session$ns("migFormContainer")))
+        updateCheckboxInput(session, "cbConfirmDataLoss", value = FALSE)
+      })
+      observeEvent(input$btConfirmDataLoss, {
+        req(input$cbConfirmDataLoss)
         confirmDataLoss(TRUE)
         tryCatch({
-          dbMigrator$migrateDb(getMigrationConfig(),
-                               forceRemove = TRUE, callback = updateProgress)
-          showElReplaceTxt(session, paste0("#", session$ns("migrationSuccess")),
-                           lang$nav$migrationModule$successMsg)
-          returnCode(0L)
+          migrationConfig(getMigrationConfig())
         }, error = function(e){
           flog.error("Problems migrating database. Error message: %s", conditionMessage(e))
-          showHideEl(session, paste0("#", session$ns("dataMigrationErrors")),
-                     4000L, lang$errMsg$unknownError)
+          write("\n", stderr())
+          write("merr:::500", stderr())
         })
       })
       observeEvent(input$btConfirmMigration, {
-        hideEl(session, paste0("#", session$ns("dataMigrationErrors")))
-        disableEl(session, paste0("#", session$ns("btCancelMigration")))
-        on.exit(enableEl(session, paste0("#", session$ns("btCancelMigration"))))
-        progress <- shiny::Progress$new()
-        on.exit(progress$close(), add = TRUE)
-        progress$set(message = lang$nav$migrationModule$progress$title, value = 0)
-        updateProgress <- function(){
-          progress$inc(1/length(inconsistentTablesInfo),
-                       detail = sprintf(lang$nav$migrationModule$progress$title,
-                                        progress$getValue() + 1L, length(inconsistentTablesInfo)))
-        }
         tryCatch({
-          dbMigrator$migrateDb(getMigrationConfig(),
-                               forceRemove = FALSE, callback = updateProgress)
-          showEl(session, paste0("#", session$ns("migrationSuccess")))
-          returnCode(0L)
+          migrationConfig(getMigrationConfig())
         }, error_data_loss = function(e){
           flog.info("Migrating data with current config will lead to loss of data: %s. Confirmation required.", conditionMessage(e))
           showDataLossConfirmationDialog(conditionMessage(e))
@@ -245,16 +312,29 @@ dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
                      4000L, lang$errMsg$unknownError)
         })
       })
-      observeEvent(input$btCancelMigration, {
-        if(is.null(returnCode())){
-          returnCode(1L)
-        }
-      })
-      if(includeRemoveAllButton){
-        removeDbTablesServer("removeAllButton", errorContainerId = session$ns("dataMigrationErrors"),
-                             successContainerId = session$ns("migrationSuccess"), returnCode)
-      }
-      return(returnCode)
+      return(migrationConfig)
     }
   )
+}
+
+migrateFromConfig <- function(path){
+  migrationConfig <- fromJSON(path, simplifyDataFrame = FALSE, simplifyVector = FALSE)
+  noTablesMigrated <- 1L
+  updateProgress <- function(){
+    write("\n", stderr())
+    write(paste0("mmigprog:::",
+                 round(noTablesMigrated/length(inconsistentTablesInfo) * 100)), 
+          stderr())
+    noTablesMigrated <<- noTablesMigrated + 1L
+  }
+  tryCatch({
+    dbMigrator$migrateDb(migrationConfig,
+                         forceRemove = TRUE, callback = updateProgress)
+    write("\n", stderr())
+    write("mmigprog:::200", stderr())
+  }, error = function(e){
+    flog.error("Problems migrating database. Error message: %s", conditionMessage(e))
+    write("\n", stderr())
+    write("merr:::500", stderr())
+  })
 }
