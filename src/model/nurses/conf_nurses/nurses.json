@@ -1,0 +1,87 @@
+{
+  "theme": "browser",
+  "excelIncludeMeta": true,
+  "excelIncludeEmptySheets": true,
+  "autoGenInputGraphs": true,
+  "storeLogFilesDuration": 7,
+  "defCompMode": "split",
+  "activateModules": {
+    "loadLocal": true,
+    "logFile": true,
+    "lstFile": true,
+    "attachments": true,
+    "downloadTempFiles": false
+  },
+  "aggregateWidgets": true,
+  "overwriteSheetOrder": {
+    "input": ["nursedata", "shiftdata", "nurseskills", "skillrequirements", "vacation", "nurseassoc", "nurseincompat", "_scalars", "_widgets"]
+  },
+  "overwriteAliases": {
+    "nursedata": {
+      "newAlias": "Nurse Data"
+    },
+    "shiftdata": {
+      "newAlias": "Nurse Data"
+    },
+    "nurseskills": {
+      "newAlias": "Nurse has particular skill"
+    },
+    "skillrequirements": {
+      "newAlias": "skillrequirements"
+    },
+    "vacation": {
+      "newAlias": "vacation"
+    },
+    "nurseassoc": {
+      "newAlias": "nurseassoc"
+    },
+    "nurseincompat": {
+      "newAlias": "cannot work together"
+    },
+    "_scalars": {
+      "newAlias": "Scalars"
+    },
+    "nurseassignments": {
+      "newAlias": "assign nurse to shift"
+    },
+    "nurseworktime": {
+      "newAlias": "working time in hours by nurse"
+    },
+    "_scalarsve_out": {
+      "newAlias": "Output Variable/Equation Scalars"
+    },
+    "nursemorethanavghours": {
+      "newAlias": "overtime"
+    },
+    "nurselessthanavghours": {
+      "newAlias": "undertime"
+    },
+    "costbydepartments": {
+      "newAlias": "cost by department"
+    },
+    "kpi": {
+      "newAlias": "kpi"
+    }
+  },
+  "saveTraceFile": true,
+  "roundingDecimals": 2,
+  "dataRendering": {
+    "nurseassignments": {
+      "outType": "mirorenderer_nurseassignments",
+      "packages": ["dplyr", "timevis"],
+      "additionalData": "shiftdata"
+    }
+  },
+  "handsontable": {
+    "stretchH": "none",
+    "readonly": false,
+    "manualColumnResize": true,
+    "contextMenu": {
+      "enabled": true,
+      "allowRowEdit": true,
+      "allowColEdit": true
+    },
+    "height": 700,
+    "colWidths": 200
+  }
+}
