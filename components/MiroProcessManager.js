@@ -14,19 +14,19 @@ const {
     https://github.com/dirkschumacher/r-shiny-electron
 
     MIT License
-    
+
     Copyright (c) 2018 Dirk Schumacher, Noam Ross, Rich FitzJohn
-    
+
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
     in the Software without restriction, including without limitation the rights
     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
     copies of the Software, and to permit persons to whom the Software is
     furnished to do so, subject to the following conditions:
-    
+
     The above copyright notice and this permission notice shall be included in all
     copies or substantial portions of the Software.
-    
+
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -62,14 +62,15 @@ class MiroProcessManager {
     if (internalPid != null) {
       await progressCallback({ internalPid, code: 'start' });
       await waitFor(1500);
-      await this.waitForResponse(internalPid, progressCallback, onErrorStartup, onSuccess);
+      await this.waitForResponse(appData.id, appData.allowMultiple,
+        internalPid, progressCallback, onErrorStartup, onSuccess);
     }
   }
 
   async createNewMiroProc(appData, libPath, onErrorStartup, onErrorLater, onProcessFinished) {
     if (appData.allowMultiple !== true && this.processIdMap[appData.id]) {
       log.error('Process for this model already running. This should not happen. Reference not freed.');
-      return;
+      return null;
     }
     let internalPid = this.miroProcesses.findIndex(isNull);
     if (internalPid === -1) {
@@ -85,9 +86,9 @@ class MiroProcessManager {
     } catch (e) {
       log.debug(`Process could not be started, as scanning open ports failed with error: ${e.message}`);
       if (onErrorStartup) {
-        await onErrorStartup(appData.id);
+        await onErrorStartup(appData.id, e);
       }
-      return;
+      return null;
     }
     this.pidPortMap[internalPid.toString()] = shinyPort;
     log.debug(`Process: ${internalPid} is being started on port: ${shinyPort}.`);
@@ -147,11 +148,11 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       MIRO_MODE: appData.mode ? appData.mode : 'base',
       MIRO_MODEL_PATH: this.inDevelopmentMode ? appData.modelPath
         : path.join(this.appDataPath, appData.id, `${appData.id}.gms`),
-    }
+    };
     if (appData.customEnv) {
-      for (const [envName, envVal] of Object.entries(appData.customEnv)) {
-        procEnv[envName] = envVal;
-      }
+      Object.keys(appData.customEnv).forEach((envName) => {
+        procEnv[envName] = appData.customEnv[envName];
+      });
     }
     this.miroProcesses[internalPid] = execa(path.join(await rpath, 'bin', 'R'),
       ['--no-echo', '--no-restore', '--vanilla',
@@ -189,7 +190,8 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
     return internalPid;
   }
 
-  async waitForResponse(internalPid, progressCallback, onError, onSuccess) {
+  async waitForResponse(appId, allowMultiple, internalPid,
+    progressCallback, onError, onSuccess) {
     const shinyPort = this.pidPortMap[internalPid.toString()];
     if (!shinyPort) {
       return;
@@ -220,11 +222,11 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
     await this.terminate(internalPid);
     this.miroProcesses[internalPid] = null;
     delete this.pidPortMap[internalPid.toString()];
-    if (appData.allowMultiple !== true) {
-      delete this.processIdMap[appData.id];
+    if (allowMultiple !== true) {
+      delete this.processIdMap[appId];
     }
     if (onError) {
-      await onError(appData.id);
+      await onError(appId);
     }
   }
 
@@ -243,7 +245,7 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
   }
 
   async terminateAll() {
-    log.debug(`Request to terminate all running apps received.`);
+    log.debug('Request to terminate all running apps received.');
     const termPromises = this.miroProcesses.map((miroProcess) => {
       if (!miroProcess) {
         return { pid: null };

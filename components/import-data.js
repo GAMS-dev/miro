@@ -16,11 +16,12 @@ async function addModelData(miroProcessManager, paths, modelName,
   }
   const runRProc = async function fRunRProc() {
     restartRProc = false;
+    const appId = modelName.toLowerCase();
     const procPid = await miroProcessManager.createNewMiroProc({
-      id: modelName.toLowerCase(),
+      id: appId,
       miroversion: miroVersion,
       mode: miroMode,
-      usetmpdir: usetmpdir,
+      usetmpdir,
       dbpath: paths.dbpath,
       allowMultiple: true,
       customEnv: {
@@ -36,17 +37,45 @@ async function addModelData(miroProcessManager, paths, modelName,
         MIRO_DATA_DIR: dataDir || '',
       },
       stdOut: 'pipe',
-      stdErr: 'pipe'
+      stdErr: 'pipe',
     }, paths.libPath);
 
     if (procPid == null) {
-      log.error(`Unknown error while storing data.`);
+      log.error('Unknown error while storing data.');
       throw new Error();
     }
 
     const miroProc = miroProcessManager.getProc(procPid);
 
     windowObj.setProgressBar(0);
+
+    const openMigrationWizard = (url) => {
+      log.debug(`Database migration wizard for app: ${modelName.toLowerCase()} being opened in launcher.`);
+      migrationWizardWindow = new BrowserWindow({
+        width: 800,
+        height: 600,
+        minWidth: 800,
+        minHeight: 600,
+        show: false,
+        webPreferences: {
+          nodeIntegration: false,
+          contextIsolation: true,
+        },
+      });
+      migrationWizardWindow.loadURL(url, { extraHeaders: 'pragma: no-cache\n' });
+      migrationWizardWindow.on('close', (e) => {
+        e.preventDefault();
+        log.debug(`Database migration wizard for app: ${modelName.toLowerCase()} closed.`);
+        migrationWizardWindow.destroy();
+        migrationWizardWindow = null;
+      });
+      migrationWizardWindow.once('ready-to-show', () => {
+        migrationWizardWindow.show();
+        migrationWizardWindow.maximize();
+        log.debug(`Window for database migration wizard for app: ${modelName.toLowerCase()} created.`);
+      });
+    };
+
     // eslint-disable-next-line no-restricted-syntax
     for await (const data of miroProc.stderr) {
       const msg = data.toString().trim();
@@ -57,36 +86,10 @@ async function addModelData(miroProcessManager, paths, modelName,
         const error = msg.trim().split(':::');
         if (error[1] === '409') {
           log.debug('MIRO signalled that database needs to be migrated. Waiting for user to migrate database.');
-          miroProcessManager.waitForResponse(procPid,
+          miroProcessManager.waitForResponse(appId, true, procPid,
             async (event) => {
               log.info(event);
-            }, null,
-            (url) => {
-              log.debug(`Database migration wizard for app: ${modelName.toLowerCase()} being opened in launcher.`);
-              migrationWizardWindow = new BrowserWindow({
-                width: 800,
-                height: 600,
-                minWidth: 800,
-                minHeight: 600,
-                show: false,
-                webPreferences: {
-                  nodeIntegration: false,
-                  contextIsolation: true,
-                },
-              });
-              migrationWizardWindow.loadURL(url, { extraHeaders: 'pragma: no-cache\n' });
-              migrationWizardWindow.on('close', (e) => {
-                e.preventDefault();
-                log.debug(`Database migration wizard for app: ${modelName.toLowerCase()} closed.`);
-                migrationWizardWindow.destroy();
-                migrationWizardWindow = null;
-              });
-              migrationWizardWindow.once('ready-to-show', () => {
-                migrationWizardWindow.show();
-                migrationWizardWindow.maximize();
-                log.debug(`Window for database migration wizard for app: ${modelName.toLowerCase()} created.`);
-              });
-            });
+            }, null, openMigrationWizard);
           restartRProc = true;
         } else if (error[1] === '418') {
           log.info('MIRO signalled that the scenario already exists.');
