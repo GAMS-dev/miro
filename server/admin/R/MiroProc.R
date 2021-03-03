@@ -6,20 +6,16 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
 
     private$procEnv <- procEnv
 
-    if(!identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")){
-      # if not NOAUTH mode, admin user = SHINYPROXY_USERNAME
-      private$procEnv[["MIRO_ADMIN_USER"]] <- NULL
-    }
-
     return(invisible(self))
   },
-  getTablesToRemove = function(){
-    return(private$tablesToRemove)
+  getMigrationInfo = function(){
+    return(private$migrationInfo)
   },
   run = function(appId, modelName, miroVersion, appDir, dataDir,
-    progressSelector, successCallback, overwriteScen = TRUE, requestType = "addApp"){
-    private$tablesToRemove <- NULL
+    progressSelector, successCallback, overwriteScen = TRUE, requestType = "addApp",
+    migrationConfigPath = NULL, launchDbMigrationManager = NULL){
     private$errorRaised <- FALSE
+    private$migrationInfo <- NULL
     private$stdErr <- ""
     if(length(private$miroProc) &&
         private$miroProc$is_alive()){
@@ -33,6 +29,12 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
     procEnv$MIRO_MODEL_PATH <- file.path(appDir, paste0(modelName, ".gms"))
     procEnv$MIRO_DATA_DIR <- dataDir
     procEnv$MIRO_OVERWRITE_SCEN_IMPORT <- if(!identical(overwriteScen, TRUE)) "false" else "true"
+    if(is.null(migrationConfigPath)){
+      procEnv$MIRO_MIGRATION_CONFIG_PATH <- file.path(tempdir(check = TRUE), "mig_conf.json")
+    }else{
+      procEnv$MIRO_MIGRATION_CONFIG_PATH <- migrationConfigPath
+      procEnv$MIRO_MIGRATE_DB <- "true"
+    }
 
     private$miroProc <- processx::process$new("R", c("-e", 
         paste0("shiny::runApp('", MIRO_APP_PATH, "',port=3839,host='0.0.0.0')")),
@@ -55,38 +57,20 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
                 flog.debug(paste0("MIRO error message received: ", line))
                 error <- strsplit(trimws(line), ":::", fixed = TRUE)[[1]][-1]
                 if(error[1] == '409'){
-                   if(length(error) < 2){
-                    flog.error('MIRO signalled that there are inconsistent tables but no data was provided.');
-                    private$session$sendCustomMessage("onError", list(requestType = requestType, message = "Internal error"))
-                    private$procObs$destroy()
-                    private$procObs <- NULL
-                    return()
-                   }
-                   # split and decode base64 encoded table names
-                   datasetsToRemove <- vapply(strsplit(error[2], ",", fixed = TRUE)[[1]], function(dataset){
-                     return(rawToChar(jsonlite::base64_dec(dataset)))
-                   }, character(1), USE.NAMES = FALSE)
-                   flog.debug(paste0("Datasets to be removed are: ", paste(datasetsToRemove, collapse = "','")))
-
-                   escapedAppId <- escapeAppIds(appId)[1]
-                   private$tablesToRemove <- vapply(datasetsToRemove, function(el){
-                    return(paste0(escapedAppId, "_", el))
-                    }, character(1), USE.NAMES = FALSE)
-                   flog.debug(paste0("Inconsistent tables to be removed are: ",
-                    paste(private$tablesToRemove, collapse = "','")))
-
-                   private$session$sendCustomMessage("onInconsistentDbTables", 
-                    list(datasetsToRemove = I(datasetsToRemove)))
+                   flog.debug("MIRO signalled that database needs to be migrated. Waiting for user to migrate database.")
+                   private$migrationInfo <- c(fromJSON(procEnv$MIRO_MIGRATION_CONFIG_PATH,
+                                                        simplifyDataFrame = FALSE,
+                                                        simplifyVector = FALSE),
+                                              list(appId = appId, modelName = modelName,
+                                                miroVersion = miroVersion, appDir = appDir,
+                                                dataDir = dataDir))
+                   private$session$sendCustomMessage("onHideAddAppProgress", list())
+                   private$showMigrationModal(launchDbMigrationManager)
                    private$errorRaised <- TRUE
-                   private$procObs$destroy()
-                   private$procObs <- NULL
                }else if(error[1] == '418'){
                    flog.info("MIRO signalled that the scenario to import already exists.")
                    private$session$sendCustomMessage("onScenarioExists", error[2])
                    private$errorRaised <- TRUE
-                   private$procObs$destroy()
-                   private$procObs <- NULL
-
                }
             }else if(startsWith(line, 'mprog:::')){
                 progress <- suppressWarnings(as.integer(substring(line, 9)))
@@ -96,6 +80,14 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
                     private$session$sendCustomMessage("onProgress", 
                         list(selector = progressSelector,
                           progress = if(progress >= 100) -1 else progress))
+                }
+            }else if(startsWith(line, 'mmigprog:::')){
+                progress <- suppressWarnings(as.integer(substring(line, 12)))
+                if(is.na(progress)){
+                    flog.warn("Bad migration progress message received from MIRO: %s", line)
+                }else{
+                    private$session$sendCustomMessage("onProgress", 
+                        list(progress = if(progress >= 100) -1 else progress))
                 }
             }
         }
@@ -116,7 +108,8 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
                 }else{
                     flog.warn("MIRO process finished with exit code: %s.",
                       as.character(procExitStatus))
-                    flog.error('Unexpected error when starting MIRO process. Stderr: %s', private$stdErr)
+                    flog.error('Unexpected error when starting MIRO process. Stderr: %s',
+                      private$stdErr)
                     private$session$sendCustomMessage("onError", list(requestType = requestType, message = "Internal error."))
                 }
                 private$miroProc <- NULL
@@ -143,6 +136,20 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
     procObs = NULL,
     stdErr = "",
     errorRaised = FALSE,
-    tablesToRemove = NULL
+    migrationInfo = NULL,
+    showMigrationModal = function(launchDbMigrationManager){
+      showModal(modalDialog(
+        title = "Database migration",
+        tags$div(id = "migrationFormErrors", class = "gmsalert gmsalert-error",
+                style = "white-space:pre-wrap;", lang$errMsg$unknownError),
+        HTML(private$migrationInfo$uiContent),
+        footer = actionButton("btCloseMigForm", lang$nav$migrationModule$btCancelMigration),
+        size = "l"
+      ), session = private$session)
+      isolate({
+        currentVal <- launchDbMigrationManager()
+        launchDbMigrationManager(currentVal + 1L)
+      })
+    }
   )
 )

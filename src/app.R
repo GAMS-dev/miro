@@ -815,12 +815,28 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
       source("./tools/db_migration/modules/form_db_migration.R", local = TRUE)
       source("./tools/db_migration/server.R", local = TRUE)
       source("./tools/db_migration/ui.R", local = TRUE)
+      if(isShinyProxy){
+        if(identical(Sys.getenv("MIRO_MIGRATE_DB"), "true")){
+          migrateFromConfig(Sys.getenv("MIRO_MIGRATION_CONFIG_PATH"))
+          quit("no", 0L)
+        }else{
+          write_json(list(inconsistentTablesInfo = inconsistentTablesInfo,
+                          orphanedTablesInfo = orphanedTablesInfo,
+                          uiContent = as.character(
+                            dbMigrationForm("migrationForm",
+                                            inconsistentTablesInfo,
+                                            orphanedTablesInfo,
+                                            standalone = FALSE))),
+                     path = Sys.getenv("MIRO_MIGRATION_CONFIG_PATH"),
+                     auto_unbox = TRUE, null = "null")
+          write("\n", stderr())
+          write("merr:::409", stderr())
+          quit("no", 1L)
+        }
+      }
       if(miroStoreDataOnly){
         write("\n", stderr())
         write("merr:::409", stderr())
-      }
-      if(isShinyProxy){
-        quit("no", 10L)
       }
       migApp <<- shinyApp(ui = uiDbMig, server = serverDbMig)
     }
