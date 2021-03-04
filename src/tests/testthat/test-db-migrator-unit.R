@@ -73,13 +73,15 @@ dbSchema <- list(tabName = c(`_scenMeta` = "_sys_metadata_transport", `_scenLock
                               `_scalars_out` = "ccc", a = "ccd", b = "cd", d = "cccd", ilocdata = "cdd", 
                               jlocdata = "cdd"))
 
+skipPostgres <- TRUE
 if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
-  dbTypes <- c("sqlite", "postgres")
-}else{
-  dbTypes <- "sqlite"
+  skipPostgres <- FALSE
 }
 
-for(dbType in dbTypes){
+for(dbType in c("sqlite", "postgres")){
+  if(dbType == "postgres" && skipPostgres){
+    skip("Skipping Postgres tests as MIRO_DB_TYPE is not set to 'postgres'")
+  }
   procEnv <- list()
   
   if(identical(dbType, "sqlite")){
