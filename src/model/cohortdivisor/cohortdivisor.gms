@@ -12,30 +12,30 @@ Alias (*,gc);
 
 $onExternalInput
 Table groupData(g<,mode,ghdr)
-                                    maxGroupSize  priority  
+                                        maxGroupSize  priority  
 
-6Et.               'split even'                          1
-6a.                'split'                     5
-6b.                'split'                     5
-6c.                'split'                     5
-6eR.               'split even'                          1
-6kR.               'split even'                          1
-muellers.          'prevent split'                     100
-paul_and_friends.  'prevent split'                       5        
-schoolbus_newtown. 'prevent split'                      99
+6Et.                   'split even'                          1
+6a.                    'split'                     5
+6b.                    'split'                     5
+6c.                    'split'                     5
+6eR.                   'split even'                          1
+6kR.                   'split even'                          1
+muellers.              'prevent split'                     100
+paul_and_friends.      'prevent split'                       5        
+schoolbus_springfield. 'prevent split'                      99
 ;
 
 Set  
   gsmap(g,s<) /
-   6Et.              (Gabi,Lasse,Sandra,Tina,Udo)
-   6a.               (Anna,Bernd,Charlotte,Dieter,Erwin,Frauke,Gabi)
-   6b.               (Hans,Ina,Jana,Karl,Lasse,Manuel)
-   6c.               (Nina,Otto,Paul,Quentin,Rita,Sandra,Tina,Udo)
-   6eR.              (Anna,Bernd,Charlotte,Hans,Nina,Otto,Paul,Quentin,Rita)
-   6kR.              (Dieter,Erwin,Frauke,Ina,Jana,Karl,Manuel)
-   muellers.         (Karl,Lasse)
-   paul_and_friends. (Paul,Otto,Udo)
-   schoolbus_newtown.(Frauke,Gabi,Jana,Quentin)
+   6Et.                  (Gabi,Lasse,Sandra,Tina,Udo)
+   6a.                   (Anna,Bernd,Charlotte,Dieter,Erwin,Frauke,Gabi)
+   6b.                   (Hans,Ina,Jana,Karl,Lasse,Manuel)
+   6c.                   (Nina,Otto,Paul,Quentin,Rita,Sandra,Tina,Udo)
+   6eR.                  (Anna,Bernd,Charlotte,Hans,Nina,Otto,Paul,Quentin,Rita)
+   6kR.                  (Dieter,Erwin,Frauke,Ina,Jana,Karl,Manuel)
+   muellers.             (Karl,Lasse)
+   paul_and_friends.     (Paul,Otto,Udo)
+   schoolbus_springfield.(Frauke,Gabi,Jana,Quentin)
   /;
 
 Set
