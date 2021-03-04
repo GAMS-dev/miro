@@ -37,8 +37,7 @@ dbSchema <- list(tabName = c(`_scenMeta` = "_sys_metadata_transport", `_scenLock
                              `_scenTrc` = "_sys_trace_transport", `_scenAttach` = "_sys_attach_transport", 
                              `_scenScripts` = "_sys_scripts_transport", `_jobMeta` = "_sys_jobs_transport", 
                              "transport_results", "transport__scalars_out", "transport_a", 
-                             "transport_b", "transport_d", "transport_ilocdata", 
-                             "transport__scalars"),
+                             "transport_b", "transport_d", "transport_ilocdata", "transport_jlocdata"),
                  colNames = list(`_scenMeta` = c(sid = "_sid", 
                                                  uid = "_uid", sname = "_sname", stime = "_stime", stag = "_stag", 
                                                  accessR = "_accessr", accessW = "_accessw", accessX = "_accessx", 
@@ -67,13 +66,12 @@ dbSchema <- list(tabName = c(`_scenMeta` = "_sys_metadata_transport", `_scenLock
                                  d = c("i", 
                                        "j", "k", "value"),
                                  ilocdata = c("i", "lng", "lat"),
-                                 `_scalars` = c("scalar", "description", "value"
-                                 )),
+                                 jlocdata = c("j", "lng", "lat")),
                  colTypes = c(`_scenMeta` = "iccTcccci", `_scenLock` = "ciT", 
                               `_scenTrc` = "cccccdidddddiiiddddddc", `_scenAttach` = "icclbT", 
                               `_scenScripts` = "icc", `_jobMeta` = "iciTcciiic", results = "ccdddddddd", 
                               `_scalars_out` = "ccc", a = "ccd", b = "cd", d = "cccd", ilocdata = "cdd", 
-                              `_scalars` = "ccc"))
+                              jlocdata = "cdd"))
 
 if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
   dbTypes <- c("sqlite", "postgres")
@@ -200,6 +198,20 @@ for(dbType in dbTypes){
                                 k = c("New-york", "Chicago", "Topeka",
                                       "New-york", "Chicago", "Topeka"),
                                 value = c(2.5, 1.7, 1.8, 2.5, 1.8, 1.4)))
+    migrationConfig <- list(ilocdata = list(oldTableName = "jlocdata",
+                                            colNames = c("j", "lng", "lat")),
+                            jlocdata = list(oldTableName = "ilocdata",
+                                            colNames = c("i", "lng", "lat")))
+    expect_error(dbMigrator$migrateDb(migrationConfig,
+                                      forceRemove = FALSE), NA)
+    expect_identical(dbReadTable(conn, "transport_jlocdata")[-1],
+                     data.frame(j = c("Seattle", "San-Diego"),
+                                lng = c(-122.335167, -117.161087),
+                                lat = c(47.608013, 32.715736)))
+    expect_identical(dbReadTable(conn, "transport_ilocdata")[-1],
+                     data.frame(i = c("New-york", "Chicago", "Topeka"),
+                                lng = c(-73.935242, -87.623177, -95.695312),
+                                lat = c(40.73061, 41.881832, 39.056198)))
   })
 }
 
