@@ -154,7 +154,9 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
       for(tableToRename in tablesToRename[newTableNamesExist]){
         private$renameTable(paste0(private$modelNameDb, "_",
                                    migrationConfig[[tableToRename]]$oldTableName),
-                            paste0("_", tableToRename))
+                            paste0(private$modelNameDb, "__",
+                                   migrationConfig[[tableToRename]]$oldTableName))
+        migrationConfig[[tableToRename]]$oldTableName <- paste0("_", migrationConfig[[tableToRename]]$oldTableName)
       }
       
       for(tableToRename in tablesToRename){
@@ -248,6 +250,29 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
   tablePrefixLen = NULL,
   orphanedTables = NULL,
   existingTables = NULL,
+  renameIndex = function(oldName, newName){
+    if(inherits(private$conn, "PqConnection")){
+      query <- SQL(paste0("ALTER INDEX ",
+                          DBI::dbQuoteIdentifier(private$conn, paste0("sid_index_", oldName)),
+                          " RENAME TO ",
+                          DBI::dbQuoteIdentifier(private$conn, paste0("sid_index_", newName))))
+      flog.debug("Running query: %s", query)
+      dbExecute(private$conn, query)
+      return(invisible(self))
+    }
+    private$dropIndex(oldName)
+    query <- private$getCreateIndexQuery(newName)
+    flog.debug("Running query: %s", query)
+    dbExecute(private$conn, query)
+    return(invisible(self))
+  },
+  dropIndex = function(tableName){
+    query <- SQL(paste0("DROP INDEX ",
+                        DBI::dbQuoteIdentifier(private$conn, paste0("sid_index_", tableName))))
+    flog.debug("Running query: %s", query)
+    dbExecute(private$conn, query)
+    return(invisible(self))
+  },
   getCreateIndexQuery = function(tableName){
     return(SQL(paste0("CREATE INDEX ",
                       DBI::dbQuoteIdentifier(private$conn, paste0("sid_index_", tableName)),
@@ -427,6 +452,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
                         DBI::dbQuoteIdentifier(private$conn, newName)))
     flog.trace("Running query: %s", query)
     DBI::dbExecute(private$conn, query)
+    private$renameIndex(oldName, newName)
     return(invisible(self))
   },
   getSymName = function(tabName){
