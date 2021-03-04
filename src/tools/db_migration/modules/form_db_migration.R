@@ -3,7 +3,7 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
   ns <- NS(id)
   tagList(
     if(!standalone)
-      tags$div(id = ns("dataLossDialog"), class = "container", style = "display:none",
+      tags$div(id = ns("dataLossDialog"), class = "container-fluid", style = "display:none",
                tags$h5(lang$nav$migrationModule$dialogConfirmDataLoss$title),
                tags$div(id = ns("dataLossDialogMsg")),
                checkboxInput_MIRO(ns("cbConfirmDataLoss"),
@@ -13,7 +13,7 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
                tagAppendAttributes(actionButton(ns("btConfirmDataLoss"), class = "bt-highlight-1",
                                                 lang$nav$migrationModule$dialogConfirmDataLoss$btConfirm),
                                    `disabled` = "true")),
-    tags$div(id = ns("migFormContainer"), class = "container", style = "font-size:12pt;",
+    tags$div(id = ns("migFormContainer"), class = "container-fluid", style = "font-size:12pt;",
              tags$div(id = ns("migrationSuccess"), class = "gmsalert gmsalert-success",
                       lang$nav$migrationModule$successMsg),
              tags$div(id = ns("dataMigrationErrors"), class = "gmsalert gmsalert-error",
