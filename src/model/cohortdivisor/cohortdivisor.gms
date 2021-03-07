@@ -1,4 +1,5 @@
-* partition students into cohorts so that inter-cohort connections are minimized
+* Partition students into cohorts so that inter-cohort connections are minimized
+* via group concept. More details can be found in the README.md
 
 Sets
   s           'students'
