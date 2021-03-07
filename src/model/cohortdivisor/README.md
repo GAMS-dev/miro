@@ -4,7 +4,7 @@ The current Corona pandemic is posing major challenges for society as a whole. S
 
 This Cohort Divisor MIRO app has been inspired by the excellent work [Corona-Schuleinteilung](https://www.mathematik.uni-kl.de/opt/corona-schuleinteilung/) (in German) by [AG Opt](https://www.mathematik.uni-kl.de/opt/) at University of Kaiserslautern.
 
-The fundamental concept of the Cohort Divisor are *groups*. A group can consist of the students of a class or a course. Moreover, students from the same village sharing a bus ride, siblings, or friends can form a group. For each group the user needs to specify how the group should be handled by Cohort Divisor. For example, students of a class have to be divided that no more than a certain number are placed in the same cohort. However, if there are very few students in a group, it may not be divided at all. For example, sibling groups should not be split up if possible. The Cohort Divisor has the following group *modes*:
+The fundamental concept of the Cohort divisor are *groups*. A group can consist of the students of a class or a course. Moreover, students from the same village sharing a bus ride, siblings, or friends can form a group. For each group the user needs to specify how the group should be handled by Cohort Divisor. For example, students of a class have to be divided that no more than a certain number are placed in the same cohort. However, if there are very few students in a group, it may not be divided at all. For example, sibling groups should not be split up if possible. The Cohort Divisor has the following group *modes*:
 
 -   Split: The group will be split and each half cannot exceed a given maximum size
 
