@@ -44,17 +44,15 @@ This assignment can now be moved to the input tab "Existing cohort map" by click
 
 ## Import and Export of data
 
-Entering all the group and student information is a tedious task and the information (potentially anonymized) is already present in some Excel workbooks. The MIRO Cohort Divisor can import the data from an Excel workbook. The structure of such a workbook needs to be recognizable by MIRO and hence it is probably best to start with exporting the example data into an Excel workbook. Follow the following sequence of clicks to get to an Excel workbook:
+Entering all the group and student information is a tedious task and the information (potentially anonymized) is already present in some Excel workbooks. The MIRO Cohort Divisor can import the data from an Excel workbook. The structure of such a workbook needs to be recognizable by the application and hence it is probably best to start with a workbook containing sample data which you can find [here](https://www.gams.com/blog/2021/03/a-cohort-divisor-application-for-schools/Cohort_Assignment_EN.xlsx). 
 
-1.  In the scenario menu (top right corner) select Export and format "Microsoft Excel (XLSX)", click "Export", and browse to a location to store the Excel workbook file:
+1.  Open the workbook in Excel and enter/copy your data into the sheets "Group Info" and "Group Assignment". If a cohort division already exists that is to be improved by the application, the division can be entered in the "Existing Cohorts" sheet. 
 
-![](static_cohortdivisor/image7.png)
+![](static_cohortdivisor/image12.png)
 
-![](static_cohortdivisor/image8.png)
+> Start the data exactly where the example data started. Blank lines can throw off the importer. In the individual Excel sheets you will find more information about the data format and contents.
 
-2.  Open the workbook in Excel. Only the sheets with "(Input)" in their name are relevant for importing data, but at least keep the sheet "\_index" that helps MIRO to locate the data in the workbook. Now enter/copy your data into the sheets "groupdata (Input)" and "gsmap (Input)". Start the data exactly where the example data started. Blank lines can throw off the MIRO importer.
-
-3.  Now import the Excel workbook by clicking on "Load data" in the left panel, browsing for the Excel file, and clicking load:
+2.  In the application import the Excel workbook by clicking on "Load data" in the left panel, browsing for the Excel file, and clicking load:
 
 ![](static_cohortdivisor/image9.png)
 
