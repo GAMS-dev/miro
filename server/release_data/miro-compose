@@ -27,6 +27,23 @@ install (){
 
     printf "You can change the GAMS Engine connection info at any time by modifying the \".env\" file.\nNote that MIRO Server must be restarted for these changes to take effect.\n"
 
+    read -p 'Enable authentication? [Y/n]: ' ENABLE_AUTH
+
+    case "$ENABLE_AUTH" in
+        [nN][oO]|[nN])
+            sed -i -E "s/authentication: .*/authentication: none/" data_raw/application.yml || {
+                echo "Problems updating authentication method."
+                exit 1
+            }
+            ;;
+        *)
+            sed -i -E "s/authentication: .*/authentication: webservice/" data_raw/application.yml || {
+                echo "Problems updating authentication method."
+                exit 1
+            }
+            ;;
+    esac
+
     printf "Installing GAMS MIRO server. Please wait...\n\n\n"
 
     pull_images

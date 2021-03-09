@@ -8,7 +8,7 @@ function install
     }
 
     if (!(type .env | Select-String -Pattern "GMS_MIRO_ENGINE_HOST" -SimpleMatch)) {
-        $ENGINE_HOST = Read-Host -Prompt "Please enter GAMS Engine host: "
+        $ENGINE_HOST = Read-Host -Prompt "Please enter GAMS Engine host"
         if (!$ENGINE_HOST) {
             "Invalid GAMS Engine host!"
             exit 1
@@ -16,7 +16,7 @@ function install
         Add-Content -Value "GMS_MIRO_ENGINE_HOST=$ENGINE_HOST" .env
     }
     if (!(type .env | Select-String -Pattern "GMS_MIRO_ENGINE_NS" -SimpleMatch)) {
-        $ENGINE_NS = Read-Host -Prompt "Please enter namespace where this user is inviter on: "
+        $ENGINE_NS = Read-Host -Prompt "Please enter namespace where this user is inviter on"
         if (!$ENGINE_NS) {
             "Invalid GAMS Engine namespace!"
             exit 1
@@ -25,6 +25,15 @@ function install
     }
 
     'You can change the GAMS Engine credentials at any time by modifying the ".env" file.'
+
+    $ENABLE_AUTH = Read-Host -Prompt "Enable authentication? [Y/n]"
+
+    $VALID_NO_ANSWERS = @("n","N","no","NO","nO","No")
+    if ($ENABLE_AUTH -in $VALID_NO_ANSWERS) {
+        (Get-Content -Path data_raw/application.yml) -replace "authentication: .*", "authentication: none" | Set-Content data_raw/application.yml
+    } else {
+        (Get-Content -Path data_raw/application.yml) -replace "authentication: .*", "authentication: webservice" | Set-Content data_raw/application.yml
+    }
 
     "Installing GAMS MIRO server. Please wait..."
 
