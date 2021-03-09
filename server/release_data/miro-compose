@@ -35,6 +35,22 @@ install (){
                 echo "Problems updating authentication method."
                 exit 1
             }
+            if ! grep -q "GMS_MIRO_ENGINE_ANONYMOUS_USER" .env; then
+                read -p 'Please enter name of user to be used to run jobs: ' ENGINE_ANON_USR
+                [ -z ${ENGINE_ANON_USR} ] && {
+                    echo "Invalid username!"
+                    exit 1
+                }
+                echo "GMS_MIRO_ENGINE_ANONYMOUS_USER=${ENGINE_ANON_USR}">>.env
+            fi
+            if ! grep -q "GMS_MIRO_ENGINE_ANONYMOUS_PWD" .env; then
+                read -sp 'Please enter password of this user: ' ENGINE_ANON_PWD
+                [ -z ${ENGINE_ANON_PWD} ] && {
+                    echo "Invalid password!"
+                    exit 1
+                }
+                echo "GMS_MIRO_ENGINE_ANONYMOUS_PWD=${ENGINE_ANON_PWD}">>.env
+            fi
             ;;
         *)
             sed -i -E "s/authentication: .*/authentication: webservice/" data_raw/application.yml || {

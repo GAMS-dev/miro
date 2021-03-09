@@ -24,13 +24,30 @@ function install
         Add-Content -Value "GMS_MIRO_ENGINE_NS=$ENGINE_NS" .env
     }
 
-    'You can change the GAMS Engine credentials at any time by modifying the ".env" file.'
+    'You can change the GAMS Engine connection info at any time by modifying the ".env" file.'
+    'Note that MIRO Server must be restarted for these changes to take effect.'
 
     $ENABLE_AUTH = Read-Host -Prompt "Enable authentication? [Y/n]"
 
     $VALID_NO_ANSWERS = @("n","N","no","NO","nO","No")
     if ($ENABLE_AUTH -in $VALID_NO_ANSWERS) {
         (Get-Content -Path data_raw/application.yml) -replace "authentication: .*", "authentication: none" | Set-Content data_raw/application.yml
+        if (!(type .env | Select-String -Pattern "GMS_MIRO_ENGINE_ANONYMOUS_USER" -SimpleMatch)) {
+            $ENGINE_ANON_USR = Read-Host -Prompt "Please enter name of user to be used to run jobs"
+            if (!$ENGINE_ANON_USR) {
+                "Invalid username!"
+                exit 1
+            }
+            Add-Content -Value "GMS_MIRO_ENGINE_ANONYMOUS_USER=$ENGINE_ANON_USR" .env
+        }
+        if (!(type .env | Select-String -Pattern "GMS_MIRO_ENGINE_ANONYMOUS_PWD" -SimpleMatch)) {
+            $ENGINE_ANON_PWD = Read-Host -Prompt "Please enter password of this user" -AsSecureString
+            if (!$ENGINE_ANON_PWD) {
+                "Invalid password!"
+                exit 1
+            }
+            Add-Content -Value "GMS_MIRO_ENGINE_ANONYMOUS_PWD=$ENGINE_ANON_PWD" .env
+        }
     } else {
         (Get-Content -Path data_raw/application.yml) -replace "authentication: .*", "authentication: webservice" | Set-Content data_raw/application.yml
     }
