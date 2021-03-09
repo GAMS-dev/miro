@@ -3,8 +3,11 @@ param([string]$action)
 function install
 {
     if (!(Test-Path .env)) {
-        "No env file found. Please report to GAMS!"
-        exit 1
+        [Reflection.Assembly]::LoadWithPartialName("System.Web")
+        $db_password = [System.Web.Security.Membership]::GeneratePassword(40,0)
+        "A new master password for your MIRO Server database was generated: $db_password"
+        'Please keep this password in a safe place.'
+        Add-Content -Value "GMS_MIRO_DATABASE_PWD=$db_password" .env
     }
 
     if (!(type .env | Select-String -Pattern "GMS_MIRO_ENGINE_HOST" -SimpleMatch)) {

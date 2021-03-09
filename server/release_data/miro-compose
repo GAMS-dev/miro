@@ -6,7 +6,7 @@ install (){
     [ -f .env ] || {
         local db_password=$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 40 ; echo)
         printf "A new master password for your MIRO Server database was generated: ${db_password}\nPlease keep this password in a safe place.\n"
-        printf "GMS_MIRO_DATABASE_PWD=${db_password}\nGMS_MIRO_ENGINE_ANONYMOUS_USER=ENTER_USERNAME_HERE\nGMS_MIRO_ENGINE_ANONYMOUS_PWD=ENTER_PASSWORD_HERE\n" > .env
+        printf "GMS_MIRO_DATABASE_PWD=${db_password}\n" > .env
     }
     if ! grep -q "GMS_MIRO_ENGINE_HOST" .env; then
         read -p 'Please enter GAMS Engine host: ' ENGINE_HOST
