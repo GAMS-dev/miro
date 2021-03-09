@@ -9,7 +9,7 @@ You can either set these variables inside the shell you start GAMS MIRO Server f
 | `GMS_MIRO_ENGINE_NS `  | Engine namespace to be used by MIRO Server | `miro_server`|
 
 # Start GAMS MIRO Server
-Once you have GAMS MIRO Server installed, you can launch it via `./miro-compose start`. GAMS MIRO Server will now listen on port 8080. You can log in with any user that has at least execute permission on the namespace provided. A user with full access to that namespace will be considered as administrator by MIRO Server and can add/remove applications.
+Once you have GAMS MIRO Server installed, you can launch it via `./miro-compose start`. GAMS MIRO Server will now listen on port 8080. You can log in with any user that has at least execute permissions on the namespace provided. A user with full access to that namespace will be considered as administrator by MIRO Server and can add/remove applications.
 
 # Update GAMS MIRO Server
 To update GAMS MIRO Server to the latest version, run `./miro-compose update`. Note that this will pull new images and launch them. If you only want to pull new images, run `./miro-compose pull`.
@@ -47,16 +47,8 @@ server {
         proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
         proxy_set_header  X-Forwarded-Proto $scheme;
     }
-    location /engine/api { try_files $uri @app; }
-    location @app {
-        include uwsgi_params;
-        uwsgi_pass localhost:5000;
-        add_header Access-Control-Allow-Origin "*" always;
-        add_header Access-Control-Allow-Headers "authorization, content-type, Accept, Content-Type, Content-Language, Accept-Language, X-Fields" always;
-        add_header Access-Control-Allow-Methods "DELETE, OPTIONS, GET, HEAD, POST, PUT" always;
-    }
     location /engine {
-        root /usr/share/nginx;
+        proxy_pass http://127.0.0.1:5000;
     }
     client_max_body_size 0;
 }
@@ -64,7 +56,7 @@ server {
 
 Note that even though both GAMS Engine and MIRO Server run on the same host, the GAMS Engine host is not `localhost`.  
 
-# Host GAMS Engine on a different path than root
+# Host MIRO Server on a different path than root
 You may want to host MIRO Server on a different path. To do this, you must adjust the context path in the file 'application.yml' accordingly (`server.servlet.context-path`).
 Note that with SELinux active (e.g. CentOS/RHEL), you have to allow your nginx server to proxy to the upstream MIRO Server host. You can do so by running: `setsebool -P httpd_can_network_connect 1`.
 
@@ -72,12 +64,4 @@ Note that with SELinux active (e.g. CentOS/RHEL), you have to allow your nginx s
 In case your MIRO applications need additional packages, you have to extend the MIRO Docker image (https://github.com/GAMS-dev/miro_desktop/blob/master/Dockerfile). You can do so by adding the additional packages required by your custom renderers to the file `additional_packages` located inside this directory. Each package name must be on a new line. Once all packages are added to this file, run `./miro-compose build`.
 
 # Using no authentication
-When using no authentication (e.g. to showcase applications as in the case of the [MIRO Gallery](https://miro.gams.com)), you need to provide the credentials of some Engine user with execute permissions via the `.env` file:
-
-|Environment variable name|Environment variable value| Example |
-|-------------------------|--------------------------|---------|
-| `GMS_MIRO_ENGINE_ANONYMOUS_USER`    | Username of anonymous user |`miro_server_anonymous`|
-| `GMS_MIRO_ENGINE_ANONYMOUS_PWD `  | Password of anonymous user | `t@qHwt%3Mh`|
-
-In addition, the environment variable `GMS_MIRO_ANONYMOUS_SA_PWD` controls what password should be used to access the admin panel accessible at: `https://your-miro-server-domain.com/app_direct/admin` (The username is always: `admin` when using no authentication).
-
+When using no authentication (e.g. to showcase applications as in the case of the [MIRO Gallery](https://miro.gams.com)), you can reach the admin panel at: `https://your-miro-server-domain.com/app_direct/admin`. You can log in with any Engine user that has write permissions on your MIRO Server namespace (`GMS_MIRO_ENGINE_NS `).
