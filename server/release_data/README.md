@@ -75,4 +75,11 @@ Note that with SELinux active (e.g. CentOS/RHEL), you have to allow your nginx s
 In case your MIRO applications need additional packages, you have to extend the Docker UI image (https://github.com/GAMS-dev/miro_desktop/blob/master/Dockerfile). You can do so by adding the additional packages required by your custom renderers to the file `additional_packages` located inside this directory. Each package name must be on a new line. Once all packages are added to this file, run `./miro-compose build`. 
 
 # Using no authentication
-When using no authentication (e.g. to showcase applications as in the case of the [MIRO Gallery](https://miro.gams.com)), you can reach the admin panel at: `https://your-miro-server-domain.com/app_direct/admin`. You can log in with any Engine user that has write permissions on your MIRO Server namespace (`GMS_MIRO_ENGINE_NS `).
+When using no authentication (e.g. to showcase applications as in the case of the [MIRO Gallery](https://miro.gams.com)), you need to provide the credentials of some Engine user with execute permissions via the `.env` file:
+
+|Environment variable name|Environment variable value| Example |
+|-------------------------|--------------------------|---------|
+| `GMS_MIRO_ENGINE_ANONYMOUS_USER`    | Username of anonymous user |`miro_server_anonymous`|
+| `GMS_MIRO_ENGINE_ANONYMOUS_PWD `  | Password of anonymous user | `t@qHwt%3Mh`|
+
+The admin panel can be reached at: `https://your-miro-server-domain.com/app_direct/admin`. You can log in with any Engine user that has write permissions on your MIRO Server namespace (provided via `GMS_MIRO_ENGINE_NS `).
