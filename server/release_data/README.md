@@ -1,11 +1,11 @@
 # Installation
 GAMS MIRO Server makes use of GAMS Engine, a server software that allows you to run GAMS jobs in cloud environments. 
 
-1.  Engine
+1\.  Engine
    1.  For the installation of GAMS Engine follow the instructions at [https://www.gams.com/engine/installation.html](https://www.gams.com/engine/installation.html). When successfully installed, MIRO Engine will be mounted on `/engine` (Management interface) and `/engine/api` (Engine API).  
    2.  Log into the management interface (`/engine`) with username: `admin` and password: `admin`. Change the password of the administrator via the interface.
    
-2.  MIRO Server
+2\.  MIRO Server
    1.  Extract `miro_server.zip`. This will create a subfolder `miro_server`.
    2.  Open a terminal and cd into that folder.
    3.  Get IP of `docker0` network interface via: `sudo ip addr show docker0 |grep -Po 'inet \K[\d.]+'`.
