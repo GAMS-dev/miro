@@ -60,6 +60,12 @@ server {
     }
     location /engine {
         proxy_pass http://127.0.0.1:5000;
+
+        proxy_redirect    off;
+        proxy_set_header  Host             $http_host;
+        proxy_set_header  X-Real-IP        $remote_addr;
+        proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
+        proxy_set_header  X-Forwarded-Proto $scheme;
     }
     client_max_body_size 0;
 }
@@ -69,7 +75,6 @@ Note that even though both GAMS Engine and MIRO Server run on the same host, the
 
 # Host MIRO Server on a different path than root
 You may want to host MIRO Server on a different path. To do this, you must adjust the context path in the file 'application.yml' accordingly (`server.servlet.context-path`). This path must be identical to the location specified in the nginx configuration.
-Note that with SELinux active (e.g. CentOS/RHEL), you have to allow your nginx server to proxy to the upstream MIRO Server host. You can do so by running: `setsebool -P httpd_can_network_connect 1`.
 
 # Extending the MIRO Docker image
 In case your MIRO applications need additional packages, you have to extend the Docker UI image (https://github.com/GAMS-dev/miro_desktop/blob/master/Dockerfile). You can do so by adding the additional packages required by your custom renderers to the file `additional_packages` located inside this directory. Each package name must be on a new line. Once all packages are added to this file, run `./miro-compose build`. 
@@ -83,3 +88,6 @@ When using no authentication (e.g. to showcase applications as in the case of th
 | `GMS_MIRO_ENGINE_ANONYMOUS_PWD `  | Password of anonymous user | `t@qHwt%3Mh`|
 
 The admin panel can be reached at: `https://your-miro-server-domain.com/app_direct/admin`. You can log in with any Engine user that has write permissions on your MIRO Server namespace (provided via `GMS_MIRO_ENGINE_NS `).
+
+# Running under SELinux
+Note that with SELinux active (e.g. CentOS/RHEL), you might have to allow your nginx server to proxy to the upstream MIRO Server host. You can do so by running: `setsebool -P httpd_can_network_connect 1`.
