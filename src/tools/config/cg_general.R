@@ -916,7 +916,7 @@ observeEvent(input$group_sameTabOut, {
     return()
   
   arrayIdx <- indexMap$push("outputGroups", input$group_sameTabOut[1])
-  arrayIdxAll <- indexMap$push("outputGroups_full", input$group_sameTabWidget[1])
+  arrayIdxAll <- indexMap$push("outputGroups_full", input$group_sameTabOut[1])
   newVal   <- isTRUE(as.logical(input$group_sameTabOut[2]))
   
   if(arrayIdx <= length(rv$generalConfig[["outputGroups"]]) && 
