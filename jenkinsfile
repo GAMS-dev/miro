@@ -18,6 +18,10 @@ pipeline {
             defaultValue: false,
             description: 'Build CI image?',
             name: 'BUILD_CI')
+        booleanParam(
+            defaultValue: false,
+            description: 'Force release (even if tests fail)?',
+            name: 'FORCE_RELEASE')
     }
 
     stages {
@@ -228,7 +232,7 @@ pipeline {
                                     '''
                                 }
                             }
-                            if (env.BRANCH_NAME == 'master' && currentBuild.currentResult == "SUCCESS") {
+                            if (env.BRANCH_NAME == 'master' && (currentBuild.currentResult == "SUCCESS" || params.FORCE_RELEASE)) {
                                 sh '''#!/bin/bash -xe
                                     yarn docker-publish
                                     ## build MIRO server images
@@ -268,7 +272,7 @@ pipeline {
         stage('Deploy to CloudFront') {
             agent { label 'master' }
             when {
-                expression { return currentBuild.currentResult == "SUCCESS" }
+                expression { return (currentBuild.currentResult == "SUCCESS" || params.FORCE_RELEASE) }
                 branch 'master'
             }
             options {
@@ -320,7 +324,7 @@ pipeline {
         stage('Update documentation'){
             agent { label 'docker' }
             when {
-                expression { return currentBuild.currentResult == "SUCCESS" }
+                expression { return (currentBuild.currentResult == "SUCCESS" || params.FORCE_RELEASE) }
                 branch 'master'
             }
             steps {
