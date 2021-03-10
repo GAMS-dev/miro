@@ -1,4 +1,4 @@
-Rversion <- "4.0.2"
+Rversion <- "4.0.4"
 CRANMirrors <- c('https://ftp.fau.de/cran/',
     'https://cloud.r-project.org/',
     'https://stat.ethz.ch/CRAN/')
@@ -77,6 +77,8 @@ RlibPathSrc <- file.path('.', 'r', 'library_src')
 RlibPathTmp <- NULL
 if(CIBuild){
     RlibPathTmp <- file.path(.libPaths()[1], "miro_lib")
+    buildConfigContent <- strsplit(readLines('build-config.json'), '"', fixed = TRUE)[[1]]
+    Rversion <- buildConfigContent[which(buildConfigContent=="rVersion") + 2]
 }
 installedPackagesTmp <- installed.packages(RlibPathTmp)
 # install packages to lib path devel and copy over
