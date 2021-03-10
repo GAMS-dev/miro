@@ -935,7 +935,7 @@ function createMainWindow(showRunningApps = false, onSuccess = null) {
       appsData.apps, appDataPath, true, true, appsActive, lang.general);
     log.debug(`App data (${appsData.apps.length} app(s)) loaded into main window.`);
     if (onSuccess) {
-      onSuccess()
+      onSuccess();
     }
     if (appLoaded || miroDevelopMode) {
       return;
