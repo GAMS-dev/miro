@@ -971,9 +971,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           clrs <- round(seq(255, 40, length.out = length(brks) + 1), 0) %>%
             {paste0("rgb(255,", ., ",", ., ")")}
         }
-        if(length(dataTmp) > 500){
-          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, "500"))
-          dataTmp <- dataTmp[, 1:500]
+        if(length(dataTmp) > 300){
+          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, "300"))
+          dataTmp <- dataTmp[, 1:300]
         }else{
           hideEl(session, paste0("#", ns("errMsg")))
         }
