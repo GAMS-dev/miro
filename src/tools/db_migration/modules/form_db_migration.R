@@ -43,7 +43,7 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
                }else{
                  tableMeta <- list()
                }
-               colClass <- max(floor(12/(length(tableInfo$colNames) + 1L)), 4L)
+               colClass <- max(floor(12/(length(tableInfo$colNames) + 1L)), 3L)
                colClass <- paste0("col-", colClass, " col-xs-", colClass)
                tagList(
                  tags$div(class = "row", style = "padding-top:20px;border-top:5px solid #000;text-align:center;",
