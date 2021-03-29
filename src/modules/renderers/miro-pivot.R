@@ -168,18 +168,26 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                     )),
            sortable_js(ns("filterIndexList"), 
                        options = sortable_options(group = ns("indices"), supportPointer = FALSE,
+                                                  multiDrag = TRUE,
+                                                  selectedClass = "drop-index-item-selected",
                                                   onLoad = sortable_js_capture_input(ns("filterIndexList")),
                                                   onSort = sortable_js_capture_input(ns("filterIndexList")))),
            sortable_js(ns("rowIndexList"), 
                        options = sortable_options(group = ns("indices"), supportPointer = FALSE,
+                                                  multiDrag = TRUE,
+                                                  selectedClass = "drop-index-item-selected",
                                                   onLoad = sortable_js_capture_input(ns("rowIndexList")),
                                                   onSort = sortable_js_capture_input(ns("rowIndexList")))),
            sortable_js(ns("colIndexList"), 
                        options = sortable_options(group = ns("indices"), supportPointer = FALSE, direction = "vertical", 
+                                                  multiDrag = TRUE,
+                                                  selectedClass = "drop-index-item-selected",
                                                   onLoad = sortable_js_capture_input(ns("colIndexList")),
                                                   onSort = sortable_js_capture_input(ns("colIndexList")))),
            sortable_js(ns("aggregationIndexList"), 
                        options = sortable_options(group = ns("indices"), supportPointer = FALSE,
+                                                  multiDrag = TRUE,
+                                                  selectedClass = "drop-index-item-selected",
                                                   onLoad = sortable_js_capture_input(ns("aggregationIndexList")),
                                                   onSort = sortable_js_capture_input(ns("aggregationIndexList"))))
   )
@@ -963,9 +971,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           clrs <- round(seq(255, 40, length.out = length(brks) + 1), 0) %>%
             {paste0("rgb(255,", ., ",", ., ")")}
         }
-        if(length(dataTmp) > 500){
-          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, "500"))
-          dataTmp <- dataTmp[, 1:500]
+        if(length(dataTmp) > 300){
+          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, "300"))
+          dataTmp <- dataTmp[, 1:300]
         }else{
           hideEl(session, paste0("#", ns("errMsg")))
         }
