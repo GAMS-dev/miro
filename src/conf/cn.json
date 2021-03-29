@@ -798,6 +798,12 @@
         "badEncoding": "您上传的文件不是UTF-8编码的。 不支持UTF-8以外的其他编码！"
       }
     },
+    "gdxio": {
+      "errors": {
+        "duplicateRecords": "符号中的记录重复：'%s'",
+        "duplicateRecordsTruncated": "（仅显示前10个重复记录）"
+      }
+    },
     "xlsio":{
       "warnings":{
         "invalidSymbols": "警告：Excel文件中的无效符号被忽略：'%s'。",
