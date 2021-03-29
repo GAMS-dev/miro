@@ -14,7 +14,7 @@ const installRPackages = require('./components/install-r.js');
 const requiredAPIVersion = 1;
 const miroVersion = '1.3.99';
 const miroRelease = 'Feb 18 2021';
-const libVersion = '1.1';
+const libVersion = '1.3';
 const exampleAppsData = require('./components/example-apps.js')(miroVersion, requiredAPIVersion);
 const LangParser = require('./components/LangParser');
 const addModelData = require('./components/import-data');
@@ -707,7 +707,7 @@ if (!miroDevelopMode) {
   }
 }
 
-function createMainWindow(showRunningApps = false) {
+function createMainWindow(showRunningApps = false, onSuccess = null) {
   log.debug('Creating main window..');
   if (mainWindow) {
     log.debug('Main window already open.');
@@ -744,6 +744,9 @@ function createMainWindow(showRunningApps = false) {
     mainWindow.webContents.send('apps-received',
       appsData.apps, appDataPath, true, true, appsActive, lang.general);
     log.debug(`App data (${appsData.apps.length} app(s)) loaded into main window.`);
+    if (onSuccess) {
+      onSuccess();
+    }
     if (appLoaded || miroDevelopMode) {
       return;
     }
@@ -1555,8 +1558,7 @@ app.on('ready', async () => {
       buildArchive: process.env.MIRO_BUILD_ARCHIVE !== 'false',
     });
   } else {
-    createMainWindow();
-    searchLibPath();
+    createMainWindow(false, () => searchLibPath());
   }
 
   log.info('MIRO launcher started successfully.');

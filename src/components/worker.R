@@ -1363,10 +1363,11 @@ Worker <- R6Class("Worker", public = list(
   saveLoginCredentials = function(url, username, namespace, useRegistered){
     # create token that expires in a week
     sessionToken <- private$validateAPIResponse(POST(
-      url = paste0(url, "/auth/"), 
-      body = list(expires_in = 604800),
-      add_headers(Authorization = private$authHeader,
-                  Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+      url = paste0(url, "/auth/login"), 
+      body = list(expires_in = 604800,
+                  username = username,
+                  password = private$metadata$password),
+      add_headers(Timestamp = as.character(Sys.time(), usetz = TRUE)), 
       timeout(2L)))$token
     
     private$metadata$password  <- sessionToken
