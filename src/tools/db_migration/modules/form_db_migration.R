@@ -15,9 +15,10 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
                                    `disabled` = "true")),
     tags$div(id = ns("migFormContainer"), class = "container-fluid", style = "font-size:12pt;",
              tags$div(id = ns("migrationSuccess"), class = "gmsalert gmsalert-success",
+                      style = "position:fixed;",
                       lang$nav$migrationModule$successMsg),
              tags$div(id = ns("dataMigrationErrors"), class = "gmsalert gmsalert-error",
-                      style = "white-space:pre-wrap;"),
+                      style = "white-space:pre-wrap;position:fixed;"),
              tags$p(lang$nav$migrationModule$desc),
              tags$div(style = "text-align:center;margin-bottom:20px;",
                       tags$b(style = "border: 2px solid #d11a2a;padding: 6px 12px;",
@@ -42,7 +43,7 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
                }else{
                  tableMeta <- list()
                }
-               colClass <- floor(12/(length(tableInfo$colNames) + 1L))
+               colClass <- max(floor(12/(length(tableInfo$colNames) + 1L)), 4L)
                colClass <- paste0("col-", colClass, " col-xs-", colClass)
                tagList(
                  tags$div(class = "row", style = "padding-top:20px;border-top:5px solid #000;text-align:center;",
@@ -163,6 +164,7 @@ dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
           })
           tablesMigrated <- vapply(migrationConfig, "[[", character(1L), "oldTableName",
                                    USE.NAMES = FALSE)
+          tablesMigrated <- tablesMigrated[tablesMigrated != "-"]
           tablesToBeRemoved <- !names(orphanedTablesInfo) %in% tablesMigrated
           if(showDataLossErrors && any(tablesToBeRemoved)){
             errMsgDataLoss <- paste(errMsgDataLoss,
@@ -175,7 +177,7 @@ dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
           }
           if(any(duplicated(tablesMigrated))){
             stop_custom("error_bad_settings",
-                        sprintf(lang$nav$migrationModule$dialogConfirmDataLoss$errDuplicateTables,
+                        sprintf(lang$nav$migrationModule$errDuplicateTables,
                                 paste(tablesMigrated[duplicated(tablesMigrated)], collapse = "', '")),
                         call. = FALSE)
           }
@@ -228,6 +230,10 @@ dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
             showElReplaceTxt(session, paste0("#", session$ns("migrationSuccess")),
                              lang$nav$migrationModule$successMsg)
             returnCode(0L)
+          }, error_bad_settings = function(e){
+            flog.info("Bad settings: %s", conditionMessage(e))
+            showHideEl(session, paste0("#", session$ns("dataMigrationErrors")),
+                       4000L, conditionMessage(e))
           }, error = function(e){
             flog.error("Problems migrating database. Error message: %s", conditionMessage(e))
             showHideEl(session, paste0("#", session$ns("dataMigrationErrors")),
