@@ -981,6 +981,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         
         ret <- datatable(dataTmp, extensions = c("Scroller", "FixedColumns"), 
                   selection = if(isEditableTable) "multiple" else "none", editable = isEditableTable,
+                  callback = JS("setTimeout(function() { table.draw(true); }, 500);"),
                   container = DTbuildColHeaderContainer(names(dataTmp), 
                                                         noRowHeaders, 
                                                         unlist(setIndexAliases[names(dataTmp)[seq_len(noRowHeaders)]], 
