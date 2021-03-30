@@ -65,9 +65,52 @@ app$setInputs("tab_0_3-miroPivot-saveViewConfirm" = "click")
 Sys.sleep(1)
 app$findElement("#tab_0_3-miroPivot-saveView")$click()
 Sys.sleep(1)
+app$setInputs("tab_0_3-miroPivot-newViewName" = "new test view")
+app$setInputs("tab_0_3-miroPivot-saveViewConfirm" = "click")
+expect_true(app$waitFor("$('#tab_0_3-miroPivot-errUniqueName').is(':visible');", timeout = 50))
+app$setInputs("tab_0_3-miroPivot-saveViewCancelOverwrite" = "click")
+expect_true(app$waitFor("$('#tab_0_3-miroPivot-errUniqueName').is(':visible') === false;", timeout = 50))
 app$setInputs("tab_0_3-miroPivot-newViewName" = "abc")
 app$setInputs("tab_0_3-miroPivot-saveViewConfirm" = "click")
 Sys.sleep(1)
+
+app$findElement("#tab_0_3-miroPivot-toggleViewButton")$click()
+Sys.sleep(0.5)
+expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD a').eq(5).text()==='abc';", timeout = 50))
+expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD a').eq(5).click();true;", timeout = 50))
+expect_chartjs("tab_0_3-miroPivot-pivotChart",
+               list(350, 200),
+               c("value"))
+
+expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD a').eq(0).click();true;", timeout = 50))
+app$setInputs(`tab_0_3-miroPivot-pivotRenderer` = "bar")
+expect_chartjs("tab_0_3-miroPivot-pivotChart",
+               list(c(600, 350, 600, 200)),
+               c("default.San-Diego", "default.Seattle", "default (Sandbox).San-Diego",
+                 "default (Sandbox).Seattle"))
+
+app$findElement("#tab_0_3-miroPivot-saveView")$click()
+Sys.sleep(1)
+app$setInputs("tab_0_3-miroPivot-newViewName" = "abc")
+app$setInputs("tab_0_3-miroPivot-saveViewConfirm" = "click")
+expect_true(app$waitFor("$('#tab_0_3-miroPivot-errUniqueName').is(':visible');", timeout = 50))
+app$setInputs("tab_0_3-miroPivot-saveViewOverwrite" = "click")
+Sys.sleep(1)
+
+# check that view 'abc' was overwritten successfully
+app$findElement("#tab_0_3-miroPivot-toggleViewButton")$click()
+Sys.sleep(0.5)
+expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD a').eq(0).click();true;", timeout = 50))
+Sys.sleep(0.5)
+app$findElement("#tab_0_3-miroPivot-toggleViewButton")$click()
+Sys.sleep(0.5)
+expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD a').eq(5).text()==='abc';", timeout = 50))
+expect_true(app$waitFor("$('#tab_0_3-miroPivot-savedViewsDD a').eq(5).click();true;", timeout = 50))
+Sys.sleep(1)
+expect_chartjs("tab_0_3-miroPivot-pivotChart",
+               list(c(600, 350, 600, 200)),
+               c("default.San-Diego", "default.Seattle", "default (Sandbox).San-Diego",
+                 "default (Sandbox).Seattle"))
 
 # check that new views were saved
 app$setInputs(btEditMeta = "click")
