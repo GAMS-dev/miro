@@ -189,14 +189,20 @@ Scenario <- R6Class("Scenario",
                           writePerm <- private$writePerm
                           execPerm <- private$execPerm
                         }
-                        super$getMetadata(sid = private$sid, uid = private$suid, sname = private$sname, 
-                                          stime = private$stime, stag = private$tags, readPerm = readPerm, 
-                                          writePerm = writePerm, execPerm = execPerm,
-                                          uidAlias = aliases[["uid"]], snameAlias = aliases[["sname"]], 
-                                          stimeAlias = aliases[["stime"]],
-                                          stagAlias = aliases[["stag"]], readPermAlias = aliases[["readPerm"]], 
-                                          writePermAlias = aliases[["writePerm"]],
-                                          execPermAlias = aliases[["execPerm"]])
+                        if(length(aliases)){
+                          super$getMetadata(sid = private$sid, uid = private$suid, sname = private$sname, 
+                                            stime = private$stime, stag = private$tags, readPerm = readPerm, 
+                                            writePerm = writePerm, execPerm = execPerm,
+                                            uidAlias = aliases[["uid"]], snameAlias = aliases[["sname"]], 
+                                            stimeAlias = aliases[["stime"]],
+                                            stagAlias = aliases[["stag"]], readPermAlias = aliases[["readPerm"]], 
+                                            writePermAlias = aliases[["writePerm"]],
+                                            execPermAlias = aliases[["execPerm"]])
+                        }else{
+                          super$getMetadata(sid = private$sid, uid = private$suid, sname = private$sname, 
+                                            stime = private$stime, stag = private$tags, readPerm = readPerm, 
+                                            writePerm = writePerm, execPerm = execPerm)
+                        }
                       },
                       resetAccessPerm = function(){
                         if(private$isReadonly()){
