@@ -5309,9 +5309,13 @@
                 "val60": {
                   "type": "string",
                   "minLength": 1
+                },
+                "val61": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 58
+              "minProperties": 59
             },
             "widgetOptions": {
               "type": "object",

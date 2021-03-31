@@ -951,6 +951,11 @@ body_admin <- dashboardBody({
                                                        ))
                                                    ),
                                                    tags$div(class="option-wrapper",
+                                                            tags$div(id = "invalidClArgsError",
+                                                                     class = "err-msg",
+                                                                     sprintf(lang$adminMode$widgets$validate[["val61"]],
+                                                                             paste(reservedGMSOpt,
+                                                                                   collapse = "', '"))),
                                                             selectizeInput("general_args", 
                                                                            tags$div(lang$adminMode$general$args$label, 
                                                                                     tags$a("", title = lang$adminMode$general$ui$tooltipDocs, 

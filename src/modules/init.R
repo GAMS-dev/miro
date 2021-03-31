@@ -460,11 +460,14 @@ if(is.null(errMsg)){
   # declare GAMS compile time variables and GAMS options
   DDPar               <- getGMSPar(names(modelIn), prefixDDPar)
   GMSOpt              <- getGMSPar(names(modelIn), prefixGMSOpt)
-  if(any(c(vapply(DDPar, function(el){ identical(nchar(trimws(substring(el, nchar(prefixDDPar) + 1L))), 0L)}, 
-                logical(1L), USE.NAMES = FALSE),
-           vapply(GMSOpt, function(el){ identical(nchar(trimws(substring(el, nchar(prefixGMSOpt) + 1L))), 0L)}, 
-                  logical(1L), USE.NAMES = FALSE)))){
-    errMsg <- "Unnamed GAMS command line parameter(s) detected. Empty names are not allowed!"
+  if(any(vapply(DDPar, function(el){ identical(nchar(trimws(el)), nchar(prefixDDPar))}, 
+                logical(1L), USE.NAMES = FALSE))){
+    errMsg <- "Unnamed Double Dash Parameter(s) detected. Empty names are not allowed!"
+  }
+  if(any(vapply(tolower(GMSOpt), function(el){ identical(nchar(trimws(el)), nchar(prefixGMSOpt)) ||
+      el %in% paste0(prefixGMSOpt, reservedGMSOpt)}, 
+      logical(1L), USE.NAMES = FALSE))){
+    errMsg <- sprintf("Invalid GAMS option(s) detected. GAMS options must not be unnamed and must not be one of the reserved options: '%s'!", paste(reservedGMSOpt, collapse = "', '"))
   }
   
   modelInToImport     <- getInputToImport(modelIn, keywordsNoImport)
