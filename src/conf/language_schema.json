@@ -2674,6 +2674,14 @@
               "type": "string",
               "minLength": 1
             },
+            "newViewBtCancelOverwrite": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewBtOverwrite": {
+              "type": "string",
+              "minLength": 1
+            },
             "errUniqueViewName": {
               "type": "string",
               "minLength": 1
@@ -2807,7 +2815,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 29
+          "minProperties": 31
         },
         "datatable": {
           "type": "object",
