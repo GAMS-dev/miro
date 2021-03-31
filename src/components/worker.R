@@ -154,7 +154,7 @@ Worker <- R6Class("Worker", public = list(
     
     private$clArgsDf <- clArgsDf
     
-    private$runRemote(inputData, dynamicPar)
+    private$runRemote(inputData, dynamicPar, name = name)
     tryCatch({
       remoteSubValue <- as.character(value(private$fRemoteSub))
     }, error = function(e){
@@ -796,12 +796,12 @@ Worker <- R6Class("Worker", public = list(
                                    env = private$getProcEnv())
     return(invisible(self))
   },
-  runRemote = function(inputData, hcubeData = NULL){
+  runRemote = function(inputData, hcubeData = NULL, name = NULL){
     private$status  <- "s"
     inputData$writeDisk(private$workDir, 
                         fileName = private$metadata$MIROGdxInName)
     if(!is.R6(hcubeData)){
-      inputData$copyMiroWs(private$workDir, private$clArgsDf)
+      inputData$copyMiroWs(private$workDir, private$clArgsDf, jobName = name)
     }
     private$fRemoteSub  <- future({
       suppressWarnings(suppressMessages({

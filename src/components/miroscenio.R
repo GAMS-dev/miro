@@ -137,7 +137,8 @@ loadMiroScen <- function(path, activeScen, attachments, views, inputNames, exdir
   }
   return(dfClArgs)
 }
-generateMiroScenMeta <- function(path, metadata, attachments, views, scenId = NULL, clArgs = character(0L)){
+generateMiroScenMeta <- function(path, metadata, attachments, views,
+                                 scenId = NULL, clArgs = character(0L), jobName = NULL){
   if(!dir.create(file.path(path, "attachments"))){
     stop(sprintf("Could not create (temporary) directory: %s", path), call. = FALSE)
   }
@@ -150,7 +151,7 @@ generateMiroScenMeta <- function(path, metadata, attachments, views, scenId = NU
       stop("Unexpected error occurred while downloading attachments.", call. = FALSE)
     }
   }
-  metadataContent <- list(version = 1L, scen_name = metadata[[3]][1],
+  metadataContent <- list(version = 1L, scen_name = if(is.null(jobName)) metadata[[3]][1] else jobName,
                           scen_tags = metadata[[5]][1],
                           cl_args = clArgs,
                           attachments = attachmentMetadata, model = modelName,

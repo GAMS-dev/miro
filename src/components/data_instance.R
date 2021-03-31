@@ -94,7 +94,7 @@ DataInstance <- R6Class("DataInstance", public = list(
     
     return(private$writeGDX(file.path(filePath, fileName), idsToWrite, ...))
   },
-  copyMiroWs = function(wsPath, clArgsDf){
+  copyMiroWs = function(wsPath, clArgsDf, jobName = NULL){
     miroMetaDir <- file.path(wsPath, "_miro_ws_")
     if(file.exists(miroMetaDir) &&
        !identical(unlink(miroMetaDir, recursive = TRUE, force = TRUE), 0L)){
@@ -105,7 +105,7 @@ DataInstance <- R6Class("DataInstance", public = list(
     }
     generateMiroScenMeta(miroMetaDir, private$activeScen$getMetadata(),
                          private$attachments, private$views,
-                         scenId = 1L, clArgs = clArgsDf)
+                         scenId = 1L, clArgs = clArgsDf, jobName = jobName)
     self$addDirPaths(miroMetaDir)
     return(invisible(self))
   },
