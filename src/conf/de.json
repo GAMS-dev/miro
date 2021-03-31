@@ -804,6 +804,12 @@
         "badEncoding": "Die Datei, die Sie hochgeladen haben, ist nicht UTF-8 kodiert. Andere Kodierungen als UTF-8 werden nicht unterstützt!"
       }
     },
+    "gdxio": {
+      "errors": {
+        "duplicateRecords": "Doppelte Datensätze im Symbol: '%s'",
+        "duplicateRecordsTruncated": "(Es werden nur die ersten 10 doppelten Datensätze angezeigt)"
+      }
+    },
     "xlsio":{
       "warnings":{
         "invalidSymbols": "WARNUNG: Ungültige Symbole in der Excel-Datei, die ignoriert wurden: '%s'.",

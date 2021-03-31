@@ -804,6 +804,12 @@
         "badEncoding": "The file you uploaded is not UTF-8 encoded. Other encodings than UTF-8 are not supported!"
       }
     },
+    "gdxio": {
+      "errors": {
+        "duplicateRecords": "Duplicate records in symbol: '%s'",
+        "duplicateRecordsTruncated": "(Only the first 10 duplicate records are displayed)"
+      }
+    },
     "xlsio":{
       "warnings":{
         "invalidSymbols": "WARNING: Invalid symbols in Excel file ignored: '%s'.",

@@ -3121,6 +3121,29 @@
           },
           "minProperties": 2
         },
+        "gdxio": {
+          "description": "Errors/warnings used in gdxio class",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "errors": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "duplicateRecords": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "duplicateRecordsTruncated": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 2
+            }
+          },
+          "minProperties": 1
+        },
         "xlsio": {
           "description": "Errors/warnings used in xlsio class",
           "type": "object",
@@ -3893,7 +3916,7 @@
           "minProperties": 3
         }
       },
-      "minProperties": 38
+      "minProperties": 39
     },
     "adminMode": {
       "description": "language specific objects of the MIRO admin mode",
