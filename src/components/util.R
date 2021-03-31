@@ -1586,3 +1586,27 @@ stop_custom <- function(.subclass, message, call = NULL, ...) {
   )
   stop(err)
 }
+clArgsDfToPf <- function(clArgsDf){
+  if(!length(clArgsDf) || !nrow(clArgsDf)){
+    return(character(0L))
+  }
+  isGAMSOption <- startsWith(clArgsDf[[1]], prefixGMSOpt)
+  pfContent <- vapply(seq_len(nrow(clArgsDf)), 
+                      function(i){
+                        if(clArgsDf[[3]][i] %in% CLARG_MISSING_VALUES)
+                          return(NA_character_)
+                        if(isGAMSOption[i])
+                          return(paste0(substring(clArgsDf[[1]][i], nchar(prefixGMSOpt) + 1L), '=', 
+                                        escapeGAMSCL(clArgsDf[[3]][i])))
+                        symbolTmp <- substring(clArgsDf[[1]][i], 
+                                               nchar(prefixDDPar) + 1L)
+                        if(endsWith(symbolTmp, "$lo")){
+                          symbolTmp <- paste0(substring(symbolTmp, 1, nchar(symbolTmp) - 3), "_lo")
+                        }else if(endsWith(symbolTmp, "$up")){
+                          symbolTmp <- paste0(substring(symbolTmp, 1, nchar(symbolTmp) - 3), "_up")
+                        }
+                        paste0('--', symbolTmp, '=', 
+                               escapeGAMSCL(clArgsDf[[3]][i]))
+                      }, character(1L), USE.NAMES = FALSE)
+  return(pfContent[!is.na(pfContent)])
+}

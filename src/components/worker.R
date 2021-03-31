@@ -137,13 +137,8 @@ Worker <- R6Class("Worker", public = list(
   setWorkDir = function(workDir){
     private$workDir <- workDir
   },
-  run = function(inputData, pfFileContent = NULL, sid = NULL){
-    if(length(pfFileContent)){
-      stopifnot(is.character(pfFileContent), length(pfFileContent) > 0L)
-      private$pfFileContent <- pfFileContent
-    }else{
-      private$pfFileContent <- NULL
-    }
+  run = function(inputData, clArgsDf = NULL, sid = NULL){
+    private$clArgsDf <- clArgsDf
     private$initRun(sid)
     
     if(private$remote){
@@ -153,16 +148,11 @@ Worker <- R6Class("Worker", public = list(
     private$runLocal(inputData)
     return(0L)
   },
-  runAsync = function(inputData = NULL, pfFileContent = NULL, sid = NULL, tags = NULL, 
+  runAsync = function(inputData = NULL, clArgsDf = NULL, sid = NULL, tags = NULL, 
                       dynamicPar = NULL, name = NULL){
     req(private$remote)
     
-    if(length(pfFileContent)){
-      stopifnot(is.character(pfFileContent), length(pfFileContent) > 0L)
-      private$pfFileContent <- pfFileContent
-    }else{
-      private$pfFileContent <- NULL
-    }
+    private$clArgsDf <- clArgsDf
     
     private$runRemote(inputData, dynamicPar)
     tryCatch({
@@ -200,13 +190,13 @@ Worker <- R6Class("Worker", public = list(
     return(private$process)
   },
   runHcube = function(staticData = NULL, dynamicPar = NULL, sid = NULL, tags = NULL, 
-                      attachmentFilePaths = NULL, pfFileContent = NULL){
+                      attachmentFilePaths = NULL, clArgsDf = NULL){
     req(length(private$db) > 0L)
     
     private$initRun(sid)
     
     if(private$remote){
-      pID <- self$runAsync(staticData, pfFileContent = pfFileContent, sid = sid, 
+      pID <- self$runAsync(staticData, clArgsDf = clArgsDf, sid = sid, 
                            tags = tags, dynamicPar = dynamicPar)
     }else{
       private$jID <- self$addJobDb("", sid, tags = tags)
@@ -750,7 +740,7 @@ Worker <- R6Class("Worker", public = list(
   inputData = NULL,
   log = character(1L),
   authHeader = character(1L),
-  pfFileContent = NULL,
+  clArgsDf = NULL,
   process = NULL,
   workDir = NULL,
   hardKill = FALSE,
@@ -776,7 +766,7 @@ Worker <- R6Class("Worker", public = list(
       gamsArgs <- c(gamsArgs, paste0('trace="', tableNameTracePrefix, private$metadata$modelName, '.trc"'), "traceopt=3")
     }
     pfFilePath <- gmsFilePath(file.path(private$workDir, tolower(private$metadata$modelName) %+% ".pf"))
-    writeLines(c(private$pfFileContent, gamsArgs), pfFilePath)
+    writeLines(c(clArgsDfToPf(private$clArgsDf), gamsArgs), pfFilePath)
     
     private$process <- process$new(file.path(private$metadata$gamsSysDir, "gams"), 
                                    args = c(private$metadata$modelGmsName, "pf", pfFilePath), 
@@ -810,6 +800,9 @@ Worker <- R6Class("Worker", public = list(
     private$status  <- "s"
     inputData$writeDisk(private$workDir, 
                         fileName = private$metadata$MIROGdxInName)
+    if(!is.R6(hcubeData)){
+      inputData$copyMiroWs(private$workDir, private$clArgsDf)
+    }
     private$fRemoteSub  <- future({
       suppressWarnings(suppressMessages({
         library(zip)
@@ -859,7 +852,8 @@ Worker <- R6Class("Worker", public = list(
                                                          else
                                                            c(dataFilesToFetch,
                                                              metadata$text_entities,
-                                                             requestBody$stdout_filename)),
+                                                             requestBody$stdout_filename,
+                                                             "_miro_ws_/*")),
                                            type = 'application/json')
       requestBody$data <- upload_file(inputData$
                                         addFilePaths(pfFilePath)$
@@ -893,7 +887,7 @@ Worker <- R6Class("Worker", public = list(
         return(paste0("error:", statusCode, msg))
       }
     }, globals = list(metadata = private$metadata, workDir = private$workDir,
-                      pfFileContent = private$pfFileContent, inputData = inputData,
+                      pfFileContent = clArgsDfToPf(private$clArgsDf), inputData = inputData,
                       tableNameTracePrefix = tableNameTracePrefix, authHeader = private$authHeader,
                       gmsFilePath = gmsFilePath, DataInstance = DataInstance, 
                       isWindows = isWindows, hcubeData = hcubeData))
