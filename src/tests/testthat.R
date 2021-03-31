@@ -33,5 +33,5 @@ reporter <- MultiReporter$new(list(
 
 stopOnFailure <- identical(commandArgs(trailingOnly=TRUE), "--stop")
 
-test_file("tests/testthat/test-db-migrator-unit.R", reporter = reporter)
-#test_dir("tests/testthat", reporter = reporter, stop_on_failure = stopOnFailure)
+#test_file("tests/testthat/test-db-migrator-unit.R", reporter = reporter)
+test_dir("tests/testthat", reporter = reporter, stop_on_failure = stopOnFailure)
