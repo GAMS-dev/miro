@@ -433,32 +433,29 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           if(is.null(input$saveView) || initData || input$saveView == 0L || readonlyViews){
             return()
           }
-          showModal(modalDialog(tags$div(id = ns("errUniqueName"), class = "gmsalert gmsalert-error", 
-                                         style = "position:relative",
+          showModal(modalDialog(tags$div(id = ns("errUniqueName"), style = "display:none;",
                                          lang$renderers$miroPivot$errUniqueViewName),
                                 textInput(ns("newViewName"),
                                           lang$renderers$miroPivot$newViewLabel), 
                                 footer = tagList(
-                                  modalButton(lang$renderers$miroPivot$newViewBtCancel),
-                                  actionButton(ns("saveViewConfirm"), lang$renderers$miroPivot$newViewBtSave, 
-                                               class = "bt-highlight-1 bt-gms-confirm")
+                                  tags$div(id = ns("saveViewButtonsWrapper"),
+                                           modalButton(lang$renderers$miroPivot$newViewBtCancel),
+                                           actionButton(ns("saveViewConfirm"), lang$renderers$miroPivot$newViewBtSave, 
+                                                        class = "bt-highlight-1 bt-gms-confirm")
+                                           ),
+                                  tags$div(id = ns("saveViewOverwriteButtonsWrapper"), style = "display:none",
+                                           actionButton(ns("saveViewCancelOverwrite"),
+                                                        lang$renderers$miroPivot$newViewBtCancelOverwrite),
+                                           actionButton(ns("saveViewOverwrite"),
+                                                        lang$renderers$miroPivot$newViewBtOverwrite, 
+                                                        class = "bt-highlight-1 bt-gms-confirm")
+                                  )
                                 ),
                                 fade = TRUE, easyClose = FALSE, size = "s", 
                                 title = lang$renderers$miroPivot$newViewTitle))
         })
-        rendererEnv[[ns("saveViewConfirm")]] <- observe({
-          if(is.null(input$saveViewConfirm) || initData || 
-             input$saveViewConfirm == 0L || readonlyViews){
-            return()
-          }
+        addNewView <- function(overwrite = FALSE){
           isolate({
-            if(identical(input$newViewName, "")){
-              return()
-            }
-            if(input$newViewName %in% c("default", views$getIds(session))){
-              showEl(session, paste0("#", ns("errUniqueName")))
-              return()
-            }
             newViewConfig <- list(aggregationFunction = input$aggregationFunction,
                                   pivotRenderer = input$pivotRenderer,
                                   domainFilter = list(default = input$domainFilter))
@@ -480,14 +477,59 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 newViewConfig[[indexEl[[1]]]] <- filterElList
               }
             }
-            insertUI(paste0("#", ns("savedViewsDD")), 
-                     createBootstrapDropdownChoices(list(id = htmlIdEnc(input$newViewName), 
-                                                         alias = input$newViewName), 
-                                                    ns("savedViews"), ns("deleteView")), 
-                     where = "beforeEnd")
-            views$add(session, input$newViewName, newViewConfig)
+            if(overwrite){
+              views$add(session, input$newViewName, newViewConfig)
+            }else{
+              insertUI(paste0("#", ns("savedViewsDD")), 
+                       createBootstrapDropdownChoices(list(id = htmlIdEnc(input$newViewName), 
+                                                           alias = input$newViewName), 
+                                                      ns("savedViews"), ns("deleteView")), 
+                       where = "beforeEnd")
+              views$add(session, input$newViewName, newViewConfig)
+            }
           })
+        }
+        rendererEnv[[ns("saveViewConfirm")]] <- observe({
+          if(is.null(input$saveViewConfirm) || initData || 
+             input$saveViewConfirm == 0L || readonlyViews){
+            return()
+          }
+          
+          if(identical(input$newViewName, "")){
+            return()
+          }
+          if(input$newViewName %in% c("default", views$getIds(session))){
+            hideEl(session, paste0("#", ns("newViewName")))
+            hideEl(session, paste0("#", ns("saveViewButtonsWrapper")))
+            showEl(session, paste0("#", ns("errUniqueName")))
+            showEl(session, paste0("#", ns("saveViewOverwriteButtonsWrapper")))
+            return()
+          }
+          addNewView()
           removeModal(session)
+        })
+        rendererEnv[[ns("saveViewOverwriteConfirm")]] <- observe({
+          if(is.null(input$saveViewOverwrite) || initData || 
+             input$saveViewOverwrite == 0L || readonlyViews){
+            return()
+          }
+          
+          if(identical(input$newViewName, "")){
+            flog.error("New view name is empty. Should never happen!")
+            return()
+          }
+          addNewView(overwrite = TRUE)
+          removeModal(session)
+        })
+        rendererEnv[[ns("saveViewCancelOverwrite")]] <- observe({
+          if(is.null(input$saveViewCancelOverwrite) || initData || 
+             input$saveViewCancelOverwrite == 0L || readonlyViews){
+            return()
+          }
+          hideEl(session, paste0("#", ns("saveViewOverwriteButtonsWrapper")))
+          hideEl(session, paste0("#", ns("errUniqueName")))
+          showEl(session, paste0("#", ns("newViewName")))
+          showEl(session, paste0("#", ns("saveViewButtonsWrapper")))
         })
         rendererEnv[[ns("deleteView")]] <- observe({
           if(is.null(input$deleteView) || initData || readonlyViews){
