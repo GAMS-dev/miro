@@ -198,7 +198,6 @@ observeEvent(virtualActionButton(
     if(!closeScenario()){
       return()
     }
-    rv$activeSname  <- worker$getJobName(jobImportID)
     newInputCount <- 0L
     errMsg <- NULL
     overwriteInput <- TRUE
@@ -224,6 +223,20 @@ observeEvent(virtualActionButton(
     })
     if(length(errMsg))
       return()
+    
+    tryCatch({
+      loadMiroScenMeta(file.path(tmpdir, "_miro_ws_"),
+                       activeScen, attachments, views,
+                       names(modelIn))
+    }, error = function(e){
+      flog.error("Problems loading scenario metadata. Error message: '%s'.", 
+                 conditionMessage(e))
+      showHideEl(session, "#fetchJobsError")
+    })
+    if(length(errMsg))
+      return()
+    
+    rv$activeSname  <- activeScen$getScenName()
     
     loadModeWorkDir  <- tmpdir
     loadModeFileName <- if(identical(config$fileExchange, "gdx")) MIROGdxInName else NULL
