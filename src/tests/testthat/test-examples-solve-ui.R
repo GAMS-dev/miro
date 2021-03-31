@@ -16,11 +16,11 @@ if(file.exists(file.path(Sys.getenv("MIRO_DB_PATH"), "miro.sqlite3"))){
     stop("Could not remove old database SQLite file for tests")
   }
 }
-for(modelToTest in c("pickstock", "transport", "sudoku", "farming", "inscribedsquare", "tsp", "cpack", "lubrication", "kport", "cutstock")){
+for(modelToTest in c("pickstock", "transport", "sudoku", "farming", "inscribedsquare", "tsp", "cpack", "lubrication", "kport")){
   miroModelDir <- file.path(testDir, "..", "model", modelToTest)
   Sys.setenv(MIRO_MODEL_PATH = file.path(miroModelDir,  paste0(modelToTest, ".gms")))
   Sys.setenv(GMSMODELNAME = modelToTest)
-  if(modelToTest %in% c("pickstock", "kport", "cutstock")){
+  if(modelToTest %in% c("pickstock", "kport")){
     extraClArgs <- c(additionalGamsClArgs, "MIP=CBC")
   }else{
     extraClArgs <- c()
