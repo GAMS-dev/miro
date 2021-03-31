@@ -1354,7 +1354,8 @@
         "val57": "The file name contains invalid characters. Attachments in subdirectories are not supported!",
         "val58": "The decimal separator and the thousand grouping separator must not be identical!",
         "val59": "The GAMS symbol: %s is declared as table. This causes the last column to be pivoted in MIRO. MIRO pivot cannot be used with already pivoted symbols. Please declare the symbol as a parameter instead.",
-        "val60": "Each group member may only appear in a single group!"
+        "val60": "Each group member may only appear in a single group!",
+        "val61": "The GAMS option must not be one of the reserved options: '%s'."
       },
       "widgetOptions":{
         "slider": "Slider",

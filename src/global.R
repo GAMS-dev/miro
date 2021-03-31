@@ -73,6 +73,7 @@ modelDir <- "model"
 # prefix used for identifying compile time variables
 prefixDDPar  <- "_gmspar_"
 prefixGMSOpt <- "_gmsopt_"
+reservedGMSOpt <- c("idir1", "trace", "traceopt", "curdir")
 
 # strings that indicate the value of a command line parameter should not 
 # be communicated with GAMS (will be unset)
