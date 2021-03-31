@@ -4,7 +4,6 @@ const { format } = require('util');
 const { dialog } = require('electron');
 const log = require('electron-log');
 const addModelData = require('./import-data.js');
-const { getAppDbPath } = require('./util');
 
 function miroscenGetModelName(scenFilePath, successCallback, errCallback) {
   yauzl.open(scenFilePath, { lazyEntries: true }, (err, zipfile) => {
@@ -40,7 +39,8 @@ miroscen file as no metadata was found.')));
     return null;
   });
 }
-function addMiroscen(scenFilePath, windowObj, paths, appsData, miroProcesses) {
+function addMiroscen(miroProcessManager, scenFilePath, windowObj,
+  paths, appsData) {
   return new Promise((resolve, reject) => {
     const onSuccess = async (modelName) => {
       let miroVersion;
@@ -52,20 +52,18 @@ function addMiroscen(scenFilePath, windowObj, paths, appsData, miroProcesses) {
       }
       try {
         await addModelData(
+          miroProcessManager,
           {
-            rpath: paths.rpath,
             libPath: paths.libPath,
-            miroResourcePath: paths.miroResourcePath,
-            miroWorkspaceDir: paths.miroWorkspaceDir,
-            dbpath: getAppDbPath(appsData.getAppConfigValue(modelName, 'dbpath')),
-            logpath: paths.logpath,
+            dbpath: appsData.getAppConfigValue(modelName, 'dbpath'),
             appDir: path.join(paths.appDataPath, modelName),
           },
           modelName,
           'base',
           miroVersion,
           appsData.getAppConfigValue(modelName, 'usetmpdir'),
-          miroProcesses, windowObj, scenFilePath, 'loading-screen-progress',
+          windowObj,
+          scenFilePath, 'loading-screen-progress',
         );
       } catch (err) {
         if (err.message !== 'suppress') {

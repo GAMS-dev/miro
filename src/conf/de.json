@@ -661,6 +661,38 @@
     },
     "hot":{
       "search": "Suche:"
+    },
+    "migrationModule": {
+      "title": "Datenbankmigration",
+      "desc": "Wir haben festgestellt, dass sich Ihr GAMS/MIRO-Datenvertrag auf eine Weise geändert hat, die mit dem aktuellen Datenbanklayout Ihrer App nicht kompatibel ist. Bitte geben Sie an, wie Ihre Daten migriert werden sollen.",
+      "backupWarning": "Wir empfehlen Ihnen dringend, vor der Migration ein Backup Ihrer Datenbank zu erstellen.",
+      "successMsg": "Ihre Daten wurden erfolgreich migriert!",
+      "labelSymbol": "Symbol: '%s'",
+      "selectTableToMap": "Daten verwenden von",
+      "btCancelMigration": "Abbrechen",
+      "btConfirmMigration": "Migration bestätigen",
+      "errDuplicateTables": "Tabelle(n): '%s' können nicht dupliziert werden!",
+      "dialogConfirmDataLoss": {
+        "title": "Warnung: Verlust von Daten",
+        "descTables": "Achtung! Die folgenden Tabellen werden mit Ihrer aktuellen Migrationskonfiguration entfernt: '%s'!",
+        "descTableCols": "Achtung! Die Spalte(n): '%s' der Tabelle: '%s' werden mit Ihrer aktuellen Migrationskonfiguration entfernt!",
+        "cbConfirmDataLoss": "Ich bestätige",
+        "btCancel": "Abbrechen",
+        "btConfirm": "Daten entfernen"
+      },
+      "progress":{
+        "title": "Migriere Daten",
+        "desc": "Migriere Tabelle %s/%s"
+      },
+      "btRemoveTables":{
+        "label": "Alle Datenbanktabellen löschen",
+        "confirmTitle": "Alle Datenbanktabellen löschen",
+        "confirmDesc": "Sind Sie sicher, dass Sie alle zum Modell gehörenden Datenbanktabellen löschen wollen? Das kann nicht rückgängig gemacht werden! Möglicherweise möchten Sie zuerst die Datenbank sichern, bevor Sie fortfahren.",
+        "cbConfirm": "Alle Tabellen entfernen?",
+        "btCancel": "Abbrechen",
+        "btConfirm": "Tabellen entfernen",
+        "msgSuccess": "Datenbanktabellen erfolgreich entfernt"
+      }
     }
   },
   "progressBar":{  
@@ -1526,42 +1558,14 @@
     },
     "database":{
       "title": "Datenbankverwaltung",
-      "removeSuccess": "Datenbanktabellen erfolgreich entfernt",
-      "restoreSuccess": "Daten erfolgreich wiederhergestellt",
-      "restoreNoData": "Es wurden keine CSV-Dateien im Archiv gefunden. Nichts wurde wiederhergestellt.",
-      "restoreInvalidData": "Mindestens eine der Tabellen ist ungültig. Nichts wurde wiederhergestellt.",
-      "maxRowError": "Die maximale Anzahl der zu exportierenden Zeilen wurde für mindestens 1 Tabelle überschritten. Bitte sichern Sie die Datenbank manuell!",
+      "infoPostgres": "Sie verwenden GAMS MIRO Desktop mit einem <a href=\"https://www.postgresql.org\" target=\"_blank\">PostgreSQL</a>-Datenbank-Backend. Die verwendete Datenbank hat den Namen: %s und befindet sich unter: %s. Um Ihre Datenbank zu sichern, lesen Sie <a href=\"https://www.postgresql.org/docs/current/backup.html\" target=\"_blank\">hier</a>.",
+      "infoSQLite": "Sie verwenden GAMS MIRO Desktop mit einem <a href=\"https://sqlite.org\" target=\"_blank\">SQLite</a>-Datenbank-Backend. Die verwendete Datenbank befindet sich unter: %s.",
       "backup": "Datenbanksicherung",
-      "backupWrapper": "Sie möchten ein Backup der Datenbank erstellen? Klicken Sie auf die Schaltfläche unten, um ein Zip-Archiv mit allen in CSV-Dateien gespeicherten Datenbanktabellen zu erhalten. Beachten Sie, dass es schneller ist, Ihre Datenbank mit dem nativen Sicherungswerkzeug Ihres DBMS zu sichern. Das bedeutet, dass Sie bei großen Datenbanken Ihre Datenbank manuell sichern sollten!",
-      "dbSaveAll": "Datenbanktabellen speichern",
-      "restore": "Datenbank wiederherstellen",
-      "restoreWrapper": "Sie wollen die Datenbank mit Daten aus einer bestehenden Zip-Datei wiederherstellen? Bitte wählen Sie die Datei aus, die Sie für die Wiederherstellung der Datenbank verwenden möchten.",
-      "restoreDb": "Wiederherstellen",
+      "backupWrapper": "Sie möchten eine Sicherung der Datenbank erstellen? Beachten Sie, dass die gesicherte Datenbank die Daten aller Ihrer MIRO-Anwendungen enthält, nicht nur die der aktuellen.",
+      "btDownloadBackup": "Datenbank sichern",
+      "backupProgress": "Datenbank wird gesichert...",
       "remove": "Daten löschen",
-      "removeWrapper": "Sie wollen alle Tabellen entfernen, die zu dem Modell gehören (z.B. weil sich das Schema geändert hat)?",
-      "removeDialogBtn": "Alle Datenbanktabellen löschen",
-      "removeDialogTitle": "Datenbanktabellen entfernen",
-      "removeDialogDesc": "Sind Sie sicher, dass Sie alle zum Modell gehörenden Datenbanktabellen löschen wollen? Das kann nicht rückgängig gemacht werden! Möglicherweise möchten Sie zuerst die Datenbank speichern, bevor Sie fortfahren.",
-      "removeDialogCancel": "Abbrechen",
-      "removeDialogConfirm": "Tabellen entfernen",
-      "removeOrphansWrapper": "Sie wollen alle verwaisten Tabellen, die zu dem Modell gehören, entfernen?",
-      "removeOrphansDialogBtn": "Alle verwaisten Datenbanktabellen löschen",
-      "removeOrphansDialogDesc": "Sind Sie sicher, dass Sie alle verwaisten Datenbanktabellen, die zu Ihrem Modell gehören, löschen wollen? Das kann nicht rückgängig gemacht werden! Möglicherweise möchten Sie die Datenbank zuerst speichern, bevor Sie fortfahren.",
-      "removeInconsistent": "Wollen Sie alle inkonsistenten Datenbanktabellen löschen?",
-      "removeInconsistentConfirm": "Sind Sie sicher, dass Sie alle inkonsistenten Datenbanktabellen, die zu dem Modell gehören, löschen wollen?",
-      "cannotBeUndone": "Das kann nicht rückgängig gemacht werden! Möglicherweise möchten Sie die Datenbank zuerst speichern, bevor Sie fortfahren.",
-      "removeTitle": "Datenbanktabellen entfernen",
-      "removeCheck": "Alle Tabellen entfernen?",
-      "confirm": "Bestätigen",
-      "cancel": "Abbrechen",
-      "removeOrphansCheck": "Alle verwaisten Tabellen entfernen?",
-      "removeOrphansTitle": "Verwaiste Datenbanktabellen löschen",
-      "saveMsg": "Datenbank wird gespeichert...",
-      "compressMsg": "Dateien komprimieren...",
-      "decompressMsg": "Dateien dekomprimieren...",
-      "validateMsg": "Dateien validieren...",
-      "uploadMsg": "Dateien hochladen...",
-      "finishedMsg": "Beendet..."
+      "removeWrapper": "Sie wollen alle Tabellen entfernen, die zu dem Modell gehören (z.B. weil sich das Schema geändert hat)?"
     },
     "graphs":{
       "toolCategories": {
