@@ -5522,12 +5522,16 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "fixedColumnsLeft": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "heatmap": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 8
+              "minProperties": 9
             },
             "slider": {
               "type": "object",

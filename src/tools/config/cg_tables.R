@@ -152,6 +152,7 @@ observeEvent({input$table_symbol
     rv$tableWidgetConfig <- list() 
     currentConfig <- NULL
     removeUI(selector = "#table_wrapper div", multiple = TRUE)
+    isGamsTable <<- FALSE
     
     if(currentTableSymbolName %in% inputSymMultiDimChoices){
       if(currentTableSymbolName %in% names(configJSON$inputWidgets)){
@@ -167,6 +168,8 @@ observeEvent({input$table_symbol
                                  logical(1L), USE.NAMES = FALSE)
         if(sum(numericHeaders) <= 1L){
           pivotCols <<- inputSymHeaders[[input$table_symbol]][!numericHeaders]
+        }else{
+          isGamsTable <<- TRUE
         }
       }
       
@@ -202,9 +205,9 @@ observeEvent({input$table_symbol
                                      readonlyCols = checkLength(configuredTable, currentConfig[["readonlyCols"]], NULL),
                                      hideIndexCol = checkLength(configuredTable, currentConfig$hideIndexCol, FALSE),
                                      heatmap = checkLength(configuredTable, currentConfig$heatmap, FALSE),
-                                     pivotCols = checkLength(configuredTable, currentConfig$pivotCols, "_"))
+                                     pivotCols = checkLength(configuredTable, currentConfig$pivotCols, "_"),
+                                     fixedColumnsLeft = checkLength(configuredTable, currentConfig$fixedColumnsLeft, NULL))
       }
-      
       insertUI(selector = "#table_wrapper", getSymbolHotOptions(), where = "beforeEnd")
       hideEl(session, "#outputTable_preview")
       if(identical(rv$tableWidgetConfig$tableType, input$inputTable_type)){
@@ -274,11 +277,19 @@ getSymbolHotOptions <- function(){
                               lang$adminMode$graphs$miroPivotOptions$infoMsgDummyData)),
     conditionalPanel(condition = "input.inputTable_type!=='pivot'",
                      checkboxInput_MIRO("table_readonly", lang$adminMode$widgets$table$readonly, value = rv$tableWidgetConfig$readonly),
-                     if(length(pivotCols))
+                     if(length(pivotCols)){
                        tags$div(class="option-wrapper",
                                 selectInput("table_pivotCols", lang$adminMode$widgets$table$pivotCols, 
                                             choices = c(`_` = "_", pivotCols), 
                                             selected = if(length(rv$tableWidgetConfig$pivotCols)) rv$tableWidgetConfig$pivotCols else "_"))
+                     }
+                       
+    ),
+    conditionalPanel(condition = paste0("input.inputTable_type==='default' && ((input.table_pivotCols!=null && input.table_pivotCols!=='_') 
+                                        || ", tolower(isGamsTable), ")"),
+                     tags$div(class="option-wrapper",
+                              checkboxInput_MIRO("table_fixedColumnsLeft", lang$adminMode$widgets$table$fixedColumnsLeft, 
+                                                 value = if(length(rv$tableWidgetConfig$fixedColumnsLeft)) TRUE else FALSE))
     ),
     conditionalPanel(condition = "input.inputTable_type==='default' && (input.table_pivotCols==null || input.table_pivotCols==='_')",
                      tags$div(class="option-wrapper",
@@ -419,7 +430,9 @@ output$hot_preview <- renderRHandsontable({
   data <- data$data
   colsReadonly <- match(input$table_readonlyCols, headersUnnamed)
   colsReadonly <- colsReadonly[!is.na(colsReadonly)]
-  
+  fixedColumnsLeft <- isolate(rv$tableWidgetConfig$fixedColumnsLeft)
+  if(is.null(fixedColumnsLeft)) fixedColumnsLeft <- 0 
+
   ht <- rhandsontable(data = data,
                       rowHeaders = if(isTRUE(input$table_hideIndexCol)) NULL else rownames(data),
                       colHeaders = colHeaders,
@@ -429,6 +442,7 @@ output$hot_preview <- renderRHandsontable({
   if(!pivotTable && length(colsReadonly)){
     ht <- hot_col(ht, colsReadonly, readOnly = TRUE)
   }
+  ht <- hot_cols(ht, fixedColumnsLeft = fixedColumnsLeft)
   if(isTRUE(input$table_heatmap)){
     return(hot_heatmap(ht))
   }else{
@@ -656,6 +670,7 @@ observeEvent({rv$refreshInputTableType
       tableType    = "default",
       readonly     = input$table_readonly,
       pivotCols    = input$table_pivotCols,
+      fixedColumnsLeft = input$table_fixedColumnsLeft,
       readonlyCols = input$table_readonlyCols,
       hideIndexCol = input$table_hideIndexCol,
       heatmap      = input$table_heatmap
@@ -694,9 +709,34 @@ observeEvent(input$table_pivotCols, {
   rv$tableWidgetConfig$pivotCols <<- input$table_pivotCols
   if(!identical(input$table_pivotCols, "_")){
     rv$tableWidgetConfig$readonlyCols <<- NULL
+    numericColsTmp <- sum(vapply(modelIn[[input$table_symbol]]$headers, 
+                               function(header) identical(header$type, "numeric"), 
+                               logical(1L), USE.NAMES = FALSE))
+    if(isGamsTable){
+      fixedColumnsLeftTmp <- length(inputSymHeaders[[input$table_symbol]]) - numericColsTmp
+    }else{
+      fixedColumnsLeftTmp <- length(inputSymHeaders[[input$table_symbol]]) - numericColsTmp - 1L
+    }
+    rv$tableWidgetConfig$fixedColumnsLeft <<- fixedColumnsLeftTmp
   }else{
     rv$tableWidgetConfig$readonlyCols <<- input$table_readonlyCols
+    rv$tableWidgetConfig$fixedColumnsLeft <<- NULL
   }
+})
+observeEvent(input$table_fixedColumnsLeft, {
+  if(isFALSE(input$table_fixedColumnsLeft)){
+    rv$tableWidgetConfig$fixedColumnsLeft <<- NULL
+    return()
+  }
+  numericColsTmp <- sum(vapply(modelIn[[input$table_symbol]]$headers, 
+             function(header) identical(header$type, "numeric"), 
+             logical(1L), USE.NAMES = FALSE))
+  if(isGamsTable){
+    fixedColumnsLeftTmp <- length(inputSymHeaders[[input$table_symbol]]) - numericColsTmp
+  }else{
+    fixedColumnsLeftTmp <- length(inputSymHeaders[[input$table_symbol]]) - numericColsTmp - 1L
+  }
+  rv$tableWidgetConfig$fixedColumnsLeft <<- fixedColumnsLeftTmp
 })
 observeEvent(input$table_heatmap, {
   rv$tableWidgetConfig$heatmap <<- input$table_heatmap
