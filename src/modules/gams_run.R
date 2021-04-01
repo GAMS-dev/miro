@@ -974,7 +974,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     if(length(activeScen) && length(activeScen$getSid())){
       jobSid <- activeScen$getSid()
     }
-    worker$run(dataModelRun$inputData, dataModelRun$clArgsDf, jobSid)
+    worker$run(dataModelRun$inputData, dataModelRun$clArgsDf, jobSid, name = activeScen$getScenName())
   }, error_duplicate_records = function(e){
     flog.info("Problems writing GDX file. Duplicate records found: %s", conditionMessage(e))
     errMsg <<- conditionMessage(e)

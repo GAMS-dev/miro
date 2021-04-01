@@ -137,12 +137,12 @@ Worker <- R6Class("Worker", public = list(
   setWorkDir = function(workDir){
     private$workDir <- workDir
   },
-  run = function(inputData, clArgsDf = NULL, sid = NULL){
+  run = function(inputData, clArgsDf = NULL, sid = NULL, name = NULL){
     private$clArgsDf <- clArgsDf
     private$initRun(sid)
     
     if(private$remote){
-      private$runRemote(inputData)
+      private$runRemote(inputData, name = name)
       return(0L)
     }
     private$runLocal(inputData)
@@ -730,6 +730,7 @@ Worker <- R6Class("Worker", public = list(
   hcube = logical(1L),
   status = NULL, 
   jID = NULL,
+  jobName = NULL,
   db = NULL,
   conn = NULL,
   jobListInit = FALSE,
@@ -801,6 +802,7 @@ Worker <- R6Class("Worker", public = list(
     inputData$writeDisk(private$workDir, 
                         fileName = private$metadata$MIROGdxInName)
     if(!is.R6(hcubeData)){
+      private$jobName <- name
       inputData$copyMiroWs(private$workDir, private$clArgsDf, jobName = name)
     }
     private$fRemoteSub  <- future({
@@ -1023,7 +1025,8 @@ Worker <- R6Class("Worker", public = list(
           private$process <- value(private$fRemoteSub)
           if(length(private$db)){
             tryCatch({
-              private$jID <- self$addJobDb(private$process, private$sid)
+              private$jID <- self$addJobDb(private$process, private$sid,
+                                           name = private$jobName)
             }, error = function(e){
               flog.warn("Could not add job to database. Error message; '%s'.", 
                         conditionMessage(e))
