@@ -43,7 +43,7 @@ RUN mkdir /home/miroci
 RUN chown -R miroci /home/miroci
 
 # install openssh and rsync for deploying documentation
-apt-get update && apt-get install -y openssh-client rsync
+RUN apt-get update && apt-get install -y openssh-client rsync
 
 USER miroci
 
