@@ -1853,10 +1853,6 @@ if(!is.null(errMsg)){
         stopifnot(is.integer(input$btExportScen), length(input$btExportScen) == 1L)
         if(useGdx && !LAUNCHHCUBEMODE){
           exportTypes <- setNames(c("miroscen", "gdx", "csv", "xls"), lang$nav$fileExport$fileTypes)
-          if(input$btExportScen > 1L){
-            # remove miroscen option in comparison Mode (currently not supported)
-            exportTypes <- exportTypes[-1]
-          }
         }else{
           exportTypes <- setNames(c("csv", "xls"), lang$nav$fileExport$fileTypes[-c(1, 2)])
         }
