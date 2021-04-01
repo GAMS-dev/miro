@@ -254,36 +254,6 @@ Db <- R6Class("Db",
                     return(0L)
                   }
                 },
-                getLatestSid          = function(){
-                  # Fetch the last inserted sid from database 
-                  #
-                  # Args:
-                  # 
-                  # Returns:
-                  # integer: latest scenario Id exported to database
-                  
-                  if(inherits(private$conn, "PqConnection")){
-                    tryCatch({
-                      query <- SQL(paste0("SELECT nextval(pg_get_serial_sequence(",
-                                                        DBI::dbQuoteString(private$conn, private$tableNameMetadata), 
-                                                        ", ", DBI::dbQuoteString(private$conn, private$scenMetaColnames['sid']), "));"))
-                      nextVal <- DBI::dbGetQuery(private$conn, query)
-                      return(as.integer(nextVal[[1L]][1]))
-                    }, error = function(e){
-                      return(0L)
-                    })
-                  }else{
-                    tryCatch({
-                      query <- SQL(paste0("SELECT MAX(",
-                                          dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), ")  FROM ",
-                                          dbQuoteIdentifier(private$conn, private$tableNameMetadata), ";"))
-                      nextVal <- DBI::dbGetQuery(private$conn, query)
-                      return(as.integer(nextVal[[1L]][1]))
-                    }, error = function(e){
-                      return(0L)
-                    })
-                  }
-                },
                 loadScenarios = function(sids, limit = 1e7, msgProgress){
                   # Load multiple scenarios from database
                   #
