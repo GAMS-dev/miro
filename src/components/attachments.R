@@ -548,6 +548,9 @@ Attachments <- R6Class("Attachments",
                                      is.integer(maxDuration), length(maxDuration) == 1L)
                            
                            tableNameDb    <- dbSchema$getDbTableName("_scenAttach")
+                           if(!DBI::dbExistsTable(private$conn, tableNameDb)){
+                             return(invisible(self))
+                           }
                            expirationTime <- as.character(Sys.time() - 3600L * 24L * maxDuration, 
                                                           usetz = TRUE, tz = "GMT")
                            query <- paste0("DELETE FROM ", dbQuoteIdentifier(private$conn, tableNameDb),
