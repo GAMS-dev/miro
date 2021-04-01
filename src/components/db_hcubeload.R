@@ -535,12 +535,13 @@ HcubeLoad <- R6Class("HcubeLoad",
                        genKeyTypeString       = function(keyTypeList){
                          keyTypeList <- vapply(keyTypeList, function(keyTypeEl){
                            dbQuoteIdentifier(private$conn, "_" %+% keyTypeEl$key) %+%
-                             if(identical(keyTypeEl$type, "string")){
+                             if(keyTypeEl$type %in% c("string", "set")){
                                " varchar"
-                             }else if(identical(keyTypeEl$type, "numeric")){
+                             }else if(keyTypeEl$type %in% c("numeric", "number", "parameter")){
                                " numeric"
                              }else{
-                               stop("Invalid type: ''. Allowed types are: 'string, number'.")
+                               stop(sprintf("Invalid type: '%s'. Allowed types are: 'string, number'.",
+                                            keyTypeEl$type), call. = FALSE)
                              }
                          }, character(1L), USE.NAMES = FALSE)
                          paste(keyTypeList, collapse = ", ")
