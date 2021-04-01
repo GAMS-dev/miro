@@ -40,7 +40,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     if(inherits(private$conn, "PqConnection")){
       query <- paste0("SELECT table_name FROM information_schema.tables", 
                       " WHERE table_schema='",
-                      dbQuoteIdentifier(private$db$getInfo()$schema),
+                      dbQuoteIdentifier(private$conn, private$db$getInfo()$schema),
                       "' AND table_type='BASE TABLE';")
     }else{
       query <- paste0("SELECT name FROM sqlite_master WHERE type = 'table';")
