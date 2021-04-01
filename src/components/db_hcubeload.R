@@ -32,18 +32,15 @@ HcubeLoad <- R6Class("HcubeLoad",
                          private$db                 <- db
                          private$conn               <- db$getConn()
                          private$sidCol             <- dbQuoteIdentifier(private$conn, 
-                                                                         db$getScenMetaColnames()['sid'])
+                                                                         "_sid")
                          private$modelName          <- modelName
                          private$scalarColNames     <- scalarColNames
-                         private$tabNameMeta        <- db$getTableNameMetadata()
+                         private$tabNameMeta        <- dbSchema$getDbTableName("_scenMeta")
                          private$scalarTables       <- scalarTables
                          private$keyTypeList        <- scalarKeyTypeList
                          private$tableFieldSep      <- tableFieldSep
-                         private$dbSchema           <- db$getDbSchema()
-                         private$tableNameTrace     <- private$dbSchema$tabName[["_scenTrc"]]
-                         private$traceColNames      <- private$dbSchema$colNames[["_scenTrc"]]
                          private$inputDsNamesNotToDisplay <- inputDsNamesNotToDisplay
-                         private$hcubeScalarTables  <- paste0(db$getModelNameDb(), "_", hcubeScalars)
+                         private$hcubeScalarTables  <- hcubeScalars
                          
                          if(inherits(private$conn, "PqConnection")){
                            dbExecute(private$conn, "CREATE EXTENSION IF NOT EXISTS tablefunc")
@@ -117,7 +114,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                          if(!length(data)){
                            return(tibble())
                          }
-                         tagID <- which(endsWith(names(data), private$dbSchema$colNames[["_scenMeta"]][['stag']]))[1L]
+                         tagID <- which(endsWith(names(data), "_stag"))[1L]
                          if(!is.na(tagID)){
                            if(any(nchar(data[[tagID]]) > 0)){
                              data[[tagID]] <- substr(data[[tagID]], 2L, nchar(data[[tagID]]) - 1L)
@@ -177,7 +174,6 @@ HcubeLoad <- R6Class("HcubeLoad",
                        genPaverTraceFiles = function(workDir, exclTraceCols = NULL) {
                          stopifnot(length(private$groupedSids) > 0L)
                          stopifnot(length(private$groupLabels) > 0L)
-                         stopifnot(length(private$tableNameTrace) > 0L)
                          stopifnot(is.character(workDir), length(workDir) == 1L)
                          
                          groupLabels   <- vapply(seq_len(nrow(private$groupLabels)), function(i){
@@ -187,10 +183,10 @@ HcubeLoad <- R6Class("HcubeLoad",
                            fileName <- file.path(workDir, i %+% ".trc")
                            paverFile <- file(fileName, open = 'wt')
                            writeLines(paste0("* Trace Record Definition\n* GamsSolve\n",
-                                             "* ", paste(setdiff(private$traceColNames, exclTraceCols), collapse = ","),
+                                             "* ", paste(setdiff(traceColNames, exclTraceCols), collapse = ","),
                                              "\n*\n* SOLVER,\n* TIMELIMIT,3600\n* NODELIMIT,2100000000\n* GAPLIMIT,0"), con = paverFile)
                            close(paverFile)
-                           paverData      <- private$db$importDataset(private$tableNameTrace, 
+                           paverData      <- private$db$importDataset("_scenTrc", 
                                                                       subsetSids = private$groupedSids[[i]])
                            if(!length(paverData) || 
                               nrow(paverData) != length(private$groupedSids[[i]])){
@@ -214,17 +210,11 @@ HcubeLoad <- R6Class("HcubeLoad",
                          stopifnot(length(scenIds) >= 1L, is.character(tmpDir), 
                                    length(tmpDir) == 1L)
                          
-                         scenTableNames <- private$getTableNamesScenario()
-                         if(!length(scenTableNames)){
-                           return(invisible(self))
-                         }
-                         names(scenTableNames) <- substring(scenTableNames, 
-                                                            nchar(private$db$getModelNameDb()) + 2L)
-                         scenTableNames <- scenTableNames[!names(scenTableNames) %in% private$
+                         scenTableNames <- dbSchema$getAllSymbols()
+                         scenTableNames <- scenTableNames[!scenTableNames %in% private$
                                                             inputDsNamesNotToDisplay]
                          noScenTables   <- length(scenTableNames)
                          noScenIds <- length(scenIds)
-                         colScenName <- private$db$getScenMetaColnames()['sname']
                          
                          scenIdDirNameMap <- vector("list", length(scenIds))
                          
@@ -232,10 +222,10 @@ HcubeLoad <- R6Class("HcubeLoad",
                            noProgressSteps <- noScenTables + noScenIds + 1L
                          }
                          scenIdNameMap <- private$db$
-                           importDataset(private$db$getTableNameMetadata(), 
+                           importDataset("_scenMeta", 
                                          subsetSids = scenIds,
-                                         colNames = c(private$db$getScenMetaColnames()['sid'], 
-                                                      colScenName))
+                                         colNames = c("_sid", 
+                                                      "_sname"))
                          scenIdsOrdered <- scenIdNameMap[[1]]
                          scenIdNameMap  <- setNames(scenIdNameMap[[2]], scenIdsOrdered)
                          
@@ -294,26 +284,24 @@ HcubeLoad <- R6Class("HcubeLoad",
                          stopifnot(length(scenIds) >= 1L)
                          stopifnot(is.character(tmpDir), length(tmpDir) == 1L)
                          
-                         scenTableNames <- c(private$db$getTableNameMetadata(), 
-                                             private$getTableNamesScenario(), 
-                                             private$tableNameTrace)
+                         scenTableNames <- c("_scenMeta", 
+                                             dbSchema$getAllSymbols(), 
+                                             "_scenTrc")
                          noScenTables   <- length(scenTableNames)
-                         colScenName <- private$db$getScenMetaColnames()['sname']
                          
                          scenIdDirNameMap <- vector("list", length(scenIds))
                          
                          if(!is.null(progressBar)){
-                           noProgressSteps <- (noScenTables * 2L + 1L)
+                           noProgressSteps <- noScenTables * 2L + 1L
                          }
                          sameNameCounter   <- list()
-                         startCharTableName <- nchar(private$db$getModelNameDb()) + 2L
                          for(tabId in seq_along(scenTableNames)){
                            if(identical(tabId, 1L)){
                              tableName <- "_metadata_"
                            }else if(identical(tabId, length(scenTableNames))){
                              tableName <- "_trace_"
                            }else{
-                             tableName <- substring(scenTableNames[[tabId]], startCharTableName)
+                             tableName <- scenTableNames[[tabId]]
                              if(startsWith(tableName, "_")){
                                tableName <- substring(tableName, 2)
                              }
@@ -347,7 +335,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                              
                              if(identical(tabId, 1L)){
                                
-                               scenName <- tableTmp[[i]][[colScenName]][[1L]]
+                               scenName <- tableTmp[[i]][["_sname"]][[1L]]
                                
                                dirNameScen <- file.path(tmpDir, scenName)
                                
@@ -385,10 +373,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                        scalarColNames          = character(0L),
                        sidCol                  = character(0L),
                        tabNameMeta             = character(0L),
-                       dbSchema                = vector("list", 3L),
                        scalarTables            = character(0L),
-                       tableNameTrace          = character(0L),
-                       traceColNames           = character(0L),
                        inputDsNamesNotToDisplay = character(0L),
                        tableFieldSep           = character(0L),
                        hcubeScalarTables       = character(0L),
@@ -411,11 +396,15 @@ HcubeLoad <- R6Class("HcubeLoad",
                          }, character(1L), USE.NAMES = FALSE)
                          innerJoin <- NULL
                          if(length(innerPivotTables)){
-                           innerJoin <- paste0(" FULL JOIN (", innerPivotTables,
-                                               ") AS ", dbQuoteIdentifier(private$conn, innerTables),
-                                               " ON ", dbQuoteIdentifier(private$conn, private$tabNameMeta), 
-                                               ".", private$sidCol, "=", dbQuoteIdentifier(private$conn, innerTables),
-                                               ".", private$sidCol)
+                           innerJoin <- paste0(" FULL JOIN (",
+                                               innerPivotTables,
+                                               ") AS ",
+                                               dbQuoteIdentifier(private$conn, innerTables),
+                                               " ON ",
+                                               dbQuoteIdentifier(private$conn,
+                                                                 dbSchema$getDbTableName("_scenMeta")), 
+                                               "._sid=", dbQuoteIdentifier(private$conn, innerTables),
+                                               "._sid")
                          }
                          
                          # fetch dataframe
@@ -520,16 +509,18 @@ HcubeLoad <- R6Class("HcubeLoad",
                        genPivotQuery          = function(tableName, keyCol, valCol, keyTypeList){
                          keyCols <- vapply(keyTypeList, "[[", character(1L), "key", USE.NAMES = FALSE)
                          SQL(paste0("SELECT * FROM crosstab ('SELECT ", 
-                                    dbQuoteIdentifier(private$conn, private$sidCol),  ", ", 
+                                    dbQuoteIdentifier(private$conn, "_sid"),  ", ", 
                                     dbQuoteIdentifier(private$conn, keyCol), 
                                     ", ", dbQuoteIdentifier(private$conn, valCol), " FROM ", 
-                                    dbQuoteIdentifier(private$conn, tableName), 
+                                    dbQuoteIdentifier(private$conn, dbSchema$getDbTableName(tableName)), 
                                     " WHERE ", dbQuoteIdentifier(private$conn, keyCol), " IN ('", 
                                     paste(dbQuoteString(private$conn, keyCols), collapse = "', '"), 
                                     "') ORDER BY 1,2',$$ VALUES (", 
                                     paste(dbQuoteString(private$conn, keyCols), collapse = "), ("), ")$$) AS ", 
-                                    dbQuoteIdentifier(private$conn, tableName %+% "_tmp"), " (", 
-                                    dbQuoteIdentifier(private$conn, private$sidCol), " int, ", 
+                                    dbQuoteIdentifier(private$conn,
+                                                      paste0(tableName, "_tmp")),
+                                    " (", 
+                                    dbQuoteIdentifier(private$conn, "_sid"), " int, ", 
                                     private$genKeyTypeString(keyTypeList), ")"))
                        },
                        genKeyTypeString       = function(keyTypeList){
@@ -547,7 +538,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                          paste(keyTypeList, collapse = ", ")
                        },
                        getTableNamesScenario = function(){
-                        scenTableNames <- private$db$getTableNamesScenario()
+                        scenTableNames <- dbSchema$getAllSymbols()
                         return(scenTableNames[!scenTableNames %in% private$hcubeScalarTables])
                        }
                      )

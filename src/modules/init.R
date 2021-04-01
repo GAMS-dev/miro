@@ -1381,14 +1381,9 @@ if(is.null(errMsg)){
   }
 }
 if(is.null(errMsg)){
-  # define table names (format: modelName_scen.prefix_table.name) where "name" is the name of the dataset
-  # scenario data is a concatenated list of outputData and inputData
-  scenTableNames    <- c(names(modelOut), inputDsNames)
-  if(!length(scenTableNames)){
+  if(length(modelOut) + length(inputDsNames) < 1L){
     errMsg <- "You have defined neither input nor output symbols. Please enter at least one external symbol!"
   }
-  scenTableNames    <- paste0(gsub("_", "", modelName, fixed = TRUE),
-                              "_", scenTableNames)
   # define scenario tables to display in interface
   inputIdsNotToDisplay <- vapply(inputDsNames, function(el){
     if(identical(modelIn[[el]]$dropdown$single, TRUE) || 
@@ -1676,113 +1671,31 @@ if(is.null(errMsg)){
   installPackage$timevis <- LAUNCHCONFIGMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
                                                           function(conf){if(identical(conf$graph$tool, "timevis")) TRUE else FALSE}, 
                                                           logical(1L), USE.NAMES = FALSE))
-  
-  dbSchema <- list(tabName = c('_scenMeta' = scenMetadataTablePrefix %+% modelName, 
-                               '_scenLock' = scenLockTablePrefix %+% modelName,
-                               '_scenTrc' = tableNameTracePrefix %+% modelName,
-                               '_scenAttach' = tableNameAttachPrefix %+% modelName,
-                               '_scenScripts' = tableNameScriptsPrefix %+% modelName,
-                               '_jobMeta' = tableNameJobPrefix %+% modelName),
-                   colNames = list('_scenMeta' = c(sid = sidIdentifier, uid = uidIdentifier, sname = snameIdentifier,
-                                                   stime = stimeIdentifier, stag = stagIdentifier, accessR = accessIdentifier %+% "r",
-                                                   accessW = accessIdentifier %+% "w", accessX = accessIdentifier %+% "x", 
-                                                   scode = scodeIdentifier),
-                                   '_scenLock' = c(uid = uidIdentifier, sid = sidIdentifier, lock = slocktimeIdentifier),
-                                   '_scenTrc' = traceColNames,
-                                   '_scenAttach' = c(sid = sidIdentifier, fn = "fileName",
-                                                     fExt = "fileExt", 
-                                                     execPerm = "execPerm",
-                                                     content = "fileContent",
-                                                     time = "timestamp"),
-                                   '_scenScripts' = c(sid = sidIdentifier, id = "id",
-                                                     content = "scriptContent"),
-                                   '_jobMeta' = c(jid = '_jid', uid = uidIdentifier,  
-                                                  status = '_status', time = '_jtime', 
-                                                  tag = stagIdentifier, pid = '_pid', 
-                                                  sid = sidIdentifier, gamsret = '_gamsret',
-                                                  scode = scodeIdentifier, sname = snameIdentifier)),
-                   colTypes = c('_scenMeta' = "iccTcccci",
-                                '_scenLock' = "ciT", '_scenTrc' = "cccccdidddddiiiddddddc",
-                                '_scenAttach' = "icclbT", '_scenScripts' = "icc", '_jobMeta' = "iciTcciiic"))
-  
-  dbSchema$tabName  <- c(dbSchema$tabName, scenTableNames)
-  scenColNamesTmp   <- lapply(c(modelOut, modelIn), function(el) return(names(el$headers)))
-  scenColTypesTmp   <- lapply(c(modelOut, modelIn), "[[", "colTypes")
-  dsIsNoTable       <- vapply(scenColNamesTmp, is.null, logical(1L), USE.NAMES = FALSE)
+  dbSchemaModel <- setNames(lapply(seq_len(length(modelOut) + length(modelIn)), function(i){
+    if(i <= length(modelOut)){
+      el <- modelOut[[i]]
+      tabName <- names(modelOut)[i]
+    }else{
+      el <- modelIn[[i - length(modelOut)]]
+      tabName <- names(modelIn)[i - length(modelOut)]
+    }
+    if(!length(el$headers)){
+      return(NA)
+    }
+    return(list(tabName = tabName,
+                colNames = names(el$headers),
+                colTypes = el$colTypes))
+  }), c(names(modelOut), names(modelIn)))
+  dsIsNoTable       <- is.na(dbSchemaModel)
   if(any(dsIsNoTable)){
-    scenColNamesTmp[dsIsNoTable]       <- NULL
-    scenColTypesTmp[dsIsNoTable]       <- NULL
+    dbSchemaModel[dsIsNoTable]       <- NULL
     if(!scalarsFileName %in% names(modelIn)){
-      scenColNamesTmp[[scalarsFileName]] <- scalarsFileHeaders
-      scenColTypesTmp[scalarsFileName]   <- "ccc"
+      dbSchemaModel <- c(dbSchemaModel,
+                         setNames(list(list(tabName = scalarsFileName,
+                                            colNames = scalarsFileHeaders,
+                                            colTypes = "ccc")), scalarsFileName))
     }
   }
-  dbSchema$colNames  <- c(dbSchema$colNames, scenColNamesTmp)
-  dbSchema$colTypes  <- c(dbSchema$colTypes, unlist(scenColTypesTmp))
-  rm(dsIsNoTable, scenColNamesTmp, scenColTypesTmp)
-  
-  # generate GAMS return code map
-  GAMSReturnCodeMap <- c(
-    '-500' = "Internal error",
-    '-404' = "Host could not be reached",
-    '-401' = "Access denied",
-    '-400' = "License expired",
-    '-100' = "Model execution timed out",
-    '-15' = "Model execution was interrupted",
-    '-9' = "Model execution was interrupted",
-    '1' = "Solver is to be called, the system should never return this number", 
-    '2' = "There was a compilation error", 
-    '3' = "There was an execution error", 
-    '4' = "System limits were reached",
-    '5' = "There was a file error",
-    '6' = "There was a parameter error",
-    '7' = "There was a licensing error",
-    '8' = "There was a GAMS system error",
-    '9' = "GAMS could not be started",
-    '10' = "Out of memory",
-    '11' = "Out of disk",
-    '109' = "Could not create process/scratch directory",
-    '110' = "Too many process/scratch directories",
-    '112' = "Could not delete the process/scratch directory",
-    '113' = "Could not write the script gamsnext",
-    '114' = "Could not write the parameter file",
-    '115' = "Could not read environment variable",
-    '144' = "Could not spawn the GAMS language compiler (gamscmex)",
-    '400' = "Could not spawn the GAMS language compiler (gamscmex)",
-    '145' = "Current directory (curdir) does not exist",
-    '401' = "Current directory (curdir) does not exist",
-    '146' = "Cannot set current directory (curdir)",
-    '402' = "Cannot set current directory (curdir)",
-    '148' = "Blank in system directory (UNIX only)",
-    '404' = "Blank in system directory (UNIX only)",
-    '149' = "Blank in current directory (UNIX only)",
-    '405' = "Blank in current directory (UNIX only)",
-    '150' = "Blank in scratch extension (scrext)",
-    '406' = "Blank in scratch extension (scrext)",
-    '151' = "Unexpected cmexRC",
-    '407' = "Unexpected cmexRC",
-    '152' = "Could not find the process directory (procdir)",
-    '408' = "Could not find the process directory (procdir)",
-    '153' = "CMEX library could not be found (experimental)",
-    '409' = "CMEX library could not be found (experimental)",
-    '154' = "Entry point in CMEX library could not be found (experimental)",
-    '410' = "Entry point in CMEX library could not be found (experimental)",
-    '155' = "Blank in process directory (UNIX only)",
-    '411' = "Blank in process directory (UNIX only)",
-    '156' = "Blank in scratch directory (UNIX only)",
-    '412' = "Blank in scratch directory (UNIX only)",
-    '141' = "Cannot add path / unknown UNIX environment / cannot set environment variable",
-    '232' = "Driver error: incorrect command line parameters for gams",
-    '1000' = "Driver error: incorrect command line parameters for gams",
-    '208' = "Cannot add path / unknown UNIX environment / cannot set environment variable",
-    '2000' = "Cannot add path / unknown UNIX environment / cannot set environment variable",
-    '184' = "Driver error: problems getting current directory",
-    '3000' = "Driver error: problems getting current directory",
-    '160' = "Driver error: internal error: GAMS compile and execute module not found",
-    '4000' = "Driver error: internal error: GAMS compile and execute module not found",
-    '126' = "Driver error: internal error: cannot load option handling library",
-    '5000' = "Driver error: internal error: cannot load option handling library"
-  )
 }
 if(is.null(errMsg)){
   # parse README.md file 

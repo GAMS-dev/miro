@@ -559,6 +559,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "sname": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "stime": {
                   "type": "string",
                   "minLength": 1
@@ -568,7 +572,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 3
+              "minProperties": 4
             }
           },
           "minProperties": 13

@@ -142,6 +142,7 @@
       },
       "metaColAliases":{
         "uid":"Eigentümer",
+        "sname": "Name",
         "stime":"Erstellungsdatum",
         "stag": "Job-Tags"
       }

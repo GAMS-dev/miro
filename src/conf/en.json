@@ -142,6 +142,7 @@
       },
       "metaColAliases":{
         "uid":"Owner",
+        "sname": "Name",
         "stime":"Time created",
         "stag": "Job tags"
       }
@@ -433,7 +434,7 @@
       "infoDataOnly": "With the selected file type only data is exported. Metadata such as attachments, views, tags, etc. are not included."
     },
     "excelExport":{  
-      "metadataSheet":{  
+      "metadataSheet":{
         "title":"Info",
         "uid":"User",
         "sname":"Scenario name",

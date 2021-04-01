@@ -9,9 +9,9 @@ Worker <- R6Class("Worker", public = list(
     if(length(db)){
       private$db <- db
       private$conn <- db$getConn()
-      dbSchema <- db$getDbSchema()
-      private$dbColNames <- dbSchema$colNames[['_jobMeta']]
-      private$dbTabName <- dbSchema$tabName[['_jobMeta']]
+      jobMetaSchema <- dbSchema$getDbSchema("_jobMeta")
+      private$dbColNames <- jobMetaSchema$colNames
+      private$dbTabName <- jobMetaSchema$tabName
     }
     return(invisible(self))
   },
@@ -210,6 +210,9 @@ Worker <- R6Class("Worker", public = list(
                            tags = tags, dynamicPar = dynamicPar)
     }else{
       private$jID <- self$addJobDb("", sid, tags = tags)
+      if(identical(private$jID, -1L)){
+        stop("Problems storing Hypercube job metadata.", call. = FALSE)
+      }
       flog.trace("Metadata for Hypercube job was written to database. Hypercube job ID: '%d' was assigned to job.", 
                  private$jID)
       private$runHcubeLocal(dynamicPar, staticData, attachmentFilePaths)
@@ -262,8 +265,7 @@ Worker <- R6Class("Worker", public = list(
                                                    private$metadata$MIROGdxInName))
                            },'"'))
     if(private$metadata$saveTraceFile){
-      scenGmsPar <- c(scenGmsPar, paste0('trace="', tableNameTracePrefix, 
-                                         private$metadata$modelName, '.trc"'), "traceopt=3")
+      scenGmsPar <- c(scenGmsPar, 'trace="_scenTrc.trc"', "traceopt=3")
     }
     
     writeLines(scenGmsPar, file.path(workDir, tolower(private$metadata$modelName) %+% ".pf"))
@@ -365,7 +367,7 @@ Worker <- R6Class("Worker", public = list(
       colNames <- c(colNames, private$dbColNames[['pid']])
       values   <- c(values, pID)
     }
-    private$db$updateRows(private$dbTabName, 
+    private$db$updateRows("_jobMeta", 
                           tibble(private$dbColNames[[1L]], jID), 
                           colNames = colNames, values = values)
     
@@ -373,7 +375,7 @@ Worker <- R6Class("Worker", public = list(
   },
   getJobList = function(jobHist = FALSE){
     newCompleted <- FALSE
-    jobList <- private$db$importDataset(private$dbTabName, 
+    jobList <- private$db$importDataset("_jobMeta", 
                                         tibble(c(private$dbColNames[['uid']], 
                                                  private$dbColNames[['status']],
                                                  private$dbColNames[['scode']]),
@@ -694,39 +696,39 @@ Worker <- R6Class("Worker", public = list(
       return(-1L)
     tryCatch({
       query <- paste0("INSERT INTO ",
-                      DBI::dbQuoteIdentifier(private$conn, tabName), 
+                      dbQuoteIdentifier(private$conn, tabName), 
                       " (", DBI::dbQuoteIdentifier(private$conn, colNames[[2]]), ",",
-                      DBI::dbQuoteIdentifier(private$conn, colNames[[3]]), ",",
-                      DBI::dbQuoteIdentifier(private$conn, colNames[[4]]), ",",
-                      DBI::dbQuoteIdentifier(private$conn, colNames[[5]]), ",",
-                      DBI::dbQuoteIdentifier(private$conn, colNames[[6]]), ",",
-                      DBI::dbQuoteIdentifier(private$conn, colNames[[7]]), ",",
-                      DBI::dbQuoteIdentifier(private$conn, colNames[[9]]), ",",
-                      DBI::dbQuoteIdentifier(private$conn, colNames[[10]]),
+                      dbQuoteIdentifier(private$conn, colNames[[3]]), ",",
+                      dbQuoteIdentifier(private$conn, colNames[[4]]), ",",
+                      dbQuoteIdentifier(private$conn, colNames[[5]]), ",",
+                      dbQuoteIdentifier(private$conn, colNames[[6]]), ",",
+                      dbQuoteIdentifier(private$conn, colNames[[7]]), ",",
+                      dbQuoteIdentifier(private$conn, colNames[[9]]), ",",
+                      dbQuoteIdentifier(private$conn, colNames[[10]]),
                       ") VALUES (",  
-                      DBI::dbQuoteLiteral(private$conn, private$metadata$uid), ",", 
+                      dbQuoteLiteral(private$conn, private$metadata$uid), ",", 
                       status, ",",
-                      DBI::dbQuoteLiteral(private$conn, as.character(Sys.time(), usetz = TRUE)), ",",
-                      DBI::dbQuoteLiteral(private$conn, vector2Csv(tags)), ",",
-                      DBI::dbQuoteLiteral(private$conn, as.character(pid)), ",",
-                      if(length(sid)) DBI::dbQuoteLiteral(private$conn, sid) else "NULL", ",", 
-                      DBI::dbQuoteLiteral(private$conn, 
-                                          if(private$hcube) 
-                                            SCODEMAP[['hcube_jobconfig']]
-                                          else
-                                            SCODEMAP[['scen']]), ",", 
-                      DBI::dbQuoteString(private$conn, name), ")",
+                      dbQuoteLiteral(private$conn, as.character(Sys.time(), usetz = TRUE)), ",",
+                      dbQuoteLiteral(private$conn, vector2Csv(tags)), ",",
+                      dbQuoteLiteral(private$conn, as.character(pid)), ",",
+                      if(length(sid)) dbQuoteLiteral(private$conn, sid) else "NULL", ",", 
+                      dbQuoteLiteral(private$conn, 
+                                     if(private$hcube) 
+                                       SCODEMAP[['hcube_jobconfig']]
+                                     else
+                                       SCODEMAP[['scen']]), ",", 
+                      dbQuoteString(private$conn, name), ")",
                       if(inherits(private$conn, "PqConnection")) 
-                        paste0(" RETURNING", DBI::dbQuoteIdentifier(private$conn, colNames[[1]]))
+                        paste0(" RETURNING", dbQuoteIdentifier(private$conn, colNames[[1]]))
       )
       if(inherits(private$conn, "PqConnection")) {
-        jID <- DBI::dbGetQuery(private$conn, query)[[1L]][1L]
+        jID <- dbGetQuery(private$conn, SQL(query))[[1L]][1L]
       }else{
-        DBI::dbExecute(private$conn, query)
+        private$db$runQuery(query)
         # need to send second SQL statement because SQLite doesn't support RETURNING function
         query <- paste0("SELECT last_insert_rowid() FROM ", 
-                        DBI::dbQuoteIdentifier(private$conn, tabName))
-        jID <- DBI::dbGetQuery(private$conn, query)[[1]][1L]
+                        dbQuoteIdentifier(private$conn, tabName))
+        jID <- dbGetQuery(private$conn, SQL(query))[[1]][1L]
       }
       return(jID)
     }, error = function(e){
@@ -773,7 +775,7 @@ Worker <- R6Class("Worker", public = list(
                   paste0('IDCGDXInput="', private$metadata$MIROGdxInName, '"'), 
                   "LstTitleLeftAligned=1")
     if(private$metadata$saveTraceFile){
-      gamsArgs <- c(gamsArgs, paste0('trace="', tableNameTracePrefix, private$metadata$modelName, '.trc"'), "traceopt=3")
+      gamsArgs <- c(gamsArgs, 'trace="_scenTrc.trc"', "traceopt=3")
     }
     pfFilePath <- gmsFilePath(file.path(private$workDir, tolower(private$metadata$modelName) %+% ".pf"))
     writeLines(c(private$pfFileContent, gamsArgs), pfFilePath)
@@ -829,7 +831,7 @@ Worker <- R6Class("Worker", public = list(
       gamsArgs <- c(if(length(metadata$extraClArgs)) metadata$extraClArgs, 
                     metadata$clArgs)
       if(metadata$saveTraceFile){
-        traceFileName <- paste0(tableNameTracePrefix, metadata$modelName, '.trc')
+        traceFileName <- "_scenTrc.trc"
         gamsArgs <- c(gamsArgs, paste0('trace="', traceFileName, '"'), "traceopt=3")
         if(length(dataFilesToFetch))
           dataFilesToFetch <- c(dataFilesToFetch, traceFileName)
@@ -894,7 +896,7 @@ Worker <- R6Class("Worker", public = list(
       }
     }, globals = list(metadata = private$metadata, workDir = private$workDir,
                       pfFileContent = private$pfFileContent, inputData = inputData,
-                      tableNameTracePrefix = tableNameTracePrefix, authHeader = private$authHeader,
+                      authHeader = private$authHeader,
                       gmsFilePath = gmsFilePath, DataInstance = DataInstance, 
                       isWindows = isWindows, hcubeData = hcubeData))
     return(self)

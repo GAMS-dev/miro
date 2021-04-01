@@ -73,7 +73,7 @@ if out_script == "gams":
       linestmp += "$offecho\n"
    
    # last line of job submission file: zip the results (exclude lst, json, gms and gdx files). Delete existing zip before
-   linestmp += "$if exist " + zipname + ".zip $call rm -r " + zipname + ".zip\n" + "$call cd " + zipname + " && gmszip -r ../" + zipname + ".zip ./* -i \"*/_miro_gdxin_.gdx\" \"*/_miro_gdxout_.gdx\" \"*/_sys_trace_" + model_name + ".trc\""
+   linestmp += "$if exist " + zipname + ".zip $call rm -r " + zipname + ".zip\n" + "$call cd " + zipname + " && gmszip -r ../" + zipname + ".zip ./* -i \"*/_miro_gdxin_.gdx\" \"*/_miro_gdxout_.gdx\" \"*/_scenTrc.trc\""
 
    # delete all temporary solution directories
    linestmp += "\n$call rm -r " + zipname

@@ -139,7 +139,7 @@ if(is.null(errMsg)){
     }
     miroDbDir     <- Sys.getenv("MIRO_DB_PATH")
     if(identical(miroDbDir, "")){
-      miroDbDir <- miroWorkspace
+      miroDbDir <- file.path(miroWorkspace, "app_data")
     }
   }
   if(!identical(Sys.getenv("MIRO_LOG_PATH"), "")){
@@ -221,6 +221,16 @@ if(is.null(errMsg)){
                       rSaveFilePath)
   }else{
     load(rSaveFilePath)
+    if(exists(dbSchema)){
+      # legacy app, need to convert to new format
+      dbSchemaModel <- dbSchema$tabName[-seq_len(6)]
+      dbSchemaModel <- setNames(lapply(seq_along(dbSchemaModel), function(i){
+        list(tabName = dbSchemaModel[i],
+             colNames = dbSchema$colNames[[i + 6L]],
+             colTypes = dbSchema$colTypes[[i + 6L]])
+      }), dbSchemaModel)
+      rm(dbSchema)
+    }
     suppressWarnings(rm(lang))
     for (customRendererName  in customRendererNames){
       assign(customRendererName, get(customRendererName), envir = .GlobalEnv)
@@ -268,7 +278,16 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
   }else{
     dbConfig <- list(type = "sqlite",
                      name = file.path(miroDbDir, 
-                                      "miro.sqlite3"))
+                                      paste0(modelName, ".sqlite3")))
+    if(!dir.exists(miroDbDir)){
+      tryCatch({
+        if(!dir.create(miroDbDir, showWarnings = FALSE))
+          stop()
+      }, error = function(e){
+        errMsg <<- paste(errMsg, sprintf("App data directory: '%s' could not be created. Check that you have sufficient read/write permissions.", miroDbDir),
+                         sep = "\n")
+      })
+    }
   }
   if(isTRUE(config$activateModules$remoteExecution)){
     useTempDir <- TRUE
@@ -497,9 +516,9 @@ if(miroBuildonly){
                 "modelOutAlias", "colsWithDep", "scalarsInMetaData",
                 "modelInMustImport", "modelInAlias", "DDPar", "GMSOpt", 
                 "modelInToImportAlias", "modelInToImport", "inputDsNamesNotToDisplay",
-                "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
-                "GAMSReturnCodeMap", "dependentDatasets", "outputTabs", 
-                "installPackage", "dbSchema", "scalarInputSym", "scalarInputSymToVerify",
+                "dbSchemaModel", "modelOutTemplate", "scenTableNamesToDisplay", 
+                "dependentDatasets", "outputTabs", 
+                "installPackage", "scalarInputSym", "scalarInputSymToVerify",
                 "requiredPackagesCR", "datasetsRemoteExport", "dropdownAliases", 
                 #TODO: Update API version when dataContract is used elsewhere than in Configuration mode
                 "dataContract"), 
@@ -643,7 +662,6 @@ if(is.null(errMsg)){
     plan(multiprocess)
   }
   # try to create the DB connection (PostgreSQL)
-  auth <- NULL
   db <- NULL
   if(identical(tolower(dbConfig$type), "sqlite")){
     requiredPackages <- c("DBI", "RSQLite")
@@ -652,43 +670,25 @@ if(is.null(errMsg)){
   }
   errMsg <- installAndRequirePackages(requiredPackages, installedPackages, RLibPath, CRANMirror, miroWorkspace)
   
+  source("./components/db_schema.R")
   source("./components/db.R")
   source("./components/db_scen.R")
   tryCatch({
-    dbSchema$tabName["_scenViews"] <- paste0(tableNameViewsPrefix, modelName)
-    dbSchema$colNames[["_scenViews"]] <- c(sid = sidIdentifier, symname = "symName",
-                                           id = "id", data = "data", time = "timestamp")
-    dbSchema$colTypes["_scenViews"] <- "icccT"
-    scenMetadataTable <- scenMetadataTablePrefix %+% modelName
-    db   <- Db$new(uid = uid, dbConf = dbConfig, dbSchema = dbSchema,
+    dbSchema <<- DbSchema$new(dbSchemaModel)
+    db   <- Db$new(uid = uid, dbConf = dbConfig,
                    slocktimeLimit = slocktimeLimit, modelName = modelName,
                    hcubeActive = LAUNCHHCUBEMODE, ugroups = ugroups)
     conn <- db$getConn()
+    dbSchema$setConn(conn)
     flog.debug("Database connection established.")
   }, error = function(e){
     flog.error("Problems initialising database class. Error message: %s", e)
     errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
   })
-  # initialise access management
-  source("./components/db_auth.R")
-  tryCatch({
-    auth <- Auth$new(conn, uid, defaultGroup = defaultGroup, 
-                     tableNameGroups = amTableNameGroups, 
-                     tableNameElements = amTableNameElements, 
-                     tableNameHierarchy = amTableNameHierarchy, 
-                     tableNameMetadata = scenMetadataTable, 
-                     uidIdentifier = uidIdentifier, 
-                     accessIdentifier = accessIdentifier, 
-                     accessElIdentifier = accessElIdentifier)
-    flog.debug("Access Control initialised.")
-  }, error = function(e){
-    flog.error("Problems initialising authorisation class. Error message: %s", e)
-    errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
-  })
   tryCatch({
     dataio <- DataIO$new(config = list(modelIn = modelIn, modelOut = modelOut, 
                                        modelName = modelName),
-                         db = db, auth = auth)
+                         db = db)
   }, error = function(e) {
     flog.error("Problems initialising dataio class. Error message: %s", e)
     errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
@@ -957,9 +957,7 @@ if(!is.null(errMsg)){
         if(debugMode){
           forceScenImport <- identical(Sys.getenv("MIRO_FORCE_SCEN_IMPORT"), "true")
           if(!forceScenImport){
-            currentDataHashesDf  <- db$importDataset("_sys__data_hashes",
-                                                     tibble("model",
-                                                            db$getModelNameDb()))
+            currentDataHashesDf  <- db$importDataset("_dataHash")
             currentDataHashes <- list()
             if(length(currentDataHashesDf) && nrow(currentDataHashesDf)){
               currentDataHashes <- currentDataHashesDf[["hash"]]
@@ -1117,11 +1115,9 @@ if(!is.null(errMsg)){
           }
         }
         if(debugMode && !forceScenImport && !identical(currentDataHashes, newDataHashes)){
-          db$deleteRows("_sys__data_hashes", "model",
-                        db$getModelNameDb())
-          db$exportDataset("_sys__data_hashes",
-                           tibble(model = db$getModelNameDb(),
-                                  filename = names(newDataHashes),
+          db$deleteRows("_dataHash", force = TRUE)
+          db$exportDataset("_dataHash",
+                           tibble(filename = names(newDataHashes),
                                   hash = unlist(newDataHashes, use.names = FALSE)))
         }
       }
@@ -1282,7 +1278,7 @@ if(!is.null(errMsg)){
       sidCompOrder     <- NULL
       
       worker <- Worker$new(metadata = list(uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
-                                           tableNameTracePrefix = tableNameTracePrefix, maxSizeToRead = 5000,
+                                           maxSizeToRead = 5000,
                                            modelDataFiles = c(if(identical(config$fileExchange, "gdx")) 
                                              c(MIROGdxInName, MIROGdxOutName) else 
                                                paste0(c(names(modelOut), inputDsNames), ".csv"), 
@@ -1900,15 +1896,18 @@ if(!is.null(errMsg)){
             silent = TRUE)
         if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")){
           # clean up
-          try(db$deleteRows(scenMetadataTable, 
-                            uidIdentifier, 
-                            uid), silent = TRUE)
+          try(db$deleteRows("_scenMeta", "_uid", uid), silent = TRUE)
           
         }
-        if(config$activateModules$attachments && 
+        if(config$activateModules$attachments &&
            config$storeLogFilesDuration > 0L){
-          db$removeExpiredAttachments(paste0(modelNameRaw, c(".log", ".lst")), 
+          tryCatch(
+            attachments$removeExpired(paste0(modelNameRaw, c(".log", ".lst")), 
                                       config$storeLogFilesDuration)
+            , error = function(e){
+              flog.error("Problems removing expired attachments. Error message: '%s'.", 
+                         conditionMessage(e))
+            })
         }
         activeScen$finalize()
         if(!interactive() && !isShinyProxy){

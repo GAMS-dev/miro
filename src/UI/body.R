@@ -476,7 +476,7 @@ if(buildUI){
                                                lang$nav$hcubeLoad$msgNoHashFound),
                                       tags$div(id = "showHashError", class = "gmsalert gmsalert-error", style = "bottom:10%;",
                                                lang$errMsg$unknownError),
-                                      actionButton("btShowHash", 
+                                      actionButton("btShowHash",
                                                    lang$nav$hcubeLoad$showHashButton)
                              )
                     )

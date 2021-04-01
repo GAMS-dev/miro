@@ -1,26 +1,16 @@
 DataIO <- R6Class("DataIO", public = list(
-  initialize = function(config, auth = NULL, db = NULL){
+  initialize = function(config, db = NULL){
     stopifnot(is.list(config))
-    if(!is.null(auth))
-      stopifnot(is.R6(auth))
     if(!is.null(db))
       stopifnot(is.R6(db))
     private$config <- config[!vapply(names(config), is.null, 
                                      logical(1L), USE.NAMES = FALSE)]
-    private$auth <- auth
     private$db <- db
   },
   import = function(item, dsName){
     stopifnot(length(item) > 0L, is.list(item))
     data <- NULL
-    if(identical(item$source, "database")){
-      if(is.null(auth)){
-        stop("No auth object provided. Cannot connect to internal database.", 
-             call. = FALSE)
-      }
-      data <- auth$importShared(tableName = paste0(sharedTablePrefix, "_", dsName), 
-                                keyCol = if(length(item$colSubset)) item$colSubset else character(0L))
-    }else if(identical(item$source, "customFunction")){
+    if(identical(item$source, "customFunction")){
       if(!length(item$functionName)){
         stop("No function name specified for remote import", call. = FALSE)
       }
@@ -64,15 +54,6 @@ DataIO <- R6Class("DataIO", public = list(
     stopifnot(inherits(data, "data.frame"), length(item) > 0L, is.list(item))
     
     switch(tolower(item$source),
-           database = {
-             if(is.null(auth)){
-               stop("No auth object provided. Cannot connect to internal database.", 
-                    call. = FALSE)
-             }
-             db$exportDataset(tableName = paste0(sharedTablePrefix, "_", dataset), 
-                              data, checkColNames = TRUE)
-             return(self)
-           },
            customfunction = {
              if(!length(item$functionName)){
                stop("No function name specified for remote export", call. = FALSE)
@@ -120,7 +101,6 @@ DataIO <- R6Class("DataIO", public = list(
   }
 ), private = list(
   config = NULL,
-  auth = NULL,
   db = NULL,
   sendHTTPRequest = function(item){
     switch(item$method,

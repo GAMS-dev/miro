@@ -6,7 +6,9 @@ library(RSQLite)
 source("../../components/db.R")
 source("../../components/db_migrator.R")
 
-ioConfig <<- list(hcubeScalars = character())
+ioConfig <<- list(modelOut = list(results = NULL, `_scalars_out` = NULL),
+                  inputDsNames = c("a", "b", "d", "ilocdata", "jlocdata"),
+                  hcubeScalars = character())
 
 miroAppPath <- file.path(getwd(), "..", "..")
 
@@ -33,50 +35,36 @@ modelName <- "transport"
 
 
 testDir <- file.path(getwd(), "..")
-dbSchema <- list(tabName = c(`_scenMeta` = "_sys_metadata_transport", `_scenLock` = "_sys_scenlocks_transport", 
-                             `_scenTrc` = "_sys_trace_transport", `_scenAttach` = "_sys_attach_transport", 
-                             `_scenScripts` = "_sys_scripts_transport", `_jobMeta` = "_sys_jobs_transport", 
-                             "transport_results", "transport__scalars_out", "transport_a", 
-                             "transport_b", "transport_d", "transport_ilocdata", "transport_jlocdata"),
-                 colNames = list(`_scenMeta` = c(sid = "_sid", 
-                                                 uid = "_uid", sname = "_sname", stime = "_stime", stag = "_stag", 
-                                                 accessR = "_accessr", accessW = "_accessw", accessX = "_accessx", 
-                                                 scode = "_scode"), `_scenLock` = c(uid = "_uid", sid = "_sid", 
-                                                                                    lock = "_slocktime"),
-                                 `_scenTrc` = c("InputFileName", "ModelType", 
-                                                "SolverName", "NLP", "MIP", "JulianDate", "Direction", "NumberOfEquations", 
-                                                "NumberOfVariables", "NumberOfDiscreteVariables", "NumberOfNonZeros", 
-                                                "NumberOfNonlinearNonZeros", "OptionFile", "ModelStatus", "SolverStatus", 
-                                                "ObjectiveValue", "ObjectiveValueEstimate", "SolverTime", "NumberOfIterations", 
-                                                "NumberOfDomainViolations", "NumberOfNodes", "#User1"),
-                                 `_scenAttach` = c(sid = "_sid", 
-                                                   fn = "fileName", fExt = "fileExt", execPerm = "execPerm", content = "fileContent", 
-                                                   time = "timestamp"), `_scenScripts` = c(sid = "_sid", id = "id", 
-                                                                                           content = "scriptContent"),
-                                 `_jobMeta` = c(jid = "_jid", uid = "_uid", 
-                                                status = "_status", time = "_jtime", tag = "_stag", pid = "_pid", 
-                                                sid = "_sid", gamsret = "_gamsret", scode = "_scode", sname = "_sname"
-                                 ),
-                                 results = c("i", "j", "lngp", "latp", "lngm", "latm", "cap", 
-                                              "demand", "quantities", "bla"),
-                                 `_scalars_out` = c("scalar", "description", 
-                                                    "value"),
-                                 a = c("i", "j", "value"),
-                                 b = c("k", "value"),
-                                 d = c("i", 
-                                       "j", "k", "value"),
-                                 ilocdata = c("i", "lng", "lat"),
-                                 jlocdata = c("j", "lng", "lat")),
-                 colTypes = c(`_scenMeta` = "iccTcccci", `_scenLock` = "ciT", 
-                              `_scenTrc` = "cccccdidddddiiiddddddc", `_scenAttach` = "icclbT", 
-                              `_scenScripts` = "icc", `_jobMeta` = "iciTcciiic", results = "ccdddddddd", 
-                              `_scalars_out` = "ccc", a = "ccd", b = "cd", d = "cccd", ilocdata = "cdd", 
-                              jlocdata = "cdd"))
 
 skipPostgres <- TRUE
 if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
   skipPostgres <- FALSE
 }
+
+dbSchema <<- DbSchema$new(list(results = list(tabName = "results",
+                                              colNames = c("i", "j", "lngp", "latp", "lngm", "latm", "cap", 
+                                                           "demand", "quantities", "bla"),
+                                              colTypes = "ccdddddddd"), 
+                               `_scalars_out` = list(tabName = "_scalars_out",
+                                                     colNames = c("scalar", "description", 
+                                                                  "value"),
+                                                     colTypes = "ccc"),
+                               a = list(tabName = "a",
+                                        colNames = c("i", "j", "value"),
+                                        colTypes = "ccd"),
+                               b = list(tabName = "b",
+                                        colNames = c("k", "value"),
+                                        colTypes = "cd"),
+                               d = list(tabName = "d",
+                                        colNames = c("i", 
+                                                     "j", "k", "value"),
+                                        colTypes = "cccd"),
+                               ilocdata = list(tabName = "ilocdata",
+                                               colNames = c("i", "lng", "lat"),
+                                               colTypes = "cdd"), 
+                               jlocdata = list(tabName = "jlocdata",
+                                               colNames = c("j", "lng", "lat"),
+                                               colTypes = "cdd")))
 
 for(dbType in c("sqlite", "postgres")){
   if(dbType == "postgres" && skipPostgres){
@@ -107,10 +95,12 @@ for(dbType in c("sqlite", "postgres")){
                      host = procEnv$MIRO_DB_HOST,
                      port = procEnv$MIRO_DB_PORT)
   }
-  db <- Db$new(uid = "user", dbConf = dbConfig, dbSchema = dbSchema,
+  
+  db <- Db$new(uid = "user", dbConf = dbConfig,
                slocktimeLimit = 20, modelName = modelName,
                hcubeActive = FALSE, ugroups = "users", forceNew = TRUE)
   conn <- db$getConn()
+  dbSchema$setConn(conn)
   
   populateDb(procEnv)
   dbMigrator <- DbMigrator$new(db)
