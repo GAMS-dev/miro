@@ -1,7 +1,7 @@
 image:
   name: hub.gams.com:443/gamsmiro-ci:latest
 
-test:
+test_job:
   tags:
     - linux
   before_script:
@@ -24,3 +24,16 @@ test:
     - if: $CI_MERGE_REQUEST_TITLE =~ /^Draft:/
       when: manual
     - if: $CI_MERGE_REQUEST_ID
+
+update_doc_job:
+  tags:
+    - linux
+  before_script:
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+  script:
+    - rsync -rlptvz -e "ssh -o StrictHostKeyChecking=no" doc/* ubuntu@new.gams.com:/var/www/html/staging.gams.com/public_html/miro
+  rules:
+    - when: manual

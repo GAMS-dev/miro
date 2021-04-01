@@ -42,6 +42,9 @@ RUN groupadd -g 1001 miroci && \
 RUN mkdir /home/miroci
 RUN chown -R miroci /home/miroci
 
+# install openssh and rsync for deploying documentation
+apt-get update && apt-get install -y openssh-client rsync
+
 USER miroci
 
 RUN R -e "library(shinytest);installDependencies()"
