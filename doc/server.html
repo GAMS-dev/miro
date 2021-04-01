@@ -125,75 +125,143 @@
                                 </div>
                                 <div  id="server-install"  class="section-block">
                                     <h3 class="block-title">Installation</h3>
-                                    <p>If you have purchased GAMS MIRO Server, GAMS will provide you with a ZIP file that contains everything you need to get started.</p>
-                                    <ul>
-                                      <li>Once the <a href = "#server-prerequisites" class = "scrollto">prerequisites</a> are set up, copy the ZIP file to your server in a directory of your choice and unzip it there.
-                                      <div class="callout-block callout-success">
-                                          <div class="icon-holder">
-                                              <i class="fas fa-thumbs-up"></i>
-                                          </div><!--//icon-holder-->
-                                          <div class="content">
-                                              <b class="callout-title">Tip:</b>
-                                              <p>GAMS MIRO applications will later be stored at this location.</p>
-                                          </div><!--//content-->
-                                      </div><!--//callout-block-->
-                                      </li>
-                                      <li>Next, login to the GAMS Docker registry. To do so, run <div class = "console-box"><span class="console-content">&gt; docker login hub.gams.com</span></div> with the credentials GAMS provided you with. </li>
-                                      <li>Afterwards, you are ready to install MIRO Server by running: <div class = "console-box"><span class="console-content">&gt; ./miro-compose install</span>.</div> The installation script will inform you whether the installation was successful or not.</li>
-                                      <li>GAMS MIRO Server requires an instance of <a href="https://www.gams.com/engine/">GAMS Engine</a> to solve the GAMS jobs. You have to provide the credentials to GAMS Engine via environment variables.
-                                      You can either set these variables inside the shell you start GAMS MIRO Server from or append them to the <i>.env</i> file that is located inside the ZIP file mentioned above. The following environment variables have to be set:
-                                      <div class="table-responsive" style="margin:15px auto;">
-                                        <table class="table table-striped">
-                                            <thead>
-                                                <tr>
-                                                  <th style="width:30%;">Environment Variable Name</th>
-                                                  <th>Environment Variable Value</th>
-                                                  <th>Example</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                  <td>GMS_MIRO_ENGINE_HOST</td>
-                                                  <td>IP adress and port/DNS of Engine</td>
-                                                  <td>https://miro.gams.com/engine/api</td>
-                                                </tr>
-                                                <tr>
-                                                  <td>GMS_MIRO_ENGINE_NS</td>
-                                                  <td>Namespace to use for GAMS MIRO Server</td>
-                                                  <td>miro_server</td>
-                                                </tr>
-                                                <tr>
-                                                  <td>GMS_MIRO_ENGINE_USER</td>
-                                                  <td>Name of a user that is an inviter (or admin) inside the given namespace</td>
-                                                  <td>miro_server_admin</td>
-                                                </tr>
-                                                <tr>
-                                                  <td>GMS_MIRO_ENGINE_PWD</td>
-                                                  <td>Password of the user</td>
-                                                  <td>miro_server_admin_password</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                      </div><!--//table-responsive--></li>
-                                    </ul>
+                                    <p>When you purchase GAMS MIRO Server, you will receive a ZIP file that contains everything you need to get started. The general installation instructions are given below. However, keep in mind that the installation is highly dependent on your setup. Since GAMS MIRO Server is a server application, the concepts of <i>ports</i>, <i>SSL</i>, <i>certificates</i>, etc. are omnipresent. Setting up such a system is a common task for a server administrator. If you have problems with the installation, please do not hesitate to contact us by mail at <a href="mailto:support@gams.com" target="_blank">support@gams.com</a>.</p>
+                                    <ol>
+                                          <li>Install Docker from <a href="https://docs.docker.com/engine/install/" target="_blank">https://docs.docker.com/engine/install/</a>. Start docker afterwards. We further recommend to configure Docker to <a href="https://docs.docker.com/engine/install/linux-postinstall/#configure-docker-to-start-on-boot">start on boot</a>.</li>
+                                          <li>Install Docker Compose from <a href="https://docs.docker.com/compose/install/" target="_blank">https://docs.docker.com/compose/install/</a>.</li>
+                                          <li>Extract <kbd>miro_server.zip</kbd>. This will create a subfolder <kbd>miro_server</kbd>.</li>
+                                          <li>Open a terminal and <kbd>cd</kbd> into that folder.
+										  <div class="callout-block callout-success">
+                                              <div class="icon-holder">
+                                                  <i class="fas fa-thumbs-up"></i>
+                                              </div><!--//icon-holder-->
+                                              <div class="content">
+                                                  <b class="callout-title">Tip:</b>
+                                                  <p>GAMS MIRO applications will later be stored at this location.</p>
+                                              </div><!--//content-->
+                                          </div><!--//callout-block--></li> 
+										  <li>In case MIRO Server and GAMS Engine run on the same machine: Get the IP of the <kbd>docker0</kbd> network interface via: <kbd>sudo ip addr show docker0 |grep -Po 'inet \K[\d.]+'</kbd>. You will need this IP in the next step.</li>
+                                          <li id="step6">Install MIRO Sever by running <kbd>./miro-compose install</kbd>. You will be asked to enter the GAMS Engine host and the <a href="https://gams.com/engine/administration.html#namespaces">namespace</a> to be used by MIRO Server. For the host enter: <kbd>http://&lt;IP extracted from previous step&gt;/engine/api</kbd>. If you specified a port when installing GAMS Engine, this port must also be specified here: <kbd>http://&lt;IP extracted from previous step&gt;:&lt;engine port&gt;/engine/api</kbd>. The default namespace is <kbd>global</kbd>. You can also specify any other namespace created in GAMS Engine. You can change the GAMS Engine connection info at any time by modifying the <kbd>.env</kbd> file that is located inside the miro_server directory. The following environment variables have to be set:
+										  <div class="table-responsive" style="margin:15px auto;">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                      <th style="width:30%;">Environment Variable Name</th>
+                                                      <th>Environment Variable Value</th>
+                                                      <th>Example</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                      <td>GMS_MIRO_ENGINE_HOST</td>
+                                                      <td>IP adress and port/DNS of Engine</td>
+                                                      <td>https://miro.gams.com/engine/api</td>
+                                                    </tr>
+                                                    <tr>
+                                                      <td>GMS_MIRO_ENGINE_NS</td>
+                                                      <td>Engine namespace to be used by MIRO Server</td>
+                                                      <td>miro_server</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                          </div><!--//table-responsive-->
+										  Note that MIRO Server must be restarted if the <kbd>.env</kbd> has been changed. You will also be asked whether you want to use MIRO Server with or without authentication service, i.e. whether users have to log in with an existing GAMS Engine account (default) or whether everyone with a URL should have free access. Read more about the user management in the section <a href="#authentication-user-management">Authentication and User Management</a>.
+										  The installation script will inform you whether the installation was successful or not.
+										  </li>
+                                    </ol>
                                 </div>
-                                <div  id="server-start"  class="section-block">
-                                    <h3 class="block-title">Start</h3>    
-                                    <p>Once you have GAMS MIRO Server installed, you can launch it via <div class = "console-box"><span class="console-content">&gt; ./miro-compose start</span>.</div>GAMS MIRO Server will now listen on port 8080. After the installation, there is a single administrator with username: <i>admin</i> and password <i>admin</i>.</p>
-                                </div>
-                                <div  id="server-update"  class="section-block">
-                                    <h3 class="block-title">Update</h3> 
-                                    <p>To update GAMS MIRO Server to the latest version, run <div class = "console-box"><span class="console-content">&gt; ./miro-compose update</span></div>Note that this will pull new images from the GAMS Docker registry and launch them. If you only want to pull new images, run <div class = "console-box"><span class="console-content">&gt; ./miro-compose pull</span></div></p>
-                                </div>
-                                <div  id="server-stop"  class="section-block">
-                                    <h3 class="block-title">Stop</h3> 
-                                    <p>To stop a running instance of GAMS MIRO Server, run <div class = "console-box"><span class="console-content">&gt; ./miro-compose stop</span></div></p>
-                                </div>
-                                <div  id="server-uninstall"  class="section-block">
-                                    <h3 class="block-title">Uninstall</h3> 
+                                <div  id="server-interaction"  class="section-block">
+                                    <h3 class="block-title">Start / Stop / Update / Uninstall</h3> 
+									<h5 class="block-title">Start</h5> 
+                                    <p>Once you have GAMS MIRO Server installed, you can launch it via <div class = "console-box"><span class="console-content">&gt; ./miro-compose start</span>.</div>GAMS MIRO Server will now listen on port 8080. You can log in with any GAMS Engine user that has at least execute permissions on the namespace provided. A user with full access to that namespace will be considered as administrator by MIRO Server and can add/remove applications. To access the admin panel, go to <kbd>/app/admin</kbd>. Add your MIRO applications here. To access a MIRO application that has been added to MIRO Server, go to <kbd>/app_direct/&lt;appId&gt;</kbd>, where <kbd>appId</kbd> is the lowercase name of your main gms file.</p> 
+									<h5 class="block-title">Stop</h5> 
+									<p>To stop a running instance of GAMS MIRO Server, run <div class = "console-box"><span class="console-content">&gt; ./miro-compose stop</span></div></p> 
+									<h5 class="block-title">Update</h5> 
+									<p>To update GAMS MIRO Server to the latest version, run <div class = "console-box"><span class="console-content">&gt; ./miro-compose update</span></div>Note that this will pull new images from the GAMS Docker registry and launch them. If you only want to pull new images, run <div class = "console-box"><span class="console-content">&gt; ./miro-compose pull</span></div></p>
+									<h5 class="block-title">Uninstall</h5> 
                                     <p>To remove GAMS MIRO Server including all data associated with it from your server, run <div class = "console-box"><span class="console-content">&gt; ./miro-compose uninstall</span></div> 
                                     Additionally, you can remove the directory where you extracted the configuration files of the GAMS MIRO Server.</p>
                                 </div>
+                                <div  id="server-nginx"  class="section-block">
+                                    <h3 class="block-title">Nginx example configuration</h3> 
+                                    <p>We suggest to run GAMS MIRO Server behind a reverse proxy such as <a href = "https://www.nginx.com/" target = "_blank">nginx</a>. You can find an example configuration in the file <kbd>miro.conf</kbd> located inside the <i>miro_server</i> directory mentioned in the installation instructions. To apply this configuration, simply copy it to the configuration location of your nginx (e.g. <kbd>sudo cp miro.conf /etc/nginx/conf.d/</kbd>). Note that you will have to reload nginx afterwards using <kbd>sudo nginx -s reload</kbd>.</p>
+								</div>
+                                <div  id="server-engine-on-same-host"  class="section-block">
+                                    <h3 class="block-title">Hosting GAMS Engine and MIRO Server on the same host</h3> 
+									<p>When you are hosting MIRO Engie and MIRO Server on the same host, you have to merge the nginx configurations of both GAMS Engine and MIRO Server. A resulting <kbd>/etc/nginx/conf.d/miro.conf</kbd> could look as follows:</p>
+                                     <pre><code class="language-">map $http_upgrade $connection_upgrade {
+   default upgrade;
+   ''      close;
+}
+server {
+    listen 80;
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 600s;
+
+        proxy_redirect    off;
+        proxy_set_header  Host             $http_host;
+        proxy_set_header  X-Real-IP        $remote_addr;
+        proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
+        proxy_set_header  X-Forwarded-Proto $scheme;
+    }
+    location /engine {
+        proxy_pass http://127.0.0.1:5000;
+        
+        proxy_redirect    off;
+        proxy_set_header  Host             $http_host;
+        proxy_set_header  X-Real-IP        $remote_addr;
+        proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
+        proxy_set_header  X-Forwarded-Proto $scheme;
+
+    }
+    client_max_body_size 0;
+}</code></pre>
+                                    <p>Note that even though both GAMS Engine and MIRO Server run on the same host, the GAMS Engine host is not <kbd>localhost</kbd>. In case TLS, port/certificate info etc. is used, this needs to be added here as well. If you need help with this, contact us. Nginx needs to be reloaded if the configuration has been changed: <kbd>sudo nginx -s reload</kbd>.</p>
+									<p>
+									You may want to host MIRO Server on a different path than root. To do this, you must adjust the context path in the file <i>application.yml</i> accordingly (entry <i>server.servlet.context-path</i>).</p>
+                                </div>
+                                <div  id="authentication-user-management"  class="section-block">
+                                    <h3 class="block-title">Authentication and User Management</h3> 
+                                    <p>By default MIRO Server uses the authentication service of GAMS Engine. Every user who wants to solve GAMS jobs with MIRO Server needs a GAMS Engine user account with at least execute permissions in the <a href="https://gams.com/engine/administration.html#namespaces">namespace</a> to be used. If you are GAMS Engine administrator, you can manage users and namespaces for MIRO Server directly in the <a href="https://www.gams.com/engine/administration.html#user-management">Engine UI</a>.</p>
+									<p>If you decide to use MIRO Server without authentication (e.g. to showcase applications as in the case of the <a href="https://miro.gams.com">MIRO Gallery</a>), you need to register one GAMS Engine user with execute permissions in the namespace to be used, e.g. a user <kbd>anonymous</kbd>. You will need the credentials of that user in <a href="#step6" class="scrollto">step 6 of the installation</a>. You can also provide the credentials of this user via the `.env` file:</p>
+									<div class="table-responsive" style="margin:15px auto;">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                      <th style="width:30%;">Environment Variable Name</th>
+                                                      <th>Environment Variable Value</th>
+                                                      <th>Example</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                      <td>GMS_MIRO_ENGINE_ANONYMOUS_USER</td>
+                                                      <td>Username of anonymous user</td>
+                                                      <td>miro_server_anonymous</td>
+                                                    </tr>
+                                                    <tr>
+                                                      <td>GMS_MIRO_ENGINE_ANONYMOUS_PWD</td>
+                                                      <td>Password of anonymous user</td>
+                                                      <td>t@qHwt%3Mh</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                          </div><!--//table-responsive-->
+                                </div>
+                                <div  id="admin-panel"  class="section-block">
+                                    <h3 class="block-title">The admin panel</h3> 
+                                    <p></p>
+                                </div>
+                                <div  id="selinux"  class="section-block">
+                                    <h3 class="block-title">Running under SELinux</h3> 
+                                    <p>Note that with SELinux active (e.g. CentOS/RHEL), you might have to allow your nginx server to proxy to the upstream MIRO Server host. You can do so by running: <kbd>setsebool -P httpd_can_network_connect 1</kbd>.</p>
+                                </div>
+								
                                 <div  id="server-customize"  class="section-block">
                                     <h3 class="block-title">Customize</h3> 
                                     <p>The entire customization in GAMS MIRO Server is done in the file <i>data/application.yml</i>. Here you can add/remove users, change the authentication method or the language of GAMS MIRO.</p>
@@ -204,40 +272,6 @@
                                         <div class="content">
                                             <b class="callout-title">Note:</b>
                                             <p>Please make sure each user is assigned to at least one group. MIRO does not support assigning users to no group at all! </p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block-->
-                                </div>
-                                <div  id="server-nginx"  class="section-block">
-                                    <h3 class="block-title">Nginx example configuration</h3> 
-                                    <p>We suggest to run GAMS MIRO Server behind a reverse proxy such as <a href = "https://www.nginx.com/" target = "_blank">nginx</a>. The following configuration will allow you to access GAMS MIRO Server on the root of your server:</p>
-                                     <pre><code class="language-">map $http_upgrade $connection_upgrade {
-   default upgrade;
-   ''      close;
-}
-location / {
-    proxy_pass http://127.0.0.1:8080;
-
-    client_max_body_size 200M;
-
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-    proxy_read_timeout 600s;
-
-    proxy_redirect    off;
-    proxy_set_header  Host             $http_host;
-    proxy_set_header  X-Real-IP        $remote_addr;
-    proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
-    proxy_set_header  X-Forwarded-Proto $scheme;
-}</code></pre>
-                                    <p>You may want to host MIRO Server on a different path. To do this, you must adjust the context path in the file <i>application.yml</i> accordingly (<i>server.servlet.context-path</i>).</p>
-                                    <div class="callout-block callout-warning">
-                                        <div class="icon-holder">
-                                            <i class="fas fa-info-circle"></i>
-                                        </div><!--//icon-holder-->
-                                        <div class="content">
-                                            <b class="callout-title">Note:</b>
-                                            <p>Note that with SELinux active (e.g. CentOS/RHEL), you have to allow your nginx server to proxy to the upstream MIRO Server host. You can do so by running: <div class = "console-box"><span class="console-content long-word-wrap">&gt; setsebool -P httpd_can_network_connect 1</span></div></p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                 </div>
@@ -253,12 +287,12 @@ location / {
                                 <nav class="doc-sub-menu nav flex-column">
                                   <a class="nav-link scrollto" href="#server-prerequisites">Prerequisites</a>
                                   <a class="nav-link scrollto" href="#server-install">Installation</a>
-                                  <a class="nav-link scrollto" href="#server-start">Start</a>
-                                  <a class="nav-link scrollto" href="#server-update">Update</a>
-                                  <a class="nav-link scrollto" href="#server-stop">Stop</a>
-                                  <a class="nav-link scrollto" href="#server-uninstall">Uninstall</a>
-                                  <a class="nav-link scrollto" href="#server-customize">Customize</a>
+                                  <a class="nav-link scrollto" href="#server-interaction">Start / Update / Stop / Uninstall</a>
                                   <a class="nav-link scrollto" href="#server-nginx">Nginx example configuration</a>
+                                  <a class="nav-link scrollto" href="#authentication-user-management">Authentication and user management</a>
+                                  <a class="nav-link scrollto" href="#admin-panel">The admin panel</a>
+                                  <a class="nav-link scrollto" href="#selinux">Running under SELinux</a>
+                                  <a class="nav-link scrollto" href="#server-customize">Customize</a>
                                 </nav><!--//nav-->
                             </nav><!--//doc-menu-->
                         </div>
