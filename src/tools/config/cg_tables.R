@@ -148,6 +148,12 @@ observeEvent({input$table_symbol
     req(identical(input$table_type, "symbol"),
         length(input$table_symbol) > 0L,
         nchar(input$table_symbol) > 0L)
+    
+    #do not keep configuration of other symbol when triggering rv$refreshInputTableType (below)
+    refreshSameSymbol <<- FALSE
+    if(identical(currentTableSymbolName, input$table_symbol)){
+      refreshSameSymbol <<- TRUE
+    }
     currentTableSymbolName <<- input$table_symbol
     rv$tableWidgetConfig <- list() 
     currentConfig <- NULL
@@ -626,12 +632,19 @@ observeEvent({rv$refreshInputTableType
     rv$tableWidgetConfig$tableType <- "bigdata"
     hideEl(session, "#pivotColsRestriction")
     hideEl(session, "#inputTable_pivot-data")
-    rv$tableWidgetConfig <<- list(
-      widgetType   = "table",
-      tableType    = "bigdata",
-      readonly     = input$table_readonly,
-      pivotCols    = input$table_pivotCols
-    )
+    if(refreshSameSymbol){
+      rv$tableWidgetConfig <<- list(
+        widgetType   = "table",
+        tableType    = "bigdata",
+        readonly     = input$table_readonly,
+        pivotCols    = input$table_pivotCols
+      )
+    }else{
+      rv$tableWidgetConfig <- list(widgetType = "table",
+                                   tableType = "bigdata",
+                                   readonly =  checkLength(configuredTable, configJSON$inputWidgets[[currentTableSymbolName]][["readonly"]], FALSE),
+                                   pivotCols = checkLength(configuredTable, configJSON$inputWidgets[[currentTableSymbolName]][["pivotCols"]], "_"))
+    }
     if(length(labelTmp)){
       rv$tableWidgetConfig$label <- labelTmp
     }
@@ -665,16 +678,39 @@ observeEvent({rv$refreshInputTableType
   }else{
     rv$tableWidgetConfig$tableType <- "default"
     hideEl(session, "#inputTable_pivot-data")
-    rv$tableWidgetConfig <<- list(
-      widgetType   = "table",
-      tableType    = "default",
-      readonly     = input$table_readonly,
-      pivotCols    = input$table_pivotCols,
-      fixedColumnsLeft = input$table_fixedColumnsLeft,
-      readonlyCols = input$table_readonlyCols,
-      hideIndexCol = input$table_hideIndexCol,
-      heatmap      = input$table_heatmap
-    )
+    if(refreshSameSymbol){
+      rv$tableWidgetConfig <<- list(
+        widgetType   = "table",
+        tableType    = "default",
+        readonly     = input$table_readonly,
+        pivotCols    = input$table_pivotCols,
+        readonlyCols = input$table_readonlyCols,
+        hideIndexCol = input$table_hideIndexCol,
+        heatmap      = input$table_heatmap
+      )
+      if(isTRUE(input$table_fixedColumnsLeft)){
+        numericColsTmp <- sum(vapply(modelIn[[input$table_symbol]]$headers, 
+                                     function(header) identical(header$type, "numeric"), 
+                                     logical(1L), USE.NAMES = FALSE))
+        if(isGamsTable){
+          fixedColumnsLeftTmp <- length(inputSymHeaders[[input$table_symbol]]) - numericColsTmp
+        }else{
+          fixedColumnsLeftTmp <- length(inputSymHeaders[[input$table_symbol]]) - numericColsTmp - 1L
+        }
+        rv$tableWidgetConfig$fixedColumnsLeft <<- fixedColumnsLeftTmp
+      }else{
+        rv$tableWidgetConfig$fixedColumnsLeft <<- NULL
+      }
+    }else{
+      rv$tableWidgetConfig <- list(widgetType = "table",
+                                   tableType = "default",
+                                   readonly = checkLength(configuredTable, configJSON$inputWidgets[[currentTableSymbolName]][["readonly"]], FALSE),
+                                   readonlyCols = checkLength(configuredTable, configJSON$inputWidgets[[currentTableSymbolName]][["readonlyCols"]], NULL),
+                                   hideIndexCol = checkLength(configuredTable, configJSON$inputWidgets[[currentTableSymbolName]]$hideIndexCol, FALSE),
+                                   heatmap = checkLength(configuredTable, configJSON$inputWidgets[[currentTableSymbolName]]$heatmap, FALSE),
+                                   pivotCols = checkLength(configuredTable, configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols, "_"))
+      rv$tableWidgetConfig$fixedColumnsLeft <- checkLength(configuredTable, configJSON$inputWidgets[[currentTableSymbolName]]$fixedColumnsLeft, NULL)
+    }
     if(length(labelTmp)){
       rv$tableWidgetConfig$label <- labelTmp
     }
