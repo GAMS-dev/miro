@@ -189,7 +189,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
          identical(sum(colsToAdd), length(newSchema$colNames) - min(which(colsToAdd)) + 1L)){
         # all columns to add are at the end
         flog.debug("Adding column(s): %s to the end of table: %s",
-                   newColNames[colsToAdd], dbTableName)
+                   newSchema$newColNames[colsToAdd], dbTableName)
         private$addColumns(dbTableName,
                            newSchema$colNames[colsToAdd],
                            dbSchema$getColTypesSQL(newSchema$colTypes)[colsToAdd])
@@ -327,7 +327,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     }
     for(colIdx in seq_along(colNames)){
       private$db$runQuery(paste("ALTER TABLE",
-                                DBI::dbQuoteIdentifier(private$conn, tableName),
+                                DBI::dbQuoteIdentifier(private$conn, dbTableName),
                                 "ADD COLUMN",
                                 DBI::dbQuoteIdentifier(private$conn, colNames[colIdx]),
                                 colTypes[colIdx]))
