@@ -197,7 +197,7 @@ HcubeImport <- R6Class("HcubeImport",
                                                  DBI::dbQuoteString(private$conn, dbSchema$getDbTableName("_scenMeta")), 
                                                  ", ",
                                                  DBI::dbQuoteString(private$conn,
-                                                                    private$scenMetaColnames['sid']), "));"))
+                                                                    "_sid"), "));"))
                            }else{
                              query <- SQL("SELECT LAST_INSERT_ROWID();")
                            }
