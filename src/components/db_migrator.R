@@ -69,8 +69,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
       private$db$runQuery(paste0("DROP TABLE IF EXISTS ",  
                                  paste(dbQuoteIdentifier(private$conn, dbTableNames),
                                        collapse = ", "), " CASCADE;"))
-      private$dropIndex(dbTableNames, ifExists = TRUE)
-      flog.info("Database tables: '%s' deleted.", paste(dbTableNames, "', '"))
+      flog.info("Database tables: '%s' deleted.", paste(dbTableNames, collapse = "', '"))
       return(invisible(self))
     }
     # turn foreign key usage off
@@ -78,7 +77,6 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     for(dbTableName in dbTableNames){
       private$db$runQuery(paste0("DROP TABLE IF EXISTS ",  
                                  dbQuoteIdentifier(private$conn, dbTableName), " ;"))
-      private$dropIndex(dbTableName, ifExists = TRUE)
       flog.info("Database table: '%s' deleted.", dbTableName)
     }
     # turn foreign key usage on again
@@ -274,7 +272,6 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
         private$db$runQuery(private$getRemapTableQuery(dbTableName, colMapping))
         private$db$runQuery(paste0("DROP TABLE ",
                                    dbQuoteIdentifier(private$conn, dbTableName), " CASCADE;"))
-        private$dropIndex(dbTableName)
         private$db$runQuery(paste0("ALTER TABLE ",
                             DBI::dbQuoteIdentifier(private$conn, paste0("_", dbTableName)), 
                             " RENAME TO ",
@@ -299,7 +296,6 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
         private$db$runQuery(private$getRemapTableQuery(dbTableName, colMapping))
         private$db$runQuery(paste0("DROP TABLE ",
                                    dbQuoteIdentifier(private$conn, dbTableName)))
-        private$dropIndex(dbTableName)
         private$db$runQuery(paste0("ALTER TABLE ",
                                    DBI::dbQuoteIdentifier(private$conn, paste0("_", dbTableName)), 
                                    " RENAME TO ",
