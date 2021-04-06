@@ -36,6 +36,7 @@ testModelPath <- file.path(testDir, "model", "pickstock_with_data")
 modelDataPath <- file.path(testModelPath, "data_pickstock_with_data")
 Sys.setenv(MIRO_MODEL_PATH = file.path(testModelPath,
                                        "pickstock_with_data.gms"))
+createTestDb()
 
 file.copy2(file.path(modelDataPath, "default.gdx"),
            file.path(modelDataPath, "pickstock.gdx"))

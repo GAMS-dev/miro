@@ -2,12 +2,9 @@ context("UI tests - Loading and comparing scenarios")
 
 testDir <- file.path(getwd(), "..")
 
-createTestDb()
-
-# END setup
-
 for(modelToTest in c("pickstock", "transport")){
   testModelPath <- file.path(testDir, "model", modelToTest)
+  createTestDb()
   Sys.setenv(MIRO_MODEL_PATH = file.path(testModelPath,
                                          paste0(modelToTest, ".gms")))
   Sys.setenv(GMSMODELNAME = modelToTest)

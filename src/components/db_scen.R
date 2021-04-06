@@ -173,14 +173,20 @@ Scenario <- R6Class("Scenario",
                         stopifnot(is.logical(noPermFields), length(noPermFields) == 1L)
                         #END error checks
                         
+                        if(length(private$sid)){
+                          sid <- private$sid
+                        }else{
+                          sid <- NA_integer_
+                        }
+                        
                         if(noPermFields){
-                          return(tibble("_sid" = private$sid,
+                          return(tibble("_sid" = sid,
                                         "_uid" = private$suid,
                                         "_sname" = private$sname,
                                         "_stime" = private$stime,
                                         "_stag" = private$tags))
                         }
-                        return(tibble("_sid" = private$sid,
+                        return(tibble("_sid" = sid,
                                       "_uid" = private$suid,
                                       "_sname" = private$sname,
                                       "_stime" = private$stime,
