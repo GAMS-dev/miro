@@ -1,6 +1,24 @@
 activeSymbol <- list(id = integer(1L), name = character(1L), 
                      alias = character(1L), indices = c())
 activeSymbolName <- character(0L)
+customRendererEvalEnv <- new.env(parent = parent.frame())
+# Redefine observe function so that custom renderers don't crash when error
+# occurs in observer (see also: https://github.com/rstudio/shiny/issues/2904#issuecomment-634776972)
+customRendererEvalEnv$observe <- function(x, ...) {
+  x <- substitute(x)
+  env <- parent.frame()
+  shiny::observe({
+    tryCatch(
+      eval(x, env),
+      error = function(e) {
+        showElReplaceTxt(session, "#preview-error",
+                         sprintf("An error occurred in an observer: %s", conditionMessage(e)))
+      }
+    )
+  },
+  ...
+  )
+}
 customRendererEnv <- new.env(parent = emptyenv())
 skipLoadRenderer <- TRUE
 invalidCustomRender <- FALSE
@@ -3704,14 +3722,14 @@ getRendererFunctions <- function(rendererName){
     
     # This command is super confusing. It gets the body of the function and puts it
     # into a string without adding the curly braces {}.
-    funOutputBody <- deparse(body(eval(parse(text = funOutputStr))))
+    funOutputBody <- deparse(body(eval(parse(text = funOutputStr), envir = customRendererEvalEnv)))
     if(length(funOutputBody) > 3L){
       funOutputBody <- paste0(funOutputBody[seq(3L, length(funOutputBody) - 1)],
                               collapse = "\n")
     }else{
       funOutputBody <- ""
     }
-    funRenderBody <- deparse(body(eval(parse(text = funRenderStr))))
+    funRenderBody <- deparse(body(eval(parse(text = funRenderStr), envir = customRendererEvalEnv)))
     if(length(funRenderBody) > 2L){
       funRenderBody <- paste0(funRenderBody[seq(2L, length(funRenderBody) - 1)],
                               collapse = "\n")
@@ -3741,9 +3759,9 @@ output[["preview_custom_renderer"]] <- renderUI({
     isolate(input$customOutputFunction),
     "}"
   ))
-  eval(parse(text = outputFunction))("preview_output_custom", height = 400,
-                                     options = rv$graphConfig$options,
-                                     path = customRendererDir)
+  eval(parse(text = outputFunction), envir = customRendererEvalEnv)("preview_output_custom", height = 400,
+                                                                    options = rv$graphConfig$options,
+                                                                    path = customRendererDir)
 })
 
 
@@ -3900,7 +3918,7 @@ observe({
           customRendererFunctionName(),
           " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){\n",
           input$customRenderFunction,
-          "\n}"))))
+          "\n}"))), envir = customRendererEvalEnv)
         callModule(customRendererFunction, "preview_output_custom",
                    data, options = rv$graphConfig$options, 
                    path = customRendererDir, rendererEnv = customRendererEnv,
