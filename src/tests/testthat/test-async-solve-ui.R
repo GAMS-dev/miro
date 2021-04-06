@@ -1,14 +1,12 @@
 context("UI tests - asynchronous solve")
 skip_if(identical(Sys.getenv("ENGINE_URL"), ""),
-        "Skipping asynchronous solve tests as no ENGINE_URL was not set.")
+        "Skipping asynchronous solve tests as ENGINE_URL was not set.")
 skip_if(identical(Sys.getenv("ENGINE_USER"), ""),
-        "Skipping asynchronous solve tests as no ENGINE_USER was not set.")
+        "Skipping asynchronous solve tests as ENGINE_USER was not set.")
 skip_if(identical(Sys.getenv("ENGINE_PASSWORD"), ""),
-        "Skipping asynchronous solve tests as no ENGINE_PASSWORD was not set.")
+        "Skipping asynchronous solve tests as ENGINE_PASSWORD was not set.")
 skip_if(identical(Sys.getenv("ENGINE_NS"), ""),
-        "Skipping asynchronous solve tests as no ENGINE_NS was not set.")
-
-testDir <- file.path(getwd(), "..")
+        "Skipping asynchronous solve tests as ENGINE_NS was not set.")
 
 createTestDb()
 

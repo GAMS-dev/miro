@@ -1,9 +1,6 @@
 context("UI tests - Import/Export miroscen files")
 
-testDir <- file.path(getwd(), "..")
-
 createTestDb()
-# END setup
 
 testModelPath <- file.path(testDir, "model", "transport")
 modelDataPath <- file.path(testModelPath, "data_transport")

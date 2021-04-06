@@ -2,8 +2,6 @@ context("UI tests - MIRO log works")
 skip_if(identical(Sys.getenv("GAMS_SYS_DIR"), ""),
         "GAMS_SYS_DIR environment variable not set. Skipping tests.")
 
-testDir <- file.path(getwd(), "..")
-
 createTestDb()
 
 additionalGamsClArgs <- character(0L)

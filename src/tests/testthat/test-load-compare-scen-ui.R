@@ -1,7 +1,5 @@
 context("UI tests - Loading and comparing scenarios")
 
-testDir <- file.path(getwd(), "..")
-
 for(modelToTest in c("pickstock", "transport")){
   testModelPath <- file.path(testDir, "model", modelToTest)
   createTestDb()

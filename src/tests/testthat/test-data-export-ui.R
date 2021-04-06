@@ -1,7 +1,7 @@
 context("UI tests - export sandbox scenario")
-testDir <- file.path(getwd(), "..")
 
 createTestDb()
+
 testModel <- "transport"
 testModelPath <- file.path(testDir, "model", testModel)
 Sys.setenv(MIRO_MODEL_PATH = file.path(testModelPath, paste0(testModel, ".gms")))

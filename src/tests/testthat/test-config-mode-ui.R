@@ -1,13 +1,6 @@
 context("UI tests - Configuration Mode")
 library(shinytest)
 
-source("../../components/util.R")
-
-if(!dependenciesInstalled()){
-  installDependencies()
-}
-testDir <- file.path(getwd(), "..")
-
 createTestDb()
 
 Sys.setenv(MIRO_MODEL_PATH = file.path(testDir, "model", "pickstock_configuration",

@@ -1,10 +1,6 @@
 context("UI tests - Valuebox settings")
 
-testDir <- file.path(getwd(), "..")
-
 createTestDb()
-# END setup
-
 
 modelToTest <- "pickstock_with_data"
 testModelDir <- file.path(testDir, "model", modelToTest)

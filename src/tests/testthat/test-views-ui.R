@@ -1,7 +1,5 @@
 context("UI tests - views")
 
-testDir <- file.path(getwd(), "..")
-
 createTestDb()
 
 testModelPath <- file.path(testDir, "model", "transport")

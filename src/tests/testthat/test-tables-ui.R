@@ -1,7 +1,5 @@
 context("UI tests - Table settings")
 
-testDir <- file.path(getwd(), "..")
-
 createTestDb()
 # END setup
 

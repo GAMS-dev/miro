@@ -1,9 +1,6 @@
 context("UI tests - Attachments")
 
-testDir <- file.path(getwd(), "..")
-
 createTestDb()
-# END setup
 
 Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "model", "pickstock_with_data", "pickstock_with_data.gms"))
 Sys.setenv(MIRO_MODE="base")

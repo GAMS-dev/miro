@@ -34,9 +34,6 @@ populateDb <- function(procEnv){
 
 modelName <- "transport"
 
-
-testDir <- file.path(getwd(), "..")
-
 skipPostgres <- TRUE
 if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
   skipPostgres <- FALSE

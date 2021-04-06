@@ -21,8 +21,6 @@ FakeSession <- R6Class("FakeSession", public = list(
   id = NULL
 ))
 
-testDir <- file.path(getwd(), "..")
-
 createTestDb()
 
 ioConfig <<- list()

@@ -2,10 +2,7 @@ context("UI tests - Scenario permissions")
 skip_if(identical(Sys.getenv("GAMS_SYS_DIR"), ""),
         "GAMS_SYS_DIR environment variable not set. Skipping tests.")
 
-testDir <- file.path(getwd(), "..")
-
 createTestDb()
-# END setup
 
 additionalGamsClArgs <- character(0L)
 if(!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")){

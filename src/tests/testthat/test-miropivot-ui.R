@@ -1,9 +1,6 @@
 context("UI tests - MIRO Pivot")
 
-testDir <- file.path(getwd(), "..")
-
 createTestDb()
-# END setup
 
 Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "model", "transport_miropivot",
                                        "transport_miropivot.gms"))

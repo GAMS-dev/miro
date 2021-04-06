@@ -1,7 +1,5 @@
 context("UI tests - skip import of data files")
 
-testDir <- file.path(getwd(), "..")
-
 createTestDb()
 
 testModelPath <- file.path(testDir, "model", "transport")

@@ -1,7 +1,5 @@
 context("UI tests - pivot compare mode")
 
-testDir <- file.path(getwd(), "..")
-
 createTestDb()
 testModelPath <- file.path(testDir, "model", "transport")
 Sys.setenv(MIRO_MODEL_PATH = file.path(testModelPath,

@@ -2,7 +2,6 @@ context("UI tests - Language tests")
 
 modelsToTest <- c("pickstock")
 langsToTest <- c("en", "de", "cn")
-testDir <- file.path(getwd(), "..")
 
 createTestDb()
 # END setup
