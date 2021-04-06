@@ -129,7 +129,7 @@ DbSchema <- R6Class("DbSchema", public = list(
     return(paste0("CREATE TABLE ", 
                   dbQuoteIdentifier(private$conn, dbTableName), 
                   " (", paste(dbQuoteIdentifier(private$conn, symSchema$colNames), 
-                              private$getColTypesSQL(symSchema$colTypes), collapse = ", "),
+                              self$getColTypesSQL(symSchema$colTypes), collapse = ", "),
                   foreignKeyConstraint, ");"))
   },
   getCreateIndexQuery = function(tableName){
@@ -143,6 +143,40 @@ DbSchema <- R6Class("DbSchema", public = list(
                   " (",
                   dbQuoteIdentifier(private$conn, "_sid"),
                   ");"))
+  },
+  getColTypesSQL = function(colTypes){
+    return(vapply(strsplit(colTypes, "", fixed = TRUE)[[1]], function(colType){
+      if(colType %in% c("i", "integer")){
+        return("INTEGER")
+      }
+      if(colType %in% c("d", "numeric")){
+        return("DOUBLE PRECISION")
+      }
+      if(colType %in% c("c", "character")){
+        return("TEXT")
+      }
+      if(colType %in% c("b", "blob")){
+        if(inherits(private$conn, "PqConnection")){
+          return("BYTEA")
+        }
+        return("BLOB")
+      }
+      if(identical(colType, "T")){
+        if(inherits(private$conn, "PqConnection")){
+          return("TIMESTAMPTZ")
+        }
+        return("TEXT")
+      }
+      if(identical(colType, "l")){
+        if(inherits(private$conn, "PqConnection")){
+          return("BOOLEAN")
+        }
+        return("INTEGER")
+      }
+      stop_custom("error_config", sprintf("Invalid migration config: Invalid column type: %s",
+                                          colType),
+                  call. = FALSE)
+    }, character(1L), USE.NAMES = FALSE))
   }
 ), private = list(
   schema = NULL,
@@ -219,39 +253,5 @@ DbSchema <- R6Class("DbSchema", public = list(
                   dbQuoteIdentifier(private$conn, schema$colNames[["lock"]]),
                   if(inherits(private$conn, "PqConnection"))
                     " timestamp with time zone);" else " text);"))
-  },
-  getColTypesSQL = function(colTypes){
-    return(vapply(strsplit(colTypes, "", fixed = TRUE)[[1]], function(colType){
-      if(colType %in% c("i", "integer")){
-        return("INTEGER")
-      }
-      if(colType %in% c("d", "numeric")){
-        return("DOUBLE PRECISION")
-      }
-      if(colType %in% c("c", "character")){
-        return("TEXT")
-      }
-      if(colType %in% c("b", "blob")){
-        if(inherits(private$conn, "PqConnection")){
-          return("BYTEA")
-        }
-        return("BLOB")
-      }
-      if(identical(colType, "T")){
-        if(inherits(private$conn, "PqConnection")){
-          return("TIMESTAMPTZ")
-        }
-        return("TEXT")
-      }
-      if(identical(colType, "l")){
-        if(inherits(private$conn, "PqConnection")){
-          return("BOOLEAN")
-        }
-        return("INTEGER")
-      }
-      stop_custom("error_config", sprintf("Invalid migration config: Invalid column type: %s",
-                                          colType),
-                  call. = FALSE)
-    }, character(1L), USE.NAMES = FALSE))
   }
 ))
