@@ -241,6 +241,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                                                                  subsetSids = scenIds)
                            return(split(dataDbTmp[-1], dataDbTmp[[1L]]))
                          })
+                         names(dataTmp) <- scenTableNames
                          sameNameCounter   <- list()
                          
                          
