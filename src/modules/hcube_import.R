@@ -181,7 +181,7 @@ observeEvent(virtualActionButton(rv$btSave), {
     hcubeImport$saveScenarios(hcubeTags, jobID = jobImportID, readPerm = uid, 
                               writePerm = uid, execPerm = uid, progressBar = prog)
   }, error = function(e){
-    flog.error("Problems exporting scenarios. Error message: %s.", e)
+    flog.error("Problems importing scenarios. Error message: %s.", e)
     errMsg <<- lang$errMsg$hcubeImport$dbUpload$desc
   })
   if(is.null(showErrorMsg(lang$errMsg$hcubeImport$dbUpload$title, errMsg))){
