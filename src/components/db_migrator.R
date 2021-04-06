@@ -39,9 +39,9 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
   getDbTableNamesModel = function(){
     if(inherits(private$conn, "PqConnection")){
       query <- paste0("SELECT table_name FROM information_schema.tables", 
-                      " WHERE table_schema='",
-                      dbQuoteIdentifier(private$conn, private$db$getInfo()$schema),
-                      "' AND table_type='BASE TABLE';")
+                      " WHERE table_schema=",
+                      dbQuoteString(private$conn, private$db$getInfo()$schema),
+                      " AND table_type='BASE TABLE';")
     }else{
       query <- paste0("SELECT name FROM sqlite_master WHERE type = 'table';")
     }
@@ -400,9 +400,11 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
   },
   getTableInfo = function(dbTableName){
     if(inherits(private$conn, "PqConnection")){
-      query <- SQL(paste0("SELECT ordinal_position,column_name,data_type FROM information_schema.columns WHERE table_name = ", 
+      query <- SQL(paste0("SELECT ordinal_position,column_name,data_type FROM information_schema.columns WHERE table_name =", 
                           dbQuoteString(private$conn, dbTableName),
-                          " ORDER BY ordinal_position;"))
+                          " AND table_schema=",
+                          dbQuoteString(private$conn, private$db$getInfo()$schema),
+                          "ORDER BY ordinal_position;"))
       tabInfo     <- dbGetQuery(private$conn, query)
       return(list(colNames = tabInfo$column_name[-1], colTypes = tabInfo$data_type[-1]))
     }
