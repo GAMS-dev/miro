@@ -190,12 +190,11 @@ HcubeImport <- R6Class("HcubeImport",
                                                     `_accessx` = rep.int(execPerm, numberScen),
                                                     `_scode` = rep.int(jobID, numberScen))
                            metadataTable[[3]] <- Sys.time()
-                           names(metadataTable) <- scenMetaColnames[-1]
                            
                            self$writeMetadata(metadataTable)
                            if(inherits(private$conn, "PqConnection")){
                              query <- SQL(paste0("SELECT currval(pg_get_serial_sequence(",
-                                                 DBI::dbQuoteString(private$conn, private$tableNameMetadata), 
+                                                 DBI::dbQuoteString(private$conn, dbSchema$getDbTableName("_scenMeta")), 
                                                  ", ",
                                                  DBI::dbQuoteString(private$conn,
                                                                     private$scenMetaColnames['sid']), "));"))
