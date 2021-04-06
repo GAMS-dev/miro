@@ -1583,7 +1583,9 @@
         "deleteGraph": "删除",
         "saveGraph": "保存",
         "toggleLeft": "将左屏切换到全屏模式",
-        "toggleRight": "将右屏切换到全屏模式"
+        "toggleRight": "将右屏切换到全屏模式",
+        "previewError": "发生错误：“%s”",
+        "previewErrorObs": "观察者内部发生错误：“%s”"
       },
       "graphOptions":{
         "pie": "饼图",

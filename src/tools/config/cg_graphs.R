@@ -12,7 +12,7 @@ customRendererEvalEnv$observe <- function(x, ...) {
       eval(x, env),
       error = function(e) {
         showElReplaceTxt(session, "#preview-error",
-                         sprintf("An error occurred in an observer: %s", conditionMessage(e)))
+                         sprintf(lang$adminMode$graphs$ui$previewErrorObs, conditionMessage(e)))
       }
     )
   },
@@ -3950,7 +3950,8 @@ observe({
     hideEl(session, "#preview-content-miropivot")
     hideEl(session, "#preview-content-timevis")
     hideEl(session, "#preview-content-valuebox")
-    showElReplaceTxt(session, "#preview-error", "An error occurred: " %+% toString(e))
+    showElReplaceTxt(session, "#preview-error",
+                     sprintf(lang$adminMode$graphs$ui$previewError, conditionMessage(e)))
   })
 }, priority = -1000)
 

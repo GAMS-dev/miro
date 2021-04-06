@@ -6251,9 +6251,17 @@
                 "toggleRight": {
                   "type": "string",
                   "minLength": 1
+                },
+                "previewError": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "previewErrorObs": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 13
+              "minProperties": 16
             },
             "graphOptions": {
               "type": "object",

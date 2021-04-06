@@ -1584,7 +1584,9 @@
         "deleteGraph": "Delete",
         "saveGraph": "Save",
         "toggleLeft": "Switch left panel to full screen",
-        "toggleRight": "Switch right panel to full screen"
+        "toggleRight": "Switch right panel to full screen",
+        "previewError": "An error occurred: '%s'",
+        "previewErrorObs": "An error occurred in an observer: '%s'"
       },
       "graphOptions":{
         "pie": "Pie chart",

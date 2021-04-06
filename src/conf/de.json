@@ -1584,7 +1584,9 @@
         "deleteGraph": "Löschen",
         "saveGraph": "Speichern",
         "toggleLeft": "Linken Bildbereich auf Vollbildmodus umschalten",
-        "toggleRight": "Rechten Bildbereich auf Vollbildmodus umschalten"
+        "toggleRight": "Rechten Bildbereich auf Vollbildmodus umschalten",
+        "previewError": "Es ist ein Fehler aufgetreten: '%s'",
+        "previewErrorObs": "In einem Observer ist ein Fehler aufgetreten: '%s'"
       },
       "graphOptions":{
         "pie": "Kreisdiagramm",
