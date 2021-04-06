@@ -3,6 +3,7 @@ library(futile.logger)
 library(DBI)
 library(RSQLite)
 
+source("../../components/db_schema.R")
 source("../../components/db.R")
 source("../../components/db_migrator.R")
 
@@ -39,6 +40,7 @@ testDir <- file.path(getwd(), "..")
 skipPostgres <- TRUE
 if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
   skipPostgres <- FALSE
+  createTestDb()
 }
 
 dbSchema <<- DbSchema$new(list(results = list(tabName = "results",
@@ -73,7 +75,7 @@ for(dbType in c("sqlite", "postgres")){
   procEnv <- list()
   
   if(identical(dbType, "sqlite")){
-    dbPath <- file.path(testDir, "miro.sqlite3")
+    dbPath <- file.path(testDir, "transport.sqlite3")
     procEnv$MIRO_DB_PATH <- dirname(dbPath)
     
     unlink(dbPath)
@@ -82,6 +84,7 @@ for(dbType in c("sqlite", "postgres")){
                      name = dbPath)
   }else{
     procEnv$MIRO_DB_TYPE <- "postgres"
+    procEnv$MIRO_DB_SCHEMA <- "mirotests"
     procEnv$MIRO_DB_USERNAME <- Sys.getenv("MIRO_DB_USERNAME", "postgres")
     procEnv$MIRO_DB_PASSWORD <-Sys.getenv("MIRO_DB_PASSWORD", "")
     procEnv$MIRO_DB_NAME <- Sys.getenv("MIRO_DB_NAME", "postgres")
@@ -93,7 +96,8 @@ for(dbType in c("sqlite", "postgres")){
                      password = procEnv$MIRO_DB_PASSWORD,
                      name = procEnv$MIRO_DB_NAME,
                      host = procEnv$MIRO_DB_HOST,
-                     port = procEnv$MIRO_DB_PORT)
+                     port = procEnv$MIRO_DB_PORT,
+                     schema = "mirotests")
   }
   
   db <- Db$new(uid = "user", dbConf = dbConfig,
@@ -135,21 +139,21 @@ for(dbType in c("sqlite", "postgres")){
                                       forceRemove = FALSE), class = "error_data_loss", regex = "forceRemove")
     expect_error(dbMigrator$migrateDb(migrationConfig,
                                       forceRemove = TRUE), NA)
-    expect_identical(dbReadTable(conn, "transport_results")[-1],
+    expect_identical(dbReadTable(conn, "results")[-1],
                      data.frame(i = c("Seattle", "Seattle", "Seattle", "San-Diego", "San-Diego", "San-Diego"),
                                 j = c("New-york", "Chicago", "Topeka", "New-york", "Chicago", "Topeka"),
                                 lngp = c(-122.335167, -122.335167, -122.335167, -117.161087, -117.161087, -117.161087),
                                 latp = c(47.608013, 47.608013, 47.608013, 32.715736, 32.715736, 32.715736),
-                                lngm = c(-73.935242, -87.623177, -95.695312, -73.935242, -87.623177, -95.695312), 
+                                lngm = c(-73.935242, -87.623177, -95.695312, -73.935242, -87.623177, -95.695312),
                                 latm = c(40.73061, 41.881832, 39.056198, 40.73061, 41.881832, 39.056198), cap = c(350, 350, 350, 600, 600, 600),
                                 demand = c(325, 300, 275, 325, 300, 275),
                                 quantities = c(50, 300, NA, 275, NA, 275),
                                 bla = NA_real_))
-    expect_identical(dbReadTable(conn, "transport_a")[-1],
+    expect_identical(dbReadTable(conn, "a")[-1],
                      data.frame(i = c("Seattle", "San-Diego"),
                                 j = NA_character_,
                                 value = c(350, 600)))
-    expect_identical(dbReadTable(conn, "transport_b")[-1],
+    expect_identical(dbReadTable(conn, "b")[-1],
                      data.frame(k = c("New-york", "Chicago", "Topeka"),
                                 value = c(325, 300, 275)))
     migrationConfig <- list(a = list(oldTableName = "a", colNames = c("-", "-", "value")))
@@ -157,7 +161,7 @@ for(dbType in c("sqlite", "postgres")){
                                       forceRemove = FALSE), class = "error_data_loss", regex = "forceRemove")
     expect_error(dbMigrator$migrateDb(migrationConfig,
                                       forceRemove = TRUE), NA)
-    expect_identical(dbReadTable(conn, "transport_a")[-1],
+    expect_identical(dbReadTable(conn, "a")[-1],
                      data.frame(i = NA_character_,
                                 j = NA_character_,
                                 value = c(350, 600)))
@@ -166,7 +170,7 @@ for(dbType in c("sqlite", "postgres")){
                                             colNames = c("i", "lat", "lng")))
     expect_error(dbMigrator$migrateDb(migrationConfig,
                                       forceRemove = FALSE), NA)
-    expect_identical(dbReadTable(conn, "transport_ilocdata")[-1],
+    expect_identical(dbReadTable(conn, "ilocdata")[-1],
                      data.frame(i = c("Seattle", "San-Diego"),
                                 lng = c(47.608013, 32.715736),
                                 lat = c(-122.335167, -117.161087)))
@@ -174,7 +178,7 @@ for(dbType in c("sqlite", "postgres")){
                                             colNames = c("i", "lat", "lng")))
     expect_error(dbMigrator$migrateDb(migrationConfig,
                                       forceRemove = FALSE), NA)
-    expect_identical(dbReadTable(conn, "transport_ilocdata")[-1],
+    expect_identical(dbReadTable(conn, "ilocdata")[-1],
                      data.frame(i = c("Seattle", "San-Diego"),
                                 lng = c(-122.335167, -117.161087),
                                 lat = c(47.608013, 32.715736)))
@@ -182,7 +186,7 @@ for(dbType in c("sqlite", "postgres")){
                                      colNames = c("i", "j", "j", "value")))
     expect_error(dbMigrator$migrateDb(migrationConfig,
                                       forceRemove = FALSE), NA)
-    expect_identical(dbReadTable(conn, "transport_d")[-1],
+    expect_identical(dbReadTable(conn, "d")[-1],
                      data.frame(i = c("Seattle", "Seattle", "Seattle",
                                       "San-Diego", "San-Diego", "San-Diego"),
                                 j = c("New-york", "Chicago", "Topeka",
@@ -196,11 +200,11 @@ for(dbType in c("sqlite", "postgres")){
                                             colNames = c("i", "lng", "lat")))
     expect_error(dbMigrator$migrateDb(migrationConfig,
                                       forceRemove = FALSE), NA)
-    expect_identical(dbReadTable(conn, "transport_jlocdata")[-1],
+    expect_identical(dbReadTable(conn, "jlocdata")[-1],
                      data.frame(j = c("Seattle", "San-Diego"),
                                 lng = c(-122.335167, -117.161087),
                                 lat = c(47.608013, 32.715736)))
-    expect_identical(dbReadTable(conn, "transport_ilocdata")[-1],
+    expect_identical(dbReadTable(conn, "ilocdata")[-1],
                      data.frame(i = c("New-york", "Chicago", "Topeka"),
                                 lng = c(-73.935242, -87.623177, -95.695312),
                                 lat = c(40.73061, 41.881832, 39.056198)))
