@@ -115,9 +115,10 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
     # include metadata sheet in Excel file
     if(isTRUE(includeMetadataSheet) && !is.null(metaData)){
       metaData <- metaData[, -1, drop = FALSE]
-      names(metaData) <- lang$nav$excelExport$metadataSheet[c("uid", "sname", "stime",
-                                                              "stag", "readPerm", "writePerm",
-                                                              "execPerm")[seq_along(metaData)]]
+      names(metaData) <- unlist(lang$nav$excelExport$metadataSheet[c("uid", "sname", "stime",
+                                                                     "stag", "readPerm", "writePerm",
+                                                                     "execPerm")[seq_along(metaData)]],
+                                use.names = FALSE)
       metaData[[" "]] <- ""
       metaData[["  "]] <- ""
       symDesc <- bind_rows(lapply(seq_along(wsNamesRaw), function(idx){
