@@ -1,7 +1,10 @@
 errMsg <- installAndRequirePackages("V8", installedPackages, RLibPath, CRANMirror, miroWorkspace)
 # check whether there exists a config file and if not create an empty one
 if(is.null(errMsg)){
-  if(!file.exists(paste0(currentModelDir, .Platform$file.sep, "conf_", modelName,
+  if(nchar(modelName) > 63){
+    errMsg <<- sprintf("The MIRO app name: '%s' is too long! A maximum length of 63 characters is allowed!",
+                       modelName)
+  }else if(!file.exists(paste0(currentModelDir, .Platform$file.sep, "conf_", modelName,
                          .Platform$file.sep, modelName, ".json"))){
     tryCatch(cat("{}\n", file = paste0(currentModelDir, .Platform$file.sep, "conf_", modelName,
                                        .Platform$file.sep, modelName, ".json")),
