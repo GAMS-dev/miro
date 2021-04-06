@@ -65,10 +65,10 @@ Db <- R6Class("Db",
                                                    name = dbConf$name, schema = dbConf$schema)
                     if(length(dbConf$schema) &&
                        !dbConf$schema %in% c("public", dbConf$username)){
-                      # need to add schema to search path
-                      self$runQuery("SET search_path TO ",
-                                    dbQuoteIdentifier(private$conn, dbConf$schema),
-                                    ",public;")
+                            # need to add schema to search path
+                            self$runQuery(paste0("SET search_path TO ",
+                                                 dbQuoteIdentifier(private$conn, dbConf$schema),
+                                                 ";"))
                     }
                   }else if(identical(dbConf$type, "sqlite")){
                     tryCatch({
