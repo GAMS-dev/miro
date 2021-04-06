@@ -3,8 +3,6 @@ context("UI tests - Table settings")
 testDir <- file.path(getwd(), "..")
 
 createTestDb()
-
-Sys.setenv(MIRO_DB_PATH = testDir)
 # END setup
 
 Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "model", "pickstock_output_tables",

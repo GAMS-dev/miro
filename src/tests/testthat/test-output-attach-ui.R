@@ -13,14 +13,8 @@ if(identical(Sys.getenv("GAMS_SYS_DIR"), "")){
     additionalGamsClArgs <- paste0('license="', Sys.getenv("MIRO_TEST_GAMS_LICE"), '"')
     saveAdditionalGamsClArgs(miroModelDir, "transport", additionalGamsClArgs)
   }
-  Sys.setenv(MIRO_DB_PATH = testDir)
   Sys.setenv(MIRO_MODEL_PATH = file.path(testDir, "model", "transport_outputAttach",
                                          "transport.gms"))
-  if(file.exists(file.path(Sys.getenv("MIRO_DB_PATH"), "miro.sqlite3"))){
-    if(unlink(file.path(Sys.getenv("MIRO_DB_PATH"), "miro.sqlite3"), force = TRUE)){
-      stop("Could not remove old database SQLite file for tests")
-    }
-  }
   if(file.exists(file.path(getwd(), "..", "model", "transport_outputAttach",
                            "report.put"))){
     unlink(file.path(getwd(), "..", "model", "transport_outputAttach",

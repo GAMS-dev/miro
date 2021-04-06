@@ -5,7 +5,6 @@ skip_if(identical(Sys.getenv("GAMS_SYS_DIR"), ""),
 testDir <- file.path(getwd(), "..")
 
 createTestDb()
-Sys.setenv(MIRO_DB_PATH = testDir)
 # END setup
 
 testModelPath <- file.path(testDir, "model", "transport_custom_map")

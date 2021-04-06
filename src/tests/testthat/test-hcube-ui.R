@@ -4,7 +4,6 @@ skip_if(identical(Sys.getenv("GAMS_SYS_DIR"), ""),
 testDir <- file.path(getwd(), "..")
 
 createTestDb()
-Sys.setenv(MIRO_DB_PATH = testDir)
 
 modelToTest <- "pickstock_configuration"
 testModelDir <- file.path(testDir, "model", modelToTest)

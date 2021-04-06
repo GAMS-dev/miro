@@ -3,8 +3,6 @@ context("UI tests - Import/Export miroscen files")
 testDir <- file.path(getwd(), "..")
 
 createTestDb()
-
-Sys.setenv(MIRO_DB_PATH = testDir)
 # END setup
 
 testModelPath <- file.path(testDir, "model", "transport")

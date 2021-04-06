@@ -4,7 +4,6 @@ testDir <- file.path(getwd(), "..")
 
 createTestDb()
 
-Sys.setenv(MIRO_DB_PATH = testDir)
 # END setup
 
 for(modelToTest in c("pickstock", "transport")){

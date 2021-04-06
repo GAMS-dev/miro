@@ -11,7 +11,6 @@ additionalGamsClArgs <- character(0L)
 if(!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")){
   additionalGamsClArgs <- paste0('license="', Sys.getenv("MIRO_TEST_GAMS_LICE"), '"')
 }
-Sys.setenv(MIRO_DB_PATH = testDir)
 
 modelToTest <- "pickstock_with_data"
 miroModelDir <- file.path(testDir, "model", modelToTest)

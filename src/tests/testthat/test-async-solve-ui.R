@@ -19,7 +19,6 @@ modelDataPath <- file.path(testModelDir, paste0("data_", modelToTest))
 configJSONFileName <- file.path(testModelDir, paste0("conf_", modelToTest),
                                 paste0(modelToTest, ".json"))
 
-Sys.setenv(MIRO_DB_PATH = testDir)
 file.move(file.path(testModelDir, paste0(modelToTest, ".gms")),
           file.path(testModelDir, paste0("bk_", modelToTest, ".gms")))
 file.move(file.path(testModelDir, paste0(modelToTest, "_files.txt")),
