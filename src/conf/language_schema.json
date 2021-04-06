@@ -6244,7 +6244,11 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "toggleFullscreen": {
+                "toggleLeft": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "toggleRight": {
                   "type": "string",
                   "minLength": 1
                 }

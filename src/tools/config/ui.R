@@ -174,11 +174,25 @@ font-size: 12px;
                     tags$div(id = "graphValidationErr", class = "gmsalert gmsalert-error center-alert"),
                     tags$div(id = "unknownErrorGraphs", class = "gmsalert gmsalert-error center-alert",
                              lang$adminMode$graphs$ui$gamsSymbols),
+                    fluidRow(
+                      tags$div(class = "col-sm-6",
+                               tags$h4(id = "previewDataInputToggle", class = "box-title", 
+                                       icon("minus"), style = "cursor:pointer;font-weight:bold;", 
+                                       onclick = "Miro.slideToggleEl({id: '#previewDataInputWrapper', 
+                                              toggleIconDiv: '#previewDataInputToggle'})")
+                      ),
+                      tags$div(class = "col-sm-6",
+                               tags$div(class="btn-group btn-group-right", role="group",
+                                        tags$div(title = lang$adminMode$graphs$ui$toggleLeft,
+                                                 actionButton("toggleFullscreenLeft", HTML("<i class='fas fa-chevron-left'></i> <i class='fas fa-expand'></i>"), 
+                                                     class = "toggle-fullscreen-btn toggle-config-view-left")),
+                                        tags$div(title = lang$adminMode$graphs$ui$toggleRight,
+                                                 actionButton("toggleFullscreenRight", HTML("<i class='fas fa-expand'></i> <i class='fas fa-chevron-right'></i>"), 
+                                                     class = "toggle-fullscreen-btn toggle-config-view-right"))
+                               )
+                      )
+                    ),
                     tags$div(class = "col-sm-6", id = "config-left-graph",
-                                      tags$h4(id = "previewDataInputToggle", class = "box-title", 
-                                              icon("minus"), style = "cursor:pointer;font-weight:bold;", 
-                                              onclick = "Miro.slideToggleEl({id: '#previewDataInputWrapper', 
-                                              toggleIconDiv: '#previewDataInputToggle'})"),
                                       tags$div(id = "previewDataInputWrapper", 
                                                tabsetPanel(
                                                  tabPanel(lang$nav$dialogImport$tabDatabase,
@@ -354,10 +368,7 @@ font-size: 12px;
                              )
                     ),
                     tags$div(class = "col-sm-6 preview-outer-wrapper", id = "config-right-graph",
-                             tags$div(style = "margin-bottom:50px;text-align:right;",
-                                      actionButton("toggleFullscreenGraph", lang$adminMode$graphs$ui$toggleFullscreen, icon("expand"), 
-                                                   class = "toggle-fullscreen-btn toggle-config-view-graph")
-                             ),
+                             
                              tags$div(id = "preview-error", class = "err-msg"),
                              tags$div(id = "preview-content-plotly", style="overflow: auto;",
                                       renderDataUI("preview_output_plotly", type = "graph", 
