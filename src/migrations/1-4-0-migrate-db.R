@@ -78,7 +78,7 @@ migrateMiroDatabase <- function(oldPath, newPath){
     })
   }
   if(file.move(oldPath, file.path(dirname(oldPath), "bk_miro.sqlite3"))){
-    on.exit(flog.info("Backup of old database was stored in: '%s'", file.path(dirname(oldPath), "bk_miro.sqlite3")),
+    on.exit(flog.info("Backup of old database was stored in: '%s'. Delete manually to free space.", file.path(dirname(oldPath), "bk_miro.sqlite3")),
             add = TRUE)
   }else{
     on.exit(flog.warn("Could not move: '%s' to: '%s", oldPath, file.path(dirname(oldPath), "bk_miro.sqlite3")),
