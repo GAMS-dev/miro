@@ -4,8 +4,6 @@ if(!identical(RLibPath, "")) {
 }
 print(sessionInfo())
 
-print(Sys.getenv("CI_JOB_IMAGE"))
-
 print("Library paths:")
 print(.libPaths())
 print("Home directory:")
@@ -37,4 +35,4 @@ stopOnFailure <- identical(commandArgs(trailingOnly=TRUE), "--stop")
 testDir <- file.path(getwd(), "tests")
 
 #test_file("tests/testthat/test-examples-solve-ui.R", reporter = reporter)
-#test_dir("tests/testthat", reporter = reporter, stop_on_failure = stopOnFailure)
+test_dir("tests/testthat", reporter = reporter, stop_on_failure = stopOnFailure)
