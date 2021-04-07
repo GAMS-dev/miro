@@ -17,8 +17,8 @@ module.exports = (env, argv) => ({
       skin_browser: './less/skins/browser.js',
       skin_light: './less/skins/light.js',
       skin_dark: './less/skins/dark.js',
-      miro: './srcjs/miro.js',
-      miro_admin: './srcjs/miro_admin.js'
+      miro: ['babel-polyfill', './srcjs/miro.js'],
+      miro_admin: ['babel-polyfill', './srcjs/miro_admin.js']
     },
     optimization: {
       minimize: true,
