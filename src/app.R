@@ -92,11 +92,6 @@ filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./component
                     "./components/scen_comp_pivot.R", "./components/js_util.R")
 LAUNCHCONFIGMODE <- FALSE
 LAUNCHHCUBEMODE <<- FALSE
-if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
-  pb <- winProgressBar(title = "Loading GAMS MIRO", label = "Loading required packages",
-                       min = 0, max = 1, initial = 0, width = 300)
-  setWinProgressBar(pb, 0.3, label= "Initializing GAMS MIRO")
-}
 if(is.null(errMsg)){
   # include custom functions and modules
   lapply(filesToInclude, function(file){
@@ -859,11 +854,6 @@ if(!is.null(errMsg)){
       stop()
     quit("no", 1L)
   }
-  if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
-    setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
-    close(pb)
-    pb <- NULL
-  }
   ui_initError <- fluidPage(
     tags$head(
       if(!is.list(config) || !is.character(config$theme)){
@@ -915,9 +905,6 @@ if(!is.null(errMsg)){
 }else{
   uidAdmin <<- if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) "admin" else uid
   local({
-    if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
-      setWinProgressBar(pb, 0.6, label= "Importing new data")
-    }
     miroDataDir   <- Sys.getenv("MIRO_DATA_DIR")
     removeDataFile <- !debugMode
     if(identical(miroDataDir, "")){
@@ -1150,11 +1137,6 @@ if(!is.null(errMsg)){
     }
   })
   
-  if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
-    setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
-    close(pb)
-    pb <- NULL
-  }
   if(LAUNCHCONFIGMODE){
     source("./tools/db_migration/modules/bt_delete_database.R", local = TRUE)
     source("./tools/config/server.R", local = TRUE)
