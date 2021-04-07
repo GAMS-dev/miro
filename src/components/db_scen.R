@@ -413,12 +413,22 @@ Scenario <- R6Class("Scenario",
                       finalize = function(){
                         if(length(private$sid)){
                           if(identical(private$getUidLock(), private$uid)){
-                            flog.debug("Scenario: '%s' unlocked.", private$sid)
-                            private$unlock()
+                            tryCatch({
+                              private$unlock()
+                              flog.debug("Scenario: '%s' unlocked.", private$sid)
+                            }, error = function(e){
+                              flog.warn("Scenario: '%s' could not be unlocked. Error message: '%s'",
+                                        private$sid, conditionMessage(e))
+                            })
                           }
                           if(private$newScen && !private$scenSaved){
-                            flog.debug("Scenario was not saved. Thus, it will be removed.")
-                            self$delete()
+                            tryCatch({
+                              flog.debug("Scenario was not saved. Thus, it will be removed.")
+                              self$delete()
+                            }, error = function(e){
+                              flog.warn("Scenario could not be removed. Error message: '%s'",
+                                        conditionMessage(e))
+                            })
                           }
                           private$sid <- integer(0L)
                         }
