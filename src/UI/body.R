@@ -733,9 +733,10 @@ if(buildUI){
 {throwOnError:false,delimiters:[{left:'$$',right:'$$',display:true},{left: '$',right:'$',display:false}]});")
           )
         },
+        tags$meta(name = "color-scheme", content="dark light"),
         tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
-        tags$script(src = "miro.js", type = "application/javascript"),
-        # css sheets that depend on data from config JSON file
+        tags$script(`defer src` = "miro.js", type = "application/javascript"),
+        # styles that depend on data from config JSON file
         # Logo ratio should be 4,6 (width/height)
         tags$style(HTML(
           paste0('

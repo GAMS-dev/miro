@@ -181,7 +181,7 @@ observeEvent(input$btSortName, {
                                                desc = FALSE))
     updateActionButton(session, "btSortName", 
                        label = lang$nav$dialogLoadScen$btSortNameDESC, 
-                       icon = icon("sort-by-alphabet-alt", lib = "glyphicon"))
+                       icon = icon("sort-alpha-down-alt"))
     btSortNameDesc <<- FALSE
   }else{
     updateSelectInput(session, "selLoadScen", 
@@ -189,7 +189,7 @@ observeEvent(input$btSortName, {
                                                uid, "_sname", desc = TRUE))
     updateActionButton(session, "btSortName", 
                        label = lang$nav$dialogLoadScen$btSortNameASC, 
-                       icon = icon("sort-by-alphabet", lib = "glyphicon"))
+                       icon = icon("sort-alpha-down"))
     btSortNameDesc <<- TRUE
   }
   
@@ -207,14 +207,14 @@ observeEvent(input$btSortTime, {
                                                uid, "_stime", desc = FALSE))
     updateActionButton(session, "btSortTime", 
                        label = lang$nav$dialogLoadScen$btSortTimeDESC, 
-                       icon = icon("sort-by-order-alt", lib = "glyphicon"))
+                       icon = icon("sort-numeric-down-alt"))
     btSortTimeDesc <<- FALSE
   }else{
     updateSelectInput(session, "selLoadScen", choices = formatScenList(
       scenMetaDbSubset, uid, "_stime", desc = TRUE))
     updateActionButton(session, "btSortTime", 
                        label = lang$nav$dialogLoadScen$btSortTimeASC, 
-                       icon = icon("sort-by-order", lib = "glyphicon"))
+                       icon = icon("sort-numeric-down"))
     btSortTimeDesc <<- TRUE
   }
 })
@@ -786,7 +786,7 @@ if(LAUNCHHCUBEMODE){
                                                  desc = FALSE))
       updateActionButton(session, "btSortName_base", 
                          label = lang$nav$dialogLoadScen$btSortNameDESC, 
-                         icon = icon("sort-by-alphabet-alt", lib = "glyphicon"))
+                         icon = icon("sort-alpha-down-alt"))
       btSortNameDescBase <<- FALSE
     }else{
       updateSelectInput(session, "selLoadScen_base", 
@@ -794,7 +794,7 @@ if(LAUNCHHCUBEMODE){
                                                  "_sname", desc = TRUE))
       updateActionButton(session, "btSortName_base", 
                          label = lang$nav$dialogLoadScen$btSortNameASC, 
-                         icon = icon("sort-by-alphabet", lib = "glyphicon"))
+                         icon = icon("sort-alpha-down"))
       btSortNameDescBase <<- TRUE
     }
     
@@ -812,14 +812,14 @@ if(LAUNCHHCUBEMODE){
                                                  "_stime", desc = FALSE))
       updateActionButton(session, "btSortTime_base", 
                          label = lang$nav$dialogLoadScen$btSortTimeDESC, 
-                         icon = icon("sort-by-order-alt", lib = "glyphicon"))
+                         icon = icon("sort-numeric-down-alt"))
       btSortTimeDescBase <<- FALSE
     }else{
       updateSelectInput(session, "selLoadScen_base", choices = formatScenList(
         scenMetaDbBaseSubset, uid, "_stime", desc = TRUE))
       updateActionButton(session, "btSortTime_base", 
                          label = lang$nav$dialogLoadScen$btSortTimeASC, 
-                         icon = icon("sort-by-order", lib = "glyphicon"))
+                         icon = icon("sort-numeric-down"))
       btSortTimeDescBase <<- TRUE
     }
   })

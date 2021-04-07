@@ -548,15 +548,6 @@ readTraceData <- function(filePath, traceColNames){
     stop("Trace data has incorrect length.", call. = FALSE)
   }
 }
-getIcon <- function(name, lib){
-  if(!identical(name, NULL)){
-    lib <- if(identical(lib, "glyphicon")) "glyphicon" else "font-awesome"
-    icon <- icon(name, lib)
-  }else{
-    icon <-  NULL
-  }
-  return(icon)
-}
 csv2Vector <- function(csv){
   if(!length(csv)){
     return(character(0L))
