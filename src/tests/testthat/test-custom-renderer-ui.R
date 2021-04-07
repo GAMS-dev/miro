@@ -3,7 +3,6 @@ skip_if(identical(Sys.getenv("GAMS_SYS_DIR"), ""),
         "GAMS_SYS_DIR environment variable not set. Skipping tests.")
 
 createTestDb()
-# END setup
 
 testModelPath <- file.path(testDir, "model", "transport_custom_map")
 Sys.setenv(MIRO_MODEL_PATH = file.path(testModelPath,

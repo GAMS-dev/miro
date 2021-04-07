@@ -125,14 +125,14 @@ PerformanceReporter <- R6::R6Class("PerformanceReporter", public = list(
   publish = function(){
     context <- eval(substitute(testthat::get_reporter()$.context),
                     envir = parent.frame())
-    if(is.na(private$pass)){
-      warning("No reporter password set. Skipping publishing performance results.")
-      private$data <- list()
-      return(return(invisible(self)))
-    }
     dataToPublish <- list(context = context,
                           data = private$data)
     private$data <- list()
+    if(is.na(private$pass)){
+      warning("No reporter password set. Skipping publishing performance results.")
+      print(dataToPublish)
+      return(return(invisible(self)))
+    }
     tryCatch({
       req <- httr::POST(private$url, body = dataToPublish,
                         httr::authenticate(private$user, private$pass),
