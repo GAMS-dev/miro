@@ -5,17 +5,9 @@ skip_if(identical(Sys.getenv("GAMS_SYS_DIR"), ""),
 additionalGamsClArgs <- character(0L)
 if(!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")){
   additionalGamsClArgs <- paste0('license="', Sys.getenv("MIRO_TEST_GAMS_LICE"), '"')
-  if(identical(Sys.getenv("CI_JOB_IMAGE"), "hub.gams.com:443/gamsmiro-ci:latest") &&
-     !file.exists(file.path(Sys.getenv("GAMS_SYS_DIR"), "gamslice.txt"))){
-    # workaround for cutstock example as GAMS parameters like license
-    # are not forwarded to bch facility with latest GAMS versions (34).
-    if(!file.copy(Sys.getenv("MIRO_TEST_GAMS_LICE"), file.path(Sys.getenv("GAMS_SYS_DIR"), "gamslice.txt"))){
-      warning("Could not copy GAMS license to GAMS system directory. Cutstock test is likely to fail!")
-    }
-  }
 }
 
-for(modelToTest in c("pickstock", "transport", "sudoku", "farming", "inscribedsquare", "tsp", "cpack", "lubrication", "kport", "cutstock")){
+for(modelToTest in c("pickstock", "transport", "sudoku", "farming", "inscribedsquare", "tsp", "cpack", "lubrication", "kport")){
   createTestDb()
   miroModelDir <- file.path(testDir, "..", "model", modelToTest)
   Sys.setenv(MIRO_MODEL_PATH = file.path(miroModelDir,  paste0(modelToTest, ".gms")))
