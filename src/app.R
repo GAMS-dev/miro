@@ -221,7 +221,7 @@ if(is.null(errMsg)){
                       rSaveFilePath)
   }else{
     load(rSaveFilePath)
-    if(exists(dbSchema)){
+    if(exists("dbSchema")){
       # legacy app, need to convert to new format
       dbSchemaModel <- dbSchema$tabName[-seq_len(6)]
       dbSchemaModel <- setNames(lapply(seq_along(dbSchemaModel), function(i){
