@@ -733,7 +733,8 @@ if(buildUI){
 {throwOnError:false,delimiters:[{left:'$$',right:'$$',display:true},{left: '$',right:'$',display:false}]});")
           )
         },
-        tags$meta(name = "color-scheme", content="dark light"),
+        tags$meta(name = "color-scheme",
+                  content = if(identical(config$theme, "browser")) "dark light" else "normal"),
         tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
         tags$script(`defer src` = "miro.js", type = "application/javascript"),
         # styles that depend on data from config JSON file
