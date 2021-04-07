@@ -577,8 +577,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   idxScalarIn <- dbSchema$getSymIdx(scalarsFileName)[[1]]
   
   if(identical(currentCompMode, "pivot")){
-    if(!compareModeTabsetGenerated[3]){
-      compareModeTabsetGenerated[3] <<- TRUE
+    if(!dynamicUILoaded$compareModeTabsets[3]){
+      dynamicUILoaded$compareModeTabsets[3] <<- TRUE
       insertUI("#pivotCompScenWrapper", where = "afterBegin",
                generateScenarioTabset(0L, pivotCompare = TRUE), immediate = TRUE)
     }

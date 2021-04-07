@@ -1229,7 +1229,10 @@ if(!is.null(errMsg)){
       modelStatusObs     <- NULL
       miroLogAnnotations <- NULL
       
-      compareModeTabsetGenerated <- vector("logical", 3L)
+      dynamicUILoaded <- list(inputGraphs = vector("logical", length(modelIn)),
+                              outputTablesUI = vector("logical", length(configGraphsOut)),
+                              outputTables = vector("logical", length(configGraphsOut)),
+                              compareModeTabsets = vector("logical", 3L))
       
       # set local working directory
       unzipModelFilesProcess <- NULL
@@ -1558,6 +1561,7 @@ if(!is.null(errMsg)){
       modelInputData  <- vector(mode = "list", length = length(modelIn))
       modelInputDataVisible <- vector(mode = "list", length = length(modelIn))
       modelInputGraphVisible <- vector(mode = "logical", length = length(modelIn))
+      modelOutputTableVisible <- vector(mode = "logical", length = length(configGraphsOut))
       modelInputDataHcube <- vector(mode = "list", length = length(modelIn))
       externalInputData <- vector(mode = "list", length = length(modelIn))
       externalInputData_filtered <- vector(mode = "list", length = length(modelIn))
