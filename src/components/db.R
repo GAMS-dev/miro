@@ -71,6 +71,15 @@ Db <- R6Class("Db",
                                                  ";"))
                     }
                   }else if(identical(dbConf$type, "sqlite")){
+                    if(length(dbConf$dbPathToMigrate)){
+                      tryCatch({
+                        source("./migrations/1-4-0-migrate-db.R")
+                        migrateMiroDatabase(oldPath = dbConf$dbPathToMigrate, newPath = dirname(dbConf$name))
+                      }, error = function(e){
+                        stop(sprintf("Db: Database could not be migrated. Error message: %s", conditionMessage(e)), 
+                             call. = FALSE)
+                      })
+                    }
                     tryCatch({
                       private$conn <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = dbConf$name, bigint = "integer")
                       # turn foreign key usage on

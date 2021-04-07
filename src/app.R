@@ -275,13 +275,21 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
                      name = file.path(miroDbDir, 
                                       paste0(modelName, ".sqlite3")))
     if(!dir.exists(miroDbDir)){
-      tryCatch({
-        if(!dir.create(miroDbDir, showWarnings = FALSE))
-          stop()
-      }, error = function(e){
-        errMsg <<- paste(errMsg, sprintf("App data directory: '%s' could not be created. Check that you have sufficient read/write permissions.", miroDbDir),
-                         sep = "\n")
-      })
+      if(identical(basename(miroDbDir), "app_data") &&
+         identical(dirname(miroDbDir), miroWorkspace) &&
+         file.exists(file.path(miroWorkspace, "miro.sqlite3"))){
+        # new MIRO app_data directory in MIRO workspace
+        dbConfig$dbPathToMigrate <- file.path(miroWorkspace, "miro.sqlite3")
+      }
+      if(!dir.create(miroDbDir, showWarnings = FALSE)){
+        errMsg <- paste(errMsg, sprintf("App data directory: '%s' could not be created. Check that you have sufficient read/write permissions.", miroDbDir),
+                        sep = "\n")
+      }
+    }else if(!identical(dirname(miroDbDir), miroWorkspace) &&
+             file.exists(file.path(miroDbDir, "miro.sqlite3")) &&
+             !file.exists(dbConfig$name)){
+      # custom database location with existing legacy database
+      dbConfig$dbPathToMigrate <- file.path(miroDbDir, "miro.sqlite3")
     }
   }
   if(isTRUE(config$activateModules$remoteExecution)){

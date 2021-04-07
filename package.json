@@ -32,7 +32,8 @@
       "src/examples/**",
       "src/tools/**",
       "src/UI/**",
-      "src/start-shiny.R"
+      "src/start-shiny.R",
+      "src/migrations/**"
     ],
     "files": [
       "**/*",
