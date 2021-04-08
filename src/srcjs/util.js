@@ -9,12 +9,12 @@ function changeChartjsTheme(dark = false) {
     return;
   }
   if (dark) {
-    Chart.defaults.global.defaultFontColor = 'white';
+    Chart.defaults.color = 'white';
   } else {
-    Chart.defaults.global.defaultFontColor = '#666';
+    Chart.defaults.color = '#666';
   }
   Chart.helpers.each(Chart.instances, (instance) => {
-    instance.chart.update();
+    instance.update();
   });
 }
 
@@ -131,7 +131,10 @@ export function rerenderHot(delay = 100) {
   setTimeout(() => {
     const el = $('.rhandsontable:visible').get(0);
     if (el !== undefined) {
-      HTMLWidgets.getInstance(el).hot.render();
+      const hotInstance = HTMLWidgets.getInstance(el);
+      if (hotInstance !== undefined) {
+        hotInstance.hot.render();
+      }
     }
   }, delay);
 }
