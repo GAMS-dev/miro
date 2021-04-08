@@ -476,8 +476,8 @@
       "title": "Download temporary files",
       "desc": "Select the file you wish to download",
       "noFiles": "No files found",
-      "downloadZipButton":"Download all as zip",
-      "downloadButton":"Download file",
+      "downloadAllButton":"Download all",
+      "downloadButton":"Download",
       "cancelButton":"Cancel"
     },
     "dialogJobSubmission":{
