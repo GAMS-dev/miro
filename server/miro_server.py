@@ -57,7 +57,7 @@ class MiroServer(object):
     parser.add_argument('--module',
       type=str,
       help='Module to build',
-      choices=['dockerproxy', 'proxy'])
+      choices=['dockerproxy', 'proxy', 'auth'])
 
     parser.add_argument('--pull', help='Pull images from hub.gams.com', 
       action='store_true')

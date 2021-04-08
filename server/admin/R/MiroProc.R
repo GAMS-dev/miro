@@ -2,6 +2,8 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
   initialize = function(session){
     private$session <- session
     procEnv <- as.list(Sys.getenv())
+    procEnv[["MIRO_DB_USERNAME"]] <- NULL
+    procEnv[["MIRO_DB_PASSWORD"]] <- NULL
     procEnv$MIRO_POPULATE_DB <- "true"
 
     private$procEnv <- procEnv
@@ -10,6 +12,12 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
   },
   getMigrationInfo = function(){
     return(private$migrationInfo)
+  },
+  setDbCredentials = function(username, password){
+    private$procEnv[["MIRO_DB_USERNAME"]] <- username
+    private$procEnv[["MIRO_DB_PASSWORD"]] <- password
+    private$procEnv[["MIRO_DB_SCHEMA"]] <- username
+    return(invisible(self))
   },
   run = function(appId, modelName, miroVersion, appDir, dataDir,
     progressSelector, successCallback, overwriteScen = TRUE, requestType = "addApp",

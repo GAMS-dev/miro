@@ -142,6 +142,7 @@
       },
       "metaColAliases":{
         "uid":"Eigentümer",
+        "sname": "Name",
         "stime":"Erstellungsdatum",
         "stag": "Job-Tags"
       }
@@ -1561,7 +1562,7 @@
       "infoPostgres": "Sie verwenden GAMS MIRO Desktop mit einem <a href=\"https://www.postgresql.org\" target=\"_blank\">PostgreSQL</a>-Datenbank-Backend. Die verwendete Datenbank hat den Namen: %s und befindet sich unter: %s. Um Ihre Datenbank zu sichern, lesen Sie <a href=\"https://www.postgresql.org/docs/current/backup.html\" target=\"_blank\">hier</a>.",
       "infoSQLite": "Sie verwenden GAMS MIRO Desktop mit einem <a href=\"https://sqlite.org\" target=\"_blank\">SQLite</a>-Datenbank-Backend. Die verwendete Datenbank befindet sich unter: %s.",
       "backup": "Datenbanksicherung",
-      "backupWrapper": "Sie möchten eine Sicherung der Datenbank erstellen? Beachten Sie, dass die gesicherte Datenbank die Daten aller Ihrer MIRO-Anwendungen enthält, nicht nur die der aktuellen.",
+      "backupWrapper": "Sie möchten eine Sicherung der Datenbank erstellen?",
       "btDownloadBackup": "Datenbank sichern",
       "backupProgress": "Datenbank wird gesichert...",
       "remove": "Daten löschen",

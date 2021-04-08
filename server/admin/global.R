@@ -1,5 +1,6 @@
 library(futile.logger)
 library(R6)
+library(DBI)
 library(jsonlite)
 library(yaml)
 library(httr)

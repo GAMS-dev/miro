@@ -5,6 +5,7 @@ library(futile.logger)
 library(DBI)
 
 source("../../components/scenario_metadata.R")
+source("../../components/db_schema.R")
 source("../../components/db.R")
 source("../../components/attachments.R")
 
@@ -20,21 +21,18 @@ FakeSession <- R6Class("FakeSession", public = list(
   id = NULL
 ))
 
-testDir <- file.path(getwd(), "..")
-
 createTestDb()
 
+ioConfig <<- list()
+
+dbSchema <<- DbSchema$new()
 db <- Db$new(uid = "te_de\\%d", 
              dbConf = list(type = "sqlite",
                            name = file.path(testDir, 
-                                            "miro.sqlite3")), 
-             dbSchema = list(colNames = list("_scenMeta" = c(sid = "_sid")),
-                             tabName = c("_scenAttach" = "_attach",
-                                         "_scenMeta" = "asd",
-                                         "_scenLock" = "def"),
-                             colTypes = list()),
+                                            "miro.sqlite3")),
              slocktimeLimit = slocktimeLimit, modelName = modelName,
              hcubeActive = FALSE, ugroups = c("bla_blubb", "test123"))
+dbSchema$setConn(db$getConn())
 
 workDir <- tempdir()
 
@@ -98,7 +96,7 @@ test_that("Flushing opQueue works", {
   data <- attachments$flushOpQueue()$save
   expect_error(db$exportScenDataset(dplyr::bind_cols("_sid" = rep.int(1, nrow(data)),
                                                      data),
-                                    "_attach", addForeignKey = FALSE), NA)
+                                    "_scenAttach"), NA)
 })
 
 test_that("Initializing scen data works", {

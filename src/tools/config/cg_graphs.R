@@ -167,7 +167,7 @@ tryCatch({
 showErrorMsg(lang$errMsg$fetchScenData$title, errMsg)
 if(!is.null(scenMetaDb) && nrow(scenMetaDb)){
   # by default, put most recently saved scenario first
-  scenList <- db$formatScenList(scenMetaDb, stimeIdentifier, desc = TRUE)
+  scenList <- formatScenList(scenMetaDb, uid, "_stime", desc = TRUE)
   updateSelectInput(session, "scenList", choices = scenList)
   hideEl(session, "#noDbScen")
   showEl(session, "#dbScen")

@@ -2,8 +2,6 @@ context("Integration test - App deployment")
 library(processx)
 library(zip)
 
-testDir <- file.path(getwd(), "..")
-
 createTestDb()
 
 modelToTest <- "pickstock"

@@ -540,7 +540,7 @@ showEditMetaDialog <- function(metadata,
   }
   langData <- lang$nav[[modeDescriptor]]
   
-  scenTags <- csv2Vector(metadata[["stag"]][[1]])
+  scenTags <- csv2Vector(metadata[["_stag"]][[1]])
   
   contentAccessPerm <- NULL
   
@@ -551,7 +551,7 @@ showEditMetaDialog <- function(metadata,
              langData$scenExists),
     tags$div(class = "space"),
     textInput("editMetaName", langData$newName, 
-              value = metadata[["sname"]][[1]]),
+              value = metadata[["_sname"]][[1]]),
     selectizeInput("editMetaTags", langData$newTags, 
                    scenTags, selected = scenTags,
                    multiple = TRUE, options = list(
@@ -559,10 +559,10 @@ showEditMetaDialog <- function(metadata,
                      'persist' = FALSE)
     )
   )
-  writePerm <- csv2Vector(metadata[["writePerm"]][[1]])
+  writePerm <- csv2Vector(metadata[["_accessw"]][[1]])
   if(!isLocked && length(ugroups) && any(ugroups %in% writePerm)){
-    readPerm  <- csv2Vector(metadata[["readPerm"]][[1]])
-    execPerm <- csv2Vector(metadata[["execPerm"]][[1]])
+    readPerm  <- csv2Vector(metadata[["_accessr"]][[1]])
+    execPerm <- csv2Vector(metadata[["_accessx"]][[1]])
     
     contentAccessPerm <- tabPanel(langData$categoryAccessPerm, 
                                   tags$div(class = "gmsalert gmsalert-error", id = "editMetaEmptyPerm",
@@ -1031,7 +1031,7 @@ showManualJobImportDialog <- function(){
     footer = tagList(
       modalButton(lang$nav$hcubeMode$manualJobImportDialog$cancelButton),
       actionButton("btUploadHcube", label = lang$nav$hcubeMode$manualJobImportDialog$uploadButton, 
-                   class = "bt-highlight-1 bt-gms-confirm")
+                   class = "bt-highlight-1 bt-gms-confirm", disabled = TRUE)
     ),
     fade = TRUE, easyClose = TRUE
   ))

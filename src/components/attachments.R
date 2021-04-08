@@ -7,7 +7,6 @@ Attachments <- R6Class("Attachments",
                            private$db <- db
                            private$config <- config
                            private$workDir <- file.path(dirname(workDir), basename(workDir))
-                           private$tabName <- db$getDbSchema()$tabName[["_scenAttach"]]
                            private$conn <- db$getConn()
                            super$initialize(inputSymbols, outputSymbols, tabularInputSymbols, rv)
                          },
@@ -351,7 +350,7 @@ Attachments <- R6Class("Attachments",
                              }
                            }
                            
-                           data <- private$db$importDataset(private$tabName,
+                           data <- private$db$importDataset("_scenAttach",
                                                             if(allExecPerm && unmodifiedData)
                                                               tibble("execPerm", if(inherits(private$conn, "PqConnection")) TRUE else 1)
                                                             else
@@ -535,12 +534,44 @@ Attachments <- R6Class("Attachments",
                            }
                            private$attachmentsToClean <- character(0L)
                            return(invisible(self))
+                         },
+                         removeExpired = function(fileNames, maxDuration){
+                           # removes attachments that have exceeded maximum storage duration
+                           # 
+                           # Args:
+                           #    fileNames:     file names to remove
+                           #    maxDuration:   maximum storage duration in days
+                           # 
+                           # Returns:
+                           #    integer: number of rows affected
+                           stopifnot(is.character(fileNames), length(fileNames) >= 1L,
+                                     is.integer(maxDuration), length(maxDuration) == 1L)
+                           
+                           tableNameDb    <- dbSchema$getDbTableName("_scenAttach")
+                           if(!DBI::dbExistsTable(private$conn, tableNameDb)){
+                             return(invisible(self))
+                           }
+                           expirationTime <- as.character(Sys.time() - 3600L * 24L * maxDuration, 
+                                                          usetz = TRUE, tz = "GMT")
+                           query <- paste0("DELETE FROM ", dbQuoteIdentifier(private$conn, tableNameDb),
+                                           " WHERE ", dbQuoteIdentifier(private$conn, "fileName"),
+                                           " IN (", 
+                                           paste(dbQuoteString(private$conn, fileNames), collapse = ", "),
+                                           ") AND ",
+                                           dbQuoteIdentifier(private$conn, "timestamp"),
+                                           "<", 
+                                           dbQuoteString(private$conn, expirationTime))
+                           affectedRows <- private$db$runQuery(query)
+                           if(affectedRows > 0L){
+                             flog.debug("Db: %s attachments in table: '%s' were deleted due to surpassing the expiration date (Attachments.removeExpired).",
+                                        affectedRows, tableNameDb)
+                           }
+                           return(invisible(self))
                          }),
                        private = list(
                          sid = NULL,
                          db = NULL,
                          conn = NULL,
-                         tabName = NULL,
                          config = NULL,
                          attachmentData = NULL,
                          workDir = NULL,
@@ -571,7 +602,7 @@ Attachments <- R6Class("Attachments",
                            return(invisible(self))
                          },
                          fetchDataFromDb = function(sid){
-                           return(private$db$importDataset(private$tabName, 
+                           return(private$db$importDataset("_scenAttach", 
                                                            colNames = c("fileName", "execPerm"), 
                                                            subsetSids = sid))
                          },

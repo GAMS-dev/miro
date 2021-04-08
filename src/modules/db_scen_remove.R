@@ -111,7 +111,7 @@ closeScenario <- function(clearMeta = TRUE){
   }
   activeScen        <<- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
                                      isNewScen = TRUE, views = views, attachments = attachments)
-  scenMetaData[["scen_1_"]] <<- activeScen$getMetadata(lang$nav$excelExport$metadataSheet)
+  scenMetaData[["scen_1_"]] <<- activeScen$getMetadata()
   rv$activeSname    <<- NULL
   scenTags          <<- NULL
   attachmentList    <<- tibble(name = vector("character", attachMaxNo), 

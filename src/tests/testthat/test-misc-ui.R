@@ -1,10 +1,6 @@
 context("UI tests - Miscellaneous")
 
-testDir <- file.path(getwd(), "..")
-
 createTestDb()
-
-Sys.setenv(MIRO_DB_PATH = testDir)
 
 testModelPath <- file.path(testDir, "model", "transport")
 Sys.setenv(MIRO_MODEL_PATH = file.path(testModelPath,

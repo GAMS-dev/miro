@@ -172,34 +172,42 @@ server <- function(input, output, session){
                 newAppConfig[["accessGroups"]] <- as.list(newGroups)
             }
 
+            appDbCredentials <- db$createAppSchema(appId)
+            newAppConfig[["containerEnv"]][["MIRO_DB_USERNAME"]] <- appDbCredentials$user
+            newAppConfig[["containerEnv"]][["MIRO_DB_PASSWORD"]] <- appDbCredentials$password
+            newAppConfig[["containerEnv"]][["MIRO_DB_SCHEMA"]]   <- appDbCredentials$user
+
             appDir   <- file.path(getwd(), MIRO_MODEL_DIR, appId)
             dataDir  <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_", appId))
 
             extractAppData(isolate(input$miroAppFile$datapath), appId,
                         logoPath)
 
-            miroProc$run(appId, modelName, miroAppValidator$getMIROVersion(),
-                appDir, dataDir, progressSelector = "#addAppProgress",
-                overwriteScen = TRUE, requestType = "addApp",
-                launchDbMigrationManager = launchDbMigrationManager, function(){
-                tryCatch({
-                    engineClient$registerModel(appId, paste0(modelName, ".gms"), appDir, overwrite = TRUE)
-                    flog.debug("New MIRO app: %s registered at Engine.", modelName)
+            miroProc$
+                setDbCredentials(appDbCredentials$user,
+                    appDbCredentials$password)$
+                run(appId, modelName, miroAppValidator$getMIROVersion(),
+                    appDir, dataDir, progressSelector = "#addAppProgress",
+                    overwriteScen = TRUE, requestType = "addApp",
+                    launchDbMigrationManager = launchDbMigrationManager, function(){
+                    tryCatch({
+                        engineClient$registerModel(appId, paste0(modelName, ".gms"), appDir, overwrite = TRUE)
+                        flog.debug("New MIRO app: %s registered at Engine.", modelName)
 
-                    modelConfig$add(newAppConfig)
-                    flog.debug("New MIRO app: %s added.", appId)
+                        modelConfig$add(newAppConfig)
+                        flog.debug("New MIRO app: %s added.", appId)
 
-                    session$sendCustomMessage("onSuccess", 
-                        list(requestType = "addApp", 
-                            configList = modelConfig$getConfigList(), 
-                            groupList = modelConfig$getAccessGroupUnion()))
-                }, error = function(e){
-                    errMsg <- sprintf("Invalid MIRO app. Error message: %s", 
-                            conditionMessage(e))
-                    flog.info(errMsg)
-                    session$sendCustomMessage("onError", list(requestType = "addApp", message = errMsg))
+                        session$sendCustomMessage("onSuccess", 
+                            list(requestType = "addApp", 
+                                configList = modelConfig$getConfigList(), 
+                                groupList = modelConfig$getAccessGroupUnion()))
+                    }, error = function(e){
+                        errMsg <- sprintf("Invalid MIRO app. Error message: %s", 
+                                conditionMessage(e))
+                        flog.info(errMsg)
+                        session$sendCustomMessage("onError", list(requestType = "addApp", message = errMsg))
+                    })
                 })
-            })
         }, error = function(e){
             errMsg <- sprintf("Invalid MIRO app. Error message: %s", 
                     conditionMessage(e))
@@ -222,7 +230,7 @@ server <- function(input, output, session){
             appId <- modelConfig$getAppId(appIndex)
 
             if(isTRUE(input$deleteApp$removeData)){
-                db$removeAppDbTables(appId)
+                db$removeAppSchema(appId)
                 flog.info("Data for MIRO app: %s removed successfully.", appId)
             }
 
