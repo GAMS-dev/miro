@@ -38,9 +38,12 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
   },
   getDbTableNamesModel = function(){
     if(inherits(private$conn, "PqConnection")){
-      query <- paste0("SELECT table_name FROM information_schema.tables", 
-                      " WHERE table_schema=",
-                      dbQuoteString(private$conn, private$db$getInfo()$schema),
+      dbSchemaName <- private$db$getInfo()$schema
+      if(!length(dbSchemaName)){
+        dbSchemaName <- "public"
+      }
+      query <- paste0("SELECT table_name FROM information_schema.tables WHERE table_schema=",
+                      dbQuoteString(private$conn, dbSchemaName),
                       " AND table_type='BASE TABLE';")
     }else{
       query <- paste0("SELECT name FROM sqlite_master WHERE type = 'table';")
