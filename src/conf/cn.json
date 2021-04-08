@@ -1561,7 +1561,7 @@
       "infoPostgres": "您正在将GAMS MIRO Desktop与<a href=\"https://www.postgresql.org\" target=\"_blank\"> PostgreSQL </a>数据库后端一起使用。 所使用的数据库的名称为：%s，并且位于：%s。 要备份数据库，请在<a href=\"https://www.postgresql.org/docs/current/backup.html\" target=\"_blank\">此处</a>阅读。",
       "infoSQLite": "您正在将GAMS MIRO Desktop与<a href=\"https://sqlite.org\" target=\"_blank\"> SQLite </a>数据库后端一起使用。 使用的数据库位于：%s。",
       "backup": "数据库备份",
-      "backupWrapper": "您要创建数据库备份吗？ 请注意，备份的数据库包含您所有MIRO应用程序的数据，而不仅仅是当前的数据库。",
+      "backupWrapper": "您要创建数据库备份吗？",
       "btDownloadBackup": "备份资料库",
       "backupProgress": "正在保存数据库，请稍等",
       "remove": "删除数据",
