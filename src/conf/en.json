@@ -1562,7 +1562,7 @@
       "infoPostgres": "You are using GAMS MIRO Desktop with a <a href=\"https://www.postgresql.org\" target=\"_blank\">PostgreSQL</a> database backend. The database used has the name: %s and is located at: %s. To back up your database, read <a href=\"https://www.postgresql.org/docs/current/backup.html\" target=\"_blank\">here</a>.",
       "infoSQLite": "You are using GAMS MIRO Desktop with a <a href=\"https://sqlite.org\" target=\"_blank\">SQLite</a> database backend. The database used is located at: %s.",
       "backup": "Database backup",
-      "backupWrapper": "You want to create a backup of the database? Note that the backed up database contains the data of all your MIRO applications, not only the current one.",
+      "backupWrapper": "You want to create a backup of the database?",
       "btDownloadBackup": "Backup database",
       "backupProgress": "Database is being saved...",
       "remove": "Delete data",
