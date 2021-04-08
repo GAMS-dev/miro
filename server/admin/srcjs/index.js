@@ -159,7 +159,7 @@ function refreshConfigList() {
             <input data-index="${index}" data-id="${id}" class="btn btn-secondary cancel-btn" value="Cancel" type="reset">
             <button class="btn btn-secondary confirm-btn btn-save-changes" data-id="${id}" data-index="${index}" type="button">Save</button>
         </div>
-        <a class="delete-app-button app-corner-button" data-index="${index}"><i class="fas fa-times"></i></a>
+        <a class="delete-app-button app-corner-button" data-index="${index}" data-id="${id}"><i class="fas fa-times"></i></a>
       </div>
     </div>`;
   }, '');
@@ -411,18 +411,31 @@ $appsWrapper.on('click', '.btn-save-changes', function () {
 
 $appsWrapper.on('click', '.delete-app-button', function () {
   const appIndex = this.dataset.index;
+  const appId = this.dataset.id;
   bootbox.confirm({
     message: 'Are you sure you want to remove this app? This cannot be undone.',
     centerVertical: true,
+    onEscape: false,
     callback: (removeAppConfirmed) => {
       if (!removeAppConfirmed) {
         return;
       }
-      bootbox.confirm({
-        message: 'Do you want to permanently remove all data belonging to this app? This cannot be undone.',
+      bootbox.prompt({
+        required: true,
+        title: 'Remove data',
+        message: `Do you want to permanently remove all data belonging to this app? Please type <b>${escapeHtml(appId)}</b> to confirm.`,
         centerVertical: true,
-        callback: (removeDataConfirmed) => {
-          sendRemoveRequest(appIndex, removeDataConfirmed);
+        onEscape: false,
+        callback: (result) => {
+          if (result === null) {
+            sendRemoveRequest(appIndex, false);
+            return true;
+          }
+          if (result !== appId) {
+            return false;
+          }
+          sendRemoveRequest(appIndex, true);
+          return true;
         },
       });
     },
@@ -570,6 +583,7 @@ $(document).ready(() => {
     bootbox.confirm({
       message: `A scenario: '${scenName}' already exists. Do you want to overwrite it?`,
       centerVertical: true,
+      onEscape: false,
       callback: (removeScenConfirmed) => {
         if (!removeScenConfirmed) {
           return;
