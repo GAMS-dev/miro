@@ -2,8 +2,6 @@ context("UI tests - Download temporary files")
 
 createTestDb()
 
-Sys.setenv(MIRO_DB_PATH = testDir)
-
 Sys.setenv(MIRO_MODEL_PATH = file.path(getwd(), "..", "model", "pickstock_output_tables",
                                        "pickstock_output_tables.gms"))
 Sys.setenv(MIRO_MODE="base")
