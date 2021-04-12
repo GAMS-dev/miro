@@ -1809,7 +1809,7 @@ if(!is.null(errMsg)){
         scenIdLong <- paste0("scen_", i, "_")
         # compare scenarios
         observe({
-          # we need to duplicate code from loadDynamicTabContentByTabsetId here to have 
+          # we need to duplicate code from getSheetnamesByTabsetId here to have 
           # reactive dependencies
           tabIdFull <- input[[paste0("contentScen_", i)]]
           if(is.null(tabIdFull)){
@@ -1820,6 +1820,9 @@ if(!is.null(errMsg)){
           if(isGroupOfSheets[[groupId]]){
             tabId <- as.integer(strsplit(input[[paste0("contentScen_", i, "_", groupId)]], 
                                          "_", fixed = TRUE)[[1L]][[4L]])
+          }
+          if(!length(scenData$getRefScenMap(tabIdToRef(i)))){
+            return()
           }
           if(groupId > length(outputTabs)){
             groupId <- groupId - length(outputTabs)

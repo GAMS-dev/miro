@@ -396,6 +396,7 @@ if(buildUI){
             tags$div(id = "scen-tab-view", style = if(identical(config$defCompMode, "tab")) "" else "display:none;",
                      tags$div(style = "float: right;",
                               tags$a(id = "btCmpTabCloseAll",
+                                     style = "display:none",
                                      href = "#",
                                      onclick = paste0("Miro.confirmModalShow('", 
                                                       lang$nav[["dialogCloseAllScen"]]$title, "', '", 

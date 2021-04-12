@@ -25,5 +25,7 @@ renderScenInCompMode <- function(scenId, refreshData = FALSE){
                           metaTmp[["_sname"]][1]))
   showElReplaceTxt(session, paste0("#cmpScenDate_", scenId),
                    metaTmp[["_stime"]][1])
-  loadDynamicTabContentByTabsetId(session, scenId, initEnv = TRUE)
+  loadDynamicTabContentCompMode(session, scenId,
+                                getSheetnamesByTabsetId(scenId),
+                                initEnv = TRUE)
 }

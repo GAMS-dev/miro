@@ -1,13 +1,7 @@
 {
   "output": {
-    "cmpScenTitle_2": {
-      "html": "default1",
-      "deps": [
-
-      ]
-    },
-    "cmpScenTitle_3": {
-      "html": "default4",
+    "inputDataTitle": {
+      "html": "<i>&lt;New Scenario&gt;<\/i>",
       "deps": [
 
       ]

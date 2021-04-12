@@ -66,6 +66,9 @@ observeEvent(input[["btCmpTabCloseAll"]], {
   numberScenTabs                 <<- 0L
   occupiedSidSlots[]             <<- FALSE
   sidCompOrder                   <<- NULL
+  hideEl(session, "#btCmpTabCloseAll")
+  showEl(session, "#cmpTabNoScenWrapper")
+  disableEl(session, "#btCompareScen")
 })
 observeEvent(input[["btScenClose"]], {
   tabsetId <- suppressWarnings(as.integer(input[["btScenClose"]]))

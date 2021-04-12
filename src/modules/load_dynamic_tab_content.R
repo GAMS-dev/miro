@@ -1,4 +1,4 @@
-loadDynamicTabContentByTabsetId <- function(session, tabsetId, initEnv = FALSE){
+getSheetnamesByTabsetId <- function(tabsetId){
   tabIdFull <- isolate(input[[paste0("contentScen_", tabsetId)]])
   if(is.null(tabIdFull)){
     return()
@@ -24,9 +24,10 @@ loadDynamicTabContentByTabsetId <- function(session, tabsetId, initEnv = FALSE){
   }else{
     sheetNames <- names(modelOut)[outputTabs[[groupId]]]
   }
-  loadDynamicTabContentCompMode(session, tabsetId,
-                                if(is.null(tabId)) sheetNames else sheetNames[tabId],
-                                initEnv = initEnv)
+  if(is.null(tabId)){
+    return(sheetNames)
+  }
+  return(sheetNames[tabId])
 }
 getPivotCompGraphConfig <- function(sheetName){
   if(sheetName %in% names(ioConfig$modelOut)){

@@ -82,9 +82,14 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
       uiSidList <- unique(unlist(uiSidList[!splitCompRefIds],
                                  use.names = FALSE))
     }else if(identical(currentCompMode, "pivot")){
-      scenMetaDb <<- scenMetaDb[!as.character(scenMetaDb[[1]]) %in% uiSidList[["cmpPivot"]], ]
-      uiSidList <- unique(unlist(uiSidList[names(uiSidList) != "cmpPivot"],
-                                 use.names = FALSE))
+      sidsLoadedInPivotMode <- uiSidList[["cmpPivot"]]
+      if(length(sidsLoadedInPivotMode)){
+        uiSidList <- sidsLoadedInPivotMode
+      }else{
+        scenMetaDb <<- scenMetaDb[!as.character(scenMetaDb[[1]]) %in% uiSidList[["cmpPivot"]], ]
+        uiSidList <- unique(unlist(uiSidList[names(uiSidList) != "cmpPivot"],
+                                   use.names = FALSE))
+      }
     }else{
       tabRefs <- startsWith(names(uiSidList), "cmpTab_")
       sidsAlreadyLoaded <- unlist(uiSidList[tabRefs], use.names = FALSE)
@@ -243,7 +248,9 @@ observeEvent(input$btRefreshComp, {
       return()
     }
   }
-  loadDynamicTabContentByTabsetId(session, input$btRefreshComp, initEnv = TRUE)
+  loadDynamicTabContentCompMode(session, input$btRefreshComp,
+                                getSheetnamesByTabsetId(input$btRefreshComp),
+                                initEnv = TRUE)
 })
 
 # load scenario confirmed
@@ -305,6 +312,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   if(!length(sidsToLoad)){
     return()
   }
+  sidsToLoadVector <- unlist(sidsToLoad, use.names = FALSE)
   
   if(sum(!occupiedSidSlots) < length(sidsToLoad)){
     flog.info("Maximum number of scenarios in scenario comparison mode reached (%d).", 
@@ -316,41 +324,56 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   }
   if(isInSolveMode){
     refId <- "sb"
-  }else if(identical(currentCompMode, "pivot")){
-    refId <- "cmpPivot"
-  }else if(identical(currentCompMode, "tab")){
-    refId <- NULL
-  }else if(identical(currentCompMode, "split")){
-    if(loadInLeftBoxSplit){
-      refId <- "cmpSplitL"
-    }else{
-      refId <- "cmpSplitR"
-    }
+    viewsSids <- 1L
+    symToFetch <- NULL
   }else{
-    flog.error("Invalid state (not in solve mode, and currentCompMode is neither: pivot, tab nor split. Please contact GAMS!.")
-    return(showErrorMsg(lang$errMsg$loadScen$title, lang$errMsg$unknownError))
+    # get names of symbols on first tab
+    if(length(outputTabs)){
+      symToFetch <- names(modelOut)[outputTabs[[1]]]
+    }else{
+      symToFetch <- scenInputTabs[[1]]
+      if(identical(sheetName, 0L)){
+        symToFetch <- scalarsFileName
+      }else{
+        symToFetch <- names(modelIn)[symToFetch]
+      }
+    }
+    if(identical(currentCompMode, "pivot")){
+      refId <- "cmpPivot"
+      viewsSids <- 0L
+      # check if we are modifying already opened scenarios
+      sidsInPivotComp <- scenData$getRefScenMap("cmpPivot")
+      if(length(sidsInPivotComp)){
+        dynamicUILoaded$compTabset[["tab_0"]][["content"]][] <<- FALSE
+        sidsToRemoveFromPivotComp <- !sidsInPivotComp %in% c(sidsToLoadVector, "sb_cmpPivot")
+        if(any(sidsToRemoveFromPivotComp)){
+          scenData$clear(refId, sidsInPivotComp[sidsToRemoveFromPivotComp])
+        }
+        if(isGroupOfSheets[[1]]){
+          tabId <- 1
+        }
+        symToFetch <- getSheetnamesByTabsetId("0")
+      }
+    }else if(identical(currentCompMode, "tab")){
+      refId <- NULL
+      viewsSids <- which(!occupiedSidSlots)[seq_along(sidsToLoadVector)] + 3
+    }else if(identical(currentCompMode, "split")){
+      if(loadInLeftBoxSplit){
+        refId <- "cmpSplitL"
+        viewsSids <- 2L
+      }else{
+        refId <- "cmpSplitR"
+        viewsSids <- 3L
+      }
+    }else{
+      flog.error("Invalid state (not in solve mode, and currentCompMode is neither: pivot, tab nor split. Please contact GAMS!.")
+      return(showErrorMsg(lang$errMsg$loadScen$title, lang$errMsg$unknownError))
+    }
   }
   errMsg <- NULL
   tryCatch({
-    sidsToLoadVector <- unlist(sidsToLoad, use.names = FALSE)
-    if(isInSolveMode){
-      viewsSids <- 1L
-    }else if(identical(currentCompMode, "pivot")){
-      viewsSids <- 0L
-    }else if(identical(currentCompMode, "tab")){
-      viewsSids   <- which(!occupiedSidSlots)[seq_along(sidsToLoadVector)] + 3
-    }else if(loadInLeftBoxSplit){
-      viewsSids   <- 2L
-    }else{
-      viewsSids   <- 3L
-    }
     scriptDataTmp <- NULL
     sandboxId <- 1L
-    if(isInSolveMode){
-      symToFetch <- dbSchema$getAllSymbols()
-    }else{
-      symToFetch <- dbSchema$getAllSymbols()[1]
-    }
     if("sb" %in% sidsToLoadVector){
       if(tryCatch({
         scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE),
@@ -497,7 +520,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
                generateScenarioTabset(0L, pivotCompare = TRUE), immediate = TRUE)
     }
     return(tryCatch({
-      loadDynamicTabContentCompMode(session, 0L, scenTableNamesToDisplay[1], initEnv = TRUE)
+      loadDynamicTabContentCompMode(session, 0L, symToFetch, initEnv = TRUE)
       hideEl(session, "#pivotCompBtWrapper")
       showEl(session, "#pivotCompScenWrapper")
       switchTab(session, "scenComp")
