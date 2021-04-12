@@ -1081,7 +1081,6 @@ if(!is.null(errMsg)){
           dataOut <- dataOut$tabular
           dataIn  <- loadScenData(metaData = metaDataTmp,
                                   workDir = tmpDir,
-                                  errMsg = lang$errMsg$GAMSInput$badInputData,
                                   templates = modelInTemplateTmp, method = method,
                                   fileName = miroDataFile, DDPar = DDPar, GMSOpt = GMSOpt,
                                   dfClArgs = dfClArgs, xlsio = xlsio)

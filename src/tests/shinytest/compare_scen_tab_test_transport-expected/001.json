@@ -1,12 +1,12 @@
 {
   "output": {
-    "title_4": {
+    "cmpScenTitle_4": {
       "html": "New Scenario",
       "deps": [
 
       ]
     },
-    "title_5": {
+    "cmpScenTitle_5": {
       "html": "test123",
       "deps": [
 

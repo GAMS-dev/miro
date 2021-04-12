@@ -95,7 +95,7 @@ showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm",
     ),
     tags$div(id = "badScenarioName", class = "gmsalert gmsalert-error", 
              lang$nav[[modeDescriptor]]$badName),
-    tags$div(id = "scenarioExits", class = "err-msg", style = "display:none;", 
+    tags$div(id = "scenarioExists", class = "err-msg", style = "display:none;", 
              lang$nav[[modeDescriptor]]$scenExists),
     footer = tagList(
       tags$div(id = "dialogSaveInit",

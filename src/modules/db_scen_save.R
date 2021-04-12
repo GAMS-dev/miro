@@ -66,7 +66,7 @@ observeEvent(virtualActionButton(rv$btSaveAs), {
 })
 
 observeEvent(input$btNewName, {
-  hideEl(session, "#scenarioExits")
+  hideEl(session, "#scenarioExists")
   showEl(session, "#scenNameWrapper")
   showEl(session, "#dialogSaveInit")
   hideEl(session, "#dialogSaveConfirm")
@@ -100,7 +100,7 @@ observeEvent(input$btCheckName, {
       return()
     }
     if(scenExists){
-      showEl(session, "#scenarioExits")
+      showEl(session, "#scenarioExists")
       hideEl(session, "#scenNameWrapper")
       hideEl(session, "#dialogSaveInit")
       showEl(session, "#dialogSaveConfirm")
