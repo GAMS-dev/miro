@@ -296,7 +296,8 @@ if(buildUI){
                                                     customOptions = modelIn[[i]]$options,
                                                     height = modelIn[[i]]$height)
                                    }, error = function(e) {
-                                     flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
+                                     flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]),
+                                                       conditionMessage(e)))
                                      errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
                                      showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
                                    })
@@ -393,18 +394,29 @@ if(buildUI){
     tabItem(tabName = "scenarios",
             generateScenarioTabsetPivot(LAUNCHHCUBEMODE),
             tags$div(id = "scen-tab-view", style = if(identical(config$defCompMode, "tab")) "" else "display:none;",
+                     tags$div(style = "float: right;",
+                              tags$a(id = "btCmpTabCloseAll",
+                                     href = "#",
+                                     onclick = paste0("Miro.confirmModalShow('", 
+                                                      lang$nav[["dialogCloseAllScen"]]$title, "', '", 
+                                                      lang$nav[["dialogCloseAllScen"]]$desc, "', '", 
+                                                      lang$nav[["dialogCloseAllScen"]]$cancelButton, "', '", 
+                                                      lang$nav[["dialogCloseAllScen"]]$okButton, 
+                                                      "','Shiny.setInputValue(\\'btCmpTabCloseAll\\',1,{priority:\\'event\\'})')"),
+                                     lang$nav$scen$btCloseAll)),
                      tabsetPanel(id="scenTabset"),
-                     tags$div(id = "no-scen", lang$nav$scen$noScen, class = "no-scen",
+                     tags$div(id = "cmpTabNoScenWrapper", lang$nav$scen$noScen, class = "no-scen",
                               tags$div(style = "margin: 10px;",
-                                       HTML(paste0('<button class="btn btn-default action-button" ',
-                                                   'type="button" onclick="Shiny.setInputValue(\'btLoadScen\',1,{priority: \'event\'})">', 
-                                                   lang$nav$scen$btLoad, '</button>')))
+                                       tags$button(class = "btn btn-default action-button",
+                                                   type = "button",
+                                                   onclick = "Shiny.setInputValue('btLoadScen',1,{priority: 'event'})",
+                                                   lang$nav$scen$btLoad))
                      )
             ),
             fluidRow(
               tags$div(id = "scen-split-view", style = if(identical(config$defCompMode, "split")) "" else "display:none;",
                        box(width = 6, solidHeader = TRUE, status="primary", title = 
-                             tagList(uiOutput("title_2", inline = T), 
+                             tagList(tags$span(id = "cmpScenTitle_2"),
                                      tags$div(style = "float: right;", 
                                               actionButton(inputId = "btScenSplit1_close", 
                                                            class = "bt-icon",
@@ -414,7 +426,7 @@ if(buildUI){
                            genSplitCompButtons(1)
                        ),
                        box(width = 6, solidHeader = TRUE, status="primary", 
-                           title = tagList(uiOutput("title_3", inline = T), 
+                           title = tagList(tags$span(id = "cmpScenTitle_3"),
                                            tags$div(style = "float: right;", 
                                                     actionButton(inputId = "btScenSplit2_close", 
                                                                  class = "bt-icon", icon = icon("times"), label = NULL))),

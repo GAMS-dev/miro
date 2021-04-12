@@ -1624,3 +1624,18 @@ formatScenList = function(scenList, uid, orderBy = NULL, desc = FALSE, limit = 1
                          scenList[["_sname"]], " (", 
                          scenList[["_stime"]], ")")))
 }
+tabIdToRef <- function(tabId){
+  if(tabId == 0L){
+    return("cmpPivot")
+  }
+  if(tabId == 1L){
+    return("sb")
+  }
+  if(tabId == 2L){
+    return("cmpSplitL")
+  }
+  if(tabId == 3L){
+    return("cmpSplitR")
+  }
+  return(paste0("cmpTab_", as.character(tabId)))
+}

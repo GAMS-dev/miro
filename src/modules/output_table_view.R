@@ -51,7 +51,7 @@ observeEvent(input$outputTableView, {
         tryCatch({
           callModule(renderData, paste0("table-out_", iEl),
                      type = "datatable",
-                     data = scenData[["scen_1_"]][[iEl]],
+                     data = scenData$get("sb", names(modelOut)[iEl]),
                      dtOptions = configGraphsOut[[iEl]]$datatable,
                      roundPrecision = roundPrecision)
           dynamicUILoaded[["outputTables"]][iEl] <<- TRUE

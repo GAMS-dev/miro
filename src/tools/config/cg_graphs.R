@@ -161,7 +161,8 @@ scenMetaDb <- NULL
 tryCatch({
   scenMetaDb <- db$fetchScenList(scode = SCODEMAP[['scen']])
 }, error = function(e){
-  flog.error("Problems fetching list of scenarios from database. Error message: %s.", e)
+  flog.error("Problems fetching list of scenarios from database. Error message: %s.",
+             conditionMessage(e))
   errMsg <<- lang$errMsg$fetchScenData$desc
 })
 showErrorMsg(lang$errMsg$fetchScenData$title, errMsg)
@@ -398,11 +399,12 @@ observeEvent(input$dbInput, {
     return(NULL)
   }
   tryCatch({
-    scenDataTmp <- db$loadScenarios(sidToLoad, 
-                                    msgProgress = lang$progressBar$loadScenDb)[[1L]]
+    scenData$load(sidToLoad, refId = "sb")
+    scenDataTmp <- scenData$get("sb")
+    print(scenDataTmp)
   }, error = function(e){
-    flog.error("Some error occurred loading scenarios: '%s' from database. Error message: %s.", 
-               paste(sidsToLoad, collapse = ", "), e)
+    flog.error("Some error occurred loading scenario: '%s' from database. Error message: %s.", 
+               sidToLoad, conditionMessage(e))
     errMsg <<- lang$errMsg$loadScen$desc
   })
   if(is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))){
@@ -493,27 +495,31 @@ observeEvent(input$localInput, {
   tabularOutputWithData <- NULL
   if(identical(loadMode, "gdx")){
     tryCatch({
-        outputDataTmp <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, 
-                                      workDir = dirname(isolate(input$localInput$datapath)), 
-                                      modelName = modelName, errMsg = lang$errMsg$GAMSOutput,
-                                      scalarsFileHeaders = scalarsFileHeaders, 
-                                      templates = modelOutTemplate, method = loadMode, 
-                                      hiddenOutputScalars = character(0L),
+        outputDataTmp <- loadScenData(metaData = modelOut, 
+                                      workDir = dirname(isolate(input$localInput$datapath)),
+                                      templates = modelOutTemplate,
+                                      method = loadMode, 
                                       fileName = basename(isolate(input$localInput$datapath)),
                                       xlsio = xlsio)
     }, error = function(e){
-      flog.error("Problems loading output data. Error message: %s.", e)
+      flog.error("Problems loading output data. Error message: %s.",
+                 conditionMessage(e))
       errMsg <<- lang$errMsg$readOutput$desc
     })
     if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
       return()
     }
-    if(!is.null(outputDataTmp$scalar)){
-      configScalars <<- bind_rows(configScalars, outputDataTmp$scalar)
-    }
     if(!is.null(outputDataTmp$tabular)){
       modelOutputData        <<- outputDataTmp$tabular
       names(modelOutputData) <<- names(modelOut)
+      if(scalarsOutName %in% names(modelOutputData)){
+        configScalars <<- bind_rows(configScalars,
+                                    modelOutputData[[scalarsOutName]])
+        if(length(config$hiddenOutputScalars)){
+          rowsToFiler <- !modelOutputData[[scalarsOutName]] %in% config$hiddenOutputScalars
+          modelOutputData[[scalarsOutName]] <<- modelOutputData[[scalarsOutName]][rowsToFiler, ]
+        }
+      }
     }
     isEmptyOutput         <<- isNonemptyDataset(modelOutputData)
     tabularOutputWithData <- outputSymMultiDimChoices[!isEmptyOutput]
@@ -1914,7 +1920,8 @@ observeEvent(input$chart_ylabel, {
     }
     rv$graphConfig$graph$ydata[[labelID]]$label <<- label
   }, error = function(e){
-    flog.info("Could not change label for y-data. Error message: '%s'.", e)
+    flog.info("Could not change label for y-data. Error message: '%s'.",
+              conditionMessage(e))
   })
 })
 observeEvent(input$bar_mode, {

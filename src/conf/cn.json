@@ -95,6 +95,7 @@
     "scen":{
       "noScen":"未选择任何场景",
       "btLoad": "加载",
+      "btCloseAll": "关闭所有",
       "scenNameSandboxSuffix": "(沙盒)",
       "tooltips":{
         "btExport":"导出场景",
@@ -340,6 +341,12 @@
       "desc":"确定要关闭所选的场景吗？",
       "cancelButton": "否",
       "okButton": "是"
+    },
+    "dialogCloseAllScen":{
+      "title":"关闭所有场景",
+      "desc":"您确定要关闭所场景？",
+      "cancelButton":"否",
+      "okButton":"是"
     },
     "dialogExistingOutput":{
       "title":"已存在输出数据",
@@ -968,7 +975,8 @@
     },
     "loadScen":{
       "title":"加载场景时出错",
-      "desc":"加载所选场景时出现错误。"
+      "desc":"加载所选场景时出现错误。",
+      "inconsistentDataWarning": "在您查看场景时，该场景已更改。 因此，数据可能不一致。 您可能要刷新方案。"
     },
     "deleteScen":{
       "title":"删除场景时出错",

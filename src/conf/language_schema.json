@@ -377,6 +377,10 @@
               "type": "string",
               "minLength": 1
             },
+            "btCloseAll": {
+              "type": "string",
+              "minLength": 1
+            },
             "scenNameSandboxSuffix": {
               "type": "string",
               "minLength": 1
@@ -467,7 +471,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 6
+          "minProperties": 7
         },
         "hcubeImport": {
           "type": "object",
@@ -3769,9 +3773,13 @@
             "desc": {
               "type": "string",
               "minLength": 1
+            },
+            "inconsistentDataWarning": {
+              "type": "string",
+              "minLength": 1
             }
           },
-          "minProperties": 2
+          "minProperties": 3
         },
         "deleteScen": {
           "type": "object",

@@ -121,6 +121,9 @@ server_admin <- function(input, output, session){
                        reset_table_input = 0L, refreshOptions = 0L, refreshInputTableType = 0L)
 
   xlsio <- XlsIO$new()
+  scenData <- ScenData$new(db = db,
+                           scenDataTemplate = scenDataTemplate,
+                           hiddenOutputScalars = config$hiddenOutputScalars)
   session$sendCustomMessage("gms-setGAMSSymbols", 
                             list(gamsSymbols = list(inSym = unname(inputSymMultiDim), 
                                                     inAlias = names(inputSymMultiDim),

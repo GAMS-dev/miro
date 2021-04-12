@@ -13,11 +13,10 @@ if(!identical(loadMode, "scen")){
       modelInTemplateTmp[[length(metaDataTmp) + 1L]] <- scalarsInTemplate
       metaDataTmp <- c(metaDataTmp, scalarsInMetaData)
     }
-    scenInputData <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp, 
-                                  workDir = loadModeWorkDir, 
-                                  modelName = modelName, errMsg = lang$errMsg$GAMSInput$badInputData,
-                                  scalarsFileHeaders = scalarsFileHeaders,
-                                  templates = modelInTemplateTmp, method = loadMode,
+    scenInputData <- loadScenData(metaData = metaDataTmp,
+                                  workDir = loadModeWorkDir,
+                                  templates = modelInTemplateTmp,
+                                  method = loadMode,
                                   fileName = loadModeFileName, DDPar = DDPar, GMSOpt = GMSOpt,
                                   dfClArgs = dfClArgs, xlsio = xlsio, csvio = csvio)
     if(length(scenInputData$errors)){
@@ -30,7 +29,8 @@ if(!identical(loadMode, "scen")){
     names(scenInputData) <- namesScenInputData
     rm(metaDataTmp, namesScenInputData, modelInTemplateTmp)
   }, error = function(e){
-    flog.error("Problems loading input data. Error message: %s.", e)
+    flog.error("Problems loading input data. Error message: %s.",
+               conditionMessage(e))
     errMsg <<- lang$errMsg$dataError$desc
   })
 }
@@ -52,8 +52,7 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
           if(identical(names(modelIn)[[i]], scalarsFileName)){
             if(verifyScalarInput(dataTmp, modelIn[[i]]$headers, 
                                  c(scalarInputSym, scalarInputSymToVerify))){
-              scalarDataset <<- dataTmp 
-              attr(dataTmp, "aliases")  <- attr(modelInTemplate[[i]], "aliases")
+              scalarDataset <<- dataTmp
               modelInputData[[i]] <<- dataTmp[dataTmp[[1]] %in% modelIn[[i]]$symnames, , drop = FALSE]
               inputVerified <- TRUE
             }
@@ -69,7 +68,6 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
                 }
               }, logical(1L), USE.NAMES = FALSE)
               dataTmp[numericSet] <- lapply(dataTmp[numericSet], as.character)
-              attr(dataTmp, "aliases")  <- attr(modelInTemplate[[i]], "aliases")
               modelInputData[[i]] <<- dataTmp
               inputVerified <- TRUE
             }

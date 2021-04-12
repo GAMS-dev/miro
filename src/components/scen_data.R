@@ -1,0 +1,285 @@
+ScenData <- R6Class("ScenData", public = list(
+  initialize = function(db, scenDataTemplate, hiddenOutputScalars = character(0L)){
+    private$db <- db
+    private$dbSymbols <- dbSchema$getAllSymbols()
+    private$scenDataTemplate <- scenDataTemplate
+    self$clearSandbox()
+    private$hiddenOutputScalars <- tolower(hiddenOutputScalars)
+    return(invisible(self))
+  },
+  getRefScenMap = function(refId = NULL){
+    if(is.null(refId)){
+      return(private$refScenMap)
+    }
+    return(private$refScenMap[[refId]])
+  },
+  loadSandbox = function(data, symNames = NULL, metaData = NULL){
+    noData <- vapply(data, is.null, logical(1L), USE.NAMES = FALSE)
+    if(any(noData)){
+      if(is.null(symNames)){
+        data[noData] <- private$scenDataTemplate
+      }else{
+        data[noData] <- private$scenDataTemplate[match(symNames, private$dbSymbols)]
+      }
+    }
+    if(is.null(symNames)){
+      symNames <- private$dbSymbols
+    }
+    stopifnot(identical(length(symNames), length(data)))
+    scalarsOutIdx <- match(scalarsOutName, symNames)
+    if(!is.na(scalarsOutIdx)){
+      rowsToFilter <- !tolower(data[[scalarsOutIdx]][[1]]) %in% private$hiddenOutputScalars
+      private$cachedData[["sb"]][["scalar"]] <- data[[scalarsOutIdx]]
+      data[[scalarsOutIdx]] <- data[[scalarsOutIdx]][rowsToFilter, ]
+    }
+    private$cachedData[["sb"]][["data"]][symNames] <- data
+    if(!is.null(metaData)){
+      private$cachedData[["sb"]][["meta"]] <- metaData
+    }
+    return(invisible(self))
+  },
+  clearSandbox = function(){
+    private$cachedData[["sb"]] <- list(data = setNames(private$scenDataTemplate, private$dbSymbols),
+                                       scalar = tibble(scalar = character(),
+                                                       description = character(),
+                                                       value = character()),
+                                       meta = tibble())
+    return(invisible(self))
+  },
+  addRefId = function(refId, scenIds){
+    stopifnot(is.character(refId))
+    isSbScen <- scenIds == "sb"
+    if(any(isSbScen) && !identical(refId, "sb")){
+      scenIds[isSbScen] <- paste0("sb_", refId)
+    }
+    private$refScenMap[[refId]] <- unique(c(private$refScenMap[[refId]], as.character(scenIds)))
+    return(invisible(self))
+  },
+  getSandboxHasOutputData = function(){
+    for(data in private$cachedData[["sb"]][["data"]][names(ioConfig$modelOut)]){
+      if(nrow(data) > 0L){
+        return(TRUE)
+      }
+    }
+    return(FALSE)
+  },
+  load = function(scenIds, sheetIds = NULL, symNames = NULL, limit = 1e7,
+                  showProgress = TRUE, refId = NULL, registerRef = TRUE){
+    if(identical(refId, "sb") && length(scenIds) > 1L){
+      stop_custom("bad_param", "Cannot load multiple scenarios with refId=sb", call. = FALSE)
+    }
+    if(!length(scenIds)){
+      return(invisible(self))
+    }
+    if(!is.null(sheetIds)){
+      symNames <- private$dbSymbols[sheetIds]
+    }else if(is.null(symNames)){
+      symNames <- private$dbSymbols
+    }
+    if(showProgress){
+      prog <- Progress$new()
+      on.exit(prog$close())
+      prog$set(message = lang$progressBar$loadScenDb$title, value = 0)
+      incAmount <- 1/(length(scenIds) * length(symNames))
+    }
+    i <- 1L
+    checkDirty <- TRUE
+    if(!identical(refId, "sb")){
+      isSbScen <- startsWith(as.character(scenIds), "sb")
+      if(any(isSbScen)){
+        private$duplicateSandbox(refId)
+        if(registerRef){
+          self$addRefId(refId, "sb")
+        }
+        scenIds <- as.integer(scenIds[!isSbScen])
+      }
+    }
+    for(scenId in scenIds){
+      scenIdChar <- if(identical(refId, "sb")) "sb" else as.character(scenId)
+      if(!scenId %in% names(private$cachedData)){
+        # fetch timestamp
+        metaData <- private$getMetadata(scenId)
+        private$cachedData[[scenIdChar]] <- list(data = list(),
+                                                 meta = metaData,
+                                                 timestamp = metaData[["_stime"]][1])
+        checkDirty <- FALSE
+      }
+      for(symName in symNames){
+        if(identical(refId, "sb") ||
+           is.null(private$cachedData[[scenIdChar]][["data"]]) ||
+           is.null(private$cachedData[[scenIdChar]][["data"]][[symName]])){
+          if(identical(symName, scalarsOutName)){
+            if(checkDirty){
+              private$checkDirty(scenId)
+            }
+            dataTmp <- private$db$importDataset(tableName = symName, 
+                                                subsetSids = scenId,
+                                                limit = limit)
+            if(length(dataTmp)){
+              private$cachedData[[scenIdChar]][["scalar"]] <- select(dataTmp, -`_sid`)
+            }else{
+              private$cachedData[[scenIdChar]][["scalar"]] <- tibble(scalar = character(),
+                                                                     description = character(),
+                                                                     value = character())
+            }
+            if(length(private$hiddenOutputScalars)){
+              scalarsInData <- private$cachedData[[scenIdChar]][["scalar"]][[1]]
+              rowsToFilter <- !tolower(scalarsInData) %in% private$hiddenOutputScalars
+            }else{
+              rowsToFilter <- TRUE
+            }
+            private$cachedData[[scenIdChar]][["data"]][[symName]] <- private$cachedData[[scenIdChar]][["scalar"]][rowsToFilter, ]
+          }else{
+            if(checkDirty){
+              private$checkDirty(scenId)
+            }
+            dataTmp <- private$db$importDataset(tableName = symName, 
+                                                subsetSids = scenId,
+                                                limit = limit)
+            if(length(dataTmp)){
+              private$cachedData[[scenIdChar]][["data"]][[symName]] <- select(dataTmp, -`_sid`)
+            }else{
+              private$cachedData[[scenIdChar]][["data"]][[symName]] <- private$scenDataTemplate[[match(symName, private$dbSymbols)]]
+            }
+          }
+        }
+        if(showProgress){
+          prog$inc(amount = incAmount,
+                   detail = paste0(lang$progressBar$loadScenDb$progress, i))
+        }
+        i <- i + 1L
+      }
+    }
+    if(registerRef && !is.null(refId) && !identical(refId, "sb")){
+      self$addRefId(refId, scenIds)
+    }
+    return(invisible(self))
+  },
+  getAll = function(refId, symName = NULL, showProgress = TRUE){
+    stopifnot(identical(length(symName), 1L))
+    scenIds <- private$refScenMap[[refId]]
+    self$load(scenIds, symNames = symName, showProgress = showProgress,
+              refId = refId, registerRef = FALSE)
+    return(lapply(as.character(scenIds), function(scenId){
+      private$cachedData[[scenId]][["data"]][[symName]]
+    }))
+  },
+  get = function(refId, symNames = NULL, sheetIds = NULL, loadData = TRUE, showProgress = TRUE){
+    if(identical(refId, "sb")){
+      scenId <- "sb"
+    }else{
+      scenId <- private$refScenMap[[refId]]
+      stopifnot(identical(length(scenId), 1L))
+    }
+    if(!is.null(sheetIds)){
+      symNames <- private$dbSymbols[sheetIds]
+    }else if(is.null(symNames)){
+      symNames <- private$dbSymbols
+    }
+    if(!identical(refId, "sb")){
+      self$load(scenId, symNames = symNames, showProgress = showProgress,
+                refId = refId, registerRef = FALSE)
+    }
+    if(is.null(symNames)){
+      return(private$cachedData[[as.character(scenId)]][["data"]])
+    }
+    if(length(symNames) > 1L){
+      return(private$cachedData[[as.character(scenId)]][["data"]][symNames])
+    }
+    return(private$cachedData[[as.character(scenId)]][["data"]][[symNames]])
+  },
+  getScalars = function(refId, outputScalarsOnly = FALSE){
+    if(identical(refId, "sb")){
+      scenId <- "sb"
+    }else{
+      scenId <- private$refScenMap[[refId]]
+      stopifnot(identical(length(scenId), 1L))
+    }
+    outputScalarsFull <- private$cachedData[[as.character(scenId)]][["scalar"]]
+    inputScalars <- self$get(refId, symNames = scalarsFileName)
+    if(length(outputScalarsFull)){
+      if(!outputScalarsOnly && length(inputScalars)){
+        return(bind_rows(inputScalars,
+                         outputScalarsFull))
+      }
+      return(outputScalarsFull)
+    }
+    return(tibble(scalar = character(), description = character(), value = character()))
+  },
+  getById = function(id, refId = NULL, scenIds = NULL){
+    if(!is.null(refId)){
+      scenIds <- private$refScenMap[[refId]]
+    }
+    if(identical(length(scenIds), 0L)){
+      return(list())
+    }
+    if(identical(length(scenIds), 1L)){
+      return(private$cachedData[[as.character(scenIds)]][[id]])
+    }
+    return(lapply(private$cachedData[as.character(scenIds)], "[[", id))
+  },
+  clear = function(refId, scenIds = NULL, clearRef = TRUE){
+    stopifnot(is.character(refId))
+    
+    if(is.null(scenIds)){
+      scenIds <- private$refScenMap[[refId]]
+      refScenIdx <- seq_along(scenIds)
+    }else{
+      refScenIdx <- match(scenIds, private$refScenMap[[refId]])
+      if(any(is.na(refScenIdx))){
+        stop_custom("bad_ref", "The scenario ids could not be found for the refId you provided. Did you forget to register them via ScenData$addRefId()?", call. = FALSE)
+      }
+    }
+    
+    scenIdsToClear <- rep.int(TRUE, length(scenIds))
+    # don't clear sandbox data
+    scenIdsToClear[scenIds == "sb"] <- FALSE
+    for(scenIdsInRef in private$refScenMap[names(private$refScenMap) != refId]){
+      # don't clear scenario data of scenarios with reference count > 0
+      scenIdsToClear[which(scenIds %in% scenIdsInRef)] <- FALSE
+    }
+    scenIdsToClear <- scenIds[scenIdsToClear]
+    if(length(scenIdsToClear)){
+      private$cachedData[as.character(scenIdsToClear)] <- NULL
+    }
+    if(clearRef){
+      private$refScenMap[[refId]] <- private$refScenMap[[refId]][-refScenIdx]
+    }
+    return(invisible(self))
+  }
+), private = list(
+  db = NULL,
+  scenDataTemplate = NULL,
+  hiddenOutputScalars = NULL,
+  cachedData = NULL,
+  dbSymbols = NULL,
+  refScenMap = list(),
+  getMetadata = function(scenIds){
+    metaTmp <- private$db$importDataset("_scenMeta", 
+                                        subsetSids = scenIds)
+    isHcScen <- metaTmp[["_scode"]] > 0
+    if(any(isHcScen)){
+      metaTmp[["_sname"]][isHcScen] <- paste0("HC (", substr(metaTmp[["_sname"]][isHcScen], 1L, 8L), "...)")
+    }
+    return(metaTmp)
+  },
+  checkDirty = function(scenId){
+    currentTimestamp <- private$db$importDataset("_scenMeta", 
+                                                 subsetSids = scenId,
+                                                 colNames = "_stime")[["_stime"]][1]
+    cSid <- as.character(scenId)
+    private$cachedData[[cSid]][["dirty"]] <- !identical(private$cachedData[[cSid]][["timestamp"]],
+                                                        currentTimestamp)
+    return(invisible(self))
+  },
+  duplicateSandbox = function(refId){
+    # copy all data from sandbox over
+    stopifnot(length(refId) == 1L)
+    if(!length(private$cachedData[[paste0("sb_", refId)]])){
+      private$cachedData[[paste0("sb_", refId)]] <- private$cachedData[["sb"]]
+      private$cachedData[[paste0("sb_", refId)]][["meta"]][["_sname"]] <- paste(private$cachedData[[paste0("sb_", refId)]][["meta"]][["_sname"]],
+                                                                                lang$nav$scen$scenNameSandboxSuffix)
+    }
+    return(invisible(self))
+  }
+))

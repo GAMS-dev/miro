@@ -44,7 +44,7 @@ observeEvent(input$btSymbolLink, {
   loadMode  <-  "scen"
   newInputCount <- 0L
   
-  scenInputData <- scenData[["scen_1_"]][[i]]
+  scenInputData <- scenData$get("sb", names(modelOut)[i])
   inputId <- match(modelOut[[i]]$symbolLink, names(modelIn))
   names(scenInputData) <- names(modelIn[[inputId]]$headers)
   scenInputData <- list(scenInputData)

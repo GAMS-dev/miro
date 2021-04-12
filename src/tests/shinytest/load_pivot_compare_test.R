@@ -14,7 +14,7 @@ app$findElement(".btSplitView button")$click()
 app$findElements(".btSplitView a[data-view='tab']")[[1]]$click()
 Sys.sleep(0.5)
 
-app$findElement("#no-scen .action-button")$click()
+app$findElement("#cmpTabNoScenWrapper .action-button")$click()
 Sys.sleep(0.5)
 scenToSelect <- paste0(c("1_", "3_"), currentUser)
 app$setInputs(selLoadScen = scenToSelect, wait_ = FALSE, values_ = FALSE)
@@ -42,7 +42,7 @@ expect_options(getSelectizeOptions(app, "#selLoadScen"),
 app$setInputs(selLoadScen = paste0("4_", currentUser))
 app$setInputs(btLoadScenConfirm = "click")
 Sys.sleep(0.5)
-app$snapshot(items = list(output = c("title_2", "title_3")), screenshot = TRUE)
+app$snapshot(items = list(output = c("cmpScenTitle_2", "cmpScenTitle_3")), screenshot = TRUE)
 # scenarios loaded in split view: 1, 4
 
 # load scenarios into pivot view
@@ -85,7 +85,7 @@ expect_chartjs("tab_0_3-miroPivot-pivotChart",
                  "default2.Seattle"))
 app$findElements("#scen-pivot-view .box-title button")[[1]]$click()
 Sys.sleep(0.5)
-app$snapshot(items = list(output = c("title_2", "title_3")), screenshot = TRUE)
+app$snapshot(items = list(output = c("cmpScenTitle_2", "cmpScenTitle_3")), screenshot = TRUE)
 expect_options(app$getAllValues()$input$selLoadScen,
                paste0(c("1_", "2_"), currentUser))
 app$findElement("button[data-dismiss='modal']")$click()
@@ -114,7 +114,7 @@ Sys.sleep(0.5)
 app$findElement("#btLoadScen")$click()
 Sys.sleep(0.5)
 expect_options(getSelectizeOptions(app, "#selLoadScen"),
-               paste0(c("2_", "4_", "-19_"), currentUser))
+               paste0(c("2_", "4_", "sb_"), currentUser))
 app$findElement("button[data-dismiss='modal']")$click()
 Sys.sleep(0.5)
 

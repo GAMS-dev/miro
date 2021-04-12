@@ -89,7 +89,7 @@ filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./component
                     "./components/dataio.R", "./components/hcube_data_instance.R", 
                     "./components/miro_tabsetpanel.R", "./modules/render_data.R", 
                     "./modules/generate_data.R", "./components/script_output.R",
-                    "./components/scen_comp_pivot.R", "./components/js_util.R")
+                    "./components/js_util.R", "./components/scen_data.R")
 LAUNCHCONFIGMODE <- FALSE
 LAUNCHHCUBEMODE <<- FALSE
 if(is.null(errMsg)){
@@ -102,7 +102,8 @@ if(is.null(errMsg)){
         source(file)
       }, error = function(e){
         errMsg <<- paste(errMsg, paste0("Some error occurred while sourcing file '", 
-                                        file, "'. Error message: ", e), sep = "\n")
+                                        file, "'. Error message: ",
+                                        conditionMessage(e)), sep = "\n")
       }, warning = function(w){
         errMsg <<- paste(errMsg, paste0("Some error occurred while sourcing file '", 
                                         file, "'. Error message: ", w), sep = "\n")
@@ -400,7 +401,7 @@ if(is.null(errMsg)){
       }, error = function(e){
         errMsg <<- paste(errMsg, 
                          sprintf("Some error occurred while sourcing renderer file '%s'. Error message: '%s'.", 
-                                 file, e), sep = "\n")
+                                 file, conditionMessage(e)), sep = "\n")
       }, warning = function(w){
         errMsg <<- paste(errMsg, 
                          sprintf("Some error occurred while sourcing renderer file '%s'. Error message: '%s'.", 
@@ -420,7 +421,7 @@ if(is.null(errMsg) && debugMode){
       }, error = function(e){
         errMsg <<- paste(errMsg, 
                          sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
-                                 file, e), sep = "\n")
+                                 file, conditionMessage(e)), sep = "\n")
       }, warning = function(w){
         errMsg <<- paste(errMsg, 
                          sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
@@ -685,7 +686,7 @@ if(is.null(errMsg)){
     dbSchema$setConn(conn)
     flog.debug("Database connection established.")
   }, error = function(e){
-    flog.error("Problems initialising database class. Error message: %s", e)
+    flog.error("Problems initialising database class. Error message: %s", conditionMessage(e))
     errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
   })
   tryCatch({
@@ -693,7 +694,7 @@ if(is.null(errMsg)){
                                        modelName = modelName),
                          db = db)
   }, error = function(e) {
-    flog.error("Problems initialising dataio class. Error message: %s", e)
+    flog.error("Problems initialising dataio class. Error message: %s", conditionMessage(e))
     errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
   })
   
@@ -1068,23 +1069,27 @@ if(!is.null(errMsg)){
                         newScen$getScenName(), call. = FALSE)
           }
           
-          dataOut <- loadScenData(scalarsOutName, modelOut, tmpDir, modelName, scalarsFileHeaders,
-                                  modelOutTemplate, method = method, fileName = miroDataFile, xlsio = xlsio)$tabular
+          dataOut <- loadScenData(modelOut, tmpDir,
+                                  modelOutTemplate,
+                                  method = method,
+                                  fileName = miroDataFile,
+                                  xlsio = xlsio)
           if(length(dataOut$errors)){
             flog.warn("Some problems occurred while reading output data: %s",
                       paste(dataOut$errors, collapse = ", "))
           }
-          dataIn  <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp,
+          dataOut <- dataOut$tabular
+          dataIn  <- loadScenData(metaData = metaDataTmp,
                                   workDir = tmpDir,
-                                  modelName = modelName, errMsg = lang$errMsg$GAMSInput$badInputData,
-                                  scalarsFileHeaders = scalarsFileHeaders,
+                                  errMsg = lang$errMsg$GAMSInput$badInputData,
                                   templates = modelInTemplateTmp, method = method,
                                   fileName = miroDataFile, DDPar = DDPar, GMSOpt = GMSOpt,
-                                  dfClArgs = dfClArgs, xlsio = xlsio)$tabular
+                                  dfClArgs = dfClArgs, xlsio = xlsio)
           if(length(dataIn$errors)){
             flog.warn("Some problems occurred while reading input data: %s",
                       paste(dataIn$errors, collapse = ", "))
           }
+          dataIn <- dataIn$tabular
           if(!scalarsFileName %in% names(metaDataTmp) && length(c(DDPar, GMSOpt))){
             # additional command line parameters that are not GAMS symbols
             scalarsTemplate <- tibble(a = character(0L), b = character(0L), c = character(0L))
@@ -1182,11 +1187,6 @@ if(!is.null(errMsg)){
       asyncCount         <- 1L
       asyncLogLoaded     <- vector(mode = "logical", 3L)
       asyncResObs        <- NULL
-      # parameters used for saving scenario data
-      scenData           <- list()
-      scenData[["scen_1_"]] <- scenDataTemplate
-      # parameter used for saving (hidden) scalar data
-      scalarData         <- list()
       traceData          <- data.frame()
       # boolean that specifies whether handsontable is initialised
       hotInit            <- vector("logical", length = length(modelIn))
@@ -1222,7 +1222,8 @@ if(!is.null(errMsg)){
       dynamicUILoaded <- list(inputGraphs = vector("logical", length(modelIn)),
                               outputTablesUI = vector("logical", length(configGraphsOut)),
                               outputTables = vector("logical", length(configGraphsOut)),
-                              compareModeTabsets = vector("logical", 3L))
+                              compareModeTabsets = vector("logical", 3L),
+                              compTabset = list())
       
       # set local working directory
       unzipModelFilesProcess <- NULL
@@ -1241,7 +1242,7 @@ if(!is.null(errMsg)){
         workDir <- currentModelDir
       }
       
-      rv <- reactiveValues(scenId = 4L, unsavedFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
+      rv <- reactiveValues(unsavedFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
                            btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
                            btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
                            noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
@@ -1262,6 +1263,9 @@ if(!is.null(errMsg)){
                                             names(modelIn),
                                             names(modelOut),
                                             ioConfig$inputDsNamesBase, rv)
+      scenData <- ScenData$new(db = db,
+                               scenDataTemplate = scenDataTemplate,
+                               hiddenOutputScalars = config$hiddenOutputScalars)
       # currently active scenario (R6 object)
       activeScen         <- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
                                          isNewScen = TRUE, views = views, attachments = attachments)
@@ -1297,7 +1301,6 @@ if(!is.null(errMsg)){
       rendererEnv        <- new.env(parent = emptyenv())
       rendererEnv$output <- new.env(parent = emptyenv())
       
-      scenMetaData     <- list()
       # scenario metadata of scenario saved in database
       scenMetaDb       <- NULL
       scenMetaDbBase   <- NULL
@@ -1305,12 +1308,6 @@ if(!is.null(errMsg)){
       scenTags         <- NULL
       scenMetaDbSubset <- NULL
       scenMetaDbBaseSubset <- NULL
-      # save the scenario ids loaded in UI
-      scenCounterMultiComp <- 4L
-      sidsInComp       <- vector("integer", length = maxNumberScenarios + 1)
-      sidsInSplitComp  <- vector("integer", length = 2L)
-      sidsInPivotComp  <- vector("integer", length = maxNumberScenarios + 1)
-      # occupied slots (scenario is loaded in ui with this rv$scenId)
       occupiedSidSlots <- vector("logical", length = maxNumberScenarios)
       loadInLeftBoxSplit <- TRUE
       # trigger navigation through tabs by shortcuts
@@ -1498,13 +1495,10 @@ if(!is.null(errMsg)){
             errMsg <- NULL
             
             tryCatch({
-              saveAsFlag <<- FALSE
-              source("./modules/scen_save.R", local = TRUE)
-              data <- scenData[[scenIdLong]]
-              names(data) <- c(names(modelOut), inputDsNames)
+              scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE), modelInFileNames)
               gdxio$wgdx(paste0(workDir, .Platform$file.sep, 
                                 "scripts_", modelName, .Platform$file.sep, "data.gdx"), 
-                         data, squeezeZeros = 'n')
+                         scenData$get("sb"), squeezeZeros = 'n')
             }, error = function(e){
               flog.error("Problems writing gdx file for script: '%s'. Error message: '%s'.", 
                          scriptId, conditionMessage(e))
@@ -1573,7 +1567,7 @@ if(!is.null(errMsg)){
           }
         }
       }, error = function(e){
-        flog.warn("Problems loading default scenario. Error message: '%s'.", e)
+        flog.warn("Problems loading default scenario. Error message: '%s'.", conditionMessage(e))
       })
       
       # initialise list of reactive expressions returning data for model input
@@ -1723,6 +1717,8 @@ if(!is.null(errMsg)){
       # UI elements (modalDialogs)
       source("./UI/dialogs.R", local = TRUE)
       ####### Model input
+      # get sandbox data
+      source("./modules/input_save.R", local = TRUE)
       # render tabular input datasets
       source("./modules/input_render_tab.R", local = TRUE)
       # render non tabular input datasets (e.g. slider, dropdown)
@@ -1772,6 +1768,8 @@ if(!is.null(errMsg)){
       # delete scenario 
       source("./modules/db_scen_remove.R", local = TRUE)
       # scenario module
+      # render scenarios (comparison mode)
+      source("./modules/scen_render.R", local = TRUE)
       #load shared datasets
       source("./modules/db_external_load.R", local = TRUE)
       # load scenario
@@ -1782,62 +1780,92 @@ if(!is.null(errMsg)){
       source("./modules/scen_split.R", local = TRUE)
       skipScenCompObserve <- vector("logical", maxNumberScenarios + 3L)
       
-      scenCompUpdateTab <- function(scenId, sheetId, groupId = NULL){
+      scenCompUpdateTab <- function(tabsetId, sheetId, groupId = NULL){
         if(is.null(groupId)){
-          if(!identical(isolate(input[[paste0("contentScen_", scenId)]]), 
-                        paste0("contentScen_", scenId, "_", sheetId)))
-            skipScenCompObserve[scenId] <<- TRUE
-          updateTabsetPanel(session, paste0("contentScen_", scenId),
-                            paste0("contentScen_", scenId, "_", sheetId))
+          if(!identical(isolate(input[[paste0("contentScen_", tabsetId)]]), 
+                        paste0("contentScen_", tabsetId, "_", sheetId)))
+            skipScenCompObserve[tabsetId] <<- TRUE
+          updateTabsetPanel(session, paste0("contentScen_", tabsetId),
+                            paste0("contentScen_", tabsetId, "_", sheetId))
         }else{
-          updateTabsetPanel(session, paste0("contentScen_", scenId),
-                            paste0("contentScen_", scenId, "_", groupId))
-          updateTabsetPanel(session, paste0("contentScen_", scenId, "_", groupId),
-                            paste0("contentScen_", scenId, "_", groupId, "_", sheetId))
+          updateTabsetPanel(session, paste0("contentScen_", tabsetId),
+                            paste0("contentScen_", tabsetId, "_", groupId))
+          updateTabsetPanel(session, paste0("contentScen_", tabsetId, "_", groupId),
+                            paste0("contentScen_", tabsetId, "_", groupId, "_", sheetId))
         }
       }
       
       source("./modules/scen_compare_actions.R", local = TRUE)
+      source("./modules/load_dynamic_tab_content.R", local = TRUE)
       
       observeEvent(input$btScenPivot_close, {
         showEl(session, "#pivotCompBtWrapper")
         hideEl(session, "#pivotCompScenWrapper")
         isInRefreshMode <<- FALSE
-        sidsInPivotComp[] <<- 0L
-        if(LAUNCHHCUBEMODE){
-          scenMetaData[["scen_0_"]] <<- NULL
-        }else{
-          disableEl(session, "#btClosePivotComp")
-        }
+        scenData$clear("cmpPivot")
+        dynamicUILoaded$compTabset[["tab_0"]][["content"]][] <<- FALSE
+        disableEl(session, "#btClosePivotComp")
       })
-      lapply(seq_len(maxNumberScenarios  + 3L), function(i){
+      lapply(seq(0L, maxNumberScenarios  + 3L), function(i){
         scenIdLong <- paste0("scen_", i, "_")
         # compare scenarios
-        obsCompare[[i]] <<- observe({
-          if(is.null(input[[paste0("contentScen_", i)]]) || 
-             skipScenCompObserve[i]){
-            skipScenCompObserve[i] <<- FALSE
-            return(NULL)
+        observe({
+          # we need to duplicate code from loadDynamicTabContentByTabsetId here to have 
+          # reactive dependencies
+          tabIdFull <- input[[paste0("contentScen_", i)]]
+          if(is.null(tabIdFull)){
+            return()
           }
-          j <- as.integer(strsplit(isolate(input[[paste0("contentScen_", i)]]), 
-                                   "_", fixed = TRUE)[[1]][[3L]])
-          groupId <- NULL
-          if(isGroupOfSheets[[j]]){
-            groupId <- j
-            j <- strsplit(input[[paste0("contentScen_", i, "_", groupId)]], 
-                          "_", fixed = TRUE)[[1L]][[4L]]
+          groupId <- as.integer(strsplit(tabIdFull, "_", fixed = TRUE)[[1]][3L])
+          tabId <- NULL
+          if(isGroupOfSheets[[groupId]]){
+            tabId <- as.integer(strsplit(input[[paste0("contentScen_", i, "_", groupId)]], 
+                                         "_", fixed = TRUE)[[1L]][[4L]])
           }
-          if(identical(i, 2L)){
-            scenCompUpdateTab(scenId = i + 1L, sheetId = j, groupId = groupId)
-          }else if(identical(i, 3L)){
-            scenCompUpdateTab(scenId = i - 1L, sheetId = j, groupId = groupId)
+          if(groupId > length(outputTabs)){
+            groupId <- groupId - length(outputTabs)
+            if(groupId > length(scenInputTabs)){
+              # is script tab
+              return()
+            }
+            sheetName <- scenInputTabs[[groupId]]
+            if(identical(sheetName, 0L)){
+              sheetNames <- scalarsFileName
+            }else{
+              sheetNames <- names(modelIn)[sheetName]
+            }
           }else{
-            lapply(names(scenData), function(scen){
-              scenCompUpdateTab(scenId = as.integer(strsplit(scen, "_")[[1]][[2L]]), 
-                                sheetId = j, groupId = groupId)
-            })
+            sheetNames <- names(modelOut)[outputTabs[[groupId]]]
           }
-        }, suspended = TRUE)
+          loadDynamicTabContentCompMode(session, i, if(is.null(tabId)) sheetNames else sheetNames[tabId])
+        })
+        if(i > 0L){
+          obsCompare[[i]] <<- observe({
+            if(is.null(input[[paste0("contentScen_", i)]]) || 
+               skipScenCompObserve[i]){
+              skipScenCompObserve[i] <<- FALSE
+              return(NULL)
+            }
+            j <- as.integer(strsplit(isolate(input[[paste0("contentScen_", i)]]), 
+                                     "_", fixed = TRUE)[[1]][[3L]])
+            groupId <- NULL
+            if(isGroupOfSheets[[j]]){
+              groupId <- j
+              j <- strsplit(input[[paste0("contentScen_", i, "_", groupId)]], 
+                            "_", fixed = TRUE)[[1L]][[4L]]
+            }
+            if(identical(i, 2L)){
+              scenCompUpdateTab(i + 1L, sheetId = j, groupId = groupId)
+            }else if(identical(i, 3L)){
+              scenCompUpdateTab(i - 1L, sheetId = j, groupId = groupId)
+            }else{
+              lapply(which(occupiedSidSlots) + 3L, function(tabsetId){
+                scenCompUpdateTab(tabsetId,
+                                  sheetId = j, groupId = groupId)
+              })
+            }
+          }, suspended = TRUE)
+        }
       })
       
       # scenario comparison

@@ -2,9 +2,6 @@
 closeScenario <- function(clearMeta = TRUE){
   # remove output data
   errMsg <- NULL
-  scenData[["scen_1_"]] <<- scenDataTemplate
-  # clear scalar data
-  scalarData[["scen_1_"]] <<- data.frame()
   traceData <<- data.frame()
   # reset input data sheets
   modelInputData     <<- modelInTemplate
@@ -104,6 +101,7 @@ closeScenario <- function(clearMeta = TRUE){
   renderOutputData(rendererEnv, views)
   if(length(activeScen)){
     if(clearMeta){
+      scenData$clearSandbox()
       views$clearConf()
       attachments$clear(cleanLocal = TRUE)
     }
@@ -111,7 +109,6 @@ closeScenario <- function(clearMeta = TRUE){
   }
   activeScen        <<- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
                                      isNewScen = TRUE, views = views, attachments = attachments)
-  scenMetaData[["scen_1_"]] <<- activeScen$getMetadata()
   rv$activeSname    <<- NULL
   scenTags          <<- NULL
   attachmentList    <<- tibble(name = vector("character", attachMaxNo), 
@@ -154,7 +151,8 @@ observeEvent(input$btDeleteConfirm, {
     showEl(session, "#deleteScen_ui")
     showEl(session, "#btRemoveDeletedConfirm")
   }, error = function(e){
-    flog.error("Problems deleting scenario: '%s'. Error message: '%s'.", activeScen$getScenName(), e)
+    flog.error("Problems deleting scenario: '%s'. Error message: '%s'.",
+               activeScen$getScenName(), conditionMessage(e))
     errMsg <<- lang$errMsg$deleteScen$desc
   })
   if(!is.null(errMsg)){

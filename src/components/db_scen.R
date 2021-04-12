@@ -224,7 +224,11 @@ Scenario <- R6Class("Scenario",
                           addScenIdAttach <- TRUE
                           try(private$fetchMetadata(sname = private$sname, uid = private$uid), silent = TRUE)
                         }
-                        symNamesScenario <- dbSchema$getAllSymbols()
+                        if(length(names(datasets))){
+                          symNamesScenario <- names(datasets)
+                        }else{
+                          symNamesScenario <- dbSchema$getAllSymbols()
+                        }
                         stopifnot(is.list(datasets), identical(length(datasets), length(symNamesScenario)))
                         if(!is.null(msgProgress)){
                           stopifnot(is.character(msgProgress$title), length(msgProgress$title) == 1)
@@ -670,7 +674,7 @@ Scenario <- R6Class("Scenario",
                             flog.debug("Db: %s: Table with locks ('%s') was created as it did not yet exist. (Scenario.lock)", private$uid, private$tableNameScenLocks)
                           }, error = function(e){
                             stop(sprintf("Db: %s: An error occurred while trying to create table. (Scenario.lock, table: '%s'). Error message: %s.", 
-                                         private$uid, private$tableNameScenLocks, e), call. = FALSE)
+                                         private$uid, private$tableNameScenLocks, conditionMessage(e)), call. = FALSE)
                           })
                         }
                         # check whether scenario is already locked
@@ -699,7 +703,7 @@ Scenario <- R6Class("Scenario",
                           flog.debug("Db: %s: Lock was added for scenario: '%s' (Scenario.lock).", private$uid, private$sid)
                         }, error = function(e){
                           stop(sprintf("Db: %s: An error occurred writing to database (Scenario.lock, table: '%s', scenario: '%s'). Error message: %s", 
-                                       private$uid, private$tableNameScenLocks, private$sid, e), call. = FALSE)
+                                       private$uid, private$tableNameScenLocks, private$sid, conditionMessage(e)), call. = FALSE)
                         })
                         invisible(self)
                       },
@@ -747,7 +751,8 @@ Scenario <- R6Class("Scenario",
                             return(TRUE)
                           }
                         }, error = function(e){
-                          stop(sprintf("Db: Problems locking scenario: '%s'. Error message: %s.", private$sid, e), call. = FALSE)
+                          stop(sprintf("Db: Problems locking scenario: '%s'. Error message: %s.", private$sid,
+                                       conditionMessage(e)), call. = FALSE)
                         })
                       },
                       isReadonly = function(){

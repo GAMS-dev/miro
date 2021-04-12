@@ -189,7 +189,7 @@ observeEvent(input$btGraphIn, {
         data <- getInputDataset(i, visible = TRUE)
       }, error = function(e){
         flog.error("Dataset: '%s' could not be loaded. Error message: '%s'.", 
-                   modelInAlias[i], e)
+                   modelInAlias[i], conditionMessage(e))
         errMsg <<- sprintf(lang$errMsg$GAMSInput$noData, 
                            modelInAlias[i])
       })
@@ -401,10 +401,7 @@ lapply(modelInTabularData, function(sheet){
         colnames <- tabData$colnames
         tabData  <- tabData$data
       }else{
-        colnames <- attr(modelInputData[[i]], "aliases")
-        if(!length(colnames)){
-          colnames <- attr(modelInTemplate[[i]], "aliases")
-        }
+        colnames <- attr(modelInTemplate[[i]], "aliases")
       }
       
       # check for readonly columns
@@ -509,10 +506,7 @@ lapply(modelInTabularData, function(sheet){
         tabData  <- tabData$data
         tableContent[[i]] <<- tabData
       }else{
-        colnames <- attr(modelInputData[[i]], "aliases")
-        if(!length(colnames)){
-          colnames <- attr(modelInTemplate[[i]], "aliases")
-        }
+        colnames <- attr(modelInTemplate[[i]], "aliases")
       }
       tryCatch({
         dtOptions <- modifyList(config$datatable,
@@ -525,7 +519,7 @@ lapply(modelInTabularData, function(sheet){
                            roundPrecision = roundPrecision, render = FALSE)
       }, error = function(e){
         flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
-                   modelInAlias[[i]], e) 
+                   modelInAlias[[i]], conditionMessage(e)) 
         errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
       })
       if(is.null(showErrorMsg(lang$errMsg$renderTable$title, errMsg))){
@@ -553,11 +547,7 @@ lapply(modelInTabularData, function(sheet){
         colnames <- c(attr(modelInTemplate[[i]], "aliases")[-c(pivotIdx, length(modelInTemplate[[i]]))],
                       names(tableContent[[i]])[seq(noRowHeaders + 1L, length(tableContent[[i]]))])
       }else{
-        if(length(colnames)){
-          colnames <- attr(modelInputData[[i]], "aliases")
-        }else{
-          colnames <- attr(modelInTemplate[[i]], "aliases")
-        }
+        colnames <- attr(modelInTemplate[[i]], "aliases")
       }
       newRowId <- suppressWarnings(as.integer(input[[paste0("in_", i, "_rows_selected")]]))
       if(any(is.na(newRowId))){
@@ -738,7 +728,7 @@ lapply(modelInTabularData, function(sheet){
         skipObs[[i]] <<- TRUE
       }, error = function(e){
         flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
-                   modelInAlias[[i]], e)
+                   modelInAlias[[i]], conditionMessage(e))
         errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
       })
     })

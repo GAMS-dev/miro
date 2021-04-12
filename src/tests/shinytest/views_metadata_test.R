@@ -99,5 +99,5 @@ expect_true(app$waitFor("$('#currentViewsTable tbody td')[4].innerHTML==='demand
 expect_true(app$waitFor("$('#currentViewsTable tbody td')[5].innerHTML==='&lt;script&gt;location.reload();&lt;/script&gt;'",
                         timeout = 50))
 
-app$snapshot(items = list(output = c("title_2")), screenshot = TRUE)
+app$snapshot(items = list(output = c("cmpScenTitle_2")), screenshot = TRUE)
 app$stop()

@@ -58,7 +58,8 @@ Db <- R6Class("Db",
                                                      user = dbConf$username, password = dbConf$password,
                                                      bigint = "integer")
                     }, error = function(e){
-                      stop(sprintf("Db: Database connection could not be established. Error message: %s", e), 
+                      stop(sprintf("Db: Database connection could not be established. Error message: %s",
+                                   conditionMessage(e)), 
                            call. = FALSE)
                     })
                     private$connectionInfo <- list(loc = paste0(dbConf$host, ":", dbConf$port),
@@ -85,7 +86,8 @@ Db <- R6Class("Db",
                       # turn foreign key usage on
                       self$runQuery("PRAGMA foreign_keys = ON;")
                     }, error = function(e){
-                      stop(sprintf("Db: Database connection could not be established. Error message: %s", e), 
+                      stop(sprintf("Db: Database connection could not be established. Error message: %s",
+                                   conditionMessage(e)), 
                            call. = FALSE)
                     })
                     private$connectionInfo <- list(loc = dbConf$name,
@@ -252,52 +254,6 @@ Db <- R6Class("Db",
                   }else{
                     return(0L)
                   }
-                },
-                loadScenarios = function(sids, limit = 1e7, msgProgress = NULL,
-                                         symToFetch = NULL){
-                  # Load multiple scenarios from database
-                  #
-                  # Args:
-                  #   sids:             scenario IDs to load 
-                  #   limit:            maxmimum number of rows to fetch per dataset
-                  #   msgProgress:      title and progress info for the progress bar
-                  #   symToFetch:       symbols to fetch (optional)
-                  #
-                  # Returns:
-                  #   list of scenario datasets
-                  
-                  #BEGIN error checks 
-                  sids <- suppressWarnings(as.integer(sids))
-                  stopifnot(!any(is.na(sids)), length(sids) >= 1)
-                  stopifnot(is.numeric(limit), length(limit) == 1)
-                  #END error checks
-                  
-                  #initialize progress bar
-                  if(is.null(symToFetch)){
-                    symToFetch <- dbSchema$getAllSymbols()
-                  }
-                  if(!is.null(msgProgress)){
-                    prog <- Progress$new()
-                    on.exit(prog$close())
-                    prog$set(message = msgProgress$title, value = 0)
-                    incAmount <- 1/(length(sids) * length(symToFetch))
-                    updateProgress <- function(detail = NULL) {
-                      prog$inc(amount = incAmount, detail = detail)
-                    }
-                  }
-                  scenData <- lapply(seq_along(sids), function(i){
-                    lapply(symToFetch, function(symName){
-                      dataset <- self$importDataset(tableName = symName, 
-                                                    subsetSids = sids[i],
-                                                    limit = limit)
-                      dataset[, "_sid"] <- NULL
-                      if(!is.null(msgProgress)){
-                        updateProgress(detail = paste0(msgProgress$progress, i))
-                      }
-                      return(dataset)
-                    })
-                  })
-                  return(scenData)
                 },
                 loadScriptResults = function(sids, limit = 1e7, msgProgress){
                   # Load script results from database
@@ -698,7 +654,7 @@ Db <- R6Class("Db",
                     }, error = function(e){
                       stop(sprintf("Db: An error occurred while querying the database (Db.importDataset, " %+%
                                      "table: '%s'). Error message: %s.",
-                                   tableNameDb, e), call. = FALSE)
+                                   tableNameDb, conditionMessage(e)), call. = FALSE)
                     })
                   }
                   return(dataset)
@@ -733,7 +689,7 @@ Db <- R6Class("Db",
                                    tableNameDb)
                       }, error = function(e){
                         stop(sprintf("Db: An error occurred writing to database (Db.exportScenDataset, 
-               table: '%s'). Error message: %s", tableNameDb, e),
+               table: '%s'). Error message: %s", tableNameDb, conditionMessage(e)),
                call. = FALSE)
                       })
                     }else{

@@ -88,7 +88,8 @@ storeGAMSOutputFiles <- function(workDir){
                                   paste(basename(filesToStore), collapse = "', '"))
              },
              {
-               flog.error("Problems while trying to store GAMS output files in the database. Error message: '%s'.", e)
+               flog.error("Problems while trying to store GAMS output files in the database. Error message: '%s'.",
+                          conditionMessage(e))
                errMsg <<- lang$errMsg$unknownError
              })
     })
@@ -101,19 +102,22 @@ prepareModelRun <- function(async = FALSE){
   prog$set(message = lang$progressBar$prepRun$title, value = 0)
   
   prog$inc(amount = 0.5, detail = lang$progressBar$prepRun$sendInput)
-  # save input data 
-  saveInputDb <- FALSE
-  source("./modules/input_save.R", local = TRUE)
-  if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
-    return(NULL)
+  # save input data
+  if(tryCatch({
+    dataTmp <- getInputDataFromSandbox(saveInputDb = FALSE)
+    FALSE
+  }, no_data = function(e){
+    flog.error(conditionMessage(e))
+    showErrorMsg(lang$errMsg$GAMSInput$title, conditionMessage(e))
+    return(TRUE)
+  }, error = function(e){
+    flog.error("Unexpected error while fetching input data from sandbox. Error message: '%s'", conditionMessage(e))
+    showErrorMsg(lang$errMsg$GAMSInput$title, lang$errMsg$unknownError)
+    return(TRUE)
+  })){
+    return()
   }
-  lapply(seq_along(dataTmp), function(i){
-    if(is.null(dataTmp[[i]])){
-      scenData[["scen_1_"]][[i + length(modelOut)]] <<- scenDataTemplate[[i + length(modelOut)]]
-    }else{
-      scenData[["scen_1_"]][[i + length(modelOut)]] <<- dataTmp[[i]]
-    }
-  })
+  scenData$loadSandbox(dataTmp, modelInFileNames, activeScen$getMetadata())
   pfFileContent <- NULL
   inputData <- DataInstance$new(modelInFileNames, fileExchange = config$fileExchange,
                                 gdxio = gdxio, csvDelim = config$csvDelim)
@@ -416,7 +420,7 @@ if(LAUNCHHCUBEMODE){
                  data <- fixColTypes(getInputDataset(i), modelIn[[i]]$colTypes)
                }, error = function(e){
                  flog.error("Dataset: '%s' could not be loaded. Error message: '%s'.", 
-                            modelInAlias[i], e)
+                            modelInAlias[i], conditionMessage(e))
                  errMsg <<- sprintf(lang$errMsg$GAMSInput$noData, 
                                     modelInAlias[i])
                })
@@ -569,28 +573,17 @@ if(LAUNCHHCUBEMODE){
   loadOutputData <- function(){
     storeGAMSOutputFiles(workDir)
     
-    GAMSResults <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, workDir = workDir, 
-                                modelName = modelName, errMsg = lang$errMsg$GAMSOutput$badOutputData,
-                                scalarsFileHeaders = scalarsFileHeaders, fileName = MIROGdxOutName,
-                                templates = modelOutTemplate, method = config$fileExchange, 
-                                csvDelim = config$csvDelim, hiddenOutputScalars = config$hiddenOutputScalars)
-    if(!is.null(GAMSResults$scalar)){
-      scalarData[["scen_1_"]] <<- GAMSResults$scalar
-    }
-    scalarIdTmp <- match(scalarsFileName, tolower(inputDsNames))[[1L]]
-    if(!is.na(scalarIdTmp)){
-      scalarData[["scen_1_"]] <<- bind_rows(scenData[["scen_1_"]][[scalarIdTmp + length(modelOut)]],
-                                            scalarData[["scen_1_"]])
-    }
-    if(!is.null(GAMSResults$tabular)){
-      scenData[["scen_1_"]][seq_along(modelOut)] <<- GAMSResults$tabular
-    }
+    scenData$loadSandbox(loadScenData(metaData = modelOut, workDir = workDir,
+                                      fileName = MIROGdxOutName,
+                                      templates = modelOutTemplate,
+                                      method = config$fileExchange,
+                                      csvDelim = config$csvDelim)$tabular, names(modelOut))
     if(config$saveTraceFile){
       tryCatch({
         traceData <<- readTraceData(file.path(workDir, "_scenTrc.trc"), 
                                     traceColNames)
       }, error = function(e){
-        flog.info("Problems loading trace data. Error message: %s.", e)
+        flog.info("Problems loading trace data. Error message: %s.", conditionMessage(e))
       })
     }
     tryCatch(
@@ -607,7 +600,7 @@ if(LAUNCHHCUBEMODE){
     tryCatch({
       loadOutputData()
     }, error = function(e){
-      flog.error("Problems loading output data. Error message: %s.", e)
+      flog.error("Problems loading output data. Error message: %s.", conditionMessage(e))
       errMsg <<- lang$errMsg$readOutput$desc
     })
     if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
@@ -706,7 +699,7 @@ if(config$activateModules$lstFile){
       }
     }, error = function(e) {
       flog.warn("GAMS listing file could not be read (model: '%s'). Error message: %s.", 
-                modelName, e)
+                modelName, conditionMessage(e))
       showErrorMsg(lang$errMsg$readLst$title, errMsg)
       return("")
     })
@@ -728,7 +721,7 @@ if(config$activateModules$miroLogFile){
         miroLogContent <- miroLogContent$content
       }
     }, error = function(e){
-      flog.warn("MIRO log file could not be read. Error message: '%s'.", e)
+      flog.warn("MIRO log file could not be read. Error message: '%s'.", conditionMessage(e))
     })
     return(HTML(paste(miroLogContent, collapse = "\n")))
   }
@@ -867,7 +860,7 @@ output$modelStatus <- renderUI({
     tryCatch({
       loadOutputData()
     }, error = function(e){
-      flog.error("Problems loading output data. Error message: %s.", e)
+      flog.error("Problems loading output data. Error message: %s.", conditionMessage(e))
       errMsg <<- lang$errMsg$readOutput$desc
     })
     if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
@@ -953,7 +946,8 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     tryCatch(
       scenToSolve <- scenToSolve(),
       error = function(e){
-        flog.error("Problems getting list of scenarios to solve in Hypercube mode. Error message: '%s'.", e)
+        flog.error("Problems getting list of scenarios to solve in Hypercube mode. Error message: '%s'.",
+                   conditionMessage(e))
         errMsg <<- lang$errMsg$GAMSInput$desc
       })
     if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
@@ -1045,7 +1039,8 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     logfileObs  <<- logRE$obs
     logfile     <<- logRE$re
   }, error = function(e) {
-    flog.error("GAMS log file could not be read (model: '%s'). Error message: %s.", modelName, e)
+    flog.error("GAMS log file could not be read (model: '%s'). Error message: %s.",
+               modelName, conditionMessage(e))
     errMsg <<- lang$errMsg$readLog$desc
   })
   showErrorMsg(lang$errMsg$readLog$title, errMsg)
@@ -1106,7 +1101,7 @@ if(!isShinyProxy && config$activateModules$remoteExecution){
       showEl(session, "#btRemoteExecLogin")
       hideEl(session, "#remoteExecLogoutDiv")
     }, error = function(e){
-      flog.error("Problems setting credentials: %s", e)
+      flog.error("Problems setting credentials: %s", conditionMessage(e))
       showErrorMsg(lang$errMsg$fileWrite$title, sprintf(lang$errMsg$fileWrite$desc,
                                                         rememberMeFileName))
     })

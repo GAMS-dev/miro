@@ -12,41 +12,32 @@ renderOutputData <- function(rendererEnv, views){
   dynamicUILoaded[["outputTables"]][] <<- FALSE
   lapply(unlist(outputTabs, use.names = FALSE), function(i){
     tryCatch({
-      if(length(configGraphsOut[[i]]$additionalData)){
-        additionalOutputIds <- match(configGraphsOut[[i]]$additionalData, names(modelOut))
-        additionalOutputIdsNA <- is.na(additionalOutputIds)
-        if(any(additionalOutputIdsNA)){
-          additionalInputIds <- match(configGraphsOut[[i]]$
-                                        additionalData[additionalOutputIdsNA],
-                                      modelInFileNames)
-          additionalOutputIds <- c(i, additionalOutputIds[!additionalOutputIdsNA])
-          rendererData <- scenData[["scen_1_"]][c(additionalOutputIds,
-                                                  additionalInputIds + length(modelOut))]
-          names(rendererData) <- c(names(modelOut)[additionalOutputIds], 
-                                   modelInFileNames[additionalInputIds])
-        }else{
-          additionalOutputIds <- c(i, additionalOutputIds)
-          rendererData <- scenData[["scen_1_"]][additionalOutputIds]
-          names(rendererData) <- names(modelOut)[additionalOutputIds]
-        }
-      }else{
-        rendererData <- scenData[["scen_1_"]][[i]]
-      }
-      callModule(renderData, "tab_" %+% i, type = configGraphsOut[[i]]$outType, data = rendererData,
-                 configData = scalarData[["scen_1_"]], dtOptions = configGraphsOut[[i]]$datatable, graphOptions = configGraphsOut[[i]]$graph, 
-                 pivotOptions = configGraphsOut[[i]]$pivottable, customOptions = configGraphsOut[[i]]$options,
-                 roundPrecision = roundPrecision, modelDir = modelDir, rendererEnv = rendererEnv$output,
-                 views = views, attachments = attachments)
+      callModule(renderData, paste0("tab_", i),
+                 type = configGraphsOut[[i]]$outType,
+                 data = scenData$get("sb",
+                                     symNames = c(names(modelOut)[i],
+                                                  configGraphsOut[[i]]$additionalData)),
+                 configData = scenData$getScalars("sb"),
+                 dtOptions = configGraphsOut[[i]]$datatable,
+                 graphOptions = configGraphsOut[[i]]$graph, 
+                 pivotOptions = configGraphsOut[[i]]$pivottable,
+                 customOptions = configGraphsOut[[i]]$options,
+                 roundPrecision = roundPrecision,
+                 modelDir = modelDir,
+                 rendererEnv = rendererEnv$output,
+                 views = views,
+                 attachments = attachments)
       if(modelOutputTableVisible[[i]]){
         callModule(renderData, paste0("table-out_", i),
                    type = "datatable",
-                   data = scenData[["scen_1_"]][[i]],
+                   data = scenData$get("sb", symNames = names(modelOut)[i]),
                    dtOptions = configGraphsOut[[i]]$datatable,
                    roundPrecision = roundPrecision)
         dynamicUILoaded[["outputTables"]][i] <<- TRUE
       }
     }, error = function(e) {
-      flog.error("Problems rendering output charts/tables of dataset: '%s'. Error message: %s.", modelOutAlias[i], e)
+      flog.error("Problems rendering output charts/tables of dataset: '%s'. Error message: %s.",
+                 modelOutAlias[i], conditionMessage(e))
       errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderTable$desc, modelOutAlias[i]), sep = "\n")
       showEl(session, paste0("#tab_", i, "-noData"))
       hideEl(session, paste0("#tab_", i, "-data"))

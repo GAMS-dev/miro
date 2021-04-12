@@ -31,41 +31,25 @@ observeEvent(input$btScenSplit2_open, {
   }
   rv$btLoadScen <<- isolate(rv$btLoadScen + 1)
 })
-loadSandboxScen <- function(scenId){
-  source("./modules/scen_save.R", local = TRUE)
-  scenIdLongNew <- paste0("scen_", scenId, "_")
-  
-  # copy data over as scen_save.R stores data in active scenario (scen_1_), 
-  # but here we need it in (scen_2_ or scen_3_ respectively)
-  scenData[[scenIdLongNew]] <<- scenData[[scenIdLong]]
-  scalarData[[scenIdLongNew]] <<- scalarData[[scenIdLong]]
-  
-  scenMetaData[[scenIdLongNew]] <<- db$getMetadata(sid = -19L, uid = uid, 
-                                                   sname = paste(if(length(rv$activeSname))
-                                                     rv$activeSname else lang$nav$dialogNewScen$newScenName,
-                                                     lang$nav$scen$scenNameSandboxSuffix), 
-                                                   stime = Sys.time(),
-                                                   uidAlias = lang$nav$excelExport$metadataSheet$uid, 
-                                                   snameAlias = lang$nav$excelExport$metadataSheet$sname, 
-                                                   stimeAlias = lang$nav$excelExport$metadataSheet$stime)
-  idxScalarOut <- dbSchema$getSymIdx(scalarsOutName)[[1]]
-  idxScalarIn <- dbSchema$getSymIdx(scalarsFileName)[[1]]
-  # load scalar data if available
-  if(!is.na(idxScalarIn) && nrow(scenData[[scenIdLongNew]][[idxScalarIn]])){
-    scalarData[[scenIdLongNew]]               <<- scenData[[scenIdLongNew]][[idxScalarIn]]
-  }else{
-    scalarData[[scenIdLongNew]]               <<- tibble()
+loadSandboxScen <- function(scenId, refresh = FALSE){
+  if(tryCatch({
+    scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE),
+                         modelInFileNames, activeScen$getMetadata())
+    FALSE
+  }, no_data = function(e){
+    flog.error(conditionMessage(e))
+    showErrorMsg(lang$errMsg$GAMSInput$title, conditionMessage(e))
+    return(TRUE)
+  }, error = function(e){
+    flog.error("Unexpected error while fetching input data from sandbox. Error message: '%s'", conditionMessage(e))
+    showErrorMsg(lang$errMsg$GAMSInput$title, lang$errMsg$unknownError)
+    return(TRUE)
+  })){
+    return()
   }
-  if(!is.na(idxScalarOut) && nrow(scenData[[scenIdLongNew]][[idxScalarOut]])){
-    # scalar data exists
-    rowIdsToRemove                         <- tolower(scenData[[scenIdLongNew]][[idxScalarOut]][[1]]) %in% config$hiddenOutputScalars
-    scalarData[[scenIdLongNew]]               <<- bind_rows(scalarData[[scenIdLongNew]], 
-                                                            scenData[[scenIdLongNew]][[idxScalarOut]])
-    scenData[[scenIdLongNew]][[idxScalarOut]] <<- scenData[[scenIdLongNew]][[idxScalarOut]][!rowIdsToRemove, ]
-  }
-  scenIdLong <- scenIdLongNew
+  scenData$addRefId(tabIdToRef(scenId), "sb")
   views$duplicateSandboxConf(scenId)
-  try(source("./modules/scen_render.R", local = TRUE), silent = TRUE)
+  renderScenInCompMode(scenId, refreshData = refresh)
   # load script results
   if(length(config$scripts$base)){
     scriptOutput$loadResultsBase(scriptOutput$getResults(), 
@@ -107,48 +91,30 @@ observeEvent(input$loadActiveScenSplitComp, {
     updateTabsetPanel(session, paste0("contentScen_", id, "_1"), 
                       paste0("contentScen_", id, "_1_1"))
   }
-  loadSandboxScen(id)
-  showEl(session, paste0("#refreshSandbox_", id))
-  sidsInSplitComp[id - 1L] <<- -19L
+  loadSandboxScen(id, refresh = FALSE)
 })
 
 observeEvent(input$btScenSplit1_close, {
-  flog.debug("%s: Close Scenario button clicked (left box in split view).", uid)
-  
-  if(identical(sidsInSplitComp[[1]], 0L)){
-    return(NULL)
-  }
-  
-  output$title_2                                     <- renderUI(character(0))
-  scenIdLong                                         <- "scen_2_"
-  scenData[[scenIdLong]]                             <<- list(NULL)
-  scalarData[[scenIdLong]]                           <<- list(NULL)
-  scenMetaData[[scenIdLong]]                         <<- list(NULL)
-  sidsInSplitComp[1]                                 <<- 0L
+  flog.debug("Close Scenario button clicked (left box in split view).")
+
+  dynamicUILoaded$compTabset[["tab_2"]][["content"]][] <<- FALSE
   views$clearConf("2")
+  scenData$clear("cmpSplitL")
   
   # show button and hide content
-  hideEl(session, "#refreshSandbox_2")
+  hideEl(session, "#cmpScenTitle_2")
   hideEl(session, "#scenSplit1_content")
   showEl(session, "#scenSplit1_open")
 })
 observeEvent(input$btScenSplit2_close, {
-  flog.debug("%s: Close Scenario button clicked (right box in split view).", uid)
+  flog.debug("Close Scenario button clicked (right box in split view).")
   
-  if(identical(sidsInSplitComp[[2]], 0L)){
-    return(NULL)
-  }
-  
-  output$title_3                                     <- renderUI(character(0))
-  scenIdLong                                         <- "scen_3_"
-  scenData[[scenIdLong]]                             <<- list(NULL)
-  scalarData[[scenIdLong]]                           <<- list(NULL)
-  scenMetaData[[scenIdLong]]                         <<- list(NULL)
-  sidsInSplitComp[2]                                 <<- 0L
+  dynamicUILoaded$compTabset[["tab_3"]][["content"]][] <<- FALSE
   views$clearConf("3")
+  scenData$clear("cmpSplitR")
   
   # show button and hide content
-  hideEl(session, "#refreshSandbox_3")
+  hideEl(session, "#cmpScenTitle_3")
   hideEl(session, "#scenSplit2_content")
   showEl(session, "#scenSplit2_open")
 })
