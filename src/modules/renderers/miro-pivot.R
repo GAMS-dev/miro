@@ -56,7 +56,9 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
   
   indices <- getIndexLists(unassignedSetIndices, options)
   
-  aggregationFunctions <- if(identical(options[["_metadata_"]]$symtype, "set"))
+  aggregationFunctions <- if((length(options[["_metadata_"]]$symname) &&
+                             options[["_metadata_"]]$symname %in% c(scalarsFileName, scalarsOutName)) ||
+                             identical(options[["_metadata_"]]$symtype, "set"))
     setNames(c("count", "min"),
              c(lang$renderers$miroPivot$aggregationFunctions$count,
                lang$renderers$miroPivot$aggregationFunctions$min))
@@ -211,6 +213,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       initFilter <- TRUE
       initData <- TRUE
       initRenderer <- TRUE
+      isScalarTable <- FALSE
       resetFilters <- isTRUE(options$resetOnInit)
       
       numericCols <- vapply(data, class, character(1L), USE.NAMES = FALSE) %in% c("numeric", "integer")
@@ -223,9 +226,15 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         valueColName <- "value"
       }else if(sum(numericCols) == 0L){
         # data is a set -> drop last column and replace with 1
-        data[, length(data)] <- 1L
         names(data) <- c(names(data)[-length(data)], "value")
         valueColName <- "value"
+        isScalarTable <- length(options[["_metadata_"]]$symname) &&
+          options[["_metadata_"]]$symname %in% c(scalarsFileName, scalarsOutName)
+        if(isScalarTable){
+          data <- suppressWarnings(mutate(data, value = as.numeric(value)))
+        }else{
+          data[, length(data)] <- 1L
+        }
       }
       data <- mutate_if(data, is.character, as.factor)
       
@@ -287,7 +296,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       indices <- character(0L)
       # we need to update aggregation functions in case the symbol type is not available when rendering the UI
       # (e.g. in Configuration Mode)
-      aggregationFunctions <- if(identical(options[["_metadata_"]]$symtype, "set"))
+      aggregationFunctions <- if(isScalarTable || identical(options[["_metadata_"]]$symtype, "set"))
         setNames(c("count", "min"),
                  c(lang$renderers$miroPivot$aggregationFunctions$count,
                    lang$renderers$miroPivot$aggregationFunctions$min))
