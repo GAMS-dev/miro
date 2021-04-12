@@ -14,7 +14,8 @@ observeEvent(input$btImport, {
       SCODEMAP[['hcube_jobconfig']] else SCODEMAP[['scen']])
     dbTagList        <- csv2Vector(scenMetaDb[["_stag"]])
   }, error = function(e){
-    flog.error("Problems fetching list of saved scenarios from database. Error message: %s.", e)
+    flog.error("Problems fetching list of saved scenarios from database. Error message: %s.",
+               conditionMessage(e))
     errMsg <<- sprintf(lang$errMsg$fetchScenData$desc, modelInAlias[i])
   })
   if(is.null(showErrorMsg(lang$errMsg$fetchScenData$title, errMsg))){

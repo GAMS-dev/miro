@@ -437,7 +437,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                            dataset <- as_tibble(DBI::dbGetQuery(private$conn, query))
                          }, error = function(e){
                            stop(sprintf("Db: An error occurred while querying the database (HcubeLoad.fetchResults)." %+%
-                                          "Error message: '%s'.", e),
+                                          "Error message: '%s'.", conditionMessage(e)),
                                 call. = FALSE)
                          })
                          if(nrow(dataset) > limit){

@@ -82,7 +82,7 @@ observeEvent(rv$uploadHcube, {
       flog.error("The zip file you are trying to upload contains invalid files. Only trace and gdx files allowed! No path traversals!")
       errMsg <<- lang$errMsg$hcubeImport$extract$invalidFiles
     }else{
-      flog.error("Problems unzipping the file. Error message: %s.", e)
+      flog.error("Problems unzipping the file. Error message: %s.", conditionMessage(e))
       errMsg <<- lang$errMsg$hcubeImport$extract$desc
     }
   })
@@ -95,7 +95,7 @@ observeEvent(rv$uploadHcube, {
     invalidScenIds <- hcubeImport$validateScenFiles()
     flog.trace("Scenario files validated.")
   }, error = function(e){
-    flog.error("Problems validating results. Error message: %s.", e)
+    flog.error("Problems validating results. Error message: %s.", conditionMessage(e))
     errMsg <<- lang$errMsg$hcubeImport$extract$desc
   })
   if(is.null(showErrorMsg(lang$errMsg$hcubeImport$extract$title, errMsg))){
@@ -130,7 +130,7 @@ observeEvent(virtualActionButton(rv$noInvalidData), {
     hcubeImport$readAllScenData()
     flog.trace("Scenario data read into memory.")
   }, error = function(e){
-    flog.error("Problems reading scenario data. Error message: %s.", e)
+    flog.error("Problems reading scenario data. Error message: %s.", conditionMessage(e))
     errMsg <<- lang$errMsg$hcubeImport$scenRead$desc
   })
   if(is.null(showErrorMsg(lang$errMsg$hcubeImport$scenRead$title, errMsg))){
@@ -152,7 +152,8 @@ observeEvent(virtualActionButton(rv$noInvalidData), {
       rv$btSave <- rv$btSave + 1L
     }
   }, error = function(e){
-    flog.error("Problems fetching duplicated Scenarios from database. Error message: %s.", e)
+    flog.error("Problems fetching duplicated Scenarios from database. Error message: %s.",
+               conditionMessage(e))
     errMsg <<- lang$errMsg$hcubeImport$duplicateFetch$desc
   })
   if(is.null(showErrorMsg(lang$errMsg$hcubeImport$duplicateFetch$title, errMsg))){
@@ -181,7 +182,8 @@ observeEvent(virtualActionButton(rv$btSave), {
     hcubeImport$saveScenarios(hcubeTags, jobID = jobImportID, readPerm = uid, 
                               writePerm = uid, execPerm = uid, progressBar = prog)
   }, error = function(e){
-    flog.error("Problems importing scenarios. Error message: %s.", e)
+    flog.error("Problems importing scenarios. Error message: %s.",
+               conditionMessage(e))
     errMsg <<- lang$errMsg$hcubeImport$dbUpload$desc
   })
   if(is.null(showErrorMsg(lang$errMsg$hcubeImport$dbUpload$title, errMsg))){
@@ -232,7 +234,8 @@ observeEvent(input$btUploadHcube, {
     jobImportID    <<- jIDtmp
   }, error = function(e){
     showHideEl(session, "#manHcubeImportUnknownError")
-    flog.error("Problems writing Hypercube job metadata to database. Error message: '%s'.", e)
+    flog.error("Problems writing Hypercube job metadata to database. Error message: '%s'.",
+               conditionMessage(e))
     noErr <<- FALSE
   })
   if(!noErr)
