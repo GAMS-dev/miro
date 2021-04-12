@@ -1023,7 +1023,7 @@ if(!is.null(errMsg)){
                                              ioConfig$inputDsNamesBase)
             }
             
-            newScen <- Scenario$new(db = db, sname = "unnamed", isNewScen = TRUE,
+            newScen <- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, isNewScen = TRUE,
                                     readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
                                     execPerm = c(uidAdmin, ugroups), uid = uidAdmin,
                                     views = views, attachments = attachments)
