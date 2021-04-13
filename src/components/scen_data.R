@@ -164,7 +164,8 @@ ScenData <- R6Class("ScenData", public = list(
       private$cachedData[[scenId]][["data"]][[symName]]
     }))
   },
-  get = function(refId, symNames = NULL, sheetIds = NULL, loadData = TRUE, showProgress = TRUE){
+  get = function(refId, symNames = NULL, sheetIds = NULL, loadData = TRUE, showProgress = TRUE,
+                 drop = FALSE){
     if(identical(refId, "sb")){
       scenId <- "sb"
     }else{
@@ -183,7 +184,7 @@ ScenData <- R6Class("ScenData", public = list(
     if(is.null(symNames)){
       return(private$cachedData[[as.character(scenId)]][["data"]])
     }
-    if(length(symNames) > 1L){
+    if(length(symNames) > 1L || !drop){
       return(private$cachedData[[as.character(scenId)]][["data"]][symNames])
     }
     return(private$cachedData[[as.character(scenId)]][["data"]][[symNames]])

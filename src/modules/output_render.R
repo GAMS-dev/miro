@@ -16,7 +16,8 @@ renderOutputData <- function(rendererEnv, views){
                  type = configGraphsOut[[i]]$outType,
                  data = scenData$get("sb",
                                      symNames = c(names(modelOut)[i],
-                                                  configGraphsOut[[i]]$additionalData)),
+                                                  configGraphsOut[[i]]$additionalData),
+                                     drop = TRUE),
                  configData = scenData$getScalars("sb"),
                  dtOptions = configGraphsOut[[i]]$datatable,
                  graphOptions = configGraphsOut[[i]]$graph, 
@@ -30,7 +31,7 @@ renderOutputData <- function(rendererEnv, views){
       if(modelOutputTableVisible[[i]]){
         callModule(renderData, paste0("table-out_", i),
                    type = "datatable",
-                   data = scenData$get("sb", symNames = names(modelOut)[i]),
+                   data = scenData$get("sb", symNames = names(modelOut)[i], drop = TRUE),
                    dtOptions = configGraphsOut[[i]]$datatable,
                    roundPrecision = roundPrecision)
         dynamicUILoaded[["outputTables"]][i] <<- TRUE

@@ -190,7 +190,8 @@ loadDynamicTabContentCompMode <- function(session, tabsetId, sheetNames, initEnv
           callModule(renderData, paste0(tabsetIdChar, "_", tabId), 
                      type = graphConfig$outType, 
                      data = scenData$get(refId,
-                                         symNames = c(sheetName, graphConfig$additionalData)), 
+                                         symNames = c(sheetName, graphConfig$additionalData),
+                                         drop = TRUE), 
                      configData = scenData$getScalars(refId), 
                      dtOptions = graphConfig$datatable,
                      graphOptions = graphConfig$graph, 
@@ -201,7 +202,7 @@ loadDynamicTabContentCompMode <- function(session, tabsetId, sheetNames, initEnv
                      rendererEnv = rendererEnv[[refId]], views = views, attachments = attachments)
           callModule(renderData, paste0("table_", tabsetIdChar, "_", tabId),
                      type = "datatable", 
-                     data = scenData$get(refId, symNames = sheetName), 
+                     data = scenData$get(refId, symNames = sheetName, drop = TRUE), 
                      dtOptions = graphConfig$datatable, roundPrecision = roundPrecision)
           dynamicUILoaded$compTabset[[tabsetIdChar]][["content"]][tabId] <<- TRUE
           if(identical(scenData$getById("dirty", refId = refId), TRUE)){
