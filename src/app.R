@@ -1338,10 +1338,10 @@ if(!is.null(errMsg)){
           flog.debug("Navigated %d output tabs (using shortcut).", direction)
           currentGroup <- as.numeric(gsub("\\D", "", isolate(input$outputTabset)))
           if(shortcutNest && length(outputTabs[[currentGroup]]) > 1L){
-            currentSheet <- as.integer(strsplit(isolate(input[[paste0("outputTabset", 
-                                                                      currentGroup)]]), "_")[[1]][2])
-            updateTabsetPanel(session, paste0("outputTabset", currentGroup), 
-                              paste0("outputTabset", 
+            currentSheet <- as.integer(strsplit(isolate(input[[paste0("outputTabset_", 
+                                                                      currentGroup)]]), "_")[[1]][3])
+            updateTabsetPanel(session, paste0("outputTabset_", currentGroup), 
+                              paste0("outputTabset_", 
                                      currentGroup, "_", currentSheet + direction))
           }else{
             updateTabsetPanel(session, "outputTabset", 
@@ -1825,7 +1825,7 @@ if(!is.null(errMsg)){
           groupId <- as.integer(strsplit(tabIdFull, "_", fixed = TRUE)[[1]][3L - isOutputTabset])
           tabId <- NULL
           if(isGroupOfSheets[[groupId]]){
-            tabId <- as.integer(strsplit(input[[paste0("contentScen_", i, "_", groupId)]], 
+            tabId <- as.integer(strsplit(input[[paste0(tabsetName, "_", groupId)]],
                                          "_", fixed = TRUE)[[1L]][[4L - isOutputTabset]])
           }
           if(!length(scenData$getRefScenMap(tabIdToRef(i)))){

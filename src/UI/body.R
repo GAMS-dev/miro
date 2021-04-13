@@ -597,7 +597,7 @@ if(buildUI){
           titleId <- match(i, outputTabs[[tabId]]) + 1L
           return(tabPanel(
             title = outputTabTitles[[tabId]][titleId],
-            value = paste0("outputTabset", tabId, "_", titleId - 1L),
+            value = paste0("outputTabset_", tabId, "_", titleId - 1L),
             tags$div(class="small-space"),
             tabContent,
             tags$div(class="small-space")
@@ -612,7 +612,7 @@ if(buildUI){
         title = outputTabTitles[[tabId]][1],
         value = paste0("outputTabset_", tabId),
         if(length(outputTabTitles[[tabId]]) > 1L){
-          MIROtabsetPanel(id = paste0("outputTabset", tabId),
+          MIROtabsetPanel(id = paste0("outputTabset_", tabId),
                           btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs,
                           content)
         }else{

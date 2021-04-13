@@ -14,7 +14,7 @@ observeEvent(input$outputTableView, {
     return(NULL)
   }
   if(length(outputTabTitles[[i]]) > 1L){
-    j <- as.integer(strsplit(isolate(input[[paste0("outputTabset", i)]]), "_")[[1]][2])
+    j <- as.integer(strsplit(isolate(input[[paste0("outputTabset_", i)]]), "_")[[1]][3])
     i <- outputTabs[[i]][j]
   }else{
     i <- outputTabs[[i]]
