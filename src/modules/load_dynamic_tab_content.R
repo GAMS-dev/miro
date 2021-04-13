@@ -117,18 +117,18 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
         graphConfig <- getScenTabData(scalarsFileName)
         graphConfig <- graphConfig$graphConfig
       }else{
-        sheetId <- match(sheetName, names(modelIn))
+        sheetId <- match(sheetName, names(modelOut))
         if(is.na(sheetId)){
-          sheetId <- match(sheetName, names(modelOut))
+          sheetId <- match(sheetName, names(modelIn))
           if(is.na(sheetId)){
             flog.error("Sheet name: '%s' could not be found in either names of input or output symbols. Should never happen!",
                        sheetName)
             return(showErrorMsg(lang$errMsg$loadScen$title,
                                 lang$errMsg$loadScen$desc))
           }
-          graphConfig <- configGraphsOut[[sheetId]]
-        }else{
           graphConfig <- configGraphsIn[[sheetId]]
+        }else{
+          graphConfig <- configGraphsOut[[sheetId]]
         }
       }
     }
