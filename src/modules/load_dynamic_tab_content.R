@@ -201,7 +201,7 @@ loadDynamicTabContentCompMode <- function(session, tabsetId, sheetNames, initEnv
                      modelDir = modelDir,
                      rendererEnv = rendererEnv[[refId]], views = views, attachments = attachments)
           callModule(renderData, paste0("table_", tabsetIdChar, "_", tabId),
-                     type = "datatable", 
+                     type = "datatable",
                      data = scenData$get(refId, symNames = sheetName, drop = TRUE), 
                      dtOptions = graphConfig$datatable, roundPrecision = roundPrecision)
           dynamicUILoaded$compTabset[[tabsetIdChar]][["content"]][tabId] <<- TRUE

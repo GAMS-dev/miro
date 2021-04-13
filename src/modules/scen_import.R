@@ -414,14 +414,15 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   scenData$loadSandbox(scenInputData, names(scenInputData), activeScen$getMetadata())
   if(LAUNCHHCUBEMODE){
     noOutputData <<- TRUE
-  }else{
+  }else if(!identical(loadMode, "scsv")){
     prog$set(detail = lang$progressBar$importScen$renderOutput, value = 0.8)
     tryCatch({
       outputData <- loadScenData(metaData = modelOut,
                                  workDir = loadModeWorkDir,
                                  templates = modelOutTemplate,
                                  method = loadMode,
-                                 fileName = loadModeFileName, xlsio = xlsio)
+                                 fileName = loadModeFileName,
+                                 xlsio = xlsio, csvio = csvio)
       loadErrors <- c(loadErrors, outputData$errors)
     }, error = function(e){
       flog.info("Problems loading output data. Error message: %s.", 
@@ -432,8 +433,8 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
       return()
     }
     scenData$loadSandbox(outputData$tabular, names(modelOut))
+    renderOutputData(rendererEnv, views)
     if(scenData$getSandboxHasOutputData()){
-      renderOutputData(rendererEnv, views)
       noOutputData <<- FALSE
     }else{
       noOutputData <<- TRUE
