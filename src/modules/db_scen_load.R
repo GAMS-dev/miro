@@ -254,7 +254,7 @@ observeEvent(input$btRefreshComp, {
   loadDynamicTabContent(session, tabsetId,
                         getSheetnamesByTabsetId(tabsetId),
                         initEnv = TRUE)
-  metaTmp <- scenData$getById("meta", refId = refId)
+  metaTmp <- scenData$getById("meta", refId = refId, drop = TRUE)
   showElReplaceTxt(session, paste0("#cmpScenTitle_", tabsetId),
                    paste0(if(!identical(uid, metaTmp[["_uid"]][1])) paste0(metaTmp[["_uid"]][1], ": "),
                           metaTmp[["_sname"]][1]))

@@ -135,7 +135,8 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
         hideEl(session, paste0("#scenTable_", tabsetId, "_", tabId))
       }
     }else{
-      flog.trace("Rendering UI elements for tabset: %s on tab: %s (sheetname: %s)", tabsetId, tabId, sheetName)
+      flog.trace("Rendering UI elements for tabset: %s on tab: %s (sheetname: %s)",
+                 tabsetId, tabId, sheetName)
       tryCatch({
         insertUI(paste0("#scenGraph_", tabsetId, "_", tabId),
                  ui = renderDataUI(paste0(tabsetIdChar,
@@ -194,7 +195,7 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
                      rendererEnv = rendererEnv[[refId]],
                      views = views, attachments = attachments)
           dynamicUILoaded$dynamicTabsets[[tabsetIdChar]][["content"]][tabId] <<- TRUE
-          if(any(unlist(scenData$getById("dirty", refId = refId), use.names = FALSE))){
+          if(any(unlist(scenData$getById("dirty", refId = refId, drop = TRUE), use.names = FALSE))){
             showErrorMsg(lang$errMsg$loadScen$title, lang$errMsg$loadScen$inconsistentDataWarning)
           }
         }, error = function(e) {
@@ -222,7 +223,7 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
                      data = scenData$get(refId, symNames = sheetName, drop = TRUE), 
                      dtOptions = graphConfig$datatable, roundPrecision = roundPrecision)
           dynamicUILoaded$dynamicTabsets[[tabsetIdChar]][["content"]][tabId] <<- TRUE
-          if(identical(scenData$getById("dirty", refId = refId), TRUE)){
+          if(identical(scenData$getById("dirty", refId = refId, drop = TRUE), TRUE)){
             showErrorMsg(lang$errMsg$loadScen$title, lang$errMsg$loadScen$inconsistentDataWarning)
           }
         }, error = function(e) {

@@ -121,7 +121,7 @@ output[["scenExportHandler"]] <- downloadHandler(
         }
       }
       fileName <- paste0(modelName, "_",
-                         scenData$getById("meta", refId = tabIdToRef(tabsetId))[["_sname"]][1], 
+                         scenData$getById("meta", refId = tabIdToRef(tabsetId), drop = TRUE)[["_sname"]][1], 
                          ".", fileExt)
       flog.debug("File: '%s' was downloaded.", fileName)
     })
@@ -162,7 +162,7 @@ output[["scenExportHandler"]] <- downloadHandler(
     }
     data <- scenData$get(refId)
     suppressRemoveModal <- FALSE
-    if(identical(scenData$getById("dirty", refId = refId), TRUE)){
+    if(identical(scenData$getById("dirty", refId = refId, drop = TRUE), TRUE)){
       showElReplaceTxt(session, "#scenExportError", lang$errMsg$loadScen$inconsistentDataWarning)
       suppressRemoveModal <- TRUE
     }
@@ -201,7 +201,7 @@ output[["scenExportHandler"]] <- downloadHandler(
     }
     if(identical(exportFileType, "miroscen")){
       return(tryCatch({
-        generateMiroScen(file, scenData$getById("meta", refId = refId),
+        generateMiroScen(file, scenData$getById("meta", refId = refId, drop = TRUE),
                          data, attachments, views, tabsetId)
         if(!suppressRemoveModal){
           removeModal()
@@ -248,7 +248,7 @@ output[["scenExportHandler"]] <- downloadHandler(
     if(!suppressRemoveModal){
       removeModal()
     }
-    return(xlsio$write(file, data, scenData$getById("meta", refId = tabIdToRef(tabsetId)),
+    return(xlsio$write(file, data, scenData$getById("meta", refId = tabIdToRef(tabsetId), drop = TRUE),
                        includeMetadataSheet = config$excelIncludeMeta,
                        includeEmptySheets = config$excelIncludeEmptySheets))
   }
@@ -306,7 +306,7 @@ observeEvent(input[["scenRemoteExportHandler"]], {
     }
     suppressRemoveModal <- FALSE
     data <- scenData$get(refId)
-    if(identical(scenData$getById("dirty", refId = refId), TRUE)){
+    if(identical(scenData$getById("dirty", refId = refId, drop = TRUE), TRUE)){
       showElReplaceTxt(session, "#scenExportError", lang$errMsg$loadScen$inconsistentDataWarning)
       suppressRemoveModal <- TRUE
     }

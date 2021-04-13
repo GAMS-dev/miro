@@ -19,7 +19,7 @@ renderScenInCompMode <- function(scenId, refreshData = FALSE){
     }
   }
   # update title and date
-  metaTmp <- scenData$getById("meta", refId = tabIdToRef(scenId))
+  metaTmp <- scenData$getById("meta", refId = tabIdToRef(scenId), drop = TRUE)
   showElReplaceTxt(session, paste0("#cmpScenTitle_", scenId),
                    paste0(if(!identical(uid, metaTmp[["_uid"]][1])) paste0(metaTmp[["_uid"]][1], ": "),
                           metaTmp[["_sname"]][1]))

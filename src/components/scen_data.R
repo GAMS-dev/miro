@@ -210,7 +210,7 @@ ScenData <- R6Class("ScenData", public = list(
     }
     return(tibble(scalar = character(), description = character(), value = character()))
   },
-  getById = function(id, refId = NULL, scenIds = NULL){
+  getById = function(id, refId = NULL, scenIds = NULL, drop = FALSE){
     if(!is.null(refId)){
       if(identical(refId, "sb")){
         scenIds <- "sb"
@@ -221,7 +221,7 @@ ScenData <- R6Class("ScenData", public = list(
     if(identical(length(scenIds), 0L)){
       return(list())
     }
-    if(identical(length(scenIds), 1L)){
+    if(identical(length(scenIds), 1L) && drop){
       return(private$cachedData[[as.character(scenIds)]][[id]])
     }
     return(lapply(private$cachedData[as.character(scenIds)], "[[", id))
