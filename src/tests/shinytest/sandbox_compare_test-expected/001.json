@@ -1,19 +1,7 @@
 {
   "output": {
-    "cmpScenTitle_4": {
-      "html": "default1",
-      "deps": [
-
-      ]
-    },
-    "cmpScenTitle_5": {
-      "html": "default1 (Sandbox)",
-      "deps": [
-
-      ]
-    },
-    "cmpScenTitle_6": {
-      "html": "default3",
+    "inputDataTitle": {
+      "html": "default1 (*)",
       "deps": [
 
       ]

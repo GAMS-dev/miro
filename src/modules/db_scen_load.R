@@ -221,16 +221,17 @@ observeEvent(input$btRefreshComp, {
     flog.error("Refresh scenario in compare mode triggered while Hypercube is launched. This should never happen and is likely an attempt to tamper with the app!")
     return()
   }
-  if(identical(input$btRefreshComp, 0L)){
+  tabsetId <- input$btRefreshComp
+  if(identical(tabsetId, 0L)){
     flog.debug("Refresh scenario in pivot compare mode clicked.")
-  }else if(input$btRefreshComp %in% c(2L, 3L)){
+  }else if(tabsetId %in% c(2L, 3L)){
     flog.debug("Refresh scenario in split compare mode clicked.")
   }else{
     flog.debug("Refresh scenario in tab compare mode clicked.")
   }
-  refId <- tabIdToRef(input$btRefreshComp)
+  refId <- tabIdToRef(tabsetId)
   scenData$clear(refId, clearRef = FALSE)
-  dynamicUILoaded$compTabset[[paste0("tab_", input$btRefreshComp)]][["content"]][] <<- FALSE
+  dynamicUILoaded$compTabset[[paste0("tab_", tabsetId)]][["content"]][] <<- FALSE
   if(any(startsWith(as.character(scenData$getRefScenMap(refId)), "sb"))){
     if(tryCatch({
       scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE),
@@ -248,9 +249,15 @@ observeEvent(input$btRefreshComp, {
       return()
     }
   }
-  loadDynamicTabContentCompMode(session, input$btRefreshComp,
-                                getSheetnamesByTabsetId(input$btRefreshComp),
+  loadDynamicTabContentCompMode(session, tabsetId,
+                                getSheetnamesByTabsetId(tabsetId),
                                 initEnv = TRUE)
+  metaTmp <- scenData$getById("meta", refId = refId)
+  showElReplaceTxt(session, paste0("#cmpScenTitle_", tabsetId),
+                   paste0(if(!identical(uid, metaTmp[["_uid"]][1])) paste0(metaTmp[["_uid"]][1], ": "),
+                          metaTmp[["_sname"]][1]))
+  showElReplaceTxt(session, paste0("#cmpScenDate_", tabsetId),
+                   metaTmp[["_stime"]][1])
 })
 
 # load scenario confirmed
