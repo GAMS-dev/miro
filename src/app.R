@@ -1320,9 +1320,8 @@ if(!is.null(errMsg)){
         nestTabsetsViaShortcuts(direction = -1L)
       })
       navigateTabsViaShortcuts <- function(direction){
-        
         if(isolate(input$sidebarMenuId) == "inputData"){
-          flog.debug("Navigated %d input tab (using shortcut).", direction)
+          flog.trace("Navigated %d input tab (using shortcut).", direction)
           currentGroup <- as.numeric(gsub("\\D", "", isolate(input$inputTabset)))
           if(shortcutNest && length(inputTabs[[currentGroup]]) > 1L){
             currentSheet <- as.integer(strsplit(isolate(input[[paste0("inputTabset", 
@@ -1334,8 +1333,10 @@ if(!is.null(errMsg)){
             updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", 
                                                              currentGroup + direction))
           }
-        }else if(isolate(input$sidebarMenuId) == "outputData"){
-          flog.debug("Navigated %d output tabs (using shortcut).", direction)
+          return()
+        }
+        if(isolate(input$sidebarMenuId) == "outputData"){
+          flog.trace("Navigated %d output tabs (using shortcut).", direction)
           currentGroup <- as.numeric(gsub("\\D", "", isolate(input$outputTabset)))
           if(shortcutNest && length(outputTabs[[currentGroup]]) > 1L){
             currentSheet <- as.integer(strsplit(isolate(input[[paste0("outputTabset_", 
@@ -1347,10 +1348,13 @@ if(!is.null(errMsg)){
             updateTabsetPanel(session, "outputTabset", 
                               paste0("outputTabset_", currentGroup + direction))
           }
-        }else if(isolate(input$sidebarMenuId) == "scenarios"){
-          if(identical(currentCompMode, "split")){
-            flog.debug("Navigated %d data tabs in split view scenario comparison view (using shortcut).", direction)
-            currentScen <- 2
+          return()
+        }
+        if(isolate(input$sidebarMenuId) == "scenarios"){
+          if(currentCompMode %in% c("split", "pivot")){
+            flog.trace("Navigated %d data tabs in %s view scenario comparison view (using shortcut).",
+                       direction, currentCompMode)
+            currentScen <- if(identical(currentCompMode, "pivot")) 0L else 2L
             currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen)]]),
                                                 "_", fixed = TRUE)[[1L]][[3L]])
             if(shortcutNest > 0L && isGroupOfSheets[[currentSheet]]){
@@ -1359,54 +1363,59 @@ if(!is.null(errMsg)){
               currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen, "_", 
                                                                         currentGroup)]]),
                                                   "_", fixed = TRUE)[[1L]][[4L]])
-              updateTabsetPanel(session, paste0("contentScen_", currentScen, 
-                                                "_", currentGroup), 
-                                paste0("contentScen_", currentScen, "_", 
+              updateTabsetPanel(session, paste0("contentScen_", currentScen,
+                                                "_", currentGroup),
+                                paste0("contentScen_", currentScen, "_",
                                        currentGroup, "_", currentSheet + direction))
-              
-              updateTabsetPanel(session, paste0("contentScen_", currentScen + 1L, 
-                                                "_", currentGroup), 
-                                paste0("contentScen_", currentScen + 1L, "_", 
+              if(identical(currentScen, 2L)){
+                updateTabsetPanel(session, paste0("contentScen_", currentScen + 1L, 
+                                                  "_", currentGroup), 
+                                  paste0("contentScen_", currentScen + 1L, "_", 
+                                         currentGroup, "_", currentSheet + direction))
+              }
+            }else{
+              # switch to next group
+              updateTabsetPanel(session, paste0("contentScen_", currentScen), 
+                                paste0("contentScen_", currentScen, "_", currentSheet + direction))
+              if(identical(currentScen, 2L)){
+                updateTabsetPanel(session, paste0("contentScen_", currentScen + 1L), 
+                                  paste0("contentScen_", currentScen + 1L, "_", currentSheet + direction))
+              }
+            }
+            return()
+          }
+          if(is.null(sidCompOrder)){
+            return()
+          }
+          currentScen <- as.integer(strsplit(isolate(input$scenTabset), "_", fixed = TRUE)[[1L]][[2L]])
+          if(shortcutNest > 0L){
+            flog.trace("Navigated %d data tabs in scenario comparison view (using shortcut).", direction)
+            currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen)]]),
+                                                "_", fixed = TRUE)[[1L]][[3L]])
+            if(shortcutNest > 1L && isGroupOfSheets[[currentSheet]]){
+              # nest to group of sheets
+              currentGroup <- currentSheet
+              currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen, "_", 
+                                                                        currentGroup)]]),
+                                                  "_", fixed = TRUE)[[1L]][[4L]])
+              updateTabsetPanel(session, paste0("contentScen_", currentScen, "_", currentGroup), 
+                                paste0("contentScen_", currentScen, "_", 
                                        currentGroup, "_", currentSheet + direction))
             }else{
               # switch to next group
               updateTabsetPanel(session, paste0("contentScen_", currentScen), 
                                 paste0("contentScen_", currentScen, "_", currentSheet + direction))
-              updateTabsetPanel(session, paste0("contentScen_", currentScen + 1L), 
-                                paste0("contentScen_", currentScen + 1L, "_", currentSheet + direction))
             }
           }else{
-            if(is.null(sidCompOrder)){
-              return()
-            }
-            currentScen <- as.integer(strsplit(isolate(input$scenTabset), "_", fixed = TRUE)[[1L]][[2L]])
-            if(shortcutNest > 0L){
-              flog.debug("Navigated %d data tabs in scenario comparison view (using shortcut).", direction)
-              currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen)]]),
-                                                  "_", fixed = TRUE)[[1L]][[3L]])
-              if(shortcutNest > 1L && isGroupOfSheets[[currentSheet]]){
-                # nest to group of sheets
-                currentGroup <- currentSheet
-                currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen, "_", 
-                                                                          currentGroup)]]),
-                                                    "_", fixed = TRUE)[[1L]][[4L]])
-                updateTabsetPanel(session, paste0("contentScen_", currentScen, "_", currentGroup), 
-                                  paste0("contentScen_", currentScen, "_", 
-                                         currentGroup, "_", currentSheet + direction))
-              }else{
-                # switch to next group
-                updateTabsetPanel(session, paste0("contentScen_", currentScen), 
-                                  paste0("contentScen_", currentScen, "_", currentSheet + direction))
-              }
-            }else{
-              flog.debug("Navigated %d scenario tabs in scenario comparison view (using shortcut).", direction)
-              # go to next scenario tab
-              idx <- which(sidCompOrder == currentScen)[1]
-              updateTabsetPanel(session, "scenTabset", paste0("scen_", sidCompOrder[idx + direction], "_"))
-            }
+            flog.trace("Navigated %d scenario tabs in scenario comparison view (using shortcut).", direction)
+            # go to next scenario tab
+            idx <- which(sidCompOrder == currentScen)[1]
+            updateTabsetPanel(session, "scenTabset", paste0("scen_", sidCompOrder[idx + direction], "_"))
           }
-        }else if(isolate(input$sidebarMenuId) == "hcubeAnalyze"){
-          flog.debug("Navigated %d data tabs in paver output tabpanel (using shortcut).", direction)
+          return()
+        }
+        if(isolate(input$sidebarMenuId) == "hcubeAnalyze"){
+          flog.trace("Navigated %d data tabs in paver output tabpanel (using shortcut).", direction)
           # go to next data sheet
           local({
             tabsetName <- isolate(input$analysisResults)
