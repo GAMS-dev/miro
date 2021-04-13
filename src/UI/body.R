@@ -587,16 +587,11 @@ if(buildUI){
     outputTabContent <- lapply(seq_along(outputTabs), function(tabId){
       content <- lapply(outputTabs[[tabId]], function(i){
         tabContent <- tagList(
-          tags$div(id = paste0("graph-out_", i), class = "render-output", 
+          tags$div(id = paste0("scenGraph_1_", i), class = "render-output", 
                    style = if(!is.null(configGraphsOut[[i]]$height)) 
-                     sprintf("min-height: %s;", addCssDim(configGraphsOut[[i]]$height, 5)),
-                   renderDataUI(paste0("tab_",i), type = configGraphsOut[[i]]$outType, 
-                                graphTool = configGraphsOut[[i]]$graph$tool, 
-                                customOptions = configGraphsOut[[i]]$options,
-                                filterOptions = configGraphsOut[[i]]$graph$filter,
-                                height = configGraphsOut[[i]]$height)
+                     sprintf("min-height: %s;", addCssDim(configGraphsOut[[i]]$height, 5))
           ),
-          tags$div(id = paste0("data-out_", i), class = "render-output", style = "display:none;")
+          tags$div(id = paste0("scenTable_1_", i), class = "render-output", style = "display:none;")
         )
         if(length(outputTabTitles[[tabId]]) > 1L){
           titleId <- match(i, outputTabs[[tabId]]) + 1L

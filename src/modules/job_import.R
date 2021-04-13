@@ -272,7 +272,7 @@ observeEvent(virtualActionButton(
     updateTabsetPanel(session, "outputTabset",
                       selected = "outputTabset_1")
     # rendering tables and graphs
-    renderOutputData(rendererEnv, views)
+    renderOutputData()
     
     tryCatch({
       worker$updateJobStatus(JOBSTATUSMAP[['imported']], 

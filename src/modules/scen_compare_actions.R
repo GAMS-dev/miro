@@ -48,8 +48,8 @@ observeEvent(input[["btScenTableView"]], {
 closeCmpTab <- function(tabsetId){
   removeTab("scenTabset", paste0("scen_", tabsetId, "_"))
   scenData$clear(tabIdToRef(tabsetId))
-  dynamicUILoaded$compTabset[[paste0("tab_", tabsetId)]][["ui"]][] <<- FALSE
-  dynamicUILoaded$compTabset[[paste0("tab_", tabsetId)]][["content"]][] <<- FALSE
+  dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetId)]][["ui"]][] <<- FALSE
+  dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetId)]][["content"]][] <<- FALSE
   views$clearConf(tabsetId)
 }
 observeEvent(input[["btCmpTabCloseAll"]], {

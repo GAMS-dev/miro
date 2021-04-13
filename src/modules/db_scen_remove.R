@@ -98,7 +98,7 @@ closeScenario <- function(clearMeta = TRUE){
   })
   
   # reset model output data
-  renderOutputData(rendererEnv, views)
+  renderOutputData()
   if(length(activeScen)){
     if(clearMeta){
       scenData$clearSandbox()

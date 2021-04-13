@@ -231,7 +231,9 @@ observeEvent(input$btRefreshComp, {
   }
   refId <- tabIdToRef(tabsetId)
   scenData$clear(refId, clearRef = FALSE)
-  dynamicUILoaded$compTabset[[paste0("tab_", tabsetId)]][["content"]][] <<- FALSE
+  if(!is.null(dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetId)]])){
+    dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetId)]][["content"]][] <<- FALSE
+  }
   if(any(startsWith(as.character(scenData$getRefScenMap(refId)), "sb"))){
     if(tryCatch({
       scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE),
@@ -249,9 +251,9 @@ observeEvent(input$btRefreshComp, {
       return()
     }
   }
-  loadDynamicTabContentCompMode(session, tabsetId,
-                                getSheetnamesByTabsetId(tabsetId),
-                                initEnv = TRUE)
+  loadDynamicTabContent(session, tabsetId,
+                        getSheetnamesByTabsetId(tabsetId),
+                        initEnv = TRUE)
   metaTmp <- scenData$getById("meta", refId = refId)
   showElReplaceTxt(session, paste0("#cmpScenTitle_", tabsetId),
                    paste0(if(!identical(uid, metaTmp[["_uid"]][1])) paste0(metaTmp[["_uid"]][1], ": "),
@@ -351,7 +353,9 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       # check if we are modifying already opened scenarios
       sidsInPivotComp <- scenData$getRefScenMap("cmpPivot")
       if(length(sidsInPivotComp)){
-        dynamicUILoaded$compTabset[["tab_0"]][["content"]][] <<- FALSE
+        if(!is.null(dynamicUILoaded$dynamicTabsets[["tab_0"]])){
+          dynamicUILoaded$dynamicTabsets[["tab_0"]][["content"]][] <<- FALSE
+        }
         sidsToRemoveFromPivotComp <- !sidsInPivotComp %in% c(sidsToLoadVector, "sb_cmpPivot")
         if(any(sidsToRemoveFromPivotComp)){
           scenData$clear(refId, sidsInPivotComp[sidsToRemoveFromPivotComp])
@@ -498,7 +502,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       # render output data
       noOutputData <<- !scenData$getSandboxHasOutputData()
       # rendering tables and graphs
-      renderOutputData(rendererEnv, views)
+      renderOutputData()
       
       # load script results
       if(length(config$scripts$base)){
@@ -527,7 +531,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
                generateScenarioTabset(0L, pivotCompare = TRUE), immediate = TRUE)
     }
     return(tryCatch({
-      loadDynamicTabContentCompMode(session, 0L, symToFetch, initEnv = TRUE)
+      loadDynamicTabContent(session, 0L, symToFetch, initEnv = TRUE)
       hideEl(session, "#pivotCompBtWrapper")
       showEl(session, "#pivotCompScenWrapper")
       switchTab(session, "scenComp")

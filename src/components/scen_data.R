@@ -11,6 +11,9 @@ ScenData <- R6Class("ScenData", public = list(
     if(is.null(refId)){
       return(private$refScenMap)
     }
+    if(identical(refId, "sb")){
+      return("sb")
+    }
     return(private$refScenMap[[refId]])
   },
   loadSandbox = function(data, symNames = NULL, metaData = NULL){

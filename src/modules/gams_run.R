@@ -611,7 +611,7 @@ if(LAUNCHHCUBEMODE){
     switchTab(session, "output")
     updateTabsetPanel(session, "scenTabset",
                       selected = "results.current")
-    renderOutputData(rendererEnv, views)
+    renderOutputData()
     markUnsaved()
   })
   observeEvent(virtualActionButton(input$btSubmitJob, rv$btSubmitJob), {
@@ -870,7 +870,7 @@ output$modelStatus <- renderUI({
     switchTab(session, "output")
     updateTabsetPanel(session, "scenTabset",
                       selected = "results.current")
-    isolate(renderOutputData(rendererEnv, views))
+    isolate(renderOutputData())
     
     markUnsaved()
   }

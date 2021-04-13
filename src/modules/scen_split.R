@@ -95,8 +95,10 @@ observeEvent(input$loadActiveScenSplitComp, {
 
 observeEvent(input$btScenSplit1_close, {
   flog.debug("Close Scenario button clicked (left box in split view).")
-
-  dynamicUILoaded$compTabset[["tab_2"]][["content"]][] <<- FALSE
+  
+  if(!is.null(dynamicUILoaded$dynamicTabsets[["tab_2"]])){
+    dynamicUILoaded$dynamicTabsets[["tab_2"]][["content"]][] <<- FALSE
+  }
   views$clearConf("2")
   scenData$clear("cmpSplitL")
   
@@ -108,7 +110,9 @@ observeEvent(input$btScenSplit1_close, {
 observeEvent(input$btScenSplit2_close, {
   flog.debug("Close Scenario button clicked (right box in split view).")
   
-  dynamicUILoaded$compTabset[["tab_3"]][["content"]][] <<- FALSE
+  if(!is.null(dynamicUILoaded$dynamicTabsets[["tab_3"]])){
+    dynamicUILoaded$dynamicTabsets[["tab_3"]][["content"]][] <<- FALSE
+  }
   views$clearConf("3")
   scenData$clear("cmpSplitR")
   

@@ -1222,7 +1222,7 @@ if(!is.null(errMsg)){
                               outputTablesUI = vector("logical", length(configGraphsOut)),
                               outputTables = vector("logical", length(configGraphsOut)),
                               compareModeTabsets = vector("logical", 3L),
-                              compTabset = list())
+                              dynamicTabsets = list())
       
       # set local working directory
       unzipModelFilesProcess <- NULL
@@ -1298,7 +1298,6 @@ if(!is.null(errMsg)){
         do.call(worker$setCredentials, credConfig)
       }
       rendererEnv        <- new.env(parent = emptyenv())
-      rendererEnv$output <- new.env(parent = emptyenv())
       
       # scenario metadata of scenario saved in database
       scenMetaDb       <- NULL
@@ -1544,7 +1543,6 @@ if(!is.null(errMsg)){
       modelInputData  <- vector(mode = "list", length = length(modelIn))
       modelInputDataVisible <- vector(mode = "list", length = length(modelIn))
       modelInputGraphVisible <- vector(mode = "logical", length = length(modelIn))
-      modelOutputTableVisible <- vector(mode = "logical", length = length(configGraphsOut))
       modelInputDataHcube <- vector(mode = "list", length = length(modelIn))
       externalInputData <- vector(mode = "list", length = length(modelIn))
       externalInputData_filtered <- vector(mode = "list", length = length(modelIn))
@@ -1802,7 +1800,9 @@ if(!is.null(errMsg)){
         hideEl(session, "#pivotCompScenWrapper")
         isInRefreshMode <<- FALSE
         scenData$clear("cmpPivot")
-        dynamicUILoaded$compTabset[["tab_0"]][["content"]][] <<- FALSE
+        if(!is.null(dynamicUILoaded$dynamicTabsets[["tab_0"]])){
+          dynamicUILoaded$dynamicTabsets[["tab_0"]][["content"]][] <<- FALSE
+        }
         disableEl(session, "#btClosePivotComp")
       })
       lapply(seq(0L, maxNumberScenarios  + 3L), function(i){
@@ -1811,20 +1811,31 @@ if(!is.null(errMsg)){
         observe({
           # we need to duplicate code from getSheetnamesByTabsetId here to have 
           # reactive dependencies
-          tabIdFull <- input[[paste0("contentScen_", i)]]
+          if(identical(i, 1L)){
+            tabsetName <- "outputTabset"
+            isOutputTabset <- TRUE
+          }else{
+            tabsetName <- paste0("contentScen_", i)
+            isOutputTabset <- FALSE
+          }
+          tabIdFull <- input[[tabsetName]]
           if(is.null(tabIdFull)){
             return()
           }
-          groupId <- as.integer(strsplit(tabIdFull, "_", fixed = TRUE)[[1]][3L])
+          groupId <- as.integer(strsplit(tabIdFull, "_", fixed = TRUE)[[1]][3L - isOutputTabset])
           tabId <- NULL
           if(isGroupOfSheets[[groupId]]){
             tabId <- as.integer(strsplit(input[[paste0("contentScen_", i, "_", groupId)]], 
-                                         "_", fixed = TRUE)[[1L]][[4L]])
+                                         "_", fixed = TRUE)[[1L]][[4L - isOutputTabset]])
           }
           if(!length(scenData$getRefScenMap(tabIdToRef(i)))){
             return()
           }
           if(groupId > length(outputTabs)){
+            if(isOutputTabset){
+              # is script tab
+              return()
+            }
             groupId <- groupId - length(outputTabs)
             if(groupId > length(scenInputTabs)){
               # is script tab
@@ -1839,7 +1850,7 @@ if(!is.null(errMsg)){
           }else{
             sheetNames <- names(modelOut)[outputTabs[[groupId]]]
           }
-          loadDynamicTabContentCompMode(session, i, if(is.null(tabId)) sheetNames else sheetNames[tabId])
+          loadDynamicTabContent(session, i, if(is.null(tabId)) sheetNames else sheetNames[tabId])
         })
         if(i > 0L){
           obsCompare[[i]] <<- observe({

@@ -1,15 +1,25 @@
 getSheetnamesByTabsetId <- function(tabsetId){
-  tabIdFull <- isolate(input[[paste0("contentScen_", tabsetId)]])
+  if(identical(tabsetId, 1L)){
+    tabsetName <- "outputTabset"
+    isOutputTabset <- TRUE
+  }else{
+    tabsetName <- paste0("contentScen_", tabsetId)
+    isOutputTabset <- FALSE
+  }
+  tabIdFull <- isolate(input[[tabsetName]])
   if(is.null(tabIdFull)){
     return()
   }
-  groupId <- as.integer(strsplit(tabIdFull, "_", fixed = TRUE)[[1]][3L])
+  groupId <- as.integer(strsplit(tabIdFull, "_", fixed = TRUE)[[1]][3L - isOutputTabset])
   tabId <- NULL
   if(isGroupOfSheets[[groupId]]){
-    tabId <- as.integer(strsplit(isolate(input[[paste0("contentScen_", tabsetId, "_", groupId)]]), 
-                                 "_", fixed = TRUE)[[1L]][[4L]])
+    tabId <- as.integer(strsplit(isolate(input[[paste0(tabsetName, "_", groupId)]]),
+                                 "_", fixed = TRUE)[[1L]][[4L - isOutputTabset]])
   }
   if(groupId > length(outputTabs)){
+    if(isOutputTabset){
+      return()
+    }
     groupId <- groupId - length(outputTabs)
     if(groupId > length(scenInputTabs)){
       # is script tab
@@ -66,17 +76,21 @@ getPivotCompGraphConfig <- function(sheetName){
   }
   return(graphConfig)
 }
-loadDynamicTabContentCompMode <- function(session, tabsetId, sheetNames, initEnv = FALSE){
+loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE){
+  if(!length(sheetNames)){
+    return()
+  }
   errMsg <- NULL
   tabsetIdChar <- paste0("tab_", tabsetId)
   isInPivotComp <- identical(tabsetId, 0L)
+  isOutputTabset <- identical(tabsetId, 1L)
   refId <- tabIdToRef(tabsetId)
   showLoadingScreen(session, 500)
   on.exit(hideLoadingScreen(session))
   
-  if(is.null(dynamicUILoaded$compTabset[[tabsetIdChar]])){
-    dynamicUILoaded$compTabset[[tabsetIdChar]] <<- list(ui = vector("logical", length(configGraphsOut) + length(modelIn)),
-                                                        content = vector("logical", length(configGraphsOut) + length(modelIn)))
+  if(is.null(dynamicUILoaded$dynamicTabsets[[tabsetIdChar]])){
+    dynamicUILoaded$dynamicTabsets[[tabsetIdChar]] <<- list(ui = vector("logical", length(configGraphsOut) + length(modelIn)),
+                                                            content = vector("logical", length(configGraphsOut) + length(modelIn)))
   }
   if(initEnv){
     flog.trace("(Re)initializing environment for ref ID: %s", refId)
@@ -114,9 +128,12 @@ loadDynamicTabContentCompMode <- function(session, tabsetId, sheetNames, initEnv
         }
       }
     }
-    if(dynamicUILoaded$compTabset[[tabsetIdChar]][["ui"]][tabId]){
-      showEl(session, paste0("#scenGraph_", tabsetId, "_", tabId))
-      hideEl(session, paste0("#scenTable_", tabsetId, "_", tabId))
+    if(dynamicUILoaded$dynamicTabsets[[tabsetIdChar]][["ui"]][tabId]){
+      if(!isOutputTabset){
+        # we don't want to switch view when viewing sandbox output tables
+        showEl(session, paste0("#scenGraph_", tabsetId, "_", tabId))
+        hideEl(session, paste0("#scenTable_", tabsetId, "_", tabId))
+      }
     }else{
       flog.trace("Rendering UI elements for tabset: %s on tab: %s (sheetname: %s)", tabsetId, tabId, sheetName)
       tryCatch({
@@ -131,7 +148,7 @@ loadDynamicTabContentCompMode <- function(session, tabsetId, sheetNames, initEnv
                                    modelDir = modelDir,
                                    createdDynamically = FALSE),
                  immediate = TRUE)
-        dynamicUILoaded$compTabset[[tabsetIdChar]][["ui"]][tabId] <<- TRUE
+        dynamicUILoaded$dynamicTabsets[[tabsetIdChar]][["ui"]][tabId] <<- TRUE
       }, error = function(e) {
         flog.error("Problems rendering UI elements for scenario dataset: '%s'. Error message: %s.", 
                    sheetName, conditionMessage(e))
@@ -157,7 +174,7 @@ loadDynamicTabContentCompMode <- function(session, tabsetId, sheetNames, initEnv
         }
       }
     }
-    if(!dynamicUILoaded$compTabset[[tabsetIdChar]][["content"]][tabId]){
+    if(!dynamicUILoaded$dynamicTabsets[[tabsetIdChar]][["content"]][tabId]){
       flog.trace("Rendering content for tabset: %s on tab: %s (sheetname: %s)", tabsetId, tabId, sheetName)
       if(isInPivotComp){
         tryCatch({
@@ -176,7 +193,7 @@ loadDynamicTabContentCompMode <- function(session, tabsetId, sheetNames, initEnv
                      roundPrecision = roundPrecision,
                      rendererEnv = rendererEnv[[refId]],
                      views = views, attachments = attachments)
-          dynamicUILoaded$compTabset[[tabsetIdChar]][["content"]][tabId] <<- TRUE
+          dynamicUILoaded$dynamicTabsets[[tabsetIdChar]][["content"]][tabId] <<- TRUE
           if(any(unlist(scenData$getById("dirty", refId = refId), use.names = FALSE))){
             showErrorMsg(lang$errMsg$loadScen$title, lang$errMsg$loadScen$inconsistentDataWarning)
           }
@@ -204,13 +221,15 @@ loadDynamicTabContentCompMode <- function(session, tabsetId, sheetNames, initEnv
                      type = "datatable",
                      data = scenData$get(refId, symNames = sheetName, drop = TRUE), 
                      dtOptions = graphConfig$datatable, roundPrecision = roundPrecision)
-          dynamicUILoaded$compTabset[[tabsetIdChar]][["content"]][tabId] <<- TRUE
+          dynamicUILoaded$dynamicTabsets[[tabsetIdChar]][["content"]][tabId] <<- TRUE
           if(identical(scenData$getById("dirty", refId = refId), TRUE)){
             showErrorMsg(lang$errMsg$loadScen$title, lang$errMsg$loadScen$inconsistentDataWarning)
           }
         }, error = function(e) {
           flog.error("Problem rendering graphs for dataset: '%s'. Error message: %s.",
                      sheetName, conditionMessage(e))
+          showEl(session, paste0("#", tabsetIdChar, "_", tabId, "-noData"))
+          hideEl(session, paste0("#", tabsetIdChar, "_", tabId, "-data"))
           errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderGraph$desc, sheetName), sep = "\n")
         })
       }
