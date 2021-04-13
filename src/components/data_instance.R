@@ -3,7 +3,10 @@ DataInstance <- R6Class("DataInstance", public = list(
                         fileExchange = c("csv", "gdx"), 
                         gdxio = NULL,
                         csvDelim = ",",
-                        sortedNames = character(0L)){
+                        sortedNames = character(0L),
+                        activeScen = NULL,
+                        attachments = NULL,
+                        views = NULL){
     if(!length(datasetNames)){
       private$datasetNames <- character(0L)
     }else{
@@ -18,6 +21,9 @@ DataInstance <- R6Class("DataInstance", public = list(
     }
     private$fileExchange <- match.arg(fileExchange)
     private$csvDelim     <- csvDelim
+    private$activeScen   <- activeScen
+    private$attachments  <- attachments
+    private$views        <- views
     return(invisible(self))
   },
   push = function(datasetName, data){
@@ -64,6 +70,12 @@ DataInstance <- R6Class("DataInstance", public = list(
     }
     return(invisible(self))
   },
+  addDirPaths = function(dirPaths){
+    if(is.character(dirPaths) && length(dirPaths)){
+      private$dirPaths <- c(private$dirPaths, dirPaths)
+    }
+    return(invisible(self))
+  },
   writeDisk = function(filePath, datasetName = NULL, fileName = NULL, ...){
     stopifnot(is.character(filePath), identical(length(filePath), 1L))
     if(length(datasetName)){
@@ -82,6 +94,21 @@ DataInstance <- R6Class("DataInstance", public = list(
     
     return(private$writeGDX(file.path(filePath, fileName), idsToWrite, ...))
   },
+  copyMiroWs = function(wsPath, clArgsDf, jobName = NULL){
+    miroMetaDir <- file.path(wsPath, "_miro_ws_")
+    if(file.exists(miroMetaDir) &&
+       !identical(unlink(miroMetaDir, recursive = TRUE, force = TRUE), 0L)){
+      stop(sprintf("Could not remove (temporary) directory: %s", miroMetaDir), call. = FALSE)
+    }
+    if(!dir.create(miroMetaDir)){
+      stop(sprintf("Could not create (temporary) directory: %s", miroMetaDir), call. = FALSE)
+    }
+    generateMiroScenMeta(miroMetaDir, private$activeScen$getMetadata(),
+                         private$attachments, private$views,
+                         scenId = 1L, clArgs = clArgsDf, jobName = jobName)
+    self$addDirPaths(miroMetaDir)
+    return(invisible(self))
+  },
   compress = function(fileName = NULL, recurse = FALSE){
     if(!is.null(fileName)){
       stopifnot(is.character(fileName), identical(length(fileName), 1L))
@@ -92,16 +119,27 @@ DataInstance <- R6Class("DataInstance", public = list(
       stop("Nothing to compress.", call. = FALSE)
     }
     zipr(fileName, private$filePaths, recurse = recurse, compression_level = 9L)
+    if(length(private$dirPaths)){
+      if(any(duplicated(dirname(private$dirPaths)))){
+        stop("Multiple directories with different root currently not supported!", call. = FALSE)
+      }
+      zipr_append(fileName, private$dirPaths, root = dirname(private$dirPaths[[1]]),
+                  recurse = TRUE, compression_level = 9L)
+    }
     return(invisible(fileName))
   }
 ), private = list(
   data = list(),
   gdxio = NULL,
   filePaths = character(0L),
+  dirPaths = character(0L),
   datasetNames = character(0L),
   fileExchange = character(1L),
   csvDelim = character(1L),
   sortedNames = character(0L),
+  activeScen = NULL,
+  attachments = NULL,
+  views = NULL,
   writeGDX = function(filePath, idsToWrite, squeezeZeros = c("n", "y", "e")){
     squeezeZeros <- match.arg(squeezeZeros)
     private$gdxio$wgdx(filePath, private$data[idsToWrite], squeezeZeros)

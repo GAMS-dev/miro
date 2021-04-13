@@ -137,34 +137,24 @@ Worker <- R6Class("Worker", public = list(
   setWorkDir = function(workDir){
     private$workDir <- workDir
   },
-  run = function(inputData, pfFileContent = NULL, sid = NULL){
-    if(length(pfFileContent)){
-      stopifnot(is.character(pfFileContent), length(pfFileContent) > 0L)
-      private$pfFileContent <- pfFileContent
-    }else{
-      private$pfFileContent <- NULL
-    }
+  run = function(inputData, clArgsDf = NULL, sid = NULL, name = NULL){
+    private$clArgsDf <- clArgsDf
     private$initRun(sid)
     
     if(private$remote){
-      private$runRemote(inputData)
+      private$runRemote(inputData, name = name)
       return(0L)
     }
     private$runLocal(inputData)
     return(0L)
   },
-  runAsync = function(inputData = NULL, pfFileContent = NULL, sid = NULL, tags = NULL, 
+  runAsync = function(inputData = NULL, clArgsDf = NULL, sid = NULL, tags = NULL, 
                       dynamicPar = NULL, name = NULL){
     req(private$remote)
     
-    if(length(pfFileContent)){
-      stopifnot(is.character(pfFileContent), length(pfFileContent) > 0L)
-      private$pfFileContent <- pfFileContent
-    }else{
-      private$pfFileContent <- NULL
-    }
+    private$clArgsDf <- clArgsDf
     
-    private$runRemote(inputData, dynamicPar)
+    private$runRemote(inputData, dynamicPar, name = name)
     tryCatch({
       remoteSubValue <- as.character(value(private$fRemoteSub))
     }, error = function(e){
@@ -200,13 +190,13 @@ Worker <- R6Class("Worker", public = list(
     return(private$process)
   },
   runHcube = function(staticData = NULL, dynamicPar = NULL, sid = NULL, tags = NULL, 
-                      attachmentFilePaths = NULL, pfFileContent = NULL){
+                      attachmentFilePaths = NULL, clArgsDf = NULL){
     req(length(private$db) > 0L)
     
     private$initRun(sid)
     
     if(private$remote){
-      pID <- self$runAsync(staticData, pfFileContent = pfFileContent, sid = sid, 
+      pID <- self$runAsync(staticData, clArgsDf = clArgsDf, sid = sid, 
                            tags = tags, dynamicPar = dynamicPar)
     }else{
       private$jID <- self$addJobDb("", sid, tags = tags)
@@ -742,6 +732,7 @@ Worker <- R6Class("Worker", public = list(
   hcube = logical(1L),
   status = NULL, 
   jID = NULL,
+  jobName = NULL,
   db = NULL,
   conn = NULL,
   jobListInit = FALSE,
@@ -752,7 +743,7 @@ Worker <- R6Class("Worker", public = list(
   inputData = NULL,
   log = character(1L),
   authHeader = character(1L),
-  pfFileContent = NULL,
+  clArgsDf = NULL,
   process = NULL,
   workDir = NULL,
   hardKill = FALSE,
@@ -778,7 +769,7 @@ Worker <- R6Class("Worker", public = list(
       gamsArgs <- c(gamsArgs, 'trace="_scenTrc.trc"', "traceopt=3")
     }
     pfFilePath <- gmsFilePath(file.path(private$workDir, tolower(private$metadata$modelName) %+% ".pf"))
-    writeLines(c(private$pfFileContent, gamsArgs), pfFilePath)
+    writeLines(c(clArgsDfToPf(private$clArgsDf), gamsArgs), pfFilePath)
     
     private$process <- process$new(file.path(private$metadata$gamsSysDir, "gams"), 
                                    args = c(private$metadata$modelGmsName, "pf", pfFilePath), 
@@ -808,10 +799,14 @@ Worker <- R6Class("Worker", public = list(
                                    env = private$getProcEnv())
     return(invisible(self))
   },
-  runRemote = function(inputData, hcubeData = NULL){
+  runRemote = function(inputData, hcubeData = NULL, name = NULL){
     private$status  <- "s"
     inputData$writeDisk(private$workDir, 
                         fileName = private$metadata$MIROGdxInName)
+    if(!is.R6(hcubeData)){
+      private$jobName <- name
+      inputData$copyMiroWs(private$workDir, private$clArgsDf, jobName = name)
+    }
     private$fRemoteSub  <- future({
       suppressWarnings(suppressMessages({
         library(zip)
@@ -861,7 +856,8 @@ Worker <- R6Class("Worker", public = list(
                                                          else
                                                            c(dataFilesToFetch,
                                                              metadata$text_entities,
-                                                             requestBody$stdout_filename)),
+                                                             requestBody$stdout_filename,
+                                                             "_miro_ws_/*")),
                                            type = 'application/json')
       requestBody$data <- upload_file(inputData$
                                         addFilePaths(pfFilePath)$
@@ -895,7 +891,7 @@ Worker <- R6Class("Worker", public = list(
         return(paste0("error:", statusCode, msg))
       }
     }, globals = list(metadata = private$metadata, workDir = private$workDir,
-                      pfFileContent = private$pfFileContent, inputData = inputData,
+                      pfFileContent = clArgsDfToPf(private$clArgsDf), inputData = inputData,
                       authHeader = private$authHeader,
                       gmsFilePath = gmsFilePath, DataInstance = DataInstance, 
                       isWindows = isWindows, hcubeData = hcubeData))
@@ -1031,7 +1027,8 @@ Worker <- R6Class("Worker", public = list(
           private$process <- value(private$fRemoteSub)
           if(length(private$db)){
             tryCatch({
-              private$jID <- self$addJobDb(private$process, private$sid)
+              private$jID <- self$addJobDb(private$process, private$sid,
+                                           name = private$jobName)
             }, error = function(e){
               flog.warn("Could not add job to database. Error message; '%s'.", 
                         conditionMessage(e))
