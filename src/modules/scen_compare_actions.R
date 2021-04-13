@@ -92,7 +92,7 @@ observeEvent(input[["btScenClose"]], {
   }
 })
 
-# export scenario data to excel spreadsheet
+# export scenario data
 output[["scenExportHandler"]] <- downloadHandler(
   filename = function() {
     tabsetId <- suppressWarnings(as.integer(input[["scenExportId"]]))
@@ -188,7 +188,7 @@ output[["scenExportHandler"]] <- downloadHandler(
     prog$set(value = 0.2)
     
     if(identical(exportFileType, "gdx")){
-      tryCatch({
+      return(tryCatch({
         gdxio$wgdx(file, data, squeezeZeros = "n")
         if(!suppressRemoveModal){
           removeModal()
@@ -196,21 +196,28 @@ output[["scenExportHandler"]] <- downloadHandler(
       }, error_duplicate_records = function(e){
         flog.info("Duplicate records found when writing GDX file: %s", conditionMessage(e))
         showElReplaceTxt(session, "#scenExportError", conditionMessage(e))
-      })
-      return()
-    }else if(identical(exportFileType, "miroscen")){
-      tryCatch({
-        generateMiroScen(file, scenData$getById("meta", refId = tabIdToRef(tabsetId)),
+        downloadHandlerError(file, conditionMessage(e))
+      }))
+    }
+    if(identical(exportFileType, "miroscen")){
+      return(tryCatch({
+        generateMiroScen(file, scenData$getById("meta", refId = refId),
                          data, attachments, views, tabsetId)
         if(!suppressRemoveModal){
           removeModal()
         }
       }, error_duplicate_records = function(e){
-        flog.info("Duplicate records found when writing GDX file: %s", conditionMessage(e))
+        flog.info("Duplicate records found when writing GDX file (in miroscen file): %s",
+                  conditionMessage(e))
         showElReplaceTxt(session, "#scenExportError", conditionMessage(e))
-      })
-      return()
-    }else if(identical(exportFileType, "csv")){
+        downloadHandlerError(file, conditionMessage(e))
+      }, error = function(e){
+        flog.info("Unexpected error while creating miroscen file for export: %s", conditionMessage(e))
+        showElReplaceTxt(session, "#scenExportError", lang$errMsg$unknownError)
+        downloadHandlerError(file, lang$errMsg$unknownError)
+      }))
+    }
+    if(identical(exportFileType, "csv")){
       if(!suppressRemoveModal){
         removeModal()
       }

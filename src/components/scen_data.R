@@ -209,7 +209,11 @@ ScenData <- R6Class("ScenData", public = list(
   },
   getById = function(id, refId = NULL, scenIds = NULL){
     if(!is.null(refId)){
-      scenIds <- private$refScenMap[[refId]]
+      if(identical(refId, "sb")){
+        scenIds <- "sb"
+      }else{
+        scenIds <- private$refScenMap[[refId]]
+      }
     }
     if(identical(length(scenIds), 0L)){
       return(list())
