@@ -203,8 +203,19 @@ HcubeImport <- R6Class("HcubeImport",
                                                     rep.int(execPerm, numberScen), rep.int(jobID, numberScen))
                            metadataTable[[3]] <- Sys.time()
                            names(metadataTable) <- scenMetaColnames[-1]
-                           firstScenId <- self$getLatestSid() + 1L
                            self$writeMetadata(metadataTable)
+                           if(inherits(private$conn, "PqConnection")){
+                             query <- SQL(paste0("SELECT currval(pg_get_serial_sequence(",
+                                                 DBI::dbQuoteString(private$conn, private$tableNameMetadata), 
+                                                 ", ",
+                                                 DBI::dbQuoteString(private$conn,
+                                                                    private$scenMetaColnames['sid']), "));"))
+                           }else{
+                             query <- SQL("SELECT LAST_INSERT_ROWID();")
+                           }
+                           lasInsertedRowId <- as.integer(DBI::dbGetQuery(private$conn, query)[[1]][1])
+                           stopifnot(lasInsertedRowId >= numberScen)
+                           firstScenId <- lasInsertedRowId - numberScen + 1L
                            
                            # concatenate to single table first and then do bulk export to database
                            for(scenId in seq_along(scenData)){

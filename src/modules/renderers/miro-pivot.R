@@ -337,7 +337,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         
         if(length(options[["pivotRenderer"]]) &&
-           options[["pivotRenderer"]] %in% c("table", "line", "bar", "stackedbar", "radar")){
+           options[["pivotRenderer"]] %in% c("table", "heatmap", "line", "bar", "stackedbar", "radar")){
           updateSelectInput(session, "pivotRenderer", selected = options[["pivotRenderer"]])
         }else{
           updateSelectInput(session, "pivotRenderer", selected = "table")
@@ -910,6 +910,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if(initRenderer && isTRUE(options$resetOnInit)){
           if(length(currentView[["pivotRenderer"]])){
             pivotRenderer <- currentView[["pivotRenderer"]]
+            initRenderer <<- FALSE
           }else{
             return()
           }

@@ -1,4 +1,7 @@
 options(shiny.maxRequestSize = 500*1024^2)
+
+source("../app/tools/db_migration/modules/form_db_migration.R", local = TRUE)
+
 miroAppValidator <- MiroAppValidator$new()
 miroscenParser   <- MiroscenParser$new()
 modelConfig      <- ModelConfig$new(file.path("data", "specs.yaml"))
@@ -44,6 +47,8 @@ initCallback <- function(session, modelConfigList){
 server <- function(input, output, session){
     isLoggedIn <- FALSE
     miroProc   <- MiroProc$new(session)
+
+    launchDbMigrationManager <- reactiveVal(0L)
 
     modelConfigList <- modelConfig$getConfigList()
 
@@ -167,15 +172,6 @@ server <- function(input, output, session){
                 newAppConfig[["accessGroups"]] <- as.list(newGroups)
             }
 
-            if(isTRUE(input$addApp$removeInconsistentTables)){
-                tablesToRemove <- miroProc$getTablesToRemove()
-                if(!length(tablesToRemove)){
-                    flog.error("Request to remove inconsistent tables received, even though there are no inconsistent tables. This looks like an attempt to tamper with the app.")
-                    stop("Internal error", call. = FALSE)
-                }
-                db$removeTables(tablesToRemove)
-            }
-
             appDir   <- file.path(getwd(), MIRO_MODEL_DIR, appId)
             dataDir  <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_", appId))
 
@@ -184,7 +180,8 @@ server <- function(input, output, session){
 
             miroProc$run(appId, modelName, miroAppValidator$getMIROVersion(),
                 appDir, dataDir, progressSelector = "#addAppProgress",
-                overwriteScen = TRUE, requestType = "addApp", function(){
+                overwriteScen = TRUE, requestType = "addApp",
+                launchDbMigrationManager = launchDbMigrationManager, function(){
                 tryCatch({
                     engineClient$registerModel(appId, paste0(modelName, ".gms"), appDir, overwrite = TRUE)
                     flog.debug("New MIRO app: %s registered at Engine.", modelName)
@@ -226,6 +223,7 @@ server <- function(input, output, session){
 
             if(isTRUE(input$deleteApp$removeData)){
                 db$removeAppDbTables(appId)
+                flog.info("Data for MIRO app: %s removed successfully.", appId)
             }
 
             removeAppData(appIndex, modelConfig$getAppLogo(appIndex))
@@ -345,5 +343,55 @@ server <- function(input, output, session){
     observeEvent(input$addMiroscen, {
         flog.info("Request to add miroscen received (Overwrite: true).")
         addMiroscen(input$miroDataFiles$datapath, TRUE)
+    })
+    # database migration manager
+    migrationObs <- NULL
+    observe({
+        if(launchDbMigrationManager() == 0L){
+            return()
+        }
+        migrationInfo <- miroProc$getMigrationInfo()
+        migrationConfig <- dbMigrationServer("migrationForm",
+            migrationInfo$inconsistentTablesInfo,
+            migrationInfo$orphanedTablesInfo,
+            standalone = FALSE)
+        migrationObs <- observe({
+            if(!is.null(migrationConfig())){
+                try({
+                    migrationObs$destroy()
+                    migrationObs <<- NULL
+                }, silent = TRUE)
+
+                session$sendCustomMessage("onProgress", 
+                        list(selector = "dbMigration",
+                          progress = 10))
+
+                migrationConfigPath <- file.path(tempdir(TRUE), "mig_conf.json")
+                write_json(migrationConfig(), migrationConfigPath,
+                    auto_unbox = TRUE, null = "null")
+
+                session$sendCustomMessage("onProgress", list(progress = 20))
+
+                miroProc$run(migrationInfo$appId, migrationInfo$modelName,
+                    migrationInfo$miroVersion,
+                    migrationInfo$appDir, migrationInfo$dataDir,
+                    migrationConfigPath = migrationConfigPath,
+                    progressSelector = "#addAppProgress",
+                    overwriteScen = TRUE, requestType = "migrateDb", function(){
+                        flog.debug("Database for app: %s migrated successfully.",
+                            migrationInfo$appId)
+                        removeModal()
+                        session$sendCustomMessage("onSuccess", 
+                            list(requestType = "migrateDb"))
+                })
+            }
+        })
+    })
+    observeEvent(input$btCloseMigForm, {
+        try({
+            migrationObs$destroy()
+            migrationObs <<- NULL
+        }, silent = TRUE)
+        removeModal()
     })
 }
