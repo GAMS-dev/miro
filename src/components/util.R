@@ -1577,7 +1577,6 @@ stop_custom <- function(.subclass, message, call = NULL, ...) {
   )
   stop(err)
 }
-<<<<<<< HEAD
 formatScenList = function(scenList, uid, orderBy = NULL, desc = FALSE, limit = 100L){
   # returns list of scenarios (formatted for dropdown menu)
   #
