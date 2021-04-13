@@ -105,7 +105,11 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
     }
   }
   for(sheetName in sheetNames){
-    tabId <- match(sheetName, scenTableNamesToDisplay)
+    if(isOutputTabset){
+      tabId <- match(sheetName, names(modelOut))
+    }else{
+      tabId <- match(sheetName, scenTableNamesToDisplay)
+    }
     if(isInPivotComp){
       graphConfig <- getPivotCompGraphConfig(sheetName)
     }else{
