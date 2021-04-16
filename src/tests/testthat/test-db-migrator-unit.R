@@ -21,10 +21,10 @@ populateDb <- function(procEnv){
                                      "default.gdx")
   procEnv$MIRO_OVERWRITE_SCEN_IMPORT <- "true"
   
-  miroProc <- run(file.path(R.home("bin"), "R"),
-                                    c("-e", 
-                                      paste0("shiny::runApp('", miroAppPath, "',port=3839,host='0.0.0.0')")),
-                                    env = unlist(procEnv), wd = miroAppPath, error_on_status = FALSE)
+  miroProc <- processx::run(file.path(R.home("bin"), "R"),
+                            c("-e", 
+                              paste0("shiny::runApp('", miroAppPath, "',port=3839,host='0.0.0.0')")),
+                            env = unlist(procEnv), wd = miroAppPath, error_on_status = FALSE)
   if(miroProc$status != 0L){
     print(miroProc$stdout)
     print(miroProc$stderr)
