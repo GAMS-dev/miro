@@ -1205,10 +1205,9 @@ loadPfFileContent <- function(content, GMSOpt = character(0L), DDPar = character
   content       <- content[tolower(content[[1]]) %in% 
                              c(GMSOpt, DDPar), , 
                            drop = FALSE]
-  if(!length(clArgsTmp)){
+  if(!length(content[[1]])){
     return(tibble())
   }
-  content[[1]]  <- clArgsTmp
   return(content)
 }
 
