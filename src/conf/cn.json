@@ -127,6 +127,7 @@
     "hcubeLoad":{
       "title":"加载场景",
       "noData":"查询未返回任何数据",
+      "invalidCsvFilter": "“%s”不得包含“，”。",
       "showHashButton":"显示哈希值",
       "msgOnlyOneHash":"请只选择一种场景。",
       "msgNoHashFound":"未找到该场景的哈希值。该场景在Hypercube模式下可能未解决。",
@@ -673,6 +674,7 @@
       "btCancelMigration": "取消",
       "btConfirmMigration": "确认迁移",
       "errDuplicateTables": "表：'%s'不能重复！",
+      "incompatibleTypeWarning": "必须将现有数据转换为数字以适合新的数据库表。 无法转换的值变为0！",
       "dialogConfirmDataLoss": {
         "title": "警告：数据丢失",
         "descTables": "注意：使用当前的迁移配置，将删除以下表格：'％s'！",

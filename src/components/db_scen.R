@@ -32,7 +32,7 @@ Scenario <- R6Class("Scenario",
                           private$userAccessGroups <- uid
                         }else{
                           private$uid  <- db$getUid()
-                          private$userAccessGroups    <- db$accessGroups
+                          private$userAccessGroups    <- db$getUserAccessGroups()
                         }
                         if(is.null(sid)){
                           stopifnot(is.character(sname), length(sname) == 1)
@@ -73,10 +73,11 @@ Scenario <- R6Class("Scenario",
                         private$execPerm            <- vector2Csv(execPerm)
                         private$views               <- views
                         private$attachments         <- attachments
+                        private$hcubeActive         <- db$getHcubeActive()
                         
                         savedAttachConfig <- NULL
                         
-                        if(db$getHcubeActive())
+                        if(private$hcubeActive)
                           private$scode <- SCODEMAP[['hcube_jobconfig']]
                         else
                           private$scode <- SCODEMAP[['scen']]

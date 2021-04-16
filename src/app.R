@@ -219,11 +219,46 @@ if(is.null(errMsg)){
     if(exists("dbSchema")){
       # legacy app, need to convert to new format
       dbSchemaModel <- dbSchema$tabName[-seq_len(6)]
-      dbSchemaModel <- setNames(lapply(seq_along(dbSchemaModel), function(i){
+      dbSchemaModel <- list(schema = setNames(lapply(seq_along(dbSchemaModel), function(i){
+        if(dbSchemaModel[i] %in% c(scalarsFileName, scalarsOutName)){
+          return(NA)
+        }
         list(tabName = dbSchemaModel[i],
              colNames = dbSchema$colNames[[i + 6L]],
              colTypes = dbSchema$colTypes[[i + 6L]])
-      }), dbSchemaModel)
+      }), dbSchemaModel), views = list())
+      dbSchemaModel$schema[is.na(dbSchemaModel$schema)] <- NULL
+      if(scalarsOutName %in% names(modelOut)){
+        scalarMeta <- setNames(modelOut[[scalarsOutName]]$symtypes,
+                               modelOut[[scalarsOutName]]$symnames)
+        dbSchemaModel$schema <- c(dbSchemaModel$schema,
+                                  setNames(lapply(names(scalarMeta), function(scalarName){
+                                    list(tabName = scalarName,
+                                         colNames = scalarName,
+                                         colTypes = if(identical(scalarMeta[[scalarName]], "set")) "c" else "d")
+                                  }), names(scalarMeta)))
+        dbSchemaModel$views[[scalarsOutName]] <- c(dbSchemaModel$views[[scalarsOutName]], names(scalarMeta))
+      }
+      if(scalarsFileName %in% names(modelInRaw)){
+        scalarMeta <- setNames(modelInRaw[[scalarsFileName]]$symtypes,
+                               modelInRaw[[scalarsFileName]]$symnames)
+        dbSchemaModel$schema <- c(dbSchemaModel$schema,
+                                  setNames(lapply(names(scalarMeta), function(scalarName){
+                                    list(tabName = scalarName,
+                                         colNames = scalarName,
+                                         colTypes = if(identical(scalarMeta[[scalarName]], "set")) "c" else "d")
+                                  }), names(scalarMeta)))
+        dbSchemaModel$views[[scalarsFileName]] <- c(dbSchemaModel$views[[scalarsFileName]], names(scalarMeta))
+      }
+      if(length(GMSOpt) || length(DDPar)){
+        dbSchemaModel$schema <- c(dbSchemaModel$schema,
+                                  setNames(lapply(c(GMSOpt, DDPar), function(parName){
+                                    list(tabName = parName,
+                                         colNames = parName,
+                                         colTypes = "c")
+                                  }), c(GMSOpt, DDPar)))
+        dbSchemaModel$views[[scalarsFileName]] <- c(dbSchemaModel$views[[scalarsFileName]], c(GMSOpt, DDPar))
+      }
       rm(dbSchema)
     }
     suppressWarnings(rm(lang))
@@ -242,6 +277,8 @@ if(is.null(errMsg)){
                     modelInRaw = modelInRaw,
                     inputDsNames = inputDsNames,
                     hcubeScalars = hcubeScalars,
+                    DDPar = DDPar,
+                    GMSOpt = GMSOpt,
                     inputDsNamesBase = inputDsNames[!inputDsNames %in% hcubeScalars],
                     scenTableNamesToDisplay = scenTableNamesToDisplay)
   if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildonly){
@@ -842,6 +879,19 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
         write("merr:::409", stderr())
       }
       migApp <<- shinyApp(ui = uiDbMig, server = serverDbMig)
+    }else{
+      tryCatch({
+        dbMigrator$createMissingScalarTables()
+      }, error = function(e){
+        flog.error("Problems creating scalar tables. Error message: '%s'.", conditionMessage(e))
+        if(miroStoreDataOnly){
+          write("\n", stderr())
+          write("merr:::500", stderr())
+        }
+        if(interactive())
+          stop()
+        quit("no", 1L)
+      })
     }
   })
   if(length(migApp)){
@@ -1023,8 +1073,10 @@ if(!is.null(errMsg)){
             }
             
             newScen <- Scenario$new(db = db, sname = "unnamed", isNewScen = TRUE,
-                                    readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
-                                    execPerm = c(uidAdmin, ugroups), uid = uidAdmin,
+                                    readPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
+                                    writePerm = uidAdmin,
+                                    execPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
+                                    uid = uidAdmin,
                                     views = views, attachments = attachments)
             if(!tryCatch(validateMiroScen(file.path(miroDataDir, miroDataFile)), error = function(e){
               flog.error("Invalid miroscen file. Error message: '%s'.", conditionMessage(e))
@@ -1058,8 +1110,10 @@ if(!is.null(errMsg)){
                                          simplifyDataFrame = FALSE, simplifyVector = FALSE))
             }
             newScen <- Scenario$new(db = db, sname = scenName, isNewScen = TRUE,
-                                    readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
-                                    execPerm = c(uidAdmin, ugroups), uid = uidAdmin, views = views)
+                                    readPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
+                                    writePerm = uidAdmin,
+                                    execPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
+                                    uid = uidAdmin, views = views)
           }
           if(!overwriteScenToImport && db$checkSnameExists(newScen$getScenName(), newScen$getScenUid())){
             flog.info("Scenario: %s already exists and overwrite is set to FALSE. Skipping...",

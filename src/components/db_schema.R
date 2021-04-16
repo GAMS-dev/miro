@@ -1,7 +1,8 @@
 DbSchema <- R6Class("DbSchema", public = list(
   initialize = function(symbolSchema = NULL){
     private$dbSymbols <- c(names(ioConfig$modelOut), ioConfig$inputDsNames)
-    stopifnot(identical(length(symbolSchema), length(private$dbSymbols)))
+    private$dbTableNames <- names(symbolSchema$schema)
+    private$dbViews <- symbolSchema$views
     
     private$schema <- c(list(
       '_scenMeta' = list(tabName = "_sys_metadata_",
@@ -67,7 +68,7 @@ DbSchema <- R6Class("DbSchema", public = list(
                                       hash = "hash"),
                          colTypes = "cc"
       )
-    ), symbolSchema)
+    ), symbolSchema$schema)
     return(invisible(self))
   },
   getTableNamesCurrentSchema = function(){
@@ -78,13 +79,33 @@ DbSchema <- R6Class("DbSchema", public = list(
     return(invisible(self))
   },
   getDbTableName = function(tableName){
+    if(tableName %in% c(scalarsFileName, scalarsOutName)){
+      return(tableName)
+    }
+    if(LAUNCHHCUBEMODE){
+      if(tableName %in% ioConfig$hcubeScalars){
+        return(paste0("_hc_", tableName))
+      }
+      if(identical(tableName, "_hc__scalars")){
+        return("_hc__scalars")
+      }
+    }
     return(private$schema[[tableName]]$tabName)
   },
   getDbIndexName = function(tableName){
-    return(paste0("sid_index_", private$schema[[tableName]]$tabName))
+    return(paste0("sid_index_", self$getDbTableName(tableName)))
   },
   getDbSchema = function(tableName){
     return(private$schema[[tableName]])
+  },
+  getDbTableNames = function(){
+    return(private$dbTableNames)
+  },
+  getDbViews = function(viewName = NULL){
+    if(is.null(viewName)){
+      return(private$dbViews)
+    }
+    return(private$dbViews[[viewName]])
   },
   getAllSymbols = function(){
     return(private$dbSymbols)
@@ -104,10 +125,13 @@ DbSchema <- R6Class("DbSchema", public = list(
     }
     return(self$getCreateTableQueryRaw(tableName))
   },
-  getCreateTableQueryRaw = function(symName, includeForeignKey = TRUE, dbTableName = NULL){
-    symSchema <- private$schema[[symName]]
+  getCreateTableQueryRaw = function(symName, includeForeignKey = TRUE,
+                                    dbTableName = NULL, symSchema = NULL){
+    if(is.null(symSchema)){
+      symSchema <- private$schema[[symName]]
+    }
     if(is.null(dbTableName)){
-      dbTableName <- symSchema$tabName
+      dbTableName <- self$getDbTableName(symName)
     }
     if(includeForeignKey){
       foreignKeyConstraint <- paste0(", CONSTRAINT foreign_key FOREIGN KEY (", 
@@ -121,7 +145,7 @@ DbSchema <- R6Class("DbSchema", public = list(
     }else{
       foreignKeyConstraint <- ""
     }
-    if(symName %in% private$dbSymbols){
+    if(symName %in% private$dbTableNames){
       # need to prepend sid column
       symSchema$colNames <- c("_sid", symSchema$colNames)
       symSchema$colTypes <- paste0("i", symSchema$colTypes)
@@ -177,9 +201,51 @@ DbSchema <- R6Class("DbSchema", public = list(
                                           colType),
                   call. = FALSE)
     }, character(1L), USE.NAMES = FALSE))
+  },
+  getCreateScalarViewQuery = function(viewName, scalarNames){
+    escapedScalarNames <- dbQuoteIdentifier(private$conn, scalarNames)
+    escapedTableNameMeta <- dbQuoteIdentifier(private$conn,  private$schema[["_scenMeta"]]$tabName)
+    return(paste0("CREATE VIEW ", dbQuoteIdentifier(private$conn, viewName), " AS SELECT ",
+                  escapedTableNameMeta, "._sid,",
+                  paste(escapedScalarNames, collapse = ","), " FROM ",
+                  escapedTableNameMeta, " ",
+                  paste(paste0("LEFT JOIN ", escapedScalarNames, " ON ",
+                               escapedTableNameMeta, "._sid=", escapedScalarNames, "._sid"),
+                        collapse = " ")))
+  },
+  getCreateScalarViewTriggerFnQuery = function(viewName, scalarNames){
+    return(paste0("CREATE OR REPLACE FUNCTION ",
+                  dbQuoteIdentifier(private$conn, paste0(viewName, "_insert_fn")),
+                  "() RETURNS TRIGGER AS $$ BEGIN ",
+                  private$getCreateScalarViewInsertQueries(
+                    dbQuoteIdentifier(private$conn, scalarNames)),
+                  " RETURN NULL; END; $$ LANGUAGE plpgsql;"))
+  },
+  getDropScalarTriggerQuery = function(viewName){
+    if(inherits(private$conn, "PqConnection")){
+      return(paste0("DROP FUNCTION IF EXISTS ",
+                    dbQuoteIdentifier(private$conn, paste0(viewName, "_insert_fn")),
+                    " CASCADE;"))
+    }
+    return(paste0("DROP TRIGGER IF EXISTS ",
+                  dbQuoteIdentifier(private$conn, paste0(viewName, "_insert"))))
+  },
+  getCreateScalarViewTriggerQuery = function(viewName, scalarNames){
+    escapedScalarNames <- dbQuoteIdentifier(private$conn, scalarNames)
+    if(inherits(private$conn, "PqConnection")){
+      triggerFn <- paste0(" FOR EACH ROW EXECUTE PROCEDURE ",
+                          dbQuoteIdentifier(private$conn, paste0(viewName, "_insert_fn")), "()")
+    }else{
+      triggerFn <- paste0(" BEGIN ", private$getCreateScalarViewInsertQueries(escapedScalarNames), " END")
+    }
+    return(paste0("CREATE TRIGGER ", dbQuoteIdentifier(private$conn, paste0(viewName, "_insert")),
+                  " INSTEAD OF INSERT ON ", dbQuoteIdentifier(private$conn, viewName),
+                  triggerFn))
   }
 ), private = list(
   schema = NULL,
+  dbViews = NULL,
+  dbTableNames = NULL,
   dbSymbols = NULL,
   conn = NULL,
   getCreateScenMetaTableQuery = function(){
@@ -253,5 +319,13 @@ DbSchema <- R6Class("DbSchema", public = list(
                   dbQuoteIdentifier(private$conn, schema$colNames[["lock"]]),
                   if(inherits(private$conn, "PqConnection"))
                     " timestamp with time zone);" else " text);"))
+  },
+  getCreateScalarViewInsertQueries = function(escapedScalarNames){
+    return(paste(paste0("INSERT INTO",
+                        escapedScalarNames,
+                        "(_sid,",
+                        escapedScalarNames,
+                        ") VALUES (NEW._sid,NEW.",
+                        escapedScalarNames, ");"), collapse = " "))
   }
 ))

@@ -127,6 +127,7 @@
     "hcubeLoad":{
       "title":"Load scenarios",
       "noData":"No data was returned by your query",
+      "invalidCsvFilter": "'%s' must not contain ','.",
       "showHashButton": "Show hash",
       "msgOnlyOneHash": "Please select only one scenario.",
       "msgNoHashFound": "No hash was found for the selected scenario. Apparently the scenario was not solved in Hypercube Mode.",
@@ -673,6 +674,7 @@
       "btCancelMigration": "Cancel",
       "btConfirmMigration": "Confirm migration",
       "errDuplicateTables": "Table(s): '%s' cannot be duplicated!",
+      "incompatibleTypeWarning": "The existing data must be cast to a numeric value to fit into the new database table. Values that cannot be converted become 0!",
       "dialogConfirmDataLoss": {
         "title": "Warning: Loss of data",
         "descTables": "Attention: The following tables are removed with your current migration configuration: '%s'!",
