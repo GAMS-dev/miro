@@ -1145,9 +1145,9 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, hcubeMode = TRUE, showLogFi
                                         tags$span(
                                           lang$nav$importJobsDialog$ttips$discardedCompleted))
                               }else if(identical(jStatus, JOBSTATUSMAP[['imported']])){
-                                tags$td("imported")
+                                tags$td(lang$nav$importJobsDialog$status$imported)
                               }else if(identical(jStatus, JOBSTATUSMAP[['imported(man)']])){
-                                tags$td(class = "ttip", lang$nav$importJobsDialog$status$discarded,
+                                tags$td(class = "ttip", lang$nav$importJobsDialog$status$imported,
                                         tags$span(
                                           lang$nav$importJobsDialog$ttips$importedManual))
                               }else{
