@@ -709,7 +709,7 @@ Db <- R6Class("Db",
                     })
                   }
                   if(tableName %in% c(scalarsFileName, scalarsOutName)){
-                          return(private$convertScalarTableFromDb(dataset, tableName))
+                          return(private$convertScalarTableFromDb(dataset, tableName, length(subsetSids)))
                   }
                   return(dataset)
                 },
@@ -1029,7 +1029,7 @@ Db <- R6Class("Db",
                           mutate_at(select(dataset, c(1L, scalarOrder[!is.na(scalarOrder)])),
                                     coerceToFloat, as.numeric)))
           },
-          convertScalarTableFromDb = function(dataset, tableName){
+          convertScalarTableFromDb = function(dataset, tableName, noScen = 1L){
                   # note that dataset has _sid as first column (thus everything is offset by 1)
                   if(identical(tableName, scalarsFileName)){
                           symtext <- character()
@@ -1045,7 +1045,7 @@ Db <- R6Class("Db",
                                                         cols = dbSchema$getDbViews(tableName),
                                                         names_to = "scalar",
                                                         values_to = "value"),
-                                           description = symtext, .after = 2L),
+                                           description = rep.int(symtext, noScen), .after = 2L),
                                 value = as.character(value)))
           }
         )
