@@ -190,14 +190,12 @@ HcubeImport <- R6Class("HcubeImport",
                                                     `_scode` = rep.int(jobID, numberScen))
                            metadataTable[[3]] <- Sys.time()
                            
-                           self$writeMetadata(metadataTable)
                            if(inherits(private$conn, "PqConnection")){
-                             query <- SQL(paste0("SELECT currval(pg_get_serial_sequence(",
-                                                 DBI::dbQuoteString(private$conn, dbSchema$getDbTableName("_scenMeta")), 
-                                                 ", ",
-                                                 DBI::dbQuoteString(private$conn,
-                                                                    "_sid"), "));"))
+                             query <- paste(sqlAppendTable(conn, dbSchema$getDbTableName("_scenMeta"),
+                                                           sqlData(conn, metadataTable),
+                                                           row.names = FALSE), "RETURNING _sid")
                            }else{
+                             self$writeMetadata(metadataTable)
                              query <- SQL("SELECT LAST_INSERT_ROWID();")
                            }
                            lasInsertedRowId <- as.integer(DBI::dbGetQuery(private$conn, query)[[1]][1])
@@ -217,8 +215,6 @@ HcubeImport <- R6Class("HcubeImport",
                                  add_column(`_sid` = firstScenId + scenIdx - 1L,
                                             private$scenData[[scenIdx]][[tableName]],
                                             .before = 1L)}))
-                               print(tableName)
-                               print(dataTmp)
                                self$exportScenDataset(dataTmp, tableName, isHcJobConfig = FALSE)
                                if(!is.null(progressBar)){
                                  progressBar$inc(amount = 0, message = sprintf("Uploading table %d of %d.",
