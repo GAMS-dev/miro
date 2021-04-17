@@ -954,6 +954,11 @@ if(is.null(errMsg)){
                errMsg <<- paste(errMsg, paste0("The date range selector: '", modelInAlias[i], 
                                                "' uses a reserved name as its identifier. Please choose a different name."), sep = "\n")
              }
+             # double dash parameters declared as dateranges are automatically
+             # expanded to 2 double dash parameters with suffixes _lo and _up
+             # TODO: allow specifying any names for lower and upper limit 
+             # (possibly even 2 GAMS scalars)
+             DDPar <<- c(DDPar[DDPar != name], paste0(name, c("_lo", "_up")))
              # TODO : support dependency
              return(NULL)
            },
