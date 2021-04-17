@@ -20,7 +20,7 @@ FakeSession <- R6Class("FakeSession", public = list(
 ), private = list(
   id = NULL
 ))
-
+LAUNCHHCUBEMODE <<- FALSE
 createTestDb()
 
 ioConfig <<- list()
