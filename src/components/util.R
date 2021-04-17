@@ -503,22 +503,6 @@ addCssDim <- function(x, y){
   return(paste0(dgts, tmp[2]))
 }
 
-getGMSPar <- function(inputNames, prefixPar){
-  # Finds compile time variables/GAMS options and returns them as a list
-  #
-  # Args:
-  #   inputNames:     vector of names of input sheets
-  #   prefixPar:      numeric that specifies additional height to be added (same unit as x)
-  #
-  # Returns:
-  #   vector of names of compile time variables
-  
-  inputNames       <- tolower(inputNames)
-  prefixPar        <- tolower(paste0("^", prefixPar))
-  isGMSPar         <- grepl(prefixPar, inputNames)
-  
-  return(inputNames[isGMSPar])
-}
 virtualActionButton <- function(...){
   o <- structure(sum(...), class = "shinyActionButtonValue")
   invisible(o)
@@ -1210,16 +1194,11 @@ loadPfFileContent <- function(content, GMSOpt = character(0L), DDPar = character
     return(tibble())
   }
   content       <- content[tolower(content[[1]]) %in% 
-                             c(GMSOpt, 
-                               outer(DDPar, c("", "_lo", "_up"), FUN = "paste0")), , 
+                             c(GMSOpt, DDPar), , 
                            drop = FALSE]
-  clArgsTmp     <- stri_replace_first_regex(content[[1]], 
-                                            "_lo$", "\\$lo")
-  clArgsTmp     <- stri_replace_first_regex(clArgsTmp, "_up$", "\\$up")
-  if(!length(clArgsTmp)){
+  if(!length(content[[1]])){
     return(tibble())
   }
-  content[[1]]  <- clArgsTmp
   return(content)
 }
 
@@ -1662,4 +1641,17 @@ clArgsDfToPf <- function(clArgsDf){
                                escapeGAMSCL(clArgsDf[[3]][i]))
                       }, character(1L), USE.NAMES = FALSE)
   return(pfContent[!is.na(pfContent)])
+}
+accessPermInput <- function(inputId, label, choices, selected = NULL){
+  selectizeInput(inputId, label, "", multiple= TRUE,
+                 options = list(valueField = "value",
+                                labelField = "value",
+                                searchField = "value",
+                                options = lapply(choices, function(option){
+                                  list(isGroup = startsWith(option, "_"),
+                                       value = option)
+                                }),
+                                sortField = I("function(i1,i2) {return i1.value-i2.value;}"),
+                                items = I(toJSON(selected, auto_unbox = FALSE)),
+                                render = I("{option: function(d,e){return '<div>'+(d.isGroup?'<i class=\"fas fa-users\"></i> '+e(d.value.substring(1)):'<i class=\"fas fa-user\"></i> '+e(d.value))+'</div>';},item:function(d,e){return '<div>'+(d.isGroup?'<i class=\"fas fa-users\"></i> '+e(d.value.substring(1)):'<i class=\"fas fa-user\"></i> '+e(d.value))+'</div>';}}")))
 }

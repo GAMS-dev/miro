@@ -22,6 +22,9 @@ migrateMiroDatabase <- function(oldPath, newPath){
   }, finally = {
     DBI::dbDisconnect(conn)
   })
+  # scalars need to be migrated last..
+  isScalarTable <- endsWith(allDbTables, "_scalars") | endsWith(allDbTables, "_scalars_out")
+  allDbTables <- c(allDbTables[!isScalarTable], allDbTables[isScalarTable])
   appIdsWithData <- vapply(allDbTables,
                            function(dbTableName){
                              if(!startsWith(dbTableName, "_sys_metadata_")){
@@ -66,6 +69,69 @@ migrateMiroDatabase <- function(oldPath, newPath){
                                     nchar(dbTableToRename) - nchar(appIdWithData))
         }else{
           newTableName <- substring(dbTableToRename, appTablePrefixLen + 1L, nchar(dbTableToRename))
+        }
+        if(newTableName %in% c("_scalars", "_scalars_out")){
+          scalarsToMigrate <- dbGetQuery(conn,
+                                         paste0("SELECT DISTINCT scalar FROM ",
+                                                dbQuoteIdentifier(conn, dbTableToRename)))
+          if(!length(scalarsToMigrate) || !length(scalarsToMigrate[[1]])){
+            dbExecute(conn, SQL(paste0("DROP TABLE IF EXISTS ", dbQuoteIdentifier(conn, dbTableToRename), " ;")))
+            next
+          }
+          sidsHcConfig <- dbGetQuery(conn, paste0("SELECT _sid FROM ",
+                                                  dbQuoteIdentifier(conn, paste0("_sys_metadata_",
+                                                                                 appIdWithData)),
+                                                  " WHERE _scode=-1"))
+          if(length(sidsHcConfig) && length(sidsHcConfig[[1]])){
+            # copy Hypercube scalars to new _hc__scalars table
+            dbExecute(conn,
+                      "CREATE TABLE _hc__scalars (_sid INTEGER,scalar TEXT,description TEXT,value TEXT, CONSTRAINT foreign_key FOREIGN KEY (_sid) REFERENCES _sys_metadata_(_sid) ON DELETE CASCADE);")
+            dbExecute(conn, SQL(paste0("INSERT INTO _hc__scalars (_sid,scalar,description,value) SELECT _sid,scalar,description,value FROM ",
+                                       dbQuoteIdentifier(conn, dbTableToRename), " WHERE _sid IN (",
+                                       paste(DBI::dbQuoteLiteral(conn, sidsHcConfig[[1]]), collapse = ","), ")")))
+          }
+          scalarsToMigrate <- gsub("$", "_", scalarsToMigrate[[1]], fixed = TRUE)
+          for(scalarTableName in scalarsToMigrate){
+            if(dbExistsTable(conn, scalarTableName)){
+              # is Hypercube scalar table
+              dbExecute(conn, SQL(paste0("ALTER TABLE ",
+                                         DBI::dbQuoteIdentifier(conn, scalarTableName), 
+                                         " RENAME TO ",
+                                         DBI::dbQuoteIdentifier(conn, paste0("_hc_", scalarTableName)))))
+            }
+            dbExecute(conn,
+                      paste0("CREATE TABLE ", 
+                             dbQuoteIdentifier(conn, scalarTableName), 
+                             " (_sid INTEGER,", dbQuoteIdentifier(conn, scalarTableName), 
+                             " TEXT, CONSTRAINT foreign_key FOREIGN KEY (_sid) REFERENCES ",
+                             "_sys_metadata_(_sid) ON DELETE CASCADE);"))
+            dbExecute(conn, paste0("CREATE INDEX ",
+                                   dbQuoteIdentifier(conn, paste0("sid_index_", scalarTableName)),
+                                   " ON ",
+                                   dbQuoteIdentifier(conn, scalarTableName),
+                                   " (",
+                                   dbQuoteIdentifier(conn, "_sid"),
+                                   ");"))
+            dbExecute(conn, SQL(paste0("INSERT INTO ", dbQuoteIdentifier(conn, scalarTableName),
+                                       " (_sid,", dbQuoteIdentifier(conn, scalarTableName),
+                                       ") SELECT _sid,value FROM ",
+                                       dbQuoteIdentifier(conn, dbTableToRename), " WHERE scalar=",
+                                       dbQuoteString(conn, scalarTableName))))
+          }
+          dbExecute(conn, SQL(paste0("DROP TABLE IF EXISTS ", dbQuoteIdentifier(conn, dbTableToRename), " ;")))
+          escapedScalarNames <- DBI::dbQuoteIdentifier(conn, scalarsToMigrate)
+          dbExecute(conn, paste0("CREATE VIEW ", dbQuoteIdentifier(conn, newTableName), " AS SELECT ",
+                                 "_sys_metadata_._sid,",
+                                 paste(escapedScalarNames, collapse = ","), " FROM _sys_metadata_ ",
+                                 paste(paste0("LEFT JOIN ", escapedScalarNames, " ON ",
+                                              "_sys_metadata_._sid=", escapedScalarNames, "._sid"),
+                                       collapse = " ")))
+          dbExecute(conn, paste0("CREATE TRIGGER ", dbQuoteIdentifier(conn, paste0(newTableName, "_insert")),
+                                 " INSTEAD OF INSERT ON ", dbQuoteIdentifier(conn, newTableName),
+                                 " BEGIN ", paste(paste0("INSERT INTO", escapedScalarNames, "(_sid,",
+                                                         escapedScalarNames, ") VALUES (NEW._sid,NEW.",
+                                                         escapedScalarNames, ");"), collapse = " "), " END"))
+          next
         }
         dbExecute(conn, SQL(paste0("ALTER TABLE ",
                                    DBI::dbQuoteIdentifier(conn, dbTableToRename), 

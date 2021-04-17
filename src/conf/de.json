@@ -128,6 +128,7 @@
     "hcubeLoad":{
       "title":"Lade Szenarien",
       "noData":"Für die von Ihnen abgesetzte Datenbankabfrage konnten keine Daten gefunden werden.",
+      "invalidCsvFilter": "'%s' dürfen kein ',' enthalten.",
       "showHashButton": "Hash anzeigen",
       "msgOnlyOneHash": "Bitte wählen Sie nur ein Szenario aus.",
       "msgNoHashFound": "Für das ausgewählte Szenario wurde kein Hash gefunden. Anscheinend wurde das Szenario nicht im Hypercube-Modus gelöst.",
@@ -680,6 +681,7 @@
       "btCancelMigration": "Abbrechen",
       "btConfirmMigration": "Migration bestätigen",
       "errDuplicateTables": "Tabelle(n): '%s' können nicht dupliziert werden!",
+      "incompatibleTypeWarning": "Die vorhandenen Daten müssen in einen numerischen Wert gecastet werden, damit sie in die neue Datenbanktabelle passen. Werte, die nicht umgewandelt werden können, werden zu 0!",
       "dialogConfirmDataLoss": {
         "title": "Warnung: Verlust von Daten",
         "descTables": "Achtung! Die folgenden Tabellen werden mit Ihrer aktuellen Migrationskonfiguration entfernt: '%s'!",

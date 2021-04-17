@@ -420,7 +420,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       if(length(refId)){
         # there are multiple ref ids in tab comparison mode.
         scenData$load(as.integer(sidsToLoadVector), refId = refId,
-                      symNames = symToFetch)
+                      symNames = symToFetch,
+                      isHcJobConfig = LAUNCHHCUBEMODE && isInSolveMode)
       }
       scriptDataTmp <- append(db$loadScriptResults(sidsToLoadVector,
                                                    msgProgress = lang$progressBar$loadScenDb),

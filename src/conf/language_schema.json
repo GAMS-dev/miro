@@ -508,6 +508,10 @@
               "type": "string",
               "minLength": 1
             },
+            "invalidCsvFilter": {
+              "type": "string",
+              "minLength": 1
+            },
             "msgOnlyOneHash": {
               "type": "string",
               "minLength": 1
@@ -579,7 +583,7 @@
               "minProperties": 4
             }
           },
-          "minProperties": 13
+          "minProperties": 14
         },
         "hcubeAnalyze": {
           "type": "object",
@@ -2650,6 +2654,10 @@
               "type": "string",
               "minLength": 1
             },
+            "incompatibleTypeWarning": {
+              "type": "string",
+              "minLength": 1
+            },
             "dialogConfirmDataLoss": {
               "type": "object",
               "additionalProperties": false,
@@ -2732,7 +2740,7 @@
               "minProperties": 7
             }
           },
-          "minProperties": 12
+          "minProperties": 13
         }
       },
       "minProperties": 51

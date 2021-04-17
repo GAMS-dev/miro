@@ -57,16 +57,29 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
                                                lang$nav$migrationModule$selectTableToMap,
                                                tableMapping)),
                           lapply(seq_along(tableInfo$colNames), function(j){
+                            showTypeWarning <- FALSE
                             if(length(tableInfo$currentColNames)){
-                              if(identical(colTypes[j], "c")){
-                                colChoices <- c("-", textCols)
+                              if(identical(length(tableInfo$colNames), 1L)){
+                                # scalar tables are allowed to be type-converted
+                                colChoices <- c(textCols, numericCols)
+                                if(!identical(colTypes[1], "c") && length(textCols)){
+                                  showTypeWarning <- TRUE
+                                }
                               }else{
-                                colChoices <- c("-", numericCols)
+                                if(identical(colTypes[j], "c")){
+                                  colChoices <- c("-", textCols)
+                                }else{
+                                  colChoices <- c("-", numericCols)
+                                }
                               }
                             }else{
                               colChoices <- "-"
                             }
                             tags$div(class = colClass,
+                                     tags$div(id = ns("incompatibleTypeWarning"),
+                                              class = "err-msg",
+                                              style = if(!showTypeWarning) "display:none;",
+                                              lang$nav$migrationModule$incompatibleTypeWarning),
                                      selectInput(ns(paste0("dbMigrateTable_", i, "_", j)),
                                                  tags$span(title = tableMeta$headers[[j]]$alias,
                                                            tableInfo$colNames[j]),
@@ -117,10 +130,20 @@ dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
           colTypes <- strsplit(tableInfo$colTypes, "", fixed = TRUE)[[1]]
           
           for(j in seq_along(tableInfo$colNames)){
-            if(identical(colTypes[j], "c")){
-              colChoices <- c("-", textCols)
+            if(identical(length(tableInfo$colNames), 1L)){
+              # scalar tables are allowed to be type-converted
+              colChoices <- c(textCols, numericCols)
+              if(!identical(colTypes[j], "c") && length(textCols)){
+                showEl(session, paste0("#", session$ns("incompatibleTypeWarning")))
+              }else{
+                hideEl(session, paste0("#", session$ns("incompatibleTypeWarning")))
+              }
             }else{
-              colChoices <- c("-", numericCols)
+              if(identical(colTypes[j], "c")){
+                colChoices <- c("-", textCols)
+              }else{
+                colChoices <- c("-", numericCols)
+              }
             }
             updateSelectInput(session, paste0("dbMigrateTable_", i, "_", j),
                               choices = colChoices,

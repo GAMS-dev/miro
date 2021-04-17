@@ -99,8 +99,14 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
           # double slider has two scalar values saved
           if((modelIn[[i]]$type == "slider" && length(modelIn[[i]]$slider$default) > 1) || 
              (modelIn[[i]]$type == "daterange")){
-            dataTmp <- scalarDataset[[3]][tolower(scalarDataset[[1]]) %in% 
-                                            paste0(scalarName, c("$lo", "$up"))]
+            if(identical(modelIn[[i]]$slider$single, TRUE)){
+              # single slider that was extended in HC Mode
+              dataTmp <- scalarDataset[[3]][tolower(scalarDataset[[1]]) %in% 
+                                              paste0(scalarName, c("$lo", "$up"))]
+            }else{
+              dataTmp <- scalarDataset[[3]][tolower(scalarDataset[[1]]) %in% 
+                                              paste0(scalarName, c("_lo", "_up"))]
+            }
             if(identical(modelIn[[i]]$type, "slider")){
               dataTmp <- as.numeric(dataTmp)
             }

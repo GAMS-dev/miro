@@ -67,7 +67,8 @@ ScenData <- R6Class("ScenData", public = list(
     return(FALSE)
   },
   load = function(scenIds, sheetIds = NULL, symNames = NULL, limit = 1e7,
-                  showProgress = TRUE, refId = NULL, registerRef = TRUE){
+                  showProgress = TRUE, refId = NULL, registerRef = TRUE,
+                  isHcJobConfig = FALSE){
     if(identical(refId, "sb") && length(scenIds) > 1L){
       stop_custom("bad_param", "Cannot load multiple scenarios with refId=sb", call. = FALSE)
     }
@@ -111,6 +112,10 @@ ScenData <- R6Class("ScenData", public = list(
         if(identical(refId, "sb") ||
            is.null(private$cachedData[[scenIdChar]][["data"]]) ||
            is.null(private$cachedData[[scenIdChar]][["data"]][[symName]])){
+          if(LAUNCHHCUBEMODE && isHcJobConfig
+             && identical(symName, scalarsFileName)){
+            symName <- "_hc__scalars"
+          }
           if(identical(symName, scalarsOutName)){
             if(checkDirty){
               private$checkDirty(scenId)

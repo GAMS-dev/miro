@@ -21,14 +21,13 @@ populateDb <- function(procEnv){
                                      "default.gdx")
   procEnv$MIRO_OVERWRITE_SCEN_IMPORT <- "true"
   
-  miroProc <- processx::process$new(file.path(R.home("bin"), "R"),
-                                    c("-e", 
-                                      paste0("shiny::runApp('", miroAppPath, "',port=3839,host='0.0.0.0')")),
-                                    env = unlist(procEnv), wd = miroAppPath, stderr = "|", stdout = "|")
-  miroProc$wait()
-  if(miroProc$get_exit_status() != 0L){
-    print(miroProc$read_all_output())
-    print(miroProc$read_all_error())
+  miroProc <- processx::run(file.path(R.home("bin"), "R"),
+                            c("-e", 
+                              paste0("shiny::runApp('", miroAppPath, "',port=3839,host='0.0.0.0')")),
+                            env = unlist(procEnv), wd = miroAppPath, error_on_status = FALSE)
+  if(miroProc$status != 0L){
+    print(miroProc$stdout)
+    print(miroProc$stderr)
   }
 }
 
@@ -40,30 +39,30 @@ if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
   createTestDb()
 }
 
-dbSchema <<- DbSchema$new(list(results = list(tabName = "results",
-                                              colNames = c("i", "j", "lngp", "latp", "lngm", "latm", "cap", 
-                                                           "demand", "quantities", "bla"),
-                                              colTypes = "ccdddddddd"), 
-                               `_scalars_out` = list(tabName = "_scalars_out",
-                                                     colNames = c("scalar", "description", 
-                                                                  "value"),
-                                                     colTypes = "ccc"),
-                               a = list(tabName = "a",
-                                        colNames = c("i", "j", "value"),
-                                        colTypes = "ccd"),
-                               b = list(tabName = "b",
-                                        colNames = c("k", "value"),
-                                        colTypes = "cd"),
-                               d = list(tabName = "d",
-                                        colNames = c("i", 
-                                                     "j", "k", "value"),
-                                        colTypes = "cccd"),
-                               ilocdata = list(tabName = "ilocdata",
-                                               colNames = c("i", "lng", "lat"),
-                                               colTypes = "cdd"), 
-                               jlocdata = list(tabName = "jlocdata",
-                                               colNames = c("j", "lng", "lat"),
-                                               colTypes = "cdd")))
+dbSchema <<- DbSchema$new(list(schema = list(results = list(tabName = "results",
+                                                            colNames = c("i", "j", "lngp", "latp", "lngm", "latm", "cap", 
+                                                                         "demand", "quantities", "bla"),
+                                                            colTypes = "ccdddddddd"), 
+                                             total_cost = list(tabName = "total_cost",
+                                                               colNames = "total_cost",
+                                                               colTypes = "c"),
+                                             a = list(tabName = "a",
+                                                      colNames = c("i", "j", "value"),
+                                                      colTypes = "ccd"),
+                                             b = list(tabName = "b",
+                                                      colNames = c("k", "value"),
+                                                      colTypes = "cd"),
+                                             d = list(tabName = "d",
+                                                      colNames = c("i", 
+                                                                   "j", "k", "value"),
+                                                      colTypes = "cccd"),
+                                             ilocdata = list(tabName = "ilocdata",
+                                                             colNames = c("i", "lng", "lat"),
+                                                             colTypes = "cdd"), 
+                                             jlocdata = list(tabName = "jlocdata",
+                                                             colNames = c("j", "lng", "lat"),
+                                                             colTypes = "cdd")),
+                               views = list("_scalars_out" = "total_cost")))
 
 for(dbType in c("sqlite", "postgres")){
   if(dbType == "postgres" && skipPostgres){
@@ -96,14 +95,13 @@ for(dbType in c("sqlite", "postgres")){
                      port = procEnv$MIRO_DB_PORT,
                      schema = "mirotests")
   }
-  
+  populateDb(procEnv)
   db <- Db$new(uid = "user", dbConf = dbConfig,
                slocktimeLimit = 20, modelName = modelName,
                hcubeActive = FALSE, ugroups = "users", forceNew = TRUE)
   conn <- db$getConn()
   dbSchema$setConn(conn)
   
-  populateDb(procEnv)
   dbMigrator <- DbMigrator$new(db)
   
   test_that(paste0("Validating migration config works (", dbType, ")"), {
@@ -131,11 +129,14 @@ for(dbType in c("sqlite", "postgres")){
                                            colNames = c("i", "j", "lngp", "latp", "lngm", "latm", "cap", 
                                                         "demand", "quantities", "-")),
                             a = list(oldTableName = "a", colNames = c("i", "-", "value")),
-                            b = list(oldTableName = "b", colNames = c("j", "value")))
+                            b = list(oldTableName = "b", colNames = c("j", "value")),
+                            total_cost = list(oldTableName = "total_cost", colNames = "total_cost"))
     expect_error(dbMigrator$migrateDb(migrationConfig,
                                       forceRemove = FALSE), class = "error_data_loss", regex = "forceRemove")
     expect_error(dbMigrator$migrateDb(migrationConfig,
                                       forceRemove = TRUE), NA)
+    expect_identical(tolower(dbMigrator$.__enclos_env__$private$getTableInfo("total_cost")$colTypes),
+                     "text")
     expect_identical(dbReadTable(conn, "results")[-1],
                      data.frame(i = c("Seattle", "Seattle", "Seattle", "San-Diego", "San-Diego", "San-Diego"),
                                 j = c("New-york", "Chicago", "Topeka", "New-york", "Chicago", "Topeka"),

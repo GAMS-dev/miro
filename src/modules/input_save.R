@@ -53,22 +53,24 @@ getInputDataFromSandbox <- function(saveInputDb = FALSE){
              # add name and description fields
              if(length(value) > 1){
                # double slider (two values)
-               scalar      <- paste0(tolower(names(modelIn))[[i]], c("$lo", "$up"))
-               description <- paste0(modelInAlias[i], c(" (min)", " (max)"))
                if(identical(modelIn[[i]]$slider$double, TRUE)){
-                 scalar      <- c(scalar, paste0(tolower(names(modelIn))[[i]], 
-                                                 c("$step", "$mode")))
-                 description <- c(description, paste0(modelInAlias[i], 
-                                                      c(" (step size)", " (mode)")))
-                 value       <- c(value, isolate(input[["hcubeStep_" %+% i]]),
-                                  isolate(input[["hcubeMode_" %+% i]]))
-               }
-               if(identical(modelIn[[i]]$slider$single, TRUE)){
-                 scalar      <- c(scalar, paste0(tolower(names(modelIn))[[i]], 
-                                                 "$step"))
-                 description <- c(description, paste0(modelInAlias[i], 
-                                                      " (step size)"))
+                 # HC Mode: already double slider in base mode
+                 scalar      <- paste0(names(modelIn)[i],
+                                       c("_lo", "_up", "$step", "$mode"))
+                 description <- paste0(modelInAlias[i], 
+                                       c(" (lower)", " (upper)", " (step size)", " (mode)"))
+                 value       <- c(value, isolate(input[[paste0("hcubeStep_", i)]]),
+                                  isolate(input[[paste0("hcubeMode_", i)]]))
+               }else if(identical(modelIn[[i]]$slider$single, TRUE)){
+                 # HC Mode: slider was expanded to double slider
+                 scalar      <- paste0(names(modelIn)[i], 
+                                       c("$lo", "$up", "$step"))
+                 description <- paste0(modelInAlias[i], 
+                                       c(" (lower)", " (upper)", " (step size)"))
                  value       <- c(value, isolate(input[["hcubeStep_" %+% i]]))
+               }else{
+                 scalar      <- paste0(names(modelIn)[i], c("_lo", "_up"))
+                 description <- paste0(modelInAlias[i],  c(" (lower)", " (upper)"))
                }
              }else{
                # standard slider (one value)

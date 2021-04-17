@@ -130,8 +130,7 @@ prepareModelRun <- function(async = FALSE){
     }
     if(identical(tolower(names(dataTmp)[[id]]), scalarsFileName)){
       # scalars file exists, so remove compile time variables from it
-      DDParIdx           <- dataTmp[[id]][[1]] %in% outer(DDPar, c("", "$lo", "$up"), 
-                                                         FUN = "paste0")
+      DDParIdx           <- dataTmp[[id]][[1]] %in% DDPar
       GMSOptIdx          <- dataTmp[[id]][[1]] %in% GMSOpt
       if(any(c(DDParIdx, GMSOptIdx))){
         isClArg <- (DDParIdx | GMSOptIdx)
@@ -290,8 +289,10 @@ if(LAUNCHHCUBEMODE){
                if(length(value) > 1){
                  if(identical(modelIn[[i]]$slider$double, TRUE)){
                    # double slider in single run mode
-                   return(paste0(parPrefix, "_lo= ", value[1], 
-                                 '|"""|', parPrefix, "_up= ", value[2]))
+                   if (!identical(input[["hcubeMode_" %+% i]], TRUE)){
+                     return(paste0(parPrefix, "_lo= ", value[1], 
+                                   '|"""|', parPrefix, "_up= ", value[2]))
+                   }
                  }else if(!identical(modelIn[[i]]$slider$single, TRUE)){
                    # double slider in base mode with noHcube=FALSE
                    return(paste0(parPrefix, "_lo= ", value[1], 

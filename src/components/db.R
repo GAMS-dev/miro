@@ -43,9 +43,9 @@ Db <- R6Class("Db",
                   
                   private$uid                         <- uid
                   if(length(ugroups) >= 1L && is.character(ugroups)){
-                    private$userAccessGroups <- c(uid, ugroups)
+                    private$userAccessGroups <- paste0("_", ugroups)
                   }else{
-                    private$userAccessGroups <- uid
+                    private$userAccessGroups <- character(0L)
                   }
                   private$modelName                   <- modelName
                   private$slocktimeLimit              <- slocktimeLimit
@@ -100,7 +100,7 @@ Db <- R6Class("Db",
                 },
                 getConn               = function() private$conn,
                 getUid                = function() private$uid,
-                getUserAccessGroups   = function() private$userAccessGroups,
+                getUserAccessGroups   = function() c(private$uid, private$userAccessGroups),
                 getSlocktimeLimit     = function() private$slocktimeLimit,
                 getHcubeActive        = function() private$hcubeActive,
                 getInfo               = function(){
@@ -178,6 +178,14 @@ Db <- R6Class("Db",
                   }
                   
                   return(metadata)
+                },
+                getAccessPermSubQuery = function(accessId){
+                        # returns subquery that can be used to restrict results to user permissions
+                        return(private$buildSQLSubsetString(
+                                private$getCsvSubsetClause(accessId,
+                                                           c(private$uid,
+                                                             private$userAccessGroups)),
+                                " OR "))
                 },
                 checkSnameExists      = function(sname, uid = NULL){
                   # test whether scenario with the given name already exists 
@@ -349,11 +357,8 @@ Db <- R6Class("Db",
                   }
                   subsetWritePerm <- NULL
                   if(identical(tableName, "_scenMeta")){
-                    subsetWritePerm <- paste0(" AND (", 
-                                              private$buildSQLSubsetString(
-                                                private$getCsvSubsetClause("_accessw",
-                                                                           private$userAccessGroups),
-                                                " OR "), ")")
+                    subsetWritePerm <- paste0(" AND (",
+                                              self$getAccessPermSubQuery("_accessw"), ")")
                   }
                   if(!length(subsetRows) || nchar(subsetRows) < 1L){
                     if(force && is.null(subsetWritePerm)){
@@ -432,10 +437,8 @@ Db <- R6Class("Db",
                   }
                   subsetWritePerm <- NULL
                   if(identical(tableName, "_scenMeta")){
-                    subsetWritePerm <- paste0(" AND (", 
-                                              private$buildSQLSubsetString(
-                                                private$getCsvSubsetClause("_accessw",
-                                                                           private$userAccessGroups), " OR "), ")")
+                    subsetWritePerm <- paste0(" AND (",
+                                              self$getAccessPermSubQuery("_accessw"), ")")
                   }
                   tryCatch({
                     query <- paste0("UPDATE ", DBI::dbQuoteIdentifier(private$conn, tableNameDb), " SET ",
@@ -632,9 +635,7 @@ Db <- R6Class("Db",
                     }
                     subsetReadPerm <- NULL
                     if(!isAdmin && identical(tableName, "_scenMeta")){
-                      subsetReadPerm <- private$buildSQLSubsetString(
-                        private$getCsvSubsetClause("_accessr",
-                                                   private$userAccessGroups), " OR ")
+                      subsetReadPerm <- self$getAccessPermSubQuery("_accessr")
                       if(length(subsetRows)){
                         subsetRows <- paste0(subsetRows, " AND (", subsetReadPerm, ")")
                       }else{
@@ -657,72 +658,69 @@ Db <- R6Class("Db",
                                    tableNameDb, conditionMessage(e)), call. = FALSE)
                     })
                   }
+                  if(tableName %in% c(scalarsFileName, scalarsOutName)){
+                          return(private$convertScalarTableFromDb(dataset, tableName, length(subsetSids)))
+                  }
                   return(dataset)
                 },
-                exportScenDataset       = function(dataset, tableName){
+                exportScenDataset       = function(dataset, tableName, isHcJobConfig = TRUE){
                   # Saves scenario dataset to database
                   #
                   # Args:
                   #   dataset:             dataframe to save
                   #   tableName:           name of the table to export dataframe to
+                  #   isHcJobConfig:       boolean that indicates whether data to store is
+                  #                        Hypercube Mode job configuration (optional)   
                   #
                   # Returns:
                   #   Db object: invisibly returns reference to object in case of success, throws Exception if error
                   
                   #BEGIN error checks 
                   if(!hasContent(dataset)){
-                    dataset <- NULL
+                          flog.debug("Db: Nothing was written to table '%s' as no data was provided.", tableNameDb)
+                          return(invisible(self))
                   }
                   stopifnot(inherits(dataset, "data.frame") || is.null(dataset))
                   stopifnot(is.character(tableName), length(tableName) == 1)
                   #END error checks
                   
                   tableNameDb <- dbSchema$getDbTableName(tableName)
-                  
-                  dataset <- dateColToChar(private$conn, dataset)
-                  if(DBI::dbExistsTable(private$conn, tableNameDb)){
-                    if(!is.null(dataset)){
-                      tryCatch({
-                        DBI::dbWriteTable(private$conn, tableNameDb, dataset,
-                                          row.names = FALSE, append = TRUE)
-                        flog.debug("Db: Data was added to table: '%s' (Db.exportScenDataset).", 
-                                   tableNameDb)
-                      }, error = function(e){
-                        stop(sprintf("Db: An error occurred writing to database (Db.exportScenDataset, 
-               table: '%s'). Error message: %s", tableNameDb, conditionMessage(e)),
-               call. = FALSE)
-                      })
-                    }else{
-                      flog.debug("Db: Nothing was written to table '%s' as no data was provided (Db.exportScenDataset).", 
-                                 tableNameDb)
-                    }
-                  }else if(!is.null(dataset)){
-                    tryCatch({
-                      self$runQuery(dbSchema$getCreateTableQuery(tableName))
-                    }, error = function(e){
-                      stop(sprintf("Table: '%s' could not be created (Db.exportScenDataset). Error message: %s.",
-                                   tableNameDb, conditionMessage(e)), call. = FALSE)
-                    })
-                    tryCatch({
-                      self$runQuery(dbSchema$getCreateIndexQuery(tableName))
-                    }, error = function(e){
-                      stop(sprintf("Index on table: '%s' could not be created (Db.exportScenDataset).Error message: %s.",
-                                   tableNameDb, conditionMessage(e)), call. = FALSE)
-                    })
-                    flog.debug("Db: A database table named: '%s' did not yet exist. Therefore it was created (Db.exportScenDataset).",
-                               tableNameDb)
-                    tryCatch({
-                      DBI::dbWriteTable(private$conn, tableNameDb, dataset,
-                                        row.names = FALSE, append = TRUE)
-                      flog.info("Db: First data was written to table: '%s' (Db.exportScenDataset).",
-                                tableNameDb)
-                    }, error = function(e){
-                      stop(sprintf("Db: An error occurred writing to database (Db.exportScenDataset, table: '%s'). 
-          Error message: %s", tableNameDb, conditionMessage(e)), call. = FALSE)
-                    })
+                  if(tableName %in% c(scalarsFileName, scalarsOutName)){
+                          if(private$hcubeActive && isHcJobConfig &&
+                             identical(tableName, scalarsFileName)){
+                                  tableName <- "_hc__scalars"
+                                  tableNameDb <- tableName
+                          }else{
+                                  dataset <- private$convertScalarTableToDb(dataset, tableName)
+                          }
                   }else{
-                    flog.debug("Db: Nothing was written to table '%s' as no data was provided.", tableNameDb)
+                          dataset <- dateColToChar(private$conn, dataset)
                   }
+                  if(!dbExistsTable(private$conn, tableNameDb)){
+                          tryCatch({
+                                  self$runQuery(dbSchema$getCreateTableQuery(tableName))
+                          }, error = function(e){
+                                  stop(sprintf("Table: '%s' could not be created (Db.exportScenDataset). Error message: %s.",
+                                               tableNameDb, conditionMessage(e)), call. = FALSE)
+                          })
+                          tryCatch({
+                                  self$runQuery(dbSchema$getCreateIndexQuery(tableName))
+                          }, error = function(e){
+                                  stop(sprintf("Index on table: '%s' could not be created (Db.exportScenDataset).Error message: %s.",
+                                               tableNameDb, conditionMessage(e)), call. = FALSE)
+                          })
+                          flog.debug("Db: A database table named: '%s' did not yet exist. Therefore it was created (Db.exportScenDataset).",
+                                     tableNameDb)
+                  }
+                  tryCatch({
+                          DBI::dbWriteTable(private$conn, tableNameDb, dataset,
+                                            row.names = FALSE, append = TRUE)
+                          flog.debug("Db: Data was added to table: '%s' (Db.exportScenDataset).", 
+                                     tableNameDb)
+                  }, error = function(e){
+                          stop(sprintf("Db: An error occurred writing to database (Db.exportScenDataset, table: '%s'). Error message: %s",
+                                       tableNameDb, conditionMessage(e)), call. = FALSE)
+                  })
                   invisible(self)
                 },
           writeMetadata = function(metadata, update = FALSE){
@@ -770,7 +768,7 @@ Db <- R6Class("Db",
                                              sname = metadata[["_sname"]][[1]],
                                              stime = as.character(metadata[["_stime"]][[1]], usetz = TRUE),
                                              stag = metadata[["_stag"]][[1]],
-                                             accessR = metadata[["accessr"]][[1]],
+                                             accessR = metadata[["_accessr"]][[1]],
                                              accessW = metadata[["_accessw"]][[1]],
                                              accessX = metadata[["_accessx"]][[1]],
                                              sid = metadata[["_sid"]][[1]])
@@ -830,25 +828,18 @@ Db <- R6Class("Db",
                                            scode), innerSepAND = FALSE))
           
         },
-        buildRowSubsetSubquery = function(subsetData, innerSep, outerSep, SQL = TRUE){
-          brackets <- NULL
-          if(identical(innerSep, " OR "))
-            brackets <- c("(", ")")
-          if(SQL){
-            query <- unlist(lapply(subsetData, private$buildSQLSubsetString, 
-                                   innerSep), use.names = FALSE)
-            if(length(query))
-              query <- paste(brackets[1], query, brackets[2],  
-                             collapse = outerSep)
-            else
-              return(character(0L))
-            return(DBI::SQL(query))
-          }else{
-            query <- paste(brackets[1], unlist(lapply(subsetData, private$buildRSubsetString, 
-                                                      innerSep), use.names = FALSE), brackets[2],  
-                           collapse = outerSep)
-            return(query)
-          }
+        buildRowSubsetSubquery = function(subsetData, innerSep, outerSep){
+                brackets <- NULL
+                if(identical(innerSep, " OR "))
+                        brackets <- c("(", ")")
+                query <- unlist(lapply(subsetData, private$buildSQLSubsetString, 
+                                       innerSep), use.names = FALSE)
+                if(length(query))
+                        query <- paste(brackets[1], query, brackets[2],  
+                                       collapse = outerSep)
+                else
+                        return(character(0L))
+                return(DBI::SQL(query))
         },
         escapePatternPivot = function(pattern){
           if(inherits(private$conn, "PqConnection")){
@@ -872,15 +863,6 @@ Db <- R6Class("Db",
           flog.debug("Db: Database connection ended as Db object was gced.")
         }
               ),
-        active = list(
-          accessGroups= function(groups){
-            if(missing(groups))
-              return(private$userAccessGroups)
-            
-            stopifnot(is.character(groups), length(groups) >=1)
-            private$userAccessGroups <- unique(groups)
-          }
-        ),
         private = list(
           conn                = NULL,
           connectionInfo      = NULL,
@@ -915,95 +897,6 @@ Db <- R6Class("Db",
                                    "LIKE")
             return(subsetClause)
           },
-          buildRSubsetString = function(dataFrame, sep = " "){
-            if(!length(dataFrame) || !nrow(dataFrame)){
-              return(NULL)
-            }else if(length(dataFrame) < 3L){
-              dataFrame[[3]] <- "="
-            }
-            fields  <- dataFrame[[1]]
-            valsRaw <- dataFrame[[2]]
-            vals    <- self$escapePatternPivot(valsRaw)
-            if(identical(length(dataFrame), 4L)){
-              fields <- paste0(dataFrame[[4]], ".", fields)
-            }
-            fields <- paste0("`", fields, "`")
-            # replace operators that are different in R and SQL
-            cond <- vapply(seq_along(dataFrame[[3]]), function(i){
-              field <- fields[i]
-              op    <- dataFrame[[3]][i]
-              val   <- vals[i]
-              switch(op,
-                     "!=" = {
-                       if(is.na(valsRaw[i]) || (length(valsRaw[i]) && !nchar(valsRaw[i]))){
-                         return(paste0("!is.na(", field, ")"))
-                       }
-                       valNum <- suppressWarnings(as.numeric(valsRaw[i]))
-                       if(is.na(valNum)){
-                         val <- paste0("'", val, "'")
-                       }else{
-                         val <- valNum
-                       }
-                       return(paste0(field, "!=", val))
-                     },
-                     "=" = {
-                       if(is.na(valsRaw[i]) || (length(valsRaw[i]) && !nchar(valsRaw[i]))){
-                         return(paste0("is.na(", field, ")"))
-                       }
-                       valNum <- suppressWarnings(as.numeric(valsRaw[i]))
-                       if(is.na(valNum)){
-                         val <- paste0("'", val, "'")
-                       }else{
-                         val <- valNum
-                       }
-                       return(paste0(field, "==", val))
-                     },
-                     "%LIKE" = {
-                       return(paste0("grepl('", val, "$', ", 
-                                     field, ", perl = TRUE)"))
-                     },
-                     "LIKE%" = {
-                       return(paste0("grepl('^", val, "', ", 
-                                     field, ", perl = TRUE)"))
-                     },
-                     "%LIKE%" = {
-                       return(paste0("grepl('", val, "', ", 
-                                     field, ", perl = TRUE)"))
-                     },
-                     "%NOTLIKE%" = {
-                       return(paste0("!grepl('", val, "', ", 
-                                     field, ", perl = TRUE)"))
-                     },
-                     "%LIKE," = {
-                       return(paste0("grepl('", val, ",', ", 
-                                     field, ", perl = TRUE)"))
-                     },
-                     ",LIKE%" = {
-                       return(paste0("grepl(',", val, "', ", 
-                                     field, ", perl = TRUE)"))
-                     },
-                     "%,LIKE,%" = {
-                       return(paste0("grepl(',", val, ",', ", 
-                                     field, ", perl = TRUE)"))
-                     },
-                     "%,NOTLIKE,%" = {
-                       return(paste0("!grepl(',", val, ",', ", 
-                                     field, ", perl = TRUE)"))
-                     },
-                     {
-                       valNum <- suppressWarnings(as.numeric(valsRaw[i]))
-                       if(is.na(valNum)){
-                         val <- paste0("'", val, "'")
-                       }else{
-                         val <- valNum
-                       }
-                       return(paste0(field, op, val))
-                     })
-            }, character(1L), USE.NAMES = FALSE)
-            
-            query <- paste(cond, collapse = sep)
-            return(query)
-          },
           buildSQLSubsetString = function(dataFrame, sep = " "){
             if(!length(dataFrame) || !nrow(dataFrame)){
               return(NULL)
@@ -1012,6 +905,7 @@ Db <- R6Class("Db",
             }
             fields <- dataFrame[[1]]
             vals   <- as.character(dataFrame[[2]])
+            checkForNull <- is.na(vals)
             fields <- DBI::dbQuoteIdentifier(private$conn, fields)
             vals   <- DBI::dbQuoteLiteral(private$conn, vals)
             
@@ -1024,6 +918,8 @@ Db <- R6Class("Db",
               # SQLite needs explicit mention of escape character in clause
               vals[operator == "LIKE"] <- paste0(vals[operator == "LIKE"], "  ESCAPE '\\'")
             }
+            operator[checkForNull & operator == "="] <- "IS"
+            operator[checkForNull & operator == "!="] <- "IS NOT"
             query <- paste(paste(fields, operator, vals), collapse = sep)
             return(SQL(query))
           },
@@ -1058,6 +954,51 @@ Db <- R6Class("Db",
             }else{
               return(0L)
             }
+          },
+          convertScalarTableToDb = function(dataset, tableName){
+                  # note that dataset has _sid as first column (thus everything is offset by 1)
+                  if(identical(tableName, scalarsFileName)){
+                          symtypes <- character()
+                          if(scalarsFileName %in% names(ioConfig$modelInRaw)){
+                                  symtypes <- ioConfig$modelInRaw[[scalarsFileName]]$symtypes
+                          }
+                          symtypes <- c(symtypes, rep.int("set", length(ioConfig$DDPar) +
+                                                                  length(ioConfig$GMSOpt)))
+                  }else{
+                          symtypes <- ioConfig$modelOut[[scalarsOutName]]$symtypes
+                  }
+                  dataset <- pivot_wider(dataset[, -3],
+                                         names_from = names(dataset)[2],
+                                         values_from = names(dataset)[4])
+                  scalarsToSave <- dbSchema$getDbViews(tableName)
+                  scalarOrder <- match(scalarsToSave, names(dataset))
+                  coerceToFloat <- which(symtypes[!is.na(scalarOrder)] == "parameter") + 1L
+                  
+                  return(suppressWarnings(
+                          mutate_at(select(dataset, c(1L, scalarOrder[!is.na(scalarOrder)])),
+                                    coerceToFloat, as.numeric)))
+          },
+          convertScalarTableFromDb = function(dataset, tableName, noScen = 1L){
+                  # note that dataset has _sid as first column (thus everything is offset by 1)
+                  if(!length(dataset) || !nrow(dataset)){
+                          return(tibble())
+                  }
+                  if(identical(tableName, scalarsFileName)){
+                          symtext <- character()
+                          if(scalarsFileName %in% names(ioConfig$modelInRaw)){
+                                  symtext <- ioConfig$modelInRaw[[scalarsFileName]]$symtext
+                          }
+                          symtext <- c(symtext, rep.int("", length(ioConfig$DDPar) +
+                                                                length(ioConfig$GMSOpt)))
+                  }else{
+                          symtext <- ioConfig$modelOut[[scalarsOutName]]$symtext
+                  }
+                  return(mutate(add_column(pivot_longer(mutate_all(dataset, as.character),
+                                                        cols = dbSchema$getDbViews(tableName),
+                                                        names_to = "scalar",
+                                                        values_to = "value"),
+                                           description = rep.int(symtext, noScen), .after = 2L),
+                                value = as.character(value)))
           }
         )
 )
