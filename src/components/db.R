@@ -1031,6 +1031,9 @@ Db <- R6Class("Db",
           },
           convertScalarTableFromDb = function(dataset, tableName, noScen = 1L){
                   # note that dataset has _sid as first column (thus everything is offset by 1)
+                  if(!length(dataset) || !nrow(dataset)){
+                          return(tibble())
+                  }
                   if(identical(tableName, scalarsFileName)){
                           symtext <- character()
                           if(scalarsFileName %in% names(ioConfig$modelInRaw)){
