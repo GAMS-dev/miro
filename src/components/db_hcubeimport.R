@@ -191,8 +191,8 @@ HcubeImport <- R6Class("HcubeImport",
                            metadataTable[[3]] <- Sys.time()
                            
                            if(inherits(private$conn, "PqConnection")){
-                             query <- paste(sqlAppendTable(conn, dbSchema$getDbTableName("_scenMeta"),
-                                                           sqlData(conn, metadataTable),
+                             query <- paste(sqlAppendTable(private$conn, dbSchema$getDbTableName("_scenMeta"),
+                                                           sqlData(private$conn, metadataTable),
                                                            row.names = FALSE), "RETURNING _sid")
                            }else{
                              self$writeMetadata(metadataTable)
