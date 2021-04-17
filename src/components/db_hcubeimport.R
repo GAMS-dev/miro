@@ -194,13 +194,14 @@ HcubeImport <- R6Class("HcubeImport",
                              query <- paste(sqlAppendTable(private$conn, dbSchema$getDbTableName("_scenMeta"),
                                                            sqlData(private$conn, metadataTable),
                                                            row.names = FALSE), "RETURNING _sid")
+                             firstScenId <- as.integer(DBI::dbGetQuery(private$conn, query)[[1]][1])
                            }else{
                              self$writeMetadata(metadataTable)
                              query <- SQL("SELECT LAST_INSERT_ROWID();")
+                             lasInsertedRowId <- as.integer(DBI::dbGetQuery(private$conn, query)[[1]][1])
+                             firstScenId <- lasInsertedRowId - numberScen + 1L
                            }
-                           lasInsertedRowId <- as.integer(DBI::dbGetQuery(private$conn, query)[[1]][1])
-                           stopifnot(lasInsertedRowId >= numberScen)
-                           firstScenId <- lasInsertedRowId - numberScen + 1L
+                           stopifnot(firstScenId >= 1L)
                            
                            if(!is.null(progressBar)){
                              progressBar$inc(amount = 0, message = sprintf("Uploading tables to database."))
@@ -211,11 +212,10 @@ HcubeImport <- R6Class("HcubeImport",
                            tryCatch({
                              lapply(seq_along(tableNames), function(i){
                                tableName <- tableNames[i]
-                               dataTmp <- bind_rows(lapply(seq_along(private$scenData), function(scenIdx){
+                               self$exportScenDataset(bind_rows(lapply(seq_along(private$scenData), function(scenIdx){
                                  add_column(`_sid` = firstScenId + scenIdx - 1L,
                                             private$scenData[[scenIdx]][[tableName]],
-                                            .before = 1L)}))
-                               self$exportScenDataset(dataTmp, tableName, isHcJobConfig = FALSE)
+                                            .before = 1L)})), tableName, isHcJobConfig = FALSE)
                                if(!is.null(progressBar)){
                                  progressBar$inc(amount = 0, message = sprintf("Uploading table %d of %d.",
                                                                                i, length(tableNames)))
