@@ -112,10 +112,6 @@ ScenData <- R6Class("ScenData", public = list(
         if(identical(refId, "sb") ||
            is.null(private$cachedData[[scenIdChar]][["data"]]) ||
            is.null(private$cachedData[[scenIdChar]][["data"]][[symName]])){
-          if(LAUNCHHCUBEMODE && isHcJobConfig
-             && identical(symName, scalarsFileName)){
-            symName <- "_hc__scalars"
-          }
           if(identical(symName, scalarsOutName)){
             if(checkDirty){
               private$checkDirty(scenId)
@@ -141,7 +137,10 @@ ScenData <- R6Class("ScenData", public = list(
             if(checkDirty){
               private$checkDirty(scenId)
             }
-            dataTmp <- private$db$importDataset(tableName = symName, 
+            dataTmp <- private$db$importDataset(tableName =
+                                                  if(LAUNCHHCUBEMODE && isHcJobConfig
+                                                     && identical(symName, scalarsFileName))
+                                                    "_hc__scalars" else symName, 
                                                 subsetSids = scenId,
                                                 limit = limit)
             if(length(dataTmp)){
