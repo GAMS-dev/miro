@@ -1,4 +1,4 @@
-/* global $:false HTMLWidgets:false Chart:false */
+/* global $:false HTMLWidgets:false */
 
 export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -27,24 +27,6 @@ export class LoadingScreen {
       $('#loading-screen').hide();
     }
   }
-}
-
-function changeChartjsTheme(dark = false) {
-  if (typeof Chart === 'undefined') {
-    return;
-  }
-  if (dark) {
-    Chart.defaults.color = 'white';
-  } else {
-    Chart.defaults.color = '#666';
-  }
-  Chart.helpers.each(Chart.instances, (instance) => {
-    instance.update();
-  });
-}
-
-export function changeTheme(dark = false) {
-  changeChartjsTheme(dark);
 }
 
 export function changeActiveButtons(tabId) {
