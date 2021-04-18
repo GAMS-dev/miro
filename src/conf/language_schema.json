@@ -2829,6 +2829,18 @@
               "type": "string",
               "minLength": 1
             },
+            "newViewChartTitle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewxTitle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewyTitle": {
+              "type": "string",
+              "minLength": 1
+            },
             "newViewBtCancel": {
               "type": "string",
               "minLength": 1
@@ -2978,7 +2990,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 31
+          "minProperties": 34
         },
         "datatable": {
           "type": "object",

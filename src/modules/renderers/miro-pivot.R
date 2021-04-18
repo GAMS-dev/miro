@@ -244,6 +244,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       noRowDim <- length(data) - 1L
       
       updateFilter <- reactiveVal(1L)
+      updateRenderer <- reactiveVal(1L)
       
       isInput <- isTRUE(options[["_input_"]])
       isEditable <- FALSE
@@ -445,7 +446,24 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           showModal(modalDialog(tags$div(id = ns("errUniqueName"), style = "display:none;",
                                          lang$renderers$miroPivot$errUniqueViewName),
                                 textInput(ns("newViewName"),
-                                          lang$renderers$miroPivot$newViewLabel), 
+                                          lang$renderers$miroPivot$newViewLabel),
+                                if(length(isolate(input$pivotRenderer)) &&
+                                   isolate(input$pivotRenderer) %in% c("bar", "stackedbar", "line"))
+                                  tags$div(style = "text-align:left;", 
+                                         tags$i(class="fas fa-arrow-down",
+                                                role = "presentation",
+                                                `aria-label` = "More options",
+                                                onclick = "$(this).next().slideToggle();$(this).toggleClass('fa-arrow-up');$(this).toggleClass('fa-arrow-down');", 
+                                                style = "cursor: pointer;"),
+                                         tags$div(style = "display:none;",
+                                                  textInput(ns("advancedTitle"),
+                                                            lang$renderers$miroPivot$newViewChartTitle),
+                                                  textInput(ns("advancedxTitle"),
+                                                            lang$renderers$miroPivot$newViewxTitle),
+                                                  textInput(ns("advancedyTitle"),
+                                                            lang$renderers$miroPivot$newViewyTitle)
+                                         )
+                                ),
                                 footer = tagList(
                                   tags$div(id = ns("saveViewButtonsWrapper"),
                                            modalButton(lang$renderers$miroPivot$newViewBtCancel),
@@ -486,6 +504,22 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 newViewConfig[[indexEl[[1]]]] <- filterElList
               }
             }
+            refreshRequired <- FALSE
+            for(advancedOption in list(list(inputId = "advancedTitle",
+                                            optionId = "title"),
+                                       list(inputId = "advancedxTitle",
+                                            optionId = "xTitle"),
+                                       list(inputId = "advancedyTitle",
+                                            optionId = "yTitle"))){
+              optionValTmp <- input[[advancedOption$inputId]]
+              if(length(optionValTmp)){
+                optionValTmp <- trimws(optionValTmp)
+                if(nchar(optionValTmp) > 0L){
+                  refreshRequired <- TRUE
+                  newViewConfig$options[[advancedOption$optionId]] <- optionValTmp
+                }
+              }
+            }
             if(overwrite){
               views$add(session, input$newViewName, newViewConfig)
             }else{
@@ -495,6 +529,13 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                                       ns("savedViews"), ns("deleteView")), 
                        where = "beforeEnd")
               views$add(session, input$newViewName, newViewConfig)
+            }
+            if(refreshRequired){
+              currentView <<- newViewConfig
+              isolate({
+                newVal <- updateRenderer() + 1L
+                updateRenderer(newVal)
+              })
             }
           })
         }
@@ -915,6 +956,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       # ===================================================
       
       output$pivotChart <- renderChartjs({
+        updateRenderer()
         pivotRenderer <- input$pivotRenderer
         if(initRenderer && isTRUE(options$resetOnInit)){
           if(length(currentView[["pivotRenderer"]])){
@@ -961,17 +1003,27 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           labels <- "value"
         }
         if(identical(pivotRenderer, "line")){
-          chartJsObj <- chartjs(customColors = customChartColors) %>% 
-            cjsLine(labels = labels)
+          chartJsObj <- chartjs(customColors = customChartColors, title = currentView$options$title) %>% 
+            cjsLine(labels = labels,
+                    xTitle = currentView$options$xTitle,
+                    yTitle = currentView$options$yTitle)
         }else if(identical(pivotRenderer, "stackedbar")){
-          chartJsObj <- chartjs(customColors = customChartColors) %>% 
-            cjsBar(labels = labels, stacked = TRUE)
+          chartJsObj <- chartjs(customColors = customChartColors, title = currentView$options$title) %>% 
+            cjsBar(labels = labels, stacked = TRUE,
+                   xTitle = currentView$options$xTitle,
+                   yTitle = currentView$options$yTitle)
         }else if(identical(pivotRenderer, "radar")){
-          chartJsObj <- chartjs(customColors = customChartColors) %>% 
+          chartJsObj <- chartjs(customColors = customChartColors, title = currentView$options$title) %>% 
             cjsRadar(labels = labels)
         }else{
-          chartJsObj <- chartjs(customColors = customChartColors) %>% 
-            cjsBar(labels = labels)
+          chartJsObj <- chartjs(customColors = customChartColors, title = currentView$options$title) %>% 
+            cjsBar(labels = labels,
+                   xTitle = currentView$options$xTitle,
+                   yTitle = currentView$options$yTitle)
+        }
+        if(length(currentView$options)){
+          # reset chart and axes title
+          currentView$options <<- NULL
         }
         for(i in seq_len(min(noSeries, 40L))){
           chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]], 
