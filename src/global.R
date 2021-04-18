@@ -42,8 +42,6 @@ maxNumberScenarios <- 50
 maxNoScenToShow <- 2e2
 # local user ID (single user)
 uid <- Sys.info()[["user"]]
-# define the default type for output format
-defOutType <- "miroPivot"
 # define the default format for input sheets
 defInType <- "miroPivot"
 # default height of pivot table

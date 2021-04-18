@@ -1488,8 +1488,8 @@ if(is.null(errMsg)){
         config$dataRendering[[elName]]$outType <- "datatable"
       }
     }else{
-      config$dataRendering[[elName]]$outType <- defOutType
-      if(identical(defOutType, "pivot")){
+      config$dataRendering[[elName]]$outType <- config$defaultRendererOutput
+      if(identical(config$defaultRendererOutput, "pivot")){
         config$dataRendering[[elName]]$pivottable <- prepopPivot(modelOut[[i]])
       }
     }

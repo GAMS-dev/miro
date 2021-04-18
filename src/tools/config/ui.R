@@ -542,6 +542,12 @@ body_admin <- dashboardBody({
                                tags$div(class = "col-sm-6", style = "padding-top: 20px;",
                                         tags$div(class="main-tab",
                                                  tags$div(tagList(
+                                                   tags$h2(lang$adminMode$general$ui$headerRenderers, class="option-category"),
+                                                   tags$div(class = "option-wrapper", style = "margin-bottom: 5px;",
+                                                            selectInput("general_defaultRendererOutput", lang$adminMode$general$defaultRenderer$labelOutput,
+                                                                        setNames(c("miroPivot", "datatable"),                                                                                            lang$adminMode$general$defaultRenderer$choicesOutput),
+                                                                        selected = configJSON$defaultRendererOutput)),
+                                                   tags$hr(),
                                                    tags$h2(lang$adminMode$general$ui$headerLogo, class="option-category"),
                                                    tags$div(class = "option-wrapper", style = "margin-bottom: 5px;",
                                                             fileInput("widget_general_logo_upload", lang$adminMode$general$logo$label,

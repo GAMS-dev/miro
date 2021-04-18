@@ -1089,6 +1089,7 @@
         "tabModules": "模块",
         "tabScripts": "分析脚本",
         "headerGeneral": "通用",
+        "headerRenderers": "默认渲染器",
         "headerLogo": "标志",
         "headerSymbolDisplay": "Symbol display",
         "headerTabGrouping": "组合选项卡",
@@ -1196,6 +1197,10 @@
       "decimal":{
         "label": "指定输出值的精确小数位数",
         "tooltip": "这影响了所有的输出表、大数据输入表和超立方体模式下用于加载场景的表。 - 打开文档"
+      },
+      "defaultRenderer":{
+        "labelOutput": "输出数据的默认渲染器",
+        "choicesOutput": ["数据透视表", "桌子"]
       },
       "logo":{
         "header": "预览标志:",

@@ -97,6 +97,14 @@ observeEvent(c(input$default_scen_check, input$general_default_scen_name), {
   else
     rv$generalConfig$defaultScenName <<- NULL
 })
+observeEvent(input$general_defaultRendererOutput, {
+  if(length(input$general_defaultRendererOutput) &&
+     input$general_defaultRendererOutput %in% c("miroPivot", "datatable")){
+    rv$generalConfig$defaultRendererOutput <<- input$general_defaultRendererOutput
+  }else{
+    rv$generalConfig$defaultRendererOutput <<- "miroPivot"
+  }
+})
 observeEvent(input$widget_general_logo_upload, {
   inFile   <- input$widget_general_logo_upload
   filePath <- inFile$datapath
