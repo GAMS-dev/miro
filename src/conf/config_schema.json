@@ -91,6 +91,32 @@
          "enablePersistentViews": {
            "description":"Enable persistent views.",
            "type": "boolean"
+         },
+         "customChartColors": {
+           "description": "Custom color palette. Every second color is the hover color of previous one.",
+           "type":"array"
+         },
+         "chartOptions": {
+           "description":"Additional chart options",
+            "type":"object",
+            "additionalProperties":false,
+            "properties":{
+               "title":{
+                 "description":"Chart title",
+                 "type": "string",
+                 "minLength": 1
+               },
+               "xTitle":{
+                 "description":"X-axis label",
+                 "type": "string",
+                 "minLength": 1
+               },
+               "yTitle":{
+                 "description":"Y-axis label",
+                 "type": "string",
+                 "minLength": 1
+               }
+            }
          }
       }
     }
