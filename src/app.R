@@ -1022,6 +1022,17 @@ if(!is.null(errMsg)){
           if(debugMode && !forceScenImport){
             dataHash <- digest::digest(file = file.path(miroDataDir, miroDataFile),
                                        algo = "sha1", serialize = FALSE)
+            if(!identical(dataFileExt[i], "miroscen")){
+              scenName <- tools::file_path_sans_ext(miroDataFile)
+              viewsFileId <- match(paste0(tolower(scenName), "_views.json"),
+                                   tolower(miroDataFilesRaw))
+              if(!is.na(viewsFileId)){
+                dataHash <- paste0(dataHash, digest::digest(file = file.path(miroDataDir,
+                                                                             paste0(tolower(scenName),
+                                                                                    "_views.json")),
+                                                            algo = "sha1", serialize = FALSE))
+              }
+            }
             if(miroDataFile %in% names(currentDataHashes) && 
                identical(dataHash, currentDataHashes[[miroDataFile]])){
               flog.info("Data: '%s' skipped because it has not changed since the last start.", miroDataFile)
@@ -1098,16 +1109,13 @@ if(!is.null(errMsg)){
             }
             miroDataFile <- "data.gdx"
           }else{
-            scenName <- tools::file_path_sans_ext(miroDataFile)
-            viewDataId <- match(paste0(tolower(scenName), "_views.json"),
-                                tolower(miroDataFilesRaw))
             views <- NULL
-            if(!is.na(viewDataId)){
+            if(!is.na(viewsFileId)){
               flog.debug("Found view data for scenario: %s.", scenName)
               views <- Views$new(names(modelIn),
                                  names(modelOut),
                                  ioConfig$inputDsNamesBase)
-              views$addConf(safeFromJSON(read_file(file.path(miroDataDir, miroDataFilesRaw[viewDataId])),
+              views$addConf(safeFromJSON(read_file(file.path(miroDataDir, miroDataFilesRaw[viewsFileId])),
                                          simplifyDataFrame = FALSE, simplifyVector = FALSE))
             }
             newScen <- Scenario$new(db = db, sname = scenName, isNewScen = TRUE,
