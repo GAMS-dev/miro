@@ -12,13 +12,17 @@
 #' @import htmltools
 #'
 #' @export
-chartjs <- function(width = NULL, height = NULL, palette = "Paired", customColors = NULL, debug = FALSE) {
+chartjs <- function(width = NULL, height = NULL, palette = "Paired", customColors = NULL,
+                    title = NULL, debug = FALSE) {
   chartOptions <- baseOptions()
 
   x = list(options = chartOptions,
            customColors = customColors,
            palette = palette,
            debug = debug)
+  if(!is.null(title)){
+    x$options$plugins$title <- list(display = TRUE, text = title)
+  }
 
   # Create widget
   htmlwidgets::createWidget(
