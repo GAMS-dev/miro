@@ -807,7 +807,12 @@ if(is.null(errMsg)){
              tryCatch({
                choices <- getDependenciesDropdown(choices = modelIn[[i]]$dropdown$choices, modelIn = modelIn, name = name)
                if(!is.null(modelIn[[i]]$dropdown$aliases)){
-                 aliases <- getDependenciesDropdown(choices = modelIn[[i]]$dropdown$aliases, modelIn = modelIn, name = name)
+                 if(choices$hasDep){
+                   aliases <- getDependenciesDropdown(choices = modelIn[[i]]$dropdown$aliases, modelIn = modelIn, name = name)
+                 }else{
+                   aliases <- list(strings = unlist(gsub("$$", "$", modelIn[[i]]$dropdown$aliases, fixed = TRUE),
+                                                    use.names = FALSE))
+                 }
                }else{
                  aliases <- NULL
                }
