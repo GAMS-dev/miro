@@ -166,6 +166,7 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL){
   k <- 1
   
   if(length(choices)){
+    choices <- as.character(choices)
     elRaw <- choices
     forwardDep  <- startsWith(choices, "$")
     backwardDep <- endsWith(choices, "$")
