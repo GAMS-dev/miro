@@ -1019,6 +1019,7 @@ if(!is.null(errMsg)){
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
           dfClArgs <- NULL
+          viewsFileId <- NULL
           if(debugMode && !forceScenImport){
             dataHash <- digest::digest(file = file.path(miroDataDir, miroDataFile),
                                        algo = "sha1", serialize = FALSE)
@@ -1110,6 +1111,11 @@ if(!is.null(errMsg)){
             miroDataFile <- "data.gdx"
           }else{
             views <- NULL
+            if(is.null(viewsFileId)){
+              scenName <- tools::file_path_sans_ext(miroDataFile)
+              viewsFileId <- match(paste0(tolower(scenName), "_views.json"),
+                                   tolower(miroDataFilesRaw))
+            }
             if(!is.na(viewsFileId)){
               flog.debug("Found view data for scenario: %s.", scenName)
               views <- Views$new(names(modelIn),
