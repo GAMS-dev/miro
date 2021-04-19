@@ -1557,8 +1557,7 @@ if(!is.null(errMsg)){
             
             tryCatch({
               scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE), modelInFileNames)
-              gdxio$wgdx(paste0(workDir, .Platform$file.sep, 
-                                "scripts_", modelName, .Platform$file.sep, "data.gdx"), 
+              gdxio$wgdx(file.path(workDir, paste0("scripts_", modelName), "data.gdx"), 
                          scenData$get("sb"), squeezeZeros = 'n')
             }, error = function(e){
               flog.error("Problems writing gdx file for script: '%s'. Error message: '%s'.", 
@@ -1887,7 +1886,7 @@ if(!is.null(errMsg)){
           }
           groupId <- as.integer(strsplit(tabIdFull, "_", fixed = TRUE)[[1]][3L - isOutputTabset])
           tabId <- NULL
-          if(isGroupOfSheets[[groupId]]){
+          if(groupId <= length(isGroupOfSheets) && isGroupOfSheets[[groupId]]){
             tabId <- as.integer(strsplit(input[[paste0(tabsetName, "_", groupId)]],
                                          "_", fixed = TRUE)[[1L]][[4L - isOutputTabset]])
           }
