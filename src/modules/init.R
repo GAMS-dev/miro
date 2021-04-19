@@ -1325,8 +1325,12 @@ if(is.null(errMsg)){
     return(FALSE)
   }, logical(1L), USE.NAMES = FALSE)
   
-  scenDataTemplate <- c(modelOutTemplate, modelInTemplate[match(inputDsNames, names(modelIn))])
-  
+  scalarDsNameIdx <- match(inputDsNames, names(modelIn))
+  scenDataTemplate <- c(modelOutTemplate, modelInTemplate[scalarDsNameIdx])
+  if(is.na(scalarDsNameIdx[length(inputDsNames)])){
+    # need to add scalars template manually
+    scenDataTemplate[[length(scenDataTemplate)]] <- scalarsInTemplate
+  }
   # get column types for tabular datasets
   for(i in seq_along(modelIn)){
     if(is.null(modelIn[[i]]$headers)){
@@ -1699,7 +1703,9 @@ if(is.null(errMsg)){
       el <- modelIn[[i - length(modelOut)]]
       tabName <- names(modelIn)[i - length(modelOut)]
     }
-    if(!length(el$headers) || tabName %in% c(scalarsFileName, scalarsOutName)){
+    if(!length(el$headers) || isTRUE(el$dropdown$single) ||
+       isTRUE(el$dropdown$checkbox) ||
+       tabName %in% c(scalarsFileName, scalarsOutName)){
       return(NA)
     }
     return(list(tabName = tabName,
