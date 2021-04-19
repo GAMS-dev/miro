@@ -1,26 +1,39 @@
 sudokuOutput <- function(id, height, options, path){
-   ns <- NS(id)
-   rHandsontableOutput(ns("sudoku"))
+  ns <- NS(id)
+  if(isTRUE(options$isInput)){
+    return(tagList(
+      span(textOutput(ns("uniqueSolWarning")), style="color:red"),
+      rHandsontableOutput(ns("sudoku"))
+    ))
+  }
+  return(rHandsontableOutput(ns("sudoku")))
 }
 
 renderSudoku <- function(input, output, session, data, options = NULL, path = NULL, ...){
-  force(data)
-  dataTmp <- data
-  if(length(data) && nrow(data)){
+  if(isTRUE(options$isInput)){
+    output$uniqueSolWarning <- renderText({
+      if(isTRUE(data$force_unique_sol())) "Model will abort if more than one solution exists."
+    })
+  }
+  initialData <- NULL
+  dataToRender <- reactive({
+    dataTmp <- if(isTRUE(options$isInput)) data[[1]]() else data
+    if(!length(dataTmp) || !nrow(dataTmp)){
+      return(as_tibble(vapply(paste0("col", 1:9), function(el){character(9L)}, character(9L))))
+    }
     dataTmp     <- dataTmp[-1L]
     if(isTRUE(options$isInput)){
       dataTmp <- dataTmp %>% mutate_if(is.numeric, as.character)
       dataTmp[is.na(dataTmp)] <- ""
     }else{
-      initialData <- which(dataTmp < 0)
+      initialData <<- which(dataTmp < 0)
       dataTmp     <- abs(dataTmp)
       dataTmp <- dataTmp %>% mutate_if(is.numeric, as.character)
       dataTmp[is.na(dataTmp)] <- ""
     }
-  }else{
-    dataTmp <- as_tibble(vapply(paste0("col", 1:9), function(el){character(9L)}, character(9L)))
-  }
-  output$sudoku <- renderRHandsontable(rhandsontable(dataTmp, readOnly = !isTRUE(options$isInput), 
+    return(dataTmp)
+  })
+  output$sudoku <- renderRHandsontable(rhandsontable(dataToRender(), readOnly = !isTRUE(options$isInput), 
                                                      rowHeaders = FALSE, colHeaders = FALSE) %>%
                                          hot_table(contextMenu = FALSE, customBorders = lapply(0:8, function(i){
                                            list(

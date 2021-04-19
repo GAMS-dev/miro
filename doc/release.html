@@ -69,6 +69,10 @@
                                      <li>The database layout that MIRO uses internally has been changed significantly. At the first start MIRO checks if there is an existing MIRO database and tries to migrate this database automatically to the new layout. A backup of the old database is kept in case something goes wrong. Some data can not be migrated automatically. The first time you start your MIRO app, you will be prompted with a migration dialog if some data needs to be migrated manually. Sliders that have been expanded in Hypercube Mode job configurations cannot be migrated!</li>
                                      <li>An error is now issued if the MIRO app name (filename of the main .gms file) is longer than 60 characters.</li>
                                    </ul>
+                                   <h3>Deprecated features</h3>
+                                   <ul>
+                                     <li>The API for <a href="./customize.html#custom-input-widgets">custom input widgets</a> has been updated. Data is now passed in the form of reactive expressions instead of tibbles. The old API version is still the default for backward compatibility. However, you will now receive a deprecation warning if you are not using the new API version. The old API will be removed in a future MIRO release.</li>
+                                   </ul>
                                    <h3>Minor new features and improvements</h3>
                                    <ul>
                                      <li>Migrating database tables is now significantly more powerful thanks to the new <a href="./deployment.html#db-migration">Migration Wizard</a>.</li>
@@ -86,6 +90,7 @@
                                      <li>When submitting a job to <a href="https://gams.com/engine" target="_blank">GAMS Engine</a>, the MIRO sandbox is now restored when importing the results. This means that attachments, views, tags, etc. are preserved.</li>
                                      <li>You can now select the default renderer for all output data via the Configuration Mode (pivot table or table).</li>
                                      <li>Changing only the views of a scenario in the data_&lt;modelname&gt; folder now updates the scenario in the database.</li>
+                                     <li>The new <a href="./customize.html#custom-input-widgets">custom input widget API</a> now passes data wrapped in reactive expressions. Also, access to values from scalar widgets is now supported.</li>
                                    </ul>
                                    <h3>Bug fixes</h3>
                                    <ul>

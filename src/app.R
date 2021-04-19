@@ -533,9 +533,9 @@ if(miroBuildonly){
                              paste0(modelNameRaw, ".miroapp"))) &&
        unlink(file.path(currentModelDir,
                         paste0(modelNameRaw, ".miroapp")), force = TRUE) == 1){
-      warning("Problems removing corrupted miroapp file")
+      warning("Problems removing corrupted miroapp file", call. = FALSE)
     }
-    warning(errMsg)
+    warning(errMsg, call. = FALSE)
     if(interactive())
       stop()
     if(isTRUE(attr(errMsg, "noMA"))){
@@ -586,7 +586,7 @@ if(miroBuildonly){
     buildProcHcube$wait()
     procHcubeRetC <- buildProcHcube$get_exit_status()
     if(!identical(procHcubeRetC, 0L)){
-      warning(buildProcHcube$read_error())
+      warning(buildProcHcube$read_error(), call. = FALSE)
       if(interactive())
         stop()
       quit("no", procHcubeRetC)
@@ -904,7 +904,7 @@ if(!is.null(errMsg)){
     if(length(warningMsg)) flog.warn(warningMsg)
     flog.fatal(errMsg)
   }else{
-    warning(errMsg)
+    warning(errMsg, call. = FALSE)
   }
   if(isShinyProxy){
     stop('An error occured. Check log for more information!', call. = FALSE)
@@ -1639,7 +1639,7 @@ if(!is.null(errMsg)){
       })
       
       # initialise list of reactive expressions returning data for model input
-      dataModelIn <- vector(mode = "list", length = length(modelIn))
+      dataModelIn <- setNames(vector(mode = "list", length = length(modelIn)), names(modelIn))
       # auxiliary vector that specifies whether data frame has no data or data was overwritten
       isEmptyInput <- vector(mode = "logical", length = length(modelIn))
       # input is empty in the beginning
@@ -1787,10 +1787,10 @@ if(!is.null(errMsg)){
       ####### Model input
       # get sandbox data
       source("./modules/input_save.R", local = TRUE)
-      # render tabular input datasets
-      source("./modules/input_render_tab.R", local = TRUE)
       # render non tabular input datasets (e.g. slider, dropdown)
       source("./modules/input_render_nontab.R", local = TRUE)
+      # render tabular input datasets
+      source("./modules/input_render_tab.R", local = TRUE)
       # generate import dialogue
       source("./modules/input_ui.R", local = TRUE)
       # load input data from Excel sheet

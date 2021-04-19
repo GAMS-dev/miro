@@ -25,7 +25,7 @@ generateData <- function(input, output, session, data, type,
                          views = NULL, attachments = NULL){
   typeCustom <- type
   if(tolower(typeCustom) == "miropivot"){
-    return(renderMiroPivot("inputPivot", as_tibble(data), options = customOptions, 
+    return(renderMiroPivot("inputPivot", data, options = customOptions, 
                            path = customRendererDir, rendererEnv = rendererEnv, views = views))
   }
   tryCatch({
@@ -36,8 +36,8 @@ generateData <- function(input, output, session, data, type,
                    Please make sure you first define such a function.", typeCustom), call. = FALSE)
   })
   tryCatch({
-    return(callModule(customGenerator, "custom", as_tibble(data), options = customOptions, 
-                      path = customRendererDir, rendererEnv = rendererEnv, views = views, 
+    return(callModule(customGenerator, "custom", data, options = customOptions, 
+                      path = customRendererDir, views = views, 
                       attachments = attachments))
   }, error = function(e){
     stop(sprintf("An error occured in the custom generator function: '%s'. Error message: %s.",

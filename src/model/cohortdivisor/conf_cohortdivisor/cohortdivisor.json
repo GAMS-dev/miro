@@ -58,7 +58,8 @@
     },
     "existingcohortgroupmap": {
       "widgetType": "custom",
-      "rendererName": "mirorenderer_existingcohortgroupmap"
+      "rendererName": "mirorenderer_existingcohortgroupmap",
+      "apiVersion": 2
     },
     "gsmap": {
       "widgetType": "table",

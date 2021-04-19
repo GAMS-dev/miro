@@ -108,6 +108,7 @@
     "iilocdata": {
       "widgetType": "custom",
       "rendererName": "tsp",
+      "apiVersion": 2,
       "alias": "City location information"
     },
     "_scalars": {

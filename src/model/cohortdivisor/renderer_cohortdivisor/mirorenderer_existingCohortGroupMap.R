@@ -10,14 +10,29 @@ mirorenderer_existingcohortgroupmapOutput <- function(id, height = NULL, options
 }
  
  renderMirorenderer_existingcohortgroupmap <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){
-    force(data)
-    studentsA <- filter(data, c == "A")
-    studentsA <- unique(studentsA$s)
-    studentsB <- filter(data, c == "B")
-    studentsB <- unique(studentsB$s)
-    if (!is.null(data$g)) {
-        updateSelectizeInput(session, "groupFilter", choices = sort(unique(data$g)))
-    }
+    modifiedData <- reactiveVal()
+    observe({
+        if (!is.null(data()$g)) {
+            updateSelectizeInput(session, "groupFilter", choices = sort(unique(data()$g)))
+        }
+        modifiedData(data())
+    })
+    observeEvent(input$cohort_b, {
+        dataTmp <- modifiedData()
+        if (identical(input$cohort_b, dataTmp$s[dataTmp$c == "B"])) {
+            return()
+        }
+        dataTmp$c[dataTmp$s %in% studentsFiltered()$s] <- "A"
+        dataTmp$c[dataTmp$s %in% input$cohort_b & dataTmp$s %in% studentsFiltered()$s] <- "B"
+        modifiedData(dataTmp)
+    })
+    dataRet <- reactive(modifiedData())
+    studentsFiltered <- reactive({
+        if (is.null(input$groupFilter)) {
+            return(dataRet())
+        }
+        filter(dataRet(), g %in% c(input$groupFilter))
+    })
     output$cohortsOut <- renderUI({
         cohortLists <- sortable::bucket_list(header = NULL, group_name = session$ns("cohort_list"), 
             orientation = "horizontal", sortable::add_rank_list(text = "Cohort A", 
@@ -27,31 +42,5 @@ mirorenderer_existingcohortgroupmapOutput <- function(id, height = NULL, options
                 "B"]), input_id = session$ns("cohort_b")))
         return(cohortLists)
     })
-    markUnsaved <- FALSE
-    updateList <- reactiveVal(0)
-    dataRet <- data
-    rendererEnv[[session$ns("cohortsObs")]] <- observe({
-        force(input$cohort_b)
-        if (is.null(input$cohort_b) || identical(input$cohort_b, 
-            dataRet$s[dataRet$c == "B"])) {
-            return()
-        }
-        isolate({
-            dataRet$c[dataRet$s %in% studentsFiltered()$s] <<- "A"
-            dataRet$c[dataRet$s %in% input$cohort_b & dataRet$s %in% 
-                studentsFiltered()$s] <<- "B"
-            newVal <- updateList() + 1L
-            updateList(newVal)
-        })
-    })
-    studentsFiltered <- reactive({
-        if (is.null(input$groupFilter)) {
-            return(dataRet)
-        }
-        filter(dataRet, g %in% c(input$groupFilter))
-    })
-    return(reactive({
-        updateList()
-        return(dataRet)
-    }))
+    return(dataRet)
 }

@@ -1089,6 +1089,24 @@
                       "description":"Additional options",
                       "type":"object"
                    },
+                   "apiVersion":{
+                     "description":"API version to use",
+                     "type":"integer",
+                     "minimum":1,
+                     "maximum":2,
+                     "default":1
+                   },
+                   "additionalData":{
+                     "description":"Specify additional input symbols whose data should be handed to custom widget. Currently, only data from scalar widgets (sliders, dropdowns etc.) is supported.",
+                    "type":["array", "string"],
+                    "minLength":1,
+                    "minItems":1,
+                    "uniqueItems":true,
+                    "items":{  
+                       "type":"string",
+                       "minLength":1
+                    }
+                   },
                    "noImport":{  
                     "description":"Boolean that specifies whether data should not be imported from external source",
                     "type":"boolean"
