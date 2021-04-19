@@ -163,12 +163,17 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
               is.character(scriptId), length(scriptId) == 1L)
     if(hcube){
       outputFile <- private$hcConfig[[id]]$outputFile
+      parseMarkdown <- identical(private$config[[id]]$markdown, TRUE)
     }else{
       outputFile <- private$config[[id]]$outputFile
+      parseMarkdown <- identical(private$config[[id]]$markdown, TRUE)
     }
     return(tryCatch({
       private$scriptResults[[scriptId]] <- read_file(file.path(private$workDir,
                                                                outputFile))
+      if(parseMarkdown){
+        return(markdown(private$scriptResults[[scriptId]]))
+      }
       return(private$scriptResults[[scriptId]])
     }, error = function(e){
       flog.error("Problems reading output file of script: '%s'. Error message: '%s'.", 

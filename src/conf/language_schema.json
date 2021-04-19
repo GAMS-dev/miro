@@ -7577,12 +7577,16 @@
                       "type": "string",
                       "minLength": 1
                     },
+                    "markdown": {
+                      "type": "string",
+                      "minLength": 1
+                    },
                     "timeout": {
                       "type": "string",
                       "minLength": 1
                     }
                   },
-                  "minProperties": 6
+                  "minProperties": 7
                 },
                 "addOutAttach": {
                   "type": "object",

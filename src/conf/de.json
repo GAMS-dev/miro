@@ -1898,6 +1898,7 @@
           "cmd": "Auszuführender Befehl",
           "args": "Argumente für den Befehl",
           "outFile": "Name der Ausgabedatei (inklusive Dateiendung)",
+          "markdown": "Ausgabedatei ist eine Markdown-Datei",
           "timeout": "Timeout (Sekunden, -1 für unendlich)"
         },
         "addOutAttach":{

@@ -2553,6 +2553,10 @@
                     "type":"string",
                     "minLength":3
                   },
+                  "markdown": {
+                    "description": "Parse output as markdown?",
+                    "type": "boolean"
+                  },
                   "timeout": {
                     "description":"Timeout (seconds) when process shall be interrupted. -1 for infinity.",
                     "type":"integer",
@@ -2597,6 +2601,10 @@
                     "description":"Output filename that shall be displayed in MIRO once script is finished",
                     "type":"string",
                     "minLength":3
+                  },
+                  "markdown": {
+                    "description": "Parse output as markdown?",
+                    "type": "boolean"
                   },
                   "timeout": {
                     "description":"Timeout (seconds) when process shall be interrupted. -1 for infinity.",
