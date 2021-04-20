@@ -263,7 +263,7 @@ Db <- R6Class("Db",
                     return(0L)
                   }
                 },
-                loadScriptResults = function(sids, limit = 1e7, msgProgress){
+                loadScriptResults = function(sids, limit = 1e7, msgProgress = NULL){
                   # Load script results from database
                   #
                   # Args:
@@ -278,23 +278,27 @@ Db <- R6Class("Db",
                   sids <- suppressWarnings(as.integer(sids))
                   stopifnot(!any(is.na(sids)), length(sids) >= 1)
                   stopifnot(is.numeric(limit), length(limit) == 1)
-                  stopifnot(is.character(msgProgress$title), length(msgProgress$title) == 1)
-                  stopifnot(is.character(msgProgress$progress), length(msgProgress$progress) == 1)
                   #END error checks
                   
                   #initialize progress bar
-                  prog <- Progress$new()
-                  on.exit(prog$close())
-                  prog$set(message = msgProgress$title, value = 0)
-                  incAmount <- 1/length(sids)
-                  updateProgress <- function(detail = NULL) {
-                    prog$inc(amount = incAmount, detail = detail)
+                  if(!is.null(msgProgress)){
+                          stopifnot(is.character(msgProgress$title), length(msgProgress$title) == 1)
+                          stopifnot(is.character(msgProgress$progress), length(msgProgress$progress) == 1)
+                          prog <- Progress$new()
+                          on.exit(prog$close())
+                          prog$set(message = msgProgress$title, value = 0)
+                          incAmount <- 1/length(sids)
+                          updateProgress <- function(detail = NULL) {
+                                  prog$inc(amount = incAmount, detail = detail)
+                          }
                   }
                   scriptData <- lapply(seq_along(sids), function(i){
                     dataset <- self$importDataset(tableName = "_scenScripts", 
                                                   subsetSids = sids[i], limit = limit)
                     dataset[, "_sid"] <- NULL
-                    updateProgress(detail = paste0(msgProgress$progress, i))
+                    if(!is.null(msgProgress)){
+                            updateProgress(detail = paste0(msgProgress$progress, i))
+                    }
                     return(dataset)
                   })
                   return(scriptData)
