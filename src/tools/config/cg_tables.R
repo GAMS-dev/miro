@@ -3,6 +3,7 @@ tableSymbols <- setNames(list(c(inputSymMultiDimChoices),
                          c(lang$adminMode$tables$ui$inputSymbols, 
                            lang$adminMode$tables$ui$outputSymbols))
 inputPivotRendererEnv <- new.env(parent = emptyenv())
+currentTableSymbolName <- character(0L)
 if(length(tableSymbols)){
   updateSelectInput(session, "table_symbol", choices = tableSymbols)
   noTableSymbols <- FALSE
