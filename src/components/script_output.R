@@ -39,6 +39,26 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
     }
     return(private$scriptResults[[scriptId]])
   },
+  clearContent = function(scriptIds = NULL, scenId = NULL){
+    if(is.null(scriptIds)){
+      scriptIds <- seq_along(private$config)
+    }
+    if(is.null(scenId)){
+      for(scriptId in scriptIds){
+        self$interrupt(private$config[[scriptId]]$id, suppressWarning = TRUE)
+        hideEl(private$session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
+        hideEl(private$session, paste0("#scriptOutput_", scriptId, " .script-output"))
+        showEl(private$session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
+      }
+      private$scriptResults <- list()
+      return(invisible(self))
+    }
+    for(scriptId in scriptIds){
+      hideEl(private$session, paste0("#scenScript_", scenId, "_", scriptId))
+      showEl(private$session, paste0("#scenScript_", scenId, "_", scriptId, "_noData"))
+    }
+    return(invisible(self))
+  },
   sendContent = function(data, id, scenId = NULL, 
                          hcube = FALSE, isError = FALSE){
     private$session$sendCustomMessage("gms-scriptExecuted", 
@@ -61,8 +81,10 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
     idsLoaded <- lapply(seq_along(private$config), function(id){
       config <- private$config[[id]]
       rowNo <- match(config$id, idsToLoad)
-      if(is.na(rowNo))
+      if(is.na(rowNo)){
+        self$clearContent(id, scenId)
         return(NULL)
+      }
       if(is.null(scenId)){
         private$scriptResults[[config$id]] <- dataToLoad[rowNo]
         hideEl(private$session, paste0("#scriptOutput_", id, " .out-no-data"))
@@ -83,22 +105,25 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
       }
     }
   },
-  interrupt = function(scriptId = NULL){
+  interrupt = function(scriptId = NULL, suppressWarning = FALSE){
     if(is.null(scriptId)){
       if(!length(private$activeScripts)){
-        return()
+        return(invisible(self))
       }
       scriptId <- names(private$activeScripts)[[1L]]
     }
     if(scriptId %in% names(private$activeScripts)){
-      private$clearProcess(scriptId)
       if(private$killScript(scriptId)){
         flog.debug("Script: '%s' was interrupted.", scriptId)
       }
-      return()
+      private$clearProcess(scriptId)
+      return(invisible(self))
     }
-    flog.warn("Script: '%s' could not be interrupted as it was not found in list of active scripts.",
-              scriptId)
+    if(!suppressWarning){
+      flog.warn("Script: '%s' could not be interrupted as it was not found in list of active scripts.",
+                scriptId)
+    }
+    return(invisible(self))
   },
   run = function(id, hcube = FALSE){
     stopifnot(is.integer(id), id > 0)

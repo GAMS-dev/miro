@@ -114,11 +114,7 @@ closeScenario <- function(clearMeta = TRUE){
   attachmentList    <<- tibble(name = vector("character", attachMaxNo), 
                                execPerm = vector("logical", attachMaxNo))
   if(!LAUNCHHCUBEMODE){
-    lapply(seq_along(config$scripts$base), function(scriptId){
-      hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-      hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
-      showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-    })
+    scriptOutput$clearContent()
   }
   
   markSaved()
