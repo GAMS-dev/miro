@@ -1072,17 +1072,7 @@
       "widgets": "Configure widgets",
       "graphs": "Configure graphs",
       "database": "Database management",
-      "custom":{
-        "skeleton": "skeleton:",
-        "steps": "Steps:",
-        "li1": "Create a directory renderer_%s in your model directory with a file %s_custom.R in it.",
-        "li2": "Copy the above code and paste it into the %s_custom.R file.",
-        "li3a": "Write your own custom renderer! For a detailed description of how to write such a custom renderer, see ",
-        "li3b": "here",
-        "description1": "The next time the application is started after a click on save MIRO looks for a custom renderer function in the file %s_custom.R. If this is not found, the application does not start! Make sure that you have included the custom renderer function correctly. It is always a good idea to first develop a custom renderer isolated from MIRO and, as soon as you are satisfied with the result, to integrate it into the MIRO application.",
-        "description2": "Note:",
-        "description3": "If your application doesn't start because of the reason mentioned above, you can always delete the configured renderer here."
-      }
+      "restartRequired": "Note: For these changes to take effect, you must restart the Configuration Mode!"
     },
     "general":{
       "ui":{
@@ -1607,6 +1597,7 @@
         "legend": "Legend",
         "markers": "Markers",
         "flows": "Flows",
+        "advanced": "Advanced options",
         "minicharts": "Minicharts",
         "groupsLayers": "Groups & Layers",
         "data": "Data"
@@ -1624,7 +1615,10 @@
         "choices": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram", "Time Series Diagram", "Map chart", "Gantt chart", "Pivot table and pivot charts", "Valuebox for scalar values", "Custom renderer"],
         "deleteGraph": "Delete",
         "saveGraph": "Save",
-        "toggleFullscreen": "Toggle fullscreen"
+        "toggleLeft": "Switch left panel to full screen",
+        "toggleRight": "Switch right panel to full screen",
+        "previewError": "An error occurred: '%s'",
+        "previewErrorObs": "An error occurred in an observer: '%s'"
       },
       "graphOptions":{
         "pie": "Pie chart",
@@ -1642,6 +1636,7 @@
       },
       "validate":{
         "val1": "Could not set range for x axis. Check for correct data format!",
+        "custom1": "Could not parse additional options. Please make sure that you use valid JSON syntax!",
         "pieValues": "The selected symbol has too many values to be displayed as a pie chart. The maximum number of values that can be displayed in a pie chart is 100.",
         "tableNeeded": "A symbol that is to be configured as a map must be declared as a GAMS table, since multiple value columns are required (e.g. latitude and longitude information)."
       },
@@ -1850,8 +1845,11 @@
         }
       },
       "customOptions":{
-        "name": "Name of the custom renderer function (no space)",
+        "btUpdate": "Update",
+        "externalRenderer": "Use renderer from other symbol",
+        "symNotFoundSuffix": "(symbol not found)",
         "packages": "Packages necessary for the renderer",
+        "options": "Additional options passed to renderer functions",
         "additionalData": "Additional datasets to communicate with the custom renderer"
       },
       "filterOptions":{
