@@ -92,7 +92,11 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
         hideEl(private$session, paste0("#scenScript_", scenId, "_", id, "_noData"))
       }
       flog.trace("Script output of script: '%s' loaded.", config$id)
-      self$sendContent(dataToLoad[rowNo], id, scenId)
+      outputToLoad <- dataToLoad[rowNo]
+      if(identical(config$markdown, TRUE)){
+        outputToLoad <- markdown(outputToLoad)
+      }
+      self$sendContent(outputToLoad, id, scenId)
       return(config$id)
     })
     if(is.null(scenId)){
