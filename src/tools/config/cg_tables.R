@@ -428,7 +428,7 @@ output$hot_preview <- renderRHandsontable({
   if(!identical(rv$tableWidgetConfig$tableType, "default")){
     return()
   }
-  data <- createTableData(input$table_symbol, input$table_pivotCols)
+  data <- createTableData(input$table_symbol, rv$tableWidgetConfig$pivotCols)
   
   headersTmp <- data$headersRaw
   headersUnnamed <- unname(headersTmp)
