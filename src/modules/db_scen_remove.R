@@ -113,7 +113,7 @@ closeScenario <- function(clearMeta = TRUE){
   scenTags          <<- NULL
   attachmentList    <<- tibble(name = vector("character", attachMaxNo), 
                                execPerm = vector("logical", attachMaxNo))
-  if(!LAUNCHHCUBEMODE){
+  if(!LAUNCHHCUBEMODE && length(config$scripts$base)){
     scriptOutput$clearContent()
   }
   
