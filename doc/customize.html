@@ -1132,7 +1132,7 @@ renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path
 }
                                         </code></pre>
                                   </div><p>Let's disect what we just did: First, we defined our two renderer functions <kbd>sudokuOutput</kbd> and <kbd>renderSudoku</kbd>. Since we want to use the R package <a href="https://jrowen.github.io/rhandsontable/" target="_blank">rhandsontable</a> to display our Sudoku grid, we have to use the placeholder function <kbd>rHandsontableOutput</kbd> as well as the corresponding renderer function <kbd>renderRHandsontable</kbd>. If you are wondering what the hell placeholder and renderer functions are, read the section on <a href="#custom-renderers" class="scrollto">custom renderers</a>.</p>
-                                  <p>Note that we use the option <kbd>isInput</kbd> we specified previously to determine whether our table should be read-only or not. Furthermore, we only return a reactive expression when we use the renderer function to return data - in the case of a custom input widget. A detail you might stumble upon is the expression <kbd>hot_to_r(input$sudoku)</kbd>. This is simply a way to <a href="https://en.wikipedia.org/wiki/Serialization" target="_blank">deserialize</a> the data coming from the UI that the <a href="https://jrowen.github.io/rhandsontable/" target="_blank">rhandsontable</a> tool provides. What's important is that we return an R data frame that has exactly the number of columns MIRO expects our input symbol to have (in this example <kbd>initial_state</kbd>).</p><p>That's all there is to it! We configured our first custom widget. To use the same renderer for the the results that are stored in a GAMS symbol called <i>result</i>, simply add the following lines to the <span class="code">sudoku.json</span> file. Note that we do not set the option <kbd>isInput</kbd> here.</p><pre><code class="language-r">"dataRendering": {
+                                  <p>Note that we use the option <kbd>isInput</kbd> we specified previously to determine whether our table should be read-only or not. Furthermore, we only return a reactive expression when we use the renderer function to return data - in the case of a custom input widget. A detail you might stumble upon is the expression <kbd>hot_to_r(input$sudoku)</kbd>. This is simply a way to <a href="https://en.wikipedia.org/wiki/Serialization" target="_blank">deserialize</a> the data coming from the UI that the <a href="https://jrowen.github.io/rhandsontable/" target="_blank">rhandsontable</a> tool provides. What's important is that we return an R data frame that has exactly the number of columns MIRO expects our input symbol to have (in this example <kbd>initial_state</kbd>).</p><p>That's all there is to it! We configured our first custom widget. To use the same renderer for the results that are stored in a GAMS symbol called <i>result</i>, simply add the following lines to the <span class="code">sudoku.json</span> file. Note that we do not set the option <kbd>isInput</kbd> here.</p><pre><code class="language-r">"dataRendering": {
     "results": {
       "outType": "sudoku"
     }
@@ -1394,16 +1394,7 @@ renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path
                                 </div><!--//section-block-->
                                 <div class="section-block" id="custom-renderers">
                                   <h3 class="block-title">Custom Renderers</h3>
-                                  <p>GAMS MIRO allows you to use your own custom renderers for your datasets. In this section we will show you how to create really sophisticated graphics that can not be configured with the Configuration Mode of GAMS MIRO.</p>
-                                  <div class="callout-block callout-warning">
-                                        <div class="icon-holder">
-                                            <i class="fas fa-exclamation-triangle"></i>
-                                        </div><!--//icon-holder-->
-                                        <div class="content">
-                                            <b class="callout-title">Note:</b>
-                                            <p>The following example shows how a map can be created using a custom renderer. Note that maps can also be configured in the <a href="#configurationMode" class="scrollto">Configuration Mode</a>. However, the following example shows how the R API can be used for custom graphics in general.</p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block-->
+                                  <p>GAMS MIRO allows you to use your own custom renderers for your datasets. In this section we will show you how to create really sophisticated custom graphics.</p>
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:250pt;" src="assets/images/output-data_raw1.png" alt="Result of custom renderer - Map with markers" />
                                   </div>
@@ -1411,21 +1402,21 @@ renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path
                                     <p>In order to visualize a dataset, you will need to write two functions: a placeholder where your graphs etc. will later be rendered as well as the rendering function itself. To learn more about the concepts of this dual component approach, visit the website for the R Shiny framework that GAMS MIRO is based upon: <a href="https://shiny.rstudio.com/">https://shiny.rstudio.com/</a>. In particular, we are using <a href="https://shiny.rstudio.com/articles/modules.html" target="_blank">Shiny Modules</a> to realize the interface between MIRO and your custom renderer functions. The template for the two components of every custom renderer is as follows:</p>
                                     <div class="code-block">
                                         <pre><code class="language-r">
-&#x3C;rendererName&#x3E;Output &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
+mirorenderer_&#x3C;symbolName&#x3E;Output &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
   ns &#x3C;- NS(id)
 }
 
-render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){
+renderMirorenderer_&#x3C;symbolName&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){
 }
                                         </code></pre>
                                     </div><!--//code-block-->
-                                    <p>Note that you need to replace <span class="code">&lt;rendererName&gt;</span> with your preferred name. Let's go through this code step by step. As mentioned, for each custom renderer we need to specify two functions: one that generates the placeholder and one that fills this placeholder with data. The name of the placeholder function must be postfixed with "<span class="code">Output</span>" and the name of the function that specifies the actual rendering must be prefixed with the keyword "<span class="code">render</span>".
-                                      Let's get back to our <i>transport</i> example. We would like to see the flow of goods visualized on a map. We now write our own custom renderer which we name: <span class="code">transportMap</span>. Thus, our initial template looks like this:
+                                    <p>Note that you need to replace <span class="code">&lt;symbolName&gt;</span> with the name of the GAMS symbol you want to use this renderer for. Let's go through this code step by step. As mentioned, for each custom renderer we need to specify two functions: one that generates the placeholder and one that fills this placeholder with data. The name of the placeholder function must be postfixed with "<span class="code">Output</span>" and the name of the function that specifies the actual rendering must be prefixed with the keyword "<span class="code">render</span>".
+                                    Let's get back to our <i>transport</i> example. We would like to see the flow of goods visualized on a map. The GAMS symbol that contains the flow data is called <span class="code">optSched</span>. Thus, our initial template looks like this:
                                     <div class="code-block">
-                                        <pre><code class="language-r">transportMapOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
+                                        <pre><code class="language-r">mirorenderer_optschedOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
   ns &#x3C;- NS(id)
 }
-renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){
+renderMirorenderer_optsched &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){
 }</code></pre>
                                     </div><!--//code-block-->
                                     <div class="callout-block callout-warning">
@@ -1434,7 +1425,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <b class="callout-title">Note:</b>
-                                            <p>R is case sensitive and the first letter after the <span class="code">render</span> keyword needs to be uppercase! Thus, if the name of your renderer starts with a lowercase letter, you need to convert it to uppercase in the <kbd>render*</kbd> function.</p>
+                                            <p>MIRO expects your renderer names to follow this strict convention. Note that the symbol name in your renderer name should be converted to all lowercase. Even if the symbol in GAMS is called <span class="code">optSched</span>, the renderer function name should be <span class="code">mirorenderer_optschedOutput</span> and <span class="code">renderMirorenderer_optsched</span>.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                     <div class="callout-block callout-warning">
@@ -1443,17 +1434,17 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <b class="callout-title">Note:</b>
-                                            <p>Custom renderer scripts must be located in a folder named: <span class="code">renderer_&lt;modelname&gt;</span> in your model directory. You can name these <span class="code">.r</span> files as you like. </p>
+                                            <p>Custom renderer scripts must be located in a folder named: <span class="code">renderer_&lt;modelname&gt;</span> in your model directory. The name of the renderer file should be: <span class="code">mirorenderer_&lt;symbolname&gt;.R</span>. </p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                     <p>Both functions take a number of parameters. Let's start with the placeholder function: Each custom renderer has its own ID. In order to avoid <a href="https://en.wikipedia.org/wiki/Name_collision" target="_blank">name collisions</a> with other custom renderers or functions of GAMS MIRO, we need to prefix our input and output elements with this ID. How should we prefix our custom input and output functions, though? Fortunately, Shiny provides us with the function: <kbd><a href="https://shiny.rstudio.com/reference/shiny/0.13.1/NS.html" target="_blank">NS()</a></kbd>. This function takes the ID of our custom renderer as its input and returns a function (functions that return functions are often called <i>closures</i> in R) that does the prefixing for us. Thus, whenever we want to specify a new input or output element, we simply hand the ID we would like to use for this element over to this prefixing function (which in our case is bound to the <kbd>ns</kbd> variable). We can also specify a height for our renderer as well as the path where the renderer files are located. We can also pass additional options to our renderer functions.</p>
                                     <p>Let's get back to our example. As we would like to visualize our optimized schedule on an interactive map, we choose the popular <a href="https://leafletjs.com" target="_blank">Leaflet</a> library. Fortunately, there is already an R/Shiny interface for this library: <a href="https://rstudio.github.io/leaflet/" target="_blank">Leaflet for R</a>. This R package comes with the two functions: <kbd>leafletOutput()</kbd> that generates the placeholder and <kbd>renderLeaflet()</kbd> that renders a Leaflet map object created by the <kbd>leaflet()</kbd> function which takes our dataframe as its first argument. So let's put the pieces together and extend our code:
                                       <div class="code-block">
-                                          <pre><code class="language-r">transportMapOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
+                                          <pre><code class="language-r">mirorenderer_optschedOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
   ns &#x3C;- NS(id)
   leaflet::leafletOutput(ns(&#x22;map&#x22;), height = height)
 }
-renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){
+renderMirorenderer_optsched &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){
   output$map &#x3C;- leaflet::renderLeaflet(leaflet::leaflet(data))
 }</code></pre>
                                       </div><!--//code-block-->
@@ -1499,14 +1490,14 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                         <p>As you can see we bound the GAMS parameter <span class="code">optSched</span> to our new custom renderer <span class="code">transportMap</span>. Furthermore, we specified a parameter: <span class="code">title</span> that can be accessed by our custom renderer via the <span class="code">options</span> list. </p>
                                       <p>If we decided to run our MIRO app now, we still would not be able to see anything other than a blank area. Thus, we will need to fill our renderer with some life:
                                         <div class="code-block">
-                                            <pre><code class="language-r">transportMapOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
+                                            <pre><code class="language-r">mirorenderer_optschedOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
   ns &#x3C;- NS(id)
   tagList(
     textOutput(ns(&#x22;title&#x22;)),
     leaflet::leafletOutput(ns(&#x22;map&#x22;))
   )
 }
-renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){
+renderMirorenderer_optsched &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){
   output$title &#x3C;- renderText(options$title)
   output$map   &#x3C;- leaflet::renderLeaflet(leaflet::leaflet(data) %&#x3E;%
                                            leaflet::addTiles() %&#x3E;%
@@ -1796,6 +1787,15 @@ updateCallback <- function(){
 views$registerUpdateCallback(session, updateCallback)
                                         </code></pre>
                                       </div><!--//code-block-->
+                                      <h4 id="migrate-custom-renderers">Migrate renderers from MIRO 1.x</h5>
+                                      <p>The custom renderers you created with MIRO 1.x will also work with MIRO 2.0. You will only encounter problems if you try to use these renderers in the Configuration Mode. To make your old renderers compatible with the Configuration Mode of MIRO 2.0, you must follow the rules below:</p>
+                                      <ul>
+                                        <li>A renderer is now bound to a specific symbol.</li>
+                                        <li>Renderers can be shared by different symbols, but they always belong to one of them.</li>
+                                        <li>This means that the name of the output and renderer functions should be: <span class="code">mirorenderer_&#x3C;symbolName&#x3E;Output</span> and <span class="code">mirorenderer_&#x3C;symbolName&#x3E;Output</span> respectively.</li>
+                                        <li>Renderer files must be named <span class="code">mirorenderer_&lt;symbolname&gt;.R</span>.</li>
+                                        <li>Only one output/render function may be declared per file.</li>
+                                      </ul>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="language-files">
                                   <h3 class="block-title">Language Files</h3>
@@ -1834,6 +1834,7 @@ views$registerUpdateCallback(session, updateCallback)
                                           <a class="nav-link scrollto" href="#additional-datasets">Additional datasets</a>
                                           <a class="nav-link scrollto" href="#additional-r-packages">Additional R packages</a>
                                           <a class="nav-link scrollto" href="#custom-renderer-views">Views</a>
+                                          <a class="nav-link scrollto" href="#migrate-custom-renderers">Migrate renderers from MIRO 1.x</a>
                                         </nav>
                                     <a class="nav-link scrollto" href="#language-files">Language Files</a>
                                 </nav>

@@ -3748,7 +3748,7 @@ output$customOutputBoilerplate <- renderText({
 output$customRenderBoilerplate <- renderText({
   paste0(
     customRendererFunctionName(),
-    " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){"
+    " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){"
   )
 })
 output[["preview_custom_renderer"]] <- renderUI({
@@ -3916,7 +3916,7 @@ observe({
       local({
         customRendererFunction <- eval(parse(text = isolate(paste0(
           customRendererFunctionName(),
-          " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){\n",
+          " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){\n",
           input$customRenderFunction,
           "\n}"))), envir = customRendererEvalEnv)
         callModule(customRendererFunction, "preview_output_custom",

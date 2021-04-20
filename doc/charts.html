@@ -1175,37 +1175,24 @@ firstDayTraining(td)                   = td.pos = 1;
                                 <div class="section-block">
                                   <h3 class="block-title">Configuration</h3>
                                     <p>Section <a href = "./customize.html#custom-renderers">Custom graphics</a> gives examples and explains in detail how to deal with custom renderers in general.</p>
-                                    <p>The Configuration Mode can be used to assist with the basic configuration for using custom graphics. If a symbol is selected for the use of a custom renderer in Configuration Mode, the following screen appears:</p>
+                                    <p>The Configuration Mode can help you create your own renderers. If a symbol is selected for the use of a custom renderer in Configuration Mode, the following screen appears:</p>
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" src="assets/images/configuration_mode/graphs_custom_editor.png" alt="Custom graph editor configuration" />
                                     </div>
-                                    <p>The editor allows you to code your custom renderer directly in configuration mode. Since MIRO uses <a href = https://shiny.rstudio.com/>shiny</a> modules we have two editors.
-                                      The upper editor defines the arrangement of our custom renderer's output. The second editor defines all calculations and operations needed to actually construct the custom renderer.
-                                      Upon clicking the update button the code in both cells is executed and the graph appears on the right (or an error warning). As an example consider the map created for the transport model below</p>
+                                    <p>With the custom renderer editor you can write your own renderer and see the result immediately.
+                                      The upper editor defines the placeholder or output function, while the lower editor is for the renderer function. If you are not yet familiar with the concept of output and render function, please read the corresponding <a href="./customize.html#custom-renderers">section</a> first.
+                                      When you click the "Update" button, the code is executed in both cells and the graph appears on the right (or an error message if you made a mistake). As an example consider the map created for the transport model below</p>
                                     <div class="section-block" style="text-align:center;">
-                                        <img class="img-fluid" src="assets/images/configuration_mode/graphs_custom_editor_transport.png" alt="Custom graph editor transport configuration" />
+                                        <img class="img-fluid" src="assets/images/configuration_mode/graphs_custom_editor_transport.png" alt="Custom renderer editor for transport configuration" />
                                     </div>
-                                    <p> To save your renderer click the save button in the lower left. If not already present, MIRO will create the folder renderer_&lt;modelname&gt; in your current working directory.
-                                      To avoid accidential overwriting of old custom renderer R files, graphs written in configuration mode are by default saved as mirorenderer_&lt;symbolname&gt;.
-                                      Renderers used for other symbols in the same model can be imported too, are however, uneditable.</p>
+                                    <p>To save your renderer, click the "Save" button at the bottom left. If it does not already exist, MIRO creates the folder <span class="code">renderer_&lt;modelname&gt;</span> in your current working directory and saves your code in a file called: <span class="code">mirorenderer_&lt;symbolname&gt;.R</span>.
+                                    </p>
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" src="assets/images/configuration_mode/graphs_custom_options.png" alt="Custom graph options configuration" />
                                     </div>
 
-                                    <p>In the advanced options tab, you can import additional symbols, R-packages - meaning not yet in MIRO included -. Additional datasets allow you to use multiple GAMS symbols in the same renderer function. Also, you can set options for your render function.
-                                      Note, that this can alternatively be done through a JSON file, where all other things are stored as well. Currently additional symbols are only available when you configure a custom renderer for an output symbol! The resulting JSON snippet looks like this:</p>
-                                    <pre><code class="language-json">
-{
-   "dataRendering":{
-      "schedule": {
-         "outType": "transportMap",
-         "packages": "leaflet",
-         "additionalData": ["ilocdata", "jlocdata"]
-    }
-   }
-}
-                                    </code></pre>
-                                    <p>Furthermore, you can add options to this snippet, for example a title or other specifications. These can then be accessed from the custom renderer function.</p>
+                                    <p>On the Advanced Options tab, you can add additional symbols to be used by your renderer, specify R packages that are not included in MIRO but are required by your renderer, and set additional options that will be available in your renderer (read <a href="./customize.html#custom-renderers">here</a> to learn more). Additional options are especially useful when you share your renderer between different symbols.</p>
+                                    <p>The resulting JSON snippet for our transport example looks like this:</p>
                                     <pre><code class="language-json">
 {
    "dataRendering":{
@@ -1220,16 +1207,6 @@ firstDayTraining(td)                   = td.pos = 1;
    }
 }
                                     </code></pre>
-                                    <!--<p>The second assistance is that the basic framework for the R code is supplied on the right side of the screen. It also explains in detail what to do with the code snippet:</p>
-                                    <div class = "box-grey">
-                                        <p>Steps:</p>
-                                        <ol>
-                                          <li>Create a directory <i>renderer_transport</i> in your model directory with a file <i>transport_custom.R</i> in it.</li>
-                                          <li>Copy the above code and paste it into the <i>transport_custom.R</i> file.</li>
-                                          <li>Write your own custom renderer! For a detailed description of how to write such a custom renderer, see <a href = "./customize.html#custom-renderers">here</a>.</li>
-                                        </ol>
-                                        <p>The next time the application is started, MIRO looks for a custom renderer function in the file <i>transport_custom.R</i>. If this is not found, the application does not start! Make sure that you have included the custom renderer function correctly. It is always a good idea to first develop a custom renderer isolated from MIRO and - as soon as you are satisfied with the result - to integrate it into the MIRO application.<p>
-                                    </div>-->
                                     <div class="callout-block callout-success">
                                       <div class="icon-holder">
                                           <i class="fas fa-thumbs-up"></i>
@@ -1237,7 +1214,7 @@ firstDayTraining(td)                   = td.pos = 1;
 
                                       <div class="content">
                                           <b class="callout-title">Tip:</b>
-                                            <p>MIRO looks for a custom renderer function for your symbol in the folder <i>renderer_&lt;modelname&gt;</i>. If no renderer is found the application doesn't start. To solve this you can always delete the configured renderer using the Configuration Mode.</p>
+                                            <p>MIRO looks for a custom renderer function for your symbol in the folder <span class="code">renderer_&lt;modelname&gt;</span>. If a renderer was configure but is not found in this directory, the application doesn't start. To solve this you can always delete the configured renderer using the Configuration Mode (or remove it manually from the JSON file).</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                 </div><!--//section-block-->
