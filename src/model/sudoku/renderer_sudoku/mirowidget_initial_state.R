@@ -1,4 +1,4 @@
-mirorenderer_initial_stateOutput <- function(id, height = NULL, options = NULL, path = NULL){
+mirowidget_initial_stateOutput <- function(id, height = NULL, options = NULL, path = NULL){
     ns <- NS(id)
     if (isTRUE(options$isInput)) {
         return(tagList(span(textOutput(ns("uniqueSolWarning")), 
@@ -7,7 +7,7 @@ mirorenderer_initial_stateOutput <- function(id, height = NULL, options = NULL, 
     return(rHandsontableOutput(ns("sudoku")))
 }
  
- renderMirorenderer_initial_state <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){
+ renderMirowidget_initial_state <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){
     if (isTRUE(options$isInput)) {
         output$uniqueSolWarning <- renderText({
             if (isTRUE(data$force_unique_sol())) 
