@@ -234,7 +234,9 @@ observeEvent(input$btRefreshComp, {
   if(!is.null(dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetId)]])){
     dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetId)]][["content"]][] <<- FALSE
   }
-  if(any(startsWith(as.character(scenData$getRefScenMap(refId)), "sb"))){
+  scenIds <- scenData$getRefScenMap(refId)
+  sbScenId <- startsWith(as.character(scenIds), "sb")
+  if(any(sbScenId)){
     if(tryCatch({
       scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE),
                            modelInFileNames, activeScen$getMetadata())
@@ -250,10 +252,29 @@ observeEvent(input$btRefreshComp, {
     })){
       return()
     }
+    views$duplicateSandboxConf(tabsetId)
   }
-  loadDynamicTabContent(session, tabsetId,
-                        getSheetnamesByTabsetId(tabsetId),
-                        initEnv = TRUE)
+  sidsToLoad <- as.integer(scenIds[!sbScenId])
+  if(length(sidsToLoad)){
+    views$loadConf(db$importDataset(tableName = "_scenViews", 
+                                    subsetSids = sidsToLoad), FALSE,
+                   tabsetId, sidsToLoad)
+  }
+  if(length(config$scripts$base) && !identical(tabsetId, 0L)){
+    if(any(sbScenId)){
+      scriptOutput$loadResultsBase(scriptOutput$getResults(), tabsetId)
+    }else if(length(sidsToLoad)){
+      scriptOutput$loadResultsBase(db$loadScriptResults(sidsToLoad), tabsetId)
+    }
+  }
+  sheetNames <- getSheetnamesByTabsetId(tabsetId)
+  if(length(sheetNames)){
+    loadDynamicTabContent(session, tabsetId,
+                          sheetNames,
+                          initEnv = TRUE)
+  }else{
+    scenData$get(refId, symNames = character(), showProgress = FALSE)
+  }
   metaTmp <- scenData$getById("meta", refId = refId, drop = TRUE)
   showElReplaceTxt(session, paste0("#cmpScenTitle_", tabsetId),
                    paste0(if(!identical(uid, metaTmp[["_uid"]][1])) paste0(metaTmp[["_uid"]][1], ": "),
