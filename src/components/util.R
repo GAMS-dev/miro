@@ -17,6 +17,9 @@ getCommandArg <- function(argName, exception = TRUE){
     }
   }
 }
+isBadScenName <- function(scenName){
+  return(nchar(scenName) > 63 || nchar(trimws(scenName, "both")) < 1L)
+}
 isWindows <- function() .Platform$OS.type == 'windows'
 hasContent <- function(x){
   if(inherits(x, "data.frame") && nrow(x) == 0){

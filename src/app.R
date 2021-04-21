@@ -89,7 +89,7 @@ filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./component
                     "./components/dataio.R", "./components/hcube_data_instance.R", 
                     "./components/miro_tabsetpanel.R", "./modules/render_data.R", 
                     "./modules/generate_data.R", "./components/script_output.R",
-                    "./components/js_util.R", "./components/scen_data.R")
+                    "./components/js_util.R", "./components/scen_data.R", "./components/batch_loader.R")
 LAUNCHCONFIGMODE <- FALSE
 LAUNCHHCUBEMODE <<- FALSE
 if(is.null(errMsg)){
@@ -746,7 +746,6 @@ if(is.null(errMsg)){
     }
     errMsg <- installAndRequirePackages(c("digest"), installedPackages, RLibPath, CRANMirror, miroWorkspace)
     source("./components/db_hcubeimport.R")
-    source("./components/db_hcubeload.R")
   }
 }
 
@@ -1312,7 +1311,7 @@ if(!is.null(errMsg)){
       rv <- reactiveValues(unsavedFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
                            btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
                            btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
-                           noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
+                           noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L, updateBatchLoadData = 0L,
                            jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L, importCSV = 0L,
                            refreshLogs = NULL, triggerAsyncProcObserver = NULL)
       
@@ -1823,13 +1822,14 @@ if(!is.null(errMsg)){
         source("./modules/download_tmp.R", local = TRUE)
       }
       
+      ####### Batch load module
+      source("./modules/batch_load.R", local = TRUE)
+      
       ####### Paver interaction
       if(LAUNCHHCUBEMODE){
         source("./modules/gams_job_list.R", local = TRUE)
         ####### Hcube import module
         source("./modules/hcube_import.R", local = TRUE)
-        ####### Hcube load module
-        source("./modules/hcube_load.R", local = TRUE)
         # analyze button clicked
         source("./modules/analysis_run.R", local = TRUE)
       }else if(config$activateModules$remoteExecution){
@@ -1872,6 +1872,7 @@ if(!is.null(errMsg)){
       source("./modules/load_dynamic_tab_content.R", local = TRUE)
       
       observeEvent(input$btScenPivot_close, {
+        resetCompTabset("0")
         showEl(session, "#pivotCompBtWrapper")
         hideEl(session, "#pivotCompScenWrapper")
         isInRefreshMode <<- FALSE

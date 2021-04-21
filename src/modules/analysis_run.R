@@ -36,6 +36,8 @@ genPaverArgs <- function(traceFilenames, clArgs = NULL){
 
 observeEvent(input$btAnalysisConfig, {
   # if already tracefiles in tracefiledir show deletion warning
+  hideEl(".batch-load-content")
+  showEl(".batch-load-analysis-content")
   if(length(list.files(traceFileDir)) > 0){
     showEl(session, "#deleteTrace")
   }
@@ -65,14 +67,14 @@ observeEvent(input$btRunPaver, {
   }
   gmswebiter <<- gmswebiter + 1
   noErr <- TRUE
-  scenToFetch <- rv$fetchedScenarios[[1]] %in% sidsToLoad
+  scenToFetch <- batchLoadData[[1]] %in% sidsToLoad
   if(!any(scenToFetch)){
     flog.warn("Paver was attempted to be started while no scenarios were selected.")
     showHideEl(session, "#analysisRunUnknownError", 6000L)
     return()
   }
   tryCatch({
-    exceedsMaxNoSolvers <- hcubeLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[scenToFetch, , drop = FALSE], 
+    exceedsMaxNoSolvers <- hcubeLoad$exceedsMaxNoSolvers(batchLoadData[scenToFetch, , drop = FALSE], 
                                                          input$selPaverAttribs, maxSolversPaver,
                                                          isolate(input$paverExclAttrib))
   }, error = function(e){

@@ -391,6 +391,46 @@ if(buildUI){
               )
             )
     ),
+    tabItem(tabName = "loadResults",
+            fluidRow(
+              box(title = lang$nav$queryBuilder$title, status="primary", 
+                  solidHeader = TRUE, width = 12, style="overflow-x: auto",
+                  tags$div(id = "loadContent",
+                           tags$div(id = "selectorsWrapper"
+                           ),
+                           tags$div(id = "buttonsWrapper", class = "item-or-query",
+                                    actionButton("btNewBlock", label = lang$nav$queryBuilder$orButton)),
+                           tags$div(class = "item-or-query",
+                                    actionButton("btSendQuery", label = lang$nav$queryBuilder$queryButton, 
+                                                 class = "bt-highlight-1")
+                           )
+                  ),
+                  genSpinner(id = "hyperQueryLoad", hidden = TRUE, absolute = FALSE),
+                  tags$div(id = "queryBuilderError", class = "gmsalert gmsalert-error"),
+                  tags$div(style = "min-height: 80px;", dataTableOutput("batchLoadResults")),
+                  tags$div(id = "batchLoadNoData", 
+                           style = "text-align:center;font-size:16px;font-weight:bold;margin:20px;display:none;",
+                           lang$nav$queryBuilder$noData),
+                  tags$div(id = "batchLoadButtons", style = "display:none;padding:30px 0 50px 0;",
+                           tags$div(class = "col-sm-6",
+                                    tags$div(
+                                      actionButton("hcubeLoadSelected", lang$nav$queryBuilder$chooseSelectedButton , 
+                                                   class = "bt-highlight-1"),
+                                      actionButton("hcubeLoadCurrent", lang$nav$queryBuilder$chooseCurrentButton , 
+                                                   class = "bt-highlight-1"),
+                                      actionButton("hcubeLoadAll", lang$nav$queryBuilder$chooseAllButton, 
+                                                   class = "bt-highlight-1")
+                                    )
+                           ),
+                           if(LAUNCHHCUBEMODE)
+                             tags$div(class = "col-sm-6", style = "text-align:right;",
+                                      actionButton("btShowHash",
+                                                   lang$nav$queryBuilder$showHashButton)
+                             )
+                  )
+              )
+            )
+    ),
     tabItem(tabName = "scenarios",
             generateScenarioTabsetPivot(LAUNCHHCUBEMODE),
             tags$div(id = "scen-tab-view", style = if(identical(config$defCompMode, "tab")) "" else "display:none;",
@@ -440,45 +480,6 @@ if(buildUI){
   )
   if(LAUNCHHCUBEMODE){
     tabItemList <- c(tabItemList, list(
-      tabItem(tabName = "loadResults",
-              fluidRow(
-                box(title = lang$nav$hcubeLoad$title, status="primary", 
-                    solidHeader = TRUE, width = 12, style="overflow-x: auto",
-                    tags$div(id = "loadContent",
-                             tags$div(id = "selectorsWrapper"
-                             ),
-                             tags$div(id = "buttonsWrapper", class = "item-or-query",
-                                      actionButton("btNewBlock", label = lang$nav$hcubeLoad$orButton)),
-                             tags$div(class = "item-or-query",
-                                      actionButton("btSendQuery", label = lang$nav$hcubeLoad$queryButton, 
-                                                   class = "bt-highlight-1")
-                             )
-                    ),
-                    genSpinner(id = "hyperQueryLoad", hidden = TRUE, absolute = FALSE),
-                    tags$div(id = "queryBuilderError", class = "gmsalert gmsalert-error"),
-                    tags$div(style = "min-height: 80px;", dataTableOutput("hcubeLoadResults")),
-                    tags$div(id = "hcubeLoadNoData", 
-                             style = "text-align:center;font-size:16px;font-weight:bold;margin:20px;display:none;",
-                             lang$nav$hcubeLoad$noData),
-                    tags$div(id = "hcubeLoadButtons", style = "display:none;padding:30px 0 50px 0;",
-                             tags$div(class = "col-sm-6",
-                                      tags$div(
-                                        actionButton("hcubeLoadSelected", lang$nav$hcubeLoad$chooseSelectedButton , 
-                                                     class = "bt-highlight-1"),
-                                        actionButton("hcubeLoadCurrent", lang$nav$hcubeLoad$chooseCurrentButton , 
-                                                     class = "bt-highlight-1"),
-                                        actionButton("hcubeLoadAll", lang$nav$hcubeLoad$chooseAllButton, 
-                                                     class = "bt-highlight-1")
-                                      )
-                             ),
-                             tags$div(class = "col-sm-6", style = "text-align:right;",
-                                      actionButton("btShowHash",
-                                                   lang$nav$hcubeLoad$showHashButton)
-                             )
-                    )
-                )
-              )
-      ),
       tabItem(tabName = "importData",
               fluidRow(
                 box(title = tagList(lang$nav$hcubeImport$title, 
