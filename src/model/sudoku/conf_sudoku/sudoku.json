@@ -23,16 +23,16 @@
   "saveTraceFile": true,
   "dataRendering": {
     "results": {
-      "outType": "sudoku"
+      "outType": "mirowidget_initial_state"
     },
     "initial_state": {
-      "outType": "sudoku"
+      "outType": "mirowidget_initial_state"
     }
   },
   "inputWidgets": {
     "initial_state": {
       "widgetType": "custom",
-      "rendererName": "sudoku",
+      "rendererName": "mirowidget_initial_state",
       "alias": "Initial state",
       "apiVersion": 2,
       "additionalData": "force_unique_sol",
@@ -51,19 +51,23 @@
   },
   "pageTitle": "Sudoku solver",
   "miroLogFile": "miro.log",
+  "overwriteAliases": {
+    "initial_state": {
+      "newAlias": "initial_state"
+    },
+    "results": {
+      "newAlias": "results"
+    }
+  },
+  "defaultRendererOutput": "miroPivot",
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
-    "highlightCol": true,
-    "highlightRow": true,
-    "columnSorting": true,
     "manualColumnResize": true,
     "contextMenu": {
       "enabled": true,
       "allowRowEdit": true,
-      "allowColEdit": true,
-      "allowReadOnly": false,
-      "allowComments": true
+      "allowColEdit": true
     },
     "height": 700,
     "colWidths": 150

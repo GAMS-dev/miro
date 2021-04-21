@@ -621,7 +621,36 @@ function addArrayDataElWrapper(arrayID, defaults, symbol, cnt = 1) {
   }
 }
 
+function changeThemeConfigMode(darkMode = false) {
+  const customOutputEditor = $('#customOutputFunction');
+  let theme;
+  if (darkMode) {
+    theme = 'ambiance';
+  } else {
+    theme = 'chrome';
+  }
+  if (customOutputEditor.is(':visible')
+    && typeof customOutputEditor.data('aceEditor') !== 'undefined') {
+    customOutputEditor.data('ace-editor').setTheme(`ace/theme/${theme}`);
+  }
+  const customRendererEditor = $('#customRenderFunction');
+  if (customRendererEditor.is(':visible')
+    && typeof customRendererEditor.data('aceEditor') !== 'undefined') {
+    customRendererEditor.data('ace-editor').setTheme(`ace/theme/${theme}`);
+  }
+}
+
+function setColorTheme(darkMode = false) {
+  Shiny.setInputValue('isInDarkMode', darkMode);
+}
+
 $(document).ready(() => {
+  if (typeof window.matchMedia('(prefers-color-scheme: dark)').addEventListener !== 'undefined') {
+    // browser supports listening to matchMedia change
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      changeThemeConfigMode(e.matches);
+    });
+  }
   $(document).on('change', '.must-not-be-empty', function () {
     if ($(this).val() === '') {
       $(this).css({ borderColor: '#F39619' });
@@ -658,6 +687,7 @@ $(document).ready(() => {
       .indexOf(index) === -1);
   });
   Shiny.addCustomMessageHandler('gms-setGAMSSymbols', (data) => {
+    setColorTheme(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
     const symData = data.gamsSymbols;
     ({ lang } = data);
     $.each(symData, (key, val) => {
@@ -680,6 +710,14 @@ $(document).ready(() => {
       inputArrayFactory.destroy(data.arrayID);
     }
     setTimeout(addArrayDataElWrapper, 300, data.arrayID, data.defaults, data.symbol);
+  });
+  $(document).on('shiny:value', (event) => {
+    if (event.target.id === 'preview_custom_renderer') {
+      Shiny.setInputValue('btUpdateCustomRendererPreview', 1, { priority: 'event' });
+    }
+  });
+  Shiny.addCustomMessageHandler('gms-shinySetInputValue', (data) => {
+    setTimeout(() => Shiny.setInputValue(data.id, data.val, { priority: 'event' }), data.timeout);
   });
   Shiny.addCustomMessageHandler('gms-destroyArray', (arrayID) => {
     if (arrayID) {

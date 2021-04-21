@@ -286,7 +286,7 @@ if(is.null(errMsg)){
     errMsg <- paste(errMsg, 
                     sprintf("Can not use 'gdx' as file exchange with GAMS if gdxrrw library is not installed.\n
 Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw-miro) installation in your R library: '%s'.", .libPaths()[1]),
-                    sep = "\n")
+sep = "\n")
   }
   GAMSClArgs <- c(paste0("execMode=", gamsExecMode),
                   paste0('IDCGDXOutput="', MIROGdxOutName, '"'))
@@ -394,7 +394,7 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
                             modelPath)
         }
         if(is.null(errMsg) && any(!file.copy2(file.path(currentModelDir, modelFiles), 
-                                             file.path(modelPath, modelFiles)))){
+                                              file.path(modelPath, modelFiles)))){
           errMsg <- sprintf("Problems copying files from: '%s' to: '%s'. No write permissions?",
                             currentModelDir, modelPath)
         }
@@ -472,13 +472,13 @@ if(is.null(errMsg) && debugMode){
   listOfCustomRenderers <- Set$new()
   requiredPackagesCR <<- NULL
   
-  if(!LAUNCHCONFIGMODE){
-    for(customRendererConfig in c(configGraphsOut, configGraphsIn, config$inputWidgets)){
-      # check whether non standard renderers were defined in graph config
-      if(!is.null(customRendererConfig$rendererName)){
-        customRendererConfig$outType <- customRendererConfig$rendererName
-      }
-      if(any(is.na(match(tolower(customRendererConfig$outType), standardRenderers)))){
+  for(customRendererConfig in c(configGraphsOut, configGraphsIn, config$inputWidgets)){
+    # check whether non standard renderers were defined in graph config
+    if(!is.null(customRendererConfig$rendererName)){
+      customRendererConfig$outType <- customRendererConfig$rendererName
+    }
+    if(any(is.na(match(tolower(customRendererConfig$outType), standardRenderers)))){
+      if(!LAUNCHCONFIGMODE){
         customRendererName <- "render" %+% toupper(substr(customRendererConfig$outType, 1, 1)) %+% 
           substr(customRendererConfig$outType, 2, nchar(customRendererConfig$outType))
         customRendererOutput <- customRendererConfig$outType %+% "Output"
@@ -500,10 +500,10 @@ if(is.null(errMsg) && debugMode){
                            sprintf("No output function for custom renderer function: '%s' was found. Please make sure you define such a function.", 
                                    customRendererName), sep = "\n")
         })
-        # find packages to install and install them
-        if(length(customRendererConfig$packages)){
-          requiredPackagesCR <- c(requiredPackagesCR, customRendererConfig$packages)
-        }
+      }
+      # find packages to install and install them
+      if(length(customRendererConfig$packages)){
+        requiredPackagesCR <- c(requiredPackagesCR, customRendererConfig$packages)
       }
     }
   }
@@ -678,7 +678,7 @@ if(is.null(errMsg)){
   }
   if(LAUNCHCONFIGMODE){
     requiredPackages <- c(requiredPackages, "plotly", "xts", "dygraphs", "leaflet", "chartjs", "sortable",
-                          "leaflet.minicharts", "timevis")
+                          "leaflet.minicharts", "timevis", "shinyAce")
   }else{
     requiredPackages <- c(requiredPackages, 
                           if(identical(installPackage$plotly, TRUE)) "plotly",
@@ -757,9 +757,9 @@ if(is.null(errMsg)){
       gdxio <<- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", 
                                     if(identical(tolower(Sys.info()[["sysname"]]), "windows")) 
                                       file.path("bin", "x64") else "bin"), 
-        c(modelInRaw, modelOut), scalarsFileName,
-        scalarsOutName, scalarEquationsName, scalarEquationsOutName,
-        dropdownAliases, config$textOnlySymbols)
+                          c(modelInRaw, modelOut), scalarsFileName,
+                          scalarsOutName, scalarEquationsName, scalarEquationsOutName,
+                          dropdownAliases, config$textOnlySymbols)
     }
   }, error = function(e){
     flog.error(e)
@@ -997,7 +997,7 @@ if(!is.null(errMsg)){
         inputIdsTmp        <- inputIdsTmp[!is.na(inputIdsTmp)]
         metaDataTmp        <- metaDataTmp[inputIdsTmp]
         modelInTemplateTmp <- modelInTemplateTmp[inputIdsTmp]
-
+        
         tmpDirToRemove     <- character(0L)
         
         if(debugMode){
@@ -1019,6 +1019,7 @@ if(!is.null(errMsg)){
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
           dfClArgs <- NULL
+          viewsFileId <- NULL
           if(debugMode && !forceScenImport){
             dataHash <- digest::digest(file = file.path(miroDataDir, miroDataFile),
                                        algo = "sha1", serialize = FALSE)
@@ -1110,6 +1111,11 @@ if(!is.null(errMsg)){
             miroDataFile <- "data.gdx"
           }else{
             views <- NULL
+            if(is.null(viewsFileId)){
+              scenName <- tools::file_path_sans_ext(miroDataFile)
+              viewsFileId <- match(paste0(tolower(scenName), "_views.json"),
+                                   tolower(miroDataFilesRaw))
+            }
             if(!is.na(viewsFileId)){
               flog.debug("Found view data for scenario: %s.", scenName)
               views <- Views$new(names(modelIn),
@@ -1319,7 +1325,7 @@ if(!is.null(errMsg)){
                                                      forbiddenFNames = c(if(identical(config$fileExchange, "gdx")) 
                                                        c(MIROGdxInName, MIROGdxOutName) else 
                                                          paste0(c(names(modelOut), inputDsNames), ".csv"),
-                                                                         paste0(modelNameRaw, c(".log", ".lst")))),
+                                                       paste0(modelNameRaw, c(".log", ".lst")))),
                                             workDir,
                                             names(modelIn),
                                             names(modelOut),

@@ -1,9 +1,9 @@
-tspOutput <- function(id, height, options, path){
+mirowidget_iilocdataOutput <- function(id, height, options, path){
   ns <- NS(id)
   leaflet::leafletOutput(ns("tsp_input"), width = "100%", height = 700)
 }
 
-renderTsp <- function(input, output, session, data, options = NULL, path = NULL, ...){
+renderMirowidget_iilocdata <- function(input, output, session, data, options = NULL, path = NULL, ...){
   markerCnt <- 1L
   
   rv <- reactiveValues(markerPositions = list)

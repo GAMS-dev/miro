@@ -19,6 +19,18 @@ pipeline {
             description: 'Build CI image?',
             name: 'BUILD_CI')
         booleanParam(
+            defaultValue: true,
+            description: 'Build Linux?',
+            name: 'BUILD_LINUX')
+        booleanParam(
+            defaultValue: true,
+            description: 'Build Windows?',
+            name: 'BUILD_WIN')
+        booleanParam(
+            defaultValue: true,
+            description: 'Build Mac?',
+            name: 'BUILD_MAC')
+        booleanParam(
             defaultValue: false,
             description: 'Force release (even if tests fail)?',
             name: 'FORCE_RELEASE')
@@ -55,6 +67,10 @@ pipeline {
         stage('Build') {
             parallel {
                 stage ('linux') {
+                    when {
+                        beforeAgent true
+                        expression { params.BUILD_LINUX }
+                    }
                     agent { label 'docker' }
                     steps {
                         sh '''
@@ -121,6 +137,10 @@ pipeline {
                     }
                 }
                 stage ('windowsX64') {
+                    when {
+                        beforeAgent true
+                        expression { params.BUILD_WIN }
+                    }
                     agent { label 'windowsX64' }
                     steps {
                         withCredentials([certificate(aliasVariable: '', credentialsId: '302df092-b329-47b9-8f7a-605da075126d', keystoreVariable: 'WIN_CERT_FILE', 
@@ -138,6 +158,10 @@ pipeline {
                     }
                 }
                 stage ('macos') {
+                    when {
+                        beforeAgent true
+                        expression { params.BUILD_MAC }
+                    }
                     agent { label 'macos' }
                     steps {
                         sh '''
@@ -160,6 +184,10 @@ pipeline {
             }
             parallel {
                 stage ('windowsX64') {
+                    when {
+                        beforeAgent true
+                        expression { params.BUILD_WIN }
+                    }
                     agent { label 'windowsX64' }
                     options {
                         skipDefaultCheckout()
@@ -181,6 +209,10 @@ pipeline {
                     }
                 }
                 stage ('macos') {
+                    when {
+                        beforeAgent true
+                        expression { params.BUILD_MAC }
+                    }
                     agent { label 'macos' }
                     options {
                         skipDefaultCheckout()
@@ -211,6 +243,10 @@ pipeline {
         stage('Deploy') {
             parallel {
                 stage ('linux') {
+                    when {
+                        beforeAgent true
+                        expression { params.BUILD_LINUX }
+                    }
                     agent { label 'docker' }
                     options {
                         skipDefaultCheckout()
@@ -250,6 +286,10 @@ pipeline {
                     }
                 }
                 stage ('windowsX64') {
+                    when {
+                        beforeAgent true
+                        expression { params.BUILD_WIN }
+                    }
                     agent { label 'windowsX64' }
                     options {
                         skipDefaultCheckout()
@@ -259,6 +299,10 @@ pipeline {
                     }
                 }
                 stage ('macos') {
+                    when {
+                        beforeAgent true
+                        expression { params.BUILD_MAC }
+                    }
                     agent { label 'macos' }
                     options {
                         skipDefaultCheckout()

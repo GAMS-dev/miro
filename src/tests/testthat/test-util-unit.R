@@ -37,24 +37,29 @@ test_that("getDependenciesDropdown works", {
   expect_identical(getDependenciesDropdown(c("$s$", "_"), modelIn1, "actscen"), 
                    list(fw = list(rdata = list("s"), pdata = list("s")), 
                         bw = list(rdata = list("s"), pdata = list("s")), 
+                        hasDep = TRUE,
                         strings = "_"))
   expect_identical(getDependenciesDropdown(c("$rdata$s$", "_", "def"), modelIn1, "actscen"), 
                    list(fw = list(rdata = list("s")), 
-                        bw = list(rdata = list("s")), 
+                        bw = list(rdata = list("s")),
+                        hasDep = TRUE,
                         strings = c("_", "def")))
   expect_identical(getDependenciesDropdown(c("$rdata$s", "_", "def"), modelIn1, "actscen"), 
                    list(fw = list(rdata = list("s")), 
                         bw = list(),
+                        hasDep = TRUE,
                         strings = c("_", "def")))
   expect_identical(getDependenciesDropdown(c("pdata$s$", "_", "def"), modelIn1, "actscen"), 
                    list(fw = list(), 
                         bw = list(pdata = list("s")),
+                        hasDep = TRUE,
                         strings = c("_", "def")))
   expect_error(getDependenciesDropdown(c("xdata$s$", "_", "def"), modelIn1, "actscen"))
   expect_error(getDependenciesDropdown(c("$xdata", "_", "def"), modelIn1, "actscen"))
   expect_identical(getDependenciesDropdown(c("pdata$$s$$", "_", "def"), modelIn1, "actscen"), 
                    list(fw = list(), 
                         bw = list(),
+                        hasDep = FALSE,
                         strings = c("pdata$s$", "_", "def")))
 })
 
