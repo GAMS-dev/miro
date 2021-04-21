@@ -32,8 +32,6 @@ test:
       - .yarn
   artifacts:
     when: always
-    paths:
-      - src/tests/shinytest/*-current/*
     reports:
       junit: src/tests/testthat/test-out.xml
   rules:
