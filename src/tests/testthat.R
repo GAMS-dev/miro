@@ -34,5 +34,5 @@ reporter <- MultiReporter$new(list(
 stopOnFailure <- identical(commandArgs(trailingOnly=TRUE), "--stop")
 testDir <- file.path(getwd(), "tests")
 
-test_file("tests/testthat/test-load-compare-scen-ui.R", reporter = reporter)
-#test_dir("tests/testthat", reporter = reporter, stop_on_failure = stopOnFailure)
+#test_file("tests/testthat/test-examples-solve-ui.R", reporter = reporter)
+test_dir("tests/testthat", reporter = reporter, stop_on_failure = stopOnFailure)
