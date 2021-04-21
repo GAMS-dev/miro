@@ -264,7 +264,7 @@ observeEvent(input$btRefreshComp, {
     if(any(sbScenId)){
       scriptOutput$loadResultsBase(scriptOutput$getResults(), tabsetId)
     }else if(length(sidsToLoad)){
-      scriptOutput$loadResultsBase(db$loadScriptResults(sidsToLoad), tabsetId)
+      scriptOutput$loadResultsBase(db$loadScriptResults(sidsToLoad)[[1]], tabsetId)
     }
   }
   sheetNames <- getSheetnamesByTabsetId(tabsetId)
