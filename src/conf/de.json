@@ -136,6 +136,17 @@
       "chooseAllButton":"Wähle alle",
       "orButton": "ODER",
       "andButton": "UND",
+      "operators":{
+        "is": "ist",
+        "notis": "ist nicht",
+        "contains": "enthält",
+        "notcontains": "enthält nicht",
+        "startswith": "beginnt mit",
+        "endswith": "endet mit",
+        "exists": "existiert",
+        "notexists": "existiert nicht",
+        "between": "zwischen"
+      },
       "queryButton": "Ergebnisse abrufen",
       "showHashDialog":{
         "title": "Szenario Hash",

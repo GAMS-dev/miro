@@ -136,6 +136,17 @@
       "chooseAllButton":"所有场景",
       "orButton":"或",
       "andButton":"和",
+      "operators":{
+        "is": "等于",
+        "notis": "不等于",
+        "contains": "包含",
+        "notcontains": "不包含",
+        "startswith": "以开始",
+        "endswith": "以结束",
+        "exists": "存在",
+        "notexists": "不存在",
+        "between": "间"
+      },
       "queryButton":"获取结果",
       "showHashDialog":{
         "title":"场景的哈希值",

@@ -136,6 +136,17 @@
       "chooseAllButton":"Choose all",
       "orButton": "OR",
       "andButton": "AND",
+      "operators":{
+        "is": "is",
+        "notis": "is not",
+        "contains": "contains",
+        "notcontains": "doesn't contain",
+        "startswith": "starts with",
+        "endswith": "ends with",
+        "exists": "exists",
+        "notexists": "doesn't exist",
+        "between": "between"
+      },
       "queryButton": "Fetch results",
       "showHashDialog":{
         "title": "Scenario hash",
