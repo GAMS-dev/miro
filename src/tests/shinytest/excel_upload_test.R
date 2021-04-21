@@ -14,6 +14,7 @@ if(!identical(Sys.getenv("GMSMODELNAME"), "pickstock")){
                screenshot = TRUE)
 }
 app$setInputs(btImport = "click")
+Sys.sleep(0.5)
 app$setInputs(tb_importData = "tb_importData_local")
 app$uploadFile(localInput = paste0("../data/", Sys.getenv("GMSMODELNAME"), ".xlsx"))
 Sys.sleep(0.5)
@@ -23,9 +24,9 @@ Sys.sleep(1)
 app$snapshot(items = list(input = paste0("slider_", c(widgetSheetId, widgetSheetId + 1L))), 
              screenshot = TRUE)
 app$setInputs(btSave = "click")
-Sys.sleep(0.5)
-app$findElement(".modal-footer .bt-gms-confirm")$click()
 Sys.sleep(1)
+app$findElement(".modal-footer .bt-gms-confirm")$click()
+Sys.sleep(2)
 if(identical(Sys.getenv("GMSMODELNAME"), "pickstock")){
   app$findElement("#btRemove1")$click()
   Sys.sleep(1)
