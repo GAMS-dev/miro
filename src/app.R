@@ -1512,92 +1512,13 @@ if(!is.null(errMsg)){
       scriptOutput <- NULL
       
       if(LAUNCHHCUBEMODE){
-        if(length(config$scripts)){
+        if(length(config$scripts$hcube)){
           scriptOutput <- ScriptOutput$new(session, file.path(workDir, paste0("scripts_", modelName)), 
                                            config$scripts, lang$nav$scriptOutput$errMsg,
                                            gamsSysDir = gamsSysDir)
         }
-      }else{
-        if(length(config$scripts$base)){
-          scriptOutput <- ScriptOutput$new(session, file.path(workDir, paste0("scripts_", modelName)),
-                                           config$scripts, lang$nav$scriptOutput$errMsg,
-                                           gamsSysDir = gamsSysDir)
-          observeEvent(input$runScript, {
-            scriptId <- suppressWarnings(as.integer(input$runScript))
-            if(is.na(scriptId) || scriptId < 1 || 
-               scriptId > length(config$scripts$base)){
-              flog.error("A script with id: '%s' was attempted to be executed. However, this script does not exist. Looks like an attempt to tamper with the app!",
-                         input$runScript)
-              return()
-            }
-            if(scriptOutput$isRunning(scriptId)){
-              flog.debug("Button to interrupt script: '%s' clicked.", scriptId)
-              scriptOutput$interrupt(scriptId)
-              hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-              hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
-              showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-              
-              showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"), 
-                               lang$nav$scriptOutput$runButton)
-              return()
-            }
-            flog.debug("Button to execute script: '%s' clicked.", scriptId)
-            
-            if(!dir.exists(paste0(workDir, .Platform$file.sep, "scripts_", modelName))){
-              if(dir.exists(paste0(currentModelDir, .Platform$file.sep, "scripts_", modelName))){
-                if(!file.copy2(paste0(currentModelDir, .Platform$file.sep, "scripts_", modelName),
-                               paste0(workDir, .Platform$file.sep, "scripts_", modelName))){
-                  flog.error("Problems copying files from: '%s' to: '%s'.",
-                             paste0(workDir, .Platform$file.sep, "scripts_", modelName),
-                             paste0(currentModelDir, .Platform$file.sep, "scripts_", modelName))
-                  hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-                  hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-                  return(scriptOutput$sendContent(lang$errMsg$unknownError, scriptId, isError = TRUE))
-                }
-              }else{
-                flog.info("No 'scripts_%s' directory was found. Did you forget to include it in the model assembly file ('%s_files.txt')?",
-                          modelName, modelName)
-                hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-                showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-                return(scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$noScript, scriptId, isError = TRUE))
-              }
-            }
-            showEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-            hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
-            hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-            
-            errMsg <- NULL
-            
-            tryCatch({
-              scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE), modelInFileNames)
-              gdxio$wgdx(file.path(workDir, paste0("scripts_", modelName), "data.gdx"), 
-                         scenData$get("sb"), squeezeZeros = 'n')
-            }, error = function(e){
-              flog.error("Problems writing gdx file for script: '%s'. Error message: '%s'.", 
-                         scriptId, conditionMessage(e))
-              errMsg <<- sprintf(lang$errMsg$fileWrite$desc, "data.gdx")
-              hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-              hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-              scriptOutput$sendContent(errMsg, scriptId, isError = TRUE)
-            })
-            if(!is.null(errMsg)){
-              return()
-            }
-            tryCatch({
-              scriptOutput$run(scriptId)
-              showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"), 
-                               lang$nav$scriptOutput$interruptButton)
-            }, error = function(e){
-              flog.info("Script: '%s' crashed during startup. Error message: '%s'.",
-                        scriptId, conditionMessage(e))
-              scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$crash, scriptId, 
-                                       hcube = FALSE, isError = TRUE)
-            })
-          })
-          observeEvent(input$outputGenerated,{
-            noOutputData <<- FALSE
-          })
-        }
+      }else if(length(config$scripts$base) || length(config$scripts$hcube)){
+        source("./modules/analysis_scripts.R", local = TRUE)
       }
       
       if(!dir.exists(workDir) && !dir.create(workDir, recursive = TRUE)){

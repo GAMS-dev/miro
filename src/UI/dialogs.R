@@ -903,7 +903,7 @@ showBatchLoadDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver 
   
   if(length(customScripts)){
     analysisScriptsDD <- selectInput("selHcubeAnalysisScript", lang$nav$dialogBatchLoad$selAnalysisScript, 
-                                     setNames(vapply(customScripts, "[[", character(1L), "id", USE.NAMES = FALSE),
+                                     setNames(seq_along(customScripts),
                                               vapply(customScripts, "[[", character(1L), "title", USE.NAMES = FALSE)),
                                      multiple = FALSE, width = "100%")
     if(length(analysisTabset)){
@@ -927,108 +927,124 @@ showBatchLoadDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver 
       analysisTabset <- analysisScriptsDD
     }
   }
-  showModal(modalDialog(
-    title = lang$nav$dialogBatchLoad$title,
-    tags$div(class = "gmsalert gmsalert-error", id = "paverRunNoTrc", 
-             lang$nav$dialogBatchLoad$noTrc),
-    tags$div(class = "gmsalert gmsalert-error", id = "analysisRunScriptRunning", 
-             lang$nav$dialogBatchLoad$analysisRunScriptRunning),
-    tags$div(class = "gmsalert gmsalert-error", id = "analysisRunUnknownError", 
-             lang$errMsg$unknownError),
-    tags$div(class = "gmsalert gmsalert-error", id = "configPaverMaxSolversErr", 
-             sprintf(lang$nav$dialogBatchLoad$tooManySolvers, 
-                     maxSolversPaver)),
-    tagList(
-      tags$div(class = "gmsalert gmsalert-success", id = "batchRemoveSuccess",
-               lang$nav$dialogBatchLoad$removeSuccess),
-      tags$div(class = "gmsalert gmsalert-error", id = "batchRemoveError",
-               lang$errMsg$unknownError),
-      tags$div(class = "batch-load-remove-content", style = "display:none;",
-               sprintf(lang$nav$dialogBatchLoad$removeConfirm, noScenSelected)
-      )
-    ),
-    tags$div(class = "batch-load-content",
-             if(length(sidsToLoad) <= maxConcurentLoad){
-               lang$nav$dialogBatchLoad$selectMethod
-             }else{
-               sprintf(lang$nav$dialogBatchLoad$maxScenWarning1, maxConcurentLoad) %+% 
-                 lang$nav$dialogBatchLoad$maxScenWarning2
-             }
-    ),
-    tags$div(style = "display:none", class = "batch-load-dl-content",
-             selectInput("selExportFiletype", lang$nav$dialogBatchLoad$selExportType, 
-                         c("gdx", "csv"), width = "100%")),
-    tags$div(class = "batch-load-sb-content", style = "display:none;",
-             lang$nav$dialogImport$descOverwriteInput
-    ),
-    if(length(analysisTabset))
-      tags$div(style = "display:none;", class = "batch-load-analysis-content",
-               analysisTabset
-               
-      ),
-    footer = tagList(
-      modalButton(lang$nav$dialogImport$cancelButton),
-      actionButton("btBatchRemove",
-                   lang$nav$dialogBatchLoad$removeButton,
-                   class = "bt-remove batch-load-content batch-load-remove-content"),
-      tags$button(id = "btBatchDownload", class = "btn btn-default batch-load-content",
-                  type = "button", onclick = "$('.batch-load-content').hide();$('.batch-load-dl-content').show();Shiny.bindAll();",  
-                  lang$nav$dialogBatchLoad$downloadButton),
-      downloadButton("btBatchDownloadConfirm", style = "display:none", class = "batch-load-dl-content",
-                     lang$nav$dialogBatchLoad$downloadButton),
-      if(length(analysisTabset)){
-        tagList(actionButton("btAnalysisConfig", class = "batch-load-content",
-                             lang$nav$dialogBatchLoad$paverButton),
-                tags$div(style = "display:none;", class = "batch-load-analysis-content",
-                         actionButton("btRunPaver", lang$nav$dialogBatchLoad$runPaverButton, 
-                                      class = "bt-highlight-1 bt-gms-confirm batch-load-content", 
-                                      style = if(length(customScripts)) "display:none;"),
-                         actionButton("btRunHcubeScript", lang$nav$dialogBatchLoad$runScriptButton, 
-                                      class = "bt-highlight-1 bt-gms-confirm", 
-                                      style = if(!length(customScripts)) "display:none;")))
-      },
-      if(identical(length(sidsToLoad), 1L)){
-        tagList(actionButton("btBatchLoadSb", class = "batch-load-content",
-                             lang$nav$dialogBatchLoad$interactiveButtonSb),
-                actionButton("btBatchLoadSbOverwrite",
-                             class = "bt-highlight-1 bt-gms-confirm batch-load-sb-content",
-                             style = "display:none",
-                             lang$nav$dialogBatchLoad$interactiveButtonSb))
-      },
-      if(length(sidsToLoad) <= maxConcurentLoad){
-        tags$div(class = "btn-group", class = "batch-load-content",
-                 tags$button(class = "btn btn-default", type = "button", id = "btBatchCompare", 
-                             style = "margin:6px 0px 6px 5px;border-right:0px;",
-                             onclick = "Shiny.setInputValue('btBatchCompare','tab',{priority:'event'});", 
-                             lang$nav$dialogBatchLoad$interactiveButtonTab),
-                 tags$button(class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
-                             style = "margin:6px 0px 6px 0;display:block;",
-                             tags$span(class = "caret"),
-                             tags$span(class = "sr-only", "toggle dropdown")),
-                 tags$ul(class = "dropdown-menu", role = "menu", style = "margin-left: 5px;",
-                         tags$li(
-                           tags$a(href = "#",
-                                  onclick = paste0("Miro.changeDDButtonEvent('", 
-                                                   htmltools::htmlEscape(lang$nav$dialogBatchLoad$interactiveButtonTab), 
-                                                   "', '#btBatchCompare', 'btBatchCompare', 'tab');"),
-                                  lang$nav$dialogBatchLoad$interactiveButtonTab)),
-                         tags$li(
-                           tags$a(href = "#",
-                                  onclick = paste0("Miro.changeDDButtonEvent('", 
-                                                   htmltools::htmlEscape(lang$nav$dialogBatchLoad$interactiveButtonPivot), 
-                                                   "', '#btBatchCompare', 'btBatchCompare', 'pivot');"),
-                                  lang$nav$dialogBatchLoad$interactiveButtonPivot)),
-                         if(length(sidsToLoad) <= 2L){
-                           tags$li(
-                             tags$a(href = "#",
-                                    onclick = paste0("Miro.changeDDButtonEvent('", 
-                                                     htmltools::htmlEscape(lang$nav$dialogBatchLoad$interactiveButtonSplit), 
-                                                     "', '#btBatchCompare', 'btBatchCompare', 'split');"),
-                                    lang$nav$dialogBatchLoad$interactiveButtonSplit))
-                         }))
-      }),
-    fade = TRUE, easyClose = TRUE, size = "m"
-  ))
+  showModal(
+    tags$div(
+      id = "shiny-modal", class = "modal fade", tabindex = "-1",
+      `data-backdrop` = "static", `data-keyboard` = "false",
+      tags$div(
+        id = "batchLoadModal", class = "modal-dialog",
+        tags$div(
+          class = "modal-content",
+          tags$div(class = "modal-header",
+                   tags$h4(class = "modal-title", lang$nav$dialogBatchLoad$title)),
+          tags$div(class = "modal-body",
+                   tags$div(class = "gmsalert gmsalert-error", id = "paverRunNoTrc", 
+                            lang$nav$dialogBatchLoad$noTrc),
+                   tags$div(class = "gmsalert gmsalert-error", id = "analysisRunScriptRunning", 
+                            lang$nav$dialogBatchLoad$analysisRunScriptRunning),
+                   tags$div(class = "gmsalert gmsalert-error", id = "analysisRunUnknownError", 
+                            lang$errMsg$unknownError),
+                   tags$div(class = "gmsalert gmsalert-error", id = "configPaverMaxSolversErr", 
+                            sprintf(lang$nav$dialogBatchLoad$tooManySolvers, 
+                                    maxSolversPaver)),
+                   tagList(
+                     tags$div(class = "gmsalert gmsalert-success", id = "batchRemoveSuccess",
+                              lang$nav$dialogBatchLoad$removeSuccess),
+                     tags$div(class = "gmsalert gmsalert-error", id = "batchRemoveError",
+                              lang$errMsg$unknownError),
+                     tags$div(class = "batch-load-remove-content", style = "display:none;",
+                              sprintf(lang$nav$dialogBatchLoad$removeConfirm, noScenSelected)
+                     )
+                   ),
+                   tags$div(class = "batch-load-content",
+                            if(length(sidsToLoad) <= maxConcurentLoad){
+                              lang$nav$dialogBatchLoad$selectMethod
+                            }else{
+                              sprintf(lang$nav$dialogBatchLoad$maxScenWarning1, maxConcurentLoad) %+% 
+                                lang$nav$dialogBatchLoad$maxScenWarning2
+                            }
+                   ),
+                   tags$div(style = "display:none", class = "batch-load-dl-content",
+                            selectInput("selExportFiletype", lang$nav$dialogBatchLoad$selExportType, 
+                                        c("gdx", "csv"), width = "100%")),
+                   tags$div(class = "batch-load-sb-content", style = "display:none;",
+                            lang$nav$dialogImport$descOverwriteInput
+                   ),
+                   if(length(analysisTabset)){
+                     tagList(
+                       tags$div(style = "display:none;",
+                                class = "batch-load-content batch-load-analysis-content",
+                                analysisTabset),
+                       tags$div(id = "batchLoadAnalysisWrapper",
+                                style = "display:none;", class = "batch-load-script-content",
+                                genSpinner(id = "batchLoadAnalysisSpinner", absolute = FALSE))
+                     )
+                   }),
+          tags$div(class = "modal-footer",
+                   actionButton("btBatchLoadCancel", lang$nav$dialogImport$cancelButton),
+                   actionButton("btBatchRemove",
+                                lang$nav$dialogBatchLoad$removeButton,
+                                class = "bt-remove batch-load-content batch-load-remove-content"),
+                   tags$button(id = "btBatchDownload", class = "btn btn-default batch-load-content",
+                               type = "button", onclick = "$('.batch-load-content').hide();$('.batch-load-dl-content').show();Shiny.bindAll();",  
+                               lang$nav$dialogBatchLoad$downloadButton),
+                   downloadButton("btBatchDownloadConfirm", style = "display:none", class = "batch-load-dl-content",
+                                  lang$nav$dialogBatchLoad$downloadButton),
+                   if(length(analysisTabset)){
+                     tagList(actionButton("btAnalysisConfig", class = "batch-load-content",
+                                          lang$nav$dialogBatchLoad$paverButton),
+                             tags$div(style = "display:none;",
+                                      class = "batch-load-content batch-load-analysis-content",
+                                      actionButton("btRunPaver", lang$nav$dialogBatchLoad$runPaverButton, 
+                                                   class = "bt-highlight-1 bt-gms-confirm", 
+                                                   style = if(length(customScripts)) "display:none;"),
+                                      actionButton("btRunHcubeScript", lang$nav$dialogBatchLoad$runScriptButton, 
+                                                   class = "bt-highlight-1 bt-gms-confirm", 
+                                                   style = if(!length(customScripts)) "display:none;")),
+                             downloadButton("btDownloadBatchLoadScript",
+                                            lang$nav$dialogBatchLoad$downloadAnalysisButton,
+                                            style = "display:none"))
+                   },
+                   if(identical(length(sidsToLoad), 1L)){
+                     tagList(actionButton("btBatchLoadSb", class = "batch-load-content",
+                                          lang$nav$dialogBatchLoad$interactiveButtonSb),
+                             actionButton("btBatchLoadSbOverwrite",
+                                          class = "bt-highlight-1 bt-gms-confirm batch-load-sb-content",
+                                          style = "display:none",
+                                          lang$nav$dialogBatchLoad$interactiveButtonSb))
+                   },
+                   if(length(sidsToLoad) <= maxConcurentLoad){
+                     tags$div(class = "btn-group", class = "batch-load-content",
+                              tags$button(class = "btn btn-default", type = "button", id = "btBatchCompare", 
+                                          style = "margin:6px 0px 6px 5px;border-right:0px;",
+                                          onclick = "Shiny.setInputValue('btBatchCompare','tab',{priority:'event'});", 
+                                          lang$nav$dialogBatchLoad$interactiveButtonTab),
+                              tags$button(class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
+                                          style = "margin:6px 0px 6px 0;display:block;",
+                                          tags$span(class = "caret"),
+                                          tags$span(class = "sr-only", "toggle dropdown")),
+                              tags$ul(class = "dropdown-menu", role = "menu", style = "margin-left: 5px;",
+                                      tags$li(
+                                        tags$a(href = "#",
+                                               onclick = paste0("Miro.changeDDButtonEvent('", 
+                                                                htmltools::htmlEscape(lang$nav$dialogBatchLoad$interactiveButtonTab), 
+                                                                "', '#btBatchCompare', 'btBatchCompare', 'tab');"),
+                                               lang$nav$dialogBatchLoad$interactiveButtonTab)),
+                                      tags$li(
+                                        tags$a(href = "#",
+                                               onclick = paste0("Miro.changeDDButtonEvent('", 
+                                                                htmltools::htmlEscape(lang$nav$dialogBatchLoad$interactiveButtonPivot), 
+                                                                "', '#btBatchCompare', 'btBatchCompare', 'pivot');"),
+                                               lang$nav$dialogBatchLoad$interactiveButtonPivot)),
+                                      if(length(sidsToLoad) <= 2L){
+                                        tags$li(
+                                          tags$a(href = "#",
+                                                 onclick = paste0("Miro.changeDDButtonEvent('", 
+                                                                  htmltools::htmlEscape(lang$nav$dialogBatchLoad$interactiveButtonSplit), 
+                                                                  "', '#btBatchCompare', 'btBatchCompare', 'split');"),
+                                                 lang$nav$dialogBatchLoad$interactiveButtonSplit))
+                                      }))}))),
+      tags$script("$('#shiny-modal').modal().focus();")))
 }
 # Hypercube job import module
 showManualJobImportDialog <- function(){

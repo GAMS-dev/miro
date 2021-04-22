@@ -514,3 +514,16 @@ observeEvent(input$btBatchRemove, {
     hcubeRemoveConfirmed <<- TRUE
   }
 })
+
+observeEvent(input$btBatchLoadCancel, {
+  flog.trace("Close batch load dialog button clicked.")
+  if(!LAUNCHHCUBEMODE && length(config$scripts$hcube) &&
+     any(scriptOutput$isRunning())){
+    for(script in config$scripts$hcube){
+      if(scriptOutput$isRunning(script$id)){
+        scriptOutput$interrupt(script$id)
+      }
+    }
+  }
+  removeModal()
+})
