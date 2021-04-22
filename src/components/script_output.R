@@ -14,12 +14,14 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
                                             private$scriptEnv[["PATH"]])
     }
   },
-  isRunning = function(id = NULL){
-    if(is.null(id)){
+  isRunning = function(scriptId = NULL){
+    if(is.null(scriptId)){
       return(length(private$activeScripts) > 0L)
     }
-    scriptId <- paste0("script_", id)
     return(scriptId %in% names(private$activeScripts))
+  },
+  getRunningScriptIds = function(){
+    return(names(private$activeScripts))
   },
   hasResults = function(scriptId = NULL){
     if(is.null(scriptId)){
@@ -192,7 +194,7 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
               is.character(scriptId), length(scriptId) == 1L)
     if(hcube){
       outputFile <- private$hcConfig[[id]]$outputFile
-      parseMarkdown <- identical(private$config[[id]]$markdown, TRUE)
+      parseMarkdown <- identical(private$hcConfig[[id]]$markdown, TRUE)
     }else{
       outputFile <- private$config[[id]]$outputFile
       parseMarkdown <- identical(private$config[[id]]$markdown, TRUE)
