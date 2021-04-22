@@ -1,5 +1,5 @@
-showEl <- function(session, id){
-  session$sendCustomMessage("gms-showEl", id)
+showEl <- function(session, id, inline = FALSE){
+  session$sendCustomMessage("gms-showEl", list(id = id, inline = inline))
 }
 showLoadingScreen <- function(session, delay){
   session$sendCustomMessage("gms-showLoadingScreen", delay)

@@ -374,13 +374,19 @@ $(document).ready(() => {
   Shiny.addCustomMessageHandler('gms-hideLoadingScreen', (e) => { // eslint-disable-line no-unused-vars
     loadingScreen.hide();
   });
-  Shiny.addCustomMessageHandler('gms-showEl', (id) => {
-    if (isInputEl(id)) {
-      $(id).closest('.shiny-input-container').show();
+  Shiny.addCustomMessageHandler('gms-showEl', (data) => {
+    let el;
+    if (isInputEl(data.id)) {
+      el = $(data.id).closest('.shiny-input-container');
     } else {
-      $(id).show();
+      el = $(data.id);
     }
-    $(id).trigger('shown');
+    if (data.inline) {
+      el.css('display', 'inline-block');
+    } else {
+      el.show();
+    }
+    $(data.id).trigger('shown');
   });
   Shiny.addCustomMessageHandler('gms-changeHeightEl', (data) => {
     if (data.delay != null) {
