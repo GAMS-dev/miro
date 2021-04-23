@@ -218,10 +218,21 @@ if(is.null(errMsg)){
     load(rSaveFilePath)
     if(exists("dbSchema")){
       # legacy app, need to convert to new format
-      dbSchemaModel <- dbSchema$tabName[-seq_len(6)]
+      dbSchemaModel <- substring(dbSchema$tabName[-seq_len(6)],
+                                 nchar(gsub("_", "", modelName, fixed = TRUE)) + 2L)
       dbSchemaModel <- list(schema = setNames(lapply(seq_along(dbSchemaModel), function(i){
         if(dbSchemaModel[i] %in% c(scalarsFileName, scalarsOutName)){
           return(NA)
+        }
+        if(LAUNCHHCUBEMODE){
+          if(i <= length(modelOut)){
+            el <- modelOut[[i]]
+          }else{
+            el <- modelIn[[i - length(modelOut)]]
+          }
+          if(isTRUE(el$dropdown$single) || isTRUE(el$dropdown$checkbox)){
+            return(NA)
+          }
         }
         list(tabName = dbSchemaModel[i],
              colNames = dbSchema$colNames[[i + 6L]],
