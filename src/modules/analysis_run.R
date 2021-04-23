@@ -36,8 +36,9 @@ genPaverArgs <- function(traceFilenames, clArgs = NULL){
 
 observeEvent(input$btAnalysisConfig, {
   # if already tracefiles in tracefiledir show deletion warning
-  hideEl(".batch-load-content")
-  showEl(".batch-load-analysis-content")
+  hideEl(session, ".batch-load-content")
+  showEl(session, ".batch-load-analysis-content")
+  showEl(session, ".batch-load-analysis-footer", inline = TRUE)
   if(length(list.files(traceFileDir)) > 0){
     showEl(session, "#deleteTrace")
   }
