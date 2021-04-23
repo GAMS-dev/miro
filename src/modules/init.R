@@ -421,6 +421,10 @@ if(is.null(errMsg)){
         modelIn[[i]]$pivotCols  <- widgetConfig$pivotCols
         widgetConfig$pivotCols  <- NULL
       }
+      if(!is.null(widgetConfig[["fixedColumnsLeft"]])){
+        modelIn[[i]]$fixedColumnsLeft  <- widgetConfig$fixedColumnsLeft
+        widgetConfig$fixedColumnsLeft  <- NULL
+      }
       if(!is.null(widgetConfig[["colWidths"]])){
         modelIn[[i]]$colWidths  <- widgetConfig$colWidths
         widgetConfig$colWidths  <- NULL

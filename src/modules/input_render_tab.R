@@ -430,7 +430,7 @@ lapply(modelInTabularData, function(sheet){
                      manualColumnResize = hotOptions$manualColumnResize, 
                      colWidths = if(length(modelIn[[i]]$colWidths))
                        modelIn[[i]]$colWidths else hotOptions$colWidths, 
-                     fixedColumnsLeft = hotOptions$fixedColumnsLeft)
+                     fixedColumnsLeft = modelIn[[i]]$fixedColumnsLeft)
       for(dropdownCol in names(modelIn[[i]]$dropdownCols)){
         colSourceConfig <- modelIn[[i]]$dropdownCols[[dropdownCol]]
         k <- match(colSourceConfig$symbol, names(modelIn))
