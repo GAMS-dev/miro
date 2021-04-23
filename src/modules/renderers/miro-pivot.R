@@ -57,7 +57,9 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
   indices <- getIndexLists(unassignedSetIndices, options)
   
   aggregationFunctions <- if(identical(options[["_metadata_"]]$symtype, "set"))
-    setNames("count", lang$renderers$miroPivot$aggregationFunctions$count)
+    setNames(c("count", "min"),
+             c(lang$renderers$miroPivot$aggregationFunctions$count,
+               lang$renderers$miroPivot$aggregationFunctions$min))
   else
     setNames(c("sum", "count", "mean", "median", "min", "max"), 
              c(lang$renderers$miroPivot$aggregationFunctions$sum,
@@ -166,18 +168,26 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                     )),
            sortable_js(ns("filterIndexList"), 
                        options = sortable_options(group = ns("indices"), supportPointer = FALSE,
+                                                  multiDrag = TRUE,
+                                                  selectedClass = "drop-index-item-selected",
                                                   onLoad = sortable_js_capture_input(ns("filterIndexList")),
                                                   onSort = sortable_js_capture_input(ns("filterIndexList")))),
            sortable_js(ns("rowIndexList"), 
                        options = sortable_options(group = ns("indices"), supportPointer = FALSE,
+                                                  multiDrag = TRUE,
+                                                  selectedClass = "drop-index-item-selected",
                                                   onLoad = sortable_js_capture_input(ns("rowIndexList")),
                                                   onSort = sortable_js_capture_input(ns("rowIndexList")))),
            sortable_js(ns("colIndexList"), 
                        options = sortable_options(group = ns("indices"), supportPointer = FALSE, direction = "vertical", 
+                                                  multiDrag = TRUE,
+                                                  selectedClass = "drop-index-item-selected",
                                                   onLoad = sortable_js_capture_input(ns("colIndexList")),
                                                   onSort = sortable_js_capture_input(ns("colIndexList")))),
            sortable_js(ns("aggregationIndexList"), 
                        options = sortable_options(group = ns("indices"), supportPointer = FALSE,
+                                                  multiDrag = TRUE,
+                                                  selectedClass = "drop-index-item-selected",
                                                   onLoad = sortable_js_capture_input(ns("aggregationIndexList")),
                                                   onSort = sortable_js_capture_input(ns("aggregationIndexList"))))
   )
@@ -278,7 +288,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       # we need to update aggregation functions in case the symbol type is not available when rendering the UI
       # (e.g. in Configuration Mode)
       aggregationFunctions <- if(identical(options[["_metadata_"]]$symtype, "set"))
-        setNames("count", lang$renderers$miroPivot$aggregationFunctions$count)
+        setNames(c("count", "min"),
+                 c(lang$renderers$miroPivot$aggregationFunctions$count,
+                   lang$renderers$miroPivot$aggregationFunctions$min))
       else
         setNames(c("sum", "count", "mean", "median", "min", "max"), 
                  c(lang$renderers$miroPivot$aggregationFunctions$sum,
@@ -325,7 +337,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         
         if(length(options[["pivotRenderer"]]) &&
-           options[["pivotRenderer"]] %in% c("table", "line", "bar", "stackedbar", "radar")){
+           options[["pivotRenderer"]] %in% c("table", "heatmap", "line", "bar", "stackedbar", "radar")){
           updateSelectInput(session, "pivotRenderer", selected = options[["pivotRenderer"]])
         }else{
           updateSelectInput(session, "pivotRenderer", selected = "table")
@@ -421,32 +433,29 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           if(is.null(input$saveView) || initData || input$saveView == 0L || readonlyViews){
             return()
           }
-          showModal(modalDialog(tags$div(id = ns("errUniqueName"), class = "gmsalert gmsalert-error", 
-                                         style = "position:relative",
+          showModal(modalDialog(tags$div(id = ns("errUniqueName"), style = "display:none;",
                                          lang$renderers$miroPivot$errUniqueViewName),
                                 textInput(ns("newViewName"),
                                           lang$renderers$miroPivot$newViewLabel), 
                                 footer = tagList(
-                                  modalButton(lang$renderers$miroPivot$newViewBtCancel),
-                                  actionButton(ns("saveViewConfirm"), lang$renderers$miroPivot$newViewBtSave, 
-                                               class = "bt-highlight-1 bt-gms-confirm")
+                                  tags$div(id = ns("saveViewButtonsWrapper"),
+                                           modalButton(lang$renderers$miroPivot$newViewBtCancel),
+                                           actionButton(ns("saveViewConfirm"), lang$renderers$miroPivot$newViewBtSave, 
+                                                        class = "bt-highlight-1 bt-gms-confirm")
+                                           ),
+                                  tags$div(id = ns("saveViewOverwriteButtonsWrapper"), style = "display:none",
+                                           actionButton(ns("saveViewCancelOverwrite"),
+                                                        lang$renderers$miroPivot$newViewBtCancelOverwrite),
+                                           actionButton(ns("saveViewOverwrite"),
+                                                        lang$renderers$miroPivot$newViewBtOverwrite, 
+                                                        class = "bt-highlight-1 bt-gms-confirm")
+                                  )
                                 ),
                                 fade = TRUE, easyClose = FALSE, size = "s", 
                                 title = lang$renderers$miroPivot$newViewTitle))
         })
-        rendererEnv[[ns("saveViewConfirm")]] <- observe({
-          if(is.null(input$saveViewConfirm) || initData || 
-             input$saveViewConfirm == 0L || readonlyViews){
-            return()
-          }
+        addNewView <- function(overwrite = FALSE){
           isolate({
-            if(identical(input$newViewName, "")){
-              return()
-            }
-            if(input$newViewName %in% c("default", views$getIds(session))){
-              showEl(session, paste0("#", ns("errUniqueName")))
-              return()
-            }
             newViewConfig <- list(aggregationFunction = input$aggregationFunction,
                                   pivotRenderer = input$pivotRenderer,
                                   domainFilter = list(default = input$domainFilter))
@@ -468,14 +477,59 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 newViewConfig[[indexEl[[1]]]] <- filterElList
               }
             }
-            insertUI(paste0("#", ns("savedViewsDD")), 
-                     createBootstrapDropdownChoices(list(id = htmlIdEnc(input$newViewName), 
-                                                         alias = input$newViewName), 
-                                                    ns("savedViews"), ns("deleteView")), 
-                     where = "beforeEnd")
-            views$add(session, input$newViewName, newViewConfig)
+            if(overwrite){
+              views$add(session, input$newViewName, newViewConfig)
+            }else{
+              insertUI(paste0("#", ns("savedViewsDD")), 
+                       createBootstrapDropdownChoices(list(id = htmlIdEnc(input$newViewName), 
+                                                           alias = input$newViewName), 
+                                                      ns("savedViews"), ns("deleteView")), 
+                       where = "beforeEnd")
+              views$add(session, input$newViewName, newViewConfig)
+            }
           })
+        }
+        rendererEnv[[ns("saveViewConfirm")]] <- observe({
+          if(is.null(input$saveViewConfirm) || initData || 
+             input$saveViewConfirm == 0L || readonlyViews){
+            return()
+          }
+          
+          if(identical(input$newViewName, "")){
+            return()
+          }
+          if(input$newViewName %in% c("default", views$getIds(session))){
+            hideEl(session, paste0("#", ns("newViewName")))
+            hideEl(session, paste0("#", ns("saveViewButtonsWrapper")))
+            showEl(session, paste0("#", ns("errUniqueName")))
+            showEl(session, paste0("#", ns("saveViewOverwriteButtonsWrapper")))
+            return()
+          }
+          addNewView()
           removeModal(session)
+        })
+        rendererEnv[[ns("saveViewOverwriteConfirm")]] <- observe({
+          if(is.null(input$saveViewOverwrite) || initData || 
+             input$saveViewOverwrite == 0L || readonlyViews){
+            return()
+          }
+          
+          if(identical(input$newViewName, "")){
+            flog.error("New view name is empty. Should never happen!")
+            return()
+          }
+          addNewView(overwrite = TRUE)
+          removeModal(session)
+        })
+        rendererEnv[[ns("saveViewCancelOverwrite")]] <- observe({
+          if(is.null(input$saveViewCancelOverwrite) || initData || 
+             input$saveViewCancelOverwrite == 0L || readonlyViews){
+            return()
+          }
+          hideEl(session, paste0("#", ns("saveViewOverwriteButtonsWrapper")))
+          hideEl(session, paste0("#", ns("errUniqueName")))
+          showEl(session, paste0("#", ns("newViewName")))
+          showEl(session, paste0("#", ns("saveViewButtonsWrapper")))
         })
         rendererEnv[[ns("deleteView")]] <- observe({
           if(is.null(input$deleteView) || initData || readonlyViews){
@@ -779,19 +833,17 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             disableEl(session, paste0("#", ns("btAddRow")))
             disableEl(session, paste0("#", ns("btRemoveRows")))
           }
-          if(identical(options[["_metadata_"]]$symtype, "parameter")){
-            aggregationFunctionTmp <- input$aggregationFunction
-            if(is.null(aggregationFunction)){
-              aggregationFunction <- aggregationFunctionTmp
-            }
-            if(length(aggregationFunction) != 1L ||
-               !aggregationFunction %in% c("sum", "count", "min", "max", "mean", "median")){
-              flog.warn("Attempt to tamper with the app detected! User entered: '%s' as aggregation function.",
-                        aggregationFunction)
-              stop("Attempt to tamper with the app detected!", call. = FALSE)
-            }
-          }else{
-            aggregationFunction <- "count"
+          aggregationFunctionTmp <- input$aggregationFunction
+          if(is.null(aggregationFunction)){
+            aggregationFunction <- aggregationFunctionTmp
+          }
+          if(identical(aggregationFunction, "")){
+            aggregationFunction <- aggregationFunctions[[1]]
+          }else if(length(aggregationFunction) != 1L ||
+             !aggregationFunction %in% c("sum", "count", "min", "max", "mean", "median")){
+            flog.warn("Attempt to tamper with the app detected! User entered: '%s' as aggregation function.",
+                      aggregationFunction)
+            stop("Attempt to tamper with the app detected!", call. = FALSE)
           }
           if(!identical(valueColName, "value")){
             names(dataTmp)[length(dataTmp)] <- "value"
@@ -858,6 +910,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if(initRenderer && isTRUE(options$resetOnInit)){
           if(length(currentView[["pivotRenderer"]])){
             pivotRenderer <- currentView[["pivotRenderer"]]
+            initRenderer <<- FALSE
           }else{
             return()
           }
@@ -961,9 +1014,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           clrs <- round(seq(255, 40, length.out = length(brks) + 1), 0) %>%
             {paste0("rgb(255,", ., ",", ., ")")}
         }
-        if(length(dataTmp) > 500){
-          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, "500"))
-          dataTmp <- dataTmp[, 1:500]
+        if(length(dataTmp) > 300){
+          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, "300"))
+          dataTmp <- dataTmp[, 1:300]
         }else{
           hideEl(session, paste0("#", ns("errMsg")))
         }
@@ -971,6 +1024,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         
         ret <- datatable(dataTmp, extensions = c("Scroller", "FixedColumns"), 
                   selection = if(isEditableTable) "multiple" else "none", editable = isEditableTable,
+                  callback = JS("setTimeout(function() { table.draw(true); }, 500);"),
                   container = DTbuildColHeaderContainer(names(dataTmp), 
                                                         noRowHeaders, 
                                                         unlist(setIndexAliases[names(dataTmp)[seq_len(noRowHeaders)]], 

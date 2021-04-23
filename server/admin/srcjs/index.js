@@ -39,7 +39,7 @@ const addAppWrapperHTML = `<div id="addAppBox" class="add-app-box app-box-fixed-
                             <a class="btn-add-app" id="addApp"><i class="fas fa-plus-circle"></i></a>
                           </div>`;
 
-function sendAddRequest(removeInconsistentTables = false) {
+function sendAddRequest() {
   const newAppTitle = document.getElementById('newAppName').value;
   if (!newAppTitle || newAppTitle.trim() === '') {
     bootbox.alert({ title: 'Missing App title', message: 'Please enter an app title.', centerVertical: true });
@@ -51,7 +51,6 @@ function sendAddRequest(removeInconsistentTables = false) {
     title: newAppTitle,
     desc: document.getElementById('newAppDesc').value,
     groups: $('#newAppGroups').val(),
-    removeInconsistentTables,
   }, {
     priority: 'event',
   });
@@ -522,6 +521,11 @@ $(document).ready(() => {
       $('#loadingScreenProgressWrapper').hide();
       $('#loadingScreenProgress').css('width', '0%').attr('aria-valuenow', '0');
       return;
+    } else if (data.requestType === 'migrateDb') {
+      $('#loadingScreenProgressWrapper').hide();
+      $('#loadingScreenProgress').css('width', '0%').attr('aria-valuenow', '0');
+      sendAddRequest();
+      return;
     }
     if (Array.isArray(data.configList)) {
       currentConfigList = data.configList;
@@ -536,31 +540,29 @@ $(document).ready(() => {
       });
     }
   });
+  Shiny.addCustomMessageHandler('onHideAddAppProgress', (e) => { // eslint-disable-line no-unused-vars
+    $('#addAppSpinner').hide();
+    $('#addAppProgress').css('width', '0%').attr('aria-valuenow', '0');
+    $('#btAddApp').attr('disabled', false);
+  });
   Shiny.addCustomMessageHandler('onProgress', (data) => {
+    let selector;
+    if (data.selector == null) {
+      selector = '#loadingScreenProgress';
+      $('#loadingScreenProgressWrapper').show();
+    } else {
+      selector = data.selector;
+    }
     if (data.progress === -1) {
-      $(data.selector).css('width', '0%').attr('aria-valuenow', '0');
-      if (data.selector === '#addAppProgress') {
+      $(selector).css('width', '0%').attr('aria-valuenow', '0');
+      if (selector === '#addAppProgress') {
         $('#addAppSpinner').hide();
+      } else if (data.selector == null) {
+        $('#loadingScreenProgressWrapper').hide();
       }
     } else {
-      $(data.selector).css('width', `${data.progress}%`).attr('aria-valuenow', data.progress);
+      $(selector).css('width', `${data.progress}%`).attr('aria-valuenow', data.progress);
     }
-  });
-  Shiny.addCustomMessageHandler('onInconsistentDbTables', (data) => {
-    $('#loadingScreenProgressWrapper').hide();
-    bootbox.confirm({
-      message: `Your database contains records that are inconsistent with the new version of the MIRO application \
-you want to add. Do you want to remove all inconsistent data? The datasets to be removed are: '${data.datasetsToRemove.join("', '")}'.`,
-      centerVertical: true,
-      callback: (removeDataConfirmed) => {
-        if (!removeDataConfirmed) {
-          $('#addAppProgress').css('width', '0%').attr('aria-valuenow', '0');
-          $('#addAppSpinner').hide();
-          return;
-        }
-        sendAddRequest(true);
-      },
-    });
   });
   Shiny.addCustomMessageHandler('onScenarioExists', (scenName) => {
     $('#loadingScreenProgressWrapper').hide();
@@ -632,11 +634,39 @@ you want to add. Do you want to remove all inconsistent data? The datasets to be
     } else if (e.requestType === 'addScen') {
       $('#loadingScreenProgressWrapper').hide();
       $('#loadingScreenProgress').css('width', '0%').attr('aria-valuenow', '0');
+    } else if (e.requestType === 'migrateDb') {
+      $('#loadingScreenProgressWrapper').hide();
+      $('#loadingScreenProgress').css('width', '0%').attr('aria-valuenow', '0');
+      $('#migrationFormErrors').show();
+      return;
     }
     bootbox.alert({
       title: 'Error',
       message: e.message,
       centerVertical: true,
     });
+  });
+  Shiny.addCustomMessageHandler('gms-showEl', (id) => {
+    $(id).show();
+    $(id).trigger('shown');
+  });
+  Shiny.addCustomMessageHandler('gms-hideEl', (id) => {
+    $(id).hide();
+    $(id).trigger('hidden');
+  });
+  Shiny.addCustomMessageHandler('gms-enableEl', (id) => {
+    $(id).prop('disabled', false);
+  });
+  Shiny.addCustomMessageHandler('gms-disableEl', (id) => {
+    $(id).prop('disabled', true);
+  });
+  Shiny.addCustomMessageHandler('gms-showHideEl', (data) => {
+    if (data.msg !== null) {
+      $(data.id).text(data.msg);
+    }
+    $(data.id).show().delay(data.delay).fadeOut();
+  });
+  Shiny.addCustomMessageHandler('gms-showElReplaceTxt', (data) => {
+    $(data.id).text(data.txt).show();
   });
 });

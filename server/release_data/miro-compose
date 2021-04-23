@@ -6,7 +6,7 @@ install (){
     [ -f .env ] || {
         local db_password=$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 40 ; echo)
         printf "A new master password for your MIRO Server database was generated: ${db_password}\nPlease keep this password in a safe place.\n"
-        printf "GMS_MIRO_DATABASE_PWD=${db_password}\nGMS_MIRO_ENGINE_ANONYMOUS_USER=ENTER_USERNAME_HERE\nGMS_MIRO_ENGINE_ANONYMOUS_PWD=ENTER_PASSWORD_HERE\n" > .env
+        printf "GMS_MIRO_DATABASE_PWD=${db_password}\n" > .env
     }
     if ! grep -q "GMS_MIRO_ENGINE_HOST" .env; then
         read -p 'Please enter GAMS Engine host: ' ENGINE_HOST
@@ -26,6 +26,39 @@ install (){
     fi
 
     printf "You can change the GAMS Engine connection info at any time by modifying the \".env\" file.\nNote that MIRO Server must be restarted for these changes to take effect.\n"
+
+    read -p 'Enable authentication? [Y/n]: ' ENABLE_AUTH
+
+    case "$ENABLE_AUTH" in
+        [nN][oO]|[nN])
+            sed -i -E "s/authentication: .*/authentication: none/" data_raw/application.yml || {
+                echo "Problems updating authentication method."
+                exit 1
+            }
+            if ! grep -q "GMS_MIRO_ENGINE_ANONYMOUS_USER" .env; then
+                read -p 'Please enter name of user to be used to run jobs: ' ENGINE_ANON_USR
+                [ -z ${ENGINE_ANON_USR} ] && {
+                    echo "Invalid username!"
+                    exit 1
+                }
+                echo "GMS_MIRO_ENGINE_ANONYMOUS_USER=${ENGINE_ANON_USR}">>.env
+            fi
+            if ! grep -q "GMS_MIRO_ENGINE_ANONYMOUS_PWD" .env; then
+                read -sp 'Please enter password of this user: ' ENGINE_ANON_PWD
+                [ -z ${ENGINE_ANON_PWD} ] && {
+                    echo "Invalid password!"
+                    exit 1
+                }
+                echo "GMS_MIRO_ENGINE_ANONYMOUS_PWD=${ENGINE_ANON_PWD}">>.env
+            fi
+            ;;
+        *)
+            sed -i -E "s/authentication: .*/authentication: webservice/" data_raw/application.yml || {
+                echo "Problems updating authentication method."
+                exit 1
+            }
+            ;;
+    esac
 
     printf "Installing GAMS MIRO server. Please wait...\n\n\n"
 

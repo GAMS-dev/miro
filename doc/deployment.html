@@ -371,6 +371,28 @@ inc/inc2.inc
 }</code></pre>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
+                            <section id="db-migration" class="doc-section">
+                                <h2 class="section-title">Database migration</h2>
+                                <div class="section-block">
+                                    <p>From time to time, you may want to update your MIRO application. Most updates, such as changing the layout of your application, adjusting the renderers, or even improving your GAMS model, are not problematic. It gets more complicated when you change the GAMS/MIRO data contract, i.e. anything between the <code class="language-gams">$onExternalInput</code> / <code class="language-gams">$offExternalInput</code> or <code class="language-gams">$onExternalOutput</code> / <code class="language-gams">$offExternalOutput</code> tags. MIRO stores all of your application's data in a relational database. This means that every time you change the domains of a symbol (add/remove/rename indices) or remove/rename external input and/or output symbols, the database must be migrated to the new data contract. Fortunately, MIRO offers a <i>Migration Wizard</i> to assist you with this process.</p>
+                                    <p>Let's look at an example where we have added a time dimension to the <i>transport</i> example model:</p>
+                                    <div class="section-block" style="text-align:center;">
+                                        <img class="img-fluid" style="max-height:350pt" src="assets/images/deployment/migration-wizard.png" alt="Migration Wizard for transport model with added time dimension" />
+                                    </div>
+                                    <p>You can see that we need to migrate data from the three symbols: <code class="language-gams">schedule</code>, <code class="language-gams">a0</code> and <code class="language-gams">b</code>. The symbols <code class="language-gams">schedule</code> and <code class="language-gams">b</code> now have an additional dimension <code class="language-gams">t</code>. Before this new version, we did not have this dimension, so we choose <kbd>-</kbd> here to indicate that this data is missing. If we were to load a scenario that was saved with an old version of our app, the data in these columns would be marked as <i>NA</i>.</p>
+                                    <p>As we renamed the symbol <code class="language-gams">a</code> to <code class="language-gams">a0</code>, we indicate that data for symbol <code class="language-gams">a0</code> should come from <code class="language-gams">a</code>.</p>
+                                    <p>Note that as an alternative to migrating existing data, we also have the option to remove all existing data by clicking the <kbd>Delete all database tables</kbd> button in the lower left corner.</p>
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Warning:</b>
+                                            <p>Before you migrate the data, you should perform a backup of your database. If you are using MIRO Desktop, you can do this via the <a href="./customize.html#database-management">Configuration Mode</a>. For MIRO Server, please refer to: <a href="https://www.postgresql.org/docs/current/backup.html" target="_blank"></a>.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
                         </div><!--//content-inner-->
                     </div><!--//doc-content-->
                     <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
@@ -388,6 +410,7 @@ inc/inc2.inc
                                     <a class="nav-link scrollto" href="#collaboration-apps">Share MIRO apps</a>
                                     <a class="nav-link scrollto" href="#collaboration-settings">Share settings</a>
                                 </nav><!--//nav-->
+                                <a class="nav-link scrollto" href="#db-migration">Database migration</a>
                         </div>
                     </div><!--//doc-sidebar-->
                 </div><!--//doc-body-->
@@ -395,7 +418,7 @@ inc/inc2.inc
         </div><!--//doc-wrapper-->
     </div><!--//page-wrapper-->
     <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
-    <!--#include virtual="/footer.html" -->
+    <!--#include virtual="/footer_miro.html" -->
 
     <!-- Main Javascript -->
     <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>

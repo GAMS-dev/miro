@@ -8,6 +8,9 @@ filePathEnc2 <- nativeFileEnc(file.path(getwd(), "dätä/test_gdxio.gdx"))
 filePathEnc3 <- nativeFileEnc(file.path(getwd(), "dätä/tests_gdxioeq.gdx"))
 filePathEnc4 <- nativeFileEnc(file.path(getwd(), "dätä/tests_gdxiouni.gdx"))
 
+lang <<- list(errMsg = list(gdxio = list(errors = list(duplicateRecords = "Duplicate records in symbol: '%s'",
+                                                      duplicateRecordsTruncated = "(Only the first 10 duplicate records are displayed)"))))
+
 gdxio <- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO",
                              if(identical(tolower(Sys.info()[["sysname"]]), "windows")) 
                                file.path("bin", "x64") else "bin"), c(modelInRaw, modelOut), 
@@ -331,9 +334,9 @@ test_that("Duplicate records throw error (part 2)", {
   #                           '3' = "text")
   data <- list(varData)
   names(data) <- "i10"
-  expect_error(gdxio$wgdx(filePath, data), regexp = "a\\.a\na\\.b\na\\.c\na\\.d\na\\.e\na\\.f\na\\.g\na\\.h\na\\.i\na\\.j\n\n \\(Only the first 10 duplicate records are displayed\\)$",
+  expect_error(gdxio$wgdx(filePath, data), regexp = "a\\.a\na\\.b\na\\.c\na\\.d\na\\.e\na\\.f\na\\.g\na\\.h\na\\.i\na\\.j\n\n\\(Only the first 10 duplicate records are displayed\\)$",
                class = "error_duplicate_records")
   names(data) <- "a12345678901234567890123456789012345678901234567890123456789012"
-  expect_error(gdxio$wgdx(filePath, data), regexp = "a\\.a\na\\.b\na\\.c\na\\.d\na\\.e\na\\.f\na\\.g\na\\.h\na\\.i\na\\.j\n\n \\(Only the first 10 duplicate records are displayed\\)$",
+  expect_error(gdxio$wgdx(filePath, data), regexp = "a\\.a\na\\.b\na\\.c\na\\.d\na\\.e\na\\.f\na\\.g\na\\.h\na\\.i\na\\.j\n\n\\(Only the first 10 duplicate records are displayed\\)$",
                class = "error_duplicate_records")
 })

@@ -124,45 +124,31 @@ font-size: 12px;
       tabItem(tabName = "db_management",
               fluidRow(
                 box(title = lang$adminMode$database$title, status="primary", solidHeader = TRUE, width = 12,
-                    tags$div(id = "removeSuccess", class = "gmsalert gmsalert-success center-alert",
-                             lang$adminMode$database$removeSuccess),
-                    tags$div(id = "restoreSuccess", class = "gmsalert gmsalert-success center-alert",
-                             lang$adminMode$database$restoreSuccess),
-                    tags$div(id = "restoreNoData", class = "gmsalert gmsalert-error center-alert",
-                             lang$adminMode$database$restoreNoData),
-                    tags$div(id = "restoreInvalidData", class = "gmsalert gmsalert-error center-alert",
-                             lang$adminMode$database$restoreInvalidData),
-                    tags$div(id = "maxRowError", class = "gmsalert gmsalert-error center-alert",
-                             lang$adminMode$database$maxRowError),
+                    tags$div(id = "removeSuccess", class = "gmsalert gmsalert-success center-alert"),
                     tags$div(id = "unknownError", class = "gmsalert gmsalert-error center-alert",
                              lang$errMsg$unknownError),
                     tags$div(class = "space"),
-                    tags$label("for" = "db_backup_wrapper", lang$adminMode$database$backup),
-                    tags$div(id = "db_backup_wrapper", lang$adminMode$database$backupWrapper),
-                    downloadButton("dbSaveAll", label = lang$adminMode$database$dbSaveAll),
-                    tags$div(class = "space"),
+                    if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
+                      tags$h4(HTML(sprintf(lang$adminMode$database$infoPostgres,
+                                           paste0("<code>", db$getInfo()$name, "</code>"),
+                                           paste0("<code>", db$getInfo()$loc, "</code>"))))
+                    }else{
+                      tagList(
+                        tags$h4(HTML(sprintf(lang$adminMode$database$infoSQLite,
+                                             paste0("<code>", db$getInfo()$loc, "</code>")))),
+                        tags$hr(),
+                        tags$div(class = "space"),
+                        tags$label("for" = "db_backup_wrapper", lang$adminMode$database$backup),
+                        tags$div(id = "db_backup_wrapper", lang$adminMode$database$backupWrapper),
+                        downloadButton("btDownloadBackup", label = lang$adminMode$database$btDownloadBackup),
+                        tags$div(class = "space")
+                      )
+                    },
                     tags$hr(),
                     tags$div(class = "space"),
-                    tags$label("for" = "db_restore_wrapper", lang$adminMode$database$restore),
-                    tags$div(id = "db_restore_wrapper", lang$adminMode$database$restoreWrapper,
-                             tags$div(style = "max-width:400px;",
-                                      fileInput("dbBackupZip", label = NULL, 
-                                                accept = c(".zip", "application/zip", 
-                                                           "application/octet-stream", 
-                                                           "application/x-zip-compressed", 
-                                                           "multipart/x-zip"))),
-                             actionButton("restoreDb", lang$adminMode$database$restoreDb)
-                    ),
-                    tags$div(class = "space"),
-                    tags$hr(),
-                    tags$div(class = "space"),
-                    tags$label("for" = "db_remove_orphans_wrapper", lang$adminMode$database$remove),
-                    tags$div(id = "db_remove_orphans_wrapper", lang$adminMode$database$removeOrphansWrapper,
-                             tags$div(actionButton("removeDbOrphans", lang$adminMode$database$removeOrphansDialogBtn))
-                    ),
-                    tags$div(class = "space"),
+                    tags$label("for" = "db_remove_wrapper", lang$adminMode$database$remove),
                     tags$div(id = "db_remove_wrapper", lang$adminMode$database$removeWrapper,
-                             tags$div(actionButton("removeDbTables", lang$adminMode$database$removeDialogBtn))
+                             tags$div(removeDbTablesButton("removeAllButton"))
                     )
                 )
               )
@@ -963,6 +949,11 @@ font-size: 12px;
                                                        ))
                                                    ),
                                                    tags$div(class="option-wrapper",
+                                                            tags$div(id = "invalidClArgsError",
+                                                                     class = "err-msg",
+                                                                     sprintf(lang$adminMode$widgets$validate[["val61"]],
+                                                                             paste(reservedGMSOpt,
+                                                                                   collapse = "', '"))),
                                                             selectizeInput("general_args", 
                                                                            tags$div(lang$adminMode$general$args$label, 
                                                                                     tags$a("", title = lang$adminMode$general$ui$tooltipDocs, 

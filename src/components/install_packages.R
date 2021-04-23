@@ -50,6 +50,7 @@ installAndRequirePackages <- function(requiredPackages, installedPackages, RLibP
           }
         }else{
           remotes::install_version(package[1], package[2],
+                                   repos = CRANMirror,
                                    dependencies = FALSE,
                                    INSTALL_opts = '--no-multiarch')
         }

@@ -1452,11 +1452,14 @@ animation: none !important;
     -ms-user-select: none; /* Internet Explorer/Edge */
       user-select: none;
 }
-.drop-index-item:hover {
+.drop-index-item-selected {
   color: #000;
   background-color: #e7e7e7;
   border-color: #adadad;
   transition: all .5s ease;
+}
+.drop-index-item:hover {
+  .drop-index-item-selected;
 }
 .dropdown-item-wrapper {
   display: flex;

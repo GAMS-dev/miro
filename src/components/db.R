@@ -3,7 +3,7 @@ Db <- R6Class("Db",
               public = list(
                 initialize        = function(uid, dbConf, dbSchema, slocktimeLimit, modelName,
                                              traceColNames = NULL, hcubeActive = FALSE,
-                                             ugroups = character(0L)){
+                                             ugroups = character(0L), forceNew = FALSE){
                   # Initialize database class
                   #
                   # Args:
@@ -15,9 +15,10 @@ Db <- R6Class("Db",
                   #   slocktimeLimit:      maximum duration a lock is allowed to persist
                   #   hcubeActive:         boolean that specifies whether Hypercube mode is currently active
                   #   ugroups:             user group(s) (optional)
+                  #   forceNew:            force creating new db object even if one already exists
                   
                   #BEGIN error checks 
-                  if(is.null(private$info$isInitialized)){
+                  if(is.null(private$info$isInitialized) || forceNew){
                     private$info$isInitialized <- 1L
                   }else{
                     flog.error("Db: Tried to create more than one Db object.")
@@ -70,6 +71,8 @@ Db <- R6Class("Db",
                       stop(sprintf("Db: Database connection could not be established. Error message: %s", e), 
                            call. = FALSE)
                     })
+                    private$connectionInfo <- list(loc = paste0(dbConf$host, ":", dbConf$port),
+                                                   name = dbConf$name)
                   }else if(identical(dbConf$type, "sqlite")){
                     tryCatch({
                       private$conn <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = dbConf$name, bigint = "integer")
@@ -79,6 +82,8 @@ Db <- R6Class("Db",
                       stop(sprintf("Db: Database connection could not be established. Error message: %s", e), 
                            call. = FALSE)
                     })
+                    private$connectionInfo <- list(loc = dbConf$name,
+                                                   name = NULL)
                   }else{
                     stop(sprintf("Db: A non supported database type (%s) was specified. Could not establish connection.", 
                                  dbConf$type), call. = FALSE) 
@@ -95,134 +100,12 @@ Db <- R6Class("Db",
                 getTableNamesScenario = function() private$tableNamesScenario,
                 getHcubeActive        = function() private$hcubeActive,
                 getModelNameDb        = function() private$modelNameDb,
-                getOrphanedTables     = function(hcubeScalars = NULL){
-                  # find orphaned database tables 
-                  #
-                  # Args:
-                  #   hcubeScalars:        name of scalars that are transferred to 
-                  #                        tables in Hypercube mode
+                getInfo               = function(){
+                  # Returns some connection info
                   #
                   # Returns:
-                  #   list with names of orphaned database tables
-                  if(inherits(private$conn, "PqConnection")){
-                    query <- SQL(paste0("SELECT table_name FROM information_schema.tables", 
-                                        " WHERE table_schema='public' AND table_type='BASE TABLE'", 
-                                        " AND table_name LIKE ", 
-                                        dbQuoteString(private$conn, self$escapePattern(private$modelNameDb) %+% "\\_%"), ";"))
-                  }else{
-                    query <- SQL(paste0("SELECT name FROM sqlite_master WHERE type = 'table'",
-                                        " AND name LIKE ", 
-                                        dbQuoteString(private$conn, self$escapePattern(private$modelNameDb) %+% "\\_%"), " ESCAPE '\\';"))
-                  }
-                  tryCatch({
-                    dbTables <- dbGetQuery(private$conn, query)[[1L]]
-                  }, error = function(e){
-                    stop(sprintf("Db: An error occurred while fetching table names from database (Db.getOrphanTables). Error message: '%s'.",
-                                 e), call. = FALSE)
-                  })
-                  orphanedTables <- dbTables[!dbTables %in% private$tableNamesScenario]
-                  if(!is.null(hcubeScalars)){
-                    hcubeScalarsIdx <-  orphanedTables %in% paste0(private$modelNameDb, "_", 
-                                                                   hcubeScalars)
-                    orphanedTables <- orphanedTables[!hcubeScalarsIdx]
-                  }
-                  return(orphanedTables)
-                },
-                getInconsistentTables = function(){
-                  errMsg  <- NULL
-                  colNames <- private$dbSchema$colNames
-                  colTypes <- private$dbSchema$colTypes
-                  headers <- colNames
-                  
-                  badTables <- vapply(private$tableNamesScenario, function(tabName){
-                    tabNameRaw  <- tolower(gsub("^[^_]+_", "", tabName))
-                    confHeaders <- colNames[[tabNameRaw]]
-                    if(!is.null(confHeaders) && dbExistsTable(private$conn, tabName)){
-                      tryCatch({
-                        if(inherits(private$conn, "PqConnection")){
-                          query <- SQL(paste0("SELECT ordinal_position,column_name,data_type FROM information_schema.columns WHERE table_name = ", 
-                                              dbQuoteString(private$conn, tabName),
-                                              " ORDER BY ordinal_position;"))
-                          tabInfo     <- dbGetQuery(private$conn, query)
-                          tabColNames <- tabInfo$column_name[-1L]
-                          tabColTypes <- tabInfo$data_type[-1L]
-                          
-                        }else{
-                          query <- SQL(paste0("PRAGMA table_info(", 
-                                              dbQuoteIdentifier(private$conn, tabName), ");"))
-                          tabInfo     <- dbGetQuery(private$conn, query)
-                          tabColNames <- tabInfo$name[-1L]
-                          tabColTypes <- tabInfo$type[-1L]
-                        }
-                      }, error = function(e){
-                        stop(sprintf("Db: An error occurred while fetching table headers from database (Db.getInconsistentTables, table: '%s').\nError message: '%s'.",
-                                     tabName, e), call. = FALSE)
-                      })
-                      errMsgTmp <- paste(errMsg, sprintf("Database table headers ('%s') are different from those in current configuration ('%s').\nPlease fix the database schema or change your GAMS model!\n",
-                                                         paste(tabColNames, collapse = "', '"),
-                                                         paste(confHeaders, collapse = "', '")))
-                      if(!identical(colTypeVectorToString(tabColTypes), colTypes[[tabNameRaw]])){
-                        errMsg <<- errMsgTmp
-                        return(tabNameRaw)
-                      }
-                      if(any(confHeaders != tabColNames)){
-                        errMsg <<- errMsgTmp
-                        return(tabNameRaw)
-                      }
-                    }
-                    return(NA_character_)
-                  }, character(1L), USE.NAMES = FALSE)
-                  badTables <- badTables[!is.na(badTables)]
-                  return(list(names = badTables, headers = headers[names(headers) %in% badTables], errMsg = errMsg))
-                },
-                removeTablesModel     = function(tableNames = NULL){
-                  stopifnot(is.null(tableNames) || is.character(tableNames))
-                  
-                  removeAllTables <- FALSE
-                  if(!length(tableNames)){
-                    removeAllTables <- TRUE
-                    tableNames <- c(private$getTableNamesModel(), private$dbSchema$tabName[['_scenAttach']],
-                                    private$dbSchema$tabName[['_scenScripts']])
-                  }
-                  
-                  # bring metadata table to front as others depend on it
-                  if(inherits(private$conn, "PqConnection")){
-                    query <- paste0("DROP TABLE IF EXISTS ",  
-                                    paste(dbQuoteIdentifier(private$conn, tableNames),
-                                          collapse = ", "), " CASCADE;")
-                    dbExecute(private$conn, query)
-                    flog.info("Database tables: '%s' deleted.", paste(tableNames, "', '"))
-                    return(invisible(self))
-                  }
-                  # turn foreign key usage off
-                  dbExecute(private$conn, "PRAGMA foreign_keys = OFF;")
-                  for(tableName in tableNames){
-                    query <- paste0("DROP TABLE IF EXISTS ",  
-                                    dbQuoteIdentifier(private$conn, tableName), " ;")
-                    dbExecute(private$conn, query)
-                    flog.info("Database table: '%s' deleted.", tableName)
-                  }
-                  # turn foreign key usage on again
-                  dbExecute(private$conn, "PRAGMA foreign_keys = ON;")
-                  if(removeAllTables){
-                    self$deleteRows("_sys__data_hashes", "model", private$modelNameDb)
-                  }
-                  return(invisible(self))
-                },
-                saveTablesModel       = function(tempDir){
-                  stopifnot(is.character(tempDir), length(tempDir) == 1)
-                  limit <- 1e7 + 1L
-                  tableNames <- private$getTableNamesModel()
-                  for(tableName in tableNames){
-                    data <- self$importDataset(tableName, limit = limit, isAdmin = TRUE)
-                    if(length(nrow(data)) &&  nrow(data) > limit){
-                      stop("maxRowException", call. = FALSE)
-                    }
-                    write_csv(data, file.path(tempDir, tableName %+% ".csv"), 
-                              na = "", append = FALSE, col_names = TRUE,
-                              quote_escape = "double")
-                  }
-                  return(invisible(self))
+                  #   list with strings: $loc (location info), $name (database name)
+                  return(private$connectionInfo)
                 },
                 getMetadata           = function(sid, uid, sname, stime, stag = character(0L), 
                                                  readPerm = character(0L), writePerm = character(0L),
@@ -369,36 +252,6 @@ Db <- R6Class("Db",
                     return(as.integer(metadataRow[[private$scenMetaColnames['sid']]][1]))
                   }else{
                     return(0L)
-                  }
-                },
-                getLatestSid          = function(){
-                  # Fetch the last inserted sid from database 
-                  #
-                  # Args:
-                  # 
-                  # Returns:
-                  # integer: latest scenario Id exported to database
-                  
-                  if(inherits(private$conn, "PqConnection")){
-                    tryCatch({
-                      query <- SQL(paste0("SELECT nextval(pg_get_serial_sequence(",
-                                                        DBI::dbQuoteString(private$conn, private$tableNameMetadata), 
-                                                        ", ", DBI::dbQuoteString(private$conn, private$scenMetaColnames['sid']), "));"))
-                      nextVal <- DBI::dbGetQuery(private$conn, query)
-                      return(as.integer(nextVal[[1L]][1]))
-                    }, error = function(e){
-                      return(0L)
-                    })
-                  }else{
-                    tryCatch({
-                      query <- SQL(paste0("SELECT MAX(",
-                                          dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), ")  FROM ",
-                                          dbQuoteIdentifier(private$conn, private$tableNameMetadata), ";"))
-                      nextVal <- DBI::dbGetQuery(private$conn, query)
-                      return(as.integer(nextVal[[1L]][1]))
-                    }, error = function(e){
-                      return(0L)
-                    })
                   }
                 },
                 loadScenarios = function(sids, limit = 1e7, msgProgress){
@@ -1195,6 +1048,7 @@ Db <- R6Class("Db",
               ),
               private = list(
                 conn                = NULL,
+                connectionInfo      = NULL,
                 uid                 = character(1L),
                 modelName           = character(1L),
                 modelNameDb         = character(1L),

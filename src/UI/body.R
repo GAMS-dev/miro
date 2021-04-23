@@ -340,7 +340,9 @@ if(buildUI){
       title = inputTabTitles[[tabId]][1],
       value = paste0("inputTabset_", tabId),
       if(length(inputTabTitles[[tabId]]) > 1L){
-        do.call(tabsetPanel, c(id = paste0("inputTabset", tabId), content))
+        MIROtabsetPanel(id = paste0("inputTabset", tabId),
+                        btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs,
+                        content)
       }else{
         tagList(tags$div(class="small-space"), 
                 if(length(inputTabs[[tabId]]) > 1L){
@@ -621,7 +623,9 @@ if(buildUI){
         title = outputTabTitles[[tabId]][1],
         value = paste0("outputTabset_", tabId),
         if(length(outputTabTitles[[tabId]]) > 1L){
-          do.call(tabsetPanel, c(id = paste0("outputTabset", tabId), content))
+          MIROtabsetPanel(id = paste0("outputTabset", tabId),
+                          btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs,
+                          content)
         }else{
           tagList(tags$div(class="small-space"), 
                   if(length(outputTabs[[tabId]]) > 1L){

@@ -1,7 +1,7 @@
 #version number
 MIROVersion <- "1.3.99"
 APIVersion  <- "1"
-MIRORDate   <- "Feb 18 2021"
+MIRORDate   <- "Mar 10 2021"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -708,58 +708,6 @@ if(is.null(errMsg)){
     source("./components/db_hcubeload.R")
   }
 }
-inconsistentTableNames <- NULL
-if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
-  # checking database inconsistencies
-  local({
-    orphanedTables <- NULL
-    tryCatch({
-      orphanedTables <- db$getOrphanedTables(hcubeScalars = ioConfig$hcubeScalars)
-    }, error = function(e){
-      flog.error("Problems fetching orphaned database tables. Error message: '%s'.", e)
-      errMsg <<- paste(errMsg, sprintf("Problems fetching orphaned database tables. Error message: '%s'.", 
-                                       conditionMessage(e)), sep = '\n')
-    })
-    if(length(orphanedTables)){
-      msg <- sprintf("There are orphaned tables in your database: '%s'.\n
-This could be caused because you used a different database schema in the past (e.g. due to different inputs and/or outputs). 
-Note that you can remove orphaned database tables using the configuration mode ('Database management' section).",
-paste(orphanedTables, collapse = "', '"))
-      flog.warn(msg)
-    }
-    inconsistentTables <- NULL
-    tryCatch({
-      inconsistentTables <- db$getInconsistentTables()
-    }, error = function(e){
-      flog.error("Problems fetching database tables (for inconsistency checks).\nDetails: '%s'.", e)
-      if(miroStoreDataOnly){
-        write("\n", stderr())
-        write("merr:::500", stderr())
-      }
-      errMsg <<- paste(errMsg, sprintf("Problems fetching database tables (for inconsistency checks). Error message: '%s'.", 
-                                       conditionMessage(e)), sep = '\n')
-    })
-    if(length(inconsistentTables$names)){
-      inconsistentTableNames <<- paste0(gsub("_", "", modelName, fixed = TRUE), 
-                                        "_", inconsistentTables$names)
-      flog.error(sprintf("There are tables in your database that do not match the current database schema of your model.\n
-Those tables are: '%s'.\nError message: '%s'.",
-paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg))
-      msg <- paste(errMsg, sprintf("There are tables in your database that do not match the current database schema of your model.\n
-Those tables are: '%s'.\nError message: '%s'.",
-paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg),
-collapse = "\n")
-      errMsg <<- paste(errMsg, msg, sep = "\n")
-      if(miroStoreDataOnly){
-        write("\n", stderr())
-        write(paste0("merr:::409:::", paste(vapply(inconsistentTables$names, 
-                                                   function(el) base64_enc(charToRaw(el)), 
-                                                   character(1L), USE.NAMES = FALSE), 
-                                            collapse = ",")), stderr())
-      }
-    }
-  })
-}
 
 if(is.null(errMsg)){
   tryCatch({
@@ -837,6 +785,66 @@ if(is.null(errMsg)){
     }, finally = rm(credConfigTmp))
   }
 }
+if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
+  # checking database inconsistencies
+  source("./components/db_migrator.R")
+  migApp <- NULL
+  local({
+    tryCatch({
+      dbMigrator <- DbMigrator$new(db)
+      inconsistentTablesInfo <- dbMigrator$getInconsistentTablesInfo()
+      orphanedTablesInfo <- dbMigrator$getOrphanedTablesInfo()
+      isNewTable <- vapply(inconsistentTablesInfo, function(tableInfo){
+        if(length(tableInfo$currentColNames)){
+          return(FALSE)
+        }
+        return(TRUE)
+      }, logical(1L), USE.NAMES = FALSE)
+    }, error = function(e){
+      flog.error("Problems initialising dbMigrator. Error message: '%s'.", conditionMessage(e))
+      if(miroStoreDataOnly){
+        write("\n", stderr())
+        write("merr:::500", stderr())
+      }
+      if(interactive())
+        stop()
+      quit("no", 1L)
+    })
+    if(length(inconsistentTablesInfo[!isNewTable]) || length(orphanedTablesInfo)){
+      source("./tools/db_migration/modules/bt_delete_database.R", local = TRUE)
+      source("./tools/db_migration/modules/form_db_migration.R", local = TRUE)
+      source("./tools/db_migration/server.R", local = TRUE)
+      source("./tools/db_migration/ui.R", local = TRUE)
+      if(isShinyProxy){
+        if(identical(Sys.getenv("MIRO_MIGRATE_DB"), "true")){
+          migrateFromConfig(Sys.getenv("MIRO_MIGRATION_CONFIG_PATH"))
+          quit("no", 0L)
+        }else{
+          write_json(list(inconsistentTablesInfo = inconsistentTablesInfo,
+                          orphanedTablesInfo = orphanedTablesInfo,
+                          uiContent = as.character(
+                            dbMigrationForm("migrationForm",
+                                            inconsistentTablesInfo,
+                                            orphanedTablesInfo,
+                                            standalone = FALSE))),
+                     path = Sys.getenv("MIRO_MIGRATION_CONFIG_PATH"),
+                     auto_unbox = TRUE, null = "null")
+          write("\n", stderr())
+          write("merr:::409", stderr())
+          quit("no", 1L)
+        }
+      }
+      if(miroStoreDataOnly){
+        write("\n", stderr())
+        write("merr:::409", stderr())
+      }
+      migApp <<- shinyApp(ui = uiDbMig, server = serverDbMig)
+    }
+  })
+  if(length(migApp)){
+    return(migApp)
+  }
+}
 if(!is.null(errMsg)){
   if(loggerInitialised){
     if(length(warningMsg)) flog.warn(warningMsg)
@@ -872,18 +880,6 @@ if(!is.null(errMsg)){
         lang$errMsg$initErrors$title
       }),
     fluidRow(align="center",
-             tags$div(id = "removeSuccess", class = "gmsalert gmsalert-success",
-                      if(!exists("lang") || is.null(lang$adminMode$database$removeSuccess)){
-                        "Database tables removed successfully"
-                      }else{
-                        lang$adminMode$database$removeSuccess
-                      }),
-             tags$div(id = "unknownError", class = "gmsalert gmsalert-error",
-                      if(!exists("lang") || is.null(lang$errMsg$unknownError)){
-                        "An unexpected error occurred."
-                      }else{
-                        lang$errMsg$unknownError
-                      }),
              HTML("<br>"),
              div(
                if(!exists("lang") || is.null(lang$errMsg$initErrors$desc)){
@@ -894,76 +890,12 @@ if(!is.null(errMsg)){
                , class = "initErrors"),
              HTML("<br>"),
              verbatimTextOutput("errorMessages"),
-             if(length(inconsistentTableNames)){
-               tagList(
-                 tags$div(id = "db_remove_wrapper",
-                          if(!exists("lang") || is.null(lang$adminMode$database$removeInconsistent)){
-                            "You want to remove all the inconsistent tables?"
-                          }else{
-                            lang$adminMode$database$removeInconsistent
-                          },
-                          tags$div(actionButton("removeInconsistentDbTables", 
-                                                "Delete inconsistent database tables"))
-                 ),
-                 tags$div(id = "db_remove_wrapper",style="margin-top:20px;",
-                          if(!exists("lang") || is.null(lang$adminMode$database$removeWrapper)){
-                            "You want to remove all the tables that belong to your model (e.g. because the schema changed)?"
-                          }else{
-                            lang$adminMode$database$removeWrapper
-                          },
-                          tags$div(actionButton("removeDbTables", 
-                                                if(!exists("lang") || is.null(lang$adminMode$database$removeDialogBtn)){
-                                                  "Delete all database tables"
-                                                }else{
-                                                  lang$adminMode$database$removeDialogBtn
-                                                }))
-                 )
-               )
-             },
              tags$div(style = "text-align:center;margin-top:20px;", 
                       actionButton("btCloseInitErrWindow", if(!exists("lang") || is.null(lang$errMsg$initErrors$okButton))
                         "Ok" else lang$errMsg$initErrors$okButton))
     )
   )
   server_initError <- function(input, output, session){
-    if(length(inconsistentTableNames)){
-      if(!exists("lang") || is.null(lang$adminMode$database$removeDialogTitle)){
-        removeDbTabLang <- list(title = "Remove database tables",
-                                desc = "Are you sure that you want to delete all database tables? This can not be undone! You might want to save the database first before proceeding.",
-                                cancel = "Cancel",
-                                confirm = "")
-      }else{
-        removeDbTabLang <- list(title = lang$adminMode$database$removeDialogTitle,
-                                desc = lang$adminMode$database$removeDialogDesc,
-                                cancel = lang$adminMode$database$removeDialogCancel,
-                                confirm = lang$adminMode$database$removeDialogConfirm)
-      }
-      observeEvent(input$removeInconsistentDbTables, {
-        showModal(modalDialog(title = removeDbTabLang$title,
-                              if(!exists("lang") || is.null(lang$adminMode$database$removeInconsistentConfirm) || 
-                                 is.null(lang$adminMode$database$cannotBeUndone)){
-                                "Are you sure that you want to delete all inconsistent database tables? This can not be undone! You might want to save the database first before proceeding."
-                              }else{
-                                paste(lang$adminMode$database$removeInconsistentConfirm, lang$adminMode$database$cannotBeUndone)
-                              }, footer = tagList(
-                                modalButton(removeDbTabLang$cancel),
-                                actionButton("removeInconsistentDbTablesConfirm", label = removeDbTabLang$confirm, 
-                                             class = "bt-highlight-1"))))
-      })
-      observeEvent(input$removeInconsistentDbTablesConfirm, {
-        tryCatch({
-          if(length(inconsistentTableNames)){
-            db$removeTablesModel(inconsistentTableNames)
-          }
-        }, error = function(e){
-          flog.error("Unexpected error: '%s'. Please contact GAMS if this error persists.", e)
-          showHideEl(session, "#unknownError", 6000L)
-        })
-        removeModal()
-        showHideEl(session, "#removeSuccess", 3000L)
-      })
-      source(file.path("tools", "config", "db_management.R"), local = TRUE)
-    }
     output$errorMessages <- renderText(
       errMsg
     )
@@ -981,7 +913,7 @@ if(!is.null(errMsg)){
   
   shinyApp(ui = ui_initError, server = server_initError)
 }else{
-  uidAdmin <<- Sys.getenv("MIRO_ADMIN_USER", uid)
+  uidAdmin <<- if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) "admin" else uid
   local({
     if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
       setWinProgressBar(pb, 0.6, label= "Importing new data")
@@ -1200,7 +1132,7 @@ if(!is.null(errMsg)){
         write(paste0("merr:::418:::", conditionMessage(e)), stderr())
         if(interactive())
           stop()
-        quit("no", 1L)
+        quit("no", 0L)
       }
       gc()
     }, error = function(e){
@@ -1228,6 +1160,7 @@ if(!is.null(errMsg)){
     pb <- NULL
   }
   if(LAUNCHCONFIGMODE){
+    source("./tools/db_migration/modules/bt_delete_database.R", local = TRUE)
     source("./tools/config/server.R", local = TRUE)
     source("./tools/config/ui.R", local = TRUE)
     shinyApp(ui = ui_admin, server = server_admin)

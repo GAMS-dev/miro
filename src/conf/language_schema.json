@@ -2578,9 +2578,133 @@
             }
           },
           "minProperties": 1
+        },
+        "migrationModule": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "desc": {
+              "type": "string",
+              "minLength": 1
+            },
+            "backupWarning": {
+              "type": "string",
+              "minLength": 1
+            },
+            "successMsg": {
+              "type": "string",
+              "minLength": 1
+            },
+            "labelSymbol": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selectTableToMap": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btCancelMigration": {
+              "type": "string",
+              "minLength": 1
+            },
+            "btConfirmMigration": {
+              "type": "string",
+              "minLength": 1
+            },
+            "errDuplicateTables": {
+              "type": "string",
+              "minLength": 1
+            },
+            "dialogConfirmDataLoss": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "descTables": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "descTableCols": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbConfirmDataLoss": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btCancel": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btConfirm": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 6
+            },
+            "progress": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "desc": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 2
+            },
+            "btRemoveTables": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "confirmTitle": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "confirmDesc": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "cbConfirm": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btCancel": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "btConfirm": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "msgSuccess": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 7
+            }
+          },
+          "minProperties": 12
         }
       },
-      "minProperties": 49
+      "minProperties": 50
     },
     "renderers": {
       "description": "language specific objects of renderers",
@@ -2671,6 +2795,14 @@
               "minLength": 1
             },
             "newViewBtSave": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewBtCancelOverwrite": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewBtOverwrite": {
               "type": "string",
               "minLength": 1
             },
@@ -2807,7 +2939,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 29
+          "minProperties": 31
         },
         "datatable": {
           "type": "object",
@@ -3112,6 +3244,29 @@
             }
           },
           "minProperties": 2
+        },
+        "gdxio": {
+          "description": "Errors/warnings used in gdxio class",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "errors": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "duplicateRecords": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "duplicateRecordsTruncated": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 2
+            }
+          },
+          "minProperties": 1
         },
         "xlsio": {
           "description": "Errors/warnings used in xlsio class",
@@ -3885,7 +4040,7 @@
           "minProperties": 3
         }
       },
-      "minProperties": 38
+      "minProperties": 39
     },
     "adminMode": {
       "description": "language specific objects of the MIRO admin mode",
@@ -5239,9 +5394,13 @@
                 "val60": {
                   "type": "string",
                   "minLength": 1
+                },
+                "val61": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 58
+              "minProperties": 59
             },
             "widgetOptions": {
               "type": "object",
@@ -5936,23 +6095,11 @@
               "type": "string",
               "minLength": 1
             },
-            "removeSuccess": {
+            "infoPostgres": {
               "type": "string",
               "minLength": 1
             },
-            "restoreSuccess": {
-              "type": "string",
-              "minLength": 1
-            },
-            "restoreNoData": {
-              "type": "string",
-              "minLength": 1
-            },
-            "restoreInvalidData": {
-              "type": "string",
-              "minLength": 1
-            },
-            "maxRowError": {
+            "infoSQLite": {
               "type": "string",
               "minLength": 1
             },
@@ -5964,19 +6111,11 @@
               "type": "string",
               "minLength": 1
             },
-            "dbSaveAll": {
+            "btDownloadBackup": {
               "type": "string",
               "minLength": 1
             },
-            "restore": {
-              "type": "string",
-              "minLength": 1
-            },
-            "restoreWrapper": {
-              "type": "string",
-              "minLength": 1
-            },
-            "restoreDb": {
+            "backupProgress": {
               "type": "string",
               "minLength": 1
             },
@@ -5987,101 +6126,9 @@
             "removeWrapper": {
               "type": "string",
               "minLength": 1
-            },
-            "removeDialogBtn": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeDialogTitle": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeDialogDesc": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeDialogCancel": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeDialogConfirm": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeOrphansWrapper": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeOrphansDialogBtn": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeOrphansDialogDesc": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeInconsistent": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeInconsistentConfirm": {
-              "type": "string",
-              "minLength": 1
-            },
-            "cannotBeUndone": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeTitle": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeCheck": {
-              "type": "string",
-              "minLength": 1
-            },
-            "confirm": {
-              "type": "string",
-              "minLength": 1
-            },
-            "cancel": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeOrphansCheck": {
-              "type": "string",
-              "minLength": 1
-            },
-            "removeOrphansTitle": {
-              "type": "string",
-              "minLength": 1
-            },
-            "saveMsg": {
-              "type": "string",
-              "minLength": 1
-            },
-            "compressMsg": {
-              "type": "string",
-              "minLength": 1
-            },
-            "decompressMsg": {
-              "type": "string",
-              "minLength": 1
-            },
-            "validateMsg": {
-              "type": "string",
-              "minLength": 1
-            },
-            "uploadMsg": {
-              "type": "string",
-              "minLength": 1
-            },
-            "finishedMsg": {
-              "type": "string",
-              "minLength": 1
             }
           },
-          "minProperties": 37
+          "minProperties": 9
         },
         "graphs": {
           "type": "object",

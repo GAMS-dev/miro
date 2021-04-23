@@ -205,3 +205,58 @@ loginRequired <- function(session, isLoggedIn){
 escapeAppIds = function(appIds){
     return(tolower(gsub("_", "", appIds, fixed = TRUE)))
 }
+
+# taken from Advanced R by Hadley Wickham (https://adv-r.hadley.nz/conditions.html)
+# licensed under the MIT license
+stop_custom <- function(.subclass, message, call = NULL, ...) {
+  err <- structure(
+    list(
+      message = message,
+      call = call,
+      ...
+    ),
+    class = c(.subclass, "error", "condition")
+  )
+  stop(err)
+}
+
+checkboxInput_MIRO <- function(inputId, label, value = FALSE){
+  inputTag <- tags$input(id = inputId, type = "checkbox")
+  if (!is.null(value) && value)
+    inputTag$attribs$checked <- "checked"
+  tags$div(class = "shiny-input-container",
+           tags$label(class = "cb-label", "for" = inputId, label),
+           tags$div(
+             tags$label(class = "checkbox-material",
+                        tags$div(class = "form-group", 
+                                 tags$div(class = "checkbox",
+                                          tags$label(inputTag, tags$span())))
+             ))
+  )
+}
+
+# js utility functions
+
+showEl <- function(session, id){
+  session$sendCustomMessage("gms-showEl", id)
+}
+
+hideEl <- function(session, id){
+  session$sendCustomMessage("gms-hideEl", id)
+}
+
+showElReplaceTxt <- function(session, id, txt){
+  session$sendCustomMessage("gms-showElReplaceTxt", list(id = id, txt = htmltools::htmlEscape(txt)))
+}
+
+showHideEl <- function(session, id, delay = 2000, msg = NULL){
+  session$sendCustomMessage("gms-showHideEl", list(id = id, delay = delay, msg = msg))
+}
+
+enableEl <- function(session, id){
+  session$sendCustomMessage("gms-enableEl", id)
+}
+
+disableEl <- function(session, id){
+  session$sendCustomMessage("gms-disableEl", id)
+}

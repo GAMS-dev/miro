@@ -155,11 +155,25 @@ observeEvent(input$general_save_duration, {
 
 observeEvent(input$general_args, ignoreNULL = FALSE, {
   if(!length(input$general_args)){
+    hideEl(session, "#invalidClArgsError")
     rv$generalConfig$extraClArgs <<- NULL
     configJSON$extraClArgs <<- NULL
+    return()
   }
-  else{
-    rv$generalConfig$extraClArgs <<- input$general_args
+  invalidClArgs <- trimws(tolower(vapply(strsplit(input$general_args, " |="),
+                                         "[[", character(1L), 1L, USE.NAMES = FALSE))) %in% reservedGMSOpt
+  if(any(invalidClArgs)){
+    showEl(session, "#invalidClArgsError")
+    newClArgs <- input$general_args[!invalidClArgs]
+    if(!length(newClArgs)){
+      rv$generalConfig$extraClArgs <<- NULL
+      configJSON$extraClArgs <<- NULL
+    }else{
+      rv$generalConfig$extraClArgs <- I(newClArgs)
+    }
+  }else{
+    hideEl(session, "#invalidClArgsError")
+    rv$generalConfig$extraClArgs <- I(input$general_args)
   }
 })
 
@@ -916,7 +930,7 @@ observeEvent(input$group_sameTabOut, {
     return()
   
   arrayIdx <- indexMap$push("outputGroups", input$group_sameTabOut[1])
-  arrayIdxAll <- indexMap$push("outputGroups_full", input$group_sameTabWidget[1])
+  arrayIdxAll <- indexMap$push("outputGroups_full", input$group_sameTabOut[1])
   newVal   <- isTRUE(as.logical(input$group_sameTabOut[2]))
   
   if(arrayIdx <= length(rv$generalConfig[["outputGroups"]]) && 

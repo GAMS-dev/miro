@@ -15,7 +15,7 @@ logger.setLevel(gunicorn_logger.level)
 class Settings(BaseSettings):
     engine_url: str
     engine_ns: str
-    session_timeout: int = 3600*5
+    session_timeout: int = 3600*12
 
 
 settings = Settings()
@@ -33,12 +33,13 @@ app = FastAPI()
 async def login(auth_request: AuthRequest, response: Response):
     logger.info("Login request received for user: %s.", auth_request.username)
     try:
-        r = requests.post(f"{settings.engine_url}/auth", auth=(
-            auth_request.username, auth_request.password),
-            data={"expires_in": settings.session_timeout})
+        r = requests.post(f"{settings.engine_url}/auth/login",
+            data={"expires_in": settings.session_timeout,
+                "username": auth_request.username,
+                "password": auth_request.password})
         if r.status_code != 200:
             logger.info("Invalid return code (%s) when requesting token from GAMS Engine",
-                        str(r.status_code), settings.engine_ns)
+                        str(r.status_code))
             response.status_code = r.status_code
             return r.json()
         token = r.json()["token"]

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import print_function
 import argparse
-
+import time
 import os
 import sys
 import subprocess
@@ -16,15 +16,6 @@ import json
 from distutils.dir_util import copy_tree
 
 ZIP_IGNORE_FILES = ['.DS_Store']
-
-def zipdir(path, ziph):
-  for root, dirs, files in os.walk(path):
-      for file in files:
-          if file in ZIP_IGNORE_FILES:
-            continue
-          
-          ziph.write(os.path.join(root, file),
-            os.path.join('miro_server', os.path.relpath(os.path.join(root, file), path)))
 
 def gen_password(length):
   return ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, 
@@ -152,7 +143,32 @@ class MiroServer(object):
     shutil.copy('LICENSE', os.path.join('release', 'LICENSE'))
 
     release_zip_file = zipfile.ZipFile(release_zip_filename, 'w', zipfile.ZIP_DEFLATED)
-    zipdir('release', release_zip_file)
+
+    for root, dirs, files in os.walk('release'):
+        for file in files:
+            if file in ZIP_IGNORE_FILES:
+                continue
+
+            name_in_zip = os.path.join('miro_server',
+                                       os.path.relpath(os.path.join(root, file), 'release'))
+            if os.name == 'nt' and file == 'miro-compose':
+                # we have to manually set executable bit of miro-compose on Windows
+                upsh = zipfile.ZipInfo(name_in_zip)
+                upsh.date_time = time.localtime()
+                upsh.external_attr = 0o100755 << 16
+                upsh.create_system = 3
+                with open(os.path.join(root, file), 'rb') as f:
+                    upsh_content = f.read()
+
+                # make sure file has unix line endings
+                upsh_content = upsh_content.replace(b'\r\n', b'\n')
+
+                release_zip_file.writestr(upsh, upsh_content)
+                continue
+
+            release_zip_file.write(os.path.join(root, file),
+                                   name_in_zip)
+
     release_zip_file.close()
     print(f"GAMS MIRO Server release file was written to: {os.path.join(os.getcwd(), release_zip_filename)}")
 
