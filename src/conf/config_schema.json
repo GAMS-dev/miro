@@ -2571,7 +2571,7 @@
              "uniqueItems":true,
              "items":{
                 "type":"object",
-                "description": "Scripts that will be displayed in the analysis section in the Hypercube mode and is feeded with input and output data of all selected scenarios",
+                "description": "Scripts for analyzing batches of scenarios.",
                 "additionalProperties":false,
                 "properties":{
                   "title": {

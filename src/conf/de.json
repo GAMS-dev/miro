@@ -1097,7 +1097,7 @@
         "headerBaseScripts": "Basismodus",
         "headerOutputAttach": "Ergebnis-Anhänge",
         "baseScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte aus, die im Ausgabeabschnitt angezeigt werden",
-        "headerHcubeScripts": "Hypercube-Modus",
+        "headerHcubeScripts": "Batch-Analyse",
         "hcubeScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte für mehrere Szenarien auf einmal aus",
         "headerScenData": "Szenario & Daten",
         "headerComputation": "Berechnung",
@@ -1141,7 +1141,7 @@
       },
       "scripts":{
         "base": "Spezifizieren Sie individuelle Analyseskripte für den Basismodus.",
-        "hcube": "Spezifizieren Sie individuelle Analyseskripte für den Hypercube-Modus."
+        "hcube": "Spezifizieren Sie individuelle Analyseskripte für die Batch-Analyse."
       },
       "outputAttach": {
         "label": "Neue Anlage hinzufügen"

@@ -63,15 +63,15 @@ if(LAUNCHHCUBEMODE){
                                        tags$span(class = "sr-only", "toggle dropdown")),
                            tags$ul(class = "dropdown-menu dropdown-sidebar", role = "menu", style = "margin:6px 0px 6px 15px;position:relative;width:85%;",
                                    tags$li(tags$a(href = "#", onclick = paste0("Miro.changeDDButtonEvent('", 
-                                                                               htmltools::htmlEscape(lang$nav$sidebarButtons$solve), 
+                                                                               htmltools::htmlEscape(lang$nav$sidebarButtons$solve),
                                                                                "', '#btSolve', 'btSolve');"),
                                                   lang$nav$sidebarButtons$solve)),
                                    tags$li(tags$a(href = "#", onclick = paste0("Miro.changeDDButtonEvent('", 
-                                                                               htmltools::htmlEscape(lang$nav$sidebarButtons$submitJob), 
+                                                                               htmltools::htmlEscape(lang$nav$sidebarButtons$submitJob),
                                                                                "', '#btSolve', 'btSubmitJob');"),
                                                   lang$nav$sidebarButtons$submitJob))))
                 else
-                  actionButton("btSolve", lang$nav$sidebarButtons$solve, 
+                  actionButton("btSolve", lang$nav$sidebarButtons$solve,
                                width = "85%", class = "bt-highlight-2 btSolve", style = "display:block;"), 
                 tagAppendAttributes(actionButton("btInterrupt", lang$nav$sidebarButtons$interrupt, 
                                                  width = "85%", class = "bt-highlight-2", style = "display:block;"), 

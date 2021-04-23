@@ -1097,7 +1097,7 @@
         "headerBaseScripts": "基本模式",
         "headerOutputAttach": "附件",
         "baseScriptsTooltip": "运行自定义分析脚本，该脚本将显示在输出中",
-        "headerHcubeScripts": "Hypercube模式",
+        "headerHcubeScripts": "批次分析",
         "hcubeScriptsTooltip": "一次运行多个方案的自定义分析脚本",
         "headerScenData": "场景和数据",
         "headerComputation": "计算",
@@ -1140,7 +1140,7 @@
       },
       "scripts":{
         "base": "指定基本模式的自定义分析脚本",
-        "hcube": "指定Hypercube模式的自定义分析脚本"
+        "hcube": "指定自定义分析脚本以分析批次的方案"
       },
       "outputAttach": {
         "label": "添加新的附件"

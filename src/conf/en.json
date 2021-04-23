@@ -1098,7 +1098,7 @@
         "headerBaseScripts": "Base Mode",
         "headerOutputAttach": "Output attachments",
         "baseScriptsTooltip": "Run custom analysis scripts which will be displayed in the output section",
-        "headerHcubeScripts": "Hypercube Mode",
+        "headerHcubeScripts": "Batch analysis",
         "hcubeScriptsTooltip": "Run custom analysis scripts for multiple scenarios at once",
         "headerScenData": "Scenario & data",
         "headerComputation": "Computation",
@@ -1142,7 +1142,7 @@
       },
       "scripts":{
         "base": "Specify custom analysis scripts for the Base Mode",
-        "hcube": "Specify custom analysis scripts for the Hypercube Mode"
+        "hcube": "Specify custom analysis scripts for analyzing batches of scenarios"
       },
       "outputAttach": {
         "label": "Add new attachment"
