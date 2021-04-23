@@ -200,7 +200,7 @@ getLoadDbPanel <- function(id, title, scenList, tagList, iconName, modeDescripto
                       column(12,
                              if(async){
                                tagList(
-                                 genSpinner("importDataDbSpinner"),
+                                 genSpinner("importDataDbSpinner", extraClasses = "gen-spinner-black"),
                                  tags$div(id = "importDataDbUnknownError", style = "display:none;",
                                           lang$errMsg$unknownError), 
                                  tags$div(id = "importDataDbNoContent", style = "display:none;", 
@@ -383,7 +383,7 @@ HTML(paste0('<div class="small-space"></div>
                                                                       onclick="Miro.validateHcubeHash()">',
             htmltools::htmlEscape(lang$nav[[modeDescriptor]]$hcubeHashButton), 
             '</button></div>')),
-genSpinner("hcHashLookup_load", absolute = TRUE, hidden = TRUE),
+genSpinner("hcHashLookup_load", absolute = TRUE, hidden = TRUE, extraClasses = "gen-spinner-black"),
 tags$div(style = "max-height: 500px;overflow:auto;",
          uiOutput("hcHashLookupResults")
 )
@@ -621,7 +621,8 @@ showEditMetaDialog <- function(metadata,
                                      })
                                    },
                                    tags$div(id = "endAttachList", class = "small-space"),
-                                   genSpinner(id = "addAttachLoading", hidden = TRUE, absolute = FALSE)
+                                   genSpinner(id = "addAttachLoading", hidden = TRUE, absolute = FALSE,
+                                              extraClasses = "gen-spinner-black")
     )
     contentViews <- tabPanel(langData$categoryViews,
                              tags$div(class = "gmsalert gmsalert-success", id = "viewsSuccess", 
@@ -673,7 +674,8 @@ showEditMetaDialog <- function(metadata,
                                          type = "button",
                                          onClick = "Miro.sendSelectedRowsRequest('currentViewsTable','removeViews','viewsNoneSelected')",
                                          lang$nav$dialogEditMeta$viewsRemove),
-                             genSpinner(id = "addViewsLoading", hidden = TRUE, absolute = FALSE)
+                             genSpinner(id = "addViewsLoading", hidden = TRUE, absolute = FALSE,
+                                        extraClasses = "gen-spinner-black")
     )
     contentList <- list(tabPanel(langData$categoryGeneral, 
                                  content), contentAttachments, contentViews)
@@ -758,7 +760,7 @@ showJobSubmissionDialog <- function(jobName = ""){
     tags$div(id = "jobSubmissionLoad", style = "display:none;text-align:center;",
              lang$nav$dialogJobSubmission$descWait,
              tags$div(class = "space"),
-             genSpinner(hidden = FALSE, absolute = FALSE)),
+             genSpinner(hidden = FALSE, absolute = FALSE, extraClasses = "gen-spinner-black")),
     tags$div(id = "jobSubmissionWrapper", 
              lang$nav$dialogJobSubmission$desc,
              tags$div(class = "space"),
@@ -792,7 +794,7 @@ showHcubeSubmitDialog <- function(noIdsToSolve, noIdsExist){
     tags$div(id = "jobSubmissionLoad", style = "display:none;text-align:center;",
              lang$nav$dialogHcube$descJobSubmission,
              tags$div(class = "space"),
-             genSpinner(hidden = FALSE, absolute = FALSE)),
+             genSpinner(hidden = FALSE, absolute = FALSE, extraClasses = "gen-spinner-black")),
     tags$div(id = "jobSubmissionWrapper", 
              tags$div(paste0(sprintf(lang$nav$dialogHcube$desc, noIdsToSolve, 
                                      noIdsExist), if(!identical(noIdsExist, noIdsToSolve)) 
@@ -977,7 +979,8 @@ showBatchLoadDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver 
                                 analysisTabset),
                        tags$div(id = "batchLoadAnalysisWrapper",
                                 style = "display:none;", class = "batch-load-script-content",
-                                genSpinner(id = "batchLoadAnalysisSpinner", absolute = FALSE))
+                                genSpinner(id = "batchLoadAnalysisSpinner", absolute = FALSE,
+                                           extraClasses = "gen-spinner-black"))
                      )
                    }),
           tags$div(class = "modal-footer",
@@ -994,7 +997,7 @@ showBatchLoadDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver 
                      tagList(actionButton("btAnalysisConfig", class = "batch-load-content",
                                           lang$nav$dialogBatchLoad$paverButton),
                              tags$div(style = "display:none;",
-                                      class = "batch-load-content batch-load-analysis-content",
+                                      class = "batch-load-content batch-load-analysis-footer",
                                       actionButton("btRunPaver", lang$nav$dialogBatchLoad$runPaverButton, 
                                                    class = "bt-highlight-1 bt-gms-confirm", 
                                                    style = if(length(customScripts)) "display:none;"),
@@ -1005,7 +1008,7 @@ showBatchLoadDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver 
                                             lang$nav$dialogBatchLoad$downloadAnalysisButton,
                                             style = "display:none"))
                    },
-                   if(identical(length(sidsToLoad), 1L)){
+                   if(identical(length(sidsToLoad), 1L) && !LAUNCHHCUBEMODE){
                      tagList(actionButton("btBatchLoadSb", class = "batch-load-content",
                                           lang$nav$dialogBatchLoad$interactiveButtonSb),
                              actionButton("btBatchLoadSbOverwrite",
@@ -1282,7 +1285,7 @@ showJobLogFileDialog <- function(jID){
                                   value = paste0("log_", jID),
                                   tags$pre(style = "max-height:400px;max-height:50vh;overflow:auto;",
                                            id = "asyncLogContainer",
-                                           genSpinner()
+                                           genSpinner(extraClasses = "gen-spinner-black")
                                   ))
   }
   if(config$activateModules$lstFile){
@@ -1290,7 +1293,7 @@ showJobLogFileDialog <- function(jID){
                                   value = paste0("listfile_", jID),
                                   tags$pre(style = "max-height:400px;max-height:50vh;overflow:auto;",
                                            id = "asyncLstContainer", 
-                                           genSpinner()
+                                           genSpinner(extraClasses = "gen-spinner-black")
                                   ))
   }
   if(config$activateModules$miroLogFile){
@@ -1298,7 +1301,7 @@ showJobLogFileDialog <- function(jID){
                                       value = paste0("mirolog_", jID),
                                       tags$pre(style = "max-height:400px;max-height:50vh;overflow:auto;",
                                                id = "asyncMiroLogContainer",
-                                               genSpinner()
+                                               genSpinner(extraClasses = "gen-spinner-black")
                                       ))
   }
   logTabsetList <- unname(logTabsetList)

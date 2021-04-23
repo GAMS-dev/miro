@@ -5,7 +5,8 @@ scriptOutput <- ScriptOutput$new(session, scriptsPath,
 
 observeEvent(input$btAnalysisConfig, {
   hideEl(session, ".batch-load-content")
-  showEl(session, ".batch-load-analysis-content", inline = TRUE)
+  showEl(session, ".batch-load-analysis-content")
+  showEl(session, ".batch-load-analysis-footer", inline = TRUE)
 })
 if(length(config$scripts$base)){
   observeEvent(input$runScript, {
