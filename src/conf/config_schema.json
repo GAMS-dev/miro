@@ -1005,6 +1005,12 @@
                         "minLength":1
                       }
                     },
+                    "fixedColumnsLeft": {
+                       "description": "Whether non-pivoted columns should be fixed",
+                       "type": ["integer", "null"],
+                       "minLength": 1,
+                       "minimum": 1
+                    },
                     "sortPivotCols":{
                       "description":"Whether pivoted columns should be sorted alphabetically",
                         "type":"boolean"

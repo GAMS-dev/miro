@@ -1425,6 +1425,7 @@
         "readonly": "Soll die Tabelle schreibgeschützt sein?",
         "readonlyCols": "Wählen Sie Spalten aus, die schreibgeschützt sein sollen",
         "pivotCols": "Wählen Sie eine Spalte, die pivotiert werden soll",
+        "fixedColumnsLeft": "Spalten fixieren, die nicht pivotiert sind?",
         "heatmap": "Die Tabelle in eine Heatmap wandeln?"
       },
       "slider":{

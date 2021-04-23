@@ -1426,6 +1426,7 @@
         "readonly": "Should table be readonly?",
         "readonlyCols": "Select columns to be readonly",
         "pivotCols": "Select a column to pivot",
+        "fixedColumnsLeft": "Fix columns that are not pivoted?",
         "heatmap": "Turn table into a heatmap?"
       },
       "slider":{
