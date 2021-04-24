@@ -88,6 +88,10 @@
            "description":"Enable button that allows to hide empty columns.",
            "type": "boolean"
          },
+         "hideEmptyCols": {
+           "description":"Default value for hide empty columns checkbox (only relevant if enableHideEmptyCols is TRUE).",
+           "type": "boolean"
+         },
          "enablePersistentViews": {
            "description":"Enable persistent views.",
            "type": "boolean"

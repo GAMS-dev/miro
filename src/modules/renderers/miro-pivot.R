@@ -143,7 +143,8 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                                        selected = if(length(options$pivotRenderer))
                                          options$pivotRenderer else "table"),
                            if(isTRUE(options$enableHideEmptyCols))
-                              checkboxInput_MIRO(ns("hideEmptyCols"), lang$renderers$miroPivot$cbHideEmptyCols)),
+                              checkboxInput_MIRO(ns("hideEmptyCols"), lang$renderers$miroPivot$cbHideEmptyCols,
+                                                value = identical(options$hideEmptyCols, TRUE))),
                     column(width = 6L, style = "padding: 1em;",
                            tags$ul(id = ns("colIndexList"), class="drop-index-list vertical-index-list",
                                    genIndexList(indices$cols))),
@@ -356,6 +357,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }else{
           updateSelectInput(session, "pivotRenderer", selected = "table")
         }
+        if(isTRUE(options$enableHideEmptyCols)){
+          updateCheckboxInput(session, "hideEmptyCols",
+                              value = identical(options[["hideEmptyCols"]], TRUE))
+        }
         newView <- list(filter = unname(indices$filter),
                         aggregations = unname(indices$aggregations),
                         cols = unname(indices$cols))
@@ -490,6 +495,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             newViewConfig <- list(aggregationFunction = input$aggregationFunction,
                                   pivotRenderer = input$pivotRenderer,
                                   domainFilter = list(default = input$domainFilter))
+            if(isTRUE(options$enableHideEmptyCols)){
+              newViewConfig$hideEmptyCols <- identical(input$hideEmptyCols, TRUE)
+            }
             for(indexEl in list(c("rows", "rowIndexList"))){
               indexVal <- input[[indexEl[[2]]]]
               if(length(indexVal)){

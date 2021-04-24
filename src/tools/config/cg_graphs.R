@@ -3737,7 +3737,8 @@ observeEvent(rv$saveGraphConfirm, {
     configJSON$dataRendering[[activeSymbol$name]]$options <<- list(
       aggregationFunction = input[["preview_output_miropivot-miroPivot-aggregationFunction"]],
       pivotRenderer = input[["preview_output_miropivot-miroPivot-pivotRenderer"]],
-      enableHideEmptyCols = isTRUE(input$miropivot_enableHideEmptyCols)
+      enableHideEmptyCols = isTRUE(input$miropivot_enableHideEmptyCols),
+      hideEmptyCols = isTRUE(input[["preview_output_miropivot-miroPivot-hideEmptyCols"]])
     )
     if(length(rv$graphConfig$graph$options$emptyUEL)){
       configJSON$dataRendering[[activeSymbol$name]]$options$emptyUEL <<- rv$graphConfig$graph$options$emptyUEL
