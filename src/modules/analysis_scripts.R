@@ -135,7 +135,7 @@ if(length(config$scripts$hcube)){
                                     style = "display:none"),
                            tags$div(class = "space"),
                            tags$iframe(class = "script-output",
-                                       style = "max-height:800px;max-height:90vh;")),
+                                       style = "height:800px;height:80vh;")),
              immediate = TRUE)
     if(tryCatch({
       batchLoader$genGdxFiles(sidsToLoad, scriptsPath,
