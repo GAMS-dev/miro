@@ -603,6 +603,14 @@ body{
   padding-top: 15px;
   padding-bottom: 15px;
 }
+.page-wrapper .doc-section [id]::before { 
+  display: block; 
+  content: " "; 
+  margin-top: -60.3px; /* header offset */
+  height: 60.3px;
+  visibility: hidden; 
+  pointer-events: none;
+}
 .page-wrapper .doc-section .section-title {
   font-size: 26px;
   margin-top: 0;
@@ -616,73 +624,25 @@ body{
   font-size: 24px;
   font-weight: bold;
 }
-.page-wrapper .doc-section h1::before { 
-  display: block; 
-  content: " "; 
-  margin-top: -60.3px; 
-  height: 60.3px; 
-  visibility: hidden; 
-  pointer-events: none;
-}
 .page-wrapper .doc-section h2 {
   font-size: 22px;
   font-weight: bold;
-}
-.page-wrapper .doc-section h2::before { 
-  display: block; 
-  content: " "; 
-  margin-top: -60.3px; 
-  height: 60.3px; 
-  visibility: hidden; 
-  pointer-events: none;
 }
 .page-wrapper .doc-section h3 {
   font-size: 20px;
   font-weight: bold;
 }
-.page-wrapper .doc-section h3::before { 
-  display: block; 
-  content: " "; 
-  margin-top: -60.3px; 
-  height: 60.3px; 
-  visibility: hidden; 
-  pointer-events: none;
-}
 .page-wrapper .doc-section h4 {
   font-size: 18px;
   font-weight: bold;
-}
-.page-wrapper .doc-section h4::before { 
-  display: block; 
-  content: " "; 
-  margin-top: -60.3px; 
-  height: 60.3px; 
-  visibility: hidden; 
-  pointer-events: none;
 }
 .page-wrapper .doc-section h5 {
   font-size: 16px;
   font-weight: bold;
 }
-.page-wrapper .doc-section h5::before { 
-  display: block; 
-  content: " "; 
-  margin-top: -60.3px; 
-  height: 60.3px; 
-  visibility: hidden; 
-  pointer-events: none;
-}
 .page-wrapper .doc-section h6 {
   font-size: 14px;
   font-weight: bold;
-}
-.page-wrapper .doc-section h6::before { 
-  display: block; 
-  content: " "; 
-  margin-top: -60.3px; 
-  height: 60.3px; 
-  visibility: hidden; 
-  pointer-events: none;
 }
 .page-wrapper .section-block {
   padding-top: 15px;
