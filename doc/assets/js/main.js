@@ -13,7 +13,7 @@ $(document).ready(function() {
     });
 
     /* Activate scrollspy menu */
-    $('body').scrollspy({target: '#doc-menu', offset: -100});
+    $('body').scrollspy({target: '#doc-menu', offset: 100});
     
     /* Smooth scrolling */
 	$('a.scrollto').on('click', function(e){

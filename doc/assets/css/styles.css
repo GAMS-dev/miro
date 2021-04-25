@@ -1096,7 +1096,7 @@ body{
 .page-wrapper .sticky {
   position: -webkit-sticky;
   position: sticky;
-  top: 0;
+  top: 70px;
 }
 .page-wrapper .sticky:before,
 .page-wrapper .sticky:after {
