@@ -21,7 +21,6 @@ $(document).ready(function() {
         var target = this.hash;    
         e.preventDefault();
 		$('body').scrollTo(target, 800, {offset: -60.3, 'axis':'y'});
-		
 	});
 	
     
