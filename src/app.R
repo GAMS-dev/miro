@@ -441,7 +441,7 @@ if(is.null(errMsg) && debugMode){
                                    customRendererName), sep = "\n")
         })
       }
-      # find packages to install and install them
+      # find packages to install them
       if(length(customRendererConfig$packages)){
         requiredPackagesCR <- c(requiredPackagesCR, customRendererConfig$packages)
       }

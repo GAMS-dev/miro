@@ -2547,7 +2547,6 @@ observeEvent({
     }else if(identical(chartTool, "custom")){
       showEl(session, ".category-btn-custom")
       addClassEl(session, id = "#categoryCustom1", "category-btn-active")
-      addClassEl(session, id = "#categoryCustom2", "category-btn-active")
       invalidCustomRender <<- FALSE
       insertUI(selector = "#tool_options",
                tags$div(id = "custom_options", getCustomOptions()), where = "beforeEnd")
