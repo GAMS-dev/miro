@@ -82,7 +82,7 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
                                               lang$nav$migrationModule$incompatibleTypeWarning),
                                      selectInput(ns(paste0("dbMigrateTable_", i, "_", j)),
                                                  tags$span(title = tableMeta$headers[[j]]$alias,
-                                                           tableInfo$colNames[j]),
+                                                           paste0(lang$nav$migrationModule$selectColToMap, tableInfo$colNames[j])),
                                                  colChoices,
                                                  selected = if(tableInfo$colNames[j] %in% colChoices)
                                                    tableInfo$colNames[j] else "-"
