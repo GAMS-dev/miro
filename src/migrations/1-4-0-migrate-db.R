@@ -79,8 +79,7 @@ migrateMiroDatabase <- function(oldPath, newPath){
             next
           }
           sidsHcConfig <- dbGetQuery(conn, paste0("SELECT _sid FROM ",
-                                                  dbQuoteIdentifier(conn, paste0("_sys_metadata_",
-                                                                                 appIdWithData)),
+                                                  dbQuoteIdentifier(conn, "_sys_metadata_"),
                                                   " WHERE _scode=-1"))
           if(length(sidsHcConfig) && length(sidsHcConfig[[1]])){
             # copy Hypercube scalars to new _hc__scalars table
