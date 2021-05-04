@@ -56,31 +56,27 @@
   },
   "dataRendering": {
     "t": {
-      "outType": "curve",
-      "packages": "graphics",
+      "outType": "mirorenderer_t",
       "options": {
         "title": "Curve with inscribed square"
-      }
+      },
+      "packages": "graphics"
     }
   },
   "readme": {
     "tabTitle": "Readme",
-    "filename": "README.md"
+    "filename": "README.md",
+    "enableMath": false
   },
-  "handsontable": {
-    "stretchH": "none",
-    "readonly": false,
-    "highlightCol": true,
-    "highlightRow": true,
-    "columnSorting": true,
-    "manualColumnResize": true,
-    "contextMenu": {
-      "enabled": true,
-      "allowRowEdit": true,
-      "allowColEdit": true,
-      "allowReadOnly": false
+  "overwriteAliases": {
+    "_scalarsve_out": {
+      "newAlias": "Output Variable/Equation Scalars"
     },
-    "height": 700,
-    "colWidths": 150
+    "t": {
+      "newAlias": "position of square corner points on curve"
+    },
+    "_scalars_out": {
+      "newAlias": "Output Scalars"
+    }
   }
 }

@@ -1058,17 +1058,7 @@
       "widgets": "Widgets konfigurieren",
       "graphs": "Graphen konfigurieren",
       "database": "Datenbankverwaltung",
-      "custom":{
-        "skeleton": "Grundgerüst:",
-        "steps": "Schritte:",
-        "li1": "Erstellen Sie ein Verzeichnis renderer_%s in Ihrem Modellverzeichnis mit einer Datei %s_custom.R darin.",
-        "li2": "Kopiere den obenstehenden Code und füge ihn in die Datei %s_custom.R ein.",
-        "li3a": "Schreibe deinen eigenen Renderer! Für eine detaillierte Beschreibung, wie man einen solchen benutzerdefinierten Renderer schreibt, siehe ",
-        "li3b": "hier",
-        "description1": "Das nächste Mal, wenn die Applikation nach einem Klick auf speichern gestartet wird, sucht MIRO nach einer benutzerdefinierten Rendererfunktion in der Datei %s_custom.R. Wird diese nicht gefunden, startet die Anwendung nicht! Vergewissere dich also immer, dass du die benutzerdefinierte Rendererfunktion korrekt eingebunden hast. Es ist immer eine gute Idee, zunächst einen von MIRO isolierten Renderer zu entwickeln und ihn, sobald du mit dem Ergebnis zufrieden bist, in die MIRO-Anwendung zu integrieren.",
-        "description2": "Beachte:",
-        "description3": "Wenn deine Anwendung aus dem oben genannten Grund nicht startet, kannst du den konfigurierten Renderer hier jederzeit löschen."
-      }
+      "restartRequired": "Hinweis: Damit diese Änderungen wirksam werden, müssen Sie den Konfigurationsmodus neu starten!"
     },
     "general":{
       "ui":{
@@ -1589,6 +1579,7 @@
         "legend": "Legende",
         "markers": "Markierungen",
         "flows": "Flüsse",
+        "advanced": "Erweiterte Optionen",
         "minicharts": "Minicharts",
         "groupsLayers": "Gruppen & Ebenen",
         "data": "Daten"
@@ -1606,7 +1597,10 @@
         "choices": ["Kreisdiagramm", "Balkendiagramm", "Streudiagramm", "Liniendiagramm", "Blasendiagramm", "Histogramm", "Zeitreihen-Diagramm", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle und Pivot-Charts", "Wertebox für skalare Werte", "Eigener Renderer"],
         "deleteGraph": "Löschen",
         "saveGraph": "Speichern",
-        "toggleFullscreen": "Vollbild wechseln"
+        "toggleLeft": "Linken Bildbereich auf Vollbildmodus umschalten",
+        "toggleRight": "Rechten Bildbereich auf Vollbildmodus umschalten",
+        "previewError": "Es ist ein Fehler aufgetreten: '%s'",
+        "previewErrorObs": "In einem Observer ist ein Fehler aufgetreten: '%s'"
       },
       "graphOptions":{
         "pie": "Kreisdiagramm",
@@ -1624,6 +1618,7 @@
       },
       "validate":{
         "val1": "Der Bereich für die x-Achse konnte nicht eingestellt werden. Überprüfen Sie das korrekte Datenformat!",
+        "custom1": "Konnte zusätzliche Optionen nicht parsen. Bitte stellen Sie sicher, dass Sie eine gültige JSON-Syntax verwenden!",
         "pieValues": "Das ausgewählte Symbol hat zu viele Werte, um als Kuchendiagramm angezeigt zu werden. Die maximale Anzahl der Werte, die in einem Kuchendiagramm dargestellt werden können, beträgt 100.",
         "tableNeeded": "Ein Symbol, das als Karte konfiguriert werden soll, muss als GAMS-Tabelle deklariert werden (table statement), da mehrere Wertespalten benötigt werden (z.B. Breiten- und Längengradangaben)."
       },
@@ -1832,7 +1827,10 @@
         }
       },
       "customOptions":{
-        "name": "Name der benutzerdefinierten Rendererfunktion (ohne Leerzeichen)",
+        "btUpdate": "Aktualisieren",
+        "externalRenderer": "Renderer von anderem Symbol verwenden",
+        "symNotFoundSuffix": "(Symbol nicht gefunden)",
+        "options": "Zusätzliche Optionen, die an Renderer-Funktionen übergeben werden",
         "packages": "Benötigte Pakete für den Renderer",
         "additionalData": "Zusätzliche Datensätze, die mit dem benutzerdefinierten Renderer kommuniziert werden sollen"
       },

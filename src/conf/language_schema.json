@@ -4106,48 +4106,9 @@
               "type": "string",
               "minLength": 1
             },
-            "custom": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "skeleton": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "steps": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "li1": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "li2": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "li3a": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "li3b": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "description1": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "description2": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "description3": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "minProperties": 9
+            "restartRequired": {
+              "type": "string",
+              "minLength": 1
             }
           },
           "minProperties": 7
@@ -6257,6 +6218,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "advanced": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "minicharts": {
                   "type": "string",
                   "minLength": 1
@@ -6270,7 +6235,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 22
+              "minProperties": 23
             },
             "ui": {
               "type": "object",
@@ -6330,12 +6295,24 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "toggleFullscreen": {
+                "toggleLeft": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "toggleRight": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "previewError": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "previewErrorObs": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 13
+              "minProperties": 16
             },
             "graphOptions": {
               "type": "object",
@@ -6400,6 +6377,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "custom1": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "pieValues": {
                   "type": "string",
                   "minLength": 1
@@ -6409,7 +6390,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 3
+              "minProperties": 4
             },
             "errMsg": {
               "type": "object",
@@ -7316,7 +7297,19 @@
               "type": "object",
               "additionalProperties": false,
               "properties": {
-                "name": {
+                "btUpdate": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "externalRenderer": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "symNotFoundSuffix": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "options": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -7329,7 +7322,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 3
+              "minProperties": 6
             },
             "filterOptions": {
               "type": "object",
