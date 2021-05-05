@@ -175,6 +175,12 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
       newSchema <- dbSchema$getDbSchema(symName)
       dbTableName <- dbSchema$getDbTableName(symName)
       
+      if(!inherits(private$conn, "PqConnection") && any(colsToRemove)){
+        # since sqlite does not support dropping columns, we need to remap table anyway
+        flog.debug("Remapping table: %s", dbTableName)
+        private$remapTable(symName, migrationLayout$colNames)
+        return()
+      }
       if(length(migrationLayout$colNames) == length(currentLayout$colNames[!colsToRemove]) &&
          all(migrationLayout$colNames == currentLayout$colNames[!colsToRemove])){
         if(any(colsToRemove)){
@@ -182,6 +188,8 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
                      paste(currentLayout$colNames[colsToRemove], collapse = ", "),
                      dbTableName)
           private$dropColumns(dbTableName, currentLayout$colNames[colsToRemove])
+          currentLayout$colNames <- currentLayout$colNames[!colsToRemove]
+          currentLayout$colTypes <- currentLayout$colTypes[!colsToRemove]
         }
         
         currentColNames <- migrationLayout$colNames
@@ -230,8 +238,14 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
       if(any(colsToAdd) &&
          identical(sum(colsToAdd), length(newSchema$colNames) - min(which(colsToAdd)) + 1L)){
         # all columns to add are at the end
+        if(any(colsToRemove)){
+          flog.debug("Removing columns: %s from table: %s",
+                     paste(currentLayout$colNames[colsToRemove], collapse = ", "),
+                     dbTableName)
+          private$dropColumns(dbTableName, currentLayout$colNames[colsToRemove])
+        }
         flog.debug("Adding column(s): %s to the end of table: %s",
-                   newSchema$newColNames[colsToAdd], dbTableName)
+                   newSchema$colNames[colsToAdd], dbTableName)
         private$addColumns(dbTableName,
                            newSchema$colNames[colsToAdd],
                            dbSchema$getColTypesSQL(newSchema$colTypes)[colsToAdd])
@@ -412,6 +426,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
                                        collapse = ",")))
       return(invisible(self))
     }
+    stop("dropping columns not supported in sqlite", call. = FALSE)
   },
   renameTable = function(oldName, newName){
     private$db$runQuery(paste0("ALTER TABLE ",
