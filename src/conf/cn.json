@@ -1069,17 +1069,7 @@
       "widgets": "配置小部件",
       "graphs": "配置图表",
       "database": "管理数据库",
-	  "custom":{
-        "skeleton": "结构：",
-        "steps": "步骤：",
-        "li1": "在当前模型地路径下创建包含'%s_custom.R'文件的文件夹 'renderer_%s'",
-        "li2": "复制上面的代码并将其粘贴到文件'%s_custom.R'中",
-        "li3a": "编写自己的自定义绘制器！ 有关如何编写自定义绘制器的详细说明，请参见 ",
-        "li3b": "此处",
-        "description1": "单击'保存'按钮后，下次启动MIRO时，MIRO在文件'%s_custom.R'中寻找自定义的绘制器，如果找不到该文件，MIRO无法启动！ 请确保自定义的绘制器的功能和配置完全正确。 建议您首先开发一个本地的自定义绘制器，获得满意的结果后将其集成到MIRO应用程序中。",
-        "description2": "注意：",
-        "description3": "如果该应用程序由于上述原因无法启动，您可以随时删除配置过的绘制器。"
-      }																			 
+      "restartRequired": "注意：为了使这些更改生效，您必须重新启动配置模式！"
     },
     "general":{
       "ui":{
@@ -1424,6 +1414,7 @@
         "readonly": "设定表格为只读吗？",
         "readonlyCols": "设定表格的某些列为只读",
 		"pivotCols": "选择要旋转的列",
+        "fixedColumnsLeft": "是否应该将所有非枢轴列固定下来？",
         "heatmap": "把表格转换成热图？"
       },
       "slider":{
@@ -1598,6 +1589,7 @@
         "legend": "Legend",
         "markers": "标记",
         "flows": "流量",
+        "advanced": "高级选项",
         "minicharts": "小型图标",
         "groupsLayers": "组和层",
         "data": "数据"
@@ -1615,7 +1607,10 @@
         "choices": ["饼图", "柱形图", "散点图", "折线图", "气泡图", "直方图", "时间序列图形工具", "地图工具", "甘特图", "数据透视表", "标量值的值框", "自定义绘制器"],
         "deleteGraph": "删除",
         "saveGraph": "保存",
-        "toggleFullscreen": "切换全屏"
+        "toggleLeft": "将左屏切换到全屏模式",
+        "toggleRight": "将右屏切换到全屏模式",
+        "previewError": "发生错误：“%s”",
+        "previewErrorObs": "观察者内部发生错误：“%s”"
       },
       "graphOptions":{
         "pie": "饼图",
@@ -1633,6 +1628,7 @@
       },
       "validate":{
         "val1": "无法设置x轴的范围。 请检查数据格式是否正确！",
+        "custom1": "无法解析其他自定义选项。 请确保您使用有效的JSON语法！",
         "pieValues": "所选GAMS符号的值太多，无法显示饼图。 饼图中最多可显示100个值。",
         "tableNeeded": "要配置为地图的符号必须声明为GAMS表，因为需要多个值列(如经纬度信息)。"
       },
@@ -1841,9 +1837,12 @@
         }
       },
       "customOptions":{
-        "name": "指定代码中自定义绘制器功能的名称（无空格）",
+        "btUpdate": "更新",
+        "externalRenderer": "从另一个符号使用渲染器",
+        "symNotFoundSuffix": "（找不到符号）",
+        "options": "传递给渲染器功能的其他选项",
         "packages": "绘制器所需的软件包",
-        "additionalData": "Additional datasets to communicate with the custom renderer"
+        "additionalData": "应传递给自定义渲染器的其他数据集"
       },
       "filterOptions":{
         "filter": "是否允许通过下拉菜单选择符号的域？",
