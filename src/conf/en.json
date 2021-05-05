@@ -679,7 +679,7 @@
       "title": "Database migration",
       "desc": "We have determined that your GAMS/MIRO data contract has changed in a way that is incompatible with your app's current database layout. Please specify how your data should be migrated.",
       "backupWarning": "We strongly recommend that you backup your database before migration.",
-      "successMsg": "Your data has been migrated successfully!",
+      "successMsg": "Your data has been migrated successfully! Please restart the application.",
       "labelSymbol": "Symbol: '%s'",
       "selectTableToMap": "Migrate data from",
       "selectColToMap": "Column: ",
@@ -706,7 +706,7 @@
         "cbConfirm": "Remove all tables?",
         "btCancel": "Cancel",
         "btConfirm": "Remove tables",
-        "msgSuccess": "Database tables removed successfully!"
+        "msgSuccess": "Database tables removed successfully! Please restart the application."
       }
     }
   },

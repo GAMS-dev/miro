@@ -679,7 +679,7 @@
       "title": "Datenbankmigration",
       "desc": "Wir haben festgestellt, dass sich Ihr GAMS/MIRO-Datenvertrag auf eine Weise geändert hat, die mit dem aktuellen Datenbanklayout Ihrer App nicht kompatibel ist. Bitte geben Sie an, wie Ihre Daten migriert werden sollen.",
       "backupWarning": "Wir empfehlen Ihnen dringend, vor der Migration ein Backup Ihrer Datenbank zu erstellen.",
-      "successMsg": "Ihre Daten wurden erfolgreich migriert!",
+      "successMsg": "Ihre Daten wurden erfolgreich migriert! Bitte starten Sie die Anwendung neu.",
       "labelSymbol": "Symbol: '%s'",
       "selectTableToMap": "Migriere Daten von",
       "selectColToMap": "Spalte: ",
@@ -706,7 +706,7 @@
         "cbConfirm": "Alle Tabellen entfernen?",
         "btCancel": "Abbrechen",
         "btConfirm": "Tabellen entfernen",
-        "msgSuccess": "Datenbanktabellen erfolgreich entfernt"
+        "msgSuccess": "Datenbanktabellen erfolgreich entfernt. Bitte starten Sie die Anwendung neu."
       }
     }
   },
