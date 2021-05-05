@@ -851,6 +851,9 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
         }
         return(TRUE)
       }, logical(1L), USE.NAMES = FALSE)
+      if(!length(orphanedTablesInfo)){
+        inconsistentTablesInfo <- inconsistentTablesInfo[!isNewTable]
+      }
     }, error = function(e){
       flog.error("Problems initialising dbMigrator. Error message: '%s'.", conditionMessage(e))
       if(miroStoreDataOnly){
@@ -861,7 +864,7 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
         stop()
       quit("no", 1L)
     })
-    if(length(inconsistentTablesInfo[!isNewTable]) || length(orphanedTablesInfo)){
+    if(length(inconsistentTablesInfo) || length(orphanedTablesInfo)){
       source("./tools/db_migration/modules/bt_delete_database.R", local = TRUE)
       source("./tools/db_migration/modules/form_db_migration.R", local = TRUE)
       source("./tools/db_migration/server.R", local = TRUE)
