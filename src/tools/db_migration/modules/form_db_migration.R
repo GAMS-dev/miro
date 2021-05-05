@@ -85,7 +85,7 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
                                      ),
                                      tags$div(id = ns("incompatibleTypeWarning"),
                                               class = "err-msg",
-                                              style = paste0("margin:0px;", if(!showTypeWarning) "display:none;"),
+                                              style = paste0("margin:0px;text-align: justify;", if(!showTypeWarning) "display:none;"),
                                               lang$nav$migrationModule$incompatibleTypeWarning))
                           })
                  )
