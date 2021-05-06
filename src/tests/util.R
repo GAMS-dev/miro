@@ -58,7 +58,7 @@ expect_files_in_zip <- function(app, id, files){
   expect_true(all(files %in% filesInZip))
 }
 
-createTestDb <- function(dbPath = file.path(getwd(), "..", "miro.sqlite3")){
+createTestDb <- function(dbPath = file.path(getwd(), "..", "testdb")){
   if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
     # need to clean db tables
     conn <- DBI::dbConnect(drv = RPostgres::Postgres(),
@@ -69,20 +69,25 @@ createTestDb <- function(dbPath = file.path(getwd(), "..", "miro.sqlite3")){
                            password = Sys.getenv("MIRO_DB_PASSWORD"),
                            bigint = "integer")
     on.exit(DBI::dbDisconnect(conn))
-    DBI::dbExecute(conn, DBI::SQL("DROP SCHEMA public CASCADE;"))
-    DBI::dbExecute(conn, DBI::SQL("CREATE SCHEMA public;"))
-    DBI::dbExecute(conn, DBI::SQL(paste0("GRANT ALL ON SCHEMA public TO ",
+    DBI::dbExecute(conn, DBI::SQL("SET client_min_messages TO WARNING;"))
+    DBI::dbExecute(conn, DBI::SQL("DROP SCHEMA IF EXISTS mirotests CASCADE;"))
+    DBI::dbExecute(conn, DBI::SQL("CREATE SCHEMA mirotests;"))
+    DBI::dbExecute(conn, DBI::SQL(paste0("GRANT ALL ON SCHEMA mirotests TO ",
                                          DBI::dbQuoteIdentifier(conn, Sys.getenv("MIRO_DB_USERNAME")), ";")))
-    DBI::dbExecute(conn, DBI::SQL("GRANT ALL ON SCHEMA public TO public;"))
+    Sys.setenv(MIRO_DB_SCHEMA = "mirotests")
   }else{
     if(file.exists(dbPath)){
-      if(unlink(dbPath, force = TRUE)){
+      if(unlink(dbPath, force = TRUE, recursive = TRUE)){
         gc()
-        if(unlink(dbPath, force = TRUE)){
+        if(unlink(dbPath, force = TRUE, recursive = TRUE)){
           stop("Could not remove old database SQLite file for tests")
         }
       }
+      if(!dir.create(dbPath)){
+        stop(sprintf("Could not create test database path: '%s'.", dbPath))
+      }
     }
+    Sys.setenv(MIRO_DB_PATH = dbPath)
   }
 }
 
@@ -121,14 +126,14 @@ PerformanceReporter <- R6::R6Class("PerformanceReporter", public = list(
   publish = function(){
     context <- eval(substitute(testthat::get_reporter()$.context),
                     envir = parent.frame())
-    if(is.na(private$pass)){
-      warning("No reporter password set. Skipping publishing performance results.")
-      private$data <- list()
-      return(return(invisible(self)))
-    }
     dataToPublish <- list(context = context,
                           data = private$data)
     private$data <- list()
+    if(is.na(private$pass)){
+      warning("No reporter password set. Skipping publishing performance results.")
+      print(dataToPublish)
+      return(return(invisible(self)))
+    }
     tryCatch({
       req <- httr::POST(private$url, body = dataToPublish,
                         httr::authenticate(private$user, private$pass),

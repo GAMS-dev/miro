@@ -2169,7 +2169,6 @@
                       "type":"string",
                       "default": "REST",
                       "enum":[
-                        "database",
                         "customFunction",
                         "REST"
                       ]

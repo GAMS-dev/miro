@@ -127,6 +127,7 @@
     "hcubeLoad":{
       "title":"Lade Szenarien",
       "noData":"Für die von Ihnen abgesetzte Datenbankabfrage konnten keine Daten gefunden werden.",
+      "invalidCsvFilter": "'%s' dürfen kein ',' enthalten.",
       "showHashButton": "Hash anzeigen",
       "msgOnlyOneHash": "Bitte wählen Sie nur ein Szenario aus.",
       "msgNoHashFound": "Für das ausgewählte Szenario wurde kein Hash gefunden. Anscheinend wurde das Szenario nicht im Hypercube-Modus gelöst.",
@@ -135,6 +136,17 @@
       "chooseAllButton":"Wähle alle",
       "orButton": "ODER",
       "andButton": "UND",
+      "operators":{
+        "is": "ist",
+        "notis": "ist nicht",
+        "contains": "enthält",
+        "notcontains": "enthält nicht",
+        "startswith": "beginnt mit",
+        "endswith": "endet mit",
+        "exists": "existiert",
+        "notexists": "existiert nicht",
+        "between": "zwischen"
+      },
       "queryButton": "Ergebnisse abrufen",
       "showHashDialog":{
         "title": "Szenario Hash",
@@ -142,6 +154,7 @@
       },
       "metaColAliases":{
         "uid":"Eigentümer",
+        "sname": "Name",
         "stime":"Erstellungsdatum",
         "stag": "Job-Tags"
       }
@@ -666,12 +679,14 @@
       "title": "Datenbankmigration",
       "desc": "Wir haben festgestellt, dass sich Ihr GAMS/MIRO-Datenvertrag auf eine Weise geändert hat, die mit dem aktuellen Datenbanklayout Ihrer App nicht kompatibel ist. Bitte geben Sie an, wie Ihre Daten migriert werden sollen.",
       "backupWarning": "Wir empfehlen Ihnen dringend, vor der Migration ein Backup Ihrer Datenbank zu erstellen.",
-      "successMsg": "Ihre Daten wurden erfolgreich migriert!",
+      "successMsg": "Ihre Daten wurden erfolgreich migriert! Bitte starten Sie die Anwendung neu.",
       "labelSymbol": "Symbol: '%s'",
-      "selectTableToMap": "Daten verwenden von",
+      "selectTableToMap": "Migriere Daten von",
+      "selectColToMap": "Spalte: ",
       "btCancelMigration": "Abbrechen",
       "btConfirmMigration": "Migration bestätigen",
       "errDuplicateTables": "Tabelle(n): '%s' können nicht dupliziert werden!",
+      "incompatibleTypeWarning": "Die vorhandenen Daten müssen in einen numerischen Wert gecastet werden, damit sie in die neue Datenbanktabelle passen. Werte, die nicht umgewandelt werden können, werden zu 0!",
       "dialogConfirmDataLoss": {
         "title": "Warnung: Verlust von Daten",
         "descTables": "Achtung! Die folgenden Tabellen werden mit Ihrer aktuellen Migrationskonfiguration entfernt: '%s'!",
@@ -691,7 +706,7 @@
         "cbConfirm": "Alle Tabellen entfernen?",
         "btCancel": "Abbrechen",
         "btConfirm": "Tabellen entfernen",
-        "msgSuccess": "Datenbanktabellen erfolgreich entfernt"
+        "msgSuccess": "Datenbanktabellen erfolgreich entfernt. Bitte starten Sie die Anwendung neu."
       }
     }
   },
@@ -1552,7 +1567,7 @@
       "infoPostgres": "Sie verwenden GAMS MIRO Desktop mit einem <a href=\"https://www.postgresql.org\" target=\"_blank\">PostgreSQL</a>-Datenbank-Backend. Die verwendete Datenbank hat den Namen: %s und befindet sich unter: %s. Um Ihre Datenbank zu sichern, lesen Sie <a href=\"https://www.postgresql.org/docs/current/backup.html\" target=\"_blank\">hier</a>.",
       "infoSQLite": "Sie verwenden GAMS MIRO Desktop mit einem <a href=\"https://sqlite.org\" target=\"_blank\">SQLite</a>-Datenbank-Backend. Die verwendete Datenbank befindet sich unter: %s.",
       "backup": "Datenbanksicherung",
-      "backupWrapper": "Sie möchten eine Sicherung der Datenbank erstellen? Beachten Sie, dass die gesicherte Datenbank die Daten aller Ihrer MIRO-Anwendungen enthält, nicht nur die der aktuellen.",
+      "backupWrapper": "Sie möchten eine Sicherung der Datenbank erstellen?",
       "btDownloadBackup": "Datenbank sichern",
       "backupProgress": "Datenbank wird gesichert...",
       "remove": "Daten löschen",

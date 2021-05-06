@@ -185,7 +185,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
         activeScen$saveScriptResults(scriptOutput$getResults())
       }
     }
-    scenMetaData[["scen_1_"]] <<- activeScen$getMetadata(lang$nav$excelExport$metadataSheet)
+    scenMetaData[["scen_1_"]] <<- activeScen$getMetadata()
     flog.debug("%s: Scenario saved to database (Scenario: %s).", uid, activeScen$getScenName())
   }, error = function(e) {
     flog.error("Some error occurred saving scenario to database. Error message: %s.",
@@ -220,13 +220,12 @@ observeEvent(input$btEditMeta, {
     attachmentMetadata <- attachmentList
     viewsMetadata <- views$getSummary(modelInRaw, modelOut)
   }
-  showEditMetaDialog(activeScen$getMetadata(c(uid = "uid", sname = "sname", stime = "stime", stag = "stag",
-                                              readPerm = "readPerm", writePerm = "writePerm", execPerm = "execPerm"), noPermFields = FALSE), 
+  showEditMetaDialog(activeScen$getMetadata(noPermFields = FALSE), 
                      allowAttachments = config$activateModules$attachments, 
                      attachmentMetadata = attachmentMetadata, 
                      viewsMetadata = viewsMetadata,
                      attachAllowExec = attachAllowExec, 
-                     ugroups = c(uid, csv2Vector(ugroups)),
+                     ugroups = csv2Vector(db$getUserAccessGroups()),
                      isLocked = length(activeScen) != 0L && length(activeScen$getLockUid()) > 0L)
 })
 
@@ -271,7 +270,7 @@ observeEvent(input$btUpdateMeta, {
     currentWritePerm <- activeScen$getWritePerm()
     currentExecPerm <- activeScen$getExecPerm()
     
-    activeUserGroups <- c(uid, csv2Vector(ugroups))
+    activeUserGroups <- db$getUserAccessGroups()
     
     
     if(activeScen$isReadonlyOrLocked){
@@ -317,7 +316,7 @@ observeEvent(input$btUpdateMeta, {
       activeScen$updateMetadata(scenName, isolate(input$editMetaTags), 
                                 newReadPerm, newWritePerm, newExecPerm)
       rv$activeSname <- scenName
-      scenMetaData[["scen_1_"]] <<- activeScen$getMetadata(lang$nav$excelExport$metadataSheet)
+      scenMetaData[["scen_1_"]] <<- activeScen$getMetadata()
       markUnsaved()
       removeModal()
     }, error = function(e){

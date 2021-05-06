@@ -64,6 +64,10 @@
                           <section id="v14" class="doc-section">
                               <h2 class="section-title" style="display:inline-block">GAMS MIRO 1.4</h2> <div style="display:inline-block; padding-left:15px;">(xxxx-xx-xx)</div>
                               <div class="section-block">
+                                   <h3>Breaking changes</h3>
+                                   <ul>
+                                     <li>The database layout that MIRO uses internally has been changed significantly. At the first start MIRO checks if there is an existing MIRO database and tries to migrate this database automatically to the new layout. A backup of the old database is kept in case something goes wrong. Some data can not be migrated automatically. The first time you start your MIRO app, you will be prompted with a migration dialog if some data needs to be migrated manually. Sliders that have been expanded in Hypercube Mode job configurations cannot be migrated!</li>
+                                     <li>An error is now issued if the MIRO app name (filename of the main .gms file) is longer than 60 characters.</li>
                                    <h3>New features</h3>
                                    <ul>
                                      <li>Custom renderers can now be edited with a <a href="./charts.html#custom-graphics">live preview via the Configuration Mode</a>. This should increase productivity when developing custom renderers. Your existing renderers will still work, but will not be recognized by this new editor. To learn how to migrate them to be compatible with the new editor, see <a href="./customize.html#migrate-custom-renderers">here</a>.</li>
@@ -77,7 +81,8 @@
                                      <li>The error message reporting duplicate records when exporting a GDX file now shows the symbol alias instead of the symbol name and is localized.</li>
                                      <li>Input/output groups with more than 6 tabs now get a "More..." tab that combines subsequent tabs.</li>
                                      <li><a href="./charts.html#pivot-chart">MIRO Pivot Tables</a>: When adding new views, existing views with the same name can now be overwritten.</li>
-                                     <li>Add option to <a href="./customize.html#table-option-fixedColumnsLeft">fix table columns to the left</a> when scrolling horizontally.</li>
+                                     <li>Windows: Removed progress bar when starting MIRO.</li>
+                                     <li>Add option to <a href="./customize.html#table-option-fixedColumnsLeft">fix table columns to the left</a> when scrolling horizontally.</li>\
                                    </ul>
                                    <h3>Bug fixes</h3>
                                    <ul>

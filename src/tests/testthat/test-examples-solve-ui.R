@@ -2,21 +2,13 @@ context("UI tests - Example models solve")
 skip_if(identical(Sys.getenv("GAMS_SYS_DIR"), ""),
         "GAMS_SYS_DIR environment variable not set. Skipping tests.")
 
-testDir <- file.path(getwd(), "..")
-
-createTestDb()
-
 additionalGamsClArgs <- character(0L)
 if(!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")){
   additionalGamsClArgs <- paste0('license="', Sys.getenv("MIRO_TEST_GAMS_LICE"), '"')
 }
-Sys.setenv(MIRO_DB_PATH = testDir)
-if(file.exists(file.path(Sys.getenv("MIRO_DB_PATH"), "miro.sqlite3"))){
-  if(unlink(file.path(Sys.getenv("MIRO_DB_PATH"), "miro.sqlite3"), force = TRUE)){
-    stop("Could not remove old database SQLite file for tests")
-  }
-}
+
 for(modelToTest in c("pickstock", "transport", "sudoku", "farming", "inscribedsquare", "tsp", "cpack", "lubrication", "kport")){
+  createTestDb()
   miroModelDir <- file.path(testDir, "..", "model", modelToTest)
   Sys.setenv(MIRO_MODEL_PATH = file.path(miroModelDir,  paste0(modelToTest, ".gms")))
   Sys.setenv(GMSMODELNAME = modelToTest)

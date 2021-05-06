@@ -127,6 +127,7 @@
     "hcubeLoad":{
       "title":"Load scenarios",
       "noData":"No data was returned by your query",
+      "invalidCsvFilter": "'%s' must not contain ','.",
       "showHashButton": "Show hash",
       "msgOnlyOneHash": "Please select only one scenario.",
       "msgNoHashFound": "No hash was found for the selected scenario. Apparently the scenario was not solved in Hypercube Mode.",
@@ -135,6 +136,17 @@
       "chooseAllButton":"Choose all",
       "orButton": "OR",
       "andButton": "AND",
+      "operators":{
+        "is": "is",
+        "notis": "is not",
+        "contains": "contains",
+        "notcontains": "doesn't contain",
+        "startswith": "starts with",
+        "endswith": "ends with",
+        "exists": "exists",
+        "notexists": "doesn't exist",
+        "between": "between"
+      },
       "queryButton": "Fetch results",
       "showHashDialog":{
         "title": "Scenario hash",
@@ -142,6 +154,7 @@
       },
       "metaColAliases":{
         "uid":"Owner",
+        "sname": "Name",
         "stime":"Time created",
         "stag": "Job tags"
       }
@@ -433,7 +446,7 @@
       "infoDataOnly": "With the selected file type only data is exported. Metadata such as attachments, views, tags, etc. are not included."
     },
     "excelExport":{  
-      "metadataSheet":{  
+      "metadataSheet":{
         "title":"Info",
         "uid":"User",
         "sname":"Scenario name",
@@ -666,12 +679,14 @@
       "title": "Database migration",
       "desc": "We have determined that your GAMS/MIRO data contract has changed in a way that is incompatible with your app's current database layout. Please specify how your data should be migrated.",
       "backupWarning": "We strongly recommend that you backup your database before migration.",
-      "successMsg": "Your data has been migrated successfully!",
+      "successMsg": "Your data has been migrated successfully! Please restart the application.",
       "labelSymbol": "Symbol: '%s'",
-      "selectTableToMap": "Use data from",
+      "selectTableToMap": "Migrate data from",
+      "selectColToMap": "Column: ",
       "btCancelMigration": "Cancel",
       "btConfirmMigration": "Confirm migration",
       "errDuplicateTables": "Table(s): '%s' cannot be duplicated!",
+      "incompatibleTypeWarning": "The existing data must be cast to a numeric value to fit into the new database table. Values that cannot be converted become 0!",
       "dialogConfirmDataLoss": {
         "title": "Warning: Loss of data",
         "descTables": "Attention: The following tables are removed with your current migration configuration: '%s'!",
@@ -691,7 +706,7 @@
         "cbConfirm": "Remove all tables?",
         "btCancel": "Cancel",
         "btConfirm": "Remove tables",
-        "msgSuccess": "Database tables removed successfully!"
+        "msgSuccess": "Database tables removed successfully! Please restart the application."
       }
     }
   },
@@ -1552,7 +1567,7 @@
       "infoPostgres": "You are using GAMS MIRO Desktop with a <a href=\"https://www.postgresql.org\" target=\"_blank\">PostgreSQL</a> database backend. The database used has the name: %s and is located at: %s. To back up your database, read <a href=\"https://www.postgresql.org/docs/current/backup.html\" target=\"_blank\">here</a>.",
       "infoSQLite": "You are using GAMS MIRO Desktop with a <a href=\"https://sqlite.org\" target=\"_blank\">SQLite</a> database backend. The database used is located at: %s.",
       "backup": "Database backup",
-      "backupWrapper": "You want to create a backup of the database? Note that the backed up database contains the data of all your MIRO applications, not only the current one.",
+      "backupWrapper": "You want to create a backup of the database?",
       "btDownloadBackup": "Backup database",
       "backupProgress": "Database is being saved...",
       "remove": "Delete data",

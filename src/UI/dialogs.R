@@ -540,7 +540,7 @@ showEditMetaDialog <- function(metadata,
   }
   langData <- lang$nav[[modeDescriptor]]
   
-  scenTags <- csv2Vector(metadata[["stag"]][[1]])
+  scenTags <- csv2Vector(metadata[["_stag"]][[1]])
   
   contentAccessPerm <- NULL
   
@@ -551,7 +551,7 @@ showEditMetaDialog <- function(metadata,
              langData$scenExists),
     tags$div(class = "space"),
     textInput("editMetaName", langData$newName, 
-              value = metadata[["sname"]][[1]]),
+              value = metadata[["_sname"]][[1]]),
     selectizeInput("editMetaTags", langData$newTags, 
                    scenTags, selected = scenTags,
                    multiple = TRUE, options = list(
@@ -559,10 +559,10 @@ showEditMetaDialog <- function(metadata,
                      'persist' = FALSE)
     )
   )
-  writePerm <- csv2Vector(metadata[["writePerm"]][[1]])
+  writePerm <- csv2Vector(metadata[["_accessw"]][[1]])
   if(!isLocked && length(ugroups) && any(ugroups %in% writePerm)){
-    readPerm  <- csv2Vector(metadata[["readPerm"]][[1]])
-    execPerm <- csv2Vector(metadata[["execPerm"]][[1]])
+    readPerm  <- csv2Vector(metadata[["_accessr"]][[1]])
+    execPerm <- csv2Vector(metadata[["_accessx"]][[1]])
     
     contentAccessPerm <- tabPanel(langData$categoryAccessPerm, 
                                   tags$div(class = "gmsalert gmsalert-error", id = "editMetaEmptyPerm",
@@ -572,15 +572,12 @@ showEditMetaDialog <- function(metadata,
                                   tags$div(class = "gmsalert gmsalert-error", id = "editAccessRightsError", 
                                            langData$errMsg),
                                   tags$div(class = "space"),
-                                  selectizeInput("editMetaReadPerm", lang$nav$excelExport$metadataSheet$readPerm, 
-                                                 unique(c(readPerm, ugroups)), selected = readPerm,
-                                                 multiple = TRUE),
-                                  selectizeInput("editMetaWritePerm", lang$nav$excelExport$metadataSheet$writePerm, 
-                                                 unique(c(writePerm, ugroups)), selected = writePerm,
-                                                 multiple = TRUE),
-                                  selectizeInput("editMetaExecPerm", lang$nav$excelExport$metadataSheet$execPerm, 
-                                                 unique(c(execPerm, ugroups)), selected = execPerm,
-                                                 multiple = TRUE)
+                                  accessPermInput("editMetaReadPerm", lang$nav$excelExport$metadataSheet$readPerm, 
+                                                 sort(unique(c(readPerm, ugroups))), selected = readPerm),
+                                  accessPermInput("editMetaWritePerm", lang$nav$excelExport$metadataSheet$writePerm, 
+                                                  sort(unique(c(writePerm, ugroups))), selected = writePerm),
+                                  accessPermInput("editMetaExecPerm", lang$nav$excelExport$metadataSheet$execPerm, 
+                                                  sort(unique(c(execPerm, ugroups))), selected = execPerm)
     )
   }
   if(allowAttachments){
@@ -1031,7 +1028,7 @@ showManualJobImportDialog <- function(){
     footer = tagList(
       modalButton(lang$nav$hcubeMode$manualJobImportDialog$cancelButton),
       actionButton("btUploadHcube", label = lang$nav$hcubeMode$manualJobImportDialog$uploadButton, 
-                   class = "bt-highlight-1 bt-gms-confirm")
+                   class = "bt-highlight-1 bt-gms-confirm", disabled = TRUE)
     ),
     fade = TRUE, easyClose = TRUE
   ))
@@ -1148,9 +1145,9 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, hcubeMode = TRUE, showLogFi
                                         tags$span(
                                           lang$nav$importJobsDialog$ttips$discardedCompleted))
                               }else if(identical(jStatus, JOBSTATUSMAP[['imported']])){
-                                tags$td("imported")
+                                tags$td(lang$nav$importJobsDialog$status$imported)
                               }else if(identical(jStatus, JOBSTATUSMAP[['imported(man)']])){
-                                tags$td(class = "ttip", lang$nav$importJobsDialog$status$discarded,
+                                tags$td(class = "ttip", lang$nav$importJobsDialog$status$imported,
                                         tags$span(
                                           lang$nav$importJobsDialog$ttips$importedManual))
                               }else{
@@ -1286,54 +1283,63 @@ showJobProgressDialog <- function(jID, progressStatus){
 }
 # Hypercube load module
 generateLine <- function(i, j, type, label){
-  tags$div(id = "line" %+% i %+% "_" %+% j, class = "item-line",
+  tags$div(id = paste0("line", i, "_", j), class = "item-line",
            tags$div(class = "item-name", helpText(label)),
-           tags$div(class = "item-scen-drop", switch(type,
-                                                     number = {
-                                                       selectInput("op_" %+% i %+% "_" %+% j, label=NULL, 
-                                                                   choices = c('=', '<', '>', '<=', ">=", '!='))
-                                                     },
-                                                     text = {
-                                                       selectInput("op_" %+% i %+% "_" %+% j, label=NULL, 
-                                                                   choices = c(contains = "%LIKE%", 
-                                                                               "doesn't contain" = "%NOTLIKE%",
-                                                                               "starts with" = "LIKE%",
-                                                                               "ends with" = "%LIKE",
-                                                                               is = "=",
-                                                                               "is not" = "!="), 
-                                                                   selected = "=")
-                                                     },
-                                                     csv = {
-                                                       selectInput("op_" %+% i %+% "_" %+% j, label=NULL, 
-                                                                   choices = c(contains = "%LIKE%", 
-                                                                               "doesn't contain" = "%NOTLIKE%",
-                                                                               "starts with" = ",LIKE%",
-                                                                               "ends with" = "%LIKE,",
-                                                                               is = "%,LIKE,%",
-                                                                               "is not" = "%,NOTLIKE,%"), 
-                                                                   selected = "%,LIKE,%")
-                                                     },
-                                                     date = {
-                                                       selectInput("op_" %+% i %+% "_" %+% j, label=NULL, 
-                                                                   choices = c(between = "BETWEEN"))
-                                                     })
+           tags$div(class = "item-scen-drop", 
+                    switch(type,
+                           number = {
+                             selectInput(paste0("op_", i, "_", j), label = NULL, 
+                                         choices = c("=", "<", ">", "<=", ">=", "!="))
+                           },
+                           text = {
+                             selectInput(paste0("op_", i, "_", j), label = NULL, 
+                                         choices = setNames(c("=", "!=", "%LIKE%", 
+                                                              "%NOTLIKE%", "LIKE%", "%LIKE",
+                                                              "%EXIST", "%NOTEXIST"),
+                                                            c(lang$nav$hcubeLoad$operators$is,
+                                                              lang$nav$hcubeLoad$operators$notis,
+                                                              lang$nav$hcubeLoad$operators$contains,
+                                                              lang$nav$hcubeLoad$operators$notcontains,
+                                                              lang$nav$hcubeLoad$operators$startswith,
+                                                              lang$nav$hcubeLoad$operators$endswith,
+                                                              lang$nav$hcubeLoad$operators$exists,
+                                                              lang$nav$hcubeLoad$operators$notexists)), 
+                                         selected = "=")
+                           },
+                           csv = {
+                             selectInput(paste0("op_", i, "_", j), label = NULL, 
+                                         choices = setNames(c("%,LIKE,%", "%,NOTLIKE,%", "%LIKE%", 
+                                                              "%NOTLIKE%", ",LIKE%", "%LIKE,"),
+                                                            c(lang$nav$hcubeLoad$operators$is,
+                                                              lang$nav$hcubeLoad$operators$notis,
+                                                              lang$nav$hcubeLoad$operators$contains,
+                                                              lang$nav$hcubeLoad$operators$notcontains,
+                                                              lang$nav$hcubeLoad$operators$startswith,
+                                                              lang$nav$hcubeLoad$operators$endswith)),
+                                         selected = "%,LIKE,%")
+                           },
+                           date = {
+                             selectInput(paste0("op_", i, "_", j), label = NULL, 
+                                         choices = setNames("BETWEEN", lang$nav$hcubeLoad$operators$between))
+                           })
            ),
            tags$div(class = "item-search-crit",
                     switch(type,
                            number = {
-                             numericInput("val_" %+% i %+% "_" %+% j, label=NULL, 
+                             numericInput(paste0("val_", i, "_", j), label = NULL, 
                                           value = 0L)
                            },
                            date = {
-                             dateRangeInput("val_" %+% i %+% "_" %+% j, label=NULL)
+                             dateRangeInput(paste0("val_", i, "_", j), label = NULL)
                            }, 
                            {
-                             textInput("val_" %+% i %+% "_" %+% j, label=NULL)
+                             conditionalPanel(paste0("!['%EXIST','%NOTEXIST'].includes(input.op_", i, "_", j, ")"),
+                                              textInput(paste0("val_", i, "_", j), label = NULL))
                            })
                     
            ),
            tags$div(class = "item-delete",
-                    actionButton("btRemoveLine" %+% i %+% "_" %+% j, label = "-")
+                    actionButton(paste0("btRemoveLine", i, "_", j), label = "-")
            )
   )
 }
@@ -1341,13 +1347,13 @@ addHcubeLoadBlock <- function(id, choices){
   insertUI(
     selector = "#selectorsWrapper",
     where = "beforeEnd",
-    ui = tags$div(id = "block" %+% id, style="position:relative;", if(id > 1L){
+    ui = tags$div(id = paste0("block", id), style="position:relative;", if(id > 1L){
       tags$div(tags$hr(),
                tags$div(class = "or-sign", lang$nav$hcubeLoad$orButton))
     },
     tags$div(class="and-wrapper", 
              tags$div(class="and-sign", "&"),
-             tags$div(id = "blockContent" %+% id, 
+             tags$div(id = paste0("blockContent", id), 
                       class = "grid-container"
              ),
              tags$div(class = "item-add-block",
@@ -1355,12 +1361,12 @@ addHcubeLoadBlock <- function(id, choices){
                                tags$span(class="and-button", 
                                          lang$nav$hcubeLoad$andButton)),
                       tags$div(class = "item-dropdown", 
-                               selectInput("newLine_" %+% id, "", 
-                                           choices = fields)
+                               selectInput(paste0("newLine_", id), "", 
+                                           choices = choices)
                       ),
                       if(id > 1L){
                         tags$div(class = "item-delete",
-                                 actionButton("btRemoveBlock" %+% id, label = "-"))
+                                 actionButton(paste0("btRemoveBlock", id), label = "-"))
                       }
              )
     ))

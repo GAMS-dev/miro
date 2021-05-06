@@ -503,22 +503,6 @@ addCssDim <- function(x, y){
   return(paste0(dgts, tmp[2]))
 }
 
-getGMSPar <- function(inputNames, prefixPar){
-  # Finds compile time variables/GAMS options and returns them as a list
-  #
-  # Args:
-  #   inputNames:     vector of names of input sheets
-  #   prefixPar:      numeric that specifies additional height to be added (same unit as x)
-  #
-  # Returns:
-  #   vector of names of compile time variables
-  
-  inputNames       <- tolower(inputNames)
-  prefixPar        <- tolower(paste0("^", prefixPar))
-  isGMSPar         <- grepl(prefixPar, inputNames)
-  
-  return(inputNames[isGMSPar])
-}
 virtualActionButton <- function(...){
   o <- structure(sum(...), class = "shinyActionButtonValue")
   invisible(o)
@@ -1070,7 +1054,8 @@ setDbConfig <- function(){
     list(envVar = 'MIRO_DB_PASSWORD', keyName = 'password', desc = 'database password'),
     list(envVar = 'MIRO_DB_NAME', keyName = 'name', desc = 'database name'),
     list(envVar = 'MIRO_DB_HOST', keyName = 'host', desc = 'database host', default = 'localhost'),
-    list(envVar = 'MIRO_DB_PORT', keyName = 'port', desc = 'database port', numeric = TRUE, default = 5432))
+    list(envVar = 'MIRO_DB_PORT', keyName = 'port', desc = 'database port', numeric = TRUE, default = 5432),
+    list(envVar = 'MIRO_DB_SCHEMA', keyName = 'schema', desc = 'database schema', default = 'public'))
   
   for(i in seq_along(envNameDbDataMap)){
     metaData <- envNameDbDataMap[[i]]
@@ -1218,16 +1203,11 @@ loadPfFileContent <- function(content, GMSOpt = character(0L), DDPar = character
     return(tibble())
   }
   content       <- content[tolower(content[[1]]) %in% 
-                             c(GMSOpt, 
-                               outer(DDPar, c("", "_lo", "_up"), FUN = "paste0")), , 
+                             c(GMSOpt, DDPar), , 
                            drop = FALSE]
-  clArgsTmp     <- stri_replace_first_regex(content[[1]], 
-                                            "_lo$", "\\$lo")
-  clArgsTmp     <- stri_replace_first_regex(clArgsTmp, "_up$", "\\$up")
-  if(!length(clArgsTmp)){
+  if(!length(content[[1]])){
     return(tibble())
   }
-  content[[1]]  <- clArgsTmp
   return(content)
 }
 
@@ -1584,4 +1564,64 @@ stop_custom <- function(.subclass, message, call = NULL, ...) {
     class = c(.subclass, "error", "condition")
   )
   stop(err)
+}
+formatScenList = function(scenList, uid, orderBy = NULL, desc = FALSE, limit = 100L){
+  # returns list of scenarios (formatted for dropdown menu)
+  #
+  # Args:
+  #   scenList:          dataframe with scenario metadata
+  #   uid:               name of currently logged in user
+  #   orderBy:           column to use for ordering data frame (optional)
+  #   desc:              boolean that specifies whether ordering should be 
+  #                      descending(FALSE) or ascending (TRUE) (optional)
+  #   limit:             maximum number of scenarios to format
+  #
+  # Returns:
+  #   character vector: named vector formatted to be used in dropdown menus, 
+  #   returns NULL in case no scenarios found
+  
+  #BEGIN error checks
+  if(!hasContent(scenList)){
+    return(NULL)
+  }
+  stopifnot(inherits(scenList, "data.frame"))
+  if(!is.null(orderBy)){
+    stopifnot(is.character(orderBy) && length(orderBy) == 1)
+  }
+  stopifnot(is.logical(desc), length(desc) == 1)
+  limit <- as.integer(limit)
+  stopifnot(!is.na(limit))
+  # END error checks
+  
+  limit <- min(nrow(scenList), limit)
+  scenList <- scenList[seq_len(limit), , drop = FALSE]
+  if(!is.null(orderBy)){
+    if(desc){
+      scenList <- dplyr::arrange(scenList, desc(!!as.name(orderBy)))
+    }else{
+      scenList <- dplyr::arrange(scenList, !!as.name(orderBy))
+    }
+  }
+  
+  return(setNames(paste0(scenList[["_sid"]], "_", 
+                         scenList[["_uid"]]), 
+                  paste0(vapply(scenList[["_uid"]], 
+                                function(el){ 
+                                  if(identical(el, uid)) "" else paste0(el, ": ")}, 
+                                character(1), USE.NAMES = FALSE), 
+                         scenList[["_sname"]], " (", 
+                         scenList[["_stime"]], ")")))
+}
+accessPermInput <- function(inputId, label, choices, selected = NULL){
+  selectizeInput(inputId, label, "", multiple= TRUE,
+                 options = list(valueField = "value",
+                                labelField = "value",
+                                searchField = "value",
+                                options = lapply(choices, function(option){
+                                  list(isGroup = startsWith(option, "_"),
+                                       value = option)
+                                }),
+                                sortField = I("function(i1,i2) {return i1.value-i2.value;}"),
+                                items = I(toJSON(selected, auto_unbox = FALSE)),
+                                render = I("{option: function(d,e){return '<div>'+(d.isGroup?'<i class=\"fas fa-users\"></i> '+e(d.value.substring(1)):'<i class=\"fas fa-user\"></i> '+e(d.value))+'</div>';},item:function(d,e){return '<div>'+(d.isGroup?'<i class=\"fas fa-users\"></i> '+e(d.value.substring(1)):'<i class=\"fas fa-user\"></i> '+e(d.value))+'</div>';}}")))
 }

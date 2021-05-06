@@ -124,8 +124,7 @@ prepareModelRun <- function(async = FALSE){
     }
     if(identical(tolower(names(dataTmp)[[id]]), scalarsFileName)){
       # scalars file exists, so remove compile time variables from it
-      DDParIdx           <- dataTmp[[id]][[1]] %in% outer(DDPar, c("", "$lo", "$up"), 
-                                                         FUN = "paste0")
+      DDParIdx           <- dataTmp[[id]][[1]] %in% DDPar
       GMSOptIdx          <- dataTmp[[id]][[1]] %in% GMSOpt
       DDParValues        <- dataTmp[[id]][DDParIdx, , drop = FALSE]
       GMSOptValues       <- dataTmp[[id]][GMSOptIdx, , drop = FALSE]
@@ -136,11 +135,6 @@ prepareModelRun <- function(async = FALSE){
                                     return(NA_character_)
                                   symbolTmp <- substring(DDParValues[[1]][i], 
                                                          nchar(prefixDDPar) + 1L)
-                                  if(endsWith(symbolTmp, "$lo")){
-                                    symbolTmp <- paste0(substring(symbolTmp, 1, nchar(symbolTmp) - 3), "_lo")
-                                  }else if(endsWith(symbolTmp, "$up")){
-                                    symbolTmp <- paste0(substring(symbolTmp, 1, nchar(symbolTmp) - 3), "_up")
-                                  }
                                   paste0('--', symbolTmp, '=', 
                                          escapeGAMSCL(DDParValues[[3]][i]))
                                 }, character(1L), USE.NAMES = FALSE)
@@ -310,8 +304,10 @@ if(LAUNCHHCUBEMODE){
                if(length(value) > 1){
                  if(identical(modelIn[[i]]$slider$double, TRUE)){
                    # double slider in single run mode
-                   return(paste0(parPrefix, "_lo= ", value[1], 
-                                 '|"""|', parPrefix, "_up= ", value[2]))
+                   if (!identical(input[["hcubeMode_" %+% i]], TRUE)){
+                     return(paste0(parPrefix, "_lo= ", value[1], 
+                                   '|"""|', parPrefix, "_up= ", value[2]))
+                   }
                  }else if(!identical(modelIn[[i]]$slider$single, TRUE)){
                    # double slider in base mode with noHcube=FALSE
                    return(paste0(parPrefix, "_lo= ", value[1], 
@@ -587,9 +583,7 @@ if(LAUNCHHCUBEMODE){
     }
     if(config$saveTraceFile){
       tryCatch({
-        traceData <<- readTraceData(file.path(workDir, 
-                                              paste0(tableNameTracePrefix,
-                                                     modelName, ".trc")), 
+        traceData <<- readTraceData(file.path(workDir, "_scenTrc.trc"), 
                                     traceColNames)
       }, error = function(e){
         flog.info("Problems loading trace data. Error message: %s.", e)
@@ -811,7 +805,7 @@ output$modelStatus <- renderUI({
   }
   
   if(currModelStat < 0){
-    returnCodeText <- GAMSReturnCodeMap[as.character(currModelStat)]
+    returnCodeText <- GAMSRCMAP[as.character(currModelStat)]
     if(is.na(returnCodeText)){
       returnCodeText <- as.character(currModelStat)
     }
@@ -829,7 +823,7 @@ output$modelStatus <- renderUI({
   })
   
   if(currModelStat != 0){
-    returnCodeText <- GAMSReturnCodeMap[as.character(currModelStat)]
+    returnCodeText <- GAMSRCMAP[as.character(currModelStat)]
     if(is.na(returnCodeText)){
       returnCodeText <- as.character(currModelStat)
     }
@@ -945,8 +939,8 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     on.exit(suppressWarnings(prog$close()))
     prog$set(message = lang$progressBar$prepRun$title, value = 0)
     
-    idsSolved <<- db$importDataset(scenMetadataTable, colNames = snameIdentifier, 
-                                   tibble(scodeIdentifier, SCODEMAP[['scen']], ">"))
+    idsSolved <<- db$importDataset("_scenMeta", colNames = "_sname", 
+                                   tibble("_scode", SCODEMAP[['scen']], ">"))
     if(length(idsSolved)){
       idsSolved <<- unique(idsSolved[[1L]])
     }
@@ -974,8 +968,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
                            "lo=3")
     }
     if(config$saveTraceFile){
-      scenGmsPar <<- paste0(scenGmsPar, ' trace="', tableNameTracePrefix, modelName, '.trc"',
-                            " traceopt=3")
+      scenGmsPar <<- paste0(scenGmsPar, ' trace="_scenTrc.trc" traceopt=3')
     }
     
     sidsDiff <- setdiff(idsToSolve, idsSolved)

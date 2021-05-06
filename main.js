@@ -21,12 +21,8 @@ const addModelData = require('./components/import-data');
 const addMiroscen = require('./components/miroscen-parser');
 const AppDataStore = require('./components/AppDataStore');
 const ConfigManager = require('./components/ConfigManager');
-const MiroDb = require('./components/MiroDb');
 const unzip = util.promisify(require('./components/Unzip'));
 const MiroProcessManager = require('./components/MiroProcessManager');
-const {
-  getAppDbPath,
-} = require('./components/util');
 
 const isMac = process.platform === 'darwin';
 const DEVELOPMENT_MODE = !app.isPackaged;
@@ -1367,10 +1363,6 @@ ipcMain.on('delete-app', async (e, appId) => {
     message: lang.main.DeleteDataMsg,
   }) === 1;
 
-  let appDbPath;
-  if (deleteAppData) {
-    appDbPath = appsData.getAppConfigValue(appId, 'dbPath');
-  }
   try {
     const rmPromise = fs.remove(path.join(appDataPath, appId));
     try {
@@ -1403,29 +1395,25 @@ ipcMain.on('delete-app', async (e, appId) => {
       showErrorMsg({
         type: 'error',
         title: lang.main.ErrorUnexpectedHdr,
-        message: lang.main.ErrorUnexpectedMsg2,
+        message: lang.main.ErrorUnexpectedMsg2 + err.message,
       });
     }
   } finally {
     if (deleteAppData) {
-      try {
-        const miroDb = new MiroDb(path.join(getAppDbPath(appDbPath),
-          'miro.sqlite3'));
-        try {
-          miroDb.removeAppDbTables(appId);
-        } finally {
-          miroDb.close();
-        }
-        const rmPromiseHcube = fs.remove(path.join(miroWorkspaceDir, 'hcube_jobs', appId));
-        const rmPromiseCred = fs.remove(path.join(miroWorkspaceDir, `.cred_${appId}`));
-        await rmPromiseHcube;
-        await rmPromiseCred;
-      } catch (err) {
-        log.error(`Problems removing data (app ID: ${appId}). Error message: ${err.message}`);
+      const rmPromises = [];
+      rmPromises.push(fs.remove(path.join(miroWorkspaceDir, 'app_data', `${appId}.sqlite3`)),
+        fs.remove(path.join(miroWorkspaceDir, 'hcube_jobs', appId)),
+        fs.remove(path.join(miroWorkspaceDir, `.cred_${appId}`)));
+      const deleteAppDataStatus = await Promise.allSettled(rmPromises);
+      const errorMsg = deleteAppDataStatus
+        .filter((value) => value.status === 'rejected')
+        .map((value) => value.reason.toString()).join('\n');
+      if (errorMsg) {
+        log.error(`Problems removing data (app ID: ${appId}). Error message: ${errorMsg}`);
         showErrorMsg({
           type: 'error',
           title: lang.main.ErrorUnexpectedHdr,
-          message: lang.main.ErrorUnexpectedMsg2,
+          message: lang.main.ErrorUnexpectedMsg2 + errorMsg,
         });
       }
     }

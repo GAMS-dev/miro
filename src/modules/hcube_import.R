@@ -37,11 +37,6 @@ additionalInputScalars <- inputDsNames[vapply(inputDsNames, function(el){
 if(length(scalarInToVerify))
   scalarInToVerify <- scalarInToVerify[!startsWith(scalarInToVerify, "_")]
 
-gmsColTypes <- c(db$getDbSchema()$colTypes, setNames("ccc", scalarsFileName))
-gmsFileHeaders <- c(db$getDbSchema()$colNames, setNames(list(scalarsFileHeaders), 
-                                                        scalarsFileName))
-disableEl(session, "#btUploadHcube")
-
 # initialise hcube import class
 hcubeImport <- HcubeImport$new(db, scalarsFileName, scalarsOutName, 
                                tableNamesCanHave = c(setdiff(c(inputDsNames,
@@ -56,13 +51,12 @@ hcubeImport <- HcubeImport$new(db, scalarsFileName, scalarsOutName,
                                                              c(scalarsOutName,
                                                                scalarEquationsOutName))),
                                tableNamesMustHave = c(scalarInToVerify, 
-                                                      if(config$saveTraceFile) tableNameTracePrefix %+% modelName),
-                               config$csvDelim, workDir, gmsColTypes = gmsColTypes, gmsFileHeaders = gmsFileHeaders,
+                                                      if(config$saveTraceFile) "_scenTrc"),
+                               config$csvDelim, workDir,
                                gdxio = gdxio, inputSym = setdiff(inputDsNames, additionalInputScalars), 
                                outputSym = names(modelOut),
                                templates = setNames(c(modelInTemplate, modelOutTemplate, scalarsInTemplate), 
                                                     c(names(modelIn), names(modelOut), scalarsFileName)))
-rm(gmsColTypes)
 duplicatedScenIds <- vector("character", 0L)
 hcubeTags         <- character(0L)
 zipFilePath       <- NULL
@@ -148,10 +142,10 @@ observeEvent(virtualActionButton(rv$noInvalidData), {
   prog$inc(amount = 1/6, detail = lang$progressBar$hcubeImport$duplicateCheck)
   tryCatch({
     duplicatedScen    <- hcubeImport$getScenDuplicates()
-    duplicatedScenIds <<- duplicatedScen[[snameIdentifier]]
+    duplicatedScenIds <<- duplicatedScen[["_sname"]]
     flog.trace("Duplicated scenarios identified.")
     if(nrow(duplicatedScen)){
-      dupScenTags <- paste(unique(duplicatedScen[[stagIdentifier]]), collapse = ", ")
+      dupScenTags <- paste(unique(duplicatedScen[["_stag"]]), collapse = ", ")
       noDupScen   <- length(unique(duplicatedScenIds))
       showDuplicatedScenDialog(noDupScen, dupScenTags, noScen = length(hcubeImport$getScenNames()))
     }else{
@@ -187,7 +181,7 @@ observeEvent(virtualActionButton(rv$btSave), {
     hcubeImport$saveScenarios(hcubeTags, jobID = jobImportID, readPerm = uid, 
                               writePerm = uid, execPerm = uid, progressBar = prog)
   }, error = function(e){
-    flog.error("Problems exporting scenarios. Error message: %s.", e)
+    flog.error("Problems importing scenarios. Error message: %s.", e)
     errMsg <<- lang$errMsg$hcubeImport$dbUpload$desc
   })
   if(is.null(showErrorMsg(lang$errMsg$hcubeImport$dbUpload$title, errMsg))){

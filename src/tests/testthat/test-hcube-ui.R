@@ -1,10 +1,8 @@
 context("UI tests - Hypercube Mode")
 skip_if(identical(Sys.getenv("GAMS_SYS_DIR"), ""),
         "GAMS_SYS_DIR environment variable not set. Skipping tests.")
-testDir <- file.path(getwd(), "..")
 
 createTestDb()
-Sys.setenv(MIRO_DB_PATH = testDir)
 
 modelToTest <- "pickstock_configuration"
 testModelDir <- file.path(testDir, "model", modelToTest)

@@ -48,10 +48,8 @@ loadSandboxScen <- function(scenId){
                                                    uidAlias = lang$nav$excelExport$metadataSheet$uid, 
                                                    snameAlias = lang$nav$excelExport$metadataSheet$sname, 
                                                    stimeAlias = lang$nav$excelExport$metadataSheet$stime)
-  idxScalarOut <- match(paste0(gsub("_", "", modelName, fixed = TRUE), 
-                               "_", scalarsOutName), scenTableNames)[[1]]
-  idxScalarIn <- match(paste0(gsub("_", "", modelName, fixed = TRUE), 
-                              "_", scalarsFileName), scenTableNames)[[1]]
+  idxScalarOut <- dbSchema$getSymIdx(scalarsOutName)[[1]]
+  idxScalarIn <- dbSchema$getSymIdx(scalarsFileName)[[1]]
   # load scalar data if available
   if(!is.na(idxScalarIn) && nrow(scenData[[scenIdLongNew]][[idxScalarIn]])){
     scalarData[[scenIdLongNew]]               <<- scenData[[scenIdLongNew]][[idxScalarIn]]

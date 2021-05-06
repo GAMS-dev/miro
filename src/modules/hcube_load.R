@@ -1,23 +1,20 @@
 hcubeRemoveConfirmed <- FALSE
 
-inputType <- list(text = "_uid", date = c("_stime"), csv = "_stag")
+inputType <- list(text = c("_uid", "_sname"), date = "_stime", csv = "_stag")
 keysRaw   <- NULL
 scalarFields  <- NULL
-scalarTables  <- NULL
 scalarKeyTypeList <- list()
-scalarsTabNameIn  <- gsub("_", "", modelName, fixed = TRUE) %+% "_" %+% scalarsFileName
-scalarsTabNameOut <- gsub("_", "", modelName, fixed = TRUE) %+% "_" %+% scalarsOutName
 modelInSorted <- sort(names(modelIn))
-modelOutSorted <- sort(modelOut[[scalarsTabNameOut]]$symnames)
+modelOutSorted <- sort(modelOut[[scalarsOutName]]$symnames)
 
 appendInputTypeList <- function(scalarsTabName){
   inputType$text <<- c(inputType$text, vapply(scalarKeyTypeList[[scalarsTabName]], 
-                                             function(el) if(el$type %in% c("set", "string", "acronym")) "_" %+% el$key else NA_character_, 
-                                             character(1L), USE.NAMES = FALSE))
+                                              function(el) if(el$type %in% c("set", "string", "acronym")) el$key else NA_character_, 
+                                              character(1L), USE.NAMES = FALSE))
   inputType$text <<- inputType$text[!is.na(inputType$text)]
   inputType$number <<- c(inputType$number, vapply(scalarKeyTypeList[[scalarsTabName]], 
-                                                 function(el) if(el$type %in% c("scalar", "parameter", "number")) "_" %+% el$key else NA_character_, 
-                                                 character(1L), USE.NAMES = FALSE))
+                                                  function(el) if(el$type %in% c("scalar", "parameter", "number")) el$key else NA_character_, 
+                                                  character(1L), USE.NAMES = FALSE))
   inputType$number <<- inputType$number[!is.na(inputType$number)]
 }
 
@@ -28,69 +25,75 @@ for(j in seq_along(modelIn)){
     next
   }
   if(!is.null(modelIn[[i]]$daterange)){
-    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]] %+% "$lo", type = "string", alias = modelInAlias[[i]] %+% " (lower)")
-    scalarKeyTypeList[[scalarsTabNameIn]][[k + 1L]] <- list(key = names(modelIn)[[i]] %+% "$up", type = "string", alias = modelInAlias[[i]] %+% " (upper)")
+    scalarKeyTypeList[[scalarsFileName]][[k]] <- list(key = paste0(names(modelIn)[[i]], "_lo"),
+                                                      type = "string",
+                                                      alias = paste0(modelInAlias[[i]], " (lower)"))
+    scalarKeyTypeList[[scalarsFileName]][[k + 1L]] <- list(key = paste0(names(modelIn)[[i]], "_up"),
+                                                           type = "string",
+                                                           alias = paste0(modelInAlias[[i]], " (upper)"))
     k <- k + 2L
-  }else if(!is.null(modelIn[[i]]$slider) && identical(modelIn[[i]]$slider$double, TRUE)){
-    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]] %+% "$lo", type = "number", alias = modelInAlias[[i]] %+% " (lower)")
-    scalarKeyTypeList[[scalarsTabNameIn]][[k + 1L]] <- list(key = names(modelIn)[[i]] %+% "$up", type = "number", alias = modelInAlias[[i]] %+% " (upper)")
+  }else if(identical(modelIn[[i]]$slider$double, TRUE)){
+    scalarKeyTypeList[[scalarsFileName]][[k]] <- list(key = paste0(names(modelIn)[[i]], "_lo"),
+                                                      type = "number",
+                                                      alias = paste0(modelInAlias[[i]], " (lower)"))
+    scalarKeyTypeList[[scalarsFileName]][[k + 1L]] <- list(key = paste0(names(modelIn)[[i]], "_up"),
+                                                           type = "number",
+                                                           alias = paste0(modelInAlias[[i]], " (upper)"))
     k <- k + 2L
-  }else if(!is.null(modelIn[[i]]$daterange)){
-    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]] %+% "$lo", type = "string", alias = modelInAlias[[i]] %+% " (lower)")
-    scalarKeyTypeList[[scalarsTabNameIn]][[k + 1L]] <- list(key = names(modelIn)[[i]] %+% "$up", type = "string", alias = modelInAlias[[i]] %+% " (upper)")
-    k <- k + 2L
-  }else if(modelIn[[i]]$type %in% c("slider", "checkbox", "numericinput") || identical(modelIn[[i]]$dropdown$checkbox, TRUE)){
-    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]], type = "number", alias = modelInAlias[[i]])
+  }else if(modelIn[[i]]$type %in% c("slider", "checkbox", "numericinput") ||
+           identical(modelIn[[i]]$dropdown$checkbox, TRUE)){
+    scalarKeyTypeList[[scalarsFileName]][[k]] <- list(key = names(modelIn)[[i]],
+                                                      type = "number",
+                                                      alias = modelInAlias[[i]])
     k <- k + 1L
-  }else if(modelIn[[i]]$type %in% c("dropdown", "dropdowne", "date", "textinput") && 
+  }else if(modelIn[[i]]$type %in% c("dropdown", "dropdowne", "date", "textinput") &&
            !isFALSE(modelIn[[i]]$dropdown$single)){
-    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]], type = "string", alias = modelInAlias[[i]])
+    scalarKeyTypeList[[scalarsFileName]][[k]] <- list(key = names(modelIn)[[i]],
+                                                      type = "string",
+                                                      alias = modelInAlias[[i]])
     k <- k + 1L
   }
 }
 
 if(length(modelIn[[scalarsFileName]])){
-  scalarKeyTypeList[[scalarsTabNameIn]] <- c(scalarKeyTypeList[[scalarsTabNameIn]], 
-                                             lapply(seq_along(modelIn[[scalarsFileName]]$symnames), function(i){
-                                               list(key = modelIn[[scalarsFileName]]$symnames[[i]], 
+  scalarKeyTypeList[[scalarsFileName]] <- c(scalarKeyTypeList[[scalarsFileName]], 
+                                            lapply(seq_along(modelIn[[scalarsFileName]]$symnames), function(i){
+                                              list(key = modelIn[[scalarsFileName]]$symnames[[i]], 
                                                    type = modelIn[[scalarsFileName]]$symtypes[[i]], 
                                                    alias = modelIn[[scalarsFileName]]$symtext[[i]])
-                                             }))
+                                            }))
 }
 
-if(length(scalarKeyTypeList[[scalarsTabNameIn]])){
-  appendInputTypeList(scalarsTabNameIn)
-  scalarFields        <- scalarsTabNameIn %+% "._" %+% 
-    vapply(scalarKeyTypeList[[scalarsTabNameIn]], "[[", character(1L), "key", USE.NAMES = FALSE)
-  names(scalarFields) <- vapply(scalarKeyTypeList[[scalarsTabNameIn]],
+if(length(scalarKeyTypeList[[scalarsFileName]])){
+  appendInputTypeList(scalarsFileName)
+  scalarFields        <- paste0(scalarsFileName, ".", 
+                                vapply(scalarKeyTypeList[[scalarsFileName]],
+                                       "[[", character(1L), "key", USE.NAMES = FALSE))
+  names(scalarFields) <- vapply(scalarKeyTypeList[[scalarsFileName]],
                                 "[[", character(1L), "alias", USE.NAMES = FALSE)
-  scalarTables <- scalarsTabNameIn
 }
 scalarOutFields <- NULL
 if(length(modelOut[[scalarsOutName]])){
-  scalarKeyTypeList[[scalarsTabNameOut]] <- lapply(seq_along(modelOut[[scalarsOutName]]$symnames), function(i){
+  scalarKeyTypeList[[scalarsOutName]] <- lapply(seq_along(modelOut[[scalarsOutName]]$symnames), function(i){
     list(key = modelOut[[scalarsOutName]]$symnames[[i]], 
          type = modelOut[[scalarsOutName]]$symtypes[[i]], 
          alias = modelOut[[scalarsOutName]]$symtext[[i]])
   })
-  scalarKeyTypeList[[scalarsTabNameOut]] <- scalarKeyTypeList[[scalarsTabNameOut]][order(vapply(scalarKeyTypeList[[scalarsTabNameOut]], 
-                                                                                                "[[", character(1L), "key", USE.NAMES = FALSE))]
-  appendInputTypeList(scalarsTabNameOut)
-  scalarOutFields        <- scalarsTabNameOut %+% "._" %+% 
-                             vapply(scalarKeyTypeList[[scalarsTabNameOut]], "[[", character(1L), "key", USE.NAMES = FALSE)
-  names(scalarOutFields) <- vapply(scalarKeyTypeList[[scalarsTabNameOut]],
+  scalarKeyTypeList[[scalarsOutName]] <- scalarKeyTypeList[[scalarsOutName]][order(vapply(scalarKeyTypeList[[scalarsOutName]], 
+                                                                                          "[[", character(1L), "key", USE.NAMES = FALSE))]
+  appendInputTypeList(scalarsOutName)
+  scalarOutFields        <- scalarsOutName %+% "." %+% 
+    vapply(scalarKeyTypeList[[scalarsOutName]], "[[", character(1L), "key", USE.NAMES = FALSE)
+  names(scalarOutFields) <- vapply(scalarKeyTypeList[[scalarsOutName]],
                                    "[[", character(1L), "alias", USE.NAMES = FALSE)
   scalarFields <- c(scalarFields, scalarOutFields)
-  scalarTables <- c(scalarTables, scalarsTabNameOut)
 }
 
-hcubeLoad <- HcubeLoad$new(db, scalarsFileHeaders[c(1, 3)], modelName,
-                           inputDsNamesNotToDisplay,
-                           scalarTables, scalarKeyTypeList, 
-                           hcubeScalars = getHcubeScalars(modelIn))
-metaCols <- db$getScenMetaColnames()
-fields <- c("", scenMetadataTable %+% "." %+% metaCols[c("uid", "stime", "stag")])
-names(fields) <- c("", lang$nav$hcubeLoad$metaColAliases$uid, 
+hcubeLoad <- HcubeLoad$new(db, inputDsNamesNotToDisplay)
+fields <- c("", paste0(dbSchema$getDbTableName("_scenMeta"), ".",
+                       c("_uid", "_sname", "_stime", "_stag")))
+names(fields) <- c("", lang$nav$hcubeLoad$metaColAliases$uid,
+                   lang$nav$hcubeLoad$metaColAliases$sname,
                    lang$nav$hcubeLoad$metaColAliases$stime,
                    lang$nav$hcubeLoad$metaColAliases$stag)
 fields <- c(fields, scalarFields)
@@ -99,11 +102,11 @@ maxNumBlocks   <- 5L
 activeBlocks   <- vector("logical", maxNumBlocks)
 activeLines    <- vector("logical", maxNumBlocks^2)
 fieldsSelected <- vector("character", maxNumBlocks^2)
-tmpOutputKeys  <- vapply(scalarKeyTypeList[[scalarsTabNameOut]], 
+tmpOutputKeys  <- vapply(scalarKeyTypeList[[scalarsOutName]], 
                          "[[", character(1L), "key", USE.NAMES = FALSE)
 exclAttribChoices <- c(fields[2:4], scalarOutFields)
 if(length(tmpOutputKeys))
-  names(exclAttribChoices)[4:length(exclAttribChoices)] <- vapply(scalarKeyTypeList[[scalarsTabNameOut]],
+  names(exclAttribChoices)[4:length(exclAttribChoices)] <- vapply(scalarKeyTypeList[[scalarsOutName]],
                                                                   "[[", character(1L), "alias", USE.NAMES = FALSE)
 rm(tmpOutputKeys)
 hideEl(session, "#hcubeLoadButtons")
@@ -112,151 +115,197 @@ observeEvent(input$btNewBlock, {
   if(all(activeBlocks)){
     return(NULL)
   }
-  i <- which.min(activeBlocks)
-  activeBlocks[i] <<- TRUE
-  addHcubeLoadBlock(id = i, choices = fields)
+  blockIdx <- which.min(activeBlocks)
+  activeBlocks[blockIdx] <<- TRUE
+  addHcubeLoadBlock(id = blockIdx, choices = fields)
 }, ignoreNULL = FALSE)
-lapply(2:maxNumBlocks, function(i){
-  observeEvent(input[["btRemoveBlock" %+% i]], {
-    removeBlock(i)
-  })
-})
-lapply(seq_len(maxNumBlocks), function(i){
-  lapply(seq_len(maxNumBlocks), function(j){
-    observeEvent(input[["btRemoveLine" %+% i %+% "_" %+% j]], {
-      activeLines[j + (i - 1) * maxNumBlocks]  <<- FALSE
-      removeUI(selector = "#line" %+% i %+% "_" %+% j)
-      if(i > 1 && noLinesInBlock(i)){
-        removeBlock(i)
+
+queryBuilderRemoveBlock <- function(blockIdx){
+  activeBlocks[blockIdx] <<- FALSE
+  activeLines[(blockIdx - 1) * maxNumBlocks + 1]  <<- FALSE
+  removeUI(selector = paste0("#block", blockIdx))
+}
+
+lapply(seq_len(maxNumBlocks), function(blockIdx){
+  if(blockIdx > 1L){
+    observeEvent(input[[paste0("btRemoveBlock", blockIdx)]], {
+      queryBuilderRemoveBlock(blockIdx)
+    })
+  }
+  blockOffset <- (blockIdx - 1L) * maxNumBlocks
+  lapply(seq_len(maxNumBlocks), function(lineIdx){
+    observeEvent(input[[paste0("btRemoveLine", blockIdx, "_", lineIdx)]], {
+      activeLines[lineIdx + blockOffset]  <<- FALSE
+      removeUI(selector = paste0("#line", blockIdx, "_", lineIdx))
+      if(blockIdx > 1L &&
+         !any(activeLines[seq(blockOffset + 1L, blockOffset + maxNumBlocks)])){
+        queryBuilderRemoveBlock(blockIdx)
       }
     })
   })
-  observeEvent(input[["newLine_" %+% i]], {
-    if(all(activeLines[((i - 1) * maxNumBlocks + 1):
-                       ((i - 1) * maxNumBlocks + maxNumBlocks)]) ||
-       input[["newLine_" %+% i]] == ""){
-      return(NULL)
+  observeEvent(input[[paste0("newLine_", blockIdx)]], {
+    if(all(activeLines[seq(blockOffset + 1L, blockOffset + maxNumBlocks)]) ||
+       input[[paste0("newLine_", blockIdx)]] == ""){
+      return()
     }
-    j <- which.min(activeLines[((i - 1) * maxNumBlocks + 1):
-                                 ((i - 1) * maxNumBlocks + maxNumBlocks)])
-    activeLines[j + (i - 1) * maxNumBlocks]  <<- TRUE
-    label <- names(fields)[match(input[["newLine_" %+% i]], fields)]
+    lineIdxToAssign <- which.min(activeLines[seq(blockOffset + 1L,
+                                                 blockOffset + maxNumBlocks)])
+    activeLines[blockOffset + lineIdxToAssign]  <<- TRUE
     
-    fieldsSelected[j + (i - 1) * maxNumBlocks] <<- input[["newLine_" %+% i]]
-    field <- strsplit(input[["newLine_" %+% i]], ".", fixed = TRUE)[[1]][[2]]
+    fieldSelected <- input[[paste0("newLine_", blockIdx)]]
     
-    if(field %in% inputType[['text']]){
-      ui <- generateLine(i, j, "text", label)
-    }else if(field %in% inputType[['date']]){
-      ui <- generateLine(i, j, "date", label)
-    }else if(field %in% inputType[['csv']]){
-      ui <- generateLine(i, j, "csv", label)
+    fieldId <- match(fieldSelected, fields)
+    if(length(fieldId) != 1L || is.na(fieldId)){
+      flog.error("Invalid field selected in query builder: '%s'. This is likely an attempt to tamper with the app!",
+                 fieldSelected)
+      stop()
+    }
+    label <- names(fields)[fieldId]
+    
+    fieldsSelected[blockOffset + lineIdxToAssign] <<- fieldSelected
+    field <- strsplit(fieldSelected, ".", fixed = TRUE)[[1]][[2]]
+    
+    if(field %in% inputType[["text"]]){
+      ui <- generateLine(blockIdx, lineIdxToAssign, "text", label)
+    }else if(field %in% inputType[["date"]]){
+      ui <- generateLine(blockIdx, lineIdxToAssign, "date", label)
+    }else if(field %in% inputType[["csv"]]){
+      ui <- generateLine(blockIdx, lineIdxToAssign, "csv", label)
     }else{
-      ui <- generateLine(i, j, "number", label)
+      ui <- generateLine(blockIdx, lineIdxToAssign, "number", label)
     }
     insertUI(
-      selector = "#blockContent" %+% i,
+      selector = paste0("#blockContent", blockIdx),
       where = "beforeEnd",
       ui = ui
     )
-    updateSelectInput(session, "newLine_" %+% i, selected = "")
+    updateSelectInput(session, paste0("newLine_", blockIdx), selected = "")
   })
 })
 observeEvent(input$btSendQuery, {
   disableEl(session, "#btSendQuery")
   showEl(session, "#hyperQueryLoad")
-  a <- 1L
-  c <- 1L
+  on.exit(hideEl(session, "#hyperQueryLoad"))
+  on.exit(enableEl(session, "#btSendQuery"), add = TRUE)
+  
+  i <- 1L
   subsetCoditions <- NULL
-  subsetScalars   <- NULL
-  lapply(seq_len(maxNumBlocks), function(i){
-    if(!activeBlocks[i]){
-      return(NULL)
-    }
-    b <- 1L
+  for(blockIdx in which(activeBlocks)){
+    j <- 1L
     table       <- NULL
     field       <- NULL
     val         <- NULL
     op          <- NULL
-    lapply(seq_len(maxNumBlocks), function(j){
-      if(!activeLines[j + (i - 1) * maxNumBlocks]){
-        return(NULL)
-      }
-      tableField <- strsplit(fieldsSelected[j + (i - 1) * maxNumBlocks], 
+    
+    blockOffset <- (blockIdx - 1L) * maxNumBlocks
+    for(lineIdx in which(activeLines[seq(blockOffset + 1L,
+                                         blockOffset + maxNumBlocks)])){
+      tableField <- strsplit(fieldsSelected[blockOffset + lineIdx], 
                              ".", fixed = TRUE)[[1]]
-      table[b]  <<- tableField[[1]]
-      field[b]  <<- tableField[[2]]
-      op[b]     <<- input[["op_" %+% i %+% "_" %+% j]]
-      if(grepl("%", op[b])[[1]] && inherits(db$getConn(), "PqConnection")){
-        switch(op[b],
+      table[j]  <- tableField[[1]]
+      field[j]  <- tableField[[2]]
+      opUntrusted <- as.character(input[[paste0("op_", blockIdx, "_", lineIdx)]])
+      filterVal <- input[[paste0("val_", blockIdx, "_", lineIdx)]]
+      
+      if(field[j] %in% inputType[["text"]]){
+        validOperators <- c("%LIKE%", "%NOTLIKE%", "LIKE%", "%LIKE", "=", "!=", "%EXIST", "%NOTEXIST")
+      }else if(field[j] %in% inputType[["date"]]){
+        validOperators <- "BETWEEN"
+      }else if(field[j] %in% inputType[["csv"]]){
+        validOperators <- c("%LIKE%", "%NOTLIKE%", ",LIKE%",
+                            "%LIKE,", "%,LIKE,%", "%,NOTLIKE,%")
+        if(grepl(",", filterVal[1], fixed=TRUE)){
+          fieldId <- match(fieldsSelected[blockOffset + lineIdx], fields)
+          showHideEl(session, "#queryBuilderError", 4000L,
+                     sprintf(lang$nav$hcubeLoad$invalidCsvFilter,
+                             if(is.na(fieldId)) fields[j] else names(fields)[fieldId]))
+          return()
+        }
+      }else{
+        validOperators <- c("=", "<", ">", "<=", ">=", "!=")
+      }
+      if(length(opUntrusted) != 1L || !opUntrusted %in% validOperators){
+        flog.error("Invalid operator: '%s' received for field: '%s'. This is likely an attempt to tamper with the app!",
+                   opUntrusted, field[j])
+        return()
+      }
+      op[j]     <- opUntrusted
+      filterValEscaped <- db$escapePatternPivot(filterVal)
+      if(grepl("%", op[j])[[1]]){
+        switch(op[j],
                "%LIKE" = {
-                 val[b] <<- "%" %+% 
-                   db$escapePatternPivot(input[["val_" %+% i %+% "_" %+% j]])
-                 op[b]  <<- "LIKE"
+                 val[j] <- paste0("%", filterValEscaped) 
+                   
+                 op[j]  <- "LIKE"
                },
                "LIKE%" = {
-                 val[b] <<- db$escapePatternPivot(input[["val_" %+% i %+% "_" %+% j]]) %+% "%"
-                 op[b]  <<- "LIKE"
+                 val[j] <- paste0(filterValEscaped, "%")
+                 op[j]  <- "LIKE"
                },
                "%LIKE%" = {
-                 val[b] <<- "%" %+% 
-                   db$escapePatternPivot(input[["val_" %+% i %+% "_" %+% j]]) %+% "%"
-                 op[b]  <<- "LIKE"
+                 val[j] <- paste0("%", filterValEscaped, "%")
+                 op[j]  <- "LIKE"
                },
                "%NOTLIKE%" = {
-                 val[b] <<- "%" %+% 
-                   db$escapePatternPivot(input[["val_" %+% i %+% "_" %+% j]]) %+% "%"
-                 op[b]  <<- "NOT LIKE"
+                 val[j] <- paste0("%", filterValEscaped, "%")
+                 op[j]  <- "NOT LIKE"
                },
                ",LIKE%" = {
-                 val[b] <<- "%," %+% db$escapePatternPivot(input[["val_" %+% i %+% "_" %+% j]]) %+% "%"
-                 op[b]  <<- "LIKE"
+                 val[j] <- paste0("%,", filterValEscaped, "%")
+                 op[j]  <- "LIKE"
                },
                "%LIKE," = {
-                 val[b] <<- "%" %+% 
-                   db$escapePatternPivot(input[["val_" %+% i %+% "_" %+% j]]) %+% ",%"
-                 op[b]  <<- "LIKE"
+                 val[j] <- paste0("%", filterValEscaped, ",%")
+                 op[j]  <- "LIKE"
                },
                "%,LIKE,%" = {
-                 val[b] <<- "%," %+% 
-                   db$escapePatternPivot(input[["val_" %+% i %+% "_" %+% j]]) %+% ",%"
-                 op[b]  <<- "LIKE"
+                 val[j] <- paste0("%,", filterValEscaped, ",%")
+                 op[j]  <- "LIKE"
                },
                "%,NOTLIKE,%" = {
-                 val[b] <<- "%," %+% 
-                   db$escapePatternPivot(input[["val_" %+% i %+% "_" %+% j]]) %+% ",%"
-                 op[b]  <<- "NOT LIKE"
+                 val[j] <- paste0("%,", filterValEscaped, ",%")
+                 op[j]  <- "NOT LIKE"
+               },
+               "%EXIST" = {
+                 val[j] <- NA
+                 op[j] <- "!="
+               },
+               "%NOTEXIST" = {
+                 val[j] <- NA
+                 op[j] <- "="
                })
-      }else if(identical(op[b], "BETWEEN")){
-        table[b + 1] <<- tableField[[1]]
-        field[b + 1] <<- tableField[[2]]
-        val[b]     <<- as.character(input[["val_" %+% i %+% "_" %+% j]][[1]])
-        val[b + 1] <<- as.character(input[["val_" %+% i %+% "_" %+% j]][[2]] + 1)
-        op[b]      <<- ">="
-        op[b + 1]  <<- "<"
-        b <<- b + 2L
-        return(NULL)
+      }else if(identical(op[j], "BETWEEN")){
+        table[j + 1] <- tableField[[1]]
+        field[j + 1] <- tableField[[2]]
+        val[j]       <- as.character(filterVal[[1]])
+        val[j + 1]   <- as.character(filterVal[[2]] + 1)
+        op[j]        <- ">="
+        op[j + 1]    <- "<"
+        j <- j + 2L
+        next
       }else{
-        val[b] <<- input[["val_" %+% i %+% "_" %+% j]]
+        val[j] <- filterVal
       }
-      b <<- b + 1L
-    })
-    if(length(field)){
-      subsetCoditions[[a]] <<- tibble(field, val, op, table)
-    }else{
-      subsetCoditions[[a]] <<- tibble()
+      j <- j + 1L
     }
-    a <<- a + 1L
-  })
+    if(length(field)){
+      subsetCoditions[[i]] <- tibble(field, val, op, table)
+    }else{
+      subsetCoditions[[i]] <- tibble()
+    }
+    i <- i + 1L
+  }
   colsToFetch <- strsplit(fields[-1], ".", fixed = TRUE)
-  colN <- c(sidIdentifier, vapply(colsToFetch, 
-                                   '[[', FUN.VALUE = "character", 2, 
-                                   USE.NAMES = FALSE))
-  names(colN) <- c(scenMetadataTable, vapply(colsToFetch, '[[', 
-                                               FUN.VALUE = "character", 1,
-                                               USE.NAMES = FALSE))
+  colN <- c("_sid", vapply(colsToFetch, 
+                           '[[', FUN.VALUE = "character", 2, 
+                           USE.NAMES = FALSE))
+  names(colN) <- c("_sys_metadata_", vapply(colsToFetch, '[[', 
+                                            FUN.VALUE = "character", 1,
+                                            USE.NAMES = FALSE))
   tryCatch({
-    rv$fetchedScenarios <- hcubeLoad$fetchResults(subsetCoditions, colNames = colN, limit = hcubeLoadMaxScen)
+    rv$fetchedScenarios <- hcubeLoad$fetchResults(subsetCoditions,
+                                                  colNames = colN,
+                                                  limit = hcubeLoadMaxScen)
   }, error = function(e){
     if(identical(conditionMessage(e), "maxNoRowsVio")){
       errMsg <- sprintf("Your query results in too many scenarios to be fetched from the database. The maximum number of scenarios to be fetched is: %d. Please narrow your search.", 
@@ -266,7 +315,7 @@ observeEvent(input$btSendQuery, {
         "Please try again or contact the system administrator in case this problem persists."
     }
     showErrorMsg("Error fetching data", errMsg)
-    flog.warn("Problems executing hcubeLoad query. Error message: %s.", e)
+    flog.warn("Problems executing hcubeLoad query. Error message: %s.", conditionMessage(e))
   })
   if(length(isolate(rv$fetchedScenarios)) && nrow(isolate(rv$fetchedScenarios))){
     showEl(session, "#hcubeLoadButtons")
@@ -275,8 +324,6 @@ observeEvent(input$btSendQuery, {
     showEl(session, "#hcubeLoadNoData")
     hideEl(session, "#hcubeLoadButtons")
   }
-  hideEl(session, "#hyperQueryLoad")
-  enableEl(session, "#btSendQuery")
 })
 
 if("DT" %in% (.packages())){
@@ -284,9 +331,18 @@ if("DT" %in% (.packages())){
     if(length(rv$fetchedScenarios) && nrow(rv$fetchedScenarios)){
       data <- rv$fetchedScenarios[, -1]
       datatable(
-        data, filter = "bottom", colnames = names(fields)[-1], rownames = FALSE) %>%
-      formatDate(2L,  method = "toLocaleString") %>%
-        formatRound(seq(4, length(data))[vapply(data[, seq(4, length(data))], is.numeric, logical(1L), USE.NAMES = FALSE)], 
+        data, filter = "bottom", colnames = names(fields)[-1], rownames = FALSE,
+        options = list(scrollX = TRUE, columnDefs = list(list(
+          targets = "_all",
+          render = JS(
+            "function(data, type, row, meta) {",
+            "return type === 'display' && data != null && data.length > 20 ?",
+            "'<span title=\"' + data + '\">' + data.substr(0, 20) + '...</span>' : data;",
+            "}")
+        )))) %>%
+        formatDate(3L,  method = "toLocaleString") %>%
+        formatRound(seq(5L, length(data))[vapply(data[, seq(5L, length(data))],
+                                                 is.numeric, logical(1L), USE.NAMES = FALSE)], 
                     digits = roundPrecision)
     }
   )
@@ -302,24 +358,24 @@ observeEvent(input$btShowHash, {
   flog.debug("Button to show hash of selected scenario (Hypercube load) clicked.")
   selectedRows <- isolate(input$hcubeLoadResults_rows_selected)
   if(!length(selectedRows) || length(selectedRows) > 1L){
-    showHideEl(session, "#showHashOnlyOne", 4000L)
+    showHideEl(session, "#queryBuilderError", 4000L, lang$nav$hcubeLoad$msgOnlyOneHash)
     return()
   }
   noErr <- TRUE
   tryCatch(
-    hashValue <- db$importDataset(db$getDbSchema()$tabName[['_scenMeta']], colNames = snameIdentifier, 
-                                  tibble(scodeIdentifier, SCODEMAP[['scen']], ">"),
+    hashValue <- db$importDataset("_scenMeta", colNames = "_sname", 
+                                  tibble("_scode", SCODEMAP[['scen']], ">"),
                                   subsetSids = rv$fetchedScenarios[[1]][selectedRows])[[1]]
-  , error = function(e){
-    flog.error("Problems fetching hash value from database. Error message: '%s'.", e)
-    showHideEl(session, "#showHashError", 4000L)
-    noErr <<- FALSE
-  })
+    , error = function(e){
+      flog.error("Problems fetching hash value from database. Error message: '%s'.", e)
+      showHideEl(session, "#queryBuilderError", 4000L, lang$errMsg$unknownError)
+      noErr <<- FALSE
+    })
   if(!noErr){
     return()
   }
   if(!length(hashValue)){
-    showHideEl(session, "#showNoHashError", 4000L)
+    showHideEl(session, "#queryBuilderError", 4000L, lang$nav$hcubeLoad$msgNoHashFound)
     return()
   }
   showHashDialog(hashValue)
@@ -405,30 +461,16 @@ output$btHcubeDownloadConfirm <- downloadHandler(
   },
   contentType = "application/zip")
 
-noLinesInBlock <- function(blockId){
-  if(any(activeLines[((blockId - 1) * maxNumBlocks + 1):
-                     ((blockId - 1) * maxNumBlocks + maxNumBlocks)])){
-    return(FALSE)
-  }else{
-    return(TRUE)
-  }
-}
-removeBlock <- function(blockId){
-  activeBlocks[blockId] <<- FALSE
-  activeLines[(blockId - 1) * maxNumBlocks + 1]  <<- FALSE
-  removeUI(selector = "#block" %+% blockId)
-}
-
 observeEvent(input$btHcubeRemove, {
   if(hcubeRemoveConfirmed){
     errMsg <- NULL
     disableEl(session, "#btHcubeRemove")
     affectedRows <- 0L
-    tryCatch(affectedRows <- db$deleteRows(db$getTableNameMetadata(), subsetSids = sidsToLoad), 
+    tryCatch(affectedRows <- db$deleteRows("_scenMeta", subsetSids = sidsToLoad), 
              error = function(e){
-      flog.error("Problems removing Hypercube scenarios. Error message: %s", e)
-      errMsg <<- TRUE
-    })
+               flog.error("Problems removing Hypercube scenarios. Error message: %s", e)
+               errMsg <<- TRUE
+             })
     if(!is.null(errMsg) || affectedRows < sidsToLoad){
       showHideEl(session, "#hcubeRemoveError", 4000L)
       return(NULL)
