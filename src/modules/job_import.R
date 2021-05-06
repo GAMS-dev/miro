@@ -292,9 +292,7 @@ observeEvent(virtualActionButton(
     }
     if(config$saveTraceFile){
       tryCatch({
-        traceData <<- readTraceData(file.path(tmpdir, 
-                                              paste0(tableNameTracePrefix,
-                                                     modelName, ".trc")), 
+        traceData <<- readTraceData(file.path(tmpdir, "_scenTrc.trc"), 
                                     traceColNames)
       }, error = function(e){
         errMsg <<- conditionMessage(e)

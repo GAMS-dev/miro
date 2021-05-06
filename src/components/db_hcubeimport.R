@@ -3,7 +3,7 @@ HcubeImport <- R6Class("HcubeImport",
                        public = list(
                          initialize        = function(db, scalarsInputName, scalarsOutputName, 
                                                       tableNamesCanHave, tableNamesMustHave,
-                                                      csvDelim, workDir, gmsColTypes, gmsFileHeaders,
+                                                      csvDelim, workDir,
                                                       gdxio, inputSym, outputSym, templates){
                            # R6 class to import scenarios in hcube mode
                            #
@@ -16,9 +16,6 @@ HcubeImport <- R6Class("HcubeImport",
                            #                            for the scenario to be valid
                            #   csvDelim:                csv delimiter
                            #   workDir:                 directory where temporary files are saved
-                           #   traceColNames:           column names of trace file
-                           #   gmsColTypes:             character vector of column types per datasheet
-                           #   gmsFileHeaders:          character vector of file headers per datasheet
                            #   gdxio:                   gdxio class
                            #   inputSym:                input symbols
                            #   outputSym:               output symbols
@@ -33,9 +30,6 @@ HcubeImport <- R6Class("HcubeImport",
                            stopifnot(is.character(tableNamesMustHave))
                            stopifnot(is.character(csvDelim), length(csvDelim) == 1)
                            stopifnot(is.character(workDir), length(workDir) == 1)
-                           stopifnot(is.character(traceColNames), length(traceColNames) >= 1)
-                           stopifnot(is.character(gmsColTypes), length(gmsColTypes) >= 1)
-                           stopifnot(is.list(gmsFileHeaders), length(gmsFileHeaders) >= 1)
                            stopifnot(is.R6(gdxio), is.character(outputSym),
                                      is.list(templates))
                            # END error checks
@@ -43,21 +37,13 @@ HcubeImport <- R6Class("HcubeImport",
                            private$conn               <- db$getConn()
                            private$uid                <- db$getUid()
                            private$userAccessGroups   <- db$getUserAccessGroups()
-                           private$tableNamesScenario <- db$getTableNamesScenario()
-                           private$tableNameMetadata  <- db$getTableNameMetadata()
-                           private$scenMetaColnames   <- db$getScenMetaColnames()
-                           private$dbSchema           <- db$getDbSchema()
-                           private$traceTabName       <- private$dbSchema$tabName[['_scenTrc']]
-                           private$traceColNames      <- private$dbSchema$colNames[['_scenTrc']]
                            private$scalarsInputName   <- tolower(scalarsInputName)
                            private$scalarsOutputName  <- tolower(scalarsOutputName)
                            private$tableNamesMustHave <- tableNamesMustHave
                            private$tableNamesToVerify <- c(tableNamesCanHave, tableNamesMustHave)
                            private$csvDelim           <- csvDelim
                            private$workDir            <- workDir
-                           private$includeTrc         <- private$traceTabName %in% private$tableNamesToVerify
-                           private$gmsColTypes        <- gmsColTypes
-                           private$gmsFileHeaders     <- gmsFileHeaders
+                           private$includeTrc         <- "_scenTrc" %in% private$tableNamesToVerify
                            private$gdxio              <- gdxio
                            private$inputSym           <- if(is.null(inputSym)) character(0L) else inputSym
                            private$outputSym          <- outputSym
@@ -181,79 +167,76 @@ HcubeImport <- R6Class("HcubeImport",
                            
                            scenData         <- private$scenData
                            saveTraceFile    <- as.integer(private$includeTrc)
-                           tableNames <- private$tableNamesScenario
+                           tableNames       <- dbSchema$getAllSymbols()
+                           tableNames       <- tableNames[!tableNames %in% ioConfig$hcubeScalars]
                            if(saveTraceFile){
-                             tableNames <- c(tableNames, private$traceTabName)
+                             tableNames <- c(tableNames, "_scenTrc")
                            }
                            
-                           scenMetaColnames <- private$scenMetaColnames
                            readPerm         <- vector2Csv(readPerm)
                            writePerm        <- vector2Csv(writePerm)
                            execPerm         <- vector2Csv(execPerm)
-                           tableNamesRaw    <- gsub("^[^_]+_", "", tableNames)
-                           tablesTmp        <- vector("list", length(tableNames) + saveTraceFile)
-                           tables           <- vector("list", length(tableNames) + saveTraceFile)
                            
                            # export metadata to reserve scenario ids
                            numberScen     <- length(scenData)
                            private$noScen <- numberScen
-                           metadataTable  <- tibble(rep.int(private$uid, numberScen), names(scenData), 
-                                                    rep.int(1, numberScen), rep.int(hcubeTags, numberScen), 
-                                                    rep.int(readPerm, numberScen), rep.int(writePerm, numberScen),
-                                                    rep.int(execPerm, numberScen), rep.int(jobID, numberScen))
+                           metadataTable  <- tibble(`_uid` = rep.int(private$uid, numberScen),
+                                                    `_sname` = names(scenData), 
+                                                    `_stime` = rep.int(1, numberScen),
+                                                    `_stag` = rep.int(hcubeTags, numberScen), 
+                                                    `_accessr` = rep.int(readPerm, numberScen),
+                                                    `_accessw` = rep.int(writePerm, numberScen),
+                                                    `_accessx` = rep.int(execPerm, numberScen),
+                                                    `_scode` = rep.int(jobID, numberScen))
                            metadataTable[[3]] <- Sys.time()
-                           names(metadataTable) <- scenMetaColnames[-1]
-                           self$writeMetadata(metadataTable)
-                           if(inherits(private$conn, "PqConnection")){
-                             query <- SQL(paste0("SELECT currval(pg_get_serial_sequence(",
-                                                 DBI::dbQuoteString(private$conn, private$tableNameMetadata), 
-                                                 ", ",
-                                                 DBI::dbQuoteString(private$conn,
-                                                                    private$scenMetaColnames['sid']), "));"))
-                           }else{
-                             query <- SQL("SELECT LAST_INSERT_ROWID();")
-                           }
-                           lasInsertedRowId <- as.integer(DBI::dbGetQuery(private$conn, query)[[1]][1])
-                           stopifnot(lasInsertedRowId >= numberScen)
-                           firstScenId <- lasInsertedRowId - numberScen + 1L
                            
-                           # concatenate to single table first and then do bulk export to database
-                           for(scenId in seq_along(scenData)){
-                             for(tableId in seq_len(length(tableNamesRaw) + saveTraceFile)){
-                               if(tableId > length(tableNamesRaw)){
-                                 scenTableId <- match(private$traceTabName, names(scenData[[scenId]]))
-                               }
-                               scenTableId <- match(tableNamesRaw[tableId], names(scenData[[scenId]]))
-                               if(!is.na(scenTableId) && nrow(scenData[[scenId]][[scenTableId]])){
-                                 scenData[[scenId]][[scenTableId]] <- cbind(sid = firstScenId + scenId - 1,
-                                                                            scenData[[scenId]][[scenTableId]])
-                                 colnames(scenData[[scenId]][[scenTableId]])[1] <- scenMetaColnames[1]
-                                 tablesTmp[[tableId]][[scenId]] <- scenData[[scenId]][[scenTableId]]
-                               }
-                             }
-                             if(!is.null(progressBar) && scenId %% 10 == 0){
-                               progressBar$inc(amount = 0, message = sprintf("Preparing scenario %d of %d.", 
-                                                                             scenId, length(scenData)))
-                             }
+                           if(inherits(private$conn, "PqConnection")){
+                             query <- paste(sqlAppendTable(private$conn, dbSchema$getDbTableName("_scenMeta"),
+                                                           sqlData(private$conn, metadataTable),
+                                                           row.names = FALSE), "RETURNING _sid")
+                             firstScenId <- as.integer(DBI::dbGetQuery(private$conn, query)[[1]][1])
+                           }else{
+                             self$writeMetadata(metadataTable)
+                             query <- SQL("SELECT LAST_INSERT_ROWID();")
+                             lasInsertedRowId <- as.integer(DBI::dbGetQuery(private$conn, query)[[1]][1])
+                             firstScenId <- lasInsertedRowId - numberScen + 1L
                            }
-                           tables <- lapply(seq_along(tableNamesRaw), function(tableId){
-                             if(length(tablesTmp[[tableId]])){
-                               do.call(bind_rows, tablesTmp[[tableId]])
-                             }
-                           })
+                           stopifnot(firstScenId >= 1L)
+                           
                            if(!is.null(progressBar)){
                              progressBar$inc(amount = 0, message = sprintf("Uploading tables to database."))
                            }
-                           lapply(seq_along(tables), function(i){
-                             if(!is.null(private$gmsFileHeaders[[tableNamesRaw[[i]]]]) && 
-                                length(tables[[i]])){
-                               names(tables[[i]])[-1L] <- private$gmsFileHeaders[[tableNamesRaw[[i]]]]
+                           if(!dbBegin(private$conn)){
+                             stop("Could not start database transaction.", call. = FALSE)
+                           }
+                           tryCatch({
+                             lapply(seq_along(tableNames), function(i){
+                               tableName <- tableNames[i]
+                               self$exportScenDataset(bind_rows(lapply(seq_along(private$scenData), function(scenIdx){
+                                 add_column(`_sid` = firstScenId + scenIdx - 1L,
+                                            private$scenData[[scenIdx]][[tableName]],
+                                            .before = 1L)})), tableName, isHcJobConfig = FALSE)
+                               if(!is.null(progressBar)){
+                                 progressBar$inc(amount = 0, message = sprintf("Uploading table %d of %d.",
+                                                                               i, length(tableNames)))
+                               }
+                             })
+                             if(!dbCommit(private$conn)){
+                               stop_custom("error_commit", "Could not commit database transaction", call. = FALSE)
                              }
-                             self$exportScenDataset(tables[[i]], tableNames[[i]])
-                             if(!is.null(progressBar)){
-                               progressBar$inc(amount = 0, message = sprintf("Uploading table %d of %d.",
-                                                                             i, length(tables)))
+                           }, error_commit = function(e){
+                             stop(conditionMessage(e), call. = FALSE)
+                           }, error = function(e){
+                             if(!dbRollback(private$conn)){
+                               self$deleteRows("_scenMeta",
+                                               subsetSids = seq(firstScenId,
+                                                                firstScenId + numberScen - 1L))
+                               stop("Could not roll back database transaction.", call. = FALSE)
                              }
+                             self$deleteRows("_scenMeta",
+                                             subsetSids = seq(firstScenId,
+                                                              firstScenId + numberScen - 1L))
+                             stop(conditionMessage(e), call. = FALSE)
                            })
                            invisible(self)
                          },
@@ -276,10 +259,10 @@ HcubeImport <- R6Class("HcubeImport",
                            }
                            # END error checks
                            
-                           previousResults <- self$importDataset(private$tableNameMetadata,
-                                                                 colNames = c(private$scenMetaColnames['sname'], 
-                                                                              private$scenMetaColnames['stag']))
-                           isDuplicated <- previousResults[[private$scenMetaColnames['sname']]] %in% scenNames
+                           previousResults <- self$importDataset("_scenMeta",
+                                                                 colNames = c("_sname", 
+                                                                              "_stag"))
+                           isDuplicated <- previousResults[["_sname"]] %in% scenNames
                            private$duplicatedScenIds <- scenNames[isDuplicated]
                            return(previousResults[isDuplicated, ])
                          },
@@ -291,15 +274,9 @@ HcubeImport <- R6Class("HcubeImport",
                          conn                    = NULL,
                          scenData                = NULL,
                          uid                     = character(0L),
-                         dbSchema                = vector("list", 3L),
                          gdxio                   = NULL,
-                         tableNamesScenario      = character(0L),
-                         tableNameMetadata       = character(0L),
-                         scenMetaColnames        = character(0L),
                          scenNames               = character(0L),
                          filePaths                = character(0L),
-                         gmsColTypes             = character(0L),
-                         gmsFileHeaders          = character(0L),
                          scalarsInputName        = character(0L),
                          scalarsOutputName       = character(0L),
                          tableNamesMustHave      = character(0L),
@@ -308,7 +285,6 @@ HcubeImport <- R6Class("HcubeImport",
                          workDir                 = character(0L),
                          invalidScenIds          = character(0L),
                          duplicatedScenIds       = character(0L),
-                         traceColNames           = character(0L),
                          traceTabName            = character(0L),
                          includeTrc              = logical(0L),
                          noScen                  = integer(1L),
@@ -322,8 +298,7 @@ HcubeImport <- R6Class("HcubeImport",
                          readScenData      = function(filePaths){
                            scenDataNames <- lapply(tolower(filePaths), function(filePath){
                              if(endsWith(filePath, ".trc")){
-                               fileName <- basename(filePath)
-                               return(substring(fileName, 1, nchar(fileName) - 4))
+                               return("_scenTrc")
                              }else if(identical(basename(filePath), MIROGdxInName)){
                                return(private$inputSym)
                              }else{
@@ -333,11 +308,15 @@ HcubeImport <- R6Class("HcubeImport",
                              filePath <- filePaths[[i]]
                              tryCatch({
                                if(endsWith(tolower(filePath), ".trc")){
-                                 return(list(readTraceData(filePath, private$traceColNames)[1, ]))
+                                 return(list(readTraceData(filePath, traceColNames)[1, ]))
                                }
                                symNames <- scenDataNames[[i]]
                                return(lapply(symNames, function(symName){
-                                 colTypes <- private$gmsColTypes[[symName]]
+                                 if(symName %in% c(scalarsFileName, scalarsOutName)){
+                                   colTypes <- "ccc"
+                                 }else{
+                                   colTypes <- dbSchema$getDbSchema(symName)$colTypes
+                                 }
                                  scenData <- tryCatch({
                                    fixColTypes(private$gdxio$rgdx(filePath, symName), colTypes)
                                  }, error = function(e){
@@ -348,6 +327,8 @@ HcubeImport <- R6Class("HcubeImport",
                                  }
                                  if(length(private$templates[[symName]])){
                                    names(scenData) <- names(private$templates[[symName]])
+                                 }else if(symName %in% c(scalarsFileName, scalarsOutName)){
+                                   names(scenData) <- c("scalar", "description", "value")
                                  }
                                  return(scenData %>% mutate_if(is.character, 
                                                                replace_na, replace = ""))
@@ -361,21 +342,21 @@ HcubeImport <- R6Class("HcubeImport",
                            return(scenData)
                          },
                          verifyScenFiles = function(filePaths){
-                           tableNames    <- tolower(unlist(lapply(filePaths, function(filePath){
+                           tableNames    <- unlist(lapply(filePaths, function(filePath){
                              if(endsWith(tolower(filePath), ".trc")){
-                               fileName <- tolower(basename(filePath))
-                               return(substring(fileName, 1, nchar(fileName) - 4))
+                               return("_scenTrc")
                              }
                              gdxSym <- private$gdxio$getSymbols(filePath)
-                             return(c(gdxSym$sets, gdxSym$parameters, gdxSym$variables, gdxSym$equations))}),
-                             use.names = FALSE, recursive = FALSE))
+                             return(tolower(c(gdxSym$sets, gdxSym$parameters,
+                                              gdxSym$variables, gdxSym$equations)))}),
+                             use.names = FALSE, recursive = FALSE)
                            verifiedIds   <- match(private$tableNamesMustHave, tableNames)
                            if(any(is.na(verifiedIds))){
                              flog.info("The scenario misses some tables that must be included: '%s'.", 
                                        paste(private$tableNamesMustHave[is.na(verifiedIds)], collapse = "', '"))
                              return(NULL)
                            }else{
-                             verifiedIds   <- match(tolower(tableNames), private$tableNamesToVerify)
+                             verifiedIds   <- match(tableNames, private$tableNamesToVerify)
                              if(any(is.na(verifiedIds))){
                                flog.info("The scenario includes invalid datasets: '%s'.", 
                                          paste(tableNames[is.na(verifiedIds)], collapse = "', '"))
@@ -389,8 +370,8 @@ HcubeImport <- R6Class("HcubeImport",
                            validFileNames <- c(MIROGdxInName, MIROGdxOutName)
                             
                            if(private$includeTrc){
-                             validFileNames <- c(validFileNames, 
-                                                 paste0(tableNameTracePrefix, modelName, ".trc"))
+                             validFileNames <- c(validFileNames, "_scenTrc.trc",
+                                                 paste0("_sys_trace_", modelName, ".trc"))
                            }
                            fileNamesZip   <- zip_list(zipFilePath)
                            fileNamesZip   <- fileNamesZip[fileNamesZip$compressed_size > 0, ]$filename

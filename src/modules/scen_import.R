@@ -401,8 +401,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   loadErrors <- character(0L)
   source("./modules/input_load.R", local = TRUE)
   if(identical(fileType, "miroscen")){
-    scenMetaData[["scen_1_"]] <<- activeScen$
-      getMetadata(lang$nav$excelExport$metadataSheet)
+    scenMetaData[["scen_1_"]] <<- activeScen$getMetadata()
     # update scenario name
     rv$activeSname  <<- activeScen$getScenName()
   }else{

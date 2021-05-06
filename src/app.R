@@ -92,11 +92,6 @@ filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./component
                     "./components/scen_comp_pivot.R", "./components/js_util.R")
 LAUNCHCONFIGMODE <- FALSE
 LAUNCHHCUBEMODE <<- FALSE
-if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
-  pb <- winProgressBar(title = "Loading GAMS MIRO", label = "Loading required packages",
-                       min = 0, max = 1, initial = 0, width = 300)
-  setWinProgressBar(pb, 0.3, label= "Initializing GAMS MIRO")
-}
 if(is.null(errMsg)){
   # include custom functions and modules
   lapply(filesToInclude, function(file){
@@ -139,7 +134,7 @@ if(is.null(errMsg)){
     }
     miroDbDir     <- Sys.getenv("MIRO_DB_PATH")
     if(identical(miroDbDir, "")){
-      miroDbDir <- miroWorkspace
+      miroDbDir <- file.path(miroWorkspace, "app_data")
     }
   }
   if(!identical(Sys.getenv("MIRO_LOG_PATH"), "")){
@@ -221,6 +216,62 @@ if(is.null(errMsg)){
                       rSaveFilePath)
   }else{
     load(rSaveFilePath)
+    if(exists("dbSchema")){
+      # legacy app, need to convert to new format
+      dbSchemaModel <- substring(dbSchema$tabName[-seq_len(6)],
+                                 nchar(gsub("_", "", modelName, fixed = TRUE)) + 2L)
+      dbSchemaModel <- list(schema = setNames(lapply(seq_along(dbSchemaModel), function(i){
+        if(dbSchemaModel[i] %in% c(scalarsFileName, scalarsOutName)){
+          return(NA)
+        }
+        if(LAUNCHHCUBEMODE){
+          if(i <= length(modelOut)){
+            el <- modelOut[[i]]
+          }else{
+            el <- modelIn[[i - length(modelOut)]]
+          }
+          if(isTRUE(el$dropdown$single) || isTRUE(el$dropdown$checkbox)){
+            return(NA)
+          }
+        }
+        list(tabName = dbSchemaModel[i],
+             colNames = dbSchema$colNames[[i + 6L]],
+             colTypes = dbSchema$colTypes[[i + 6L]])
+      }), dbSchemaModel), views = list())
+      dbSchemaModel$schema[is.na(dbSchemaModel$schema)] <- NULL
+      if(scalarsOutName %in% names(modelOut)){
+        scalarMeta <- setNames(modelOut[[scalarsOutName]]$symtypes,
+                               modelOut[[scalarsOutName]]$symnames)
+        dbSchemaModel$schema <- c(dbSchemaModel$schema,
+                                  setNames(lapply(names(scalarMeta), function(scalarName){
+                                    list(tabName = scalarName,
+                                         colNames = scalarName,
+                                         colTypes = if(identical(scalarMeta[[scalarName]], "set")) "c" else "d")
+                                  }), names(scalarMeta)))
+        dbSchemaModel$views[[scalarsOutName]] <- c(dbSchemaModel$views[[scalarsOutName]], names(scalarMeta))
+      }
+      if(scalarsFileName %in% names(modelInRaw)){
+        scalarMeta <- setNames(modelInRaw[[scalarsFileName]]$symtypes,
+                               modelInRaw[[scalarsFileName]]$symnames)
+        dbSchemaModel$schema <- c(dbSchemaModel$schema,
+                                  setNames(lapply(names(scalarMeta), function(scalarName){
+                                    list(tabName = scalarName,
+                                         colNames = scalarName,
+                                         colTypes = if(identical(scalarMeta[[scalarName]], "set")) "c" else "d")
+                                  }), names(scalarMeta)))
+        dbSchemaModel$views[[scalarsFileName]] <- c(dbSchemaModel$views[[scalarsFileName]], names(scalarMeta))
+      }
+      if(length(GMSOpt) || length(DDPar)){
+        dbSchemaModel$schema <- c(dbSchemaModel$schema,
+                                  setNames(lapply(c(GMSOpt, DDPar), function(parName){
+                                    list(tabName = parName,
+                                         colNames = parName,
+                                         colTypes = "c")
+                                  }), c(GMSOpt, DDPar)))
+        dbSchemaModel$views[[scalarsFileName]] <- c(dbSchemaModel$views[[scalarsFileName]], c(GMSOpt, DDPar))
+      }
+      rm(dbSchema)
+    }
     suppressWarnings(rm(lang))
     for (customRendererName  in customRendererNames){
       assign(customRendererName, get(customRendererName), envir = .GlobalEnv)
@@ -237,13 +288,15 @@ if(is.null(errMsg)){
                     modelInRaw = modelInRaw,
                     inputDsNames = inputDsNames,
                     hcubeScalars = hcubeScalars,
+                    DDPar = DDPar,
+                    GMSOpt = GMSOpt,
                     inputDsNamesBase = inputDsNames[!inputDsNames %in% hcubeScalars],
                     scenTableNamesToDisplay = scenTableNamesToDisplay)
   if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildonly){
     errMsg <- paste(errMsg, 
                     sprintf("Can not use 'gdx' as file exchange with GAMS if gdxrrw library is not installed.\n
 Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw-miro) installation in your R library: '%s'.", .libPaths()[1]),
-                    sep = "\n")
+sep = "\n")
   }
   GAMSClArgs <- c(paste0("execMode=", gamsExecMode),
                   paste0('IDCGDXOutput="', MIROGdxOutName, '"'))
@@ -268,7 +321,24 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
   }else{
     dbConfig <- list(type = "sqlite",
                      name = file.path(miroDbDir, 
-                                      "miro.sqlite3"))
+                                      paste0(modelName, ".sqlite3")))
+    if(!dir.exists(miroDbDir)){
+      if(identical(basename(miroDbDir), "app_data") &&
+         identical(dirname(miroDbDir), miroWorkspace) &&
+         file.exists(file.path(miroWorkspace, "miro.sqlite3"))){
+        # new MIRO app_data directory in MIRO workspace
+        dbConfig$dbPathToMigrate <- file.path(miroWorkspace, "miro.sqlite3")
+      }
+      if(!dir.create(miroDbDir, showWarnings = FALSE)){
+        errMsg <- paste(errMsg, sprintf("App data directory: '%s' could not be created. Check that you have sufficient read/write permissions.", miroDbDir),
+                        sep = "\n")
+      }
+    }else if(!identical(dirname(miroDbDir), miroWorkspace) &&
+             file.exists(file.path(miroDbDir, "miro.sqlite3")) &&
+             !file.exists(dbConfig$name)){
+      # custom database location with existing legacy database
+      dbConfig$dbPathToMigrate <- file.path(miroDbDir, "miro.sqlite3")
+    }
   }
   if(isTRUE(config$activateModules$remoteExecution)){
     useTempDir <- TRUE
@@ -334,7 +404,7 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
                             modelPath)
         }
         if(is.null(errMsg) && any(!file.copy2(file.path(currentModelDir, modelFiles), 
-                                             file.path(modelPath, modelFiles)))){
+                                              file.path(modelPath, modelFiles)))){
           errMsg <- sprintf("Problems copying files from: '%s' to: '%s'. No write permissions?",
                             currentModelDir, modelPath)
         }
@@ -412,13 +482,13 @@ if(is.null(errMsg) && debugMode){
   listOfCustomRenderers <- Set$new()
   requiredPackagesCR <<- NULL
   
-  if(!LAUNCHCONFIGMODE){
-    for(customRendererConfig in c(configGraphsOut, configGraphsIn, config$inputWidgets)){
-      # check whether non standard renderers were defined in graph config
-      if(!is.null(customRendererConfig$rendererName)){
-        customRendererConfig$outType <- customRendererConfig$rendererName
-      }
-      if(any(is.na(match(tolower(customRendererConfig$outType), standardRenderers)))){
+  for(customRendererConfig in c(configGraphsOut, configGraphsIn, config$inputWidgets)){
+    # check whether non standard renderers were defined in graph config
+    if(!is.null(customRendererConfig$rendererName)){
+      customRendererConfig$outType <- customRendererConfig$rendererName
+    }
+    if(any(is.na(match(tolower(customRendererConfig$outType), standardRenderers)))){
+      if(!LAUNCHCONFIGMODE){
         customRendererName <- "render" %+% toupper(substr(customRendererConfig$outType, 1, 1)) %+% 
           substr(customRendererConfig$outType, 2, nchar(customRendererConfig$outType))
         customRendererOutput <- customRendererConfig$outType %+% "Output"
@@ -440,10 +510,10 @@ if(is.null(errMsg) && debugMode){
                            sprintf("No output function for custom renderer function: '%s' was found. Please make sure you define such a function.", 
                                    customRendererName), sep = "\n")
         })
-        # find packages to install and install them
-        if(length(customRendererConfig$packages)){
-          requiredPackagesCR <- c(requiredPackagesCR, customRendererConfig$packages)
-        }
+      }
+      # find packages to install them
+      if(length(customRendererConfig$packages)){
+        requiredPackagesCR <- c(requiredPackagesCR, customRendererConfig$packages)
       }
     }
   }
@@ -497,9 +567,9 @@ if(miroBuildonly){
                 "modelOutAlias", "colsWithDep", "scalarsInMetaData",
                 "modelInMustImport", "modelInAlias", "DDPar", "GMSOpt", 
                 "modelInToImportAlias", "modelInToImport", "inputDsNamesNotToDisplay",
-                "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
-                "GAMSReturnCodeMap", "dependentDatasets", "outputTabs", 
-                "installPackage", "dbSchema", "scalarInputSym", "scalarInputSymToVerify",
+                "dbSchemaModel", "modelOutTemplate", "scenTableNamesToDisplay", 
+                "dependentDatasets", "outputTabs", 
+                "installPackage", "scalarInputSym", "scalarInputSymToVerify",
                 "requiredPackagesCR", "datasetsRemoteExport", "dropdownAliases", 
                 #TODO: Update API version when dataContract is used elsewhere than in Configuration mode
                 "dataContract"), 
@@ -618,7 +688,7 @@ if(is.null(errMsg)){
   }
   if(LAUNCHCONFIGMODE){
     requiredPackages <- c(requiredPackages, "plotly", "xts", "dygraphs", "leaflet", "chartjs", "sortable",
-                          "leaflet.minicharts", "timevis")
+                          "leaflet.minicharts", "timevis", "shinyAce")
   }else{
     requiredPackages <- c(requiredPackages, 
                           if(identical(installPackage$plotly, TRUE)) "plotly",
@@ -643,7 +713,6 @@ if(is.null(errMsg)){
     plan(multiprocess)
   }
   # try to create the DB connection (PostgreSQL)
-  auth <- NULL
   db <- NULL
   if(identical(tolower(dbConfig$type), "sqlite")){
     requiredPackages <- c("DBI", "RSQLite")
@@ -652,43 +721,25 @@ if(is.null(errMsg)){
   }
   errMsg <- installAndRequirePackages(requiredPackages, installedPackages, RLibPath, CRANMirror, miroWorkspace)
   
+  source("./components/db_schema.R")
   source("./components/db.R")
   source("./components/db_scen.R")
   tryCatch({
-    dbSchema$tabName["_scenViews"] <- paste0(tableNameViewsPrefix, modelName)
-    dbSchema$colNames[["_scenViews"]] <- c(sid = sidIdentifier, symname = "symName",
-                                           id = "id", data = "data", time = "timestamp")
-    dbSchema$colTypes["_scenViews"] <- "icccT"
-    scenMetadataTable <- scenMetadataTablePrefix %+% modelName
-    db   <- Db$new(uid = uid, dbConf = dbConfig, dbSchema = dbSchema,
+    dbSchema <<- DbSchema$new(dbSchemaModel)
+    db   <- Db$new(uid = uid, dbConf = dbConfig,
                    slocktimeLimit = slocktimeLimit, modelName = modelName,
                    hcubeActive = LAUNCHHCUBEMODE, ugroups = ugroups)
     conn <- db$getConn()
+    dbSchema$setConn(conn)
     flog.debug("Database connection established.")
   }, error = function(e){
     flog.error("Problems initialising database class. Error message: %s", e)
     errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
   })
-  # initialise access management
-  source("./components/db_auth.R")
-  tryCatch({
-    auth <- Auth$new(conn, uid, defaultGroup = defaultGroup, 
-                     tableNameGroups = amTableNameGroups, 
-                     tableNameElements = amTableNameElements, 
-                     tableNameHierarchy = amTableNameHierarchy, 
-                     tableNameMetadata = scenMetadataTable, 
-                     uidIdentifier = uidIdentifier, 
-                     accessIdentifier = accessIdentifier, 
-                     accessElIdentifier = accessElIdentifier)
-    flog.debug("Access Control initialised.")
-  }, error = function(e){
-    flog.error("Problems initialising authorisation class. Error message: %s", e)
-    errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
-  })
   tryCatch({
     dataio <- DataIO$new(config = list(modelIn = modelIn, modelOut = modelOut, 
                                        modelName = modelName),
-                         db = db, auth = auth)
+                         db = db)
   }, error = function(e) {
     flog.error("Problems initialising dataio class. Error message: %s", e)
     errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
@@ -716,9 +767,9 @@ if(is.null(errMsg)){
       gdxio <<- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", 
                                     if(identical(tolower(Sys.info()[["sysname"]]), "windows")) 
                                       file.path("bin", "x64") else "bin"), 
-        c(modelInRaw, modelOut), scalarsFileName,
-        scalarsOutName, scalarEquationsName, scalarEquationsOutName,
-        dropdownAliases, config$textOnlySymbols)
+                          c(modelInRaw, modelOut), scalarsFileName,
+                          scalarsOutName, scalarEquationsName, scalarEquationsOutName,
+                          dropdownAliases, config$textOnlySymbols)
     }
   }, error = function(e){
     flog.error(e)
@@ -800,6 +851,9 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
         }
         return(TRUE)
       }, logical(1L), USE.NAMES = FALSE)
+      if(!length(orphanedTablesInfo)){
+        inconsistentTablesInfo <- inconsistentTablesInfo[!isNewTable]
+      }
     }, error = function(e){
       flog.error("Problems initialising dbMigrator. Error message: '%s'.", conditionMessage(e))
       if(miroStoreDataOnly){
@@ -810,7 +864,7 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
         stop()
       quit("no", 1L)
     })
-    if(length(inconsistentTablesInfo[!isNewTable]) || length(orphanedTablesInfo)){
+    if(length(inconsistentTablesInfo) || length(orphanedTablesInfo)){
       source("./tools/db_migration/modules/bt_delete_database.R", local = TRUE)
       source("./tools/db_migration/modules/form_db_migration.R", local = TRUE)
       source("./tools/db_migration/server.R", local = TRUE)
@@ -839,6 +893,19 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
         write("merr:::409", stderr())
       }
       migApp <<- shinyApp(ui = uiDbMig, server = serverDbMig)
+    }else{
+      tryCatch({
+        dbMigrator$createMissingScalarTables()
+      }, error = function(e){
+        flog.error("Problems creating scalar tables. Error message: '%s'.", conditionMessage(e))
+        if(miroStoreDataOnly){
+          write("\n", stderr())
+          write("merr:::500", stderr())
+        }
+        if(interactive())
+          stop()
+        quit("no", 1L)
+      })
     }
   })
   if(length(migApp)){
@@ -858,11 +925,6 @@ if(!is.null(errMsg)){
     if(interactive())
       stop()
     quit("no", 1L)
-  }
-  if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
-    setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
-    close(pb)
-    pb <- NULL
   }
   ui_initError <- fluidPage(
     tags$head(
@@ -915,9 +977,6 @@ if(!is.null(errMsg)){
 }else{
   uidAdmin <<- if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) "admin" else uid
   local({
-    if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
-      setWinProgressBar(pb, 0.6, label= "Importing new data")
-    }
     miroDataDir   <- Sys.getenv("MIRO_DATA_DIR")
     removeDataFile <- !debugMode
     if(identical(miroDataDir, "")){
@@ -951,15 +1010,13 @@ if(!is.null(errMsg)){
         inputIdsTmp        <- inputIdsTmp[!is.na(inputIdsTmp)]
         metaDataTmp        <- metaDataTmp[inputIdsTmp]
         modelInTemplateTmp <- modelInTemplateTmp[inputIdsTmp]
-
+        
         tmpDirToRemove     <- character(0L)
         
         if(debugMode){
           forceScenImport <- identical(Sys.getenv("MIRO_FORCE_SCEN_IMPORT"), "true")
           if(!forceScenImport){
-            currentDataHashesDf  <- db$importDataset("_sys__data_hashes",
-                                                     tibble("model",
-                                                            db$getModelNameDb()))
+            currentDataHashesDf  <- db$importDataset("_dataHash")
             currentDataHashes <- list()
             if(length(currentDataHashesDf) && nrow(currentDataHashesDf)){
               currentDataHashes <- currentDataHashesDf[["hash"]]
@@ -1030,8 +1087,10 @@ if(!is.null(errMsg)){
             }
             
             newScen <- Scenario$new(db = db, sname = "unnamed", isNewScen = TRUE,
-                                    readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
-                                    execPerm = c(uidAdmin, ugroups), uid = uidAdmin,
+                                    readPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
+                                    writePerm = uidAdmin,
+                                    execPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
+                                    uid = uidAdmin,
                                     views = views, attachments = attachments)
             if(!tryCatch(validateMiroScen(file.path(miroDataDir, miroDataFile)), error = function(e){
               flog.error("Invalid miroscen file. Error message: '%s'.", conditionMessage(e))
@@ -1065,8 +1124,10 @@ if(!is.null(errMsg)){
                                          simplifyDataFrame = FALSE, simplifyVector = FALSE))
             }
             newScen <- Scenario$new(db = db, sname = scenName, isNewScen = TRUE,
-                                    readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
-                                    execPerm = c(uidAdmin, ugroups), uid = uidAdmin, views = views)
+                                    readPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
+                                    writePerm = uidAdmin,
+                                    execPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
+                                    uid = uidAdmin, views = views)
           }
           if(!overwriteScenToImport && db$checkSnameExists(newScen$getScenName(), newScen$getScenUid())){
             flog.info("Scenario: %s already exists and overwrite is set to FALSE. Skipping...",
@@ -1117,11 +1178,9 @@ if(!is.null(errMsg)){
           }
         }
         if(debugMode && !forceScenImport && !identical(currentDataHashes, newDataHashes)){
-          db$deleteRows("_sys__data_hashes", "model",
-                        db$getModelNameDb())
-          db$exportDataset("_sys__data_hashes",
-                           tibble(model = db$getModelNameDb(),
-                                  filename = names(newDataHashes),
+          db$deleteRows("_dataHash", force = TRUE)
+          db$exportDataset("_dataHash",
+                           tibble(filename = names(newDataHashes),
                                   hash = unlist(newDataHashes, use.names = FALSE)))
         }
       }
@@ -1154,11 +1213,6 @@ if(!is.null(errMsg)){
     }
   })
   
-  if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
-    setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
-    close(pb)
-    pb <- NULL
-  }
   if(LAUNCHCONFIGMODE){
     source("./tools/db_migration/modules/bt_delete_database.R", local = TRUE)
     source("./tools/config/server.R", local = TRUE)
@@ -1268,7 +1322,7 @@ if(!is.null(errMsg)){
                                                      forbiddenFNames = c(if(identical(config$fileExchange, "gdx")) 
                                                        c(MIROGdxInName, MIROGdxOutName) else 
                                                          paste0(c(names(modelOut), inputDsNames), ".csv"),
-                                                                         paste0(modelNameRaw, c(".log", ".lst")))),
+                                                       paste0(modelNameRaw, c(".log", ".lst")))),
                                             workDir,
                                             names(modelIn),
                                             names(modelOut),
@@ -1282,7 +1336,7 @@ if(!is.null(errMsg)){
       sidCompOrder     <- NULL
       
       worker <- Worker$new(metadata = list(uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
-                                           tableNameTracePrefix = tableNameTracePrefix, maxSizeToRead = 5000,
+                                           maxSizeToRead = 5000,
                                            modelDataFiles = c(if(identical(config$fileExchange, "gdx")) 
                                              c(MIROGdxInName, MIROGdxOutName) else 
                                                paste0(c(names(modelOut), inputDsNames), ".csv"), 
@@ -1857,10 +1911,6 @@ if(!is.null(errMsg)){
         stopifnot(is.integer(input$btExportScen), length(input$btExportScen) == 1L)
         if(useGdx && !LAUNCHHCUBEMODE){
           exportTypes <- setNames(c("miroscen", "gdx", "csv", "xls"), lang$nav$fileExport$fileTypes)
-          if(input$btExportScen > 1L){
-            # remove miroscen option in comparison Mode (currently not supported)
-            exportTypes <- exportTypes[-1]
-          }
         }else{
           exportTypes <- setNames(c("csv", "xls"), lang$nav$fileExport$fileTypes[-c(1, 2)])
         }
@@ -1900,15 +1950,18 @@ if(!is.null(errMsg)){
             silent = TRUE)
         if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")){
           # clean up
-          try(db$deleteRows(scenMetadataTable, 
-                            uidIdentifier, 
-                            uid), silent = TRUE)
+          try(db$deleteRows("_scenMeta", "_uid", uid), silent = TRUE)
           
         }
-        if(config$activateModules$attachments && 
+        if(config$activateModules$attachments &&
            config$storeLogFilesDuration > 0L){
-          db$removeExpiredAttachments(paste0(modelNameRaw, c(".log", ".lst")), 
+          tryCatch(
+            attachments$removeExpired(paste0(modelNameRaw, c(".log", ".lst")), 
                                       config$storeLogFilesDuration)
+            , error = function(e){
+              flog.error("Problems removing expired attachments. Error message: '%s'.", 
+                         conditionMessage(e))
+            })
         }
         activeScen$finalize()
         if(!interactive() && !isShinyProxy){

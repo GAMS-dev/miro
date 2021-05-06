@@ -3,7 +3,7 @@ context("Unit tests - worker class")
 source("../../components/worker.R")
 
 worker <- Worker$new(metadata = list(uid = "test", modelName = "pickstock", noNeedCred = FALSE,
-                                     tableNameTracePrefix = tableNameTracePrefix, maxSizeToRead = 5000,
+                                     maxSizeToRead = 5000,
                                      modelDataFiles = c(MIROGdxInName, MIROGdxOutName),
                                      MIROGdxInName = MIROGdxInName,
                                      clArgs = c(paste0("execMode=", gamsExecMode),

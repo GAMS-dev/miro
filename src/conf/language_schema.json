@@ -504,6 +504,10 @@
               "type": "string",
               "minLength": 1
             },
+            "invalidCsvFilter": {
+              "type": "string",
+              "minLength": 1
+            },
             "msgOnlyOneHash": {
               "type": "string",
               "minLength": 1
@@ -532,6 +536,49 @@
               "type": "string",
               "minLength": 1
             },
+            "operators": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "is": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "notis": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "contains": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "notcontains": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "startswith": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "endswith": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "exists": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "notexists": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "between": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 9
+            },
             "queryButton": {
               "type": "string",
               "minLength": 1
@@ -559,6 +606,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "sname": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "stime": {
                   "type": "string",
                   "minLength": 1
@@ -568,10 +619,10 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 3
+              "minProperties": 4
             }
           },
-          "minProperties": 13
+          "minProperties": 15
         },
         "hcubeAnalyze": {
           "type": "object",
@@ -2607,6 +2658,10 @@
               "type": "string",
               "minLength": 1
             },
+            "selectColToMap": {
+              "type": "string",
+              "minLength": 1
+            },
             "btCancelMigration": {
               "type": "string",
               "minLength": 1
@@ -2616,6 +2671,10 @@
               "minLength": 1
             },
             "errDuplicateTables": {
+              "type": "string",
+              "minLength": 1
+            },
+            "incompatibleTypeWarning": {
               "type": "string",
               "minLength": 1
             },
@@ -2701,7 +2760,7 @@
               "minProperties": 7
             }
           },
-          "minProperties": 12
+          "minProperties": 14
         }
       },
       "minProperties": 50
@@ -4106,48 +4165,9 @@
               "type": "string",
               "minLength": 1
             },
-            "custom": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "skeleton": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "steps": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "li1": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "li2": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "li3a": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "li3b": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "description1": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "description2": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "description3": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "minProperties": 9
+            "restartRequired": {
+              "type": "string",
+              "minLength": 1
             }
           },
           "minProperties": 7
@@ -5522,12 +5542,16 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "fixedColumnsLeft": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "heatmap": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 8
+              "minProperties": 9
             },
             "slider": {
               "type": "object",
@@ -6253,6 +6277,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "advanced": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "minicharts": {
                   "type": "string",
                   "minLength": 1
@@ -6266,7 +6294,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 22
+              "minProperties": 23
             },
             "ui": {
               "type": "object",
@@ -6326,12 +6354,24 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "toggleFullscreen": {
+                "toggleLeft": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "toggleRight": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "previewError": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "previewErrorObs": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 13
+              "minProperties": 16
             },
             "graphOptions": {
               "type": "object",
@@ -6396,6 +6436,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "custom1": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "pieValues": {
                   "type": "string",
                   "minLength": 1
@@ -6405,7 +6449,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 3
+              "minProperties": 4
             },
             "errMsg": {
               "type": "object",
@@ -7312,7 +7356,19 @@
               "type": "object",
               "additionalProperties": false,
               "properties": {
-                "name": {
+                "btUpdate": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "externalRenderer": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "symNotFoundSuffix": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "options": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -7325,7 +7381,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 3
+              "minProperties": 6
             },
             "filterOptions": {
               "type": "object",

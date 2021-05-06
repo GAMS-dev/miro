@@ -1,0 +1,1151 @@
+{
+	"modelTitle":	"A Transportation Problem with multiple version LP/MIP/MINLP",
+	"inputSymbols":	{
+		"_scalars":	{
+			"alias":	"Input Scalars",
+			"symnames":	["type", "f", "mins", "beta"],
+			"symtext":	["selected model type", "freight in dollars per case per thousand miles", "minimum shipment (MIP- and MINLP-only)", "beta (MINLP-only)"],
+			"symtypes":	["set", "parameter", "parameter", "parameter"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		},
+		"a":	{
+			"alias":	"capacity of plant i in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"capacity of plant i in cases"
+				}
+			}
+		},
+		"b":	{
+			"alias":	"demand at market j in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"demand at market j in cases"
+				}
+			}
+		},
+		"d":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d1":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d2":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d3":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d4":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d5":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d6":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d7":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d8":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d9":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d10":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d11":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d12":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d13":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d14":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d15":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d16":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d17":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d18":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d19":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d20":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d21":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d22":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d23":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d24":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d25":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d26":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d27":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d28":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d29":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"d30":	{
+			"alias":	"distance in thousands of miles",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"distance in thousands of miles"
+				}
+			}
+		},
+		"ilocdata":	{
+			"alias":	"Plant location information",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"lat":	{
+					"type":	"numeric",
+					"alias":	"lat"
+				},
+				"lng":	{
+					"type":	"numeric",
+					"alias":	"lng"
+				}
+			}
+		},
+		"jlocdata":	{
+			"alias":	"Market location information",
+			"symtype":	"parameter",
+			"headers":	{
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"lat":	{
+					"type":	"numeric",
+					"alias":	"lat"
+				},
+				"lng":	{
+					"type":	"numeric",
+					"alias":	"lng"
+				}
+			}
+		}
+	},
+	"outputSymbols":	{
+		"schedule":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"lngp":	{
+					"type":	"numeric",
+					"alias":	"lngp"
+				},
+				"latp":	{
+					"type":	"numeric",
+					"alias":	"latp"
+				},
+				"lngm":	{
+					"type":	"numeric",
+					"alias":	"lngm"
+				},
+				"latm":	{
+					"type":	"numeric",
+					"alias":	"latm"
+				},
+				"cap":	{
+					"type":	"numeric",
+					"alias":	"cap"
+				},
+				"demand":	{
+					"type":	"numeric",
+					"alias":	"demand"
+				},
+				"quantities":	{
+					"type":	"numeric",
+					"alias":	"quantities"
+				}
+			}
+		},
+		"schedule2":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"schedule3":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"schedule4":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"schedule5":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"schedule6":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"schedule7":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"schedule8":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"schedule9":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"schedule10":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"schedule11":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"schedule12":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"schedule13":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"schedule14":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"schedule15":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"schedule16":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"schedule17":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"schedule18":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"schedule19":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"schedule20":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"schedule21":	{
+			"alias":	"shipment quantities in cases",
+			"symtype":	"parameter",
+			"headers":	{
+				"i":	{
+					"type":	"string",
+					"alias":	"canning plants"
+				},
+				"j":	{
+					"type":	"string",
+					"alias":	"markets"
+				},
+				"schedulehdr":	{
+					"type":	"string",
+					"alias":	"schedule header"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"shipment quantities in cases"
+				}
+			}
+		},
+		"_scalars_out":	{
+			"alias":	"Output Scalars",
+			"symnames":	["total_cost"],
+			"symtext":	["total transportation costs in thousands of dollars"],
+			"symtypes":	["parameter"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		}
+	}
+}

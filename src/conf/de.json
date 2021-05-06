@@ -127,6 +127,7 @@
     "hcubeLoad":{
       "title":"Lade Szenarien",
       "noData":"Für die von Ihnen abgesetzte Datenbankabfrage konnten keine Daten gefunden werden.",
+      "invalidCsvFilter": "'%s' dürfen kein ',' enthalten.",
       "showHashButton": "Hash anzeigen",
       "msgOnlyOneHash": "Bitte wählen Sie nur ein Szenario aus.",
       "msgNoHashFound": "Für das ausgewählte Szenario wurde kein Hash gefunden. Anscheinend wurde das Szenario nicht im Hypercube-Modus gelöst.",
@@ -135,6 +136,17 @@
       "chooseAllButton":"Wähle alle",
       "orButton": "ODER",
       "andButton": "UND",
+      "operators":{
+        "is": "ist",
+        "notis": "ist nicht",
+        "contains": "enthält",
+        "notcontains": "enthält nicht",
+        "startswith": "beginnt mit",
+        "endswith": "endet mit",
+        "exists": "existiert",
+        "notexists": "existiert nicht",
+        "between": "zwischen"
+      },
       "queryButton": "Ergebnisse abrufen",
       "showHashDialog":{
         "title": "Szenario Hash",
@@ -142,6 +154,7 @@
       },
       "metaColAliases":{
         "uid":"Eigentümer",
+        "sname": "Name",
         "stime":"Erstellungsdatum",
         "stag": "Job-Tags"
       }
@@ -666,12 +679,14 @@
       "title": "Datenbankmigration",
       "desc": "Wir haben festgestellt, dass sich Ihr GAMS/MIRO-Datenvertrag auf eine Weise geändert hat, die mit dem aktuellen Datenbanklayout Ihrer App nicht kompatibel ist. Bitte geben Sie an, wie Ihre Daten migriert werden sollen.",
       "backupWarning": "Wir empfehlen Ihnen dringend, vor der Migration ein Backup Ihrer Datenbank zu erstellen.",
-      "successMsg": "Ihre Daten wurden erfolgreich migriert!",
+      "successMsg": "Ihre Daten wurden erfolgreich migriert! Bitte starten Sie die Anwendung neu.",
       "labelSymbol": "Symbol: '%s'",
-      "selectTableToMap": "Daten verwenden von",
+      "selectTableToMap": "Migriere Daten von",
+      "selectColToMap": "Spalte: ",
       "btCancelMigration": "Abbrechen",
       "btConfirmMigration": "Migration bestätigen",
       "errDuplicateTables": "Tabelle(n): '%s' können nicht dupliziert werden!",
+      "incompatibleTypeWarning": "Die vorhandenen Daten müssen in einen numerischen Wert gecastet werden, damit sie in die neue Datenbanktabelle passen. Werte, die nicht umgewandelt werden können, werden zu 0!",
       "dialogConfirmDataLoss": {
         "title": "Warnung: Verlust von Daten",
         "descTables": "Achtung! Die folgenden Tabellen werden mit Ihrer aktuellen Migrationskonfiguration entfernt: '%s'!",
@@ -691,7 +706,7 @@
         "cbConfirm": "Alle Tabellen entfernen?",
         "btCancel": "Abbrechen",
         "btConfirm": "Tabellen entfernen",
-        "msgSuccess": "Datenbanktabellen erfolgreich entfernt"
+        "msgSuccess": "Datenbanktabellen erfolgreich entfernt. Bitte starten Sie die Anwendung neu."
       }
     }
   },
@@ -1058,17 +1073,7 @@
       "widgets": "Widgets konfigurieren",
       "graphs": "Graphen konfigurieren",
       "database": "Datenbankverwaltung",
-      "custom":{
-        "skeleton": "Grundgerüst:",
-        "steps": "Schritte:",
-        "li1": "Erstellen Sie ein Verzeichnis renderer_%s in Ihrem Modellverzeichnis mit einer Datei %s_custom.R darin.",
-        "li2": "Kopiere den obenstehenden Code und füge ihn in die Datei %s_custom.R ein.",
-        "li3a": "Schreibe deinen eigenen Renderer! Für eine detaillierte Beschreibung, wie man einen solchen benutzerdefinierten Renderer schreibt, siehe ",
-        "li3b": "hier",
-        "description1": "Das nächste Mal, wenn die Applikation nach einem Klick auf speichern gestartet wird, sucht MIRO nach einer benutzerdefinierten Rendererfunktion in der Datei %s_custom.R. Wird diese nicht gefunden, startet die Anwendung nicht! Vergewissere dich also immer, dass du die benutzerdefinierte Rendererfunktion korrekt eingebunden hast. Es ist immer eine gute Idee, zunächst einen von MIRO isolierten Renderer zu entwickeln und ihn, sobald du mit dem Ergebnis zufrieden bist, in die MIRO-Anwendung zu integrieren.",
-        "description2": "Beachte:",
-        "description3": "Wenn deine Anwendung aus dem oben genannten Grund nicht startet, kannst du den konfigurierten Renderer hier jederzeit löschen."
-      }
+      "restartRequired": "Hinweis: Damit diese Änderungen wirksam werden, müssen Sie den Konfigurationsmodus neu starten!"
     },
     "general":{
       "ui":{
@@ -1414,6 +1419,7 @@
         "readonly": "Soll die Tabelle schreibgeschützt sein?",
         "readonlyCols": "Wählen Sie Spalten aus, die schreibgeschützt sein sollen",
         "pivotCols": "Wählen Sie eine Spalte, die pivotiert werden soll",
+        "fixedColumnsLeft": "Spalten fixieren, die nicht pivotiert sind?",
         "heatmap": "Die Tabelle in eine Heatmap wandeln?"
       },
       "slider":{
@@ -1561,7 +1567,7 @@
       "infoPostgres": "Sie verwenden GAMS MIRO Desktop mit einem <a href=\"https://www.postgresql.org\" target=\"_blank\">PostgreSQL</a>-Datenbank-Backend. Die verwendete Datenbank hat den Namen: %s und befindet sich unter: %s. Um Ihre Datenbank zu sichern, lesen Sie <a href=\"https://www.postgresql.org/docs/current/backup.html\" target=\"_blank\">hier</a>.",
       "infoSQLite": "Sie verwenden GAMS MIRO Desktop mit einem <a href=\"https://sqlite.org\" target=\"_blank\">SQLite</a>-Datenbank-Backend. Die verwendete Datenbank befindet sich unter: %s.",
       "backup": "Datenbanksicherung",
-      "backupWrapper": "Sie möchten eine Sicherung der Datenbank erstellen? Beachten Sie, dass die gesicherte Datenbank die Daten aller Ihrer MIRO-Anwendungen enthält, nicht nur die der aktuellen.",
+      "backupWrapper": "Sie möchten eine Sicherung der Datenbank erstellen?",
       "btDownloadBackup": "Datenbank sichern",
       "backupProgress": "Datenbank wird gesichert...",
       "remove": "Daten löschen",
@@ -1588,6 +1594,7 @@
         "legend": "Legende",
         "markers": "Markierungen",
         "flows": "Flüsse",
+        "advanced": "Erweiterte Optionen",
         "minicharts": "Minicharts",
         "groupsLayers": "Gruppen & Ebenen",
         "data": "Daten"
@@ -1605,7 +1612,10 @@
         "choices": ["Kreisdiagramm", "Balkendiagramm", "Streudiagramm", "Liniendiagramm", "Blasendiagramm", "Histogramm", "Zeitreihen-Diagramm", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle und Pivot-Charts", "Wertebox für skalare Werte", "Eigener Renderer"],
         "deleteGraph": "Löschen",
         "saveGraph": "Speichern",
-        "toggleFullscreen": "Vollbild wechseln"
+        "toggleLeft": "Linken Bildbereich auf Vollbildmodus umschalten",
+        "toggleRight": "Rechten Bildbereich auf Vollbildmodus umschalten",
+        "previewError": "Es ist ein Fehler aufgetreten: '%s'",
+        "previewErrorObs": "In einem Observer ist ein Fehler aufgetreten: '%s'"
       },
       "graphOptions":{
         "pie": "Kreisdiagramm",
@@ -1623,6 +1633,7 @@
       },
       "validate":{
         "val1": "Der Bereich für die x-Achse konnte nicht eingestellt werden. Überprüfen Sie das korrekte Datenformat!",
+        "custom1": "Konnte zusätzliche Optionen nicht parsen. Bitte stellen Sie sicher, dass Sie eine gültige JSON-Syntax verwenden!",
         "pieValues": "Das ausgewählte Symbol hat zu viele Werte, um als Kuchendiagramm angezeigt zu werden. Die maximale Anzahl der Werte, die in einem Kuchendiagramm dargestellt werden können, beträgt 100.",
         "tableNeeded": "Ein Symbol, das als Karte konfiguriert werden soll, muss als GAMS-Tabelle deklariert werden (table statement), da mehrere Wertespalten benötigt werden (z.B. Breiten- und Längengradangaben)."
       },
@@ -1831,7 +1842,10 @@
         }
       },
       "customOptions":{
-        "name": "Name der benutzerdefinierten Rendererfunktion (ohne Leerzeichen)",
+        "btUpdate": "Aktualisieren",
+        "externalRenderer": "Renderer von anderem Symbol verwenden",
+        "symNotFoundSuffix": "(Symbol nicht gefunden)",
+        "options": "Zusätzliche Optionen, die an Renderer-Funktionen übergeben werden",
         "packages": "Benötigte Pakete für den Renderer",
         "additionalData": "Zusätzliche Datensätze, die mit dem benutzerdefinierten Renderer kommuniziert werden sollen"
       },
