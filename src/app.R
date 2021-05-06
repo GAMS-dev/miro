@@ -218,12 +218,58 @@ if(is.null(errMsg)){
     load(rSaveFilePath)
     if(exists("dbSchema")){
       # legacy app, need to convert to new format
-      dbSchemaModel <- dbSchema$tabName[-seq_len(6)]
-      dbSchemaModel <- setNames(lapply(seq_along(dbSchemaModel), function(i){
+      dbSchemaModel <- substring(dbSchema$tabName[-seq_len(6)],
+                                 nchar(gsub("_", "", modelName, fixed = TRUE)) + 2L)
+      dbSchemaModel <- list(schema = setNames(lapply(seq_along(dbSchemaModel), function(i){
+        if(dbSchemaModel[i] %in% c(scalarsFileName, scalarsOutName)){
+          return(NA)
+        }
+        if(LAUNCHHCUBEMODE){
+          if(i <= length(modelOut)){
+            el <- modelOut[[i]]
+          }else{
+            el <- modelIn[[i - length(modelOut)]]
+          }
+          if(isTRUE(el$dropdown$single) || isTRUE(el$dropdown$checkbox)){
+            return(NA)
+          }
+        }
         list(tabName = dbSchemaModel[i],
              colNames = dbSchema$colNames[[i + 6L]],
              colTypes = dbSchema$colTypes[[i + 6L]])
-      }), dbSchemaModel)
+      }), dbSchemaModel), views = list())
+      dbSchemaModel$schema[is.na(dbSchemaModel$schema)] <- NULL
+      if(scalarsOutName %in% names(modelOut)){
+        scalarMeta <- setNames(modelOut[[scalarsOutName]]$symtypes,
+                               modelOut[[scalarsOutName]]$symnames)
+        dbSchemaModel$schema <- c(dbSchemaModel$schema,
+                                  setNames(lapply(names(scalarMeta), function(scalarName){
+                                    list(tabName = scalarName,
+                                         colNames = scalarName,
+                                         colTypes = if(identical(scalarMeta[[scalarName]], "set")) "c" else "d")
+                                  }), names(scalarMeta)))
+        dbSchemaModel$views[[scalarsOutName]] <- c(dbSchemaModel$views[[scalarsOutName]], names(scalarMeta))
+      }
+      if(scalarsFileName %in% names(modelInRaw)){
+        scalarMeta <- setNames(modelInRaw[[scalarsFileName]]$symtypes,
+                               modelInRaw[[scalarsFileName]]$symnames)
+        dbSchemaModel$schema <- c(dbSchemaModel$schema,
+                                  setNames(lapply(names(scalarMeta), function(scalarName){
+                                    list(tabName = scalarName,
+                                         colNames = scalarName,
+                                         colTypes = if(identical(scalarMeta[[scalarName]], "set")) "c" else "d")
+                                  }), names(scalarMeta)))
+        dbSchemaModel$views[[scalarsFileName]] <- c(dbSchemaModel$views[[scalarsFileName]], names(scalarMeta))
+      }
+      if(length(GMSOpt) || length(DDPar)){
+        dbSchemaModel$schema <- c(dbSchemaModel$schema,
+                                  setNames(lapply(c(GMSOpt, DDPar), function(parName){
+                                    list(tabName = parName,
+                                         colNames = parName,
+                                         colTypes = "c")
+                                  }), c(GMSOpt, DDPar)))
+        dbSchemaModel$views[[scalarsFileName]] <- c(dbSchemaModel$views[[scalarsFileName]], c(GMSOpt, DDPar))
+      }
       rm(dbSchema)
     }
     suppressWarnings(rm(lang))
@@ -242,13 +288,15 @@ if(is.null(errMsg)){
                     modelInRaw = modelInRaw,
                     inputDsNames = inputDsNames,
                     hcubeScalars = hcubeScalars,
+                    DDPar = DDPar,
+                    GMSOpt = GMSOpt,
                     inputDsNamesBase = inputDsNames[!inputDsNames %in% hcubeScalars],
                     scenTableNamesToDisplay = scenTableNamesToDisplay)
   if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildonly){
     errMsg <- paste(errMsg, 
                     sprintf("Can not use 'gdx' as file exchange with GAMS if gdxrrw library is not installed.\n
 Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw-miro) installation in your R library: '%s'.", .libPaths()[1]),
-                    sep = "\n")
+sep = "\n")
   }
   GAMSClArgs <- c(paste0("execMode=", gamsExecMode),
                   paste0('IDCGDXOutput="', MIROGdxOutName, '"'))
@@ -356,7 +404,7 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
                             modelPath)
         }
         if(is.null(errMsg) && any(!file.copy2(file.path(currentModelDir, modelFiles), 
-                                             file.path(modelPath, modelFiles)))){
+                                              file.path(modelPath, modelFiles)))){
           errMsg <- sprintf("Problems copying files from: '%s' to: '%s'. No write permissions?",
                             currentModelDir, modelPath)
         }
@@ -434,13 +482,13 @@ if(is.null(errMsg) && debugMode){
   listOfCustomRenderers <- Set$new()
   requiredPackagesCR <<- NULL
   
-  if(!LAUNCHCONFIGMODE){
-    for(customRendererConfig in c(configGraphsOut, configGraphsIn, config$inputWidgets)){
-      # check whether non standard renderers were defined in graph config
-      if(!is.null(customRendererConfig$rendererName)){
-        customRendererConfig$outType <- customRendererConfig$rendererName
-      }
-      if(any(is.na(match(tolower(customRendererConfig$outType), standardRenderers)))){
+  for(customRendererConfig in c(configGraphsOut, configGraphsIn, config$inputWidgets)){
+    # check whether non standard renderers were defined in graph config
+    if(!is.null(customRendererConfig$rendererName)){
+      customRendererConfig$outType <- customRendererConfig$rendererName
+    }
+    if(any(is.na(match(tolower(customRendererConfig$outType), standardRenderers)))){
+      if(!LAUNCHCONFIGMODE){
         customRendererName <- "render" %+% toupper(substr(customRendererConfig$outType, 1, 1)) %+% 
           substr(customRendererConfig$outType, 2, nchar(customRendererConfig$outType))
         customRendererOutput <- customRendererConfig$outType %+% "Output"
@@ -462,10 +510,10 @@ if(is.null(errMsg) && debugMode){
                            sprintf("No output function for custom renderer function: '%s' was found. Please make sure you define such a function.", 
                                    customRendererName), sep = "\n")
         })
-        # find packages to install and install them
-        if(length(customRendererConfig$packages)){
-          requiredPackagesCR <- c(requiredPackagesCR, customRendererConfig$packages)
-        }
+      }
+      # find packages to install them
+      if(length(customRendererConfig$packages)){
+        requiredPackagesCR <- c(requiredPackagesCR, customRendererConfig$packages)
       }
     }
   }
@@ -640,7 +688,7 @@ if(is.null(errMsg)){
   }
   if(LAUNCHCONFIGMODE){
     requiredPackages <- c(requiredPackages, "plotly", "xts", "dygraphs", "leaflet", "chartjs", "sortable",
-                          "leaflet.minicharts", "timevis")
+                          "leaflet.minicharts", "timevis", "shinyAce")
   }else{
     requiredPackages <- c(requiredPackages, 
                           if(identical(installPackage$plotly, TRUE)) "plotly",
@@ -719,9 +767,9 @@ if(is.null(errMsg)){
       gdxio <<- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", 
                                     if(identical(tolower(Sys.info()[["sysname"]]), "windows")) 
                                       file.path("bin", "x64") else "bin"), 
-        c(modelInRaw, modelOut), scalarsFileName,
-        scalarsOutName, scalarEquationsName, scalarEquationsOutName,
-        dropdownAliases, config$textOnlySymbols)
+                          c(modelInRaw, modelOut), scalarsFileName,
+                          scalarsOutName, scalarEquationsName, scalarEquationsOutName,
+                          dropdownAliases, config$textOnlySymbols)
     }
   }, error = function(e){
     flog.error(e)
@@ -803,6 +851,9 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
         }
         return(TRUE)
       }, logical(1L), USE.NAMES = FALSE)
+      if(!length(orphanedTablesInfo)){
+        inconsistentTablesInfo <- inconsistentTablesInfo[!isNewTable]
+      }
     }, error = function(e){
       flog.error("Problems initialising dbMigrator. Error message: '%s'.", conditionMessage(e))
       if(miroStoreDataOnly){
@@ -813,7 +864,7 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
         stop()
       quit("no", 1L)
     })
-    if(length(inconsistentTablesInfo[!isNewTable]) || length(orphanedTablesInfo)){
+    if(length(inconsistentTablesInfo) || length(orphanedTablesInfo)){
       source("./tools/db_migration/modules/bt_delete_database.R", local = TRUE)
       source("./tools/db_migration/modules/form_db_migration.R", local = TRUE)
       source("./tools/db_migration/server.R", local = TRUE)
@@ -842,6 +893,19 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
         write("merr:::409", stderr())
       }
       migApp <<- shinyApp(ui = uiDbMig, server = serverDbMig)
+    }else{
+      tryCatch({
+        dbMigrator$createMissingScalarTables()
+      }, error = function(e){
+        flog.error("Problems creating scalar tables. Error message: '%s'.", conditionMessage(e))
+        if(miroStoreDataOnly){
+          write("\n", stderr())
+          write("merr:::500", stderr())
+        }
+        if(interactive())
+          stop()
+        quit("no", 1L)
+      })
     }
   })
   if(length(migApp)){
@@ -946,7 +1010,7 @@ if(!is.null(errMsg)){
         inputIdsTmp        <- inputIdsTmp[!is.na(inputIdsTmp)]
         metaDataTmp        <- metaDataTmp[inputIdsTmp]
         modelInTemplateTmp <- modelInTemplateTmp[inputIdsTmp]
-
+        
         tmpDirToRemove     <- character(0L)
         
         if(debugMode){
@@ -1023,8 +1087,10 @@ if(!is.null(errMsg)){
             }
             
             newScen <- Scenario$new(db = db, sname = "unnamed", isNewScen = TRUE,
-                                    readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
-                                    execPerm = c(uidAdmin, ugroups), uid = uidAdmin,
+                                    readPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
+                                    writePerm = uidAdmin,
+                                    execPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
+                                    uid = uidAdmin,
                                     views = views, attachments = attachments)
             if(!tryCatch(validateMiroScen(file.path(miroDataDir, miroDataFile)), error = function(e){
               flog.error("Invalid miroscen file. Error message: '%s'.", conditionMessage(e))
@@ -1058,8 +1124,10 @@ if(!is.null(errMsg)){
                                          simplifyDataFrame = FALSE, simplifyVector = FALSE))
             }
             newScen <- Scenario$new(db = db, sname = scenName, isNewScen = TRUE,
-                                    readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
-                                    execPerm = c(uidAdmin, ugroups), uid = uidAdmin, views = views)
+                                    readPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
+                                    writePerm = uidAdmin,
+                                    execPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
+                                    uid = uidAdmin, views = views)
           }
           if(!overwriteScenToImport && db$checkSnameExists(newScen$getScenName(), newScen$getScenUid())){
             flog.info("Scenario: %s already exists and overwrite is set to FALSE. Skipping...",
@@ -1254,7 +1322,7 @@ if(!is.null(errMsg)){
                                                      forbiddenFNames = c(if(identical(config$fileExchange, "gdx")) 
                                                        c(MIROGdxInName, MIROGdxOutName) else 
                                                          paste0(c(names(modelOut), inputDsNames), ".csv"),
-                                                                         paste0(modelNameRaw, c(".log", ".lst")))),
+                                                       paste0(modelNameRaw, c(".log", ".lst")))),
                                             workDir,
                                             names(modelIn),
                                             names(modelOut),

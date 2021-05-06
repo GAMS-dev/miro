@@ -22,17 +22,17 @@
   "excelIncludeEmptySheets": true,
   "saveTraceFile": true,
   "dataRendering": {
-    "results": {
-      "outType": "sudoku"
-    },
     "initial_state": {
-      "outType": "sudoku"
+      "outType": "mirorenderer_initial_state"
+    },
+    "results": {
+      "outType": "mirorenderer_initial_state"
     }
   },
   "inputWidgets": {
     "initial_state": {
       "widgetType": "custom",
-      "rendererName": "sudoku",
+      "rendererName": "mirorenderer_initial_state",
       "alias": "Initial state",
       "options": {
         "isInput": true
@@ -49,19 +49,22 @@
   },
   "pageTitle": "Sudoku solver",
   "miroLogFile": "miro.log",
+  "overwriteAliases": {
+    "initial_state": {
+      "newAlias": "initial_state"
+    },
+    "results": {
+      "newAlias": "results"
+    }
+  },
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
-    "highlightCol": true,
-    "highlightRow": true,
-    "columnSorting": true,
     "manualColumnResize": true,
     "contextMenu": {
       "enabled": true,
       "allowRowEdit": true,
-      "allowColEdit": true,
-      "allowReadOnly": false,
-      "allowComments": true
+      "allowColEdit": true
     },
     "height": 700,
     "colWidths": 150

@@ -86,7 +86,7 @@ hcubeSubmissionFile <- "hcube_submission"
 # maximum number of scenarios that can be solved per hcube run
 maxNoHcube <- 10000L
 # maximum number of scenarios to fetch when querying the database
-hcubeLoadMaxScen <- 3e7
+hcubeLoadMaxScen <- 5e5
 # maximum number of scenarios that can be loaded to scenario
 # comparison mode at the same time
 maxConcurentLoad <- 10L
