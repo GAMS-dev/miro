@@ -58,6 +58,29 @@ expect_files_in_zip <- function(app, id, files){
   expect_true(all(files %in% filesInZip))
 }
 
+expect_symbols_in_gdx <- function(app, id, symNames){
+  url <- app$findElement(paste0("#", id))$getAttribute("href")
+  req <- httr::GET(url)
+  tempFiles <- file.path(tempdir(check = TRUE), "shinytest-download.gdx")
+  on.exit(unlink(tempFiles))
+  writeBin(req$content, tempFiles)
+  symInGdx <- gdxrrwMIRO::gdxInfo(tempFiles, returnList = TRUE, dump = FALSE)
+  symInGdx <- c(symInGdx$sets, symInGdx$parameters, symInGdx$variables, symInGdx$equations)
+  expect_identical(length(symInGdx), length(symNames))
+  expect_true(all(symNames %in% symInGdx))
+}
+
+expect_sheets_in_xls <- function(app, id, sheetNames){
+  url <- app$findElement(paste0("#", id))$getAttribute("href")
+  req <- httr::GET(url)
+  tempFiles <- file.path(tempdir(check = TRUE), "shinytest-download")
+  on.exit(unlink(tempFiles))
+  writeBin(req$content, tempFiles)
+  sheetsInXls <- readxl::excel_sheets(tempFiles)
+  expect_identical(length(sheetsInXls), length(sheetNames))
+  expect_true(all(sheetNames %in% sheetsInXls))
+}
+
 createTestDb <- function(dbPath = file.path(getwd(), "..", "testdb")){
   if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
     # need to clean db tables
