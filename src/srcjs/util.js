@@ -4,6 +4,31 @@ export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export class LoadingScreen {
+  constructor() {
+    this.activeCount = 0;
+  }
+
+  show(delay) {
+    this.activeCount += 1;
+    setTimeout(() => {
+      if (this.activeCount > 0) {
+        $('#loading-screen').show();
+      }
+    }, delay);
+  }
+
+  hide() {
+    if (this.activeCount === 0) {
+      return;
+    }
+    this.activeCount -= 1;
+    if (this.activeCount === 0) {
+      $('#loading-screen').hide();
+    }
+  }
+}
+
 function changeChartjsTheme(dark = false) {
   if (typeof Chart === 'undefined') {
     return;

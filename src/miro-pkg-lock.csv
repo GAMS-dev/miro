@@ -28,6 +28,7 @@ withr, 2.2.0
 leaflet.providers, 1.9.0
 commonmark, 1.7
 shiny
+shinyAce, 0.4.1
 colorspace, 1.4-1
 purrr, 0.3.4
 yaml, 2.2.1

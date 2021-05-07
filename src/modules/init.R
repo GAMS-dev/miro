@@ -2,8 +2,8 @@ errMsg <- installAndRequirePackages("V8", installedPackages, RLibPath, CRANMirro
 # check whether there exists a config file and if not create an empty one
 if(is.null(errMsg)){
   if(nchar(modelName) > 60){
-    errMsg <<- sprintf("The MIRO app name: '%s' is too long! A maximum length of 60 characters is allowed!",
-                       modelName)
+    errMsg <- sprintf("The MIRO app name: '%s' is too long! A maximum length of 60 characters is allowed!",
+                      modelName)
   }else if(!file.exists(paste0(currentModelDir, .Platform$file.sep, "conf_", modelName,
                          .Platform$file.sep, modelName, ".json"))){
     tryCatch(cat("{}\n", file = paste0(currentModelDir, .Platform$file.sep, "conf_", modelName,
@@ -424,6 +424,10 @@ if(is.null(errMsg)){
         modelIn[[i]]$pivotCols  <- widgetConfig$pivotCols
         widgetConfig$pivotCols  <- NULL
       }
+      if(!is.null(widgetConfig[["fixedColumnsLeft"]])){
+        modelIn[[i]]$fixedColumnsLeft  <- widgetConfig$fixedColumnsLeft
+        widgetConfig$fixedColumnsLeft  <- NULL
+      }
       if(!is.null(widgetConfig[["colWidths"]])){
         modelIn[[i]]$colWidths  <- widgetConfig$colWidths
         widgetConfig$colWidths  <- NULL
@@ -460,16 +464,13 @@ if(is.null(errMsg)){
 }
 
 if(is.null(errMsg)){
-  # declare GAMS compile time variables and GAMS options
-  DDPar               <- getGMSPar(names(modelIn), prefixDDPar)
-  GMSOpt              <- getGMSPar(names(modelIn), prefixGMSOpt)
-  if(any(vapply(DDPar, function(el){ identical(nchar(trimws(el)), nchar(prefixDDPar))}, 
-                logical(1L), USE.NAMES = FALSE))){
+  # declare GAMS double dash parameters and GAMS options
+  DDPar               <- names(modelIn)[startsWith(names(modelIn), prefixDDPar)]
+  GMSOpt              <- names(modelIn)[startsWith(names(modelIn), prefixGMSOpt)]
+  if(any(nchar(DDPar) <= nchar(prefixDDPar))){
     errMsg <- "Unnamed Double Dash Parameter(s) detected. Empty names are not allowed!"
   }
-  if(any(vapply(tolower(GMSOpt), function(el){ identical(nchar(trimws(el)), nchar(prefixGMSOpt)) ||
-      el %in% paste0(prefixGMSOpt, reservedGMSOpt)}, 
-      logical(1L), USE.NAMES = FALSE))){
+  if(any(nchar(GMSOpt) <= nchar(prefixGMSOpt) | GMSOpt %in% paste0(prefixGMSOpt, reservedGMSOpt))){
     errMsg <- sprintf("Invalid GAMS option(s) detected. GAMS options must not be unnamed and must not be one of the reserved options: '%s'!", paste(reservedGMSOpt, collapse = "', '"))
   }
   
@@ -930,6 +931,14 @@ if(is.null(errMsg)){
                }
                # used to access default value inside lapply (in input_render_nontab.R)
                attributes(sliderValues[[name]]$def) <- list(ref = "def")
+               if(length(modelIn[[i]]$slider$default) > 1L &&
+                  !identical(modelIn[[i]]$slider$single, TRUE)){
+                 # double dash parameters declared as double sliders are automatically
+                 # expanded to 2 double dash parameters with suffixes _lo and _up
+                 # TODO: allow specifying any names for lower and upper limit 
+                 # (possibly even 2 GAMS scalars)
+                 DDPar <<- c(DDPar[DDPar != name], paste0(name, c("_lo", "_up")))
+               }
              }, error = function(e){
                errMsg <<- paste(errMsg,paste0("'", modelInAlias[i], 
                                               "' has no valid input type defined. Error message: ", e), sep = "\n")
@@ -949,6 +958,11 @@ if(is.null(errMsg)){
                errMsg <<- paste(errMsg, paste0("The date range selector: '", modelInAlias[i], 
                                                "' uses a reserved name as its identifier. Please choose a different name."), sep = "\n")
              }
+             # double dash parameters declared as dateranges are automatically
+             # expanded to 2 double dash parameters with suffixes _lo and _up
+             # TODO: allow specifying any names for lower and upper limit 
+             # (possibly even 2 GAMS scalars)
+             DDPar <<- c(DDPar[DDPar != name], paste0(name, c("_lo", "_up")))
              # TODO : support dependency
              return(NULL)
            },
@@ -1047,11 +1061,11 @@ if(is.null(errMsg)){
     scalarInputSymToVerify <- unlist(lapply(scalarInputSym, function(el){
       if(identical(modelIn[[el]]$type, "slider") && length(modelIn[[el]]$slider$default) > 1){
         if(isTRUE(modelIn[[el]]$slider$double)){
-          return(paste0(el, c("","$lo", "$up", "$step", "$mode")))
+          return(paste0(el, c("","_lo", "_up", "$step", "$mode")))
         }
         return(paste0(el, c("", "$lo", "$up", "$step")))
       }else if(identical(modelIn[[el]]$type, "daterange")){
-        return(paste0(el, c("", "$lo", "$up")))
+        return(paste0(el, c("", "_lo", "_up")))
       }
       return(NULL)
     }), use.names = FALSE)
@@ -1674,7 +1688,7 @@ if(is.null(errMsg)){
   installPackage$timevis <- LAUNCHCONFIGMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
                                                           function(conf){if(identical(conf$graph$tool, "timevis")) TRUE else FALSE}, 
                                                           logical(1L), USE.NAMES = FALSE))
-  dbSchemaModel <- setNames(lapply(seq_len(length(modelOut) + length(modelIn)), function(i){
+  dbSchemaModel <- list(schema = setNames(lapply(seq_len(length(modelOut) + length(modelIn)), function(i){
     if(i <= length(modelOut)){
       el <- modelOut[[i]]
       tabName <- names(modelOut)[i]
@@ -1682,22 +1696,44 @@ if(is.null(errMsg)){
       el <- modelIn[[i - length(modelOut)]]
       tabName <- names(modelIn)[i - length(modelOut)]
     }
-    if(!length(el$headers)){
+    if(!length(el$headers) || tabName %in% c(scalarsFileName, scalarsOutName)){
       return(NA)
     }
     return(list(tabName = tabName,
                 colNames = names(el$headers),
                 colTypes = el$colTypes))
-  }), c(names(modelOut), names(modelIn)))
-  dsIsNoTable       <- is.na(dbSchemaModel)
-  if(any(dsIsNoTable)){
-    dbSchemaModel[dsIsNoTable]       <- NULL
-    if(!scalarsFileName %in% names(modelIn)){
-      dbSchemaModel <- c(dbSchemaModel,
-                         setNames(list(list(tabName = scalarsFileName,
-                                            colNames = scalarsFileHeaders,
-                                            colTypes = "ccc")), scalarsFileName))
-    }
+  }), c(names(modelOut), names(modelIn))), views = list())
+  dbSchemaModel$schema[is.na(dbSchemaModel$schema)] <- NULL
+  if(scalarsOutName %in% names(modelOut)){
+    scalarMeta <- setNames(modelOut[[scalarsOutName]]$symtypes,
+                           modelOut[[scalarsOutName]]$symnames)
+    dbSchemaModel$schema <- c(dbSchemaModel$schema,
+                              setNames(lapply(names(scalarMeta), function(scalarName){
+                                list(tabName = scalarName,
+                                     colNames = scalarName,
+                                     colTypes = if(identical(scalarMeta[[scalarName]], "set")) "c" else "d")
+                              }), names(scalarMeta)))
+    dbSchemaModel$views[[scalarsOutName]] <- c(dbSchemaModel$views[[scalarsOutName]], names(scalarMeta))
+  }
+  if(scalarsFileName %in% names(modelInRaw)){
+    scalarMeta <- setNames(modelInRaw[[scalarsFileName]]$symtypes,
+                           modelInRaw[[scalarsFileName]]$symnames)
+    dbSchemaModel$schema <- c(dbSchemaModel$schema,
+                              setNames(lapply(names(scalarMeta), function(scalarName){
+                                list(tabName = scalarName,
+                                     colNames = scalarName,
+                                     colTypes = if(identical(scalarMeta[[scalarName]], "set")) "c" else "d")
+                              }), names(scalarMeta)))
+    dbSchemaModel$views[[scalarsFileName]] <- c(dbSchemaModel$views[[scalarsFileName]], names(scalarMeta))
+  }
+  if(length(GMSOpt) || length(DDPar)){
+    dbSchemaModel$schema <- c(dbSchemaModel$schema,
+                              setNames(lapply(c(GMSOpt, DDPar), function(parName){
+                                list(tabName = parName,
+                                     colNames = parName,
+                                     colTypes = "c")
+                              }), c(GMSOpt, DDPar)))
+    dbSchemaModel$views[[scalarsFileName]] <- c(dbSchemaModel$views[[scalarsFileName]], c(GMSOpt, DDPar))
   }
 }
 if(is.null(errMsg)){

@@ -503,22 +503,6 @@ addCssDim <- function(x, y){
   return(paste0(dgts, tmp[2]))
 }
 
-getGMSPar <- function(inputNames, prefixPar){
-  # Finds compile time variables/GAMS options and returns them as a list
-  #
-  # Args:
-  #   inputNames:     vector of names of input sheets
-  #   prefixPar:      numeric that specifies additional height to be added (same unit as x)
-  #
-  # Returns:
-  #   vector of names of compile time variables
-  
-  inputNames       <- tolower(inputNames)
-  prefixPar        <- tolower(paste0("^", prefixPar))
-  isGMSPar         <- grepl(prefixPar, inputNames)
-  
-  return(inputNames[isGMSPar])
-}
 virtualActionButton <- function(...){
   o <- structure(sum(...), class = "shinyActionButtonValue")
   invisible(o)
@@ -547,15 +531,6 @@ readTraceData <- function(filePath, traceColNames){
   }else{
     stop("Trace data has incorrect length.", call. = FALSE)
   }
-}
-getIcon <- function(name, lib){
-  if(!identical(name, NULL)){
-    lib <- if(identical(lib, "glyphicon")) "glyphicon" else "font-awesome"
-    icon <- icon(name, lib)
-  }else{
-    icon <-  NULL
-  }
-  return(icon)
 }
 csv2Vector <- function(csv){
   if(!length(csv)){
@@ -1219,16 +1194,11 @@ loadPfFileContent <- function(content, GMSOpt = character(0L), DDPar = character
     return(tibble())
   }
   content       <- content[tolower(content[[1]]) %in% 
-                             c(GMSOpt, 
-                               outer(DDPar, c("", "_lo", "_up"), FUN = "paste0")), , 
+                             c(GMSOpt, DDPar), , 
                            drop = FALSE]
-  clArgsTmp     <- stri_replace_first_regex(content[[1]], 
-                                            "_lo$", "\\$lo")
-  clArgsTmp     <- stri_replace_first_regex(clArgsTmp, "_up$", "\\$up")
-  if(!length(clArgsTmp)){
+  if(!length(content[[1]])){
     return(tibble())
   }
-  content[[1]]  <- clArgsTmp
   return(content)
 }
 
@@ -1586,6 +1556,30 @@ stop_custom <- function(.subclass, message, call = NULL, ...) {
   )
   stop(err)
 }
+clArgsDfToPf <- function(clArgsDf){
+  if(!length(clArgsDf) || !nrow(clArgsDf)){
+    return(character(0L))
+  }
+  isGAMSOption <- startsWith(clArgsDf[[1]], prefixGMSOpt)
+  pfContent <- vapply(seq_len(nrow(clArgsDf)), 
+                      function(i){
+                        if(clArgsDf[[3]][i] %in% CLARG_MISSING_VALUES)
+                          return(NA_character_)
+                        if(isGAMSOption[i])
+                          return(paste0(substring(clArgsDf[[1]][i], nchar(prefixGMSOpt) + 1L), '=', 
+                                        escapeGAMSCL(clArgsDf[[3]][i])))
+                        symbolTmp <- substring(clArgsDf[[1]][i], 
+                                               nchar(prefixDDPar) + 1L)
+                        if(endsWith(symbolTmp, "$lo")){
+                          symbolTmp <- paste0(substring(symbolTmp, 1, nchar(symbolTmp) - 3), "_lo")
+                        }else if(endsWith(symbolTmp, "$up")){
+                          symbolTmp <- paste0(substring(symbolTmp, 1, nchar(symbolTmp) - 3), "_up")
+                        }
+                        paste0('--', symbolTmp, '=', 
+                               escapeGAMSCL(clArgsDf[[3]][i]))
+                      }, character(1L), USE.NAMES = FALSE)
+  return(pfContent[!is.na(pfContent)])
+}
 formatScenList = function(scenList, uid, orderBy = NULL, desc = FALSE, limit = 100L){
   # returns list of scenarios (formatted for dropdown menu)
   #
@@ -1632,4 +1626,17 @@ formatScenList = function(scenList, uid, orderBy = NULL, desc = FALSE, limit = 1
                                 character(1), USE.NAMES = FALSE), 
                          scenList[["_sname"]], " (", 
                          scenList[["_stime"]], ")")))
+}
+accessPermInput <- function(inputId, label, choices, selected = NULL){
+  selectizeInput(inputId, label, "", multiple= TRUE,
+                 options = list(valueField = "value",
+                                labelField = "value",
+                                searchField = "value",
+                                options = lapply(choices, function(option){
+                                  list(isGroup = startsWith(option, "_"),
+                                       value = option)
+                                }),
+                                sortField = I("function(i1,i2) {return i1.value-i2.value;}"),
+                                items = I(toJSON(selected, auto_unbox = FALSE)),
+                                render = I("{option: function(d,e){return '<div>'+(d.isGroup?'<i class=\"fas fa-users\"></i> '+e(d.value.substring(1)):'<i class=\"fas fa-user\"></i> '+e(d.value))+'</div>';},item:function(d,e){return '<div>'+(d.isGroup?'<i class=\"fas fa-users\"></i> '+e(d.value.substring(1)):'<i class=\"fas fa-user\"></i> '+e(d.value))+'</div>';}}")))
 }

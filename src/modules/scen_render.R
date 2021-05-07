@@ -5,8 +5,8 @@ if(identical(currentCompMode, "split")){
   # hide button and show content
   local({
     id <- if(loadInLeftBoxSplit) 1L else 2L
-    if(!compareModeTabsetGenerated[id]){
-      compareModeTabsetGenerated[id] <<- TRUE
+    if(!dynamicUILoaded$compareModeTabsets[id]){
+      dynamicUILoaded$compareModeTabsets[id] <<- TRUE
       insertUI(paste0("#scenSplit", id, "_content"), where = "afterBegin",
                generateScenarioTabsetSplit(id + 1L), immediate = TRUE)
     }

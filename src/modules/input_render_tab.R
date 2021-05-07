@@ -156,6 +156,8 @@ observe({
 })
 observeEvent(input$btGraphIn, {
   i <- as.integer(strsplit(input$inputTabset, "_")[[1]][2])
+  showLoadingScreen(session, 500)
+  on.exit(hideLoadingScreen(session))
   if(is.na(i) || i < 1){
     return()
   }
@@ -200,7 +202,26 @@ observeEvent(input$btGraphIn, {
         return(modelInTemplate[[i]])
       })
     }
-    
+    if(!dynamicUILoaded$inputGraphs[i]){
+      tryCatch({
+        insertUI(paste0("#graph-in_", i),
+                 ui = renderDataUI(paste0("in_", i), type = configGraphsIn[[i]]$outType, 
+                                   graphTool = configGraphsIn[[i]]$graph$tool, 
+                                   customOptions = configGraphsIn[[i]]$options,
+                                   filterOptions = configGraphsIn[[i]]$graph$filter,
+                                   height = configGraphsIn[[i]]$height,
+                                   createdDynamically = TRUE),
+                 immediate = TRUE)
+        dynamicUILoaded$inputGraphs[i] <<- TRUE
+      }, error = function(e) {
+        flog.error(sprintf("Problems generating UI elements for chart for dataset: '%s'. Error message: %s.",
+                           modelInAlias[i], conditionMessage(e)))
+        errMsg <<- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
+      })
+      if(is.null(showErrorMsg(lang$errMsg$renderGraph$title, errMsg))){
+        return()
+      }
+    }
     tryCatch({
       if(is.null(rendererEnv[[paste0("in_", i)]])){
         rendererEnv[[paste0("in_", i)]] <- new.env(parent = emptyenv())
@@ -211,7 +232,7 @@ observeEvent(input$btGraphIn, {
           }
         }
       }
-      callModule(renderData, "in_" %+% i, 
+      callModule(renderData, paste0("in_", i), 
                  type = configGraphsIn[[i]]$outType, 
                  data = data,
                  dtOptions = config$datatable, 
@@ -223,7 +244,7 @@ observeEvent(input$btGraphIn, {
                  views = views, attachments = attachments)
     }, error = function(e) {
       flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", 
-                 modelInAlias[i], e)
+                 modelInAlias[i], conditionMessage(e))
       errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), sep = "\n")
     })
   })
@@ -430,7 +451,7 @@ lapply(modelInTabularData, function(sheet){
                      manualColumnResize = hotOptions$manualColumnResize, 
                      colWidths = if(length(modelIn[[i]]$colWidths))
                        modelIn[[i]]$colWidths else hotOptions$colWidths, 
-                     fixedColumnsLeft = hotOptions$fixedColumnsLeft)
+                     fixedColumnsLeft = modelIn[[i]]$fixedColumnsLeft)
       for(dropdownCol in names(modelIn[[i]]$dropdownCols)){
         colSourceConfig <- modelIn[[i]]$dropdownCols[[dropdownCol]]
         k <- match(colSourceConfig$symbol, names(modelIn))

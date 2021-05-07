@@ -2,8 +2,10 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
   initialize = function(db){
     private$db <- db
     private$conn <- db$getConn()
-    private$symNamesScenario <- dbSchema$getAllSymbols()
-    private$orphanedTables <- private$getOrphanedTablesInternal(ioConfig$hcubeScalars)
+    private$dbTableNames <- dbSchema$getDbTableNames()
+    private$orphanedTables <- private$getOrphanedTablesInternal(c("_scalars",
+                                                                  ioConfig$hcubeScalars))
+    private$newTables <- private$dbTableNames[!private$dbTableNames %in% private$existingTables]
     return(invisible(self))
   },
   getOrphanedTablesInfo = function(){
@@ -14,11 +16,10 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     return(tabInfo)
   },
   getInconsistentTablesInfo = function(){
-    badTables <- lapply(private$symNamesScenario, function(symName){
+    badTables <- lapply(private$dbTableNames, function(symName){
       tabInfo <- dbSchema$getDbSchema(symName)
       confHeaders <- tabInfo$colNames
       dbTableName <- tabInfo$tabName
-      
       if(!is.null(confHeaders)){
         if(!dbExistsTable(private$conn, dbTableName)){
           return(tabInfo)
@@ -35,6 +36,31 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
       return(NA)
     })
     return(badTables[!is.na(badTables)])
+  },
+  createMissingScalarTables = function(){
+    scalarViews <- dbSchema$getDbViews()
+    for(scalarViewName in names(scalarViews)){
+      newScalarTables <- scalarViews[[scalarViewName]] %in% private$newTables
+      if(any(newScalarTables)){
+        if(!dbSchema$getDbTableName("_scenMeta") %in% private$existingTables){
+          private$db$runQuery(dbSchema$getCreateTableQuery("_scenMeta"))
+          private$existingTables <- c(private$existingTables,
+                                      dbSchema$getDbTableName("_scenMeta"))
+        }
+        for(newScalarTable in scalarViews[[scalarViewName]][newScalarTables]){
+          private$db$runQuery(dbSchema$getCreateTableQueryRaw(newScalarTable,
+                                                              dbTableName = newScalarTable))
+          private$db$runQuery(dbSchema$getCreateIndexQueryRaw(newScalarTable))
+          private$existingTables <- c(private$existingTables, newScalarTable)
+        }
+        private$dropScalarTableViews(scalarViewName)
+        private$updateScalarTableViews(scalarViewName, scalarViews[[scalarViewName]])
+      }
+    }
+    if(LAUNCHHCUBEMODE && !"_hc__scalars" %in% private$existingTables){
+      private$createHcScalarsTable()
+    }
+    return(invisible(self))
   },
   getDbTableNamesModel = function(){
     if(inherits(private$conn, "PqConnection")){
@@ -75,14 +101,12 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
       flog.info("Database tables: '%s' deleted.", paste(dbTableNames, collapse = "', '"))
       return(invisible(self))
     }
-    # turn foreign key usage off
     private$db$runQuery("PRAGMA foreign_keys = OFF;")
     for(dbTableName in dbTableNames){
       private$db$runQuery(paste0("DROP TABLE IF EXISTS ",  
                                  dbQuoteIdentifier(private$conn, dbTableName), " ;"))
       flog.info("Database table: '%s' deleted.", dbTableName)
     }
-    # turn foreign key usage on again
     private$db$runQuery("PRAGMA foreign_keys = ON;")
     return(invisible(self))
   },
@@ -98,6 +122,12 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     
     tablesToRemove <- !private$orphanedTables %in% oldTableNames
     
+    # drop views in case scalar tables get dropped/modified
+    # (will be recreated at the end of the migration process)
+    # TODO: Do this only if scalar tables have changed
+    for(scalarViewName in c(scalarsFileName, scalarsOutName)){
+      private$dropScalarTableViews(scalarViewName)
+    }
     if(any(tablesToRemove)){
       if(!forceRemove){
         stop_custom("error_data_loss", "The database migration you specified will lead to loss of data but forceRemove was not set.", call.= FALSE)
@@ -127,6 +157,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
                             tableToRename)
       }
     }
+    scalarViews <- dbSchema$getDbViews()
     
     lapply(names(migrationConfig), function(symName){
       # first see if we can take shortcuts
@@ -144,6 +175,12 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
       newSchema <- dbSchema$getDbSchema(symName)
       dbTableName <- dbSchema$getDbTableName(symName)
       
+      if(!inherits(private$conn, "PqConnection") && any(colsToRemove)){
+        # since sqlite does not support dropping columns, we need to remap table anyway
+        flog.debug("Remapping table: %s", dbTableName)
+        private$remapTable(symName, migrationLayout$colNames)
+        return()
+      }
       if(length(migrationLayout$colNames) == length(currentLayout$colNames[!colsToRemove]) &&
          all(migrationLayout$colNames == currentLayout$colNames[!colsToRemove])){
         if(any(colsToRemove)){
@@ -151,6 +188,8 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
                      paste(currentLayout$colNames[colsToRemove], collapse = ", "),
                      dbTableName)
           private$dropColumns(dbTableName, currentLayout$colNames[colsToRemove])
+          currentLayout$colNames <- currentLayout$colNames[!colsToRemove]
+          currentLayout$colTypes <- currentLayout$colTypes[!colsToRemove]
         }
         
         currentColNames <- migrationLayout$colNames
@@ -177,6 +216,14 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
                                oldName = currentColNamesTmp[colIdToRename],
                                newName = newSchema$colNames[colIdToRename])
         }
+        newColTypes <- tolower(dbSchema$getColTypesSQL(newSchema$colTypes))
+        if(any(tolower(currentLayout$colTypes) != newColTypes)){
+          if(symName %in% unlist(scalarViews, use.names = FALSE)){
+            private$typecastScalarTable(dbTableName, newColTypes[1])
+          }else{
+            stop("Converting column types not supported for non-scalar tables.", call. = FALSE)
+          }
+        }
         return()
       }
       
@@ -191,8 +238,14 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
       if(any(colsToAdd) &&
          identical(sum(colsToAdd), length(newSchema$colNames) - min(which(colsToAdd)) + 1L)){
         # all columns to add are at the end
+        if(any(colsToRemove)){
+          flog.debug("Removing columns: %s from table: %s",
+                     paste(currentLayout$colNames[colsToRemove], collapse = ", "),
+                     dbTableName)
+          private$dropColumns(dbTableName, currentLayout$colNames[colsToRemove])
+        }
         flog.debug("Adding column(s): %s to the end of table: %s",
-                   newSchema$newColNames[colsToAdd], dbTableName)
+                   newSchema$colNames[colsToAdd], dbTableName)
         private$addColumns(dbTableName,
                            newSchema$colNames[colsToAdd],
                            dbSchema$getColTypesSQL(newSchema$colTypes)[colsToAdd])
@@ -204,13 +257,35 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
       private$remapTable(symName, migrationLayout$colNames)
       return()
     })
+    # make sure scalar views are updated
+    # TODO: Do this only if scalar tables have changed
+    private$existingTables <- self$getDbTableNamesModel()
+    private$newTables <- private$dbTableNames[!private$dbTableNames %in% private$existingTables]
+    self$createMissingScalarTables()
+    for(scalarViewName in names(scalarViews)){
+      private$updateScalarTableViews(scalarViewName, scalarViews[[scalarViewName]])
+    }
+    return(invisible(self))
   }
 ), private = list(
   conn = NULL,
   db = NULL,
-  symNamesScenario = NULL,
+  dbTableNames = NULL,
   orphanedTables = NULL,
   existingTables = NULL,
+  newTables = NULL,
+  typecastScalarTable = function(tableName, newType = "text"){
+    if(inherits(private$conn, "PqConnection")){
+      escapedTableName <- dbQuoteIdentifier(private$conn, tableName)
+      private$db$runQuery(paste0("ALTER TABLE ", escapedTableName,
+                                 " ALTER COLUMN ", escapedTableName,
+                                 " TYPE ", newType, " USING CAST(",
+                                 escapedTableName, " AS ",
+                                 newType, ");"))
+      return(invisible(self))
+    }
+    return(private$remapTable(tableName, tableName, castAs = newType))
+  },
   renameIndex = function(oldName, newName){
     if(inherits(private$conn, "PqConnection")){
       query <- SQL(paste0("ALTER INDEX ",
@@ -231,7 +306,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
                                                        collapse = ", "))))
     return(invisible(self))
   },
-  getRemapTableQuery = function(dbTableName, colMapping){
+  getRemapTableQuery = function(dbTableName, colMapping, castAs = NULL){
     sidColName <- DBI::dbQuoteIdentifier(private$conn,
                                          "_sid")
     return(paste0("INSERT INTO ",
@@ -242,13 +317,18 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
                   }, character(1L), USE.NAMES = FALSE), collapse = ", "),
                   ") SELECT ", sidColName, ", ",
                   paste(vapply(colMapping, function(colNameOrigin){
-                    DBI::dbQuoteIdentifier(private$conn, colNameOrigin)
+                    if(!is.null(castAs)){
+                      return(paste0("CAST(",
+                                    DBI::dbQuoteIdentifier(private$conn, colNameOrigin), 
+                                    " AS ", castAs, ")"))
+                    }
+                    return(DBI::dbQuoteIdentifier(private$conn, colNameOrigin))
                   }, character(1L), USE.NAMES = FALSE), collapse = ", "),
                   " FROM ",
                   DBI::dbQuoteIdentifier(private$conn, dbTableName),
                   ";"))
   },
-  remapTable = function(tableName, colNames){
+  remapTable = function(tableName, colNames, castAs = NULL){
     newColNames <- dbSchema$getDbSchema(tableName)$colNames
     if(!identical(length(newColNames), length(colNames))){
       stop_custom("error_config",
@@ -263,7 +343,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     if(inherits(private$conn, "PqConnection")){
       return(private$remapTablePostgres(tableName, colMapping))
     }
-    return(private$remapTableSQLite(tableName, colMapping))
+    return(private$remapTableSQLite(tableName, colMapping, castAs = castAs))
   },
   remapTablePostgres = function(tableName, colMapping){
     dbTableName <- dbSchema$getDbTableName(tableName)
@@ -284,7 +364,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     )
     return(invisible(self))
   },
-  remapTableSQLite = function(tableName, colMapping){
+  remapTableSQLite = function(tableName, colMapping, castAs = NULL){
     # this basically implements the steps described on https://sqlite.org/lang_altertable.html
     private$db$runQuery("PRAGMA foreign_keys = OFF;")
     sidColName <- DBI::dbQuoteIdentifier(private$conn,
@@ -296,7 +376,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
       {
         private$db$runQuery(dbSchema$getCreateTableQueryRaw(tableName,
                                                             dbTableName = paste0("_", dbTableName)))
-        private$db$runQuery(private$getRemapTableQuery(dbTableName, colMapping))
+        private$db$runQuery(private$getRemapTableQuery(dbTableName, colMapping, castAs = castAs))
         private$db$runQuery(paste0("DROP TABLE ",
                                    dbQuoteIdentifier(private$conn, dbTableName)))
         private$db$runQuery(paste0("ALTER TABLE ",
@@ -346,6 +426,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
                                        collapse = ",")))
       return(invisible(self))
     }
+    stop("dropping columns not supported in sqlite", call. = FALSE)
   },
   renameTable = function(oldName, newName){
     private$db$runQuery(paste0("ALTER TABLE ",
@@ -369,7 +450,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
                   call. = FALSE)
     }
     for(i in seq_along(migrationConfig)){
-      if(!names(migrationConfig)[i] %in% private$symNamesScenario){
+      if(!names(migrationConfig)[i] %in% private$dbTableNames){
         stop_custom("error_config", sprintf("Invalid migration config: table: %s does not exist in db schema",
                                             names(migrationConfig)[i]),
                     call. = FALSE)
@@ -396,8 +477,12 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     dbTableNames <- self$getDbTableNamesModel()
     private$existingTables <- dbTableNames
     orphanedTables <- dbTableNames[!dbTableNames %in% dbSchema$getTableNamesCurrentSchema()]
-    if(!is.null(hcubeScalars)){
-      orphanedTables <- orphanedTables[!orphanedTables %in% hcubeScalars]
+    if(LAUNCHHCUBEMODE){
+      if(!is.null(hcubeScalars)){
+        orphanedTables <- orphanedTables[!orphanedTables %in% paste0("_hc_", hcubeScalars)]
+      }
+    }else{
+      orphanedTables <- orphanedTables[!startsWith(orphanedTables, "_hc_")]
     }
     return(orphanedTables)
   },
@@ -415,5 +500,28 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
                         dbQuoteIdentifier(private$conn, dbTableName), ");"))
     tabInfo     <- dbGetQuery(private$conn, query)
     return(list(colNames = tabInfo$name[-1], colTypes = tabInfo$type[-1]))
+  },
+  dropScalarTableViews = function(tableName){
+    private$db$runQuery(dbSchema$getDropScalarTriggerQuery(tableName))
+    private$db$runQuery(SQL(paste0("DROP VIEW IF EXISTS ",
+                                   dbQuoteIdentifier(private$conn, tableName))))
+    return(invisible(self))
+  },
+  updateScalarTableViews = function(tableName, scalars){
+    private$db$runQuery(dbSchema$getCreateScalarViewQuery(tableName, scalars))
+    if(inherits(private$conn, "PqConnection")){
+      private$db$runQuery(dbSchema$getCreateScalarViewTriggerFnQuery(tableName, scalars))
+    }
+    private$db$runQuery(dbSchema$getCreateScalarViewTriggerQuery(tableName, scalars))
+    return(invisible(self))
+  },
+  createHcScalarsTable = function(){
+    private$db$runQuery(
+      dbSchema$getCreateTableQueryRaw("_hc__scalars", dbTableName = "_hc__scalars",
+                                      symSchema = list(tabName = "_hc__scalars",
+                                                       colNames = c("_sid", "scalar",
+                                                                    "description", "value"),
+                                                       colTypes = "iccc")))
+    return(invisible(self))
   }
 ))

@@ -77,12 +77,14 @@ body_admin <- dashboardBody({
   }
   tagList(
     tags$head(
+      tags$meta(name = "color-scheme",
+                content = if(identical(config$theme, "browser")) "dark light" else "normal"),
       tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
       tags$link(type = "text/css", rel = "stylesheet", href = "bootstrap-colorpicker.min.css"),
-      tags$script(src = "showdown.min.js", type = "application/javascript"),
-      tags$script(src = "mathjax-extension.js", type = "application/javascript"),
-      tags$script(src = "bootstrap-colorpicker.min.js", type = "application/javascript"),
-      tags$script(src = "miro_admin.js", type = "application/javascript"),
+      tags$script(`defer src` = "showdown.min.js", type = "application/javascript"),
+      tags$script(`defer src` = "mathjax-extension.js", type = "application/javascript"),
+      tags$script(`defer src` = "bootstrap-colorpicker.min.js", type = "application/javascript"),
+      tags$script(`defer src` = "miro_admin.js", type = "application/javascript"),
       tags$link(type = "text/css", rel="stylesheet", href="katex.min.css"),
       tags$script(type = "application/javascript", `defer src`="katex.min.js"),
       tags$script(type = "application/javascript", `defer src`="auto-render.min.js"),
@@ -95,6 +97,14 @@ body_admin <- dashboardBody({
 }
 .main-header .logo {
                              background-image: url("gams_logo.png");
+}
+.shiny-output-error, .shiny-output-error:before{
+visibility:visible;
+}
+.custom-renderer-boilerplate {
+white-space:pre-wrap;
+font-family: Menlo,Monaco,Consolas,Courier New,monospace;
+font-size: 12px;
 }')))),
     HTML('<!-- Creates modal dialog for confirm messages -->
        <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -152,11 +162,25 @@ body_admin <- dashboardBody({
                     tags$div(id = "graphValidationErr", class = "gmsalert gmsalert-error center-alert"),
                     tags$div(id = "unknownErrorGraphs", class = "gmsalert gmsalert-error center-alert",
                              lang$adminMode$graphs$ui$gamsSymbols),
+                    fluidRow(
+                      tags$div(class = "col-sm-6",
+                               tags$h4(id = "previewDataInputToggle", class = "box-title", 
+                                       icon("minus"), style = "cursor:pointer;font-weight:bold;", 
+                                       onclick = "Miro.slideToggleEl({id: '#previewDataInputWrapper', 
+                                              toggleIconDiv: '#previewDataInputToggle'})")
+                      ),
+                      tags$div(class = "col-sm-6",
+                               tags$div(class="btn-group btn-group-right", role="group",
+                                        tags$div(title = lang$adminMode$graphs$ui$toggleLeft,
+                                                 actionButton("toggleFullscreenLeft", HTML("<i class='fas fa-chevron-left'></i> <i class='fas fa-expand'></i>"), 
+                                                     class = "toggle-fullscreen-btn toggle-config-view-left")),
+                                        tags$div(title = lang$adminMode$graphs$ui$toggleRight,
+                                                 actionButton("toggleFullscreenRight", HTML("<i class='fas fa-expand'></i> <i class='fas fa-chevron-right'></i>"), 
+                                                     class = "toggle-fullscreen-btn toggle-config-view-right"))
+                               )
+                      )
+                    ),
                     tags$div(class = "col-sm-6", id = "config-left-graph",
-                                      tags$h4(id = "previewDataInputToggle", class = "box-title", 
-                                              icon("minus"), style = "cursor:pointer;font-weight:bold;", 
-                                              onclick = "Miro.slideToggleEl({id: '#previewDataInputWrapper', 
-                                              toggleIconDiv: '#previewDataInputToggle'})"),
                                       tags$div(id = "previewDataInputWrapper", 
                                                tabsetPanel(
                                                  tabPanel(lang$nav$dialogImport$tabDatabase,
@@ -313,6 +337,8 @@ body_admin <- dashboardBody({
                                                                 #custom 
                                                                 tags$li(id = "categoryCustom1", class = "category-btn category-btn-custom", `data-cat`="48",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$main)),
+                                                                tags$li(id = "categoryCustom2", class = "category-btn category-btn-custom", `data-cat`="48a",
+                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$advanced)),
                                                                 #valuebox 
                                                                 tags$li(id = "categoryValuebox1", class = "category-btn category-btn-valuebox", `data-cat`="49",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$main))
@@ -330,10 +356,7 @@ body_admin <- dashboardBody({
                              )
                     ),
                     tags$div(class = "col-sm-6 preview-outer-wrapper", id = "config-right-graph",
-                             tags$div(style = "margin-bottom:50px;text-align:right;",
-                                      actionButton("toggleFullscreenGraph", lang$adminMode$graphs$ui$toggleFullscreen, icon("expand"), 
-                                                   class = "toggle-fullscreen-btn toggle-config-view-graph")
-                             ),
+                             
                              tags$div(id = "preview-error", class = "err-msg"),
                              tags$div(id = "preview-content-plotly", style="overflow: auto;",
                                       renderDataUI("preview_output_plotly", type = "graph", 
@@ -371,19 +394,10 @@ body_admin <- dashboardBody({
                                                                         col = "a"), 
                                                    height = 400)),
                              tags$div(id = "preview-content-custom", style = "display:none; overflow:auto;text-align:left;",
-                                      tags$h4(paste0(modelName,"_custom.R ", lang$adminMode$uiR$custom$skeleton)),
-                                      verbatimTextOutput("preview_output_custom"),
-                                      tags$h4(lang$adminMode$uiR$custom$steps),
-                                      tags$ol(
-                                        tags$li(sprintf(lang$adminMode$uiR$custom$li1, modelName, modelName)), 
-                                        tags$li(sprintf(lang$adminMode$uiR$custom$li2, modelName)), 
-                                        tags$li(lang$adminMode$uiR$custom$li3a, 
-                                                tags$a(href = "https://gams.com/miro/customize.html#custom-renderers", 
-                                                       lang$adminMode$uiR$custom$li3b, target = "_blank"),".")
-                                      ),
-                                      tags$div(sprintf(lang$adminMode$uiR$custom$description1, modelName)),
-                                      tags$h4(lang$adminMode$uiR$custom$description2),
-                                      tags$div(lang$adminMode$uiR$custom$description3)
+                                      tags$button(class = "btn btn-default", type = "button",
+                                                  onclick = "Shiny.setInputValue('btUpdateCustomRendererOutput',1,{priority:'event'});", 
+                                                  lang$adminMode$graphs$customOptions$btUpdate),
+                                      uiOutput("preview_custom_renderer")
                              ),
                              if(scalarsOutName %in% names(modelOut)){
                                tags$div(id = "preview-content-valuebox", style = "display:none;text-align:left",

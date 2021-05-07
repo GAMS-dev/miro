@@ -168,6 +168,7 @@ HcubeImport <- R6Class("HcubeImport",
                            scenData         <- private$scenData
                            saveTraceFile    <- as.integer(private$includeTrc)
                            tableNames       <- dbSchema$getAllSymbols()
+                           tableNames       <- tableNames[!tableNames %in% ioConfig$hcubeScalars]
                            if(saveTraceFile){
                              tableNames <- c(tableNames, "_scenTrc")
                            }
@@ -175,8 +176,6 @@ HcubeImport <- R6Class("HcubeImport",
                            readPerm         <- vector2Csv(readPerm)
                            writePerm        <- vector2Csv(writePerm)
                            execPerm         <- vector2Csv(execPerm)
-                           tablesTmp        <- vector("list", length(tableNames))
-                           tables           <- vector("list", length(tableNames))
                            
                            # export metadata to reserve scenario ids
                            numberScen     <- length(scenData)
@@ -191,58 +190,53 @@ HcubeImport <- R6Class("HcubeImport",
                                                     `_scode` = rep.int(jobID, numberScen))
                            metadataTable[[3]] <- Sys.time()
                            
-                           self$writeMetadata(metadataTable)
                            if(inherits(private$conn, "PqConnection")){
-                             query <- SQL(paste0("SELECT currval(pg_get_serial_sequence(",
-                                                 DBI::dbQuoteString(private$conn, dbSchema$getDbTableName("_scenMeta")), 
-                                                 ", ",
-                                                 DBI::dbQuoteString(private$conn,
-                                                                    "_sid"), "));"))
+                             query <- paste(sqlAppendTable(private$conn, dbSchema$getDbTableName("_scenMeta"),
+                                                           sqlData(private$conn, metadataTable),
+                                                           row.names = FALSE), "RETURNING _sid")
+                             firstScenId <- as.integer(DBI::dbGetQuery(private$conn, query)[[1]][1])
                            }else{
+                             self$writeMetadata(metadataTable)
                              query <- SQL("SELECT LAST_INSERT_ROWID();")
+                             lasInsertedRowId <- as.integer(DBI::dbGetQuery(private$conn, query)[[1]][1])
+                             firstScenId <- lasInsertedRowId - numberScen + 1L
                            }
-                           lasInsertedRowId <- as.integer(DBI::dbGetQuery(private$conn, query)[[1]][1])
-                           stopifnot(lasInsertedRowId >= numberScen)
-                           firstScenId <- lasInsertedRowId - numberScen + 1L
+                           stopifnot(firstScenId >= 1L)
                            
-                           # concatenate to single table first and then do bulk export to database
-                           for(scenId in seq_along(scenData)){
-                             for(tableId in seq_len(length(tableNames) + saveTraceFile)){
-                               if(tableId > length(tableNames)){
-                                 scenTableId <- match(private$traceTabName, names(scenData[[scenId]]))
-                               }
-                               scenTableId <- match(tableNames[tableId], names(scenData[[scenId]]))
-                               if(!is.na(scenTableId) && nrow(scenData[[scenId]][[scenTableId]])){
-                                 scenData[[scenId]][[scenTableId]] <- cbind(sid = firstScenId + scenId - 1,
-                                                                            scenData[[scenId]][[scenTableId]])
-                                 names(scenData[[scenId]][[scenTableId]])[1] <- "_sid"
-                                 tablesTmp[[tableId]][[scenId]] <- scenData[[scenId]][[scenTableId]]
-                               }
-                             }
-                             if(!is.null(progressBar) && scenId %% 10 == 0){
-                               progressBar$inc(amount = 0, message = sprintf("Preparing scenario %d of %d.", 
-                                                                             scenId, length(scenData)))
-                             }
-                           }
-                           tables <- lapply(seq_along(tableNames), function(tableId){
-                             if(length(tablesTmp[[tableId]])){
-                               do.call(bind_rows, tablesTmp[[tableId]])
-                             }
-                           })
                            if(!is.null(progressBar)){
                              progressBar$inc(amount = 0, message = sprintf("Uploading tables to database."))
                            }
-                           lapply(seq_along(tables), function(i){
-                             colNames <- dbSchema$getDbSchema(tableNames[[i]])$colNames
-                             if(!is.null(colNames) && 
-                                length(tables[[i]])){
-                               names(tables[[i]])[-1L] <- colNames
+                           if(!dbBegin(private$conn)){
+                             stop("Could not start database transaction.", call. = FALSE)
+                           }
+                           tryCatch({
+                             lapply(seq_along(tableNames), function(i){
+                               tableName <- tableNames[i]
+                               self$exportScenDataset(bind_rows(lapply(seq_along(private$scenData), function(scenIdx){
+                                 add_column(`_sid` = firstScenId + scenIdx - 1L,
+                                            private$scenData[[scenIdx]][[tableName]],
+                                            .before = 1L)})), tableName, isHcJobConfig = FALSE)
+                               if(!is.null(progressBar)){
+                                 progressBar$inc(amount = 0, message = sprintf("Uploading table %d of %d.",
+                                                                               i, length(tableNames)))
+                               }
+                             })
+                             if(!dbCommit(private$conn)){
+                               stop_custom("error_commit", "Could not commit database transaction", call. = FALSE)
                              }
-                             self$exportScenDataset(tables[[i]], tableNames[[i]])
-                             if(!is.null(progressBar)){
-                               progressBar$inc(amount = 0, message = sprintf("Uploading table %d of %d.",
-                                                                             i, length(tables)))
+                           }, error_commit = function(e){
+                             stop(conditionMessage(e), call. = FALSE)
+                           }, error = function(e){
+                             if(!dbRollback(private$conn)){
+                               self$deleteRows("_scenMeta",
+                                               subsetSids = seq(firstScenId,
+                                                                firstScenId + numberScen - 1L))
+                               stop("Could not roll back database transaction.", call. = FALSE)
                              }
+                             self$deleteRows("_scenMeta",
+                                             subsetSids = seq(firstScenId,
+                                                              firstScenId + numberScen - 1L))
+                             stop(conditionMessage(e), call. = FALSE)
                            })
                            invisible(self)
                          },
@@ -318,7 +312,11 @@ HcubeImport <- R6Class("HcubeImport",
                                }
                                symNames <- scenDataNames[[i]]
                                return(lapply(symNames, function(symName){
-                                 colTypes <- dbSchema$getDbSchema(symName)$colTypes
+                                 if(symName %in% c(scalarsFileName, scalarsOutName)){
+                                   colTypes <- "ccc"
+                                 }else{
+                                   colTypes <- dbSchema$getDbSchema(symName)$colTypes
+                                 }
                                  scenData <- tryCatch({
                                    fixColTypes(private$gdxio$rgdx(filePath, symName), colTypes)
                                  }, error = function(e){
@@ -329,6 +327,8 @@ HcubeImport <- R6Class("HcubeImport",
                                  }
                                  if(length(private$templates[[symName]])){
                                    names(scenData) <- names(private$templates[[symName]])
+                                 }else if(symName %in% c(scalarsFileName, scalarsOutName)){
+                                   names(scenData) <- c("scalar", "description", "value")
                                  }
                                  return(scenData %>% mutate_if(is.character, 
                                                                replace_na, replace = ""))

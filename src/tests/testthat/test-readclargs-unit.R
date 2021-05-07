@@ -48,15 +48,15 @@ test_that("Reading of pf file works with both GMSOpt and DDPar range", {
   expect_identical(loadPfFileContent(c("--asd=def", "MIP=CPLEX", "--def_lo=1", 
                                        "--def_up=99",
                                        "IDXGenerateGDX=bla.gdx", "huhu=asd"), 
-                                     c("mip"), c("asd", "def")), 
-                   tibble::tibble(scalar = c("asd", "MIP", "def$lo", "def$up"), 
+                                     c("mip"), c("asd", "def_lo", "def_up")), 
+                   tibble::tibble(scalar = c("asd", "MIP", "def_lo", "def_up"), 
                                   description = character(4L), 
                                   value = c("def", "CPLEX", "1", "99")))
   expect_identical(loadPfFileContent(c("--asd=def", "MIP=CPLEX", "--def_lo 1", 
                                        "--def_up 99",
                                        "IDXGenerateGDX=bla.gdx", "huhu=asd"), 
-                                     c("mip"), c("asd", "def")), 
-                   tibble::tibble(scalar = c("asd", "MIP", "def$lo", "def$up"), 
+                                     c("mip"), c("asd", "def_lo", "def_up")), 
+                   tibble::tibble(scalar = c("asd", "MIP", "def_lo", "def_up"), 
                                   description = character(4L), 
                                   value = c("def", "CPLEX", "1", "99")))
 })
