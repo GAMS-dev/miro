@@ -92,7 +92,7 @@ install (){
         }
     fi
 
-    printf "GAMS MIRO server installed successfully!\nUse './miro-compose start' to start now.\n"
+    printf "GAMS MIRO server installed successfully!\nUse './miro-server start' to start now.\n"
     return 0
 }
 

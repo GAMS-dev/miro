@@ -151,8 +151,8 @@ class MiroServer(object):
 
             name_in_zip = os.path.join('miro_server',
                                        os.path.relpath(os.path.join(root, file), 'release'))
-            if os.name == 'nt' and file == 'miro-compose':
-                # we have to manually set executable bit of miro-compose on Windows
+            if os.name == 'nt' and file == 'miro-server':
+                # we have to manually set executable bit of miro-server on Windows
                 upsh = zipfile.ZipInfo(name_in_zip)
                 upsh.date_time = time.localtime()
                 upsh.external_attr = 0o100755 << 16

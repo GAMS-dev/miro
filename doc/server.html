@@ -130,7 +130,7 @@
                                       </div><!--//callout-block-->
                                       </li>
                                       <li>Next, login to the GAMS Docker registry. To do so, run <div class = "console-box"><span class="console-content">&gt; docker login hub.gams.com</span></div> with the credentials GAMS provided you with. </li>
-                                      <li>Afterwards, you are ready to install MIRO Server by running: <div class = "console-box"><span class="console-content">&gt; ./miro-compose install</span>.</div> The installation script will inform you whether the installation was successful or not.</li>
+                                      <li>Afterwards, you are ready to install MIRO Server by running: <div class = "console-box"><span class="console-content">&gt; ./miro-server install</span>.</div> The installation script will inform you whether the installation was successful or not.</li>
                                       <li>GAMS MIRO Server requires an instance of <a href="https://www.gams.com/engine/">GAMS Engine</a> to solve the GAMS jobs. You have to provide the credentials to GAMS Engine via environment variables.
                                       You can either set these variables inside the shell you start GAMS MIRO Server from or append them to the <i>.env</i> file that is located inside the ZIP file mentioned above. The following environment variables have to be set:
                                       <div class="table-responsive" style="margin:15px auto;">
@@ -170,19 +170,19 @@
                                 </div>
                                 <div  id="server-start"  class="section-block">
                                     <h3 class="block-title">Start</h3>    
-                                    <p>Once you have GAMS MIRO Server installed, you can launch it via <div class = "console-box"><span class="console-content">&gt; ./miro-compose start</span>.</div>GAMS MIRO Server will now listen on port 8080. After the installation, there is a single administrator with username: <i>admin</i> and password <i>admin</i>.</p>
+                                    <p>Once you have GAMS MIRO Server installed, you can launch it via <div class = "console-box"><span class="console-content">&gt; ./miro-server start</span>.</div>GAMS MIRO Server will now listen on port 8080. After the installation, there is a single administrator with username: <i>admin</i> and password <i>admin</i>.</p>
                                 </div>
                                 <div  id="server-update"  class="section-block">
                                     <h3 class="block-title">Update</h3> 
-                                    <p>To update GAMS MIRO Server to the latest version, run <div class = "console-box"><span class="console-content">&gt; ./miro-compose update</span></div>Note that this will pull new images from the GAMS Docker registry and launch them. If you only want to pull new images, run <div class = "console-box"><span class="console-content">&gt; ./miro-compose pull</span></div></p>
+                                    <p>To update GAMS MIRO Server to the latest version, run <div class = "console-box"><span class="console-content">&gt; ./miro-server update</span></div>Note that this will pull new images from the GAMS Docker registry and launch them. If you only want to pull new images, run <div class = "console-box"><span class="console-content">&gt; ./miro-server pull</span></div></p>
                                 </div>
                                 <div  id="server-stop"  class="section-block">
                                     <h3 class="block-title">Stop</h3> 
-                                    <p>To stop a running instance of GAMS MIRO Server, run <div class = "console-box"><span class="console-content">&gt; ./miro-compose stop</span></div></p>
+                                    <p>To stop a running instance of GAMS MIRO Server, run <div class = "console-box"><span class="console-content">&gt; ./miro-server stop</span></div></p>
                                 </div>
                                 <div  id="server-uninstall"  class="section-block">
                                     <h3 class="block-title">Uninstall</h3> 
-                                    <p>To remove GAMS MIRO Server including all data associated with it from your server, run <div class = "console-box"><span class="console-content">&gt; ./miro-compose uninstall</span></div> 
+                                    <p>To remove GAMS MIRO Server including all data associated with it from your server, run <div class = "console-box"><span class="console-content">&gt; ./miro-server uninstall</span></div> 
                                     Additionally, you can remove the directory where you extracted the configuration files of the GAMS MIRO Server.</p>
                                 </div>
                                 <div  id="server-customize"  class="section-block">

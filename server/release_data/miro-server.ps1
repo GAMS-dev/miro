@@ -76,7 +76,7 @@ function install
         mkdir models
     }
 
-    "GAMS MIRO server installed successfully! Use './miro-compose.ps1 start' to start now."
+    "GAMS MIRO server installed successfully! Use './miro-server.ps1 start' to start now."
 }
 
 function install
