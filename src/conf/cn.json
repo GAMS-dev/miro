@@ -137,6 +137,17 @@
       "chooseAllButton":"所有场景",
       "orButton":"或",
       "andButton":"和",
+      "operators":{
+        "is": "等于",
+        "notis": "不等于",
+        "contains": "包含",
+        "notcontains": "不包含",
+        "startswith": "以开始",
+        "endswith": "以结束",
+        "exists": "存在",
+        "notexists": "不存在",
+        "between": "间"
+      },
       "queryButton":"获取结果",
       "showHashDialog":{
         "title":"场景的哈希值",
@@ -677,9 +688,10 @@
       "title": "数据库迁移",
       "desc": "我们确定您的GAMS / MIRO数据合同已以与您的应用程序当前数据库布局不兼容的方式进行了更改。 请指定您的数据应如何迁移。",
       "backupWarning": "强烈建议您在迁移之前备份数据库。",
-      "successMsg": "您的数据已成功迁移！",
+      "successMsg": "您的数据已成功迁移！请重新启动应用程序。",
       "labelSymbol": "符号：“%s”",
-      "selectTableToMap": "使用来自",
+      "selectTableToMap": "从迁移数据",
+      "selectColToMap": "栏目：",
       "btCancelMigration": "取消",
       "btConfirmMigration": "确认迁移",
       "errDuplicateTables": "表：'%s'不能重复！",
@@ -703,7 +715,7 @@
         "cbConfirm": "删除所有表格？",
         "btCancel": "取消",
         "btConfirm": "删除表格",
-        "msgSuccess": "数据库表已删除"
+        "msgSuccess": "数据库表已删除! 请重新启动应用程序。"
       }
     }
   },
