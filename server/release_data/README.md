@@ -80,7 +80,7 @@ Note that even though both GAMS Engine and MIRO Server run on the same host, the
 You may want to host MIRO Server on a different path. To do this, you must adjust the context path in the file 'application.yml' accordingly (`server.servlet.context-path`). This path must be identical to the location specified in the nginx configuration.
 
 # Extending the MIRO Docker image
-In case your MIRO applications need additional packages, you have to extend the Docker UI image (https://github.com/GAMS-dev/miro_desktop/blob/master/Dockerfile). You can do so by adding the additional packages required by your custom renderers to the file `additional_packages` located inside this directory. Each package name must be on a new line. Once all packages are added to this file, run `./miro-compose build`. 
+In case your MIRO applications need additional packages, you have to extend the [Docker UI image] (https://github.com/GAMS-dev/miro_desktop/blob/master/Dockerfile). You can do so by adding the additional packages required by your custom renderers to the file `additional_packages` located inside this directory. Each package name must be on a new line. Once all packages are added to this file, run `./miro-compose build`. 
 
 # Authentication and User Management
 By default MIRO Server uses the authentication service of GAMS Engine. Every user who wants to solve GAMS jobs with MIRO Server needs a GAMS Engine user account with at least execute permissions in the [namespace](https://gams.com/engine/administration.html#namespaces) to be used. If you are GAMS Engine administrator, you can manage users and namespaces for MIRO Server directly in the [Engine UI](https://www.gams.com/engine/administration.html#user-management).
