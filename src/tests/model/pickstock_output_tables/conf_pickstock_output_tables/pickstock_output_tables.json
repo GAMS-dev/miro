@@ -224,7 +224,7 @@
     "lstFile": true,
     "attachments": true,
     "remoteExecution": false,
-    "downloadTempFiles": false
+    "downloadTempFiles": true
   },
   "aggregateWidgets": true,
   "excelIncludeMeta": true,

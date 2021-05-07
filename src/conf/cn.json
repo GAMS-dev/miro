@@ -489,7 +489,7 @@
       "title":"下载临时文件",
       "desc":"选择要下载的文件",
       "noFiles":"未找到文件",
-      "downloadZipButton":"全部下载为zip文件",
+      "downloadAllButton":"全部下载",
       "downloadButton":"下载",
       "cancelButton": "取消"
     },

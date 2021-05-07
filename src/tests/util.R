@@ -58,6 +58,16 @@ expect_files_in_zip <- function(app, id, files){
   expect_true(all(files %in% filesInZip))
 }
 
+get_downloaded_file_content <- function(app, id, raw = FALSE){
+  url <- app$findElement(paste0("#", id))$getAttribute("href")
+  req <- httr::GET(url)
+  tempFiles <- file.path(tempdir(check = TRUE), "shinytest-download")
+  on.exit(unlink(tempFiles))
+  if(raw)
+    return(req$content)
+  return(rawToChar(req$content))
+}
+
 createTestDb <- function(dbPath = file.path(getwd(), "..", "testdb")){
   if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
     # need to clean db tables

@@ -1906,7 +1906,7 @@
               "type": "string",
               "minLength": 1
             },
-            "downloadZipButton": {
+            "downloadAllButton": {
               "type": "string",
               "minLength": 1
             },
