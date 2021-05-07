@@ -41,12 +41,13 @@ class MiroServer(object):
 
     args = parser.parse_args(sys.argv[1:2])
 
+    with open(os.path.join('..', 'build-config.json'), 'r') as f:
+        r_base_version = json.loads(f.read())['rVersion'].strip()
+
     self.__compose_env = os.environ.copy()
     self.__compose_env['COMPOSE_PROJECT_NAME'] = 'miro_server'
     self.__compose_env['COMPOSE_IGNORE_ORPHANS'] = 'True'
-
-    with open(os.path.join('..', 'package.json'), 'r') as f:
-      self.__version_string = json.loads(f.read())['version'].strip()
+    self.__compose_env['R_BASE_VERSION'] = r_base_version
 
     getattr(self, args.command)()
 
@@ -57,9 +58,12 @@ class MiroServer(object):
     parser.add_argument('--module',
       type=str,
       help='Module to build',
-      choices=['dockerproxy', 'proxy', 'auth'])
+      choices=['dockerproxy', 'proxy', 'auth', 'admin', 'ui'])
 
     parser.add_argument('--pull', help='Pull images from hub.gams.com', 
+      action='store_true')
+
+    parser.add_argument('--no-prep', help='Skips downloading required R packages', 
       action='store_true')
 
     args = parser.parse_args(sys.argv[2:])
@@ -72,28 +76,31 @@ class MiroServer(object):
       subprocess.check_call(['docker-compose', 'pull'], env=self.__compose_env)
 
     if args.module is None:
+      if not args.no_prep:
+        subprocess.check_call(['yarn', 'docker-prepare'], cwd='..')
       subprocess.check_call(['docker-compose', 'build'], env=self.__compose_env)
     else:
+      if args.module == 'ui' and not args.no_prep:
+        subprocess.check_call(['yarn', 'docker-prepare'], cwd='..')
       subprocess.check_call(['docker-compose', 'build', args.module], env=self.__compose_env)
 
 
   def up(self):
     parser = argparse.ArgumentParser(
-          description='Launches GAMS MIRO Server')
+          description='Starts GAMS MIRO Server')
 
     subprocess.check_call(['docker-compose', 'up', '-d'], env=self.__compose_env)
 
 
   def down(self):
     parser = argparse.ArgumentParser(
-          description='Launches GAMS MIRO Server')
+          description='Stops GAMS MIRO Server')
     parser.add_argument('-v', '--volumes', help='Removes volumes and networks', 
       action='store_true')
 
     args = parser.parse_args(sys.argv[2:])
 
     dc_args_miro = ['docker-compose', 'down']
-    dc_args_engine = ['docker-compose', '-f', 'docker-compose.miro.yml', 'down']
 
     self.stop_proxies('hub.gams.com/gamsmiro-admin')
     self.stop_proxies('hub.gams.com/gamsmiro-ui')
@@ -105,10 +112,20 @@ class MiroServer(object):
 
 
   def push(self):
+    parser = argparse.ArgumentParser(
+          description='Publishes GAMS MIRO Server Docker images')
+    parser.add_argument('--unstable',
+      help='Unstable build',
+      action='store_true')
+
+    args = parser.parse_args(sys.argv[2:])
+
     for image in [('gamsmiro-sproxy', 'gamsmiro-sproxy'),
                   ('gamsmiro-proxy', 'gamsmiro-proxy'),
-                  ('gamsmiro-auth', 'gamsmiro-auth')]:
-      self.push_image(*image)
+                  ('gamsmiro-auth', 'gamsmiro-auth'),
+                  ('gamsmiro-admin', 'gamsmiro-admin'),
+                  ('gamsmiro-ui', 'gamsmiro-ui')]:
+      self.push_image(*image, unstable=args.unstable)
 
 
   def release(self):
@@ -187,11 +204,21 @@ class MiroServer(object):
       subprocess.check_call([*['docker', 'rm'], *active_admin_containers])
 
 
-  def push_image(self, image_name_local, image_name_hub):
-    subprocess.check_call(['docker', 'tag', image_name_local, f'hub.gams.com/{image_name_hub}'])
-    subprocess.check_call(['docker', 'tag', image_name_local, f'hub.gams.com/{image_name_hub}:{self.__version_string}'])
-    subprocess.check_call(['docker', 'push', f'hub.gams.com/{image_name_hub}'])
-    subprocess.check_call(['docker', 'push', f'hub.gams.com/{image_name_hub}:{self.__version_string}'])
+  def push_image(self, image_name_local, image_name_hub, unstable=False):
+    if unstable:
+      version_string = 'unstable'
+    else:
+      with open(os.path.join('..', 'package.json'), 'r') as f:
+        version_string = json.loads(f.read())['version'].strip()
+
+    if not unstable:
+      subprocess.check_call(['docker', 'tag', image_name_local, f'hub.gams.com/{image_name_hub}'])
+
+    subprocess.check_call(['docker', 'tag', image_name_local, f'hub.gams.com/{image_name_hub}:{version_string}'])
+    if not unstable:
+      subprocess.check_call(['docker', 'push', f'hub.gams.com/{image_name_hub}'])
+
+    subprocess.check_call(['docker', 'push', f'hub.gams.com/{image_name_hub}:{version_string}'])
 
 
 if __name__ == '__main__':

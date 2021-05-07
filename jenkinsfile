@@ -81,13 +81,12 @@ pipeline {
                         script{
                             if (params.BUILD_CI) {
                                 sh '''
-                                    yarn docker-build --ci
+                                    yarn docker-build-ci
                                 '''
                             }
                             if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
                                 sh '''#!/bin/bash -xe
                                     ## build MIRO server images
-                                    yarn docker-build
                                     pushd server > /dev/null
                                         python3 miro_server.py build
                                     popd > /dev/null
@@ -270,15 +269,17 @@ pipeline {
                             }
                             if (env.BRANCH_NAME == 'master' && (currentBuild.currentResult == "SUCCESS" || params.FORCE_RELEASE)) {
                                 sh '''#!/bin/bash -xe
-                                    yarn docker-publish
                                     ## build MIRO server images
                                     pushd server > /dev/null
                                         python3 miro_server.py push
                                     popd > /dev/null
                                 '''
                             } else if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
-                                sh '''
-                                    yarn docker-publish-unstable
+                                sh '''#!/bin/bash -xe
+                                    ## build MIRO server images
+                                    pushd server > /dev/null
+                                        python3 miro_server.py push --unstable
+                                    popd > /dev/null
                                 '''
                             }
                         }

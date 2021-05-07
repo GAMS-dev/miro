@@ -2,10 +2,16 @@ version: "3.7"
 services:
   miro_admin:
     image: hub.gams.com/gamsmiro-admin
+    build: ./admin/
     restart: "no"
     command: /bin/true
   miro_ui:
     image: hub.gams.com/gamsmiro-ui
+    build:
+      context: ../
+      args:
+        - R_BASE_VERSION=${R_BASE_VERSION}
+      dockerfile: ./server/miro_ui/Dockerfile
     restart: "no"
     command: /bin/true
   auth:
