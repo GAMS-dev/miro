@@ -1684,7 +1684,7 @@ accessPermInput <- function(inputId, label, choices, selected = NULL){
                                 labelField = "value",
                                 searchField = "value",
                                 options = lapply(choices, function(option){
-                                  list(isGroup = startsWith(option, "_"),
+                                  list(isGroup = startsWith(option, "#"),
                                        value = option)
                                 }),
                                 sortField = I("function(i1,i2) {return i1.value-i2.value;}"),

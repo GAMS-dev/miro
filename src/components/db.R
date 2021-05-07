@@ -43,7 +43,7 @@ Db <- R6Class("Db",
                   
                   private$uid                         <- uid
                   if(length(ugroups) >= 1L && is.character(ugroups)){
-                    private$userAccessGroups <- paste0("_", ugroups)
+                    private$userAccessGroups <- paste0("#", ugroups)
                   }else{
                     private$userAccessGroups <- character(0L)
                   }

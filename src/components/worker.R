@@ -605,6 +605,20 @@ Worker <- R6Class("Worker", public = list(
                                         maxSize = private$metadata$maxSizeToRead,
                                         chunkNo = chunkNo, getSize = getSize))
   },
+  getAccessGroups = function(){
+    if(private$remote){
+      ret <- GET(url = paste0(private$metadata$url, 
+                              "/namespaces/", 
+                              private$metadata$namespace, "/user/groups"), 
+                 add_headers(Authorization = private$authHeader,
+                             Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+                 timeout(5L))
+      return(unlist(lapply(content(ret), function(accessGroup){
+        return(c(paste0("#", accessGroup$label), accessGroup$members))
+      }), use.names = FALSE))
+    }
+    return(csv2Vector(private$db$getUserAccessGroups()))
+  },
   pingLog = function(){
     if(inherits(private$process, "process")){
       return(private$pingLocalLog())
