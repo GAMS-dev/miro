@@ -157,9 +157,9 @@ if(is.null(errMsg)){
       errMsg <- paste(errMsg, "No user groups specified (shinyproxy).", sep = "\n")
     }
     if(!identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true") && 
-       any(!grepl("^[a-zA-Z0-9][a-zA-Z0-9!%\\(\\)\\-_~]{3,69}$", c(uid, ugroups), perl = TRUE))){
+       any(!grepl("^[a-zA-Z0-9_]{4,70}$", c(uid, ugroups), perl = TRUE))){
       errMsg <- paste(errMsg, 
-                      "Invalid user ID or user group specified. The following rules apply for user IDs and groups:\n- must be at least 4 and not more than 70 characters long\n- must start with a number or letter (upper or lowercase) {a-z}, {A-Z}, {0-9}\n- may container numbers, letters and the following additional characters: {!%()-_~}",
+                      "Invalid user ID or user group specified. The following rules apply for user IDs and groups:\n- must be at least 4 and not more than 70 characters long\n- may contain only a-z A-Z 0-9 _",
                       sep = "\n")
     }
   }else{
