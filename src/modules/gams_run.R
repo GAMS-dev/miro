@@ -114,9 +114,11 @@ prepareModelRun <- function(async = FALSE){
       scenData[["scen_1_"]][[i + length(modelOut)]] <<- dataTmp[[i]]
     }
   })
-  pfFileContent <- NULL
+  clArgsDf <- NULL
   inputData <- DataInstance$new(modelInFileNames, fileExchange = config$fileExchange,
-                                gdxio = gdxio, csvDelim = config$csvDelim)
+                                gdxio = gdxio, csvDelim = config$csvDelim,
+                                activeScen = activeScen, attachments = attachments,
+                                views = views)
   lapply(seq_along(dataTmp), function(id){
     # write compile time variable file and remove compile time variables from scalar dataset
     if(is.null(dataTmp[[id]])){
@@ -126,32 +128,11 @@ prepareModelRun <- function(async = FALSE){
       # scalars file exists, so remove compile time variables from it
       DDParIdx           <- dataTmp[[id]][[1]] %in% DDPar
       GMSOptIdx          <- dataTmp[[id]][[1]] %in% GMSOpt
-      DDParValues        <- dataTmp[[id]][DDParIdx, , drop = FALSE]
-      GMSOptValues       <- dataTmp[[id]][GMSOptIdx, , drop = FALSE]
-      if(nrow(DDParValues) || nrow(GMSOptValues)){
-        pfGMSPar      <- vapply(seq_along(DDParValues[[1]]), 
-                                function(i){
-                                  if(DDParValues[[3]][i] %in% CLARG_MISSING_VALUES)
-                                    return(NA_character_)
-                                  symbolTmp <- substring(DDParValues[[1]][i], 
-                                                         nchar(prefixDDPar) + 1L)
-                                  paste0('--', symbolTmp, '=', 
-                                         escapeGAMSCL(DDParValues[[3]][i]))
-                                }, character(1L), USE.NAMES = FALSE)
-        pfGMSPar      <- pfGMSPar[!is.na(pfGMSPar)]
-        # do not write '_' in pf file (no selection)
-        pfGMSOpt      <- vapply(seq_along(GMSOptValues[[1]]), 
-                                function(i){
-                                  if(!GMSOptValues[[3]][i] %in% CLARG_MISSING_VALUES) 
-                                    paste0(substring(GMSOptValues[[1]][i], nchar(prefixGMSOpt) + 1L), '=', 
-                                           escapeGAMSCL(GMSOptValues[[3]][i]))
-                                  else
-                                    NA_character_
-                                }, character(1L), USE.NAMES = FALSE)
-        pfGMSOpt      <- pfGMSOpt[!is.na(pfGMSOpt)]
-        pfFileContent <<- c(pfGMSPar, pfGMSOpt)
+      if(any(c(DDParIdx, GMSOptIdx))){
+        isClArg <- (DDParIdx | GMSOptIdx)
+        clArgsDf <<- dataTmp[[id]][isClArg, ]
         # remove those rows from scalars file that are compile time variables
-        inputData$push(names(dataTmp)[[id]], dataTmp[[id]][!(DDParIdx | GMSOptIdx), ])
+        inputData$push(names(dataTmp)[[id]], dataTmp[[id]][!isClArg, ])
       }else{
         inputData$push(names(dataTmp)[[id]], dataTmp[[id]])
       }
@@ -179,7 +160,7 @@ prepareModelRun <- function(async = FALSE){
   if(is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))){
     return(NULL)
   }
-  return(list(inputData = inputData, pfFileContent = pfFileContent))
+  return(list(inputData = inputData, clArgsDf = clArgsDf))
 }
 if(LAUNCHHCUBEMODE){
   idsToSolve <- NULL
@@ -663,7 +644,7 @@ if(LAUNCHHCUBEMODE){
     tryCatch({
       hideEl(session, "#jobSubmissionWrapper")
       showEl(session, "#jobSubmissionLoad")
-      worker$runAsync(dataModelRun$inputData, dataModelRun$pfFileContent, sid, 
+      worker$runAsync(dataModelRun$inputData, dataModelRun$clArgsDf, sid, 
                       name = jobName)
       showHideEl(session, "#jobSubmitSuccess", 2000)
     }, error = function(e){
@@ -991,7 +972,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     if(length(activeScen) && length(activeScen$getSid())){
       jobSid <- activeScen$getSid()
     }
-    worker$run(dataModelRun$inputData, dataModelRun$pfFileContent, jobSid)
+    worker$run(dataModelRun$inputData, dataModelRun$clArgsDf, jobSid, name = activeScen$getScenName())
   }, error_duplicate_records = function(e){
     flog.info("Problems writing GDX file. Duplicate records found: %s", conditionMessage(e))
     errMsg <<- conditionMessage(e)
