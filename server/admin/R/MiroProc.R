@@ -118,7 +118,7 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
                       as.character(procExitStatus))
                     flog.error('Unexpected error when starting MIRO process. Stderr: %s',
                       private$stdErr)
-                    private$session$sendCustomMessage("onError", list(requestType = requestType, message = "Internal error."))
+                    private$session$sendCustomMessage("onError", list(requestType = requestType, message = "Internal error. Check log for more information."))
                 }
                 private$miroProc <- NULL
             }

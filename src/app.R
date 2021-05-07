@@ -920,7 +920,11 @@ if(!is.null(errMsg)){
     warning(errMsg, call. = FALSE)
   }
   if(isShinyProxy){
-    stop('An error occured. Check log for more information!', call. = FALSE)
+    if(miroStoreDataOnly){
+      stop(sprintf("An error occured. Error message: %s",
+                   errMsg), call. = FALSE)
+    }
+    stop("An error occured. Check log for more information!", call. = FALSE)
   }else if(miroStoreDataOnly){
     if(interactive())
       stop()

@@ -132,7 +132,7 @@ server <- function(input, output, session){
         tryCatch({
             if(!length(miroAppValidator$getAppTitle())){
                 flog.error("Add App request sent without the miroapp file being validated. This should never happen and is likely an attempt to tamper with the app.")
-                stop("Internal error.", call. = FALSE)
+                stop("Internal error. Check log for more information.", call. = FALSE)
             }
             currentConfigList <- modelConfig$getConfigList()
             newAppTitle <- trimws(input$addApp$title)
