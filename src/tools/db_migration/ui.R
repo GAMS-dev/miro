@@ -1,7 +1,8 @@
 uiDbMig <- fluidPage(
   tags$head(
+    tags$meta(name = "color-scheme", content = "dark light"),
     tags$link(type = "text/css", rel = "stylesheet", href = "skin_browser.css"),
-    tags$script(src = "miro.js", type = "application/javascript")
+    tags$script(`defer src` = "miro.js", type = "application/javascript")
   ),
   tagList(
     tags$head(tags$title(lang$nav$migrationModule$title)),

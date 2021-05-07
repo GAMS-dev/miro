@@ -77,12 +77,14 @@ body_admin <- dashboardBody({
   }
   tagList(
     tags$head(
+      tags$meta(name = "color-scheme",
+                content = if(identical(config$theme, "browser")) "dark light" else "normal"),
       tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
       tags$link(type = "text/css", rel = "stylesheet", href = "bootstrap-colorpicker.min.css"),
-      tags$script(src = "showdown.min.js", type = "application/javascript"),
-      tags$script(src = "mathjax-extension.js", type = "application/javascript"),
-      tags$script(src = "bootstrap-colorpicker.min.js", type = "application/javascript"),
-      tags$script(src = "miro_admin.js", type = "application/javascript"),
+      tags$script(`defer src` = "showdown.min.js", type = "application/javascript"),
+      tags$script(`defer src` = "mathjax-extension.js", type = "application/javascript"),
+      tags$script(`defer src` = "bootstrap-colorpicker.min.js", type = "application/javascript"),
+      tags$script(`defer src` = "miro_admin.js", type = "application/javascript"),
       tags$link(type = "text/css", rel="stylesheet", href="katex.min.css"),
       tags$script(type = "application/javascript", `defer src`="katex.min.js"),
       tags$script(type = "application/javascript", `defer src`="auto-render.min.js"),

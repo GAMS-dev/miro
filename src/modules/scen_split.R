@@ -84,15 +84,15 @@ observeEvent(input$loadActiveScenSplitComp, {
   on.exit(hideEl(session, "#loading-screen"))
   if(identical(id, 2L)){
     loadInLeftBoxSplit <<- TRUE
-    if(!compareModeTabsetGenerated[1]){
-      compareModeTabsetGenerated[1] <<- TRUE
+    if(!dynamicUILoaded$compareModeTabsets[1]){
+      dynamicUILoaded$compareModeTabsets[1] <<- TRUE
       insertUI("#scenSplit1_content", where = "afterBegin",
                generateScenarioTabsetSplit(2), immediate = TRUE)
     }
   }else if(identical(id, 3L)){
     loadInLeftBoxSplit <<- FALSE
-    if(!compareModeTabsetGenerated[2]){
-      compareModeTabsetGenerated[2] <<- TRUE
+    if(!dynamicUILoaded$compareModeTabsets[2]){
+      dynamicUILoaded$compareModeTabsets[2] <<- TRUE
       insertUI("#scenSplit2_content", where = "afterBegin",
                generateScenarioTabsetSplit(3), immediate = TRUE)
     }

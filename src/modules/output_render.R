@@ -9,6 +9,7 @@ renderOutputData <- function(rendererEnv, views){
       rendererEnv$output[[el]]$destroy()
     }
   }
+  dynamicUILoaded[["outputTables"]][] <<- FALSE
   lapply(unlist(outputTabs, use.names = FALSE), function(i){
     tryCatch({
       if(length(configGraphsOut[[i]]$additionalData)){
@@ -36,8 +37,14 @@ renderOutputData <- function(rendererEnv, views){
                  pivotOptions = configGraphsOut[[i]]$pivottable, customOptions = configGraphsOut[[i]]$options,
                  roundPrecision = roundPrecision, modelDir = modelDir, rendererEnv = rendererEnv$output,
                  views = views, attachments = attachments)
-      callModule(renderData, "table-out_" %+% i, type = "datatable", data = scenData[["scen_1_"]][[i]],
-                 dtOptions = configGraphsOut[[i]]$datatable , roundPrecision = roundPrecision)
+      if(modelOutputTableVisible[[i]]){
+        callModule(renderData, paste0("table-out_", i),
+                   type = "datatable",
+                   data = scenData[["scen_1_"]][[i]],
+                   dtOptions = configGraphsOut[[i]]$datatable,
+                   roundPrecision = roundPrecision)
+        dynamicUILoaded[["outputTables"]][i] <<- TRUE
+      }
     }, error = function(e) {
       flog.error("Problems rendering output charts/tables of dataset: '%s'. Error message: %s.", modelOutAlias[i], e)
       errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderTable$desc, modelOutAlias[i]), sep = "\n")

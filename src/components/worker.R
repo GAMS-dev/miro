@@ -17,7 +17,7 @@ Worker <- R6Class("Worker", public = list(
   },
   logout = function(){
     private$metadata$url       <- ""
-    private$metadata$username  <- private$metadata$uid
+    private$metadata$username  <- ""
     private$metadata$password  <- ""
     private$metadata$namespace <- ""
     private$metadata$useRegistered <- FALSE

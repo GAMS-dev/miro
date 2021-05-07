@@ -304,19 +304,7 @@ if(buildUI){
                                }),
                                tags$div(id = paste0("graph-in_", i), class = "render-output", 
                                         style = paste0("padding:1px;display:none;", if(!is.null(configGraphsIn[[i]]$height)) 
-                                          sprintf("min-height: %s;", addCssDim(configGraphsIn[[i]]$height, 5))),
-                                        tryCatch({
-                                          renderDataUI(paste0("in_", i), type = configGraphsIn[[i]]$outType, 
-                                                       graphTool = configGraphsIn[[i]]$graph$tool, 
-                                                       customOptions = configGraphsIn[[i]]$options,
-                                                       filterOptions = configGraphsIn[[i]]$graph$filter,
-                                                       height = configGraphsIn[[i]]$height,
-                                                       createdDynamically = TRUE)
-                                        }, error = function(e) {
-                                          flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
-                                          errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
-                                          showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
-                                        })
+                                          sprintf("min-height: %s;", addCssDim(configGraphsIn[[i]]$height, 5)))
                                ))
                            }
       )
@@ -590,14 +578,7 @@ if(buildUI){
                                 filterOptions = configGraphsOut[[i]]$graph$filter,
                                 height = configGraphsOut[[i]]$height)
           ),
-          tags$div(id = paste0("data-out_", i), class = "render-output", style = "display:none;",{
-            tryCatch({
-              renderDataUI(paste0("table-out_",i), type = "datatable")
-            }, error = function(e) {
-              flog.error(paste0(sprintf(lang$errMsg$renderTable$desc, name), e))
-              eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderTable$desc, name), sep = "\n")
-            })
-          })
+          tags$div(id = paste0("data-out_", i), class = "render-output", style = "display:none;")
         )
         if(length(outputTabTitles[[tabId]]) > 1L){
           titleId <- match(i, outputTabs[[tabId]]) + 1L
@@ -747,9 +728,11 @@ if(buildUI){
 {throwOnError:false,delimiters:[{left:'$$',right:'$$',display:true},{left: '$',right:'$',display:false}]});")
           )
         },
+        tags$meta(name = "color-scheme",
+                  content = if(identical(config$theme, "browser")) "dark light" else "normal"),
         tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
-        tags$script(src = "miro.js", type = "application/javascript"),
-        # css sheets that depend on data from config JSON file
+        tags$script(`defer src` = "miro.js", type = "application/javascript"),
+        # styles that depend on data from config JSON file
         # Logo ratio should be 4,6 (width/height)
         tags$style(HTML(
           paste0('
