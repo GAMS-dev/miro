@@ -69,6 +69,7 @@ createTestDb <- function(dbPath = file.path(getwd(), "..", "testdb")){
                            password = Sys.getenv("MIRO_DB_PASSWORD"),
                            bigint = "integer")
     on.exit(DBI::dbDisconnect(conn))
+    DBI::dbExecute(conn, DBI::SQL("SET client_min_messages TO WARNING;"))
     DBI::dbExecute(conn, DBI::SQL("DROP SCHEMA IF EXISTS mirotests CASCADE;"))
     DBI::dbExecute(conn, DBI::SQL("CREATE SCHEMA mirotests;"))
     DBI::dbExecute(conn, DBI::SQL(paste0("GRANT ALL ON SCHEMA mirotests TO ",

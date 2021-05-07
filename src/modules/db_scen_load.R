@@ -383,7 +383,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       }
       if(length(sidsToLoadVector)){
         scenDataTmp <- append(db$loadScenarios(sidsToLoadVector, 
-                                               msgProgress = lang$progressBar$loadScenDb),
+                                               msgProgress = lang$progressBar$loadScenDb,
+                                               isHcJobConfig = LAUNCHHCUBEMODE && isInSolveMode),
                               scenDataTmp, sandboxId - 1)
         scriptDataTmp <- append(db$loadScriptResults(sidsToLoadVector,
                                                      msgProgress = lang$progressBar$loadScenDb),

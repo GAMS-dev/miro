@@ -442,6 +442,7 @@ if(buildUI){
                              )
                     ),
                     genSpinner(id = "hyperQueryLoad", hidden = TRUE, absolute = FALSE),
+                    tags$div(id = "queryBuilderError", class = "gmsalert gmsalert-error"),
                     tags$div(style = "min-height: 80px;", dataTableOutput("hcubeLoadResults")),
                     tags$div(id = "hcubeLoadNoData", 
                              style = "text-align:center;font-size:16px;font-weight:bold;margin:20px;display:none;",
@@ -458,12 +459,6 @@ if(buildUI){
                                       )
                              ),
                              tags$div(class = "col-sm-6", style = "text-align:right;",
-                                      tags$div(id = "showHashOnlyOne", class = "gmsalert gmsalert-error", style = "bottom:10%;",
-                                               lang$nav$hcubeLoad$msgOnlyOneHash),
-                                      tags$div(id = "showNoHashError", class = "gmsalert gmsalert-error", style = "bottom:10%;",
-                                               lang$nav$hcubeLoad$msgNoHashFound),
-                                      tags$div(id = "showHashError", class = "gmsalert gmsalert-error", style = "bottom:10%;",
-                                               lang$errMsg$unknownError),
                                       actionButton("btShowHash",
                                                    lang$nav$hcubeLoad$showHashButton)
                              )
