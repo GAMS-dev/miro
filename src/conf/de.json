@@ -487,7 +487,7 @@
     },
     "dialogDownloadTmp":{
       "title": "Temporäre Dateien laden",
-      "desc": "Wählen Sie die zu ladende Datei aus",
+      "desc": "Wählen Sie die zu ladenden Dateien aus",
       "noFiles": "Es konnten keine Dateien gefunden werden",
       "downloadAllButton":"Alle Dateien herunterladen",
       "downloadButton":"Herunterladen",

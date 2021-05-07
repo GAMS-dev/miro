@@ -487,7 +487,7 @@
     },
     "dialogDownloadTmp":{
       "title": "Download temporary files",
-      "desc": "Select the file you wish to download",
+      "desc": "Select the file(s) you wish to download",
       "noFiles": "No files found",
       "downloadAllButton":"Download all",
       "downloadButton":"Download",
