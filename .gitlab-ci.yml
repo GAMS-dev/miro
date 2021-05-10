@@ -58,3 +58,4 @@ update_doc_job:
   rules:
     - when: manual
     - allow_failure: true
+  needs: []
