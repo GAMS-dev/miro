@@ -64,6 +64,9 @@ expect_symbols_in_gdx <- function(app, id, symNames){
   tempFiles <- file.path(tempdir(check = TRUE), "shinytest-download.gdx")
   on.exit(unlink(tempFiles))
   writeBin(req$content, tempFiles)
+  gdxrrwMIRO::igdx(file.path(.libPaths()[1], "gdxrrwMIRO", 
+                             if(identical(tolower(Sys.info()[["sysname"]]), "windows")) 
+                               file.path("bin", "x64") else "bin"), silent = TRUE, returnStr = FALSE)
   symInGdx <- gdxrrwMIRO::gdxInfo(tempFiles, returnList = TRUE, dump = FALSE)
   symInGdx <- c(symInGdx$sets, symInGdx$parameters, symInGdx$variables, symInGdx$equations)
   expect_identical(length(symInGdx), length(symNames))
