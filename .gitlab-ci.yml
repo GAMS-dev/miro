@@ -55,6 +55,7 @@ update_doc_job:
     - chmod 700 ~/.ssh
   script:
     - rsync -rlptvz -e "ssh -o StrictHostKeyChecking=no" doc/* ubuntu@new.gams.com:/var/www/html/staging.gams.com/public_html/miro
-  when: manual
-  allow_failure: true
+  rules:
+    - when: manual
+    - allow_failure: true
   needs: []
