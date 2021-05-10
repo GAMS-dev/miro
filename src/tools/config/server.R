@@ -125,6 +125,9 @@ server_admin <- function(input, output, session){
   observe(isInDarkMode <<- isTRUE(input$isInDarkMode))
 
   xlsio <- XlsIO$new()
+  scenData <- ScenData$new(db = db,
+                           scenDataTemplate = scenDataTemplate,
+                           hiddenOutputScalars = config$hiddenOutputScalars)
   session$sendCustomMessage("gms-setGAMSSymbols", 
                             list(gamsSymbols = list(inSym = unname(inputSymMultiDim), 
                                                     inAlias = names(inputSymMultiDim),

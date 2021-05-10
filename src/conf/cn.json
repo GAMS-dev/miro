@@ -95,6 +95,7 @@
     "scen":{
       "noScen":"未选择任何场景",
       "btLoad": "加载",
+      "btCloseAll": "关闭所有",
       "scenNameSandboxSuffix": "(沙盒)",
       "tooltips":{
         "btExport":"导出场景",
@@ -353,6 +354,12 @@
       "cancelButton": "否",
       "okButton": "是"
     },
+    "dialogCloseAllScen":{
+      "title":"关闭所有场景",
+      "desc":"您确定要关闭所场景？",
+      "cancelButton":"否",
+      "okButton":"是"
+    },
     "dialogExistingOutput":{
       "title":"已存在输出数据",
       "desc":"要保存的场景包含与当前输入数据不对应的输出数据，丢弃该输出数据？",
@@ -489,7 +496,7 @@
       "title":"下载临时文件",
       "desc":"选择要下载的文件",
       "noFiles":"未找到文件",
-      "downloadZipButton":"全部下载为zip文件",
+      "downloadAllButton":"全部下载",
       "downloadButton":"下载",
       "cancelButton": "取消"
     },
@@ -982,7 +989,8 @@
     },
     "loadScen":{
       "title":"加载场景时出错",
-      "desc":"加载所选场景时出现错误。"
+      "desc":"加载所选场景时出现错误。",
+      "inconsistentDataWarning": "在您查看场景时，该场景已更改。 因此，数据可能不一致。 您可能要刷新方案。"
     },
     "deleteScen":{
       "title":"删除场景时出错",

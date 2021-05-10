@@ -40,6 +40,7 @@ generateData <- function(input, output, session, data, type,
                       path = customRendererDir, rendererEnv = rendererEnv, views = views, 
                       attachments = attachments))
   }, error = function(e){
-    stop(sprintf("An error occured in the custom generator function: '%s'. Error message: %s.", typeCustom, e), call. = FALSE)
+    stop(sprintf("An error occured in the custom generator function: '%s'. Error message: %s.",
+                 typeCustom, conditionMessage(e)), call. = FALSE)
   })
 }

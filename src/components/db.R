@@ -58,7 +58,8 @@ Db <- R6Class("Db",
                                                      user = dbConf$username, password = dbConf$password,
                                                      bigint = "integer")
                     }, error = function(e){
-                      stop(sprintf("Db: Database connection could not be established. Error message: %s", e), 
+                      stop(sprintf("Db: Database connection could not be established. Error message: %s",
+                                   conditionMessage(e)), 
                            call. = FALSE)
                     })
                     private$connectionInfo <- list(loc = paste0(dbConf$host, ":", dbConf$port),
@@ -85,7 +86,8 @@ Db <- R6Class("Db",
                       # turn foreign key usage on
                       self$runQuery("PRAGMA foreign_keys = ON;")
                     }, error = function(e){
-                      stop(sprintf("Db: Database connection could not be established. Error message: %s", e), 
+                      stop(sprintf("Db: Database connection could not be established. Error message: %s",
+                                   conditionMessage(e)), 
                            call. = FALSE)
                     })
                     private$connectionInfo <- list(loc = dbConf$name,
@@ -261,59 +263,7 @@ Db <- R6Class("Db",
                     return(0L)
                   }
                 },
-                loadScenarios = function(sids, limit = 1e7, msgProgress = NULL,
-                                         symToFetch = NULL, isHcJobConfig = TRUE){
-                  # Load multiple scenarios from database
-                  #
-                  # Args:
-                  #   sids:             scenario IDs to load 
-                  #   limit:            maxmimum number of rows to fetch per dataset
-                  #   msgProgress:      title and progress info for the progress bar
-                  #   symToFetch:       symbols to fetch (optional)
-                  #   isHcJobConfig:    boolean that indicates whether scenario to load is
-                  #                     Hypercube Mode job configuration (optional)
-                  #
-                  # Returns:
-                  #   list of scenario datasets
-                  
-                  #BEGIN error checks 
-                  sids <- suppressWarnings(as.integer(sids))
-                  stopifnot(!any(is.na(sids)), length(sids) >= 1)
-                  stopifnot(is.numeric(limit), length(limit) == 1)
-                  #END error checks
-                  
-                  #initialize progress bar
-                  if(is.null(symToFetch)){
-                    symToFetch <- dbSchema$getAllSymbols()
-                  }
-                  if(!is.null(msgProgress)){
-                    prog <- Progress$new()
-                    on.exit(prog$close())
-                    prog$set(message = msgProgress$title, value = 0)
-                    incAmount <- 1/(length(sids) * length(symToFetch))
-                    updateProgress <- function(detail = NULL) {
-                      prog$inc(amount = incAmount, detail = detail)
-                    }
-                  }
-                  scenData <- lapply(seq_along(sids), function(i){
-                    lapply(symToFetch, function(symName){
-                            if(private$hcubeActive && isHcJobConfig
-                               && identical(symName, scalarsFileName)){
-                                    symName <- "_hc__scalars"
-                            }
-                      dataset <- self$importDataset(tableName = symName, 
-                                                    subsetSids = sids[i],
-                                                    limit = limit)
-                      dataset[, "_sid"] <- NULL
-                      if(!is.null(msgProgress)){
-                        updateProgress(detail = paste0(msgProgress$progress, i))
-                      }
-                      return(dataset)
-                    })
-                  })
-                  return(scenData)
-                },
-                loadScriptResults = function(sids, limit = 1e7, msgProgress){
+                loadScriptResults = function(sids, limit = 1e7, msgProgress = NULL){
                   # Load script results from database
                   #
                   # Args:
@@ -328,23 +278,27 @@ Db <- R6Class("Db",
                   sids <- suppressWarnings(as.integer(sids))
                   stopifnot(!any(is.na(sids)), length(sids) >= 1)
                   stopifnot(is.numeric(limit), length(limit) == 1)
-                  stopifnot(is.character(msgProgress$title), length(msgProgress$title) == 1)
-                  stopifnot(is.character(msgProgress$progress), length(msgProgress$progress) == 1)
                   #END error checks
                   
                   #initialize progress bar
-                  prog <- Progress$new()
-                  on.exit(prog$close())
-                  prog$set(message = msgProgress$title, value = 0)
-                  incAmount <- 1/length(sids)
-                  updateProgress <- function(detail = NULL) {
-                    prog$inc(amount = incAmount, detail = detail)
+                  if(!is.null(msgProgress)){
+                          stopifnot(is.character(msgProgress$title), length(msgProgress$title) == 1)
+                          stopifnot(is.character(msgProgress$progress), length(msgProgress$progress) == 1)
+                          prog <- Progress$new()
+                          on.exit(prog$close())
+                          prog$set(message = msgProgress$title, value = 0)
+                          incAmount <- 1/length(sids)
+                          updateProgress <- function(detail = NULL) {
+                                  prog$inc(amount = incAmount, detail = detail)
+                          }
                   }
                   scriptData <- lapply(seq_along(sids), function(i){
                     dataset <- self$importDataset(tableName = "_scenScripts", 
                                                   subsetSids = sids[i], limit = limit)
                     dataset[, "_sid"] <- NULL
-                    updateProgress(detail = paste0(msgProgress$progress, i))
+                    if(!is.null(msgProgress)){
+                            updateProgress(detail = paste0(msgProgress$progress, i))
+                    }
                     return(dataset)
                   })
                   return(scriptData)
@@ -705,7 +659,7 @@ Db <- R6Class("Db",
                     }, error = function(e){
                       stop(sprintf("Db: An error occurred while querying the database (Db.importDataset, " %+%
                                      "table: '%s'). Error message: %s.",
-                                   tableNameDb, e), call. = FALSE)
+                                   tableNameDb, conditionMessage(e)), call. = FALSE)
                     })
                   }
                   if(tableName %in% c(scalarsFileName, scalarsOutName)){
@@ -768,9 +722,8 @@ Db <- R6Class("Db",
                           flog.debug("Db: Data was added to table: '%s' (Db.exportScenDataset).", 
                                      tableNameDb)
                   }, error = function(e){
-                          stop(sprintf("Db: An error occurred writing to database (Db.exportScenDataset, 
-               table: '%s'). Error message: %s", tableNameDb, e),
-               call. = FALSE)
+                          stop(sprintf("Db: An error occurred writing to database (Db.exportScenDataset, table: '%s'). Error message: %s",
+                                       tableNameDb, conditionMessage(e)), call. = FALSE)
                   })
                   invisible(self)
                 },

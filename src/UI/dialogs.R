@@ -95,7 +95,7 @@ showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm",
     ),
     tags$div(id = "badScenarioName", class = "gmsalert gmsalert-error", 
              lang$nav[[modeDescriptor]]$badName),
-    tags$div(id = "scenarioExits", class = "err-msg", style = "display:none;", 
+    tags$div(id = "scenarioExists", class = "err-msg", style = "display:none;", 
              lang$nav[[modeDescriptor]]$scenExists),
     footer = tagList(
       tags$div(id = "dialogSaveInit",
@@ -181,10 +181,10 @@ getLoadDbPanel <- function(id, title, scenList, tagList, iconName, modeDescripto
     tags$div(
       lang$nav$dialogLoadScen$sortBy,
       actionButton("btSortName" %+% suffixInputs, label = lang$nav$dialogLoadScen$btSortNameASC, 
-                   icon = icon("sort-by-alphabet", lib = "glyphicon"), 
+                   icon = icon("sort-alpha-down"), 
                    class = "scen-sort-by"), 
       actionButton("btSortTime" %+% suffixInputs, label = lang$nav$dialogLoadScen$btSortTimeASC, 
-                   icon = icon("sort-by-order", lib = "glyphicon"), 
+                   icon = icon("sort-numeric-down"), 
                    class = "scen-sort-by scen-sort-by-selected")
     ),
     tags$div(class = "small-space"),
@@ -493,10 +493,10 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
                            tags$div(
                              lang$nav$dialogLoadScen$sortBy,
                              actionButton("btSortName", label = lang$nav$dialogLoadScen$btSortNameASC, 
-                                          icon = icon("sort-by-alphabet", lib = "glyphicon"), 
+                                          icon = icon("sort-alpha-down"), 
                                           class = "scen-sort-by"), 
                              actionButton("btSortTime", label = lang$nav$dialogLoadScen$btSortTimeASC, 
-                                          icon = icon("sort-by-order", lib = "glyphicon"), 
+                                          icon = icon("sort-numeric-down"), 
                                           class = "scen-sort-by scen-sort-by-selected")
                            )
     )

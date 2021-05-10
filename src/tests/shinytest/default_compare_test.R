@@ -15,7 +15,8 @@ app$snapshotInit("default_compare_test")
 app$findElement('a[data-value="scenarios"]')$click()
 expect_error(app$findElements(".scenSplit-button-load")[[2]]$click(), NA)
 Sys.sleep(2L)
-app$snapshot(items = list(output = c("title_2", "title_3")), screenshot = TRUE)
+expect_true(app$waitFor("$('#cmpScenTitle_2').text()==='New Scenario (Sandbox)';", timeout = 50))
+app$snapshot(items = list(output = c("inputDataTitle")), screenshot = TRUE)
 app$stop()
 
 # default = tab view

@@ -1,7 +1,50 @@
-/* global $:false HTMLWidgets:false */
+/* global $:false HTMLWidgets:false Chart:false */
 
 export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export class LoadingScreen {
+  constructor() {
+    this.activeCount = 0;
+  }
+
+  show(delay) {
+    this.activeCount += 1;
+    setTimeout(() => {
+      if (this.activeCount > 0) {
+        $('#loading-screen').show();
+      }
+    }, delay);
+  }
+
+  hide() {
+    if (this.activeCount === 0) {
+      return;
+    }
+    this.activeCount -= 1;
+    if (this.activeCount === 0) {
+      $('#loading-screen').hide();
+    }
+  }
+}
+
+function changeChartjsTheme(dark = false) {
+  if (typeof Chart === 'undefined') {
+    return;
+  }
+  if (dark) {
+    Chart.defaults.color = 'white';
+  } else {
+    Chart.defaults.color = '#666';
+  }
+  Chart.helpers.each(Chart.instances, (instance) => {
+    instance.update();
+  });
+}
+
+export function changeTheme(dark = false) {
+  changeChartjsTheme(dark);
 }
 
 export function changeActiveButtons(tabId) {

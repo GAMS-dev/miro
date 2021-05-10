@@ -4,7 +4,7 @@ observe({
     return(hideEl(session, "#btSymbolLink"))
   }
   if(length(outputTabTitles[[i]]) > 1L){
-    j <- as.integer(strsplit(input[[paste0("outputTabset", i)]], "_")[[1]][2])
+    j <- as.integer(strsplit(input[[paste0("outputTabset_", i)]], "_")[[1]][3])
     i <- outputTabs[[i]][j]
   }else{
     i <- outputTabs[[i]][1]
@@ -25,7 +25,7 @@ observeEvent(input$btSymbolLink, {
   }
   i <- as.integer(strsplit(input$outputTabset, "_")[[1]][2])
   if(length(outputTabs[[i]]) > 1L){
-    j <- as.integer(strsplit(input[[paste0("outputTabset", i)]], "_")[[1]][2])
+    j <- as.integer(strsplit(input[[paste0("outputTabset_", i)]], "_")[[1]][3])
     i <- outputTabs[[i]][j]
   }else{
     i <- outputTabs[[i]][1]
@@ -44,7 +44,7 @@ observeEvent(input$btSymbolLink, {
   loadMode  <-  "scen"
   newInputCount <- 0L
   
-  scenInputData <- scenData[["scen_1_"]][[i]]
+  scenInputData <- scenData$get("sb", names(modelOut)[i], drop = TRUE)
   inputId <- match(modelOut[[i]]$symbolLink, names(modelIn))
   names(scenInputData) <- names(modelIn[[inputId]]$headers)
   scenInputData <- list(scenInputData)

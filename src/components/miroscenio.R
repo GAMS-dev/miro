@@ -66,6 +66,44 @@ validateMiroScen <- function(path) {
   }
   return(invisible(TRUE))
 }
+loadMiroScenMeta <- function(path, activeScen, attachments, views, inputNames, zipPath = NULL){
+  metadata <- suppressWarnings(fromJSON(file.path(path, "metadata.json"),
+                                        simplifyDataFrame = TRUE, simplifyVector = FALSE))
+  dfClArgs <- NULL
+  if(length(metadata[["cl_args"]])){
+    dfClArgs <- as_tibble(metadata[["cl_args"]]) %>% add_column(description = "", .after = 1)
+    clArgIds <- match(dfClArgs[[1]], inputNames)
+    if(any(is.na(clArgIds))){
+      flog.info("Command line argument(s): '%s' found in miroscen file is not part of app configuration. They were ignored.",
+                dfClArgs[[1]][is.na(clArgIds)])
+      dfClArgs <- dfClArgs[!is.na(clArgIds), ]
+    }
+  }
+  activeScen$updateMetadata(newName = as.character(metadata[["scen_name"]]),
+                            newTags = csv2Vector(as.character(metadata[["scen_tags"]])))
+  views$addConf(safeFromJSON(read_file(file.path(path, "views.json")),
+                             simplifyDataFrame = FALSE, simplifyVector = FALSE))
+  if(length(metadata[["attachments"]])){
+    attachmentMetadata <- as_tibble(metadata[["attachments"]])
+    if(length(attachmentMetadata[[1]])){
+      if(length(zipPath)){
+        if(!dir.create(file.path(path, "attachments"))){
+          stop(sprintf("Could not create (temporary) directory: %s", file.path(path, "attachments")),
+               call. = FALSE)
+        }
+        unzip(zipPath, files = paste0("attachments/", attachmentMetadata[[1]]),
+              junkpaths = TRUE, exdir = file.path(path, "attachments"))
+      }
+      if(is.symlink(file.path(path, "attachments", attachmentMetadata[[1]]))){
+        stop_custom("error_symlinks", "Symlinks detected in miroscen file.", call. = FALSE)
+      }
+      attachments$add(NULL, file.path(path, "attachments", attachmentMetadata[[1]]),
+                      fileNames = attachmentMetadata[[1]],
+                      execPerm = as.logical(attachmentMetadata[[2]]))
+    }
+  }
+  return(dfClArgs)
+}
 loadMiroScen <- function(path, activeScen, attachments, views, inputNames, exdir = NULL) {
   tmpd <- file.path(tempdir(check = TRUE), "miroscen")
   if(file.exists(tmpd) &&
@@ -81,39 +119,7 @@ loadMiroScen <- function(path, activeScen, attachments, views, inputNames, exdir
   if(is.symlink(file.path(tmpd, c("metadata.json", "views.json", "data.gdx")))){
     stop_custom("error_symlinks", "Symlinks detected in miroscen file.", call. = FALSE)
   }
-  metadata <- suppressWarnings(fromJSON(file.path(tmpd, "metadata.json"),
-                                        simplifyDataFrame = TRUE, simplifyVector = FALSE))
-  dfClArgs <- NULL
-  if(length(metadata[["cl_args"]])){
-    dfClArgs <- as_tibble(metadata[["cl_args"]]) %>% add_column(description = "", .after = 1)
-    clArgIds <- match(dfClArgs[[1]], inputNames)
-    if(any(is.na(clArgIds))){
-      flog.info("Command line argument(s): '%s' found in miroscen file is not part of app configuration. They were ignored.",
-                dfClArgs[[1]][is.na(clArgIds)])
-      dfClArgs <- dfClArgs[!is.na(clArgIds), ]
-    }
-  }
-  activeScen$updateMetadata(newName = as.character(metadata[["scen_name"]]),
-                            newTags = csv2Vector(as.character(metadata[["scen_tags"]])))
-  views$addConf(safeFromJSON(read_file(file.path(tmpd, "views.json")),
-                             simplifyDataFrame = FALSE, simplifyVector = FALSE))
-  if(length(metadata[["attachments"]])){
-    attachmentMetadata <- as_tibble(metadata[["attachments"]])
-    if(length(attachmentMetadata[[1]])){
-      if(!dir.create(file.path(tmpd, "attachments"))){
-        stop(sprintf("Could not create (temporary) directory: %s", file.path(tmpd, "attachments")),
-             call. = FALSE)
-      }
-      unzip(path, files = paste0("attachments/", attachmentMetadata[[1]]),
-            junkpaths = TRUE, exdir = file.path(tmpd, "attachments"))
-      if(is.symlink(file.path(tmpd, "attachments", attachmentMetadata[[1]]))){
-        stop_custom("error_symlinks", "Symlinks detected in miroscen file.", call. = FALSE)
-      }
-      attachments$add(NULL, file.path(tmpd, "attachments", attachmentMetadata[[1]]),
-                      fileNames = attachmentMetadata[[1]],
-                      execPerm = as.logical(attachmentMetadata[[2]]))
-    }
-  }
+  dfClArgs <- loadMiroScenMeta(tmpd, activeScen, attachments, views, inputNames, zipPath = path)
   if(file.exists(file.path(dirname(path), "data.gdx")) &&
      !identical(unlink(file.path(dirname(path), "data.gdx"), force = TRUE), 0L)){
     stop_custom("error_os", sprintf("Could not remove file: '%s'.", file.path(dirname(path), "data.gdx")),
@@ -131,6 +137,33 @@ loadMiroScen <- function(path, activeScen, attachments, views, inputNames, exdir
   }
   return(dfClArgs)
 }
+generateMiroScenMeta <- function(path, metadata, attachments, views,
+                                 scenId = NULL, clArgs = character(0L), jobName = NULL){
+  if(!dir.create(file.path(path, "attachments"))){
+    stop(sprintf("Could not create (temporary) directory: %s", path), call. = FALSE)
+  }
+  scenId <- if(length(scenId) && scenId != 1L) metadata[[1]][1]
+  attachmentMetadata <- attachments$getMetadata(scenId)
+  if(length(attachmentMetadata) && length(attachmentMetadata[[1]])){
+    if(length(attachments$download(file.path(path, "attachments"),
+                                   attachmentMetadata[[1]],
+                                   scenId = scenId)) != length(attachmentMetadata[[1]])){
+      stop("Unexpected error occurred while downloading attachments.", call. = FALSE)
+    }
+  }
+  metadataContent <- list(version = 1L, scen_name = if(is.null(jobName)) metadata[[3]][1] else jobName,
+                          scen_tags = metadata[[5]][1],
+                          cl_args = clArgs,
+                          attachments = attachmentMetadata, model = modelName,
+                          model_raw = modelNameRaw,
+                          uid = metadata[[2]][1], last_modified = metadata[[4]][1],
+                          time_created = as.character(Sys.time(),
+                                                      usetz = TRUE, tz = "GMT"))
+  write_json(metadataContent, file.path(path, "metadata.json"),
+             auto_unbox = TRUE, null = "null")
+  write_file(views$getJSON(NULL, if(length(scenId)) scenId else "1"),
+             file.path(path, "views.json"))
+}
 generateMiroScen <- function(path, metadata, data, attachments, views, scenId = NULL) {
   tmpd <- file.path(tempdir(check = TRUE), "miroscen")
   if(file.exists(tmpd) &&
@@ -141,36 +174,14 @@ generateMiroScen <- function(path, metadata, data, attachments, views, scenId = 
     stop(sprintf("Could not create (temporary) directory: %s", tmpd), call. = FALSE)
   }
   #on.exit(unlink(tmpd, recursive = TRUE, force = TRUE))
-  if(!dir.create(file.path(tmpd, "attachments"))){
-    stop(sprintf("Could not create (temporary) directory: %s", tmpd), call. = FALSE)
-  }
   if(scalarsFileName %in% names(data)){
     clArgs <- filter(data[[scalarsFileName]], startsWith(scalar, "_")) %>%
       select(scalar, value)
   }else{
     clArgs <- character()
   }
-  scenId <- if(length(scenId) && scenId != 1L) metadata[[1]][1]
-  attachmentMetadata <- attachments$getMetadata(scenId)
-  if(length(attachmentMetadata) && length(attachmentMetadata[[1]])){
-    if(length(attachments$download(file.path(tmpd, "attachments"),
-                                   attachmentMetadata[[1]],
-                                   scenId = scenId)) != length(attachmentMetadata[[1]])){
-      stop("Unexpected error occurred while downloading attachments.", call. = FALSE)
-    }
-  }
-  metadataContent <- list(version = 1L, scen_name = metadata[[3]][1],
-                          scen_tags = metadata[[5]][1],
-                          cl_args = clArgs,
-                          attachments = attachmentMetadata, model = modelName,
-                          model_raw = modelNameRaw,
-                          uid = metadata[[2]][1], last_modified = metadata[[4]][1],
-                          time_created = as.character(Sys.time(),
-                                                      usetz = TRUE, tz = "GMT"))
-  write_json(metadataContent, file.path(tmpd, "metadata.json"),
-             auto_unbox = TRUE, null = "null")
-  write_file(views$getJSON(NULL, if(length(scenId)) scenId else "1"),
-             file.path(tmpd, "views.json"))
+  generateMiroScenMeta(tmpd, metadata, attachments, views, scenId, clArgs)
+  
   gdxio$wgdx(file.path(tmpd, "data.gdx"), data, squeezeZeros = "n")
   return(zipMiro(path, files = c("metadata.json", "data.gdx",
                                  "views.json", "attachments"),

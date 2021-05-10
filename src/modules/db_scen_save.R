@@ -66,7 +66,7 @@ observeEvent(virtualActionButton(rv$btSaveAs), {
 })
 
 observeEvent(input$btNewName, {
-  hideEl(session, "#scenarioExits")
+  hideEl(session, "#scenarioExists")
   showEl(session, "#scenNameWrapper")
   showEl(session, "#dialogSaveInit")
   hideEl(session, "#dialogSaveConfirm")
@@ -92,14 +92,15 @@ observeEvent(input$btCheckName, {
         scenExists <- FALSE
       }
     }, error = function(e){
-      flog.error("Some error occurred while checking whether scenario: '%s' exists. Error message: '%s'.", scenName, e)
+      flog.error("Some error occurred while checking whether scenario: '%s' exists. Error message: '%s'.",
+                 scenName, conditionMessage(e))
       errMsg <<- lang$errMsg$fetchScenData$desc
     })
     if(is.null(showErrorMsg(lang$errMsg$fetchScenData$title, errMsg))){
       return()
     }
     if(scenExists){
-      showEl(session, "#scenarioExits")
+      showEl(session, "#scenarioExists")
       hideEl(session, "#scenNameWrapper")
       hideEl(session, "#dialogSaveInit")
       showEl(session, "#dialogSaveConfirm")
@@ -124,7 +125,8 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
         return(NULL)
       }
     }, error = function(e){
-      flog.error("Problems while trying to determine whether scenario is readonly or locked. Error message: %s.", e)
+      flog.error("Problems while trying to determine whether scenario is readonly or locked. Error message: %s.",
+                 conditionMessage(e))
       errMsg <<- lang$errMsg$lockScen$desc
     })
     if(is.null(showErrorMsg(lang$errMsg$lockScen$title, errMsg))){
@@ -132,13 +134,26 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
     }
   }
   
-  source("./modules/scen_save.R", local = TRUE)
-  if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
-    return(NULL)
+  if(tryCatch({
+    if(!saveOutput){
+      scenData$clearSandbox()
+    }
+    scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE),
+                         modelInFileNames, activeScen$getMetadata())
+    FALSE
+  }, no_data = function(e){
+    flog.error(conditionMessage(e))
+    showErrorMsg(lang$errMsg$GAMSInput$title, conditionMessage(e))
+    return(TRUE)
+  }, error = function(e){
+    flog.error("Unexpected error while fetching input data from sandbox. Error message: '%s'", conditionMessage(e))
+    showErrorMsg(lang$errMsg$GAMSInput$title, lang$errMsg$unknownError)
+    return(TRUE)
+  })){
+    return()
   }
   removeModal()
   # save to database
-  scenStr <- "scen_1_"
   duplicatedMetadata <- NULL
   tryCatch({
     if(saveAsFlag){
@@ -176,7 +191,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
                                   views = views, attachments = attachments)
       scenTags   <<- NULL
     }
-    activeScen$save(scenData[[scenStr]], msgProgress = lang$progressBar$saveScenDb)
+    activeScen$save(scenData$get("sb"), msgProgress = lang$progressBar$saveScenDb)
     if(saveOutput){
       if(config$saveTraceFile && length(traceData)){
         activeScen$saveTraceData(traceData)
@@ -185,7 +200,6 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
         activeScen$saveScriptResults(scriptOutput$getResults())
       }
     }
-    scenMetaData[["scen_1_"]] <<- activeScen$getMetadata()
     flog.debug("%s: Scenario saved to database (Scenario: %s).", uid, activeScen$getScenName())
   }, error = function(e) {
     flog.error("Some error occurred saving scenario to database. Error message: %s.",
@@ -196,15 +210,14 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
     return(NULL)
   }
   # check whether output data was saved and in case it was set identifier accordingly
-  if(!LAUNCHHCUBEMODE && any(vapply(scenData[[scenStr]][seq_along(modelOut)], 
-                                    hasContent, logical(1L), USE.NAMES = FALSE))){
+  if(!LAUNCHHCUBEMODE && scenData$getSandboxHasOutputData()){
     noOutputData <<- FALSE
   }else{
     noOutputData <<- TRUE
   }
   if(!saveOutput){
     # remove output from UI
-    renderOutputData(rendererEnv, views)
+    renderOutputData()
   }
   
   # reset dirty flag and unsaved status
@@ -254,7 +267,7 @@ observeEvent(input$btUpdateMeta, {
       }
     }, error = function(e){
       flog.error("Some error occurred while checking whether scenario: '%s' exists. Error message: '%s'.", 
-                 scenName, e)
+                 scenName, conditionMessage(e))
       errMsg <<- lang$errMsg$fetchScenData$desc
     })
     if(!is.null(errMsg)){
@@ -316,11 +329,10 @@ observeEvent(input$btUpdateMeta, {
       activeScen$updateMetadata(scenName, isolate(input$editMetaTags), 
                                 newReadPerm, newWritePerm, newExecPerm)
       rv$activeSname <- scenName
-      scenMetaData[["scen_1_"]] <<- activeScen$getMetadata()
       markUnsaved()
       removeModal()
     }, error = function(e){
-      flog.error("Problems updating scenario metadata. Error message: %s.", e)
+      flog.error("Problems updating scenario metadata. Error message: %s.", conditionMessage(e))
       errMsg <<- character(1L)
     })
     if(!is.null(errMsg)){

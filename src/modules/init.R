@@ -817,7 +817,8 @@ if(is.null(errMsg)){
                }
              }, error = function(e){
                errMsg <<- paste(errMsg, paste0("'", modelInAlias[i], 
-                                               "' has no valid input type defined. Error message: ", e), sep = "\n")
+                                               "' has no valid input type defined. Error message: ",
+                                               conditionMessage(e)), sep = "\n")
              })
              if(!is.null(errMsg)){
                if(LAUNCHCONFIGMODE){
@@ -941,7 +942,8 @@ if(is.null(errMsg)){
                }
              }, error = function(e){
                errMsg <<- paste(errMsg,paste0("'", modelInAlias[i], 
-                                              "' has no valid input type defined. Error message: ", e), sep = "\n")
+                                              "' has no valid input type defined. Error message: ",
+                                              conditionMessage(e)), sep = "\n")
              })
              return(NULL)
            },

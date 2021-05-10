@@ -4,7 +4,7 @@ observeEvent(input$btInterrupt,{
   tryCatch({
     worker$interrupt()
   }, error= function(e){
-    flog.error("Problems interrupting the GAMS process. Error message: %s.", e)
+    flog.error("Problems interrupting the GAMS process. Error message: %s.", conditionMessage(e))
     errMsg <<- lang$errMsg$gamsTerm$desc
   })
   

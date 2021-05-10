@@ -43,5 +43,5 @@ expect_true(app$waitFor("$('#in_1-miroPivot-savedViewsDD li').eq(1).children('.d
 Sys.sleep(1)
 expect_true(app$waitFor("$('#in_1-miroPivot-customError').is(':visible')", timeout = 50))
 expect_true(app$waitFor("$('#in_1-miroPivot-customError').text().includes('idontexist')", timeout = 50))
-app$snapshot(items = list(output = c("title_2")), screenshot = TRUE)
+app$snapshot(items = list(output = c("cmpScenTitle_2")), screenshot = TRUE)
 app$stop()

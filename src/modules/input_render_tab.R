@@ -156,6 +156,8 @@ observe({
 })
 observeEvent(input$btGraphIn, {
   i <- as.integer(strsplit(input$inputTabset, "_")[[1]][2])
+  showLoadingScreen(session, 500)
+  on.exit(hideLoadingScreen(session))
   if(is.na(i) || i < 1){
     return()
   }
@@ -187,7 +189,7 @@ observeEvent(input$btGraphIn, {
         data <- getInputDataset(i, visible = TRUE)
       }, error = function(e){
         flog.error("Dataset: '%s' could not be loaded. Error message: '%s'.", 
-                   modelInAlias[i], e)
+                   modelInAlias[i], conditionMessage(e))
         errMsg <<- sprintf(lang$errMsg$GAMSInput$noData, 
                            modelInAlias[i])
       })
@@ -200,7 +202,26 @@ observeEvent(input$btGraphIn, {
         return(modelInTemplate[[i]])
       })
     }
-    
+    if(!dynamicUILoaded$inputGraphs[i]){
+      tryCatch({
+        insertUI(paste0("#graph-in_", i),
+                 ui = renderDataUI(paste0("in_", i), type = configGraphsIn[[i]]$outType, 
+                                   graphTool = configGraphsIn[[i]]$graph$tool, 
+                                   customOptions = configGraphsIn[[i]]$options,
+                                   filterOptions = configGraphsIn[[i]]$graph$filter,
+                                   height = configGraphsIn[[i]]$height,
+                                   createdDynamically = TRUE),
+                 immediate = TRUE)
+        dynamicUILoaded$inputGraphs[i] <<- TRUE
+      }, error = function(e) {
+        flog.error(sprintf("Problems generating UI elements for chart for dataset: '%s'. Error message: %s.",
+                           modelInAlias[i], conditionMessage(e)))
+        errMsg <<- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
+      })
+      if(is.null(showErrorMsg(lang$errMsg$renderGraph$title, errMsg))){
+        return()
+      }
+    }
     tryCatch({
       if(is.null(rendererEnv[[paste0("in_", i)]])){
         rendererEnv[[paste0("in_", i)]] <- new.env(parent = emptyenv())
@@ -211,7 +232,7 @@ observeEvent(input$btGraphIn, {
           }
         }
       }
-      callModule(renderData, "in_" %+% i, 
+      callModule(renderData, paste0("in_", i), 
                  type = configGraphsIn[[i]]$outType, 
                  data = data,
                  dtOptions = config$datatable, 
@@ -223,7 +244,7 @@ observeEvent(input$btGraphIn, {
                  views = views, attachments = attachments)
     }, error = function(e) {
       flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", 
-                 modelInAlias[i], e)
+                 modelInAlias[i], conditionMessage(e))
       errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), sep = "\n")
     })
   })
@@ -380,10 +401,7 @@ lapply(modelInTabularData, function(sheet){
         colnames <- tabData$colnames
         tabData  <- tabData$data
       }else{
-        colnames <- attr(modelInputData[[i]], "aliases")
-        if(!length(colnames)){
-          colnames <- attr(modelInTemplate[[i]], "aliases")
-        }
+        colnames <- attr(modelInTemplate[[i]], "aliases")
       }
       
       # check for readonly columns
@@ -488,10 +506,7 @@ lapply(modelInTabularData, function(sheet){
         tabData  <- tabData$data
         tableContent[[i]] <<- tabData
       }else{
-        colnames <- attr(modelInputData[[i]], "aliases")
-        if(!length(colnames)){
-          colnames <- attr(modelInTemplate[[i]], "aliases")
-        }
+        colnames <- attr(modelInTemplate[[i]], "aliases")
       }
       tryCatch({
         dtOptions <- modifyList(config$datatable,
@@ -504,7 +519,7 @@ lapply(modelInTabularData, function(sheet){
                            roundPrecision = roundPrecision, render = FALSE)
       }, error = function(e){
         flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
-                   modelInAlias[[i]], e) 
+                   modelInAlias[[i]], conditionMessage(e)) 
         errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
       })
       if(is.null(showErrorMsg(lang$errMsg$renderTable$title, errMsg))){
@@ -532,11 +547,7 @@ lapply(modelInTabularData, function(sheet){
         colnames <- c(attr(modelInTemplate[[i]], "aliases")[-c(pivotIdx, length(modelInTemplate[[i]]))],
                       names(tableContent[[i]])[seq(noRowHeaders + 1L, length(tableContent[[i]]))])
       }else{
-        if(length(colnames)){
-          colnames <- attr(modelInputData[[i]], "aliases")
-        }else{
-          colnames <- attr(modelInTemplate[[i]], "aliases")
-        }
+        colnames <- attr(modelInTemplate[[i]], "aliases")
       }
       newRowId <- suppressWarnings(as.integer(input[[paste0("in_", i, "_rows_selected")]]))
       if(any(is.na(newRowId))){
@@ -717,7 +728,7 @@ lapply(modelInTabularData, function(sheet){
         skipObs[[i]] <<- TRUE
       }, error = function(e){
         flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
-                   modelInAlias[[i]], e)
+                   modelInAlias[[i]], conditionMessage(e))
         errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
       })
     })

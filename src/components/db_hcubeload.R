@@ -45,8 +45,6 @@ HcubeLoad <- R6Class("HcubeLoad",
                          stopifnot(!is.na(as.integer(limit)), length(limit) == 1L)
                          # END error checks
                          
-                         #private$validateSubsetList(subsetList)
-                         
                          query <- private$buildQuery(subsetList = subsetList, 
                                                      colNames = colNames, limit = limit)
                          tryCatch({

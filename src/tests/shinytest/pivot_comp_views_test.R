@@ -12,10 +12,10 @@ expect_chartjs <- function(id, data, labels){
 }
 app$snapshot(items = list(output = "inputDataTitle"), screenshot = TRUE)
 
-currentUser <- Sys.info()[["user"]]
 app$setInputs(btImport = "click")
 Sys.sleep(0.5)
-app$setInputs(selLoadScen = paste0("1_", currentUser))
+savedScen <- getSelectizeOptions(app, "#selLoadScen")
+app$setInputs(selLoadScen = savedScen[1])
 Sys.sleep(0.5)
 app$setInputs(btLoadScenConfirm = "click")
 Sys.sleep(1.5)
@@ -27,7 +27,7 @@ app$findElements(".btSplitView a[data-view='pivot']")[[1]]$click()
 Sys.sleep(0.5)
 expect_true(app$waitFor("$('.box-title:visible button').eq(0).click();true;", timeout = 50))
 Sys.sleep(1)
-app$setInputs(selLoadScen = paste0("1_", currentUser))
+app$setInputs(selLoadScen = savedScen[1])
 Sys.sleep(0.2)
 app$setInputs(btLoadScenConfirm = "click")
 Sys.sleep(1)

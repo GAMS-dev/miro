@@ -5,7 +5,10 @@ import AutoNumeric from 'autonumeric';
 import {
   sleep, changeActiveButtons, switchTabInTabset, removeModal,
   switchTab, isInputEl, rerenderDygraph, rerenderHot, showHideEl, scrollDown,
+  changeTheme, LoadingScreen,
 } from './util';
+
+const loadingScreen = new LoadingScreen();
 
 export function changeTab(object, idActive, idRefer) {
   const tabPane = object.closest('.tabbable');
@@ -219,6 +222,13 @@ export function modal(msg, okButton, cancelButton,
 }
 
 $(document).ready(() => {
+  changeTheme(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  if (typeof window.matchMedia('(prefers-color-scheme: dark)').addEventListener !== 'undefined') {
+    // browser supports listening to matchMedia change
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      changeTheme(e.matches);
+    });
+  }
   $('#toolCategories').on('click', '.category-btn', function () {
     const catId = this.dataset.cat;
     const catBody = $(`.cat-body-${catId}`);
@@ -364,6 +374,12 @@ $(document).ready(() => {
   });
   Shiny.addCustomMessageHandler('gms-setAttrib', (data) => {
     $(data.selector).attr(data.attr, data.val);
+  });
+  Shiny.addCustomMessageHandler('gms-showLoadingScreen', (delay) => {
+    loadingScreen.show(delay);
+  });
+  Shiny.addCustomMessageHandler('gms-hideLoadingScreen', (e) => { // eslint-disable-line no-unused-vars
+    loadingScreen.hide();
   });
   Shiny.addCustomMessageHandler('gms-showEl', (id) => {
     if (isInputEl(id)) {

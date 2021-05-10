@@ -77,7 +77,8 @@ observeEvent(input$btRunPaver, {
                                                          isolate(input$paverExclAttrib))
   }, error = function(e){
       noErr <<- FALSE
-      flog.error("Problems identifying whether maximum number of solvers for paver is exceeded Error message: '%s'.", e)
+      flog.error("Problems identifying whether maximum number of solvers for paver is exceeded Error message: '%s'.",
+                 conditionMessage(e))
       showHideEl(session, "#analysisRunUnknownError", 6000L)
   })
   if(!noErr)
@@ -102,7 +103,8 @@ observeEvent(input$btRunPaver, {
       }
       dir.create(paverDir, showWarnings = FALSE)
     }, error = function(e){
-      flog.error("Problems creating temporary folder where trace files will be stored. Error message: '%s'.", e)
+      flog.error("Problems creating temporary folder where trace files will be stored. Error message: '%s'.",
+                 conditionMessage(e))
       errMsg <<- sprintf(lang$errMsg$fileWrite$desc, "./trace")
     })
     if(is.null(showErrorMsg(lang$errMsg$fileWrite$title, errMsg))){
@@ -115,11 +117,13 @@ observeEvent(input$btRunPaver, {
         noErr <<- FALSE
         switch(conditionMessage(e),
                noTrc = {
-                 flog.info("Unknown error exeuting Paver. Error message: '%s'.", e)
+                 flog.info("Unknown error exeuting Paver. Error message: '%s'.",
+                           conditionMessage(e))
                  showHideEl(session, "#paverRunNoTrc", 6000L)
                },
                {
-                 flog.error("Unknown error exeuting Paver. Error message: '%s'.", e)
+                 flog.error("Unknown error exeuting Paver. Error message: '%s'.",
+                            conditionMessage(e))
                  showHideEl(session, "#analysisRunUnknownError", 6000L)
                })
       })
@@ -236,7 +240,8 @@ observeEvent(input$btAnalysisInterrupt,{
       tryCatch({
         scriptOutput$interrupt()
       }, error= function(e){
-        flog.error("Problems interrupting process. Error message: %s.", e)
+        flog.error("Problems interrupting process. Error message: %s.",
+                   conditionMessage(e))
       })
     }else{
       flog.error("Interrupt analysis script button was pressed, but no script is currently running. Likely to be an attempt to tamper with the app!")
@@ -247,7 +252,8 @@ observeEvent(input$btAnalysisInterrupt,{
     tryCatch({
       paver$kill()
     }, error= function(e){
-      flog.error("Problems interrupting process. Error message: %s.", e)
+      flog.error("Problems interrupting process. Error message: %s.",
+                 conditionMessage(e))
       errMsg <<- lang$errMsg$paverTerm$desc
     })
     showErrorMsg(lang$errMsg$paverTerm$title, errMsg)

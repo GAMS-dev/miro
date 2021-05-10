@@ -367,7 +367,8 @@ observeEvent(input$btShowHash, {
                                   tibble("_scode", SCODEMAP[['scen']], ">"),
                                   subsetSids = rv$fetchedScenarios[[1]][selectedRows])[[1]]
     , error = function(e){
-      flog.error("Problems fetching hash value from database. Error message: '%s'.", e)
+      flog.error("Problems fetching hash value from database. Error message: '%s'.",
+                 conditionMessage(e))
       showHideEl(session, "#queryBuilderError", 4000L, lang$errMsg$unknownError)
       noErr <<- FALSE
     })
@@ -468,7 +469,8 @@ observeEvent(input$btHcubeRemove, {
     affectedRows <- 0L
     tryCatch(affectedRows <- db$deleteRows("_scenMeta", subsetSids = sidsToLoad), 
              error = function(e){
-               flog.error("Problems removing Hypercube scenarios. Error message: %s", e)
+               flog.error("Problems removing Hypercube scenarios. Error message: %s",
+                          conditionMessage(e))
                errMsg <<- TRUE
              })
     if(!is.null(errMsg) || affectedRows < sidsToLoad){

@@ -1,6 +1,12 @@
 showEl <- function(session, id){
   session$sendCustomMessage("gms-showEl", id)
 }
+showLoadingScreen <- function(session, delay){
+  session$sendCustomMessage("gms-showLoadingScreen", delay)
+}
+hideLoadingScreen <- function(session){
+  session$sendCustomMessage("gms-hideLoadingScreen", list())
+}
 showElReplaceTxt <- function(session, id, txt){
   session$sendCustomMessage("gms-showElReplaceTxt", list(id = id, txt = htmltools::htmlEscape(txt)))
 }
