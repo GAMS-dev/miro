@@ -377,6 +377,10 @@
               "type": "string",
               "minLength": 1
             },
+            "btCloseAll": {
+              "type": "string",
+              "minLength": 1
+            },
             "scenNameSandboxSuffix": {
               "type": "string",
               "minLength": 1
@@ -467,7 +471,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 6
+          "minProperties": 7
         },
         "hcubeImport": {
           "type": "object",
@@ -1244,6 +1248,29 @@
           "minProperties": 4
         },
         "dialogCloseScen": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "desc": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cancelButton": {
+              "type": "string",
+              "minLength": 1
+            },
+            "okButton": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 4
+        },
+        "dialogCloseAllScen": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
@@ -2763,7 +2790,7 @@
           "minProperties": 14
         }
       },
-      "minProperties": 50
+      "minProperties": 51
     },
     "renderers": {
       "description": "language specific objects of renderers",
@@ -3824,9 +3851,13 @@
             "desc": {
               "type": "string",
               "minLength": 1
+            },
+            "inconsistentDataWarning": {
+              "type": "string",
+              "minLength": 1
             }
           },
-          "minProperties": 2
+          "minProperties": 3
         },
         "deleteScen": {
           "type": "object",

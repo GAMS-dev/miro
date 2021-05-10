@@ -4,6 +4,7 @@ observeEvent(input$outputTableView, {
     # no output sheets available
     return(NULL)
   }
+  flog.trace("Toggle table view button (sandbox output tables) clicked.")
   showLoadingScreen(session, 500)
   on.exit(hideLoadingScreen(session))
   i <- as.integer(strsplit(isolate(input$outputTabset), "_")[[1]][2])
@@ -13,7 +14,7 @@ observeEvent(input$outputTableView, {
     return(NULL)
   }
   if(length(outputTabTitles[[i]]) > 1L){
-    j <- as.integer(strsplit(isolate(input[[paste0("outputTabset", i)]]), "_")[[1]][2])
+    j <- as.integer(strsplit(isolate(input[[paste0("outputTabset_", i)]]), "_")[[1]][3])
     i <- outputTabs[[i]][j]
   }else{
     i <- outputTabs[[i]]
@@ -23,47 +24,7 @@ observeEvent(input$outputTableView, {
     return(NULL)
   }
   for(iEl in i){
-    toggleEl(session, paste0("#graph-out_", iEl))
-    toggleEl(session, paste0("#data-out_", iEl))
-    if(modelOutputTableVisible[[iEl]]){
-      flog.debug("Table view for model output in sheet(s): %s activated.", paste0(iEl, collapse = ", "))
-      modelOutputTableVisible[[iEl]] <<- FALSE
-    }else{
-      flog.debug("Table view for model output in sheet(s): %s deactivated.", paste0(iEl, collapse = ", "))
-      modelOutputTableVisible[[iEl]] <<- TRUE
-      if(!dynamicUILoaded[["outputTablesUI"]][iEl]){
-        tryCatch({
-          insertUI(paste0("#data-out_", iEl),
-                   ui = renderDataUI(paste0("table-out_", iEl),
-                                     type = "datatable"),
-                   immediate = TRUE)
-          dynamicUILoaded[["outputTablesUI"]][iEl] <<- TRUE
-        }, error = function(e) {
-          flog.error(sprintf("Problems generating UI elements for table for output dataset: '%s'. Error message: %s.",
-                             modelOutAlias[iEl], conditionMessage(e)))
-          errMsg <<- sprintf(lang$errMsg$renderGraph$desc, modelOutAlias[iEl])
-        })
-        if(is.null(showErrorMsg(lang$errMsg$renderGraph$title, errMsg))){
-          return()
-        }
-      }
-      if(!dynamicUILoaded[["outputTables"]][iEl]){
-        tryCatch({
-          callModule(renderData, paste0("table-out_", iEl),
-                     type = "datatable",
-                     data = scenData[["scen_1_"]][[iEl]],
-                     dtOptions = configGraphsOut[[iEl]]$datatable,
-                     roundPrecision = roundPrecision)
-          dynamicUILoaded[["outputTables"]][iEl] <<- TRUE
-        }, error = function(e) {
-          flog.error(sprintf("Problems rendering table for output dataset: '%s'. Error message: %s.",
-                             modelOutAlias[iEl], conditionMessage(e)))
-          errMsg <<- sprintf(lang$errMsg$renderGraph$desc, modelOutAlias[iEl])
-        })
-        if(is.null(showErrorMsg(lang$errMsg$renderGraph$title, errMsg))){
-          return()
-        }
-      }
-    }
+    toggleEl(session, paste0("#scenGraph_1_", iEl))
+    toggleEl(session, paste0("#scenTable_1_", iEl))
   }
 })

@@ -334,7 +334,8 @@ HcubeImport <- R6Class("HcubeImport",
                                                                replace_na, replace = ""))
                                }))
                              }, error = function(e){
-                               stop(sprintf("Problems reading file: '%s'. Error message: %s.", filePath, e),
+                               stop(sprintf("Problems reading file: '%s'. Error message: %s.", filePath,
+                                            conditionMessage(e)),
                                     call. = FALSE)
                              })
                            }), recursive = FALSE, use.names = FALSE)

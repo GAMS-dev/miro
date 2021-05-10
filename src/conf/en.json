@@ -95,6 +95,7 @@
     "scen":{  
       "noScen":"No scenarios selected",
       "btLoad":"Load",
+      "btCloseAll": "Close all",
       "scenNameSandboxSuffix": "(Sandbox)",
       "tooltips":{  
         "btExport":"export scenario",
@@ -350,6 +351,12 @@
     "dialogCloseScen":{  
       "title":"Close scenario",
       "desc":"Are you sure you want to close the selected scenario?",
+      "cancelButton":"No",
+      "okButton":"Yes"
+    },
+    "dialogCloseAllScen":{
+      "title":"Close scenarios",
+      "desc":"Are you sure you want to close all scenarios?",
       "cancelButton":"No",
       "okButton":"Yes"
     },
@@ -982,7 +989,8 @@
     },
     "loadScen":{  
       "title":"Error loading scenario",
-      "desc":"Some error occurred loading the selected scenarios."
+      "desc":"Some error occurred loading the selected scenarios.",
+      "inconsistentDataWarning": "The scenario was changed while you were viewing it. Therefore, the data may not be consistent. You may want to refresh the scenario."
     },
     "deleteScen":{  
       "title":"Error deleting scenario",

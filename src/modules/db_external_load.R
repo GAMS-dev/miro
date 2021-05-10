@@ -60,7 +60,7 @@ observeEvent(input$btImportExternal, {
     tryCatch({
       externalInputData[[i]] <<- dataio$import(item, inputName)
     }, error = function(e) {
-      flog.error("Problems fetching external data. Error message: %s.", e)
+      flog.error("Problems fetching external data. Error message: %s.", conditionMessage(e))
       errMsg <<- paste(errMsg, sprintf(lang$errMsg$fetchDataset$desc, inputName), sep = "\n")
     })
     if(!is.null(errMsg)){

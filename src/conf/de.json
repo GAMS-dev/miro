@@ -95,6 +95,7 @@
     "scen":{  
       "noScen":"Kein Szenario ausgewählt",
       "btLoad":"Laden",
+      "btCloseAll": "Alle schließen",
       "scenNameSandboxSuffix": "(Sandbox)",
       "tooltips":{  
         "btExport":"Exportiere Szenariodaten",
@@ -350,6 +351,12 @@
     "dialogCloseScen":{  
       "title":"Szenario schließen",
       "desc":"Sind Sie sicher, dass Sie das ausgewählte Szenario schließen möchten?",
+      "cancelButton":"Nein",
+      "okButton":"Ja"
+    },
+    "dialogCloseAllScen":{
+      "title":"Szenarien schließen",
+      "desc":"Sind Sie sicher, dass Sie alle Szenarien schließen wollen?",
       "cancelButton":"Nein",
       "okButton":"Ja"
     },
@@ -982,7 +989,8 @@
     },
     "loadScen":{  
       "title":"Fehler beim Laden der Szenarien",
-      "desc":"Beim Laden der ausgewählten Szenarien ist ein Fehler aufgetreten."
+      "desc":"Beim Laden der ausgewählten Szenarien ist ein Fehler aufgetreten.",
+      "inconsistentDataWarning": "Das Szenario wurde geändert, während Sie es angesehen haben. Daher sind die Daten eventuell nicht konsistent. Möglicherweise möchten Sie das Szenario aktualisieren."
     },
     "deleteScen":{  
       "title":"Fehler beim Löschen des Szenarien",

@@ -81,10 +81,12 @@
                                      <li>The error message reporting duplicate records when exporting a GDX file now shows the symbol alias instead of the symbol name and is localized.</li>
                                      <li>Input/output groups with more than 6 tabs now get a "More..." tab that combines subsequent tabs.</li>
                                      <li><a href="./charts.html#pivot-chart">MIRO Pivot Tables</a>: When adding new views, existing views with the same name can now be overwritten.</li>
-                                     <li>It is now possible to <a href="./customize.html#general-temp-dir">select and download multiple files from the temporary directory</a>.</li>
                                      <li>Improve performance when starting MIRO: input graphs/output tables are now generated dynamically.</li>
-                                     <li>When submitting a job to <a href="https://gams.com/engine" target="_blank">GAMS Engine</a>, the MIRO sandbox is now restored when importing the results. This means that attachments, views, tags, etc. are preserved.</li>
+                                     <li>Improved performance when loading scenarios in scenario comparison mode: Data is now only fetched and graphs only rendered when required.</li>
+                                     <li>Add "Close All" button in the tab view comparison mode to close all currently opened scenarios.</li>
                                      <li>Windows: Removed progress bar when starting MIRO.</li>
+                                     <li>When submitting a job to <a href="https://gams.com/engine" target="_blank">GAMS Engine</a>, the MIRO sandbox is now restored when importing the results. This means that attachments, views, tags, etc. are preserved.</li>
+                                     <li>It is now possible to <a href="./customize.html#general-temp-dir">select and download multiple files from the temporary directory</a>.</li>
                                      <li>Add option to <a href="./customize.html#table-option-fixedColumnsLeft">fix table columns to the left</a> when scrolling horizontally.</li>
                                    </ul>
                                    <h3>Bug fixes</h3>
@@ -93,6 +95,7 @@
                                      <li>Fix crash in metadata dialog that occurred when a MIRO app was configured without tabular input symbols.</li>
                                      <li>Fix issue where switching to the table or heatmap renderer in MIRO Pivot did not work in certain situations.</li>
                                      <li>When loading a view with heatmap renderer in MIRO Pivot, "Table" was incorrectly selected as renderer.</li>
+                                     <li>Fix issue where keyboard shortcuts to navigate tabset panels in <a href="./start.html#compare-pivot">pivot view</a> comparison mode did not work.</li>
                                    </ul>
                               </div>
                             </section>
@@ -128,6 +131,7 @@
                                    <h3>Breaking changes</h3>
                                    <ul>
                                      <li>When writing sets/parameters with duplicate records to GDX file, an error is now issued instead of silently ignoring the duplicates.</li>
+                                     <li><a href="./charts.html#pivot-chart">MIRO Pivot Tables</a>: Scalar tables are no longer treated as sets (<i>Scalar Value</i> column is treated as set text column). Instead, scalar values are converted to floating point values. Note that values of singleton sets that cannot be converted to a floating point value become NA.</li>
                                    </ul>
                                    <h3>New features</h3>
                                     <ul>

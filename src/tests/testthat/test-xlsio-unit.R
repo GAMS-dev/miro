@@ -387,7 +387,7 @@ test_that("Writing Excel files works", {
                                     '"_scalars (Input)!C2"', '"i1 (Output)!A2"', '"distance3 (Input)!A1"'),
                           cDim = c(0,0,0,0,0,1),
                           dim = c(0,0,0,0,1,2)))
-  expect_error(xlsio$write(xlsOutFileName, testData, tibble(id = 1, User = "fproske", `Scenario name` = "asd", "Time created" = "def"),
+  expect_error(xlsio$write(xlsOutFileName, testData, tibble(`_sid` = 1, `_uid` = "fproske", `_sname` = "asd", `_stime` = "def"),
                            includeMetadataSheet = TRUE, includeEmptySheets = FALSE), NA)
   expect_identical(excel_sheets(xlsOutFileName), c(" Info", "_scalars_out (Output)","_scalars (Input)", "i1 (Output)", "distance3 (Input)", "_index"))
   expect_identical(suppressMessages(read_excel(xlsOutFileName, " Info")),

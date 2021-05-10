@@ -1,7 +1,7 @@
 {
   "output": {
-    "title_2": {
-      "html": "New Scenario (Sandbox)",
+    "inputDataTitle": {
+      "html": "<i>&lt;New Scenario&gt;<\/i>",
       "deps": [
 
       ]

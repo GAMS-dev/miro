@@ -336,9 +336,6 @@ Worker <- R6Class("Worker", public = list(
             flog.error("Problems removing Hypercube job workspace: '%s'.", hcubeJobDir)
           }
         }
-        if(private$remote){
-          private$removeJobResults(pID)
-        }
       }
     }
     

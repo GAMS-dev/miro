@@ -114,7 +114,9 @@ XlsIO <- R6::R6Class("XlsIO", inherit = LocalFileIO, public = list(
                               "_index"))
     # include metadata sheet in Excel file
     if(isTRUE(includeMetadataSheet) && !is.null(metaData)){
-      metaData <- metaData[, -1, drop = FALSE]
+      metaColIds <- match(c("_uid", "_sname", "_stime", "_stag",
+                            "_accessr", "_accessw", "_accessx"), names(metaData))
+      metaData <- metaData[, metaColIds[!is.na(metaColIds)], drop = FALSE]
       names(metaData) <- unlist(lang$nav$excelExport$metadataSheet[c("uid", "sname", "stime",
                                                                      "stag", "readPerm", "writePerm",
                                                                      "execPerm")[seq_along(metaData)]],

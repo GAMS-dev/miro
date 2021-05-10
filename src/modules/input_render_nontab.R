@@ -101,7 +101,7 @@ lapply(seq_along(modelIn), function(id){
                }, error = function(e){
                  flog.error("Some problem occurred attempting to fetch values for checkbox: '%s' " %+%
                               "(forward dependency on dataset: '%s'). Error message: %s.", 
-                            modelInAlias[id], modelInAlias[k], e)
+                            modelInAlias[id], modelInAlias[k], conditionMessage(e))
                  errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                })
                if(is.null(showErrorMsg(lang$errMsg$dataError$title, errMsg))){
@@ -303,7 +303,7 @@ lapply(seq_along(modelIn), function(id){
                    }, error = function(e){
                      flog.error("Some problem occurred attempting to fetch values for dropdown menu: '%s' " %+%
                                   "(forward dependency on dataset: '%s'). Error message: %s.", 
-                                modelInAlias[id], modelInAlias[k], e)
+                                modelInAlias[id], modelInAlias[k], conditionMessage(e))
                      errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                    })
                    if(!is.null(errMsg)){
