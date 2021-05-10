@@ -76,7 +76,7 @@ app$waitFor("$('.scen-buttons-wrapper button').get(1).click()", timeout = 50)
 Sys.sleep(1)
 app$setInputs(exportFileType = "miroscen")
 expect_true(app$waitFor("$('#cbSelectManuallyExp').is(':hidden');", timeout = 50))
-ys.sleep(0.5)
+Sys.sleep(0.5)
 expect_download_size(app, "scenExportHandler", "split_comp_download.miroscen")
 Sys.sleep(1)
 
