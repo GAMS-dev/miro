@@ -137,6 +137,17 @@
       "chooseAllButton":"Wähle alle",
       "orButton": "ODER",
       "andButton": "UND",
+      "operators":{
+        "is": "ist",
+        "notis": "ist nicht",
+        "contains": "enthält",
+        "notcontains": "enthält nicht",
+        "startswith": "beginnt mit",
+        "endswith": "endet mit",
+        "exists": "existiert",
+        "notexists": "existiert nicht",
+        "between": "zwischen"
+      },
       "queryButton": "Ergebnisse abrufen",
       "showHashDialog":{
         "title": "Szenario Hash",
@@ -483,10 +494,10 @@
     },
     "dialogDownloadTmp":{
       "title": "Temporäre Dateien laden",
-      "desc": "Wählen Sie die zu ladende Datei aus",
+      "desc": "Wählen Sie die zu ladenden Dateien aus",
       "noFiles": "Es konnten keine Dateien gefunden werden",
-      "downloadZipButton":"Alle Dateien als zip laden",
-      "downloadButton":"Datei laden",
+      "downloadAllButton":"Alle Dateien herunterladen",
+      "downloadButton":"Herunterladen",
       "cancelButton":"Abbrechen"
     },
     "dialogJobSubmission":{
@@ -675,9 +686,10 @@
       "title": "Datenbankmigration",
       "desc": "Wir haben festgestellt, dass sich Ihr GAMS/MIRO-Datenvertrag auf eine Weise geändert hat, die mit dem aktuellen Datenbanklayout Ihrer App nicht kompatibel ist. Bitte geben Sie an, wie Ihre Daten migriert werden sollen.",
       "backupWarning": "Wir empfehlen Ihnen dringend, vor der Migration ein Backup Ihrer Datenbank zu erstellen.",
-      "successMsg": "Ihre Daten wurden erfolgreich migriert!",
+      "successMsg": "Ihre Daten wurden erfolgreich migriert! Bitte starten Sie die Anwendung neu.",
       "labelSymbol": "Symbol: '%s'",
-      "selectTableToMap": "Daten verwenden von",
+      "selectTableToMap": "Migriere Daten von",
+      "selectColToMap": "Spalte: ",
       "btCancelMigration": "Abbrechen",
       "btConfirmMigration": "Migration bestätigen",
       "errDuplicateTables": "Tabelle(n): '%s' können nicht dupliziert werden!",
@@ -701,7 +713,7 @@
         "cbConfirm": "Alle Tabellen entfernen?",
         "btCancel": "Abbrechen",
         "btConfirm": "Tabellen entfernen",
-        "msgSuccess": "Datenbanktabellen erfolgreich entfernt"
+        "msgSuccess": "Datenbanktabellen erfolgreich entfernt. Bitte starten Sie die Anwendung neu."
       }
     }
   },
