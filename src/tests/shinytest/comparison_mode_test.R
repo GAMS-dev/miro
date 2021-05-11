@@ -29,9 +29,7 @@ expect_true(app$waitFor("$('.tab-content div[data-value=\"contentScen_5_5\"]').i
 #test compare mode in split view
 app$findElement(".btSplitView button")$click()
 app$findElements(".btSplitView a[data-view='split']")[[1]]$click()
-app$setInputs(btScenSplit1_open = "click")
-Sys.sleep(1)
-app$setInputs(btLoadScenConfirm = "click")
+expect_true(app$waitFor("$('.scenSplit-button-load').get(1).click();true;", timeout = 50))
 Sys.sleep(2)
 app$setInputs(btScenSplit2_open = "click")
 Sys.sleep(1)
@@ -45,5 +43,41 @@ expect_true(app$waitFor("$('.tab-content div[data-value=\"contentScen_3_2\"]').i
 app$findElement("a[data-value='contentScen_3_5']")$click()
 Sys.sleep(1)
 expect_true(app$waitFor("$('.tab-content div[data-value=\"contentScen_2_5\"]').is(':visible');", timeout = 50))
+
+# test download of files
+app$waitFor("$('.scen-buttons-wrapper button').get(1).click()", timeout = 50)
+Sys.sleep(1)
+app$setInputs(exportFileType = "xls", cbSelectManuallyExp = "true", selDataToExport = c("_scalars", "abserror"))
+expect_sheets_in_xls(app, "scenExportHandler", c(" Info", "abserror (Output)", "_scalars (Input)", "_index"))
+Sys.sleep(1)
+
+app$waitFor("$('.scen-buttons-wrapper button').get(1).click()", timeout = 50)
+Sys.sleep(1)
+app$setInputs(exportFileType = "xls")
+expect_sheets_in_xls(app, "scenExportHandler", c(" Info", "_scalars_out (Output)", "stock_weight (Output)", "dowvsindex (Output)", "abserror (Output)", "pricemerge (Output)", "_scalars (Input)", "price (Input)", "_index"))
+Sys.sleep(1)
+
+app$waitFor("$('.scen-buttons-wrapper button').get(4).click()", timeout = 50)
+Sys.sleep(1)
+app$setInputs(exportFileType = "gdx", cbSelectManuallyExp = "true", selDataToExport = c("_scalars_out", "dowvsindex"))
+Sys.sleep(1)
+expect_symbols_in_gdx(app, "scenExportHandler", c("dowvsindex", "error_ratio", "error_train", "error_test",
+                                                  "firstdaytraining", "lastdaytraining"))
+Sys.sleep(1)
+app$waitFor("$('.scen-buttons-wrapper button').get(1).click()", timeout = 50)
+Sys.sleep(1)
+app$setInputs(exportFileType = "gdx")
+expect_symbols_in_gdx(app, "scenExportHandler", c("dowvsindex", "error_ratio", "error_train", "error_test",
+                                                  "firstdaytraining", "lastdaytraining", "stock_weight",
+                                                  "abserror", "pricemerge", "price", "maxstock", "trainingdays"))
+Sys.sleep(1)
+
+app$waitFor("$('.scen-buttons-wrapper button').get(1).click()", timeout = 50)
+Sys.sleep(1)
+app$setInputs(exportFileType = "miroscen")
+expect_true(app$waitFor("$('#cbSelectManuallyExp').is(':hidden');", timeout = 50))
+Sys.sleep(0.5)
+expect_download_size(app, "scenExportHandler", "split_comp_download.miroscen")
+Sys.sleep(1)
 
 app$stop()

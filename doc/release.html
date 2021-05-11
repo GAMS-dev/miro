@@ -68,6 +68,9 @@
                                    <ul>
                                      <li>The database layout that MIRO uses internally has been changed significantly. At the first start MIRO checks if there is an existing MIRO database and tries to migrate this database automatically to the new layout. A backup of the old database is kept in case something goes wrong. Some data can not be migrated automatically. The first time you start your MIRO app, you will be prompted with a migration dialog if some data needs to be migrated manually. Sliders that have been expanded in Hypercube Mode job configurations cannot be migrated!</li>
                                      <li>An error is now issued if the MIRO app name (filename of the main .gms file) is longer than 60 characters.</li>
+                                   <h3>New features</h3>
+                                   <ul>
+                                     <li>Custom renderers can now be edited with a <a href="./charts.html#custom-graphics">live preview via the Configuration Mode</a>. This should increase productivity when developing custom renderers. Your existing renderers will still work, but will not be recognized by this new editor. To learn how to migrate them to be compatible with the new editor, see <a href="./customize.html#migrate-custom-renderers">here</a>.</li>
                                    </ul>
                                    <h3>Minor new features and improvements</h3>
                                    <ul>
@@ -86,6 +89,7 @@
                                      <li>When submitting a job to <a href="https://gams.com/engine" target="_blank">GAMS Engine</a>, the MIRO sandbox is now restored when importing the results. This means that attachments, views, tags, etc. are preserved.</li>
                                      <li>You can now select the default renderer for all output data via the Configuration Mode (pivot table or table).</li>
                                      <li>Changing only the views of a scenario in the data_&lt;modelname&gt; folder now updates the scenario in the database.</li>
+                                     <li>It is now possible to <a href="./customize.html#general-temp-dir">select and download multiple files from the temporary directory</a>.</li>
                                      <li>Add option to <a href="./customize.html#table-option-fixedColumnsLeft">fix table columns to the left</a> when scrolling horizontally.</li>
                                    </ul>
                                    <h3>Bug fixes</h3>

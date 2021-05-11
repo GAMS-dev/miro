@@ -1,7 +1,33 @@
 activeSymbol <- list(id = integer(1L), name = character(1L), 
                      alias = character(1L), indices = c())
 activeSymbolName <- character(0L)
-miroPivotRendererEnv <- new.env(parent = emptyenv())
+customRendererEvalEnv <- new.env(parent = parent.frame())
+# Redefine observe function so that custom renderers don't crash when error
+# occurs in observer (see also: https://github.com/rstudio/shiny/issues/2904#issuecomment-634776972)
+customRendererEvalEnv$observe <- function(x, ...) {
+  x <- substitute(x)
+  env <- parent.frame()
+  shiny::observe({
+    tryCatch(
+      eval(x, env),
+      error = function(e) {
+        showElReplaceTxt(session, "#preview-error",
+                         sprintf(lang$adminMode$graphs$ui$previewErrorObs, conditionMessage(e)))
+      }
+    )
+  },
+  ...
+  )
+}
+customRendererEnv <- new.env(parent = emptyenv())
+skipLoadRenderer <- TRUE
+invalidCustomRender <- FALSE
+rendererFromExternalSymbol <- FALSE
+
+existingRendererFiles <- tools::file_path_sans_ext(list.files(
+  path = customRendererDir,
+  pattern = "\\.R$"
+))
 
 newChartTool     <- character(0L)
 isInJSON         <- FALSE
@@ -83,7 +109,7 @@ langSpecificGraphs$pointShapeChoices <- c("dot" = "dot", "triangle" = "triangle"
                                           "circle" = "circle", "star" = "star", "plus" = "plus", "ex" = "ex")
 names(langSpecificGraphs$pointShapeChoices) <- lang$adminMode$graphs$dygraphsOptions$generalOptions$pointShapeChoices 
 langSpecificGraphs$positionChoices <- c("Top right" = "topright", "Bottom right" = "bottomright",
-                                          "Bottom left" = "bottomleft", "Top left" = "topleft")
+                                        "Bottom left" = "bottomleft", "Top left" = "topleft")
 names(langSpecificGraphs$positionChoices) <- lang$adminMode$graphs$leafletOptions$positionChoices 
 langSpecificGraphs$aggregatorChoices <- c("Count" = "Count","Count Unique Values" = "Count Unique Values",
                                           "List Unique Values" = "List Unique Values","Sum" = "Sum",
@@ -110,11 +136,11 @@ langSpecificGraphs$localeChoices <- c("cs" = "cs","da" = "da","de" = "de","en" =
                                       "tr" = "tr","zh" = "zh")
 names(langSpecificGraphs$localeChoices) <- lang$adminMode$graphs$pivotOptions$options$localeChoices 
 langSpecificGraphs$categoryorderChoices <- c("trace" = "trace", "category ascending" = "category ascending", "category descending" = "category descending", 
-                                      "total ascending" = "total ascending", "total descending" = "total descending", 
-                                      "min ascending" = "min ascending", "min descending" = "min descending", "max ascending" = "max ascending", 
-                                      "max descending" = "max descending", "sum ascending" = "sum ascending", "sum descending" = "sum descending", 
-                                      "mean ascending" = "mean ascending", "mean descending" = "mean descending", "median ascending" = "median ascending", 
-                                      "median descending" = "median descending")
+                                             "total ascending" = "total ascending", "total descending" = "total descending", 
+                                             "min ascending" = "min ascending", "min descending" = "min descending", "max ascending" = "max ascending", 
+                                             "max descending" = "max descending", "sum ascending" = "sum ascending", "sum descending" = "sum descending", 
+                                             "mean ascending" = "mean ascending", "mean descending" = "mean descending", "median ascending" = "median ascending", 
+                                             "median descending" = "median descending")
 names(langSpecificGraphs$categoryorderChoices) <- lang$adminMode$graphs$axisOptions$categoryorderChoices
 langSpecificGraphs$dyLegendOptions <- c("auto" = "auto", "always" = "always", "onmouseover" = "onmouseover", "follow" = "follow")
 names(langSpecificGraphs$dyLegendOptions) <- lang$adminMode$graphs$dygraphsOptions$legend$showChoices
@@ -209,8 +235,13 @@ validateGraphConfig <- function(graphJSON){
   if(identical(is.na(graphJSON$graph$xaxis$rangefrom), TRUE) || identical(is.na(graphJSON$graph$xaxis$rangeto), TRUE)){
     return(lang$adminMode$graphs$validate$val1)
   }
-  if(identical(input$chart_tool, "custom") && identical(nchar(trimws(graphJSON$outType)), 0L)){
-    return("please specify a name!")
+  if(identical(input$chart_tool, "custom")){
+    if(identical(nchar(trimws(graphJSON$outType)), 0L)){
+      return("Please specify a name!")
+    }
+    if(invalidCustomRender){
+      return(lang$adminMode$graphs$validate$custom1)
+    }
   }
   return("")
 }
@@ -338,15 +369,15 @@ updateYAxes  <- function(dyReset = NULL){
       showEl(session, "#left_dyAxis")
     }else{
       rv$graphConfig$graph$yaxis <<- list(name = "y",
-                                           label = "", 
-                                           valueRange = list(NULL, NULL),  
-                                           axisLineColor = NULL, 
-                                           axisLineWidth = NULL,
-                                           axisLabelFontSize = 0L,
-                                           drawGrid = TRUE, 
-                                           gridLineColor = "#00000000", 
-                                           gridLineWidth = NULL,
-                                           independentTicks = TRUE)
+                                          label = "", 
+                                          valueRange = list(NULL, NULL),  
+                                          axisLineColor = NULL, 
+                                          axisLineWidth = NULL,
+                                          axisLabelFontSize = 0L,
+                                          drawGrid = TRUE, 
+                                          gridLineColor = "#00000000", 
+                                          gridLineWidth = NULL,
+                                          independentTicks = TRUE)
       hideEl(session, "#left_dyAxis")
     }
     if(axisOptionsGlobal[["y2"]] > 0L){
@@ -355,7 +386,7 @@ updateYAxes  <- function(dyReset = NULL){
                                            valueRange = list(
                                              if(length(input$dyAxis2_valueRangeFrom) && nchar(input$dyAxis2_valueRangeFrom)) input$dyAxis2_valueRangeFrom else NULL, 
                                              if(length(input$dyAxis2_valueRangeTo) && nchar(input$dyAxis2_valueRangeTo)) input$dyAxis2_valueRangeTo else NULL
-                                             ), 
+                                           ), 
                                            axisLineColor = if(length(input$dyAxis2_axisLineColor)) input$dyAxis2_axisLineColor else NULL, 
                                            axisLineWidth = if(length(input$dyAxis2_axisLineWidth)) input$dyAxis2_axisLineWidth else 0.3,
                                            axisLabelFontSize = if(length(input$dyAxis2_axisLabelFontSize)) input$dyAxis2_axisLabelFontSize else 14L,
@@ -364,9 +395,9 @@ updateYAxes  <- function(dyReset = NULL){
                                            #if one axis is removed, the other one should have independet ticks
                                            independentTicks = if(axisOptionsGlobal[["y"]] > 0L){
                                              if(!is.null(input$dyAxis2_independentTicks) && length(input$dyAxis2_independentTicks)) input$dyAxis2_independentTicks else NULL
-                                             }else{
-                                               TRUE
-                                             })
+                                           }else{
+                                             TRUE
+                                           })
       if(!(axisOptionsGlobal[["y"]] > 0L))
         updateCheckboxInput(session, "dyAxis2_independentTicks", value = TRUE)
       showEl(session, "#right_dyAxis")
@@ -495,12 +526,12 @@ observeEvent(input$localInput, {
   tabularOutputWithData <- NULL
   if(identical(loadMode, "gdx")){
     tryCatch({
-        outputDataTmp <- loadScenData(metaData = modelOut, 
-                                      workDir = dirname(isolate(input$localInput$datapath)),
-                                      templates = modelOutTemplate,
-                                      method = loadMode, 
-                                      fileName = basename(isolate(input$localInput$datapath)),
-                                      xlsio = xlsio)
+      outputDataTmp <- loadScenData(metaData = modelOut, 
+                                    workDir = dirname(isolate(input$localInput$datapath)),
+                                    templates = modelOutTemplate,
+                                    method = loadMode, 
+                                    fileName = basename(isolate(input$localInput$datapath)),
+                                    xlsio = xlsio)
     }, error = function(e){
       flog.error("Problems loading output data. Error message: %s.",
                  conditionMessage(e))
@@ -591,7 +622,7 @@ observeEvent(input$leafChart_lat, {
   rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_lat[1])]]]]$lat <<- input$leafChart_lat[2]
 })
 observeEvent(input$leafChart_chartdata, {
-    rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_chartdata[1])]]]]$chartdata <<- input$leafChart_chartdata[2:length(input$leafChart_chartdata)]
+  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_chartdata[1])]]]]$chartdata <<- input$leafChart_chartdata[2:length(input$leafChart_chartdata)]
 })
 observeEvent(input$leafChart_time, {
   if(!identical(input$leafChart_time, "_"))
@@ -1028,7 +1059,7 @@ observeEvent(input$trace_frame, {
                                            slider = list(fontcolor = if(length(input$animation_slider_font_color)) input$animation_slider_font_color else "#000000",
                                                          hide = if(length(input$animation_slider_hide)) input$animation_slider_hide else FALSE))
     if(length(input$animation_slider_prefix) && !identical(input$animation_slider_prefix, "")){
-        rv$graphConfig$graph$animation$slider$prefix <- input$animation_slider_prefix
+      rv$graphConfig$graph$animation$slider$prefix <- input$animation_slider_prefix
     }
     hideEl(session, "#no_plotly_animation_options")
     showEl(session, "#plotly_animation_options")
@@ -1054,7 +1085,7 @@ observeEvent(input$animation_easing, {
 }, priority = -500)
 observeEvent(input$animation_redraw, {
   req(rv$graphConfig$graph$animation)
-    rv$graphConfig$graph$animation$redraw <<- as.logical(input$animation_redraw)
+  rv$graphConfig$graph$animation$redraw <<- as.logical(input$animation_redraw)
 }, priority = -500)
 observeEvent(input$animation_mode, {
   req(rv$graphConfig$graph$animation)
@@ -1373,8 +1404,8 @@ observeEvent(input$dyhigh_strokeBorderColor, {
   if(isTRUE(input$dyhighlight_activate))
     if(nchar(input$dyhigh_strokeBorderColor))
       rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeBorderColor <<- input$dyhigh_strokeBorderColor
-    else
-      rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeBorderColor <<- "#ffffff"
+  else
+    rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeBorderColor <<- "#ffffff"
 })
 observeEvent(input$dyLegend_activate, {
   if(isTRUE(input$dyLegend_activate)){
@@ -1928,19 +1959,67 @@ observeEvent(input$bar_mode, {
   rv$graphConfig$graph$barmode <<- input$bar_mode
 })
 
-observeEvent(input$custom_name, {
-  rv$graphConfig$outType <<- gsub(" ", "", input$custom_name, fixed = TRUE)
+observeEvent(input$customExternalSymbol, {
+  if(skipLoadRenderer){
+    skipLoadRenderer <<- FALSE
+    return()
+  }
+  rendererFromExternalSymbol <<- FALSE
+  if(identical(input$customExternalSymbol, "-")){
+    rendererFunctionName <- paste0("mirorenderer_", activeSymbolName)
+    rendererToLoad <- rendererFunctionName
+  }else{
+    rendererFunctionName <- input$customExternalSymbol
+    currentRendererSymname <- gsub("^mirorenderer\\_", "", rendererFunctionName)
+    if(currentRendererSymname %in% c(unname(inputSymMultiDimChoices),
+                                     unname(outputSymMultiDimChoices))){
+      # renderer uses code from other (existent) symbol
+      rendererFromExternalSymbol <<- TRUE
+      rendererToLoad <- rendererFunctionName
+    }else{
+      # renderer from nonexistent symbol
+      rendererToLoad <- rendererFunctionName
+      rendererFunctionName <- paste0("mirorenderer_", tolower(activeSymbol$name))
+    }
+  }
+  rv$graphConfig$outType <- rendererFunctionName
+  tryCatch({
+    rendererFunctions <- getRendererFunctions(rendererToLoad)
+    updateAceEditor(session, "customOutputFunction", value = rendererFunctions$output)
+    updateAceEditor(session, "customRenderFunction", value = rendererFunctions$renderer)
+    session$sendCustomMessage("gms-shinySetInputValue", list(id = "btUpdateCustomRendererOutput",
+                                                             val = 1L,
+                                                             timeout = 500L))
+  }, error = function(e){
+    flog.warn("Problems loading custom renderer. Error message: %s",
+              conditionMessage(e))
+  })
 })
-observeEvent(input$custom_packages, {
-  rv$graphConfig$packages <<- input$custom_packages
+observeEvent(input$customPackages, {
+  if(identical(input$customPackages, rv$graphConfig$packages)){
+    return()
+  }
+  rv$graphConfig$packages <<- input$customPackages
+  showEl(session, "#customPackagesModified")
 }, ignoreNULL = FALSE)
-observeEvent(input$custom_additionalData, {
+observeEvent(input$customAdditionalData, {
   if(activeSymbol$id > length(modelIn)){
-    rv$graphConfig$additionalData <<- input$custom_additionalData
+    rv$graphConfig$additionalData <<- input$customAdditionalData
   }else{
     rv$graphConfig$additionalData <<- NULL
   }
 }, ignoreNULL = FALSE)
+observeEvent(input$cutomOptions, {
+  tryCatch({
+    rv$graphConfig$options <- safeFromJSON(input$cutomOptions, 
+                                           simplifyDataFrame = FALSE, 
+                                           simplifyMatrix = FALSE)
+    invalidCustomRender <<- FALSE
+  }, error = function(e){
+    flog.debug("Invalid JSON (custom renderer options). Error message: %s", conditionMessage(e))
+    invalidCustomRender <<- TRUE
+  })
+})
 
 observeEvent(input$filter_dim, {
   if(input$chart_tool %in% plotlyChartTools){
@@ -1948,16 +2027,16 @@ observeEvent(input$filter_dim, {
   }else{
     chartToolTmp <- input$chart_tool
   }
- if(isFALSE(input$filter_dim)){
-   rv$graphConfig$graph$filter <<- NULL
-   hideEl(session, paste0("#preview_output_", chartToolTmp, "-data_filter"))
- }else{
-   rv$graphConfig$graph$filter <<- list(col = input$filter_col,
-                                        label = input$filter_label,
-                                        multiple = input$filter_multiple,
-                                        date = FALSE)
-   showEl(session, paste0("#preview_output_", chartToolTmp, "-data_filter"))
- }
+  if(isFALSE(input$filter_dim)){
+    rv$graphConfig$graph$filter <<- NULL
+    hideEl(session, paste0("#preview_output_", chartToolTmp, "-data_filter"))
+  }else{
+    rv$graphConfig$graph$filter <<- list(col = input$filter_col,
+                                         label = input$filter_label,
+                                         multiple = input$filter_multiple,
+                                         date = FALSE)
+    showEl(session, paste0("#preview_output_", chartToolTmp, "-data_filter"))
+  }
 })
 observeEvent(input$filter_col, {
   req(isTRUE(input$filter_dim))
@@ -2202,10 +2281,10 @@ observeEvent({
       insertUI(selector = "#tool_options", getBarOptions(), where = "beforeEnd")
       #check whether symbol is configured as bar chart (in JSON)
       if(isTRUE(configuredWithThisTool) && length(ydataTmp)){
-          addArrayEl(session, "chart_ydatabar",
-                     defaults = ydataTmp)
-          idLabelMap[["chart_ydata"]] <<- as.list(names(ydataTmp))
-          rv$graphConfig$graph$ydata <<- ydataTmp
+        addArrayEl(session, "chart_ydatabar",
+                   defaults = ydataTmp)
+        idLabelMap[["chart_ydata"]] <<- as.list(names(ydataTmp))
+        rv$graphConfig$graph$ydata <<- ydataTmp
       }
       allDataAvailable <<- TRUE
     }else if(identical(chartTool, "scatter")){
@@ -2475,9 +2554,13 @@ observeEvent({
     }else if(identical(chartTool, "custom")){
       showEl(session, ".category-btn-custom")
       addClassEl(session, id = "#categoryCustom1", "category-btn-active")
+      invalidCustomRender <<- FALSE
       insertUI(selector = "#tool_options",
                tags$div(id = "custom_options", getCustomOptions()), where = "beforeEnd")
       allDataAvailable <<- TRUE
+      session$sendCustomMessage("gms-shinySetInputValue", list(id = "btUpdateCustomRendererOutput",
+                                                          val = 1L,
+                                                          timeout = 500L))
     }else if(identical(chartTool, "datatable")){
       # only show info message for datatable configuration
       insertUI(selector = "#tool_options", 
@@ -2566,10 +2649,10 @@ getChartOptions <- reactive({
              getOptionSection()
     ),
     tags$div(class="cat-body cat-body-11 cat-body-16 cat-body-21", style="display:none;",
-               tags$div(id = "no_plotly_animation_options", class = "shiny-input-container config-message", 
-                        style = if(graphHasAnimation) "display: none;" else "display:block;", lang$adminMode$graphs$animationOptions$noAnimation),
-               tags$div(id = "plotly_animation_options", class = "shiny-input-container", 
-                        style = if(!graphHasAnimation) "display: none;", getAnimationOptions())
+             tags$div(id = "no_plotly_animation_options", class = "shiny-input-container config-message", 
+                      style = if(graphHasAnimation) "display: none;" else "display:block;", lang$adminMode$graphs$animationOptions$noAnimation),
+             tags$div(id = "plotly_animation_options", class = "shiny-input-container", 
+                      style = if(!graphHasAnimation) "display: none;", getAnimationOptions())
     )
   )
 })
@@ -2596,7 +2679,7 @@ getBarOptions  <- reactive({
              selectInput("bar_width", lang$adminMode$graphs$barOptions$width,
                          choices = c("_", scalarIndices),
                          selected = rv$graphConfig$graph$width)
-             ),
+    ),
     getChartOptions())
 })
 getAxisOptions <- function(id, title, labelOnly = FALSE){
@@ -2655,13 +2738,13 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
       tags$div(class = "shiny-input-container", style = "display:inline-block;",
                tags$label(class = "cb-label shiny-input-container", "for" = "range-wrapper", lang$adminMode$graphs$axisOptions$range),
                tags$div(style = "padding-top: 10px;",
-                 tags$div(id = "range-wrapper",
-                          tags$div(style = "max-width:400px;",
-                                   tags$div(style="display:inline-block", textInput(id %+% "_rangefrom", lang$adminMode$graphs$axisOptions$rangeFrom, 
-                                                                                    value = rv$graphConfig$graph[[id %+% "axis"]]$rangefrom)),
-                                   tags$div(style="display:inline-block", textInput(id %+% "_rangeto", lang$adminMode$graphs$axisOptions$rangeTo, 
-                                                                                    value = rv$graphConfig$graph[[id %+% "axis"]]$rangeto)))
-                 ))
+                        tags$div(id = "range-wrapper",
+                                 tags$div(style = "max-width:400px;",
+                                          tags$div(style="display:inline-block", textInput(id %+% "_rangefrom", lang$adminMode$graphs$axisOptions$rangeFrom, 
+                                                                                           value = rv$graphConfig$graph[[id %+% "axis"]]$rangefrom)),
+                                          tags$div(style="display:inline-block", textInput(id %+% "_rangeto", lang$adminMode$graphs$axisOptions$rangeTo, 
+                                                                                           value = rv$graphConfig$graph[[id %+% "axis"]]$rangeto)))
+                        ))
       )
     }
   )
@@ -2766,13 +2849,13 @@ getLineOptions  <- reactive({
     rv$graphConfig$graph$ydata <- list()
     if(length(scalarIndices)){
       rv$graphConfig$graph$ydata[[scalarIndices[[1]]]] <<- list(label = names(scalarIndices)[1], 
-                                                              mode = "lines",
-                                                              line = list(width = 2L,
-                                                                          shape = "linear",
-                                                                          dash = "solid"),
-                                                              showlegend = TRUE,
-                                                              yaxis = "y")
-    idLabelMap$chart_ydata[[1]] <<- scalarIndices[[1]]
+                                                                mode = "lines",
+                                                                line = list(width = 2L,
+                                                                            shape = "linear",
+                                                                            dash = "solid"),
+                                                                showlegend = TRUE,
+                                                                yaxis = "y")
+      idLabelMap$chart_ydata[[1]] <<- scalarIndices[[1]]
     }else{
       idLabelMap$chart_ydata[[1]] <<- "1"
     }
@@ -2896,7 +2979,7 @@ getValueboxOptions  <- reactive({
   rv$refreshContent
   visibleScalars <- !tolower(modelOut[[scalarsOutName]]$symnames) %in% tolower(configJSON$hiddenOutputScalars)
   scalarNames <- modelOut[[scalarsOutName]]$symnames[visibleScalars]
-
+  
   noScalars <- length(scalarNames)
   if(!length(currentGraphConfig) || !length(names(currentGraphConfig[[1]]))){
     boxWidth <- checkLength(configuredWithThisTool, currentGraphConfig[["width"]], 4L)
@@ -2966,10 +3049,10 @@ getValueboxOptions  <- reactive({
                                              column(7, class = "valuebox-right-col",
                                                     tags$div(title = lang$adminMode$graphs$valueboxOptions$icon,
                                                              selectizeInput(paste0("valueBoxIcon_", i), label = NULL,
-                                                                         choices = unique(c(langSpecificGraphs$valueboxIconChoices,
-                                                                                     scalarConfig$icon$name)),
-                                                                         selected = scalarConfig$icon$name,
-                                                                         options = list(create = TRUE)))))
+                                                                            choices = unique(c(langSpecificGraphs$valueboxIconChoices,
+                                                                                               scalarConfig$icon$name)),
+                                                                            selected = scalarConfig$icon$name,
+                                                                            options = list(create = TRUE)))))
                                            
                                   )
                                 })
@@ -3033,7 +3116,7 @@ getDygraphsOptions <- reactive({
     rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeWidth       <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyHighlight"]][["highlightSeriesOpts"]][["strokeWidth"]], NULL)
     rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeBorderWidth <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyHighlight"]][["highlightSeriesOpts"]][["strokeBorderWidth"]], NULL)
     rv$graphConfig$graph$dyHighlight$highlightSeriesOpts$strokeBorderColor <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyHighlight"]][["highlightSeriesOpts"]][["strokeBorderColor"]], NULL)
-
+    
     rv$graphConfig$graph$dyLegend$show                <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyLegend"]][["show"]], "auto")
     rv$graphConfig$graph$dyLegend$width               <<- checkLength(configuredWithThisTool, currentGraphConfig[["dyLegend"]][["width"]], 250L)
     rv$graphConfig$graph$dyLegend$showZeroValues      <<- checkTRUE(configuredWithThisTool, currentGraphConfig[["dyLegend"]][["showZeroValues"]])
@@ -3329,8 +3412,8 @@ getTimevisOptions<- reactive({
     rv$graphConfig$graph$showCurrentTime  <<- checkTRUE(configuredWithThisTool, currentGraphConfig[["showCurrentTime"]])
     rv$graphConfig$graph$series           <<- list()
     rv$graphConfig$graph$series[["1"]]    <<- list(content = indices[[1]], 
-                                                start = indices[[1]],
-                                                type = "box")
+                                                   start = indices[[1]],
+                                                   type = "box")
   })
   tagList(
     tagList(
@@ -3370,7 +3453,7 @@ getPivotOptions <- reactive({
     rv$graphConfig$pivottable$rows           <<- checkLength(configuredWithThisTool, currentGraphConfig[["rows"]], NULL)
     rv$graphConfig$pivottable$cols           <<- checkLength(configuredWithThisTool, currentGraphConfig[["cols"]], NULL)
     rv$graphConfig$pivottable$aggregatorName <<- checkLength(configuredWithThisTool, currentGraphConfig[["aggregatorName"]], "Sum")
-
+    
     valOne <- if(isTRUE(configuredWithThisTool) &&
                  length(currentGraphConfig[["vals"]][1]) &&
                  !is.na(currentGraphConfig[["vals"]][1]))
@@ -3405,8 +3488,8 @@ getPivotOptions <- reactive({
                       ),  
                       conditionalPanel(condition = "input.pivot_aggregatorName === 'Sum over Sum' || input.pivot_aggregatorName === '80% Upper Bound' || 
                      input.pivot_aggregatorName === '80% Lower Bound'",
-                                       selectInput("pivot_vals2", lang$adminMode$graphs$pivotOptions$vals, choices = c("_", indices),
-                                                   selected = rv$graphConfig$pivottable$vals[2])
+                     selectInput("pivot_vals2", lang$adminMode$graphs$pivotOptions$vals, choices = c("_", indices),
+                                 selected = rv$graphConfig$pivottable$vals[2])
                       )),  
              selectInput("pivot_rendererName", lang$adminMode$graphs$pivotOptions$renderer, choices = langSpecificGraphs$rendererChoices, 
                          selected = rv$graphConfig$pivottable$rendererName)),
@@ -3425,33 +3508,134 @@ getCustomOptions <- reactive({
   indices       <- activeSymbol$indices
   scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
-    rv$graphConfig$outType  <<- checkLength(configuredWithThisTool, currentGraphConfig[["outType"]], NULL) 
+    rendererNameTmp <- checkLength(configuredWithThisTool, currentGraphConfig[["outType"]], NULL)
+    rv$graphConfig$options  <<- checkLength(configuredWithThisTool, currentGraphConfig[["options"]], list())
+    
+    externalRendererFiles <- existingRendererFiles[existingRendererFiles != paste0("mirorenderer_", tolower(activeSymbol$name))]
+    
+    if(length(rendererNameTmp) &&
+       rendererNameTmp %in% externalRendererFiles){
+      externalRendererSelected <- rendererNameTmp
+    }else{
+      externalRendererSelected <- "-"
+    }
+    
+    if(identical(input$customExternalSymbol, externalRendererSelected)){
+      skipLoadRenderer <<- FALSE
+    }else{
+      skipLoadRenderer <<- TRUE
+    }
+    
+    externalRendererSymbols <- gsub("^mirorenderer\\_", "", externalRendererFiles)
+    
+    names(externalRendererFiles) <- externalRendererSymbols
+    
+    externalRendererFilesInvalid <- !externalRendererSymbols %in%
+      c(unname(inputSymMultiDimChoices),
+        unname(outputSymMultiDimChoices))
+    
+    names(externalRendererFiles)[externalRendererFilesInvalid] <- paste(externalRendererFiles[externalRendererFilesInvalid], lang$adminMode$graphs$customOptions$symNotFoundSuffix)
+    
+    rendererFromExternalSymbol <<- FALSE
+    
+    if(length(rendererNameTmp)){
+      rv$graphConfig$outType <- rendererNameTmp
+    }else{
+      rv$graphConfig$outType <- paste0("mirorenderer_", tolower(activeSymbol$name))
+    }
+    
+    if(length(rendererNameTmp) &&
+       rendererNameTmp %in% existingRendererFiles){
+      if(rendererNameTmp %in% externalRendererFiles){
+        if(rendererNameTmp %in% externalRendererFiles[externalRendererFilesInvalid]){
+          # renderer from nonexistent symbol
+          rv$graphConfig$outType <- paste0("mirorenderer_", tolower(activeSymbol$name))
+        }else{
+          # renderer uses code from other (existent) symbol
+          rendererFromExternalSymbol <<- TRUE
+        }
+      }
+      tryCatch({
+        rendererFunctions <- getRendererFunctions(rendererNameTmp)
+      }, error = function(e){
+        flog.warn("Problems loading custom renderer. Error message: %s",
+                  conditionMessage(e))
+      })
+    }else{
+      rendererFunctions <- list(output = "", renderer = "")
+    }
+    
     rv$graphConfig$packages <<- checkLength(configuredWithThisTool, currentGraphConfig[["packages"]], NULL)
     rv$graphConfig$additionalData <<- checkLength(configuredWithThisTool, currentGraphConfig[["additionalData"]], NULL)
   })
   tagList(
     tags$div(class="cat-body cat-body-48",
-             textInput("custom_name", lang$adminMode$graphs$customOptions$name, value = rv$graphConfig$outType),
-             selectizeInput("custom_packages", tags$div(lang$adminMode$graphs$customOptions$packages, 
-                                                        tags$a("", title = lang$adminMode$general$ui$tooltipDocs, class="info-wrapper", href="https://gams.com/miro/customize.html#custom-renderers", 
-                                                               tags$span(class="fas fa-info-circle", class="info-icon",
-                                                                         role = "presentation",
-                                                                         `aria-label` = "More information"), target="_blank")),
-                            choices = if(length(rv$graphConfig$packages)) rv$graphConfig$packages else c(), 
-                            selected = rv$graphConfig$packages,
-                            multiple = TRUE, options = list("create" = TRUE,"persist" = FALSE)),
+             selectInput(input = "customExternalSymbol",
+                         label = lang$adminMode$graphs$customOptions$externalRenderer,
+                         choices = c("-", externalRendererFiles),
+                         selected = externalRendererSelected),
+             tags$div(id = "customOutputBoilerplate", class = "shiny-text-output custom-renderer-boilerplate "),
+             aceEditor(
+               outputId = "customOutputFunction",
+               value = rendererFunctions$output,
+               debounce = 100,
+               mode = "r",
+               minLines = 1,
+               maxLines = 30,
+               autoScrollEditorIntoView = TRUE,
+               theme = if(isInDarkMode) "ambiance" else "chrome",
+               autoComplete = "live",
+               autoCompleters = c("rlang", "snippet", "text", "keyword")
+             ),
+             tags$div(class = "custom-renderer-boilerplate", "}"),
+             tags$div(id = "customRenderBoilerplate", class = "custom-renderer-boilerplate shiny-text-output"),
+             aceEditor(
+               outputId = "customRenderFunction",
+               value = rendererFunctions$renderer,
+               debounce = 100,
+               mode = "r",
+               minLines = 1,
+               maxLines = 30,
+               autoScrollEditorIntoView = TRUE,
+               theme = if(isInDarkMode) "ambiance" else "chrome",
+               autoComplete = "live",
+               autoCompleters = c("rlang")
+             ),
+             tags$div(class = "custom-renderer-boilerplate", "}")),
+    tags$div(class="cat-body cat-body-48a", style="display:none;",
+             
              if(activeSymbol$id > length(modelIn)){
                # active symbol is an output symbol
-               selectizeInput("custom_additionalData", lang$adminMode$graphs$customOptions$additionalData,
+               selectizeInput("customAdditionalData", lang$adminMode$graphs$customOptions$additionalData,
                               choices = setNames(list(c(inputSymMultiDimChoices), 
-                                                      c(outputSymMultiDimChoices)), 
+                                                      c(outputSymMultiDimChoices)[-(activeSymbol$id - length(modelIn))]),
                                                  c(lang$adminMode$graphs$ui$input, 
                                                    lang$adminMode$graphs$ui$output)),
                               selected = rv$graphConfig$additionalData,
                               multiple = TRUE, options = list('dropdownParent' = "body"))
-             }
-    )
-    
+             },
+             tags$div(id = "customPackagesModified", class = "err-msg",
+                      lang$adminMode$uiR$restartRequired,
+                      style = "display:none"),
+             selectizeInput("customPackages", tags$div(lang$adminMode$graphs$customOptions$packages, 
+                                                       tags$a("", title = lang$adminMode$general$ui$tooltipDocs, class="info-wrapper", href="https://gams.com/miro/customize.html#custom-renderers", 
+                                                              tags$span(class="fas fa-info-circle", class="info-icon",
+                                                                        role = "presentation",
+                                                                        `aria-label` = "More information"), target="_blank")),
+                            choices = if(length(rv$graphConfig$packages)) rv$graphConfig$packages else c(), 
+                            selected = rv$graphConfig$packages,
+                            multiple = TRUE, options = list("create" = TRUE,"persist" = FALSE)),
+             tags$label(lang$adminMode$graphs$customOptions$options, `for` = "cutomOptions"),
+             aceEditor("cutomOptions", mode = "json",
+                       value = if(length(rv$graphConfig$options))
+                         toJSON(rv$graphConfig$options, pretty = TRUE, auto_unbox = TRUE, null = "null")
+                       else "{}",
+                       debounce = 1000,
+                       minLines = 1,
+                       maxLines = 30,
+                       autoScrollEditorIntoView = TRUE,
+                       theme = if(isInDarkMode) "ambiance" else "chrome",
+                       autoComplete = "live"))
   )
 }) 
 getColorPivotOptions <- reactive({
@@ -3462,13 +3646,13 @@ getColorPivotOptions <- reactive({
     rv$graphConfig$graph$color <<- checkLength(configuredWithThisTool, currentGraphConfig[["color"]], NULL) 
   })
   tagList(
-  selectInput("chart_color", tags$div(lang$adminMode$graphs$chartOptions$color, 
-              tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#group-domain", 
-                     tags$span(class="fas fa-info-circle", class="info-icon",
-                               role = "presentation",
-                               `aria-label` = "More information"), target="_blank")),
-              choices = c("_", indices),
-              selected = rv$graphConfig$graph$color))
+    selectInput("chart_color", tags$div(lang$adminMode$graphs$chartOptions$color, 
+                                        tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#group-domain", 
+                                               tags$span(class="fas fa-info-circle", class="info-icon",
+                                                         role = "presentation",
+                                                         `aria-label` = "More information"), target="_blank")),
+                choices = c("_", indices),
+                selected = rv$graphConfig$graph$color))
 })
 getFilterOptions <- reactive({
   rv$initData
@@ -3499,9 +3683,9 @@ getFilterOptions <- reactive({
   tagList(
     tags$label(class = "cb-label info-position", "for" = "filter_dim", 
                tags$div(lang$adminMode$graphs$filterOptions$filter, tags$a("", class="info-wrapper", href="https://gams.com/miro/charts.html#filter-option", 
-                                                                                                        tags$span(class="fas fa-info-circle", class="info-icon",
-                                                                                                                  role = "presentation",
-                                                                                                                  `aria-label` = "More information"), target="_blank"))),
+                                                                           tags$span(class="fas fa-info-circle", class="info-icon",
+                                                                                     role = "presentation",
+                                                                                     `aria-label` = "More information"), target="_blank"))),
     tags$div(
       tags$label(class = "checkbox-material", 
                  checkboxInput("filter_dim", value = isTRUE(length(rv$graphConfig$graph$filter$col) > 0L), label = NULL)
@@ -3522,8 +3706,76 @@ getFilterOptions <- reactive({
              ))
   )
 })
+# custom renderer
+aceAutocomplete(inputId = "customOutputFunction")
+aceAutocomplete(inputId = "customRenderFunction")
+
+customOutputFunctionName <- reactive(paste0(tolower(rv$graphConfig$outType), "Output"))
+customRendererFunctionName <- reactive(paste0("render", toupper(substr(rv$graphConfig$outType, 1, 1)), substr(tolower(rv$graphConfig$outType), 2, nchar(rv$graphConfig$outType))))
+
+getRendererFunctions <- function(rendererName){
+  rendererPath <- file.path(customRendererDir, paste0(rendererName, ".R"))
+  if(!file.exists(rendererPath)){
+    return(list(output = "", renderer = ""))
+  }
+  local({
+    source(rendererPath, local = TRUE)
+    
+    # Need to detect the functions by looking for ^*Output <- * and ^render* <-
+    funOutputStr <- paste0(tolower(rendererName), "Output")
+    funRenderStr <- paste0("render", toupper(substr(rendererName, 1, 1)),
+                           substr(tolower(rendererName), 2, nchar(rendererName)))
+    
+    # This command is super confusing. It gets the body of the function and puts it
+    # into a string without adding the curly braces {}.
+    funOutputBody <- deparse(body(eval(parse(text = funOutputStr), envir = customRendererEvalEnv)))
+    if(length(funOutputBody) > 3L){
+      funOutputBody <- paste0(funOutputBody[seq(3L, length(funOutputBody) - 1)],
+                              collapse = "\n")
+    }else{
+      funOutputBody <- ""
+    }
+    funRenderBody <- deparse(body(eval(parse(text = funRenderStr), envir = customRendererEvalEnv)))
+    if(length(funRenderBody) > 2L){
+      funRenderBody <- paste0(funRenderBody[seq(2L, length(funRenderBody) - 1)],
+                              collapse = "\n")
+    }else{
+      funRenderBody <- ""
+    }
+    return(list(output = funOutputBody, renderer = funRenderBody))
+  })
+}
+output$customOutputBoilerplate <- renderText({
+  paste0(
+    customOutputFunctionName(),
+    " <- function(id, height = NULL, options = NULL, path = NULL){\n   ns <- NS(id)"
+  )
+})
+output$customRenderBoilerplate <- renderText({
+  paste0(
+    customRendererFunctionName(),
+    " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){"
+  )
+})
+output[["preview_custom_renderer"]] <- renderUI({
+  req(input$btUpdateCustomRendererOutput)
+  outputFunction <- isolate(paste0(
+    customOutputFunctionName(),
+    " <- function(id, height = NULL, options = NULL, path = NULL){\n    ns <- NS(id)\n",
+    isolate(input$customOutputFunction),
+    "}"
+  ))
+  eval(parse(text = outputFunction), envir = customRendererEvalEnv)("preview_output_custom", height = 400,
+                                                                    options = rv$graphConfig$options,
+                                                                    path = customRendererDir)
+})
+
+
 observe({
   req(rv$graphConfig$graph$tool, activeSymbol$id > 0L, allDataAvailable)
+  if(identical(rv$graphConfig$graph$tool, "custom")){
+    force(input$btUpdateCustomRendererPreview)
+  }
   if(identical(rv$graphConfig$graph$tool, "plotly") && identical(length(rv$graphConfig$graph$type), 0L))
     return()
   if(activeSymbol$id > length(modelIn)){
@@ -3543,8 +3795,8 @@ observe({
     if(isolate(rv$graphConfig$graph$tool) == "plotly"){
       if(identical(rv$graphConfig$graph$type, "pie") && 
          nrow(data) > 100){
-          showEl(session, "#pieValues")
-          hideEl(session, "#preview-content-plotly")
+        showEl(session, "#pieValues")
+        hideEl(session, "#preview-content-plotly")
       }else{
         callModule(renderData, "preview_output_plotly", type = "graph", 
                    data = data, configData = configScalars, 
@@ -3589,18 +3841,18 @@ observe({
       hideEl(session, "#preview-content-valuebox")
       hideEl(session, "#preview-content-custom")
     }else if(isolate(rv$graphConfig$graph$tool) == "miropivot"){
-      for(el in ls(envir = miroPivotRendererEnv)){
-        if("Observer" %in% class(miroPivotRendererEnv[[el]])){
-          miroPivotRendererEnv[[el]]$destroy()
+      for(el in ls(envir = customRendererEnv)){
+        if("Observer" %in% class(customRendererEnv[[el]])){
+          customRendererEnv[[el]]$destroy()
         }
       }
       miropivotOptions <- currentGraphConfig$options
       miropivotOptions$emptyUEL <- rv$graphConfig$graph$options$emptyUEL
       miropivotOptions$enableHideEmptyCols <- TRUE
       callModule(renderData, "preview_output_miropivot", type = "miropivot", 
-                 data = data, rendererEnv = miroPivotRendererEnv,
+                 data = data, rendererEnv = customRendererEnv,
                  customOptions = c(list("_metadata_" = metadata, 
-                                      resetOnInit = TRUE), 
+                                        resetOnInit = TRUE), 
                                    miropivotOptions),
                  roundPrecision = 2, modelDir = modelDir)
       showEl(session, "#preview-content-miropivot")
@@ -3644,25 +3896,6 @@ observe({
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-custom")
     }else if(isolate(rv$graphConfig$graph$tool) == "custom"){
-      nameTmp <- rv$graphConfig$outType
-      customR <- paste0(nameTmp, "Output <- function(id, height = NULL, options = NULL, path = NULL){
-    ns <- NS(id)
- 
-    # set default height
-    if(is.null(height)){
-      height <- 700
-    } 
-    tagList( 
-      #define rendererOutput function here 
-    ) 
-}
-                            
-",
-"render", toupper(substr(nameTmp, 1, 1)), substr(nameTmp, 2, nchar(nameTmp)), " <- function(input, output, session, data, options = NULL, path = NULL, views = NULL, outputScalarsFull = NULL, ...){ 
-    #renderer 
-
-}")
-      output[["preview_output_custom"]] <- renderText(customR)
       showEl(session, "#preview-content-custom")
       hideEl(session, "#preview-content-pivot")
       hideEl(session, "#preview-content-miropivot")
@@ -3672,6 +3905,32 @@ observe({
       hideEl(session, "#preview-content-leaflet")
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-valuebox")
+      for(el in ls(envir = customRendererEnv)){
+        if("Observer" %in% class(customRendererEnv[[el]])){
+          customRendererEnv[[el]]$destroy()
+        }
+      }
+      if(length(rv$graphConfig$additionalData)){
+        additionalDataIds <- match(rv$graphConfig$additionalData, 
+                                   names(modelOut))
+        additionalDataIds[is.na(additionalDataIds)] <- match(rv$graphConfig$additionalData[is.na(additionalDataIds)],
+                                                             inputDsNames) + length(modelOut)
+        additionalDataIds <- c(activeSymbol$id - length(modelIn), additionalDataIds)
+        data <- c(modelOutputData, modelInputData)[additionalDataIds]
+        names(data) <- c(names(modelOut), inputDsNames)[additionalDataIds]
+      }
+      local({
+        customRendererFunction <- eval(parse(text = isolate(paste0(
+          customRendererFunctionName(),
+          " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){\n",
+          input$customRenderFunction,
+          "\n}"))), envir = customRendererEvalEnv)
+        callModule(customRendererFunction, "preview_output_custom",
+                   data, options = rv$graphConfig$options, 
+                   path = customRendererDir, rendererEnv = customRendererEnv,
+                   views = NULL, attachments = NULL,
+                   outputScalarsFull = configScalars)
+      })
     }else{
       callModule(renderData, "preview_output_leaflet", type = "graph", 
                  data = data, configData = configScalars, 
@@ -3697,8 +3956,8 @@ observe({
     hideEl(session, "#preview-content-miropivot")
     hideEl(session, "#preview-content-timevis")
     hideEl(session, "#preview-content-valuebox")
-    hideEl(session, "#preview-content-custom")
-    showElReplaceTxt(session, "#preview-error", "An error occurred: " %+% toString(e))
+    showElReplaceTxt(session, "#preview-error",
+                     sprintf(lang$adminMode$graphs$ui$previewError, conditionMessage(e)))
   })
 }, priority = -1000)
 
@@ -3774,8 +4033,36 @@ observeEvent(rv$saveGraphConfirm, {
   }else if(rv$graphConfig$graph$tool == "custom"){
     configJSON$dataRendering[[activeSymbol$name]]$graph <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$height <<- NULL
-    configJSON$dataRendering[[activeSymbol$name]]$options <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$pivottable <<- NULL
+    if(!length(configJSON$dataRendering[[activeSymbol$name]]$options)){
+      configJSON$dataRendering[[activeSymbol$name]]$options <<- NULL
+    }
+    customRendererName <- paste0("mirorenderer_", tolower(activeSymbol$name))
+    if(rendererFromExternalSymbol){
+      customRendererName <- configJSON$dataRendering[[activeSymbol$name]]$outType
+    }
+    if(identical(configJSON$dataRendering[[activeSymbol$name]]$outType,
+                 customRendererName)){
+      if(!dir.exists(customRendererDir) && !dir.create(customRendererDir)){
+        flog.warn("Could not create custom renderer directory: %s", customRendererDir)
+        return(showErrorMsg(lang$errMsg$fileWrite$title,
+                            sprintf(lang$errMsg$fileWrite$desc, customRendererDir)))
+      }
+      cat(paste0(
+        customOutputFunctionName(),
+        " <- function(id, height = NULL, options = NULL, path = NULL){\n    ns <- NS(id)\n",
+        isolate(input$customOutputFunction),
+        "\n}\n"
+      ), "\n", paste0(
+        customRendererFunctionName(),
+        " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){\n",
+        input$customRenderFunction,
+        "\n}\n"), 
+      file = file.path(customRendererDir, paste0(customRendererName, ".R")))
+      if(!customRendererName %in% existingRendererFiles){
+        existingRendererFiles <<- c(existingRendererFiles, customRendererName)
+      }
+    }
   }else{
     configJSON$dataRendering[[activeSymbol$name]]$pivottable <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$options <<- NULL
@@ -3807,6 +4094,13 @@ observeEvent(input$deleteGraphConfirm, {
   graphId <- match(tolower(activeSymbol$name), tolower(names(configJSON$dataRendering)))
   if(is.na(graphId)){
     return()
+  }
+  customRendererName <- paste0("mirorenderer_", tolower(activeSymbol$name))
+  if(identical(configJSON$dataRendering[[graphId]]$outType,
+               customRendererName)){
+    unlink(file.path(customRendererDir,
+                     paste0(customRendererName, ".R")))
+    existingRendererFiles <<- existingRendererFiles[existingRendererFiles != customRendererName]
   }
   configJSON$dataRendering[[graphId]] <<- NULL
   write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")

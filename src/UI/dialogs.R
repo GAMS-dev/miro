@@ -1293,27 +1293,34 @@ generateLine <- function(i, j, type, label){
                            },
                            text = {
                              selectInput(paste0("op_", i, "_", j), label = NULL, 
-                                         choices = c(contains = "%LIKE%", 
-                                                     "doesn't contain" = "%NOTLIKE%",
-                                                     "starts with" = "LIKE%",
-                                                     "ends with" = "%LIKE",
-                                                     is = "=",
-                                                     "is not" = "!="), 
+                                         choices = setNames(c("=", "!=", "%LIKE%", 
+                                                              "%NOTLIKE%", "LIKE%", "%LIKE",
+                                                              "%EXIST", "%NOTEXIST"),
+                                                            c(lang$nav$hcubeLoad$operators$is,
+                                                              lang$nav$hcubeLoad$operators$notis,
+                                                              lang$nav$hcubeLoad$operators$contains,
+                                                              lang$nav$hcubeLoad$operators$notcontains,
+                                                              lang$nav$hcubeLoad$operators$startswith,
+                                                              lang$nav$hcubeLoad$operators$endswith,
+                                                              lang$nav$hcubeLoad$operators$exists,
+                                                              lang$nav$hcubeLoad$operators$notexists)), 
                                          selected = "=")
                            },
                            csv = {
                              selectInput(paste0("op_", i, "_", j), label = NULL, 
-                                         choices = c(contains = "%LIKE%", 
-                                                     "doesn't contain" = "%NOTLIKE%",
-                                                     "starts with" = ",LIKE%",
-                                                     "ends with" = "%LIKE,",
-                                                     is = "%,LIKE,%",
-                                                     "is not" = "%,NOTLIKE,%"), 
+                                         choices = setNames(c("%,LIKE,%", "%,NOTLIKE,%", "%LIKE%", 
+                                                              "%NOTLIKE%", ",LIKE%", "%LIKE,"),
+                                                            c(lang$nav$hcubeLoad$operators$is,
+                                                              lang$nav$hcubeLoad$operators$notis,
+                                                              lang$nav$hcubeLoad$operators$contains,
+                                                              lang$nav$hcubeLoad$operators$notcontains,
+                                                              lang$nav$hcubeLoad$operators$startswith,
+                                                              lang$nav$hcubeLoad$operators$endswith)),
                                          selected = "%,LIKE,%")
                            },
                            date = {
                              selectInput(paste0("op_", i, "_", j), label = NULL, 
-                                         choices = c(between = "BETWEEN"))
+                                         choices = setNames("BETWEEN", lang$nav$hcubeLoad$operators$between))
                            })
            ),
            tags$div(class = "item-search-crit",
@@ -1326,7 +1333,8 @@ generateLine <- function(i, j, type, label){
                              dateRangeInput(paste0("val_", i, "_", j), label = NULL)
                            }, 
                            {
-                             textInput(paste0("val_", i, "_", j), label = NULL)
+                             conditionalPanel(paste0("!['%EXIST','%NOTEXIST'].includes(input.op_", i, "_", j, ")"),
+                                              textInput(paste0("val_", i, "_", j), label = NULL))
                            })
                     
            ),

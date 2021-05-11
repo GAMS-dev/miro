@@ -9,6 +9,10 @@ variables:
   POSTGRES_PASSWORD: $MIRO_DB_PASSWORD
   POSTGRES_HOST_AUTH_METHOD: trust
 
+stages:
+  - test
+  - deploy
+
 services:
   - name: postgres:12.1-alpine
 
@@ -18,6 +22,7 @@ image:
 test_job:
   tags:
     - linux
+  stage: test
   before_script:
     - source /etc/profile.d/ci.sh
     - yarn install --cache-folder .yarn
@@ -42,6 +47,7 @@ test_job:
 update_doc_job:
   tags:
     - linux
+  stage: deploy
   before_script:
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
@@ -51,3 +57,5 @@ update_doc_job:
     - rsync -rlptvz -e "ssh -o StrictHostKeyChecking=no" doc/* ubuntu@new.gams.com:/var/www/html/staging.gams.com/public_html/miro
   rules:
     - when: manual
+    - allow_failure: true
+  needs: []

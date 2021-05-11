@@ -171,7 +171,7 @@ ScenData <- R6Class("ScenData", public = list(
       private$cachedData[[scenId]][["data"]][[symName]]
     }))
   },
-  get = function(refId, symNames = NULL, sheetIds = NULL, loadData = TRUE, showProgress = TRUE,
+  get = function(refId, symNames = NULL, sheetIds = NULL, showProgress = TRUE,
                  drop = FALSE){
     if(identical(refId, "sb")){
       scenId <- "sb"
@@ -203,6 +203,7 @@ ScenData <- R6Class("ScenData", public = list(
       scenId <- private$refScenMap[[refId]]
       stopifnot(identical(length(scenId), 1L))
     }
+    self$get(refId, symNames = scalarsOutName)
     outputScalarsFull <- private$cachedData[[as.character(scenId)]][["scalar"]]
     inputScalars <- self$get(refId, symNames = scalarsFileName)
     if(length(outputScalarsFull)){
@@ -211,6 +212,9 @@ ScenData <- R6Class("ScenData", public = list(
                          outputScalarsFull))
       }
       return(outputScalarsFull)
+    }
+    if(!outputScalarsOnly && length(inputScalars)){
+      return(inputScalars)
     }
     return(tibble(scalar = character(), description = character(), value = character()))
   },

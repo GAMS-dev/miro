@@ -5,7 +5,7 @@ import AutoNumeric from 'autonumeric';
 import {
   sleep, changeActiveButtons, switchTabInTabset, removeModal,
   switchTab, isInputEl, rerenderDygraph, rerenderHot, showHideEl, scrollDown,
-  LoadingScreen,
+  changeTheme, LoadingScreen,
 } from './util';
 
 const loadingScreen = new LoadingScreen();
@@ -222,6 +222,13 @@ export function modal(msg, okButton, cancelButton,
 }
 
 $(document).ready(() => {
+  changeTheme(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  if (typeof window.matchMedia('(prefers-color-scheme: dark)').addEventListener !== 'undefined') {
+    // browser supports listening to matchMedia change
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      changeTheme(e.matches);
+    });
+  }
   $('#toolCategories').on('click', '.category-btn', function () {
     const catId = this.dataset.cat;
     const catBody = $(`.cat-body-${catId}`);
@@ -267,10 +274,31 @@ $(document).ready(() => {
       }());
     });
   }
-  $('.toggle-config-view-graph').click(() => {
+  $('.toggle-config-view-left').click(() => {
+    $('#config-right-graph')[0].setAttribute('style', '-webkit-transition: width 0.3s ease;-moz-transition: width 0.3s ease;-o-transition: width 0.3s ease;transition: width 0.3s ease;');
+    $('#config-left-graph')[0].setAttribute('style', '-webkit-transition: margin 0.3s ease;-moz-transition: margin 0.3s ease;-o-transition: margin 0.3s ease;transition: margin 0.3s ease;');
+
+    $('#config-right-graph').removeClass('collapse-config-right').toggleClass('col-sm-12 col-sm-6');
     $('#config-left-graph').toggleClass('collapse-config-left');
-    $('#config-right-graph').toggleClass('col-sm-12 col-sm-6');
-    $('#toggleFullscreenGraph i').toggleClass('fa-expand fa-compress');
+    if ($('#config-right-graph').hasClass('col-sm-12')) {
+      $('#config-left-graph').removeClass('col-sm-12').addClass('col-sm-6');
+      $('#toggleFullscreenRight').find('i:first').removeClass('fa-compress').addClass('fa-expand');
+    }
+    $('#toggleFullscreenLeft').find('i:last').toggleClass('fa-expand fa-compress');
+    $(window).trigger('resize');
+    return false;
+  });
+  $('.toggle-config-view-right').click(() => {
+    $('#config-left-graph')[0].setAttribute('style', '-webkit-transition: width 0.3s ease;-moz-transition: width 0.3s ease;-o-transition: width 0.3s ease;transition: width 0.3s ease;');
+    $('#config-right-graph')[0].setAttribute('style', '-webkit-transition: margin 0.3s ease;-moz-transition: margin 0.3s ease;-o-transition: margin 0.3s ease;transition: margin 0.3s ease;');
+
+    $('#config-left-graph').removeClass('collapse-config-left').toggleClass('col-sm-12 col-sm-6');
+    $('#config-right-graph').toggleClass('collapse-config-right');
+    if ($('#config-left-graph').hasClass('col-sm-12')) {
+      $('#config-right-graph').removeClass('col-sm-12').addClass('col-sm-6');
+      $('#toggleFullscreenLeft').find('i:last').removeClass('fa-compress').addClass('fa-expand');
+    }
+    $('#toggleFullscreenRight').find('i:first').toggleClass('fa-expand fa-compress');
     $(window).trigger('resize');
     return false;
   });
