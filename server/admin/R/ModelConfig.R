@@ -82,6 +82,22 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
         }
         private$currentModelConfigs[[appIndex]][["displayName"]] <- newConfig[["displayName"]]
     }
+    if(!is.null(newConfig[["containerEnv"]])){
+      for(envKey in c(names(newConfig[["containerEnv"]]),
+        names(private$currentModelConfigs[[appIndex]][["containerEnv"]]))){
+        if(envKey %in% private$restrictedEnvKeys){
+          if(envKey %in% names(newConfig[["containerEnv"]])){
+            flog.warn("Invalid environment variable name: %s in custom environment file. It was ignored.", envKey)
+          }
+          next
+        }
+        if(envKey %in% names(newConfig[["containerEnv"]])){
+          private$currentModelConfigs[[appIndex]][["containerEnv"]][[envKey]] <- newConfig[["containerEnv"]][[envKey]]
+          next
+        }
+        private$currentModelConfigs[[appIndex]][["containerEnv"]][[envKey]] <- NULL
+      }
+    }
     for(configId in c("description", "logoURL")){
         if(!is.null(newConfig[[configId]])){
             private$currentModelConfigs[[appIndex]][[configId]] <- newConfig[[configId]]
@@ -141,8 +157,19 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
         private$accessGroups$join(accessGroups)
     }
 
+    appEnv <- list()
+    for(envKey in names(appConfig[["containerEnv"]])){
+      if(!envKey %in% private$restrictedEnvKeys){
+        appEnv[[envKey]] <- appConfig[["containerEnv"]][[envKey]]
+      }
+    }
+    if(length(appEnv)){
+      appEnv <- as.character(jsonlite::toJSON(appEnv, auto_unbox = TRUE))
+    }
+
     return(list(id = appConfig[["id"]], alias = appConfig[["displayName"]], 
         desc = appConfig[["description"]], logob64 = logoB64,
+        appEnv = if(length(appEnv)) appEnv else "",
         groups = I(accessGroups)))
   }),
   private = list(
@@ -150,6 +177,8 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
     accessGroups = NULL,
     adminConfig = NULL,
     currentModelConfigs = NULL,
+    restrictedEnvKeys = c("MIRO_MODEL_PATH", "MIRO_DATA_DIR", "MIRO_MODE",
+      "MIRO_VERSION_STRING", "MIRO_DB_USERNAME", "MIRO_DB_PASSWORD", "MIRO_DB_SCHEMA"),
     writeConfig = function(){
       yaml::write_yaml(list(specs = c(list(private$adminConfig), private$currentModelConfigs)), 
         private$configPath)

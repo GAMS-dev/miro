@@ -137,6 +137,7 @@ server <- function(input, output, session){
             currentConfigList <- modelConfig$getConfigList()
             newAppTitle <- trimws(input$addApp$title)
             newAppDesc  <- trimws(input$addApp$desc)
+            newAppEnv   <- trimws(input$addApp$env)
             newGroups   <- csv2Vector(input$addApp$groups)
             if(!length(newAppTitle) || nchar(newAppTitle) == 0){
                 flog.error("Add app request with empty app title received. This should never happen and is likely an attempt to tamper with the app.")
@@ -176,6 +177,22 @@ server <- function(input, output, session){
             newAppConfig[["containerEnv"]][["MIRO_DB_USERNAME"]] <- appDbCredentials$user
             newAppConfig[["containerEnv"]][["MIRO_DB_PASSWORD"]] <- appDbCredentials$password
             newAppConfig[["containerEnv"]][["MIRO_DB_SCHEMA"]]   <- appDbCredentials$user
+
+            if(length(newAppEnv)){
+                if (!jsonlite::validate(newAppEnv)) {
+                    stop("Argument 'txt' is not a valid JSON string.")
+                }
+                newAppEnv <- jsonlite::fromJSON(newAppEnv)
+                for(envName in names(newAppEnv)){
+                    if(envName %in% names(newAppConfig[["containerEnv"]])){
+                        flog.warn("Invalid environment variable name: %s in custom environment file. It was ignored.", envName)
+                    }else if(length(newAppEnv[[envName]]) != 1L){
+                        flog.error("Invalid environment variable value for variable: %s. Probably an attempt to tamper with the app!", envName)
+                    }else{
+                        newAppConfig[["containerEnv"]][[envName]] <- as.character(newAppEnv[[envName]])
+                    }
+                }
+            }
 
             appDir   <- file.path(getwd(), MIRO_MODEL_DIR, appId)
             dataDir  <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_", appId))
@@ -273,15 +290,30 @@ server <- function(input, output, session){
                 newLogoName <- getLogoName(appId, logoPath)
                 addAppLogo(appId, logoPath)
             }
+
+            if(length(input$updateApp$env)){
+                if (!jsonlite::validate(input$updateApp$env)) {
+                    stop("Argument 'txt' is not a valid JSON string.")
+                }
+                newAppEnv <- jsonlite::fromJSON(input$updateApp$env)
+                for(envName in names(newAppEnv)){
+                    if(length(newAppEnv[[envName]]) != 1L){
+                        stop("Invalid environment variable value for variable: %s.", envName)
+                    }else{
+                        newAppEnv[[envName]] <- as.character(newAppEnv[[envName]])
+                    }
+                }
+            }
             
             modelConfig$update(appIndex, list(displayName = input$updateApp$title,
-                logoURL = newLogoName,
+                logoURL = newLogoName, 
+                containerEnv = newAppEnv,
                 description = input$updateApp$desc,
                 accessGroups = csv2Vector(input$updateApp$groups)))
 
             flog.info("MIRO app: %s updated successfully.", appId)
             session$sendCustomMessage("onSuccess", 
-                    list(requestType = "updateApp", 
+                    list(requestType = "updateApp",
                         configList = modelConfig$getConfigList(), 
                         groupList = modelConfig$getAccessGroupUnion()))
         }, error = function(e){
