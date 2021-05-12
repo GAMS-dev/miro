@@ -289,10 +289,10 @@ local({
     adminConfig = gsub("REQUIRED_API_VERSION[[:space:]]*<-.*",
         paste0("REQUIRED_API_VERSION <- ", APIVersion), adminConfig)
     writeLines(adminConfig, './server/admin/global.R')
-    dockerImageMiro = readLines('./server/miro_ui/Dockerfile', warn = FALSE)
+    dockerImageMiro = readLines('./server/ui/Dockerfile', warn = FALSE)
     dockerImageMiro = gsub('com\\.gamsmiro\\.version="[^"]+"',
         paste0('com.gamsmiro.version="', MIROVersion, '"'), dockerImageMiro)
-    writeLines(dockerImageMiro, './server/miro_ui/Dockerfile')
+    writeLines(dockerImageMiro, './server/ui/Dockerfile')
     dockerImageAdmin = readLines('./server/admin/Dockerfile', warn = FALSE)
     dockerImageAdmin = gsub('com\\.gamsmiroadmin\\.version="[^"]+"',
         paste0('com.gamsmiroadmin.version="', MIROVersion, '"'), dockerImageAdmin)

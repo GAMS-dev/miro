@@ -1,4 +1,4 @@
-FROM hub.gams.com/gamsmiro-ui
+FROM gams/miro-ui
 
 USER root
 

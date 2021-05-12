@@ -60,20 +60,13 @@ class MiroServer(object):
       help='Module to build',
       choices=['dockerproxy', 'proxy', 'auth', 'admin', 'ui'])
 
-    parser.add_argument('--pull', help='Pull images from hub.gams.com', 
-      action='store_true')
-
-    parser.add_argument('--no-prep', help='Skips downloading required R packages', 
+    parser.add_argument('--no-prep', help='Skips downloading required R packages (e.g. because they are already downloaded)', 
       action='store_true')
 
     args = parser.parse_args(sys.argv[2:])
 
     if not os.path.isfile('.env'):
       gen_env_file('.env')
-
-    if args.pull:
-      subprocess.check_call(['docker', 'login', 'hub.gams.com'])
-      subprocess.check_call(['docker-compose', 'pull'], env=self.__compose_env)
 
     if args.module is None:
       if not args.no_prep:
@@ -102,8 +95,10 @@ class MiroServer(object):
 
     dc_args_miro = ['docker-compose', 'down']
 
-    self.stop_proxies('hub.gams.com/gamsmiro-admin')
-    self.stop_proxies('hub.gams.com/gamsmiro-ui')
+    self.stop_proxies('hub.gams.com/miro-admin')
+    self.stop_proxies('hub.gams.com/miro-ui')
+    self.stop_proxies('gams/miro-admin')
+    self.stop_proxies('gams/miro-ui')
 
     if args.volumes:
       dc_args_miro.append('-v')
@@ -120,11 +115,11 @@ class MiroServer(object):
 
     args = parser.parse_args(sys.argv[2:])
 
-    for image in [('gamsmiro-sproxy', 'gamsmiro-sproxy'),
-                  ('gamsmiro-proxy', 'gamsmiro-proxy'),
-                  ('gamsmiro-auth', 'gamsmiro-auth'),
-                  ('gamsmiro-admin', 'gamsmiro-admin'),
-                  ('gamsmiro-ui', 'gamsmiro-ui')]:
+    for image in [('miro-sproxy', 'miro-sproxy'),
+                  ('miro-proxy', 'miro-proxy'),
+                  ('miro-auth', 'miro-auth'),
+                  ('miro-admin', 'miro-admin'),
+                  ('miro-ui', 'miro-ui')]:
       self.push_image(*image, unstable=args.unstable)
 
 
@@ -206,19 +201,21 @@ class MiroServer(object):
 
   def push_image(self, image_name_local, image_name_hub, unstable=False):
     if unstable:
+      dhost = 'hub.gams.com'
       version_string = 'unstable'
     else:
+      dhost = 'gams'
       with open(os.path.join('..', 'package.json'), 'r') as f:
         version_string = json.loads(f.read())['version'].strip()
 
     if not unstable:
-      subprocess.check_call(['docker', 'tag', image_name_local, f'hub.gams.com/{image_name_hub}'])
+      subprocess.check_call(['docker', 'tag', image_name_local, f'{dhost}/{image_name_hub}'])
 
-    subprocess.check_call(['docker', 'tag', image_name_local, f'hub.gams.com/{image_name_hub}:{version_string}'])
+    subprocess.check_call(['docker', 'tag', image_name_local, f'{dhost}/{image_name_hub}:{version_string}'])
     if not unstable:
-      subprocess.check_call(['docker', 'push', f'hub.gams.com/{image_name_hub}'])
+      subprocess.check_call(['docker', 'push', f'{dhost}/{image_name_hub}'])
 
-    subprocess.check_call(['docker', 'push', f'hub.gams.com/{image_name_hub}:{version_string}'])
+    subprocess.check_call(['docker', 'push', f'{dhost}/{image_name_hub}:{version_string}'])
 
 
 if __name__ == '__main__':

@@ -82,7 +82,7 @@ function install
 function install
 {
     "Building custom MIRO Docker image"
-    docker build -t hub.gams.com/gamsmiro-ui:latest -f Dockerfile-extend-miro .
+    docker build -t gams/miro-ui:latest -f Dockerfile-extend-miro .
     if (!$?) { exit 1 }
 }
 
@@ -103,13 +103,13 @@ function launch
 
 function stop_proxies
 {
-    $orphaned_adminc = docker container ls -f "network=miroserver-network" -f "ancestor=hub.gams.com/gamsmiro-admin" --format "{{.ID}}"
+    $orphaned_adminc = docker container ls -f "network=miroserver-network" -f "ancestor=gams/miro-admin" --format "{{.ID}}"
     if ($orphaned_adminc) {
         docker stop $orphaned_adminc | Out-Null
         docker rm $orphaned_adminc | Out-Null
     }
     
-    $orphaned_uic = docker container ls -f "network=miroserver-network" -f "ancestor=hub.gams.com/gamsmiro-ui" --format "{{.ID}}"
+    $orphaned_uic = docker container ls -f "network=miroserver-network" -f "ancestor=gams/miro-ui" --format "{{.ID}}"
     if ($orphaned_uic) {
         docker stop $orphaned_uic | Out-Null
         docker rm $orphaned_uic | Out-Null
