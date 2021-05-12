@@ -1,9 +1,9 @@
-FROM gamsmiro-ui
+FROM miro-ui
 
-LABEL com.gamsmiroadmin.vendor="GAMS Development Corp."\
-com.gamsmiroadmin.version="1.3.99"\
-com.gamsmiroadmin.license="GPL-3.0"\
-com.gamsmiroadmin.description="GAMS MIRO Docker image for auth container"\
+LABEL com.gamsmiauth.vendor="GAMS Development Corp."\
+com.gamsmiauth.version="1.3.99"\
+com.gamsmiauth.license="GPL-3.0"\
+com.gamsmiauth.description="GAMS MIRO Docker image for auth container"\
 maintainer="fproske@gams.com"
 
 USER root
