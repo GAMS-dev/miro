@@ -5,11 +5,6 @@ HTMLWidgets.widget({
   type: 'output',
 
   initialize: function(el, width, height) {
-    if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      Chart.defaults.color = 'white';
-    } else {
-      Chart.defaults.color = '#666';
-    }
     return {};
   },
 

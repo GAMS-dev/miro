@@ -19,9 +19,9 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
                       lang$nav$migrationModule$successMsg),
              tags$div(id = ns("dataMigrationErrors"), class = "gmsalert gmsalert-error",
                       style = "white-space:pre-wrap;position:fixed;"),
-             tags$p(lang$nav$migrationModule$desc),
+             tags$p(style="text-align: center;", lang$nav$migrationModule$desc),
              tags$div(style = "text-align:center;margin-bottom:20px;",
-                      tags$b(style = "border: 2px solid #d11a2a;padding: 6px 12px;",
+                      tags$b(style = "border: 2px solid #f39619;padding: 6px 12px;",
                              lang$nav$migrationModule$backupWarning)),
              lapply(seq_along(inconsistentTablesInfo), function(i){
                tableInfo <- inconsistentTablesInfo[[i]]
@@ -46,12 +46,12 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
                colClass <- max(floor(12/(length(tableInfo$colNames) + 1L)), 3L)
                colClass <- paste0("col-", colClass, " col-xs-", colClass)
                tagList(
-                 tags$div(class = "row", style = "padding-top:20px;border-top:5px solid #000;text-align:center;",
+                 tags$div(class = "row", style = "border-top:3px solid #000;text-align:left;padding-left: 15px;",
                           tags$h3(title = tableMeta$alias,
                                   sprintf(lang$nav$migrationModule$labelSymbol,
                                           tableInfo$tabName))
                  ),
-                 tags$div(class = "row", style = "padding:20px 0;",
+                 tags$div(class = "row", style = "padding-top: 10px;",
                           tags$div(class = colClass,
                                    selectInput(ns(paste0("dbMigrateTable_", i)),
                                                lang$nav$migrationModule$selectTableToMap,
@@ -76,30 +76,30 @@ dbMigrationForm <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
                               colChoices <- "-"
                             }
                             tags$div(class = colClass,
-                                     tags$div(id = ns("incompatibleTypeWarning"),
-                                              class = "err-msg",
-                                              style = if(!showTypeWarning) "display:none;",
-                                              lang$nav$migrationModule$incompatibleTypeWarning),
                                      selectInput(ns(paste0("dbMigrateTable_", i, "_", j)),
                                                  tags$span(title = tableMeta$headers[[j]]$alias,
-                                                           tableInfo$colNames[j]),
+                                                           paste0(lang$nav$migrationModule$selectColToMap, tableInfo$colNames[j])),
                                                  colChoices,
                                                  selected = if(tableInfo$colNames[j] %in% colChoices)
                                                    tableInfo$colNames[j] else "-"
-                                     ))
+                                     ),
+                                     tags$div(id = ns("incompatibleTypeWarning"),
+                                              class = "err-msg",
+                                              style = paste0("margin:0px;text-align: justify;", if(!showTypeWarning) "display:none;"),
+                                              lang$nav$migrationModule$incompatibleTypeWarning))
                           })
                  )
                )
              }),
-             tags$div(class = "row",
+             tags$div(class = "row", style = "padding: 15px;text-align: right",
+                      actionButton(ns("btConfirmMigration"), class = "bt-highlight-1",
+                                   lang$nav$migrationModule$btConfirmMigration),
                       if(standalone)
                         tagList(
+                          removeDbTablesButton(ns("removeAllButton")),
                           actionButton(ns("btCancelMigration"),
-                                       lang$nav$migrationModule$btCancelMigration),
-                          removeDbTablesButton(ns("removeAllButton"))
-                        ),
-                      actionButton(ns("btConfirmMigration"), class = "bt-highlight-1",
-                                   lang$nav$migrationModule$btConfirmMigration)
+                                       lang$nav$migrationModule$btCancelMigration)
+                        )
              )))
 }
 

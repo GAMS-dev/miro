@@ -88,6 +88,10 @@
            "description":"Enable button that allows to hide empty columns.",
            "type": "boolean"
          },
+         "hideEmptyCols": {
+           "description":"Default value for hide empty columns checkbox (only relevant if enableHideEmptyCols is TRUE).",
+           "type": "boolean"
+         },
          "enablePersistentViews": {
            "description":"Enable persistent views.",
            "type": "boolean"
@@ -1004,6 +1008,12 @@
                         "type":"string",
                         "minLength":1
                       }
+                    },
+                    "fixedColumnsLeft": {
+                       "description": "Whether non-pivoted columns should be fixed",
+                       "type": ["integer", "null"],
+                       "minLength": 1,
+                       "minimum": 1
                     },
                     "sortPivotCols":{
                       "description":"Whether pivoted columns should be sorted alphabetically",

@@ -208,7 +208,7 @@ observeEvent(input$btSendQuery, {
       filterVal <- input[[paste0("val_", blockIdx, "_", lineIdx)]]
       
       if(field[j] %in% inputType[["text"]]){
-        validOperators <- c("%LIKE%", "%NOTLIKE%", "LIKE%", "%LIKE", "=", "!=")
+        validOperators <- c("%LIKE%", "%NOTLIKE%", "LIKE%", "%LIKE", "=", "!=", "%EXIST", "%NOTEXIST")
       }else if(field[j] %in% inputType[["date"]]){
         validOperators <- "BETWEEN"
       }else if(field[j] %in% inputType[["csv"]]){
@@ -265,6 +265,14 @@ observeEvent(input$btSendQuery, {
                "%,NOTLIKE,%" = {
                  val[j] <- paste0("%,", filterValEscaped, ",%")
                  op[j]  <- "NOT LIKE"
+               },
+               "%EXIST" = {
+                 val[j] <- NA
+                 op[j] <- "!="
+               },
+               "%NOTEXIST" = {
+                 val[j] <- NA
+                 op[j] <- "="
                })
       }else if(identical(op[j], "BETWEEN")){
         table[j + 1] <- tableField[[1]]
@@ -324,17 +332,13 @@ if("DT" %in% (.packages())){
       data <- rv$fetchedScenarios[, -1]
       datatable(
         data, filter = "bottom", colnames = names(fields)[-1], rownames = FALSE,
-        options = list(columnDefs = list(list(
+        options = list(scrollX = TRUE, columnDefs = list(list(
           targets = "_all",
           render = JS(
             "function(data, type, row, meta) {",
             "return type === 'display' && data != null && data.length > 20 ?",
             "'<span title=\"' + data + '\">' + data.substr(0, 20) + '...</span>' : data;",
             "}")
-        ),
-        list(
-          targets = 2L,
-          visible = FALSE
         )))) %>%
         formatDate(3L,  method = "toLocaleString") %>%
         formatRound(seq(5L, length(data))[vapply(data[, seq(5L, length(data))],
