@@ -27,6 +27,20 @@ def gen_env_file(env_path):
     f.write(f'GMS_MIRO_DATABASE_PWD={gen_password(40)}\nGMS_MIRO_ENGINE_ANONYMOUS_USER=miro_server_anonymous\nGMS_MIRO_ENGINE_ANONYMOUS_PWD={gen_password(40)}\n')
 
 
+DOCKERHUB_IMAGE_CONFIG = {
+    'miro-ui': {'short_desc': 'GAMS MIRO Server UI',
+                'readme_loc': f'{os.getcwd()}/image-docs/miro-ui'},
+    'miro-admin': {'short_desc': 'GAMS MIRO Server Admin Panel',
+                   'readme_loc': f'{os.getcwd()}/image-docs/miro-admin'},
+    'miro-auth': {'short_desc': 'GAMS MIRO Server Authentication Module',
+                  'readme_loc': f'{os.getcwd()}/image-docs/miro-auth'},
+    'miro-dockerproxy': {'short_desc': 'GAMS MIRO Server Docker Socket Proxy',
+                         'readme_loc': f'{os.getcwd()}/image-docs/miro-dockerproxy'},
+    'miro-proxy': {'short_desc': 'GAMS MIRO Server Container Proxy',
+                   'readme_loc': f'{os.getcwd()}/image-docs/miro-proxy'}
+}
+
+
 class MiroServer(object):
   def __init__(self):
     parser = argparse.ArgumentParser(prog='miro_server.py',
@@ -99,6 +113,8 @@ class MiroServer(object):
     self.stop_proxies('hub.gams.com/miro-ui')
     self.stop_proxies('gams/miro-admin')
     self.stop_proxies('gams/miro-ui')
+    self.stop_proxies('miro-admin')
+    self.stop_proxies('miro-ui')
 
     if args.volumes:
       dc_args_miro.append('-v')
@@ -199,6 +215,18 @@ class MiroServer(object):
       subprocess.check_call([*['docker', 'rm'], *active_admin_containers])
 
 
+  def append_tag_readme(self, file_name, tag):
+    with open(file_name, 'r') as f:
+        content = f.readlines()
+        for i, line in enumerate(content):
+            if '[`latest`' in line and not f'[`latest`, `{tag}`' in line:
+                index = line.index('[') + 9
+                content[i] = content[i][0:index] + f', `{tag}`' + content[i][index:]
+
+    with open(file_name, 'w') as f:
+        f.writelines(content)
+
+
   def push_image(self, image_name_local, image_name_hub, unstable=False):
     if unstable:
       dhost = 'hub.gams.com'
@@ -216,6 +244,28 @@ class MiroServer(object):
       subprocess.check_call(['docker', 'push', f'{dhost}/{image_name_hub}'])
 
     subprocess.check_call(['docker', 'push', f'{dhost}/{image_name_hub}:{version_string}'])
+
+    # publish README
+    if (not unstable and image_name_hub in DOCKERHUB_IMAGE_CONFIG and
+        os.path.isfile(os.path.join(DOCKERHUB_IMAGE_CONFIG[image_name_hub]['readme_loc'], 'README.md'))):
+      self.append_tag_readme(os.path.join(DOCKERHUB_IMAGE_CONFIG[image_name_hub]['readme_loc'], 'README.md'),
+                             version_string)
+      subprocess.check_call(['docker',
+                              'run',
+                              '--rm',
+                              '-v',
+                              f'{DOCKERHUB_IMAGE_CONFIG[image_name_hub]["readme_loc"]}:/myvol',
+                              '-e',
+                              f'DOCKER_USER={os.getenv("DOCKERHUB_USER")}',
+                              '-e',
+                              f'DOCKER_PASS={os.getenv("DOCKERHUB_PASS")}',
+                              'chko/docker-pushrm:1',
+                              '--file',
+                              'myvol/README.md',
+                              '--short',
+                              f'gams/{DOCKERHUB_IMAGE_CONFIG[image_name_hub]["short_desc"]}',
+                              '--debug',
+                              f'gams/{image_name_hub}'])
 
 
 if __name__ == '__main__':
