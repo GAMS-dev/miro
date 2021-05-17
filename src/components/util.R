@@ -1668,15 +1668,13 @@ colorPickerInput <- function(id, label = NULL, value = NULL, colorBox = FALSE){
   if(colorBox){
     colorpicker <- tags$div(class = "shiny-input-container miro-color-picker",
                             tags$input(id = id, type = "text",
-                                       style = "display:none",
                                        class = "form-control",
                                        value = value),
                             tags$span(class = "input-group-addon",
-                                      style = "display:inline-block;border:0;padding:0;margin:0;width:unset;",
                                       tags$i(style = paste0("background-color:",
                                                             if(length(value) && !identical(value, ""))
                                                               value else "#000000"))),
-                            tags$label(`for` = id, label, style = "display:inline-block;"))
+                            tags$label(`for` = id, label))
   }else{
     colorpicker <- tags$div(class = "form-group shiny-input-container",
                             tags$label(`for` = id, label),
