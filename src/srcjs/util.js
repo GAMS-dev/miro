@@ -1,4 +1,4 @@
-/* global $:false HTMLWidgets:false Chart:false */
+/* global $:false HTMLWidgets:false Chart:false Shiny:false */
 
 export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -178,3 +178,36 @@ export function scrollDown(id, delay = 500) {
     }, 300);
   }, delay);
 }
+
+export const colorPickerBinding = new Shiny.InputBinding();
+$.extend(colorPickerBinding, {
+  find(scope) {
+    return $(scope).find('.miro-color-picker');
+  },
+  getValue(el) {
+    return $(el).val();
+  },
+  setValue(el, value) {
+    $(el).setColor(value);
+  },
+  subscribe(el, callback) {
+    $(el).on('change.colorPickerBinding', () => {
+      callback(true);
+    });
+  },
+  getRatePolicy() {
+    return {
+      policy: 'debounce',
+      delay: 250,
+    };
+  },
+  initialize(el) {
+    $(el).colorpicker({
+      align: 'left',
+    });
+  },
+  unsubscribe(el) {
+    $(el).colorpicker('destroy');
+    $(el).off('.colorPickerBinding');
+  },
+});

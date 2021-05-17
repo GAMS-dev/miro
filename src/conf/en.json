@@ -741,6 +741,7 @@
       "newViewChartTitle": "Chart title",
       "newViewxTitle": "X-axis label",
       "newViewyTitle": "Y-axis label",
+      "newViewCbCustomColors": "Use custom colors?",
       "newViewBtCancel": "Cancel",
       "newViewBtSave": "Save",
       "newViewBtCancelOverwrite": "No",

@@ -5,7 +5,7 @@ import AutoNumeric from 'autonumeric';
 import {
   sleep, changeActiveButtons, switchTabInTabset, removeModal,
   switchTab, isInputEl, rerenderDygraph, rerenderHot, showHideEl, scrollDown,
-  changeTheme, LoadingScreen,
+  changeTheme, LoadingScreen, colorPickerBinding,
 } from './util';
 
 const loadingScreen = new LoadingScreen();
@@ -718,6 +718,7 @@ ${data.data}</div>` : data.data);
     },
   });
   Shiny.inputBindings.register(autoNumericBinding);
+  Shiny.inputBindings.register(colorPickerBinding);
 });
 
 // counter
