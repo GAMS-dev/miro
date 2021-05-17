@@ -2553,7 +2553,6 @@ observeEvent({
     }else if(identical(chartTool, "custom")){
       showEl(session, ".category-btn-custom")
       addClassEl(session, id = "#categoryCustom1", "category-btn-active")
-      addClassEl(session, id = "#categoryCustom2", "category-btn-active")
       invalidCustomRender <<- FALSE
       insertUI(selector = "#tool_options",
                tags$div(id = "custom_options", getCustomOptions()), where = "beforeEnd")
@@ -3996,7 +3995,8 @@ observeEvent(rv$saveGraphConfirm, {
     configJSON$dataRendering[[activeSymbol$name]]$options <<- list(
       aggregationFunction = input[["preview_output_miropivot-miroPivot-aggregationFunction"]],
       pivotRenderer = input[["preview_output_miropivot-miroPivot-pivotRenderer"]],
-      enableHideEmptyCols = isTRUE(input$miropivot_enableHideEmptyCols)
+      enableHideEmptyCols = isTRUE(input$miropivot_enableHideEmptyCols),
+      hideEmptyCols = isTRUE(input[["preview_output_miropivot-miroPivot-hideEmptyCols"]])
     )
     if(length(rv$graphConfig$graph$options$emptyUEL)){
       configJSON$dataRendering[[activeSymbol$name]]$options$emptyUEL <<- rv$graphConfig$graph$options$emptyUEL

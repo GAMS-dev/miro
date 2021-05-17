@@ -12,7 +12,7 @@ getSheetnamesByTabsetId <- function(tabsetId){
   }
   groupId <- as.integer(strsplit(tabIdFull, "_", fixed = TRUE)[[1]][3L - isOutputTabset])
   tabId <- NULL
-  if(isGroupOfSheets[[groupId]]){
+  if(groupId <= length(isGroupOfSheets) && isGroupOfSheets[[groupId]]){
     tabId <- as.integer(strsplit(isolate(input[[paste0(tabsetName, "_", groupId)]]),
                                  "_", fixed = TRUE)[[1L]][[4L - isOutputTabset]])
   }

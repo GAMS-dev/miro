@@ -137,6 +137,17 @@
       "chooseAllButton":"Choose all",
       "orButton": "OR",
       "andButton": "AND",
+      "operators":{
+        "is": "is",
+        "notis": "is not",
+        "contains": "contains",
+        "notcontains": "doesn't contain",
+        "startswith": "starts with",
+        "endswith": "ends with",
+        "exists": "exists",
+        "notexists": "doesn't exist",
+        "between": "between"
+      },
       "queryButton": "Fetch results",
       "showHashDialog":{
         "title": "Scenario hash",
@@ -483,10 +494,10 @@
     },
     "dialogDownloadTmp":{
       "title": "Download temporary files",
-      "desc": "Select the file you wish to download",
+      "desc": "Select the file(s) you wish to download",
       "noFiles": "No files found",
-      "downloadZipButton":"Download all as zip",
-      "downloadButton":"Download file",
+      "downloadAllButton":"Download all",
+      "downloadButton":"Download",
       "cancelButton":"Cancel"
     },
     "dialogJobSubmission":{
@@ -675,9 +686,10 @@
       "title": "Database migration",
       "desc": "We have determined that your GAMS/MIRO data contract has changed in a way that is incompatible with your app's current database layout. Please specify how your data should be migrated.",
       "backupWarning": "We strongly recommend that you backup your database before migration.",
-      "successMsg": "Your data has been migrated successfully!",
+      "successMsg": "Your data has been migrated successfully! Please restart the application.",
       "labelSymbol": "Symbol: '%s'",
-      "selectTableToMap": "Use data from",
+      "selectTableToMap": "Migrate data from",
+      "selectColToMap": "Column: ",
       "btCancelMigration": "Cancel",
       "btConfirmMigration": "Confirm migration",
       "errDuplicateTables": "Table(s): '%s' cannot be duplicated!",
@@ -701,7 +713,7 @@
         "cbConfirm": "Remove all tables?",
         "btCancel": "Cancel",
         "btConfirm": "Remove tables",
-        "msgSuccess": "Database tables removed successfully!"
+        "msgSuccess": "Database tables removed successfully! Please restart the application."
       }
     }
   },
@@ -1423,6 +1435,7 @@
         "readonly": "Should table be readonly?",
         "readonlyCols": "Select columns to be readonly",
         "pivotCols": "Select a column to pivot",
+        "fixedColumnsLeft": "Fix columns that are not pivoted?",
         "heatmap": "Turn table into a heatmap?"
       },
       "slider":{

@@ -219,10 +219,21 @@ if(is.null(errMsg)){
     load(rSaveFilePath)
     if(exists("dbSchema")){
       # legacy app, need to convert to new format
-      dbSchemaModel <- dbSchema$tabName[-seq_len(6)]
+      dbSchemaModel <- substring(dbSchema$tabName[-seq_len(6)],
+                                 nchar(gsub("_", "", modelName, fixed = TRUE)) + 2L)
       dbSchemaModel <- list(schema = setNames(lapply(seq_along(dbSchemaModel), function(i){
         if(dbSchemaModel[i] %in% c(scalarsFileName, scalarsOutName)){
           return(NA)
+        }
+        if(LAUNCHHCUBEMODE){
+          if(i <= length(modelOut)){
+            el <- modelOut[[i]]
+          }else{
+            el <- modelIn[[i - length(modelOut)]]
+          }
+          if(isTRUE(el$dropdown$single) || isTRUE(el$dropdown$checkbox)){
+            return(NA)
+          }
         }
         list(tabName = dbSchemaModel[i],
              colNames = dbSchema$colNames[[i + 6L]],
@@ -501,7 +512,7 @@ if(is.null(errMsg) && debugMode){
                                    customRendererName), sep = "\n")
         })
       }
-      # find packages to install and install them
+      # find packages to install them
       if(length(customRendererConfig$packages)){
         requiredPackagesCR <- c(requiredPackagesCR, customRendererConfig$packages)
       }
@@ -841,6 +852,9 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
         }
         return(TRUE)
       }, logical(1L), USE.NAMES = FALSE)
+      if(!length(orphanedTablesInfo)){
+        inconsistentTablesInfo <- inconsistentTablesInfo[!isNewTable]
+      }
     }, error = function(e){
       flog.error("Problems initialising dbMigrator. Error message: '%s'.", conditionMessage(e))
       if(miroStoreDataOnly){
@@ -851,7 +865,7 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
         stop()
       quit("no", 1L)
     })
-    if(length(inconsistentTablesInfo[!isNewTable]) || length(orphanedTablesInfo)){
+    if(length(inconsistentTablesInfo) || length(orphanedTablesInfo)){
       source("./tools/db_migration/modules/bt_delete_database.R", local = TRUE)
       source("./tools/db_migration/modules/form_db_migration.R", local = TRUE)
       source("./tools/db_migration/server.R", local = TRUE)
@@ -1025,11 +1039,11 @@ if(!is.null(errMsg)){
                                        algo = "sha1", serialize = FALSE)
             if(!identical(dataFileExt[i], "miroscen")){
               scenName <- tools::file_path_sans_ext(miroDataFile)
-              viewsFileId <- match(paste0(tolower(scenName), "_views.json"),
-                                   tolower(miroDataFilesRaw))
+              viewsFileId <- match(paste0(scenName, "_views.json"),
+                                   miroDataFilesRaw)
               if(!is.na(viewsFileId)){
                 dataHash <- paste0(dataHash, digest::digest(file = file.path(miroDataDir,
-                                                                             paste0(tolower(scenName),
+                                                                             paste0(scenName,
                                                                                     "_views.json")),
                                                             algo = "sha1", serialize = FALSE))
               }
@@ -1113,8 +1127,8 @@ if(!is.null(errMsg)){
             views <- NULL
             if(is.null(viewsFileId)){
               scenName <- tools::file_path_sans_ext(miroDataFile)
-              viewsFileId <- match(paste0(tolower(scenName), "_views.json"),
-                                   tolower(miroDataFilesRaw))
+              viewsFileId <- match(paste0(scenName, "_views.json"),
+                                   miroDataFilesRaw)
             }
             if(!is.na(viewsFileId)){
               flog.debug("Found view data for scenario: %s.", scenName)
@@ -1571,8 +1585,7 @@ if(!is.null(errMsg)){
             
             tryCatch({
               scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE), modelInFileNames)
-              gdxio$wgdx(paste0(workDir, .Platform$file.sep, 
-                                "scripts_", modelName, .Platform$file.sep, "data.gdx"), 
+              gdxio$wgdx(file.path(workDir, paste0("scripts_", modelName), "data.gdx"), 
                          scenData$get("sb"), squeezeZeros = 'n')
             }, error = function(e){
               flog.error("Problems writing gdx file for script: '%s'. Error message: '%s'.", 
@@ -1901,7 +1914,7 @@ if(!is.null(errMsg)){
           }
           groupId <- as.integer(strsplit(tabIdFull, "_", fixed = TRUE)[[1]][3L - isOutputTabset])
           tabId <- NULL
-          if(isGroupOfSheets[[groupId]]){
+          if(groupId <= length(isGroupOfSheets) && isGroupOfSheets[[groupId]]){
             tabId <- as.integer(strsplit(input[[paste0(tabsetName, "_", groupId)]],
                                          "_", fixed = TRUE)[[1L]][[4L - isOutputTabset]])
           }

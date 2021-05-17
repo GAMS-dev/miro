@@ -53,6 +53,10 @@ Views <- R6Class("Views",
                      if(!is_tibble(viewConf) || length(viewConf) < 4L || nrow(viewConf) == 0){
                        if(sandbox){
                          private$scenViewConf[["1"]] <- list()
+                       }else{
+                         for(scenId in as.character(scenIds)){
+                           private$scenViewConf[[scenId]] <- list()
+                         }
                        }
                        return(invisible(self))
                      }

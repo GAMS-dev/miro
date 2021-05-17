@@ -62,8 +62,15 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
     return()
   }
   if(is.null(scenMetaDb) || !nrow(scenMetaDb)){
-    return(showErrorMsg(lang$nav$dialogLoadScen$titleNoScen, 
-                        lang$nav$dialogLoadScen$descNoScen))
+    scenMetaDb <<- tibble(`_sid` = integer(),
+                          `_uid` = character(),
+                          `_sname` = character(),
+                          `_stime` = character(),
+                          `_stag` = character(),
+                          `_accessr` = character(),
+                          `_accessw` = character(),
+                          `_accessx` = character(),
+                          `_scode` = integer())
   }
   # fetch only those scenarios that are not already loaded into the ui
   uiSidList <- scenData$getRefScenMap()
@@ -100,11 +107,6 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
   }else{
     uiSidList <- integer()
     includeSandboxScen <- identical(currentCompMode, "tab")
-  }
-  
-  if(is.null(scenMetaDb) || !nrow(scenMetaDb)){
-    return(showErrorMsg(lang$nav$dialogLoadScen$titleNoScen, 
-                        lang$nav$dialogLoadScen$descNoScen))
   }
   
   maxNoScenExceeded <- FALSE
@@ -158,10 +160,15 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
   }
   # by default, put most recently saved scenario first
   dbSidList <- formatScenList(scenMetaDbSubset, uid, "_stime", desc = TRUE)
-  showLoadScenDialog(dbSidList, uiSidList, identical(currentCompMode, "split"),
-                     dbTagList = dbTagList, baseScenName = baseScenName)
-  if(maxNoScenExceeded)
-    showHideEl(session, "#importScenMaxNoScen", 4000L)
+  if(length(dbSidList) || length(uiSidList)){
+    showLoadScenDialog(dbSidList, uiSidList, identical(currentCompMode, "split"),
+                       dbTagList = dbTagList, baseScenName = baseScenName)
+    if(maxNoScenExceeded)
+      showHideEl(session, "#importScenMaxNoScen", 4000L)
+  }else{
+    return(showErrorMsg(lang$nav$dialogLoadScen$titleNoScen, 
+                        lang$nav$dialogLoadScen$descNoScen))
+  }
 })
 
 # sort by name
@@ -234,7 +241,9 @@ observeEvent(input$btRefreshComp, {
   if(!is.null(dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetId)]])){
     dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetId)]][["content"]][] <<- FALSE
   }
-  if(any(startsWith(as.character(scenData$getRefScenMap(refId)), "sb"))){
+  scenIds <- scenData$getRefScenMap(refId)
+  sbScenId <- startsWith(as.character(scenIds), "sb")
+  if(any(sbScenId)){
     if(tryCatch({
       scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE),
                            modelInFileNames, activeScen$getMetadata())
@@ -250,10 +259,29 @@ observeEvent(input$btRefreshComp, {
     })){
       return()
     }
+    views$duplicateSandboxConf(tabsetId)
   }
-  loadDynamicTabContent(session, tabsetId,
-                        getSheetnamesByTabsetId(tabsetId),
-                        initEnv = TRUE)
+  sidsToLoad <- as.integer(scenIds[!sbScenId])
+  if(length(sidsToLoad)){
+    views$loadConf(db$importDataset(tableName = "_scenViews", 
+                                    subsetSids = sidsToLoad), FALSE,
+                   tabsetId, sidsToLoad)
+  }
+  if(length(config$scripts$base) && !identical(tabsetId, 0L)){
+    if(any(sbScenId)){
+      scriptOutput$loadResultsBase(scriptOutput$getResults(), tabsetId)
+    }else if(length(sidsToLoad)){
+      scriptOutput$loadResultsBase(db$loadScriptResults(sidsToLoad)[[1]], tabsetId)
+    }
+  }
+  sheetNames <- getSheetnamesByTabsetId(tabsetId)
+  if(length(sheetNames)){
+    loadDynamicTabContent(session, tabsetId,
+                          sheetNames,
+                          initEnv = TRUE)
+  }else{
+    scenData$get(refId, symNames = character(), showProgress = FALSE)
+  }
   metaTmp <- scenData$getById("meta", refId = refId, drop = TRUE)
   showElReplaceTxt(session, paste0("#cmpScenTitle_", tabsetId),
                    paste0(if(!identical(uid, metaTmp[["_uid"]][1])) paste0(metaTmp[["_uid"]][1], ": "),

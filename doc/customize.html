@@ -622,6 +622,11 @@ $offExternalInput
                                     A total of - for example - 30 stocks to be represented in a table would lead to 30 additional columns.
                                     In this case, the <i>list view</i> might be more clear.</p>
                                     </div>
+									<h6 id="table-option-fixedColumnsLeft" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Fix columns that are not pivoted?</h6>
+                                    <div class="expanded"><p>This option is available if a table has more than one value column. This can be the case for <a href="#table-option-pivot" class = "scrollto">pivoted tables</a> and for GAMS tables. When enabled, all columns that are not pivoted (i.e. all non-value columns) are fixed to the left side of the table and remain visible even when scrolling horizontally. </p>
+									<div class="section-block" style="text-align:center;">
+                                        <img class="img-fluid" style="max-height:75pt;" src="assets/images/configuration_mode/table_fixedColumnsLeft.png" alt="Column fixed to the left" />
+                                    </div></div>
                                     <h6 id="table-option-readonlycol" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Select columns to be readonly</h6>
                                     <div class="expanded"><p>This option prevents the user from making manual changes in selected columns of the input table.
                                     Note that this option is only available for table columns that have not been pivoted (see option above).</p>
@@ -1812,7 +1817,7 @@ views$registerUpdateCallback(session, updateCallback)
                                       <ul>
                                         <li>A renderer is now bound to a specific symbol.</li>
                                         <li>Renderers can be shared by different symbols, but they always belong to one of them.</li>
-                                        <li>This means that the name of the output and renderer functions should be: <span class="code">mirorenderer_&#x3C;symbolName&#x3E;Output</span> and <span class="code">mirorenderer_&#x3C;symbolName&#x3E;Output</span> respectively.</li>
+                                        <li>This means that the name of the output and renderer functions should be: <span class="code">mirorenderer_&#x3C;symbolName&#x3E;Output</span> and <span class="code">renderMirorenderer_&#x3C;symbolName&#x3E;</span> respectively.</li>
                                         <li>Renderer files must be named <span class="code">mirorenderer_&lt;symbolname&gt;.R</span>.</li>
                                         <li>Only one output/render function may be declared per file.</li>
                                       </ul>
@@ -1866,7 +1871,7 @@ views$registerUpdateCallback(session, updateCallback)
         </div><!--//doc-wrapper-->
     </div><!--//page-wrapper-->
     <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
-    <!--#include virtual="/footer.html" -->
+    <!--#include virtual="/footer_miro.html" -->
 
     <!-- Main Javascript -->
     <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>

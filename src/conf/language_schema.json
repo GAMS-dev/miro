@@ -540,6 +540,49 @@
               "type": "string",
               "minLength": 1
             },
+            "operators": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "is": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "notis": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "contains": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "notcontains": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "startswith": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "endswith": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "exists": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "notexists": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "between": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 9
+            },
             "queryButton": {
               "type": "string",
               "minLength": 1
@@ -583,7 +626,7 @@
               "minProperties": 4
             }
           },
-          "minProperties": 14
+          "minProperties": 15
         },
         "hcubeAnalyze": {
           "type": "object",
@@ -1890,7 +1933,7 @@
               "type": "string",
               "minLength": 1
             },
-            "downloadZipButton": {
+            "downloadAllButton": {
               "type": "string",
               "minLength": 1
             },
@@ -2642,6 +2685,10 @@
               "type": "string",
               "minLength": 1
             },
+            "selectColToMap": {
+              "type": "string",
+              "minLength": 1
+            },
             "btCancelMigration": {
               "type": "string",
               "minLength": 1
@@ -2740,7 +2787,7 @@
               "minProperties": 7
             }
           },
-          "minProperties": 13
+          "minProperties": 14
         }
       },
       "minProperties": 51
@@ -5563,12 +5610,16 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "fixedColumnsLeft": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "heatmap": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 8
+              "minProperties": 9
             },
             "slider": {
               "type": "object",

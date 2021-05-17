@@ -2,8 +2,8 @@ errMsg <- installAndRequirePackages("V8", installedPackages, RLibPath, CRANMirro
 # check whether there exists a config file and if not create an empty one
 if(is.null(errMsg)){
   if(nchar(modelName) > 60){
-    errMsg <<- sprintf("The MIRO app name: '%s' is too long! A maximum length of 60 characters is allowed!",
-                       modelName)
+    errMsg <- sprintf("The MIRO app name: '%s' is too long! A maximum length of 60 characters is allowed!",
+                      modelName)
   }else if(!file.exists(paste0(currentModelDir, .Platform$file.sep, "conf_", modelName,
                          .Platform$file.sep, modelName, ".json"))){
     tryCatch(cat("{}\n", file = paste0(currentModelDir, .Platform$file.sep, "conf_", modelName,
@@ -441,6 +441,10 @@ if(is.null(errMsg)){
       if(!is.null(widgetConfig[["pivotCols"]])){
         modelIn[[i]]$pivotCols  <- widgetConfig$pivotCols
         widgetConfig$pivotCols  <- NULL
+      }
+      if(!is.null(widgetConfig[["fixedColumnsLeft"]])){
+        modelIn[[i]]$fixedColumnsLeft  <- widgetConfig$fixedColumnsLeft
+        widgetConfig$fixedColumnsLeft  <- NULL
       }
       if(!is.null(widgetConfig[["colWidths"]])){
         modelIn[[i]]$colWidths  <- widgetConfig$colWidths
