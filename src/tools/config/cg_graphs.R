@@ -432,7 +432,6 @@ observeEvent(input$dbInput, {
   tryCatch({
     scenData$load(sidToLoad, refId = "sb")
     scenDataTmp <- scenData$get("sb")
-    print(scenDataTmp)
   }, error = function(e){
     flog.error("Some error occurred loading scenario: '%s' from database. Error message: %s.", 
                sidToLoad, conditionMessage(e))
