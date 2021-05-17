@@ -1039,11 +1039,11 @@ if(!is.null(errMsg)){
                                        algo = "sha1", serialize = FALSE)
             if(!identical(dataFileExt[i], "miroscen")){
               scenName <- tools::file_path_sans_ext(miroDataFile)
-              viewsFileId <- match(paste0(tolower(scenName), "_views.json"),
-                                   tolower(miroDataFilesRaw))
+              viewsFileId <- match(paste0(scenName, "_views.json"),
+                                   miroDataFilesRaw)
               if(!is.na(viewsFileId)){
                 dataHash <- paste0(dataHash, digest::digest(file = file.path(miroDataDir,
-                                                                             paste0(tolower(scenName),
+                                                                             paste0(scenName,
                                                                                     "_views.json")),
                                                             algo = "sha1", serialize = FALSE))
               }
@@ -1127,8 +1127,8 @@ if(!is.null(errMsg)){
             views <- NULL
             if(is.null(viewsFileId)){
               scenName <- tools::file_path_sans_ext(miroDataFile)
-              viewsFileId <- match(paste0(tolower(scenName), "_views.json"),
-                                   tolower(miroDataFilesRaw))
+              viewsFileId <- match(paste0(scenName, "_views.json"),
+                                   miroDataFilesRaw)
             }
             if(!is.na(viewsFileId)){
               flog.debug("Found view data for scenario: %s.", scenName)
