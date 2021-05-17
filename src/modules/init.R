@@ -811,7 +811,12 @@ if(is.null(errMsg)){
              tryCatch({
                choices <- getDependenciesDropdown(choices = modelIn[[i]]$dropdown$choices, modelIn = modelIn, name = name)
                if(!is.null(modelIn[[i]]$dropdown$aliases)){
-                 aliases <- getDependenciesDropdown(choices = modelIn[[i]]$dropdown$aliases, modelIn = modelIn, name = name)
+                 if(choices$hasDep){
+                   aliases <- getDependenciesDropdown(choices = modelIn[[i]]$dropdown$aliases, modelIn = modelIn, name = name)
+                 }else{
+                   aliases <- list(strings = unlist(gsub("$$", "$", modelIn[[i]]$dropdown$aliases, fixed = TRUE),
+                                                    use.names = FALSE))
+                 }
                }else{
                  aliases <- NULL
                }
@@ -1324,8 +1329,12 @@ if(is.null(errMsg)){
     return(FALSE)
   }, logical(1L), USE.NAMES = FALSE)
   
-  scenDataTemplate <- c(modelOutTemplate, modelInTemplate[match(inputDsNames, names(modelIn))])
-  
+  scalarDsNameIdx <- match(inputDsNames, names(modelIn))
+  scenDataTemplate <- c(modelOutTemplate, modelInTemplate[scalarDsNameIdx])
+  if(is.na(scalarDsNameIdx[length(inputDsNames)])){
+    # need to add scalars template manually
+    scenDataTemplate[[length(scenDataTemplate)]] <- scalarsInTemplate
+  }
   # get column types for tabular datasets
   for(i in seq_along(modelIn)){
     if(is.null(modelIn[[i]]$headers)){
@@ -1492,8 +1501,8 @@ if(is.null(errMsg)){
         config$dataRendering[[elName]]$outType <- "datatable"
       }
     }else{
-      config$dataRendering[[elName]]$outType <- defOutType
-      if(identical(defOutType, "pivot")){
+      config$dataRendering[[elName]]$outType <- config$defaultRendererOutput
+      if(identical(config$defaultRendererOutput, "pivot")){
         config$dataRendering[[elName]]$pivottable <- prepopPivot(modelOut[[i]])
       }
     }
@@ -1698,7 +1707,9 @@ if(is.null(errMsg)){
       el <- modelIn[[i - length(modelOut)]]
       tabName <- names(modelIn)[i - length(modelOut)]
     }
-    if(!length(el$headers) || tabName %in% c(scalarsFileName, scalarsOutName)){
+    if(!length(el$headers) || isTRUE(el$dropdown$single) ||
+       isTRUE(el$dropdown$checkbox) ||
+       tabName %in% c(scalarsFileName, scalarsOutName)){
       return(NA)
     }
     return(list(tabName = tabName,

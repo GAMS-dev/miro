@@ -168,15 +168,24 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL){
   if(length(choices)){
     choices <- as.character(choices)
     elRaw <- choices
-    forwardDep  <- startsWith(choices, "$") & !startsWith(choices, "$$")
-    elRaw[forwardDep] <- stringi::stri_trim_left(elRaw[forwardDep], 
-                                                 pattern = "[^\\$]")
-    backwardDep <- endsWith(choices, "$") & !endsWith(choices, "$$")
-    elRaw[backwardDep] <- stringi::stri_trim_right(elRaw[backwardDep], 
+    forwardDep  <- startsWith(choices, "$")
+    backwardDep <- endsWith(choices, "$")
+    if(any(forwardDep | backwardDep)){
+      forwardDep  <- forwardDep & !startsWith(choices, "$$")
+      backwardDep <- backwardDep & !endsWith(choices, "$$")
+      elRaw[forwardDep] <- stringi::stri_trim_left(elRaw[forwardDep], 
                                                    pattern = "[^\\$]")
-    hasDep <- forwardDep | backwardDep
-    ddownDep$strings <- unlist(gsub("$$", "$", choices[!hasDep], 
-                                    fixed = TRUE), use.names = FALSE)
+      elRaw[backwardDep] <- stringi::stri_trim_right(elRaw[backwardDep], 
+                                                     pattern = "[^\\$]")
+      hasDep <- forwardDep | backwardDep
+      ddownDep$hasDep <- any(hasDep)
+      ddownDep$strings <- unlist(gsub("$$", "$", choices[!hasDep], 
+                                      fixed = TRUE), use.names = FALSE)
+    }else{
+      return(list(hasDep = FALSE,
+                  strings = unlist(gsub("$$", "$", choices, 
+                                        fixed = TRUE), use.names = FALSE)))
+    }
     lapply(seq_along(choices)[hasDep], function(i){
       #check for each element of "choices" if it contains a data reference in json (in the form of a string, e.g. "dataset_1$column_3") or a simple string or number
       # examples: "$a$b"   <- column b from sheet a are choices for dropdown

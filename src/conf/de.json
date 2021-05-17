@@ -779,6 +779,9 @@
       "rowTruncationWarning": "Die Daten wurden auf die ersten %s Zeilen gekürzt.",
       "newViewTitle": "Neuer view",
       "newViewLabel": "Bitte wählen Sie einen Namen für den View.",
+      "newViewChartTitle": "Diagrammtitel",
+      "newViewxTitle": "X-Achsen-Beschriftung",
+      "newViewyTitle": "Y-Achsen-Beschriftung",
       "newViewBtCancel": "Abbrechen",
       "newViewBtSave": "Speichern",
       "newViewBtCancelOverwrite": "Nein",
@@ -1091,6 +1094,7 @@
         "tabModules": "Module",
         "tabScripts": "Analyseskripte",
         "headerGeneral": "Allgemein",
+        "headerRenderers": "Standard-Renderer",
         "headerLogo": "Logo",
         "headerSymbolDisplay": "Symboldarstellung",
         "headerTabGrouping": "Tab-Gruppierung",
@@ -1199,6 +1203,10 @@
       "decimal":{
         "label": "Anzahl der Dezimalstellen für das Runden von numerischen Werten (globale Option).",
         "tooltip": "Wirkt sich auf alle Ausgabetabellen, Eingabetabellen mit großen Datenmengen und die Tabelle für Laden von Szenarien im Hypercube-Modus aus. - Dokumentation öffnen."
+      },
+      "defaultRenderer":{
+        "labelOutput": "Standard-Renderer für Ausgabedaten",
+        "choicesOutput": ["Pivot-Tabelle", "Tabelle"]
       },
       "logo":{
         "header": "Logo Vorschau:",

@@ -738,6 +738,9 @@
       "rowTruncationWarning": "Data was truncated to the first %s rows.",
       "newViewTitle": "New view",
       "newViewLabel": "Please choose a name for the view.",
+      "newViewChartTitle": "Chart title",
+      "newViewxTitle": "X-axis label",
+      "newViewyTitle": "Y-axis label",
       "newViewBtCancel": "Cancel",
       "newViewBtSave": "Save",
       "newViewBtCancelOverwrite": "No",
@@ -1091,6 +1094,7 @@
         "tabModules": "Modules",
         "tabScripts": "Analysis scripts",
         "headerGeneral": "General",
+        "headerRenderers": "Default renderers",
         "headerLogo": "Logo",
         "headerSymbolDisplay": "Symbol display",
         "headerTabGrouping": "Tab grouping",
@@ -1199,6 +1203,10 @@
       "decimal":{
         "label": "Number of decimal places used for rounding numerical values (global setting).",
         "tooltip": "Has an effect on all output tables, big data input tables and the table for loading scenarios in Hypercube Mode. - Open documentation."
+      },
+      "defaultRenderer":{
+        "labelOutput": "Default renderer for output data",
+        "choicesOutput": ["Pivot table", "Table"]
       },
       "logo":{
         "header": "Logo preview:",

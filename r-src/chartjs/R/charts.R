@@ -11,11 +11,13 @@ NULL
 #' @param stacked a logical, defaults to FALSE. If TRUE, bars will be stacked
 #' at each x value.
 #' @export
-cjsBar <- function(chartjs, labels, stacked = FALSE){
+cjsBar <- function(chartjs, labels, stacked = FALSE, xTitle = NULL, yTitle = NULL){
   cjs_base_chart(chartjs, labels, "bar") %>%
-    cjsAddScale("x", "category", stacked = stacked) %>%
+    cjsAddScale("x", "category", stacked = stacked,
+                title = if(!is.null(xTitle)) list(text = xTitle, display = TRUE)) %>%
     cjsAddScale("y", "linear", stacked = stacked,
-      ticks = list(beginAtZero = TRUE))
+      ticks = list(beginAtZero = TRUE),
+      title = if(!is.null(yTitle)) list(text = yTitle, display = TRUE))
 }
 
 #' @export
@@ -27,10 +29,10 @@ cjsHorizontalBar <- function(chartjs, labels, stacked = FALSE){
 
 #' @rdname charts
 #' @export
-cjsLine <- function(chartjs, labels){
+cjsLine <- function(chartjs, labels, xTitle = NULL, yTitle = NULL){
   cjs_base_chart(chartjs, labels, "line") %>%
-    cjsAddScale("x", "category") %>%
-    cjsAddScale("y", "linear")
+    cjsAddScale("x", "category", title = if(!is.null(xTitle)) list(text = xTitle, display = TRUE)) %>%
+    cjsAddScale("y", "linear", title = if(!is.null(yTitle)) list(text = yTitle, display = TRUE))
 }
 
 #' @rdname charts

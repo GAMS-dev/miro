@@ -11,9 +11,12 @@
 #'
 #'
 #' @export
-cjsAddScale <- function(cjs, axis = c("x", "y", NULL), type = "category", ...){
+cjsAddScale <- function(cjs, axis = c("x", "y", NULL), type = "category", title = NULL, ...){
   if (!is.null(axis)) {
     cjs$x$scales[[axis]] <- list(type = type, ...)
+    if(!is.null(title)) {
+      cjs$x$scales[[axis]]$title <- title
+    }
   } else cjs$x$scale <- list(type = type, ...)
   cjs
 }

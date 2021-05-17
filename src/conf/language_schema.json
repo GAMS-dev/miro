@@ -2876,6 +2876,18 @@
               "type": "string",
               "minLength": 1
             },
+            "newViewChartTitle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewxTitle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewyTitle": {
+              "type": "string",
+              "minLength": 1
+            },
             "newViewBtCancel": {
               "type": "string",
               "minLength": 1
@@ -3025,7 +3037,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 31
+          "minProperties": 34
         },
         "datatable": {
           "type": "object",
@@ -4235,6 +4247,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "headerRenderers": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "headerLogo": {
                   "type": "string",
                   "minLength": 1
@@ -4304,7 +4320,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 23
+              "minProperties": 24
             },
             "modalDialog": {
               "type": "object",
@@ -4662,6 +4678,27 @@
               },
               "minProperties": 2
             },
+            "defaultRenderer": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "labelOutput": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "choicesOutput": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "minProperties": 2
+            },
             "logo": {
               "type": "object",
               "additionalProperties": false,
@@ -4864,7 +4901,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 37
+          "minProperties": 38
         },
         "tables": {
           "type": "object",
