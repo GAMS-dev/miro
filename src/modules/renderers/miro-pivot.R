@@ -336,11 +336,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                "#df7192", "#8b1e3f", "#95D86B", "#3E721D")
       }
       
-      resetView <- function(options, domainFilterDomains, interfaceInitialized = TRUE){
+      resetView <- function(viewOptions, domainFilterDomains, interfaceInitialized = TRUE){
         unassignedSetIndices <- setNames(setIndices, 
                                          setIndexAliases)
         
-        indices <<- getIndexLists(unassignedSetIndices, options)
+        indices <<- getIndexLists(unassignedSetIndices, viewOptions)
         for(indexEl in list(c("filter", "filterIndexList"),
                             c("rows", "rowIndexList"), 
                             c("cols", "colIndexList"),
@@ -351,25 +351,25 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                                            as.character)))
         }
         
-        if(length(options[["pivotRenderer"]]) &&
-           options[["pivotRenderer"]] %in% c("table", "heatmap", "line", "bar", "stackedbar", "radar")){
-          updateSelectInput(session, "pivotRenderer", selected = options[["pivotRenderer"]])
+        if(length(viewOptions[["pivotRenderer"]]) &&
+           viewOptions[["pivotRenderer"]] %in% c("table", "heatmap", "line", "bar", "stackedbar", "radar")){
+          updateSelectInput(session, "pivotRenderer", selected = viewOptions[["pivotRenderer"]])
         }else{
           updateSelectInput(session, "pivotRenderer", selected = "table")
         }
         if(isTRUE(options$enableHideEmptyCols)){
           updateCheckboxInput(session, "hideEmptyCols",
-                              value = identical(options[["hideEmptyCols"]], TRUE))
+                              value = identical(viewOptions[["hideEmptyCols"]], TRUE))
         }
         newView <- list(filter = unname(indices$filter),
                         aggregations = unname(indices$aggregations),
                         cols = unname(indices$cols))
         if(length(domainFilterDomains)){
-          if(length(options[["domainFilter"]][["default"]]) &&
-             options[["domainFilter"]][["default"]] %in% domainFilterDomains){
+          if(length(viewOptions[["domainFilter"]][["default"]]) &&
+             viewOptions[["domainFilter"]][["default"]] %in% domainFilterDomains){
             updateTabsetPanel(session, "domainFilter", 
-                              selected = options[["domainFilter"]][["default"]])
-            newView$domainFilter <- options[["domainFilter"]][["default"]]
+                              selected = viewOptions[["domainFilter"]][["default"]])
+            newView$domainFilter <- viewOptions[["domainFilter"]][["default"]]
           }else{
             updateTabsetPanel(session, "domainFilter", 
                               selected = domainFilterDomains[[1]])
@@ -379,10 +379,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if(!interfaceInitialized){
           return()
         }
-        if(length(options[["aggregationFunction"]]) &&
-           options[["aggregationFunction"]] %in% aggregationFunctions){
+        if(length(viewOptions[["aggregationFunction"]]) &&
+           viewOptions[["aggregationFunction"]] %in% aggregationFunctions){
           updateSelectInput(session, "aggregationFunction",
-                            selected = options[["aggregationFunction"]])
+                            selected = viewOptions[["aggregationFunction"]])
         }else{
           updateSelectInput(session, "aggregationFunction",
                             selected = aggregationFunctions[[1]])
