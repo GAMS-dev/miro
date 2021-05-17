@@ -57,7 +57,7 @@ const addAppWrapperHTML = `<div id="addAppBox" class="add-app-box app-box-fixed-
 
 function validateAppEnv(envContentRaw) {
   if (envContentRaw.trim() === '') {
-    return '';
+    return true;
   }
   try {
     const envContent = JSON.parse(envContentRaw);
@@ -195,7 +195,7 @@ function refreshConfigList() {
               </div>
             </div>
             <div>
-            <div style="height:200px">
+            <div>
               <h3 title="${appNameSafe}" id="staticAppTitle_${index}" class="app-title app-title-fixed app-item-title" style="margin-top:15pt;width:100%;">${appNameSafe}</h3>
               <input id="appTitle_${index}" value="${appNameSafe}" required="required" type="text" name="alias" class="app-title editable h3-style" style="margin-top:15pt;width:100%;display:none;" placeholder="${appNamePlaceholder}">
               <p title="${descSafe}" id="staticAppDesc_${index}" class="app-desc app-desc-fixed app-item-desc">${descSafe}</p>
@@ -267,7 +267,7 @@ function expandAddAppForm() {
                         <div>
                         <input id="newAppName" type="text" required="required" name="alias" class="app-title editable h3-style" style="margin-top:15pt;width:100%;" placeholder="${appNamePlaceholder}">
                         <textarea id="newAppDesc" rows="3" name="desc" class="app-desc editable" style="margin-bottom: 1rem;width: 100%;" placeholder="${appDescPlaceholder}"></textarea>
-                        <div style="display:none">
+                        <div>
                           <label for="newAppGroups">${appGroupsPlaceholder}</label>
                           <select id="newAppGroups" style="margin-bottom: 1rem;width: 100%;" multiple>${groupOptions}</select>
                         </div>
@@ -442,7 +442,7 @@ $appsWrapper.on('click', '.app-box', function (e) {
     $(`#appDesc_${appIndex}`).show();
     $(`#appEnv_${appIndex}`).show();
     $(`#staticAppDesc_${appIndex}`).hide();
-    // $(`#appGroupsWrapper_${appIndex}`).show();
+    $(`#appGroupsWrapper_${appIndex}`).show();
     Shiny.bindAll(document.getElementById(`appBox_${appID}`));
   }
   $(`#appBox_${appID} .edit-bt-group`).slideDown(200);

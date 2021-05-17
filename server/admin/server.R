@@ -13,24 +13,23 @@ db               <- MiroDb$new(list(host = Sys.getenv("MIRO_DB_HOST", "localhost
     password = Sys.getenv("MIRO_DB_PASSWORD")))
 DEFAULT_LOGO_B64 <<- getLogoB64(file.path("www", "default_logo.png"))
 
-initCallback <- function(session, modelConfigList){
+initCallback <- function(session, appIds){
     modelListEngine <- engineClient$getModelList()
-    modelListSp <- vapply(modelConfigList, function(modelObj){
-        return(modelObj[["id"]])
-    }, character(1L), USE.NAMES = FALSE)
 
     errors <- list()
 
-    appIdsNotOnEngine <- !modelListSp %in% modelListEngine
+    appIds <- appIds[appIds != "admin"]
+
+    appIdsNotOnEngine <- !appIds %in% modelListEngine
 
     if(any(appIdsNotOnEngine)){
-        engineClient$setAppsNotOnEngine(modelListSp[appIdsNotOnEngine])
+        engineClient$setAppsNotOnEngine(appIds[appIdsNotOnEngine])
         errors$appsNotOnEngine <- I(engineClient$getAppsNotOnEngine())
         flog.info("Some apps are not registered on Engine: '%s'. They will be marked CORRUPTED!",
             paste(errors$appsNotOnEngine, collapse = "', '"))
     }
 
-    appIdsNotOnMIROServer <- !modelListEngine %in% modelListSp
+    appIdsNotOnMIROServer <- !modelListEngine %in% appIds
 
     if(any(appIdsNotOnMIROServer)){
         engineClient$setAppsNotOnMIRO(modelListEngine[appIdsNotOnMIROServer])
@@ -63,7 +62,7 @@ server <- function(input, output, session){
                 flog.info("User: %s successfully logged in.", input$loginRequest$user)
                 isLoggedIn <<- TRUE
                 session$sendCustomMessage("onLoginSuccessful", 1)
-                initCallback(session, modelConfigList)
+                initCallback(session, modelConfig$getAllAppIds())
                 return()
             }
             flog.info("Wrong log in attempt.")
@@ -72,7 +71,7 @@ server <- function(input, output, session){
         })
     }else{
         engineClient$setAuthHeader(ENGINE_TOKEN)
-        initCallback(session, modelConfigList)
+        initCallback(session, modelConfig$getAllAppIds())
     }
 
     observeEvent(input$miroAppFile, {
@@ -146,8 +145,8 @@ server <- function(input, output, session){
 
             appId <- miroAppValidator$getAppId()
 
-            if(appId %in% vapply(currentConfigList, "[[", character(1L), "id", USE.NAMES = FALSE)){
-                stop("A MIRO App with the same id already exists.", call. = FALSE)
+            if(appId %in% modelConfig$getAllAppIds()){
+                stop("A MIRO app with the same name already exists.", call. = FALSE)
             }
 
             supportedModes <- miroAppValidator$getModesSupported()
@@ -178,7 +177,7 @@ server <- function(input, output, session){
             newAppConfig[["containerEnv"]][["MIRO_DB_PASSWORD"]] <- appDbCredentials$password
             newAppConfig[["containerEnv"]][["MIRO_DB_SCHEMA"]]   <- appDbCredentials$user
 
-            if(length(newAppEnv)){
+            if(identical(length(newAppEnv), 1L) && !identical(newAppEnv, "")){
                 if (!jsonlite::validate(newAppEnv)) {
                     stop("Argument 'txt' is not a valid JSON string.")
                 }
@@ -291,7 +290,8 @@ server <- function(input, output, session){
                 addAppLogo(appId, logoPath)
             }
 
-            if(length(input$updateApp$env)){
+            newAppEnv <- NULL
+            if(identical(length(input$updateApp$env), 1L) && !identical(trimws(input$updateApp$env), "")){
                 if (!jsonlite::validate(input$updateApp$env)) {
                     stop("Argument 'txt' is not a valid JSON string.")
                 }
