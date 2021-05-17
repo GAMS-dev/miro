@@ -2558,8 +2558,8 @@ observeEvent({
                tags$div(id = "custom_options", getCustomOptions()), where = "beforeEnd")
       allDataAvailable <<- TRUE
       session$sendCustomMessage("gms-shinySetInputValue", list(id = "btUpdateCustomRendererOutput",
-                                                          val = 1L,
-                                                          timeout = 500L))
+                                                               val = 1L,
+                                                               timeout = 500L))
     }else if(identical(chartTool, "datatable")){
       # only show info message for datatable configuration
       insertUI(selector = "#tool_options", 
@@ -4054,7 +4054,7 @@ observeEvent(rv$saveGraphConfirm, {
         "\n}\n"
       ), "\n", paste0(
         customRendererFunctionName(),
-        " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, ...){\n",
+        " <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){\n",
         input$customRenderFunction,
         "\n}\n"), 
       file = file.path(customRendererDir, paste0(customRendererName, ".R")))

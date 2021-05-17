@@ -22,18 +22,20 @@
   "excelIncludeEmptySheets": true,
   "saveTraceFile": true,
   "dataRendering": {
-    "initial_state": {
-      "outType": "mirorenderer_initial_state"
-    },
     "results": {
-      "outType": "mirorenderer_initial_state"
+      "outType": "mirowidget_initial_state"
+    },
+    "initial_state": {
+      "outType": "mirowidget_initial_state"
     }
   },
   "inputWidgets": {
     "initial_state": {
       "widgetType": "custom",
-      "rendererName": "mirorenderer_initial_state",
+      "rendererName": "mirowidget_initial_state",
       "alias": "Initial state",
+      "apiVersion": 2,
+      "additionalData": "force_unique_sol",
       "options": {
         "isInput": true
       }
@@ -57,6 +59,7 @@
       "newAlias": "results"
     }
   },
+  "defaultRendererOutput": "miroPivot",
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
