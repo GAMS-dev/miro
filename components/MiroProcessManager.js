@@ -123,7 +123,7 @@ class MiroProcessManager {
 developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
 
     let miroEnv = await this.configData.get('miroEnv');
-    if (Object.keys(miroEnv).includes('PATH')) {
+    if (miroEnv != null && Object.keys(miroEnv).includes('PATH')) {
       // we append the current PATH
       const tidyPath = miroEnv.PATH
         .split(path.delimiter)
@@ -175,8 +175,7 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
         stdout: stdOutPipe,
         stderr: stdErrPipe,
         cleanup: false,
-      });
-    this.miroProcesses[internalPid].catch(async (e) => {
+      }).catch(async (e) => {
       log.debug(`Process of MIRO app with pid: ${internalPid} stopped.`);
       this.miroProcesses[internalPid] = null;
       delete this.pidPortMap[internalPid.toString()];

@@ -857,7 +857,7 @@ ${requiredAPIVersion}.`);
   }
 
   const onErrorStartup = async (appID, e) => {
-    log.warn(`Error during startup of MIRO app with ID: ${appID}. Eror message: ${JSON.stringify(e)}`);
+    log.warn(`Error during startup of MIRO app with ID: ${appID}. Eror message: ${e}`);
 
     if (mainWindow && !miroDevelopMode) {
       mainWindow.send('hide-loading-screen', appID);
