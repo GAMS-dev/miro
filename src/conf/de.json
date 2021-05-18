@@ -620,6 +620,7 @@
       "runPaverButton": "Paver starten",
       "runScriptButton": "Skript starten",
       "downloadAnalysisButton": "Downloaden",
+      "interactiveButtonSb": "In Sandbox laden",
       "interactiveButtonTab":"Vergleichen (Tab)",
       "interactiveButtonPivot":"Vergleichen (Pivot)",
       "interactiveButtonSplit": "Vergleichen (Split)",
