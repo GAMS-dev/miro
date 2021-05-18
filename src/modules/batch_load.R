@@ -379,7 +379,7 @@ output$batchLoadResults <- renderDataTable(
         render = JS(
           "function(data, type, row, meta) {",
           "return type === 'display' && data != null && data.length > 20 ?",
-          "'<span title=\"' + data + '\">' + data.substr(0, 20) + '...</span>' : data;",
+          "'<span class=\"dt-allow-click-event\" title=\"' + data + '\">' + data.substr(0, 20) + '...</span>' : data;",
           "}")
       )))) %>%
       formatDate(3L,  method = "toLocaleString") %>%
