@@ -48,7 +48,7 @@
     <iframe id="shinyframe" th:src="${container}" width="100%" frameBorder="0"></iframe>    
 	<script type="text/javascript" th:inline="javascript">
 		function setShinyframeHeight() {
-			$('#shinyframe').css('height', ($(window).height() - 15) +'px');
+			$('#shinyframe').css('height', $(window).height() +'px');
 		}
 		window.addEventListener("load", setShinyframeHeight);
 		window.addEventListener("resize",  setShinyframeHeight);
