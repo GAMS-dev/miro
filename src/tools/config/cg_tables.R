@@ -877,7 +877,8 @@ observeEvent(virtualActionButton(input$saveTableConfirm, rv$saveTableConfirm), {
                         options = list(
                           aggregationFunction = input[["inputTable_pivot-miroPivot-aggregationFunction"]],
                           pivotRenderer = input[["inputTable_pivot-miroPivot-pivotRenderer"]],
-                          enableHideEmptyCols= isTRUE(input$inputpivot_enableHideEmptyCols)
+                          enableHideEmptyCols = isTRUE(input$inputpivot_enableHideEmptyCols),
+                          hideEmptyCols = input[["inputTable_pivot-miroPivot-hideEmptyCols"]]
                         ))
       if(length(rv$tableWidgetConfig$label)){
         newConfig$label <- rv$tableWidgetConfig$label

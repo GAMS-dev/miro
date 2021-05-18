@@ -336,9 +336,7 @@ if(length(config$scripts$hcube)){
       flog.error("Problems writing gdx files for script: '%s'. Error message: '%s'.", 
                  scriptId, conditionMessage(e))
       errMsg <<- sprintf(lang$errMsg$fileWrite$desc, "data.gdx")
-      hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-      hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-      scriptOutput$sendContent(errMsg, scriptId, isError = TRUE)
+      scriptOutput$sendContent(errMsg, scriptId, hcube = TRUE, isError = TRUE)
     })
     if(!is.null(errMsg)){
       return()

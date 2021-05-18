@@ -37,7 +37,7 @@ generateData <- function(input, output, session, data, type,
   })
   tryCatch({
     return(callModule(customGenerator, "custom", data, options = customOptions, 
-                      path = customRendererDir, views = views, 
+                      path = customRendererDir, rendererEnv = rendererEnv, views = views, 
                       attachments = attachments))
   }, error = function(e){
     stop(sprintf("An error occured in the custom generator function: '%s'. Error message: %s.",

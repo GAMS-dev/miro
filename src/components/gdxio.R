@@ -248,7 +248,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
           symVal  <- symVals[[j]]
           if(symName %in% names(private$dropdownAliases) &&
              !isTRUE(private$dropdownAliases[[symName]]$clearValue)){
-            aliasId <- match(symVal, private$dropdownAliases[[symName]]$choices)
+            aliasId <- match(symVal[1], private$dropdownAliases[[symName]]$choices)
             if(is.na(aliasId)){
               uels    <- list(symVal[1])
               te      <- paste0(symVal[-1], collapse = "||")
