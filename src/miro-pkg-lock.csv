@@ -62,7 +62,7 @@ sys, 3.4
 askpass, 1.1
 prettyunits, 1.1.1
 stringi, 1.4.6
-DBI
+DBI, 1.1.1
 blob, 1.2.1
 hms, 0.5.3
 cpp11, 0.2.7

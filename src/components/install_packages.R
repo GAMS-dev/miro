@@ -40,7 +40,7 @@ installAndRequirePackages <- function(requiredPackages, installedPackages, RLibP
         }
         print(paste0("Installing: ", package[1]))
         if(length(package) == 1L){
-          if(package %in% c("DBI", "chartjs")){
+          if(package %in% c("chartjs")){
             install.packages(file.path("..", "r-src", package), repos = NULL, type="source",
               dependencies = FALSE, INSTALL_opts = "--no-multiarch")
           }else{

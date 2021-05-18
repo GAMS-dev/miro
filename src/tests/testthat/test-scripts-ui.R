@@ -11,6 +11,7 @@ configJSONFileName <- file.path(testModelDir, paste0("conf_", modelToTest),
                                 paste0(modelToTest, ".json"))
 
 Sys.setenv(MIRO_MODEL_PATH = file.path(testModelDir, paste0(modelToTest, ".gms")))
+Sys.setenv(PATH = paste0(Sys.getenv("GAMS_SYS_DIR"), ":", Sys.getenv("PATH")))
 Sys.setenv(MIRO_MODE="base")
 
 file.copy(file.path(dirname(configJSONFileName), paste0(tolower(modelToTest), ".json")), 
@@ -20,12 +21,18 @@ configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, simplifyDa
                                                   simplifyMatrix = FALSE))
 testFile <- file.path(testDir, "bla.txt")
 unlink(testFile)
+licenseFileArg <- character()
+if(!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")){
+  licenseFileArg <- paste0('license="', Sys.getenv("MIRO_TEST_GAMS_LICE"), '"')
+}
 configJSON$scripts <- list(base = list(list(tabTitle = "asd", id = "script1", command = "gams",
-                                            args = c("script1.gms", paste0("--testfile=", testFile)),
+                                            args = c("script1.gms", paste0("--testfile=", testFile),
+                                                     licenseFileArg),
                                             outputFile = "test.md",
                                             markdown = FALSE),
                                        list(tabTitle = "def", id = "script2", command = "gams",
-                                            args = "script2.gms", outputFile = "test.md",
+                                            args = c("script2.gms", licenseFileArg),
+                                            outputFile = "test.md",
                                             markdown = TRUE)))
 jsonlite::write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
 

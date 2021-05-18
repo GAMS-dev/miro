@@ -62,8 +62,15 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
     return()
   }
   if(is.null(scenMetaDb) || !nrow(scenMetaDb)){
-    return(showErrorMsg(lang$nav$dialogLoadScen$titleNoScen, 
-                        lang$nav$dialogLoadScen$descNoScen))
+    scenMetaDb <<- tibble(`_sid` = integer(),
+                          `_uid` = character(),
+                          `_sname` = character(),
+                          `_stime` = character(),
+                          `_stag` = character(),
+                          `_accessr` = character(),
+                          `_accessw` = character(),
+                          `_accessx` = character(),
+                          `_scode` = integer())
   }
   # fetch only those scenarios that are not already loaded into the ui
   uiSidList <- scenData$getRefScenMap()
@@ -100,11 +107,6 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
   }else{
     uiSidList <- integer()
     includeSandboxScen <- identical(currentCompMode, "tab")
-  }
-  
-  if(is.null(scenMetaDb) || !nrow(scenMetaDb)){
-    return(showErrorMsg(lang$nav$dialogLoadScen$titleNoScen, 
-                        lang$nav$dialogLoadScen$descNoScen))
   }
   
   maxNoScenExceeded <- FALSE
@@ -158,10 +160,15 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
   }
   # by default, put most recently saved scenario first
   dbSidList <- formatScenList(scenMetaDbSubset, uid, "_stime", desc = TRUE)
-  showLoadScenDialog(dbSidList, uiSidList, identical(currentCompMode, "split"),
-                     dbTagList = dbTagList, baseScenName = baseScenName)
-  if(maxNoScenExceeded)
-    showHideEl(session, "#importScenMaxNoScen", 4000L)
+  if(length(dbSidList) || length(uiSidList)){
+    showLoadScenDialog(dbSidList, uiSidList, identical(currentCompMode, "split"),
+                       dbTagList = dbTagList, baseScenName = baseScenName)
+    if(maxNoScenExceeded)
+      showHideEl(session, "#importScenMaxNoScen", 4000L)
+  }else{
+    return(showErrorMsg(lang$nav$dialogLoadScen$titleNoScen, 
+                        lang$nav$dialogLoadScen$descNoScen))
+  }
 })
 
 # sort by name

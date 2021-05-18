@@ -21,7 +21,8 @@ chartjs <- function(width = NULL, height = NULL, palette = "Paired", customColor
            palette = palette,
            debug = debug)
   if(!is.null(title)){
-    x$options$plugins$title <- list(display = TRUE, text = title)
+    x$options$plugins$title <- list(display = TRUE, text = title,
+                                    font = list(size = 20))
   }
 
   # Create widget
