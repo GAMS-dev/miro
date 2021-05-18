@@ -125,7 +125,7 @@
                                         <p>But: This option should be used with caution!</br> 
                                         If the model execution is skipped, the GAMS/MIRO data contract is not created or renewed. This means that changes made in the model are not communicated to MIRO. If you have a model that takes a long time to be solved and you don't want to run through it in order to launch MIRO, you can simply set the GAMS option <a href = "https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOaction" target = "_blank"><i>a=c</i></a> (action=compile) instead of the option "Skip model execution". This will only compile the model which is sufficient to update the data contract. Note that in this case a new default scenario is created, but it contains only input data and no output data.</p>
                                     </div>
-                                    <div class="expandable-box-outline" style="margin-top:30px">
+                                    <div class="expandable-box-outline">
                                         <h3 id="start-via-command-line"  class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Advanced: Start MIRO using the command line</h3>
                                         <div class="section-block" style="display:none">
                                             <p>In case you want to launch MIRO from the command line, the data contract between GAMS and MIRO must be created first (<i><a href = "./faqs.html#file-io">&lt;modelname&gt;_io.json</a></i>). This happens when the model is called in GAMS with the option <span class="code">IDCGenerateJSON=path/to/conf_&lt;modelname&gt;/&lt;modelname&gt;_io.json</span>.</p>
@@ -670,7 +670,7 @@
                                         <img class="img-fluid" src="assets/images/concept_data.png" alt="GAMS MIRO data concept" />
                                     </div>
                                 </div><!--//section-block-->
-                                <div class="expandable-box-outline" style="margin-top:30px">
+                                <div class="expandable-box-outline">
                                     <h3 id="na-zero-eps"  class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Advanced: Working with <i>NAs</i>, <i>zeros</i> and <i>EPS</i></h3>
                                     <div class="section-block" style="display:none">
                                         <p>Special attention should be paid to the communication of <i>zeros</i>, <i>NAs</i> and <i>EPS</i> between GAMS and MIRO. The following rules describe how the data is communicated in detail:</p>
