@@ -371,7 +371,7 @@ output$batchLoadResults <- renderDataTable(
       return()
     }
     data <- batchLoadData[, -1]
-    datatable(
+    dtObj <- datatable(
       data, filter = "bottom", colnames = names(batchLoadFilters)[-1], rownames = FALSE,
       editable = list(target = "cell", disable = list(columns = seq_along(data)[-2L] - 1L)),
       options = list(scrollX = TRUE, columnDefs = list(list(
@@ -382,10 +382,13 @@ output$batchLoadResults <- renderDataTable(
           "'<span class=\"dt-allow-click-event\" title=\"' + data + '\">' + data.substr(0, 20) + '...</span>' : data;",
           "}")
       )))) %>%
-      formatDate(3L,  method = "toLocaleString") %>%
-      formatRound(seq(5L, length(data))[vapply(data[, seq(5L, length(data))],
-                                               is.numeric, logical(1L), USE.NAMES = FALSE)], 
-                  digits = roundPrecision)
+      formatDate(3L,  method = "toLocaleString")
+    if(length(data) > 4L){
+      return(dtObj %>% formatRound(seq(5L, length(data))[vapply(data[, seq(5L, length(data))],
+                                                                is.numeric, logical(1L), USE.NAMES = FALSE)], 
+                                   digits = roundPrecision))
+    }
+    return(dtObj)
   }
 )
 
