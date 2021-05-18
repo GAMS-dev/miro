@@ -831,7 +831,7 @@ Worker <- R6Class("Worker", public = list(
       
       dataFilesToFetch <- metadata$modelDataFiles
       
-      requestBody <- list(model = metadata$modelName,
+      requestBody <- list(model = metadata$modelId,
                           run = metadata$modelGmsName,
                           arguments = paste0("pf=", metadata$modelName, ".pf"), 
                           namespace = metadata$namespace)

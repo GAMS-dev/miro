@@ -1358,7 +1358,14 @@ if(!is.null(errMsg)){
       # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
       sidCompOrder     <- NULL
       
+      if(config$activateModules$remoteExecution){
+        remoteModelId <- Sys.getenv("MIRO_ENGINE_MODELNAME", modelName)
+      }else{
+        remoteModelId <- modelName
+      }
+      
       worker <- Worker$new(metadata = list(uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
+                                           modelId = remoteModelId,
                                            maxSizeToRead = 5000,
                                            modelDataFiles = c(if(identical(config$fileExchange, "gdx")) 
                                              c(MIROGdxInName, MIROGdxOutName) else 
