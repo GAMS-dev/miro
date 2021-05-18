@@ -66,7 +66,7 @@ getModelPath <- function(modelPath = NULL, envVarPath = NULL){
     modelPath <- envName
   }
   gmsFileName  <- basename(modelPath)
-  modelNameRaw <- gsub("\\.[[:alpha:]]{2,3}$", "", gmsFileName)
+  modelNameRaw <- tools::file_path_sans_ext(gmsFileName)
   modelDir     <- dirname(modelPath)
   return(list(modelDir, gmsFileName, tolower(modelNameRaw), modelNameRaw))
 }
