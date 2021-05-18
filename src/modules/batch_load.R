@@ -456,7 +456,7 @@ output$btBatchDownloadConfirm <- downloadHandler(
     tolower(modelName) %+% "_data.zip"
   },
   content = function(file) {
-    flog.debug("Button to download batch of scenarops clicked.")
+    flog.debug("Button to download batch of scenarios clicked.")
     
     if(!length(sidsToLoad)){
       flog.warn("No scenario IDs to download could be found.")
