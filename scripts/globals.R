@@ -27,7 +27,7 @@ packageVersionMap <- list(c("data.table", "1.12.2"), c("backports", "1.1.9"), c(
     "3.0.3"), c("dplyr", "0.8.5"), c("sys", "3.4"), c("askpass", 
     "1.1"), c("prettyunits", "1.1.1"), c("stringi", "1.4.6"), 
     c("DBI", "1.1.1"), c("blob", "1.2.1"), c("hms", "0.5.3"), 
-    c("cpp11", "0.2.1"), c("tidyr", "1.1.2"), c("memoise", "1.1.0"
+    c("cpp11", "0.2.7"), c("tidyr", "1.1.2"), c("memoise", "1.1.0"
     ), "httr", "plotly", "shinydashboard", "timevis", c("rematch", 
     "1.0.1"), c("formatR", "1.7"), c("ps", "1.3.4"), c("clipr", 
     "0.7.0"), c("cellranger", "1.1.0"), c("progress", "1.2.2"

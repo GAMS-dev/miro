@@ -19,11 +19,11 @@
       "inputScreen":"Input",
       "outputScreen":"Output",
       "gams":"GAMS interaction",
+      "load": "Load scenarios",
       "scen":"Compare scenarios",
       "hcube":{
         "configureRun": "Configure Hypercube job",
         "import": "Import jobs",
-        "load": "Load scenarios",
         "analyze" : "Analyze scenarios"
       }
     },
@@ -125,7 +125,7 @@
       "btManualImport": "Manual import",
       "btShowHistory": "Show history"
     },
-    "hcubeLoad":{
+    "queryBuilder":{
       "title":"Load scenarios",
       "noData":"No data was returned by your query",
       "invalidCsvFilter": "'%s' must not contain ','.",
@@ -597,37 +597,40 @@
       "cancelButton": "Cancel",
       "okButton": "Show jobs"
     },
+    "dialogBatchLoad":{
+      "title": "Select action",
+      "selectMethod": "What would you like to do with the selected scenarios?",
+      "selExportType": "Select a file type",
+      "maxScenWarning1": "You may only select up to: '%d' scenarios to load into interactive mode at once.", 
+      "maxScenWarning2": " Select less scenarios or use the PAVER module to compare.",
+      "cancelButton": "Cancel",
+      "paverButton": "Analyze",
+      "selAnalysisScript": "Select the script you want to run",
+      "tabScript": "Scripts",
+      "tabPaver": "PAVER",
+      "delTrace":"Note: The existing trace files found in the current working directory will be deleted when starting PAVER.",
+      "tooManySolvers":"The attributes you selected amount to too many scenarios to compare (no more than %s scenarios can be compared). Please reduce the number of scenarios.",
+      "noTrc":"No trace data could be found for at least one of the selected scenarios.",
+      "analysisRunScriptRunning": "An analysis is currently underway. Please wait until this analysis is complete or interrupt it.",
+      "removeConfirm": "Are you sure that you want to delete the %s selected scenarios from the database? This action can not be undone!",
+      "removeSuccess": "The selected scenarios were removed successfully.",
+      "selPaverAttribs":"Please select the attributes you want to compare:",
+      "selIgnoreAttribs": "Select attributes to ignore:",
+      "selClArgs": "Specify additional arguments to call PAVER with.",
+      "runPaverButton":"Start PAVER",
+      "runScriptButton": "Start script",
+      "downloadAnalysisButton": "Download",
+      "interactiveButtonSb": "Load into sandbox",
+      "interactiveButtonTab":"Compare (Tab)",
+      "interactiveButtonPivot":"Compare (Pivot)",
+      "interactiveButtonSplit": "Compare (Split)",
+      "downloadButton":"Download data",
+      "removeButton": "Delete scenarios"
+    },
     "hcubeMode":{
       "sliderAllCombinations": "All combinations?",
       "stepsize": "Step size",
       "checkboxAliases":["No", "Yes"],
-      "hcubeLoadDialog":{
-        "title": "Select action",
-        "selectMethod": "What would you like to do with the selected scenarios?",
-        "selExportType": "Select a file type",
-        "maxScenWarning1": "You may only select up to: '%d' scenarios to load into interactive mode at once.", 
-        "maxScenWarning2": " Select less scenarios or use the PAVER module to compare.",
-        "cancelButton": "Cancel",
-        "paverButton": "Analyze",
-        "selAnalysisScript": "Select the script you want to run",
-        "tabScript": "Scripts",
-        "tabPaver": "PAVER",
-        "delTrace":"Note: The existing trace files found in the current working directory will be deleted when starting PAVER.",
-        "tooManySolvers":"The attributes you selected amount to too many scenarios to compare (no more than %s scenarios can be compared). Please reduce the number of scenarios.",
-        "noTrc":"No trace data could be found for at least one of the selected scenarios.",
-        "analysisRunScriptRunning": "An analysis is currently underway. Please wait until this analysis is complete or interrupt it.",
-        "removeConfirm": "Are you sure that you want to delete the %s selected scenarios from the database? This action can not be undone!",
-        "removeSuccess": "The selected scenarios were removed successfully.",
-        "selPaverAttribs":"Please select the attributes you want to compare:",
-        "selIgnoreAttribs": "Select attributes to ignore:",
-        "selClArgs": "Specify additional arguments to call PAVER with.",
-        "runPaverButton":"Start PAVER",
-        "runScriptButton": "Start script",
-        "interactiveButtonTab":"Compare (Tab)",
-        "interactiveButtonPivot":"Compare (Pivot)",
-        "downloadButton":"Download data",
-        "removeButton": "Delete scenarios"
-      },
       "invalidScenDialog":{
         "title":"Invalid scenarios",
         "desc": "%d of the scenarios you want to upload are invalid (%s). Do you still want to proceed?",
@@ -1107,7 +1110,7 @@
         "headerBaseScripts": "Base Mode",
         "headerOutputAttach": "Output attachments",
         "baseScriptsTooltip": "Run custom analysis scripts which will be displayed in the output section",
-        "headerHcubeScripts": "Hypercube Mode",
+        "headerHcubeScripts": "Batch analysis",
         "hcubeScriptsTooltip": "Run custom analysis scripts for multiple scenarios at once",
         "headerScenData": "Scenario & data",
         "headerComputation": "Computation",
@@ -1151,7 +1154,7 @@
       },
       "scripts":{
         "base": "Specify custom analysis scripts for the Base Mode",
-        "hcube": "Specify custom analysis scripts for the Hypercube Mode"
+        "hcube": "Specify custom analysis scripts for analyzing batches of scenarios"
       },
       "outputAttach": {
         "label": "Add new attachment"

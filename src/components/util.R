@@ -17,6 +17,9 @@ getCommandArg <- function(argName, exception = TRUE){
     }
   }
 }
+isBadScenName <- function(scenName){
+  return(nchar(scenName) > 63 || nchar(trimws(scenName, "both")) < 1L)
+}
 isWindows <- function() .Platform$OS.type == 'windows'
 hasContent <- function(x){
   if(inherits(x, "data.frame") && nrow(x) == 0){
@@ -662,8 +665,8 @@ getNestedDep <- function(depStr){
     return(depStr)
   }
 }
-genSpinner <- function(id = NULL, hidden = FALSE, absolute = TRUE, externalStyle = NULL){
-  div(id = id, class = "lds-ellipsis", 
+genSpinner <- function(id = NULL, hidden = FALSE, absolute = TRUE, externalStyle = NULL, extraClasses = NULL){
+  div(id = id, class = paste(c("lds-ellipsis", extraClasses), collapse = " "), 
       style = paste0(if(is.null(externalStyle))
         "top:50%;left:50%;z-index:1;margin-left:-32px;margin-top:-32px;" else
           externalStyle, 

@@ -36,6 +36,9 @@ genPaverArgs <- function(traceFilenames, clArgs = NULL){
 
 observeEvent(input$btAnalysisConfig, {
   # if already tracefiles in tracefiledir show deletion warning
+  hideEl(session, ".batch-load-content")
+  showEl(session, ".batch-load-analysis-content")
+  showEl(session, ".batch-load-analysis-footer", inline = TRUE)
   if(length(list.files(traceFileDir)) > 0){
     showEl(session, "#deleteTrace")
   }
@@ -65,16 +68,16 @@ observeEvent(input$btRunPaver, {
   }
   gmswebiter <<- gmswebiter + 1
   noErr <- TRUE
-  scenToFetch <- rv$fetchedScenarios[[1]] %in% sidsToLoad
+  scenToFetch <- batchLoadData[[1]] %in% sidsToLoad
   if(!any(scenToFetch)){
     flog.warn("Paver was attempted to be started while no scenarios were selected.")
     showHideEl(session, "#analysisRunUnknownError", 6000L)
     return()
   }
   tryCatch({
-    exceedsMaxNoSolvers <- hcubeLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[scenToFetch, , drop = FALSE], 
-                                                         input$selPaverAttribs, maxSolversPaver,
-                                                         isolate(input$paverExclAttrib))
+    exceedsMaxNoSolvers <- batchLoader$exceedsMaxNoSolvers(batchLoadData[scenToFetch, , drop = FALSE], 
+                                                           input$selPaverAttribs, maxSolversPaver,
+                                                           isolate(input$paverExclAttrib))
   }, error = function(e){
       noErr <<- FALSE
       flog.error("Problems identifying whether maximum number of solvers for paver is exceeded Error message: '%s'.",
@@ -112,7 +115,7 @@ observeEvent(input$btRunPaver, {
     }
     noErr <- TRUE
     tryCatch(
-      hcubeLoad$genPaverTraceFiles(traceFileDir, exclTraceCols)
+      batchLoader$genPaverTraceFiles(traceFileDir, exclTraceCols)
       ,error = function(e){
         noErr <<- FALSE
         switch(conditionMessage(e),
@@ -269,7 +272,7 @@ observeEvent(input$btNewAnalysisRun,{
 
 if(length(config$scripts$hcube)){
   observeEvent(input$btRunHcubeScript, {
-    scriptId <- suppressWarnings(as.integer(input$btRunHcubeScript))
+    scriptId <- suppressWarnings(as.integer(input$selHcubeAnalysisScript))
     flog.debug("Button to execute Hypercube analysis script: '%s' clicked.", scriptId)
     
     if(is.na(scriptId) || scriptId < 1 || scriptId > length(config$scripts$hcube)){
@@ -327,8 +330,8 @@ if(length(config$scripts$hcube)){
       prog$inc(amount = incAmount, detail = detail)
     }
     tryCatch({
-      hcubeLoad$genGdxFiles(sidsToLoad, paste0(workDir, .Platform$file.sep, "scripts_", modelName),
-                            gdxio, prog, genScenList = TRUE)
+      batchLoader$genGdxFiles(sidsToLoad, paste0(workDir, .Platform$file.sep, "scripts_", modelName),
+                              gdxio, prog, genScenList = TRUE)
     }, error = function(e){
       flog.error("Problems writing gdx files for script: '%s'. Error message: '%s'.", 
                  scriptId, conditionMessage(e))
