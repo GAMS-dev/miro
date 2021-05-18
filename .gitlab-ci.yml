@@ -56,6 +56,8 @@ update_doc_job:
   script:
     - rsync -rlptvz -e "ssh -o StrictHostKeyChecking=no" doc/* ubuntu@new.gams.com:/var/www/html/staging.gams.com/public_html/miro
   rules:
+    - if: $CI_MERGE_REQUEST_ID
+      when: always
     - when: manual
     - allow_failure: true
   needs: []
