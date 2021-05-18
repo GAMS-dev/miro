@@ -227,7 +227,7 @@ BatchLoader <- R6Class("BatchLoader",
                              }
                              scenNameList[[j]] <- paste0(scenName, ".gdx")
                              j <- j + 1L
-                             gdxio$wgdx(paste0(tmpDir, .Platform$file.sep, scenName, ".gdx"), 
+                             gdxio$wgdx(paste0(tmpDir, .Platform$file.sep, sanitizeFn(scenName), ".gdx"), 
                                         lapply(dataTmp, function(data){
                                           if(scenId %in% names(data)){
                                             return(data[[scenId]])
@@ -316,8 +316,8 @@ BatchLoader <- R6Class("BatchLoader",
                                  }
                                }
                                write_csv(tableTmp[[i]][-1L], 
-                                         paste0(scenIdDirNameMap[[scenId]], 
-                                                .Platform$file.sep, tableName, ".csv"))
+                                         paste0(sanitizeFn(scenIdDirNameMap[[scenId]]), 
+                                                .Platform$file.sep, sanitizeFn(tableName), ".csv"))
                              })
                            }
                            if(!is.null(progressBar)){
