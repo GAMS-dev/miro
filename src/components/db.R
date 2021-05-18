@@ -219,11 +219,11 @@ Db <- R6Class("Db",
                                                    count = TRUE, limit = 1L)
                   if(length(scenExists) && scenExists[[1]] >= 1){
                     flog.trace("Db: Scenario with name: '%s' already exists for user: '%s' " %+%
-                                 "(Db.checkScenExists returns FALSE).", sname, uid)
+                                 "(Db.checkScenExists returns TRUE).", sname, uid)
                     return(TRUE)
                   }
                   flog.trace("Db: Scenario with name: '%s' does not yet exist for user: '%s' " %+% 
-                               "(Db.checkScenExists returns TRUE).", sname, uid)
+                               "(Db.checkScenExists returns FALSE).", sname, uid)
                   return(FALSE)
                 },
                 getSid = function(sname, uid = NULL){
@@ -654,7 +654,7 @@ Db <- R6Class("Db",
                                                  " LIMIT ?lim ;"))
                       query   <- DBI::sqlInterpolate(private$conn, sql, lim = limit)
                       dataset <- as_tibble(DBI::dbGetQuery(private$conn, query))
-                      dataset[['_v']] <- NULL
+                      dataset[["_v"]] <- NULL
                       flog.debug("Db: Data was imported from table: '%s' (Db.importDataset).", tableNameDb)
                     }, error = function(e){
                       stop(sprintf("Db: An error occurred while querying the database (Db.importDataset, " %+%

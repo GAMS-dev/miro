@@ -227,6 +227,9 @@
                                         While solving a model with GAMS this section shows the current status of your run as well as the log and listing (lst) files. 
                                         You can add a <a href="./customize.html#miro-log">custom log</a> here too.
                                       </li>
+                                      <li><span class="fa-li"><i class="fa fa-folder-open"></i></span><b>Load scenarios:</b><br/>
+                                        "Slice & dice" the database to fetch those scenarios you are interested in.
+                                      </li>
                                       <li><span class="fa-li"><i class="fas fa-copy"></i></span><b>Compare scenarios:</b><br/>
                                         Module for the comparison of results / scenarios in a split view mode or two different multi-scenario comparison modes.
                                       </li>
@@ -567,6 +570,41 @@
                                             </ul>
                                         </div>
                                     </div><!--//section-block-->
+                                    <div id="scenario-loading"  class="section-block">
+                                        <h3 class="block-title">Finding and loading scenarios</h3>
+                                        <p>To help you find and load exactly the scenarios you are interested in, MIRO has a powerful <i>Batch Load</i> module that graphically assists you create and execute complex database queries.</p>
+                                        <p>Filters can be applied to scenario metadata such as the creation time, scenario name, or optional tags you have assigned to a scenario. You can also filter by any input and output scalars defined in your model as well as any Double-dash parameters and GAMS options. You can combine any of these filters with the logical operators AND and OR:</p>
+                                         <div class="section-block" style="text-align:center;">
+                                              <img class="img-fluid" src="assets/images/db_query.png" alt="Results of database search by Batch Load module" />
+                                        </div>
+                                        <div class="callout-block callout-success">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-thumbs-up"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <b class="callout-title">Tip:</b>
+                                              <p>You can search for empty entries (<i>NA</i>) by leaving the field empty if it is a numeric field, or by using the <kbd>exists</kbd> and <kbd>doesn't exist</kbd> operators for character fields!</p>
+                                          </div><!--//content-->
+                                        </div><!--//callout-block-->
+                                        <p>Once you have found the scenarios you were looking for, you can do one of the following:</p>
+                                        <ul>
+                                            <li><b>Delete scenarios:</b><br/>
+                                            Remove the selected scenarios.
+                                            </li>
+                                            <li><b>Download data:</b><br/>
+                                            Download scenario data for external analysis.
+                                            </li>
+                                            <li><b>Analyze:</b><br/>
+                                            Run one of your <a href="./customize.html#batch-analysis-scripts">customized batch analysis scripts</a> (only visible if you have custom analysis scripts set up).
+                                            </li>
+                                            <li><b>Load into sandbox:</b><br/>
+                                            Load the selected scenario into the <a href="#scenario-concept" class="scrollto">sandbox</a> (only visible if you have selected exactly one scenario).
+                                            </li>
+                                            <li><b>Compare: </b><br/>
+                                            <a href="#scenario-comparison" class="scrollto">Interactive scenario comparison</a>: Compare different scenarios directly in split, tab or pivot view. Best suited for a small number of scenarios to be compared (maximum allowed number of scenarios: 10).
+                                            </li>
+                                        </ul>
+                                    </div><!--//section-block-->
                                     <div id="scenario-comparison"  class="section-block">
                                         <h3 class="block-title">Scenario comparison</h3>
                                             <p>The scenario comparison mode is useful if you want to compare the input and/or output data of different model runs. 
@@ -812,16 +850,15 @@
                             <section id="performance-aspects" class="doc-section">
                                 <h2 class="section-title">Performance Aspects</h2>
                                 <div  class="section-block">
-                                    <p>The size and/or complexity of a GAMS model has no influence on the performance of a MIRO application. As the <a href="#data-concept" class="scrollto">data concept</a> shows, only data is communicated between model and application, more precisely the data of all symbols which are visible in MIRO. Therefore the amount of data to be exchanged and its visualization have a decisive effect on the performance. 
-                                    Important factors are:</p>
+                                    <p>The size and/or complexity of a GAMS model does not affect the performance of a MIRO application. As the <a href="#data-concept" class="scrollto">data concept</a> shows, only data declared as external input and output (data contract) is communicated between the model and the application. The amount of data to be exchanged as well as the complexity of its visualization influence the performance of your application. Important factors are:</p>
                                     <ul>
                                       <li>Number of symbols that are communicated with MIRO<br>
-                                      The number of symbols displayed in MIRO has a particular effect on the start-up time of an application. For each non-scalar symbol a table and a graphic is rendered in a separate tab. MIRO is not designed to display several dozen symbols at once. However, it should be no problem to use 50 symbols in MIRO (rough guide). Nevertheless, it should be reflected whether it makes sense to have such a large number of symbols in the user interface. Should the data of all these symbols be displayed in tables and be editable? Or do many of the symbols represent static data which can also be communicated in other ways? With an increasing number of symbols, the following aspects should also be taken into consideration.</li>
+                                        The more symbols you want to display in MIRO, the more tables and charts need to be set up. MIRO renders most of them lazily, that is, only when the user actually activates a particular tab. However, each of the symbols has a slight overhead and you should ask yourself whether displaying all of them is really necessary. For example, it is usually not a good idea to declare each domain set separately as external input. Instead, use the <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition" target="_blank">Implicit Set Definition</a> feature of GAMS! This not only saves rendering time in MIRO, but is often better for the user experience as it simplifies data entry. As a rule of thumb, try to limit the number of symbols in your data contract to 50.</li>
                                       <li>Amount of data that is communicated with MIRO<br>
-                                      Data is rendered in MIRO in form of a table and a graphic. The larger the amount of data, the more computationally intensive this procedure becomes. Furthermore, the rendering of graphics can be of varying complexity. While a simple pie chart is usually rendered quite quickly, graphics that include <a href="./charts.html#animation">animations</a> can take much more time. With very large amounts of data, which are displayed in MIRO for visualization purposes only, it can make sense from a performance point of view to communicate only parts of the data with MIRO or to visualize only extracts of it. </li>
+                                      Each dataset is displayed in MIRO in the form of a table and a graph. The larger the amount of data, the more computationally intensive this process becomes. In addition, the rendering of graphics can vary in complexity. While a simple pie chart is usually rendered fairly quickly, graphs that contain <a href="./charts.html#animation">animations</a> can take significantly more time. In the case of very large amounts of data that are only displayed in MIRO for visualization purposes, it may make sense from a performance point of view to communicate only parts of the data with MIRO or to visualize only sections of it, e.g. by aggregating data.</li>
                                       <li>Table tool to use<br>
-                                      MIRO provides two different table tools for input symbols, each of which has its advantages and disadvantages. The default tool for input data (<a href="https://github.com/jrowen/rhandsontable" target="_blank">rhandsontable</a>) offers a spreadsheet-like feeling. However, the second table tool (<a href="https://github.com/rstudio/DT" target="_blank">DT</a>) - which is also used for output data - is more performant for large amounts of data. In the Configuration Mode this can be configured for individual symbols as the <a href="./customize.html#table-option-large">table tool to be used</a>.</li>
-                                      <li><a href="./start.html#file-attachments">Attachments</a> offer a convenient way to communicate large amounts of data from MIRO with the GAMS model without significantly affecting the performance of the application. Since attachments are communicated as a file and therefore no data needs to be rendered, they require very few computing resources.</li>
+                                      MIRO provides several table tools for input symbols, each of which has its advantages and disadvantages. The default input data tool provides a spreadsheet-like feel. However, all data is held in the user's browsers, which becomes problematic when dealing with large amounts of data. If you have larger data sets (>10,000 records and >10 columns), MIRO offers the <a href="./customize.html#input-bigdata-table">Big Data Table</a> as well as the <a href="./customize.html#input-pivot-table">MIRO Pivot Table</a>. With these two table types, most of the data is kept on the server side and only fractions of the data are kept in the user's browser. This allows for much larger data sets (>3 million records).</li>
+                                      <li><a href="./start.html#file-attachments">Attachments</a> provide a convenient way to communicate large amounts of data from MIRO to the GAMS model without significantly impacting application performance. Since attachments are communicated as a file and therefore do not require data to be rendered, they require very few computational resources.</li>
                                     </ul>
                                 </div><!--//section-block-->
                             </section>
@@ -864,6 +901,7 @@
                                         <a class="nav-link scrollto" href="#solve-model">Solve the model</a>
                                         <a class="nav-link scrollto" href="#inspect-results">Inspect the results</a>
                                         <a class="nav-link scrollto" href="#save-export-delete">Save / export / delete a scenario</a>
+                                        <a class="nav-link scrollto" href="#scenario-loading">Finding and loading scenarios</a>
                                         <a class="nav-link scrollto has-sub-sub" href="#scenario-comparison">Scenario comparison</a>
                                         <nav class="sub-sub-menu nav flex-column">
                                           <a class="nav-link scrollto" href="#compare-pivot">Pivot view</a>

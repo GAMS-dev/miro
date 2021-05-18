@@ -1416,14 +1416,11 @@ if(is.null(errMsg)){
     config[["symbolLinks"]] <- NULL
   }
   if(length(config$scripts)){
-    if(LAUNCHHCUBEMODE){
-      if(any(duplicated(vapply(config$scripts$hcube, "[[", character(1L), "id", USE.NAMES = FALSE)))){
-        errMsg <- paste(errMsg, "Some of your Hypercube analysis scripts share the same id. Please make sure the ID is unique.")
-      }
-    }else{
-      if(any(duplicated(vapply(config$scripts$base, "[[", character(1L), "id", USE.NAMES = FALSE)))){
-        errMsg <- paste(errMsg, "Some of your analysis scripts share the same id. Please make sure the ID is unique.")
-      }
+    if(any(duplicated(vapply(config$scripts$base, "[[", character(1L), "id", USE.NAMES = FALSE)))){
+      errMsg <- paste(errMsg, "Some of your analysis scripts share the same id. Please make sure the ID is unique.")
+    }
+    if(any(duplicated(vapply(config$scripts$hcube, "[[", character(1L), "id", USE.NAMES = FALSE)))){
+      errMsg <- paste(errMsg, "Some of your Hypercube/batch analysis scripts share the same id. Please make sure the ID is unique.")
     }
   }
 }

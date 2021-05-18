@@ -89,7 +89,7 @@ filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./component
                     "./components/dataio.R", "./components/hcube_data_instance.R", 
                     "./components/miro_tabsetpanel.R", "./modules/render_data.R", 
                     "./modules/generate_data.R", "./components/script_output.R",
-                    "./components/js_util.R", "./components/scen_data.R")
+                    "./components/js_util.R", "./components/scen_data.R", "./components/batch_loader.R")
 LAUNCHCONFIGMODE <- FALSE
 LAUNCHHCUBEMODE <<- FALSE
 if(is.null(errMsg)){
@@ -757,7 +757,6 @@ if(is.null(errMsg)){
     }
     errMsg <- installAndRequirePackages(c("digest"), installedPackages, RLibPath, CRANMirror, miroWorkspace)
     source("./components/db_hcubeimport.R")
-    source("./components/db_hcubeload.R")
   }
 }
 
@@ -1326,7 +1325,7 @@ if(!is.null(errMsg)){
       rv <- reactiveValues(unsavedFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
                            btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
                            btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
-                           noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
+                           noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L, updateBatchLoadData = 0L,
                            jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L, importCSV = 0L,
                            refreshLogs = NULL, triggerAsyncProcObserver = NULL)
       
@@ -1527,92 +1526,13 @@ if(!is.null(errMsg)){
       scriptOutput <- NULL
       
       if(LAUNCHHCUBEMODE){
-        if(length(config$scripts)){
+        if(length(config$scripts$hcube)){
           scriptOutput <- ScriptOutput$new(session, file.path(workDir, paste0("scripts_", modelName)), 
                                            config$scripts, lang$nav$scriptOutput$errMsg,
                                            gamsSysDir = gamsSysDir)
         }
-      }else{
-        if(length(config$scripts$base)){
-          scriptOutput <- ScriptOutput$new(session, file.path(workDir, paste0("scripts_", modelName)),
-                                           config$scripts, lang$nav$scriptOutput$errMsg,
-                                           gamsSysDir = gamsSysDir)
-          observeEvent(input$runScript, {
-            scriptId <- suppressWarnings(as.integer(input$runScript))
-            if(is.na(scriptId) || scriptId < 1 || 
-               scriptId > length(config$scripts$base)){
-              flog.error("A script with id: '%s' was attempted to be executed. However, this script does not exist. Looks like an attempt to tamper with the app!",
-                         input$runScript)
-              return()
-            }
-            if(scriptOutput$isRunning(scriptId)){
-              flog.debug("Button to interrupt script: '%s' clicked.", scriptId)
-              scriptOutput$interrupt(scriptId)
-              hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-              hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
-              showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-              
-              showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"), 
-                               lang$nav$scriptOutput$runButton)
-              return()
-            }
-            flog.debug("Button to execute script: '%s' clicked.", scriptId)
-            
-            if(!dir.exists(paste0(workDir, .Platform$file.sep, "scripts_", modelName))){
-              if(dir.exists(paste0(currentModelDir, .Platform$file.sep, "scripts_", modelName))){
-                if(!file.copy2(paste0(currentModelDir, .Platform$file.sep, "scripts_", modelName),
-                               paste0(workDir, .Platform$file.sep, "scripts_", modelName))){
-                  flog.error("Problems copying files from: '%s' to: '%s'.",
-                             paste0(workDir, .Platform$file.sep, "scripts_", modelName),
-                             paste0(currentModelDir, .Platform$file.sep, "scripts_", modelName))
-                  hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-                  hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-                  return(scriptOutput$sendContent(lang$errMsg$unknownError, scriptId, isError = TRUE))
-                }
-              }else{
-                flog.info("No 'scripts_%s' directory was found. Did you forget to include it in the model assembly file ('%s_files.txt')?",
-                          modelName, modelName)
-                hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-                showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-                return(scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$noScript, scriptId, isError = TRUE))
-              }
-            }
-            showEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-            hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
-            hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-            
-            errMsg <- NULL
-            
-            tryCatch({
-              scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE), modelInFileNames)
-              gdxio$wgdx(file.path(workDir, paste0("scripts_", modelName), "data.gdx"), 
-                         scenData$get("sb"), squeezeZeros = 'n')
-            }, error = function(e){
-              flog.error("Problems writing gdx file for script: '%s'. Error message: '%s'.", 
-                         scriptId, conditionMessage(e))
-              errMsg <<- sprintf(lang$errMsg$fileWrite$desc, "data.gdx")
-              hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-              hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-              scriptOutput$sendContent(errMsg, scriptId, isError = TRUE)
-            })
-            if(!is.null(errMsg)){
-              return()
-            }
-            tryCatch({
-              scriptOutput$run(scriptId)
-              showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"), 
-                               lang$nav$scriptOutput$interruptButton)
-            }, error = function(e){
-              flog.info("Script: '%s' crashed during startup. Error message: '%s'.",
-                        scriptId, conditionMessage(e))
-              scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$crash, scriptId, 
-                                       hcube = FALSE, isError = TRUE)
-            })
-          })
-          observeEvent(input$outputGenerated,{
-            noOutputData <<- FALSE
-          })
-        }
+      }else if(length(config$scripts$base) || length(config$scripts$hcube)){
+        source("./modules/analysis_scripts.R", local = TRUE)
       }
       
       if(!dir.exists(workDir) && !dir.create(workDir, recursive = TRUE)){
@@ -1837,13 +1757,14 @@ if(!is.null(errMsg)){
         source("./modules/download_tmp.R", local = TRUE)
       }
       
+      ####### Batch load module
+      source("./modules/batch_load.R", local = TRUE)
+      
       ####### Paver interaction
       if(LAUNCHHCUBEMODE){
         source("./modules/gams_job_list.R", local = TRUE)
         ####### Hcube import module
         source("./modules/hcube_import.R", local = TRUE)
-        ####### Hcube load module
-        source("./modules/hcube_load.R", local = TRUE)
         # analyze button clicked
         source("./modules/analysis_run.R", local = TRUE)
       }else if(config$activateModules$remoteExecution){
@@ -1886,6 +1807,7 @@ if(!is.null(errMsg)){
       source("./modules/load_dynamic_tab_content.R", local = TRUE)
       
       observeEvent(input$btScenPivot_close, {
+        resetCompTabset("0")
         showEl(session, "#pivotCompBtWrapper")
         hideEl(session, "#pivotCompScenWrapper")
         isInRefreshMode <<- FALSE

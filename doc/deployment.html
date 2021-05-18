@@ -226,8 +226,8 @@ inc/inc2.inc
                                 </div><!--//section-block-->
                                 <div class="section-block" id="sbs-customize-app">
                                     <h3>Customize your installed MIRO apps</h3>
-                                    <p>The MIRO Desktop interface offers several ways to control the behavior of your MIRO apps. To access these settings click on <span style="white-space: nowrap;"><i>File</i> &rarr; <i>Preferences</i></span> (or <span style="white-space: nowrap;"><i>GAMS MIRO</i> &rarr; <i>Preferences</i></span> if you are on macOS). Alternatively, press <span class="key">F7</span> (or <span class="key">⌘</span> + <span class="key">,</span> on macOS). You will notice that there are two categories of settings: <i>General</i> settings and settings related to <i>Paths</i>. In the <i>General</i> category you can specify whether you want to launch your MIRO apps in a new window of the MIRO Launcher or in your default browser. You can set the language, specify the level of detail of information to be logged as well as the number of days you want your log files to be stored for (-1 being no limit)</p>
-                                    <p>Furthermore, in the <i>Paths</i> section, you can control the location where your MIRO apps are stored/loaded from and the location where log files are kept. Additionally, in case you want to use a specific GAMS or R version or the MIRO Launcher was unable to locate GAMS (or R) automatically, you can set the path to GAMS (or R) here.</p>
+                                    <p>The MIRO Desktop interface offers several ways to control the behavior of your MIRO apps. To access these settings click on <span style="white-space: nowrap;"><i>File</i> &rarr; <i>Preferences</i></span> (or <span style="white-space: nowrap;"><i>GAMS MIRO</i> &rarr; <i>Preferences</i></span> if you are on macOS). Alternatively, press <span class="key">F7</span> (or <span class="key">⌘</span> + <span class="key">,</span> on macOS). You will notice that there are three categories of settings: <i>General</i> settings, settings related to <i>Paths</i> and to the <i>Environment</i>. In the <i>General</i> category you can specify whether you want to launch your MIRO apps in a new window of the MIRO Launcher or in your default browser. You can set the language, specify the level of detail of information to be logged as well as the number of days you want your log files to be stored for (-1 being no limit).</p>
+                                    <p>In the <i>Paths</i> section, you can control the location where your MIRO apps are stored/loaded from and the location where log files are kept. Additionally, in case you want to use a specific GAMS version or the MIRO Launcher was unable to locate GAMS automatically, you can set the path to GAMS here. On Linux, you can also specify the path to the required R installation here.</p>
                                     <div class="table-responsive">
                                         <table class="table table-striped" style="margin: 0px auto; margin-bottom:15px;">
                                             <thead>
@@ -280,12 +280,53 @@ inc/inc2.inc
                                                 </tr>
                                                 <tr>
                                                   <td></td>
-                                                  <td>R path</td>
+                                                  <td>R path (Linux only)</td>
                                                   <td>Path to the R location. A current R version (3.6 or later) is required for using GAMS MIRO. Since R is bundled with MIRO on Windows and MacOS, this option is only available on Linux systems.</td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div><!--//table-responsive-->
+                                    <p id="custom-environments">In the <i>Environment</i> section, you can import a customized environment to be used by your MIRO apps. This is useful, for example, if you want to run <a href="./customize.html#batch-analysis-scripts">custom analysis scripts</a> that require external software not in your PATH or to store credentials to be used by <a href="./customize.html#remote-import-export">remote data exchange modules</a>.</p>
+                                    <p>Environment files are JSON files of the following form:</p>
+                                    <pre><code class="language-json">{
+    "ENV_VAR_1": "VAL_1",
+    "ENV_VAR_2": "VAL_2"
+}</code></pre>
+                                    <p>Environment variables names must consist solely of uppercase letters, digits and  '_' (underscore) and must not start with a digit. Note that the <kbd>PATH</kbd> environment variable is special in that MIRO prepends it to the already existing <kbd>PATH</kbd>.</p>
+                                    <p>As an example, let's say we want to run the analysis script that comes with the <i>pickstock</i> example. We do this by first setting up a Python environment for it:</p>
+                                    <ul class="nav nav-tabs" id="pickstockVenv" role="tablist">
+                                      <li class="nav-item">
+                                        <a class="nav-link active" id="venv-win-tab" data-toggle="tab" href="#venv-win" role="tab" aria-controls="venv-win" aria-selected="true">Windows</a>
+                                      </li>
+                                      <li class="nav-item">
+                                        <a class="nav-link" id="venv-unix-tab" data-toggle="tab" href="#venv-unix" role="tab" aria-controls="venv-unix" aria-selected="false">macOS / Linux</a>
+                                      </li>
+                                    </ul>
+                                    <div class="tab-content tab-console-content">
+                                      <div class="tab-pane fade show active" id="venv-win" role="tabpanel" aria-labelledby="venv-win-tab">
+                                          <div class = "console-box">
+                                            <span class="console-content">
+                                                &gt; python -m venv venv<br>
+                                                &gt; venv\Scripts\activate.bat<br>
+                                                (venv) &gt; pip install jupyter pandas matplotlib<br>
+                                                (venv) &gt; python &lt;path_to_gams&gt;\apifiles\Python\api_39\setup.py build -b %TEMP% install<br>
+                                            </span>
+                                          </div>
+                                      </div>
+                                      <div class="tab-pane fade" id="venv-unix" role="tabpanel" aria-labelledby="venv-unix-tab">
+                                         <div class = "console-box">
+                                           <span class="console-content">
+                                            &gt; python -m venv venv<br>
+                                            &gt; source venv/bin/activate<br>
+                                            (venv) &gt; pip install jupyter pandas matplotlib<br>
+                                            (venv) &gt; python &lt;path_to_gams&gt;/apifiles/Python/api_39/setup.py build -b ${TMPDIR} install<br>
+                                           </span>
+                                         </div>
+                                      </div>
+                                    </div>
+                                    <p>Now all we have to do is tell MIRO to use this Python environment by adding it to the <kbd>PATH</kbd> via the following environment file:</p><pre><code class="language-json">{
+    "PATH": "&lt;path_to_venv&gt;/venv/bin"
+}</code></pre>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
                             <section id="deployment-collaboration" class="doc-section">

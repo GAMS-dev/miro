@@ -576,6 +576,14 @@ body{
 .page-wrapper .doc-wrapper {
   padding: 45px 0;
 }
+.page-wrapper .doc-wrapper [id]::before { 
+  display: block; 
+  content: " "; 
+  margin-top: -60.3px; /* header offset */
+  height: 60.3px;
+  visibility: hidden; 
+  pointer-events: none;
+}
 .page-wrapper .doc-body {
   position: relative;
 }
@@ -1088,7 +1096,7 @@ body{
 .page-wrapper .sticky {
   position: -webkit-sticky;
   position: sticky;
-  top: 0;
+  top: 70px;
 }
 .page-wrapper .sticky:before,
 .page-wrapper .sticky:after {

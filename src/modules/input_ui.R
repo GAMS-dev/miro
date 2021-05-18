@@ -1,6 +1,6 @@
 # generate modalDialog used to import input data
 observeEvent(input$btImport, {
-  flog.debug("%s: Import input data button clicked.", uid)
+  flog.debug("Import input data button clicked.")
   isInSolveMode <<- TRUE
   dbTagList     <- NULL
   maxNoScenExceeded <- FALSE
@@ -40,12 +40,8 @@ observeEvent(input$btImport, {
   if(!LAUNCHHCUBEMODE){
     output$hcHashLookupResults <- renderUI(tags$div())
   }
-  showLoadDataDialog(scenListDb = scenListDb, dbTagList = dbTagList)
+  showLoadDataDialog(scenListDb = scenListDb, dbTagList = dbTagList,
+                     selectLocalTab = identical(length(scenListDb), 0L))
   if(maxNoScenExceeded)
     showHideEl(session, "#importScenMaxNoScen", 4000L)
-  
-  if(!length(scenListDb)){
-    # no scenarios in database, so select local tab
-    updateTabsetPanel(session, "tb_importData", selected = "tb_importData_local")
-  }
 })
