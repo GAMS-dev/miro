@@ -295,19 +295,22 @@ BatchLoader <- R6Class("BatchLoader",
                                                                  tabId, noScenTables))
                              }
                              lapply(seq_along(tableTmp), function(i){
-                               scenId   <- tableTmp[[i]][[1L]][[1L]]
+                               scenId   <- suppressWarnings(as.integer(tableTmp[[i]][[1L]][[1L]]))
+                               
+                               if(is.na(scenId)){
+                                 stop("Invalid scenario ID.", call. = FALSE)
+                               }
                                
                                if(identical(tabId, 1L)){
                                  
-                                 scenName <- tableTmp[[i]][["_sname"]][[1L]]
+                                 sanitizedScenName <- sanitizeFn(tableTmp[[i]][["_sname"]][[1L]])
+                                 dirNameScen <- file.path(tmpDir, sanitizedScenName)
                                  
-                                 dirNameScen <- file.path(tmpDir, sanitizeFn(scenName))
-                                 
-                                 if(!is.null(sameNameCounter[[scenName]])){
-                                   dirNameScen <- paste0(dirNameScen, "_", sameNameCounter[[scenName]])
-                                   sameNameCounter[[scenName]] <<- sameNameCounter[[scenName]] + 1L
+                                 if(!is.null(sameNameCounter[[sanitizedScenName]])){
+                                   dirNameScen <- paste0(dirNameScen, "_", sameNameCounter[[sanitizedScenName]])
+                                   sameNameCounter[[sanitizedScenName]] <<- sameNameCounter[[sanitizedScenName]] + 1L
                                  }else{
-                                   sameNameCounter[[scenName]] <<- 1L
+                                   sameNameCounter[[sanitizedScenName]] <<- 1L
                                  }
                                  scenIdDirNameMap[[scenId]] <<- dirNameScen
                                  if(!dir.create(dirNameScen)){
