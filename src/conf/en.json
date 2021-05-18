@@ -1909,6 +1909,7 @@
           "cmd": "Command to run",
           "args": "Arguments to the command",
           "outFile": "Name of the output file (including file extension)",
+          "markdown": "Output file is a Markdown file",
           "timeout": "Timeout (seconds, -1 for infinite)"
         },
         "addOutAttach":{

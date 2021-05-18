@@ -144,10 +144,10 @@ const arrayTypes = {
   },
   scripts_base(defaults) {
     let id; let tabTitle; let command; let args; let outputFile; let
-      timeout;
+      markdown; let timeout;
     if (defaults !== undefined) {
       ({
-        id, tabTitle, command, args, outputFile, timeout,
+        id, tabTitle, command, args, outputFile, markdown, timeout,
       } = defaults);
     }
     const elements = {
@@ -156,16 +156,17 @@ const arrayTypes = {
       scriptsB_cmd: ['text', lang.addScript.cmd, command],
       scriptsB_args: ['select', lang.addScript.args, args, args, args, true, true],
       scriptsB_outFile: ['text', lang.addScript.outFile, outputFile],
+      scriptsB_markdown: ['checkbox', lang.addScript.markdown, markdown === true],
       scriptsB_timeout: ['numeric', lang.addScript.timeout, timeout, -1, Infinity, 1],
     };
     return ([elements, { elRequired: false }, 'script']);
   },
   scripts_hcube(defaults) {
     let id; let title; let command; let args; let outputFile; let
-      timeout;
+      markdown; let timeout;
     if (defaults !== undefined) {
       ({
-        id, title, command, args, outputFile, timeout,
+        id, title, command, args, outputFile, markdown, timeout,
       } = defaults);
     }
     const elements = {
@@ -174,6 +175,7 @@ const arrayTypes = {
       scriptsH_cmd: ['text', lang.addScript.cmd, command],
       scriptsH_args: ['select', lang.addScript.args, args, args, args, true, true],
       scriptsH_outFile: ['text', lang.addScript.outFile, outputFile],
+      scriptsH_markdown: ['checkbox', lang.addScript.markdown, markdown === true],
       scriptsH_timeout: ['numeric', lang.addScript.timeout, timeout, -1, Infinity, 1],
     };
     return ([elements, { elRequired: false }, 'script']);

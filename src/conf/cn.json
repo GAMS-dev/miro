@@ -1908,6 +1908,7 @@
           "cmd": "运行命令",
           "args": "该命令的参数",
           "outFile": "输出文件的名称（包括文件扩展名）",
+          "markdown": "输出文件是Markdown文件",
           "timeout": "超时（秒，-1 为无限）"
         },
         "addOutAttach":{

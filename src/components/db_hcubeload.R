@@ -209,7 +209,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                            }
                            scenNameList[[j]] <- paste0(scenName, ".gdx")
                            j <- j + 1L
-                           gdxio$wgdx(paste0(tmpDir, .Platform$file.sep, scenName, ".gdx"), 
+                           gdxio$wgdx(paste0(tmpDir, .Platform$file.sep, sanitizeFn(scenName), ".gdx"), 
                                       lapply(dataTmp, function(data){
                                         if(scenId %in% names(data)){
                                           return(data[[scenId]])

@@ -29,12 +29,12 @@ scalarSymbols <- setNames(c(names(modelIn),
 scalarSymbols <- scalarSymbols[scalarSymbols %in% scalarInputSym]
 
 baseScriptValidator  <- Validator$new(c("id", "tabTitle", "command", 
-                                        "args", "outputFile", "timeout"),
+                                        "args", "outputFile", "markdown", "timeout"),
                                       configJSON$scripts$base,
                                       requiredKeys = c("id", "tabTitle", 
                                                        "command", "outputFile"))
 hcubeScriptValidator <- Validator$new(c("id", "title", "command", 
-                                        "args", "outputFile", "timeout"),
+                                        "args", "outputFile", "markdown", "timeout"),
                                       configJSON$scripts$hcube,
                                       requiredKeys = c("id", "title", 
                                                        "command", "outputFile"))
@@ -595,6 +595,25 @@ observeEvent(input$scriptsB_outFile, {
     setVal(arrayID, "outputFile", val)$
     getValidData()
 })
+observeEvent(input$scriptsB_markdown, {
+  if(length(input$scriptsB_markdown) < 2L){
+    return()
+  }
+  arrayID <- as.integer(input$scriptsB_markdown[1])
+  if(is.na(arrayID)){
+    return()
+  }
+  val <- as.logical(input$scriptsB_markdown[2])
+  if(!length(val) || is.na(val) || val < -1L){
+    rv$generalConfig$scripts$base <- baseScriptValidator$
+      removeKey(arrayID, "markdown")$
+      getValidData()
+    return()
+  }
+  rv$generalConfig$scripts$base <- baseScriptValidator$
+    setVal(arrayID, "markdown", val)$
+    getValidData()
+})
 observeEvent(input$scriptsB_timeout, {
   if(length(input$scriptsB_timeout) < 2L){
     return()
@@ -690,6 +709,25 @@ observeEvent(input$scriptsH_outFile, {
   
   rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
     setVal(arrayID, "outputFile", val)$
+    getValidData()
+})
+observeEvent(input$scriptsH_markdown, {
+  if(length(input$scriptsH_markdown) < 2L){
+    return()
+  }
+  arrayID <- as.integer(input$scriptsH_markdown[1])
+  if(is.na(arrayID)){
+    return()
+  }
+  val <- as.logical(input$scriptsH_markdown[2])
+  if(!length(val) || is.na(val) || val < -1L){
+    rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
+      removeKey(arrayID, "markdown")$
+      getValidData()
+    return()
+  }
+  rv$generalConfig$scripts$hcube <- hcubeScriptValidator$
+    setVal(arrayID, "markdown", val)$
     getValidData()
 })
 observeEvent(input$scriptsH_timeout, {

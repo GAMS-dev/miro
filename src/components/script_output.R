@@ -14,12 +14,14 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
                                             private$scriptEnv[["PATH"]])
     }
   },
-  isRunning = function(id = NULL){
-    if(is.null(id)){
+  isRunning = function(scriptId = NULL){
+    if(is.null(scriptId)){
       return(length(private$activeScripts) > 0L)
     }
-    scriptId <- paste0("script_", id)
     return(scriptId %in% names(private$activeScripts))
+  },
+  getRunningScriptIds = function(){
+    return(names(private$activeScripts))
   },
   hasResults = function(scriptId = NULL){
     if(is.null(scriptId)){
@@ -92,7 +94,11 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
         hideEl(private$session, paste0("#scenScript_", scenId, "_", id, "_noData"))
       }
       flog.trace("Script output of script: '%s' loaded.", config$id)
-      self$sendContent(dataToLoad[rowNo], id, scenId)
+      outputToLoad <- dataToLoad[rowNo]
+      if(identical(config$markdown, TRUE)){
+        outputToLoad <- markdown(outputToLoad)
+      }
+      self$sendContent(outputToLoad, id, scenId)
       return(config$id)
     })
     if(is.null(scenId)){
@@ -188,12 +194,17 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
               is.character(scriptId), length(scriptId) == 1L)
     if(hcube){
       outputFile <- private$hcConfig[[id]]$outputFile
+      parseMarkdown <- identical(private$hcConfig[[id]]$markdown, TRUE)
     }else{
       outputFile <- private$config[[id]]$outputFile
+      parseMarkdown <- identical(private$config[[id]]$markdown, TRUE)
     }
     return(tryCatch({
       private$scriptResults[[scriptId]] <- read_file(file.path(private$workDir,
                                                                outputFile))
+      if(parseMarkdown){
+        return(markdown(private$scriptResults[[scriptId]]))
+      }
       return(private$scriptResults[[scriptId]])
     }, error = function(e){
       flog.error("Problems reading output file of script: '%s'. Error message: '%s'.", 
