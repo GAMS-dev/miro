@@ -301,7 +301,7 @@ BatchLoader <- R6Class("BatchLoader",
                                  
                                  scenName <- tableTmp[[i]][["_sname"]][[1L]]
                                  
-                                 dirNameScen <- file.path(tmpDir, scenName)
+                                 dirNameScen <- file.path(tmpDir, sanitizeFn(scenName))
                                  
                                  if(!is.null(sameNameCounter[[scenName]])){
                                    dirNameScen <- paste0(dirNameScen, "_", sameNameCounter[[scenName]])
@@ -316,7 +316,7 @@ BatchLoader <- R6Class("BatchLoader",
                                  }
                                }
                                write_csv(tableTmp[[i]][-1L], 
-                                         paste0(sanitizeFn(scenIdDirNameMap[[scenId]]), 
+                                         paste0(scenIdDirNameMap[[scenId]], 
                                                 .Platform$file.sep, sanitizeFn(tableName), ".csv"))
                              })
                            }
