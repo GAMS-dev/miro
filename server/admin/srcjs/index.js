@@ -479,7 +479,7 @@ $appsWrapper.on('click', '.delete-app-button', function () {
       bootbox.prompt({
         required: true,
         title: 'Remove data',
-        message: `Do you want to permanently remove all data belonging to this app? Please type <b>${escapeHtml(appId)}</b> to confirm.`,
+        message: `Do you want to permanently remove all data belonging to this app? Please type <b>${escapeHtml(appId)}</b> to confirm or press 'Cancel' to keep the data.`,
         centerVertical: true,
         onEscape: false,
         callback: (result) => {
