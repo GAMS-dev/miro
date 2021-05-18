@@ -149,7 +149,6 @@ server <- function(input, output, session){
                 stop("A MIRO app with the same name already exists.", call. = FALSE)
             }
 
-            supportedModes <- miroAppValidator$getModesSupported()
             logoPath <- miroAppValidator$getLogoFile()
             logoURL  <- "default_logo.png"
             if(length(logoPath)){
@@ -163,10 +162,11 @@ server <- function(input, output, session){
                 containerVolumes = c(sprintf("/%s:/home/miro/app/model/%s:ro", appId, appId), 
                     sprintf("/data_%s:%s", appId, MIRO_CONTAINER_DATA_DIR)),
                 containerEnv = list(
-                    MIRO_MODEL_PATH = paste0("/home/miro/app/model/", appId, "/", modelName, ".gms"), 
+                    MIRO_MODEL_PATH = paste0("/home/miro/app/model/", appId, "/", modelName), 
                     MIRO_DATA_DIR = MIRO_CONTAINER_DATA_DIR, 
                     MIRO_VERSION_STRING = miroAppValidator$getMIROVersion(),
-                    MIRO_MODE = supportedModes[1]))
+                    MIRO_MODE = "base",
+                    MIRO_ENGINE_MODELNAME = appId))
 
             if(length(newGroups)){
                 newAppConfig[["accessGroups"]] <- as.list(newGroups)
@@ -196,7 +196,9 @@ server <- function(input, output, session){
             appDir   <- file.path(getwd(), MIRO_MODEL_DIR, appId)
             dataDir  <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_", appId))
 
-            extractAppData(isolate(input$miroAppFile$datapath), appId,
+            modelId <- miroAppValidator$getModelId()
+
+            extractAppData(isolate(input$miroAppFile$datapath), appId, modelId,
                         logoPath)
 
             miroProc$
@@ -207,8 +209,8 @@ server <- function(input, output, session){
                     overwriteScen = TRUE, requestType = "addApp",
                     launchDbMigrationManager = launchDbMigrationManager, function(){
                     tryCatch({
-                        engineClient$registerModel(appId, paste0(modelName, ".gms"), appDir, overwrite = TRUE)
-                        flog.debug("New MIRO app: %s registered at Engine.", modelName)
+                        engineClient$registerModel(appId, modelId, modelName, appDir, overwrite = TRUE)
+                        flog.debug("New MIRO app: %s registered at Engine.", appId)
 
                         modelConfig$add(newAppConfig)
                         flog.debug("New MIRO app: %s added.", appId)
@@ -250,7 +252,7 @@ server <- function(input, output, session){
                 flog.info("Data for MIRO app: %s removed successfully.", appId)
             }
 
-            removeAppData(appIndex, modelConfig$getAppLogo(appIndex))
+            removeAppData(appId, modelConfig$getAppLogo(appIndex))
 
             engineClient$deregisterModel(appId)
 

@@ -34,7 +34,7 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
     }
     procEnv <- private$procEnv
     procEnv$MIRO_VERSION_STRING <- miroVersion
-    procEnv$MIRO_MODEL_PATH <- file.path(appDir, paste0(modelName, ".gms"))
+    procEnv$MIRO_MODEL_PATH <- file.path(appDir, modelName)
     procEnv$MIRO_DATA_DIR <- dataDir
     procEnv$MIRO_OVERWRITE_SCEN_IMPORT <- if(!identical(overwriteScen, TRUE)) "false" else "true"
     if(is.null(migrationConfigPath)){

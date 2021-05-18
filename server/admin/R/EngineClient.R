@@ -56,17 +56,18 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
         return(modelObj[["name"]])
       }, character(1L), USE.NAMES = FALSE))
   },
-  registerModel = function(appId, mainGMSName, modelPath, overwrite = FALSE){
+  registerModel = function(appId, modelId, mainGMSName, modelPath, overwrite = FALSE){
     if(overwrite && (appId %in% private$appIdsNotOnMIRO)){
         # model already exists, so first deregister it
         self$deregisterModel(appId)
     }
-    modelDataPath <- file.path(MIRO_MODEL_DIR, appId, paste0(appId, ".zip"))
-    ret <- httr::POST(paste0(ENGINE_URL, "/namespaces/", ENGINE_NAMESPACE, "/",
-                          URLencode(appId), "?run=", URLencode(mainGMSName)), 
+    modelDataPath <- file.path(MIRO_MODEL_DIR, appId, paste0(modelId, ".zip"))
+    ret <- httr::POST(paste0(ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/",
+                          URLencode(appId)), 
                   encode = "multipart", 
                   body = list(data = upload_file(modelDataPath, 
-                    type = 'application/zip')),
+                    type = 'application/zip'),
+                  run = mainGMSName),
                   add_headers(Authorization = private$getAuthHeader(), 
                               Timestamp = as.character(Sys.time(), 
                                 usetz = TRUE)),
@@ -81,7 +82,7 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
     if(appId %in% private$appIdsNotOnEngine){
       return(invisible(self))
     }
-    ret <- httr::DELETE(paste0(ENGINE_URL, "/namespaces/", ENGINE_NAMESPACE, "/", URLencode(appId)), 
+    ret <- httr::DELETE(paste0(ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/", URLencode(appId)), 
             add_headers(Authorization = private$getAuthHeader(), 
                               Timestamp = as.character(Sys.time(), 
                                 usetz = TRUE)),

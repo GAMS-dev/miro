@@ -179,7 +179,8 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
     currentModelConfigs = NULL,
     modelConfigsNoAccess = NULL,
     restrictedEnvKeys = c("MIRO_MODEL_PATH", "MIRO_DATA_DIR", "MIRO_MODE",
-      "MIRO_VERSION_STRING", "MIRO_DB_USERNAME", "MIRO_DB_PASSWORD", "MIRO_DB_SCHEMA"),
+      "MIRO_VERSION_STRING", "MIRO_DB_USERNAME", "MIRO_DB_PASSWORD", "MIRO_DB_SCHEMA",
+      "MIRO_ENGINE_MODELNAME"),
     writeConfig = function(){
       yaml::write_yaml(list(specs = c(private$modelConfigsNoAccess, private$currentModelConfigs)), 
         private$configPath)
