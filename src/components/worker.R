@@ -613,9 +613,11 @@ Worker <- R6Class("Worker", public = list(
                  add_headers(Authorization = private$authHeader,
                              Timestamp = as.character(Sys.time(), usetz = TRUE)), 
                  timeout(5L))
-      return(unlist(lapply(content(ret), function(accessGroup){
+      groupsTmp <- unlist(lapply(content(ret), function(accessGroup){
         return(c(paste0("#", accessGroup$label), accessGroup$members))
-      }), use.names = FALSE))
+      }), use.names = FALSE)
+      groupsTmp <- groupsTmp[!tolower(groupsTmp) %in% c("#admins", "#users")]
+      return(c("#users", if("#admins" %in% tolower(private$db$getUserAccessGroups())) "#admins", groupsTmp))
     }
     return(csv2Vector(private$db$getUserAccessGroups()))
   },

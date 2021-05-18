@@ -93,10 +93,9 @@ async def login(auth_request: AuthRequest, response: Response):
             response.status_code = r.status_code
             return r.json()
 
-        user_groups = [x["label"] for x in r.json() if x["label"] != "admins"]
+        user_groups = [x["label"] for x in r.json() if x["label"].lower() not in ["admins", "users"]]
 
-        if "users" not in user_groups:
-            user_groups.append("users")
+        user_groups.append("users")
 
         if is_admin:
             user_groups.append("admins")
