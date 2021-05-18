@@ -557,7 +557,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                   }
                 }
               }
-              if(input[["useCustomChartColors"]]){
+              if(isTRUE(input[["useCustomChartColors"]])){
                 refreshRequired <- TRUE
                 newViewConfig$chartOptions[["customChartColors"]] <- vapply(
                   seq_len(length(currentSeriesLabels) * 2L),
