@@ -852,8 +852,10 @@ Worker <- R6Class("Worker", public = list(
                                                   type = 'application/json')
       }else{
         gamsArgs <- c(gamsArgs, paste0('IDCGDXInput="', metadata$MIROGdxInName, '"'))
-        textEntities <- URLencode(paste0("?text_entries=", paste(metadata$text_entities, 
-                                                                  collapse = "&text_entries=")))
+        if(length(metadata$text_entities)){
+          textEntities <- URLencode(paste0("?text_entries=", paste(metadata$text_entities, 
+                                                                   collapse = "&text_entries=")))
+        }
         if(metadata$hiddenLogFile){
           requestBody$stream_entries <- metadata$miroLogFile
         }

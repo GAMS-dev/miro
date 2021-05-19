@@ -1373,7 +1373,7 @@ if(!is.null(errMsg)){
                                              if(!LAUNCHHCUBEMODE) vapply(config$outputAttachments, "[[", character(1L), "filename", USE.NAMES = FALSE)),
                                            MIROGdxInName = MIROGdxInName,
                                            clArgs = GAMSClArgs, 
-                                           text_entities = c(paste0(modelNameRaw, ".lst"), 
+                                           text_entities = c(if(config$activateModules$lstFile) paste0(modelNameRaw, ".lst"), 
                                                              if(config$activateModules$miroLogFile) config$miroLogFile),
                                            miroLogFile = config$miroLogFile,
                                            extraClArgs = config$extraClArgs, 
