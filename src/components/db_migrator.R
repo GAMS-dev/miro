@@ -516,12 +516,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     return(invisible(self))
   },
   createHcScalarsTable = function(){
-    private$db$runQuery(
-      dbSchema$getCreateTableQueryRaw("_hc__scalars", dbTableName = "_hc__scalars",
-                                      symSchema = list(tabName = "_hc__scalars",
-                                                       colNames = c("_sid", "scalar",
-                                                                    "description", "value"),
-                                                       colTypes = "iccc")))
+    private$db$runQuery(dbSchema$getCreateTableQuery("_hc__scalars"))
     return(invisible(self))
   }
 ))
