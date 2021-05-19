@@ -5,7 +5,7 @@ set -e
 # Requires xar and cpio
 rm -rf r
 mkdir -p r
-curl -o r/r.pkg https://cloud.r-project.org/bin/macosx/R-4.0.5.pkg
+curl -o r/r.pkg https://cloud.r-project.org/bin/macosx/R-${R_BASE_VERSION}.pkg
 
 pushd r > /dev/null
     xar -xf r.pkg
