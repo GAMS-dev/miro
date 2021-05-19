@@ -74,6 +74,9 @@
         "r/**"
       ],
       "target": "nsis",
+      "arch": [
+        "x64"
+      ],
       "rfc3161TimeStampServer": "http://timestamp.apple.com/ts01",
       "icon": "./build/icon.ico"
     },
