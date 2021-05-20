@@ -29,11 +29,11 @@ packageVersionMap <- list(c("data.table", "1.12.2"), c("backports", "1.1.9"), c(
     c("DBI", "1.1.1"), c("blob", "1.2.1"), c("hms", "0.5.3"), 
     c("cpp11", "0.2.7"), c("tidyr", "1.1.2"), c("memoise", "1.1.0"
     ), "httr", "plotly", "shinydashboard", "timevis", c("rematch", 
-    "1.0.1"), c("formatR", "1.7"), c("ps", "1.3.4"), c("clipr", 
+    "1.0.1"), c("formatR", "1.7"), c("ps", "1.6.0"), c("clipr", 
     "0.7.0"), c("cellranger", "1.1.0"), c("progress", "1.2.2"
     ), c("lambda.r", "1.2.4"), c("futile.options", "1.0.1"), 
     c("zoo", "1.8-8"), c("globals", "0.12.5"), c("listenv", "0.8.0"
-    ), c("processx", "3.4.4"), c("readr", "1.3.1"), c("readxl", 
+    ), c("processx", "3.5.1"), c("readr", "1.3.1"), c("readxl", 
     "1.3.1"), c("writexl", "1.3.1"), c("rpivotTable", "0.3.0"
     ), c("futile.logger", "1.4.3"), c("zip", "2.1.1"), c("leaflet.minicharts", 
     "0.6.0"), c("xts", "0.12-0"), c("dygraphs", "1.1.1.6"), c("future", 
