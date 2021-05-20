@@ -364,6 +364,7 @@ sep = "\n")
       buildArchive <- !identical(Sys.getenv("MIRO_BUILD_ARCHIVE"), "false")
       if(is.null(errMsg) && useTempDir && buildArchive){
         tryCatch({
+          flog.info("Compressing model files...")
           zipMiro(file.path(currentModelDir, paste0(modelName, ".zip")),
                   modelFiles, currentModelDir)
           modelFiles <- paste0(modelName, ".zip")
@@ -628,6 +629,7 @@ if(miroBuildonly){
                auto_unbox = TRUE, null = "null")
     # assemble MIROAPP
     miroAppPath <- file.path(currentModelDir, paste0(modelNameRaw, ".miroapp"))
+    flog.info("Generating miroapp file...")
     zipMiro(miroAppPath, 
             c(modelFiles, basename(rSaveFilePath)), currentModelDir)
     zipr_append(miroAppPath, appMetadataFile, mode = "cherry-pick")
