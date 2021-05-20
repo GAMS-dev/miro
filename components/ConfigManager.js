@@ -195,7 +195,7 @@ class ConfigManager extends Store {
     } if (key === 'language') {
       return 'en';
     } if (key === 'logLevel') {
-      return 'TRACE';
+      return 'DEBUG';
     } if (key === 'launchExternal') {
       return false;
     } if (key === 'remoteExecution') {
