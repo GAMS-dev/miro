@@ -59,11 +59,11 @@ if(identical(Sys.getenv("MIRO_NO_DEBUG"), "true") && !miroDeploy){
 }
 tmpFileDir <- tempdir(check = TRUE)
 # required packages
-requiredPackages <- c("R6", "jsonlite", "zip", "tibble", "readr")
+requiredPackages <- c("R6", "jsonlite", "zip", "tibble", "readr", "futile.logger")
 if(!miroBuildonly){
   requiredPackages <- c(requiredPackages, "shiny", "shinydashboard", "rhandsontable", 
                         "rpivotTable", "stringi", "processx", 
-                        "dplyr", "readxl", "writexl", "futile.logger", "tidyr",
+                        "dplyr", "readxl", "writexl", "tidyr",
                         "DT", "sortable", "chartjs")
 }
 config <- list()
