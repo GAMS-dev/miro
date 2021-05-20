@@ -1,4 +1,4 @@
-FROM gamsmiro-ui
+FROM miro-ui
 
 LABEL com.gamsmiroadmin.vendor="GAMS Development Corp."\
 com.gamsmiroadmin.version="1.3.99"\
