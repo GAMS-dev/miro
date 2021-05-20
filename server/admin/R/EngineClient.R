@@ -57,6 +57,7 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
       }, character(1L), USE.NAMES = FALSE))
   },
   registerModel = function(appId, modelId, mainGMSName, modelPath, overwrite = FALSE){
+    flog.trace("Registering app: %s at Engine", appId)
     if(overwrite && (appId %in% private$appIdsNotOnMIRO)){
         # model already exists, so first deregister it
         self$deregisterModel(appId)
@@ -76,12 +77,14 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
         stop(sprintf("Unexpected return code: %s from GAMS Engine when trying to register model. Error: %s",
             status_code(ret), private$getErrorMessage(ret)), call. = FALSE)
     }
+    flog.trace("App: %s successfully registered at Engine", appId)
     return(invisible(self))
   },
   deregisterModel = function(appId){
     if(appId %in% private$appIdsNotOnEngine){
       return(invisible(self))
     }
+    flog.trace("Deregistering app: %s at Engine", appId)
     ret <- httr::DELETE(paste0(ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/", URLencode(appId)), 
             add_headers(Authorization = private$getAuthHeader(), 
                               Timestamp = as.character(Sys.time(), 
@@ -92,7 +95,7 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
         stop(sprintf("Unexpected return code: %s from GAMS Engine when trying to deregister model. Error: %s",
             status_code(ret), private$getErrorMessage(ret)), call. = FALSE)
     }
-
+    flog.trace("App: %s successfully deregistered from Engine", appId)
     return(invisible(self))
   },
   setAppsNotOnEngine = function(appIdsNotOnEngine){

@@ -43,7 +43,7 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
       procEnv$MIRO_MIGRATION_CONFIG_PATH <- migrationConfigPath
       procEnv$MIRO_MIGRATE_DB <- "true"
     }
-
+    flog.trace("Adding data for app: %s", appId)
     private$miroProc <- processx::process$new("R", c("-e", 
         paste0("shiny::runApp('", MIRO_APP_PATH, "',port=3839,host='0.0.0.0')")),
         env = unlist(procEnv), wd = MIRO_APP_PATH, stderr = "|", stdout = "|")

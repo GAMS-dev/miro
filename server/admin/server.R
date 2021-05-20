@@ -208,6 +208,7 @@ server <- function(input, output, session){
                     appDir, dataDir, progressSelector = "#addAppProgress",
                     overwriteScen = TRUE, requestType = "addApp",
                     launchDbMigrationManager = launchDbMigrationManager, function(){
+                        flog.trace("Data for app: %s added successfully", appId)
                     tryCatch({
                         engineClient$registerModel(appId, modelId, modelName, appDir, overwrite = TRUE)
                         flog.debug("New MIRO app: %s registered at Engine.", appId)
