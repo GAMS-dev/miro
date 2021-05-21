@@ -129,6 +129,9 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
         .split(path.delimiter)
         .filter((el) => el.length > 0)
         .join(path.delimiter);
+      // we need to clone object as we don't want to overwrite
+      // config data
+      miroEnv = JSON.parse(JSON.stringify(miroEnv));
       miroEnv.PATH = tidyPath + path.delimiter + process.env.PATH;
     }
     if (miroEnv == null) {
