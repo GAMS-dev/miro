@@ -699,7 +699,7 @@ if(is.null(errMsg)){
   }
   errMsg <- installAndRequirePackages(unique(requiredPackages), installedPackages, RLibPath, CRANMirror, miroWorkspace)
   
-  if(!is.null(requiredPackagesCR) && !miroStoreDataOnly){
+  if(!is.null(requiredPackagesCR) && !miroStoreDataOnly && !miroBuildonly){
     # add custom library path to libPaths
     .libPaths(c(.libPaths(), file.path(miroWorkspace, "custom_packages")))
     installedPackages <<- installed.packages()[, "Package"]
