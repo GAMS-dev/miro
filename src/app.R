@@ -43,12 +43,12 @@ if(R.version[["major"]] < 3 ||
 isShinyProxy <<- !identical(Sys.getenv("SHINYPROXY_USERNAME"), "")
 debugMode <- TRUE
 RLibPath <- NULL
-miroBuildonly <- identical(Sys.getenv("MIRO_BUILD"), "true")
+miroBuildOnly <- identical(Sys.getenv("MIRO_BUILD"), "true")
 miroStoreDataOnly <- identical(Sys.getenv("MIRO_POPULATE_DB"), "true")
-miroDeploy <- miroBuildonly
+miroDeploy <- miroBuildOnly
 if(identical(Sys.getenv("MIRO_TEST_DEPLOY"), "true")){
   miroDeploy <- TRUE
-  miroBuildonly <- FALSE
+  miroBuildOnly <- FALSE
 }
 logToConsole <- TRUE
 if(identical(Sys.getenv("MIRO_NO_DEBUG"), "true") && !miroDeploy){
@@ -60,7 +60,7 @@ if(identical(Sys.getenv("MIRO_NO_DEBUG"), "true") && !miroDeploy){
 tmpFileDir <- tempdir(check = TRUE)
 # required packages
 requiredPackages <- c("R6", "jsonlite", "zip", "tibble", "readr")
-if(!miroBuildonly){
+if(!miroBuildOnly){
   requiredPackages <- c(requiredPackages, "shiny", "shinydashboard", "rhandsontable", 
                         "rpivotTable", "stringi", "processx", 
                         "dplyr", "readxl", "writexl", "futile.logger", "tidyr",
@@ -293,7 +293,7 @@ if(is.null(errMsg)){
                     GMSOpt = GMSOpt,
                     inputDsNamesBase = inputDsNames[!inputDsNames %in% hcubeScalars],
                     scenTableNamesToDisplay = scenTableNamesToDisplay)
-  if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildonly){
+  if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildOnly){
     errMsg <- paste(errMsg, 
                     sprintf("Can not use 'gdx' as file exchange with GAMS if gdxrrw library is not installed.\n
 Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw-miro) installation in your R library: '%s'.", .libPaths()[1]),
@@ -538,7 +538,7 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
                           "For more information about third-party software included in MIRO, see ",
                           "<a href=\\'http://www.gams.com/miro/license.html\\' target=\\'_blank\\'>here</a>.")
-if(miroBuildonly){
+if(miroBuildOnly){
   if(!is.null(errMsg)){
     if(file.exists(file.path(currentModelDir,
                              paste0(modelNameRaw, ".miroapp"))) &&
@@ -699,7 +699,7 @@ if(is.null(errMsg)){
   }
   errMsg <- installAndRequirePackages(unique(requiredPackages), installedPackages, RLibPath, CRANMirror, miroWorkspace)
   
-  if(!is.null(requiredPackagesCR) && !miroStoreDataOnly && !miroBuildonly){
+  if(!is.null(requiredPackagesCR) && !miroStoreDataOnly && !miroBuildOnly){
     # add custom library path to libPaths
     .libPaths(c(.libPaths(), file.path(miroWorkspace, "custom_packages")))
     installedPackages <<- installed.packages()[, "Package"]
