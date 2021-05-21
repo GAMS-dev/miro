@@ -695,7 +695,7 @@ $(document).ready(() => {
     if (e.requestType === 'addApp') {
       $('#addAppSpinner').hide();
       $('#addAppProgress').css('width', '0%').attr('aria-valuenow', '0');
-      $('#btAddApp').attr('disabled', false);
+      $('#btAddApp').attr('disabled', true);
     } else if (e.requestType === 'loginRequest') {
       $('#loginFormWrapper').show();
       $('#loginLoadingIndicator').hide();
