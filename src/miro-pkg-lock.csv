@@ -67,6 +67,7 @@ blob, 1.2.1
 hms, 0.5.3
 cpp11, 0.2.7
 tidyr, 1.1.2
+cachem, 1.0.5
 memoise, 2.0.0
 httr
 plotly
