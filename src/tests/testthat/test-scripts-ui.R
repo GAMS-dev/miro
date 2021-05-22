@@ -11,7 +11,7 @@ configJSONFileName <- file.path(testModelDir, paste0("conf_", modelToTest),
                                 paste0(modelToTest, ".json"))
 
 Sys.setenv(MIRO_MODEL_PATH = file.path(testModelDir, paste0(modelToTest, ".gms")))
-Sys.setenv(PATH = paste0(Sys.getenv("GAMS_SYS_DIR"), ":", Sys.getenv("PATH")))
+Sys.setenv(PATH = paste0(Sys.getenv("GAMS_SYS_DIR"), .Platform$path.sep, Sys.getenv("PATH")))
 Sys.setenv(MIRO_MODE="base")
 
 file.copy(file.path(dirname(configJSONFileName), paste0(tolower(modelToTest), ".json")), 
