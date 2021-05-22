@@ -8,4 +8,8 @@ ret <- suppressMessages(shiny::runApp(
   launch.browser = identical(Sys.getenv("LAUNCHINBROWSER"), "true"),
   port = as.integer(Sys.getenv("RE_SHINY_PORT"))
 ))
-quit("no", ret)
+if(is.integer(ret)){
+  quit("no", ret)
+}else{
+  quit("no", 0L)
+}

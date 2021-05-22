@@ -110,12 +110,14 @@ if(length(config$scripts$hcube)){
           flog.error("Problems copying files from: '%s' to: '%s'.",
                      file.path(currentModelDir, paste0("scripts_", modelName)),
                      scriptsPath)
+          hideModal(session, 6L)
           showHideEl(session, "#analysisRunUnknownError", 6000L)
           return()
         }
       }else{
         flog.info("No 'scripts_%s' directory was found. Did you forget to include it in '%s_files.txt'?",
                   modelName, modelName)
+        hideModal(session, 6L)
         showHideEl(session, "#analysisRunUnknownError", 6000L)
         return()
       }
@@ -144,6 +146,7 @@ if(length(config$scripts$hcube)){
     }, error = function(e){
       flog.error("Problems writing gdx files for script: '%s'. Error message: '%s'.", 
                  scriptId, conditionMessage(e))
+      hideModal(session, 4L)
       showHideEl(session, "#analysisRunUnknownError", 4000L,
                  sprintf(lang$errMsg$fileWrite$desc, "data.gdx"))
       return(TRUE)
@@ -155,6 +158,7 @@ if(length(config$scripts$hcube)){
     }, error = function(e){
       flog.info("Script: '%s' crashed during startup. Error message: '%s'.",
                 scriptId, conditionMessage(e))
+      hideModal(session, 4L)
       showHideEl(session, "#analysisRunUnknownError", 4000L,
                  sprintf(lang$nav$scriptOutput$errMsg$crash, "data.gdx"))
     })

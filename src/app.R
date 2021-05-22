@@ -59,11 +59,11 @@ if(identical(Sys.getenv("MIRO_NO_DEBUG"), "true") && !miroDeploy){
 }
 tmpFileDir <- tempdir(check = TRUE)
 # required packages
-requiredPackages <- c("R6", "jsonlite", "zip", "tibble", "readr")
+requiredPackages <- c("R6", "jsonlite", "zip", "tibble", "readr", "futile.logger")
 if(!miroBuildonly){
   requiredPackages <- c(requiredPackages, "shiny", "shinydashboard", "rhandsontable", 
                         "rpivotTable", "stringi", "processx", 
-                        "dplyr", "readxl", "writexl", "futile.logger", "tidyr",
+                        "dplyr", "readxl", "writexl", "tidyr",
                         "DT", "sortable", "chartjs")
 }
 config <- list()
@@ -180,6 +180,31 @@ if(is.null(errMsg)){
   }
 }
 if(is.null(errMsg)){
+  if(!dir.exists(miroWorkspace) &&
+     !dir.create(miroWorkspace, showWarnings = FALSE)[1]){
+    errMsg <- sprintf("Could not create MIRO workspace directory: '%s'. Please make sure you have sufficient permissions. '", 
+                      miroWorkspace)
+  }
+  #initialise loggers
+  if(!dir.exists(logFileDir)){
+    tryCatch({
+      if(!dir.create(logFileDir, showWarnings = FALSE))
+        stop()
+    }, error = function(e){
+      errMsg <<- paste(errMsg, "Log file directory could not be created. Check that you have sufficient read/write permissions in application folder.", sep = "\n")
+    })
+  }
+}
+if(is.null(errMsg)){
+  loggingLevel <<- c(FATAL, ERROR, WARN, INFO, DEBUG, TRACE)[[loggingLevel]]
+  flog.appender(do.call(if(identical(logToConsole, TRUE)) "appender.miro" else "appender.file", 
+                        list(file = file.path(logFileDir, 
+                                              paste0(modelName, "_", uid, "_", 
+                                                     format(Sys.time(), 
+                                                            "%y.%m.%d_%H.%M.%S"), ".log")))))
+  flog.threshold("TRACE")
+  flog.trace("Logging facility initialised.")
+  loggerInitialised <- TRUE
   # name of the R save file
   useTempDir <- !identical(Sys.getenv("MIRO_USE_TMP"), "false")
   # check if GAMS model file exists
@@ -217,7 +242,7 @@ if(is.null(errMsg)){
                       rSaveFilePath)
   }else{
     load(rSaveFilePath)
-    if(exists("dbSchema")){
+    if(!exists("dbSchemaModel")){
       # legacy app, need to convert to new format
       dbSchemaModel <- substring(dbSchema$tabName[-seq_len(6)],
                                  nchar(gsub("_", "", modelName, fixed = TRUE)) + 2L)
@@ -364,6 +389,7 @@ sep = "\n")
       buildArchive <- !identical(Sys.getenv("MIRO_BUILD_ARCHIVE"), "false")
       if(is.null(errMsg) && useTempDir && buildArchive){
         tryCatch({
+          flog.info("Compressing model files...")
           zipMiro(file.path(currentModelDir, paste0(modelName, ".zip")),
                   modelFiles, currentModelDir)
           modelFiles <- paste0(modelName, ".zip")
@@ -628,6 +654,7 @@ if(miroBuildonly){
                auto_unbox = TRUE, null = "null")
     # assemble MIROAPP
     miroAppPath <- file.path(currentModelDir, paste0(modelNameRaw, ".miroapp"))
+    flog.info("Generating miroapp file...")
     zipMiro(miroAppPath, 
             c(modelFiles, basename(rSaveFilePath)), currentModelDir)
     zipr_append(miroAppPath, appMetadataFile, mode = "cherry-pick")
@@ -642,44 +669,8 @@ if(miroBuildonly){
     stop()
   quit("no")
 }
-if(is.null(errMsg)){
-  if(!dir.exists(miroWorkspace) &&
-     !dir.create(miroWorkspace, showWarnings = FALSE)[1]){
-    errMsg <- paste(errMsg, sprintf("Could not create MIRO workspace directory: '%s'. Please make sure you have sufficient permissions. '", 
-                                    miroWorkspace), sep = "\n")
-  }else{
-    if(isWindows()){
-      tryCatch(
-        processx::run("attrib", args = c("+h", miroWorkspace))
-        , error = function(e){
-          warningMsg <<- paste(warningMsg, 
-                               sprintf("Failed to hide MIRO workspace directory: '%s'. Error message: '%s'.", 
-                                       miroWorkspace, conditionMessage(e)), sep = "\n")
-        })
-    }
-  }
-  #initialise loggers
-  if(!dir.exists(logFileDir)){
-    tryCatch({
-      if(!dir.create(logFileDir, showWarnings = FALSE))
-        stop()
-    }, error = function(e){
-      errMsg <<- "Log file directory could not be created. Check that you have sufficient read/write permissions in application folder."
-    })
-  }
-}
 
 if(is.null(errMsg)){
-  loggingLevel <<- c(FATAL, ERROR, WARN, INFO, DEBUG, TRACE)[[loggingLevel]]
-  flog.appender(do.call(if(identical(logToConsole, TRUE)) "appender.miro" else "appender.file", 
-                        list(file = file.path(logFileDir, 
-                                              paste0(modelName, "_", uid, "_", 
-                                                     format(Sys.time(), 
-                                                            "%y.%m.%d_%H.%M.%S"), ".log")))))
-  flog.threshold("TRACE")
-  flog.trace("Logging facility initialised.")
-  loggerInitialised <- TRUE
-  
   if(config$activateModules$remoteExecution){
     requiredPackages <- c("future", "httr")
   }else if(length(externalInputConfig) || length(datasetsRemoteExport)){

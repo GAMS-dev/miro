@@ -67,7 +67,9 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
       hideEl(private$session, "#batchLoadAnalysisSpinner")
       addClassEl(private$session, "#batchLoadModal .modal-content", "modal-content-fullscreen")
       addClassEl(private$session, "#batchLoadModal", "modal-dialog-fullscreen")
-      showEl(private$session, "#btDownloadBatchLoadScript")
+      if(!isError){
+        showEl(private$session, "#btDownloadBatchLoadScript")
+      }
     }
     private$session$sendCustomMessage("gms-scriptExecuted", 
                                       list(id = id,

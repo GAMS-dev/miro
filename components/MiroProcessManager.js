@@ -129,6 +129,9 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
         .split(path.delimiter)
         .filter((el) => el.length > 0)
         .join(path.delimiter);
+      // we need to clone object as we don't want to overwrite
+      // config data
+      miroEnv = JSON.parse(JSON.stringify(miroEnv));
       miroEnv.PATH = tidyPath + path.delimiter + process.env.PATH;
     }
     if (miroEnv == null) {
@@ -175,7 +178,8 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
         stdout: stdOutPipe,
         stderr: stdErrPipe,
         cleanup: false,
-      }).catch(async (e) => {
+      });
+    this.miroProcesses[internalPid].catch(async (e) => {
       log.debug(`Process of MIRO app with pid: ${internalPid} stopped.`);
       this.miroProcesses[internalPid] = null;
       delete this.pidPortMap[internalPid.toString()];

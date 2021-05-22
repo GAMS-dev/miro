@@ -701,18 +701,33 @@ Db <- R6Class("Db",
                           dataset <- dateColToChar(private$conn, dataset)
                   }
                   if(!dbExistsTable(private$conn, tableNameDb)){
-                          tryCatch({
-                                  self$runQuery(dbSchema$getCreateTableQuery(tableName))
-                          }, error = function(e){
-                                  stop(sprintf("Table: '%s' could not be created (Db.exportScenDataset). Error message: %s.",
-                                               tableNameDb, conditionMessage(e)), call. = FALSE)
-                          })
-                          tryCatch({
-                                  self$runQuery(dbSchema$getCreateIndexQuery(tableName))
-                          }, error = function(e){
-                                  stop(sprintf("Index on table: '%s' could not be created (Db.exportScenDataset).Error message: %s.",
-                                               tableNameDb, conditionMessage(e)), call. = FALSE)
-                          })
+                          if(tableName %in% c(scalarsFileName, scalarsOutName)){
+                                  # this should only happen for example apps
+                                  # as for those, we don't run MIRO when importing them
+                                  tryCatch({
+                                          if(!exists("DbMigrator")){
+                                                  source("./components/db_migrator.R")
+                                          }
+                                          dbMigrator <- DbMigrator$new(self)
+                                          dbMigrator$createMissingScalarTables()
+                                  }, error = function(e){
+                                          stop(sprintf("Table: '%s' could not be created (Db.exportScenDataset). Error message: %s.",
+                                                       tableNameDb, conditionMessage(e)), call. = FALSE)
+                                  })
+                          }else{
+                                  tryCatch({
+                                          self$runQuery(dbSchema$getCreateTableQuery(tableName))
+                                  }, error = function(e){
+                                          stop(sprintf("Table: '%s' could not be created (Db.exportScenDataset). Error message: %s.",
+                                                       tableNameDb, conditionMessage(e)), call. = FALSE)
+                                  })
+                                  tryCatch({
+                                          self$runQuery(dbSchema$getCreateIndexQuery(tableName))
+                                  }, error = function(e){
+                                          stop(sprintf("Index on table: '%s' could not be created (Db.exportScenDataset).Error message: %s.",
+                                                       tableNameDb, conditionMessage(e)), call. = FALSE)
+                                  })
+                          }
                           flog.debug("Db: A database table named: '%s' did not yet exist. Therefore it was created (Db.exportScenDataset).",
                                      tableNameDb)
                   }

@@ -231,7 +231,7 @@ in a sepeare LICENSE filed located in src/LICENSE or online at: https://gams.com
 "is-typedarray@1.0.0","MIT","https://github.com/hughsk/is-typedarray","https://github.com/hughsk/is-typedarray/raw/master/LICENSE.md","com.gams.miro"
 "is-yarn-global@0.3.0","MIT","https://github.com/LitoMore/is-yarn-global","https://github.com/LitoMore/is-yarn-global/raw/master/LICENSE","com.gams.miro"
 "isarray@1.0.0","MIT","https://github.com/juliangruber/isarray","https://github.com/juliangruber/isarray","com.gams.miro"
-"isbinaryfile@4.0.6","MIT","https://github.com/gjtorikian/isBinaryFile","https://github.com/gjtorikian/isBinaryFile/raw/master/LICENSE.txt","com.gams.miro"
+"isbinaryfile@4.0.8","MIT","https://github.com/gjtorikian/isBinaryFile","https://github.com/gjtorikian/isBinaryFile/raw/master/LICENSE.txt","com.gams.miro"
 "isexe@2.0.0","ISC","https://github.com/isaacs/isexe","https://github.com/isaacs/isexe/raw/master/LICENSE","com.gams.miro"
 "jake@10.8.2","Apache-2.0","https://github.com/jakejs/jake","https://github.com/jakejs/jake","com.gams.miro"
 "jquery@3.6.0","MIT","https://github.com/jquery/jquery","https://github.com/jquery/jquery/raw/master/LICENSE.txt","com.gams.miro"
