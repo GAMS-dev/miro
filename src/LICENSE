@@ -686,6 +686,8 @@ Section 8 -- Interpretation.
         - viridisLite, Copyright (c) 2015 Simon Garnier
         - memoise, Copyright (c) 2010-2017 Hadley Wickham
         - rlang, Copyright (c) Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
+        - withr, Copyright (c)
+            Jim Hester [aut, cre], Kirill Müller [aut], Kevin Ushey [aut], Hadley Wickham [aut], Winston Chang [aut], Jennifer Bryan [ctb], Richard Cotton [ctb], RStudio [cph]
         - bindr, Copyright (c) 2016 RStudio
         - cli, Copyright (c) 2017 Gábor Csárdi
         - progress, Copyright (c) 2015-2018 Gábor Csárdi, RStudio Inc.
@@ -1058,9 +1060,6 @@ Library.
             Joshua M. Ulrich [cre, aut], Ross Bennett [ctb], Corwin Joy [ctb]
         - formatR, Copyright (c) Yihui Xie [aut, cre], Eugene Ha [ctb], 
             Kohske Takahashi [ctb], Ed Lee [ctb]
-        - withr [expanded from: GPL (≥ 2)], Copyright (c)
-            Jim Hester [aut, cre], Kirill Müller [aut], Kevin Ushey [aut], Hadley Wickham [aut], 
-            Winston Chang [aut], Richard Cotton [ctb], RStudio [cph]
         - leaflet, Copyright (c) Joe Cheng [aut, cre], Bhaskar Karambelkar [aut], 
             Yihui Xie [aut], Hadley Wickham [ctb], Kenton Russell [ctb], Kent Johnson [ctb], 
             Barret Schloerke [ctb], jQuery Foundation and contributors [ctb, cph] (jQuery library), 
