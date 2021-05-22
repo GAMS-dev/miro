@@ -48,7 +48,7 @@ sp, 1.4-2
 viridisLite, 0.3.0
 raster, 3.3-13
 farver, 2.0.3
-lifecycle, 0.2.0
+lifecycle, 1.0.0
 scales, 1.1.1
 zeallot, 0.1.0
 crosstalk

@@ -1086,7 +1086,7 @@ Library.
         - gridExtra, Copyright (c)  Baptiste Auguie [aut, cre], Anton Antonov [ctb]
         - lattice, Copyright (c)  Deepayan Sarkar [aut, cre], Felix Andrews [ctb], Kevin Wright [ctb] (documentation), Neil Klepeis [ctb], Paul Murrell [ctb]
         - RGraphics, Copyright (c) 	Paul Murrell
-        - lifecycle, Copyright (c) 	Lionel Henry [aut, cre], RStudio [cph]
+        - lifecycle, Copyright (c) 	Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
         - backports, Copyright (c)  Michel Lang [cre, aut], R Core Team [aut]
         - bit, Copyright (c) Jens Oehlschlägel [aut, cre], Brian Ripley [ctb]
         - bit64, Copyright (c) Jens Oehlschlägel [aut, cre], Leonardo Silvestri [ctb]
