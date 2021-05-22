@@ -4,7 +4,7 @@ CRANMirrors <- c('https://ftp.fau.de/cran/',
     'https://stat.ethz.ch/CRAN/')
 
 RLibPath <- Sys.getenv('LIB_PATH')
-packageVersionMap <- list(c("data.table", "1.12.2"), c("backports", "1.1.9"), c("assertthat", 
+packageVersionMap <- list(c("data.table", "1.14.0"), c("backports", "1.1.9"), c("assertthat", 
 "0.2.1"), c("crayon", "1.3.4"), c("glue", "1.4.2"), c("fansi", 
 "0.4.1"), c("cli", "2.5.0"), c("utf8", "1.1.4"), c("Rcpp", "1.0.5"
 ), c("R6", "2.4.1"), c("BH", "1.72.0-3"), c("magrittr", "1.5"
