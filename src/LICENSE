@@ -685,6 +685,7 @@ Section 8 -- Interpretation.
         - httr, Copyright (c) 2014 Hadley Wickham; RStudio
         - viridisLite, Copyright (c) 2015 Simon Garnier
         - memoise, Copyright (c) 2010-2017 Hadley Wickham
+        - rlang, Copyright (c) Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
         - bindr, Copyright (c) 2016 RStudio
         - cli, Copyright (c) 2017 Gábor Csárdi
         - progress, Copyright (c) 2015-2018 Gábor Csárdi, RStudio Inc.
@@ -1043,7 +1044,6 @@ Library.
             Joe Cheng [aut, cre], RStudio [cph], 
             Marcus Geelnard [ctb, cph] (TinyCThread library, https://tinycthread.github.io/), 
             Evan Nemerson [ctb, cph] (TinyCThread library, https://tinycthread.github.io/)
-        - rlang, Copyright (c) Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
         - assertthat, Copyright (c) Hadley Wickham [aut, cre]
         - tidyselect, Copyright (c) Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
         - clipr, Copyright (c) Matthew Lincoln [aut, cre], Louis Maddox [ctb], 

@@ -10,7 +10,7 @@ Rcpp, 1.0.5
 R6, 2.4.1
 BH, 1.72.0-3
 magrittr, 1.5
-rlang, 0.4.7
+rlang, 0.4.11
 later, 1.1.0.1
 promises, 1.1.1
 httpuv, 1.5.4
