@@ -23,7 +23,7 @@ testFile <- file.path(testDir, "bla.txt")
 unlink(testFile)
 licenseFileArg <- character()
 if(!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")){
-  licenseFileArg <- paste0('license="', Sys.getenv("MIRO_TEST_GAMS_LICE"), '"')
+  licenseFileArg <- paste0('license=', gsub("\\", "/", Sys.getenv("MIRO_TEST_GAMS_LICE"), fixed = TRUE))
 }
 configJSON$scripts <- list(base = list(list(tabTitle = "asd", id = "script1", command = "gams",
                                             args = c("script1.gms", paste0("--testfile=", testFile),
