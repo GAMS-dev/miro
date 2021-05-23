@@ -214,7 +214,7 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
     }
     const url = `http://127.0.0.1:${shinyPort}`;
     /* eslint-disable no-await-in-loop */
-    for (let i = 0; i <= 50; i += 1) {
+    for (let i = 0; i <= 100; i += 1) {
       if (!this.miroProcesses[internalPid]) {
         return;
       }
