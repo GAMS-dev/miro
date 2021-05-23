@@ -157,7 +157,7 @@
         "uid": "所有者",
         "sname": "名称",
         "stime":"创建时间",
-        "stag":"作业标签"
+        "stag":"标签"
       }
     },
     "hcubeAnalyze":{
