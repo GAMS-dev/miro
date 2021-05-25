@@ -1667,14 +1667,14 @@ accessPermInput <- function(inputId, label, choices, selected = NULL){
 colorPickerInput <- function(id, label = NULL, value = NULL, colorBox = FALSE){
   if(colorBox){
     colorpicker <- tags$div(class = "shiny-input-container miro-color-picker",
-                            tags$input(id = id, type = "text",
-                                       class = "form-control",
-                                       value = value),
+                            tags$label(`for` = id, label),
                             tags$span(class = "input-group-addon",
                                       tags$i(style = paste0("background-color:",
                                                             if(length(value) && !identical(value, ""))
                                                               value else "#000000"))),
-                            tags$label(`for` = id, label))
+                            tags$input(id = id, type = "text",
+                                       class = "form-control",
+                                       value = value))
   }else{
     colorpicker <- tags$div(class = "form-group shiny-input-container",
                             tags$label(`for` = id, label),

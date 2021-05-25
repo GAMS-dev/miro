@@ -2892,6 +2892,10 @@
               "type": "string",
               "minLength": 1
             },
+            "newViewCbManualColors": {
+              "type": "string",
+              "minLength": 1
+            },
             "newViewBtCancel": {
               "type": "string",
               "minLength": 1
@@ -3041,7 +3045,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 35
+          "minProperties": 36
         },
         "datatable": {
           "type": "object",

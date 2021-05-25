@@ -458,12 +458,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                     isolate(input$pivotRenderer) %in% c("line", "bar", "stackedbar", "radar")){
             moreOptions <- NULL
             if(isolate(input$pivotRenderer) %in% c("bar", "stackedbar", "line")){
-              moreOptions <- tagList(textInput(ns("advancedTitle"),
-                                               lang$renderers$miroPivot$newViewChartTitle),
-                                     textInput(ns("advancedxTitle"),
-                                               lang$renderers$miroPivot$newViewxTitle),
-                                     textInput(ns("advancedyTitle"),
-                                               lang$renderers$miroPivot$newViewyTitle))
+              moreOptions <- tags$div(class = "row",
+                                      tags$div(class = "col-sm-12",
+                                               textInput(ns("advancedTitle"), width = "100%",
+                                                         lang$renderers$miroPivot$newViewChartTitle)),
+                                      tags$div(class = "col-sm-6",
+                                               textInput(ns("advancedxTitle"), width = "100%",
+                                                         lang$renderers$miroPivot$newViewxTitle)),
+                                      tags$div(class = "col-sm-6",
+                                               textInput(ns("advancedyTitle"), width = "100%",
+                                                         lang$renderers$miroPivot$newViewyTitle)))
             }
             additionalOptionsContent <- tags$div(style = "text-align:left;",
                                                  tags$i(class="fas fa-arrow-down",
@@ -473,11 +477,20 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                                         style = "cursor: pointer;"),
                                                  tags$div(style = "display:none;",
                                                           moreOptions,
-                                                          checkboxInput_MIRO(ns("useCustomChartColors"),
-                                                                             label = lang$renderers$miroPivot$newViewCbCustomColors,
-                                                                             value = FALSE),
+                                                          tags$div(class = "row",
+                                                                   tags$div(class = "col-sm-6",
+                                                                            checkboxInput_MIRO(ns("useCustomChartColors"),
+                                                                                               label = lang$renderers$miroPivot$newViewCbCustomColors,
+                                                                                               value = FALSE)),
+                                                                   tags$div(class = "col-sm-6",
+                                                                            `data-display-if` = "input.useCustomChartColors===true",
+                                                                            `data-ns-prefix`=ns(""),
+                                                                            checkboxInput_MIRO("miroPivotCbCustomColorInputs",
+                                                                                               label = lang$renderers$miroPivot$newViewCbManualColors,
+                                                                                               value = FALSE))
+                                                                   ),
                                                           conditionalPanel("input.useCustomChartColors===true", ns = ns,
-                                                                           tags$div(class = "row", style = "max-height:300px;overflow-y:auto;",
+                                                                           tags$div(class = "row miro-pivot-custom-colors-wrapper",
                                                                                     lapply(seq_along(currentSeriesLabels), function(labelId){
                                                                                       tags$div(class = "col-sm-6",
                                                                                                colorPickerInput(ns(paste0("customChartColor_", labelId)),
@@ -493,7 +506,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
           showModal(modalDialog(tags$div(id = ns("errUniqueName"), style = "display:none;",
                                          lang$renderers$miroPivot$errUniqueViewName),
-                                textInput(ns("newViewName"),
+                                textInput(ns("newViewName"), width = "100%",
                                           lang$renderers$miroPivot$newViewLabel),
                                 additionalOptionsContent,
                                 footer = tagList(
