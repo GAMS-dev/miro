@@ -972,8 +972,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         pivotRenderer <- input$pivotRenderer
         if(initRenderer && isTRUE(options$resetOnInit)){
           if(length(currentView[["pivotRenderer"]])){
-            pivotRenderer <- currentView[["pivotRenderer"]]
             initRenderer <<- FALSE
+            if(!identical(pivotRenderer, currentView[["pivotRenderer"]])){
+              return()
+            }
           }else{
             return()
           }
