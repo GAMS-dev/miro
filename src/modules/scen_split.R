@@ -56,6 +56,7 @@ loadSandboxScen <- function(scenId, refresh = FALSE){
   })){
     return()
   }
+  views$duplicateSandboxConf(scenId)
   scenData$load("sb", refId = tabIdToRef(scenId))
   renderScenInCompMode(scenId, refreshData = refresh)
   # load script results
