@@ -77,9 +77,6 @@ getPivotCompGraphConfig <- function(sheetName){
   return(graphConfig)
 }
 loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE){
-  if(!length(sheetNames)){
-    return()
-  }
   errMsg <- NULL
   tabsetIdChar <- paste0("tab_", tabsetId)
   isInPivotComp <- identical(tabsetId, 0L)
@@ -103,6 +100,9 @@ loadDynamicTabContent <- function(session, tabsetId, sheetNames, initEnv = FALSE
         }
       }
     }
+  }
+  if(!length(sheetNames)){
+    return()
   }
   for(sheetName in sheetNames){
     if(isOutputTabset){
