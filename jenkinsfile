@@ -84,7 +84,7 @@ pipeline {
                                     yarn docker-build-ci
                                 '''
                             }
-                            if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
+                            if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc' || env.BRANCH_NAME == 'miro-server-1-0') {
                                 sh '''#!/bin/bash -xe
                                     ## build MIRO server images
                                     pushd server > /dev/null
@@ -295,7 +295,7 @@ pipeline {
                                        }
                                     '''
                                 }
-                            } else if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
+                            } else if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc' || env.BRANCH_NAME == 'miro-server-1-0') {
                                 sh '''#!/bin/bash -xe
                                     ## build MIRO server images
                                     pushd server > /dev/null
