@@ -217,6 +217,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       isScalarTable <- FALSE
       resetFilters <- isTRUE(options$resetOnInit)
       
+      SERIES_DEFAULT_COLOR <- "#666"
+      
       numericCols <- vapply(data, class, character(1L), USE.NAMES = FALSE) %in% c("numeric", "integer")
       if(sum(numericCols) > 1L){
         # data is already pivoted
@@ -572,22 +574,20 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               }
               if(isTRUE(input[["useCustomChartColors"]])){
                 refreshRequired <- TRUE
-                newViewConfig$chartOptions[["customChartColors"]] <- vapply(
-                  seq_len(length(currentSeriesLabels) * 2L),
-                  function(labelId){
-                    colorTmp <- input[[paste0("customChartColor_", (labelId + 1L) %/% 2L)]]
-                    if(!length(colorTmp)){
-                      return(customChartColors[labelId])
+                newViewConfig$chartOptions[["customChartColors"]] <- setNames(
+                  lapply(seq_along(currentSeriesLabels), function(labelId){
+                    seriesColor <- input[[paste0("customChartColor_", labelId)]]
+                    hoverColor <- tryCatch(colorspace::darken(seriesColor, amount = 0.3),
+                                           error = function(e){
+                                             flog.warn("MIRO Piovot: Problems darkening color for label: %s.",
+                                                       currentSeriesLabels[labelId])
+                                             return(NA)
+                                           })
+                    if(is.na(hoverColor)){
+                      return(c(SERIES_DEFAULT_COLOR, SERIES_DEFAULT_COLOR))
                     }
-                    if(identical(labelId %% 2L, 0L)){
-                      return(tryCatch(colorspace::darken(colorTmp, amount = 0.3),
-                                      error = function(e){
-                                        flog.warn("MIRO Piovt: Problems darkening color.")
-                                        return(customChartColors[labelId])
-                                      }))
-                    }
-                    return(colorTmp)
-                  }, character(1L), USE.NAMES = FALSE)
+                    return(c(seriesColor, hoverColor))
+                  }), currentSeriesLabels)
               }
             }
             if(overwrite){
@@ -1072,28 +1072,37 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if(!length(labels)){
           labels <- "value"
         }
+        currentSeriesLabels <<- names(dataTmp)[seq(rowHeaderLen + 1L, min(noSeries + rowHeaderLen,
+                                                                          40L + rowHeaderLen))]
+        if(length(currentView$chartOptions$customChartColors) &&
+           length(names(currentView$chartOptions$customChartColors))){
+          # custom chart colors specified
+          chartColorIdx <- match(currentSeriesLabels,
+                                 names(currentView$chartOptions$customChartColors))
+          chartColorsToUse <- currentView$chartOptions$customChartColors[chartColorIdx]
+          chartColorsToUse[is.na(chartColorIdx)] <- list(c(SERIES_DEFAULT_COLOR, SERIES_DEFAULT_COLOR))
+          chartColorsToUse <- unlist(chartColorsToUse, use.names = FALSE)
+        }else{
+          chartColorsToUse <- customChartColors
+        }
         if(identical(pivotRenderer, "line")){
-          chartJsObj <- chartjs(customColors = if(length(currentView$chartOptions$customChartColors))
-            currentView$chartOptions$customChartColors else customChartColors,
+          chartJsObj <- chartjs(customColors = chartColorsToUse,
             title = currentView$chartOptions$title) %>% 
             cjsLine(labels = labels,
                     xTitle = currentView$chartOptions$xTitle,
                     yTitle = currentView$chartOptions$yTitle)
         }else if(identical(pivotRenderer, "stackedbar")){
-          chartJsObj <- chartjs(customColors = if(length(currentView$chartOptions$customChartColors))
-            currentView$chartOptions$customChartColors else customChartColors,
+          chartJsObj <- chartjs(customColors = chartColorsToUse,
             title = currentView$chartOptions$title) %>% 
             cjsBar(labels = labels, stacked = TRUE,
                    xTitle = currentView$chartOptions$xTitle,
                    yTitle = currentView$chartOptions$yTitle)
         }else if(identical(pivotRenderer, "radar")){
-          chartJsObj <- chartjs(customColors = if(length(currentView$chartOptions$customChartColors))
-            currentView$chartOptions$customChartColors else customChartColors,
+          chartJsObj <- chartjs(customColors = chartColorsToUse,
             title = currentView$chartOptions$title) %>% 
             cjsRadar(labels = labels)
         }else{
-          chartJsObj <- chartjs(customColors = if(length(currentView$chartOptions$customChartColors))
-            currentView$chartOptions$customChartColors else customChartColors,
+          chartJsObj <- chartjs(customColors = chartColorsToUse,
             title = currentView$chartOptions$title) %>% 
             cjsBar(labels = labels,
                    xTitle = currentView$chartOptions$xTitle,
@@ -1107,7 +1116,6 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]], 
                                   label = names(dataTmp)[rowHeaderLen + i])
         }
-        currentSeriesLabels <<- names(dataTmp)[-seq_len(rowHeaderLen)]
         hideEl(session, paste0("#", ns("loadPivotTable")))
         
         return(chartJsObj %>% cjsLegend())
