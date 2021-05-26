@@ -574,7 +574,7 @@ $offExternalInput
                                           </div><!--//icon-holder-->
                                           <div class="content">
                                               <b class="callout-title">Tip:</b>
-                                              <p>You can search columns for empty entries ('NA') by leaving the field empty!</p>
+                                              <p>You can search for empty entries (<i>NA</i>) by leaving the field empty if it is a numeric field, or by using the <kbd>exists</kbd> and <kbd>doesn't exist</kbd> operators for character fields!</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
                                         <p>Once you have set all the filters you are interested in, you can execute your query by clicking on the <i>Query database</i> button. After the results have been retrieved, the page will be updated and you will see a table with the scenarios that correspond to your query. In the resulting table, you again have the option of selecting the scenarios that really interest you. If you want to load a scenario that was part of a Hypercube job into the Base Mode, you can get its hash value by clicking <i>Show Hash</i> in the lower right corner. Note that you can only show the hash of one scenario at a time, so don't select more than one row before clicking this button. To learn more about how to import a Hypercube scenario using its hash, read <a href="./start.html#import-data">here</a>.</p>
@@ -609,7 +609,7 @@ $offExternalInput
                                         </div>
                                         <div  id="internal-script"  class="section-block">
                                             <h6>Custom scripts:</h6>
-                                            <p>You can also have MIRO execute special analysis scripts that are tailored to your application. To learn more about how to set up such a script, read the section about <a href="./customize.html#hcube-analysis-scripts">configuring custom analysis scripts</a>.</p>
+                                            <p>You can also have MIRO execute special analysis scripts that are tailored to your application. To learn more about how to set up such a script, read the section about <a href="./customize.html#batch-analysis-scripts">configuring custom analysis scripts</a>.</p>
                                             <p>To run a custom analysis, select the scenarios you want to analyze and click on "Analyze". The following dialog opens:</p>
                                             <div class="section-block" style="text-align:center;">
                                                  <img class="img-fluid" style="max-height:150pt" src="assets/images/batch_img/hcube_script_select.png" alt="Dialog to select Hypercube analysis script" />
@@ -712,7 +712,7 @@ $offExternalInput
         </div><!--//doc-wrapper-->
     </div><!--//page-wrapper-->
     <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
-    <!--#include virtual="/footer.html" -->
+    <!--#include virtual="/footer_miro.html" -->
 
     <!-- Main Javascript -->
     <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>

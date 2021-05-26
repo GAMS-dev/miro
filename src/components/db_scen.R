@@ -32,7 +32,7 @@ Scenario <- R6Class("Scenario",
                           private$userAccessGroups <- uid
                         }else{
                           private$uid  <- db$getUid()
-                          private$userAccessGroups    <- db$accessGroups
+                          private$userAccessGroups    <- db$getUserAccessGroups()
                         }
                         if(is.null(sid)){
                           stopifnot(is.character(sname), length(sname) == 1)
@@ -65,23 +65,19 @@ Scenario <- R6Class("Scenario",
                           execPerm <- private$uid
                         }
                         
-                        private$dbSchema            <- db$getDbSchema()
-                        private$slocktimeLimit      <- db$getSlocktimeLimit
-                        private$scenMetaColnames    <- db$getScenMetaColnames()
-                        private$slocktimeIdentifier <- db$getSlocktimeIdentifier()
-                        private$tableNameMetadata   <- db$getTableNameMetadata()
-                        private$tableNameScenLocks  <- db$getTableNameScenLocks()
-                        private$tableNamesScenario  <- db$getTableNamesScenario()
+                        private$slocktimeLimit      <- db$getSlocktimeLimit()
+                        private$tableNameScenLocks  <- dbSchema$getDbTableName("_scenLock")
                         private$tags                <- vector2Csv(unique(tags))
                         private$readPerm            <- vector2Csv(readPerm)
                         private$writePerm           <- vector2Csv(writePerm)
                         private$execPerm            <- vector2Csv(execPerm)
                         private$views               <- views
                         private$attachments         <- attachments
+                        private$hcubeActive         <- db$getHcubeActive()
                         
                         savedAttachConfig <- NULL
                         
-                        if(db$getHcubeActive())
+                        if(private$hcubeActive)
                           private$scode <- SCODEMAP[['hcube_jobconfig']]
                         else
                           private$scode <- SCODEMAP[['scen']]
@@ -165,11 +161,10 @@ Scenario <- R6Class("Scenario",
                         return(list(attach = attachmentConfig,
                                     perm = permissionConfig))
                       },
-                      getMetadata = function(aliases = character(0L), noPermFields = TRUE){
+                      getMetadata = function(noPermFields = TRUE){
                         # Generates dataframe containing scenario metadata
                         #
                         # Args:
-                        #   aliases:        list or named vector of metadata field aliases (optional)
                         #   noPermFields:   do not include scenario permission fields (optional)
                         #
                         # Returns:
@@ -179,24 +174,27 @@ Scenario <- R6Class("Scenario",
                         stopifnot(is.logical(noPermFields), length(noPermFields) == 1L)
                         #END error checks
                         
-                        stag      <- character(0L)
-                        readPerm  <- character(0L)
-                        writePerm <- character(0L)
-                        execPerm  <- character(0L)
-                        
-                        if(!noPermFields){
-                          readPerm <- private$readPerm
-                          writePerm <- private$writePerm
-                          execPerm <- private$execPerm
+                        if(length(private$sid)){
+                          sid <- private$sid
+                        }else{
+                          sid <- NA_integer_
                         }
-                        super$getMetadata(sid = private$sid, uid = private$suid, sname = private$sname, 
-                                          stime = private$stime, stag = private$tags, readPerm = readPerm, 
-                                          writePerm = writePerm, execPerm = execPerm,
-                                          uidAlias = aliases[["uid"]], snameAlias = aliases[["sname"]], 
-                                          stimeAlias = aliases[["stime"]],
-                                          stagAlias = aliases[["stag"]], readPermAlias = aliases[["readPerm"]], 
-                                          writePermAlias = aliases[["writePerm"]],
-                                          execPermAlias = aliases[["execPerm"]])
+                        
+                        if(noPermFields){
+                          return(tibble("_sid" = sid,
+                                        "_uid" = private$suid,
+                                        "_sname" = private$sname,
+                                        "_stime" = private$stime,
+                                        "_stag" = private$tags))
+                        }
+                        return(tibble("_sid" = sid,
+                                      "_uid" = private$suid,
+                                      "_sname" = private$sname,
+                                      "_stime" = private$stime,
+                                      "_stag" = private$tags,
+                                      "_accessr" = private$readPerm,
+                                      "_accessw" = private$writePerm,
+                                      "_accessx" = private$execPerm))
                       },
                       resetAccessPerm = function(){
                         if(private$isReadonly()){
@@ -227,8 +225,12 @@ Scenario <- R6Class("Scenario",
                           addScenIdAttach <- TRUE
                           try(private$fetchMetadata(sname = private$sname, uid = private$uid), silent = TRUE)
                         }
-                        stopifnot(length(private$tableNamesScenario) >= 1)
-                        stopifnot(is.list(datasets), identical(length(datasets), length(private$tableNamesScenario)))
+                        if(length(names(datasets))){
+                          symNamesScenario <- names(datasets)
+                        }else{
+                          symNamesScenario <- dbSchema$getAllSymbols()
+                        }
+                        stopifnot(is.list(datasets), identical(length(datasets), length(symNamesScenario)))
                         if(!is.null(msgProgress)){
                           stopifnot(is.character(msgProgress$title), length(msgProgress$title) == 1)
                           stopifnot(is.character(msgProgress$progress), length(msgProgress$progress) == 1)
@@ -237,7 +239,7 @@ Scenario <- R6Class("Scenario",
                           on.exit(prog$close())
                           prog$set(message = msgProgress$title, value = 0)
                           updateProgress <- NULL
-                          incAmount      <- 1/length(private$tableNamesScenario)
+                          incAmount      <- 1/length(symNamesScenario)
                           updateProgress <- function(detail = NULL) {
                             prog$inc(amount = incAmount, detail = detail)
                           }
@@ -259,15 +261,16 @@ Scenario <- R6Class("Scenario",
                         
                         private$saveAttachmentData()
                         
-                        Map(function(dataset, tableName){
+                        Map(function(dataset, symNameScenario){
                           if(!is.null(dataset) && nrow(dataset)){
-                            super$exportScenDataset(private$bindSidCol(dataset), tableName)
+                            super$exportScenDataset(private$bindSidCol(dataset),
+                                                    symNameScenario)
                           }
                           if(!is.null(msgProgress)){
                             # increment progress bar
                             updateProgress(detail = msgProgress$progress)
                           }
-                        }, datasets, private$tableNamesScenario)
+                        }, datasets, symNamesScenario)
                         
                         private$saveViewData()
                         
@@ -290,7 +293,8 @@ Scenario <- R6Class("Scenario",
                         if(private$isReadonly()){
                           stop("Scenario is readonly. Saving trace data failed (Scenario.saveTraceData).", call. = FALSE)
                         }
-                        super$exportScenDataset(private$bindSidCol(traceData), private$dbSchema$tabName[["_scenTrc"]])
+                        super$exportScenDataset(private$bindSidCol(traceData),
+                                                "_scenTrc")
                         private$scenSaved <- TRUE
                         invisible(self)
                       },
@@ -310,11 +314,11 @@ Scenario <- R6Class("Scenario",
                           stop("Scenario could not be removed as it is readonly (Scenario.delete).", call. = FALSE)
                         }
                         noErr <- TRUE
-                        self$deleteRows(private$tableNameMetadata, 
-                                        private$scenMetaColnames['sid'], 
+                        self$deleteRows("_scenMeta", 
+                                        "_sid", 
                                         private$sid)
-                        self$deleteRows(private$dbSchema$tabName[["_scenAttach"]], 
-                                        private$scenMetaColnames['sid'], 
+                        self$deleteRows("_scenAttach", 
+                                        "_sid", 
                                         private$sid)
                         
                         private$unlock()
@@ -398,7 +402,9 @@ Scenario <- R6Class("Scenario",
                         stopifnot(inherits(scriptResults, "data.frame"), 
                                   length(scriptResults) == 2L)
                         
-                        names(scriptResults) <- private$dbSchema$colNames[['_scenScripts']][-1]
+                        scriptsSchema <- dbSchema$getDbSchema("_scenScripts")
+                        
+                        names(scriptResults) <- scriptsSchema$colNames[-1]
                         
                         for(i in 1:2){
                           if(!is.character(scriptResults[[i]])){
@@ -407,17 +413,27 @@ Scenario <- R6Class("Scenario",
                         }
                         
                         super$exportScenDataset(private$bindSidCol(scriptResults), 
-                                                private$dbSchema$tabName[['_scenScripts']])
+                                                "_scenScripts")
                       },
                       finalize = function(){
                         if(length(private$sid)){
                           if(identical(private$getUidLock(), private$uid)){
-                            flog.debug("Scenario: '%s' unlocked.", private$sid)
-                            private$unlock()
+                            tryCatch({
+                              private$unlock()
+                              flog.debug("Scenario: '%s' unlocked.", private$sid)
+                            }, error = function(e){
+                              flog.warn("Scenario: '%s' could not be unlocked. Error message: '%s'",
+                                        private$sid, conditionMessage(e))
+                            })
                           }
                           if(private$newScen && !private$scenSaved){
-                            flog.debug("Scenario was not saved. Thus, it will be removed.")
-                            self$delete()
+                            tryCatch({
+                              flog.debug("Scenario was not saved. Thus, it will be removed.")
+                              self$delete()
+                            }, error = function(e){
+                              flog.warn("Scenario could not be removed. Error message: '%s'",
+                                        conditionMessage(e))
+                            })
                           }
                           private$sid <- integer(0L)
                         }
@@ -453,10 +469,10 @@ Scenario <- R6Class("Scenario",
                       writePerm           = character(0L),
                       execPerm            = character(0L),
                       lockUid             = character(0L),
-                      dbSchema            = vector("list", 3L),
                       scode               = integer(1L),
                       scenSaved           = logical(1L),
                       newScen             = logical(1L),
+                      tableNameScenLocks  = character(0L),
                       traceData           = tibble(),
                       views               = NULL,
                       attachments         = NULL,
@@ -483,29 +499,29 @@ Scenario <- R6Class("Scenario",
                         #END error checks
                         
                         if(!is.null(sid)){
-                          metadata     <- self$importDataset(private$tableNameMetadata, 
+                          metadata     <- self$importDataset("_scenMeta", 
                                                              subsetSids = sid, innerSepAND = FALSE)
                           if(!nrow(metadata)){
                             stop(sprintf("A scenario with ID: '%s' could not be found. This could be due to the scenario being deleted in the meantime or due to the user tampering with the app!", 
                                          sid), call. = FALSE)
                           }
                           
-                          if(metadata[[private$scenMetaColnames['scode']]][1] != private$scode){
+                          if(metadata[["_scode"]][1] != private$scode){
                             flog.debug("The scenario loaded was generated from a different mode. A copy will be created (Scen.fetchMetadata)")
-                            private$sname     <- metadata[[private$scenMetaColnames['sname']]][1]
+                            private$sname     <- metadata[["_sname"]][1]
                             private$suid      <- private$uid
                             private$stime     <- Sys.time()
-                            private$tags      <- metadata[[private$scenMetaColnames['stag']]][1]
-                            traceData         <- super$importDataset(private$dbSchema$tabName[["_scenTrc"]],
+                            private$tags      <- metadata[["_stag"]][1]
+                            traceData         <- super$importDataset("_scenTrc",
                                                                      subsetSids = sid, limit = 1L)
                             if(length(traceData) && nrow(traceData)){
                               private$traceData <- traceData[-1]
                             }
-                            existingSids <- self$importDataset(private$tableNameMetadata, 
-                                                               colNames = private$scenMetaColnames['sid'],
-                                                               tibble(c(private$scenMetaColnames['uid'],
-                                                                        private$scenMetaColnames['sname'],
-                                                                        private$scenMetaColnames['scode']),
+                            existingSids <- self$importDataset("_scenMeta", 
+                                                               colNames = "_sid",
+                                                               tibble(c("_uid",
+                                                                        "_sname",
+                                                                        "_scode"),
                                                                       c(private$suid, private$sname,
                                                                         private$scode)))[[1]]
                             if(length(existingSids) > 0L){
@@ -513,25 +529,25 @@ Scenario <- R6Class("Scenario",
                             }
                             private$writeMetadata()
                           }else{
-                            private$suid      <- metadata[[private$scenMetaColnames['uid']]][1]
-                            private$sname     <- metadata[[private$scenMetaColnames['sname']]][1]
-                            private$stime     <- metadata[[private$scenMetaColnames['stime']]][1]
-                            private$tags      <- metadata[[private$scenMetaColnames['stag']]][1]
-                            private$readPerm  <- metadata[[private$scenMetaColnames['accessR']]][1]
-                            private$writePerm <- metadata[[private$scenMetaColnames['accessW']]][1]
-                            private$execPerm  <- metadata[[private$scenMetaColnames['accessX']]][1]
+                            private$suid      <- metadata[["_uid"]][1]
+                            private$sname     <- metadata[["_sname"]][1]
+                            private$stime     <- metadata[["_stime"]][1]
+                            private$tags      <- metadata[["_stag"]][1]
+                            private$readPerm  <- metadata[["_accessr"]][1]
+                            private$writePerm <- metadata[["_accessw"]][1]
+                            private$execPerm  <- metadata[["_accessx"]][1]
                             private$sid       <- as.integer(sid)
                           }
                         }else{
-                          metadata <- self$importDataset(private$tableNameMetadata, 
-                                                         tibble(c(private$scenMetaColnames['uid'],
-                                                                  private$scenMetaColnames['sname']),
+                          metadata <- self$importDataset("_scenMeta", 
+                                                         tibble(c("_uid",
+                                                                  "_sname"),
                                                                 c(uid, sname)))
                           if(!nrow(metadata)){
                             stop(sprintf("A scenario with name: '%s' could not be found for user: '%s'.", 
                                          sname, uid), call. = FALSE)
                           }
-                          scenFromOtherMode <- metadata[[private$scenMetaColnames['scode']]] != private$scode
+                          scenFromOtherMode <- metadata[["_scode"]] != private$scode
                           if(all(scenFromOtherMode))
                             stop("No scenario with this name exists in the current mode.",
                                  call. = FALSE)
@@ -539,7 +555,7 @@ Scenario <- R6Class("Scenario",
                           private$suid      <- uid
                           private$sname     <- sname
                           private$stime     <- Sys.time()
-                          sidTmp            <- as.integer(metadata[[private$scenMetaColnames['sid']]][!scenFromOtherMode])
+                          sidTmp            <- as.integer(metadata[["_sid"]][!scenFromOtherMode])
                           
                           private$sid       <- sidTmp
                           if(length(private$traceData) && nrow(private$traceData)){
@@ -567,8 +583,8 @@ Scenario <- R6Class("Scenario",
                         if(!DBI::dbExistsTable(private$conn, private$tableNameScenLocks)){
                           return(NA_character_)
                         }
-                        lockData <- self$importDataset(private$tableNameScenLocks, 
-                                                       tibble(private$scenMetaColnames['sid'], 
+                        lockData <- self$importDataset("_scenLock", 
+                                                       tibble("_sid", 
                                                               sid), limit = 2L)
                         if(!is.null(lockData) && nrow(lockData)){
                           if(nrow(lockData) > 1){
@@ -576,17 +592,17 @@ Scenario <- R6Class("Scenario",
                                          private$uid, private$tableNameScenLocks, sid), call. = FALSE)
                           }
                           if(!is.null(private$slocktimeLimit)){
-                            if((Sys.time() - as.POSIXct(lockData[[private$slocktimeIdentifier]])) > private$slocktimeLimit){
+                            if((Sys.time() - as.POSIXct(lockData[["_slocktime"]])) > private$slocktimeLimit){
                               # lock has expired, so remove it
                               private$unlock()
                               return(NA_character_)
                             }else{
                               # scenario is locked and lock has not yet expired
-                              return(lockData[[private$scenMetaColnames['uid']]])
+                              return(lockData[["_uid"]])
                             }
                           }else{
                             # scenario is locked and no time limit was provided
-                            return(lockData[[private$scenMetaColnames['uid']]])
+                            return(lockData[["_uid"]])
                           }
                         }else{
                           # no lock found
@@ -606,26 +622,31 @@ Scenario <- R6Class("Scenario",
                             stop("Db: Metadata could not be overwritten as scenario is readonly (Scenario.writeMetadata).", 
                                  call. = FALSE)
                           }
-                          self$deleteRows(private$tableNameMetadata, 
-                                          private$scenMetaColnames['sid'], 
-                                          private$sid)
-                          metadata           <- tibble(private$sid, private$suid, private$sname,
-                                                       private$stime, private$tags, 
-                                                       private$readPerm, private$writePerm,
-                                                       private$execPerm, private$scode)
-                          colnames(metadata) <- private$scenMetaColnames
+                          self$deleteRows("_scenMeta", "_sid", private$sid)
+                          metadata           <- tibble(`_sid` = private$sid,
+                                                       `_uid` = private$suid,
+                                                       `_sname` = private$sname,
+                                                       `_stime` = private$stime,
+                                                       `_stag` = private$tags, 
+                                                       `_accessr` = private$readPerm,
+                                                       `_accessw` = private$writePerm,
+                                                       `_accessx` = private$execPerm,
+                                                       `_scode` = private$scode)
                         }else{
                           # new scenario
                           private$newScen    <- TRUE
-                          metadata           <- tibble(private$suid, private$sname,
-                                                       private$stime, private$tags, 
-                                                       private$readPerm, private$writePerm,
-                                                       private$execPerm, private$scode)
-                          colnames(metadata) <- private$scenMetaColnames[-1]
+                          metadata           <- tibble(`_uid` = private$suid,
+                                                       `_sname` = private$sname,
+                                                       `_stime` = private$stime,
+                                                       `_stag` = private$tags, 
+                                                       `_accessr` = private$readPerm,
+                                                       `_accessw` = private$writePerm,
+                                                       `_accessx` = private$execPerm,
+                                                       `_scode` = private$scode)
                         }
                         super$writeMetadata(metadata)
-                        flog.debug("Db: Metadata (table: '%s') was added for scenario: '%s' (Scenario.writeMetadata).", 
-                                   private$tableNameMetadata, private$sname)
+                        flog.debug("Db: Metadata was added for scenario: '%s' (Scenario.writeMetadata).", 
+                                   private$sname)
                         if(!length(private$sid))
                           private$fetchMetadata(sname = private$sname, 
                                                 uid = private$suid)
@@ -650,20 +671,11 @@ Scenario <- R6Class("Scenario",
                         if(!DBI::dbExistsTable(private$conn, private$tableNameScenLocks)){
                           # in case table does not yet exist, create it
                           tryCatch({
-                            query <- paste0("CREATE TABLE ", DBI::dbQuoteIdentifier(private$conn, private$tableNameScenLocks), 
-                                            " (", 
-                                            DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['uid']), 
-                                            " text,",
-                                            DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
-                                            " int UNIQUE,", 
-                                            DBI::dbQuoteIdentifier(private$conn, private$slocktimeIdentifier), 
-                                            if(inherits(private$conn, "PqConnection")) 
-                                              " timestamp with time zone);" else " text);")
-                            DBI::dbExecute(private$conn, query)
+                            self$runQuery(dbSchema$getCreateTableQuery("_scenLock"))
                             flog.debug("Db: %s: Table with locks ('%s') was created as it did not yet exist. (Scenario.lock)", private$uid, private$tableNameScenLocks)
                           }, error = function(e){
                             stop(sprintf("Db: %s: An error occurred while trying to create table. (Scenario.lock, table: '%s'). Error message: %s.", 
-                                         private$uid, private$tableNameScenLocks, e), call. = FALSE)
+                                         private$uid, private$tableNameScenLocks, conditionMessage(e)), call. = FALSE)
                           })
                         }
                         # check whether scenario is already locked
@@ -680,17 +692,19 @@ Scenario <- R6Class("Scenario",
                             private$unlock()
                           }
                         }
-                        lockData           <- data.frame(as.character(private$uid), as.integer(private$sid), Sys.time(), stringsAsFactors = FALSE)
-                        colnames(lockData) <- c(private$scenMetaColnames['uid'], 
-                                                private$scenMetaColnames['sid'], 
-                                                private$slocktimeIdentifier)
+                        lockData           <- data.frame(as.character(private$uid),
+                                                         as.integer(private$sid),
+                                                         Sys.time(), stringsAsFactors = FALSE)
+                        colnames(lockData) <- c("_uid", 
+                                                "_sid", 
+                                                "_slocktime")
                         lockData <- dateColToChar(private$conn, lockData)
                         tryCatch({
                           DBI::dbWriteTable(private$conn, private$tableNameScenLocks, lockData, row.names = FALSE, append = TRUE)
                           flog.debug("Db: %s: Lock was added for scenario: '%s' (Scenario.lock).", private$uid, private$sid)
                         }, error = function(e){
                           stop(sprintf("Db: %s: An error occurred writing to database (Scenario.lock, table: '%s', scenario: '%s'). Error message: %s", 
-                                       private$uid, private$tableNameScenLocks, private$sid, e), call. = FALSE)
+                                       private$uid, private$tableNameScenLocks, private$sid, conditionMessage(e)), call. = FALSE)
                         })
                         invisible(self)
                       },
@@ -708,8 +722,8 @@ Scenario <- R6Class("Scenario",
                         #END error checks
                         
                         if(DBI::dbExistsTable(private$conn, private$tableNameScenLocks)){
-                          self$deleteRows(private$tableNameScenLocks, 
-                                          colNames = private$scenMetaColnames['sid'], 
+                          self$deleteRows("_scenLock", 
+                                          colNames = "_sid", 
                                           values = private$sid)
                         }
                         invisible(self)
@@ -738,7 +752,8 @@ Scenario <- R6Class("Scenario",
                             return(TRUE)
                           }
                         }, error = function(e){
-                          stop(sprintf("Db: Problems locking scenario: '%s'. Error message: %s.", private$sid, e), call. = FALSE)
+                          stop(sprintf("Db: Problems locking scenario: '%s'. Error message: %s.", private$sid,
+                                       conditionMessage(e)), call. = FALSE)
                         })
                       },
                       isReadonly = function(){
@@ -759,10 +774,9 @@ Scenario <- R6Class("Scenario",
                       },
                       bindSidCol = function(data){
                         # binds sid column to dataset
-                        sidCol <- private$scenMetaColnames['sid']
-                        if(!identical(names(data)[[1]], sidCol)){
-                          data <- dplyr::bind_cols(!!sidCol := rep.int(private$sid, nrow(data)), 
-                                                   data)
+                        if(!identical(names(data)[[1]], "_sid")){
+                          return(bind_cols(`_sid` = rep.int(private$sid, nrow(data)), 
+                                           data))
                         }
                         return(data)
                       },
@@ -774,7 +788,7 @@ Scenario <- R6Class("Scenario",
                             # where attachments should be duplicated, we do nothing
                             private$duplicateAttachmentsOnNextSave <- FALSE
                           }else{
-                            super$deleteRows(private$dbSchema$tabName[["_scenAttach"]],
+                            super$deleteRows("_scenAttach",
                                              subsetSids = private$sid)
                           }
                           private$removeAllExistingAttachments <- FALSE
@@ -788,7 +802,7 @@ Scenario <- R6Class("Scenario",
                         attachmentOpQueue <- private$attachments$flushOpQueue()
                         if(length(attachmentOpQueue$remove)){
                           # save dirty attachments 
-                          super$deleteRows(private$dbSchema$tabName[["_scenAttach"]], "fileName", 
+                          super$deleteRows("_scenAttach", "fileName", 
                                            attachmentOpQueue$remove, 
                                            conditionSep = "OR", subsetSids = private$sid)
                         }
@@ -800,14 +814,14 @@ Scenario <- R6Class("Scenario",
                             name[!attachmentOpQueue$updateExec$execPerm]
                           
                           if(length(fnHasExecPerm))
-                            super$updateRows(private$dbSchema$tabName[["_scenAttach"]], 
+                            super$updateRows("_scenAttach", 
                                              tibble("fileName", fnHasExecPerm), 
                                              colNames = "execPerm", 
                                              values = TRUE, 
                                              subsetSids = private$sid, innerSepAND = FALSE)
                           
                           if(length(fnHasNoExecPerm))
-                            super$updateRows(private$dbSchema$tabName[["_scenAttach"]], 
+                            super$updateRows("_scenAttach", 
                                              tibble("fileName", fnHasNoExecPerm), 
                                              colNames = "execPerm", 
                                              values = FALSE, 
@@ -816,7 +830,7 @@ Scenario <- R6Class("Scenario",
                         if(length(attachmentOpQueue$save)){
                           super$exportScenDataset(private$bindSidCol(
                             attachmentOpQueue$save), 
-                            private$dbSchema$tabName[["_scenAttach"]], addForeignKey = FALSE)
+                            "_scenAttach")
                           
                         }
                         return(invisible(self))
@@ -829,33 +843,40 @@ Scenario <- R6Class("Scenario",
                         if(!length(viewConf) || !nrow(viewConf)){
                           return(invisible(self))
                         }
+                        viewsSchema <- dbSchema$getDbSchema("_scenViews")
                         viewConfToSave <- fixColTypes(viewConf %>%
                                                         add_column(time = Sys.time()),
-                                                      substring(private$dbSchema$colTypes[["_scenViews"]],
+                                                      substring(viewsSchema$colTypes,
                                                                 2))
-                        names(viewConfToSave) <- private$dbSchema$colNames[["_scenViews"]][-1]
+                        names(viewConfToSave) <- viewsSchema$colNames[-1]
                         super$exportScenDataset(private$bindSidCol(viewConfToSave),
-                                                private$dbSchema$tabName[["_scenViews"]])
+                                                "_scenViews")
                         invisible(self)
                       },
                       duplicateAttachments = function(){
                         stopifnot(is.integer(private$sidToDuplicate), 
                                   length(private$sidToDuplicate) == 1L, !is.na(private$sidToDuplicate),
                                   length(private$sid) == 1L)
-                        tableName      <- private$dbSchema$tabName[["_scenAttach"]]
-                        if(!dbExistsTable(private$conn, tableName)){
+                        attachSchema      <- dbSchema$getDbSchema("_scenAttach")
+                        if(!dbExistsTable(private$conn, attachSchema$tabName)){
                           return(invisible(self))
                         }
-                        colNames       <- private$dbSchema$colNames[["_scenAttach"]]
-                        dbExecute(private$conn, 
-                                  paste0("INSERT INTO ", dbQuoteIdentifier(private$conn, tableName),
-                                         "(", paste0(dbQuoteIdentifier(private$conn, colNames), 
-                                                     collapse = ","), ") SELECT ", private$sid, ",", 
-                                         paste0(dbQuoteIdentifier(private$conn, colNames[-1]),
-                                                collapse = ","), " FROM ", 
-                                         dbQuoteIdentifier(private$conn, tableName),
-                                         " WHERE ", dbQuoteIdentifier(private$conn, colNames[1]),
-                                         "=", private$sidToDuplicate, ";"))
+                        self$runQuery(paste0("INSERT INTO ",
+                                             dbQuoteIdentifier(private$conn,
+                                                               attachSchema$tabName),
+                                             "(",
+                                             paste0(dbQuoteIdentifier(private$conn,
+                                                                      attachSchema$colNames), 
+                                                    collapse = ","),
+                                             ") SELECT ", private$sid, ",", 
+                                             paste0(dbQuoteIdentifier(private$conn,
+                                                                      attachSchema$colNames[-1]),
+                                                    collapse = ","),
+                                             " FROM ", 
+                                             dbQuoteIdentifier(private$conn, attachSchema$tabName),
+                                             " WHERE ",
+                                             dbQuoteIdentifier(private$conn, attachSchema$colNames[1]),
+                                             "=", private$sidToDuplicate, ";"))
                         private$duplicateAttachmentsOnNextSave <- FALSE
                         return(invisible(self))
                       }

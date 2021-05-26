@@ -88,9 +88,39 @@
            "description":"Enable button that allows to hide empty columns.",
            "type": "boolean"
          },
+         "hideEmptyCols": {
+           "description":"Default value for hide empty columns checkbox (only relevant if enableHideEmptyCols is TRUE).",
+           "type": "boolean"
+         },
          "enablePersistentViews": {
            "description":"Enable persistent views.",
            "type": "boolean"
+         },
+         "customChartColors": {
+           "description": "Custom color palette. Every second color is the hover color of previous one.",
+           "type":"array"
+         },
+         "chartOptions": {
+           "description":"Additional chart options",
+            "type":"object",
+            "additionalProperties":false,
+            "properties":{
+               "title":{
+                 "description":"Chart title",
+                 "type": "string",
+                 "minLength": 1
+               },
+               "xTitle":{
+                 "description":"X-axis label",
+                 "type": "string",
+                 "minLength": 1
+               },
+               "yTitle":{
+                 "description":"Y-axis label",
+                 "type": "string",
+                 "minLength": 1
+               }
+            }
          }
       }
     }
@@ -152,6 +182,15 @@
       "defaultScenName":{
         "description":"Name of the default scenario that will be loaded on startup (leave empty, if you dont want a default scenario)",
          "type":"string"
+      },
+      "defaultRendererOutput":{
+        "description":"Name of the default renderer used for output data",
+         "type":"string",
+        "enum":[ 
+            "miroPivot",
+            "datatable"
+         ],
+         "default":"miroPivot"
       },
       "UILogo":{  
          "description":"String that specifies the name of the logo to use",
@@ -970,6 +1009,12 @@
                         "minLength":1
                       }
                     },
+                    "fixedColumnsLeft": {
+                       "description": "Whether non-pivoted columns should be fixed",
+                       "type": ["integer", "null"],
+                       "minLength": 1,
+                       "minimum": 1
+                    },
                     "sortPivotCols":{
                       "description":"Whether pivoted columns should be sorted alphabetically",
                         "type":"boolean"
@@ -1053,6 +1098,24 @@
                    "options":{
                       "description":"Additional options",
                       "type":"object"
+                   },
+                   "apiVersion":{
+                     "description":"API version to use",
+                     "type":"integer",
+                     "minimum":1,
+                     "maximum":2,
+                     "default":1
+                   },
+                   "additionalData":{
+                     "description":"Specify additional input symbols whose data should be handed to custom widget. Currently, only data from scalar widgets (sliders, dropdowns etc.) is supported.",
+                    "type":["array", "string"],
+                    "minLength":1,
+                    "minItems":1,
+                    "uniqueItems":true,
+                    "items":{  
+                       "type":"string",
+                       "minLength":1
+                    }
                    },
                    "noImport":{  
                     "description":"Boolean that specifies whether data should not be imported from external source",
@@ -2163,7 +2226,6 @@
                       "type":"string",
                       "default": "REST",
                       "enum":[
-                        "database",
                         "customFunction",
                         "REST"
                       ]
@@ -2501,6 +2563,10 @@
                     "type":"string",
                     "minLength":3
                   },
+                  "markdown": {
+                    "description": "Parse output as markdown?",
+                    "type": "boolean"
+                  },
                   "timeout": {
                     "description":"Timeout (seconds) when process shall be interrupted. -1 for infinity.",
                     "type":"integer",
@@ -2515,7 +2581,7 @@
              "uniqueItems":true,
              "items":{
                 "type":"object",
-                "description": "Scripts that will be displayed in the analysis section in the Hypercube mode and is feeded with input and output data of all selected scenarios",
+                "description": "Scripts for analyzing batches of scenarios.",
                 "additionalProperties":false,
                 "properties":{
                   "title": {
@@ -2545,6 +2611,10 @@
                     "description":"Output filename that shall be displayed in MIRO once script is finished",
                     "type":"string",
                     "minLength":3
+                  },
+                  "markdown": {
+                    "description": "Parse output as markdown?",
+                    "type": "boolean"
                   },
                   "timeout": {
                     "description":"Timeout (seconds) when process shall be interrupted. -1 for infinity.",

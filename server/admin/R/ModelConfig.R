@@ -2,7 +2,8 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
   initialize = function(configPath){
     private$configPath <- configPath
 
-    private$accessGroups <- Set$new(csv2Vector(Sys.getenv("SHINYPROXY_USERGROUPS")))
+    userGroups <- csv2Vector(Sys.getenv("SHINYPROXY_USERGROUPS"))
+    private$accessGroups <- Set$new(userGroups)
 
     if(file.exists(configPath)){
         configTmp <- tryCatch(yaml::read_yaml(configPath),
@@ -10,19 +11,16 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
                 stop(sprintf("Faulty yaml syntax in configuration file: %s. Error message: %s",
                     configPath, conditionMessage(e)), call. = FALSE)
         })
-        adminConfigTmp <- configTmp[["specs"]][[1]]
-        if(!identical(adminConfigTmp[["id"]], "admin")){
-            private$adminConfig <- list()
-            private$currentModelConfigs <- configTmp[["specs"]]
-        }else{
-            private$adminConfig <- adminConfigTmp
-            private$adminConfig$accessGroups <- as.list(private$adminConfig$accessGroups)
-            if(length(configTmp[["specs"]]) > 1L){
-                private$currentModelConfigs <- configTmp[["specs"]][seq(2, length(configTmp[["specs"]]))]
-            }else{
-                private$currentModelConfigs <- list()
-            }
-        }
+        configTmp <- lapply(configTmp[["specs"]], function(appConfig){
+          appConfig[["accessGroups"]] <- as.list(appConfig[["accessGroups"]])
+          return(appConfig)
+        })
+        modelConfigsHasAccess <- vapply(configTmp, function(appConfig){
+          return(!identical(appConfig[["id"]], "admin") &&
+            (!length(appConfig[["accessGroups"]]) || any(appConfig[["accessGroups"]] %in% userGroups)))
+        }, logical(1L), USE.NAMES = FALSE)
+        private$currentModelConfigs <- configTmp[modelConfigsHasAccess]
+        private$modelConfigsNoAccess <- configTmp[!modelConfigsHasAccess]
     }else{
         stop(sprintf("Could not find configuration file: %s", configPath), call. = FALSE)
     }
@@ -40,6 +38,9 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
   },
   getConfigList = function(){
     return(lapply(seq_along(private$currentModelConfigs), self$getAppConfig))
+  },
+  getAllAppIds = function(){
+    return(vapply(c(private$modelConfigsNoAccess, private$currentModelConfigs), "[[", character(1L), "id", USE.NAMES = FALSE))
   },
   getAppId = function(appIndex){
     return(private$currentModelConfigs[[appIndex]]$id)
@@ -82,6 +83,22 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
         }
         private$currentModelConfigs[[appIndex]][["displayName"]] <- newConfig[["displayName"]]
     }
+    if(!is.null(newConfig[["containerEnv"]])){
+      for(envKey in c(names(newConfig[["containerEnv"]]),
+        names(private$currentModelConfigs[[appIndex]][["containerEnv"]]))){
+        if(envKey %in% private$restrictedEnvKeys){
+          if(envKey %in% names(newConfig[["containerEnv"]])){
+            flog.warn("Invalid environment variable name: %s in custom environment file. It was ignored.", envKey)
+          }
+          next
+        }
+        if(envKey %in% names(newConfig[["containerEnv"]])){
+          private$currentModelConfigs[[appIndex]][["containerEnv"]][[envKey]] <- newConfig[["containerEnv"]][[envKey]]
+          next
+        }
+        private$currentModelConfigs[[appIndex]][["containerEnv"]][[envKey]] <- NULL
+      }
+    }
     for(configId in c("description", "logoURL")){
         if(!is.null(newConfig[[configId]])){
             private$currentModelConfigs[[appIndex]][[configId]] <- newConfig[[configId]]
@@ -92,7 +109,7 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
         private$accessGroups$join(newConfig[["accessGroups"]])
         private$currentModelConfigs[[appIndex]][["accessGroups"]] <- as.list(newConfig[["accessGroups"]])
     }else{
-        private$currentModelConfigs[[appIndex]][["accessGroups"]] <- NULL
+        private$currentModelConfigs[[appIndex]][["accessGroups"]] <- list("users")
     }
 
     private$writeConfig()
@@ -141,17 +158,31 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
         private$accessGroups$join(accessGroups)
     }
 
+    appEnv <- list()
+    for(envKey in names(appConfig[["containerEnv"]])){
+      if(!envKey %in% private$restrictedEnvKeys){
+        appEnv[[envKey]] <- appConfig[["containerEnv"]][[envKey]]
+      }
+    }
+    if(length(appEnv)){
+      appEnv <- as.character(jsonlite::toJSON(appEnv, auto_unbox = TRUE))
+    }
+
     return(list(id = appConfig[["id"]], alias = appConfig[["displayName"]], 
         desc = appConfig[["description"]], logob64 = logoB64,
+        appEnv = if(length(appEnv)) appEnv else "",
         groups = I(accessGroups)))
   }),
   private = list(
     configPath = NULL,
     accessGroups = NULL,
-    adminConfig = NULL,
     currentModelConfigs = NULL,
+    modelConfigsNoAccess = NULL,
+    restrictedEnvKeys = c("MIRO_MODEL_PATH", "MIRO_DATA_DIR", "MIRO_MODE",
+      "MIRO_VERSION_STRING", "MIRO_DB_USERNAME", "MIRO_DB_PASSWORD", "MIRO_DB_SCHEMA",
+      "MIRO_ENGINE_MODELNAME"),
     writeConfig = function(){
-      yaml::write_yaml(list(specs = c(list(private$adminConfig), private$currentModelConfigs)), 
+      yaml::write_yaml(list(specs = c(private$modelConfigsNoAccess, private$currentModelConfigs)), 
         private$configPath)
     }
   ) 

@@ -1,13 +1,7 @@
 {
   "output": {
-    "title_2": {
-      "html": "default1",
-      "deps": [
-
-      ]
-    },
-    "title_3": {
-      "html": "default4",
+    "inputDataTitle": {
+      "html": "<i>&lt;New Scenario&gt;<\/i>",
       "deps": [
 
       ]

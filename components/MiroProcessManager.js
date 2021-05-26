@@ -122,7 +122,20 @@ class MiroProcessManager {
     log.info(`MIRO app: ${appData.id} launched at port: ${shinyPort} with dbPath: ${dbPath}, \
 developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
 
-    const procEnv = {
+    let miroEnv = await this.configData.get('miroEnv');
+    if (Object.keys(miroEnv).includes('PATH')) {
+      // we append the current PATH
+      const tidyPath = miroEnv.PATH
+        .split(path.delimiter)
+        .filter((el) => el.length > 0)
+        .join(path.delimiter);
+      miroEnv.PATH = tidyPath + path.delimiter + process.env.PATH;
+    }
+    if (miroEnv == null) {
+      miroEnv = {};
+    }
+
+    const procEnv = Object.assign(miroEnv, {
       WITHIN_ELECTRON: '1',
       R_HOME_DIR: await rpath,
       RE_SHINY_PORT: shinyPort,
@@ -148,7 +161,7 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
       MIRO_MODE: appData.mode ? appData.mode : 'base',
       MIRO_MODEL_PATH: this.inDevelopmentMode ? appData.modelPath
         : path.join(this.appDataPath, appData.id, `${appData.id}.gms`),
-    };
+    });
     if (appData.customEnv) {
       Object.keys(appData.customEnv).forEach((envName) => {
         procEnv[envName] = appData.customEnv[envName];

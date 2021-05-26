@@ -14,7 +14,7 @@ app$findElement(".btSplitView button")$click()
 app$findElements(".btSplitView a[data-view='tab']")[[1]]$click()
 Sys.sleep(0.5)
 
-app$findElement("#no-scen .action-button")$click()
+app$findElement("#cmpTabNoScenWrapper .action-button")$click()
 Sys.sleep(0.5)
 scenToSelect <- paste0(c("1_", "3_"), currentUser)
 app$setInputs(selLoadScen = scenToSelect, wait_ = FALSE, values_ = FALSE)
@@ -42,7 +42,8 @@ expect_options(getSelectizeOptions(app, "#selLoadScen"),
 app$setInputs(selLoadScen = paste0("4_", currentUser))
 app$setInputs(btLoadScenConfirm = "click")
 Sys.sleep(0.5)
-app$snapshot(items = list(output = c("title_2", "title_3")), screenshot = TRUE)
+expect_true(app$waitFor("$('#cmpScenTitle_2').text()==='default1';", timeout = 50))
+expect_true(app$waitFor("$('#cmpScenTitle_3').text()==='default4';", timeout = 50))
 # scenarios loaded in split view: 1, 4
 
 # load scenarios into pivot view
@@ -85,7 +86,9 @@ expect_chartjs("tab_0_3-miroPivot-pivotChart",
                  "default2.Seattle"))
 app$findElements("#scen-pivot-view .box-title button")[[1]]$click()
 Sys.sleep(0.5)
-app$snapshot(items = list(output = c("title_2", "title_3")), screenshot = TRUE)
+expect_true(app$waitFor("$('#cmpScenTitle_2').text()==='default1';", timeout = 50))
+expect_true(app$waitFor("$('#cmpScenTitle_3').text()==='default4';", timeout = 50))
+app$snapshot(items = list(output = c("inputDataTitle")), screenshot = TRUE)
 expect_options(app$getAllValues()$input$selLoadScen,
                paste0(c("1_", "2_"), currentUser))
 app$findElement("button[data-dismiss='modal']")$click()
@@ -96,12 +99,13 @@ Sys.sleep(0.5)
 # are displayed in UI tab in split view
 app$findElement(".btSplitView button")$click()
 app$findElements(".btSplitView a[data-view='split']")[[1]]$click()
-
+app$setInputs(btScenSplit1_close = "click")
+Sys.sleep(0.5)
 app$setInputs(btScenSplit1_open = "click")
 Sys.sleep(0.5)
 app$setInputs(tabsetLoadScen = "loadScenUI")
 expect_options(getSelectizeOptions(app, "#selLoadScenUI"),
-               paste0(c("2_", "3_"), currentUser))
+               paste0(c("1_", "2_", "3_"), currentUser))
 app$findElement("button[data-dismiss='modal']")$click()
 Sys.sleep(0.5)
 
@@ -114,7 +118,7 @@ Sys.sleep(0.5)
 app$findElement("#btLoadScen")$click()
 Sys.sleep(0.5)
 expect_options(getSelectizeOptions(app, "#selLoadScen"),
-               paste0(c("2_", "4_", "-19_"), currentUser))
+               paste0(c("2_", "4_", "sb_"), currentUser))
 app$findElement("button[data-dismiss='modal']")$click()
 Sys.sleep(0.5)
 
@@ -132,8 +136,21 @@ app$setInputs(btScenSplit1_open = "click")
 Sys.sleep(0.5)
 app$setInputs(tabsetLoadScen = "loadScenUI")
 expect_options(getSelectizeOptions(app, "#selLoadScenUI"),
-               paste0(c("3_"), currentUser))
+               paste0(c("1_", "3_"), currentUser))
 app$findElement("button[data-dismiss='modal']")$click()
 Sys.sleep(0.5)
+
+# close all in tab view
+app$findElement(".btSplitView button")$click()
+app$findElements(".btSplitView a[data-view='tab']")[[1]]$click()
+Sys.sleep(0.5)
+expect_true(app$waitFor("$('#btCmpTabCloseAll').click();true;", timeout = 50))
+Sys.sleep(0.5)
+expect_true(app$waitFor("$('.modal-footer .bt-gms-confirm').click();true;", timeout = 50))
+Sys.sleep(0.5)
+expect_true(app$waitFor("$('#scenTabset li').length===1&&$('#cmpTabNoScenWrapper').is(':visible');", timeout = 50))
+app$findElement("#cmpTabNoScenWrapper .action-button")$click()
+Sys.sleep(0.5)
+expect_true(startsWith(as.character(app$getValue("selLoadScen")), "4_"))
 
 app$stop()

@@ -84,6 +84,11 @@
               "type": "string",
               "minLength": 1
             },
+            "load": {
+              "description": "GAMS interaction menu item",
+              "type": "string",
+              "minLength": 1
+            },
             "scen": {
               "description": "Scenario interaction menu item",
               "type": "string",
@@ -102,21 +107,16 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "load": {
-                  "description": "GAMS interaction menu item",
-                  "type": "string",
-                  "minLength": 1
-                },
                 "analyze": {
                   "description": "Hypercube analyze menu item",
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 4
+              "minProperties": 3
             }
           },
-          "minProperties": 5
+          "minProperties": 6
         },
         "sidebarButtons": {
           "type": "object",
@@ -377,6 +377,10 @@
               "type": "string",
               "minLength": 1
             },
+            "btCloseAll": {
+              "type": "string",
+              "minLength": 1
+            },
             "scenNameSandboxSuffix": {
               "type": "string",
               "minLength": 1
@@ -467,7 +471,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 6
+          "minProperties": 7
         },
         "hcubeImport": {
           "type": "object",
@@ -488,7 +492,7 @@
           },
           "minProperties": 3
         },
-        "hcubeLoad": {
+        "queryBuilder": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
@@ -501,6 +505,10 @@
               "minLength": 1
             },
             "noData": {
+              "type": "string",
+              "minLength": 1
+            },
+            "invalidCsvFilter": {
               "type": "string",
               "minLength": 1
             },
@@ -532,6 +540,49 @@
               "type": "string",
               "minLength": 1
             },
+            "operators": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "is": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "notis": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "contains": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "notcontains": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "startswith": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "endswith": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "exists": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "notexists": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "between": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 9
+            },
             "queryButton": {
               "type": "string",
               "minLength": 1
@@ -559,6 +610,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "sname": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "stime": {
                   "type": "string",
                   "minLength": 1
@@ -568,10 +623,10 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 3
+              "minProperties": 4
             }
           },
-          "minProperties": 13
+          "minProperties": 15
         },
         "hcubeAnalyze": {
           "type": "object",
@@ -1193,6 +1248,29 @@
           "minProperties": 4
         },
         "dialogCloseScen": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "desc": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cancelButton": {
+              "type": "string",
+              "minLength": 1
+            },
+            "okButton": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 4
+        },
+        "dialogCloseAllScen": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
@@ -1855,7 +1933,7 @@
               "type": "string",
               "minLength": 1
             },
-            "downloadZipButton": {
+            "downloadAllButton": {
               "type": "string",
               "minLength": 1
             },
@@ -2245,6 +2323,121 @@
           },
           "minProperties": 4
         },
+        "dialogBatchLoad": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selectMethod": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selExportType": {
+              "type": "string",
+              "minLength": 1
+            },
+            "maxScenWarning1": {
+              "type": "string",
+              "minLength": 1
+            },
+            "maxScenWarning2": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cancelButton": {
+              "type": "string",
+              "minLength": 1
+            },
+            "paverButton": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selAnalysisScript": {
+              "type": "string",
+              "minLength": 1
+            },
+            "tabScript": {
+              "type": "string",
+              "minLength": 1
+            },
+            "tabPaver": {
+              "type": "string",
+              "minLength": 1
+            },
+            "delTrace": {
+              "type": "string",
+              "minLength": 1
+            },
+            "tooManySolvers": {
+              "type": "string",
+              "minLength": 1
+            },
+            "noTrc": {
+              "type": "string",
+              "minLength": 1
+            },
+            "analysisRunScriptRunning": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selPaverAttribs": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selIgnoreAttribs": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selClArgs": {
+              "type": "string",
+              "minLength": 1
+            },
+            "removeConfirm": {
+              "type": "string",
+              "minLength": 1
+            },
+            "removeSuccess": {
+              "type": "string",
+              "minLength": 1
+            },
+            "runPaverButton": {
+              "type": "string",
+              "minLength": 1
+            },
+            "runScriptButton": {
+              "type": "string",
+              "minLength": 1
+            },
+            "downloadAnalysisButton": {
+              "type": "string",
+              "minLength": 1
+            },
+            "interactiveButtonTab": {
+              "type": "string",
+              "minLength": 1
+            },
+            "interactiveButtonPivot": {
+              "type": "string",
+              "minLength": 1
+            },
+            "interactiveButtonSplit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "downloadButton": {
+              "type": "string",
+              "minLength": 1
+            },
+            "removeButton": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 27
+        },
         "hcubeMode": {
           "type": "object",
           "additionalProperties": false,
@@ -2266,113 +2459,6 @@
                 "type": "string",
                 "minLength": 1
               }
-            },
-            "hcubeLoadDialog": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "title": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "selectMethod": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "selExportType": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "maxScenWarning1": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "maxScenWarning2": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "cancelButton": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "paverButton": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "selAnalysisScript": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "tabScript": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "tabPaver": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "delTrace": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "tooManySolvers": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "noTrc": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "analysisRunScriptRunning": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "selPaverAttribs": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "selIgnoreAttribs": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "selClArgs": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "removeConfirm": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "removeSuccess": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "runPaverButton": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "runScriptButton": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "interactiveButtonTab": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "interactiveButtonPivot": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "downloadButton": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "removeButton": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "minProperties": 25
             },
             "invalidScenDialog": {
               "type": "object",
@@ -2509,7 +2595,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 10
+          "minProperties": 9
         },
         "dialogPaverInUse": {
           "type": "object",
@@ -2607,6 +2693,10 @@
               "type": "string",
               "minLength": 1
             },
+            "selectColToMap": {
+              "type": "string",
+              "minLength": 1
+            },
             "btCancelMigration": {
               "type": "string",
               "minLength": 1
@@ -2616,6 +2706,10 @@
               "minLength": 1
             },
             "errDuplicateTables": {
+              "type": "string",
+              "minLength": 1
+            },
+            "incompatibleTypeWarning": {
               "type": "string",
               "minLength": 1
             },
@@ -2701,10 +2795,10 @@
               "minProperties": 7
             }
           },
-          "minProperties": 12
+          "minProperties": 14
         }
       },
-      "minProperties": 50
+      "minProperties": 52
     },
     "renderers": {
       "description": "language specific objects of renderers",
@@ -2787,6 +2881,18 @@
               "minLength": 1
             },
             "newViewLabel": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewChartTitle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewxTitle": {
+              "type": "string",
+              "minLength": 1
+            },
+            "newViewyTitle": {
               "type": "string",
               "minLength": 1
             },
@@ -2939,7 +3045,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 31
+          "minProperties": 34
         },
         "datatable": {
           "type": "object",
@@ -3765,9 +3871,13 @@
             "desc": {
               "type": "string",
               "minLength": 1
+            },
+            "inconsistentDataWarning": {
+              "type": "string",
+              "minLength": 1
             }
           },
-          "minProperties": 2
+          "minProperties": 3
         },
         "deleteScen": {
           "type": "object",
@@ -4106,48 +4216,9 @@
               "type": "string",
               "minLength": 1
             },
-            "custom": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "skeleton": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "steps": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "li1": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "li2": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "li3a": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "li3b": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "description1": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "description2": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "description3": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "minProperties": 9
+            "restartRequired": {
+              "type": "string",
+              "minLength": 1
             }
           },
           "minProperties": 7
@@ -4181,6 +4252,10 @@
                   "minLength": 1
                 },
                 "headerGeneral": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "headerRenderers": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -4253,7 +4328,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 23
+              "minProperties": 24
             },
             "modalDialog": {
               "type": "object",
@@ -4611,6 +4686,27 @@
               },
               "minProperties": 2
             },
+            "defaultRenderer": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "labelOutput": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "choicesOutput": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "minProperties": 2
+            },
             "logo": {
               "type": "object",
               "additionalProperties": false,
@@ -4813,7 +4909,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 37
+          "minProperties": 38
         },
         "tables": {
           "type": "object",
@@ -5522,12 +5618,16 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "fixedColumnsLeft": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "heatmap": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 8
+              "minProperties": 9
             },
             "slider": {
               "type": "object",
@@ -6253,6 +6353,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "advanced": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "minicharts": {
                   "type": "string",
                   "minLength": 1
@@ -6266,7 +6370,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 22
+              "minProperties": 23
             },
             "ui": {
               "type": "object",
@@ -6326,12 +6430,24 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "toggleFullscreen": {
+                "toggleLeft": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "toggleRight": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "previewError": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "previewErrorObs": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 13
+              "minProperties": 16
             },
             "graphOptions": {
               "type": "object",
@@ -6396,6 +6512,10 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "custom1": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "pieValues": {
                   "type": "string",
                   "minLength": 1
@@ -6405,7 +6525,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 3
+              "minProperties": 4
             },
             "errMsg": {
               "type": "object",
@@ -7312,7 +7432,19 @@
               "type": "object",
               "additionalProperties": false,
               "properties": {
-                "name": {
+                "btUpdate": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "externalRenderer": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "symNotFoundSuffix": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "options": {
                   "type": "string",
                   "minLength": 1
                 },
@@ -7325,7 +7457,7 @@
                   "minLength": 1
                 }
               },
-              "minProperties": 3
+              "minProperties": 6
             },
             "filterOptions": {
               "type": "object",
@@ -7497,12 +7629,16 @@
                       "type": "string",
                       "minLength": 1
                     },
+                    "markdown": {
+                      "type": "string",
+                      "minLength": 1
+                    },
                     "timeout": {
                       "type": "string",
                       "minLength": 1
                     }
                   },
-                  "minProperties": 6
+                  "minProperties": 7
                 },
                 "addOutAttach": {
                   "type": "object",

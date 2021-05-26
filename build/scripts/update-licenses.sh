@@ -7,7 +7,7 @@ npm list -g npm-license-crawler > /dev/null || {
 MORE_DIR_EXCL=""
 if [ -d "dist" ]; then
     # on jenkins r and dist don't exist yet when this script is run
-    MORE_DIR_EXCL="--exclude dist --exclude r"
+    MORE_DIR_EXCL="--exclude dist --exclude r "
 fi
 npm-license-crawler ${MORE_DIR_EXCL}--exclude build --exclude src --exclude server --exclude r-src --dependencies --production --csv licenses.csv > /dev/null
 cat >$LICENSE_FILE <<EOL
@@ -45,9 +45,10 @@ ISC
 MIT
 WTFPL
 WTFPL OR ISC
+Python-2.0
 EOL
 
-awk -F "\"*,\"*" '{print $2}' licenses.csv | tail -n +2 | sort |uniq | while read x; do grep "$x" allowed-licenses || { >&2 echo "$x";exit 1; }; done > /dev/null || {
+awk -F "\"*,\"*" '{print $2}' licenses.csv | tail -n +2 | sort |uniq | while read x; do grep "$x" allowed-licenses || { >&2 echo "Invalid license: $x";exit 1; }; done > /dev/null || {
     \rm -f licenses.csv allowed-licenses
     exit 1
 }

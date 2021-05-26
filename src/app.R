@@ -43,12 +43,12 @@ if(R.version[["major"]] < 3 ||
 isShinyProxy <<- !identical(Sys.getenv("SHINYPROXY_USERNAME"), "")
 debugMode <- TRUE
 RLibPath <- NULL
-miroBuildonly <- identical(Sys.getenv("MIRO_BUILD"), "true")
+miroBuildOnly <- identical(Sys.getenv("MIRO_BUILD"), "true")
 miroStoreDataOnly <- identical(Sys.getenv("MIRO_POPULATE_DB"), "true")
-miroDeploy <- miroBuildonly
+miroDeploy <- miroBuildOnly
 if(identical(Sys.getenv("MIRO_TEST_DEPLOY"), "true")){
   miroDeploy <- TRUE
-  miroBuildonly <- FALSE
+  miroBuildOnly <- FALSE
 }
 logToConsole <- TRUE
 if(identical(Sys.getenv("MIRO_NO_DEBUG"), "true") && !miroDeploy){
@@ -60,7 +60,7 @@ if(identical(Sys.getenv("MIRO_NO_DEBUG"), "true") && !miroDeploy){
 tmpFileDir <- tempdir(check = TRUE)
 # required packages
 requiredPackages <- c("R6", "jsonlite", "zip", "tibble", "readr")
-if(!miroBuildonly){
+if(!miroBuildOnly){
   requiredPackages <- c(requiredPackages, "shiny", "shinydashboard", "rhandsontable", 
                         "rpivotTable", "stringi", "processx", 
                         "dplyr", "readxl", "writexl", "futile.logger", "tidyr",
@@ -89,14 +89,9 @@ filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./component
                     "./components/dataio.R", "./components/hcube_data_instance.R", 
                     "./components/miro_tabsetpanel.R", "./modules/render_data.R", 
                     "./modules/generate_data.R", "./components/script_output.R",
-                    "./components/scen_comp_pivot.R", "./components/js_util.R")
+                    "./components/js_util.R", "./components/scen_data.R", "./components/batch_loader.R")
 LAUNCHCONFIGMODE <- FALSE
 LAUNCHHCUBEMODE <<- FALSE
-if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
-  pb <- winProgressBar(title = "Loading GAMS MIRO", label = "Loading required packages",
-                       min = 0, max = 1, initial = 0, width = 300)
-  setWinProgressBar(pb, 0.3, label= "Initializing GAMS MIRO")
-}
 if(is.null(errMsg)){
   # include custom functions and modules
   lapply(filesToInclude, function(file){
@@ -107,7 +102,8 @@ if(is.null(errMsg)){
         source(file)
       }, error = function(e){
         errMsg <<- paste(errMsg, paste0("Some error occurred while sourcing file '", 
-                                        file, "'. Error message: ", e), sep = "\n")
+                                        file, "'. Error message: ",
+                                        conditionMessage(e)), sep = "\n")
       }, warning = function(w){
         errMsg <<- paste(errMsg, paste0("Some error occurred while sourcing file '", 
                                         file, "'. Error message: ", w), sep = "\n")
@@ -139,7 +135,7 @@ if(is.null(errMsg)){
     }
     miroDbDir     <- Sys.getenv("MIRO_DB_PATH")
     if(identical(miroDbDir, "")){
-      miroDbDir <- miroWorkspace
+      miroDbDir <- file.path(miroWorkspace, "app_data")
     }
   }
   if(!identical(Sys.getenv("MIRO_LOG_PATH"), "")){
@@ -161,9 +157,9 @@ if(is.null(errMsg)){
       errMsg <- paste(errMsg, "No user groups specified (shinyproxy).", sep = "\n")
     }
     if(!identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true") && 
-       any(!grepl("^[a-zA-Z0-9][a-zA-Z0-9!%\\(\\)\\-_~]{3,69}$", c(uid, ugroups), perl = TRUE))){
+       any(!grepl("^[a-zA-Z0-9_]{4,70}$", c(uid, ugroups), perl = TRUE))){
       errMsg <- paste(errMsg, 
-                      "Invalid user ID or user group specified. The following rules apply for user IDs and groups:\n- must be at least 4 and not more than 70 characters long\n- must start with a number or letter (upper or lowercase) {a-z}, {A-Z}, {0-9}\n- may container numbers, letters and the following additional characters: {!%()-_~}",
+                      "Invalid user ID or user group specified. The following rules apply for user IDs and groups:\n- must be at least 4 and not more than 70 characters long\n- may contain only a-z A-Z 0-9 _",
                       sep = "\n")
     }
   }else{
@@ -221,6 +217,62 @@ if(is.null(errMsg)){
                       rSaveFilePath)
   }else{
     load(rSaveFilePath)
+    if(exists("dbSchema")){
+      # legacy app, need to convert to new format
+      dbSchemaModel <- substring(dbSchema$tabName[-seq_len(6)],
+                                 nchar(gsub("_", "", modelName, fixed = TRUE)) + 2L)
+      dbSchemaModel <- list(schema = setNames(lapply(seq_along(dbSchemaModel), function(i){
+        if(dbSchemaModel[i] %in% c(scalarsFileName, scalarsOutName)){
+          return(NA)
+        }
+        if(LAUNCHHCUBEMODE){
+          if(i <= length(modelOut)){
+            el <- modelOut[[i]]
+          }else{
+            el <- modelIn[[i - length(modelOut)]]
+          }
+          if(isTRUE(el$dropdown$single) || isTRUE(el$dropdown$checkbox)){
+            return(NA)
+          }
+        }
+        list(tabName = dbSchemaModel[i],
+             colNames = dbSchema$colNames[[i + 6L]],
+             colTypes = dbSchema$colTypes[[i + 6L]])
+      }), dbSchemaModel), views = list())
+      dbSchemaModel$schema[is.na(dbSchemaModel$schema)] <- NULL
+      if(scalarsOutName %in% names(modelOut)){
+        scalarMeta <- setNames(modelOut[[scalarsOutName]]$symtypes,
+                               modelOut[[scalarsOutName]]$symnames)
+        dbSchemaModel$schema <- c(dbSchemaModel$schema,
+                                  setNames(lapply(names(scalarMeta), function(scalarName){
+                                    list(tabName = scalarName,
+                                         colNames = scalarName,
+                                         colTypes = if(identical(scalarMeta[[scalarName]], "set")) "c" else "d")
+                                  }), names(scalarMeta)))
+        dbSchemaModel$views[[scalarsOutName]] <- c(dbSchemaModel$views[[scalarsOutName]], names(scalarMeta))
+      }
+      if(scalarsFileName %in% names(modelInRaw)){
+        scalarMeta <- setNames(modelInRaw[[scalarsFileName]]$symtypes,
+                               modelInRaw[[scalarsFileName]]$symnames)
+        dbSchemaModel$schema <- c(dbSchemaModel$schema,
+                                  setNames(lapply(names(scalarMeta), function(scalarName){
+                                    list(tabName = scalarName,
+                                         colNames = scalarName,
+                                         colTypes = if(identical(scalarMeta[[scalarName]], "set")) "c" else "d")
+                                  }), names(scalarMeta)))
+        dbSchemaModel$views[[scalarsFileName]] <- c(dbSchemaModel$views[[scalarsFileName]], names(scalarMeta))
+      }
+      if(length(GMSOpt) || length(DDPar)){
+        dbSchemaModel$schema <- c(dbSchemaModel$schema,
+                                  setNames(lapply(c(GMSOpt, DDPar), function(parName){
+                                    list(tabName = parName,
+                                         colNames = parName,
+                                         colTypes = "c")
+                                  }), c(GMSOpt, DDPar)))
+        dbSchemaModel$views[[scalarsFileName]] <- c(dbSchemaModel$views[[scalarsFileName]], c(GMSOpt, DDPar))
+      }
+      rm(dbSchema)
+    }
     suppressWarnings(rm(lang))
     for (customRendererName  in customRendererNames){
       assign(customRendererName, get(customRendererName), envir = .GlobalEnv)
@@ -237,13 +289,15 @@ if(is.null(errMsg)){
                     modelInRaw = modelInRaw,
                     inputDsNames = inputDsNames,
                     hcubeScalars = hcubeScalars,
+                    DDPar = DDPar,
+                    GMSOpt = GMSOpt,
                     inputDsNamesBase = inputDsNames[!inputDsNames %in% hcubeScalars],
                     scenTableNamesToDisplay = scenTableNamesToDisplay)
-  if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildonly){
+  if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildOnly){
     errMsg <- paste(errMsg, 
                     sprintf("Can not use 'gdx' as file exchange with GAMS if gdxrrw library is not installed.\n
 Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw-miro) installation in your R library: '%s'.", .libPaths()[1]),
-                    sep = "\n")
+sep = "\n")
   }
   GAMSClArgs <- c(paste0("execMode=", gamsExecMode),
                   paste0('IDCGDXOutput="', MIROGdxOutName, '"'))
@@ -268,7 +322,24 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
   }else{
     dbConfig <- list(type = "sqlite",
                      name = file.path(miroDbDir, 
-                                      "miro.sqlite3"))
+                                      paste0(modelName, ".sqlite3")))
+    if(!dir.exists(miroDbDir)){
+      if(identical(basename(miroDbDir), "app_data") &&
+         identical(dirname(miroDbDir), miroWorkspace) &&
+         file.exists(file.path(miroWorkspace, "miro.sqlite3"))){
+        # new MIRO app_data directory in MIRO workspace
+        dbConfig$dbPathToMigrate <- file.path(miroWorkspace, "miro.sqlite3")
+      }
+      if(!dir.create(miroDbDir, showWarnings = FALSE)){
+        errMsg <- paste(errMsg, sprintf("App data directory: '%s' could not be created. Check that you have sufficient read/write permissions.", miroDbDir),
+                        sep = "\n")
+      }
+    }else if(!identical(dirname(miroDbDir), miroWorkspace) &&
+             file.exists(file.path(miroDbDir, "miro.sqlite3")) &&
+             !file.exists(dbConfig$name)){
+      # custom database location with existing legacy database
+      dbConfig$dbPathToMigrate <- file.path(miroDbDir, "miro.sqlite3")
+    }
   }
   if(isTRUE(config$activateModules$remoteExecution)){
     useTempDir <- TRUE
@@ -334,7 +405,7 @@ Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw
                             modelPath)
         }
         if(is.null(errMsg) && any(!file.copy2(file.path(currentModelDir, modelFiles), 
-                                             file.path(modelPath, modelFiles)))){
+                                              file.path(modelPath, modelFiles)))){
           errMsg <- sprintf("Problems copying files from: '%s' to: '%s'. No write permissions?",
                             currentModelDir, modelPath)
         }
@@ -378,7 +449,7 @@ if(is.null(errMsg)){
       }, error = function(e){
         errMsg <<- paste(errMsg, 
                          sprintf("Some error occurred while sourcing renderer file '%s'. Error message: '%s'.", 
-                                 file, e), sep = "\n")
+                                 file, conditionMessage(e)), sep = "\n")
       }, warning = function(w){
         errMsg <<- paste(errMsg, 
                          sprintf("Some error occurred while sourcing renderer file '%s'. Error message: '%s'.", 
@@ -398,7 +469,7 @@ if(is.null(errMsg) && debugMode){
       }, error = function(e){
         errMsg <<- paste(errMsg, 
                          sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
-                                 file, e), sep = "\n")
+                                 file, conditionMessage(e)), sep = "\n")
       }, warning = function(w){
         errMsg <<- paste(errMsg, 
                          sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
@@ -412,13 +483,13 @@ if(is.null(errMsg) && debugMode){
   listOfCustomRenderers <- Set$new()
   requiredPackagesCR <<- NULL
   
-  if(!LAUNCHCONFIGMODE){
-    for(customRendererConfig in c(configGraphsOut, configGraphsIn, config$inputWidgets)){
-      # check whether non standard renderers were defined in graph config
-      if(!is.null(customRendererConfig$rendererName)){
-        customRendererConfig$outType <- customRendererConfig$rendererName
-      }
-      if(any(is.na(match(tolower(customRendererConfig$outType), standardRenderers)))){
+  for(customRendererConfig in c(configGraphsOut, configGraphsIn, config$inputWidgets)){
+    # check whether non standard renderers were defined in graph config
+    if(!is.null(customRendererConfig$rendererName)){
+      customRendererConfig$outType <- customRendererConfig$rendererName
+    }
+    if(any(is.na(match(tolower(customRendererConfig$outType), standardRenderers)))){
+      if(!LAUNCHCONFIGMODE){
         customRendererName <- "render" %+% toupper(substr(customRendererConfig$outType, 1, 1)) %+% 
           substr(customRendererConfig$outType, 2, nchar(customRendererConfig$outType))
         customRendererOutput <- customRendererConfig$outType %+% "Output"
@@ -440,10 +511,10 @@ if(is.null(errMsg) && debugMode){
                            sprintf("No output function for custom renderer function: '%s' was found. Please make sure you define such a function.", 
                                    customRendererName), sep = "\n")
         })
-        # find packages to install and install them
-        if(length(customRendererConfig$packages)){
-          requiredPackagesCR <- c(requiredPackagesCR, customRendererConfig$packages)
-        }
+      }
+      # find packages to install them
+      if(length(customRendererConfig$packages)){
+        requiredPackagesCR <- c(requiredPackagesCR, customRendererConfig$packages)
       }
     }
   }
@@ -467,15 +538,15 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
                           "For more information about third-party software included in MIRO, see ",
                           "<a href=\\'http://www.gams.com/miro/license.html\\' target=\\'_blank\\'>here</a>.")
-if(miroBuildonly){
+if(miroBuildOnly){
   if(!is.null(errMsg)){
     if(file.exists(file.path(currentModelDir,
                              paste0(modelNameRaw, ".miroapp"))) &&
        unlink(file.path(currentModelDir,
                         paste0(modelNameRaw, ".miroapp")), force = TRUE) == 1){
-      warning("Problems removing corrupted miroapp file")
+      warning("Problems removing corrupted miroapp file", call. = FALSE)
     }
-    warning(errMsg)
+    warning(errMsg, call. = FALSE)
     if(interactive())
       stop()
     if(isTRUE(attr(errMsg, "noMA"))){
@@ -497,9 +568,9 @@ if(miroBuildonly){
                 "modelOutAlias", "colsWithDep", "scalarsInMetaData",
                 "modelInMustImport", "modelInAlias", "DDPar", "GMSOpt", 
                 "modelInToImportAlias", "modelInToImport", "inputDsNamesNotToDisplay",
-                "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
-                "GAMSReturnCodeMap", "dependentDatasets", "outputTabs", 
-                "installPackage", "dbSchema", "scalarInputSym", "scalarInputSymToVerify",
+                "dbSchemaModel", "modelOutTemplate", "scenTableNamesToDisplay", 
+                "dependentDatasets", "outputTabs", 
+                "installPackage", "scalarInputSym", "scalarInputSymToVerify",
                 "requiredPackagesCR", "datasetsRemoteExport", "dropdownAliases", 
                 #TODO: Update API version when dataContract is used elsewhere than in Configuration mode
                 "dataContract"), 
@@ -526,7 +597,7 @@ if(miroBuildonly){
     buildProcHcube$wait()
     procHcubeRetC <- buildProcHcube$get_exit_status()
     if(!identical(procHcubeRetC, 0L)){
-      warning(buildProcHcube$read_error())
+      warning(buildProcHcube$read_error(), call. = FALSE)
       if(interactive())
         stop()
       quit("no", procHcubeRetC)
@@ -618,7 +689,7 @@ if(is.null(errMsg)){
   }
   if(LAUNCHCONFIGMODE){
     requiredPackages <- c(requiredPackages, "plotly", "xts", "dygraphs", "leaflet", "chartjs", "sortable",
-                          "leaflet.minicharts", "timevis")
+                          "leaflet.minicharts", "timevis", "shinyAce")
   }else{
     requiredPackages <- c(requiredPackages, 
                           if(identical(installPackage$plotly, TRUE)) "plotly",
@@ -628,7 +699,7 @@ if(is.null(errMsg)){
   }
   errMsg <- installAndRequirePackages(unique(requiredPackages), installedPackages, RLibPath, CRANMirror, miroWorkspace)
   
-  if(!is.null(requiredPackagesCR)){
+  if(!is.null(requiredPackagesCR) && !miroStoreDataOnly && !miroBuildOnly){
     # add custom library path to libPaths
     .libPaths(c(.libPaths(), file.path(miroWorkspace, "custom_packages")))
     installedPackages <<- installed.packages()[, "Package"]
@@ -643,7 +714,6 @@ if(is.null(errMsg)){
     plan(multiprocess)
   }
   # try to create the DB connection (PostgreSQL)
-  auth <- NULL
   db <- NULL
   if(identical(tolower(dbConfig$type), "sqlite")){
     requiredPackages <- c("DBI", "RSQLite")
@@ -652,45 +722,27 @@ if(is.null(errMsg)){
   }
   errMsg <- installAndRequirePackages(requiredPackages, installedPackages, RLibPath, CRANMirror, miroWorkspace)
   
+  source("./components/db_schema.R")
   source("./components/db.R")
   source("./components/db_scen.R")
   tryCatch({
-    dbSchema$tabName["_scenViews"] <- paste0(tableNameViewsPrefix, modelName)
-    dbSchema$colNames[["_scenViews"]] <- c(sid = sidIdentifier, symname = "symName",
-                                           id = "id", data = "data", time = "timestamp")
-    dbSchema$colTypes["_scenViews"] <- "icccT"
-    scenMetadataTable <- scenMetadataTablePrefix %+% modelName
-    db   <- Db$new(uid = uid, dbConf = dbConfig, dbSchema = dbSchema,
+    dbSchema <<- DbSchema$new(dbSchemaModel)
+    db   <- Db$new(uid = uid, dbConf = dbConfig,
                    slocktimeLimit = slocktimeLimit, modelName = modelName,
                    hcubeActive = LAUNCHHCUBEMODE, ugroups = ugroups)
     conn <- db$getConn()
+    dbSchema$setConn(conn)
     flog.debug("Database connection established.")
   }, error = function(e){
-    flog.error("Problems initialising database class. Error message: %s", e)
-    errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
-  })
-  # initialise access management
-  source("./components/db_auth.R")
-  tryCatch({
-    auth <- Auth$new(conn, uid, defaultGroup = defaultGroup, 
-                     tableNameGroups = amTableNameGroups, 
-                     tableNameElements = amTableNameElements, 
-                     tableNameHierarchy = amTableNameHierarchy, 
-                     tableNameMetadata = scenMetadataTable, 
-                     uidIdentifier = uidIdentifier, 
-                     accessIdentifier = accessIdentifier, 
-                     accessElIdentifier = accessElIdentifier)
-    flog.debug("Access Control initialised.")
-  }, error = function(e){
-    flog.error("Problems initialising authorisation class. Error message: %s", e)
+    flog.error("Problems initialising database class. Error message: %s", conditionMessage(e))
     errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
   })
   tryCatch({
     dataio <- DataIO$new(config = list(modelIn = modelIn, modelOut = modelOut, 
                                        modelName = modelName),
-                         db = db, auth = auth)
+                         db = db)
   }, error = function(e) {
-    flog.error("Problems initialising dataio class. Error message: %s", e)
+    flog.error("Problems initialising dataio class. Error message: %s", conditionMessage(e))
     errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
   })
   
@@ -705,7 +757,6 @@ if(is.null(errMsg)){
     }
     errMsg <- installAndRequirePackages(c("digest"), installedPackages, RLibPath, CRANMirror, miroWorkspace)
     source("./components/db_hcubeimport.R")
-    source("./components/db_hcubeload.R")
   }
 }
 
@@ -716,9 +767,9 @@ if(is.null(errMsg)){
       gdxio <<- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", 
                                     if(identical(tolower(Sys.info()[["sysname"]]), "windows")) 
                                       file.path("bin", "x64") else "bin"), 
-        c(modelInRaw, modelOut), scalarsFileName,
-        scalarsOutName, scalarEquationsName, scalarEquationsOutName,
-        dropdownAliases, config$textOnlySymbols)
+                          c(modelInRaw, modelOut), scalarsFileName,
+                          scalarsOutName, scalarEquationsName, scalarEquationsOutName,
+                          dropdownAliases, config$textOnlySymbols)
     }
   }, error = function(e){
     flog.error(e)
@@ -800,6 +851,9 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
         }
         return(TRUE)
       }, logical(1L), USE.NAMES = FALSE)
+      if(!length(orphanedTablesInfo)){
+        inconsistentTablesInfo <- inconsistentTablesInfo[!isNewTable]
+      }
     }, error = function(e){
       flog.error("Problems initialising dbMigrator. Error message: '%s'.", conditionMessage(e))
       if(miroStoreDataOnly){
@@ -810,7 +864,7 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
         stop()
       quit("no", 1L)
     })
-    if(length(inconsistentTablesInfo[!isNewTable]) || length(orphanedTablesInfo)){
+    if(length(inconsistentTablesInfo) || length(orphanedTablesInfo)){
       source("./tools/db_migration/modules/bt_delete_database.R", local = TRUE)
       source("./tools/db_migration/modules/form_db_migration.R", local = TRUE)
       source("./tools/db_migration/server.R", local = TRUE)
@@ -839,6 +893,19 @@ if(is.null(errMsg) && (debugMode || miroStoreDataOnly)){
         write("merr:::409", stderr())
       }
       migApp <<- shinyApp(ui = uiDbMig, server = serverDbMig)
+    }else{
+      tryCatch({
+        dbMigrator$createMissingScalarTables()
+      }, error = function(e){
+        flog.error("Problems creating scalar tables. Error message: '%s'.", conditionMessage(e))
+        if(miroStoreDataOnly){
+          write("\n", stderr())
+          write("merr:::500", stderr())
+        }
+        if(interactive())
+          stop()
+        quit("no", 1L)
+      })
     }
   })
   if(length(migApp)){
@@ -850,19 +917,18 @@ if(!is.null(errMsg)){
     if(length(warningMsg)) flog.warn(warningMsg)
     flog.fatal(errMsg)
   }else{
-    warning(errMsg)
+    warning(errMsg, call. = FALSE)
   }
   if(isShinyProxy){
-    stop('An error occured. Check log for more information!', call. = FALSE)
+    if(miroStoreDataOnly){
+      stop(sprintf("An error occured. Error message: %s",
+                   errMsg), call. = FALSE)
+    }
+    stop("An error occured. Check log for more information!", call. = FALSE)
   }else if(miroStoreDataOnly){
     if(interactive())
       stop()
     quit("no", 1L)
-  }
-  if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
-    setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
-    close(pb)
-    pb <- NULL
   }
   ui_initError <- fluidPage(
     tags$head(
@@ -915,9 +981,6 @@ if(!is.null(errMsg)){
 }else{
   uidAdmin <<- if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")) "admin" else uid
   local({
-    if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
-      setWinProgressBar(pb, 0.6, label= "Importing new data")
-    }
     miroDataDir   <- Sys.getenv("MIRO_DATA_DIR")
     removeDataFile <- !debugMode
     if(identical(miroDataDir, "")){
@@ -951,15 +1014,13 @@ if(!is.null(errMsg)){
         inputIdsTmp        <- inputIdsTmp[!is.na(inputIdsTmp)]
         metaDataTmp        <- metaDataTmp[inputIdsTmp]
         modelInTemplateTmp <- modelInTemplateTmp[inputIdsTmp]
-
+        
         tmpDirToRemove     <- character(0L)
         
         if(debugMode){
           forceScenImport <- identical(Sys.getenv("MIRO_FORCE_SCEN_IMPORT"), "true")
           if(!forceScenImport){
-            currentDataHashesDf  <- db$importDataset("_sys__data_hashes",
-                                                     tibble("model",
-                                                            db$getModelNameDb()))
+            currentDataHashesDf  <- db$importDataset("_dataHash")
             currentDataHashes <- list()
             if(length(currentDataHashesDf) && nrow(currentDataHashesDf)){
               currentDataHashes <- currentDataHashesDf[["hash"]]
@@ -975,9 +1036,21 @@ if(!is.null(errMsg)){
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
           dfClArgs <- NULL
+          viewsFileId <- NULL
           if(debugMode && !forceScenImport){
             dataHash <- digest::digest(file = file.path(miroDataDir, miroDataFile),
                                        algo = "sha1", serialize = FALSE)
+            if(!identical(dataFileExt[i], "miroscen")){
+              scenName <- tools::file_path_sans_ext(miroDataFile)
+              viewsFileId <- match(paste0(scenName, "_views.json"),
+                                   miroDataFilesRaw)
+              if(!is.na(viewsFileId)){
+                dataHash <- paste0(dataHash, digest::digest(file = file.path(miroDataDir,
+                                                                             paste0(scenName,
+                                                                                    "_views.json")),
+                                                            algo = "sha1", serialize = FALSE))
+              }
+            }
             if(miroDataFile %in% names(currentDataHashes) && 
                identical(dataHash, currentDataHashes[[miroDataFile]])){
               flog.info("Data: '%s' skipped because it has not changed since the last start.", miroDataFile)
@@ -1029,9 +1102,11 @@ if(!is.null(errMsg)){
                                              ioConfig$inputDsNamesBase)
             }
             
-            newScen <- Scenario$new(db = db, sname = "unnamed", isNewScen = TRUE,
-                                    readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
-                                    execPerm = c(uidAdmin, ugroups), uid = uidAdmin,
+            newScen <- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, isNewScen = TRUE,
+                                    readPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
+                                    writePerm = uidAdmin,
+                                    execPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
+                                    uid = uidAdmin,
                                     views = views, attachments = attachments)
             if(!tryCatch(validateMiroScen(file.path(miroDataDir, miroDataFile)), error = function(e){
               flog.error("Invalid miroscen file. Error message: '%s'.", conditionMessage(e))
@@ -1052,21 +1127,25 @@ if(!is.null(errMsg)){
             }
             miroDataFile <- "data.gdx"
           }else{
-            scenName <- tools::file_path_sans_ext(miroDataFile)
-            viewDataId <- match(paste0(tolower(scenName), "_views.json"),
-                                tolower(miroDataFilesRaw))
             views <- NULL
-            if(!is.na(viewDataId)){
+            if(is.null(viewsFileId)){
+              scenName <- tools::file_path_sans_ext(miroDataFile)
+              viewsFileId <- match(paste0(scenName, "_views.json"),
+                                   miroDataFilesRaw)
+            }
+            if(!is.na(viewsFileId)){
               flog.debug("Found view data for scenario: %s.", scenName)
               views <- Views$new(names(modelIn),
                                  names(modelOut),
                                  ioConfig$inputDsNamesBase)
-              views$addConf(safeFromJSON(read_file(file.path(miroDataDir, miroDataFilesRaw[viewDataId])),
+              views$addConf(safeFromJSON(read_file(file.path(miroDataDir, miroDataFilesRaw[viewsFileId])),
                                          simplifyDataFrame = FALSE, simplifyVector = FALSE))
             }
             newScen <- Scenario$new(db = db, sname = scenName, isNewScen = TRUE,
-                                    readPerm = c(uidAdmin, ugroups), writePerm = uidAdmin,
-                                    execPerm = c(uidAdmin, ugroups), uid = uidAdmin, views = views)
+                                    readPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
+                                    writePerm = uidAdmin,
+                                    execPerm = c(uidAdmin, db$getUserAccessGroups()[-1]),
+                                    uid = uidAdmin, views = views)
           }
           if(!overwriteScenToImport && db$checkSnameExists(newScen$getScenName(), newScen$getScenUid())){
             flog.info("Scenario: %s already exists and overwrite is set to FALSE. Skipping...",
@@ -1075,23 +1154,26 @@ if(!is.null(errMsg)){
                         newScen$getScenName(), call. = FALSE)
           }
           
-          dataOut <- loadScenData(scalarsOutName, modelOut, tmpDir, modelName, scalarsFileHeaders,
-                                  modelOutTemplate, method = method, fileName = miroDataFile, xlsio = xlsio)$tabular
+          dataOut <- loadScenData(modelOut, tmpDir,
+                                  modelOutTemplate,
+                                  method = method,
+                                  fileName = miroDataFile,
+                                  xlsio = xlsio)
           if(length(dataOut$errors)){
             flog.warn("Some problems occurred while reading output data: %s",
                       paste(dataOut$errors, collapse = ", "))
           }
-          dataIn  <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp,
+          dataOut <- dataOut$tabular
+          dataIn  <- loadScenData(metaData = metaDataTmp,
                                   workDir = tmpDir,
-                                  modelName = modelName, errMsg = lang$errMsg$GAMSInput$badInputData,
-                                  scalarsFileHeaders = scalarsFileHeaders,
                                   templates = modelInTemplateTmp, method = method,
                                   fileName = miroDataFile, DDPar = DDPar, GMSOpt = GMSOpt,
-                                  dfClArgs = dfClArgs, xlsio = xlsio)$tabular
+                                  dfClArgs = dfClArgs, xlsio = xlsio)
           if(length(dataIn$errors)){
             flog.warn("Some problems occurred while reading input data: %s",
                       paste(dataIn$errors, collapse = ", "))
           }
+          dataIn <- dataIn$tabular
           if(!scalarsFileName %in% names(metaDataTmp) && length(c(DDPar, GMSOpt))){
             # additional command line parameters that are not GAMS symbols
             scalarsTemplate <- tibble(a = character(0L), b = character(0L), c = character(0L))
@@ -1117,11 +1199,9 @@ if(!is.null(errMsg)){
           }
         }
         if(debugMode && !forceScenImport && !identical(currentDataHashes, newDataHashes)){
-          db$deleteRows("_sys__data_hashes", "model",
-                        db$getModelNameDb())
-          db$exportDataset("_sys__data_hashes",
-                           tibble(model = db$getModelNameDb(),
-                                  filename = names(newDataHashes),
+          db$deleteRows("_dataHash", force = TRUE)
+          db$exportDataset("_dataHash",
+                           tibble(filename = names(newDataHashes),
                                   hash = unlist(newDataHashes, use.names = FALSE)))
         }
       }
@@ -1154,11 +1234,6 @@ if(!is.null(errMsg)){
     }
   })
   
-  if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
-    setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
-    close(pb)
-    pb <- NULL
-  }
   if(LAUNCHCONFIGMODE){
     source("./tools/db_migration/modules/bt_delete_database.R", local = TRUE)
     source("./tools/config/server.R", local = TRUE)
@@ -1196,11 +1271,6 @@ if(!is.null(errMsg)){
       asyncCount         <- 1L
       asyncLogLoaded     <- vector(mode = "logical", 3L)
       asyncResObs        <- NULL
-      # parameters used for saving scenario data
-      scenData           <- list()
-      scenData[["scen_1_"]] <- scenDataTemplate
-      # parameter used for saving (hidden) scalar data
-      scalarData         <- list()
       traceData          <- data.frame()
       # boolean that specifies whether handsontable is initialised
       hotInit            <- vector("logical", length = length(modelIn))
@@ -1233,7 +1303,11 @@ if(!is.null(errMsg)){
       modelStatusObs     <- NULL
       miroLogAnnotations <- NULL
       
-      compareModeTabsetGenerated <- vector("logical", 3L)
+      dynamicUILoaded <- list(inputGraphs = vector("logical", length(modelIn)),
+                              outputTablesUI = vector("logical", length(configGraphsOut)),
+                              outputTables = vector("logical", length(configGraphsOut)),
+                              compareModeTabsets = vector("logical", 3L),
+                              dynamicTabsets = list())
       
       # set local working directory
       unzipModelFilesProcess <- NULL
@@ -1252,10 +1326,10 @@ if(!is.null(errMsg)){
         workDir <- currentModelDir
       }
       
-      rv <- reactiveValues(scenId = 4L, unsavedFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
+      rv <- reactiveValues(unsavedFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
                            btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
                            btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
-                           noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
+                           noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L, updateBatchLoadData = 0L,
                            jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L, importCSV = 0L,
                            refreshLogs = NULL, triggerAsyncProcObserver = NULL)
       
@@ -1268,11 +1342,14 @@ if(!is.null(errMsg)){
                                                      forbiddenFNames = c(if(identical(config$fileExchange, "gdx")) 
                                                        c(MIROGdxInName, MIROGdxOutName) else 
                                                          paste0(c(names(modelOut), inputDsNames), ".csv"),
-                                                                         paste0(modelNameRaw, c(".log", ".lst")))),
+                                                       paste0(modelNameRaw, c(".log", ".lst")))),
                                             workDir,
                                             names(modelIn),
                                             names(modelOut),
                                             ioConfig$inputDsNamesBase, rv)
+      scenData <- ScenData$new(db = db,
+                               scenDataTemplate = scenDataTemplate,
+                               hiddenOutputScalars = config$hiddenOutputScalars)
       # currently active scenario (R6 object)
       activeScen         <- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
                                          isNewScen = TRUE, views = views, attachments = attachments)
@@ -1281,15 +1358,22 @@ if(!is.null(errMsg)){
       # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
       sidCompOrder     <- NULL
       
+      if(config$activateModules$remoteExecution){
+        remoteModelId <- Sys.getenv("MIRO_ENGINE_MODELNAME", modelName)
+      }else{
+        remoteModelId <- modelName
+      }
+      
       worker <- Worker$new(metadata = list(uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
-                                           tableNameTracePrefix = tableNameTracePrefix, maxSizeToRead = 5000,
+                                           modelId = remoteModelId,
+                                           maxSizeToRead = 5000,
                                            modelDataFiles = c(if(identical(config$fileExchange, "gdx")) 
                                              c(MIROGdxInName, MIROGdxOutName) else 
                                                paste0(c(names(modelOut), inputDsNames), ".csv"), 
                                              if(!LAUNCHHCUBEMODE) vapply(config$outputAttachments, "[[", character(1L), "filename", USE.NAMES = FALSE)),
                                            MIROGdxInName = MIROGdxInName,
                                            clArgs = GAMSClArgs, 
-                                           text_entities = c(paste0(modelNameRaw, ".lst"), 
+                                           text_entities = c(if(config$activateModules$lstFile) paste0(modelNameRaw, ".lst"), 
                                                              if(config$activateModules$miroLogFile) config$miroLogFile),
                                            miroLogFile = config$miroLogFile,
                                            extraClArgs = config$extraClArgs, 
@@ -1306,9 +1390,7 @@ if(!is.null(errMsg)){
         do.call(worker$setCredentials, credConfig)
       }
       rendererEnv        <- new.env(parent = emptyenv())
-      rendererEnv$output <- new.env(parent = emptyenv())
       
-      scenMetaData     <- list()
       # scenario metadata of scenario saved in database
       scenMetaDb       <- NULL
       scenMetaDbBase   <- NULL
@@ -1316,12 +1398,6 @@ if(!is.null(errMsg)){
       scenTags         <- NULL
       scenMetaDbSubset <- NULL
       scenMetaDbBaseSubset <- NULL
-      # save the scenario ids loaded in UI
-      scenCounterMultiComp <- 4L
-      sidsInComp       <- vector("integer", length = maxNumberScenarios + 1)
-      sidsInSplitComp  <- vector("integer", length = 2L)
-      sidsInPivotComp  <- vector("integer", length = maxNumberScenarios + 1)
-      # occupied slots (scenario is loaded in ui with this rv$scenId)
       occupiedSidSlots <- vector("logical", length = maxNumberScenarios)
       loadInLeftBoxSplit <- TRUE
       # trigger navigation through tabs by shortcuts
@@ -1336,9 +1412,8 @@ if(!is.null(errMsg)){
         nestTabsetsViaShortcuts(direction = -1L)
       })
       navigateTabsViaShortcuts <- function(direction){
-        
         if(isolate(input$sidebarMenuId) == "inputData"){
-          flog.debug("Navigated %d input tab (using shortcut).", direction)
+          flog.trace("Navigated %d input tab (using shortcut).", direction)
           currentGroup <- as.numeric(gsub("\\D", "", isolate(input$inputTabset)))
           if(shortcutNest && length(inputTabs[[currentGroup]]) > 1L){
             currentSheet <- as.integer(strsplit(isolate(input[[paste0("inputTabset", 
@@ -1350,23 +1425,28 @@ if(!is.null(errMsg)){
             updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", 
                                                              currentGroup + direction))
           }
-        }else if(isolate(input$sidebarMenuId) == "outputData"){
-          flog.debug("Navigated %d output tabs (using shortcut).", direction)
+          return()
+        }
+        if(isolate(input$sidebarMenuId) == "outputData"){
+          flog.trace("Navigated %d output tabs (using shortcut).", direction)
           currentGroup <- as.numeric(gsub("\\D", "", isolate(input$outputTabset)))
           if(shortcutNest && length(outputTabs[[currentGroup]]) > 1L){
-            currentSheet <- as.integer(strsplit(isolate(input[[paste0("outputTabset", 
-                                                                      currentGroup)]]), "_")[[1]][2])
-            updateTabsetPanel(session, paste0("outputTabset", currentGroup), 
-                              paste0("outputTabset", 
+            currentSheet <- as.integer(strsplit(isolate(input[[paste0("outputTabset_", 
+                                                                      currentGroup)]]), "_")[[1]][3])
+            updateTabsetPanel(session, paste0("outputTabset_", currentGroup), 
+                              paste0("outputTabset_", 
                                      currentGroup, "_", currentSheet + direction))
           }else{
             updateTabsetPanel(session, "outputTabset", 
                               paste0("outputTabset_", currentGroup + direction))
           }
-        }else if(isolate(input$sidebarMenuId) == "scenarios"){
-          if(identical(currentCompMode, "split")){
-            flog.debug("Navigated %d data tabs in split view scenario comparison view (using shortcut).", direction)
-            currentScen <- 2
+          return()
+        }
+        if(isolate(input$sidebarMenuId) == "scenarios"){
+          if(currentCompMode %in% c("split", "pivot")){
+            flog.trace("Navigated %d data tabs in %s view scenario comparison view (using shortcut).",
+                       direction, currentCompMode)
+            currentScen <- if(identical(currentCompMode, "pivot")) 0L else 2L
             currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen)]]),
                                                 "_", fixed = TRUE)[[1L]][[3L]])
             if(shortcutNest > 0L && isGroupOfSheets[[currentSheet]]){
@@ -1375,54 +1455,59 @@ if(!is.null(errMsg)){
               currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen, "_", 
                                                                         currentGroup)]]),
                                                   "_", fixed = TRUE)[[1L]][[4L]])
-              updateTabsetPanel(session, paste0("contentScen_", currentScen, 
-                                                "_", currentGroup), 
-                                paste0("contentScen_", currentScen, "_", 
+              updateTabsetPanel(session, paste0("contentScen_", currentScen,
+                                                "_", currentGroup),
+                                paste0("contentScen_", currentScen, "_",
                                        currentGroup, "_", currentSheet + direction))
-              
-              updateTabsetPanel(session, paste0("contentScen_", currentScen + 1L, 
-                                                "_", currentGroup), 
-                                paste0("contentScen_", currentScen + 1L, "_", 
+              if(identical(currentScen, 2L)){
+                updateTabsetPanel(session, paste0("contentScen_", currentScen + 1L, 
+                                                  "_", currentGroup), 
+                                  paste0("contentScen_", currentScen + 1L, "_", 
+                                         currentGroup, "_", currentSheet + direction))
+              }
+            }else{
+              # switch to next group
+              updateTabsetPanel(session, paste0("contentScen_", currentScen), 
+                                paste0("contentScen_", currentScen, "_", currentSheet + direction))
+              if(identical(currentScen, 2L)){
+                updateTabsetPanel(session, paste0("contentScen_", currentScen + 1L), 
+                                  paste0("contentScen_", currentScen + 1L, "_", currentSheet + direction))
+              }
+            }
+            return()
+          }
+          if(is.null(sidCompOrder)){
+            return()
+          }
+          currentScen <- as.integer(strsplit(isolate(input$scenTabset), "_", fixed = TRUE)[[1L]][[2L]])
+          if(shortcutNest > 0L){
+            flog.trace("Navigated %d data tabs in scenario comparison view (using shortcut).", direction)
+            currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen)]]),
+                                                "_", fixed = TRUE)[[1L]][[3L]])
+            if(shortcutNest > 1L && isGroupOfSheets[[currentSheet]]){
+              # nest to group of sheets
+              currentGroup <- currentSheet
+              currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen, "_", 
+                                                                        currentGroup)]]),
+                                                  "_", fixed = TRUE)[[1L]][[4L]])
+              updateTabsetPanel(session, paste0("contentScen_", currentScen, "_", currentGroup), 
+                                paste0("contentScen_", currentScen, "_", 
                                        currentGroup, "_", currentSheet + direction))
             }else{
               # switch to next group
               updateTabsetPanel(session, paste0("contentScen_", currentScen), 
                                 paste0("contentScen_", currentScen, "_", currentSheet + direction))
-              updateTabsetPanel(session, paste0("contentScen_", currentScen + 1L), 
-                                paste0("contentScen_", currentScen + 1L, "_", currentSheet + direction))
             }
           }else{
-            if(is.null(sidCompOrder)){
-              return()
-            }
-            currentScen <- as.integer(strsplit(isolate(input$scenTabset), "_", fixed = TRUE)[[1L]][[2L]])
-            if(shortcutNest > 0L){
-              flog.debug("Navigated %d data tabs in scenario comparison view (using shortcut).", direction)
-              currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen)]]),
-                                                  "_", fixed = TRUE)[[1L]][[3L]])
-              if(shortcutNest > 1L && isGroupOfSheets[[currentSheet]]){
-                # nest to group of sheets
-                currentGroup <- currentSheet
-                currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen, "_", 
-                                                                          currentGroup)]]),
-                                                    "_", fixed = TRUE)[[1L]][[4L]])
-                updateTabsetPanel(session, paste0("contentScen_", currentScen, "_", currentGroup), 
-                                  paste0("contentScen_", currentScen, "_", 
-                                         currentGroup, "_", currentSheet + direction))
-              }else{
-                # switch to next group
-                updateTabsetPanel(session, paste0("contentScen_", currentScen), 
-                                  paste0("contentScen_", currentScen, "_", currentSheet + direction))
-              }
-            }else{
-              flog.debug("Navigated %d scenario tabs in scenario comparison view (using shortcut).", direction)
-              # go to next scenario tab
-              idx <- which(sidCompOrder == currentScen)[1]
-              updateTabsetPanel(session, "scenTabset", paste0("scen_", sidCompOrder[idx + direction], "_"))
-            }
+            flog.trace("Navigated %d scenario tabs in scenario comparison view (using shortcut).", direction)
+            # go to next scenario tab
+            idx <- which(sidCompOrder == currentScen)[1]
+            updateTabsetPanel(session, "scenTabset", paste0("scen_", sidCompOrder[idx + direction], "_"))
           }
-        }else if(isolate(input$sidebarMenuId) == "hcubeAnalyze"){
-          flog.debug("Navigated %d data tabs in paver output tabpanel (using shortcut).", direction)
+          return()
+        }
+        if(isolate(input$sidebarMenuId) == "hcubeAnalyze"){
+          flog.trace("Navigated %d data tabs in paver output tabpanel (using shortcut).", direction)
           # go to next data sheet
           local({
             tabsetName <- isolate(input$analysisResults)
@@ -1452,96 +1537,13 @@ if(!is.null(errMsg)){
       scriptOutput <- NULL
       
       if(LAUNCHHCUBEMODE){
-        if(length(config$scripts)){
+        if(length(config$scripts$hcube)){
           scriptOutput <- ScriptOutput$new(session, file.path(workDir, paste0("scripts_", modelName)), 
                                            config$scripts, lang$nav$scriptOutput$errMsg,
                                            gamsSysDir = gamsSysDir)
         }
-      }else{
-        if(length(config$scripts$base)){
-          scriptOutput <- ScriptOutput$new(session, file.path(workDir, paste0("scripts_", modelName)),
-                                           config$scripts, lang$nav$scriptOutput$errMsg,
-                                           gamsSysDir = gamsSysDir)
-          observeEvent(input$runScript, {
-            scriptId <- suppressWarnings(as.integer(input$runScript))
-            if(is.na(scriptId) || scriptId < 1 || 
-               scriptId > length(config$scripts$base)){
-              flog.error("A script with id: '%s' was attempted to be executed. However, this script does not exist. Looks like an attempt to tamper with the app!",
-                         input$runScript)
-              return()
-            }
-            if(scriptOutput$isRunning(scriptId)){
-              flog.debug("Button to interrupt script: '%s' clicked.", scriptId)
-              scriptOutput$interrupt(scriptId)
-              hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-              hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
-              showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-              
-              showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"), 
-                               lang$nav$scriptOutput$runButton)
-              return()
-            }
-            flog.debug("Button to execute script: '%s' clicked.", scriptId)
-            
-            if(!dir.exists(paste0(workDir, .Platform$file.sep, "scripts_", modelName))){
-              if(dir.exists(paste0(currentModelDir, .Platform$file.sep, "scripts_", modelName))){
-                if(!file.copy2(paste0(currentModelDir, .Platform$file.sep, "scripts_", modelName),
-                               paste0(workDir, .Platform$file.sep, "scripts_", modelName))){
-                  flog.error("Problems copying files from: '%s' to: '%s'.",
-                             paste0(workDir, .Platform$file.sep, "scripts_", modelName),
-                             paste0(currentModelDir, .Platform$file.sep, "scripts_", modelName))
-                  hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-                  hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-                  return(scriptOutput$sendContent(lang$errMsg$unknownError, scriptId, isError = TRUE))
-                }
-              }else{
-                flog.info("No 'scripts_%s' directory was found. Did you forget to include it in the model assembly file ('%s_files.txt')?",
-                          modelName, modelName)
-                hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-                showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-                return(scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$noScript, scriptId, isError = TRUE))
-              }
-            }
-            showEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-            hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
-            hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-            
-            errMsg <- NULL
-            
-            tryCatch({
-              saveAsFlag <<- FALSE
-              source("./modules/scen_save.R", local = TRUE)
-              data <- scenData[[scenIdLong]]
-              names(data) <- c(names(modelOut), inputDsNames)
-              gdxio$wgdx(paste0(workDir, .Platform$file.sep, 
-                                "scripts_", modelName, .Platform$file.sep, "data.gdx"), 
-                         data, squeezeZeros = 'n')
-            }, error = function(e){
-              flog.error("Problems writing gdx file for script: '%s'. Error message: '%s'.", 
-                         scriptId, conditionMessage(e))
-              errMsg <<- sprintf(lang$errMsg$fileWrite$desc, "data.gdx")
-              hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-              hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-              scriptOutput$sendContent(errMsg, scriptId, isError = TRUE)
-            })
-            if(!is.null(errMsg)){
-              return()
-            }
-            tryCatch({
-              scriptOutput$run(scriptId)
-              showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"), 
-                               lang$nav$scriptOutput$interruptButton)
-            }, error = function(e){
-              flog.info("Script: '%s' crashed during startup. Error message: '%s'.",
-                        scriptId, conditionMessage(e))
-              scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$crash, scriptId, 
-                                       hcube = FALSE, isError = TRUE)
-            })
-          })
-          observeEvent(input$outputGenerated,{
-            noOutputData <<- FALSE
-          })
-        }
+      }else if(length(config$scripts$base) || length(config$scripts$hcube)){
+        source("./modules/analysis_scripts.R", local = TRUE)
       }
       
       if(!dir.exists(workDir) && !dir.create(workDir, recursive = TRUE)){
@@ -1583,11 +1585,11 @@ if(!is.null(errMsg)){
           }
         }
       }, error = function(e){
-        flog.warn("Problems loading default scenario. Error message: '%s'.", e)
+        flog.warn("Problems loading default scenario. Error message: '%s'.", conditionMessage(e))
       })
       
       # initialise list of reactive expressions returning data for model input
-      dataModelIn <- vector(mode = "list", length = length(modelIn))
+      dataModelIn <- setNames(vector(mode = "list", length = length(modelIn)), names(modelIn))
       # auxiliary vector that specifies whether data frame has no data or data was overwritten
       isEmptyInput <- vector(mode = "logical", length = length(modelIn))
       # input is empty in the beginning
@@ -1733,10 +1735,12 @@ if(!is.null(errMsg)){
       # UI elements (modalDialogs)
       source("./UI/dialogs.R", local = TRUE)
       ####### Model input
-      # render tabular input datasets
-      source("./modules/input_render_tab.R", local = TRUE)
+      # get sandbox data
+      source("./modules/input_save.R", local = TRUE)
       # render non tabular input datasets (e.g. slider, dropdown)
       source("./modules/input_render_nontab.R", local = TRUE)
+      # render tabular input datasets
+      source("./modules/input_render_tab.R", local = TRUE)
       # generate import dialogue
       source("./modules/input_ui.R", local = TRUE)
       # load input data from Excel sheet
@@ -1764,13 +1768,14 @@ if(!is.null(errMsg)){
         source("./modules/download_tmp.R", local = TRUE)
       }
       
+      ####### Batch load module
+      source("./modules/batch_load.R", local = TRUE)
+      
       ####### Paver interaction
       if(LAUNCHHCUBEMODE){
         source("./modules/gams_job_list.R", local = TRUE)
         ####### Hcube import module
         source("./modules/hcube_import.R", local = TRUE)
-        ####### Hcube load module
-        source("./modules/hcube_load.R", local = TRUE)
         # analyze button clicked
         source("./modules/analysis_run.R", local = TRUE)
       }else if(config$activateModules$remoteExecution){
@@ -1782,6 +1787,8 @@ if(!is.null(errMsg)){
       # delete scenario 
       source("./modules/db_scen_remove.R", local = TRUE)
       # scenario module
+      # render scenarios (comparison mode)
+      source("./modules/scen_render.R", local = TRUE)
       #load shared datasets
       source("./modules/db_external_load.R", local = TRUE)
       # load scenario
@@ -1792,62 +1799,109 @@ if(!is.null(errMsg)){
       source("./modules/scen_split.R", local = TRUE)
       skipScenCompObserve <- vector("logical", maxNumberScenarios + 3L)
       
-      scenCompUpdateTab <- function(scenId, sheetId, groupId = NULL){
+      scenCompUpdateTab <- function(tabsetId, sheetId, groupId = NULL){
         if(is.null(groupId)){
-          if(!identical(isolate(input[[paste0("contentScen_", scenId)]]), 
-                        paste0("contentScen_", scenId, "_", sheetId)))
-            skipScenCompObserve[scenId] <<- TRUE
-          updateTabsetPanel(session, paste0("contentScen_", scenId),
-                            paste0("contentScen_", scenId, "_", sheetId))
+          if(!identical(isolate(input[[paste0("contentScen_", tabsetId)]]), 
+                        paste0("contentScen_", tabsetId, "_", sheetId)))
+            skipScenCompObserve[tabsetId] <<- TRUE
+          updateTabsetPanel(session, paste0("contentScen_", tabsetId),
+                            paste0("contentScen_", tabsetId, "_", sheetId))
         }else{
-          updateTabsetPanel(session, paste0("contentScen_", scenId),
-                            paste0("contentScen_", scenId, "_", groupId))
-          updateTabsetPanel(session, paste0("contentScen_", scenId, "_", groupId),
-                            paste0("contentScen_", scenId, "_", groupId, "_", sheetId))
+          updateTabsetPanel(session, paste0("contentScen_", tabsetId),
+                            paste0("contentScen_", tabsetId, "_", groupId))
+          updateTabsetPanel(session, paste0("contentScen_", tabsetId, "_", groupId),
+                            paste0("contentScen_", tabsetId, "_", groupId, "_", sheetId))
         }
       }
       
       source("./modules/scen_compare_actions.R", local = TRUE)
+      source("./modules/load_dynamic_tab_content.R", local = TRUE)
       
       observeEvent(input$btScenPivot_close, {
+        resetCompTabset("0")
         showEl(session, "#pivotCompBtWrapper")
         hideEl(session, "#pivotCompScenWrapper")
         isInRefreshMode <<- FALSE
-        sidsInPivotComp[] <<- 0L
-        if(LAUNCHHCUBEMODE){
-          scenMetaData[["scen_0_"]] <<- NULL
-        }else{
-          disableEl(session, "#btClosePivotComp")
+        scenData$clear("cmpPivot")
+        if(!is.null(dynamicUILoaded$dynamicTabsets[["tab_0"]])){
+          dynamicUILoaded$dynamicTabsets[["tab_0"]][["content"]][] <<- FALSE
         }
+        disableEl(session, "#btClosePivotComp")
       })
-      lapply(seq_len(maxNumberScenarios  + 3L), function(i){
+      lapply(seq(0L, maxNumberScenarios  + 3L), function(i){
         scenIdLong <- paste0("scen_", i, "_")
         # compare scenarios
-        obsCompare[[i]] <<- observe({
-          if(is.null(input[[paste0("contentScen_", i)]]) || 
-             skipScenCompObserve[i]){
-            skipScenCompObserve[i] <<- FALSE
-            return(NULL)
-          }
-          j <- as.integer(strsplit(isolate(input[[paste0("contentScen_", i)]]), 
-                                   "_", fixed = TRUE)[[1]][[3L]])
-          groupId <- NULL
-          if(isGroupOfSheets[[j]]){
-            groupId <- j
-            j <- strsplit(input[[paste0("contentScen_", i, "_", groupId)]], 
-                          "_", fixed = TRUE)[[1L]][[4L]]
-          }
-          if(identical(i, 2L)){
-            scenCompUpdateTab(scenId = i + 1L, sheetId = j, groupId = groupId)
-          }else if(identical(i, 3L)){
-            scenCompUpdateTab(scenId = i - 1L, sheetId = j, groupId = groupId)
+        observe({
+          # we need to duplicate code from getSheetnamesByTabsetId here to have 
+          # reactive dependencies
+          if(identical(i, 1L)){
+            tabsetName <- "outputTabset"
+            isOutputTabset <- TRUE
           }else{
-            lapply(names(scenData), function(scen){
-              scenCompUpdateTab(scenId = as.integer(strsplit(scen, "_")[[1]][[2L]]), 
-                                sheetId = j, groupId = groupId)
-            })
+            tabsetName <- paste0("contentScen_", i)
+            isOutputTabset <- FALSE
           }
-        }, suspended = TRUE)
+          tabIdFull <- input[[tabsetName]]
+          if(is.null(tabIdFull)){
+            return()
+          }
+          groupId <- as.integer(strsplit(tabIdFull, "_", fixed = TRUE)[[1]][3L - isOutputTabset])
+          tabId <- NULL
+          if(groupId <= length(isGroupOfSheets) && isGroupOfSheets[[groupId]]){
+            tabId <- as.integer(strsplit(input[[paste0(tabsetName, "_", groupId)]],
+                                         "_", fixed = TRUE)[[1L]][[4L - isOutputTabset]])
+          }
+          if(!length(scenData$getRefScenMap(tabIdToRef(i)))){
+            return()
+          }
+          if(groupId > length(outputTabs)){
+            if(isOutputTabset){
+              # is script tab
+              return()
+            }
+            groupId <- groupId - length(outputTabs)
+            if(groupId > length(scenInputTabs)){
+              # is script tab
+              return()
+            }
+            sheetName <- scenInputTabs[[groupId]]
+            if(identical(sheetName, 0L)){
+              sheetNames <- scalarsFileName
+            }else{
+              sheetNames <- names(modelIn)[sheetName]
+            }
+          }else{
+            sheetNames <- names(modelOut)[outputTabs[[groupId]]]
+          }
+          loadDynamicTabContent(session, i, if(is.null(tabId)) sheetNames else sheetNames[tabId])
+        })
+        if(i > 0L){
+          obsCompare[[i]] <<- observe({
+            if(is.null(input[[paste0("contentScen_", i)]]) || 
+               skipScenCompObserve[i]){
+              skipScenCompObserve[i] <<- FALSE
+              return(NULL)
+            }
+            j <- as.integer(strsplit(isolate(input[[paste0("contentScen_", i)]]), 
+                                     "_", fixed = TRUE)[[1]][[3L]])
+            groupId <- NULL
+            if(isGroupOfSheets[[j]]){
+              groupId <- j
+              j <- strsplit(input[[paste0("contentScen_", i, "_", groupId)]], 
+                            "_", fixed = TRUE)[[1L]][[4L]]
+            }
+            if(identical(i, 2L)){
+              scenCompUpdateTab(i + 1L, sheetId = j, groupId = groupId)
+            }else if(identical(i, 3L)){
+              scenCompUpdateTab(i - 1L, sheetId = j, groupId = groupId)
+            }else{
+              lapply(which(occupiedSidSlots) + 3L, function(tabsetId){
+                scenCompUpdateTab(tabsetId,
+                                  sheetId = j, groupId = groupId)
+              })
+            }
+          }, suspended = TRUE)
+        }
       })
       
       # scenario comparison
@@ -1857,10 +1911,6 @@ if(!is.null(errMsg)){
         stopifnot(is.integer(input$btExportScen), length(input$btExportScen) == 1L)
         if(useGdx && !LAUNCHHCUBEMODE){
           exportTypes <- setNames(c("miroscen", "gdx", "csv", "xls"), lang$nav$fileExport$fileTypes)
-          if(input$btExportScen > 1L){
-            # remove miroscen option in comparison Mode (currently not supported)
-            exportTypes <- exportTypes[-1]
-          }
         }else{
           exportTypes <- setNames(c("csv", "xls"), lang$nav$fileExport$fileTypes[-c(1, 2)])
         }
@@ -1900,15 +1950,18 @@ if(!is.null(errMsg)){
             silent = TRUE)
         if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")){
           # clean up
-          try(db$deleteRows(scenMetadataTable, 
-                            uidIdentifier, 
-                            uid), silent = TRUE)
+          try(db$deleteRows("_scenMeta", "_uid", uid), silent = TRUE)
           
         }
-        if(config$activateModules$attachments && 
+        if(config$activateModules$attachments &&
            config$storeLogFilesDuration > 0L){
-          db$removeExpiredAttachments(paste0(modelNameRaw, c(".log", ".lst")), 
+          tryCatch(
+            attachments$removeExpired(paste0(modelNameRaw, c(".log", ".lst")), 
                                       config$storeLogFilesDuration)
+            , error = function(e){
+              flog.error("Problems removing expired attachments. Error message: '%s'.", 
+                         conditionMessage(e))
+            })
         }
         activeScen$finalize()
         if(!interactive() && !isShinyProxy){

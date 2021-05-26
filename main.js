@@ -21,12 +21,8 @@ const addModelData = require('./components/import-data');
 const addMiroscen = require('./components/miroscen-parser');
 const AppDataStore = require('./components/AppDataStore');
 const ConfigManager = require('./components/ConfigManager');
-const MiroDb = require('./components/MiroDb');
 const unzip = util.promisify(require('./components/Unzip'));
 const MiroProcessManager = require('./components/MiroProcessManager');
-const {
-  getAppDbPath,
-} = require('./components/util');
 
 const isMac = process.platform === 'darwin';
 const DEVELOPMENT_MODE = !app.isPackaged;
@@ -105,13 +101,13 @@ let aboutDialogWindow;
 let fileToOpen;
 let appLoaded = false;
 
-function showErrorMsg(optionsTmp) {
-  if (mainWindow) {
+function showErrorMsg(optionsTmp, windowObj = mainWindow) {
+  if (windowObj) {
     const options = optionsTmp;
     if (!options.buttons) {
       options.buttons = ['OK'];
     }
-    dialog.showMessageBoxSync(mainWindow, options);
+    dialog.showMessageBoxSync(windowObj, options);
   }
 }
 
@@ -1087,6 +1083,56 @@ ipcMain.on('show-error-msg', (e, options) => {
   log.debug(`New error message received. Title: ${options.title}, message: ${options.message}.`);
   showErrorMsg(options);
 });
+ipcMain.on('import-miroenv', async () => {
+  if (!settingsWindow) {
+    return;
+  }
+  const pathSelected = dialog.showOpenDialogSync(settingsWindow, {
+    title: lang.settings.dialogImportEnvHdr,
+    message: lang.settings.dialogImportEnvHdr,
+    properties: ['openFile'],
+    filters: [{ name: 'JSON', extensions: ['json', 'JSON'] }],
+  });
+  if (!pathSelected) {
+    return;
+  }
+  try {
+    const envTxt = await fs.readFile(pathSelected[0]);
+    const newEnv = JSON.parse(envTxt);
+    configData.validate('miroEnv', newEnv);
+    settingsWindow.webContents.send('update-miroEnv', newEnv);
+  } catch (err) {
+    log.info(`Could not validate environment file. Error message: '${err.message}'`);
+    showErrorMsg({
+      type: 'info',
+      title: lang.settings.ErrorInvalidEnvFileHdr,
+      message: util.format(lang.settings.ErrorInvalidEnvFileMsg, err.message),
+    }, settingsWindow);
+  }
+});
+ipcMain.on('export-miroenv', async () => {
+  const pathSelected = dialog.showSaveDialogSync(settingsWindow, {
+    title: lang.settings.dialogExportEnvHdr,
+    message: lang.settings.dialogExportEnvHdr,
+    defaultPath: 'miro-env.json',
+    properties: ['createDirectory', 'showOverwriteConfirmation'],
+  });
+  if (!pathSelected) {
+    return;
+  }
+  try {
+    const currentEnv = await configData.get('miroEnv');
+    await fs.writeFile(pathSelected,
+      JSON.stringify(currentEnv == null ? {} : currentEnv, null, 2), 'utf-8');
+  } catch (err) {
+    log.info(`Problems fetching current environment. Error message: '${err.message}'`);
+    showErrorMsg({
+      type: 'error',
+      title: lang.main.ErrorUnexpectedHdr,
+      message: lang.main.ErrorUnexpectedMsg,
+    }, settingsWindow);
+  }
+});
 ipcMain.on('settings-select-new-path', async (e, id, defaultPath) => {
   if (settingsWindow) {
     const langData = {
@@ -1367,10 +1413,6 @@ ipcMain.on('delete-app', async (e, appId) => {
     message: lang.main.DeleteDataMsg,
   }) === 1;
 
-  let appDbPath;
-  if (deleteAppData) {
-    appDbPath = appsData.getAppConfigValue(appId, 'dbPath');
-  }
   try {
     const rmPromise = fs.remove(path.join(appDataPath, appId));
     try {
@@ -1403,29 +1445,25 @@ ipcMain.on('delete-app', async (e, appId) => {
       showErrorMsg({
         type: 'error',
         title: lang.main.ErrorUnexpectedHdr,
-        message: lang.main.ErrorUnexpectedMsg2,
+        message: lang.main.ErrorUnexpectedMsg2 + err.message,
       });
     }
   } finally {
     if (deleteAppData) {
-      try {
-        const miroDb = new MiroDb(path.join(getAppDbPath(appDbPath),
-          'miro.sqlite3'));
-        try {
-          miroDb.removeAppDbTables(appId);
-        } finally {
-          miroDb.close();
-        }
-        const rmPromiseHcube = fs.remove(path.join(miroWorkspaceDir, 'hcube_jobs', appId));
-        const rmPromiseCred = fs.remove(path.join(miroWorkspaceDir, `.cred_${appId}`));
-        await rmPromiseHcube;
-        await rmPromiseCred;
-      } catch (err) {
-        log.error(`Problems removing data (app ID: ${appId}). Error message: ${err.message}`);
+      const rmPromises = [];
+      rmPromises.push(fs.remove(path.join(miroWorkspaceDir, 'app_data', `${appId}.sqlite3`)),
+        fs.remove(path.join(miroWorkspaceDir, 'hcube_jobs', appId)),
+        fs.remove(path.join(miroWorkspaceDir, `.cred_${appId}`)));
+      const deleteAppDataStatus = await Promise.allSettled(rmPromises);
+      const errorMsg = deleteAppDataStatus
+        .filter((value) => value.status === 'rejected')
+        .map((value) => value.reason.toString()).join('\n');
+      if (errorMsg) {
+        log.error(`Problems removing data (app ID: ${appId}). Error message: ${errorMsg}`);
         showErrorMsg({
           type: 'error',
           title: lang.main.ErrorUnexpectedHdr,
-          message: lang.main.ErrorUnexpectedMsg2,
+          message: lang.main.ErrorUnexpectedMsg2 + errorMsg,
         });
       }
     }

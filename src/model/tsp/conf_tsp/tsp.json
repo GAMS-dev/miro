@@ -107,7 +107,8 @@
   "inputWidgets": {
     "iilocdata": {
       "widgetType": "custom",
-      "rendererName": "tsp",
+      "rendererName": "mirowidget_iilocdata",
+      "apiVersion": 2,
       "alias": "City location information"
     },
     "_scalars": {

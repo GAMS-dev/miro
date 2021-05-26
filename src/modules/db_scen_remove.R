@@ -2,9 +2,6 @@
 closeScenario <- function(clearMeta = TRUE){
   # remove output data
   errMsg <- NULL
-  scenData[["scen_1_"]] <<- scenDataTemplate
-  # clear scalar data
-  scalarData[["scen_1_"]] <<- data.frame()
   traceData <<- data.frame()
   # reset input data sheets
   modelInputData     <<- modelInTemplate
@@ -101,9 +98,10 @@ closeScenario <- function(clearMeta = TRUE){
   })
   
   # reset model output data
-  renderOutputData(rendererEnv, views)
+  renderOutputData()
   if(length(activeScen)){
     if(clearMeta){
+      scenData$clearSandbox()
       views$clearConf()
       attachments$clear(cleanLocal = TRUE)
     }
@@ -111,17 +109,12 @@ closeScenario <- function(clearMeta = TRUE){
   }
   activeScen        <<- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
                                      isNewScen = TRUE, views = views, attachments = attachments)
-  scenMetaData[["scen_1_"]] <<- activeScen$getMetadata(lang$nav$excelExport$metadataSheet)
   rv$activeSname    <<- NULL
   scenTags          <<- NULL
   attachmentList    <<- tibble(name = vector("character", attachMaxNo), 
                                execPerm = vector("logical", attachMaxNo))
-  if(!LAUNCHHCUBEMODE){
-    lapply(seq_along(config$scripts$base), function(scriptId){
-      hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-      hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
-      showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-    })
+  if(!LAUNCHHCUBEMODE && length(config$scripts$base)){
+    scriptOutput$clearContent()
   }
   
   markSaved()
@@ -154,7 +147,8 @@ observeEvent(input$btDeleteConfirm, {
     showEl(session, "#deleteScen_ui")
     showEl(session, "#btRemoveDeletedConfirm")
   }, error = function(e){
-    flog.error("Problems deleting scenario: '%s'. Error message: '%s'.", activeScen$getScenName(), e)
+    flog.error("Problems deleting scenario: '%s'. Error message: '%s'.",
+               activeScen$getScenName(), conditionMessage(e))
     errMsg <<- lang$errMsg$deleteScen$desc
   })
   if(!is.null(errMsg)){

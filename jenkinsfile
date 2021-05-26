@@ -19,6 +19,18 @@ pipeline {
             description: 'Build CI image?',
             name: 'BUILD_CI')
         booleanParam(
+            defaultValue: true,
+            description: 'Build Linux?',
+            name: 'BUILD_LINUX')
+        booleanParam(
+            defaultValue: true,
+            description: 'Build Windows?',
+            name: 'BUILD_WIN')
+        booleanParam(
+            defaultValue: true,
+            description: 'Build Mac?',
+            name: 'BUILD_MAC')
+        booleanParam(
             defaultValue: false,
             description: 'Force release (even if tests fail)?',
             name: 'FORCE_RELEASE')
@@ -55,6 +67,10 @@ pipeline {
         stage('Build') {
             parallel {
                 stage ('linux') {
+                    when {
+                        beforeAgent true
+                        expression { params.BUILD_LINUX }
+                    }
                     agent { label 'docker' }
                     steps {
                         sh '''
@@ -65,13 +81,12 @@ pipeline {
                         script{
                             if (params.BUILD_CI) {
                                 sh '''
-                                    yarn docker-build --ci
+                                    yarn docker-build-ci
                                 '''
                             }
                             if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
                                 sh '''#!/bin/bash -xe
                                     ## build MIRO server images
-                                    yarn docker-build
                                     pushd server > /dev/null
                                         python3 miro_server.py build
                                     popd > /dev/null
@@ -81,7 +96,7 @@ pipeline {
                         sshagent(['a2576ca5-f8e0-4e28-9d42-b0c5603b213d']) {
                             sh '''#!/bin/bash -xe
                                git status
-                               git add ./main.js ./package.json ./scripts/globals.R ./Dockerfile ./Dockerfile-admin
+                               git add ./main.js ./package.json ./scripts/globals.R ./server/ui/Dockerfile ./server/admin/Dockerfile
                                git status
                                git config user.name 'jenkins'
                                git config user.email 'jenkins@berlin.noreply.gams.com'
@@ -121,6 +136,10 @@ pipeline {
                     }
                 }
                 stage ('windowsX64') {
+                    when {
+                        beforeAgent true
+                        expression { params.BUILD_WIN }
+                    }
                     agent { label 'windowsX64' }
                     steps {
                         withCredentials([certificate(aliasVariable: '', credentialsId: '302df092-b329-47b9-8f7a-605da075126d', keystoreVariable: 'WIN_CERT_FILE', 
@@ -138,6 +157,10 @@ pipeline {
                     }
                 }
                 stage ('macos') {
+                    when {
+                        beforeAgent true
+                        expression { params.BUILD_MAC }
+                    }
                     agent { label 'macos' }
                     steps {
                         sh '''
@@ -160,6 +183,10 @@ pipeline {
             }
             parallel {
                 stage ('windowsX64') {
+                    when {
+                        beforeAgent true
+                        expression { params.BUILD_WIN }
+                    }
                     agent { label 'windowsX64' }
                     options {
                         skipDefaultCheckout()
@@ -181,6 +208,10 @@ pipeline {
                     }
                 }
                 stage ('macos') {
+                    when {
+                        beforeAgent true
+                        expression { params.BUILD_MAC }
+                    }
                     agent { label 'macos' }
                     options {
                         skipDefaultCheckout()
@@ -211,6 +242,10 @@ pipeline {
         stage('Deploy') {
             parallel {
                 stage ('linux') {
+                    when {
+                        beforeAgent true
+                        expression { params.BUILD_LINUX }
+                    }
                     agent { label 'docker' }
                     options {
                         skipDefaultCheckout()
@@ -233,16 +268,39 @@ pipeline {
                                 }
                             }
                             if (env.BRANCH_NAME == 'master' && (currentBuild.currentResult == "SUCCESS" || params.FORCE_RELEASE)) {
+                                withCredentials([usernamePassword(credentialsId: '6a4cd702-946f-4003-b4ab-bbf0296e56db', passwordVariable: 'DOCKERHUB_PASS', usernameVariable: 'DOCKERHUB_USER')]){
+                                    sh '''#!/bin/bash -xe
+                                        docker login --username="${DOCKERHUB_USER}" --password="${DOCKERHUB_PASS}"
+                                        ## build MIRO server images
+                                        pushd server > /dev/null
+                                            python3 miro_server.py push
+                                        popd > /dev/null
+                                    '''
+                                }
+                                sshagent(['a2576ca5-f8e0-4e28-9d42-b0c5603b213d']) {
+                                    sh '''#!/bin/bash -xe
+                                       git status
+                                       git add ./server/image-docs/*
+                                       git status
+                                       git config user.name 'jenkins'
+                                       git config user.email 'jenkins@berlin.noreply.gams.com'
+                                       git checkout -B $BRANCH_NAME
+                                       git commit -m "[CI skip] Update MIRO Server image README files" || {
+                                         true
+                                       } && {
+                                           set +x
+                                           export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+                                           git push origin HEAD:$BRANCH_NAME
+                                           set -x
+                                       }
+                                    '''
+                                }
+                            } else if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
                                 sh '''#!/bin/bash -xe
-                                    yarn docker-publish
                                     ## build MIRO server images
                                     pushd server > /dev/null
-                                        python3 miro_server.py push
+                                        python3 miro_server.py push --unstable
                                     popd > /dev/null
-                                '''
-                            } else if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
-                                sh '''
-                                    yarn docker-publish-unstable
                                 '''
                             }
                         }
@@ -250,6 +308,10 @@ pipeline {
                     }
                 }
                 stage ('windowsX64') {
+                    when {
+                        beforeAgent true
+                        expression { params.BUILD_WIN }
+                    }
                     agent { label 'windowsX64' }
                     options {
                         skipDefaultCheckout()
@@ -259,6 +321,10 @@ pipeline {
                     }
                 }
                 stage ('macos') {
+                    when {
+                        beforeAgent true
+                        expression { params.BUILD_MAC }
+                    }
                     agent { label 'macos' }
                     options {
                         skipDefaultCheckout()

@@ -24,6 +24,7 @@ expect_identical(configRaw$roundingDecimals, configNew$roundingDecimals)
 
 #interface tab (II)
 expect_identical(configRaw$UILogo, configNew$UILogo)
+expect_identical(configRaw$defaultRendererOutput, configNew$defaultRendererOutput)
 expect_identical(configRaw$readme$tabTitle, configNew$readme$tabTitle)
 expect_identical(configRaw$readme$filename, configNew$readme$filename)
 expect_identical(configRaw$readme$enableMath, configNew$readme$enableMath)

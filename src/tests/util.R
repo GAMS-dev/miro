@@ -58,14 +58,70 @@ expect_files_in_zip <- function(app, id, files){
   expect_true(all(files %in% filesInZip))
 }
 
-createTestDb <- function(dbPath = file.path(getwd(), "..", "miro.sqlite3")){
-  if(file.exists(dbPath)){
-    if(unlink(dbPath, force = TRUE)){
-      gc()
-      if(unlink(dbPath, force = TRUE)){
-        stop("Could not remove old database SQLite file for tests")
+expect_symbols_in_gdx <- function(app, id, symNames){
+  url <- app$findElement(paste0("#", id))$getAttribute("href")
+  req <- httr::GET(url)
+  tempFiles <- file.path(tempdir(check = TRUE), "shinytest-download.gdx")
+  on.exit(unlink(tempFiles))
+  writeBin(req$content, tempFiles)
+  gdxrrwMIRO::igdx(file.path(.libPaths()[1], "gdxrrwMIRO", 
+                             if(identical(tolower(Sys.info()[["sysname"]]), "windows")) 
+                               file.path("bin", "x64") else "bin"), silent = TRUE, returnStr = FALSE)
+  symInGdx <- gdxrrwMIRO::gdxInfo(tempFiles, returnList = TRUE, dump = FALSE)
+  symInGdx <- c(symInGdx$sets, symInGdx$parameters, symInGdx$variables, symInGdx$equations)
+  expect_identical(length(symInGdx), length(symNames))
+  expect_true(all(symNames %in% symInGdx))
+}
+
+expect_sheets_in_xls <- function(app, id, sheetNames){
+  url <- app$findElement(paste0("#", id))$getAttribute("href")
+  req <- httr::GET(url)
+  tempFiles <- file.path(tempdir(check = TRUE), "shinytest-download")
+  on.exit(unlink(tempFiles))
+  writeBin(req$content, tempFiles)
+  sheetsInXls <- readxl::excel_sheets(tempFiles)
+  expect_identical(length(sheetsInXls), length(sheetNames))
+  expect_true(all(sheetNames %in% sheetsInXls))
+}
+
+get_downloaded_file_content <- function(app, id, raw = FALSE){
+  url <- app$findElement(paste0("#", id))$getAttribute("href")
+  req <- httr::GET(url)
+  if(raw)
+    return(req$content)
+  return(rawToChar(req$content))
+}
+
+createTestDb <- function(dbPath = file.path(getwd(), "..", "testdb")){
+  if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
+    # need to clean db tables
+    conn <- DBI::dbConnect(drv = RPostgres::Postgres(),
+                           dbname = Sys.getenv("MIRO_DB_NAME"), 
+                           host = Sys.getenv("MIRO_DB_HOST"),
+                           port = 5432, 
+                           user = Sys.getenv("MIRO_DB_USERNAME"),
+                           password = Sys.getenv("MIRO_DB_PASSWORD"),
+                           bigint = "integer")
+    on.exit(DBI::dbDisconnect(conn))
+    DBI::dbExecute(conn, DBI::SQL("SET client_min_messages TO WARNING;"))
+    DBI::dbExecute(conn, DBI::SQL("DROP SCHEMA IF EXISTS mirotests CASCADE;"))
+    DBI::dbExecute(conn, DBI::SQL("CREATE SCHEMA mirotests;"))
+    DBI::dbExecute(conn, DBI::SQL(paste0("GRANT ALL ON SCHEMA mirotests TO ",
+                                         DBI::dbQuoteIdentifier(conn, Sys.getenv("MIRO_DB_USERNAME")), ";")))
+    Sys.setenv(MIRO_DB_SCHEMA = "mirotests")
+  }else{
+    if(file.exists(dbPath)){
+      if(unlink(dbPath, force = TRUE, recursive = TRUE)){
+        gc()
+        if(unlink(dbPath, force = TRUE, recursive = TRUE)){
+          stop("Could not remove old database SQLite file for tests")
+        }
+      }
+      if(!dir.create(dbPath)){
+        stop(sprintf("Could not create test database path: '%s'.", dbPath))
       }
     }
+    Sys.setenv(MIRO_DB_PATH = dbPath)
   }
 }
 
@@ -104,14 +160,14 @@ PerformanceReporter <- R6::R6Class("PerformanceReporter", public = list(
   publish = function(){
     context <- eval(substitute(testthat::get_reporter()$.context),
                     envir = parent.frame())
-    if(is.na(private$pass)){
-      warning("No reporter password set. Skipping publishing performance results.")
-      private$data <- list()
-      return(return(invisible(self)))
-    }
     dataToPublish <- list(context = context,
                           data = private$data)
     private$data <- list()
+    if(is.na(private$pass)){
+      warning("No reporter password set. Skipping publishing performance results.")
+      print(dataToPublish)
+      return(return(invisible(self)))
+    }
     tryCatch({
       req <- httr::POST(private$url, body = dataToPublish,
                         httr::authenticate(private$user, private$pass),

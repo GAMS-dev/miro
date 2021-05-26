@@ -427,6 +427,18 @@ a:hover {
   overflow: hidden;
   text-align: left;
 }
+.app-env-file-input-label {
+  width: 100%;
+  cursor: pointer!important;
+}
+@media (prefers-color-scheme: dark) {
+  .app-env-file-input-label {
+    background: #292D33!important;
+  }
+}
+.app-env-file-input {
+  display: none;
+}
 .app-title-fixed {
   display: -webkit-box;
   -webkit-line-clamp: 1;

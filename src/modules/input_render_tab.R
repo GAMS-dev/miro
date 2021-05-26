@@ -156,6 +156,8 @@ observe({
 })
 observeEvent(input$btGraphIn, {
   i <- as.integer(strsplit(input$inputTabset, "_")[[1]][2])
+  showLoadingScreen(session, 500)
+  on.exit(hideLoadingScreen(session))
   if(is.na(i) || i < 1){
     return()
   }
@@ -187,7 +189,7 @@ observeEvent(input$btGraphIn, {
         data <- getInputDataset(i, visible = TRUE)
       }, error = function(e){
         flog.error("Dataset: '%s' could not be loaded. Error message: '%s'.", 
-                   modelInAlias[i], e)
+                   modelInAlias[i], conditionMessage(e))
         errMsg <<- sprintf(lang$errMsg$GAMSInput$noData, 
                            modelInAlias[i])
       })
@@ -200,7 +202,26 @@ observeEvent(input$btGraphIn, {
         return(modelInTemplate[[i]])
       })
     }
-    
+    if(!dynamicUILoaded$inputGraphs[i]){
+      tryCatch({
+        insertUI(paste0("#graph-in_", i),
+                 ui = renderDataUI(paste0("in_", i), type = configGraphsIn[[i]]$outType, 
+                                   graphTool = configGraphsIn[[i]]$graph$tool, 
+                                   customOptions = configGraphsIn[[i]]$options,
+                                   filterOptions = configGraphsIn[[i]]$graph$filter,
+                                   height = configGraphsIn[[i]]$height,
+                                   createdDynamically = TRUE),
+                 immediate = TRUE)
+        dynamicUILoaded$inputGraphs[i] <<- TRUE
+      }, error = function(e) {
+        flog.error(sprintf("Problems generating UI elements for chart for dataset: '%s'. Error message: %s.",
+                           modelInAlias[i], conditionMessage(e)))
+        errMsg <<- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
+      })
+      if(is.null(showErrorMsg(lang$errMsg$renderGraph$title, errMsg))){
+        return()
+      }
+    }
     tryCatch({
       if(is.null(rendererEnv[[paste0("in_", i)]])){
         rendererEnv[[paste0("in_", i)]] <- new.env(parent = emptyenv())
@@ -211,7 +232,7 @@ observeEvent(input$btGraphIn, {
           }
         }
       }
-      callModule(renderData, "in_" %+% i, 
+      callModule(renderData, paste0("in_", i), 
                  type = configGraphsIn[[i]]$outType, 
                  data = data,
                  dtOptions = config$datatable, 
@@ -223,7 +244,7 @@ observeEvent(input$btGraphIn, {
                  views = views, attachments = attachments)
     }, error = function(e) {
       flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", 
-                 modelInAlias[i], e)
+                 modelInAlias[i], conditionMessage(e))
       errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), sep = "\n")
     })
   })
@@ -380,10 +401,7 @@ lapply(modelInTabularData, function(sheet){
         colnames <- tabData$colnames
         tabData  <- tabData$data
       }else{
-        colnames <- attr(modelInputData[[i]], "aliases")
-        if(!length(colnames)){
-          colnames <- attr(modelInTemplate[[i]], "aliases")
-        }
+        colnames <- attr(modelInTemplate[[i]], "aliases")
       }
       
       # check for readonly columns
@@ -430,7 +448,7 @@ lapply(modelInTabularData, function(sheet){
                      manualColumnResize = hotOptions$manualColumnResize, 
                      colWidths = if(length(modelIn[[i]]$colWidths))
                        modelIn[[i]]$colWidths else hotOptions$colWidths, 
-                     fixedColumnsLeft = hotOptions$fixedColumnsLeft)
+                     fixedColumnsLeft = modelIn[[i]]$fixedColumnsLeft)
       for(dropdownCol in names(modelIn[[i]]$dropdownCols)){
         colSourceConfig <- modelIn[[i]]$dropdownCols[[dropdownCol]]
         k <- match(colSourceConfig$symbol, names(modelIn))
@@ -488,10 +506,7 @@ lapply(modelInTabularData, function(sheet){
         tabData  <- tabData$data
         tableContent[[i]] <<- tabData
       }else{
-        colnames <- attr(modelInputData[[i]], "aliases")
-        if(!length(colnames)){
-          colnames <- attr(modelInTemplate[[i]], "aliases")
-        }
+        colnames <- attr(modelInTemplate[[i]], "aliases")
       }
       tryCatch({
         dtOptions <- modifyList(config$datatable,
@@ -504,7 +519,7 @@ lapply(modelInTabularData, function(sheet){
                            roundPrecision = roundPrecision, render = FALSE)
       }, error = function(e){
         flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
-                   modelInAlias[[i]], e) 
+                   modelInAlias[[i]], conditionMessage(e)) 
         errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
       })
       if(is.null(showErrorMsg(lang$errMsg$renderTable$title, errMsg))){
@@ -532,11 +547,7 @@ lapply(modelInTabularData, function(sheet){
         colnames <- c(attr(modelInTemplate[[i]], "aliases")[-c(pivotIdx, length(modelInTemplate[[i]]))],
                       names(tableContent[[i]])[seq(noRowHeaders + 1L, length(tableContent[[i]]))])
       }else{
-        if(length(colnames)){
-          colnames <- attr(modelInputData[[i]], "aliases")
-        }else{
-          colnames <- attr(modelInTemplate[[i]], "aliases")
-        }
+        colnames <- attr(modelInTemplate[[i]], "aliases")
       }
       newRowId <- suppressWarnings(as.integer(input[[paste0("in_", i, "_rows_selected")]]))
       if(any(is.na(newRowId))){
@@ -699,28 +710,50 @@ lapply(modelInTabularData, function(sheet){
     })
   }else if(identical(modelIn[[i]]$type, "custom")){
     rendererEnv[[paste0("input_", i)]] <- new.env(parent = emptyenv())
-    observe({
+    if(identical(modelIn[[i]]$apiVersion, 2L)){
       tryCatch({
-        for(el in ls(envir = rendererEnv[[paste0("input_", i)]])){
-          if("Observer" %in% class(rendererEnv[[paste0("input_", i)]][[el]])){
-            rendererEnv[[paste0("input_", i)]][[el]]$destroy()
-          }
+        if(length(modelIn[[i]]$additionalData)){
+          dataIds <- c(i, match(modelIn[[i]]$additionalData, names(modelIn)))
+        }else{
+          dataIds <- i
         }
         modelInputDataVisible[[i]] <<- callModule(generateData, paste0("data-in_", i), 
                                                   type = modelIn[[i]]$rendererName, 
-                                                  data = dataModelIn[[i]](),
+                                                  data = if(length(dataIds) > 1L)
+                                                    dataModelIn[dataIds] else dataModelIn[[i]],
                                                   customOptions = modelIn[[i]]$options,
                                                   rendererEnv = rendererEnv[[paste0("input_", i)]],
                                                   attachments = attachments,
                                                   views = views)
-        isolate(rv[[paste0("reinit_", i)]] <- isFALSE(rv[[paste0("reinit_", i)]]))
-        skipObs[[i]] <<- TRUE
       }, error = function(e){
         flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
-                   modelInAlias[[i]], e)
+                   modelInAlias[[i]], conditionMessage(e))
         errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
       })
-    })
+    }else{
+      observe({
+        tryCatch({
+          for(el in ls(envir = rendererEnv[[paste0("input_", i)]])){
+            if("Observer" %in% class(rendererEnv[[paste0("input_", i)]][[el]])){
+              rendererEnv[[paste0("input_", i)]][[el]]$destroy()
+            }
+          }
+          modelInputDataVisible[[i]] <<- callModule(generateData, paste0("data-in_", i), 
+                                                    type = modelIn[[i]]$rendererName, 
+                                                    data = as_tibble(dataModelIn[[i]]()),
+                                                    customOptions = modelIn[[i]]$options,
+                                                    rendererEnv = rendererEnv[[paste0("input_", i)]],
+                                                    attachments = attachments,
+                                                    views = views)
+          isolate(rv[[paste0("reinit_", i)]] <- isFALSE(rv[[paste0("reinit_", i)]]))
+          skipObs[[i]] <<- TRUE
+        }, error = function(e){
+          flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
+                     modelInAlias[[i]], conditionMessage(e))
+          errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
+        })
+      })
+    }
     observe({
       force(rv[[paste0("reinit_", i)]])
       if(is.null(force(modelInputDataVisible[[i]]())) || isTRUE(skipObs[[i]])){

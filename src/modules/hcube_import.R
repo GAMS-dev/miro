@@ -37,11 +37,6 @@ additionalInputScalars <- inputDsNames[vapply(inputDsNames, function(el){
 if(length(scalarInToVerify))
   scalarInToVerify <- scalarInToVerify[!startsWith(scalarInToVerify, "_")]
 
-gmsColTypes <- c(db$getDbSchema()$colTypes, setNames("ccc", scalarsFileName))
-gmsFileHeaders <- c(db$getDbSchema()$colNames, setNames(list(scalarsFileHeaders), 
-                                                        scalarsFileName))
-disableEl(session, "#btUploadHcube")
-
 # initialise hcube import class
 hcubeImport <- HcubeImport$new(db, scalarsFileName, scalarsOutName, 
                                tableNamesCanHave = c(setdiff(c(inputDsNames,
@@ -56,13 +51,12 @@ hcubeImport <- HcubeImport$new(db, scalarsFileName, scalarsOutName,
                                                              c(scalarsOutName,
                                                                scalarEquationsOutName))),
                                tableNamesMustHave = c(scalarInToVerify, 
-                                                      if(config$saveTraceFile) tableNameTracePrefix %+% modelName),
-                               config$csvDelim, workDir, gmsColTypes = gmsColTypes, gmsFileHeaders = gmsFileHeaders,
+                                                      if(config$saveTraceFile) "_scenTrc"),
+                               config$csvDelim, workDir,
                                gdxio = gdxio, inputSym = setdiff(inputDsNames, additionalInputScalars), 
                                outputSym = names(modelOut),
                                templates = setNames(c(modelInTemplate, modelOutTemplate, scalarsInTemplate), 
                                                     c(names(modelIn), names(modelOut), scalarsFileName)))
-rm(gmsColTypes)
 duplicatedScenIds <- vector("character", 0L)
 hcubeTags         <- character(0L)
 zipFilePath       <- NULL
@@ -88,7 +82,7 @@ observeEvent(rv$uploadHcube, {
       flog.error("The zip file you are trying to upload contains invalid files. Only trace and gdx files allowed! No path traversals!")
       errMsg <<- lang$errMsg$hcubeImport$extract$invalidFiles
     }else{
-      flog.error("Problems unzipping the file. Error message: %s.", e)
+      flog.error("Problems unzipping the file. Error message: %s.", conditionMessage(e))
       errMsg <<- lang$errMsg$hcubeImport$extract$desc
     }
   })
@@ -101,7 +95,7 @@ observeEvent(rv$uploadHcube, {
     invalidScenIds <- hcubeImport$validateScenFiles()
     flog.trace("Scenario files validated.")
   }, error = function(e){
-    flog.error("Problems validating results. Error message: %s.", e)
+    flog.error("Problems validating results. Error message: %s.", conditionMessage(e))
     errMsg <<- lang$errMsg$hcubeImport$extract$desc
   })
   if(is.null(showErrorMsg(lang$errMsg$hcubeImport$extract$title, errMsg))){
@@ -136,7 +130,7 @@ observeEvent(virtualActionButton(rv$noInvalidData), {
     hcubeImport$readAllScenData()
     flog.trace("Scenario data read into memory.")
   }, error = function(e){
-    flog.error("Problems reading scenario data. Error message: %s.", e)
+    flog.error("Problems reading scenario data. Error message: %s.", conditionMessage(e))
     errMsg <<- lang$errMsg$hcubeImport$scenRead$desc
   })
   if(is.null(showErrorMsg(lang$errMsg$hcubeImport$scenRead$title, errMsg))){
@@ -148,17 +142,18 @@ observeEvent(virtualActionButton(rv$noInvalidData), {
   prog$inc(amount = 1/6, detail = lang$progressBar$hcubeImport$duplicateCheck)
   tryCatch({
     duplicatedScen    <- hcubeImport$getScenDuplicates()
-    duplicatedScenIds <<- duplicatedScen[[snameIdentifier]]
+    duplicatedScenIds <<- duplicatedScen[["_sname"]]
     flog.trace("Duplicated scenarios identified.")
     if(nrow(duplicatedScen)){
-      dupScenTags <- paste(unique(duplicatedScen[[stagIdentifier]]), collapse = ", ")
+      dupScenTags <- paste(unique(duplicatedScen[["_stag"]]), collapse = ", ")
       noDupScen   <- length(unique(duplicatedScenIds))
       showDuplicatedScenDialog(noDupScen, dupScenTags, noScen = length(hcubeImport$getScenNames()))
     }else{
       rv$btSave <- rv$btSave + 1L
     }
   }, error = function(e){
-    flog.error("Problems fetching duplicated Scenarios from database. Error message: %s.", e)
+    flog.error("Problems fetching duplicated Scenarios from database. Error message: %s.",
+               conditionMessage(e))
     errMsg <<- lang$errMsg$hcubeImport$duplicateFetch$desc
   })
   if(is.null(showErrorMsg(lang$errMsg$hcubeImport$duplicateFetch$title, errMsg))){
@@ -187,7 +182,8 @@ observeEvent(virtualActionButton(rv$btSave), {
     hcubeImport$saveScenarios(hcubeTags, jobID = jobImportID, readPerm = uid, 
                               writePerm = uid, execPerm = uid, progressBar = prog)
   }, error = function(e){
-    flog.error("Problems exporting scenarios. Error message: %s.", e)
+    flog.error("Problems importing scenarios. Error message: %s.",
+               conditionMessage(e))
     errMsg <<- lang$errMsg$hcubeImport$dbUpload$desc
   })
   if(is.null(showErrorMsg(lang$errMsg$hcubeImport$dbUpload$title, errMsg))){
@@ -238,7 +234,8 @@ observeEvent(input$btUploadHcube, {
     jobImportID    <<- jIDtmp
   }, error = function(e){
     showHideEl(session, "#manHcubeImportUnknownError")
-    flog.error("Problems writing Hypercube job metadata to database. Error message: '%s'.", e)
+    flog.error("Problems writing Hypercube job metadata to database. Error message: '%s'.",
+               conditionMessage(e))
     noErr <<- FALSE
   })
   if(!noErr)

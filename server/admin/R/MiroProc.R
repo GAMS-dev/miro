@@ -2,6 +2,8 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
   initialize = function(session){
     private$session <- session
     procEnv <- as.list(Sys.getenv())
+    procEnv[["MIRO_DB_USERNAME"]] <- NULL
+    procEnv[["MIRO_DB_PASSWORD"]] <- NULL
     procEnv$MIRO_POPULATE_DB <- "true"
 
     private$procEnv <- procEnv
@@ -10,6 +12,12 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
   },
   getMigrationInfo = function(){
     return(private$migrationInfo)
+  },
+  setDbCredentials = function(username, password){
+    private$procEnv[["MIRO_DB_USERNAME"]] <- username
+    private$procEnv[["MIRO_DB_PASSWORD"]] <- password
+    private$procEnv[["MIRO_DB_SCHEMA"]] <- username
+    return(invisible(self))
   },
   run = function(appId, modelName, miroVersion, appDir, dataDir,
     progressSelector, successCallback, overwriteScen = TRUE, requestType = "addApp",
@@ -26,7 +34,7 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
     }
     procEnv <- private$procEnv
     procEnv$MIRO_VERSION_STRING <- miroVersion
-    procEnv$MIRO_MODEL_PATH <- file.path(appDir, paste0(modelName, ".gms"))
+    procEnv$MIRO_MODEL_PATH <- file.path(appDir, modelName)
     procEnv$MIRO_DATA_DIR <- dataDir
     procEnv$MIRO_OVERWRITE_SCEN_IMPORT <- if(!identical(overwriteScen, TRUE)) "false" else "true"
     if(is.null(migrationConfigPath)){
@@ -35,7 +43,7 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
       procEnv$MIRO_MIGRATION_CONFIG_PATH <- migrationConfigPath
       procEnv$MIRO_MIGRATE_DB <- "true"
     }
-
+    flog.trace("Adding data for app: %s", appId)
     private$miroProc <- processx::process$new("R", c("-e", 
         paste0("shiny::runApp('", MIRO_APP_PATH, "',port=3839,host='0.0.0.0')")),
         env = unlist(procEnv), wd = MIRO_APP_PATH, stderr = "|", stdout = "|")
@@ -110,7 +118,7 @@ MiroProc <- R6::R6Class("MiroProc", public = list(
                       as.character(procExitStatus))
                     flog.error('Unexpected error when starting MIRO process. Stderr: %s',
                       private$stdErr)
-                    private$session$sendCustomMessage("onError", list(requestType = requestType, message = "Internal error."))
+                    private$session$sendCustomMessage("onError", list(requestType = requestType, message = "Internal error. Check log for more information."))
                 }
                 private$miroProc <- NULL
             }
