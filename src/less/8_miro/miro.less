@@ -64,6 +64,16 @@ body{
      background: @modal-bg-dark;
   });
 }
+.readme-wrapper code {
+  .responsiveDark({
+     color: @light-blue;
+     background-color: @highlight-bg;
+  },
+  {
+     color: @light-blue-dark;
+     background-color: @highlight-bg-dark;
+  });
+}
 .readme-preview-markdown {
   width: 100%;
   height: 65vh;
@@ -344,6 +354,11 @@ animation: none !important;
   {
      background-image: url('images/miro_logo_dark.png');
   });
+}
+.menu-icon-align {
+  width:15px;
+  display: inline-block; 
+  margin-right: 8px;
 }
 /* sidebar*/
 .bt-highlight-1{

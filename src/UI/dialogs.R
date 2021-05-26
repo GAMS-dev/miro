@@ -673,6 +673,7 @@ showEditMetaDialog <- function(metadata,
                              tags$button(class = "btn btn-default bt-remove",
                                          type = "button",
                                          onClick = "Miro.sendSelectedRowsRequest('currentViewsTable','removeViews','viewsNoneSelected')",
+                                         icon("trash"),
                                          lang$nav$dialogEditMeta$viewsRemove),
                              genSpinner(id = "addViewsLoading", hidden = TRUE, absolute = FALSE,
                                         extraClasses = "gen-spinner-black")
