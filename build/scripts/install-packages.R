@@ -45,7 +45,7 @@ if ( isLinux ) {
 }
 requiredPackages <- c('devtools', 'remotes', 'jsonlite', 'V8', 
     'zip', 'tibble', 'readr', 'R6', 'processx', 
-    'testthat', 'shinytest', 'Rcpp')
+    'testthat', 'shinytest', 'Rcpp', 'futile.logger')
 if ( identical(Sys.getenv('BUILD_DOCKER'), 'true') ) {
     requiredPackages <- c(requiredPackages, 'DBI', 'blob')
 }
@@ -320,6 +320,7 @@ if(length(RlibPathDevel)){
 Sys.setenv(MIRO_BUILD='true')
 for ( modelName in c( 'pickstock', 'transport', 'sudoku', 'tsp', 'farming',
     'inscribedsquare', 'cpack', 'cutstock' ) ) {
+    print(sprintf("Building example app: %s", modelName))
     if(modelName %in% c('inscribedsquare', 'cpack', 'tsp', 'cutstock')){
         Sys.setenv(MIRO_MODE='base')
     }else{

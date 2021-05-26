@@ -1350,7 +1350,7 @@ if(is.null(errMsg)){
   
   scalarDsNameIdx <- match(inputDsNames, names(modelIn))
   scenDataTemplate <- c(modelOutTemplate, modelInTemplate[scalarDsNameIdx])
-  if(is.na(scalarDsNameIdx[length(inputDsNames)])){
+  if(length(scalarDsNameIdx[length(inputDsNames)]) && is.na(scalarDsNameIdx[length(inputDsNames)])){
     # need to add scalars template manually
     scenDataTemplate[[length(scenDataTemplate)]] <- scalarsInTemplate
   }

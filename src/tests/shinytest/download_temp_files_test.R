@@ -19,7 +19,7 @@ content <- get_downloaded_file_content(app, "btDownloadTmpConfirm")
 expect_true(startsWith(content, "$title Stock Selection"))
 app$setInputs(selectDownloadTmp = "dowjones2016.csv")
 content <- get_downloaded_file_content(app, "btDownloadTmpConfirm")
-expect_true(startsWith(content, "date,symbol,price\n"))
+expect_true(startsWith(content, paste0("date,symbol,price", if(.Platform$OS.type == 'windows') "\r\n" else "\n")))
 
 # select multiple files should result in zip
 app$setInputs(selectDownloadTmp = c("pickstock_output_tables.gms", "dowjones2016.csv"))
@@ -27,6 +27,6 @@ expect_files_in_zip(app, "btDownloadTmpConfirm", c("pickstock_output_tables.gms"
 # Make sure doing funny stuff is not possible here..
 app$setInputs(selectDownloadTmp = "asd.csv")
 content <- get_downloaded_file_content(app, "btDownloadTmpConfirm")
-expect_true(identical(content, "Invalid  filename\n"))
+expect_true(identical(content, paste0("Invalid  filename", if(.Platform$OS.type == 'windows') "\r\n" else "\n")))
 app$stop()
 
