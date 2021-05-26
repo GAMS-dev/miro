@@ -246,7 +246,7 @@ if(is.null(errMsg)){
       # legacy app, need to convert to new format
       dbSchemaModel <- substring(dbSchema$tabName[-seq_len(6)],
                                  nchar(gsub("_", "", modelName, fixed = TRUE)) + 2L)
-      dbSchemaModel <- list(schema = setNames(lapply(seq_along(dbSchemaModel), function(i){
+      dbSchemaModel <- lapply(seq_along(dbSchemaModel), function(i){
         if(dbSchemaModel[i] %in% c(scalarsFileName, scalarsOutName)){
           return(NA)
         }
@@ -263,8 +263,12 @@ if(is.null(errMsg)){
         list(tabName = dbSchemaModel[i],
              colNames = dbSchema$colNames[[i + 6L]],
              colTypes = dbSchema$colTypes[[i + 6L]])
-      }), dbSchemaModel), views = list())
-      dbSchemaModel$schema[is.na(dbSchemaModel$schema)] <- NULL
+      })
+      dbSchemaModel[is.na(dbSchemaModel)] <- NULL
+      dbSchemaModel <- list(schema = setNames(dbSchemaModel,
+                                              vapply(dbSchemaModel, "[[", character(1L),
+                                                     "tabName", USE.NAMES = FALSE)),
+                            views = list())
       if(scalarsOutName %in% names(modelOut)){
         scalarMeta <- setNames(modelOut[[scalarsOutName]]$symtypes,
                                modelOut[[scalarsOutName]]$symnames)
