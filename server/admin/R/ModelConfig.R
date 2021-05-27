@@ -106,10 +106,10 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
     }
     
     if(length(newConfig[["accessGroups"]]) > 0){
-        private$accessGroups$join(newConfig[["accessGroups"]])
-        private$currentModelConfigs[[appIndex]][["accessGroups"]] <- as.list(newConfig[["accessGroups"]])
+        private$accessGroups$join(toupper(newConfig[["accessGroups"]]))
+        private$currentModelConfigs[[appIndex]][["accessGroups"]] <- as.list(toupper(newConfig[["accessGroups"]]))
     }else{
-        private$currentModelConfigs[[appIndex]][["accessGroups"]] <- list("users")
+        private$currentModelConfigs[[appIndex]][["accessGroups"]] <- list()
     }
 
     private$writeConfig()
