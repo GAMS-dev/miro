@@ -742,7 +742,7 @@
       "newViewxTitle": "X-axis label",
       "newViewyTitle": "Y-axis label",
       "newViewCbCustomColors": "Use custom colors?",
-      "newViewCbManualColors": "Enter manually?",
+      "newViewCbManualColors": "Enter colors manually?",
       "newViewBtCancel": "Cancel",
       "newViewBtSave": "Save",
       "newViewBtCancelOverwrite": "No",

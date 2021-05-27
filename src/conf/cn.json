@@ -783,7 +783,7 @@
       "newViewxTitle": "X轴标签",
       "newViewyTitle": "Y轴标签",
       "newViewCbCustomColors": "使用自定义颜色？",
-      "newViewCbManualColors": "手动输入？",
+      "newViewCbManualColors": "手动输入颜色？",
       "newViewBtCancel": "取消",
       "newViewBtSave": "保存",
       "newViewBtCancelOverwrite": "不",
