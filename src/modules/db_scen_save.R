@@ -254,6 +254,7 @@ observeEvent(input$tpEditMeta, {
   on.exit(hideEl(session, "#contentAccessPermSpinner"))
   if(tryCatch({
     accessGroups <- worker$getAccessGroups()
+    db$setRemoteUsers(accessGroups)
     FALSE
   }, error = function(e){
     flog.warn("Problems fetching user access groups. Error message: %s",
@@ -320,8 +321,7 @@ observeEvent(input$btUpdateMeta, {
     currentWritePerm <- activeScen$getWritePerm()
     currentExecPerm <- activeScen$getExecPerm()
     
-    activeUserGroups <- db$getUserAccessGroups()
-    
+    activeUserGroups <- c(db$getUserAccessGroups(), db$getRemoteUsers())
     
     if(activeScen$isReadonlyOrLocked){
       newWritePerm <- character(0L)
