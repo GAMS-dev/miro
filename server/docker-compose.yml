@@ -1,10 +1,5 @@
 version: "3.7"
 services:
-  admin:
-    image: miro-admin
-    build: ./admin/
-    restart: "no"
-    command: /bin/true
   ui:
     image: miro-ui
     build:
@@ -12,6 +7,11 @@ services:
       args:
         - R_BASE_VERSION=${R_BASE_VERSION}
       dockerfile: ./server/ui/Dockerfile
+    restart: "no"
+    command: /bin/true
+  admin:
+    image: miro-admin
+    build: ./admin/
     restart: "no"
     command: /bin/true
   auth:

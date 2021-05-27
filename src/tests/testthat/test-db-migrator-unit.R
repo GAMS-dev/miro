@@ -65,9 +65,10 @@ dbSchema <<- DbSchema$new(list(schema = list(results = list(tabName = "results",
 
 for(dbType in c("sqlite", "postgres")){
   if(dbType == "postgres" && skipPostgres){
-    skip("Skipping Postgres tests as MIRO_DB_TYPE is not set to 'postgres'")
+    next
   }
-  procEnv <- list()
+  procEnv <- list(R_LIBS_USER = Sys.getenv("LIB_PATH"),
+                  GAMS_SYS_DIR = Sys.getenv("GAMS_SYS_DIR"))
   
   if(identical(dbType, "sqlite")){
     dbPath <- file.path(testDir, "transport.sqlite3")
@@ -213,19 +214,23 @@ if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
   createTestDb()
 }
 
-ioConfig <<- list(modelOut = list(dowvsindex = NULL),
+ioConfig <<- list(modelOut = list(dowvsindex = NULL, stock_weight = NULL),
                   inputDsNames = character(),
                   hcubeScalars = character())
 
 dbSchema <<- DbSchema$new(list(schema = list(dowvsindex = list(tabName = "dowvsindex",
                                                             colNames = c("date", "index fund"),
-                                                            colTypes = "cd"))))
+                                                            colTypes = "cd"),
+                                             stock_weight = list(tabName = "stock_weight",
+                                                                 colNames = c("symbol", "value"),
+                                                                 colTypes = "cd"))))
 
 for(dbType in c("sqlite", "postgres")){
   if(dbType == "postgres" && skipPostgres){
     skip("Skipping Postgres tests as MIRO_DB_TYPE is not set to 'postgres'")
   }
-  procEnv <- list()
+  procEnv <- procEnv <- list(R_LIBS_USER = Sys.getenv("LIB_PATH"),
+                             GAMS_SYS_DIR = Sys.getenv("GAMS_SYS_DIR"))
   
   if(identical(dbType, "sqlite")){
     dbPath <- file.path(testDir, "pickstock.sqlite3")
@@ -263,13 +268,16 @@ for(dbType in c("sqlite", "postgres")){
   
   test_that(paste0("Migrating tables works (", dbType, "), pickstock"), {
     migrationConfig <- list(dowvsindex = list(oldTableName  = "dowvsindex",
-                                              colNames = c("date", "index fund")))
+                                              colNames = c("date", "index fund")),
+                            stock_weight = list(oldTableName = "stock_weight",
+                                                colNames = c("-", "-")))
     expect_error(dbMigrator$migrateDb(migrationConfig,
                                       forceRemove = TRUE), NA)
     expect_equal(dbReadTable(conn, "dowvsindex")[-1][1:2, ],
                  data.frame(date = c("2016-01-04", "2016-01-05"),
                             "index fund" = c(98.3977098527647, 
                                              99.9596599723713)))
+    expect_false(dbExistsTable(conn, "stock_weight"))
   })
 }
 

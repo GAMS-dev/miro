@@ -12,8 +12,8 @@ const menu = require('./components/menu.js');
 const installRPackages = require('./components/install-r.js');
 
 const requiredAPIVersion = 1;
-const miroVersion = '1.3.99';
-const miroRelease = 'Mar 10 2021';
+const miroVersion = '1.9.99';
+const miroRelease = 'May 23 2021';
 const libVersion = '1.3';
 const exampleAppsData = require('./components/example-apps.js')(miroVersion, requiredAPIVersion);
 const LangParser = require('./components/LangParser');
@@ -857,7 +857,7 @@ ${requiredAPIVersion}.`);
   }
 
   const onErrorStartup = async (appID, e) => {
-    log.warn(`Error during startup of MIRO app with ID: ${appID}.`);
+    log.warn(`Error during startup of MIRO app with ID: ${appID}. Eror message: ${e}`);
 
     if (mainWindow && !miroDevelopMode) {
       mainWindow.send('hide-loading-screen', appID);

@@ -34,6 +34,10 @@ pipeline {
             defaultValue: false,
             description: 'Force release (even if tests fail)?',
             name: 'FORCE_RELEASE')
+        booleanParam(
+            defaultValue: false,
+            description: 'Push MIRO Server images to hub.gams.com (tagged as unstable)?',
+            name: 'PUSH_UNSTABLE_SERVER_IMAGES')
     }
 
     stages {
@@ -84,7 +88,7 @@ pipeline {
                                     yarn docker-build-ci
                                 '''
                             }
-                            if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
+                            if (params.PUSH_UNSTABLE_SERVER_IMAGES || env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
                                 sh '''#!/bin/bash -xe
                                     ## build MIRO server images
                                     pushd server > /dev/null
@@ -295,7 +299,7 @@ pipeline {
                                        }
                                     '''
                                 }
-                            } else if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
+                            } else if (params.PUSH_UNSTABLE_SERVER_IMAGES || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
                                 sh '''#!/bin/bash -xe
                                     ## build MIRO server images
                                     pushd server > /dev/null

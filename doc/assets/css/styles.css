@@ -1500,3 +1500,7 @@ input[type=text], select {
 .api-arguments td {
   padding: 5px;
 }
+.expandable-box-outline {
+  border: 1px solid black;
+  padding: 5px;
+}

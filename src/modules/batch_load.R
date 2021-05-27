@@ -317,13 +317,6 @@ observeEvent(input$btSendQuery, {
     showErrorMsg("Error fetching data", errMsg)
     flog.warn("Problems executing hcubeLoad query. Error message: %s.", conditionMessage(e))
   })
-  if(length(isolate(batchLoadData)) && nrow(batchLoadData)){
-    showEl(session, "#batchLoadButtons")
-    hideEl(session, "#batchLoadNoData")
-  }else{
-    showEl(session, "#batchLoadNoData")
-    hideEl(session, "#batchLoadButtons")
-  }
 })
 
 batchLoadResultsProxy <- dataTableProxy("batchLoadResults")
@@ -368,9 +361,17 @@ observeEvent(input$batchLoadResults_cell_edit, {
 })
 
 output$batchLoadResults <- renderDataTable(
-  if(rv$updateBatchLoadData > 0L && length(batchLoadData) && nrow(batchLoadData)){
+  if(rv$updateBatchLoadData > 0L){
+    if(length(batchLoadData) && nrow(batchLoadData)){
+      showEl(session, "#batchLoadButtons")
+      hideEl(session, "#batchLoadNoData")
+    }else{
+      showEl(session, "#batchLoadNoData")
+      hideEl(session, "#batchLoadButtons")
+      return()
+    }
     data <- batchLoadData[, -1]
-    datatable(
+    dtObj <- datatable(
       data, filter = "bottom", colnames = names(batchLoadFilters)[-1], rownames = FALSE,
       editable = list(target = "cell", disable = list(columns = seq_along(data)[-2L] - 1L)),
       options = list(scrollX = TRUE, columnDefs = list(list(
@@ -378,13 +379,16 @@ output$batchLoadResults <- renderDataTable(
         render = JS(
           "function(data, type, row, meta) {",
           "return type === 'display' && data != null && data.length > 20 ?",
-          "'<span title=\"' + data + '\">' + data.substr(0, 20) + '...</span>' : data;",
+          "'<span class=\"dt-allow-click-event\" title=\"' + data + '\">' + data.substr(0, 20) + '...</span>' : data;",
           "}")
       )))) %>%
-      formatDate(3L,  method = "toLocaleString") %>%
-      formatRound(seq(5L, length(data))[vapply(data[, seq(5L, length(data))],
-                                               is.numeric, logical(1L), USE.NAMES = FALSE)], 
-                  digits = roundPrecision)
+      formatDate(3L,  method = "toLocaleString")
+    if(length(data) > 4L){
+      return(dtObj %>% formatRound(seq(5L, length(data))[vapply(data[, seq(5L, length(data))],
+                                                                is.numeric, logical(1L), USE.NAMES = FALSE)], 
+                                   digits = roundPrecision))
+    }
+    return(dtObj)
   }
 )
 
@@ -456,7 +460,7 @@ output$btBatchDownloadConfirm <- downloadHandler(
     tolower(modelName) %+% "_data.zip"
   },
   content = function(file) {
-    flog.debug("Button to download batch of scenarops clicked.")
+    flog.debug("Button to download batch of scenarios clicked.")
     
     if(!length(sidsToLoad)){
       flog.warn("No scenario IDs to download could be found.")
@@ -513,7 +517,8 @@ observeEvent(input$btBatchRemove, {
       return(NULL)
     }
     showHideEl(session, "#batchRemoveSuccess", 2000L)
-    batchLoadData <<- tibble()
+    batchLoadData <<- batchLoadData[!batchLoadData[[1]] %in% sidsToLoad, ]
+    rv$updateBatchLoadData <- rv$updateBatchLoadData + 1L
     hideEl(session, ".batch-load-content")
     hideModal(session, 2L)
   }else{

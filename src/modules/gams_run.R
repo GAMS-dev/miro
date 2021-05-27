@@ -710,6 +710,7 @@ if(config$activateModules$miroLogFile){
   }
 }
 
+logFilePath <- NULL
 if(config$activateModules$logFile ||
    config$activateModules$miroLogFile){
   logfileObs <- NULL
@@ -719,14 +720,15 @@ if(config$activateModules$logFile ||
   }else{
     logFilePath <- file.path(workDir, config$miroLogFile)
   }
+  writeLogFileToDisk <- TRUE
   if(config$activateModules$attachments && 
      config$storeLogFilesDuration > 0L &&
      !is.null(activeScen)){
     if(!config$activateModules$logFile){
-      logFilePath <- NULL
+      writeLogFileToDisk <- FALSE
     }
   }else{
-    logFilePath <- NULL
+    writeLogFileToDisk <- FALSE
   }
   
   logObs <- observe({
@@ -737,7 +739,7 @@ if(config$activateModules$logFile ||
     
     if(!length(logText)) return()
     
-    if(!is.null(logFilePath)){
+    if(writeLogFileToDisk){
       write_file(logText, logFilePath, append = TRUE)
     }
     appendEl(session, "#logStatusContainer", logText, 

@@ -227,7 +227,7 @@ BatchLoader <- R6Class("BatchLoader",
                              }
                              scenNameList[[j]] <- paste0(scenName, ".gdx")
                              j <- j + 1L
-                             gdxio$wgdx(paste0(tmpDir, .Platform$file.sep, scenName, ".gdx"), 
+                             gdxio$wgdx(paste0(tmpDir, .Platform$file.sep, sanitizeFn(scenName), ".gdx"), 
                                         lapply(dataTmp, function(data){
                                           if(scenId %in% names(data)){
                                             return(data[[scenId]])
@@ -295,19 +295,22 @@ BatchLoader <- R6Class("BatchLoader",
                                                                  tabId, noScenTables))
                              }
                              lapply(seq_along(tableTmp), function(i){
-                               scenId   <- tableTmp[[i]][[1L]][[1L]]
+                               scenId   <- suppressWarnings(as.integer(tableTmp[[i]][[1L]][[1L]]))
+                               
+                               if(is.na(scenId)){
+                                 stop("Invalid scenario ID.", call. = FALSE)
+                               }
                                
                                if(identical(tabId, 1L)){
                                  
-                                 scenName <- tableTmp[[i]][["_sname"]][[1L]]
+                                 sanitizedScenName <- sanitizeFn(tableTmp[[i]][["_sname"]][[1L]])
+                                 dirNameScen <- file.path(tmpDir, sanitizedScenName)
                                  
-                                 dirNameScen <- file.path(tmpDir, scenName)
-                                 
-                                 if(!is.null(sameNameCounter[[scenName]])){
-                                   dirNameScen <- paste0(dirNameScen, "_", sameNameCounter[[scenName]])
-                                   sameNameCounter[[scenName]] <<- sameNameCounter[[scenName]] + 1L
+                                 if(!is.null(sameNameCounter[[sanitizedScenName]])){
+                                   dirNameScen <- paste0(dirNameScen, "_", sameNameCounter[[sanitizedScenName]])
+                                   sameNameCounter[[sanitizedScenName]] <<- sameNameCounter[[sanitizedScenName]] + 1L
                                  }else{
-                                   sameNameCounter[[scenName]] <<- 1L
+                                   sameNameCounter[[sanitizedScenName]] <<- 1L
                                  }
                                  scenIdDirNameMap[[scenId]] <<- dirNameScen
                                  if(!dir.create(dirNameScen)){
@@ -317,7 +320,7 @@ BatchLoader <- R6Class("BatchLoader",
                                }
                                write_csv(tableTmp[[i]][-1L], 
                                          paste0(scenIdDirNameMap[[scenId]], 
-                                                .Platform$file.sep, tableName, ".csv"))
+                                                .Platform$file.sep, sanitizeFn(tableName), ".csv"))
                              })
                            }
                            if(!is.null(progressBar)){

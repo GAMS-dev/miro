@@ -222,7 +222,6 @@ export function modal(msg, okButton, cancelButton,
 }
 
 $(document).ready(() => {
-  changeTheme(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
   if (typeof window.matchMedia('(prefers-color-scheme: dark)').addEventListener !== 'undefined') {
     // browser supports listening to matchMedia change
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {

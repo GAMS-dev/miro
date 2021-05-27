@@ -101,6 +101,7 @@ a:hover {
 }
 .btn-default{
   border: 2px solid #ADADAD;
+  color:#000;
   background-color: #FFF;
   background-color: rgba(0,0,0,0);
   transition: all 500ms ease; 

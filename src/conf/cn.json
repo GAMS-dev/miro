@@ -157,7 +157,7 @@
         "uid": "所有者",
         "sname": "名称",
         "stime":"创建时间",
-        "stag":"作业标签"
+        "stag":"标签"
       }
     },
     "hcubeAnalyze":{
@@ -620,6 +620,7 @@
       "runPaverButton":"启动PAVER",
       "runScriptButton": "启动脚本",
       "downloadAnalysisButton": "下载",
+      "interactiveButtonSb": "将数据加载到沙箱",
       "interactiveButtonTab": "比较(标签视图)",
       "interactiveButtonPivot": "比较(枢轴检视)",
       "interactiveButtonSplit": "比较(拆分视图)",
