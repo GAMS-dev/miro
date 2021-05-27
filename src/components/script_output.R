@@ -14,12 +14,14 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
                                             private$scriptEnv[["PATH"]])
     }
   },
-  isRunning = function(id = NULL){
-    if(is.null(id)){
+  isRunning = function(scriptId = NULL){
+    if(is.null(scriptId)){
       return(length(private$activeScripts) > 0L)
     }
-    scriptId <- paste0("script_", id)
     return(scriptId %in% names(private$activeScripts))
+  },
+  getRunningScriptIds = function(){
+    return(names(private$activeScripts))
   },
   hasResults = function(scriptId = NULL){
     if(is.null(scriptId)){
@@ -60,14 +62,22 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
     return(invisible(self))
   },
   sendContent = function(data, id, scenId = NULL, 
-                         hcube = FALSE, isError = FALSE){
+                         hcube = FALSE, isError = FALSE, inModal = FALSE){
+    if(inModal){
+      hideEl(private$session, "#batchLoadAnalysisSpinner")
+      addClassEl(private$session, "#batchLoadModal .modal-content", "modal-content-fullscreen")
+      addClassEl(private$session, "#batchLoadModal", "modal-dialog-fullscreen")
+      if(!isError){
+        showEl(private$session, "#btDownloadBatchLoadScript")
+      }
+    }
     private$session$sendCustomMessage("gms-scriptExecuted", 
                                       list(id = id,
                                            sid = scenId,
                                            data = data,
                                            hcube = hcube,
                                            isError = isError))
-    if(hcube){
+    if(hcube && !inModal){
       hideEl(private$session, "#analysisLoad")
     }
   },
@@ -92,7 +102,11 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
         hideEl(private$session, paste0("#scenScript_", scenId, "_", id, "_noData"))
       }
       flog.trace("Script output of script: '%s' loaded.", config$id)
-      self$sendContent(dataToLoad[rowNo], id, scenId)
+      outputToLoad <- dataToLoad[rowNo]
+      if(identical(config$markdown, TRUE)){
+        outputToLoad <- markdown(outputToLoad)
+      }
+      self$sendContent(outputToLoad, id, scenId)
       return(config$id)
     })
     if(is.null(scenId)){
@@ -125,7 +139,7 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
     }
     return(invisible(self))
   },
-  run = function(id, hcube = FALSE){
+  run = function(id, hcube = FALSE, inModal = FALSE){
     stopifnot(is.integer(id), id > 0)
     
     if(hcube){
@@ -152,12 +166,14 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
       if(private$activeScriptsTo[[scriptId]] == 0L){
         flog.info("Script: '%s' timed out.", scriptId)
         private$killScript(scriptId)
-        self$sendContent(private$errorMsg$timeout, id, hcube = hcube, isError = TRUE)
+        self$sendContent(private$errorMsg$timeout, id, hcube = hcube, isError = TRUE,
+                         inModal = inModal)
         private$clearProcess(scriptId)
       }else if(length(private$pingProcess(scriptId))){
         if(identical(private$pingProcess(scriptId), 0L)){
           flog.info("Script: '%s' terminated successfully.", scriptId)
-          self$sendContent(self$readOutput(id, scriptId, hcube), id, hcube = hcube)
+          self$sendContent(self$readOutput(id, scriptId, hcube), id, hcube = hcube,
+                           inModal = inModal)
         }else{
           stdout <- tryCatch({
             private$activeScripts[[scriptId]]$read_output()
@@ -166,11 +182,12 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
           })
           flog.warn("Script output: '%s' terminated with exit code: '%s'. Stdout/err: '%s'.", 
                     scriptId, private$pingProcess(scriptId), stdout)
-          self$sendContent(private$errorMsg$crash, id, hcube = hcube, isError = TRUE)
+          self$sendContent(private$errorMsg$crash, id, hcube = hcube, isError = TRUE,
+                           inModal = inModal)
         }
         private$clearProcess(scriptId)
       }else{
-        flog.debug("Script: '%s' still running.", scriptId)
+        flog.trace("Script: '%s' still running.", scriptId)
         if(private$activeScriptsTo[[scriptId]] > 0L){
           private$activeScriptsTo[[scriptId]] <- private$activeScriptsTo[[scriptId]] - 1L
         }
@@ -188,12 +205,17 @@ ScriptOutput <- R6Class("ScriptOutput", public = list(
               is.character(scriptId), length(scriptId) == 1L)
     if(hcube){
       outputFile <- private$hcConfig[[id]]$outputFile
+      parseMarkdown <- identical(private$hcConfig[[id]]$markdown, TRUE)
     }else{
       outputFile <- private$config[[id]]$outputFile
+      parseMarkdown <- identical(private$config[[id]]$markdown, TRUE)
     }
     return(tryCatch({
       private$scriptResults[[scriptId]] <- read_file(file.path(private$workDir,
                                                                outputFile))
+      if(parseMarkdown){
+        return(markdown(private$scriptResults[[scriptId]]))
+      }
       return(private$scriptResults[[scriptId]])
     }, error = function(e){
       flog.error("Problems reading output file of script: '%s'. Error message: '%s'.", 

@@ -47,6 +47,15 @@ const schema = {
     enum: ['TRACE', 'DEBUG', 'INFO',
       'WARN', 'ERROR', 'FATAL'],
   },
+  miroEnv: {
+    type: 'object',
+    propertyNames: {
+      pattern: '^[A-Z_][A-Z0-9_]*$',
+    },
+    additionalProperties: {
+      type: 'string',
+    },
+  },
   important: {
     type: 'array',
     items: {
@@ -60,6 +69,7 @@ const schema = {
         'logLifeTime',
         'language',
         'logLevel',
+        'miroEnv',
       ],
     },
   },
@@ -88,7 +98,7 @@ class ConfigManager extends Store {
           name: 'settings',
         });
         ['gamspath', 'rpath', 'logpath', 'launchExternal', 'remoteExecution',
-          'logLifeTime', 'language', 'logLevel'].forEach((el) => {
+          'logLifeTime', 'language', 'logLevel', 'miroEnv'].forEach((el) => {
           this[el] = superPathConfigData.get(el, '');
         });
         this.important = superPathConfigData.get(
@@ -105,13 +115,24 @@ class ConfigManager extends Store {
     this.logpathDefault = path.join(miroWorkspaceDir, 'logs');
 
     ['gamspath', 'rpath', 'logpath', 'launchExternal', 'remoteExecution',
-      'logLifeTime', 'language', 'logLevel'].forEach((el) => {
+      'logLifeTime', 'language', 'logLevel', 'miroEnv'].forEach((el) => {
       if (this.important.find((iel) => iel === el)) {
         return;
       }
       this[el] = super.get(el, this[el] == null ? '' : this[el]);
     });
     return this;
+  }
+
+  validate(key, val) {
+    const currVal = super.get(key);
+    try {
+      super.set(key, val);
+    } finally {
+      if (currVal != null) {
+        super.set(key, currVal);
+      }
+    }
   }
 
   set(data) {
@@ -174,7 +195,7 @@ class ConfigManager extends Store {
     } if (key === 'language') {
       return 'en';
     } if (key === 'logLevel') {
-      return 'TRACE';
+      return 'INFO';
     } if (key === 'launchExternal') {
       return false;
     } if (key === 'remoteExecution') {

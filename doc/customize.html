@@ -288,7 +288,7 @@ putclose log;
                                       <img class="img-fluid" style= "max-height:300pt;" src="assets/images/configuration_mode/readme.png" alt="README file" />
                                   </div>
                                   <p><b>Usage:</b><br>
-                                  The readme file must be a <a href = "https://guides.github.com/features/mastering-markdown/" target = "_blank">markdown</a> or HTML
+                                  The readme file must be a <a href = "https://guides.github.com/features/mastering-markdown/" target = "_blank">Markdown</a> or HTML
                                   document which is located in the model directory. The README option must be activated in the Configuration Mode. Three options are available:
                                   <ul>
                                     <li><b>README tab title</b> (mandatory)<br>
@@ -312,7 +312,7 @@ putclose log;
                                       </div><!--//icon-holder-->
                                       <div class="content">
                                           <b class="callout-title">Note:</b>
-                                          <p>If you want to include images in your readme file, they must be located in the folder <i>static_&lt;modelname&gt;</i> in your model directory. In the markdown/HTML file, the path of the images used must be pre-fixed with "static_&lt;modelname&gt;".</p>
+                                          <p>If you want to include images in your readme file, they must be located in the folder <i>static_&lt;modelname&gt;</i> in your model directory. In the Markdown/HTML file, the path of the images used must be pre-fixed with "static_&lt;modelname&gt;".</p>
                                       </div><!--//content-->
                                   </div><!--//callout-block-->
                                   </div>
@@ -461,7 +461,7 @@ putclose;
                                   Note, that the these command line arguments are static; they can not be changed by the user from MIRO.
                                   <br>For more information about command line parameters that can be set from MIRO using widgets like sliders, dropdown menus, checkboxes etc. click <a href="./model.html#command-line">here</a>.</p>
                                   <h4 id="analysis-scripts" class="docu-general-header">Analysis scripts</h4>
-                                  <p>MIRO allows you to run custom analysis scripts in both Base and Hypercube Mode. These scripts have to generate HTML output which will be displayed in the interface once the script finished. Scripts need to be placed in a folder called <span class="code">scripts_&lt;modelname&gt;</span>; this is also where MIRO executes them (important when you use relative paths in your script).</p>
+                                  <p>MIRO allows you to run custom analysis scripts in both Base and Hypercube Mode. These scripts have to generate HTML or Markdown output which will be displayed in the interface once the script finished. Scripts need to be placed in a folder called <span class="code">scripts_&lt;modelname&gt;</span>; this is also where MIRO executes them (important when you use relative paths in your script).</p>
                                     <div class="callout-block callout-warning">
                                         <div class="icon-holder">
                                             <i class="fas fa-info-circle"></i>
@@ -472,15 +472,25 @@ putclose;
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                   <h6 onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Base Mode</h6>
-                                  <p class="expanded">In the Base Mode, your analysis scripts will appear as a new tab in the output data section. When the user runs your script, MIRO saves the data of the current scenario in a gdx file called <span class="code">data.gdx</span> in: <span class="code">scripts_&lt;modelname&gt;</span>. Your script can then read and analyze this data and produce output in the form of a single HTML file. This file will be loaded and displayed in MIRO once your script finished. Script results are stored in the database as part of a scenario. This means that when you load a scenario (either to compare it with other scenarios or to modify it), the script results are loaded as well. <br><br>
-                                  Please have a look at the following example of an analysis script in Hypercube Mode to learn how to include a script using the Configuration Mode. </p>
-                                  <h6 id="hcube-analysis-scripts" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Hypercube Mode</h6>
+                                  <p class="expanded">In the Base Mode, your analysis scripts will appear as a new tab in the output data section. When the user runs your script, MIRO saves the data of the current scenario in a gdx file called <span class="code">data.gdx</span> in: <span class="code">scripts_&lt;modelname&gt;</span>. Your script can then read and analyze this data and produce output in the form of a single HTML or Markdown file. This file will be loaded and displayed in MIRO once your script finished. Script results are stored in the database as part of a scenario. This means that when you load a scenario (either to compare it with other scenarios or to modify it), the script results are loaded as well. <br><br>
+                                  Please have a look at the following example of an analysis script for batches of scenarios to learn how to include a script using the Configuration Mode.</p>
+                                  <h6 id="batch-analysis-scripts" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Batch analysis</h6>
                                   <div class="expanded">
-                                    <p>In the Hypercube Mode, custom scripts can be used to run analyses on multiple scenarios at once. Let's consider the example that comes with the <i>pickstock</i> model: a <a href="https://jupyter.org" target="_blank">Jupyter Notebook</a> that tries to answer high-level questions like "How many training days should I use" and "How many stocks should I choose". You can find this script in <span class="code">scripts_pickstock/hcube_analysis.ipynb</span>. First, we have to tell MIRO that we want to use a custom analysis script. The Configuration Mode allows us to set everything up:</p>
+                                    <p>Custom scripts can be used to run analyses on multiple scenarios at once from the <a href="./start.html#scenario-loading">Batch Load</a> module. Let's consider the example that comes with the <i>pickstock</i> model: a <a href="https://jupyter.org" target="_blank">Jupyter Notebook</a> that tries to answer high-level questions like "How many training days should I use" and "How many stocks should I choose". You can find this script in <span class="code">scripts_pickstock/hcube_analysis.ipynb</span>. First, we have to tell MIRO that we want to use a custom analysis script. The Configuration Mode allows us to set everything up:</p>
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" style="max-height:300pt" src="assets/images/configuration_mode/hcube_script_example.png" alt="Hypercube analysis script configuration" />
                                     </div>
-                                    <p>Each script has to have a unique identifier. The identifier is only used internally and should not be changed. What's displayed in the user interface is the script alias. The command to run is "jupyter", because we want to run a Jupyter Notebook. Note that in order for this to work, <a href="https://jupyter.org/install" target="_blank">Jupyter</a> needs to be installed on the client's machine and added to the <a href="https://en.wikipedia.org/wiki/PATH_(variable)" target="_blank">PATH</a>. Jupyter allows us to run and convert our notebook to HTML. In order to do so, we specify the relevant arguments. The resulting call would be: <kbd>jupyter nbconvert --to html --execute hcube_analysis.ipynb</kbd>.</p>
+                                    <p>Each script has to have a unique identifier. The identifier is only used internally and should not be changed. What's displayed in the user interface is the script alias. The command to run is "jupyter", because we want to run a Jupyter Notebook. Note that in order for this to work, <a href="https://jupyter.org/install" target="_blank">Jupyter</a> needs to be installed on the client's machine and added to the <a href="https://en.wikipedia.org/wiki/PATH_(variable)" target="_blank">PATH</a>.</p>
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Info:</b>
+                                            <p>For more information on how to set up the Python environment required to run this example and make MIRO aware of it, see <a href="./deployment.html#custom-environments">here</a>.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                    <p>Jupyter allows us to run and convert our notebook to HTML. In order to do so, we specify the relevant arguments. The resulting call would be: <kbd>jupyter nbconvert --to html --execute hcube_analysis.ipynb</kbd>.</p>
                                     <p>Now that we set everything up, we can start testing our script. We select a few scenarios that we want to analyze, and click on "Analyze". The following dialog opens:</p>
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" style="max-height:150pt" src="assets/images/batch_img/hcube_script_select.png" alt="Dialog to select Hypercube analysis script" />
@@ -844,7 +854,7 @@ $offExternalInput
                                   <p>Besides the default tabular format, multidimensional GAMS symbols can be visualized as graphs. GAMS MIRO offers comprehensive visualization options.
                                   A lot of plotting types are available and only need to be configured, i.e. adapted to your model-specific data.
                                   </p>
-                                  <div style="outline: solid 1px black; outline-offset: 5px; margin:30px 0px">
+                                  <div class="expandable-box-outline" style="margin:30px 0px">
                                         <h3 id="symbol-dimensions"  class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Advanced: Symbol dimensions</h3>
                                         <div class="section-block" style="display:none">
                                             <p>If you want to configure a graphic for a GAMS symbol, you have to be aware of how many dimensions your GAMS symbol has, as this influences the type of graph to choose.
@@ -1091,59 +1101,78 @@ $offExternalInput
                                   <h6 id = "custom-input-widgets" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Custom input widgets</h6>
                                   <div class="expanded"><p>MIRO has an API that allows you to use custom input widgets such as charts to produce input data. This means that input data to your GAMS model can be generated by interactively modifying a chart or any other type of renderer.</p>
                                   <p>Before reading this section, you should first study the chapter about <a href="#custom-renderers" class="scrollto">custom renderers</a>. Custom widgets are an extension of custom renderers that allow you to return data back to MIRO.</p>
+                                  <div class="callout-block callout-warning">
+                                     <div class="icon-holder">
+                                         <i class="fas fa-info-circle"></i>
+                                     </div><!--//icon-holder-->
+                                     <div class="content">
+                                         <b class="callout-title">Note:</b>
+                                         <p>The API of the custom input widgets has been changed with MIRO 2.0. Documentation for API version 1 (MIRO 1.x) can be found in the <a href="https://github.com/GAMS-dev/miro/blob/v1.3.2/doc/customize.html" target="_blank">MIRO GitHub repository</a>.</p>
+                                     </div><!--//content-->
+                                 </div><!--//callout-block-->
                                   <p>To understand how this works, we will look at an example app that allows you to solve <a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank">Sudokus</a>. We would like to visualize the Sudoku in a 9x9 grid that is divided into 9 subgrids - 3x3 cells each. We will use the same tool that we use to display input tables in MIRO, but we could have used any other R package or even a combination of those. Let's first look at the boilerplate code required for any custom input widget:
                                   <div class="code-block">
                                         <pre><code class="language-r">
-&#x3C;rendererName&#x3E;Output &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
+mirorwidget_&#x3C;symbolName&#x3E;Output &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
   ns &#x3C;- NS(id)
 }
 
-render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, ...){
-  force(data)
-  return(reactive(data))
+renderMirowidget_&#x3C;symbolName&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, views = NULL, outputScalarsFull = NULL, ...){
+  return(reactive(data()))
 }
                                         </code></pre>
                                     </div><!--//code-block-->
-                                    You will notice that the boilerplate code for custom widgets is almost identical to that of <a href="#custom-renderers" class="scrollto">custom renderers</a>. Let's focus on the differences: <kbd>force(data)</kbd> forces the <kbd>data</kbd> argument to evaluate. This is necessary because otherwise your function would not be updated when new data is pushed into your widget (for example, by the user loading a scenario from the database). If you are interested in the details, search for <i>lazy evaluation in R</i>.
+                                    You will notice that the boilerplate code for custom widgets is almost identical to that of <a href="#custom-renderers" class="scrollto">custom renderers</a>.
                                     The main difference to a custom renderer is that we now have to return the input data to be passed to GAMS. Note that we return the data wrapped inside a <a href="https://shiny.rstudio.com/tutorial/written-tutorial/lesson6/" target="_blank">reactive expression</a>. This will ensure that you always return the current state of your data. When the user interacts with your widget, the data is updated.</p>
-                                    <p>Let's get back to the Sudoku example we mentioned earlier. We place a file <span class="code">sudoku.R</span> within the custom renderer directory of our app: <span class="code">&lt;modeldirectory&gt;renderer_sudoku</span>. Renderer files can have any valid file name with the extension <span class="code">.R</span> as long as they are located within the <span class="code">&lt;modeldirectory&gt;/renderer_&lt;modelname&gt;</span> directory.</p>
+                                    <p>The other important difference from custom renderers is that the <kbd>data</kbd> argument here is also a reactive expression (or a list of reactive expressions in case you specified additional datasets to be communicated with your widget), NOT a <a href="https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html">tibble</a>.</p>
+                                    <p>Let's get back to the Sudoku example we mentioned earlier. We place a file <span class="code">mirowidget_initial_state.R</span> within the custom renderer directory of our app: <span class="code">&lt;modeldirectory&gt;renderer_sudoku</span>. The output and render functions for custom widgets should be named <span class="code">mirorwidget_&#x3C;symbolName&#x3E;output</span> and <span class="code">renderMirowidget_&#x3C;symbolName&#x3E;</span> respectively, where <span class="code">symbolName</span> is the lowercase name of the GAMS symbol for which the widget is defined.</p>
                                     <p>To tell MIRO about which input symbol(s) should use our new custom widget, we have to edit the <span class="code">sudoku.json</span> file located in the <span class="code">&lt;modeldirectory&gt;/conf_&lt;modelname&gt;</span> directory. To use our custom widget <kbd>sudoku</kbd> for an input symbol named <kbd>initial_state</kbd> in our model, the following needs to be added to the configuration file:</p><pre><code class="language-json">{
 "inputWidgets": {
     "initial_state": {
       "widgetType": "custom",
-      "rendererName": "sudoku",
+      "rendererName": "mirowidget_initial_state",
       "alias": "Initial state",
+      "apiVersion": 2,
       "options": {
         "isInput": true
       }
     }
   }
 }</code></pre><p>We specified that we want an input widget of type <kbd>custom</kbd> for our GAMS symbol <kbd>initial_state</kbd>. Furthermore, we declared an alias for this symbol which defines the tab title. We also provided a list of options to our renderer functions. In our Sudoku example, we want to use the same renderer for both input data and output data. Thus, when using our new renderer for the input symbol <kbd>initial_state</kbd>, we pass an option <kbd>isInput</kbd> with the value <kbd>true</kbd> to our renderer function.</p>
+<div class="callout-block callout-warning">
+     <div class="icon-holder">
+         <i class="fas fa-info-circle"></i>
+     </div><!--//icon-holder-->
+     <div class="content">
+         <b class="callout-title">Note:</b>
+         <p>For backward compatibility reasons, you currently need to explicitly specify that you want to use API version 2 for custom input widgets. In a future version of MIRO, this will become the default.</p>
+     </div><!--//content-->
+ </div><!--//callout-block-->
 </p><p>Let's concentrate again on the renderer functions and extend the boilerplate code from before:</p><div class="code-block">
                                         <pre><code class="language-r">
-sudokuOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
+mirowidget_initial_stateOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
   ns &#x3C;- NS(id)
   rHandsontableOutput(ns('sudoku'))
 }
 
-renderSudoku &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, ...){
-  force(data)
-  output$sudoku &#x3C;- renderRHandsontable(rhandsontable(data,
-                                                     readOnly = !isTRUE(options$isInput),
-                                                     rowHeaders = FALSE))
+renderMirowidget_initial_state &#x3C;- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, ...){
+  output$sudoku &#x3C;- renderRHandsontable(
+    rhandsontable(if(isTRUE(options$isInput)) data() else data, 
+                  readOnly = !isTRUE(options$isInput), 
+                  rowHeaders = FALSE))
   if(isTRUE(options$isInput)){
     return(reactive(hot_to_r(input$sudoku)))
   }
 }
                                         </code></pre>
-                                  </div><p>Let's disect what we just did: First, we defined our two renderer functions <kbd>sudokuOutput</kbd> and <kbd>renderSudoku</kbd>. Since we want to use the R package <a href="https://jrowen.github.io/rhandsontable/" target="_blank">rhandsontable</a> to display our Sudoku grid, we have to use the placeholder function <kbd>rHandsontableOutput</kbd> as well as the corresponding renderer function <kbd>renderRHandsontable</kbd>. If you are wondering what the hell placeholder and renderer functions are, read the section on <a href="#custom-renderers" class="scrollto">custom renderers</a>.</p>
-                                  <p>Note that we use the option <kbd>isInput</kbd> we specified previously to determine whether our table should be read-only or not. Furthermore, we only return a reactive expression when we use the renderer function to return data - in the case of a custom input widget. A detail you might stumble upon is the expression <kbd>hot_to_r(input$sudoku)</kbd>. This is simply a way to <a href="https://en.wikipedia.org/wiki/Serialization" target="_blank">deserialize</a> the data coming from the UI that the <a href="https://jrowen.github.io/rhandsontable/" target="_blank">rhandsontable</a> tool provides. What's important is that we return an R data frame that has exactly the number of columns MIRO expects our input symbol to have (in this example <kbd>initial_state</kbd>).</p><p>That's all there is to it! We configured our first custom widget. To use the same renderer for the results that are stored in a GAMS symbol called <i>result</i>, simply add the following lines to the <span class="code">sudoku.json</span> file. Note that we do not set the option <kbd>isInput</kbd> here.</p><pre><code class="language-r">"dataRendering": {
+                                  </div><p>Let's disect what we just did: First, we defined our two renderer functions <span class="code">mirowidget_initial_stateOutput</span> and <span class="code">renderMirowidget_initial_state</span>. Since we want to use the R package <a href="https://jrowen.github.io/rhandsontable/" target="_blank">rhandsontable</a> to display our Sudoku grid, we have to use the placeholder function <kbd>rHandsontableOutput</kbd> as well as the corresponding renderer function <kbd>renderRHandsontable</kbd>. If you are wondering what the hell placeholder and renderer functions are, read the section on <a href="#custom-renderers" class="scrollto">custom renderers</a>.</p>
+                                  <p>Note that we use the option <kbd>isInput</kbd> we specified previously to determine whether our table should be read-only or not. Furthermore, we only return a reactive expression when we use the renderer function to return data - in the case of a custom input widget. Note that for input widgets, we need to run the reactive expression (<kbd>data()</kbd>) to get the tibble with our input data. Whenever the data changes (for example, because the user uploaded a new CSV file), the reactive expression is updated, which in turn causes our table to be re-rendered with the new data (due to the reactive nature of the <kbd>renderRHandsontable</kbd> function). The concept of reactive programming is a bit difficult to understand at first, but once you do, you'll appreciate how handy it is.</p>
+                                  <p>A detail you might stumble upon is the expression <kbd>hot_to_r(input$sudoku)</kbd>. This is simply a way to <a href="https://en.wikipedia.org/wiki/Serialization" target="_blank">deserialize</a> the data coming from the UI that the <a href="https://jrowen.github.io/rhandsontable/" target="_blank">rhandsontable</a> tool provides. What's important is that we return an R data frame that has exactly the number of columns MIRO expects our input symbol to have (in this example <kbd>initial_state</kbd>).</p><p>That's all there is to it! We configured our first custom widget. To use the same renderer for the results that are stored in a GAMS symbol called <i>result</i>, simply add the following lines to the <span class="code">sudoku.json</span> file. Note that we do not set the option <kbd>isInput</kbd> here.</p><pre><code class="language-r">"dataRendering": {
     "results": {
-      "outType": "sudoku"
+      "outType": "mirowidget_initial_state"
     }
   }</code></pre>
-  <p>The full version of the custom renderer described here as well as the corresponding GAMS model <i>Sudoku</i> can be found in the MIRO model library.</p>
-  <p>If you read until this point, you might have noticed that there is a parameter in the renderer function that we did not talk about yet: <kbd>rendererEnv</kbd>. This parameter is a static R environment that is persistent across different calls to the renderer function. Each time the input data of your widget is updated (e.g. due to the user loading a new scenario from the database), your renderer function is called. One case where this can become problematic is when you make use of <a href="https://shiny.rstudio.com/reference/shiny/0.14/observe.html" target="__blank">observers</a> in your renderer functions. Every time your renderer function is called, all observers are re-registered, which leads to duplicated observers. To avoid this problem, you must ensure that observers are cleaned up when they are no longer needed. You do this by assigning them to the <kbd>rendererEnv</kbd> environment. An example where this is extensively used is the model <kbd>tsp</kbd>, which can be found in the MIRO model library.</p>
+  <p>The full version of the custom renderer described here as well as the corresponding GAMS model <i>Sudoku</i> can be found in the MIRO model library. There you will also find an example of how to access values of (other) scalar input widgets from within your code. Note that MIRO currently supports only scalar input widgets as <code class="language-json">"additionalData"</code>.</p>
                                 </div>
                             </section>
                             <section id="jsonfiles" class="doc-section">
@@ -1467,7 +1496,7 @@ renderMirorenderer_optsched &#x3C;- function(input, output, session, data, optio
                                         </div><!--//content-->
                                     </div>
                                     <p>
-                                      The data that you want to visualize is supplied to your rendering function by the <kbd>data</kbd> argument - an R <a href="https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html">tibble</a>, a data structure that is very similar to a Data Frame. In case you specified <a class="link" href="./charts.html#custom-graphics">additional datasets</a> to be communicated with your custom renderer, <kbd>data</kbd> will be a named list of <i>tibbles</i> where the names are the GAMS symbol names. In addition, the values of all output scalars can be accessed via the argument <kbd>outputScalarsFull</kbd> (a tibble with the columns <i>scalar</i>, <i>description</i>, <i>value</i>). The function argument <kbd>path</kbd> is a string (a one-dimensional character vector) that specifies the absolute path to your <span class="code">renderer_&lt;modelname&gt;</span> directory. This is useful if you want to include external files in your custom renderer functions. Optional parameters that you want to pass to the renderer can be accessed via the argument <kbd>options</kbd> - a (nested) list. </p>
+                                      The data that you want to visualize is supplied to your rendering function by the <kbd>data</kbd> argument - an R <a href="https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html">tibble</a>, a data structure that is very similar to a Data Frame. In case you specified <a class="link" href="./charts.html#custom-graphics">additional datasets</a> to be communicated with your custom renderer, <kbd>data</kbd> will be a named list of <i>tibbles</i> where the names are the GAMS symbol names. In addition, the values of all input and output scalars can be accessed via the argument <kbd>outputScalarsFull</kbd> (a tibble with the columns <i>scalar</i>, <i>description</i>, <i>value</i>). The function argument <kbd>path</kbd> is a string (a one-dimensional character vector) that specifies the absolute path to your <span class="code">renderer_&lt;modelname&gt;</span> directory. This is useful if you want to include external files in your custom renderer functions. Optional parameters that you want to pass to the renderer can be accessed via the argument <kbd>options</kbd> - a (nested) list. </p>
                                       <div class="callout-block callout-success">
                                           <div class="icon-holder">
                                               <i class="fas fa-thumbs-up"></i>
@@ -1483,7 +1512,7 @@ renderMirorenderer_optsched &#x3C;- function(input, output, session, data, optio
                                             <pre><code class="language-json">{
    &#x22;dataRendering&#x22;:{
       &#x22;optSched&#x22;:{
-         &#x22;outType&#x22;:&#x22;transportMap&#x22;,
+         &#x22;outType&#x22;:&#x22;mirorenderer_optsched&#x22;,
          &#x22;height&#x22;:&#x22;700&#x22;,
          &#x22;options&#x22;:{
             &#x22;title&#x22;:&#x22;Optimal transportation schedule&#x22;
@@ -1492,7 +1521,7 @@ renderMirorenderer_optsched &#x3C;- function(input, output, session, data, optio
    }
 }</code></pre>
                                         </div><!--//code-block-->
-                                        <p>As you can see we bound the GAMS parameter <span class="code">optSched</span> to our new custom renderer <span class="code">transportMap</span>. Furthermore, we specified a parameter: <span class="code">title</span> that can be accessed by our custom renderer via the <span class="code">options</span> list. </p>
+                                        <p>As you can see we bound the GAMS parameter <span class="code">optSched</span> to our new custom renderer <span class="code">mirorenderer_optsched</span>. Furthermore, we specified a parameter: <span class="code">title</span> that can be accessed by our custom renderer via the <span class="code">options</span> list. </p>
                                       <p>If we decided to run our MIRO app now, we still would not be able to see anything other than a blank area. Thus, we will need to fill our renderer with some life:
                                         <div class="code-block">
                                             <pre><code class="language-r">mirorenderer_optschedOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
@@ -1524,6 +1553,7 @@ renderMirorenderer_optsched &#x3C;- function(input, output, session, data, optio
                                       <div class="section-block">
                                           <img class="img-fluid" src="assets/images/custom-renderer-map.png" alt="Result of custom renderer - Map with markers" />
                                       </div>
+                                      <p>If you read until this point, you might have noticed that there is a parameter in the renderer function that we did not talk about yet: <kbd>rendererEnv</kbd>. This parameter is a static R environment that is persistent across different calls to the renderer function. Each time the data of your widget is updated (e.g. due to the user loading a new scenario from the database), your renderer function is called. One case where this can become problematic is when you make use of <a href="https://shiny.rstudio.com/reference/shiny/0.14/observe.html" target="__blank">observers</a> in your renderer functions. Every time your renderer function is called, all observers are re-registered, which leads to duplicated observers. To avoid this problem, you must ensure that observers are cleaned up when they are no longer needed. You do this by assigning them to the <kbd>rendererEnv</kbd> environment. An example where this is extensively used is the model <kbd>tsp</kbd>, which can be found in the MIRO model library.</p>
                                       <p>You now know everything you need in order to get started writing your own custom renderers! Congratulations! In case you create a new renderer that you would like to share so that others can benefit from your work as well, please <a href="mailto:miro@gams.com" target="_blank">contact us</a>!
                                       </p>
                                       <h5 id="additional-datasets">Additional datasets</h5>
@@ -1532,7 +1562,7 @@ renderMirorenderer_optsched &#x3C;- function(input, output, session, data, optio
                                             <pre><code class="language-json">{
    &#x22;dataRendering&#x22;:{
       &#x22;optSched&#x22;:{
-         &#x22;outType&#x22;:&#x22;transportMap&#x22;,
+         &#x22;outType&#x22;:&#x22;mirorenderer_optsched&#x22;,
          &#x22;height&#x22;:&#x22;700&#x22;,
          &#x22;options&#x22;:{
             &#x22;title&#x22;:&#x22;Optimal transportation schedule&#x22;
@@ -1558,7 +1588,7 @@ renderMirorenderer_optsched &#x3C;- function(input, output, session, data, optio
                                             <pre><code class="language-json">{
    &#x22;dataRendering&#x22;:{
       &#x22;optSched&#x22;:{
-         &#x22;outType&#x22;:&#x22;transportMap&#x22;,
+         &#x22;outType&#x22;:&#x22;mirorenderer_optsched&#x22;,
          &#x22;height&#x22;:&#x22;700&#x22;,
          &#x22;options&#x22;:{
             &#x22;title&#x22;:&#x22;Optimal transportation schedule&#x22;

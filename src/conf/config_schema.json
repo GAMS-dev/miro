@@ -1099,6 +1099,24 @@
                       "description":"Additional options",
                       "type":"object"
                    },
+                   "apiVersion":{
+                     "description":"API version to use",
+                     "type":"integer",
+                     "minimum":1,
+                     "maximum":2,
+                     "default":1
+                   },
+                   "additionalData":{
+                     "description":"Specify additional input symbols whose data should be handed to custom widget. Currently, only data from scalar widgets (sliders, dropdowns etc.) is supported.",
+                    "type":["array", "string"],
+                    "minLength":1,
+                    "minItems":1,
+                    "uniqueItems":true,
+                    "items":{  
+                       "type":"string",
+                       "minLength":1
+                    }
+                   },
                    "noImport":{  
                     "description":"Boolean that specifies whether data should not be imported from external source",
                     "type":"boolean"
@@ -2545,6 +2563,10 @@
                     "type":"string",
                     "minLength":3
                   },
+                  "markdown": {
+                    "description": "Parse output as markdown?",
+                    "type": "boolean"
+                  },
                   "timeout": {
                     "description":"Timeout (seconds) when process shall be interrupted. -1 for infinity.",
                     "type":"integer",
@@ -2559,7 +2581,7 @@
              "uniqueItems":true,
              "items":{
                 "type":"object",
-                "description": "Scripts that will be displayed in the analysis section in the Hypercube mode and is feeded with input and output data of all selected scenarios",
+                "description": "Scripts for analyzing batches of scenarios.",
                 "additionalProperties":false,
                 "properties":{
                   "title": {
@@ -2589,6 +2611,10 @@
                     "description":"Output filename that shall be displayed in MIRO once script is finished",
                     "type":"string",
                     "minLength":3
+                  },
+                  "markdown": {
+                    "description": "Parse output as markdown?",
+                    "type": "boolean"
                   },
                   "timeout": {
                     "description":"Timeout (seconds) when process shall be interrupted. -1 for infinity.",

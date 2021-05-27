@@ -1,3 +1,12 @@
+resetCompTabset <- function(tabsetId){
+  updateTabsetPanel(session, paste0("contentScen_", tabsetId), 
+                    paste0("contentScen_", tabsetId, "_1"))
+  if(isGroupOfSheets[[1]]){
+    updateTabsetPanel(session, paste0("contentScen_", tabsetId, "_1"), 
+                      paste0("contentScen_", tabsetId, "_1_1"))
+  }
+}
+
 observeEvent(input$btSplitView, {
   switchCompareMode(session, input$btSplitView, numberScenTabs)
   if(identical(input$btSplitView, "tabView")){
@@ -47,6 +56,7 @@ loadSandboxScen <- function(scenId, refresh = FALSE){
   })){
     return()
   }
+  views$duplicateSandboxConf(scenId)
   scenData$load("sb", refId = tabIdToRef(scenId))
   renderScenInCompMode(scenId, refreshData = refresh)
   # load script results
@@ -84,40 +94,27 @@ observeEvent(input$loadActiveScenSplitComp, {
                User most likely tried to tamper with the app.", isolate(input$loadActiveScenSplitComp))
     return()
   }
-  updateTabsetPanel(session, paste0("contentScen_", id), 
-                    paste0("contentScen_", id, "_1"))
-  if(isGroupOfSheets[[1]]){
-    updateTabsetPanel(session, paste0("contentScen_", id, "_1"), 
-                      paste0("contentScen_", id, "_1_1"))
-  }
   loadSandboxScen(id, refresh = FALSE)
 })
-
-observeEvent(input$btScenSplit1_close, {
-  flog.debug("Close Scenario button clicked (left box in split view).")
-  
-  if(!is.null(dynamicUILoaded$dynamicTabsets[["tab_2"]])){
-    dynamicUILoaded$dynamicTabsets[["tab_2"]][["content"]][] <<- FALSE
+closeScenSplitBox <- function(tabsetId){
+  tabsetIdChar <- as.character(tabsetId)
+  if(!is.null(dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetIdChar)]])){
+    dynamicUILoaded$dynamicTabsets[[paste0("tab_", tabsetIdChar)]][["content"]][] <<- FALSE
   }
-  views$clearConf("2")
-  scenData$clear("cmpSplitL")
+  views$clearConf(tabsetIdChar)
+  scenData$clear(if(identical(tabsetId, 2L)) "cmpSplitL" else "cmpSplitR")
   
   # show button and hide content
-  hideEl(session, "#cmpScenTitle_2")
-  hideEl(session, "#scenSplit1_content")
-  showEl(session, "#scenSplit1_open")
+  resetCompTabset(tabsetIdChar)
+  hideEl(session, paste0("#cmpScenTitle_", tabsetIdChar))
+  hideEl(session, paste0("#scenSplit", tabsetId - 1L, "_content"))
+  showEl(session, paste0("#scenSplit", tabsetId - 1L, "_open"))
+}
+observeEvent(input$btScenSplit1_close, {
+  flog.debug("Close Scenario button clicked (left box in split view).")
+  closeScenSplitBox(2L)
 })
 observeEvent(input$btScenSplit2_close, {
   flog.debug("Close Scenario button clicked (right box in split view).")
-  
-  if(!is.null(dynamicUILoaded$dynamicTabsets[["tab_3"]])){
-    dynamicUILoaded$dynamicTabsets[["tab_3"]][["content"]][] <<- FALSE
-  }
-  views$clearConf("3")
-  scenData$clear("cmpSplitR")
-  
-  # show button and hide content
-  hideEl(session, "#cmpScenTitle_3")
-  hideEl(session, "#scenSplit2_content")
-  showEl(session, "#scenSplit2_open")
+  closeScenSplitBox(3L)
 })

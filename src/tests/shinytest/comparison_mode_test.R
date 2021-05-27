@@ -19,11 +19,11 @@ app$findElement("#btCompareScen")$click()
 Sys.sleep(0.2)
 app$findElement("a[data-value='contentScen_5_2']")$click()
 app$findElement("a[data-value='scen_4_']")$click()
-Sys.sleep(1)
+Sys.sleep(2)
 expect_true(app$waitFor("$('.tab-content div[data-value=\"contentScen_4_2\"]').is(':visible');", timeout = 50))
 app$findElement("a[data-value='contentScen_4_5']")$click()
 app$findElement("a[data-value='scen_5_']")$click()
-Sys.sleep(1)
+Sys.sleep(2)
 expect_true(app$waitFor("$('.tab-content div[data-value=\"contentScen_5_5\"]').is(':visible');", timeout = 50))
 
 #test compare mode in split view

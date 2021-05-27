@@ -8,6 +8,7 @@ const inputLogLifetime = $('#logLifeTime');
 const inputLanguage = $('#language');
 const inputLogLevel = $('#logLevel');
 const saveButton = $('#btSave');
+const btEnvReset = $('#btEnvReset');
 
 let lang = {};
 
@@ -18,6 +19,7 @@ let oldConfig = {};
 const newConfig = {};
 let defaultValues;
 let importantKeys;
+let noEnvDesc = 'No environment is specified';
 let requireRestart = false;
 let pathValidating = false;
 
@@ -52,6 +54,31 @@ if (['darwin', 'win32'].includes(process.platform)) {
   // do not allow changing R path on macOS/Windows as R is bundled here
   $('#rpathWrapper').hide();
 }
+
+function updateEnvTable(envData) {
+  if (envData && Object.keys(envData).length > 0) {
+    btEnvReset.attr('disabled', false);
+    newConfig.miroEnv = envData;
+    $('#env tbody').html(Object.entries(envData).map((entry) => `<tr><td>${entry[0]}</td><td>${entry[1]}</td></tr>`).join(''));
+  } else {
+    newConfig.miroEnv = null;
+    btEnvReset.attr('disabled', true);
+    $('#env tbody').html(`<tr><td colspan="2">${noEnvDesc}</td></tr>`);
+  }
+}
+
+$('#btEnvImport').on('click', () => {
+  ipcRenderer.send('import-miroenv');
+});
+
+$('#btEnvExport').on('click', () => {
+  ipcRenderer.send('export-miroenv');
+});
+
+$('#btEnvReset').on('click', () => {
+  updateEnvTable();
+  saveButton.attr('disabled', false);
+});
 
 saveButton.on('click', () => {
   if (pathValidating === true) {
@@ -114,6 +141,11 @@ ipcRenderer.on('settings-new-path-selected', (e, id, pathSelected) => {
   }
 });
 
+ipcRenderer.on('update-miroEnv', (e, envData) => {
+  updateEnvTable(envData);
+  saveButton.attr('disabled', false);
+});
+
 Object.keys(pathConfig).forEach((id) => {
   $(`#btPathSelect_${id}`).click(genPathSelectHandler(id));
 
@@ -152,15 +184,17 @@ $('.btn-reset-nonpath').click(function resetClickNonPath() {
 ipcRenderer.on('settings-loaded', (e, data, defaults, langData) => {
   if (langData != null && lang.title == null) {
     lang = langData;
-    ['title', 'general-tab', 'paths-tab', 'launchBrowser', 'browserReset', 'generalLanguage', 'languageReset',
+    ['title', 'general-tab', 'paths-tab', 'env-tab', 'launchBrowser', 'browserReset', 'generalLanguage', 'languageReset',
       'generalRemoteExec', 'remoteExecReset', 'generalLogging', 'loggingReset', 'generalLoglife', 'loglifeReset',
       'pathMiroapp', 'pathMiroappSelect', 'resetPathMiroapp', 'pathGams', 'pathGamsSelect', 'pathGamsReset', 'pathLog',
-      'pathLogSelect', 'pathLogReset', 'pathR', 'pathRSelect', 'pathRReset', 'needHelp', 'btSave'].forEach((id) => {
+      'pathLogSelect', 'pathLogReset', 'pathR', 'pathRSelect', 'pathRReset', 'needHelp', 'btSave', 'btEnvImport',
+      'btEnvExport', 'btEnvReset', 'miroEnvHdrVar', 'miroEnvHdrVal'].forEach((id) => {
       const el = document.getElementById(id);
       if (el) {
         el.innerText = lang[id];
       }
     });
+    noEnvDesc = lang.noEnvDesc;
     document.getElementById('btCancel').value = lang.btCancel;
     ['pathMiroappSelect', 'pathGamsSelect', 'pathLogSelect', 'pathRSelect'].forEach((id) => {
       const el = document.getElementById(id);
@@ -217,6 +251,8 @@ ipcRenderer.on('settings-loaded', (e, data, defaults, langData) => {
       if (isImportant) {
         $(`#${key}`).attr('disabled', true);
       }
+    } else if (key === 'miroEnv') {
+      updateEnvTable(newValue);
     } else {
       const pathSelectEl = $(`#btPathSelect_${key}`);
       if (isImportant) {

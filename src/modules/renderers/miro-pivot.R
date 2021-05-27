@@ -471,7 +471,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                                textInput(ns("advancedyTitle"), width = "100%",
                                                          lang$renderers$miroPivot$newViewyTitle)))
             }
-            additionalOptionsContent <- tags$div(style = "text-align:left;",
+            additionalOptionsContent <- tags$div(id = ns("newViewOptionsWrapper"), style = "text-align:left;",
                                                  tags$i(class="fas fa-arrow-down",
                                                         role = "presentation",
                                                         `aria-label` = "More options",
@@ -621,6 +621,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           if(isolate(input$newViewName) %in% c("default", views$getIds(session))){
             hideEl(session, paste0("#", ns("newViewName")))
             hideEl(session, paste0("#", ns("saveViewButtonsWrapper")))
+            hideEl(session, paste0("#", ns("newViewOptionsWrapper")))
             showEl(session, paste0("#", ns("errUniqueName")))
             showEl(session, paste0("#", ns("saveViewOverwriteButtonsWrapper")))
             return()
@@ -649,6 +650,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           hideEl(session, paste0("#", ns("saveViewOverwriteButtonsWrapper")))
           hideEl(session, paste0("#", ns("errUniqueName")))
           showEl(session, paste0("#", ns("newViewName")))
+          showEl(session, paste0("#", ns("newViewOptionsWrapper")))
           showEl(session, paste0("#", ns("saveViewButtonsWrapper")))
         })
         rendererEnv[[ns("deleteView")]] <- observe({
@@ -1030,8 +1032,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         pivotRenderer <- input$pivotRenderer
         if(initRenderer && isTRUE(options$resetOnInit)){
           if(length(currentView[["pivotRenderer"]])){
-            pivotRenderer <- currentView[["pivotRenderer"]]
             initRenderer <<- FALSE
+            if(!identical(pivotRenderer, currentView[["pivotRenderer"]])){
+              return()
+            }
           }else{
             return()
           }

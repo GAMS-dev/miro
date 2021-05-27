@@ -340,6 +340,15 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     names(colMapping) <- newColNames
     colMapping <- colMapping[colMapping != "-"]
     
+    if(!length(colMapping)){
+      dbTableName <- dbSchema$getDbTableName(tableName)
+      private$db$runQuery(paste0("DROP TABLE IF EXISTS ",  
+                                 dbQuoteIdentifier(private$conn,
+                                                   dbTableName), " ;"))
+      flog.info("Database table: '%s' deleted.", dbTableName)
+      return(invisible(self))
+    }
+    
     if(inherits(private$conn, "PqConnection")){
       return(private$remapTablePostgres(tableName, colMapping))
     }
@@ -516,12 +525,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     return(invisible(self))
   },
   createHcScalarsTable = function(){
-    private$db$runQuery(
-      dbSchema$getCreateTableQueryRaw("_hc__scalars", dbTableName = "_hc__scalars",
-                                      symSchema = list(tabName = "_hc__scalars",
-                                                       colNames = c("_sid", "scalar",
-                                                                    "description", "value"),
-                                                       colTypes = "iccc")))
+    private$db$runQuery(dbSchema$getCreateTableQuery("_hc__scalars"))
     return(invisible(self))
   }
 ))

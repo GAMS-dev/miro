@@ -12,8 +12,8 @@ const menu = require('./components/menu.js');
 const installRPackages = require('./components/install-r.js');
 
 const requiredAPIVersion = 1;
-const miroVersion = '1.3.99';
-const miroRelease = 'Mar 10 2021';
+const miroVersion = '1.9.99';
+const miroRelease = 'May 23 2021';
 const libVersion = '1.3';
 const exampleAppsData = require('./components/example-apps.js')(miroVersion, requiredAPIVersion);
 const LangParser = require('./components/LangParser');
@@ -101,13 +101,13 @@ let aboutDialogWindow;
 let fileToOpen;
 let appLoaded = false;
 
-function showErrorMsg(optionsTmp) {
-  if (mainWindow) {
+function showErrorMsg(optionsTmp, windowObj = mainWindow) {
+  if (windowObj) {
     const options = optionsTmp;
     if (!options.buttons) {
       options.buttons = ['OK'];
     }
-    dialog.showMessageBoxSync(mainWindow, options);
+    dialog.showMessageBoxSync(windowObj, options);
   }
 }
 
@@ -857,7 +857,7 @@ ${requiredAPIVersion}.`);
   }
 
   const onErrorStartup = async (appID, e) => {
-    log.warn(`Error during startup of MIRO app with ID: ${appID}.`);
+    log.warn(`Error during startup of MIRO app with ID: ${appID}. Eror message: ${e}`);
 
     if (mainWindow && !miroDevelopMode) {
       mainWindow.send('hide-loading-screen', appID);
@@ -1082,6 +1082,56 @@ async function searchLibPath(devMode = false) {
 ipcMain.on('show-error-msg', (e, options) => {
   log.debug(`New error message received. Title: ${options.title}, message: ${options.message}.`);
   showErrorMsg(options);
+});
+ipcMain.on('import-miroenv', async () => {
+  if (!settingsWindow) {
+    return;
+  }
+  const pathSelected = dialog.showOpenDialogSync(settingsWindow, {
+    title: lang.settings.dialogImportEnvHdr,
+    message: lang.settings.dialogImportEnvHdr,
+    properties: ['openFile'],
+    filters: [{ name: 'JSON', extensions: ['json', 'JSON'] }],
+  });
+  if (!pathSelected) {
+    return;
+  }
+  try {
+    const envTxt = await fs.readFile(pathSelected[0]);
+    const newEnv = JSON.parse(envTxt);
+    configData.validate('miroEnv', newEnv);
+    settingsWindow.webContents.send('update-miroEnv', newEnv);
+  } catch (err) {
+    log.info(`Could not validate environment file. Error message: '${err.message}'`);
+    showErrorMsg({
+      type: 'info',
+      title: lang.settings.ErrorInvalidEnvFileHdr,
+      message: util.format(lang.settings.ErrorInvalidEnvFileMsg, err.message),
+    }, settingsWindow);
+  }
+});
+ipcMain.on('export-miroenv', async () => {
+  const pathSelected = dialog.showSaveDialogSync(settingsWindow, {
+    title: lang.settings.dialogExportEnvHdr,
+    message: lang.settings.dialogExportEnvHdr,
+    defaultPath: 'miro-env.json',
+    properties: ['createDirectory', 'showOverwriteConfirmation'],
+  });
+  if (!pathSelected) {
+    return;
+  }
+  try {
+    const currentEnv = await configData.get('miroEnv');
+    await fs.writeFile(pathSelected,
+      JSON.stringify(currentEnv == null ? {} : currentEnv, null, 2), 'utf-8');
+  } catch (err) {
+    log.info(`Problems fetching current environment. Error message: '${err.message}'`);
+    showErrorMsg({
+      type: 'error',
+      title: lang.main.ErrorUnexpectedHdr,
+      message: lang.main.ErrorUnexpectedMsg,
+    }, settingsWindow);
+  }
 });
 ipcMain.on('settings-select-new-path', async (e, id, defaultPath) => {
   if (settingsWindow) {

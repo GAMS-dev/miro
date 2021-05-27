@@ -19,11 +19,11 @@
       "inputScreen":"Eingabedaten",
       "outputScreen":"Ergebnisse",
       "gams":"GAMS Interaktion",
+      "load": "Szenarien laden",
       "scen":"Szenarien vergleichen",
       "hcube":{
         "configureRun": "Hypercube-Job konfigurieren",
         "import": "Jobs importieren",
-        "load": "Szenarien laden",
         "analyze": "Szenarienanalyse"
       }
     },
@@ -125,7 +125,7 @@
       "btManualImport": "Manueller Import",
       "btShowHistory": "Verlauf anzeigen"
     },
-    "hcubeLoad":{
+    "queryBuilder":{
       "title":"Lade Szenarien",
       "noData":"Für die von Ihnen abgesetzte Datenbankabfrage konnten keine Daten gefunden werden.",
       "invalidCsvFilter": "'%s' dürfen kein ',' enthalten.",
@@ -157,7 +157,7 @@
         "uid":"Eigentümer",
         "sname": "Name",
         "stime":"Erstellungsdatum",
-        "stag": "Job-Tags"
+        "stag": "Tags"
       }
     },
     "hcubeAnalyze":{
@@ -597,37 +597,40 @@
       "cancelButton": "Abbrechen",
       "okButton": "Jobs anzeigen"
     },
+    "dialogBatchLoad":{
+      "title": "Aktion auswählen",
+      "selectMethod": "Was möchtest du mit den ausgewählten Szenarien machen?",
+      "selExportType": "Wählen Sie einen Dateityp aus",
+      "maxScenWarning1": "Sie können nur bis zu: '%d' gleichzeitig für den Vergleich im interaktiven Modus laden.", 
+      "maxScenWarning2": " Wählen Sie weniger Szenarien aus oder verwenden Sie das Paver Modul zum Vergleich.",
+      "cancelButton": "Abbrechen",
+      "paverButton": "Analysieren",
+      "selAnalysisScript": "Wählen Sie das Skript aus, das Sie ausführen möchten.",
+      "tabScript": "Skripte",
+      "tabPaver": "PAVER",
+      "delTrace":"Hinweis: Die vorhandenen Trace-Dateien im aktuellen Arbeitsverzeichnis werden beim Start von Paver gelöscht.",
+      "tooManySolvers":"Die von Ihnen gewählten Attribute ergeben zu viele zu vergleichende Szenarien (maximal: %s Szenarien können verglichen werden). Bitte reduzieren Sie die Anzahl an Szenarien.",
+      "noTrc": "Für mindestens eines der ausgewählten Szenarien konnten keine Trace-Daten gefunden werden.",
+      "analysisRunScriptRunning": "Derzeit läuft eine Analyse. Bitte warten Sie, bis diese Analyse abgeschlossen ist oder unterbrechen Sie sie.",
+      "removeConfirm": "Sind Sie sicher, dass Sie die %s ausgewählten Szenarien löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden!",
+      "removeSuccess": "Die ausgewählten Szenarien wurden erfolgreich gelöscht.",
+      "selPaverAttribs":"Bitte wählen Sie die Attribute, welche Sie vergleichen möchten:",
+      "selIgnoreAttribs": "Wählen Sie Attribute aus, die ignoriert werden sollen:",
+      "selClArgs": "Geben Sie zusätzliche Argumente an, mit denen Sie PAVER aufrufen möchten.",
+      "runPaverButton": "Paver starten",
+      "runScriptButton": "Skript starten",
+      "downloadAnalysisButton": "Downloaden",
+      "interactiveButtonSb": "In Sandbox laden",
+      "interactiveButtonTab":"Vergleichen (Tab)",
+      "interactiveButtonPivot":"Vergleichen (Pivot)",
+      "interactiveButtonSplit": "Vergleichen (Split)",
+      "downloadButton":"Daten herunterladen",
+      "removeButton": "Szenarien löschen"
+    },
     "hcubeMode":{
       "sliderAllCombinations": "Alle Kombinationen?",
       "stepsize": "Schrittweite",
       "checkboxAliases":["Nein", "Ja"],
-      "hcubeLoadDialog":{
-        "title": "Aktion auswählen",
-        "selectMethod": "Was möchtest du mit den ausgewählten Szenarien machen?",
-        "selExportType": "Wählen Sie einen Dateityp aus",
-        "maxScenWarning1": "Sie können nur bis zu: '%d' gleichzeitig für den Vergleich im interaktiven Modus laden.", 
-        "maxScenWarning2": " Wählen Sie weniger Szenarien aus oder verwenden Sie das Paver Modul zum Vergleich.",
-        "cancelButton": "Abbrechen",
-        "paverButton": "Analysieren",
-        "selAnalysisScript": "Wählen Sie das Skript aus, das Sie ausführen möchten.",
-        "tabScript": "Skripte",
-        "tabPaver": "PAVER",
-        "delTrace":"Hinweis: Die vorhandenen Trace-Dateien im aktuellen Arbeitsverzeichnis werden beim Start von Paver gelöscht.",
-        "tooManySolvers":"Die von Ihnen gewählten Attribute ergeben zu viele zu vergleichende Szenarien (maximal: %s Szenarien können verglichen werden). Bitte reduzieren Sie die Anzahl an Szenarien.",
-        "noTrc": "Für mindestens eines der ausgewählten Szenarien konnten keine Trace-Daten gefunden werden.",
-        "analysisRunScriptRunning": "Derzeit läuft eine Analyse. Bitte warten Sie, bis diese Analyse abgeschlossen ist oder unterbrechen Sie sie.",
-        "removeConfirm": "Sind Sie sicher, dass Sie die %s ausgewählten Szenarien löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden!",
-        "removeSuccess": "Die ausgewählten Szenarien wurden erfolgreich gelöscht.",
-        "selPaverAttribs":"Bitte wählen Sie die Attribute, welche Sie vergleichen möchten:",
-        "selIgnoreAttribs": "Wählen Sie Attribute aus, die ignoriert werden sollen:",
-        "selClArgs": "Geben Sie zusätzliche Argumente an, mit denen Sie PAVER aufrufen möchten.",
-        "runPaverButton": "Paver starten",
-        "runScriptButton": "Skript starten",
-        "interactiveButtonTab":"Vergleichen (Tab)",
-        "interactiveButtonPivot":"Vergleichen (Pivot)",
-        "downloadButton":"Daten herunterladen",
-        "removeButton": "Szenarien löschen"
-      },
       "invalidScenDialog":{
         "title":"Ungültige Szenarien",
         "desc": "%d der Szenarien, die Sie hochladen möchten, sind ungültig (%s). Wollen Sie dennoch fortfahren?",
@@ -1109,7 +1112,7 @@
         "headerBaseScripts": "Basismodus",
         "headerOutputAttach": "Ergebnis-Anhänge",
         "baseScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte aus, die im Ausgabeabschnitt angezeigt werden",
-        "headerHcubeScripts": "Hypercube-Modus",
+        "headerHcubeScripts": "Batch-Analyse",
         "hcubeScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte für mehrere Szenarien auf einmal aus",
         "headerScenData": "Szenario & Daten",
         "headerComputation": "Berechnung",
@@ -1153,7 +1156,7 @@
       },
       "scripts":{
         "base": "Spezifizieren Sie individuelle Analyseskripte für den Basismodus.",
-        "hcube": "Spezifizieren Sie individuelle Analyseskripte für den Hypercube-Modus."
+        "hcube": "Spezifizieren Sie individuelle Analyseskripte für die Batch-Analyse."
       },
       "outputAttach": {
         "label": "Neue Anlage hinzufügen"
@@ -1911,6 +1914,7 @@
           "cmd": "Auszuführender Befehl",
           "args": "Argumente für den Befehl",
           "outFile": "Name der Ausgabedatei (inklusive Dateiendung)",
+          "markdown": "Ausgabedatei ist eine Markdown-Datei",
           "timeout": "Timeout (Sekunden, -1 für unendlich)"
         },
         "addOutAttach":{

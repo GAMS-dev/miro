@@ -125,7 +125,7 @@ if(is.null(errMsg)){
             invalidAliases <- c(invalidAliases, idx)
           }
           warning(sprintf("The alias of symbol: '%s' was selected to be overwritten. However, this symbol could not be found.", 
-                          overwriteSymNames[idx]))
+                          overwriteSymNames[idx]), call. = FALSE)
           next
         }
         modelOut[[i]]$alias <- config[["overwriteAliases"]][[idx]][["newAlias"]]
@@ -148,13 +148,13 @@ if(is.null(errMsg)){
             invalidHeaderAliases <- c(invalidHeaderAliases, idx)
           }
           warning(sprintf("The headers of symbol: '%s' were selected to be overwritten. However, this symbol could not be found.", 
-                          overwriteSymNames[idx]))
+                          overwriteSymNames[idx]), call. = FALSE)
           next
         }
         if(length(modelOut[[i]]$headers) != length(newHeaders)){
           if(!LAUNCHCONFIGMODE)
             warning(sprintf("The headers of symbol: '%s' were selected to be overwritten. However, the dimensions do not match!", 
-                            overwriteSymNames[idx]))
+                            overwriteSymNames[idx]), call. = FALSE)
           next
         }
         for (j in seq_along(modelOut[[i]]$headers)){
@@ -165,7 +165,7 @@ if(is.null(errMsg)){
       newHeaders <- config[["overwriteHeaderAliases"]][[idx]][["newHeaders"]]
       if(length(modelIn[[i]]$headers) != length(newHeaders)){
         warning(sprintf("The headers of symbol: '%s' were selected to be overwritten. However, the dimensions do not match!", 
-                        overwriteSymNames[idx]))
+                        overwriteSymNames[idx]), call. = FALSE)
         next
       }
       for (j in seq_along(modelIn[[i]]$headers)){
@@ -220,7 +220,6 @@ if(is.null(errMsg)){
             widgetConfig$clearValue  <- NULL
           }
         }
-        config$inputWidgets[[el]]     <- NULL
         modelIn[[el_l]][[widgetType]] <- widgetConfig
         modelIn[[tolower(scalarsFileName)]]$symnames <- modelIn[[tolower(scalarsFileName)]]$symnames[-c(j)]
         if(!length(modelIn[[tolower(scalarsFileName)]]$symnames)){
@@ -398,6 +397,25 @@ if(is.null(errMsg)){
         }
         widgetConfig$rendererName  <- NULL
         widgetConfig$packages      <- NULL
+        if(identical(widgetConfig$apiVersion, 2L)){
+          modelIn[[i]]$apiVersion <- 2L
+        }else{
+          warningMsgTmp <- "API version 1 for custom input widgets is deprecated and will be removed with a future release of MIRO. Please migrate your input widgets to API version 2. Go here to find the latest documentation: https://gams.com/miro/customize.html#custom-input-widgets"
+          warning(warningMsgTmp, call. = FALSE)
+          warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
+        }
+        if(length(widgetConfig$additionalData)){
+          invalidDsNames <- !widgetConfig$additionalData %in% c(names(config$inputWidgets),
+                                                                names(modelOut))
+          if(any(invalidDsNames)){
+            errMsg <- paste(errMsg, sprintf("Invalid additional data for custom input widget: '%s' declared. The dataset(s): '%s' are not scalar input widgets. Currently, only scalar input widgets are supported as additional data for custom widgets.",
+                                            names(modelIn)[[i]],
+                                            paste(widgetConfig$additionalData[invalidDsNames], collapse = "', '")),
+                            sep = "\n")
+            next
+          }
+          modelIn[[i]]$additionalData <- widgetConfig$additionalData
+        }
       }
       if(!widgetType %in% c("table", "custom")){
         modelIn[[i]]$headers       <- NULL
@@ -454,6 +472,7 @@ if(is.null(errMsg)){
       }
     }
   }
+  config$inputWidgets <- NULL
   # make sure two input or output data sheets dont share the same name (case insensitive)
   if(any(duplicated(names(modelIn)))){
     errMsg <- "Two or more input datasets share the same name. Please make sure the identifiers are unique for each input datasheet!"
@@ -673,7 +692,7 @@ if(is.null(errMsg)){
                    if(identical(modelIn[[i]]$symtype, "set")){
                      warningMsgTmp <- sprintf("The dataset: '%s' is a set configured as a single dropdown menu. Single dropdown menus for sets are not expanded in Hypercube Mode! Use singleton set instead.", 
                                               names(modelIn)[i])
-                     warning(warningMsgTmp)
+                     warning(warningMsgTmp, call. = FALSE)
                      warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
                    }else{
                      # specify that dropdown menu is originally a single select menu
@@ -700,7 +719,7 @@ if(is.null(errMsg)){
                  warningMsgTmp <- sprintf("The dataset: '%s' uses a widget that is not supported in Hypercube Mode.
                                    Thus, it will not be transformed and stays static.", 
                                           names(modelIn)[i])
-                 warning(warningMsgTmp)
+                 warning(warningMsgTmp, call. = FALSE)
                  warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
                })
       }
@@ -1025,7 +1044,7 @@ if(is.null(errMsg)){
                 !identical(names(modelIn[[i]]$headers), scalarsFileHeaders)){
                warningMsgTmp <- paste0(modelInAlias[i], " is defined to be the scalar input dataset, ",
                                          "but has incorrect headers. The headers were adjusted accordingly.")
-               warning(warningMsgTmp)
+               warning(warningMsgTmp, call. = FALSE)
                warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
                names(modelIn[[i]]$headers) <- scalarsFileHeaders
              }
@@ -1331,7 +1350,7 @@ if(is.null(errMsg)){
   
   scalarDsNameIdx <- match(inputDsNames, names(modelIn))
   scenDataTemplate <- c(modelOutTemplate, modelInTemplate[scalarDsNameIdx])
-  if(is.na(scalarDsNameIdx[length(inputDsNames)])){
+  if(length(scalarDsNameIdx[length(inputDsNames)]) && is.na(scalarDsNameIdx[length(inputDsNames)])){
     # need to add scalars template manually
     scenDataTemplate[[length(scenDataTemplate)]] <- scalarsInTemplate
   }
@@ -1397,14 +1416,11 @@ if(is.null(errMsg)){
     config[["symbolLinks"]] <- NULL
   }
   if(length(config$scripts)){
-    if(LAUNCHHCUBEMODE){
-      if(any(duplicated(vapply(config$scripts$hcube, "[[", character(1L), "id", USE.NAMES = FALSE)))){
-        errMsg <- paste(errMsg, "Some of your Hypercube analysis scripts share the same id. Please make sure the ID is unique.")
-      }
-    }else{
-      if(any(duplicated(vapply(config$scripts$base, "[[", character(1L), "id", USE.NAMES = FALSE)))){
-        errMsg <- paste(errMsg, "Some of your analysis scripts share the same id. Please make sure the ID is unique.")
-      }
+    if(any(duplicated(vapply(config$scripts$base, "[[", character(1L), "id", USE.NAMES = FALSE)))){
+      errMsg <- paste(errMsg, "Some of your analysis scripts share the same id. Please make sure the ID is unique.")
+    }
+    if(any(duplicated(vapply(config$scripts$hcube, "[[", character(1L), "id", USE.NAMES = FALSE)))){
+      errMsg <- paste(errMsg, "Some of your Hypercube/batch analysis scripts share the same id. Please make sure the ID is unique.")
     }
   }
 }
@@ -1541,7 +1557,7 @@ if(is.null(errMsg)){
         if(isTRUE(modelOut[[i]]$hidden)){
           warningMsgTmp <- sprintf("You specified chart options for the output symbol: %s. These options will be ignored as the symbol is hidden.",
                                    names(modelOut)[i])
-          warning(warningMsgTmp)
+          warning(warningMsgTmp, call. = FALSE)
           warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
           if(LAUNCHCONFIGMODE){
             invalidGraphsToRender <- c(invalidGraphsToRender, el)
@@ -1560,7 +1576,7 @@ if(is.null(errMsg)){
               errMsgTmp <- paste0("Invalid graph config for symbol '", names(modelOut)[i], 
                                   "': ", validGraphConfig, ".")
               if(LAUNCHCONFIGMODE){
-                warning(errMsgTmp)
+                warning(errMsgTmp, call. = FALSE)
                 next
               }
               errMsg <- paste(errMsg, paste0(errMsgTmp, " Start the Configuration Mode to reconfigure your app."), sep = "\n")
@@ -1594,7 +1610,7 @@ if(is.null(errMsg)){
                                   " are configured to be additional data for the renderer of symbol: ",
                                   names(modelOut)[i], 
                                   ". These symbols could not be found among the list of either input or output symbols!")
-          warning(warningMsgTmp)
+          warning(warningMsgTmp, call. = FALSE)
           warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
         }
         configGraphsOut[[i]]$additionalData <- configGraphsOut[[i]]$additionalData[!badAdditionalDataSheetNames]
@@ -1614,7 +1630,7 @@ if(is.null(errMsg)){
           errMsgTmp <- paste0("Invalid graph config for symbol '", names(modelIn)[i], 
                               "': ", validGraphConfig, ".")
           if(LAUNCHCONFIGMODE){
-            warning(errMsgTmp)
+            warning(errMsgTmp, call. = FALSE)
             next
           }
           errMsg <- paste(errMsg, paste0(errMsgTmp, " Start the Configuration Mode to reconfigure your app."), sep = "\n")
@@ -1672,7 +1688,7 @@ if(is.null(errMsg)){
   invalidSymbolConfig <- invalidSymbolConfig[is.na(invalidSymbolConfig)]
   if(length(invalidSymbolConfig)){
     warning(sprintf("You specified an output table for the symbol(s): '%s'. This/these symbol(s) is/are not part of the data contract between GAMS and MIRO", 
-                    paste(invalidSymbolConfig, collapse = "','")))
+                    paste(invalidSymbolConfig, collapse = "','")), call. = FALSE)
   }
   
   #sanitize file names of output attachments
@@ -1682,7 +1698,7 @@ if(is.null(errMsg)){
   })
   if(LAUNCHHCUBEMODE && length(config$outputAttachments)){
     warningMsgTmp <- "Output attachments are not supported and will be ignored in Hypercube Mode."
-    warning(warningMsgTmp)
+    warning(warningMsgTmp, call. = FALSE)
     warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
   }
   

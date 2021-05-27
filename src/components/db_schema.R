@@ -122,6 +122,8 @@ DbSchema <- R6Class("DbSchema", public = list(
       return(private$getCreateScenlocksTableQuery())
     }else if(identical(tableName, "_scenAttach")){
       return(self$getCreateTableQueryRaw(tableName, includeForeignKey = FALSE))
+    }else if(identical(tableName, "_hc__scalars")){
+      return(private$getCreateHcScalarsTableQuery())
     }
     return(self$getCreateTableQueryRaw(tableName))
   },
@@ -327,5 +329,12 @@ DbSchema <- R6Class("DbSchema", public = list(
                         escapedScalarNames,
                         ") VALUES (NEW._sid,NEW.",
                         escapedScalarNames, ");"), collapse = " "))
+  },
+  getCreateHcScalarsTableQuery = function(){
+    return(self$getCreateTableQueryRaw("_hc__scalars", dbTableName = "_hc__scalars",
+                                       symSchema = list(tabName = "_hc__scalars",
+                                                        colNames = c("_sid", "scalar",
+                                                                     "description", "value"),
+                                                        colTypes = "iccc")))
   }
 ))

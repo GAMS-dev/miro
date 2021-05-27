@@ -1,7 +1,8 @@
 hcubeRemoveConfirmed <- FALSE
 
+batchLoadData <- tibble()
+
 inputType <- list(text = c("_uid", "_sname"), date = "_stime", csv = "_stag")
-keysRaw   <- NULL
 scalarFields  <- NULL
 scalarKeyTypeList <- list()
 modelInSorted <- sort(names(modelIn))
@@ -89,27 +90,24 @@ if(length(modelOut[[scalarsOutName]])){
   scalarFields <- c(scalarFields, scalarOutFields)
 }
 
-hcubeLoad <- HcubeLoad$new(db, inputDsNamesNotToDisplay)
-fields <- c("", paste0(dbSchema$getDbTableName("_scenMeta"), ".",
-                       c("_uid", "_sname", "_stime", "_stag")))
-names(fields) <- c("", lang$nav$hcubeLoad$metaColAliases$uid,
-                   lang$nav$hcubeLoad$metaColAliases$sname,
-                   lang$nav$hcubeLoad$metaColAliases$stime,
-                   lang$nav$hcubeLoad$metaColAliases$stag)
-fields <- c(fields, scalarFields)
+batchLoader <- BatchLoader$new(db, inputDsNamesNotToDisplay)
+batchLoadFilters <- c("", paste0(dbSchema$getDbTableName("_scenMeta"), ".",
+                                 c("_uid", "_sname", "_stime", "_stag")))
+names(batchLoadFilters) <- c("", lang$nav$queryBuilder$metaColAliases$uid,
+                             lang$nav$queryBuilder$metaColAliases$sname,
+                             lang$nav$queryBuilder$metaColAliases$stime,
+                             lang$nav$queryBuilder$metaColAliases$stag)
+batchLoadFilters <- c(batchLoadFilters, scalarFields)
 
 maxNumBlocks   <- 5L
 activeBlocks   <- vector("logical", maxNumBlocks)
 activeLines    <- vector("logical", maxNumBlocks^2)
 fieldsSelected <- vector("character", maxNumBlocks^2)
-tmpOutputKeys  <- vapply(scalarKeyTypeList[[scalarsOutName]], 
-                         "[[", character(1L), "key", USE.NAMES = FALSE)
-exclAttribChoices <- c(fields[2:4], scalarOutFields)
-if(length(tmpOutputKeys))
+exclAttribChoices <- c(batchLoadFilters[2:4], scalarOutFields)
+if(length(vapply(scalarKeyTypeList[[scalarsOutName]], 
+                 "[[", character(1L), "key", USE.NAMES = FALSE)))
   names(exclAttribChoices)[4:length(exclAttribChoices)] <- vapply(scalarKeyTypeList[[scalarsOutName]],
                                                                   "[[", character(1L), "alias", USE.NAMES = FALSE)
-rm(tmpOutputKeys)
-hideEl(session, "#hcubeLoadButtons")
 
 observeEvent(input$btNewBlock, {
   if(all(activeBlocks)){
@@ -117,7 +115,7 @@ observeEvent(input$btNewBlock, {
   }
   blockIdx <- which.min(activeBlocks)
   activeBlocks[blockIdx] <<- TRUE
-  addHcubeLoadBlock(id = blockIdx, choices = fields)
+  addQueryBuilderBlock(id = blockIdx, choices = batchLoadFilters)
 }, ignoreNULL = FALSE)
 
 queryBuilderRemoveBlock <- function(blockIdx){
@@ -154,13 +152,13 @@ lapply(seq_len(maxNumBlocks), function(blockIdx){
     
     fieldSelected <- input[[paste0("newLine_", blockIdx)]]
     
-    fieldId <- match(fieldSelected, fields)
+    fieldId <- match(fieldSelected, batchLoadFilters)
     if(length(fieldId) != 1L || is.na(fieldId)){
       flog.error("Invalid field selected in query builder: '%s'. This is likely an attempt to tamper with the app!",
                  fieldSelected)
       stop()
     }
-    label <- names(fields)[fieldId]
+    label <- names(batchLoadFilters)[fieldId]
     
     fieldsSelected[blockOffset + lineIdxToAssign] <<- fieldSelected
     field <- strsplit(fieldSelected, ".", fixed = TRUE)[[1]][[2]]
@@ -183,6 +181,7 @@ lapply(seq_len(maxNumBlocks), function(blockIdx){
   })
 })
 observeEvent(input$btSendQuery, {
+  flog.trace("Batch Load: Button to send new query clicked.")
   disableEl(session, "#btSendQuery")
   showEl(session, "#hyperQueryLoad")
   on.exit(hideEl(session, "#hyperQueryLoad"))
@@ -215,10 +214,10 @@ observeEvent(input$btSendQuery, {
         validOperators <- c("%LIKE%", "%NOTLIKE%", ",LIKE%",
                             "%LIKE,", "%,LIKE,%", "%,NOTLIKE,%")
         if(grepl(",", filterVal[1], fixed=TRUE)){
-          fieldId <- match(fieldsSelected[blockOffset + lineIdx], fields)
+          fieldId <- match(fieldsSelected[blockOffset + lineIdx], batchLoadFilters)
           showHideEl(session, "#queryBuilderError", 4000L,
-                     sprintf(lang$nav$hcubeLoad$invalidCsvFilter,
-                             if(is.na(fieldId)) fields[j] else names(fields)[fieldId]))
+                     sprintf(lang$nav$queryBuilder$invalidCsvFilter,
+                             if(is.na(fieldId)) batchLoadFilters[j] else names(batchLoadFilters)[fieldId]))
           return()
         }
       }else{
@@ -235,7 +234,7 @@ observeEvent(input$btSendQuery, {
         switch(op[j],
                "%LIKE" = {
                  val[j] <- paste0("%", filterValEscaped) 
-                   
+                 
                  op[j]  <- "LIKE"
                },
                "LIKE%" = {
@@ -295,7 +294,7 @@ observeEvent(input$btSendQuery, {
     }
     i <- i + 1L
   }
-  colsToFetch <- strsplit(fields[-1], ".", fixed = TRUE)
+  colsToFetch <- strsplit(batchLoadFilters[-1], ".", fixed = TRUE)
   colN <- c("_sid", vapply(colsToFetch, 
                            '[[', FUN.VALUE = "character", 2, 
                            USE.NAMES = FALSE))
@@ -303,9 +302,10 @@ observeEvent(input$btSendQuery, {
                                             FUN.VALUE = "character", 1,
                                             USE.NAMES = FALSE))
   tryCatch({
-    rv$fetchedScenarios <- hcubeLoad$fetchResults(subsetCoditions,
-                                                  colNames = colN,
-                                                  limit = hcubeLoadMaxScen)
+    batchLoadData <<- batchLoader$fetchResults(subsetCoditions,
+                                               colNames = colN,
+                                               limit = hcubeLoadMaxScen)
+    rv$updateBatchLoadData <- rv$updateBatchLoadData + 1L
   }, error = function(e){
     if(identical(conditionMessage(e), "maxNoRowsVio")){
       errMsg <- sprintf("Your query results in too many scenarios to be fetched from the database. The maximum number of scenarios to be fetched is: %d. Please narrow your search.", 
@@ -317,55 +317,93 @@ observeEvent(input$btSendQuery, {
     showErrorMsg("Error fetching data", errMsg)
     flog.warn("Problems executing hcubeLoad query. Error message: %s.", conditionMessage(e))
   })
-  if(length(isolate(rv$fetchedScenarios)) && nrow(isolate(rv$fetchedScenarios))){
-    showEl(session, "#hcubeLoadButtons")
-    hideEl(session, "#hcubeLoadNoData")
-  }else{
-    showEl(session, "#hcubeLoadNoData")
-    hideEl(session, "#hcubeLoadButtons")
+})
+
+batchLoadResultsProxy <- dataTableProxy("batchLoadResults")
+observeEvent(input$batchLoadResults_cell_edit, {
+  newNameInfo <- input$batchLoadResults_cell_edit
+  scenInfo <- batchLoadData[newNameInfo$row, c(1,2)]
+  flog.trace("Batch Load: New scenario name for sid: %s entered: %s",
+             scenInfo[["_sid"]][1], newNameInfo$value)
+  if(tryCatch({
+    batchLoader$renameScen(scenInfo[["_sid"]][1],
+                           scenInfo[["_uid"]][1],
+                           newNameInfo$value)
+    batchLoadData[newNameInfo$row, 3L] <<- newNameInfo$value
+    replaceData(batchLoadResultsProxy,
+                batchLoadData[, -1],
+                resetPaging = FALSE, rownames = FALSE)
+    FALSE
+  }, error_bad_name = function(e){
+    flog.debug("Invalid scenario name entered")
+    showHideEl(session, "#queryBuilderError", 4000L,
+               lang$nav$dialogEditMeta$badName)
+    return(TRUE)
+  }, error_scen_exists = function(e){
+    flog.debug("Invalid scenario name entered")
+    showHideEl(session, "#queryBuilderError", 4000L,
+               lang$nav$dialogEditMeta$scenExists)
+    return(TRUE)
+  }, error_perm = function(e){
+    flog.debug("No write permissions to rename scenario")
+    showHideEl(session, "#queryBuilderError", 4000L,
+               lang$errMsg$permErr)
+    return(TRUE)
+  }, error = function(e){
+    flog.error("Unexpected error while renaming scenario. Error message: '%s'",
+               conditionMessage(e))
+    showHideEl(session, "#queryBuilderError", 4000L,
+               lang$errMsg$unknownError)
+    return(TRUE)
+  })){
+    reloadData(batchLoadResultsProxy, resetPaging = FALSE)
   }
 })
 
-if("DT" %in% (.packages())){
-  output$hcubeLoadResults <- renderDataTable(
-    if(length(rv$fetchedScenarios) && nrow(rv$fetchedScenarios)){
-      data <- rv$fetchedScenarios[, -1]
-      datatable(
-        data, filter = "bottom", colnames = names(fields)[-1], rownames = FALSE,
-        options = list(scrollX = TRUE, columnDefs = list(list(
-          targets = "_all",
-          render = JS(
-            "function(data, type, row, meta) {",
-            "return type === 'display' && data != null && data.length > 20 ?",
-            "'<span title=\"' + data + '\">' + data.substr(0, 20) + '...</span>' : data;",
-            "}")
-        )))) %>%
-        formatDate(3L,  method = "toLocaleString") %>%
-        formatRound(seq(5L, length(data))[vapply(data[, seq(5L, length(data))],
-                                                 is.numeric, logical(1L), USE.NAMES = FALSE)], 
-                    digits = roundPrecision)
+output$batchLoadResults <- renderDataTable(
+  if(rv$updateBatchLoadData > 0L){
+    if(length(batchLoadData) && nrow(batchLoadData)){
+      showEl(session, "#batchLoadButtons")
+      hideEl(session, "#batchLoadNoData")
+    }else{
+      showEl(session, "#batchLoadNoData")
+      hideEl(session, "#batchLoadButtons")
+      return()
     }
-  )
-}else{
-  output$hcubeLoadResults <- renderDataTable({
-    if(length(rv$fetchedScenarios) && nrow(rv$fetchedScenarios)){
-      rv$fetchedScenarios[, -1]
+    data <- batchLoadData[, -1]
+    dtObj <- datatable(
+      data, filter = "bottom", colnames = names(batchLoadFilters)[-1], rownames = FALSE,
+      editable = list(target = "cell", disable = list(columns = seq_along(data)[-2L] - 1L)),
+      options = list(scrollX = TRUE, columnDefs = list(list(
+        targets = "_all",
+        render = JS(
+          "function(data, type, row, meta) {",
+          "return type === 'display' && data != null && data.length > 20 ?",
+          "'<span class=\"dt-allow-click-event\" title=\"' + data + '\">' + data.substr(0, 20) + '...</span>' : data;",
+          "}")
+      )))) %>%
+      formatDate(3L,  method = "toLocaleString")
+    if(length(data) > 4L){
+      return(dtObj %>% formatRound(seq(5L, length(data))[vapply(data[, seq(5L, length(data))],
+                                                                is.numeric, logical(1L), USE.NAMES = FALSE)], 
+                                   digits = roundPrecision))
     }
-  }, options = list(filter = "bottom", colnames = names(fields)[-1], rownames = FALSE))
-}
+    return(dtObj)
+  }
+)
 
 observeEvent(input$btShowHash, {
   flog.debug("Button to show hash of selected scenario (Hypercube load) clicked.")
-  selectedRows <- isolate(input$hcubeLoadResults_rows_selected)
+  selectedRows <- isolate(input$batchLoadResults_rows_selected)
   if(!length(selectedRows) || length(selectedRows) > 1L){
-    showHideEl(session, "#queryBuilderError", 4000L, lang$nav$hcubeLoad$msgOnlyOneHash)
+    showHideEl(session, "#queryBuilderError", 4000L, lang$nav$queryBuilder$msgOnlyOneHash)
     return()
   }
   noErr <- TRUE
   tryCatch(
     hashValue <- db$importDataset("_scenMeta", colNames = "_sname", 
                                   tibble("_scode", SCODEMAP[['scen']], ">"),
-                                  subsetSids = rv$fetchedScenarios[[1]][selectedRows])[[1]]
+                                  subsetSids = batchLoadData[[1]][selectedRows])[[1]]
     , error = function(e){
       flog.error("Problems fetching hash value from database. Error message: '%s'.",
                  conditionMessage(e))
@@ -376,52 +414,53 @@ observeEvent(input$btShowHash, {
     return()
   }
   if(!length(hashValue)){
-    showHideEl(session, "#queryBuilderError", 4000L, lang$nav$hcubeLoad$msgNoHashFound)
+    showHideEl(session, "#queryBuilderError", 4000L, lang$nav$queryBuilder$msgNoHashFound)
     return()
   }
   showHashDialog(hashValue)
 })
 
 observeEvent(input$hcubeLoadSelected, {
-  flog.debug("Button to load selected scenarios (Hypercube load) clicked.")
-  if(!length(input$hcubeLoadResults_rows_selected)){
+  flog.debug("Button to load selected scenarios (Batch load) clicked.")
+  if(!length(input$batchLoadResults_rows_selected)){
+    showHideEl(session, "#queryBuilderError", 4000L, lang$nav$scen$noScen)
     return()
   }
   hcubeRemoveConfirmed <<- FALSE
-  sidsToLoad <<- as.integer(rv$fetchedScenarios[[1]][input$hcubeLoadResults_rows_selected])
-  showHcubeLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad,
-                            hasRemovePerm = TRUE, exclAttribChoices = exclAttribChoices,
-                            customScripts = config$scripts$hcube)
+  sidsToLoad <<- as.integer(batchLoadData[[1]][input$batchLoadResults_rows_selected])
+  showBatchLoadDialog(length(sidsToLoad), batchLoadFilters, maxSolversPaver, maxConcurentLoad,
+                      exclAttribChoices = exclAttribChoices,
+                      customScripts = config$scripts$hcube)
 })
 observeEvent(input$hcubeLoadCurrent, {
-  flog.debug("Button to load current page of scenarios (Hypercube load) clicked.")
-  if(is.null(input$hcubeLoadResults_rows_current)){
+  flog.debug("Button to load current page of scenarios (Batch load) clicked.")
+  if(is.null(input$batchLoadResults_rows_current)){
     return()
   }
   hcubeRemoveConfirmed <<- FALSE
-  sidsToLoad <<- as.integer(rv$fetchedScenarios[[1]][input$hcubeLoadResults_rows_current])
-  showHcubeLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad,
-                            hasRemovePerm = TRUE, exclAttribChoices = exclAttribChoices,
-                            customScripts = config$scripts$hcube)
+  sidsToLoad <<- as.integer(batchLoadData[[1]][input$batchLoadResults_rows_current])
+  showBatchLoadDialog(length(sidsToLoad), batchLoadFilters, maxSolversPaver, maxConcurentLoad,
+                      exclAttribChoices = exclAttribChoices,
+                      customScripts = config$scripts$hcube)
 })
 observeEvent(input$hcubeLoadAll, {
-  flog.debug("Button to load all scenarios (Hypercube load) clicked.")
-  if(!length(rv$fetchedScenarios) || !nrow(rv$fetchedScenarios)){
+  flog.debug("Button to load all scenarios (Batch load) clicked.")
+  if(!length(batchLoadData) || !nrow(batchLoadData)){
     return()
   }
   hcubeRemoveConfirmed <<- FALSE
-  sidsToLoad     <<- as.integer(rv$fetchedScenarios[[1]])
-  showHcubeLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad, 
-                            hasRemovePerm = TRUE, exclAttribChoices = exclAttribChoices,
-                            customScripts = config$scripts$hcube)
+  sidsToLoad     <<- as.integer(batchLoadData[[1]])
+  showBatchLoadDialog(length(sidsToLoad), batchLoadFilters, maxSolversPaver, maxConcurentLoad, 
+                      exclAttribChoices = exclAttribChoices,
+                      customScripts = config$scripts$hcube)
 })
 
-output$btHcubeDownloadConfirm <- downloadHandler(
+output$btBatchDownloadConfirm <- downloadHandler(
   filename = function() {
     tolower(modelName) %+% "_data.zip"
   },
   content = function(file) {
-    flog.debug("Button to download Hypercube job files clicked.")
+    flog.debug("Button to download batch of scenarios clicked.")
     
     if(!length(sidsToLoad)){
       flog.warn("No scenario IDs to download could be found.")
@@ -449,9 +488,9 @@ output$btHcubeDownloadConfirm <- downloadHandler(
     }
     tryCatch({
       if(identical(isolate(input$selExportFiletype), "csv")){
-        hcubeLoad$genCsvFiles(sidsToLoad, tmpDir, prog)
+        batchLoader$genCsvFiles(sidsToLoad, tmpDir, prog)
       }else{
-        hcubeLoad$genGdxFiles(sidsToLoad, tmpDir, gdxio, prog)
+        batchLoader$genGdxFiles(sidsToLoad, tmpDir, gdxio, prog)
       }
       return(zipr(file, list.files(tmpDir, full.names = TRUE), 
                   compression_level = 6))
@@ -462,31 +501,42 @@ output$btHcubeDownloadConfirm <- downloadHandler(
   },
   contentType = "application/zip")
 
-observeEvent(input$btHcubeRemove, {
+observeEvent(input$btBatchRemove, {
   if(hcubeRemoveConfirmed){
     errMsg <- NULL
-    disableEl(session, "#btHcubeRemove")
+    disableEl(session, "#btBatchRemove")
     affectedRows <- 0L
     tryCatch(affectedRows <- db$deleteRows("_scenMeta", subsetSids = sidsToLoad), 
              error = function(e){
-               flog.error("Problems removing Hypercube scenarios. Error message: %s",
+               flog.error("Problems removing scenarios. Error message: %s",
                           conditionMessage(e))
                errMsg <<- TRUE
              })
     if(!is.null(errMsg) || affectedRows < sidsToLoad){
-      showHideEl(session, "#hcubeRemoveError", 4000L)
+      showHideEl(session, "#batchRemoveError", 4000L)
       return(NULL)
     }
-    showHideEl(session, "#hcubeRemoveSuccess", 2000L)
-    rv$fetchedScenarios <- tibble()
-    hideEl(session, "#hcubeLoadButtons")
+    showHideEl(session, "#batchRemoveSuccess", 2000L)
+    batchLoadData <<- batchLoadData[!batchLoadData[[1]] %in% sidsToLoad, ]
+    rv$updateBatchLoadData <- rv$updateBatchLoadData + 1L
+    hideEl(session, ".batch-load-content")
     hideModal(session, 2L)
   }else{
-    hideEl(session, "#btHcubeLoadGrp")
-    hideEl(session, "#hcubeLoadMethod")
-    hideEl(session, "#btAnalysisConfig")
-    hideEl(session, "#btHcubeDownload")
-    showEl(session, "#hcubeRemoveConfirm")
+    hideEl(session, ".batch-load-content")
+    showEl(session, ".batch-load-remove-content")
     hcubeRemoveConfirmed <<- TRUE
   }
+})
+
+observeEvent(input$btBatchLoadCancel, {
+  flog.trace("Close batch load dialog button clicked.")
+  if(!LAUNCHHCUBEMODE && length(config$scripts$hcube) &&
+     any(scriptOutput$isRunning())){
+    for(script in config$scripts$hcube){
+      if(scriptOutput$isRunning(script$id)){
+        scriptOutput$interrupt(script$id)
+      }
+    }
+  }
+  removeModal()
 })

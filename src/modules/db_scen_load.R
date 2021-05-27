@@ -311,7 +311,7 @@ observeEvent(input$btLoadScenConfirm, {
   
   # if in comparison mode skip input data check
   if(!isInSolveMode){
-    rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
+    rv$btOverwriteScen <<- rv$btOverwriteScen + 1L
     return()
   }
   checkIfInputDataExists()
@@ -323,22 +323,64 @@ observeEvent(input$btOverwriteScen, {
     return()
   }
   overwriteInput <<- TRUE
-  rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
+  rv$btOverwriteScen <<- rv$btOverwriteScen + 1L
 })
 
-observeEvent(input$btHcubeLoad, {
-  if(identical(input$btHcubeLoad, "pivot")){
+observeEvent(input$btBatchLoadSbOverwrite, {
+  flog.debug("Batch load: overwriting current content in sandbox confirmed.")
+  overwriteInput <<- TRUE
+  print(sidsToLoad)
+  switchTab(session, "input")
+  rv$btOverwriteScen <<- rv$btOverwriteScen + 1L
+})
+
+observeEvent(input$btBatchLoadSb, {
+  flog.debug("Load scenario into sandbox from batch load module button clicked.")
+  isInSolveMode <<- TRUE
+  loadIntoSandbox <<- FALSE
+  if(any(vapply(seq_along(modelIn), function(i){
+    if(length(isolate(rv[["in_" %+% i]]))){
+      return(TRUE)
+    }else{
+      return(FALSE)
+    }
+  }, logical(1), USE.NAMES = FALSE))){
+    hideEl(session, ".batch-load-content")
+    showEl(session, ".batch-load-sb-content")
+  }else{
+    switchTab(session, "input")
+    rv$btOverwriteScen <<- rv$btOverwriteScen + 1L
+  }
+})
+
+observeEvent(input$btBatchCompare, {
+  if(identical(input$btBatchCompare, "pivot")){
     viewMode <- "pivotView"
     currentCompMode <<- "pivot"
-  }else{
+  }else if(identical(input$btBatchCompare, "tab")){
     viewMode <- "tabView"
     currentCompMode <<- "tab"
+  }else{
+    viewMode <- "splitView"
+    currentCompMode <<- "split"
+    sidInLeftSplit <- length(scenData$getRefScenMap("cmpSplitL"))
+    sidInRightSplit <- length(scenData$getRefScenMap("cmpSplitR"))
+    if(length(sidsToLoad) > (2L - sum(sidInLeftSplit, sidInRightSplit))){
+      flog.info("Closing currently open scenarios in split comparison mode to load new ones.")
+      loadInLeftBoxSplit <<- TRUE
+      closeScenSplitBox(2L)
+      if(identical(length(sidsToLoad), 2L)){
+        closeScenSplitBox(3L)
+      }
+    }else{
+      loadInLeftBoxSplit <<- identical(sidInLeftSplit, 0L)
+    }
   }
-  flog.debug("Load Hypercube job scenarios (%s) to compare mode button clicked.", viewMode)
+  flog.debug("Load batch of scenarios to compare mode (%s) button clicked.", viewMode)
   isInSolveMode <<- FALSE
   loadIntoSandbox <<- FALSE
   switchCompareMode(session, viewMode, length(sidsToLoad))
-  rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
+  rv$btOverwriteScen <<- rv$btOverwriteScen + 1L
 })
 
 observeEvent(virtualActionButton(rv$btOverwriteScen), {
@@ -397,7 +439,10 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       refId <- NULL
       viewsSids <- which(!occupiedSidSlots)[seq_along(sidsToLoadVector)] + 3
     }else if(identical(currentCompMode, "split")){
-      if(loadInLeftBoxSplit){
+      if(identical(length(sidsToLoadVector), 2L)){
+        refId <- NULL
+        viewsSids <- c(2L, 3L)
+      }else if(loadInLeftBoxSplit){
         refId <- "cmpSplitL"
         viewsSids <- 2L
       }else{
@@ -585,7 +630,12 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         scenData$load(sidsToLoad[[i]], symNames = symToFetch,
                       showProgress = TRUE, refId = paste0("cmpTab_", scenId))
       }else{
-        if(loadInLeftBoxSplit){
+        if(identical(length(sidsToLoad), 2L)){
+          scenId <- i + 1L
+          scenData$load(sidsToLoad[[i]], symNames = symToFetch,
+                        showProgress = TRUE,
+                        refId = if(identical(scenId, 2L)) "cmpSplitL" else "cmpSplitR")
+        }else if(loadInLeftBoxSplit){
           scenId   <- 2L
         }else{
           scenId   <- 3L

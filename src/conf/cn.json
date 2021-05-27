@@ -19,11 +19,11 @@
       "inputScreen": "输入",
       "outputScreen": "输出",
       "gams":"GAMS交互",
+      "load":"加载场景",
       "scen":"场景比较",
       "hcube":{
         "configureRun":"配置Hypercube作业",
         "import":"导入作业",
-        "load":"加载场景",
         "analyze":"分析场景"
       }
     },
@@ -125,7 +125,7 @@
       "btManualImport":"手动导入",
       "btShowHistory":"显示历史"
     },
-    "hcubeLoad":{
+    "queryBuilder":{
       "title":"加载场景",
       "noData":"查询未返回任何数据",
       "invalidCsvFilter": "“%s”不得包含“，”。",
@@ -157,7 +157,7 @@
         "uid": "所有者",
         "sname": "名称",
         "stime":"创建时间",
-        "stag":"作业标签"
+        "stag":"标签"
       }
     },
     "hcubeAnalyze":{
@@ -597,37 +597,40 @@
       "cancelButton": "取消",
       "okButton": "显示作业"
     },
+    "dialogBatchLoad":{
+      "title": "选择操作",
+      "selectMethod": "对选定的场景进行什么操作？",
+      "selExportType": "选择文件类型",
+      "maxScenWarning1":"一次最多选择'%d'个场景加载到交互模式。",
+      "maxScenWarning2":"减少场景数或使用PAVER模块进行比较。",
+      "cancelButton":"取消",
+      "paverButton":"分析",
+      "tabScript": "脚本",
+      "tabPaver": "PAVER",
+      "delTrace":"注意：使用PAVER模块时,当前工作目录中的trace文件将被删除。",
+      "tooManySolvers":"多个场景都有该属性，无法进行比较（不超过%s个场景），请减少场景数量。",
+      "noTrc":"至少有一个所选方案找不到trace数据。",
+      "analysisRunScriptRunning": "目前正在进行分析。 请等待该分析过程结束或选择中断它。",
+      "removeConfirm":"确定要从数据库中删除选定的%s个场景吗？此操作无法撤消！",
+      "removeSuccess":"已删除所选场景。",
+      "selAnalysisScript": "选择要运行的脚本",
+      "selPaverAttribs":"请选择要比较的属性:",
+      "selIgnoreAttribs":"要忽略的属性:",
+      "selClArgs":"指定其他参数来调用PAVER",
+      "runPaverButton":"启动PAVER",
+      "runScriptButton": "启动脚本",
+      "downloadAnalysisButton": "下载",
+      "interactiveButtonSb": "将数据加载到沙箱",
+      "interactiveButtonTab": "比较(标签视图)",
+      "interactiveButtonPivot": "比较(枢轴检视)",
+      "interactiveButtonSplit": "比较(拆分视图)",
+      "downloadButton":"下载数据",
+      "removeButton":"删除场景"
+    },
     "hcubeMode":{
       "sliderAllCombinations":"所有组合？",
       "stepsize": "步长",
       "checkboxAliases":["否","是"],
-      "hcubeLoadDialog":{
-        "title": "选择操作",
-        "selectMethod": "对选定的场景进行什么操作？",
-        "selExportType": "选择文件类型",
-        "maxScenWarning1":"一次最多选择'%d'个场景加载到交互模式。",
-        "maxScenWarning2":"减少场景数或使用PAVER模块进行比较。",
-        "cancelButton":"取消",
-        "paverButton":"分析",
-        "tabScript": "脚本",
-        "tabPaver": "PAVER",
-        "delTrace":"注意：使用PAVER模块时,当前工作目录中的trace文件将被删除。",
-        "tooManySolvers":"多个场景都有该属性，无法进行比较（不超过%s个场景），请减少场景数量。",
-        "noTrc":"至少有一个所选方案找不到trace数据。",
-        "analysisRunScriptRunning": "目前正在进行分析。 请等待该分析过程结束或选择中断它。",
-        "removeConfirm":"确定要从数据库中删除选定的%s个场景吗？此操作无法撤消！",
-        "removeSuccess":"已删除所选场景。",
-        "selAnalysisScript": "选择要运行的脚本",
-        "selPaverAttribs":"请选择要比较的属性:",
-        "selIgnoreAttribs":"要忽略的属性:",
-        "selClArgs":"指定其他参数来调用PAVER",
-        "runPaverButton":"启动PAVER",
-        "runScriptButton": "启动脚本",
-        "interactiveButtonTab": "比较(标签视图)",
-        "interactiveButtonPivot": "比较(枢轴检视)",
-        "downloadButton":"下载数据",
-        "removeButton":"删除场景"
-      },
       "invalidScenDialog":{
         "title":"无效场景",
         "desc":"上传的场景中%d个无效，分别是第%s个场景。要继续上传吗？",
@@ -1109,7 +1112,7 @@
         "headerBaseScripts": "基本模式",
         "headerOutputAttach": "附件",
         "baseScriptsTooltip": "运行自定义分析脚本，该脚本将显示在输出中",
-        "headerHcubeScripts": "Hypercube模式",
+        "headerHcubeScripts": "批次分析",
         "hcubeScriptsTooltip": "一次运行多个方案的自定义分析脚本",
         "headerScenData": "场景和数据",
         "headerComputation": "计算",
@@ -1152,7 +1155,7 @@
       },
       "scripts":{
         "base": "指定基本模式的自定义分析脚本",
-        "hcube": "指定Hypercube模式的自定义分析脚本"
+        "hcube": "指定自定义分析脚本以分析批次的方案"
       },
       "outputAttach": {
         "label": "添加新的附件"
@@ -1910,6 +1913,7 @@
           "cmd": "运行命令",
           "args": "该命令的参数",
           "outFile": "输出文件的名称（包括文件扩展名）",
+          "markdown": "输出文件是Markdown文件",
           "timeout": "超时（秒，-1 为无限）"
         },
         "addOutAttach":{

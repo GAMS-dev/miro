@@ -1,34 +1,36 @@
-tspOutput <- function(id, height, options, path){
+mirowidget_iilocdataOutput <- function(id, height, options, path){
   ns <- NS(id)
   leaflet::leafletOutput(ns("tsp_input"), width = "100%", height = 700)
 }
 
-renderTsp <- function(input, output, session, data, options = NULL, path = NULL, rendererEnv = NULL, ...){
-  force(data)
+renderMirowidget_iilocdata <- function(input, output, session, data, options = NULL, path = NULL, ...){
   markerCnt <- 1L
   
-  dataTmp <- list()
-  if(length(data) == 3L && nrow(data)){
-    dataTmp <- lapply(seq_len(nrow(data)), function(i){
-      list(lat = data[[2]][i], lng = data[[3]][i])
+  rv <- reactiveValues(markerPositions = list)
+  observe({
+    if(length(data()) != 3L && !nrow(data())){
+      return()
+    }
+    isolate({
+      rv$markerPositions <- lapply(seq_len(nrow(data())), function(i){
+        list(lat = data()[[2]][i], lng = data()[[3]][i])
+      })
+      names(rv$markerPositions) <- data()[[1]]
     })
-    names(dataTmp) <- data[[1]]
-  }
+  })
   output$tsp_input <- leaflet::renderLeaflet({
-    if(length(dataTmp)){
+    if(length(data()) == 3L && nrow(data())){
       return(leaflet::leaflet() %>% leaflet::addTiles() %>%
-               leaflet::addMarkers(data[[3L]], data[[2L]], label = data[[1L]],
+               leaflet::addMarkers(data()[[3L]], data()[[2L]], label = data()[[1L]],
                                    group = "markers", options = leaflet::markerOptions(draggable = TRUE), 
-                                   layerId = data[[1L]]))
+                                   layerId = data()[[1L]]))
     }else{
       return(leaflet::leaflet() %>% leaflet::addTiles())
     }
   })
-  
-  rv <- reactiveValues(markerPositions = dataTmp)
   init <- FALSE
   
-  rendererEnv$markerClick <- observe({
+  observe({
     input$tsp_input_marker_click
     if(!init){
       return()
@@ -40,7 +42,7 @@ renderTsp <- function(input, output, session, data, options = NULL, path = NULL,
         leaflet::removeMarker(markerId)
     })
   })
-  rendererEnv$markerDragend <- observe({
+  observe({
     input$tsp_input_marker_dragend
     if(!init){
       return()
@@ -52,7 +54,7 @@ renderTsp <- function(input, output, session, data, options = NULL, path = NULL,
     })
   })
   
-  rendererEnv$mapClick <- observe({
+  observe({
     input$tsp_input_click
     if(!init){
       init <<- TRUE

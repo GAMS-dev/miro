@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "1.3.99"
+MIROVersion <- "1.9.99"
 APIVersion  <- "1"
-MIRORDate   <- "Mar 10 2021"
+MIRORDate   <- "May 23 2021"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -59,11 +59,11 @@ if(identical(Sys.getenv("MIRO_NO_DEBUG"), "true") && !miroDeploy){
 }
 tmpFileDir <- tempdir(check = TRUE)
 # required packages
-requiredPackages <- c("R6", "jsonlite", "zip", "tibble", "readr")
+requiredPackages <- c("R6", "jsonlite", "zip", "tibble", "readr", "futile.logger")
 if(!miroBuildonly){
   requiredPackages <- c(requiredPackages, "shiny", "shinydashboard", "rhandsontable", 
                         "rpivotTable", "stringi", "processx", 
-                        "dplyr", "readxl", "writexl", "futile.logger", "tidyr",
+                        "dplyr", "readxl", "writexl", "tidyr",
                         "DT", "sortable", "chartjs")
 }
 config <- list()
@@ -89,7 +89,7 @@ filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./component
                     "./components/dataio.R", "./components/hcube_data_instance.R", 
                     "./components/miro_tabsetpanel.R", "./modules/render_data.R", 
                     "./modules/generate_data.R", "./components/script_output.R",
-                    "./components/js_util.R", "./components/scen_data.R")
+                    "./components/js_util.R", "./components/scen_data.R", "./components/batch_loader.R")
 LAUNCHCONFIGMODE <- FALSE
 LAUNCHHCUBEMODE <<- FALSE
 if(is.null(errMsg)){
@@ -180,6 +180,31 @@ if(is.null(errMsg)){
   }
 }
 if(is.null(errMsg)){
+  if(!dir.exists(miroWorkspace) &&
+     !dir.create(miroWorkspace, showWarnings = FALSE)[1]){
+    errMsg <- sprintf("Could not create MIRO workspace directory: '%s'. Please make sure you have sufficient permissions. '", 
+                      miroWorkspace)
+  }
+  #initialise loggers
+  if(!dir.exists(logFileDir)){
+    tryCatch({
+      if(!dir.create(logFileDir, showWarnings = FALSE))
+        stop()
+    }, error = function(e){
+      errMsg <<- paste(errMsg, "Log file directory could not be created. Check that you have sufficient read/write permissions in application folder.", sep = "\n")
+    })
+  }
+}
+if(is.null(errMsg)){
+  loggingLevel <<- c(FATAL, ERROR, WARN, INFO, DEBUG, TRACE)[[loggingLevel]]
+  flog.appender(do.call(if(identical(logToConsole, TRUE)) "appender.miro" else "appender.file", 
+                        list(file = file.path(logFileDir, 
+                                              paste0(modelName, "_", uid, "_", 
+                                                     format(Sys.time(), 
+                                                            "%y.%m.%d_%H.%M.%S"), ".log")))))
+  flog.threshold("TRACE")
+  flog.trace("Logging facility initialised.")
+  loggerInitialised <- TRUE
   # name of the R save file
   useTempDir <- !identical(Sys.getenv("MIRO_USE_TMP"), "false")
   # check if GAMS model file exists
@@ -217,11 +242,11 @@ if(is.null(errMsg)){
                       rSaveFilePath)
   }else{
     load(rSaveFilePath)
-    if(exists("dbSchema")){
+    if(!exists("dbSchemaModel")){
       # legacy app, need to convert to new format
       dbSchemaModel <- substring(dbSchema$tabName[-seq_len(6)],
                                  nchar(gsub("_", "", modelName, fixed = TRUE)) + 2L)
-      dbSchemaModel <- list(schema = setNames(lapply(seq_along(dbSchemaModel), function(i){
+      dbSchemaModel <- lapply(seq_along(dbSchemaModel), function(i){
         if(dbSchemaModel[i] %in% c(scalarsFileName, scalarsOutName)){
           return(NA)
         }
@@ -238,8 +263,12 @@ if(is.null(errMsg)){
         list(tabName = dbSchemaModel[i],
              colNames = dbSchema$colNames[[i + 6L]],
              colTypes = dbSchema$colTypes[[i + 6L]])
-      }), dbSchemaModel), views = list())
-      dbSchemaModel$schema[is.na(dbSchemaModel$schema)] <- NULL
+      })
+      dbSchemaModel[is.na(dbSchemaModel)] <- NULL
+      dbSchemaModel <- list(schema = setNames(dbSchemaModel,
+                                              vapply(dbSchemaModel, "[[", character(1L),
+                                                     "tabName", USE.NAMES = FALSE)),
+                            views = list())
       if(scalarsOutName %in% names(modelOut)){
         scalarMeta <- setNames(modelOut[[scalarsOutName]]$symtypes,
                                modelOut[[scalarsOutName]]$symnames)
@@ -364,6 +393,7 @@ sep = "\n")
       buildArchive <- !identical(Sys.getenv("MIRO_BUILD_ARCHIVE"), "false")
       if(is.null(errMsg) && useTempDir && buildArchive){
         tryCatch({
+          flog.info("Compressing model files...")
           zipMiro(file.path(currentModelDir, paste0(modelName, ".zip")),
                   modelFiles, currentModelDir)
           modelFiles <- paste0(modelName, ".zip")
@@ -544,9 +574,9 @@ if(miroBuildonly){
                              paste0(modelNameRaw, ".miroapp"))) &&
        unlink(file.path(currentModelDir,
                         paste0(modelNameRaw, ".miroapp")), force = TRUE) == 1){
-      warning("Problems removing corrupted miroapp file")
+      warning("Problems removing corrupted miroapp file", call. = FALSE)
     }
-    warning(errMsg)
+    warning(errMsg, call. = FALSE)
     if(interactive())
       stop()
     if(isTRUE(attr(errMsg, "noMA"))){
@@ -597,7 +627,7 @@ if(miroBuildonly){
     buildProcHcube$wait()
     procHcubeRetC <- buildProcHcube$get_exit_status()
     if(!identical(procHcubeRetC, 0L)){
-      warning(buildProcHcube$read_error())
+      warning(buildProcHcube$read_error(), call. = FALSE)
       if(interactive())
         stop()
       quit("no", procHcubeRetC)
@@ -628,6 +658,7 @@ if(miroBuildonly){
                auto_unbox = TRUE, null = "null")
     # assemble MIROAPP
     miroAppPath <- file.path(currentModelDir, paste0(modelNameRaw, ".miroapp"))
+    flog.info("Generating miroapp file...")
     zipMiro(miroAppPath, 
             c(modelFiles, basename(rSaveFilePath)), currentModelDir)
     zipr_append(miroAppPath, appMetadataFile, mode = "cherry-pick")
@@ -642,44 +673,8 @@ if(miroBuildonly){
     stop()
   quit("no")
 }
-if(is.null(errMsg)){
-  if(!dir.exists(miroWorkspace) &&
-     !dir.create(miroWorkspace, showWarnings = FALSE)[1]){
-    errMsg <- paste(errMsg, sprintf("Could not create MIRO workspace directory: '%s'. Please make sure you have sufficient permissions. '", 
-                                    miroWorkspace), sep = "\n")
-  }else{
-    if(isWindows()){
-      tryCatch(
-        processx::run("attrib", args = c("+h", miroWorkspace))
-        , error = function(e){
-          warningMsg <<- paste(warningMsg, 
-                               sprintf("Failed to hide MIRO workspace directory: '%s'. Error message: '%s'.", 
-                                       miroWorkspace, conditionMessage(e)), sep = "\n")
-        })
-    }
-  }
-  #initialise loggers
-  if(!dir.exists(logFileDir)){
-    tryCatch({
-      if(!dir.create(logFileDir, showWarnings = FALSE))
-        stop()
-    }, error = function(e){
-      errMsg <<- "Log file directory could not be created. Check that you have sufficient read/write permissions in application folder."
-    })
-  }
-}
 
 if(is.null(errMsg)){
-  loggingLevel <<- c(FATAL, ERROR, WARN, INFO, DEBUG, TRACE)[[loggingLevel]]
-  flog.appender(do.call(if(identical(logToConsole, TRUE)) "appender.miro" else "appender.file", 
-                        list(file = file.path(logFileDir, 
-                                              paste0(modelName, "_", uid, "_", 
-                                                     format(Sys.time(), 
-                                                            "%y.%m.%d_%H.%M.%S"), ".log")))))
-  flog.threshold("TRACE")
-  flog.trace("Logging facility initialised.")
-  loggerInitialised <- TRUE
-  
   if(config$activateModules$remoteExecution){
     requiredPackages <- c("future", "httr")
   }else if(length(externalInputConfig) || length(datasetsRemoteExport)){
@@ -757,7 +752,6 @@ if(is.null(errMsg)){
     }
     errMsg <- installAndRequirePackages(c("digest"), installedPackages, RLibPath, CRANMirror, miroWorkspace)
     source("./components/db_hcubeimport.R")
-    source("./components/db_hcubeload.R")
   }
 }
 
@@ -918,7 +912,7 @@ if(!is.null(errMsg)){
     if(length(warningMsg)) flog.warn(warningMsg)
     flog.fatal(errMsg)
   }else{
-    warning(errMsg)
+    warning(errMsg, call. = FALSE)
   }
   if(isShinyProxy){
     stop('An error occured. Check log for more information!', call. = FALSE)
@@ -1326,7 +1320,7 @@ if(!is.null(errMsg)){
       rv <- reactiveValues(unsavedFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
                            btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
                            btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
-                           noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
+                           noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L, updateBatchLoadData = 0L,
                            jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L, importCSV = 0L,
                            refreshLogs = NULL, triggerAsyncProcObserver = NULL)
       
@@ -1527,92 +1521,13 @@ if(!is.null(errMsg)){
       scriptOutput <- NULL
       
       if(LAUNCHHCUBEMODE){
-        if(length(config$scripts)){
+        if(length(config$scripts$hcube)){
           scriptOutput <- ScriptOutput$new(session, file.path(workDir, paste0("scripts_", modelName)), 
                                            config$scripts, lang$nav$scriptOutput$errMsg,
                                            gamsSysDir = gamsSysDir)
         }
-      }else{
-        if(length(config$scripts$base)){
-          scriptOutput <- ScriptOutput$new(session, file.path(workDir, paste0("scripts_", modelName)),
-                                           config$scripts, lang$nav$scriptOutput$errMsg,
-                                           gamsSysDir = gamsSysDir)
-          observeEvent(input$runScript, {
-            scriptId <- suppressWarnings(as.integer(input$runScript))
-            if(is.na(scriptId) || scriptId < 1 || 
-               scriptId > length(config$scripts$base)){
-              flog.error("A script with id: '%s' was attempted to be executed. However, this script does not exist. Looks like an attempt to tamper with the app!",
-                         input$runScript)
-              return()
-            }
-            if(scriptOutput$isRunning(scriptId)){
-              flog.debug("Button to interrupt script: '%s' clicked.", scriptId)
-              scriptOutput$interrupt(scriptId)
-              hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-              hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
-              showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-              
-              showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"), 
-                               lang$nav$scriptOutput$runButton)
-              return()
-            }
-            flog.debug("Button to execute script: '%s' clicked.", scriptId)
-            
-            if(!dir.exists(paste0(workDir, .Platform$file.sep, "scripts_", modelName))){
-              if(dir.exists(paste0(currentModelDir, .Platform$file.sep, "scripts_", modelName))){
-                if(!file.copy2(paste0(currentModelDir, .Platform$file.sep, "scripts_", modelName),
-                               paste0(workDir, .Platform$file.sep, "scripts_", modelName))){
-                  flog.error("Problems copying files from: '%s' to: '%s'.",
-                             paste0(workDir, .Platform$file.sep, "scripts_", modelName),
-                             paste0(currentModelDir, .Platform$file.sep, "scripts_", modelName))
-                  hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-                  hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-                  return(scriptOutput$sendContent(lang$errMsg$unknownError, scriptId, isError = TRUE))
-                }
-              }else{
-                flog.info("No 'scripts_%s' directory was found. Did you forget to include it in the model assembly file ('%s_files.txt')?",
-                          modelName, modelName)
-                hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-                showEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-                return(scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$noScript, scriptId, isError = TRUE))
-              }
-            }
-            showEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-            hideEl(session, paste0("#scriptOutput_", scriptId, " .script-output"))
-            hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-            
-            errMsg <- NULL
-            
-            tryCatch({
-              scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE), modelInFileNames)
-              gdxio$wgdx(file.path(workDir, paste0("scripts_", modelName), "data.gdx"), 
-                         scenData$get("sb"), squeezeZeros = 'n')
-            }, error = function(e){
-              flog.error("Problems writing gdx file for script: '%s'. Error message: '%s'.", 
-                         scriptId, conditionMessage(e))
-              errMsg <<- sprintf(lang$errMsg$fileWrite$desc, "data.gdx")
-              hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-              hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-              scriptOutput$sendContent(errMsg, scriptId, isError = TRUE)
-            })
-            if(!is.null(errMsg)){
-              return()
-            }
-            tryCatch({
-              scriptOutput$run(scriptId)
-              showElReplaceTxt(session, paste0("#scriptOutput_", scriptId, " .btn-run-script"), 
-                               lang$nav$scriptOutput$interruptButton)
-            }, error = function(e){
-              flog.info("Script: '%s' crashed during startup. Error message: '%s'.",
-                        scriptId, conditionMessage(e))
-              scriptOutput$sendContent(lang$nav$scriptOutput$errMsg$crash, scriptId, 
-                                       hcube = FALSE, isError = TRUE)
-            })
-          })
-          observeEvent(input$outputGenerated,{
-            noOutputData <<- FALSE
-          })
-        }
+      }else if(length(config$scripts$base) || length(config$scripts$hcube)){
+        source("./modules/analysis_scripts.R", local = TRUE)
       }
       
       if(!dir.exists(workDir) && !dir.create(workDir, recursive = TRUE)){
@@ -1658,7 +1573,7 @@ if(!is.null(errMsg)){
       })
       
       # initialise list of reactive expressions returning data for model input
-      dataModelIn <- vector(mode = "list", length = length(modelIn))
+      dataModelIn <- setNames(vector(mode = "list", length = length(modelIn)), names(modelIn))
       # auxiliary vector that specifies whether data frame has no data or data was overwritten
       isEmptyInput <- vector(mode = "logical", length = length(modelIn))
       # input is empty in the beginning
@@ -1806,10 +1721,10 @@ if(!is.null(errMsg)){
       ####### Model input
       # get sandbox data
       source("./modules/input_save.R", local = TRUE)
-      # render tabular input datasets
-      source("./modules/input_render_tab.R", local = TRUE)
       # render non tabular input datasets (e.g. slider, dropdown)
       source("./modules/input_render_nontab.R", local = TRUE)
+      # render tabular input datasets
+      source("./modules/input_render_tab.R", local = TRUE)
       # generate import dialogue
       source("./modules/input_ui.R", local = TRUE)
       # load input data from Excel sheet
@@ -1837,13 +1752,14 @@ if(!is.null(errMsg)){
         source("./modules/download_tmp.R", local = TRUE)
       }
       
+      ####### Batch load module
+      source("./modules/batch_load.R", local = TRUE)
+      
       ####### Paver interaction
       if(LAUNCHHCUBEMODE){
         source("./modules/gams_job_list.R", local = TRUE)
         ####### Hcube import module
         source("./modules/hcube_import.R", local = TRUE)
-        ####### Hcube load module
-        source("./modules/hcube_load.R", local = TRUE)
         # analyze button clicked
         source("./modules/analysis_run.R", local = TRUE)
       }else if(config$activateModules$remoteExecution){
@@ -1886,6 +1802,7 @@ if(!is.null(errMsg)){
       source("./modules/load_dynamic_tab_content.R", local = TRUE)
       
       observeEvent(input$btScenPivot_close, {
+        resetCompTabset("0")
         showEl(session, "#pivotCompBtWrapper")
         hideEl(session, "#pivotCompScenWrapper")
         isInRefreshMode <<- FALSE

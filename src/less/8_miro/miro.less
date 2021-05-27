@@ -980,6 +980,9 @@ animation: none !important;
      background: @table-row-odd-dark;
   });
 }
+.gen-spinner-black div {
+  background: #000!important;
+}
 /* bring plotly charts to front */
 .plotly {
   z-index: 22;
@@ -1643,4 +1646,22 @@ animation: none !important;
   text-overflow: ellipsis;
   overflow: hidden;
   vertical-align: text-top;
+} 
+// fullscreen modal (used e.g. for analysis scripts)
+#batchLoadModal {
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+}
+.modal-dialog-fullscreen {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+.modal-content-fullscreen {
+  height: auto;
+  min-height: 100%;
+  border-radius: 0;
 }

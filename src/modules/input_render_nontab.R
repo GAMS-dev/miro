@@ -58,6 +58,9 @@ lapply(seq_along(modelIn), function(id){
   }
   switch(modelIn[[id]]$type,
          checkbox = {
+           dataModelIn[[id]] <<- reactive({
+             input[[paste0("cb_", id)]]
+           })
            if(is.na(i)){
              # no dependency
              getSelected[[id]] <<- reactive({
@@ -76,13 +79,12 @@ lapply(seq_along(modelIn), function(id){
                  return(value)
                }
              })
-             
              observe({
                value <- getSelected[[id]]()
                if(!is.null(value) && !identical(suppressWarnings(as.logical(value)), 
-                                                isolate(input[["cb_" %+% id]]))){
+                                                isolate(input[[paste0("cb_", id)]]))){
                  noCheck[id] <<- TRUE
-                 updateCheckboxInput(session, "cb_" %+% id, value = value)
+                 updateCheckboxInput(session, paste0("cb_", id), value = value)
                }
              })
            }else{
@@ -156,6 +158,9 @@ lapply(seq_along(modelIn), function(id){
            }
          },
          textinput = {
+           dataModelIn[[id]] <<- reactive({
+             input[[paste0("text_", id)]]
+           })
            getSelected[[id]] <<- reactive({
              if(is.null(rv[["in_" %+% id]])){
                return(NULL)
@@ -177,6 +182,9 @@ lapply(seq_along(modelIn), function(id){
            })
          },
          numericinput = {
+           dataModelIn[[id]] <<- reactive({
+             input[[paste0("numeric_", id)]]
+           })
            getSelected[[id]] <<- reactive({
              if(is.null(rv[["in_" %+% id]])){
                return(NULL)
@@ -198,6 +206,9 @@ lapply(seq_along(modelIn), function(id){
            })
          },
          date = {
+           dataModelIn[[id]] <<- reactive({
+             input[[paste0("date_", id)]]
+           })
            getSelected[[id]] <<- reactive({
              if(is.null(rv[["in_" %+% id]])){
                return(NULL)
@@ -220,6 +231,9 @@ lapply(seq_along(modelIn), function(id){
            })
          },
          daterange = {
+           dataModelIn[[id]] <<- reactive({
+             input[[paste0("daterange_", id)]]
+           })
            getSelected[[id]] <<- reactive({
              if(is.null(rv[["in_" %+% id]])){
                return(NULL)
@@ -245,6 +259,9 @@ lapply(seq_along(modelIn), function(id){
            })
          },
          dropdown = {
+           dataModelIn[[id]] <<- reactive({
+             input[[paste0("dropdown_", id)]]
+           })
            # retrieve selected value for dropdown menu
            getSelected[[id]] <<- reactive({
              if(is.null(rv[["in_" %+% id]])){
@@ -390,6 +407,9 @@ lapply(seq_along(modelIn), function(id){
            }
          },
          slider = {
+           dataModelIn[[id]] <<- reactive({
+             input[[paste0("slider_", id)]]
+           })
            # retrieve selected value for slider
            getSelected[[id]] <<- reactive({
              if(is.null(rv[[paste0("in_", id)]])){
