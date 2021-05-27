@@ -33,7 +33,7 @@ packageVersionMap <- list(c("data.table", "1.14.0"), c("backports", "1.1.9"), c(
     "1.6.0"), c("clipr", "0.7.0"), c("cellranger", "1.1.0"), 
     c("progress", "1.2.2"), c("lambda.r", "1.2.4"), c("futile.options", 
     "1.0.1"), c("zoo", "1.8-8"), c("globals", "0.12.5"), c("listenv", 
-    "0.8.0"), c("processx", "3.5.1"), c("readr", "1.3.1"), c("readxl", 
+    "0.8.0"), c("processx", "3.5.2"), c("readr", "1.3.1"), c("readxl", 
     "1.3.1"), c("writexl", "1.4.0"), c("rpivotTable", "0.3.0"
     ), c("futile.logger", "1.4.3"), c("zip", "2.1.1"), c("leaflet.minicharts", 
     "0.6.0"), c("xts", "0.12-0"), c("dygraphs", "1.1.1.6"), c("future", 
