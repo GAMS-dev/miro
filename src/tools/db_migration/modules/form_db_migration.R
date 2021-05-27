@@ -272,7 +272,7 @@ dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
           progress$set(message = lang$nav$migrationModule$progress$title, value = 0)
           updateProgress <- function(){
             progress$inc(1/length(inconsistentTablesInfo),
-                         detail = sprintf(lang$nav$migrationModule$progress$title,
+                         detail = sprintf(lang$nav$migrationModule$progress$desc,
                                           progress$getValue() + 1L, length(inconsistentTablesInfo)))
           }
           tryCatch({

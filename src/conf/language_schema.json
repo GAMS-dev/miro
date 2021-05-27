@@ -2415,6 +2415,10 @@
               "type": "string",
               "minLength": 1
             },
+            "interactiveButtonSb": {
+              "type": "string",
+              "minLength": 1
+            },
             "interactiveButtonTab": {
               "type": "string",
               "minLength": 1
@@ -2436,7 +2440,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 27
+          "minProperties": 28
         },
         "hcubeMode": {
           "type": "object",

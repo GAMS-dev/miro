@@ -157,7 +157,7 @@
         "uid":"Owner",
         "sname": "Name",
         "stime":"Time created",
-        "stag": "Job tags"
+        "stag": "Tags"
       }
     },
     "hcubeAnalyze":{

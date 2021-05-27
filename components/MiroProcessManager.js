@@ -123,12 +123,15 @@ class MiroProcessManager {
 developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
 
     let miroEnv = await this.configData.get('miroEnv');
-    if (Object.keys(miroEnv).includes('PATH')) {
+    if (miroEnv != null && Object.keys(miroEnv).includes('PATH')) {
       // we append the current PATH
       const tidyPath = miroEnv.PATH
         .split(path.delimiter)
         .filter((el) => el.length > 0)
         .join(path.delimiter);
+      // we need to clone object as we don't want to overwrite
+      // config data
+      miroEnv = JSON.parse(JSON.stringify(miroEnv));
       miroEnv.PATH = tidyPath + path.delimiter + process.env.PATH;
     }
     if (miroEnv == null) {
@@ -211,7 +214,7 @@ developMode: ${this.inDevelopmentMode}, libPath: ${libPath}.`);
     }
     const url = `http://127.0.0.1:${shinyPort}`;
     /* eslint-disable no-await-in-loop */
-    for (let i = 0; i <= 50; i += 1) {
+    for (let i = 0; i <= 100; i += 1) {
       if (!this.miroProcesses[internalPid]) {
         return;
       }
