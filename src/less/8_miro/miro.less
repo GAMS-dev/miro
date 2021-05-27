@@ -1396,11 +1396,11 @@ animation: none !important;
        background-color: @modal-bg-dark;
     });
 }
-.dropdown-menu .miro-pivot-delete-view-button {
+.dropdown-menu .miro-pivot-view-button {
   width: 20px;
   padding-left: 10px;
 }
-.dropdown-menu .miro-pivot-delete-view-button:hover {
+.dropdown-menu .miro-pivot-view-button:hover {
   color: #F39619;
   background-color: unset;
 }
@@ -1593,11 +1593,14 @@ animation: none !important;
 .view-dropdown-wrapper {
   max-height: 400px;
   overflow: auto;
-  width: 300px;
+  min-width: 300px;
+  max-width: 400px;
 }
 .view-dropdown-item{
   width: 100%;
   white-space:normal !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 // numeric input
 .miro-auto-numeric:invalid {
@@ -1631,7 +1634,6 @@ animation: none !important;
 }
 .miro-color-picker input {
   display: none;
-  width: unset;
 }
 .miro-color-picker span {
   display: inline-block;

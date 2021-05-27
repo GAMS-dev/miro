@@ -21,13 +21,17 @@ genIndexList <- function(indexList) {
             names(indexList)[idx])
   }))
 }
-createBootstrapDropdownChoices <- function(el, eventId, deleteEventId = NULL){
+createBootstrapDropdownChoices <- function(el, eventId, editEventId = NULL, deleteEventId = NULL){
   tags$li(id = paste0(eventId, "_", el$id), class = "dropdown-item-wrapper",
           tags$a(class="dropdown-item view-dropdown-item", role = "button", el$alias,
                  onClick = paste0("Shiny.setInputValue('", eventId, "','",
                                   el$id, "',{priority:\'event\'});")),
+          if(!is.null(editEventId))
+            tags$a(role = "button", icon("pen"), class = "miro-pivot-view-button",
+                   onClick = paste0("Shiny.setInputValue('", editEventId, "','",
+                                    el$id, "',{priority:\'event\'});")),
           if(!is.null(deleteEventId))
-            tags$a(role = "button", icon("times"), class = "miro-pivot-delete-view-button",
+            tags$a(role = "button", icon("times"), class = "miro-pivot-view-button",
                    onClick = paste0("Shiny.setInputValue('", deleteEventId, "','",
                                     el$id, "',{priority:\'event\'});")))
 }
@@ -422,7 +426,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       names(setIndexAliases) <- setIndices
       currentView <- options
       
-      currentSeriesLabels <- NULL
+      miroPivotState <- list(currentSeriesLabels = character(),
+                             triggerEditViewDialog = FALSE,
+                             editView = FALSE)
       
       if(!isFALSE(options$enablePersistentViews)){
         updateViewList <- function(){
@@ -431,7 +437,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           viewChoices <- lapply(sort(views$getIds(session)), function(viewId){
             createBootstrapDropdownChoices(list(id = htmlIdEnc(viewId), 
                                                 alias = viewId), 
-                                           ns("savedViews"), ns("deleteView"))
+                                           ns("savedViews"), ns("editView"), ns("deleteView"))
           })
           insertUI(paste0("#", ns("savedViewsDD")), 
                    c(list(tags$input(type = "text",
@@ -452,54 +458,70 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           views$registerUpdateCallback(session, updateViewList)
         }
         
-        rendererEnv[[ns("saveView")]] <- observe({
-          if(is.null(input$saveView) || initData || input$saveView == 0L || readonlyViews){
-            return()
-          }
-          if(length(isolate(input$pivotRenderer)) &&
-                    isolate(input$pivotRenderer) %in% c("line", "bar", "stackedbar", "radar")){
+        showAddViewDialog <- function(pivotRenderer, viewOptions = NULL){
+          miroPivotState$editView <<- length(viewOptions) > 0L
+          if(length(pivotRenderer) &&
+             pivotRenderer %in% c("line", "bar", "stackedbar", "radar")){
             moreOptions <- NULL
-            if(isolate(input$pivotRenderer) %in% c("bar", "stackedbar", "line")){
+            if(pivotRenderer %in% c("bar", "stackedbar", "line")){
               moreOptions <- tags$div(class = "row",
                                       tags$div(class = "col-sm-12",
                                                textInput(ns("advancedTitle"), width = "100%",
-                                                         lang$renderers$miroPivot$newViewChartTitle)),
+                                                         lang$renderers$miroPivot$newViewChartTitle,
+                                                         value = viewOptions$chartOptions$title)),
                                       tags$div(class = "col-sm-6",
                                                textInput(ns("advancedxTitle"), width = "100%",
-                                                         lang$renderers$miroPivot$newViewxTitle)),
+                                                         lang$renderers$miroPivot$newViewxTitle,
+                                                         value = viewOptions$chartOptions$xTitle)),
                                       tags$div(class = "col-sm-6",
                                                textInput(ns("advancedyTitle"), width = "100%",
-                                                         lang$renderers$miroPivot$newViewyTitle)))
+                                                         lang$renderers$miroPivot$newViewyTitle,
+                                                         value = viewOptions$chartOptions$yTitle)))
             }
+            customChartColorsUI <- lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId){
+              colorLabel <- miroPivotState$currentSeriesLabels[labelId]
+              if(length(names(viewOptions$chartOptions$customChartColors))){
+                if(colorLabel %in% names(viewOptions$chartOptions$customChartColors)){
+                  colorVal <- viewOptions$chartOptions$customChartColors[[colorLabel]][1]
+                }else{
+                  colorVal <- SERIES_DEFAULT_COLOR
+                }
+              }else{
+                colorVal <- customChartColors[(labelId - 1L)*2L+1L]
+              }
+              tags$div(class = "col-sm-6",
+                       colorPickerInput(ns(paste0("customChartColor_", labelId)),
+                                        colorLabel,
+                                        colorVal,
+                                        colorBox = TRUE))
+            })
             additionalOptionsContent <- tags$div(id = ns("newViewOptionsWrapper"), style = "text-align:left;",
-                                                 tags$i(class="fas fa-arrow-down",
+                                                 tags$i(class = paste0("fas ",
+                                                                       if(length(viewOptions$chartOptions))
+                                                                         "fa-arrow-up" else
+                                                                           "fa-arrow-down"),
                                                         role = "presentation",
                                                         `aria-label` = "More options",
                                                         onclick = "$(this).next().slideToggle();$(this).toggleClass('fa-arrow-up');$(this).toggleClass('fa-arrow-down');", 
                                                         style = "cursor: pointer;"),
-                                                 tags$div(style = "display:none;",
+                                                 tags$div(style = if(!length(viewOptions$chartOptions))
+                                                   "display:none;",
                                                           moreOptions,
                                                           tags$div(class = "row",
                                                                    tags$div(class = "col-sm-6",
                                                                             checkboxInput_MIRO(ns("useCustomChartColors"),
                                                                                                label = lang$renderers$miroPivot$newViewCbCustomColors,
-                                                                                               value = FALSE)),
+                                                                                               value = length(viewOptions$chartOptions$customChartColors) > 0L)),
                                                                    tags$div(class = "col-sm-6",
                                                                             `data-display-if` = "input.useCustomChartColors===true",
                                                                             `data-ns-prefix`=ns(""),
                                                                             checkboxInput_MIRO("miroPivotCbCustomColorInputs",
                                                                                                label = lang$renderers$miroPivot$newViewCbManualColors,
                                                                                                value = FALSE))
-                                                                   ),
+                                                          ),
                                                           conditionalPanel("input.useCustomChartColors===true", ns = ns,
                                                                            tags$div(class = "row miro-pivot-custom-colors-wrapper",
-                                                                                    lapply(seq_along(currentSeriesLabels), function(labelId){
-                                                                                      tags$div(class = "col-sm-6",
-                                                                                               colorPickerInput(ns(paste0("customChartColor_", labelId)),
-                                                                                                                currentSeriesLabels[labelId],
-                                                                                                                customChartColors[(labelId - 1L)*2L+1L],
-                                                                                                                colorBox = TRUE))
-                                                                                    })
+                                                                                    customChartColorsUI
                                                                            ))
                                                  )
             )
@@ -509,14 +531,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           showModal(modalDialog(tags$div(id = ns("errUniqueName"), style = "display:none;",
                                          lang$renderers$miroPivot$errUniqueViewName),
                                 textInput(ns("newViewName"), width = "100%",
-                                          lang$renderers$miroPivot$newViewLabel),
+                                          lang$renderers$miroPivot$newViewLabel,
+                                          value = viewOptions$name),
                                 additionalOptionsContent,
                                 footer = tagList(
                                   tags$div(id = ns("saveViewButtonsWrapper"),
                                            modalButton(lang$renderers$miroPivot$newViewBtCancel),
-                                           actionButton(ns("saveViewConfirm"), lang$renderers$miroPivot$newViewBtSave, 
+                                           actionButton(ns("saveViewConfirm"),
+                                                        lang$renderers$miroPivot$newViewBtSave, 
                                                         class = "bt-highlight-1 bt-gms-confirm")
-                                           ),
+                                  ),
                                   tags$div(id = ns("saveViewOverwriteButtonsWrapper"), style = "display:none",
                                            actionButton(ns("saveViewCancelOverwrite"),
                                                         lang$renderers$miroPivot$newViewBtCancelOverwrite),
@@ -527,7 +551,18 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                 ),
                                 fade = TRUE, easyClose = FALSE, size = "m", 
                                 title = lang$renderers$miroPivot$newViewTitle))
+        }
+        
+        rendererEnv[[ns("saveView")]] <- observe({
+          if(is.null(input$saveView) || initData || input$saveView == 0L || readonlyViews){
+            return()
+          }
+          showAddViewDialog(isolate(input$pivotRenderer))
         })
+        deleteView <- function(viewId){
+          views$remove(session, viewId)
+          removeUI(paste0("#", ns("savedViews"), "_", htmlIdEnc(viewId)))
+        }
         addNewView <- function(overwrite = FALSE){
           isolate({
             newViewConfig <- list(aggregationFunction = input$aggregationFunction,
@@ -575,19 +610,19 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               if(isTRUE(input[["useCustomChartColors"]])){
                 refreshRequired <- TRUE
                 newViewConfig$chartOptions[["customChartColors"]] <- setNames(
-                  lapply(seq_along(currentSeriesLabels), function(labelId){
+                  lapply(seq_along(miroPivotState$currentSeriesLabels), function(labelId){
                     seriesColor <- input[[paste0("customChartColor_", labelId)]]
                     hoverColor <- tryCatch(colorspace::darken(seriesColor, amount = 0.3),
                                            error = function(e){
                                              flog.warn("MIRO Piovot: Problems darkening color for label: %s.",
-                                                       currentSeriesLabels[labelId])
+                                                       miroPivotState$currentSeriesLabels[labelId])
                                              return(NA)
                                            })
                     if(is.na(hoverColor)){
                       return(c(SERIES_DEFAULT_COLOR, SERIES_DEFAULT_COLOR))
                     }
                     return(c(seriesColor, hoverColor))
-                  }), currentSeriesLabels)
+                  }), miroPivotState$currentSeriesLabels)
               }
             }
             if(overwrite){
@@ -596,16 +631,20 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
               insertUI(paste0("#", ns("savedViewsDD")), 
                        createBootstrapDropdownChoices(list(id = htmlIdEnc(input$newViewName), 
                                                            alias = input$newViewName), 
-                                                      ns("savedViews"), ns("deleteView")), 
+                                                      ns("savedViews"), ns("editView"), ns("deleteView")), 
                        where = "beforeEnd")
               views$add(session, input$newViewName, newViewConfig)
             }
+            if(miroPivotState$editView &&
+               !identical(input$newViewName, currentView$name)){
+              # view was renamed
+              deleteView(currentView$name)
+            }
             if(refreshRequired){
               currentView <<- newViewConfig
-              isolate({
-                newVal <- updateRenderer() + 1L
-                updateRenderer(newVal)
-              })
+              currentView$name <<- input$newViewName
+              newVal <- updateRenderer() + 1L
+              updateRenderer(newVal)
             }
           })
         }
@@ -618,7 +657,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           if(identical(isolate(input$newViewName), "")){
             return()
           }
-          if(isolate(input$newViewName) %in% c("default", views$getIds(session))){
+          overwriteView <- miroPivotState$editView && identical(isolate(input$newViewName), currentView$name)
+          if(isolate(input$newViewName) %in% c("default", views$getIds(session)) &&
+             !overwriteView){
             hideEl(session, paste0("#", ns("newViewName")))
             hideEl(session, paste0("#", ns("saveViewButtonsWrapper")))
             hideEl(session, paste0("#", ns("newViewOptionsWrapper")))
@@ -626,7 +667,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             showEl(session, paste0("#", ns("saveViewOverwriteButtonsWrapper")))
             return()
           }
-          addNewView()
+          addNewView(overwrite = overwriteView)
           removeModal(session)
         })
         rendererEnv[[ns("saveViewOverwriteConfirm")]] <- observe({
@@ -653,6 +694,22 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           showEl(session, paste0("#", ns("newViewOptionsWrapper")))
           showEl(session, paste0("#", ns("saveViewButtonsWrapper")))
         })
+        rendererEnv[[ns("editView")]] <- observe({
+          if(is.null(input$editView) || initData || readonlyViews){
+            return()
+          }
+          viewId <- htmlIdDec(input$editView)
+          if(length(viewId) != 1L || 
+             !viewId %in% views$getIds(session)){
+            flog.error("Invalid view id: '%s' attempted to be edited. This looks like an attempt to tamper with the app!",
+                       input$editView)
+            return()
+          }
+          miroPivotState$triggerEditViewDialog <<- TRUE
+          currentView <<- views$get(session, viewId)
+          currentView$name <<- viewId
+          resetView(currentView, options[["domainFilter"]]$domains)
+        })
         rendererEnv[[ns("deleteView")]] <- observe({
           if(is.null(input$deleteView) || initData || readonlyViews){
             return()
@@ -660,12 +717,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           viewId <- htmlIdDec(input$deleteView)
           if(length(viewId) != 1L || 
              !viewId %in% views$getIds(session)){
-            flog.error("Invalid view id: '%s' attempted to be removed This looks like an attempt to tamper with the app!",
+            flog.error("Invalid view id: '%s' attempted to be removed. This looks like an attempt to tamper with the app!",
                        input$deleteView)
             return()
           }
-          views$remove(session, viewId)
-          removeUI(paste0("#", ns("savedViews"), "_", stri_replace_all(input$deleteView, "\\.", fixed = ".")))
+          deleteView(viewId)
         })
         rendererEnv[[ns("savedViews")]] <- observe({
           if(is.null(input$savedViews) || initData){
@@ -680,6 +736,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
           currentView <<- if(identical(viewId, "default")) options else 
             views$get(session, viewId)
+          currentView$name <<- viewId
           resetView(currentView, options[["domainFilter"]]$domains)
         })
       }
@@ -1046,6 +1103,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         showEl(session, paste0("#", ns("loadPivotTable")))
         dataTmp <- dataToRender()
         if(!length(dataTmp)){
+          if(miroPivotState$triggerEditViewDialog){
+            miroPivotState$triggerEditViewDialog <<- FALSE
+            showAddViewDialog(pivotRenderer, viewOptions = currentView)
+          }
           return()
         }
         rowHeaderLen <- attr(dataTmp, "noRowHeaders")
@@ -1076,12 +1137,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if(!length(labels)){
           labels <- "value"
         }
-        currentSeriesLabels <<- names(dataTmp)[seq(rowHeaderLen + 1L, min(noSeries + rowHeaderLen,
-                                                                          40L + rowHeaderLen))]
+        miroPivotState$currentSeriesLabels <<- names(dataTmp)[seq(rowHeaderLen + 1L, min(noSeries + rowHeaderLen,
+                                                                                         40L + rowHeaderLen))]
+        if(miroPivotState$triggerEditViewDialog){
+          miroPivotState$triggerEditViewDialog <<- FALSE
+          showAddViewDialog(pivotRenderer, viewOptions = currentView)
+        }
         if(length(currentView$chartOptions$customChartColors) &&
            length(names(currentView$chartOptions$customChartColors))){
           # custom chart colors specified
-          chartColorIdx <- match(currentSeriesLabels,
+          chartColorIdx <- match(miroPivotState$currentSeriesLabels,
                                  names(currentView$chartOptions$customChartColors))
           chartColorsToUse <- currentView$chartOptions$customChartColors[chartColorIdx]
           chartColorsToUse[is.na(chartColorIdx)] <- list(c(SERIES_DEFAULT_COLOR, SERIES_DEFAULT_COLOR))
@@ -1149,6 +1214,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           }
           isHeatmap <- TRUE
           isEditableTable <- FALSE
+        }
+        if(miroPivotState$triggerEditViewDialog){
+          miroPivotState$triggerEditViewDialog <<- FALSE
+          showAddViewDialog(pivotRenderer, viewOptions = currentView)
         }
         hideEl(session, paste0("#", ns("downloadPng")))
         showEl(session, paste0("#", ns("downloadCsv")))
