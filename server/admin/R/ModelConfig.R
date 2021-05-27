@@ -83,21 +83,19 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
         }
         private$currentModelConfigs[[appIndex]][["displayName"]] <- newConfig[["displayName"]]
     }
-    if(!is.null(newConfig[["containerEnv"]])){
-      for(envKey in c(names(newConfig[["containerEnv"]]),
-        names(private$currentModelConfigs[[appIndex]][["containerEnv"]]))){
-        if(envKey %in% private$restrictedEnvKeys){
-          if(envKey %in% names(newConfig[["containerEnv"]])){
-            flog.warn("Invalid environment variable name: %s in custom environment file. It was ignored.", envKey)
-          }
-          next
-        }
+    for(envKey in c(names(newConfig[["containerEnv"]]),
+      names(private$currentModelConfigs[[appIndex]][["containerEnv"]]))){
+      if(envKey %in% private$restrictedEnvKeys){
         if(envKey %in% names(newConfig[["containerEnv"]])){
-          private$currentModelConfigs[[appIndex]][["containerEnv"]][[envKey]] <- newConfig[["containerEnv"]][[envKey]]
-          next
+          flog.warn("Invalid environment variable name: %s in custom environment file. It was ignored.", envKey)
         }
-        private$currentModelConfigs[[appIndex]][["containerEnv"]][[envKey]] <- NULL
+        next
       }
+      if(envKey %in% names(newConfig[["containerEnv"]])){
+        private$currentModelConfigs[[appIndex]][["containerEnv"]][[envKey]] <- newConfig[["containerEnv"]][[envKey]]
+        next
+      }
+      private$currentModelConfigs[[appIndex]][["containerEnv"]][[envKey]] <- NULL
     }
     for(configId in c("description", "logoURL")){
         if(!is.null(newConfig[[configId]])){
