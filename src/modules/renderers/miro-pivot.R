@@ -458,7 +458,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                           lang$renderers$miroPivot$newViewLabel),
                                 if(length(isolate(input$pivotRenderer)) &&
                                    isolate(input$pivotRenderer) %in% c("bar", "stackedbar", "line"))
-                                  tags$div(style = "text-align:left;", 
+                                  tags$div(id = ns("newViewOptionsWrapper"), style = "text-align:left;", 
                                          tags$i(class="fas fa-arrow-down",
                                                 role = "presentation",
                                                 `aria-label` = "More options",
@@ -563,6 +563,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           if(input$newViewName %in% c("default", views$getIds(session))){
             hideEl(session, paste0("#", ns("newViewName")))
             hideEl(session, paste0("#", ns("saveViewButtonsWrapper")))
+            hideEl(session, paste0("#", ns("newViewOptionsWrapper")))
             showEl(session, paste0("#", ns("errUniqueName")))
             showEl(session, paste0("#", ns("saveViewOverwriteButtonsWrapper")))
             return()
@@ -591,6 +592,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           hideEl(session, paste0("#", ns("saveViewOverwriteButtonsWrapper")))
           hideEl(session, paste0("#", ns("errUniqueName")))
           showEl(session, paste0("#", ns("newViewName")))
+          showEl(session, paste0("#", ns("newViewOptionsWrapper")))
           showEl(session, paste0("#", ns("saveViewButtonsWrapper")))
         })
         rendererEnv[[ns("deleteView")]] <- observe({
