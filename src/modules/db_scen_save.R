@@ -223,9 +223,11 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   # reset dirty flag and unsaved status
   markSaved()
 })
+editMetaRemoteAccessPermLoaded <- FALSE
 observeEvent(input$btEditMeta, {
   req(activeScen)
   
+  editMetaRemoteAccessPermLoaded <<- FALSE
   attachmentMetadata <- NULL
   viewsMetadata <- NULL
   if(config$activateModules$attachments){
@@ -252,9 +254,12 @@ observeEvent(input$tpEditMeta, {
   removeUI("#contentAccessPerm .form-group", multiple = TRUE)
   showEl(session, "#contentAccessPermSpinner")
   on.exit(hideEl(session, "#contentAccessPermSpinner"))
+  editMetaRemoteAccessPermLoaded <<- TRUE
   if(tryCatch({
     accessGroups <- worker$getAccessGroups()
-    db$setRemoteUsers(accessGroups)
+    if(config$activateModules$remoteExecution){
+      db$setRemoteUsers(accessGroups)
+    }
     FALSE
   }, error = function(e){
     flog.warn("Problems fetching user access groups. Error message: %s",
@@ -321,13 +326,13 @@ observeEvent(input$btUpdateMeta, {
     currentWritePerm <- activeScen$getWritePerm()
     currentExecPerm <- activeScen$getExecPerm()
     
-    activeUserGroups <- c(db$getUserAccessGroups(), db$getRemoteUsers())
-    
     if(activeScen$isReadonlyOrLocked){
       newWritePerm <- character(0L)
       newExecPerm <- character(0L)
       newReadPerm  <- character(0L)
-    }else{
+    }else if(editMetaRemoteAccessPermLoaded){
+      activeUserGroups <- c(db$getUserAccessGroups(), db$getRemoteUsers())
+      
       newWritePerm <- input$editMetaWritePerm
       newExecPerm  <- input$editMetaExecPerm
       newReadPerm  <- input$editMetaReadPerm
@@ -360,6 +365,10 @@ observeEvent(input$btUpdateMeta, {
         flog.debug("Attempt to revoke the scenario owner's access rights.")
         return()
       }
+    }else{
+      newReadPerm <- currentReadPerm
+      newWritePerm <- currentWritePerm
+      newExecPerm <- currentExecPerm
     }
     
     tryCatch({
