@@ -105,7 +105,7 @@ server <- function(input, output, session){
             errMsg <- sprintf("Invalid app logo. Error message: %s", 
                     conditionMessage(e))
             flog.info(errMsg)
-            session$sendCustomMessage("onError", list(requestType = "updateLogo", message = errMsg))
+            session$sendCustomMessage("onError", list(requestType = "updateLogoAddApp", message = errMsg))
         })
     })
     observeEvent(input$updateMiroAppLogo, {

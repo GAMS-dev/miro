@@ -49,6 +49,10 @@ addAppLogo <- function(appId, modelId, logoFile = NULL){
         if(!file.exists(logoPath)){
             stop(sprintf("Logo: %s does not exist.", logoPath), call. = FALSE)
         }
+        if(file.size(logoPath) > MAX_LOGO_SIZE){
+            stop(sprintf("Logo exceeds maximum size of %s bytes.",
+              as.character(MAX_LOGO_SIZE)), call. = FALSE)
+        }
         file.copy2(logoPath,
             file.path(logoDir, newLogoName))
     }else if(!file.exists(file.path(logoDir, "default_logo.png"))){
