@@ -360,7 +360,10 @@ server <- function(input, output, session){
                 flog.warn("The main gms file name in the MIRO scenario is different from the one uploaded to MIRO server (MIRO scen: %s, App: %s).",
                     modelName, appModelName)
             }
-            miroProc$run(appId, appModelName,
+            appDbCredentials <- modelConfig$getAppDbConf(appId)
+            miroProc$
+                setDbCredentials(appDbCredentials$user,
+                    appDbCredentials$password)$run(appId, appModelName,
                 appConfig$containerEnv[["MIRO_VERSION_STRING"]],
                 file.path(getwd(), MIRO_MODEL_DIR, appId), dataPath,
                 progressSelector = "#loadingScreenProgress",

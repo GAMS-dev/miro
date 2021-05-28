@@ -140,6 +140,11 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
     }
     stop(sprintf("A MIRO app with the id: %s does not exist.", id), call. = FALSE)
   },
+  getAppDbConf = function(id){
+    configFull <- self$getAppConfigFull(id)
+    return(list(user = configFull[["containerEnv"]][["MIRO_DB_USERNAME"]],
+      password = configFull[["containerEnv"]][["MIRO_DB_PASSWORD"]]))
+  },
   getAppConfig = function(index){
     appConfig <- private$currentModelConfigs[[index]]
     if("logoURL" %in% names(appConfig)){
