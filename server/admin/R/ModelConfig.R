@@ -39,8 +39,11 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
   getConfigList = function(){
     return(lapply(seq_along(private$currentModelConfigs), self$getAppConfig))
   },
-  getAllAppIds = function(){
-    return(vapply(c(private$modelConfigsNoAccess, private$currentModelConfigs), "[[", character(1L), "id", USE.NAMES = FALSE))
+  getAllAppIds = function(includeNoAccess = FALSE){
+    if(includeNoAccess){
+      return(vapply(c(private$modelConfigsNoAccess, private$currentModelConfigs), "[[", character(1L), "id", USE.NAMES = FALSE))
+    }
+    return(vapply(private$currentModelConfigs, "[[", character(1L), "id", USE.NAMES = FALSE))
   },
   getAppId = function(appIndex){
     return(private$currentModelConfigs[[appIndex]]$id)

@@ -145,7 +145,7 @@ server <- function(input, output, session){
 
             appId <- miroAppValidator$getAppId()
 
-            if(appId %in% modelConfig$getAllAppIds()){
+            if(appId %in% modelConfig$getAllAppIds(includeNoAccess = TRUE)){
                 stop("A MIRO app with the same name already exists.", call. = FALSE)
             }
 
