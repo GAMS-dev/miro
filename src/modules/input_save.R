@@ -113,7 +113,7 @@ getInputDataFromSandbox <- function(saveInputDb = FALSE){
                                               modelInAlias[i]), call. = FALSE)
              }
              # add name and description fields
-             scalar      <- paste0(names(modelIn)[[i]], c("$lo", "$up"))
+             scalar      <- paste0(names(modelIn)[[i]], c("_lo", "_up"))
              description <- paste0(modelInAlias[i], c(" (lower)", " (upper)"))
              addScalarVal(scalar, description, value)
            },
