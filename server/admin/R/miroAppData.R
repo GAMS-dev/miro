@@ -29,7 +29,7 @@ extractAppData <- function(miroAppPath, appId, modelId, logoFile = NULL){
             flog.warn("Problems moving app data file(s): '%s' from: '%s' to: '%s'",
                 paste(dataFiles[!dataFilesCopied], collapse = ","), dataDirSource, dataPath)
         }
-        if(unlink(dataDirSource, recursive = TRUE, force = TRUE) != 0){
+        if(unlink(dataDirSource, recursive = TRUE, force = TRUE) == 1){
             flog.warn("Problems removing directory: %s", dataDirSource)
         }
     }
@@ -75,8 +75,8 @@ removeAppData <- function(appId, logoFilename){
     }
     for(dirToRemove in c(modelPath, dataPath)){
         if(dir.exists(dirToRemove)){
-            if(unlink(dirToRemove, recursive = TRUE, force = TRUE) != 1){
-                flog.warn("Removing: %s for app: %s faield",
+            if(unlink(dirToRemove, recursive = TRUE, force = TRUE) == 1){
+                flog.warn("Removing: %s for app: %s failed",
                     dirToRemove, appId)
             }
         }
