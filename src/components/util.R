@@ -20,6 +20,21 @@ getCommandArg <- function(argName, exception = TRUE){
 isBadScenName <- function(scenName){
   return(nchar(scenName) > 63 || nchar(trimws(scenName, "both")) < 1L)
 }
+isBadScenTags <- function(scenTags = NULL, scenTagsV = NULL){
+  if(is.null(scenTags)){
+    scenTags <- vector2Csv(scenTagsV)
+  }else if(is.null(scenTagsV)){
+    scenTagsV <- csv2Vector(scenTags)
+  }
+  if(nchar(scenTags) > 1000){
+    return(TRUE)
+  }
+  scenTagsV <- csv2Vector(scenTags)
+  if(length(scenTagsV) > 0L && any(nchar(trimws(scenTagsV, "both")) < 1L)){
+    return(TRUE)
+  }
+  return(FALSE)
+}
 isWindows <- function() .Platform$OS.type == 'windows'
 hasContent <- function(x){
   if(inherits(x, "data.frame") && nrow(x) == 0){

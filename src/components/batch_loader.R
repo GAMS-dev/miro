@@ -85,6 +85,22 @@ BatchLoader <- R6Class("BatchLoader",
                            }
                            return(invisible(self))
                          },
+                         editScenTags = function(scenId, newTags){
+                           newTagsV <- csv2Vector(newTags)
+                           if(isBadScenTags(newTags, newTagsV)){
+                             stop_custom("error_bad_tags", "Invalid scenario tags", call. = FALSE)
+                           }
+                           scenId <- as.integer(scenId)
+                           stopifnot(identical(length(scenId), 1L), !is.na(scenId))
+                           wasUpdated <- private$db$updateRows("_scenMeta", colNames = "_stag",
+                                                               values = vector2Csv(newTagsV),
+                                                               subsetSids = scenId)
+                           if(identical(wasUpdated, 0L)){
+                             stop_custom("error_perm", "No write permissions for scenario",
+                                         call. = FALSE)
+                           }
+                           return(invisible(self))
+                         },
                          exceedsMaxNoSolvers = function(data, attribs, maxNoGroups, exclAttrib = NULL){
                            stopifnot(inherits(data, "data.frame"))
                            stopifnot(is.character("attribs"), length(attribs) > 0L)
