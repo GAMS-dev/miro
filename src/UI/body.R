@@ -108,7 +108,7 @@ if(buildUI){
                                                    tags$div(
                                                      tags$label(class = "checkbox-material", "for" = "hcubeMode_" %+% i, 
                                                                 checkboxInput("hcubeMode_" %+% i, label = NULL, 
-                                                                              value = modelIn[[i]]$checkbox$value))
+                                                                              value = FALSE))
                                                    )
                                                  )
                                           ),
