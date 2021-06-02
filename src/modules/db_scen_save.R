@@ -256,90 +256,89 @@ observeEvent(input$btUpdateMeta, {
   if(isBadScenName(scenName)){
     showHideEl(session, "#editMetaBadName", 6000)
     return()
-  }else{
-    disableEl(session, "#btUpdateMeta")
-    errMsg <- NULL
-    tryCatch({
-      if(db$checkSnameExists(scenName)){
-        scenExists <- TRUE
-      }else{
-        scenExists <- FALSE
-      }
-    }, error = function(e){
-      flog.error("Some error occurred while checking whether scenario: '%s' exists. Error message: '%s'.", 
-                 scenName, conditionMessage(e))
-      errMsg <<- lang$errMsg$fetchScenData$desc
-    })
-    if(!is.null(errMsg)){
-      showHideEl(session, "#editMetaError", 6000)
-      return()
-    }
-    if((!identical(activeScen$getScenName(), scenName)) && scenExists){
-      enableEl(session, "#btUpdateMeta")
-      showHideEl(session, "#editMetaNameExists", 6000)
-      return()
-    }
-    currentReadPerm <- activeScen$getReadPerm()
-    currentWritePerm <- activeScen$getWritePerm()
-    currentExecPerm <- activeScen$getExecPerm()
-    
-    activeUserGroups <- db$getUserAccessGroups()
-    
-    
-    if(activeScen$isReadonlyOrLocked){
-      newWritePerm <- character(0L)
-      newExecPerm <- character(0L)
-      newReadPerm  <- character(0L)
+  }
+  disableEl(session, "#btUpdateMeta")
+  errMsg <- NULL
+  tryCatch({
+    if(db$checkSnameExists(scenName)){
+      scenExists <- TRUE
     }else{
-      newWritePerm <- input$editMetaWritePerm
-      newExecPerm  <- input$editMetaExecPerm
-      newReadPerm  <- input$editMetaReadPerm
-      if(any(c(length(newReadPerm), length(newWritePerm), length(newExecPerm)) < 1L)){
-        enableEl(session, "#btUpdateMeta")
-        flog.debug("Empty permissions entered.")
-        showHideEl(session, "#editMetaEmptyPerm", 6000)
-        return()
-      }
-      if(any(!newReadPerm %in% c(activeUserGroups, currentReadPerm))){
-        showHideEl(session, "#editMetaError")
-        flog.error("Attempt to tamper with read access permissions!")
-        return()
-      }
-      if(any(!newWritePerm %in% c(activeUserGroups, currentWritePerm))){
-        showHideEl(session, "#editMetaError")
-        flog.error("Attempt to tamper with write access permissions!")
-        return()
-      }
-      if(any(!newExecPerm %in% c(activeUserGroups, currentExecPerm))){
-        showHideEl(session, "#editMetaError")
-        flog.error("Attempt to tamper with execute access permissions!")
-        return()
-      }
-      scenOwner <- activeScen$getScenUid()[[1L]]
-      if((!scenOwner %in% newReadPerm) 
-         || (!scenOwner %in% newWritePerm) 
-         || (!scenOwner %in% newExecPerm)){
-        showHideEl(session, "#editMetaIncapOwner")
-        flog.debug("Attempt to revoke the scenario owner's access rights.")
-        return()
-      }
+      scenExists <- FALSE
     }
-    
-    tryCatch({
-      activeScen$updateMetadata(scenName, isolate(input$editMetaTags), 
-                                newReadPerm, newWritePerm, newExecPerm)
-      rv$activeSname <- scenName
-      markUnsaved()
-      removeModal()
-    }, error = function(e){
-      flog.error("Problems updating scenario metadata. Error message: %s.", conditionMessage(e))
-      errMsg <<- character(1L)
-    })
-    if(!is.null(errMsg)){
+  }, error = function(e){
+    flog.error("Some error occurred while checking whether scenario: '%s' exists. Error message: '%s'.", 
+               scenName, conditionMessage(e))
+    errMsg <<- lang$errMsg$fetchScenData$desc
+  })
+  if(!is.null(errMsg)){
+    showHideEl(session, "#editMetaError", 6000)
+    return()
+  }
+  if((!identical(activeScen$getScenName(), scenName)) && scenExists){
+    enableEl(session, "#btUpdateMeta")
+    showHideEl(session, "#editMetaNameExists", 6000)
+    return()
+  }
+  currentReadPerm <- activeScen$getReadPerm()
+  currentWritePerm <- activeScen$getWritePerm()
+  currentExecPerm <- activeScen$getExecPerm()
+  
+  activeUserGroups <- db$getUserAccessGroups()
+  
+  
+  if(activeScen$isReadonlyOrLocked){
+    newWritePerm <- character(0L)
+    newExecPerm <- character(0L)
+    newReadPerm  <- character(0L)
+  }else{
+    newWritePerm <- input$editMetaWritePerm
+    newExecPerm  <- input$editMetaExecPerm
+    newReadPerm  <- input$editMetaReadPerm
+    if(any(c(length(newReadPerm), length(newWritePerm), length(newExecPerm)) < 1L)){
       enableEl(session, "#btUpdateMeta")
-      showHideEl(session, "#editMetaError")
+      flog.debug("Empty permissions entered.")
+      showHideEl(session, "#editMetaEmptyPerm", 6000)
       return()
     }
+    if(any(!newReadPerm %in% c(activeUserGroups, currentReadPerm))){
+      showHideEl(session, "#editMetaError")
+      flog.error("Attempt to tamper with read access permissions!")
+      return()
+    }
+    if(any(!newWritePerm %in% c(activeUserGroups, currentWritePerm))){
+      showHideEl(session, "#editMetaError")
+      flog.error("Attempt to tamper with write access permissions!")
+      return()
+    }
+    if(any(!newExecPerm %in% c(activeUserGroups, currentExecPerm))){
+      showHideEl(session, "#editMetaError")
+      flog.error("Attempt to tamper with execute access permissions!")
+      return()
+    }
+    scenOwner <- activeScen$getScenUid()[[1L]]
+    if((!scenOwner %in% newReadPerm) 
+       || (!scenOwner %in% newWritePerm) 
+       || (!scenOwner %in% newExecPerm)){
+      showHideEl(session, "#editMetaIncapOwner")
+      flog.debug("Attempt to revoke the scenario owner's access rights.")
+      return()
+    }
+  }
+  
+  tryCatch({
+    activeScen$updateMetadata(scenName, isolate(input$editMetaTags), 
+                              newReadPerm, newWritePerm, newExecPerm)
+    rv$activeSname <- scenName
+    markUnsaved()
+    removeModal()
+  }, error = function(e){
+    flog.error("Problems updating scenario metadata. Error message: %s.", conditionMessage(e))
+    errMsg <<- character(1L)
+  })
+  if(!is.null(errMsg)){
+    enableEl(session, "#btUpdateMeta")
+    showHideEl(session, "#editMetaError")
+    return()
   }
 })
 
