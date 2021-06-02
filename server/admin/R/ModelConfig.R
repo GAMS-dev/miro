@@ -2,8 +2,9 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
   initialize = function(configPath){
     private$configPath <- configPath
 
-    userGroups <- csv2Vector(Sys.getenv("SHINYPROXY_USERGROUPS"))
-    private$accessGroups <- Set$new(userGroups)
+    accessGroupsTmp <- toupper(unique(csv2Vector(Sys.getenv("SHINYPROXY_USERGROUPS"))))
+
+    private$accessGroups <- accessGroupsTmp[!accessGroupsTmp %in% c("USERS", "ADMINS")]
 
     if(file.exists(configPath)){
         configTmp <- tryCatch(yaml::read_yaml(configPath),
@@ -17,7 +18,7 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
         })
         modelConfigsHasAccess <- vapply(configTmp, function(appConfig){
           return(!identical(appConfig[["id"]], "admin") &&
-            (!length(appConfig[["accessGroups"]]) || any(appConfig[["accessGroups"]] %in% userGroups)))
+            (!length(appConfig[["accessGroups"]]) || any(appConfig[["accessGroups"]] %in% private$accessGroups)))
         }, logical(1L), USE.NAMES = FALSE)
         private$currentModelConfigs <- configTmp[modelConfigsHasAccess]
         private$modelConfigsNoAccess <- configTmp[!modelConfigsHasAccess]
@@ -27,7 +28,7 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
     return(invisible(self))
   },
   getAccessGroupUnion = function(){
-        return(I(private$accessGroups$get()))
+        return(I(private$accessGroups))
   },
   getModelIds = function(modelIndex){
     if(length(private$currentModelConfigs) < modelIndex){
@@ -56,10 +57,6 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
   },
   add = function(newConfig){
     private$currentModelConfigs <- c(private$currentModelConfigs, list(newConfig))
-
-    if(length(newConfig[["accessGroups"]])){
-        private$accessGroups$join(newConfig[["accessGroups"]])
-    }
 
     private$writeConfig()
     return(invisible(self))
@@ -105,12 +102,12 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
             private$currentModelConfigs[[appIndex]][[configId]] <- newConfig[[configId]]
         }
     }
-    
+    currentAccessGroups <- private$currentModelConfigs[[appIndex]][["accessGroups"]]
+    accessGroupsNoAccess <- currentAccessGroups[!toupper(currentAccessGroups) %in% private$accessGroups]
     if(length(newConfig[["accessGroups"]]) > 0){
-        private$accessGroups$join(toupper(newConfig[["accessGroups"]]))
-        private$currentModelConfigs[[appIndex]][["accessGroups"]] <- as.list(toupper(newConfig[["accessGroups"]]))
+        private$currentModelConfigs[[appIndex]][["accessGroups"]] <- as.list(unique(c(toupper(newConfig[["accessGroups"]]), accessGroupsNoAccess)))
     }else{
-        private$currentModelConfigs[[appIndex]][["accessGroups"]] <- list()
+        private$currentModelConfigs[[appIndex]][["accessGroups"]] <- as.list(accessGroupsNoAccess)
     }
 
     private$writeConfig()
@@ -161,7 +158,7 @@ ModelConfig <- R6::R6Class("ModelConfig", public = list(
 
     if("accessGroups" %in% names(appConfig) && length(appConfig[["accessGroups"]])){
         accessGroups <- appConfig[["accessGroups"]]
-        private$accessGroups$join(accessGroups)
+        accessGroups <- accessGroups[toupper(accessGroups) %in% private$accessGroups]
     }
 
     appEnv <- list()
