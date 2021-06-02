@@ -256,9 +256,11 @@ observeEvent(input$tpEditMeta, {
   on.exit(hideEl(session, "#contentAccessPermSpinner"))
   editMetaRemoteAccessPermLoaded <<- TRUE
   if(tryCatch({
-    accessGroups <- worker$getAccessGroups()
-    if(config$activateModules$remoteExecution){
+    if(isShinyProxy){
+      accessGroups <- worker$getRemoteAccessGroups()
       db$setRemoteUsers(accessGroups)
+    }else{
+      accessGroups <- db$getUserAccessGroups()
     }
     FALSE
   }, error = function(e){

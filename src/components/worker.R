@@ -605,23 +605,21 @@ Worker <- R6Class("Worker", public = list(
                                         maxSize = private$metadata$maxSizeToRead,
                                         chunkNo = chunkNo, getSize = getSize))
   },
-  getAccessGroups = function(){
-    if(private$remote){
-      ret <- GET(url = paste0(private$metadata$url, 
-                              "/namespaces/", 
-                              private$metadata$namespace, "/user/groups"), 
-                 add_headers(Authorization = private$authHeader,
-                             Timestamp = as.character(Sys.time(), usetz = TRUE)), 
-                 timeout(5L))
-      groupsTmp <- unlist(lapply(content(ret), function(accessGroup){
-        return(c(paste0("#", accessGroup$label),
-                 vapply(accessGroup$members, "[[", character(1L), "username", USE.NAMES = FALSE)))
-      }), use.names = FALSE)
-      groupsTmp <- groupsTmp[!tolower(groupsTmp) %in% c("#admins", "#users")]
-      groupsTmp <- groupsTmp[!duplicated(groupsTmp)]
-      return(c("#users", if("#admins" %in% tolower(private$db$getUserAccessGroups())) "#admins", groupsTmp))
-    }
-    return(csv2Vector(private$db$getUserAccessGroups()))
+  getRemoteAccessGroups = function(){
+    stopifnot(private$remote)
+    ret <- GET(url = paste0(private$metadata$url, 
+                            "/namespaces/", 
+                            private$metadata$namespace, "/user/groups"), 
+               add_headers(Authorization = private$authHeader,
+                           Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+               timeout(5L))
+    groupsTmp <- unlist(lapply(content(ret), function(accessGroup){
+      return(c(paste0("#", accessGroup$label),
+               vapply(accessGroup$members, "[[", character(1L), "username", USE.NAMES = FALSE)))
+    }), use.names = FALSE)
+    groupsTmp <- groupsTmp[!tolower(groupsTmp) %in% c("#admins", "#users")]
+    groupsTmp <- groupsTmp[!duplicated(groupsTmp)]
+    return(c("#users", if("#admins" %in% tolower(private$db$getUserAccessGroups())) "#admins", groupsTmp))
   },
   pingLog = function(){
     if(inherits(private$process, "process")){
