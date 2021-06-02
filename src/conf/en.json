@@ -502,6 +502,13 @@
       "downloadButton":"Download",
       "cancelButton":"Cancel"
     },
+    "dialogHashExists":{
+      "title": "Scenario already solved",
+      "desc": "The scenario you want to solve already exists in the database under the name: '%s'%s and was last saved by '%s' on '%s'.",
+      "descTags": "(tags: '%s')",
+      "cancelButton":"Cancel",
+      "okButton": "Solve again"
+    },
     "dialogJobSubmission":{
       "title": "Submit job",
       "desc": "Submit a new job to be solved asynchronously.",

@@ -1956,6 +1956,33 @@
           },
           "minProperties": 6
         },
+        "dialogHashExists": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "desc": {
+              "type": "string",
+              "minLength": 1
+            },
+            "descTags": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cancelButton": {
+              "type": "string",
+              "minLength": 1
+            },
+            "okButton": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "minProperties": 4
+        },
         "dialogJobSubmission": {
           "type": "object",
           "additionalProperties": false,
@@ -2810,7 +2837,7 @@
           "minProperties": 14
         }
       },
-      "minProperties": 52
+      "minProperties": 53
     },
     "renderers": {
       "description": "language specific objects of renderers",

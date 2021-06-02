@@ -26,6 +26,25 @@ DataInstance <- R6Class("DataInstance", public = list(
     private$views        <- views
     return(invisible(self))
   },
+  pushClArgs = function(data){
+    if(!identical(length(data), 3)){
+      return(invisible(self))
+    }
+    clArgs <- sort(c(ioConfig$DDPar, ioConfig$GMSOpt))
+    clArgVals <- data[[3]][match(clArgs, data[[1]])]
+    private$dataHashes[paste0("__cl_", clArgs)] <- vapply(clArgs, function(clArg){
+      if(is.na(clArgVals[clArgs]) || clArgVals[clArgs] %in% CLARG_MISSING_VALUES){
+        return(NA_character_)
+      }
+      if(clArg %in% ioConfig$DDPar){
+        return(paste0("--", clArg, "= ", escapeGAMSCL(clArgVals[clArgs])))
+      }
+      return(paste0(clArg, "= ", escapeGAMSCL(clArgVals[clArgs])))
+    }, character(1L), USE.NAMES = FALSE)
+    private$clArgsDf <- data
+    return(invisible(self))
+  },
+  getClArgsDf = function() private$clArgsDf,
   push = function(datasetName, data){
     stopifnot(is.character(datasetName), 
               identical(length(datasetName), 1L),
@@ -34,6 +53,36 @@ DataInstance <- R6Class("DataInstance", public = list(
       private$datasetNames <- c(private$datasetNames, datasetName)
     }
     private$data[[datasetName]] <- data
+    if(identical(datasetName, scalarsFileName)){
+      scalarsConfig <- ioConfig$modelInRaw[[scalarsFileName]]
+      scalarVals <- data[[3]][match(scalarsConfig$symnames, data[[1]])]
+      private$dataHashes[scalarsConfig$symnames] <- vapply(seq_along(scalarsConfig$symnames), function(scalarId){
+        if(identical(scalarsConfig$symtypes[scalarId], "set")){
+          scalarVal <- strsplit(scalarVals[scalarId], "||", fixed = TRUE)[[1]]
+          if(length(scalarVal) > 1L){
+            scalarText <- paste0(" --HCUBE_SCALART_", scalarsConfig$symnames[scalarId], "= ",
+                                 escapeGAMSCL(paste0(scalarVal[-1], collapse = "||")))
+          }else{
+            scalarText <- ""
+          }
+          return(paste0("--HCUBE_SCALARV_", scalarsConfig$symnames[scalarId], "= ",
+                        if(is.na(scalarVal[1])) "" else escapeGAMSCL(scalarVal[1]), scalarText))
+        }
+        return(paste0("--HCUBE_SCALARV_", scalarsConfig$symnames[scalarId], "= ",
+                      scalarVals[scalarId]))
+      }, character(1L), USE.NAMES = FALSE)
+    }else{
+      private$dataHashes[[datasetName]] <- paste0("--HCUBE_STATIC_", datasetName, "= ",
+                                                  digest::digest(data, algo = "md5"))
+    }
+    return(invisible(self))
+  },
+  generateScenHash = function(){
+    hashesToOrder <- startsWith(names(private$dataHashes), "__")
+    scenHashOrder <- order(names(private$dataHashes)[hashesToOrder])
+    scenHash <- paste(c(unlist(private$dataHashes[!hashesToOrder], use.names = FALSE),
+                        unlist(private$dataHashes[hashesToOrder][scenHashOrder], use.names = FALSE)), collapse = " ")
+    return(digest::digest(scenHash, algo = "sha256", serialize = FALSE))
   },
   addInexFile = function(workDir, modelDataFiles){
     if(!length(modelDataFiles))
@@ -53,6 +102,7 @@ DataInstance <- R6Class("DataInstance", public = list(
     for(i in seq_along(datasetNames)){
       self$push(datasetNames[[i]], data[[i]])
     }
+    return(invisible(self))
   },
   get = function(datasetName = NULL){
     if(length(datasetName)){
@@ -67,12 +117,9 @@ DataInstance <- R6Class("DataInstance", public = list(
   addFilePaths = function(filePaths){
     if(is.character(filePaths) && length(filePaths)){
       private$filePaths <- c(private$filePaths, filePaths)
-    }
-    return(invisible(self))
-  },
-  addDirPaths = function(dirPaths){
-    if(is.character(dirPaths) && length(dirPaths)){
-      private$dirPaths <- c(private$dirPaths, dirPaths)
+      private$dataHashes[paste0("__attach_", basename(filePaths))] <- vapply(filePaths, function(filePath){
+        paste0("--HCUBE_STATIC_", basename(filePath), "= ", digest::digest(file = filePath, algo = "md5"))
+      }, character(1L), USE.NAMES = FALSE)
     }
     return(invisible(self))
   },
@@ -94,7 +141,7 @@ DataInstance <- R6Class("DataInstance", public = list(
     
     return(private$writeGDX(file.path(filePath, fileName), idsToWrite, ...))
   },
-  copyMiroWs = function(wsPath, clArgsDf, jobName = NULL){
+  copyMiroWs = function(wsPath, jobName = NULL){
     miroMetaDir <- file.path(wsPath, "_miro_ws_")
     if(file.exists(miroMetaDir) &&
        !identical(unlink(miroMetaDir, recursive = TRUE, force = TRUE), 0L)){
@@ -105,8 +152,8 @@ DataInstance <- R6Class("DataInstance", public = list(
     }
     generateMiroScenMeta(miroMetaDir, private$activeScen$getMetadata(),
                          private$attachments, private$views,
-                         scenId = 1L, clArgs = clArgsDf, jobName = jobName)
-    self$addDirPaths(miroMetaDir)
+                         scenId = 1L, clArgs = private$clArgsDf, jobName = jobName)
+    private$addDirPaths(miroMetaDir)
     return(invisible(self))
   },
   compress = function(fileName = NULL, recurse = FALSE){
@@ -130,6 +177,8 @@ DataInstance <- R6Class("DataInstance", public = list(
   }
 ), private = list(
   data = list(),
+  clArgsDf = NULL,
+  dataHashes = list(),
   gdxio = NULL,
   filePaths = character(0L),
   dirPaths = character(0L),
@@ -158,6 +207,12 @@ DataInstance <- R6Class("DataInstance", public = list(
                            paste0(filePath, 
                                   names(private$data)[idsToWrite], 
                                   ".csv"))
+    return(invisible(self))
+  },
+  addDirPaths = function(dirPaths){
+    if(is.character(dirPaths) && length(dirPaths)){
+      private$dirPaths <- c(private$dirPaths, dirPaths)
+    }
     return(invisible(self))
   }
 ))

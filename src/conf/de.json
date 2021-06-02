@@ -502,6 +502,13 @@
       "downloadButton":"Herunterladen",
       "cancelButton":"Abbrechen"
     },
+    "dialogHashExists":{
+      "title": "Szenario bereits gelöst",
+      "desc": "Das Szenario, das Sie lösen möchten, existiert bereits in der Datenbank unter dem Namen: '%s'%s und wurde zuletzt von '%s' am '%s' gespeichert.",
+      "descTags": " (Tags: '%s')",
+      "cancelButton":"Abbrechen",
+      "okButton": "Erneut lösen"
+    },
     "dialogJobSubmission":{
       "title": "Job senden",
       "desc": "Einen neuen Job zum asynchronen Lösen senden.",

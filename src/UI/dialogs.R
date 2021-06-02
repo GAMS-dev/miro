@@ -741,7 +741,46 @@ showScenExportDialog <- function(id, exportTypes){
     ), fade = TRUE, easyClose = TRUE
   ))
 }
-showJobSubmissionDialog <- function(jobName = ""){
+showHashExistsDialog <- function(scenData, uid){
+  if(length(scenData[["_stag"]]) && !is.na(scenData[["_stag"]]) && nchar(scenData[["_stag"]])){
+    tagsString <- sprintf(lang$nav$dialogHashExists$descTags, 
+                          trimws(scenData[["_stag"]],
+                                 which = "both", ","))
+  }else{
+    tagsString <- ""
+  }
+  showModal(modalDialog(
+    title = lang$nav$dialogHashExists$title,
+    sprintf(lang$nav$dialogHashExists$desc, scenData[["_sname"]],
+            if(nchar(tagsString))
+              sprintf(lang$nav$dialogHashExists$descTags, tagsString) else "",
+            scenData[["_uid"]], scenData[["_stime"]]),
+    footer = tagList(
+      modalButton(lang$nav$dialogHashExists$cancelButton),
+      actionButton("btRunNoCheckHash", lang$nav$dialogHashExists$okButton,
+                   class='bt-highlight-1 bt-gms-confirm')),
+    fade = TRUE, easyClose = TRUE))
+}
+showJobSubmissionDialog <- function(jobName = "", hashExistsData = NULL){
+  if(length(hashExistsData) && nrow(hashExistsData)){
+    if(length(hashExistsData[["_stag"]]) && !is.na(hashExistsData[["_stag"]]) &&
+       nchar(hashExistsData[["_stag"]])){
+      tagsString <- sprintf(lang$nav$dialogHashExists$descTags, 
+                            trimws(hashExistsData[["_stag"]],
+                                   which = "both", ","))
+    }else{
+      tagsString <- ""
+    }
+    sameHashInfoBox <- tagList(
+      tags$div(class = "space"),
+      tags$div(class = "gmsalert gmsalert-success", style = "display:block;position:relative;",
+               sprintf(lang$nav$dialogHashExists$desc, hashExistsData[["_sname"]],
+                       if(nchar(tagsString))
+                         sprintf(lang$nav$dialogHashExists$descTags, tagsString) else "",
+                       hashExistsData[["_uid"]], hashExistsData[["_stime"]])))
+  }else{
+    sameHashInfoBox <- NULL
+  }
   showModal(modalDialog(
     tags$div(class = "gmsalert gmsalert-success", style = "position:relative;",
              id = "jobSubmitSuccess",
@@ -760,8 +799,9 @@ showJobSubmissionDialog <- function(jobName = ""){
              lang$nav$dialogJobSubmission$descWait,
              tags$div(class = "space"),
              genSpinner(hidden = FALSE, absolute = FALSE, extraClasses = "gen-spinner-black")),
-    tags$div(id = "jobSubmissionWrapper", 
+    tags$div(id = "jobSubmissionWrapper",
              lang$nav$dialogJobSubmission$desc,
+             sameHashInfoBox,
              tags$div(class = "space"),
              textInput("jobSubmissionName", lang$nav$dialogJobSubmission$jobName, jobName),
              tags$div(class = "small-space")

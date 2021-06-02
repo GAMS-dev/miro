@@ -192,6 +192,42 @@ Db <- R6Class("Db",
                                                              private$userAccessGroups)),
                                 " OR "))
                 },
+                getScenWithSameHash = function(scenHashes, limit = 1L, count = FALSE){
+                        if(!DBI::dbExistsTable(private$conn, dbSchema$getDbTableName("_scenHash"))){
+                                return(tibble())
+                        }
+                        escapedHashTableName <- DBI::dbQuoteIdentifier(private$conn,
+                                                                       dbSchema$getDbTableName("_scenHash"))
+                        escapedMetaTableName <- DBI::dbQuoteIdentifier(private$conn,
+                                                                       dbSchema$getDbTableName("_scenMeta"))
+                        if(length(scenHashes) > 500L){
+                                dbWriteTable(private$conn, "_sys_temp_hashLookup",
+                                             tibble(hash = scenHashes), 
+                                             row.names = FALSE, append = FALSE, overwrite = TRUE,
+                                             temporary = TRUE)
+                                inClause <- "SELECT hash FROM _sys_temp_hashLookup"
+                        }else{
+                                inClause <- paste(DBI::dbQuoteString(private$conn, scenHashes), collapse = ", ")
+                        }
+                        query <- paste0("SELECT ",
+                                        if(count)
+                                                paste0("COUNT(", escapedHashTableName, "._sid)")
+                                        else
+                                                paste(paste0(escapedMetaTableName, ".",
+                                                             c("_sid", "_uid", "_sname", "_stime", "_stag")),
+                                                      collapse = ", "), " FROM ",
+                                        escapedHashTableName,
+                                        " INNER JOIN ",
+                                        escapedMetaTableName,
+                                        " ON ",
+                                        escapedHashTableName, "._sid=",
+                                        escapedMetaTableName, "._sid WHERE ",
+                                        escapedHashTableName, ".hash IN (",
+                                        inClause, ")",
+                                        " AND (", self$getAccessPermSubQuery("_accessr"), ")",
+                                        if(limit) paste0(" LIMIT ", as.integer(limit)))
+                        return(as_tibble(DBI::dbGetQuery(private$conn, query)))
+                },
                 checkSnameExists      = function(sname, uid = NULL, checkNormalScen = FALSE){
                   # test whether scenario with the given name already exists 
                   # for the user specified

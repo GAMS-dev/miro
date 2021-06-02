@@ -155,17 +155,31 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   removeModal()
   # save to database
   duplicatedMetadata <- NULL
+  currentScenHash <- character(0L)
   tryCatch({
     if(saveAsFlag){
       if(!is.null(activeScen)){
+        currentScenHash <- activeScen$getScenHash()
         if(length(activeScen$getSid())){
           duplicatedMetadata <- activeScen$getMetadataInfo(input$newScenDiscardAttach, 
                                                            input$newScenDiscardPerm)
           activeScen <<- NULL
           gc()
+          if(isTRUE(input$newScenDiscardAttach) && length(currentScenHash)){
+            attachmentListTmp <- attachments$getMetadata()
+            if(length(attachmentListTmp) && any(attachmentListTmp[["execPerm"]])){
+              currentScenHash <- character(0L)
+            }
+          }
         }else{
           activeScen$updateMetadata(newName = input$scenName, newTags = scenTags)
           if(isTRUE(input$newScenDiscardAttach)){
+            if(length(currentScenHash)){
+              attachmentListTmp <- attachments$getMetadata()
+              if(length(attachmentListTmp) && any(attachmentListTmp[["execPerm"]])){
+                activeScen$setScenHash(character(0L))
+              }
+            }
             attachments$removeAll()
           }
           if(isTRUE(input$newScenDiscardPerm)){
@@ -189,7 +203,11 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
                                   tags = scenTags, overwrite = identical(saveAsFlag, TRUE),
                                   isNewScen = TRUE, duplicatedMetadata = duplicatedMetadata,
                                   views = views, attachments = attachments)
+      activeScen$setScenHash(currentScenHash)
       scenTags   <<- NULL
+    }
+    if(dirtyFlag){
+      activeScen$setScenHash(character(0L))
     }
     activeScen$save(scenData$get("sb"), msgProgress = lang$progressBar$saveScenDb)
     if(saveOutput){

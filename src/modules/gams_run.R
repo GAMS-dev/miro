@@ -119,7 +119,6 @@ prepareModelRun <- function(async = FALSE){
   }
   scenData$loadSandbox(dataTmp, if(length(modelInFileNames)) modelInFileNames else character(),
                        activeScen$getMetadata())
-  clArgsDf <- NULL
   inputData <- DataInstance$new(modelInFileNames, fileExchange = config$fileExchange,
                                 gdxio = gdxio, csvDelim = config$csvDelim,
                                 activeScen = activeScen, attachments = attachments,
@@ -135,7 +134,7 @@ prepareModelRun <- function(async = FALSE){
       GMSOptIdx          <- dataTmp[[id]][[1]] %in% GMSOpt
       if(any(c(DDParIdx, GMSOptIdx))){
         isClArg <- (DDParIdx | GMSOptIdx)
-        clArgsDf <<- dataTmp[[id]][isClArg, ]
+        inputData$pushClArgs(dataTmp[[id]][isClArg, ])
         # remove those rows from scalars file that are compile time variables
         inputData$push(names(dataTmp)[[id]], dataTmp[[id]][!isClArg, ])
       }else{
@@ -165,7 +164,7 @@ prepareModelRun <- function(async = FALSE){
   if(is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))){
     return(NULL)
   }
-  return(list(inputData = inputData, clArgsDf = clArgsDf))
+  return(inputData)
 }
 if(LAUNCHHCUBEMODE){
   idsToSolve <- NULL
@@ -609,7 +608,24 @@ if(LAUNCHHCUBEMODE){
                       forwardOnSuccess = "btSubmitJob")
       return(NULL)
     }
-    showJobSubmissionDialog(jobNameTmp)
+    inputData <- prepareModelRun(async = TRUE)
+    if(is.null(inputData)){
+      return(NULL)
+    }
+    worker$setInputData(inputData)
+    tryCatch({
+      scenHashTmp <- inputData$generateScenHash()
+      scenWithSameHash <- db$getScenWithSameHash(scenHashTmp)
+      activeScen$setScenHash(scenHashTmp)
+    }, error = function(e) {
+      flog.error("Scenario hash could not be looked up. Error message: %s.",
+                 conditionMessage(e))
+      errMsg <<- lang$errMsg$unknownError
+    })
+    if(is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))){
+      return(NULL)
+    }
+    showJobSubmissionDialog(jobNameTmp, scenWithSameHash)
   })
   observeEvent(virtualActionButton(input$btSubmitAsyncJob, rv$btSubmitAsyncJob), {
     flog.debug("Confirm new asynchronous job button clicked.")
@@ -630,16 +646,11 @@ if(LAUNCHHCUBEMODE){
       flog.error("User has no valid credentials. This looks like an attempt to tamper with the app!")
       return(NULL)
     }
-    dataModelRun <- prepareModelRun(async = TRUE)
-    if(is.null(dataModelRun)){
-      return(NULL)
-    }
     # submit job
     tryCatch({
       hideEl(session, "#jobSubmissionWrapper")
       showEl(session, "#jobSubmissionLoad")
-      worker$runAsync(dataModelRun$inputData, dataModelRun$clArgsDf, sid, 
-                      name = jobName)
+      worker$runAsync(sid, name = jobName)
       showHideEl(session, "#jobSubmitSuccess", 2000)
     }, error = function(e){
       errMsg <- conditionMessage(e)
@@ -859,16 +870,11 @@ output$modelStatus <- renderUI({
 # refresh even when modelStatus message is hidden (i.e. user is on another tab)
 outputOptions(output, "modelStatus", suspendWhenHidden = FALSE)
 
-
-observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
-  flog.debug("Solve button clicked (model: '%s').", modelName)
-  
-  clearLogs(session)
-  
+verifyCanSolve <- function(){
   if(length(modelStatus)){
     showErrorMsg(lang$errMsg$jobRunning$title, 
                  lang$errMsg$jobRunning$desc)
-    return(NULL)
+    return(FALSE)
   }
   if(length(unzipModelFilesProcess)){
     if(length(unzipModelFilesProcess$get_exit_status())){
@@ -876,7 +882,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     }else{
       showErrorMsg(lang$errMsg$unzipProcessRunning$title, 
                    lang$errMsg$unzipProcessRunning$desc)
-      return(NULL)
+      return(FALSE)
     }
   }
   if(length(activeScen) && !activeScen$hasExecPerm()){
@@ -888,12 +894,94 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     showErrorMsg(lang$nav[[modeDescriptor]]$title, 
                  lang$nav[[modeDescriptor]]$desc)
     flog.info("User has no execute permission for this scenario.")
-    return()
+    return(FALSE)
   }
   if(identical(worker$validateCredentials(), FALSE)){
     showLoginDialog(cred = worker$getCredentials(), 
                     forwardOnSuccess = "btSolve")
+    return(FALSE)
+  }
+  return(TRUE)
+}
+
+runGAMSJob <- function(){
+  clearLogs(session)
+  # run GAMS
+  errMsg <- NULL
+  inconsistentOutput <<- FALSE
+  tryCatch({
+    jobSid <- NULL
+    if(length(activeScen) && length(activeScen$getSid())){
+      jobSid <- activeScen$getSid()
+    }
+    worker$run(jobSid, name = activeScen$getScenName())
+  }, error_duplicate_records = function(e){
+    flog.info("Problems writing GDX file. Duplicate records found: %s", conditionMessage(e))
+    errMsg <<- conditionMessage(e)
+  }, error = function(e) {
+    flog.error("GAMS did not execute successfully. Error message: %s.",
+               conditionMessage(e))
+    errMsg <<- lang$errMsg$gamsExec$desc
+  })
+  if(is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))){
     return(NULL)
+  }
+  if(config$activateModules$remoteExecution)
+    updateTabsetPanel(session, "jobListPanel", selected = "current")
+  if(config$activateModules$logFile){
+    updateTabsetPanel(session, "logFileTabsset", selected = "log")
+  }else if(config$activateModules$miroLogFile){
+    updateTabsetPanel(session, "logFileTabsset", selected = "mirolog")
+  }
+  
+  #activate Interrupt button as GAMS is running now
+  updateActionButton(session, "btInterrupt", icon = character(0L))
+  enableEl(session, "#btInterrupt")
+  switchTab(session, "gamsinter")
+  
+  if(!is.null(logFilePath) &&
+     !identical(unlink(logFilePath, force = TRUE), 0L)){
+    flog.warn("Could not remove log file: '%s'.", logFilePath)
+  }
+  
+  errMsg <- NULL
+  tryCatch({
+    modelStatusRE  <- worker$getReactiveStatus(session)
+    modelStatusObs <<- modelStatusRE$obs
+    modelStatus    <<- modelStatusRE$re
+  }, error = function(e) {
+    flog.error("GAMS status could not be retrieved. Error message: %s.",
+               conditionMessage(e))
+    errMsg <<- lang$errMsg$readLog$desc
+  })
+  
+  if(is.null(showErrorMsg(lang$errMsg$readLog$title, errMsg))){
+    return()
+  }
+  
+  tryCatch({
+    logRE       <- worker$getReactiveLog(session)
+    logfileObs  <<- logRE$obs
+    logfile     <<- logRE$re
+  }, error = function(e) {
+    flog.error("GAMS log file could not be read (model: '%s'). Error message: %s.",
+               modelName, conditionMessage(e))
+    errMsg <<- lang$errMsg$readLog$desc
+  })
+  showErrorMsg(lang$errMsg$readLog$title, errMsg)
+  
+  if(is.null(rv$triggerAsyncProcObserver)){
+    rv$triggerAsyncProcObserver <- 1L
+  }else{
+    rv$triggerAsyncProcObserver <- rv$triggerAsyncProcObserver + 1L
+  }
+}
+
+observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
+  flog.debug("Solve button clicked (model: '%s').", modelName)
+  
+  if(!verifyCanSolve()){
+    return()
   }
   if(LAUNCHHCUBEMODE){
     numberScenarios <- noScenToSolve()
@@ -957,79 +1045,36 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     
     return(NULL)
   }
-  dataModelRun <- prepareModelRun(async = FALSE)
-  if(is.null(dataModelRun)){
+  inputData <- prepareModelRun(async = FALSE)
+  if(is.null(inputData)){
     return(NULL)
   }
-  # run GAMS
-  errMsg <- NULL
-  inconsistentOutput <<- FALSE
+  worker$setInputData(inputData)
   tryCatch({
-    jobSid <- NULL
-    if(length(activeScen) && length(activeScen$getSid())){
-      jobSid <- activeScen$getSid()
-    }
-    worker$run(dataModelRun$inputData, dataModelRun$clArgsDf, jobSid, name = activeScen$getScenName())
-  }, error_duplicate_records = function(e){
-    flog.info("Problems writing GDX file. Duplicate records found: %s", conditionMessage(e))
-    errMsg <<- conditionMessage(e)
+    scenHashTmp <- inputData$generateScenHash()
+    scenWithSameHash <- db$getScenWithSameHash(scenHashTmp)
+    activeScen$setScenHash(scenHashTmp)
   }, error = function(e) {
-    flog.error("GAMS did not execute successfully. Error message: %s.",
+    flog.error("Scenario hash could not be looked up. Error message: %s.",
                conditionMessage(e))
-    errMsg <<- lang$errMsg$gamsExec$desc
+    errMsg <<- lang$errMsg$unknownError
   })
   if(is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))){
     return(NULL)
   }
-  if(config$activateModules$remoteExecution)
-    updateTabsetPanel(session, "jobListPanel", selected = "current")
-  if(config$activateModules$logFile){
-    updateTabsetPanel(session, "logFileTabsset", selected = "log")
-  }else if(config$activateModules$miroLogFile){
-    updateTabsetPanel(session, "logFileTabsset", selected = "mirolog")
+  if(length(scenWithSameHash) && nrow(scenWithSameHash) > 0L){
+    showHashExistsDialog(scenWithSameHash)
+    return(NULL)
   }
-  
-  #activate Interrupt button as GAMS is running now
-  updateActionButton(session, "btInterrupt", icon = character(0L))
-  enableEl(session, "#btInterrupt")
-  switchTab(session, "gamsinter")
-  
-  if(!is.null(logFilePath) &&
-     !identical(unlink(logFilePath, force = TRUE), 0L)){
-    flog.warn("Could not remove log file: '%s'.", logFilePath)
-  }
-  
-  errMsg <- NULL
-  tryCatch({
-    modelStatusRE  <- worker$getReactiveStatus(session)
-    modelStatusObs <<- modelStatusRE$obs
-    modelStatus    <<- modelStatusRE$re
-  }, error = function(e) {
-    flog.error("GAMS status could not be retrieved. Error message: %s.",
-               conditionMessage(e))
-    errMsg <<- lang$errMsg$readLog$desc
-  })
-  
-  if(is.null(showErrorMsg(lang$errMsg$readLog$title, errMsg))){
+  runGAMSJob()
+})
+observeEvent(input$btRunNoCheckHash, {
+  flog.debug("Solve button (no check scen hash) clicked (model: '%s').", modelName)
+  if(!verifyCanSolve()){
     return()
   }
-  
-  tryCatch({
-    logRE       <- worker$getReactiveLog(session)
-    logfileObs  <<- logRE$obs
-    logfile     <<- logRE$re
-  }, error = function(e) {
-    flog.error("GAMS log file could not be read (model: '%s'). Error message: %s.",
-               modelName, conditionMessage(e))
-    errMsg <<- lang$errMsg$readLog$desc
-  })
-  showErrorMsg(lang$errMsg$readLog$title, errMsg)
-  
-  if(is.null(rv$triggerAsyncProcObserver)){
-    rv$triggerAsyncProcObserver <- 1L
-  }else{
-    rv$triggerAsyncProcObserver <- rv$triggerAsyncProcObserver + 1L
-  }
+  removeModal()
+  runGAMSJob()
 })
 if(!isShinyProxy && config$activateModules$remoteExecution){
   observeEvent(input$btRemoteExecLogin, {

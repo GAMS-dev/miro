@@ -145,6 +145,22 @@ Scenario <- R6Class("Scenario",
                       getWritePerm = function() csv2Vector(private$writePerm),
                       getExecPerm = function() csv2Vector(private$execPerm),
                       getLockUid = function() private$lockUid,
+                      getScenHash = function(){
+                        if(length(private$sid) && is.null(private$scenHash)){
+                          # need to fetch from db as it was never set
+                          scenHashTmp <- self$importDataset("_scenHash",
+                                                            subsetSids = private$sid)
+                          if(length(scenHashTmp) && nrow(scenHashTmp) > 0L){
+                            scenHashTmp <- scenHashTmp[["hash"]][1]
+                          }
+                          private$scenHash <- scenHashTmp
+                        }
+                        return(private$scenHash)
+                      },
+                      setScenHash = function(scenHash){
+                        private$scenHash <- scenHash
+                        invisible(self)
+                      },
                       getMetadataInfo = function(discardAttach = FALSE, discardPerm = FALSE){
                         stopifnot(length(private$sid) > 0L)
                         attachmentConfig <- list()
@@ -273,6 +289,7 @@ Scenario <- R6Class("Scenario",
                         }, datasets, symNamesScenario)
                         
                         private$saveViewData()
+                        private$saveHash()
                         
                         private$scenSaved <- TRUE
                         # refresh lock for scenario
@@ -474,6 +491,7 @@ Scenario <- R6Class("Scenario",
                       newScen             = logical(1L),
                       tableNameScenLocks  = character(0L),
                       traceData           = tibble(),
+                      scenHash            = NULL,
                       views               = NULL,
                       attachments         = NULL,
                       duplicateAttachmentsOnNextSave = FALSE,
@@ -879,6 +897,27 @@ Scenario <- R6Class("Scenario",
                                              "=", private$sidToDuplicate, ";"))
                         private$duplicateAttachmentsOnNextSave <- FALSE
                         return(invisible(self))
+                      },
+                      saveHash = function(){
+                        # Saves scenario hash
+                        #
+                        # Returns:
+                        #   R6 object (reference to itself)
+                        
+                        stopifnot(length(private$sid) > 0L)
+                        if(private$isReadonly()){
+                          stop("Scenario is readonly. Saving scenario hash failed (Scenario.saveHash).", call. = FALSE)
+                        }
+                        if(length(private$scenHash)){
+                          super$exportScenDataset(private$bindSidCol(tibble(hash = private$scenHash)),
+                                                  "_scenHash")
+                          flog.debug("Hash for scenario: '%s' saved.", private$sid)
+                        }else{
+                          self$deleteRows("_scenHash", 
+                                          "_sid", 
+                                          private$sid)
+                        }
+                        invisible(self)
                       }
                     )
 )

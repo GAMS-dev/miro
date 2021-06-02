@@ -502,6 +502,13 @@
       "downloadButton":"下载",
       "cancelButton": "取消"
     },
+    "dialogHashExists":{
+      "title": "场景已经解决",
+      "desc": "您要解决的方案已存在于数据库中，名称为：“%s”%s并且最后由“%s”在“%s”上保存。",
+      "descTags": "（标签：“%s”）",
+      "cancelButton":"取消",
+      "okButton": "再次解决"
+    },
     "dialogJobSubmission":{
       "title": "提交作业",
       "desc": "提交一个要异步解决的新作业。",
