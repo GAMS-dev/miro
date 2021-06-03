@@ -13,6 +13,12 @@ MIRO_VERSION_MAJOR=$(echo $MIRO_VERSION_FULL | cut -f1 -d".")
 MIRO_VERSION_MINOR=$(echo $MIRO_VERSION_FULL | cut -f2 -d".")
 MIRO_VERSION_SHORT="${MIRO_VERSION_MAJOR}.${MIRO_VERSION_MINOR}"
 MIRO_RELEASE_DATE=$(grep -m 1 -e 'MIRORDate' src/app.R | cut -f2 -d'"' | xargs -0 ${DATEBIN} +%Y-%m-%d -d )
+
+pushd server > /dev/null
+    python3 miro_server.py release -f
+popd > /dev/null
+mv server/miro_server.zip doc/GAMS-MIRO-Server-${MIRO_VERSION_FULL}.zip
+
 echo $MIRO_VERSION_FULL | sed 's/\./,/g'> ./doc/latest.ver
 sed -e '/<code class="language-json">/r./src/conf/config_schema.json' ./doc/schema_template.html >./doc/schema.html
 sed -e '/<pre id="miro-license">/r./src/LICENSE' ./doc/license_template.html >./doc/license.html
