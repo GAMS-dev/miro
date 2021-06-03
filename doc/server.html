@@ -476,7 +476,7 @@ server {
 										<p>Further settings that can be made before adding the app:
 										  <ul>
 										    <li>Access groups (optional):<br>
-										    By default, any Engine user who has access to MIRO Server can see all added apps. Optional <i>access groups</i> can be assigned to the app. By using access groups you can determine who is allowed to use the app you want to add. A user who is not a member of one (or more) access groups will not see the app in the app overview and cannot reach it via direct link (see an <a href="#access-groups" class="scrollto">example</a>). All GAMS Engine groups of the namespace used by MIRO Server are available for selection. <a href="https://www.gams.com/engine/administration.html#user-groups">Learn how to create groups and add users in GAMS Engine</a>.</li>
+										    By default, any Engine user who has access to MIRO Server can see all added apps. Optional <i>access groups</i> can be assigned to the app. By using access groups you can determine who is allowed to use the app you want to add. A user who is not a member of one (or more) access groups will not see the app in the app overview and cannot reach it via direct link (see an <a href="#access-groups" class="scrollto">example</a>). All GAMS Engine groups of the namespace used by the MIRO Server in which the administrator is a member or has the right to access are available for selection. <a href="https://www.gams.com/engine/administration.html#user-groups">Learn how to create groups and add users in GAMS Engine</a>.</li>
 										    <li id="admin-panel-lang">App environment (JSON, optional):<br>
 											<p>Here you can define a customized environment to be used by the MIRO app in JSON syntax. This can be useful/mandatory, for example, if you want to run custom analysis scripts that require external software not in the PATH or to store credentials to be used by remote data exchange modules. A detailed description including an example can be found in the <a href="./deployment.html#custom-environments">MIRO Desktop documentation</a>. The only difference to the local version is that with MIRO Server you can specify a separate environment for each app, while with MIRO Desktop this applies globally to all apps at once.</p>
 											<p>While the <a href="#global-language" class="scrollto">global language setting</a> applies to all apps, the app environment can be used to change the language of an individual app. This allows the use of apps in different languages within one MIRO Server instance. The environment variable <kbd>MIRO_LANG</kbd> specifies the language. Available languages currently are English ('en'), Chinese ('cn') and German ('de'). Example: <kbd>{"MIRO_LANG":"de"}</kbd>.
@@ -485,7 +485,8 @@ server {
                                             </div></p>
 									        </li>
 										  </ul>
-										  When all settings are done, add the app by clicking on 'Save'. The app is then validated and added to the library. 
+										  When all settings are done, add the app by clicking on 'Save'. The app is then validated and added to the library.</p>
+										  <p id="scenario-data"><b>Scenario data:</b> All scenarios that are <a href="./deployment.html#bundle-scenarios">bundled with the app</a> are stored in the MIRO Server database. They are assigned to the user who adds the app and are available to all users who are members of a group of which the scenario owner is also a member. If no groups are used, everyone can see the scenario data. 
 										</p>
                                     </div>
 									<div  id="edit-remove-app"  class="section-block">
@@ -497,7 +498,18 @@ server {
                                     </div>
 									<div  id="add-scenarios"  class="section-block">
                                         <h5 class="block-title">Add scenario data</h5> 
-                                        <p></p>
+                                        <p>Besides the possibility to <a href="#scenario-data">bundle scenario data with an app</a>, scenarios can also be added afterwards using the 'Add MIRO scenarios' box:
+										<div class="section-block">
+                                            <img class="img-fluid" style= "max-height:400pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/server/admin-scenarios.png" alt="Add scenario data" onclick="window.open(this.src, '_blank');"/>
+                                        </div>
+										Scenario files can be added here. The following rules apply:
+										<ul>
+										  <li>Scenarios must be in <a href="./start.html#import-data">miroscen</a> format.</li>
+										  <li>Only one scenario can be added at a time.</li>
+										  <li>The scenarios must match a MIRO app that is already deployed on MIRO Server.</li>
+										  <li>Scenarios are assigned to the user who adds them.</li>
+										  <li>The scenarios are made available (read and execute permissions) to all users who are members of a group of which the scenario owner is also a member. If no groups are used, everyone can see the scenario data.</li>
+										</ul></p>
                                     </div>
                                 </div>
                                 <div  id="access-apps"  class="section-block">
@@ -607,7 +619,7 @@ server {
                                   <a class="nav-link scrollto has-sub-sub" href="#access-apps">Access MIRO apps</a>
 								  <nav class="sub-sub-menu nav flex-column">
                                     <a class="nav-link scrollto" href="#app-library">MIRO Server library</a>
-                                    <a class="nav-link scrollto" href="#direct-app-link">Direct app links</a>
+                                    <a class="nav-link scrollto" href="#direct-app-link">Direct links</a>
                                   </nav>
                                   <a class="nav-link scrollto" href="#app-access">Controlling app access</a>
                                 </nav><!--//nav-->
