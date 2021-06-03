@@ -28,4 +28,4 @@ Read more in the [GAMS MIRO Server Documentation](https://www.gams.com/miro/serv
 
 Read the [Documentation](https://www.gams.com/miro/server.html#server-install) to learn how to install GAMS MIRO Server.
 
-For more information about the third-party software included in this image, see [License Information](https://www.gams.com/miro/license_server.html).
+For more information about the third-party software included in this image, see [License Information](https://www.gams.com/miro/license-server.html).
