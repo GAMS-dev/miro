@@ -548,6 +548,15 @@ if(is.null(errMsg) && debugMode){
       }
     }
   }
+  if(miroBuildonly){
+    for(el in c(externalInputConfig, datasetsRemoteExport)){
+      for(sym in el){
+        if(length(sym$functionName)){
+          listOfCustomRenderers$push(sym$functionName)
+        }
+      }
+    }
+  }
   requiredPackagesCR <- unique(requiredPackagesCR)
   customRendererNames <- listOfCustomRenderers$get()
   rm(listOfCustomRenderers)
