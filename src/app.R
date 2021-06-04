@@ -548,7 +548,7 @@ if(is.null(errMsg) && debugMode){
       }
     }
   }
-  if(miroBuildonly){
+  if(miroBuildOnly){
     for(el in c(externalInputConfig, datasetsRemoteExport)){
       for(sym in el){
         if(length(sym$functionName)){
