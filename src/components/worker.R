@@ -69,10 +69,19 @@ Worker <- R6Class("Worker", public = list(
     
     private$metadata$namespace <- namespace
     
-    ret <- GET(url = paste0(private$metadata$url, "/namespaces/", namespace, "/permissions/me"), 
-                add_headers(Authorization = private$authHeader,
-                            Timestamp = as.character(Sys.time(), usetz = TRUE)), 
-                timeout(10L))
+    if(!length(private$apiInfo) || is.na(private$apiInfo$apiVersionInt) ||
+       private$apiInfo$apiVersionInt > 210603L){
+      ret <- GET(url = paste0(private$metadata$url, "/namespaces/", namespace, "/permissions?username=",
+                              URLencode(username)), 
+                 add_headers(Authorization = private$authHeader,
+                             Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+                 timeout(10L))
+    }else{
+      ret <- GET(url = paste0(private$metadata$url, "/namespaces/", namespace, "/permissions/me"), 
+                 add_headers(Authorization = private$authHeader,
+                             Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+                 timeout(10L))
+    }
     if(identical(status_code(ret), 404L))
       stop(444L, call. = FALSE)
     if(identical(status_code(ret), 401L))
@@ -609,7 +618,7 @@ Worker <- R6Class("Worker", public = list(
     stopifnot(private$remote)
     ret <- GET(url = paste0(private$metadata$url, 
                             "/namespaces/", 
-                            private$metadata$namespace, "/user/groups"), 
+                            private$metadata$namespace, "/user-groups"), 
                add_headers(Authorization = private$authHeader,
                            Timestamp = as.character(Sys.time(), usetz = TRUE)), 
                timeout(5L))
@@ -753,6 +762,7 @@ Worker <- R6Class("Worker", public = list(
   dbColNames = character(1L),
   sid = NULL,
   metadata = NULL,
+  apiInfo = NULL,
   inputData = NULL,
   log = character(1L),
   authHeader = character(1L),
@@ -1492,6 +1502,10 @@ Worker <- R6Class("Worker", public = list(
           }
         }
       }
+      private$apiInfo <- content(ret, type = "application/json", 
+                                 encoding = "utf-8")
+      private$apiInfo$apiVersionInt <- suppressWarnings(
+        as.integer(gsub(".", "", private$apiInfo$version, fixed = TRUE)))[1]
       ret <- ret$url
       FALSE
     }, error = function(e){
