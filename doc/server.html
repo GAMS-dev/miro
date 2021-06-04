@@ -149,7 +149,24 @@
                                 </div><!--//section-block-->
 								<div id="scenario-sharing"  class="section-block">
                                     <h3 class="block-title">Scenario Sharing</h3>
-                                    <p></p>
+									<div  id="share-rules"  class="section-block">
+                                        <h5 class="block-title">Rules for scenario sharing</h5> 
+								    	<p>If several users have access to the same MIRO Server app, they can share scenarios with each other. Shared scenarios can be loaded from the database into the sandbox in the same way as own scenarios. The following rules apply:
+									        <ul>
+									          <li>Scenarios can be shared with individual users and/or with user groups.</li>
+									          <li>Scenarios can only be shared with groups or users of a group in which you are a member yourself.</li>
+									          <li>The user who shares a scenario with others is the scenario owner. The sznario owner is displayed to other users when they load a shared scenario into their sandbox. </li>
+									          <li>Access permissions are assigned to a shared scenario. As scenario owner you decide about who has read, write and/or execute permissions. Read permissions allow general access to a scenario. Write permissions give you the right to change the scenario (data) and save it again. With execute permissions you are authorized to solve the scenario.</li>
+									          <li>It is not possible for a non-owner of a scenario to revoke the owner's permissions.</li>
+											  <li>As soon as you can read a scenario, you may save the scenario as a non-owner under a new name and thus make yourself the owner of the new scenario.</li>
+									          <li>Scenarios cannot be edited or saved by multiple users at the same time. As soon as one user opens a scenario, it is locked for other users. Locked scenarios cannot be overwritten by other users. However, they can be opened, solved and saved under a different name. </li>
+									        </ul>
+									    </p>
+                                    </div>
+                                    <div  id="locked-scenario"  class="section-block">
+                                        <h5 class="block-title">Locked Scenarios</h5> 
+								    	<p></p>
+                                     </div>
                                 </div><!--//section-block-->
                             </section> 
                             <section id="miro-server-administration" class="doc-section">
@@ -522,7 +539,7 @@ server {
 										<p>Further settings that can be made before adding the app:
 										  <ul>
 										    <li>Access groups (optional):<br>
-										    By default, any Engine user who has access to MIRO Server can see all added apps. Optional <i>access groups</i> can be assigned to the app. By using access groups you can determine who is allowed to use the app you want to add. A user who is not a member of one (or more) access groups will not see the app in the app overview and cannot reach it via direct link (see an <a href="#access-groups" class="scrollto">example</a>). All GAMS Engine groups of the namespace used by the MIRO Server in which the administrator is a member or has the right to access are available for selection. <a href="https://www.gams.com/engine/administration.html#user-groups">Learn how to create groups and add users in GAMS Engine</a>.</li>
+										    By default, any Engine user who has access to MIRO Server can see all added apps. Optional <i>access groups</i> can be assigned to the app. By using access groups you can determine who is allowed to use the app you want to add. A user who is not a member of one (or more) access groups will not see the app in the app overview and cannot reach it via direct link (see an <a href="#user-groups" class="scrollto">example</a>). All GAMS Engine groups of the namespace used by the MIRO Server in which the administrator is a member or has the right to access are available for selection. <a href="https://www.gams.com/engine/administration.html#user-groups">Learn how to create groups and add users in GAMS Engine</a>.</li>
 										    <li id="admin-panel-lang">App environment (JSON, optional):<br>
 											<p>Here you can define a customized environment to be used by the MIRO app in JSON syntax. This can be useful/mandatory, for example, if you want to run custom analysis scripts that require external software not in the PATH or to store credentials to be used by remote data exchange modules. A detailed description including an example can be found in the <a href="./deployment.html#custom-environments">MIRO Desktop documentation</a>. The only difference to the local version is that with MIRO Server you can specify a separate environment for each app, while with MIRO Desktop this applies globally to all apps at once.</p>
 											<p>While the <a href="#global-language" class="scrollto">global language setting</a> applies to all apps, the app environment can be used to change the language of an individual app. This allows the use of apps in different languages within one MIRO Server instance. The environment variable <kbd>MIRO_LANG</kbd> specifies the language. Available languages currently are English ('en'), Chinese ('cn') and German ('de'). Example: <kbd>{"MIRO_LANG":"de"}</kbd>.
@@ -593,10 +610,10 @@ server {
                                 <div  id="app-access"  class="section-block">
                                     <h3 class="block-title">Controlling app access</h3> 
                                     <div class="section-block">
-									  <p>If several MIRO apps are used, it may make sense to make certain apps accessible only to certain users. There are two possible ways to do this.
-									    <ul>
-										  <li id="access-groups"><b>User Groups:</b></br>
-										    In GAMS Engine users can be assigned to groups (read more about user groups in the <a href="https://www.gams.com/engine/administration.html#user-groups">GAMS Engine documentation</a>). These groups can be used to control who can see which MIRO app hosted on MIRO Server. In the following example, there are three groups A, B and C. Users in group A have access to 4 apps, users in group B have access to 3 other apps. Group C users can access 2 apps, one of which is also used by another group. 
+									  <p>If several MIRO apps are used, it may make sense to make certain apps accessible only to certain users. There are two possible ways to do this.</p>
+									  <div  id="user-groups"  class="section-block">
+                                        <h5 class="block-title">User Groups</h5> 
+                                        <p>In GAMS Engine users can be assigned to groups (read more about user groups in the <a href="https://www.gams.com/engine/administration.html#user-groups">GAMS Engine documentation</a>). These groups can be used to control who can see which MIRO app hosted on MIRO Server. In the following example, there are three groups A, B and C. Users in group A have access to 4 apps, users in group B have access to 3 other apps. Group C users can access 2 apps, one of which is also used by another group. 
 										    <div class="section-block">
                                               <img class="img-fluid" style= "max-height:282px; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/server/groups-library-2.png" alt="Using user groups" onclick="window.open(this.src, '_blank');"/>
                                             </div>
@@ -615,10 +632,11 @@ server {
 											  <li><a href="https://www.gams.com/engine/administration.html#user-groups">Learn how to create groups and add users in GAMS Engine</a></li>
 											  <li><a href="#add-app">Learn how to control which group can see which app on MIRO Server.</a></li>
 											</ul>
-										  </li>
-										  </li>
-										  <li><b>Several MIRO Server instances:</b></br>
-										    In this approach, users are separated from each other not by groups, but by separate MIRO Server instances. The example setup is as follows: There are 3 different MIRO Server instances, each accessible under a different URL. The MIRO server instances all access the same GAMS Engine instance, but use different namespaces. Using groups is of course still possible, but not necessary in this example. 
+									    </p>
+                                      </div>
+									  <div  id="multiple-instances"  class="section-block">
+                                        <h5 class="block-title">Multiple MIRO Server instances</h5> 
+                                        <p>In this approach, users are separated from each other not by groups, but by separate MIRO Server instances. The example setup is as follows: There are 3 different MIRO Server instances, each accessible under a different URL. The MIRO server instances all access the same GAMS Engine instance, but use different namespaces. Using groups is of course still possible, but not necessary in this example. 
 										    <div class="section-block">
                                               <img class="img-fluid" style= "max-height:400pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/server/groups-library-3.png" alt="Using several MIRO Server instances" onclick="window.open(this.src, '_blank');"/>
                                             </div>
@@ -631,9 +649,8 @@ server {
                                                     <p>Note that in this setup it is not possible to share individual apps with multiple groups. Apps have to be added and maintained separately in each MIRO Server instance. Except that they use the same GAMS Engine, the three instances have nothing to do with each other. </p>
                                                 </div><!--//content-->
                                             </div><!--//callout-block-->
-										  </li>
-										</ul>
-									  </p>
+										</p>
+                                      </div>
                                     </div><!--//section-block-->
                                 </div>
 							</div>
@@ -649,7 +666,11 @@ server {
 								<nav class="doc-sub-menu nav flex-column">
 								  <a class="nav-link scrollto" href="#solve-async">Asynchronous Solving</a>
 								  <a class="nav-link scrollto" href="#job-list">Job list</a>
-								  <a class="nav-link scrollto" href="#scenario-sharing">Scenario Sharing</a>
+								  <a class="nav-link scrollto has-sub-sub" href="#scenario-sharing">Scenario Sharing</a>
+								  <nav class="sub-sub-menu nav flex-column">
+                                    <a class="nav-link scrollto" href="#share-rules">Rules for scenario sharing</a>
+                                    <a class="nav-link scrollto" href="#locked-scenario">Locked scenarios</a>
+                                  </nav>
 								</nav>
                                 <a class="nav-link scrollto" href="#miro-server-administration">GAMS MIRO Server - Administration</a>
                                 <nav class="doc-sub-menu nav flex-column">
@@ -675,7 +696,11 @@ server {
                                     <a class="nav-link scrollto" href="#app-library">MIRO Server library</a>
                                     <a class="nav-link scrollto" href="#direct-app-link">Direct links</a>
                                   </nav>
-                                  <a class="nav-link scrollto" href="#app-access">Controlling app access</a>
+                                  <a class="nav-link scrollto has-sub-sub" href="#app-access">Controlling app access</a>
+								  <nav class="sub-sub-menu nav flex-column">
+                                    <a class="nav-link scrollto" href="#user-groups">User groups</a>
+                                    <a class="nav-link scrollto" href="#multiple-instances">Multiple MIRO Server instances</a>
+                                  </nav>
                                 </nav><!--//nav-->
                             </nav><!--//doc-menu-->
                         </div>
