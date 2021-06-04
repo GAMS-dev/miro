@@ -109,16 +109,43 @@
 								<ul>
 								  <li>Scenario sharing: Share scenarios of your MIRO application(s) with other users easily from within the app. </li>
 								  <li>User- and group management: Map structures of your work environment by dividing MIRO users into groups with different privileges. Decide who can see which apps and/or who has control over adding new ones.</li>
+								  <li>Asynchronous Solving: Submit jobs and log back in later to get the results.</li>
 								  <li>App updates: Update MIRO apps without the risk of interrupting running applications.</li>
 								</ul></p>
                                 </div>
-								<div id="server-launch"  class="section-block">
-                                    <h3 class="block-title">Launching an app</h3>
-                                    <p></p>
-                                </div><!--//section-block-->
 								<div id="solve-async"  class="section-block">
                                     <h3 class="block-title">Asynchronous Solving</h3>
-                                    <p></p>
+                                    <p>Jobs that are solved with GAMS Engine in the cloud are always processed asynchronously. This has the following advantages:
+									<ul>
+									  <li>You can submit several jobs in a row without having to wait for the results of previous jobs.</li> 
+									  <li>A MIRO application does not have to keep running during the calculations, i.e. you can close the application and return at a later time to view the results.</li>
+									</ul>
+									Instead of a normal 'Solve Model' button like in MIRO Desktop, a dropdown menu appears in a MIRO app running under MIRO Server:
+									<div>
+                                        <img class="img-fluid" style= "max-height:400pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/server/solve-button.png" alt="Solve button" onclick="window.open(this.src, '_blank');"/>
+                                    </div>
+									The choices are:
+									<ul>
+									  <li><b>Solve model:</b></br>
+									  <p>The workflow is identical to the synchronous solving in MIRO Desktop. After clicking on <i>Solve model</i> the view changes to the <i>GAMS interaction</i> section, where log and listing files are shown during the calculations (if they are not hidden). After solving the view changes to the output section.</p>
+									  <p>Note that unlike MIRO Desktop, the job is now executed asynchronously. You can therefore close the MIRO app during the calculations. From the moment you log out and log back in, the job will be treated as a job that you submitted by clicking <i>submit job</i> rather than <i>solve model</i>. This means no log will be displayed anymore in the <i>GAMS interaction</i> section. Also, the results are not loaded automatically after solving. Instead the job is moved to the <a href="#job-list" class="scrollto">job list</a>. From there you can get the results after finishing the calculations.</p></li>
+									  <li><b>Submit job:</b></br>
+									  A submitted job is put directly into the <a href="#job-list" class="scrollto">job list</a>. No log is displayed, and results are not automatically loaded into the interface. Instead, the results can be imported later. Submitting a job in this way makes sense especially if you want to solve multiple jobs in a row without waiting for the results to come in.</li>
+									</ul>
+									</p>
+                                </div><!--//section-block-->
+								<div id="job-list"  class="section-block">
+                                    <h3 class="block-title">Job list</h3>
+                                    <p>The job list in the GAMS interaction section lists all submitted jobs that are still running or whose results have not yet been imported. It shows for each submitted job the owner, the submission date and the specified job name. In addition, the current status (<i>scheduled</i>, <i>running</i> or <i>completed</i>) is visible. 
+									<div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/server/job-list.png" alt="Job list" onclick="window.open(this.src, '_blank');" />
+                                    </div>
+									Results that have not yet been loaded into the database or are still pending can be discarded. As soon as a job has finished, the results can be stored in the database and loaded into the sandbox with a click on <i>Download results</i>. 
+                                    <p>If you want to see jobs that previously have been imported or discarded, you can do so by clicking on <i>Show history</i>:</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/server/job-history.png" alt="Job history" onclick="window.open(this.src, '_blank');" />
+                                    </div>
+									</p>
                                 </div><!--//section-block-->
 								<div id="scenario-sharing"  class="section-block">
                                     <h3 class="block-title">Scenario Sharing</h3>
@@ -620,8 +647,8 @@ server {
                                 <a class="nav-link scrollto" href="#miro-desktop-remote">GAMS MIRO Desktop - Boosted by GAMS Engine</a>
                                 <a class="nav-link scrollto" href="#miro-server">GAMS MIRO Server</a>
 								<nav class="doc-sub-menu nav flex-column">
-								  <a class="nav-link scrollto" href="#server-launch">Launching an app</a>
 								  <a class="nav-link scrollto" href="#solve-async">Asynchronous Solving</a>
+								  <a class="nav-link scrollto" href="#job-list">Job list</a>
 								  <a class="nav-link scrollto" href="#scenario-sharing">Scenario Sharing</a>
 								</nav>
                                 <a class="nav-link scrollto" href="#miro-server-administration">GAMS MIRO Server - Administration</a>
