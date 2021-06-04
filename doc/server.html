@@ -154,11 +154,12 @@
 								    	<p>If several users have access to the same MIRO Server app, they can share scenarios with each other. Shared scenarios can be loaded from the database into the sandbox in the same way as own scenarios. The following rules apply:
 									        <ul>
 									          <li>Scenarios can be shared with individual users and/or with user groups.</li>
-									          <li>Scenarios can only be shared with groups or users of a group in which you are a member yourself.</li>
-									          <li>The user who shares a scenario with others is the scenario owner. The sznario owner is displayed to other users when they load a shared scenario into their sandbox. </li>
+									          <li>Scenarios can only be shared with groups or users of a group in which you are a member yourself. <a href="https://www.gams.com/engine/administration.html#user-management">Inviters</a> can also see users in groups of invitees of which they themselves are not members. Admins can see all users and groups.</li>
+									          <li>The user who shares a scenario with others is the scenario owner. The scenario owner is displayed to other users when they load a shared scenario into their sandbox. </li>
+											  <li>Scenarios can be stored under the same name in the database if the owner is different. For MIRO these are then different scenarios</li>
 									          <li>Access permissions are assigned to a shared scenario. As scenario owner you decide about who has read, write and/or execute permissions. Read permissions allow general access to a scenario. Write permissions give you the right to change the scenario (data) and save it again. With execute permissions you are authorized to solve the scenario.</li>
 									          <li>It is not possible for a non-owner of a scenario to revoke the owner's permissions.</li>
-											  <li>As soon as you can read a scenario, you may save the scenario as a non-owner under a new name and thus make yourself the owner of the new scenario.</li>
+											  <li>As soon as you can read a scenario, you may save the scenario as a non-owner under your name and thus make yourself the owner of the new scenario.</li>
 									          <li>Scenarios cannot be edited or saved by multiple users at the same time. As soon as one user opens a scenario, it is locked for other users. Locked scenarios cannot be overwritten by other users. However, they can be opened, solved and saved under a different name. </li>
 									        </ul>
 									    </p>
@@ -517,7 +518,7 @@ server {
 									<div  id="admin-access"  class="section-block">
                                         <h5 class="block-title">Access</h5> 
                                         <p>In the Admin panel of MIRO Server you can add new MIRO apps and delete existing ones. Among other things, access to individual apps can also be controlled here via a user group system.</p>
-                                        <p>A user with at least <a href = "https://www.gams.com/engine/administration.html#namespaces">read and write permissions</a> on the namespace that MIRO Server uses will be considered as a MIRO Server administrator. As an administrator, the tabs 'Admin Panel' and 'Containers' are additionally displayed next to the 'Home' tab:
+                                        <p>A user with <a href = "https://www.gams.com/engine/administration.html#namespaces">read, write  and execute permissions</a> on the namespace that MIRO Server uses will be considered as a MIRO Server administrator. As an administrator, the tabs 'Admin Panel' and 'Containers' are additionally displayed next to the 'Home' tab:
 				    					<div class="section-block">
                                             <img class="img-fluid" style= "max-height:400pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/server/header.png" alt="Administrator header bar" onclick="window.open(this.src, '_blank');"/>
                                         </div>
