@@ -100,7 +100,8 @@
                             </section>  
                             <section id="miro-server" class="doc-section">
                                 <h2 class="section-title">GAMS MIRO Server</h2>
-								<p>With GAMS MIRO Server, not only the model calculations but also the MIRO apps themselves are moved to the cloud. Apps deployed with MIRO Server can be accessed from any device with a modern web browser. Local MIRO or GAMS installations are no longer necessary. This makes MIRO Server the most convenient solution when it comes to making apps available to end users all over the world. All you need as a user is a URL, valid credentials (optional) and you are ready to go.</p>
+                                <div class="section-block">
+                                    <p>With GAMS MIRO Server, not only the model calculations but also the MIRO apps themselves are moved to the cloud. Apps deployed with MIRO Server can be accessed from any device with a modern web browser. Local MIRO or GAMS installations are no longer necessary. This makes MIRO Server the most convenient solution when it comes to making apps available to end users all over the world. All you need as a user is a URL, valid credentials (optional) and you are ready to go.</p>
 								<div class="section-block" id="app-overview">
                                     <img class="img-fluid" style= "max-height:400pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/server/library.png" alt="MIRO Server library" onclick="window.open(this.src, '_blank');"/>
                                 </div>
@@ -108,9 +109,26 @@
 								<ul>
 								  <li>Scenario sharing: Share scenarios of your MIRO application(s) with other users easily from within the app. </li>
 								  <li>User- and group management: Map structures of your work environment by dividing MIRO users into groups with different privileges. Decide who can see which apps and/or who has control over adding new ones.</li>
-								  <li>(Rolling) app updates: Update MIRO apps without the risk of interrupting running applications.</li>
+								  <li>App updates: Update MIRO apps without the risk of interrupting running applications.</li>
 								</ul></p>
-                                <h3 id = "server-administration" class="section-title">Server Administration</h3>
+                                </div>
+								<div id="server-launch"  class="section-block">
+                                    <h3 class="block-title">Launching an app</h3>
+                                    <p></p>
+                                </div><!--//section-block-->
+								<div id="solve-async"  class="section-block">
+                                    <h3 class="block-title">Asynchronous Solving</h3>
+                                    <p></p>
+                                </div><!--//section-block-->
+								<div id="scenario-sharing"  class="section-block">
+                                    <h3 class="block-title">Scenario Sharing</h3>
+                                    <p></p>
+                                </div><!--//section-block-->
+                            </section> 
+                            <section id="miro-server-administration" class="doc-section">
+                                <h2 class="section-title">GAMS MIRO Server - Administration</h2>
+								<div class="section-block">
+                                <h3 id = "server-setup" class="block-title">Server Setup</h3>
                                     <div class="section-block">
                                         <div class="callout-block callout-warning">
                                             <div class="icon-holder">
@@ -124,7 +142,8 @@
                                     </div>
                                 <div  id="server-install"  class="section-block">
                                     <h5 class="block-title">Install MIRO Server</h5>
-                                    <p>When you purchase GAMS MIRO Server, you will receive a ZIP file that contains everything you need to get started. The general installation instructions are given below. However, keep in mind that the installation is highly dependent on your setup. Since GAMS MIRO Server is a server application, the concepts of <i>ports</i>, <i>SSL</i>, <i>certificates</i>, etc. are omnipresent. Setting up such a system is a common task for a server administrator. If you have problems with the installation, please do not hesitate to contact us by mail at <a href="mailto:support@gams.com" target="_blank">support@gams.com</a>.</p>
+                                    <p>To install MIRO Server, first download the ZIP file that contains everything you need to get started <a href="./download.html#miro-server">here</a>.</p>
+									<p>The general installation instructions are given below. However, keep in mind that the installation is highly dependent on your setup. Since GAMS MIRO Server is a server application, the concepts of <i>ports</i>, <i>SSL</i>, <i>certificates</i>, etc. are omnipresent. Setting up such a system is a common task for a server administrator. If you have problems with the installation, please do not hesitate to contact us by mail at <a href="mailto:support@gams.com" target="_blank">support@gams.com</a>.</p>
 									<ul class="nav nav-tabs row" style="border:none;" id="installOS" role="tablist">
                                       <li class="nav-item col-sm-12 col-md-12 col-lg-6 no-margin-sm">
                                         <a class="nav-link active" id="linux-tab" data-toggle="tab" href="#linux" role="tab" aria-controls="linux" aria-selected="true"><i class="fab fa-linux" style="font-size: 40pt;"></i><br>Linux</a>
@@ -590,6 +609,8 @@ server {
 									  </p>
                                     </div><!--//section-block-->
                                 </div>
+							</div>
+                            </section> 
                         </div><!--//content-inner-->
                     </div><!--//doc-content-->
                     <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
@@ -598,8 +619,14 @@ server {
                                 <a class="nav-link scrollto" href="#server-introduction">Introduction</a>
                                 <a class="nav-link scrollto" href="#miro-desktop-remote">GAMS MIRO Desktop - Boosted by GAMS Engine</a>
                                 <a class="nav-link scrollto" href="#miro-server">GAMS MIRO Server</a>
+								<nav class="doc-sub-menu nav flex-column">
+								  <a class="nav-link scrollto" href="#server-launch">Launching an app</a>
+								  <a class="nav-link scrollto" href="#solve-async">Asynchronous Solving</a>
+								  <a class="nav-link scrollto" href="#scenario-sharing">Scenario Sharing</a>
+								</nav>
+                                <a class="nav-link scrollto" href="#miro-server-administration">GAMS MIRO Server - Administration</a>
                                 <nav class="doc-sub-menu nav flex-column">
-                                  <a class="nav-link scrollto has-sub-sub" href="#server-administration">Server Administration</a>
+                                  <a class="nav-link scrollto has-sub-sub" href="#server-setup">Server Setup</a>
 								  <nav class="sub-sub-menu nav flex-column">
                                     <a class="nav-link scrollto" href="#server-install">Install MIRO Server</a>
                                     <a class="nav-link scrollto" href="#server-interaction">Start / Stop / Update / Uninstall</a>
