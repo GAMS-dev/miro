@@ -107,9 +107,9 @@
                                 </div>
 								<p>Besides the benefits of making them easily accessible, central hosting of MIRO apps also brings other aspects into focus:
 								<ul>
+								  <li>Asynchronous Solving: Submit jobs and log back in later to get the results.</li>
 								  <li>Scenario sharing: Share scenarios of your MIRO application(s) with other users easily from within the app. </li>
 								  <li>User- and group management: Map structures of your work environment by dividing MIRO users into groups with different privileges. Decide who can see which apps and/or who has control over adding new ones.</li>
-								  <li>Asynchronous Solving: Submit jobs and log back in later to get the results.</li>
 								  <li>App updates: Update MIRO apps without the risk of interrupting running applications.</li>
 								</ul></p>
                                 </div>
@@ -151,23 +151,45 @@
                                     <h3 class="block-title">Scenario Sharing</h3>
 									<div  id="share-rules"  class="section-block">
                                         <h5 class="block-title">Rules for scenario sharing</h5> 
-								    	<p>If several users have access to the same MIRO Server app, they can share scenarios with each other. Shared scenarios can be loaded from the database into the sandbox in the same way as own scenarios. The following rules apply:
+								    	<p>If several users have access to the same MIRO Server app, they can share scenarios. Shared scenarios can be loaded from the database into the sandbox in the same way as own scenarios.
+										    <div class="section-block">
+                                                <img class="img-fluid" style= "max-height:350pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/server/shared-scenarios.png" alt="Shared scenarios" onclick="window.open(this.src, '_blank');" />
+                                            </div>
+										    The following rules apply:
 									        <ul>
 									          <li>Scenarios can be shared with individual users and/or with user groups.</li>
 									          <li>Scenarios can only be shared with groups or users of a group in which you are a member yourself. <a href="https://www.gams.com/engine/administration.html#user-management">Inviters</a> can also see users in groups of invitees of which they themselves are not members. Admins can see all users and groups.</li>
 									          <li>The user who shares a scenario with others is the scenario owner. The scenario owner is displayed to other users when they load a shared scenario into their sandbox. </li>
 											  <li>Scenarios can be stored under the same name in the database if the owner is different. For MIRO these are then different scenarios</li>
-									          <li>Access permissions are assigned to a shared scenario. As scenario owner you decide about who has read, write and/or execute permissions. Read permissions allow general access to a scenario. Write permissions give you the right to change the scenario (data) and save it again. With execute permissions you are authorized to solve the scenario.</li>
+									          <li>Access permissions are assigned to a shared scenario. As scenario owner you decide about who has read, write and/or execute permissions. Users with read permissions can load the owner's scenario but are not authorized to edit or execute it. The scenario is marked with a lock symbol (<i class="fas fa-lock"></i>). Write permissions give you the right to change the scenario (data) and save it again. With execute permissions you are authorized to solve the scenario.</li>
 									          <li>It is not possible for a non-owner of a scenario to revoke the owner's permissions.</li>
 											  <li>As soon as you can read a scenario, you may save the scenario as a non-owner under your name and thus make yourself the owner of the new scenario.</li>
-									          <li>Scenarios cannot be edited or saved by multiple users at the same time. As soon as one user opens a scenario, it is locked for other users. Locked scenarios cannot be overwritten by other users. However, they can be opened, solved and saved under a different name. </li>
+									          <li>For the time a scenario is opened in MIRO, it is locked for other users. This prevents conflicts arising when a scenario is used concurrently. Locked scenarios can be opened in readonly mode by others (and also saved under a new name). If you open such a scenario, a lock symbol (<i class="fas fa-lock"></i>) next to the scenario name indicates the readonly status. If you have write permissions for the scenario, a notification in the lower right corner of the screen informs you about the lock status additionally. 
+										          <div class="row">
+                                                    <div class="col-sm-12 col-md-12 col-lg-6" style="padding:10pt;">
+                                                      <img class="img-fluid center-image-lg" style= "max-height:100pt; display: block;" src="assets/images/readonly_scenario.png" alt="Scenario in readonly mode" />
+                                                    </div>
+                                                    <div class="col-sm-12 col-md-12 col-lg-6" style="padding:10pt;">
+                                                      <img class="img-fluid center-image-lg" style= "max-height:100pt; display: block;" src="assets/images/locked_scenario.png" alt="Locked scenario notification" />
+                                                    </div>
+                                                  </div>
+											  </li>
 									        </ul>
 									    </p>
                                     </div>
-                                    <div  id="locked-scenario"  class="section-block">
-                                        <h5 class="block-title">Locked Scenarios</h5> 
-								    	<p></p>
-                                     </div>
+                                    <div  id="share-scenario"  class="section-block">
+                                       <h5 class="block-title">Share a scenario</h5> 
+								    	<p>The information about whether a scenario should be shared with others is controlled in the 'Access permissions' tab under Scenario &rarr; Edit metadata. 
+										    <div class="section-block">
+                                                <img class="img-fluid" style= "max-height:135pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/server/edit-metadata.png" alt="Edit metadata" onclick="window.open(this.src, '_blank');" />
+                                            </div>
+											In the example below, Rebecca is scenario owner. She gives the single user 'rschuchmann' and the group 'group 1' read permission for her scenario. Since she does not want her scenario data to be changed, she decides not to give write permissions to any other user. Members of 'group1' usually only look at results and do not want to calculate scenarios, so Rebecca only grants execute permissions to 'rschuchmann'. 
+											<div class="section-block">
+                                                <img class="img-fluid" style= "max-height:310pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/server/access-permissions.png" alt="Access permissions" onclick="window.open(this.src, '_blank');" />
+                                            </div>
+										
+										</p>
+                                    </div>
                                 </div><!--//section-block-->
                             </section> 
                             <section id="miro-server-administration" class="doc-section">
@@ -670,7 +692,7 @@ server {
 								  <a class="nav-link scrollto has-sub-sub" href="#scenario-sharing">Scenario Sharing</a>
 								  <nav class="sub-sub-menu nav flex-column">
                                     <a class="nav-link scrollto" href="#share-rules">Rules for scenario sharing</a>
-                                    <a class="nav-link scrollto" href="#locked-scenario">Locked scenarios</a>
+                                    <a class="nav-link scrollto" href="#share-scenario">Share a scenario</a>
                                   </nav>
 								</nav>
                                 <a class="nav-link scrollto" href="#miro-server-administration">GAMS MIRO Server - Administration</a>
