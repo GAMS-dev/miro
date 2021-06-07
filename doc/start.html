@@ -211,7 +211,7 @@
                                     <h3 class="block-title">Structure of GAMS MIRO</h3>
                                     <p>Below you see the input mask as it appears after the launch.
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                        <img class="img-fluid" src="assets/images/initial-screen.png" alt="initial GAMS MIRO screen" />
+                                        <img class="img-fluid" src="assets/images/initial-screen-configured.png" alt="initial GAMS MIRO screen" />
                                     </div>
                                     <p>The screen is essentially divided into two parts:</p>
                                     <h6>Navigation bar:</h6>
@@ -245,7 +245,7 @@
                                     </ol>
 
                                     <h6>Main window:</h6>
-                                    <p>The main window always displays the content of the section selected by the user in the navigation bar. Here, for example, data is visualized, scenarios are compared and analyses are carried out.</p>
+                                    <p>The main window always displays the content of the section selected by the user in the navigation bar. Here, for example, data is visualized, scenarios are compared and analyses are carried out. In the screenshot above you can also see a <a href="./customize.html#app-readme">readme</a> section that is displayed to the user. </p>
                                     <p>Besides navigation bar and main window, some functions are accessible in the header bar:</p>
                                     <ul>
                                       <li><b>Scenario:</b><br/>
@@ -518,7 +518,7 @@
                                               <img class="img-fluid" src="assets/images/output-data.png" alt="Output data screen" />
                                         </div>
                                         <p>With a click on the <img class="img-fluid" src="assets/images/tabular-btn.png" width="25" height="25" align="middle" alt="Switch to tabular view button" /> button in the upper right corner you can switch between a plot and the tabular representation of the data.</p>
-                                        <p>All scalar results are summarized in <i>Output Scalars</i>. The default visualization selected here are tiles. Like before, you can switch between graphical and tabular representation with a click on the <img class="img-fluid" src="assets/images/tabular-btn.png" width="25" height="25" align="middle" alt="Switch to tabular view button" /> button.</p>
+                                        <p>The <i>Costs</i> tab shows the objective function value of the model calculation in a tile. Like before, you can switch between graphical and tabular representation with a click on the <img class="img-fluid" src="assets/images/tabular-btn.png" width="25" height="25" align="middle" alt="Switch to tabular view button" /> button.</p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                               <img class="img-fluid" style="max-height:175pt;" src="assets/images/output-data2.png" alt="Output data screen - scalars" />
                                         </div>
@@ -526,7 +526,7 @@
                                         <h6 class="callout-title">Download temporary files:</h6>
                                         <p>If this <a href = "./customize.html#general-temp-dir">option</a> is enabled, all temporarily created files of the model run (like solution reports or the <span class="code">lst</span> and <span class="code">log</span> files) can be downloaded either separately or as a ZIP archive with a click on the <img class="img-fluid" width="25" height="25" align="middle" src="assets/images/advanced-button.png" alt="Download temporary files" /> button.</p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                             <img class="img-fluid" style="max-height:325pt;" src="assets/images/advanced-options.png" alt="Output data screen - scalars" />
+                                             <img class="img-fluid" style="max-height:325pt;" src="assets/images/download-tmp-files.png" alt="Output data screen - scalars" />
                                         </div>
                                     </div><!--//section-block-->
                                     <div id="save-export-delete"  class="section-block">
@@ -633,9 +633,6 @@
                                             <h5 class="block-title">Split view</h5>
                                             <p>If two scenarios are to be compared, the split-screen view is particularly suitable. Here the data of two scenarios can be compared side by side.</p>
                                             <div class="section-block" style="text-align:center;">
-                                                  <img class="img-fluid" src="assets/images/batch_img/split_screen_mode.png" alt="Integrated scenario comparison - split view" />
-                                            </div>
-                                            <div class="section-block" style="text-align:center;">
                                                   <img class="img-fluid" src="assets/images/compare_split.png" alt="Split view" />
                                             </div>
                                             <p>You can choose between:</p>
@@ -704,8 +701,8 @@
                                         <li> Afterwards the results are sent to MIRO and displayed in the output section. From there, data can be saved in the internal database and/or exported as a file.</li>
                                     </ol></p>
                                     <p>A little more detail:</p>
-                                    <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                        <img class="img-fluid" src="assets/images/concept_data.png" alt="GAMS MIRO data concept" />
+                                    <div class="section-block" style="display:block; margin:auto; text-align:center;cursor: pointer;">
+                                        <img class="img-fluid" src="assets/images/concept_data.png" alt="GAMS MIRO data concept" onclick="window.open(this.src, '_blank');"/>
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="expandable-box-outline">
