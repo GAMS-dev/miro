@@ -140,15 +140,12 @@
                                   <h6 id="show-log" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Show log file in UI</h6>
                                   <div class="expanded"><p>Determine whether the GAMS <i>log</i> file is displayed in the section <i>GAMS interaction</i> or not.</p>
                                       <div class="section-block">
-                                          <img class="img-fluid" style= "max-height:350pt;padding-bottom:25pt;" src="assets/images/configuration_mode/log_file.png" alt="GAMS Log file" />
+                                          <img class="img-fluid" src="assets/images/gams-inter.png" alt="GAMS Log file" />
                                       </div>
                                       <p></p>
                                   </div>
                                   <h6 id="show-lst" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Show listing (lst) file in UI</h6>
                                   <div class="expanded"><p>Determine whether the GAMS listing (<i>lst</i>) file is displayed in the section <i>GAMS interaction</i> or not.</p>
-                                      <div class="section-block">
-                                          <img class="img-fluid" style= "max-height:350pt;padding-bottom:25pt;" src="assets/images/configuration_mode/lst_file.png" alt="GAMS Log file" />
-                                      </div>
                                       <p></p>
                                   </div>
                                   <h6 id="miro-log" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Use custom MIRO log</h6>
@@ -285,7 +282,7 @@ putclose log;
                                   Its content is displayed in the input section in the first tab and is therefore the first thing the user sees after starting the application. This tab can be used by the developer
                                   to introduce and explain the MIRO application or the underlying GAMS model before the user starts working with it.</p>
                                   <div class="section-block">
-                                      <img class="img-fluid" style= "max-height:300pt;" src="assets/images/configuration_mode/readme.png" alt="README file" />
+                                      <img class="img-fluid" style= "max-height:500pt;" src="assets/images/configuration_mode/readme.png" alt="README file" />
                                   </div>
                                   <p><b>Usage:</b><br>
                                   The readme file must be a <a href = "https://guides.github.com/features/mastering-markdown/" target = "_blank">Markdown</a> or HTML
@@ -1205,7 +1202,7 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                                          </div><!--//content-->
                                      </div><!--//callout-block-->
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/config-img.png" alt="Custom visualization options"/>
+                                        <img class="img-fluid" style= "max-height:350pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/gams_miro.png" alt="Custom visualization options"/>
                                     </div>
                                     <p>In case you want to change the language of MIRO or display a scalar input symbol as a slider, this information must be stored in the <span class="code">&lt;modelname&gt;.json</span> file in JSON syntax.
                                     When you first launch MIRO for a new model, the <span class="code">&lt;modelname&gt;.json</span> file is almost empty:</p>
