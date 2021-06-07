@@ -69,10 +69,19 @@ Worker <- R6Class("Worker", public = list(
     
     private$metadata$namespace <- namespace
     
-    ret <- GET(url = paste0(private$metadata$url, "/namespaces/", namespace, "/permissions/me"), 
-                add_headers(Authorization = private$authHeader,
-                            Timestamp = as.character(Sys.time(), usetz = TRUE)), 
-                timeout(10L))
+    if(!length(private$apiInfo) || is.na(private$apiInfo$apiVersionInt) ||
+       private$apiInfo$apiVersionInt > 210603L){
+      ret <- GET(url = paste0(private$metadata$url, "/namespaces/", namespace, "/permissions?username=",
+                              URLencode(username)), 
+                 add_headers(Authorization = private$authHeader,
+                             Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+                 timeout(10L))
+    }else{
+      ret <- GET(url = paste0(private$metadata$url, "/namespaces/", namespace, "/permissions/me"), 
+                 add_headers(Authorization = private$authHeader,
+                             Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+                 timeout(10L))
+    }
     if(identical(status_code(ret), 404L))
       stop(444L, call. = FALSE)
     if(identical(status_code(ret), 401L))
@@ -605,21 +614,21 @@ Worker <- R6Class("Worker", public = list(
                                         maxSize = private$metadata$maxSizeToRead,
                                         chunkNo = chunkNo, getSize = getSize))
   },
-  getAccessGroups = function(){
-    if(private$remote){
-      ret <- GET(url = paste0(private$metadata$url, 
-                              "/namespaces/", 
-                              private$metadata$namespace, "/user/groups"), 
-                 add_headers(Authorization = private$authHeader,
-                             Timestamp = as.character(Sys.time(), usetz = TRUE)), 
-                 timeout(5L))
-      groupsTmp <- unlist(lapply(content(ret), function(accessGroup){
-        return(c(paste0("#", accessGroup$label), accessGroup$members))
-      }), use.names = FALSE)
-      groupsTmp <- groupsTmp[!tolower(groupsTmp) %in% c("#admins", "#users")]
-      return(c("#users", if("#admins" %in% tolower(private$db$getUserAccessGroups())) "#admins", groupsTmp))
-    }
-    return(csv2Vector(private$db$getUserAccessGroups()))
+  getRemoteAccessGroups = function(){
+    stopifnot(private$remote)
+    ret <- GET(url = paste0(private$metadata$url, 
+                            "/namespaces/", 
+                            private$metadata$namespace, "/user-groups"), 
+               add_headers(Authorization = private$authHeader,
+                           Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+               timeout(5L))
+    groupsTmp <- unlist(lapply(content(ret), function(accessGroup){
+      return(c(paste0("#", accessGroup$label),
+               vapply(accessGroup$members, "[[", character(1L), "username", USE.NAMES = FALSE)))
+    }), use.names = FALSE)
+    groupsTmp <- groupsTmp[!tolower(groupsTmp) %in% c("#admins", "#users")]
+    groupsTmp <- groupsTmp[!duplicated(groupsTmp)]
+    return(c("#users", if("#admins" %in% tolower(private$db$getUserAccessGroups())) "#admins", groupsTmp))
   },
   pingLog = function(){
     if(inherits(private$process, "process")){
@@ -753,6 +762,7 @@ Worker <- R6Class("Worker", public = list(
   dbColNames = character(1L),
   sid = NULL,
   metadata = NULL,
+  apiInfo = NULL,
   inputData = NULL,
   log = character(1L),
   authHeader = character(1L),
@@ -1492,6 +1502,10 @@ Worker <- R6Class("Worker", public = list(
           }
         }
       }
+      private$apiInfo <- content(ret, type = "application/json", 
+                                 encoding = "utf-8")
+      private$apiInfo$apiVersionInt <- suppressWarnings(
+        as.integer(gsub(".", "", private$apiInfo$version, fixed = TRUE)))[1]
       ret <- ret$url
       FALSE
     }, error = function(e){

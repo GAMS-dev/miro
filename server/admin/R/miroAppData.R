@@ -29,7 +29,7 @@ extractAppData <- function(miroAppPath, appId, modelId, logoFile = NULL){
             flog.warn("Problems moving app data file(s): '%s' from: '%s' to: '%s'",
                 paste(dataFiles[!dataFilesCopied], collapse = ","), dataDirSource, dataPath)
         }
-        if(unlink(dataDirSource, recursive = TRUE, force = TRUE) != 0){
+        if(unlink(dataDirSource, recursive = TRUE, force = TRUE) == 1){
             flog.warn("Problems removing directory: %s", dataDirSource)
         }
     }
@@ -48,6 +48,10 @@ addAppLogo <- function(appId, modelId, logoFile = NULL){
         newLogoName <- getLogoName(modelId, logoFile)
         if(!file.exists(logoPath)){
             stop(sprintf("Logo: %s does not exist.", logoPath), call. = FALSE)
+        }
+        if(file.size(logoPath) > MAX_LOGO_SIZE){
+            stop(sprintf("Logo exceeds maximum size of %s bytes.",
+              as.character(MAX_LOGO_SIZE)), call. = FALSE)
         }
         file.copy2(logoPath,
             file.path(logoDir, newLogoName))
@@ -71,8 +75,8 @@ removeAppData <- function(appId, logoFilename){
     }
     for(dirToRemove in c(modelPath, dataPath)){
         if(dir.exists(dirToRemove)){
-            if(unlink(dirToRemove, recursive = TRUE, force = TRUE) != 1){
-                flog.warn("Removing: %s for app: %s faield",
+            if(unlink(dirToRemove, recursive = TRUE, force = TRUE) == 1){
+                flog.warn("Removing: %s for app: %s failed",
                     dirToRemove, appId)
             }
         }

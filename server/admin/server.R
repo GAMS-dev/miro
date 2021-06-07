@@ -105,7 +105,7 @@ server <- function(input, output, session){
             errMsg <- sprintf("Invalid app logo. Error message: %s", 
                     conditionMessage(e))
             flog.info(errMsg)
-            session$sendCustomMessage("onError", list(requestType = "updateLogo", message = errMsg))
+            session$sendCustomMessage("onError", list(requestType = "updateLogoAddApp", message = errMsg))
         })
     })
     observeEvent(input$updateMiroAppLogo, {
@@ -145,7 +145,7 @@ server <- function(input, output, session){
 
             appId <- miroAppValidator$getAppId()
 
-            if(appId %in% modelConfig$getAllAppIds()){
+            if(appId %in% modelConfig$getAllAppIds(includeNoAccess = TRUE)){
                 stop("A MIRO app with the same name already exists.", call. = FALSE)
             }
 
@@ -360,7 +360,10 @@ server <- function(input, output, session){
                 flog.warn("The main gms file name in the MIRO scenario is different from the one uploaded to MIRO server (MIRO scen: %s, App: %s).",
                     modelName, appModelName)
             }
-            miroProc$run(appId, appModelName,
+            appDbCredentials <- modelConfig$getAppDbConf(appId)
+            miroProc$
+                setDbCredentials(appDbCredentials$user,
+                    appDbCredentials$password)$run(appId, appModelName,
                 appConfig$containerEnv[["MIRO_VERSION_STRING"]],
                 file.path(getwd(), MIRO_MODEL_DIR, appId), dataPath,
                 progressSelector = "#loadingScreenProgress",

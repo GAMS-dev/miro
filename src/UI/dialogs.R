@@ -677,7 +677,7 @@ showEditMetaDialog <- function(metadata,
                         tabPanel(langData$categoryGeneral, 
                                  content), contentAttachments, contentViews)
     if(length(contentAccessPerm)){
-      contentList[[4L]] <- contentAccessPerm
+      contentList[[5L]] <- contentAccessPerm
     }
     content <- do.call(tabsetPanel, contentList)
   }else if(length(contentAccessPerm)){

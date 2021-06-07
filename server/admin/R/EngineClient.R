@@ -17,7 +17,7 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
         authToken <- content(ret, type = "application/json", 
                           encoding = "utf-8")[["token"]]
         self$setAuthHeader(authToken)
-        ret <- httr::GET(paste0(ENGINE_URL, "/namespaces/", ENGINE_NAMESPACE, "/permissions/me"),
+        ret <- httr::GET(paste0(ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/permissions?username=", URLencode(username)),
                       add_headers(Authorization = private$getAuthHeader(), 
                                   Timestamp = as.character(Sys.time(), 
                                     usetz = TRUE)))
@@ -63,7 +63,7 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
         self$deregisterModel(appId)
     }
     modelDataPath <- file.path(MIRO_MODEL_DIR, appId, paste0(modelId, ".zip"))
-    ret <- httr::POST(paste0(ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/",
+    ret <- httr::POST(paste0(ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/models/",
                           URLencode(appId)), 
                   encode = "multipart", 
                   body = list(data = upload_file(modelDataPath, 
@@ -85,7 +85,7 @@ EngineClient <- R6::R6Class("EngineClient", public = list(
       return(invisible(self))
     }
     flog.trace("Deregistering app: %s at Engine", appId)
-    ret <- httr::DELETE(paste0(ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/", URLencode(appId)), 
+    ret <- httr::DELETE(paste0(ENGINE_URL, "/namespaces/", URLencode(ENGINE_NAMESPACE), "/models/", URLencode(appId)), 
             add_headers(Authorization = private$getAuthHeader(), 
                               Timestamp = as.character(Sys.time(), 
                                 usetz = TRUE)),

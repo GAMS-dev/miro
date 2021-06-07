@@ -101,6 +101,11 @@ Db <- R6Class("Db",
                 getConn               = function() private$conn,
                 getUid                = function() private$uid,
                 getUserAccessGroups   = function() c(private$uid, private$userAccessGroups),
+                getRemoteUsers        = function() private$remoteUsers,
+                setRemoteUsers        = function(remoteUsers){
+                        private$remoteUsers <- remoteUsers
+                        return(invisible(self))
+                },
                 getSlocktimeLimit     = function() private$slocktimeLimit,
                 getHcubeActive        = function() private$hcubeActive,
                 getInfo               = function(){
@@ -889,6 +894,7 @@ Db <- R6Class("Db",
           modelName           = character(1L),
           dbSchema            = vector("list", 3L),
           userAccessGroups    = character(1L),
+          remoteUsers         = character(),
           slocktimeLimit      = character(1L),
           hcubeActive         = logical(1L),
           info                = new.env(),

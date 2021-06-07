@@ -55,10 +55,10 @@ pushd src/model > /dev/null
     cp cpack/cpack.gms miro_lib
     mv cutstock/cutstock.conf.unzip miro_lib
     cp cutstock/cutstock.gms miro_lib
-    $ZIP_TOOL -r miroDemoApps.zip miro_lib -x "*.DS_Store"
+    $ZIP_TOOL -r GAMS-MIRO-Demo-Apps.zip miro_lib -x "*.DS_Store"
 popd > /dev/null
 
 pushd doc > /dev/null
-    mv ../src/model/miroDemoApps.zip .
+    mv ../src/model/GAMS-MIRO-Demo-Apps.zip .
     rm -rf ../src/model/miro_lib
 popd > /dev/null

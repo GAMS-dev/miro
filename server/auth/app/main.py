@@ -55,7 +55,8 @@ async def login(auth_request: AuthRequest, response: Response):
 
     try:
         r = requests.get(
-            f"{settings.engine_url}/namespaces/{settings.engine_ns}/permissions/me",
+            f"{settings.engine_url}/namespaces/{settings.engine_ns}/permissions",
+            params={"username": auth_request.username},
             auth=(auth_request.username, auth_request.password))
         if r.status_code != 200:
             logger.info("Invalid return code (%s) when requesting permissions for namespace: %s",
@@ -85,7 +86,7 @@ async def login(auth_request: AuthRequest, response: Response):
 
     try:
         r = requests.get(
-            f"{settings.engine_url}/namespaces/{settings.engine_ns}/user/groups",
+            f"{settings.engine_url}/namespaces/{settings.engine_ns}/user-groups",
             auth=(auth_request.username, auth_request.password))
         if r.status_code != 200:
             logger.info("Invalid return code (%s) when requesting user groups for namespace: %s",

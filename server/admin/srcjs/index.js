@@ -709,6 +709,10 @@ $(document).ready(() => {
       $('#loadingScreenProgress').css('width', '0%').attr('aria-valuenow', '0');
       $('#migrationFormErrors').show();
       return;
+    } else if (e.requestType === 'updateLogoAddApp') {
+      $('#btAddApp').attr('disabled', false);
+    } else if (e.requestType === 'updateLogo') {
+      $('.btn-save-changes').attr('disabled', false);
     }
     bootbox.alert({
       title: 'Error',

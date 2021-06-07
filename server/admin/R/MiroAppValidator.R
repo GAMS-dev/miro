@@ -33,6 +33,10 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     if(!length(logoPath) || !file.exists(logoPath)){
         stop("App logo does not exist.", call. = FALSE)
     }
+    if(file.size(logoPath) > MAX_LOGO_SIZE){
+        stop(sprintf("Logo exceeds maximum size of %s bytes.",
+          as.character(MAX_LOGO_SIZE)), call. = FALSE)
+    }
     private$logoFile <- logoPath
     private$logoB64  <- getLogoB64(logoPath)
     return(invisible(self))
@@ -50,10 +54,11 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
         flog.info("Invalid miroapp file uploaded.")
         stop("Not a valid MIRO app file.", call. = FALSE)
     }
-    filesInBundle  <- tryCatch(zip::zip_list(miroAppFile)[["filename"]], error = function(e){
+    filesInBundleRaw  <- tryCatch(zip::zip_list(miroAppFile), error = function(e){
         flog.info("Invalid miroapp file uploaded. Files is not a valid zip archive. Error message: %s", conditionMessage(e))
         stop("Not a valid MIRO app file.", call. = FALSE)
     })
+    filesInBundle <- filesInBundleRaw[["filename"]]
     if(any(grepl("..", filesInBundle, fixed = TRUE))){
         flog.warn("Invalid miroapp file uploaded. Archive includes files with .. in their filename: %s",
             paste(filesInBundle[grepl("..", filesInBundle, fixed = TRUE)], collapse = ", "))
@@ -101,7 +106,7 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
         stop(sprintf("Invalid MIRO app uploaded: %s.zip not in bundle."),
             self$getModelId(), call. = FALSE)
     }
-    private$logoB64 <- private$readLogo(miroAppFile, filesInBundle)
+    private$logoB64 <- private$readLogo(miroAppFile, filesInBundleRaw)
     appInfo <- private$readAppInfo(miroAppFile, filesInBundle)
     private$appTitle <- appInfo$title
     private$appDesc <- paste(appInfo$description, collapse = "\n")
@@ -128,7 +133,8 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     getStaticFilePath = function(){
         return(file.path(paste0("static_", self$getModelId())))
     },
-    readLogo = function(miroAppFile, filesInBundle){
+    readLogo = function(miroAppFile, filesInBundleRaw){
+        filesInBundle <- filesInBundleRaw[["filename"]]
         logoCandidates <- startsWith(filesInBundle, file.path(private$getStaticFilePath(), 
             paste0(self$getModelId(), "_logo."))) | 
             startsWith(filesInBundle, file.path(private$getStaticFilePath(), "app_logo."))
@@ -137,6 +143,11 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
         }
         if(sum(logoCandidates) > 1){
             flog.info("Multiple app logos were found. The first one will be used.")
+        }
+        if(filesInBundleRaw[["uncompressed_size"]][which(logoCandidates)[1]] > MAX_LOGO_SIZE){
+            flog.warn("The logo exceeds the maximum logo size of %s bytes. The default logo will be used.",
+                as.character(MAX_LOGO_SIZE))
+            return(DEFAULT_LOGO_B64)
         }
         private$logoFile <- filesInBundle[logoCandidates][1]
         logoPath <- unzip(miroAppFile, files = private$logoFile, 
