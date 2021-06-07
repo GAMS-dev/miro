@@ -449,8 +449,7 @@ lapply(modelInTabularData, function(sheet){
                      colWidths = if(length(modelIn[[i]]$colWidths))
                        modelIn[[i]]$colWidths else hotOptions$colWidths, 
                      fixedColumnsLeft = modelIn[[i]]$fixedColumnsLeft)
-      for(dropdownCol in names(modelIn[[i]]$dropdownCols)){
-        colSourceConfig <- modelIn[[i]]$dropdownCols[[dropdownCol]]
+      for(colSourceConfig in modelIn[[i]]$dropdownCols){
         k <- match(colSourceConfig$symbol, names(modelIn))
         source <- NULL
         if(length(colSourceConfig$static)){
@@ -473,7 +472,7 @@ lapply(modelInTabularData, function(sheet){
           source <- unique(modelInputData[[k]][[colSourceConfig$colId]])
         }
         if(length(source)){
-          ht <- hot_col(ht, match(dropdownCol, names(modelIn[[i]]$headers)),
+          ht <- hot_col(ht, colSourceConfig$ddColId,
                         type = colSourceConfig$type, source = I(source), strict = TRUE,
                         allowInvalid = FALSE)
         }
