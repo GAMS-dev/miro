@@ -909,6 +909,10 @@
               "type": "string",
               "minLength": 1
             },
+            "badTags": {
+              "type": "string",
+              "minLength": 1
+            },
             "scenExists": {
               "type": "string",
               "minLength": 1
@@ -1014,7 +1018,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 34
+          "minProperties": 35
         },
         "dialogEditMetaHC": {
           "type": "object",
