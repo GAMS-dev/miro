@@ -65,7 +65,8 @@
                             <section id="server-introduction" class="doc-section">
                                 <h2 class="section-title">Introduction</h2>
                                 <div class="section-block">
-                                    <p>In the most basic setup - GAMS MIRO Desktop - both the MIRO application and GAMS itself are installed on the same computer and run exclusively on this machine. But MIRO is not limited to this setup: You can run your MIRO applications locally, but solve the GAMS jobs in the cloud. We call this setup <i>GAMS MIRO Desktop - boosted by GAMS Engine</i>. <i><a href="https://www.gams.com/engine/">GAMS Engine</a></i> is a server software that allows you to run GAMS models on centralised compute resources. It uses state-of-the-art technology to handle the entire job management, scheduling and load balancing of your computationally intensive optimization problems. GAMS Engine is also used for <i>GAMS MIRO Server</i>. This setup allows you to run both the GAMS execution engine as well as the MIRO application itself in the cloud. Your optimization applications can then be accessed from any device with a modern web browser like a PC, smartphone or tablet.</p>
+                                    <p>In the most basic setup - GAMS MIRO Desktop - both the MIRO application and GAMS itself are installed on the same computer and run exclusively on this machine. But MIRO is not limited to this setup: You can run your MIRO applications locally, but solve the GAMS jobs in the cloud. We call this setup <i>GAMS MIRO Desktop - boosted by GAMS Engine</i>. <i><a href="https://www.gams.com/engine/">GAMS Engine</a></i> is a server software that allows you to run GAMS models on centralised compute resources. It uses state-of-the-art technology to handle the entire job management, scheduling and load balancing of your computationally intensive optimization problems.</p>
+<p>GAMS Engine is also used for <i>GAMS MIRO Server</i>. This setup allows you to run both the GAMS execution engine as well as the MIRO application itself in the cloud. Your optimization applications can then be accessed from any device with a modern web browser like a PC, smartphone or tablet.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/remote-execution.png" alt="GAMS MIRO Server" onclick="window.open(this.src, '_blank');"/>
                                     </div>
@@ -83,7 +84,7 @@
                             <section id="miro-desktop-remote" class="doc-section">
                                 <h2 class="section-title">GAMS MIRO Desktop - Boosted by GAMS Engine</h2>
                                 <div class="section-block">
-                                    <p>With <i>GAMS MIRO Desktop - Boosted by GAMS Engine</i>, you can solve GAMS jobs in the cloud with your locally running MIRO applications. This requires a running instance of GAMS Engine (read more about the installation of GAMS Engine <a href="https://www.gams.com/engine/installation.html">here</a>). To switch from executing your optimization jobs on your local machine to solving them in the cloud open your MIRO library and go to <i>Preferences</i> &rarr; <i>General</i>. Activate the checkbox "Execution of models on GAMS Engine". This setting affects all deployed MIRO apps (started via the MIRO library) and all MIRO apps under development (started via GAMS Studio or the command line).</p> 
+                                    <p>With <i>GAMS MIRO Desktop - Boosted by GAMS Engine</i>, you can solve GAMS jobs in the cloud with your locally running MIRO applications. This setup requires GAMS Engine (read more about the installation of GAMS Engine <a href="https://www.gams.com/engine/installation.html">here</a>). To switch from running your optimization jobs on your local machine to solving them in the cloud, open your MIRO library, go to <i>Preferences</i> &rarr; <i>General</i> and check the "Execution of models on GAMS Engine" checkbox. This setting affects all deployed MIRO apps (started via the MIRO library) and all MIRO apps in development (started via GAMS Studio or the command line).</p> 
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/remote/remote_enable.png" alt="Enable remote execution" onclick="window.open(this.src, '_blank');" />
                                     </div>
@@ -91,8 +92,8 @@
                                       <ul>
                                         <li><b>Engine URL</b>: URL where GAMS Engine is hosted, e.g. <kbd>http(s)://mydomain.com/engine/api</kbd>.</li>
                                         <li><b>Username &amp; password</b>: Your GAMS Engine credentials. More about the user management of GAMS Engine can be found <a href="https://www.gams.com/engine/administration.html#user-management">here</a>.</li>
-                                        <li><b>Namespace</b>: The <i>namespace</i> to solve the model in. Engine uses these namespaces to organize GAMS models. For example, each model name can only occur once within a namespace. Your user account needs at least <i>execute</i> permissions on the namespace to use. More about this topic can be found <a href="https://www.gams.com/engine/administration.html#namespaces">here</a>.</li>
-                                        <li><b>Is your model registered in the namespace</b>: When a model is registered in an Engine namespace, the model files are stored on the Engine server. This avoids having to send the same model files to Engine  for each job submit. Only the scenario data is communicated in this case. Read more <a href="https://www.gams.com/engine/administration.html#models">here</a>.</li>
+                                        <li><b>Namespace</b>: The <i>namespace</i> to solve the model in. Engine uses these namespaces to organize GAMS models. Your user account needs at least <i>execute</i> permissions on the namespace to run a registered model, or write and execute permissions to run an unregistered model. Further information can be found <a href="https://www.gams.com/engine/administration.html#namespaces">here</a>.</li>
+                                        <li><b>Is your model registered in the namespace</b>: If a model is registered in an Engine namespace, the model files are stored on Engine. This avoids having to send the same model files to Engine for each job you submit. Only the scenario data is communicated in this case. Read more <a href="https://www.gams.com/engine/administration.html#models">here</a>.</li>
                                         <li><b>Remember me</b>: Your credentials will be saved so that you will not have to log in again the next time you start the application.</li>
                                       </ul>
                                     </p>
@@ -107,7 +108,7 @@
                                 </div>
 								<p>Besides the benefits of making them easily accessible, central hosting of MIRO apps also brings other aspects into focus:
 								<ul>
-								  <li><a href="#solve-async" class="scrollto">Asynchronous Solving</a>: Submit jobs and log back in later to get the results.</li>
+								  <li><a href="#solve-async" class="scrollto">Asynchronous solving</a>: Submit jobs and log back in later to get the results.</li>
 								  <li><a href="#scenario-sharing" class="scrollto">Scenario sharing<a/>: Share scenarios of your MIRO application(s) with other users easily from within the app. </li>
 								  <li><a href="#user-groups" class="scrollto">User- and group management</a>: Map structures of your work environment by dividing MIRO users into groups with different privileges. Decide who can see which apps and/or who has control over adding new ones.</li>
 								  <li>App updates: Update MIRO apps without the risk of interrupting running applications.</li>
@@ -151,7 +152,7 @@
                                     <h3 class="block-title">Scenario Sharing</h3>
 									<div  id="share-rules"  class="section-block">
                                         <h5 class="block-title">Rules for scenario sharing</h5> 
-								    	<p>If several users have access to the same MIRO Server app, they can share scenarios. Shared scenarios can be loaded from the database into the sandbox in the same way as own scenarios.
+								    	<p>If several users have access to the same MIRO Server app, they can share scenarios. Shared scenarios can be loaded from the database into the sandbox in the same way as your own scenarios.
 										    <div class="section-block">
                                                 <img class="img-fluid" style= "max-height:350pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/server/shared-scenarios.png" alt="Shared scenarios" onclick="window.open(this.src, '_blank');" />
                                             </div>
@@ -160,11 +161,11 @@
 									          <li>Scenarios can be shared with individual users and/or with user groups.</li>
 									          <li>Scenarios can only be shared with groups or users of a group in which you are a member yourself. <a href="https://www.gams.com/engine/administration.html#user-management">Inviters</a> can also see users in groups of invitees of which they themselves are not members. Admins can see all users and groups.</li>
 									          <li>The user who shares a scenario with others is the scenario owner. The scenario owner is displayed to other users when they load a shared scenario into their sandbox. </li>
-											  <li>Scenarios can be stored under the same name in the database if the owner is different. For MIRO these are then different scenarios</li>
+											  <li>Scenarios can be stored under the same name in the database if the owner is different.</li>
 									          <li>Access permissions are assigned to a shared scenario. As scenario owner you decide about who has read, write and/or execute permissions. Users with read permissions can load the owner's scenario but are not authorized to edit or execute it. The scenario is marked with a lock symbol (<i class="fas fa-lock"></i>). Write permissions give you the right to change the scenario (data) and save it again. With execute permissions you are authorized to solve the scenario.</li>
-									          <li>It is not possible for a non-owner of a scenario to revoke the owner's permissions.</li>
-											  <li>As soon as you can read a scenario, you may save the scenario as a non-owner under your name and thus make yourself the owner of the new scenario.</li>
-									          <li>For the time a scenario is opened in MIRO, it is locked for other users. This prevents conflicts arising when a scenario is used concurrently. Locked scenarios can be opened in readonly mode by others (and also saved under a new name). If you open such a scenario, a lock symbol (<i class="fas fa-lock"></i>) next to the scenario name indicates the readonly status. If you have write permissions for the scenario, a notification in the lower right corner of the screen informs you about the lock status additionally. 
+									          <li>It is not possible to revoke the owner's access permissions.</li>
+											  <li>Users with read access can duplicate the scenario via the "Save as" button. They become the owner of this new scenario.</li>
+									          <li>For the time a scenario is opened in MIRO, it is locked for other users. This prevents conflicts arising when a scenario is used concurrently. Locked scenarios can be opened in readonly mode by others (and also saved under a new name). A lock symbol (<i class="fas fa-lock"></i>) next to the scenario name indicates the readonly status. Users with write permissions for the scenario are additionally informed about this via a notification in the lower right corner of the screen.
 										          <div class="row">
                                                     <div class="col-sm-12 col-md-12 col-lg-6" style="padding:10pt;">
                                                       <img class="img-fluid center-image-lg" style= "max-height:100pt; display: block;" src="assets/images/readonly_scenario.png" alt="Scenario in readonly mode" />
@@ -183,7 +184,7 @@
 										    <div class="section-block">
                                                 <img class="img-fluid" style= "max-height:135pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/server/edit-metadata.png" alt="Edit metadata" onclick="window.open(this.src, '_blank');" />
                                             </div>
-											In the example below, Rebecca is scenario owner. She gives the single user 'rschuchmann' and the group 'group 1' read permission for her scenario. Since she does not want her scenario data to be changed, she decides not to give write permissions to any other user. Members of 'group1' usually only look at results and do not want to calculate scenarios, so Rebecca only grants execute permissions to 'rschuchmann'. 
+											In the example below, Rebecca is scenario owner. She gives the single user 'rschuchmann' and the group 'group 1' read permission for her scenario. Since she does not want her scenario data to be changed, she decides not to give write permissions to any other user. Members of 'group 1' usually only look at results and do not want to start optimization runs. Therefore, Rebecca only grants execution rights to "rschuchmann". 
 											<div class="section-block">
                                                 <img class="img-fluid" style= "max-height:310pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/server/access-permissions.png" alt="Access permissions" onclick="window.open(this.src, '_blank');" />
                                             </div>
@@ -210,7 +211,7 @@
                                 <div  id="server-install"  class="section-block">
                                     <h5 class="block-title">Install MIRO Server</h5>
                                     <p>To install MIRO Server, first download the ZIP file that contains everything you need to get started <a href="./download.html#miro-server">here</a>.</p>
-									<p>The general installation instructions are given below. However, keep in mind that the installation is highly dependent on your setup. Since GAMS MIRO Server is a server application, the concepts of <i>ports</i>, <i>SSL</i>, <i>certificates</i>, etc. are omnipresent. Setting up such a system is a common task for a server administrator. If you have problems with the installation, please do not hesitate to contact us by mail at <a href="mailto:support@gams.com" target="_blank">support@gams.com</a>.</p>
+									<p>The general installation instructions are given below. However, keep in mind that the installation is highly dependent on your setup. The setup of GAMS MIRO Server should typically be performed by a system administrator. If you have problems with the installation, please do not hesitate to contact us by mail at <a href="mailto:support@gams.com" target="_blank">support@gams.com</a>.</p>
 									<ul class="nav nav-tabs row" style="border:none;" id="installOS" role="tablist">
                                       <li class="nav-item col-sm-12 col-md-12 col-lg-6 no-margin-sm">
                                         <a class="nav-link active" id="linux-tab" data-toggle="tab" href="#linux" role="tab" aria-controls="linux" aria-selected="true"><i class="fab fa-linux" style="font-size: 40pt;"></i><br>Linux</a>
@@ -222,7 +223,7 @@
 									<div class="tab-content" style="padding-top: 30px;" id="myTabContent">
                                       <div class="tab-pane fade show active" id="linux" role="tabpanel" aria-labelledby="win-tab">
                                         <ol>
-                                          <li>Install Docker Desktop from <a href="https://docs.docker.com/engine/install/" target="_blank">https://docs.docker.com/engine/install/</a>. Start docker afterwards. We further recommend to configure Docker to <a href="https://docs.docker.com/engine/install/linux-postinstall/#configure-docker-to-start-on-boot">start on boot</a>. To use the Docker CLI without <i>sudo</i>, you must <a href = "https://docs.docker.com/install/linux/linux-postinstall/#manage-docker-as-a-non-root-user" target = "_blank">add your user to the docker group</a>.</li>
+                                          <li>Install Docker from <a href="https://docs.docker.com/engine/install/" target="_blank">https://docs.docker.com/engine/install/</a>. Start Docker afterwards. We further recommend to configure Docker to <a href="https://docs.docker.com/engine/install/linux-postinstall/#configure-docker-to-start-on-boot">start on boot</a>. To use the Docker CLI without <i>sudo</i>, you must <a href = "https://docs.docker.com/install/linux/linux-postinstall/#manage-docker-as-a-non-root-user" target = "_blank">add your user to the docker group</a>.</li>
                                           <li>Install Docker Compose from <a href="https://docs.docker.com/compose/install/" target="_blank">https://docs.docker.com/compose/install/</a>.</li>
                                           <li id="miro_server">Extract <kbd>miro_server.zip</kbd>. This will create a subfolder <kbd>miro_server</kbd>.</li>
                                           <li>Open a terminal and <kbd>cd</kbd> into that folder.
@@ -434,7 +435,7 @@ server:
                                       </div>
 									  <p>For this purpose, a custom CSS file must be provided when MIRO Server is started. To do this, create a new directory 'CSS' under <i>miro_server/data</i>, where you put the custom CSS (e.g. <kbd>miro_server/data/css/styles.css</kbd>). Now specify this style sheet in the <i>docker-compose.yml</i> file under 'volumes'. This mounts your CSS file in the containervolume of MIRO Server:</p>
 									  
-									  <p><pre><code class="language-diff">     ports:
+									  <p><pre><code class="diff-highlight language-diff">     ports:
        - 8080:8080
      volumes:
 +      - ./data/css/styles.css:/home/miroproxy/templates/2col/assets/css/styles.css
@@ -457,7 +458,7 @@ server:
                                 </div>
                                 <div  id="server-extend"  class="section-block">
                                     <h5 class="block-title">Extending the MIRO Docker image</h5> 
-                                    <p>In case your MIRO applications need additional packages, you have to extend the <a href="https://github.com/GAMS-dev/miro_desktop/blob/master/Dockerfile" target="_blank">Docker UI image</a>. You can do so by adding the additional packages required by your custom renderers to the file <kbd>additional_packages</kbd> located inside the <a href="#miro_server" class = "scrollto">miro_server</a> directory. Each package name must be on a new line. Once all packages are added to this file, run <div class = "console-box"><span class="console-content">&gt; ./miro-server build</span></div> (on Windows <kbd>miro-server.cmd build</kbd>). Please note that additional packages may cause version conflicts with packages used internally by MIRO. We therefore recommend keeping the number of additional packages to a minimum.</p>
+                                    <p>In case your MIRO applications need additional packages, you have to extend the <a href="https://github.com/GAMS-dev/miro/tree/master/server/ui/Dockerfile" target="_blank">MIRO UI Docker image</a>. You can do so by adding the additional packages required by your custom renderers to the file <kbd>additional_packages</kbd> located inside the <a href="#miro_server" class="scrollto">miro_server</a> directory. Each package name must be on a new line. Once all packages are added to this file, run <div class = "console-box"><span class="console-content">&gt; ./miro-server build</span></div> (on Windows <kbd>miro-server.cmd build</kbd>). Please note that additional packages may cause version conflicts with packages used internally by MIRO. We therefore recommend keeping the number of additional packages to a minimum.</p>
                                 </div>
                                 <div  id="server-nginx"  class="section-block">
                                     <h5 class="block-title">Nginx example configuration</h5> 
@@ -499,7 +500,7 @@ server {
 }</code></pre></div>
                                     <p>Note that even though both GAMS Engine and MIRO Server run on the same host, the GAMS Engine host is not <kbd>localhost</kbd>. In case TLS, port/certificate info etc. is used, this needs to be added here as well. If you need help with this, please contact us. Nginx needs to be reloaded if the configuration has been changed: <kbd>sudo nginx -s reload</kbd>.</p>
 									<p>
-									If you want to host MIRO Server on a different path than root, you must adjust the context path in the file <i>data/application.yml</i> accordingly (entry <i>server.servlet.context-path</i>).</p>
+									If you want to host MIRO Server on a path other than root, you must change the context path in the file <i>data/application.yml</i> accordingly (entry <i>server.servlet.context-path</i>).</p>
                                 </div>
                                 <div  id="selinux"  class="section-block">
                                     <h5 class="block-title">Running under SELinux</h5> 
@@ -540,7 +541,7 @@ server {
 									<div  id="admin-access"  class="section-block">
                                         <h5 class="block-title">Access</h5> 
                                         <p>In the Admin panel of MIRO Server you can add new MIRO apps and delete existing ones. Among other things, access to individual apps can also be controlled here via a user group system.</p>
-                                        <p>A user with <a href = "https://www.gams.com/engine/administration.html#namespaces">read, write  and execute permissions</a> on the namespace that MIRO Server uses will be considered as a MIRO Server administrator. As an administrator, the tabs 'Admin Panel' and 'Containers' are additionally displayed next to the 'Home' tab:
+                                        <p>A user with <a href = "https://www.gams.com/engine/administration.html#namespaces">read, write and execute permissions</a> on the namespace that MIRO Server uses will be considered as a MIRO Server administrator. As an administrator, the tabs 'Admin Panel' and 'Containers' are additionally displayed next to the 'Home' tab:
 				    					<div class="section-block">
                                             <img class="img-fluid" style= "max-height:400pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/server/header.png" alt="Administrator header bar" onclick="window.open(this.src, '_blank');"/>
                                         </div>
@@ -554,7 +555,7 @@ server {
                                     </div>
 									<div  id="add-app"  class="section-block">
                                         <h5 class="block-title">Add apps</h5> 
-                                        <p>As with the local MIRO Desktop library, a new MIRO app (<a href="./deployment.html#sbs-create-app">miroapp</a> file) can be added easily via drag & drop or by clicking on the last tile:
+                                        <p>As with the local MIRO Desktop library, a new MIRO app (<a href="./deployment.html#sbs-create-app">miroapp</a> file) can be added easily via drag &amp; drop or by clicking on the last tile:
 										<div class="section-block">
                                             <img class="img-fluid" style= "max-height:400pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/server/add-app.png" alt="Add a MIRO app" onclick="window.open(this.src, '_blank');"/>
                                         </div>
@@ -562,9 +563,9 @@ server {
 										<p>Further settings that can be made before adding the app:
 										  <ul>
 										    <li>Access groups (optional):<br>
-										    By default, any Engine user who has access to MIRO Server can see all added apps. Optional <i>access groups</i> can be assigned to the app. By using access groups you can determine who is allowed to use the app you want to add. A user who is not a member of one (or more) access groups will not see the app in the app overview and cannot reach it via direct link (see an <a href="#user-groups" class="scrollto">example</a>). All GAMS Engine groups of the namespace used by the MIRO Server in which the administrator is a member or has the right to access are available for selection. <a href="https://www.gams.com/engine/administration.html#user-groups">Learn how to create groups and add users in GAMS Engine</a>.</li>
+										    By default, any Engine user who has access to the namespace used by MIRO Server can see all apps. To limit who is allowed to use the app you want to add, you can optionally assign <i>access groups</i>. A user who is not a member of one (or more) of the assigned access groups does not see the app in the app overview and cannot reach it via direct link (see an <a href="#user-groups" class="scrollto">example</a>). All GAMS Engine groups of the namespace used by MIRO Server in which the MIRO administrator is a member or has access rights are available for selection. <a href="https://www.gams.com/engine/administration.html#user-groups">Learn how to create groups and add users in GAMS Engine</a>.</li>
 										    <li id="admin-panel-lang">App environment (JSON, optional):<br>
-											<p>Here you can define a customized environment to be used by the MIRO app in JSON syntax. This can be useful/mandatory, for example, if you want to run custom analysis scripts that require external software not in the PATH or to store credentials to be used by remote data exchange modules. A detailed description including an example can be found in the <a href="./deployment.html#custom-environments">MIRO Desktop documentation</a>. The only difference to the local version is that with MIRO Server you can specify a separate environment for each app, while with MIRO Desktop this applies globally to all apps at once.</p>
+											<p>Here you can define a customized environment to be used by the MIRO app in JSON syntax. This can be useful/mandatory, for example, if you want to run custom analysis scripts that require external software not in the PATH or to store credentials to be used by remote data exchange modules. A detailed description including an example can be found in the <a href="./deployment.html#custom-environments">MIRO Desktop documentation</a>. The only difference to the local version is that with MIRO Server you can specify a separate environment for each app, while with MIRO Desktop this applies globally to all apps.</p>
 											<p>While the <a href="#global-language" class="scrollto">global language setting</a> applies to all apps, the app environment can be used to change the language of an individual app. This allows the use of apps in different languages within one MIRO Server instance. The environment variable <kbd>MIRO_LANG</kbd> specifies the language. Available languages currently are English ('en'), Chinese ('cn') and German ('de'). Example: <kbd>{"MIRO_LANG":"de"}</kbd>.
 									        <div class="section-block">
                                                 <img class="img-fluid" style= "max-height:400pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/server/miro-lang.png" alt="Change the language for one app" onclick="window.open(this.src, '_blank');"/>
@@ -572,7 +573,7 @@ server {
 									        </li>
 										  </ul>
 										  When all settings are done, add the app by clicking on 'Save'. The app is then validated and added to the library.</p>
-										  <p id="scenario-data"><b>Scenario data:</b> All scenarios that are <a href="./deployment.html#bundle-scenarios">bundled with the app</a> are stored in the MIRO Server database. They are assigned to the user who adds the app and are available to all users who are members of a group of which the scenario owner is also a member. If no groups are used, everyone can see the scenario data. 
+										  <p id="scenario-data"><b>Scenario data:</b> All scenarios that are <a href="./deployment.html#bundle-scenarios">bundled with the app</a> are stored in the MIRO Server database. The user who adds the app will become the scenario owner. All users with access to the app have read and execute permissions for these scenarios.
 										</p>
                                     </div>
 									<div  id="edit-remove-app"  class="section-block">
@@ -594,7 +595,7 @@ server {
 										  <li>Only one scenario can be added at a time.</li>
 										  <li>The scenarios must match a MIRO app that is already deployed on MIRO Server.</li>
 										  <li>Scenarios are assigned to the user who adds them.</li>
-										  <li>The scenarios are made available (read and execute permissions) to all users who are members of a group of which the scenario owner is also a member. If no groups are used, everyone can see the scenario data.</li>
+										  <li>The scenarios are made available (read and execute permissions) to all users who have access to the app.</li>
 										</ul></p>
                                     </div>
                                 </div>
