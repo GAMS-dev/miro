@@ -433,7 +433,7 @@ server:
 									  <div class="section-block">
                                           <img class="img-fluid" style= "max-height:400pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/server/custom-login-screen.png" alt="Custom login screen colors" onclick="window.open(this.src, '_blank');"/>
                                       </div>
-									  <p>For this purpose, a custom CSS file must be provided when MIRO Server is started. To do this, create a new directory 'CSS' under <i>miro_server/data</i>, where you put the custom CSS (e.g. <kbd>miro_server/data/css/styles.css</kbd>). Now specify this style sheet in the <i>docker-compose.yml</i> file under 'volumes'. This mounts your CSS file in the containervolume of MIRO Server:</p>
+									  <p>For this purpose, a custom CSS file must be provided when MIRO Server is started. To do this, create a new directory 'CSS' under <i>miro_server/data</i>, where you put the custom CSS (e.g. <kbd>miro_server/data/css/styles.css</kbd>). Now specify this style sheet in the <i>docker-compose.yml</i> file under 'volumes':</p>
 									  
 									  <p><pre><code class="diff-highlight language-diff">     ports:
        - 8080:8080
