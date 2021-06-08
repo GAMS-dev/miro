@@ -1125,6 +1125,9 @@ Worker <- R6Class("Worker", public = list(
       }else{
         private$status <- -404L
       }
+    }else if(identical(statusCode, 410L)){
+      # job canceled while queued.
+      private$status <- -9L
     }else{
       private$status <- -500L
     }
