@@ -609,7 +609,8 @@ Worker <- R6Class("Worker", public = list(
     if(inherits(private$process, "process")){
       return(private$pingLocalLog())
     }
-    if(private$metadata$hiddenLogFile && 
+    if(private$metadata$hiddenLogFile &&
+       !private$streamEntryQueueFinished &&
        !(identical(private$status, "s") || identical(private$status, "q"))){
       private$log <- private$readStreamEntity(private$process, 
                                               private$metadata$miroLogFile)
@@ -745,6 +746,7 @@ Worker <- R6Class("Worker", public = list(
   workDir = NULL,
   hardKill = FALSE,
   updateLog = 0L,
+  streamEntryQueueFinished = FALSE,
   gamsRet = NULL,
   waitCnt = integer(1L),
   wait = integer(1L),
@@ -983,7 +985,12 @@ Worker <- R6Class("Worker", public = list(
                                                             Timestamp = as.character(Sys.time(), usetz = TRUE)),
                                                 timeout(2L)))$entry_value)
     }, error = function(e){
-      flog.warn("Problems fetching stream entry. Return code: '%s'.", conditionMessage(e))
+      statusCode <- conditionMessage(e)
+      if(identical(statusCode, "308")){
+        private$streamEntryQueueFinished <- TRUE
+      }else{
+        flog.warn("Problems fetching stream entry. Return code: '%s'.", statusCode)
+      }
       return("")
     })
   },
@@ -1381,6 +1388,7 @@ Worker <- R6Class("Worker", public = list(
   initRun = function(sid){
     private$sid        <- sid
     private$log        <- character(1L)
+    private$streamEntryQueueFinished <- FALSE
     private$gamsRet    <- NULL
     private$fRemoteRes <- NULL
     private$fRemoteSub <- NULL
