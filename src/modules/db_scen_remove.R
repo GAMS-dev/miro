@@ -98,7 +98,6 @@ closeScenario <- function(clearMeta = TRUE){
   })
   
   # reset model output data
-  renderOutputData()
   if(length(activeScen)){
     if(clearMeta){
       scenData$clearSandbox()
@@ -116,6 +115,7 @@ closeScenario <- function(clearMeta = TRUE){
   if(!LAUNCHHCUBEMODE && length(config$scripts$base)){
     scriptOutput$clearContent()
   }
+  renderOutputData()
   
   markSaved()
   clearLogs(session)
