@@ -33,6 +33,9 @@ isBadScenTags <- function(scenTags = NULL, scenTagsV = NULL){
   if(length(scenTagsV) > 0L && any(nchar(trimws(scenTagsV, "both")) < 1L)){
     return(TRUE)
   }
+  if(any(duplicated(scenTagsV))){
+    return(TRUE)
+  }
   return(FALSE)
 }
 isWindows <- function() .Platform$OS.type == 'windows'
