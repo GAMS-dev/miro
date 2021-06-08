@@ -86,7 +86,7 @@ BatchLoader <- R6Class("BatchLoader",
                            return(invisible(self))
                          },
                          editScenTags = function(scenId, newTags){
-                           newTagsV <- csv2Vector(newTags)
+                           newTagsV <- trimws(csv2Vector(newTags))
                            if(isBadScenTags(newTags, newTagsV)){
                              stop_custom("error_bad_tags", "Invalid scenario tags", call. = FALSE)
                            }
