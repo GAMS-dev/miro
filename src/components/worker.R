@@ -808,7 +808,7 @@ Worker <- R6Class("Worker", public = list(
     curdir       <- gmsFilePath(hcubeDir)
     
     tryCatch({
-      writeChar(paste0("1/ ", dynamicPar$getNoJobs(), "\n"), file.path(hcubeDir, private$jID %+% ".log"), 
+      writeChar(paste0("0/ ", dynamicPar$getNoJobs(), "\n"), file.path(hcubeDir, private$jID %+% ".log"), 
                 eos = NULL)
     }, error = function(e){
       flog.warn("Log file: '%s' could not be written. Check whether you have sufficient permissions to write files to: '%s'.",
