@@ -323,7 +323,8 @@ Worker <- R6Class("Worker", public = list(
         if(jobStatus$status >= JOBSTATUSMAP[['corrupted']] &&
            jobStatus$status < JOBSTATUSMAP[['discarded']]){
           status <- JOBSTATUSMAP[['discarded(corrupted)']]
-        }else if(identical(jobStatus$status, JOBSTATUSMAP[['running']])){
+        }else if(identical(jobStatus$status, JOBSTATUSMAP[['running']]) ||
+                 identical(jobStatus$status, JOBSTATUSMAP[['queued']])){
           self$interrupt(hardKill = TRUE, process = pID)
           status <- JOBSTATUSMAP[['discarded(running)']]
         }else if(identical(jobStatus$status, JOBSTATUSMAP[['completed']])){
