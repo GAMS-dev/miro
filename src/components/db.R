@@ -187,13 +187,15 @@ Db <- R6Class("Db",
                                                              private$userAccessGroups)),
                                 " OR "))
                 },
-                checkSnameExists      = function(sname, uid = NULL){
+                checkSnameExists      = function(sname, uid = NULL, checkNormalScen = FALSE){
                   # test whether scenario with the given name already exists 
                   # for the user specified
                   # 
                   # Args:
                   #   sname:                scenario name
                   #   uid:                  user ID (optional)
+                  #   checkNormalScen:      relevant in HC mode: whether to check HC job config (FALSE)
+                  #                         or all normal scenarios (TRUE)
                   #
                   # Returns: 
                   #   boolean:              TRUE if id exists, FALSE otherwise, 
@@ -215,7 +217,9 @@ Db <- R6Class("Db",
                                                        "_sname",
                                                        "_scode"), 
                                                      c(uid, sname,
-                                                       if(private$hcubeActive) -1L else 0L)),
+                                                       if(private$hcubeActive && !checkNormalScen) -1L else 0L),
+                                                     c("=", "=",
+                                                       if(private$hcubeActive && !checkNormalScen) "=" else ">=")),
                                                    count = TRUE, limit = 1L)
                   if(length(scenExists) && scenExists[[1]] >= 1){
                     flog.trace("Db: Scenario with name: '%s' already exists for user: '%s' " %+%
