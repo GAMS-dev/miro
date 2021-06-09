@@ -223,9 +223,11 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   # reset dirty flag and unsaved status
   markSaved()
 })
+editMetaRemoteAccessPermLoaded <- FALSE
 observeEvent(input$btEditMeta, {
   req(activeScen)
   
+  editMetaRemoteAccessPermLoaded <<- FALSE
   attachmentMetadata <- NULL
   viewsMetadata <- NULL
   if(config$activateModules$attachments){
@@ -240,6 +242,49 @@ observeEvent(input$btEditMeta, {
                      attachAllowExec = attachAllowExec, 
                      ugroups = csv2Vector(db$getUserAccessGroups()),
                      isLocked = length(activeScen) != 0L && length(activeScen$getLockUid()) > 0L)
+})
+
+observeEvent(input$tpEditMeta, {
+  if(!identical(input$tpEditMeta, "accessPerm") ||
+     identical(length(activeScen), 0L) ||
+     length(activeScen$getLockUid()) > 0L){
+    return()
+  }
+  flog.trace("Access permissions tab in metadata dialog selected")
+  removeUI("#contentAccessPerm .form-group", multiple = TRUE)
+  showEl(session, "#contentAccessPermSpinner")
+  on.exit(hideEl(session, "#contentAccessPermSpinner"))
+  editMetaRemoteAccessPermLoaded <<- TRUE
+  if(tryCatch({
+    if(isShinyProxy){
+      accessGroups <- worker$getRemoteAccessGroups()
+      db$setRemoteUsers(accessGroups)
+    }else{
+      accessGroups <- db$getUserAccessGroups()
+    }
+    FALSE
+  }, error = function(e){
+    flog.warn("Problems fetching user access groups. Error message: %s",
+              conditionMessage(e))
+    insertUI("#contentAccessPerm",
+             ui = tags$div(class = "err-msg", 
+                           lang$errMsg$unknownError))
+    return(TRUE)
+  })){
+    return()
+  }
+  metaTmp <- activeScen$getMetadata(noPermFields = FALSE)
+  writePerm <- csv2Vector(metaTmp[["_accessw"]][[1]])
+  readPerm  <- csv2Vector(metaTmp[["_accessr"]][[1]])
+  execPerm <- csv2Vector(metaTmp[["_accessx"]][[1]])
+  insertUI("#contentAccessPerm",
+           ui = tagList(
+             accessPermInput("editMetaReadPerm", lang$nav$excelExport$metadataSheet$readPerm, 
+                             sort(unique(c(readPerm, accessGroups))), selected = readPerm),
+             accessPermInput("editMetaWritePerm", lang$nav$excelExport$metadataSheet$writePerm, 
+                             sort(unique(c(writePerm, accessGroups))), selected = writePerm),
+             accessPermInput("editMetaExecPerm", lang$nav$excelExport$metadataSheet$execPerm, 
+                             sort(unique(c(execPerm, accessGroups))), selected = execPerm)))
 })
 
 observeEvent(input$btUpdateMeta, {
@@ -283,14 +328,13 @@ observeEvent(input$btUpdateMeta, {
   currentWritePerm <- activeScen$getWritePerm()
   currentExecPerm <- activeScen$getExecPerm()
   
-  activeUserGroups <- db$getUserAccessGroups()
-  
-  
   if(activeScen$isReadonlyOrLocked){
     newWritePerm <- character(0L)
     newExecPerm <- character(0L)
     newReadPerm  <- character(0L)
-  }else{
+  }else if(editMetaRemoteAccessPermLoaded){
+    activeUserGroups <- c(db$getUserAccessGroups(), db$getRemoteUsers())
+    
     newWritePerm <- input$editMetaWritePerm
     newExecPerm  <- input$editMetaExecPerm
     newReadPerm  <- input$editMetaReadPerm
@@ -323,6 +367,10 @@ observeEvent(input$btUpdateMeta, {
       flog.debug("Attempt to revoke the scenario owner's access rights.")
       return()
     }
+  }else{
+    newReadPerm <- currentReadPerm
+    newWritePerm <- currentWritePerm
+    newExecPerm <- currentExecPerm
   }
   
   tryCatch({

@@ -289,14 +289,14 @@ local({
     adminConfig = gsub("REQUIRED_API_VERSION[[:space:]]*<-.*",
         paste0("REQUIRED_API_VERSION <- ", APIVersion), adminConfig)
     writeLines(adminConfig, './server/admin/global.R')
-    dockerImageMiro = readLines('./Dockerfile', warn = FALSE)
+    dockerImageMiro = readLines('./server/ui/Dockerfile', warn = FALSE)
     dockerImageMiro = gsub('com\\.gamsmiro\\.version="[^"]+"',
         paste0('com.gamsmiro.version="', MIROVersion, '"'), dockerImageMiro)
-    writeLines(dockerImageMiro, './Dockerfile')
-    dockerImageAdmin = readLines('./Dockerfile-admin', warn = FALSE)
+    writeLines(dockerImageMiro, './server/ui/Dockerfile')
+    dockerImageAdmin = readLines('./server/admin/Dockerfile', warn = FALSE)
     dockerImageAdmin = gsub('com\\.gamsmiroadmin\\.version="[^"]+"',
         paste0('com.gamsmiroadmin.version="', MIROVersion, '"'), dockerImageAdmin)
-    writeLines(dockerImageAdmin, './Dockerfile-admin')
+    writeLines(dockerImageAdmin, './server/admin/Dockerfile')
     aboutDialog = readLines('./renderer/about.js', warn = FALSE)
     aboutDialog = gsub('__HASH__',
         substr(Sys.getenv('GIT_COMMIT', '__HASH__'), 1, 8), aboutDialog, fixed = TRUE)

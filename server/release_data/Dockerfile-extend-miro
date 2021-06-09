@@ -1,4 +1,4 @@
-FROM hub.gams.com/gamsmiro-ui
+FROM gams/miro-ui
 
 USER root
 
@@ -6,7 +6,8 @@ COPY additional_packages .
 
 RUN R -e "packageList=trimws(readLines('additional_packages'));\
 packageList=packageList[packageList!=''];\
-for(packageToInstall in packageList){install.packages(packageToInstall,repos='https://cloud.r-project.org/')}"
+packageList=packageList[!(packageList %in% installed.packages()[,'Package'])];\
+for(packageToInstall in packageList){install.packages(packageToInstall,repos='https://cloud.r-project.org/',dependencies=c('Depends','Imports','LinkingTo'))}"
 
 USER miro
 
