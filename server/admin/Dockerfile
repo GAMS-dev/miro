@@ -1,4 +1,4 @@
-FROM gamsmiro-ui
+FROM miro-ui
 
 LABEL com.gamsmiroadmin.vendor="GAMS Development Corp."\
 com.gamsmiroadmin.version="1.9.99"\
@@ -8,7 +8,7 @@ maintainer="fproske@gams.com"
 
 
 # copy MIRO admin app to the image
-COPY server/admin /home/miro/admin/
+COPY . /home/miro/admin/
 
 WORKDIR /home/miro/admin
 

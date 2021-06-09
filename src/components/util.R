@@ -83,7 +83,7 @@ getModelPath <- function(modelPath = NULL, envVarPath = NULL){
     modelPath <- envName
   }
   gmsFileName  <- basename(modelPath)
-  modelNameRaw <- gsub("\\.[[:alpha:]]{2,3}$", "", gmsFileName)
+  modelNameRaw <- tools::file_path_sans_ext(gmsFileName)
   modelDir     <- dirname(modelPath)
   return(list(modelDir, gmsFileName, tolower(modelNameRaw), modelNameRaw))
 }
@@ -1677,7 +1677,7 @@ accessPermInput <- function(inputId, label, choices, selected = NULL){
                                 labelField = "value",
                                 searchField = "value",
                                 options = lapply(choices, function(option){
-                                  list(isGroup = startsWith(option, "_"),
+                                  list(isGroup = startsWith(option, "#"),
                                        value = option)
                                 }),
                                 sortField = I("function(i1,i2) {return i1.value-i2.value;}"),

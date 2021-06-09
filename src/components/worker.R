@@ -69,10 +69,19 @@ Worker <- R6Class("Worker", public = list(
     
     private$metadata$namespace <- namespace
     
-    ret <- GET(url = paste0(private$metadata$url, "/namespaces/", namespace, "/permissions/me"), 
-                add_headers(Authorization = private$authHeader,
-                            Timestamp = as.character(Sys.time(), usetz = TRUE)), 
-                timeout(10L))
+    if(!length(private$apiInfo) || is.na(private$apiInfo$apiVersionInt) ||
+       private$apiInfo$apiVersionInt > 210603L){
+      ret <- GET(url = paste0(private$metadata$url, "/namespaces/", namespace, "/permissions?username=",
+                              URLencode(username)), 
+                 add_headers(Authorization = private$authHeader,
+                             Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+                 timeout(10L))
+    }else{
+      ret <- GET(url = paste0(private$metadata$url, "/namespaces/", namespace, "/permissions/me"), 
+                 add_headers(Authorization = private$authHeader,
+                             Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+                 timeout(10L))
+    }
     if(identical(status_code(ret), 404L))
       stop(444L, call. = FALSE)
     if(identical(status_code(ret), 401L))
@@ -606,6 +615,22 @@ Worker <- R6Class("Worker", public = list(
                                         maxSize = private$metadata$maxSizeToRead,
                                         chunkNo = chunkNo, getSize = getSize))
   },
+  getRemoteAccessGroups = function(){
+    stopifnot(private$remote)
+    ret <- GET(url = paste0(private$metadata$url, 
+                            "/namespaces/", 
+                            private$metadata$namespace, "/user-groups"), 
+               add_headers(Authorization = private$authHeader,
+                           Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+               timeout(5L))
+    groupsTmp <- unlist(lapply(content(ret), function(accessGroup){
+      return(c(paste0("#", accessGroup$label),
+               vapply(accessGroup$members, "[[", character(1L), "username", USE.NAMES = FALSE)))
+    }), use.names = FALSE)
+    groupsTmp <- groupsTmp[!tolower(groupsTmp) %in% c("#admins", "#users")]
+    groupsTmp <- groupsTmp[!duplicated(groupsTmp)]
+    return(c("#users", if("#admins" %in% tolower(private$db$getUserAccessGroups())) "#admins", groupsTmp))
+  },
   pingLog = function(){
     if(inherits(private$process, "process")){
       return(private$pingLocalLog())
@@ -739,6 +764,7 @@ Worker <- R6Class("Worker", public = list(
   dbColNames = character(1L),
   sid = NULL,
   metadata = NULL,
+  apiInfo = NULL,
   inputData = NULL,
   log = character(1L),
   authHeader = character(1L),
@@ -818,7 +844,7 @@ Worker <- R6Class("Worker", public = list(
       
       dataFilesToFetch <- metadata$modelDataFiles
       
-      requestBody <- list(model = metadata$modelName,
+      requestBody <- list(model = metadata$modelId,
                           run = metadata$modelGmsName,
                           arguments = paste0("pf=", metadata$modelName, ".pf"), 
                           namespace = metadata$namespace)
@@ -839,8 +865,10 @@ Worker <- R6Class("Worker", public = list(
                                                   type = 'application/json')
       }else{
         gamsArgs <- c(gamsArgs, paste0('IDCGDXInput="', metadata$MIROGdxInName, '"'))
-        textEntities <- URLencode(paste0("?text_entries=", paste(metadata$text_entities, 
-                                                                  collapse = "&text_entries=")))
+        if(length(metadata$text_entities)){
+          textEntities <- URLencode(paste0("?text_entries=", paste(metadata$text_entities, 
+                                                                   collapse = "&text_entries=")))
+        }
         if(metadata$hiddenLogFile){
           requestBody$stream_entries <- metadata$miroLogFile
         }
@@ -1486,6 +1514,10 @@ Worker <- R6Class("Worker", public = list(
           }
         }
       }
+      private$apiInfo <- content(ret, type = "application/json", 
+                                 encoding = "utf-8")
+      private$apiInfo$apiVersionInt <- suppressWarnings(
+        as.integer(gsub(".", "", private$apiInfo$version, fixed = TRUE)))[1]
       ret <- ret$url
       FALSE
     }, error = function(e){
