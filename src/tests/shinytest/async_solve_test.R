@@ -224,10 +224,11 @@ Sys.sleep(5)
 app$findElement(".btSolve .dropdown-toggle")$click()
 app$findElement(".sidebar-menu a[onclick*='Submit job']")$click()
 Sys.sleep(1)
+token1 <- getLatestJobToken()
 app$setInputs(jobSubmissionName = "test4")
 app$findElement("#btSubmitAsyncJob")$click()
 Sys.sleep(5)
-token <- getLatestJobToken()
+token2 <- getLatestJobToken()
 
 #joblist section
 context("UI tests - asynchronous solve - joblist section")
@@ -251,14 +252,14 @@ expect_true(app$waitFor("$('#jImport_output td')[2].textContent==='test3'", time
 app$stop()
 timeout <- 600L
 repeat{
-  if(getJobStatus(token) %in% c(10L, -3L)){
+  if(getJobStatus(token1) %in% c(10L, -3L) && getJobStatus(token2) %in% c(10L, -3L)){
     break
   }
   if(timeout < 550L){
     print("Engine busy.. Waiting..")
   }
-  Sys.sleep(2L)
-  timeout <- timeout - 2L
+  Sys.sleep(4L)
+  timeout <- timeout - 4L
   if(timeout <= 0L){
     stop("Engine seems to be busy. Try again later..")
   }
