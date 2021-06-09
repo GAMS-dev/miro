@@ -73,7 +73,7 @@
         "r/**"
       ],
       "target": "nsis",
-      "signingHashAlgorithms": "sha256",
+      "timeStampServer": "http://timestamp.apple.com/ts01",
       "rfc3161TimeStampServer": "http://timestamp.apple.com/ts01",
       "icon": "./build/icon.ico"
     },
