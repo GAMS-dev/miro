@@ -574,7 +574,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       noOutputData <<- TRUE
     }else{
       # render output data
-      noOutputData <<- !scenData$getSandboxHasOutputData()
+      noOutputData <<- !scenData$getSandboxHasOutputData(scriptOutput)
       # rendering tables and graphs
       renderOutputData()
       
