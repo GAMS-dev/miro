@@ -718,7 +718,7 @@ Db <- R6Class("Db",
                                                   source("./components/db_migrator.R")
                                           }
                                           dbMigrator <- DbMigrator$new(self)
-                                          dbMigrator$createMissingScalarTables()
+                                          dbMigrator$createMissingScalarTables(tableName)
                                   }, error = function(e){
                                           stop(sprintf("Table: '%s' could not be created (Db.exportScenDataset). Error message: %s.",
                                                        tableNameDb, conditionMessage(e)), call. = FALSE)

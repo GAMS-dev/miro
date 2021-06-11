@@ -37,7 +37,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     })
     return(badTables[!is.na(badTables)])
   },
-  createMissingScalarTables = function(){
+  createMissingScalarTables = function(missingViewNames = character()){
     scalarViews <- dbSchema$getDbViews()
     for(scalarViewName in names(scalarViews)){
       newScalarTables <- scalarViews[[scalarViewName]] %in% private$newTables
@@ -54,6 +54,8 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
           private$existingTables <- c(private$existingTables, newScalarTable)
         }
         private$dropScalarTableViews(scalarViewName)
+        private$updateScalarTableViews(scalarViewName, scalarViews[[scalarViewName]])
+      }else if(scalarViewName %in% missingViewNames){
         private$updateScalarTableViews(scalarViewName, scalarViews[[scalarViewName]])
       }
     }
