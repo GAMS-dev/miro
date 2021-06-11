@@ -536,7 +536,7 @@ if(buildUI){
   }else{
     outputTabset <- tagList(
       fluidRow(
-        box(title=lang$nav$gams$boxModelStatus$title, status="warning", solidHeader = TRUE, width=12,
+        box(title=lang$nav$gams$boxModelStatus$title, status="primary", solidHeader = TRUE, width=12,
             uiOutput("modelStatus"))
       ),
       if(any(config$activateModules$logFile, config$activateModules$lstFile, 
@@ -573,7 +573,7 @@ if(buildUI){
         logTabsetList <- unname(logTabsetList)
         logTabsetList$id <- "logFileTabsset"
         fluidRow(
-          box(title=lang$nav$gams$boxGamsOutput$title, status="warning", solidHeader = TRUE, 
+          box(title=lang$nav$gams$boxGamsOutput$title, status="primary", solidHeader = TRUE, 
               width=12, collapsible = TRUE,
               do.call(tabsetPanel, logTabsetList)
           )
@@ -656,7 +656,7 @@ if(buildUI){
                                                                  actionButton(inputId = "refreshActiveJobs", 
                                                                               class = "bt-icon", 
                                                                               icon = icon("refresh"), label = NULL))),
-                                        status="warning", solidHeader = TRUE, width = 12,
+                                        status="primary", solidHeader = TRUE, width = 12,
                                         genSpinner("jImport_load", absolute = FALSE),
                                         getJobsTableSkeleton(id = "jImport_output"),
                                         tags$div(class = "col-sm-6",
