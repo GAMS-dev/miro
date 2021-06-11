@@ -263,10 +263,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     # TODO: Do this only if scalar tables have changed
     private$existingTables <- self$getDbTableNamesModel()
     private$newTables <- private$dbTableNames[!private$dbTableNames %in% private$existingTables]
-    self$createMissingScalarTables()
-    for(scalarViewName in names(scalarViews)){
-      private$updateScalarTableViews(scalarViewName, scalarViews[[scalarViewName]])
-    }
+    self$createMissingScalarTables(names(dbSchema$getDbViews()))
     return(invisible(self))
   }
 ), private = list(
