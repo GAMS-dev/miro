@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "1.9.99"
+MIROVersion <- "2.0.0"
 APIVersion  <- "1"
-MIRORDate   <- "May 23 2021"
+MIRORDate   <- "Jun 15 2021"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
