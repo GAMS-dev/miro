@@ -146,7 +146,6 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
         # Hypercube scenarios are not part of dbSidList, so we need to append them
         scenMetaDbSubset <- bind_rows(scenMetaDbSubset,
                                       uiSidList[uiSidList[["_scode"]] != SCODEMAP["scen"], ])
-        print(scenMetaDbSubset)
       }
       if(identical(currentCompMode, "split")){
         uiSidList <- formatScenList(uiSidList,
@@ -329,7 +328,6 @@ observeEvent(input$btOverwriteScen, {
 observeEvent(input$btBatchLoadSbOverwrite, {
   flog.debug("Batch load: overwriting current content in sandbox confirmed.")
   overwriteInput <<- TRUE
-  print(sidsToLoad)
   switchTab(session, "input")
   rv$btOverwriteScen <<- rv$btOverwriteScen + 1L
 })
