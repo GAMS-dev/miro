@@ -1388,7 +1388,7 @@ generateLine <- function(i, j, type, label){
                     
            ),
            tags$div(class = "item-delete",
-                    actionButton(paste0("btRemoveLine", i, "_", j), label = "-")
+                    actionButton(paste0("btRemoveLine", i, "_", j), label = "-", class = "btn-custom")
            )
   )
 }
@@ -1415,7 +1415,7 @@ addQueryBuilderBlock <- function(id, choices){
                       ),
                       if(id > 1L){
                         tags$div(class = "item-delete",
-                                 actionButton(paste0("btRemoveBlock", id), label = "-"))
+                                 actionButton(paste0("btRemoveBlock", id), label = "-", class = "btn-custom"))
                       }
              )
     ))

@@ -399,7 +399,8 @@ if(buildUI){
                            tags$div(id = "selectorsWrapper"
                            ),
                            tags$div(id = "buttonsWrapper", class = "item-or-query",
-                                    actionButton("btNewBlock", label = lang$nav$queryBuilder$orButton)),
+                                    actionButton("btNewBlock", label = lang$nav$queryBuilder$orButton,
+                                                 class = "btn-custom")),
                            tags$div(class = "item-or-query",
                                     actionButton("btSendQuery", label = lang$nav$queryBuilder$queryButton, 
                                                  class = "bt-highlight-1")
