@@ -527,7 +527,7 @@ observeEvent(input$btBatchRemove, {
                           conditionMessage(e))
                errMsg <<- TRUE
              })
-    if(!is.null(errMsg) || affectedRows < sidsToLoad){
+    if(!is.null(errMsg) || affectedRows < length(sidsToLoad)){
       showHideEl(session, "#batchRemoveError", 4000L)
       return(NULL)
     }
