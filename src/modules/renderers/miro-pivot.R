@@ -85,7 +85,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                                 })))
              )
            },
-           fluidRow(style = "margin:0", 
+           fluidRow(style = "margin:0;padding-top: 5pt;", 
                     column(width = 2L, style = "padding: 1em;",
                            tags$ul(id = ns("filterIndexList"), 
                                    class="drop-index-list filter-index-list",
@@ -94,11 +94,13 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                            if(!isFALSE(options$enablePersistentViews)){
                              tagList(
                                actionButton(ns("saveView"), label = NULL, icon = icon("plus-square"), 
-                                            title = lang$renderers$miroPivot$btNewView),
+                                            title = lang$renderers$miroPivot$btNewView,
+                                            class="btn-custom"),
                                downloadButton(ns("downloadCsv"), label = NULL,
-                                              title = lang$renderers$miroPivot$btDownloadCsv),
+                                              title = lang$renderers$miroPivot$btDownloadCsv,
+                                              class="btn-custom"),
                                tags$a(id = ns("downloadPng"),
-                                      class = "btn btn-default bt-export-canvas",
+                                      class = "btn btn-default bt-export-canvas btn-custom",
                                       download = "chart.png",
                                       href = "#",
                                       `data-canvasid` = ns("pivotChart"),
@@ -121,9 +123,9 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                              downloadButton(ns("downloadCsv"), label = lang$renderers$miroPivot$btDownloadCsv)
                            }
                     ),
-                    column(width = 4L, style = "padding: 1em;", 
+                    column(width = 4L,
                            tags$div(id = ns("filterDropdowns"), class = "miro-pivot-filter")),
-                    column(width = 4L, style = "padding: 1em;", 
+                    column(width = 4L,
                            tags$div(id = ns("aggregateDropdowns"), class = "miro-pivot-filter")),
                     column(width = 2L, style = "padding: 1em;",
                            tags$ul(id = ns("aggregationIndexList"), class="drop-index-list aggregation-index-list",
@@ -148,17 +150,17 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                     column(width = 6L, style = "padding: 1em;",
                            tags$ul(id = ns("colIndexList"), class="drop-index-list vertical-index-list",
                                    genIndexList(indices$cols))),
-                    column(width = 4L, style = "padding: 1em;", 
+                    column(width = 4L, 
                            tags$div(id = ns("colDropdowns"), class = "miro-pivot-filter"))),
-           fluidRow(style = "margin:0", column(width = 2L, style = "padding: 1em;", 
+           fluidRow(style = "margin:0", column(width = 2L, style = "padding: 1em;padding-top: 31px;", 
                                                tags$ul(id = ns("rowIndexList"), class="drop-index-list",
                                                        genIndexList(indices$rows))),
                     column(width = 10L,
                            style = "min-height: 400px;",
                            if(isTRUE(options[["_input_"]])){
-                             tags$div(style = "margin-bottom:2px;",
+                             tags$div(style = "position: absolute; top: -10px;z-index: 1;",
                                       actionButton(ns("btAddRow"), lang$renderers$miroPivot$btAddRow),
-                                      actionButton(ns("btRemoveRows"), lang$renderers$miroPivot$btRemoveRows, class = "bt-remove"),
+                                      actionButton(ns("btRemoveRows"), lang$renderers$miroPivot$btRemoveRows, class = "bt-highlight-1"),
                                       actionButton(ns("enableEdit"), lang$renderers$miroPivot$btEnableEdit,
                                                    style = "display:none")
                              )

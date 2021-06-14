@@ -16,6 +16,15 @@ body{
   background-color: rgba(0,0,0,0);
   transition: all 500ms ease; 
 }
+.btn-custom{
+  border-width: 1px;
+  .responsiveDark({
+    box-shadow: rgba(0,0,0,0.08) 0px 1px 4px;
+ },
+ {
+  box-shadow: rgba(0,0,0,0.35) 0px 1px 4px;
+ });
+}
 .readme-wrapper {
   max-height:65vh;
   overflow:auto;
@@ -1422,22 +1431,25 @@ animation: none !important;
 .drop-index-list::after {
     margin: 5px;
     position:absolute;
-    right: 0;
-    bottom: 0;
+    left: 0;
+    top: -25px;
     font-size: 10pt;
+    font-weight: 600;
 }
 .drop-index-list {
   position: relative;
   width: 100%;
-  .responsiveDark({
-     border: 1px dashed black;
-  },
-  {
-     border: 1px dashed white;
-  });
   min-height:50px;
   padding: 5px;
   list-style-type: none;
+  .responsiveDark({
+    box-shadow: rgba(0,0,0,.15) 0px 2px 4px 0px inset;
+    background-color: #f1f1f129;
+  },
+  {
+    box-shadow: rgba(0,0,0,.15) 0px 2px 4px 0px inset;
+    background-color: fade(@highlight-bg-dark, 16%);
+  });
 }
 .pivot-hdr-col {
   .responsiveDark({
@@ -1453,10 +1465,10 @@ animation: none !important;
   line-height: 30px;
   text-align: center;
   .responsiveDark({
-     border: 1px solid black;
+     border: 1px solid #e0e0e0;
   },
   {
-     border: 1px solid white;
+     border: 1px solid #5a5b5f;
   });
   border-radius: 20px;
   padding: 5px;
@@ -1469,6 +1481,13 @@ animation: none !important;
    -moz-user-select: none; /* Old versions of Firefox */
     -ms-user-select: none; /* Internet Explorer/Edge */
       user-select: none;
+      .responsiveDark({
+        background-color: @modal-bg;
+     },
+     {
+      background-color: @modal-bg-dark;
+     });
+     box-shadow: rgba(0,0,0,.15) 0px 1px 4px;
 }
 .drop-index-item-selected {
   color: #000;
