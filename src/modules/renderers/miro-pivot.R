@@ -82,7 +82,8 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                                   domainId <- match(domain, unassignedSetIndices)
                                   return(tabPanel(title = names(unassignedSetIndices)[domainId], 
                                                   value = domain))
-                                })))
+                                }))),
+                      tags$div(class = "small-space")
              )
            },
            fluidRow(style = "margin:0;padding-top: 5pt;", 
