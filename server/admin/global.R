@@ -1,5 +1,6 @@
 library(futile.logger)
 library(R6)
+library(DBI)
 library(jsonlite)
 library(yaml)
 library(httr)
@@ -12,7 +13,7 @@ LOGIN_REQUIRED    <- Sys.getenv("SHINYPROXY_NOAUTH") == "true"
 
 REQUIRED_API_VERSION <- 1
 MAX_LOGO_SIZE     <- 1e6
-MIRO_VERSION      <- "1.2.99"
+MIRO_VERSION      <- "1.3.99"
 MIRO_CONTAINER_DATA_DIR <- "/home/miro/app/data"
 MIRO_MODEL_DIR    <- "models/"
 MIRO_DATA_DIR     <- "data/"
@@ -23,3 +24,7 @@ DEFAULT_LOGO_B64  <- character(0L)
 
 flog.appender("appender.console")
 flog.threshold("TRACE")
+
+lang <- fromJSON(file.path(MIRO_APP_PATH, "conf", "en.json"),
+                 simplifyDataFrame = FALSE, 
+                 simplifyMatrix = FALSE)

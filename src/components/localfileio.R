@@ -52,7 +52,7 @@ LocalFileIO <- R6::R6Class("LocalFileIO", public = list(
     getSpecialScalars = function(specialScalars){
       return(unlist(lapply(specialScalars, function(specialScalar){
         if(identical(ioConfig$modelIn[[specialScalar]]$type, "daterange")){
-          return(paste0(specialScalar, c("$lo", "$up")))
+          return(paste0(specialScalar, c("_lo", "_up")))
         }
         if(!identical(ioConfig$modelIn[[specialScalar]]$type, "slider") ||
            !length(ioConfig$modelIn[[specialScalar]]$slider$default) > 1){
@@ -65,9 +65,9 @@ LocalFileIO <- R6::R6Class("LocalFileIO", public = list(
           return(paste0(specialScalar, c("$lo", "$up", "$step")))
         }
         if(isTRUE(ioConfig$modelIn[[specialScalar]]$slider$double)){
-          return(paste0(specialScalar, c("$lo", "$up", "$step", "$mode")))
+          return(paste0(specialScalar, c("_lo", "_up", "$step", "$mode")))
         }
-        return(paste0(specialScalar, c("$lo", "$up")))
+        return(paste0(specialScalar, c("_lo", "_up")))
       }), use.names = FALSE))
     }
   )

@@ -1,5 +1,11 @@
-showEl <- function(session, id){
-  session$sendCustomMessage("gms-showEl", id)
+showEl <- function(session, id, inline = FALSE){
+  session$sendCustomMessage("gms-showEl", list(id = id, inline = inline))
+}
+showLoadingScreen <- function(session, delay){
+  session$sendCustomMessage("gms-showLoadingScreen", delay)
+}
+hideLoadingScreen <- function(session){
+  session$sendCustomMessage("gms-hideLoadingScreen", list())
 }
 showElReplaceTxt <- function(session, id, txt){
   session$sendCustomMessage("gms-showElReplaceTxt", list(id = id, txt = htmltools::htmlEscape(txt)))
@@ -95,9 +101,6 @@ updateAttachList <- function(session, id, fileName, token, labelCb, allowExec = 
 }
 fitTitleInBox <- function(session, id){
   session$sendCustomMessage("gms-fitTitleInBox", id)
-}
-isBadScenName <- function(scenName){
-  return(grepl("^\\s*$", scenName)[[1L]] || nchar(scenName) > 63)
 }
 switchTab <- function(session, id){
   session$sendCustomMessage("gms-switchTab", id)

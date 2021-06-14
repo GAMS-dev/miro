@@ -219,7 +219,8 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
                  path = customRendererDir, rendererEnv = rendererEnv, views = views,
                  attachments = attachments, outputScalarsFull = configData)
     }, error = function(e){
-      stop(sprintf("An error occured in the custom renderer function: '%s'. Error message: %s.", typeCustom, e), call. = FALSE)
+      stop(sprintf("An error occured in the custom renderer function: '%s'. Error message: %s.", typeCustom,
+                   conditionMessage(e)), call. = FALSE)
     })
   }
   

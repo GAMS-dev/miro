@@ -57,7 +57,7 @@ header_admin <- dashboardHeader(
                                       htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\');">',
                                       lang$nav$header$help$about, '</a>')
                   )))),
-  title=paste0(lang$adminMode$uiR$adminPanel," (", modelName, ")"), disable = FALSE)
+  title=paste0(lang$adminMode$uiR$configMode," (", modelName, ")"), disable = FALSE)
 
 sidebar_admin <- dashboardSidebar(
   sidebarMenu(id="sidebarMenuId",
@@ -77,12 +77,14 @@ body_admin <- dashboardBody({
   }
   tagList(
     tags$head(
+      tags$meta(name = "color-scheme",
+                content = if(identical(config$theme, "browser")) "dark light" else "normal"),
       tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
       tags$link(type = "text/css", rel = "stylesheet", href = "bootstrap-colorpicker.min.css"),
-      tags$script(src = "showdown.min.js", type = "application/javascript"),
-      tags$script(src = "mathjax-extension.js", type = "application/javascript"),
-      tags$script(src = "bootstrap-colorpicker.min.js", type = "application/javascript"),
-      tags$script(src = "miro_admin.js", type = "application/javascript"),
+      tags$script(`defer src` = "showdown.min.js", type = "application/javascript"),
+      tags$script(`defer src` = "mathjax-extension.js", type = "application/javascript"),
+      tags$script(`defer src` = "bootstrap-colorpicker.min.js", type = "application/javascript"),
+      tags$script(`defer src` = "miro_admin.js", type = "application/javascript"),
       tags$link(type = "text/css", rel="stylesheet", href="katex.min.css"),
       tags$script(type = "application/javascript", `defer src`="katex.min.js"),
       tags$script(type = "application/javascript", `defer src`="auto-render.min.js"),
@@ -95,6 +97,14 @@ body_admin <- dashboardBody({
 }
 .main-header .logo {
                              background-image: url("gams_logo.png");
+}
+.shiny-output-error, .shiny-output-error:before{
+visibility:visible;
+}
+.custom-renderer-boilerplate {
+white-space:pre-wrap;
+font-family: Menlo,Monaco,Consolas,Courier New,monospace;
+font-size: 12px;
 }')))),
     HTML('<!-- Creates modal dialog for confirm messages -->
        <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -116,45 +126,31 @@ body_admin <- dashboardBody({
       tabItem(tabName = "db_management",
               fluidRow(
                 box(title = lang$adminMode$database$title, status="primary", solidHeader = TRUE, width = 12,
-                    tags$div(id = "removeSuccess", class = "gmsalert gmsalert-success center-alert",
-                             lang$adminMode$database$removeSuccess),
-                    tags$div(id = "restoreSuccess", class = "gmsalert gmsalert-success center-alert",
-                             lang$adminMode$database$restoreSuccess),
-                    tags$div(id = "restoreNoData", class = "gmsalert gmsalert-error center-alert",
-                             lang$adminMode$database$restoreNoData),
-                    tags$div(id = "restoreInvalidData", class = "gmsalert gmsalert-error center-alert",
-                             lang$adminMode$database$restoreInvalidData),
-                    tags$div(id = "maxRowError", class = "gmsalert gmsalert-error center-alert",
-                             lang$adminMode$database$maxRowError),
+                    tags$div(id = "removeSuccess", class = "gmsalert gmsalert-success center-alert"),
                     tags$div(id = "unknownError", class = "gmsalert gmsalert-error center-alert",
                              lang$errMsg$unknownError),
                     tags$div(class = "space"),
-                    tags$label("for" = "db_backup_wrapper", lang$adminMode$database$backup),
-                    tags$div(id = "db_backup_wrapper", lang$adminMode$database$backupWrapper),
-                    downloadButton("dbSaveAll", label = lang$adminMode$database$dbSaveAll),
-                    tags$div(class = "space"),
+                    if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
+                      tags$h4(HTML(sprintf(lang$adminMode$database$infoPostgres,
+                                           paste0("<code>", db$getInfo()$name, "</code>"),
+                                           paste0("<code>", db$getInfo()$loc, "</code>"))))
+                    }else{
+                      tagList(
+                        tags$h4(HTML(sprintf(lang$adminMode$database$infoSQLite,
+                                             paste0("<code>", db$getInfo()$loc, "</code>")))),
+                        tags$hr(),
+                        tags$div(class = "space"),
+                        tags$label("for" = "db_backup_wrapper", lang$adminMode$database$backup),
+                        tags$div(id = "db_backup_wrapper", lang$adminMode$database$backupWrapper),
+                        downloadButton("btDownloadBackup", label = lang$adminMode$database$btDownloadBackup),
+                        tags$div(class = "space")
+                      )
+                    },
                     tags$hr(),
                     tags$div(class = "space"),
-                    tags$label("for" = "db_restore_wrapper", lang$adminMode$database$restore),
-                    tags$div(id = "db_restore_wrapper", lang$adminMode$database$restoreWrapper,
-                             tags$div(style = "max-width:400px;",
-                                      fileInput("dbBackupZip", label = NULL, 
-                                                accept = c(".zip", "application/zip", 
-                                                           "application/octet-stream", 
-                                                           "application/x-zip-compressed", 
-                                                           "multipart/x-zip"))),
-                             actionButton("restoreDb", lang$adminMode$database$restoreDb)
-                    ),
-                    tags$div(class = "space"),
-                    tags$hr(),
-                    tags$div(class = "space"),
-                    tags$label("for" = "db_remove_orphans_wrapper", lang$adminMode$database$remove),
-                    tags$div(id = "db_remove_orphans_wrapper", lang$adminMode$database$removeOrphansWrapper,
-                             tags$div(actionButton("removeDbOrphans", lang$adminMode$database$removeOrphansDialogBtn))
-                    ),
-                    tags$div(class = "space"),
+                    tags$label("for" = "db_remove_wrapper", lang$adminMode$database$remove),
                     tags$div(id = "db_remove_wrapper", lang$adminMode$database$removeWrapper,
-                             tags$div(actionButton("removeDbTables", lang$adminMode$database$removeDialogBtn))
+                             tags$div(removeDbTablesButton("removeAllButton"))
                     )
                 )
               )
@@ -166,11 +162,25 @@ body_admin <- dashboardBody({
                     tags$div(id = "graphValidationErr", class = "gmsalert gmsalert-error center-alert"),
                     tags$div(id = "unknownErrorGraphs", class = "gmsalert gmsalert-error center-alert",
                              lang$adminMode$graphs$ui$gamsSymbols),
+                    fluidRow(
+                      tags$div(class = "col-sm-6",
+                               tags$h4(id = "previewDataInputToggle", class = "box-title", 
+                                       icon("minus"), style = "cursor:pointer;font-weight:bold;", 
+                                       onclick = "Miro.slideToggleEl({id: '#previewDataInputWrapper', 
+                                              toggleIconDiv: '#previewDataInputToggle'})")
+                      ),
+                      tags$div(class = "col-sm-6",
+                               tags$div(class="btn-group btn-group-right", role="group",
+                                        tags$div(title = lang$adminMode$graphs$ui$toggleLeft,
+                                                 actionButton("toggleFullscreenLeft", HTML("<i class='fas fa-chevron-left'></i> <i class='fas fa-expand'></i>"), 
+                                                     class = "toggle-fullscreen-btn toggle-config-view-left")),
+                                        tags$div(title = lang$adminMode$graphs$ui$toggleRight,
+                                                 actionButton("toggleFullscreenRight", HTML("<i class='fas fa-expand'></i> <i class='fas fa-chevron-right'></i>"), 
+                                                     class = "toggle-fullscreen-btn toggle-config-view-right"))
+                               )
+                      )
+                    ),
                     tags$div(class = "col-sm-6", id = "config-left-graph",
-                                      tags$h4(id = "previewDataInputToggle", class = "box-title", 
-                                              icon("minus"), style = "cursor:pointer;font-weight:bold;", 
-                                              onclick = "Miro.slideToggleEl({id: '#previewDataInputWrapper', 
-                                              toggleIconDiv: '#previewDataInputToggle'})"),
                                       tags$div(id = "previewDataInputWrapper", 
                                                tabsetPanel(
                                                  tabPanel(lang$nav$dialogImport$tabDatabase,
@@ -327,6 +337,8 @@ body_admin <- dashboardBody({
                                                                 #custom 
                                                                 tags$li(id = "categoryCustom1", class = "category-btn category-btn-custom", `data-cat`="48",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$main)),
+                                                                tags$li(id = "categoryCustom2", class = "category-btn category-btn-custom", `data-cat`="48a",
+                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$advanced)),
                                                                 #valuebox 
                                                                 tags$li(id = "categoryValuebox1", class = "category-btn category-btn-valuebox", `data-cat`="49",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$main))
@@ -344,10 +356,7 @@ body_admin <- dashboardBody({
                              )
                     ),
                     tags$div(class = "col-sm-6 preview-outer-wrapper", id = "config-right-graph",
-                             tags$div(style = "margin-bottom:50px;text-align:right;",
-                                      actionButton("toggleFullscreenGraph", lang$adminMode$graphs$ui$toggleFullscreen, icon("expand"), 
-                                                   class = "toggle-fullscreen-btn toggle-config-view-graph")
-                             ),
+                             
                              tags$div(id = "preview-error", class = "err-msg"),
                              tags$div(id = "preview-content-plotly", style="overflow: auto;",
                                       renderDataUI("preview_output_plotly", type = "graph", 
@@ -385,19 +394,10 @@ body_admin <- dashboardBody({
                                                                         col = "a"), 
                                                    height = 400)),
                              tags$div(id = "preview-content-custom", style = "display:none; overflow:auto;text-align:left;",
-                                      tags$h4(paste0(modelName,"_custom.R ", lang$adminMode$uiR$custom$skeleton)),
-                                      verbatimTextOutput("preview_output_custom"),
-                                      tags$h4(lang$adminMode$uiR$custom$steps),
-                                      tags$ol(
-                                        tags$li(sprintf(lang$adminMode$uiR$custom$li1, modelName, modelName)), 
-                                        tags$li(sprintf(lang$adminMode$uiR$custom$li2, modelName)), 
-                                        tags$li(lang$adminMode$uiR$custom$li3a, 
-                                                tags$a(href = "https://gams.com/miro/customize.html#custom-renderers", 
-                                                       lang$adminMode$uiR$custom$li3b, target = "_blank"),".")
-                                      ),
-                                      tags$div(sprintf(lang$adminMode$uiR$custom$description1, modelName)),
-                                      tags$h4(lang$adminMode$uiR$custom$description2),
-                                      tags$div(lang$adminMode$uiR$custom$description3)
+                                      tags$button(class = "btn btn-default", type = "button",
+                                                  onclick = "Shiny.setInputValue('btUpdateCustomRendererOutput',1,{priority:'event'});", 
+                                                  lang$adminMode$graphs$customOptions$btUpdate),
+                                      uiOutput("preview_custom_renderer")
                              ),
                              if(scalarsOutName %in% names(modelOut)){
                                tags$div(id = "preview-content-valuebox", style = "display:none;text-align:left",
@@ -554,6 +554,12 @@ body_admin <- dashboardBody({
                                tags$div(class = "col-sm-6", style = "padding-top: 20px;",
                                         tags$div(class="main-tab",
                                                  tags$div(tagList(
+                                                   tags$h2(lang$adminMode$general$ui$headerRenderers, class="option-category"),
+                                                   tags$div(class = "option-wrapper", style = "margin-bottom: 5px;",
+                                                            selectInput("general_defaultRendererOutput", lang$adminMode$general$defaultRenderer$labelOutput,
+                                                                        setNames(c("miroPivot", "datatable"),                                                                                            lang$adminMode$general$defaultRenderer$choicesOutput),
+                                                                        selected = configJSON$defaultRendererOutput)),
+                                                   tags$hr(),
                                                    tags$h2(lang$adminMode$general$ui$headerLogo, class="option-category"),
                                                    tags$div(class = "option-wrapper", style = "margin-bottom: 5px;",
                                                             fileInput("widget_general_logo_upload", lang$adminMode$general$logo$label,
@@ -951,6 +957,11 @@ body_admin <- dashboardBody({
                                                        ))
                                                    ),
                                                    tags$div(class="option-wrapper",
+                                                            tags$div(id = "invalidClArgsError",
+                                                                     class = "err-msg",
+                                                                     sprintf(lang$adminMode$widgets$validate[["val61"]],
+                                                                             paste(reservedGMSOpt,
+                                                                                   collapse = "', '"))),
                                                             selectizeInput("general_args", 
                                                                            tags$div(lang$adminMode$general$args$label, 
                                                                                     tags$a("", title = lang$adminMode$general$ui$tooltipDocs, 

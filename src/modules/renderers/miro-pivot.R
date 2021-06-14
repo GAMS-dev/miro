@@ -56,8 +56,12 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
   
   indices <- getIndexLists(unassignedSetIndices, options)
   
-  aggregationFunctions <- if(identical(options[["_metadata_"]]$symtype, "set"))
-    setNames("count", lang$renderers$miroPivot$aggregationFunctions$count)
+  aggregationFunctions <- if((length(options[["_metadata_"]]$symname) &&
+                             options[["_metadata_"]]$symname %in% c(scalarsFileName, scalarsOutName)) ||
+                             identical(options[["_metadata_"]]$symtype, "set"))
+    setNames(c("count", "min"),
+             c(lang$renderers$miroPivot$aggregationFunctions$count,
+               lang$renderers$miroPivot$aggregationFunctions$min))
   else
     setNames(c("sum", "count", "mean", "median", "min", "max"), 
              c(lang$renderers$miroPivot$aggregationFunctions$sum,
@@ -139,7 +143,8 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                                        selected = if(length(options$pivotRenderer))
                                          options$pivotRenderer else "table"),
                            if(isTRUE(options$enableHideEmptyCols))
-                              checkboxInput_MIRO(ns("hideEmptyCols"), lang$renderers$miroPivot$cbHideEmptyCols)),
+                              checkboxInput_MIRO(ns("hideEmptyCols"), lang$renderers$miroPivot$cbHideEmptyCols,
+                                                value = identical(options$hideEmptyCols, TRUE))),
                     column(width = 6L, style = "padding: 1em;",
                            tags$ul(id = ns("colIndexList"), class="drop-index-list vertical-index-list",
                                    genIndexList(indices$cols))),
@@ -166,18 +171,26 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                     )),
            sortable_js(ns("filterIndexList"), 
                        options = sortable_options(group = ns("indices"), supportPointer = FALSE,
+                                                  multiDrag = TRUE,
+                                                  selectedClass = "drop-index-item-selected",
                                                   onLoad = sortable_js_capture_input(ns("filterIndexList")),
                                                   onSort = sortable_js_capture_input(ns("filterIndexList")))),
            sortable_js(ns("rowIndexList"), 
                        options = sortable_options(group = ns("indices"), supportPointer = FALSE,
+                                                  multiDrag = TRUE,
+                                                  selectedClass = "drop-index-item-selected",
                                                   onLoad = sortable_js_capture_input(ns("rowIndexList")),
                                                   onSort = sortable_js_capture_input(ns("rowIndexList")))),
            sortable_js(ns("colIndexList"), 
                        options = sortable_options(group = ns("indices"), supportPointer = FALSE, direction = "vertical", 
+                                                  multiDrag = TRUE,
+                                                  selectedClass = "drop-index-item-selected",
                                                   onLoad = sortable_js_capture_input(ns("colIndexList")),
                                                   onSort = sortable_js_capture_input(ns("colIndexList")))),
            sortable_js(ns("aggregationIndexList"), 
                        options = sortable_options(group = ns("indices"), supportPointer = FALSE,
+                                                  multiDrag = TRUE,
+                                                  selectedClass = "drop-index-item-selected",
                                                   onLoad = sortable_js_capture_input(ns("aggregationIndexList")),
                                                   onSort = sortable_js_capture_input(ns("aggregationIndexList"))))
   )
@@ -201,6 +214,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       initFilter <- TRUE
       initData <- TRUE
       initRenderer <- TRUE
+      isScalarTable <- FALSE
       resetFilters <- isTRUE(options$resetOnInit)
       
       numericCols <- vapply(data, class, character(1L), USE.NAMES = FALSE) %in% c("numeric", "integer")
@@ -213,9 +227,15 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         valueColName <- "value"
       }else if(sum(numericCols) == 0L){
         # data is a set -> drop last column and replace with 1
-        data[, length(data)] <- 1L
         names(data) <- c(names(data)[-length(data)], "value")
         valueColName <- "value"
+        isScalarTable <- length(options[["_metadata_"]]$symname) &&
+          options[["_metadata_"]]$symname %in% c(scalarsFileName, scalarsOutName)
+        if(isScalarTable){
+          data <- suppressWarnings(mutate(data, value = as.numeric(value)))
+        }else{
+          data[, length(data)] <- 1L
+        }
       }
       data <- mutate_if(data, is.character, as.factor)
       
@@ -225,6 +245,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       noRowDim <- length(data) - 1L
       
       updateFilter <- reactiveVal(1L)
+      updateRenderer <- reactiveVal(1L)
       
       isInput <- isTRUE(options[["_input_"]])
       isEditable <- FALSE
@@ -277,8 +298,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       indices <- character(0L)
       # we need to update aggregation functions in case the symbol type is not available when rendering the UI
       # (e.g. in Configuration Mode)
-      aggregationFunctions <- if(identical(options[["_metadata_"]]$symtype, "set"))
-        setNames("count", lang$renderers$miroPivot$aggregationFunctions$count)
+      aggregationFunctions <- if(isScalarTable || identical(options[["_metadata_"]]$symtype, "set"))
+        setNames(c("count", "min"),
+                 c(lang$renderers$miroPivot$aggregationFunctions$count,
+                   lang$renderers$miroPivot$aggregationFunctions$min))
       else
         setNames(c("sum", "count", "mean", "median", "min", "max"), 
                  c(lang$renderers$miroPivot$aggregationFunctions$sum,
@@ -288,32 +311,36 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                    lang$renderers$miroPivot$aggregationFunctions$min,
                    lang$renderers$miroPivot$aggregationFunctions$max)) 
       
-      customChartColors <- c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", 
-                             "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00", 
-                             "#cab2d6", "#6a3d9a", "#ffff99", "#b15928", 
-                             "#FCDCDB", "#f9b9b7", "#D5D3DA", "#ada9b7", 
-                             "#e2546b", "#66101F", "#E0ABD7", "#c45ab3", 
-                             "#8bf2fe", "#1BE7FF", "#a1d1b6", "#4C9F70", 
-                             "#F6FAA9", "#f0f757", "#d3b499", "#9E6D42", 
-                             "#50caf3", "#086788", "#eee49d", "#E0CA3C", 
-                             "#dbcac7", "#BA9790", "#f69e84", "#EB4511", 
-                             "#ccadf1", "#9B5DE5", "#A1FB8B", "#47fa1a", 
-                             "#8dadd0", "#38618c", "#fcebea", "#fad8d6", 
-                             "#a6b474", "#373d20", "#a248ce", "#210b2c", 
-                             "#f37ea9", "#d81159", "#68f7f7", "#08bdbd", 
-                             "#98feb1", "#35ff69", "#d27193", "#6d213c", 
-                             "#edfab1", "#dcf763", "#feb46f", "#e06c00", 
-                             "#f3ebaa", "#e9d758", "#c0c7c7", "#829191", 
-                             "#f3cac5", "#E8998D", "#c7dac9", "#91b696", 
-                             "#BE99A4", "#714955", "#7c7ccf", "#2a2a72", 
-                             "#7efee0", "#00ffc5", "#c28eb1", "#6c3a5c", 
-                             "#df7192", "#8b1e3f", "#95D86B", "#3E721D")
+      if(length(options$customChartColors)){
+        customChartColors <- options$customChartColors
+      }else{
+        customChartColors <- c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", 
+                               "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00", 
+                               "#cab2d6", "#6a3d9a", "#ffff99", "#b15928", 
+                               "#FCDCDB", "#f9b9b7", "#D5D3DA", "#ada9b7", 
+                               "#e2546b", "#66101F", "#E0ABD7", "#c45ab3", 
+                               "#8bf2fe", "#1BE7FF", "#a1d1b6", "#4C9F70", 
+                               "#F6FAA9", "#f0f757", "#d3b499", "#9E6D42", 
+                               "#50caf3", "#086788", "#eee49d", "#E0CA3C", 
+                               "#dbcac7", "#BA9790", "#f69e84", "#EB4511", 
+                               "#ccadf1", "#9B5DE5", "#A1FB8B", "#47fa1a", 
+                               "#8dadd0", "#38618c", "#fcebea", "#fad8d6", 
+                               "#a6b474", "#373d20", "#a248ce", "#210b2c", 
+                               "#f37ea9", "#d81159", "#68f7f7", "#08bdbd", 
+                               "#98feb1", "#35ff69", "#d27193", "#6d213c", 
+                               "#edfab1", "#dcf763", "#feb46f", "#e06c00", 
+                               "#f3ebaa", "#e9d758", "#c0c7c7", "#829191", 
+                               "#f3cac5", "#E8998D", "#c7dac9", "#91b696", 
+                               "#BE99A4", "#714955", "#7c7ccf", "#2a2a72", 
+                               "#7efee0", "#00ffc5", "#c28eb1", "#6c3a5c", 
+                               "#df7192", "#8b1e3f", "#95D86B", "#3E721D")
+      }
       
-      resetView <- function(options, domainFilterDomains, interfaceInitialized = TRUE){
+      resetView <- function(viewOptions, domainFilterDomains, interfaceInitialized = TRUE){
         unassignedSetIndices <- setNames(setIndices, 
                                          setIndexAliases)
         
-        indices <<- getIndexLists(unassignedSetIndices, options)
+        indices <<- getIndexLists(unassignedSetIndices, viewOptions)
         for(indexEl in list(c("filter", "filterIndexList"),
                             c("rows", "rowIndexList"), 
                             c("cols", "colIndexList"),
@@ -324,21 +351,25 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                                            as.character)))
         }
         
-        if(length(options[["pivotRenderer"]]) &&
-           options[["pivotRenderer"]] %in% c("table", "line", "bar", "stackedbar", "radar")){
-          updateSelectInput(session, "pivotRenderer", selected = options[["pivotRenderer"]])
+        if(length(viewOptions[["pivotRenderer"]]) &&
+           viewOptions[["pivotRenderer"]] %in% c("table", "heatmap", "line", "bar", "stackedbar", "radar")){
+          updateSelectInput(session, "pivotRenderer", selected = viewOptions[["pivotRenderer"]])
         }else{
           updateSelectInput(session, "pivotRenderer", selected = "table")
+        }
+        if(isTRUE(options$enableHideEmptyCols)){
+          updateCheckboxInput(session, "hideEmptyCols",
+                              value = identical(viewOptions[["hideEmptyCols"]], TRUE))
         }
         newView <- list(filter = unname(indices$filter),
                         aggregations = unname(indices$aggregations),
                         cols = unname(indices$cols))
         if(length(domainFilterDomains)){
-          if(length(options[["domainFilter"]][["default"]]) &&
-             options[["domainFilter"]][["default"]] %in% domainFilterDomains){
+          if(length(viewOptions[["domainFilter"]][["default"]]) &&
+             viewOptions[["domainFilter"]][["default"]] %in% domainFilterDomains){
             updateTabsetPanel(session, "domainFilter", 
-                              selected = options[["domainFilter"]][["default"]])
-            newView$domainFilter <- options[["domainFilter"]][["default"]]
+                              selected = viewOptions[["domainFilter"]][["default"]])
+            newView$domainFilter <- viewOptions[["domainFilter"]][["default"]]
           }else{
             updateTabsetPanel(session, "domainFilter", 
                               selected = domainFilterDomains[[1]])
@@ -348,10 +379,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if(!interfaceInitialized){
           return()
         }
-        if(length(options[["aggregationFunction"]]) &&
-           options[["aggregationFunction"]] %in% aggregationFunctions){
+        if(length(viewOptions[["aggregationFunction"]]) &&
+           viewOptions[["aggregationFunction"]] %in% aggregationFunctions){
           updateSelectInput(session, "aggregationFunction",
-                            selected = options[["aggregationFunction"]])
+                            selected = viewOptions[["aggregationFunction"]])
         }else{
           updateSelectInput(session, "aggregationFunction",
                             selected = aggregationFunctions[[1]])
@@ -421,35 +452,52 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           if(is.null(input$saveView) || initData || input$saveView == 0L || readonlyViews){
             return()
           }
-          showModal(modalDialog(tags$div(id = ns("errUniqueName"), class = "gmsalert gmsalert-error", 
-                                         style = "position:relative",
+          showModal(modalDialog(tags$div(id = ns("errUniqueName"), style = "display:none;",
                                          lang$renderers$miroPivot$errUniqueViewName),
                                 textInput(ns("newViewName"),
-                                          lang$renderers$miroPivot$newViewLabel), 
+                                          lang$renderers$miroPivot$newViewLabel),
+                                if(length(isolate(input$pivotRenderer)) &&
+                                   isolate(input$pivotRenderer) %in% c("bar", "stackedbar", "line"))
+                                  tags$div(id = ns("newViewOptionsWrapper"), style = "text-align:left;", 
+                                         tags$i(class="fas fa-arrow-down",
+                                                role = "presentation",
+                                                `aria-label` = "More options",
+                                                onclick = "$(this).next().slideToggle();$(this).toggleClass('fa-arrow-up');$(this).toggleClass('fa-arrow-down');", 
+                                                style = "cursor: pointer;"),
+                                         tags$div(style = "display:none;",
+                                                  textInput(ns("advancedTitle"),
+                                                            lang$renderers$miroPivot$newViewChartTitle),
+                                                  textInput(ns("advancedxTitle"),
+                                                            lang$renderers$miroPivot$newViewxTitle),
+                                                  textInput(ns("advancedyTitle"),
+                                                            lang$renderers$miroPivot$newViewyTitle)
+                                         )
+                                ),
                                 footer = tagList(
-                                  modalButton(lang$renderers$miroPivot$newViewBtCancel),
-                                  actionButton(ns("saveViewConfirm"), lang$renderers$miroPivot$newViewBtSave, 
-                                               class = "bt-highlight-1 bt-gms-confirm")
+                                  tags$div(id = ns("saveViewButtonsWrapper"),
+                                           modalButton(lang$renderers$miroPivot$newViewBtCancel),
+                                           actionButton(ns("saveViewConfirm"), lang$renderers$miroPivot$newViewBtSave, 
+                                                        class = "bt-highlight-1 bt-gms-confirm")
+                                           ),
+                                  tags$div(id = ns("saveViewOverwriteButtonsWrapper"), style = "display:none",
+                                           actionButton(ns("saveViewCancelOverwrite"),
+                                                        lang$renderers$miroPivot$newViewBtCancelOverwrite),
+                                           actionButton(ns("saveViewOverwrite"),
+                                                        lang$renderers$miroPivot$newViewBtOverwrite, 
+                                                        class = "bt-highlight-1 bt-gms-confirm")
+                                  )
                                 ),
                                 fade = TRUE, easyClose = FALSE, size = "s", 
                                 title = lang$renderers$miroPivot$newViewTitle))
         })
-        rendererEnv[[ns("saveViewConfirm")]] <- observe({
-          if(is.null(input$saveViewConfirm) || initData || 
-             input$saveViewConfirm == 0L || readonlyViews){
-            return()
-          }
+        addNewView <- function(overwrite = FALSE){
           isolate({
-            if(identical(input$newViewName, "")){
-              return()
-            }
-            if(input$newViewName %in% c("default", views$getIds(session))){
-              showEl(session, paste0("#", ns("errUniqueName")))
-              return()
-            }
             newViewConfig <- list(aggregationFunction = input$aggregationFunction,
                                   pivotRenderer = input$pivotRenderer,
                                   domainFilter = list(default = input$domainFilter))
+            if(isTRUE(options$enableHideEmptyCols)){
+              newViewConfig$hideEmptyCols <- identical(input$hideEmptyCols, TRUE)
+            }
             for(indexEl in list(c("rows", "rowIndexList"))){
               indexVal <- input[[indexEl[[2]]]]
               if(length(indexVal)){
@@ -468,14 +516,84 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                 newViewConfig[[indexEl[[1]]]] <- filterElList
               }
             }
-            insertUI(paste0("#", ns("savedViewsDD")), 
-                     createBootstrapDropdownChoices(list(id = htmlIdEnc(input$newViewName), 
-                                                         alias = input$newViewName), 
-                                                    ns("savedViews"), ns("deleteView")), 
-                     where = "beforeEnd")
-            views$add(session, input$newViewName, newViewConfig)
+            refreshRequired <- FALSE
+            for(advancedOption in list(list(inputId = "advancedTitle",
+                                            optionId = "title"),
+                                       list(inputId = "advancedxTitle",
+                                            optionId = "xTitle"),
+                                       list(inputId = "advancedyTitle",
+                                            optionId = "yTitle"))){
+              optionValTmp <- input[[advancedOption$inputId]]
+              if(length(optionValTmp)){
+                optionValTmp <- trimws(optionValTmp)
+                if(nchar(optionValTmp) > 0L){
+                  refreshRequired <- TRUE
+                  newViewConfig$chartOptions[[advancedOption$optionId]] <- optionValTmp
+                }
+              }
+            }
+            if(overwrite){
+              views$add(session, input$newViewName, newViewConfig)
+            }else{
+              insertUI(paste0("#", ns("savedViewsDD")), 
+                       createBootstrapDropdownChoices(list(id = htmlIdEnc(input$newViewName), 
+                                                           alias = input$newViewName), 
+                                                      ns("savedViews"), ns("deleteView")), 
+                       where = "beforeEnd")
+              views$add(session, input$newViewName, newViewConfig)
+            }
+            if(refreshRequired){
+              currentView <<- newViewConfig
+              isolate({
+                newVal <- updateRenderer() + 1L
+                updateRenderer(newVal)
+              })
+            }
           })
+        }
+        rendererEnv[[ns("saveViewConfirm")]] <- observe({
+          if(is.null(input$saveViewConfirm) || initData || 
+             input$saveViewConfirm == 0L || readonlyViews){
+            return()
+          }
+          
+          if(identical(input$newViewName, "")){
+            return()
+          }
+          if(input$newViewName %in% c("default", views$getIds(session))){
+            hideEl(session, paste0("#", ns("newViewName")))
+            hideEl(session, paste0("#", ns("saveViewButtonsWrapper")))
+            hideEl(session, paste0("#", ns("newViewOptionsWrapper")))
+            showEl(session, paste0("#", ns("errUniqueName")))
+            showEl(session, paste0("#", ns("saveViewOverwriteButtonsWrapper")))
+            return()
+          }
+          addNewView()
           removeModal(session)
+        })
+        rendererEnv[[ns("saveViewOverwriteConfirm")]] <- observe({
+          if(is.null(input$saveViewOverwrite) || initData || 
+             input$saveViewOverwrite == 0L || readonlyViews){
+            return()
+          }
+          
+          if(identical(input$newViewName, "")){
+            flog.error("New view name is empty. Should never happen!")
+            return()
+          }
+          addNewView(overwrite = TRUE)
+          removeModal(session)
+        })
+        rendererEnv[[ns("saveViewCancelOverwrite")]] <- observe({
+          if(is.null(input$saveViewCancelOverwrite) || initData || 
+             input$saveViewCancelOverwrite == 0L || readonlyViews){
+            return()
+          }
+          hideEl(session, paste0("#", ns("saveViewOverwriteButtonsWrapper")))
+          hideEl(session, paste0("#", ns("errUniqueName")))
+          showEl(session, paste0("#", ns("newViewName")))
+          showEl(session, paste0("#", ns("newViewOptionsWrapper")))
+          showEl(session, paste0("#", ns("saveViewButtonsWrapper")))
         })
         rendererEnv[[ns("deleteView")]] <- observe({
           if(is.null(input$deleteView) || initData || readonlyViews){
@@ -768,7 +886,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if(is.null(rowIndexList)){
           rowIndexList <- setIndices
         }
-        if(length(rowIndexList) + length(filteredData()$filterElements) != length(setIndices)){
+        if(length(rowIndexList) + length(filteredData()$filterElements) != length(setIndices)
+           || any(rowIndexList %in% names(filteredData()$filterElements))){
           return()
         }
         rowIndexList <- c(rowIndexList, 
@@ -779,19 +898,17 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
             disableEl(session, paste0("#", ns("btAddRow")))
             disableEl(session, paste0("#", ns("btRemoveRows")))
           }
-          if(identical(options[["_metadata_"]]$symtype, "parameter")){
-            aggregationFunctionTmp <- input$aggregationFunction
-            if(is.null(aggregationFunction)){
-              aggregationFunction <- aggregationFunctionTmp
-            }
-            if(length(aggregationFunction) != 1L ||
-               !aggregationFunction %in% c("sum", "count", "min", "max", "mean", "median")){
-              flog.warn("Attempt to tamper with the app detected! User entered: '%s' as aggregation function.",
-                        aggregationFunction)
-              stop("Attempt to tamper with the app detected!", call. = FALSE)
-            }
-          }else{
-            aggregationFunction <- "count"
+          aggregationFunctionTmp <- input$aggregationFunction
+          if(is.null(aggregationFunction)){
+            aggregationFunction <- aggregationFunctionTmp
+          }
+          if(identical(aggregationFunction, "")){
+            aggregationFunction <- aggregationFunctions[[1]]
+          }else if(length(aggregationFunction) != 1L ||
+             !aggregationFunction %in% c("sum", "count", "min", "max", "mean", "median")){
+            flog.warn("Attempt to tamper with the app detected! User entered: '%s' as aggregation function.",
+                      aggregationFunction)
+            stop("Attempt to tamper with the app detected!", call. = FALSE)
           }
           if(!identical(valueColName, "value")){
             names(dataTmp)[length(dataTmp)] <- "value"
@@ -854,10 +971,14 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       # ===================================================
       
       output$pivotChart <- renderChartjs({
+        updateRenderer()
         pivotRenderer <- input$pivotRenderer
         if(initRenderer && isTRUE(options$resetOnInit)){
           if(length(currentView[["pivotRenderer"]])){
-            pivotRenderer <- currentView[["pivotRenderer"]]
+            initRenderer <<- FALSE
+            if(!identical(pivotRenderer, currentView[["pivotRenderer"]])){
+              return()
+            }
           }else{
             return()
           }
@@ -899,17 +1020,27 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           labels <- "value"
         }
         if(identical(pivotRenderer, "line")){
-          chartJsObj <- chartjs(customColors = customChartColors) %>% 
-            cjsLine(labels = labels)
+          chartJsObj <- chartjs(customColors = customChartColors, title = currentView$chartOptions$title) %>% 
+            cjsLine(labels = labels,
+                    xTitle = currentView$chartOptions$xTitle,
+                    yTitle = currentView$chartOptions$yTitle)
         }else if(identical(pivotRenderer, "stackedbar")){
-          chartJsObj <- chartjs(customColors = customChartColors) %>% 
-            cjsBar(labels = labels, stacked = TRUE)
+          chartJsObj <- chartjs(customColors = customChartColors, title = currentView$chartOptions$title) %>% 
+            cjsBar(labels = labels, stacked = TRUE,
+                   xTitle = currentView$chartOptions$xTitle,
+                   yTitle = currentView$chartOptions$yTitle)
         }else if(identical(pivotRenderer, "radar")){
-          chartJsObj <- chartjs(customColors = customChartColors) %>% 
+          chartJsObj <- chartjs(customColors = customChartColors, title = currentView$chartOptions$title) %>% 
             cjsRadar(labels = labels)
         }else{
-          chartJsObj <- chartjs(customColors = customChartColors) %>% 
-            cjsBar(labels = labels)
+          chartJsObj <- chartjs(customColors = customChartColors, title = currentView$chartOptions$title) %>% 
+            cjsBar(labels = labels,
+                   xTitle = currentView$chartOptions$xTitle,
+                   yTitle = currentView$chartOptions$yTitle)
+        }
+        if(length(currentView$chartOptions)){
+          # reset chart and axes title
+          currentView$chartOptions <<- NULL
         }
         for(i in seq_len(min(noSeries, 40L))){
           chartJsObj <- cjsSeries(chartJsObj, dataTmp[[rowHeaderLen + i]], 
@@ -961,9 +1092,9 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           clrs <- round(seq(255, 40, length.out = length(brks) + 1), 0) %>%
             {paste0("rgb(255,", ., ",", ., ")")}
         }
-        if(length(dataTmp) > 500){
-          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, "500"))
-          dataTmp <- dataTmp[, 1:500]
+        if(length(dataTmp) > 300){
+          showElReplaceTxt(session, paste0("#", ns("errMsg")), sprintf(lang$renderers$miroPivot$colTruncationWarning, "300"))
+          dataTmp <- dataTmp[, 1:300]
         }else{
           hideEl(session, paste0("#", ns("errMsg")))
         }
@@ -971,6 +1102,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         
         ret <- datatable(dataTmp, extensions = c("Scroller", "FixedColumns"), 
                   selection = if(isEditableTable) "multiple" else "none", editable = isEditableTable,
+                  callback = JS("setTimeout(function() { table.draw(true); }, 500);"),
                   container = DTbuildColHeaderContainer(names(dataTmp), 
                                                         noRowHeaders, 
                                                         unlist(setIndexAliases[names(dataTmp)[seq_len(noRowHeaders)]], 

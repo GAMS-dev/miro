@@ -1,4 +1,5 @@
 {
+  "defaultRendererOutput": "datatable",
   "UILogo": "pickstock.png",
   "miroLogFile": "miro.log",
   "scripts": {

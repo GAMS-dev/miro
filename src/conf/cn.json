@@ -19,11 +19,11 @@
       "inputScreen": "输入",
       "outputScreen": "输出",
       "gams":"GAMS交互",
+      "load":"加载场景",
       "scen":"场景比较",
       "hcube":{
         "configureRun":"配置Hypercube作业",
         "import":"导入作业",
-        "load":"加载场景",
         "analyze":"分析场景"
       }
     },
@@ -95,6 +95,7 @@
     "scen":{
       "noScen":"未选择任何场景",
       "btLoad": "加载",
+      "btCloseAll": "关闭所有",
       "scenNameSandboxSuffix": "(沙盒)",
       "tooltips":{
         "btExport":"导出场景",
@@ -124,9 +125,10 @@
       "btManualImport":"手动导入",
       "btShowHistory":"显示历史"
     },
-    "hcubeLoad":{
+    "queryBuilder":{
       "title":"加载场景",
       "noData":"查询未返回任何数据",
+      "invalidCsvFilter": "“%s”不得包含“，”。",
       "showHashButton":"显示哈希值",
       "msgOnlyOneHash":"请只选择一种场景。",
       "msgNoHashFound":"未找到该场景的哈希值。该场景在Hypercube模式下可能未解决。",
@@ -135,6 +137,17 @@
       "chooseAllButton":"所有场景",
       "orButton":"或",
       "andButton":"和",
+      "operators":{
+        "is": "等于",
+        "notis": "不等于",
+        "contains": "包含",
+        "notcontains": "不包含",
+        "startswith": "以开始",
+        "endswith": "以结束",
+        "exists": "存在",
+        "notexists": "不存在",
+        "between": "间"
+      },
       "queryButton":"获取结果",
       "showHashDialog":{
         "title":"场景的哈希值",
@@ -142,8 +155,9 @@
       },
       "metaColAliases":{
         "uid": "所有者",
+        "sname": "名称",
         "stime":"创建时间",
-        "stag":"作业标签"
+        "stag":"标签"
       }
     },
     "hcubeAnalyze":{
@@ -218,6 +232,7 @@
       "newName":"新建名称",
       "badName":"该名称无效（太长或太短），请选择其他名称。",
       "newTags":"新建标签",
+      "badTags": "输入的标签无效。 确保标记不为空或复制，不包含1000多个字符。",
       "scenExists":"带有该名称的场景已存在。",
       "emptyPerm":"场景的访问权限不能为空!",
       "incapOwner": "无法撤销该文件所有者的访问权限。",
@@ -339,6 +354,12 @@
       "desc":"确定要关闭所选的场景吗？",
       "cancelButton": "否",
       "okButton": "是"
+    },
+    "dialogCloseAllScen":{
+      "title":"关闭所有场景",
+      "desc":"您确定要关闭所场景？",
+      "cancelButton":"否",
+      "okButton":"是"
     },
     "dialogExistingOutput":{
       "title":"已存在输出数据",
@@ -476,7 +497,7 @@
       "title":"下载临时文件",
       "desc":"选择要下载的文件",
       "noFiles":"未找到文件",
-      "downloadZipButton":"全部下载为zip文件",
+      "downloadAllButton":"全部下载",
       "downloadButton":"下载",
       "cancelButton": "取消"
     },
@@ -577,37 +598,40 @@
       "cancelButton": "取消",
       "okButton": "显示作业"
     },
+    "dialogBatchLoad":{
+      "title": "选择操作",
+      "selectMethod": "对选定的场景进行什么操作？",
+      "selExportType": "选择文件类型",
+      "maxScenWarning1":"一次最多选择'%d'个场景加载到交互模式。",
+      "maxScenWarning2":"减少场景数或使用PAVER模块进行比较。",
+      "cancelButton":"取消",
+      "paverButton":"分析",
+      "tabScript": "脚本",
+      "tabPaver": "PAVER",
+      "delTrace":"注意：使用PAVER模块时,当前工作目录中的trace文件将被删除。",
+      "tooManySolvers":"多个场景都有该属性，无法进行比较（不超过%s个场景），请减少场景数量。",
+      "noTrc":"至少有一个所选方案找不到trace数据。",
+      "analysisRunScriptRunning": "目前正在进行分析。 请等待该分析过程结束或选择中断它。",
+      "removeConfirm":"确定要从数据库中删除选定的%s个场景吗？此操作无法撤消！",
+      "removeSuccess":"已删除所选场景。",
+      "selAnalysisScript": "选择要运行的脚本",
+      "selPaverAttribs":"请选择要比较的属性:",
+      "selIgnoreAttribs":"要忽略的属性:",
+      "selClArgs":"指定其他参数来调用PAVER",
+      "runPaverButton":"启动PAVER",
+      "runScriptButton": "启动脚本",
+      "downloadAnalysisButton": "下载",
+      "interactiveButtonSb": "将数据加载到沙箱",
+      "interactiveButtonTab": "比较(标签视图)",
+      "interactiveButtonPivot": "比较(枢轴检视)",
+      "interactiveButtonSplit": "比较(拆分视图)",
+      "downloadButton":"下载数据",
+      "removeButton":"删除场景"
+    },
     "hcubeMode":{
       "sliderAllCombinations":"所有组合？",
       "stepsize": "步长",
       "checkboxAliases":["否","是"],
-      "hcubeLoadDialog":{
-        "title": "选择操作",
-        "selectMethod": "对选定的场景进行什么操作？",
-        "selExportType": "选择文件类型",
-        "maxScenWarning1":"一次最多选择'%d'个场景加载到交互模式。",
-        "maxScenWarning2":"减少场景数或使用PAVER模块进行比较。",
-        "cancelButton":"取消",
-        "paverButton":"分析",
-        "tabScript": "脚本",
-        "tabPaver": "PAVER",
-        "delTrace":"注意：使用PAVER模块时,当前工作目录中的trace文件将被删除。",
-        "tooManySolvers":"多个场景都有该属性，无法进行比较（不超过%s个场景），请减少场景数量。",
-        "noTrc":"至少有一个所选方案找不到trace数据。",
-        "analysisRunScriptRunning": "目前正在进行分析。 请等待该分析过程结束或选择中断它。",
-        "removeConfirm":"确定要从数据库中删除选定的%s个场景吗？此操作无法撤消！",
-        "removeSuccess":"已删除所选场景。",
-        "selAnalysisScript": "选择要运行的脚本",
-        "selPaverAttribs":"请选择要比较的属性:",
-        "selIgnoreAttribs":"要忽略的属性:",
-        "selClArgs":"指定其他参数来调用PAVER",
-        "runPaverButton":"启动PAVER",
-        "runScriptButton": "启动脚本",
-        "interactiveButtonTab": "比较(标签视图)",
-        "interactiveButtonPivot": "比较(枢轴检视)",
-        "downloadButton":"下载数据",
-        "removeButton":"删除场景"
-      },
       "invalidScenDialog":{
         "title":"无效场景",
         "desc":"上传的场景中%d个无效，分别是第%s个场景。要继续上传吗？",
@@ -661,6 +685,40 @@
     },
     "hot":{
       "search": "搜索："
+    },
+    "migrationModule": {
+      "title": "数据库迁移",
+      "desc": "我们确定您的GAMS / MIRO数据合同已以与您的应用程序当前数据库布局不兼容的方式进行了更改。 请指定您的数据应如何迁移。",
+      "backupWarning": "强烈建议您在迁移之前备份数据库。",
+      "successMsg": "您的数据已成功迁移！请重新启动应用程序。",
+      "labelSymbol": "符号：“%s”",
+      "selectTableToMap": "从迁移数据",
+      "selectColToMap": "栏目：",
+      "btCancelMigration": "取消",
+      "btConfirmMigration": "确认迁移",
+      "errDuplicateTables": "表：'%s'不能重复！",
+      "incompatibleTypeWarning": "必须将现有数据转换为数字以适合新的数据库表。 无法转换的值变为0！",
+      "dialogConfirmDataLoss": {
+        "title": "警告：数据丢失",
+        "descTables": "注意：使用当前的迁移配置，将删除以下表格：'％s'！",
+        "descTableCols": "注意力。 您当前的迁移配置将删除表“%s”中的列“%s”！",
+        "cbConfirmDataLoss": "我确定",
+        "btCancel": "取消",
+        "btConfirm": "删除资料"
+      },
+      "progress":{
+        "title": "数据正在迁移",
+        "desc": "表%s/%s正在迁移"
+      },
+      "btRemoveTables":{
+        "label": "删除所有数据库表",
+        "confirmTitle": "删除数据库表",
+        "confirmDesc": "你确定要删除所有属于模型的数据库表吗？该操作无法撤消！ 在继续该操作之前，请先保存数据库。",
+        "cbConfirm": "删除所有表格？",
+        "btCancel": "取消",
+        "btConfirm": "删除表格",
+        "msgSuccess": "数据库表已删除! 请重新启动应用程序。"
+      }
     }
   },
   "progressBar":{
@@ -725,9 +783,14 @@
       "rowTruncationWarning": "数据被截断到前%s行。",
       "newViewTitle": "新增检视",
       "newViewLabel": "请为该视图选择一个名称。",
+      "newViewChartTitle": "图表标题",
+      "newViewxTitle": "X轴标签",
+      "newViewyTitle": "Y轴标签",
       "newViewBtCancel": "取消",
       "newViewBtSave": "保存",
-      "errUniqueViewName": "您输入的视图名称已经存在。请选择其他名称。",
+      "newViewBtCancelOverwrite": "不",
+      "newViewBtOverwrite": "是的",
+      "errUniqueViewName": "您输入的视图名称已经存在。您要覆盖视图吗？",
       "duplicateRecordTitle": "双重记录",
       "duplicateRecordDesc": "您输入的记录已经存在。",
       "errPivotDuplicate": "数据中包含重复的记录，因此无法进行枢纽。",
@@ -796,6 +859,12 @@
         "badDelim": "错误：无法确定定界符。 有效的分隔符为：'%s'。",
         "duplicateCol": "错误：不支持同一列的多项选择。",
         "badEncoding": "您上传的文件不是UTF-8编码的。 不支持UTF-8以外的其他编码！"
+      }
+    },
+    "gdxio": {
+      "errors": {
+        "duplicateRecords": "符号中的记录重复：'%s'",
+        "duplicateRecordsTruncated": "（仅显示前10个重复记录）"
       }
     },
     "xlsio":{
@@ -927,7 +996,8 @@
     },
     "loadScen":{
       "title":"加载场景时出错",
-      "desc":"加载所选场景时出现错误。"
+      "desc":"加载所选场景时出现错误。",
+      "inconsistentDataWarning": "在您查看场景时，该场景已更改。 因此，数据可能不一致。 您可能要刷新方案。"
     },
     "deleteScen":{
       "title":"删除场景时出错",
@@ -1012,23 +1082,13 @@
       "btCancel": "取消"
     },
     "uiR":{
-      "adminPanel": "GAMS MIRO管理面板",
+      "configMode": "GAMS MIRO配置模式",
       "general": "通用设置",
       "table": "图表设置",
       "widgets": "配置小部件",
       "graphs": "配置图表",
       "database": "管理数据库",
-	  "custom":{
-        "skeleton": "结构：",
-        "steps": "步骤：",
-        "li1": "在当前模型地路径下创建包含'%s_custom.R'文件的文件夹 'renderer_%s'",
-        "li2": "复制上面的代码并将其粘贴到文件'%s_custom.R'中",
-        "li3a": "编写自己的自定义绘制器！ 有关如何编写自定义绘制器的详细说明，请参见 ",
-        "li3b": "此处",
-        "description1": "单击'保存'按钮后，下次启动MIRO时，MIRO在文件'%s_custom.R'中寻找自定义的绘制器，如果找不到该文件，MIRO无法启动！ 请确保自定义的绘制器的功能和配置完全正确。 建议您首先开发一个本地的自定义绘制器，获得满意的结果后将其集成到MIRO应用程序中。",
-        "description2": "注意：",
-        "description3": "如果该应用程序由于上述原因无法启动，您可以随时删除配置过的绘制器。"
-      }																			 
+      "restartRequired": "注意：为了使这些更改生效，您必须重新启动配置模式！"
     },
     "general":{
       "ui":{
@@ -1038,6 +1098,7 @@
         "tabModules": "模块",
         "tabScripts": "分析脚本",
         "headerGeneral": "通用",
+        "headerRenderers": "默认渲染器",
         "headerLogo": "标志",
         "headerSymbolDisplay": "Symbol display",
         "headerTabGrouping": "组合选项卡",
@@ -1050,7 +1111,7 @@
         "headerBaseScripts": "基本模式",
         "headerOutputAttach": "附件",
         "baseScriptsTooltip": "运行自定义分析脚本，该脚本将显示在输出中",
-        "headerHcubeScripts": "Hypercube模式",
+        "headerHcubeScripts": "批次分析",
         "hcubeScriptsTooltip": "一次运行多个方案的自定义分析脚本",
         "headerScenData": "场景和数据",
         "headerComputation": "计算",
@@ -1093,7 +1154,7 @@
       },
       "scripts":{
         "base": "指定基本模式的自定义分析脚本",
-        "hcube": "指定Hypercube模式的自定义分析脚本"
+        "hcube": "指定自定义分析脚本以分析批次的方案"
       },
       "outputAttach": {
         "label": "添加新的附件"
@@ -1145,6 +1206,10 @@
       "decimal":{
         "label": "指定输出值的精确小数位数",
         "tooltip": "这影响了所有的输出表、大数据输入表和超立方体模式下用于加载场景的表。 - 打开文档"
+      },
+      "defaultRenderer":{
+        "labelOutput": "输出数据的默认渲染器",
+        "choicesOutput": ["数据透视表", "桌子"]
       },
       "logo":{
         "header": "预览标志:",
@@ -1351,7 +1416,8 @@
         "val57": "文件名包含无效字符。不支持子目录中的附件!",
         "val58": "小数分隔符和千组分隔符不能完全相同!",
         "val59": "GAMS符号：％s被声明为表格。 这导致最后一列在MIRO中旋转。 MIRO枢轴不能与已旋转的符号一起使用。 请声明该符号作为参数。",
-        "val60": "每个元素只能出现在一组中！"
+        "val60": "每个元素只能出现在一组中！",
+        "val61": "GAMS选项不得为保留选项之一：“%s”。"
       },
       "widgetOptions":{
 	    "slider": "滑动条",
@@ -1372,6 +1438,7 @@
         "readonly": "设定表格为只读吗？",
         "readonlyCols": "设定表格的某些列为只读",
 		"pivotCols": "选择要旋转的列",
+        "fixedColumnsLeft": "是否应该将所有非枢轴列固定下来？",
         "heatmap": "把表格转换成热图？"
       },
       "slider":{
@@ -1516,42 +1583,14 @@
     },
     "database":{
       "title": "数据库管理",
-      "removeSuccess": "数据库表已删除",
-      "restoreSuccess": "数据已恢复",
-      "restoreNoData": "在存档中找不到csv文件。 没有恢复任何文件。",
-      "restoreInvalidData": "至少有一个表格无效。 没有恢复任何文件。",
-      "maxRowError": "至少有一个表中的要导出的最大行数超出限制。 请手动备份数据库！",
+      "infoPostgres": "您正在将GAMS MIRO Desktop与<a href=\"https://www.postgresql.org\" target=\"_blank\"> PostgreSQL </a>数据库后端一起使用。 所使用的数据库的名称为：%s，并且位于：%s。 要备份数据库，请在<a href=\"https://www.postgresql.org/docs/current/backup.html\" target=\"_blank\">此处</a>阅读。",
+      "infoSQLite": "您正在将GAMS MIRO Desktop与<a href=\"https://sqlite.org\" target=\"_blank\"> SQLite </a>数据库后端一起使用。 使用的数据库位于：%s。",
       "backup": "数据库备份",
-      "backupWrapper": "要创建数据库的备份吗？单击下面的按钮以获取zip存档，其中所有数据库表都保存到csv文件中。 使用DBMS的本机备份工具备份数据库会更快。 如果是大型数据库，请手动备份数据库！",
-      "dbSaveAll": "保存数据库表",
-      "restore": "恢复数据库",
-      "restoreWrapper": "想从现有zip文件中还原数据库吗？请选择要用于还原数据库的文件。",
-      "restoreDb": "恢复数据",
+      "backupWrapper": "您要创建数据库备份吗？",
+      "btDownloadBackup": "备份资料库",
+      "backupProgress": "正在保存数据库，请稍等",
       "remove": "删除数据",
-      "removeWrapper": "需要删除属于模型的所有表吗（例如，当架构更改时）？",
-      "removeDialogBtn": "删除所有数据库表",
-      "removeDialogTitle": "删除数据库表",
-      "removeDialogDesc": "你确定要删除所有属于模型的数据库表吗？该操作无法撤消！ 在继续该操作之前，请先保存数据库。",
-      "removeDialogCancel": "取消",
-      "removeDialogConfirm": "删除表格",
-      "removeOrphansWrapper": "要删除所有属于当前模型的孤立表格吗？",
-      "removeOrphansDialogBtn": "删除所有孤立数据库表格",
-      "removeOrphansDialogDesc": "你确定要删除属于该模型的所有孤儿数据库表吗？ 该操作无法撤消！请先保存数据库再继续。",
-      "removeInconsistent": "要删除所有不一致的表格吗？",
-      "removeInconsistentConfirm": "你确定要删除所有属于模型的不一致的数据库表吗？",
-      "cannotBeUndone": "该操作无法撤消！ 在继续该操作之前，请先保存数据库。",
-      "removeTitle": "删除数据库表格",
-      "removeCheck": "删除所有表格？",
-      "confirm": "确认",
-      "cancel": "取消",
-      "removeOrphansCheck": "删除所有孤立表格？",
-      "removeOrphansTitle": "删除孤立的数据库表格",
-      "saveMsg": "正在保存数据库，请稍等",
-      "compressMsg": "正在压缩文件，请稍等",
-      "decompressMsg": "正在解压文件，请稍等",
-      "validateMsg": "正在验证文件，请稍等",
-      "uploadMsg": "正在上传文件，请稍等",
-      "finishedMsg": "正在完成操作"
+      "removeWrapper": "需要删除属于模型的所有表吗（例如，当架构更改时）？"
     },
     "graphs":{
       "toolCategories": {
@@ -1574,6 +1613,7 @@
         "legend": "Legend",
         "markers": "标记",
         "flows": "流量",
+        "advanced": "高级选项",
         "minicharts": "小型图标",
         "groupsLayers": "组和层",
         "data": "数据"
@@ -1591,7 +1631,10 @@
         "choices": ["饼图", "柱形图", "散点图", "折线图", "气泡图", "直方图", "时间序列图形工具", "地图工具", "甘特图", "数据透视表", "标量值的值框", "自定义绘制器"],
         "deleteGraph": "删除",
         "saveGraph": "保存",
-        "toggleFullscreen": "切换全屏"
+        "toggleLeft": "将左屏切换到全屏模式",
+        "toggleRight": "将右屏切换到全屏模式",
+        "previewError": "发生错误：“%s”",
+        "previewErrorObs": "观察者内部发生错误：“%s”"
       },
       "graphOptions":{
         "pie": "饼图",
@@ -1609,6 +1652,7 @@
       },
       "validate":{
         "val1": "无法设置x轴的范围。 请检查数据格式是否正确！",
+        "custom1": "无法解析其他自定义选项。 请确保您使用有效的JSON语法！",
         "pieValues": "所选GAMS符号的值太多，无法显示饼图。 饼图中最多可显示100个值。",
         "tableNeeded": "要配置为地图的符号必须声明为GAMS表，因为需要多个值列(如经纬度信息)。"
       },
@@ -1817,9 +1861,12 @@
         }
       },
       "customOptions":{
-        "name": "指定代码中自定义绘制器功能的名称（无空格）",
+        "btUpdate": "更新",
+        "externalRenderer": "从另一个符号使用渲染器",
+        "symNotFoundSuffix": "（找不到符号）",
+        "options": "传递给渲染器功能的其他选项",
         "packages": "绘制器所需的软件包",
-        "additionalData": "Additional datasets to communicate with the custom renderer"
+        "additionalData": "应传递给自定义渲染器的其他数据集"
       },
       "filterOptions":{
         "filter": "是否允许通过下拉菜单选择符号的域？",
@@ -1865,6 +1912,7 @@
           "cmd": "运行命令",
           "args": "该命令的参数",
           "outFile": "输出文件的名称（包括文件扩展名）",
+          "markdown": "输出文件是Markdown文件",
           "timeout": "超时（秒，-1 为无限）"
         },
         "addOutAttach":{

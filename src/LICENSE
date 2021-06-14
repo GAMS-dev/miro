@@ -44,6 +44,8 @@ these components are included below):
 - rhandsontable https://github.com/jrowen/rhandsontable or https://cran.r-project.org/web/packages/rhandsontable/index.html
 - shiny https://github.com/rstudio/shiny or https://cran.r-project.org/web/packages/shiny/index.html
 - shinydashboard https://github.com/rstudio/shinydashboard or https://cran.r-project.org/web/packages/shinydashboard/index.html
+- shinyAce https://github.com/trestletech/shinyAce or https://cran.r-project.org/web/packages/shinyAce/index.html
+- Ace (Ajax.org Cloud9 Editor) https://github.com/ajaxorg/ace
 - plotly https://github.com/ropensci/plotly or https://cran.r-project.org/web/packages/plotly/index.html
 - DT https://github.com/rstudio/DT or https://cran.r-project.org/web/packages/DT/index.html
 - V8 (R package) https://github.com/jeroen/V8 or https://cran.r-project.org/web/packages/V8/index.html 
@@ -115,7 +117,8 @@ these components are included below):
 - bit https://github.com/truecluster/bit or https://cran.r-project.org/web/packages/bit/index.html
 - bit64 https://github.com/truecluster/bit64 or https://cran.r-project.org/web/packages/bit64/index.html
 - RSQLite https://github.com/r-dbi/RSQLite or https://cran.r-project.org/web/packages/RSQLite/index.html
-- memoise https://github.com/r-lib/memoise https://cran.r-project.org/web/packages/memoise/index.html
+- memoise https://github.com/r-lib/memoise or https://cran.r-project.org/web/packages/memoise/index.html
+- cachem https://github.com/r-lib/cachem or https://cran.r-project.org/web/packages/cachem/index.html
 - gdxrrwMIRO https://github.com/GAMS-dev/gdxrrw-miro
 
 - bindr https://github.com/krlmlr/bindr or https://cran.r-project.org/web/packages/bindr/index.html
@@ -641,7 +644,8 @@ Section 8 -- Interpretation.
         - c3, Copyright (c) 2013 Masayuki Tanaka
         - handsontable, Copyright (c) 2012-2014 Marcin Warpechowski, Copyright (c) 2015 Handsoncode sp. z o.o. <hello@handsoncode.net>
         - R6, Copyright (c) 2015 RStudio
-        - processx, Copyright (c) 2016-2018 Mango Solutions, RStudio, Gábor Csárdi
+        - ps, Copyright (c) 2009-2020 Jay Loden, Dave Daeschler, Giampaolo Rodola', RStudio
+        - processx, Copyright (c) 2016-2019 Mango Solutions, RStudio, Gábor Csárdi
         - askpass, Copyright (c) 2018 Jeroen Ooms
         - timevis, Copyright (c) 2016 Dean Attali [aut, cre] (R interface), Almende B.V. [aut, cph] (vis.js library, http://visjs.org, http://www.almende.com/home)
         - dplyr, Copyright (c) 2013-2020 Hadley Wickham [aut, cre], Romain François [aut], Lionel Henry [aut], Kirill Müller [aut], RStudio [cph, fnd]
@@ -652,6 +656,7 @@ Section 8 -- Interpretation.
           Kent Russell and Jonathan Owen
         - natural.js (DataTables plugin), Copyright (c) Jim Palmer (based on chunking idea from Dave Koelle), Mike Grier (mgrier.com), Clint Priest, Kyle Adams, guillermo
         - plotly, Copyright (c) 2017 Plotly, Inc.
+        - shinyAce, Copyright (c) 2016 Vincent Nijs [aut, cre], Forest Fang [aut], Trestle Technology, LLC [aut], Jeff Allen [aut], Institut de Radioprotection et de Surete Nucleaire [cph], Ajax.org B.V. [ctb, cph] (Ace)
         - V8 (R package), Copyright (c) 2017 Jeroen Ooms
         - jsonlite, Copyright (c) 2017 Jeroen Ooms
         - rpivotTable, Copyright (c) 2015 Enzo Martoglio
@@ -676,11 +681,15 @@ Section 8 -- Interpretation.
         - scales, Copyright (c) 2010-2016 Hadley Wickham
         - farver, Copyright (c) 2018 Thomas Lin Pedersen [cre, aut], Berendea Nicolae [aut] (Author of the ColorSpace C++ library), Romain François ORCID iD [aut]
         - chartjs (R link), Copyright (c) 2015-2016 Pierre Formont
-        - Chart.js, Copyright (c) 2018 Chart.js Contributors
+        - Chart.js, Copyright (c) 2014-2021 Chart.js Contributors
         - sortable, Copyright (c) 2019 Andrie de Vries [cre, aut], Barret Schloerke [aut], Kenton Russell [aut, ccp] (Original author), Lebedev Konstantin [cph] ('SortableJS', http://sortablejs.github.io/Sortable/)
         - httr, Copyright (c) 2014 Hadley Wickham; RStudio
         - viridisLite, Copyright (c) 2015 Simon Garnier
         - memoise, Copyright (c) 2010-2017 Hadley Wickham
+        - cachem, Copyright (c) 2020 Winston Chang [aut, cre], RStudio [cph, fnd]
+        - rlang, Copyright (c) Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
+        - withr, Copyright (c)
+            Jim Hester [aut, cre], Kirill Müller [aut], Kevin Ushey [aut], Hadley Wickham [aut], Winston Chang [aut], Jennifer Bryan [ctb], Richard Cotton [ctb], RStudio [cph]
         - bindr, Copyright (c) 2016 RStudio
         - cli, Copyright (c) 2017 Gábor Csárdi
         - progress, Copyright (c) 2015-2018 Gábor Csárdi, RStudio Inc.
@@ -1039,7 +1048,6 @@ Library.
             Joe Cheng [aut, cre], RStudio [cph], 
             Marcus Geelnard [ctb, cph] (TinyCThread library, https://tinycthread.github.io/), 
             Evan Nemerson [ctb, cph] (TinyCThread library, https://tinycthread.github.io/)
-        - rlang, Copyright (c) Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
         - assertthat, Copyright (c) Hadley Wickham [aut, cre]
         - tidyselect, Copyright (c) Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
         - clipr, Copyright (c) Matthew Lincoln [aut, cre], Louis Maddox [ctb], 
@@ -1054,9 +1062,6 @@ Library.
             Joshua M. Ulrich [cre, aut], Ross Bennett [ctb], Corwin Joy [ctb]
         - formatR, Copyright (c) Yihui Xie [aut, cre], Eugene Ha [ctb], 
             Kohske Takahashi [ctb], Ed Lee [ctb]
-        - withr [expanded from: GPL (≥ 2)], Copyright (c)
-            Jim Hester [aut, cre], Kirill Müller [aut], Kevin Ushey [aut], Hadley Wickham [aut], 
-            Winston Chang [aut], Richard Cotton [ctb], RStudio [cph]
         - leaflet, Copyright (c) Joe Cheng [aut, cre], Bhaskar Karambelkar [aut], 
             Yihui Xie [aut], Hadley Wickham [ctb], Kenton Russell [ctb], Kent Johnson [ctb], 
             Barret Schloerke [ctb], jQuery Foundation and contributors [ctb, cph] (jQuery library), 
@@ -1083,7 +1088,7 @@ Library.
         - gridExtra, Copyright (c)  Baptiste Auguie [aut, cre], Anton Antonov [ctb]
         - lattice, Copyright (c)  Deepayan Sarkar [aut, cre], Felix Andrews [ctb], Kevin Wright [ctb] (documentation), Neil Klepeis [ctb], Paul Murrell [ctb]
         - RGraphics, Copyright (c) 	Paul Murrell
-        - lifecycle, Copyright (c) 	Lionel Henry [aut, cre], RStudio [cph]
+        - lifecycle, Copyright (c) 	Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
         - backports, Copyright (c)  Michel Lang [cre, aut], R Core Team [aut]
         - bit, Copyright (c) Jens Oehlschlägel [aut, cre], Brian Ripley [ctb]
         - bit64, Copyright (c) Jens Oehlschlägel [aut, cre], Leonardo Silvestri [ctb]
@@ -1807,7 +1812,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         - chroma, Copyright (c) 2011-2018, Gregor Aisch
         - sparkline, Copyright (c) Splunk, Inc 2012
         - stringi, Copyright (c) 2013-2018 Marek Gagolewski and other contributors
-        - ps, Copyright (c) 2009-2018 Jay Loden, Dave Daeschler, Giampaolo Rodola', RStudio
         - colorspace, Copyright (c) 2005-2016
             COPYRIGHT HOLDER: Ross Ihaka, Paul Murrell, Kurt Hornik, Jason C. Fisher, Reto Stauffer, Achim Zeileis
             ORGANIZATION: Ross Ihaka, Paul Murrell, Kurt Hornik, Jason C. Fisher, Reto Stauffer, Achim Zeileis
@@ -3441,3 +3445,32 @@ OR OTHER DEALINGS IN THE SOFTWARE.
 Except as contained in this notice, the name of a copyright holder shall not
 be used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization of the copyright holder.
+
+-----------------------------------------------------------------------------
+Ace (Ajax.org Cloud9 Editor) (https://github.com/ajaxorg/ace)
+-----------------------------------------------------------------------------
+
+Copyright (c) 2010, Ajax.org B.V.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of Ajax.org B.V. nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL AJAX.ORG B.V. BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

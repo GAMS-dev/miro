@@ -108,7 +108,7 @@ if(buildUI){
                                                    tags$div(
                                                      tags$label(class = "checkbox-material", "for" = "hcubeMode_" %+% i, 
                                                                 checkboxInput("hcubeMode_" %+% i, label = NULL, 
-                                                                              value = modelIn[[i]]$checkbox$value))
+                                                                              value = FALSE))
                                                    )
                                                  )
                                           ),
@@ -296,7 +296,8 @@ if(buildUI){
                                                     customOptions = modelIn[[i]]$options,
                                                     height = modelIn[[i]]$height)
                                    }, error = function(e) {
-                                     flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
+                                     flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]),
+                                                       conditionMessage(e)))
                                      errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
                                      showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
                                    })
@@ -304,19 +305,7 @@ if(buildUI){
                                }),
                                tags$div(id = paste0("graph-in_", i), class = "render-output", 
                                         style = paste0("padding:1px;display:none;", if(!is.null(configGraphsIn[[i]]$height)) 
-                                          sprintf("min-height: %s;", addCssDim(configGraphsIn[[i]]$height, 5))),
-                                        tryCatch({
-                                          renderDataUI(paste0("in_", i), type = configGraphsIn[[i]]$outType, 
-                                                       graphTool = configGraphsIn[[i]]$graph$tool, 
-                                                       customOptions = configGraphsIn[[i]]$options,
-                                                       filterOptions = configGraphsIn[[i]]$graph$filter,
-                                                       height = configGraphsIn[[i]]$height,
-                                                       createdDynamically = TRUE)
-                                        }, error = function(e) {
-                                          flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
-                                          errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
-                                          showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
-                                        })
+                                          sprintf("min-height: %s;", addCssDim(configGraphsIn[[i]]$height, 5)))
                                ))
                            }
       )
@@ -340,7 +329,9 @@ if(buildUI){
       title = inputTabTitles[[tabId]][1],
       value = paste0("inputTabset_", tabId),
       if(length(inputTabTitles[[tabId]]) > 1L){
-        do.call(tabsetPanel, c(id = paste0("inputTabset", tabId), content))
+        MIROtabsetPanel(id = paste0("inputTabset", tabId),
+                        btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs,
+                        content)
       }else{
         tagList(tags$div(class="small-space"), 
                 if(length(inputTabs[[tabId]]) > 1L){
@@ -400,21 +391,73 @@ if(buildUI){
               )
             )
     ),
+    tabItem(tabName = "loadResults",
+            fluidRow(
+              box(title = lang$nav$queryBuilder$title, status="primary", 
+                  solidHeader = TRUE, width = 12, style="overflow-x: auto",
+                  tags$div(id = "loadContent",
+                           tags$div(id = "selectorsWrapper"
+                           ),
+                           tags$div(id = "buttonsWrapper", class = "item-or-query",
+                                    actionButton("btNewBlock", label = lang$nav$queryBuilder$orButton)),
+                           tags$div(class = "item-or-query",
+                                    actionButton("btSendQuery", label = lang$nav$queryBuilder$queryButton, 
+                                                 class = "bt-highlight-1")
+                           )
+                  ),
+                  genSpinner(id = "hyperQueryLoad", hidden = TRUE, absolute = FALSE),
+                  tags$div(id = "queryBuilderError", class = "gmsalert gmsalert-error"),
+                  tags$div(style = "min-height: 80px;", dataTableOutput("batchLoadResults")),
+                  tags$div(id = "batchLoadNoData", 
+                           style = "text-align:center;font-size:16px;font-weight:bold;margin:20px;display:none;",
+                           lang$nav$queryBuilder$noData),
+                  tags$div(id = "batchLoadButtons", style = "display:none;padding:30px 0 50px 0;",
+                           tags$div(class = "col-sm-6",
+                                    tags$div(
+                                      actionButton("hcubeLoadSelected", lang$nav$queryBuilder$chooseSelectedButton , 
+                                                   class = "bt-highlight-1"),
+                                      actionButton("hcubeLoadCurrent", lang$nav$queryBuilder$chooseCurrentButton , 
+                                                   class = "bt-highlight-1"),
+                                      actionButton("hcubeLoadAll", lang$nav$queryBuilder$chooseAllButton, 
+                                                   class = "bt-highlight-1")
+                                    )
+                           ),
+                           if(LAUNCHHCUBEMODE)
+                             tags$div(class = "col-sm-6", style = "text-align:right;",
+                                      actionButton("btShowHash",
+                                                   lang$nav$queryBuilder$showHashButton)
+                             )
+                  )
+              )
+            )
+    ),
     tabItem(tabName = "scenarios",
             generateScenarioTabsetPivot(LAUNCHHCUBEMODE),
             tags$div(id = "scen-tab-view", style = if(identical(config$defCompMode, "tab")) "" else "display:none;",
+                     tags$div(style = "float: right;margin: 12px 5px;",
+                              tags$a(id = "btCmpTabCloseAll", style = "padding: 3px;",
+                                     style = "display:none",
+                                     href = "#",
+                                     onclick = paste0("Miro.confirmModalShow('", 
+                                                      lang$nav[["dialogCloseAllScen"]]$title, "', '", 
+                                                      lang$nav[["dialogCloseAllScen"]]$desc, "', '", 
+                                                      lang$nav[["dialogCloseAllScen"]]$cancelButton, "', '", 
+                                                      lang$nav[["dialogCloseAllScen"]]$okButton, 
+                                                      "','Shiny.setInputValue(\\'btCmpTabCloseAll\\',1,{priority:\\'event\\'})')"),
+                                     lang$nav$scen$btCloseAll)),
                      tabsetPanel(id="scenTabset"),
-                     tags$div(id = "no-scen", lang$nav$scen$noScen, class = "no-scen",
+                     tags$div(id = "cmpTabNoScenWrapper", lang$nav$scen$noScen, class = "no-scen",
                               tags$div(style = "margin: 10px;",
-                                       HTML(paste0('<button class="btn btn-default action-button" ',
-                                                   'type="button" onclick="Shiny.setInputValue(\'btLoadScen\',1,{priority: \'event\'})">', 
-                                                   lang$nav$scen$btLoad, '</button>')))
+                                       tags$button(class = "btn btn-default action-button",
+                                                   type = "button",
+                                                   onclick = "Shiny.setInputValue('btLoadScen',1,{priority: 'event'})",
+                                                   lang$nav$scen$btLoad))
                      )
             ),
             fluidRow(
               tags$div(id = "scen-split-view", style = if(identical(config$defCompMode, "split")) "" else "display:none;",
                        box(width = 6, solidHeader = TRUE, status="primary", title = 
-                             tagList(uiOutput("title_2", inline = T), 
+                             tagList(tags$span(id = "cmpScenTitle_2"),
                                      tags$div(style = "float: right;", 
                                               actionButton(inputId = "btScenSplit1_close", 
                                                            class = "bt-icon",
@@ -424,7 +467,7 @@ if(buildUI){
                            genSplitCompButtons(1)
                        ),
                        box(width = 6, solidHeader = TRUE, status="primary", 
-                           title = tagList(uiOutput("title_3", inline = T), 
+                           title = tagList(tags$span(id = "cmpScenTitle_3"),
                                            tags$div(style = "float: right;", 
                                                     actionButton(inputId = "btScenSplit2_close", 
                                                                  class = "bt-icon", icon = icon("times"), label = NULL))),
@@ -437,50 +480,6 @@ if(buildUI){
   )
   if(LAUNCHHCUBEMODE){
     tabItemList <- c(tabItemList, list(
-      tabItem(tabName = "loadResults",
-              fluidRow(
-                box(title = lang$nav$hcubeLoad$title, status="primary", 
-                    solidHeader = TRUE, width = 12, style="overflow-x: auto",
-                    tags$div(id = "loadContent",
-                             tags$div(id = "selectorsWrapper"
-                             ),
-                             tags$div(id = "buttonsWrapper", class = "item-or-query",
-                                      actionButton("btNewBlock", label = lang$nav$hcubeLoad$orButton)),
-                             tags$div(class = "item-or-query",
-                                      actionButton("btSendQuery", label = lang$nav$hcubeLoad$queryButton, 
-                                                   class = "bt-highlight-1")
-                             )
-                    ),
-                    genSpinner(id = "hyperQueryLoad", hidden = TRUE, absolute = FALSE),
-                    tags$div(style = "min-height: 80px;", dataTableOutput("hcubeLoadResults")),
-                    tags$div(id = "hcubeLoadNoData", 
-                             style = "text-align:center;font-size:16px;font-weight:bold;margin:20px;display:none;",
-                             lang$nav$hcubeLoad$noData),
-                    tags$div(id = "hcubeLoadButtons", style = "display:none;padding:30px 0 50px 0;",
-                             tags$div(class = "col-sm-6",
-                                      tags$div(
-                                        actionButton("hcubeLoadSelected", lang$nav$hcubeLoad$chooseSelectedButton , 
-                                                     class = "bt-highlight-1"),
-                                        actionButton("hcubeLoadCurrent", lang$nav$hcubeLoad$chooseCurrentButton , 
-                                                     class = "bt-highlight-1"),
-                                        actionButton("hcubeLoadAll", lang$nav$hcubeLoad$chooseAllButton, 
-                                                     class = "bt-highlight-1")
-                                      )
-                             ),
-                             tags$div(class = "col-sm-6", style = "text-align:right;",
-                                      tags$div(id = "showHashOnlyOne", class = "gmsalert gmsalert-error", style = "bottom:10%;",
-                                               lang$nav$hcubeLoad$msgOnlyOneHash),
-                                      tags$div(id = "showNoHashError", class = "gmsalert gmsalert-error", style = "bottom:10%;",
-                                               lang$nav$hcubeLoad$msgNoHashFound),
-                                      tags$div(id = "showHashError", class = "gmsalert gmsalert-error", style = "bottom:10%;",
-                                               lang$errMsg$unknownError),
-                                      actionButton("btShowHash", 
-                                                   lang$nav$hcubeLoad$showHashButton)
-                             )
-                    )
-                )
-              )
-      ),
       tabItem(tabName = "importData",
               fluidRow(
                 box(title = tagList(lang$nav$hcubeImport$title, 
@@ -584,29 +583,17 @@ if(buildUI){
     outputTabContent <- lapply(seq_along(outputTabs), function(tabId){
       content <- lapply(outputTabs[[tabId]], function(i){
         tabContent <- tagList(
-          tags$div(id = paste0("graph-out_", i), class = "render-output", 
+          tags$div(id = paste0("scenGraph_1_", i), class = "render-output", 
                    style = if(!is.null(configGraphsOut[[i]]$height)) 
-                     sprintf("min-height: %s;", addCssDim(configGraphsOut[[i]]$height, 5)),
-                   renderDataUI(paste0("tab_",i), type = configGraphsOut[[i]]$outType, 
-                                graphTool = configGraphsOut[[i]]$graph$tool, 
-                                customOptions = configGraphsOut[[i]]$options,
-                                filterOptions = configGraphsOut[[i]]$graph$filter,
-                                height = configGraphsOut[[i]]$height)
+                     sprintf("min-height: %s;", addCssDim(configGraphsOut[[i]]$height, 5))
           ),
-          tags$div(id = paste0("data-out_", i), class = "render-output", style = "display:none;",{
-            tryCatch({
-              renderDataUI(paste0("table-out_",i), type = "datatable")
-            }, error = function(e) {
-              flog.error(paste0(sprintf(lang$errMsg$renderTable$desc, name), e))
-              eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderTable$desc, name), sep = "\n")
-            })
-          })
+          tags$div(id = paste0("scenTable_1_", i), class = "render-output", style = "display:none;")
         )
         if(length(outputTabTitles[[tabId]]) > 1L){
           titleId <- match(i, outputTabs[[tabId]]) + 1L
           return(tabPanel(
             title = outputTabTitles[[tabId]][titleId],
-            value = paste0("outputTabset", tabId, "_", titleId - 1L),
+            value = paste0("outputTabset_", tabId, "_", titleId - 1L),
             tags$div(class="small-space"),
             tabContent,
             tags$div(class="small-space")
@@ -621,7 +608,9 @@ if(buildUI){
         title = outputTabTitles[[tabId]][1],
         value = paste0("outputTabset_", tabId),
         if(length(outputTabTitles[[tabId]]) > 1L){
-          do.call(tabsetPanel, c(id = paste0("outputTabset", tabId), content))
+          MIROtabsetPanel(id = paste0("outputTabset_", tabId),
+                          btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs,
+                          content)
         }else{
           tagList(tags$div(class="small-space"), 
                   if(length(outputTabs[[tabId]]) > 1L){
@@ -748,9 +737,11 @@ if(buildUI){
 {throwOnError:false,delimiters:[{left:'$$',right:'$$',display:true},{left: '$',right:'$',display:false}]});")
           )
         },
+        tags$meta(name = "color-scheme",
+                  content = if(identical(config$theme, "browser")) "dark light" else "normal"),
         tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
         tags$script(src = "miro.js", type = "application/javascript"),
-        # css sheets that depend on data from config JSON file
+        # styles that depend on data from config JSON file
         # Logo ratio should be 4,6 (width/height)
         tags$style(HTML(
           paste0('

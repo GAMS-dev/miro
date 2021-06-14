@@ -36,6 +36,9 @@ genPaverArgs <- function(traceFilenames, clArgs = NULL){
 
 observeEvent(input$btAnalysisConfig, {
   # if already tracefiles in tracefiledir show deletion warning
+  hideEl(session, ".batch-load-content")
+  showEl(session, ".batch-load-analysis-content")
+  showEl(session, ".batch-load-analysis-footer", inline = TRUE)
   if(length(list.files(traceFileDir)) > 0){
     showEl(session, "#deleteTrace")
   }
@@ -65,19 +68,20 @@ observeEvent(input$btRunPaver, {
   }
   gmswebiter <<- gmswebiter + 1
   noErr <- TRUE
-  scenToFetch <- rv$fetchedScenarios[[1]] %in% sidsToLoad
+  scenToFetch <- batchLoadData[[1]] %in% sidsToLoad
   if(!any(scenToFetch)){
     flog.warn("Paver was attempted to be started while no scenarios were selected.")
     showHideEl(session, "#analysisRunUnknownError", 6000L)
     return()
   }
   tryCatch({
-    exceedsMaxNoSolvers <- hcubeLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[scenToFetch, , drop = FALSE], 
-                                                         input$selPaverAttribs, maxSolversPaver,
-                                                         isolate(input$paverExclAttrib))
+    exceedsMaxNoSolvers <- batchLoader$exceedsMaxNoSolvers(batchLoadData[scenToFetch, , drop = FALSE], 
+                                                           input$selPaverAttribs, maxSolversPaver,
+                                                           isolate(input$paverExclAttrib))
   }, error = function(e){
       noErr <<- FALSE
-      flog.error("Problems identifying whether maximum number of solvers for paver is exceeded Error message: '%s'.", e)
+      flog.error("Problems identifying whether maximum number of solvers for paver is exceeded Error message: '%s'.",
+                 conditionMessage(e))
       showHideEl(session, "#analysisRunUnknownError", 6000L)
   })
   if(!noErr)
@@ -102,7 +106,8 @@ observeEvent(input$btRunPaver, {
       }
       dir.create(paverDir, showWarnings = FALSE)
     }, error = function(e){
-      flog.error("Problems creating temporary folder where trace files will be stored. Error message: '%s'.", e)
+      flog.error("Problems creating temporary folder where trace files will be stored. Error message: '%s'.",
+                 conditionMessage(e))
       errMsg <<- sprintf(lang$errMsg$fileWrite$desc, "./trace")
     })
     if(is.null(showErrorMsg(lang$errMsg$fileWrite$title, errMsg))){
@@ -110,16 +115,18 @@ observeEvent(input$btRunPaver, {
     }
     noErr <- TRUE
     tryCatch(
-      hcubeLoad$genPaverTraceFiles(traceFileDir, exclTraceCols)
+      batchLoader$genPaverTraceFiles(traceFileDir, exclTraceCols)
       ,error = function(e){
         noErr <<- FALSE
         switch(conditionMessage(e),
                noTrc = {
-                 flog.info("Unknown error exeuting Paver. Error message: '%s'.", e)
+                 flog.info("Unknown error exeuting Paver. Error message: '%s'.",
+                           conditionMessage(e))
                  showHideEl(session, "#paverRunNoTrc", 6000L)
                },
                {
-                 flog.error("Unknown error exeuting Paver. Error message: '%s'.", e)
+                 flog.error("Unknown error exeuting Paver. Error message: '%s'.",
+                            conditionMessage(e))
                  showHideEl(session, "#analysisRunUnknownError", 6000L)
                })
       })
@@ -236,7 +243,8 @@ observeEvent(input$btAnalysisInterrupt,{
       tryCatch({
         scriptOutput$interrupt()
       }, error= function(e){
-        flog.error("Problems interrupting process. Error message: %s.", e)
+        flog.error("Problems interrupting process. Error message: %s.",
+                   conditionMessage(e))
       })
     }else{
       flog.error("Interrupt analysis script button was pressed, but no script is currently running. Likely to be an attempt to tamper with the app!")
@@ -247,7 +255,8 @@ observeEvent(input$btAnalysisInterrupt,{
     tryCatch({
       paver$kill()
     }, error= function(e){
-      flog.error("Problems interrupting process. Error message: %s.", e)
+      flog.error("Problems interrupting process. Error message: %s.",
+                 conditionMessage(e))
       errMsg <<- lang$errMsg$paverTerm$desc
     })
     showErrorMsg(lang$errMsg$paverTerm$title, errMsg)
@@ -263,7 +272,7 @@ observeEvent(input$btNewAnalysisRun,{
 
 if(length(config$scripts$hcube)){
   observeEvent(input$btRunHcubeScript, {
-    scriptId <- suppressWarnings(as.integer(input$btRunHcubeScript))
+    scriptId <- suppressWarnings(as.integer(input$selHcubeAnalysisScript))
     flog.debug("Button to execute Hypercube analysis script: '%s' clicked.", scriptId)
     
     if(is.na(scriptId) || scriptId < 1 || scriptId > length(config$scripts$hcube)){
@@ -321,15 +330,13 @@ if(length(config$scripts$hcube)){
       prog$inc(amount = incAmount, detail = detail)
     }
     tryCatch({
-      hcubeLoad$genGdxFiles(sidsToLoad, paste0(workDir, .Platform$file.sep, "scripts_", modelName),
-                            gdxio, prog, genScenList = TRUE)
+      batchLoader$genGdxFiles(sidsToLoad, paste0(workDir, .Platform$file.sep, "scripts_", modelName),
+                              gdxio, prog, genScenList = TRUE)
     }, error = function(e){
       flog.error("Problems writing gdx files for script: '%s'. Error message: '%s'.", 
                  scriptId, conditionMessage(e))
       errMsg <<- sprintf(lang$errMsg$fileWrite$desc, "data.gdx")
-      hideEl(session, paste0("#scriptOutput_", scriptId, " .script-spinner"))
-      hideEl(session, paste0("#scriptOutput_", scriptId, " .out-no-data"))
-      scriptOutput$sendContent(errMsg, scriptId, isError = TRUE)
+      scriptOutput$sendContent(errMsg, scriptId, hcube = TRUE, isError = TRUE)
     })
     if(!is.null(errMsg)){
       return()

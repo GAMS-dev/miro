@@ -175,7 +175,7 @@ observeEvent(
       scenTags   <<- NULL
       rv$importJobConfirm <- rv$importJobConfirm + 1L
     }, error = function(e){
-      flog.error("Some error occurred creating new scenario. Error message: %s.", e)
+      flog.error("Some error occurred creating new scenario. Error message: %s.", conditionMessage(e))
       errMsg <<- lang$errMsg$saveScen$desc
     })
     if(is.null(showErrorMsg(lang$errMsg$saveScen$title, errMsg))){
@@ -198,7 +198,6 @@ observeEvent(virtualActionButton(
     if(!closeScenario()){
       return()
     }
-    rv$activeSname  <- worker$getJobName(jobImportID)
     newInputCount <- 0L
     errMsg <- NULL
     overwriteInput <- TRUE
@@ -225,6 +224,20 @@ observeEvent(virtualActionButton(
     if(length(errMsg))
       return()
     
+    tryCatch({
+      loadMiroScenMeta(file.path(tmpdir, "_miro_ws_"),
+                       activeScen, attachments, views,
+                       names(modelIn))
+    }, error = function(e){
+      flog.error("Problems loading scenario metadata. Error message: '%s'.", 
+                 conditionMessage(e))
+      showHideEl(session, "#fetchJobsError")
+    })
+    if(length(errMsg))
+      return()
+    
+    rv$activeSname  <- activeScen$getScenName()
+    
     loadModeWorkDir  <- tmpdir
     loadModeFileName <- if(identical(config$fileExchange, "gdx")) MIROGdxInName else NULL
     dfClArgs <- NULL
@@ -235,28 +248,15 @@ observeEvent(virtualActionButton(
       if(!is.null(errMsg)){
         return(NULL)
       }
-      # save input data 
-      idxMap <- match(modelInFileNames, names(scenInputData))
-      lapply(seq_along(modelInFileNames), function(i){
-        if(is.na(idxMap[i]) || is.null(scenInputData[[idxMap[i]]])){
-          scenData[["scen_1_"]][[i + length(modelOut)]] <<- scenDataTemplate[[i]]
-        }else{
-          scenData[["scen_1_"]][[i + length(modelOut)]] <<- scenInputData[[idxMap[i]]]
-        }
-      })
-      scalarIdTmp <- match(scalarsFileName, 
-                           tolower(names(scenInputData)))[[1L]]
+      scenData$clearSandbox()
+      scenData$loadSandbox(scenInputData, modelInFileNames, activeScen$getMetadata())
       if(file.exists(file.path(tmpdir, MIROGdxOutName))){
-        jobResults <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, workDir = tmpdir, 
-                                   modelName = modelName, errMsg = lang$errMsg$GAMSOutput$badOutputData,
-                                   scalarsFileHeaders = scalarsFileHeaders, fileName = MIROGdxOutName,
-                                   templates = modelOutTemplate, method = config$fileExchange, 
-                                   csvDelim = config$csvDelim, hiddenOutputScalars = config$hiddenOutputScalars)
-        if(isFALSE(jobResults$noTabularData)){
-          noOutputData <<- FALSE
-        }
-      }else{
-        jobResults <- list()
+        scenData$loadSandbox(loadScenData(metaData = modelOut, workDir = tmpdir,
+                                          fileName = MIROGdxOutName,
+                                          templates = modelOutTemplate,
+                                          method = config$fileExchange, 
+                                          csvDelim = config$csvDelim)$tabular,
+                             names(modelOut))
       }
     }, error = function(e){
       flog.error("Problems reading job output data. Error message: '%s'.", conditionMessage(e))
@@ -265,27 +265,13 @@ observeEvent(virtualActionButton(
     if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
       return(NULL)
     }
-    if(!is.na(scalarIdTmp)){
-      scalarData[["scen_1_"]] <<- scenInputData[[scalarIdTmp]]
-    }else{
-      scalarData[["scen_1_"]] <<- tibble()
-    }
-    if(!is.null(jobResults$scalar)){
-      scalarData[["scen_1_"]] <<- bind_rows(jobResults$scalar, 
-                                            scalarData[["scen_1_"]])
-    }
-    if(!is.null(jobResults$tabular)){
-      scenData[["scen_1_"]][seq_along(modelOut)] <<- jobResults$tabular
-    }
     if(config$saveTraceFile){
       tryCatch({
-        traceData <<- readTraceData(file.path(tmpdir, 
-                                              paste0(tableNameTracePrefix,
-                                                     modelName, ".trc")), 
+        traceData <<- readTraceData(file.path(tmpdir, "_scenTrc.trc"), 
                                     traceColNames)
       }, error = function(e){
         errMsg <<- conditionMessage(e)
-        flog.info("Problems loading trace data. Error message: %s.", e)
+        flog.info("Problems loading trace data. Error message: %s.", conditionMessage(e))
       })
     }
     progress$set(message = lang$progressBar$importScen$renderOutput, value = 0.8)
@@ -298,10 +284,8 @@ observeEvent(virtualActionButton(
                       selected = "results.current")
     updateTabsetPanel(session, "outputTabset",
                       selected = "outputTabset_1")
-    
-    jobResults <- NULL
     # rendering tables and graphs
-    renderOutputData(rendererEnv, views)
+    renderOutputData()
     
     tryCatch({
       worker$updateJobStatus(JOBSTATUSMAP[['imported']], 

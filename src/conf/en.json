@@ -19,11 +19,11 @@
       "inputScreen":"Input",
       "outputScreen":"Output",
       "gams":"GAMS interaction",
+      "load": "Load scenarios",
       "scen":"Compare scenarios",
       "hcube":{
         "configureRun": "Configure Hypercube job",
         "import": "Import jobs",
-        "load": "Load scenarios",
         "analyze" : "Analyze scenarios"
       }
     },
@@ -95,6 +95,7 @@
     "scen":{  
       "noScen":"No scenarios selected",
       "btLoad":"Load",
+      "btCloseAll": "Close all",
       "scenNameSandboxSuffix": "(Sandbox)",
       "tooltips":{  
         "btExport":"export scenario",
@@ -124,9 +125,10 @@
       "btManualImport": "Manual import",
       "btShowHistory": "Show history"
     },
-    "hcubeLoad":{
+    "queryBuilder":{
       "title":"Load scenarios",
       "noData":"No data was returned by your query",
+      "invalidCsvFilter": "'%s' must not contain ','.",
       "showHashButton": "Show hash",
       "msgOnlyOneHash": "Please select only one scenario.",
       "msgNoHashFound": "No hash was found for the selected scenario. Apparently the scenario was not solved in Hypercube Mode.",
@@ -135,6 +137,17 @@
       "chooseAllButton":"Choose all",
       "orButton": "OR",
       "andButton": "AND",
+      "operators":{
+        "is": "is",
+        "notis": "is not",
+        "contains": "contains",
+        "notcontains": "doesn't contain",
+        "startswith": "starts with",
+        "endswith": "ends with",
+        "exists": "exists",
+        "notexists": "doesn't exist",
+        "between": "between"
+      },
       "queryButton": "Fetch results",
       "showHashDialog":{
         "title": "Scenario hash",
@@ -142,8 +155,9 @@
       },
       "metaColAliases":{
         "uid":"Owner",
+        "sname": "Name",
         "stime":"Time created",
-        "stag": "Job tags"
+        "stag": "Tags"
       }
     },
     "hcubeAnalyze":{
@@ -218,6 +232,7 @@
       "newName": "New name",
       "badName": "The name you chose is invalid (either too long or too short). Please choose another name.",
       "newTags":"New tags",
+      "badTags": "The tag(s) entered are invalid. Make sure that the tags are not empty or duplicated and do not contain more than 1000 characters.",
       "scenExists":"A scenario already exists with the name you selected.",
       "emptyPerm":"Scenario access permissions can not be empty!",
       "incapOwner": "You cannot revoke the owner's access permissions.",
@@ -340,6 +355,12 @@
       "cancelButton":"No",
       "okButton":"Yes"
     },
+    "dialogCloseAllScen":{
+      "title":"Close scenarios",
+      "desc":"Are you sure you want to close all scenarios?",
+      "cancelButton":"No",
+      "okButton":"Yes"
+    },
     "dialogExistingOutput":{  
       "title":"Output data exists",
       "desc":"The scenario you want to save contains output data that may not correspond to the current input data. Do you want to discard the output data?",
@@ -433,7 +454,7 @@
       "infoDataOnly": "With the selected file type only data is exported. Metadata such as attachments, views, tags, etc. are not included."
     },
     "excelExport":{  
-      "metadataSheet":{  
+      "metadataSheet":{
         "title":"Info",
         "uid":"User",
         "sname":"Scenario name",
@@ -474,10 +495,10 @@
     },
     "dialogDownloadTmp":{
       "title": "Download temporary files",
-      "desc": "Select the file you wish to download",
+      "desc": "Select the file(s) you wish to download",
       "noFiles": "No files found",
-      "downloadZipButton":"Download all as zip",
-      "downloadButton":"Download file",
+      "downloadAllButton":"Download all",
+      "downloadButton":"Download",
       "cancelButton":"Cancel"
     },
     "dialogJobSubmission":{
@@ -577,37 +598,40 @@
       "cancelButton": "Cancel",
       "okButton": "Show jobs"
     },
+    "dialogBatchLoad":{
+      "title": "Select action",
+      "selectMethod": "What would you like to do with the selected scenarios?",
+      "selExportType": "Select a file type",
+      "maxScenWarning1": "You may only select up to: '%d' scenarios to load into interactive mode at once.", 
+      "maxScenWarning2": " Select less scenarios or use the PAVER module to compare.",
+      "cancelButton": "Cancel",
+      "paverButton": "Analyze",
+      "selAnalysisScript": "Select the script you want to run",
+      "tabScript": "Scripts",
+      "tabPaver": "PAVER",
+      "delTrace":"Note: The existing trace files found in the current working directory will be deleted when starting PAVER.",
+      "tooManySolvers":"The attributes you selected amount to too many scenarios to compare (no more than %s scenarios can be compared). Please reduce the number of scenarios.",
+      "noTrc":"No trace data could be found for at least one of the selected scenarios.",
+      "analysisRunScriptRunning": "An analysis is currently underway. Please wait until this analysis is complete or interrupt it.",
+      "removeConfirm": "Are you sure that you want to delete the %s selected scenarios from the database? This action can not be undone!",
+      "removeSuccess": "The selected scenarios were removed successfully.",
+      "selPaverAttribs":"Please select the attributes you want to compare:",
+      "selIgnoreAttribs": "Select attributes to ignore:",
+      "selClArgs": "Specify additional arguments to call PAVER with.",
+      "runPaverButton":"Start PAVER",
+      "runScriptButton": "Start script",
+      "downloadAnalysisButton": "Download",
+      "interactiveButtonSb": "Load into sandbox",
+      "interactiveButtonTab":"Compare (Tab)",
+      "interactiveButtonPivot":"Compare (Pivot)",
+      "interactiveButtonSplit": "Compare (Split)",
+      "downloadButton":"Download data",
+      "removeButton": "Delete scenarios"
+    },
     "hcubeMode":{
       "sliderAllCombinations": "All combinations?",
       "stepsize": "Step size",
       "checkboxAliases":["No", "Yes"],
-      "hcubeLoadDialog":{
-        "title": "Select action",
-        "selectMethod": "What would you like to do with the selected scenarios?",
-        "selExportType": "Select a file type",
-        "maxScenWarning1": "You may only select up to: '%d' scenarios to load into interactive mode at once.", 
-        "maxScenWarning2": " Select less scenarios or use the PAVER module to compare.",
-        "cancelButton": "Cancel",
-        "paverButton": "Analyze",
-        "selAnalysisScript": "Select the script you want to run",
-        "tabScript": "Scripts",
-        "tabPaver": "PAVER",
-        "delTrace":"Note: The existing trace files found in the current working directory will be deleted when starting PAVER.",
-        "tooManySolvers":"The attributes you selected amount to too many scenarios to compare (no more than %s scenarios can be compared). Please reduce the number of scenarios.",
-        "noTrc":"No trace data could be found for at least one of the selected scenarios.",
-        "analysisRunScriptRunning": "An analysis is currently underway. Please wait until this analysis is complete or interrupt it.",
-        "removeConfirm": "Are you sure that you want to delete the %s selected scenarios from the database? This action can not be undone!",
-        "removeSuccess": "The selected scenarios were removed successfully.",
-        "selPaverAttribs":"Please select the attributes you want to compare:",
-        "selIgnoreAttribs": "Select attributes to ignore:",
-        "selClArgs": "Specify additional arguments to call PAVER with.",
-        "runPaverButton":"Start PAVER",
-        "runScriptButton": "Start script",
-        "interactiveButtonTab":"Compare (Tab)",
-        "interactiveButtonPivot":"Compare (Pivot)",
-        "downloadButton":"Download data",
-        "removeButton": "Delete scenarios"
-      },
       "invalidScenDialog":{
         "title":"Invalid scenarios",
         "desc": "%d of the scenarios you want to upload are invalid (%s). Do you still want to proceed?",
@@ -661,6 +685,40 @@
     },
     "hot":{
       "search": "Search:"
+    },
+    "migrationModule": {
+      "title": "Database migration",
+      "desc": "We have determined that your GAMS/MIRO data contract has changed in a way that is incompatible with your app's current database layout. Please specify how your data should be migrated.",
+      "backupWarning": "We strongly recommend that you backup your database before migration.",
+      "successMsg": "Your data has been migrated successfully! Please restart the application.",
+      "labelSymbol": "Symbol: '%s'",
+      "selectTableToMap": "Migrate data from",
+      "selectColToMap": "Column: ",
+      "btCancelMigration": "Cancel",
+      "btConfirmMigration": "Confirm migration",
+      "errDuplicateTables": "Table(s): '%s' cannot be duplicated!",
+      "incompatibleTypeWarning": "The existing data must be cast to a numeric value to fit into the new database table. Values that cannot be converted become 0!",
+      "dialogConfirmDataLoss": {
+        "title": "Warning: Loss of data",
+        "descTables": "Attention: The following tables are removed with your current migration configuration: '%s'!",
+        "descTableCols": "Attention. The column(s): '%s' of the table: '%s' are removed with your current migration configuration!",
+        "cbConfirmDataLoss": "I confirm",
+        "btCancel": "Cancel",
+        "btConfirm": "Remove data"
+      },
+      "progress":{
+        "title": "Migrating data",
+        "desc": "Migrating table %s/%s"
+      },
+      "btRemoveTables":{
+        "label": "Delete all database tables",
+        "confirmTitle": "Remove database tables",
+        "confirmDesc": "Are you sure that you want to delete all database tables that belong to the model? This can not be undone! You might want to save the database first before proceeding.",
+        "cbConfirm": "Remove all tables?",
+        "btCancel": "Cancel",
+        "btConfirm": "Remove tables",
+        "msgSuccess": "Database tables removed successfully! Please restart the application."
+      }
     }
   },
   "renderers":{
@@ -684,9 +742,14 @@
       "rowTruncationWarning": "Data was truncated to the first %s rows.",
       "newViewTitle": "New view",
       "newViewLabel": "Please choose a name for the view.",
+      "newViewChartTitle": "Chart title",
+      "newViewxTitle": "X-axis label",
+      "newViewyTitle": "Y-axis label",
       "newViewBtCancel": "Cancel",
       "newViewBtSave": "Save",
-      "errUniqueViewName": "The view name you entered already exists. Please choose another name.",
+      "newViewBtCancelOverwrite": "No",
+      "newViewBtOverwrite": "Yes",
+      "errUniqueViewName": "The view name you entered already exists. Do you want to overwrite the view?",
       "duplicateRecordTitle": "Duplicate record",
       "duplicateRecordDesc": "The record you entered already exists.",
       "errPivotDuplicate": "The data contains duplicate records and can therefore not be pivoted.",
@@ -800,6 +863,12 @@
         "badDelim": "ERROR: Could not determine delimiter. Valid delimiters are: '%s'.",
         "duplicateCol": "ERROR: Multiple selection of the same column is not supported.",
         "badEncoding": "The file you uploaded is not UTF-8 encoded. Other encodings than UTF-8 are not supported!"
+      }
+    },
+    "gdxio": {
+      "errors": {
+        "duplicateRecords": "Duplicate records in symbol: '%s'",
+        "duplicateRecordsTruncated": "(Only the first 10 duplicate records are displayed)"
       }
     },
     "xlsio":{
@@ -927,7 +996,8 @@
     },
     "loadScen":{  
       "title":"Error loading scenario",
-      "desc":"Some error occurred loading the selected scenarios."
+      "desc":"Some error occurred loading the selected scenarios.",
+      "inconsistentDataWarning": "The scenario was changed while you were viewing it. Therefore, the data may not be consistent. You may want to refresh the scenario."
     },
     "deleteScen":{  
       "title":"Error deleting scenario",
@@ -1012,23 +1082,13 @@
       "btCancel": "Cancel"
     },
     "uiR":{
-      "adminPanel": "GAMS MIRO admin panel",
+      "configMode": "GAMS MIRO Configuration Mode",
       "general": "General settings",
       "table": "Configure tables",
       "widgets": "Configure widgets",
       "graphs": "Configure graphs",
       "database": "Database management",
-      "custom":{
-        "skeleton": "skeleton:",
-        "steps": "Steps:",
-        "li1": "Create a directory renderer_%s in your model directory with a file %s_custom.R in it.",
-        "li2": "Copy the above code and paste it into the %s_custom.R file.",
-        "li3a": "Write your own custom renderer! For a detailed description of how to write such a custom renderer, see ",
-        "li3b": "here",
-        "description1": "The next time the application is started after a click on save MIRO looks for a custom renderer function in the file %s_custom.R. If this is not found, the application does not start! Make sure that you have included the custom renderer function correctly. It is always a good idea to first develop a custom renderer isolated from MIRO and, as soon as you are satisfied with the result, to integrate it into the MIRO application.",
-        "description2": "Note:",
-        "description3": "If your application doesn't start because of the reason mentioned above, you can always delete the configured renderer here."
-      }
+      "restartRequired": "Note: For these changes to take effect, you must restart the Configuration Mode!"
     },
     "general":{
       "ui":{
@@ -1038,6 +1098,7 @@
         "tabModules": "Modules",
         "tabScripts": "Analysis scripts",
         "headerGeneral": "General",
+        "headerRenderers": "Default renderers",
         "headerLogo": "Logo",
         "headerSymbolDisplay": "Symbol display",
         "headerTabGrouping": "Tab grouping",
@@ -1050,7 +1111,7 @@
         "headerBaseScripts": "Base Mode",
         "headerOutputAttach": "Output attachments",
         "baseScriptsTooltip": "Run custom analysis scripts which will be displayed in the output section",
-        "headerHcubeScripts": "Hypercube Mode",
+        "headerHcubeScripts": "Batch analysis",
         "hcubeScriptsTooltip": "Run custom analysis scripts for multiple scenarios at once",
         "headerScenData": "Scenario & data",
         "headerComputation": "Computation",
@@ -1094,7 +1155,7 @@
       },
       "scripts":{
         "base": "Specify custom analysis scripts for the Base Mode",
-        "hcube": "Specify custom analysis scripts for the Hypercube Mode"
+        "hcube": "Specify custom analysis scripts for analyzing batches of scenarios"
       },
       "outputAttach": {
         "label": "Add new attachment"
@@ -1146,6 +1207,10 @@
       "decimal":{
         "label": "Number of decimal places used for rounding numerical values (global setting).",
         "tooltip": "Has an effect on all output tables, big data input tables and the table for loading scenarios in Hypercube Mode. - Open documentation."
+      },
+      "defaultRenderer":{
+        "labelOutput": "Default renderer for output data",
+        "choicesOutput": ["Pivot table", "Table"]
       },
       "logo":{
         "header": "Logo preview:",
@@ -1352,7 +1417,8 @@
         "val57": "The file name contains invalid characters. Attachments in subdirectories are not supported!",
         "val58": "The decimal separator and the thousand grouping separator must not be identical!",
         "val59": "The GAMS symbol: %s is declared as table. This causes the last column to be pivoted in MIRO. MIRO pivot cannot be used with already pivoted symbols. Please declare the symbol as a parameter instead.",
-        "val60": "Each group member may only appear in a single group!"
+        "val60": "Each group member may only appear in a single group!",
+        "val61": "The GAMS option must not be one of the reserved options: '%s'."
       },
       "widgetOptions":{
         "slider": "Slider",
@@ -1373,6 +1439,7 @@
         "readonly": "Should table be readonly?",
         "readonlyCols": "Select columns to be readonly",
         "pivotCols": "Select a column to pivot",
+        "fixedColumnsLeft": "Fix columns that are not pivoted?",
         "heatmap": "Turn table into a heatmap?"
       },
       "slider":{
@@ -1517,42 +1584,14 @@
     },
     "database":{
       "title": "Database management",
-      "removeSuccess": "Database tables removed successfully",
-      "restoreSuccess": "Data restored successfully",
-      "restoreNoData": "No csv files found in the archive provided. Nothing was restored.",
-      "restoreInvalidData": "At least one of the tables is invalid. Nothing was restored.",
-      "maxRowError": "The maximum number of rows to export was exceeded for atleast 1 table. Please back up the database manually!",
+      "infoPostgres": "You are using GAMS MIRO Desktop with a <a href=\"https://www.postgresql.org\" target=\"_blank\">PostgreSQL</a> database backend. The database used has the name: %s and is located at: %s. To back up your database, read <a href=\"https://www.postgresql.org/docs/current/backup.html\" target=\"_blank\">here</a>.",
+      "infoSQLite": "You are using GAMS MIRO Desktop with a <a href=\"https://sqlite.org\" target=\"_blank\">SQLite</a> database backend. The database used is located at: %s.",
       "backup": "Database backup",
-      "backupWrapper": "You want to create a backup of the database? Click the button below to get a zip archive with all the database tables saved into csv files. Be aware that it is faster to backup your database using the native backup tool of your DBMS. This means that in case of big databases you should backup your database manually!",
-      "dbSaveAll": "Save database tables",
-      "restore": "Restore database",
-      "restoreWrapper": "You want to restore the database with data from an existing zip file? Please select the file you want to use to restore the database below.",
-      "restoreDb": "Restore",
+      "backupWrapper": "You want to create a backup of the database?",
+      "btDownloadBackup": "Backup database",
+      "backupProgress": "Database is being saved...",
       "remove": "Delete data",
-      "removeWrapper": "You want to remove all the tables that belong to your model (e.g. because the schema changed)?",
-      "removeDialogBtn": "Delete all database tables",
-      "removeDialogTitle": "Remove database tables",
-      "removeDialogDesc": "Are you sure that you want to delete all database tables that belong to the model? This can not be undone! You might want to save the database first before proceeding.",
-      "removeDialogCancel": "Cancel",
-      "removeDialogConfirm": "Remove tables",
-      "removeOrphansWrapper": "You want to remove all the orphaned tables that belong to your model?",
-      "removeOrphansDialogBtn": "Delete all orphaned database tables",
-      "removeOrphansDialogDesc": "Are you sure that you want to delete all orphaned database tables that belong to the model? This can not be undone! You might want to save the database first before proceeding.",
-      "removeInconsistent": "You want to remove all the inconsistent tables?",
-      "removeInconsistentConfirm": "Are you sure that you want to delete all inconsistent database tables that belong to the model?",
-      "cannotBeUndone": "This can not be undone! You might want to save the database first before proceeding.",
-      "removeTitle": "Remove database tables", 
-      "removeCheck": "Remove all tables?",
-      "confirm": "Confirm",
-      "cancel": "Cancel",
-      "removeOrphansCheck": "Remove all orphaned tables?",
-      "removeOrphansTitle": "Remove orphaned database tables",
-      "saveMsg": "Database is being saved...",
-      "compressMsg": "Compressing files...",
-      "decompressMsg": "Decompressing files...",
-      "validateMsg": "Validating files...",
-      "uploadMsg": "Uploading files...",
-      "finishedMsg": "Finished..."
+      "removeWrapper": "You want to remove all the tables that belong to your model (e.g. because the schema changed)?"
     },
     "graphs":{
       "toolCategories": {
@@ -1575,6 +1614,7 @@
         "legend": "Legend",
         "markers": "Markers",
         "flows": "Flows",
+        "advanced": "Advanced options",
         "minicharts": "Minicharts",
         "groupsLayers": "Groups & Layers",
         "data": "Data"
@@ -1592,7 +1632,10 @@
         "choices": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram", "Time Series Diagram", "Map chart", "Gantt chart", "Pivot table and pivot charts", "Valuebox for scalar values", "Custom renderer"],
         "deleteGraph": "Delete",
         "saveGraph": "Save",
-        "toggleFullscreen": "Toggle fullscreen"
+        "toggleLeft": "Switch left panel to full screen",
+        "toggleRight": "Switch right panel to full screen",
+        "previewError": "An error occurred: '%s'",
+        "previewErrorObs": "An error occurred in an observer: '%s'"
       },
       "graphOptions":{
         "pie": "Pie chart",
@@ -1610,6 +1653,7 @@
       },
       "validate":{
         "val1": "Could not set range for x axis. Check for correct data format!",
+        "custom1": "Could not parse additional options. Please make sure that you use valid JSON syntax!",
         "pieValues": "The selected symbol has too many values to be displayed as a pie chart. The maximum number of values that can be displayed in a pie chart is 100.",
         "tableNeeded": "A symbol that is to be configured as a map must be declared as a GAMS table, since multiple value columns are required (e.g. latitude and longitude information)."
       },
@@ -1818,8 +1862,11 @@
         }
       },
       "customOptions":{
-        "name": "Name of the custom renderer function (no space)",
+        "btUpdate": "Update",
+        "externalRenderer": "Use renderer from other symbol",
+        "symNotFoundSuffix": "(symbol not found)",
         "packages": "Packages necessary for the renderer",
+        "options": "Additional options passed to renderer functions",
         "additionalData": "Additional datasets to communicate with the custom renderer"
       },
       "filterOptions":{
@@ -1866,6 +1913,7 @@
           "cmd": "Command to run",
           "args": "Arguments to the command",
           "outFile": "Name of the output file (including file extension)",
+          "markdown": "Output file is a Markdown file",
           "timeout": "Timeout (seconds, -1 for infinite)"
         },
         "addOutAttach":{

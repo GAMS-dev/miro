@@ -94,6 +94,29 @@ a:hover {
     background-color: #00adb5;
   }
 }
+.btn {
+    font-family: Arial;
+    font-size: 15px;
+    font-weight: bold;
+}
+.btn-default{
+  border: 2px solid #ADADAD;
+  color:#000;
+  background-color: #FFF;
+  background-color: rgba(0,0,0,0);
+  transition: all 500ms ease; 
+}
+@media (prefers-color-scheme: dark) {
+    .btn-default {
+        color:#eee
+    }
+}
+.btn-default:hover {
+  color: #000;
+}
+.btn-default.hover, .btn-default:active, .btn-default:hover {
+    background-color:#e7e7e7
+}
 .bt-highlight-1{
   border: 2px solid #F39619;
 }
@@ -104,6 +127,11 @@ a:hover {
 }
 .gmsalert-error{
   background-color: #F39619;
+}
+.err-msg{
+  margin: 5px;
+  color: #F39619;
+  font-weight: bold;
 }
 #btEditWrapper {
   cursor: pointer;
@@ -400,6 +428,18 @@ a:hover {
   overflow: hidden;
   text-align: left;
 }
+.app-env-file-input-label {
+  width: 100%;
+  cursor: pointer!important;
+}
+@media (prefers-color-scheme: dark) {
+  .app-env-file-input-label {
+    background: #292D33!important;
+  }
+}
+.app-env-file-input {
+  display: none;
+}
 .app-title-fixed {
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -415,7 +455,7 @@ a:hover {
   -webkit-app-region: drag;
   position: sticky;
   top:0;
-  z-index:2000;
+  z-index:1000;
   text-align:center;
   background: #494d55;
   color: rgba(255, 255, 255, 0.85);
@@ -444,11 +484,6 @@ a:hover {
   align-items: center;
   padding-top: 5px;
   padding-bottom: 5px;
-}
-.btn {
-    font-family: Arial;
-    font-size: 15px;
-    font-weight: bold;
 }
 .confirm-btn, .bootbox-accept {
     background: #f90 !important;
@@ -559,6 +594,9 @@ a:hover {
 }
 .column3 {
   width: 40%;
+}
+.modal-lg {
+  max-width: 1200px;
 }
 .modal-custom {
   margin-top: 100px;

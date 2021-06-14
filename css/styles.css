@@ -974,3 +974,33 @@ a:hover {
     background: #292D33;
   }
 }
+#envTableWrapper {
+  padding-top: 0;
+  display: block;
+  overflow: auto;
+  height: 50vh;
+}
+#envTableWrapper th {
+  background: #eee;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.env-button-wrapper {
+  padding: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  #envTableWrapper table {
+    color: #fff;
+  }
+  #envTableWrapper th {
+    background: #292D33;
+  }
+  .btn-outline-secondary {
+    color: #fff;
+  }
+}
+select.form-control, select.form-control:focus {
+  color: unset;
+  background-color: unset;
+}

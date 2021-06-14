@@ -68,6 +68,13 @@
         "author": "GAMS Development Corp", 
         "desc": "Classical Cutting Stock Problem", 
         "upvotes": 0
+    },
+    {
+        "id": "cohortdivisor", 
+        "title": "Cohort Divisor", 
+        "author": "GAMS Development Corp", 
+        "desc": "Partition students into cohorts so that inter-cohort connections are minimized", 
+        "upvotes": 0
     }
     ]
 }

@@ -107,6 +107,7 @@ markTabAsSelected <- function(x) {
 insertScenTab <- function(inputId, tab, target,
                           position = c("before", "after"), select = FALSE,
                           scenID = NULL, scenButtonLang = NULL,
+                          immediate = FALSE,
                           session = getDefaultReactiveDomain()) {
   force(target)
   force(select)
@@ -133,7 +134,7 @@ insertScenTab <- function(inputId, tab, target,
       position = position,
       select = select)
   }
-  session$onFlush(callback, once = TRUE)
+  if(immediate) callback() else session$onFlush(callback, once = TRUE)
 }
 
 MIRObuildTabItem <- function(index, tabsetId, tabs = NULL, 

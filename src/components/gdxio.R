@@ -248,7 +248,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
           symVal  <- symVals[[j]]
           if(symName %in% names(private$dropdownAliases) &&
              !isTRUE(private$dropdownAliases[[symName]]$clearValue)){
-            aliasId <- match(symVal, private$dropdownAliases[[symName]]$choices)
+            aliasId <- match(symVal[1], private$dropdownAliases[[symName]]$choices)
             if(is.na(aliasId)){
               uels    <- list(symVal[1])
               te      <- paste0(symVal[-1], collapse = "||")
@@ -290,9 +290,18 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
         errMsg <- conditionMessage(e)
         if(startsWith(errMsg, "GDXRRW:wgdx:GDXDupError:")){
           errMsg <- stri_split_fixed(substr(errMsg, 25L, nchar(errMsg)), "\n")[[1L]]
+          if(errMsg[[1]] %in% names(private$metaData)){
+            errMsg[[1]] <- sprintf(lang$errMsg$gdxio$errors$duplicateRecords,
+                                   private$metaData[[errMsg[[1]]]]$alias)
+          }else{
+            flog.warn("Could not find symbol: '%s' that was reported to have duplicate records in data contract.", errMsg[[1]])
+            errMsg[[1]] <- sprintf(lang$errMsg$gdxio$errors$duplicateRecords,
+                                   errMsg[[1]])
+          }
           if(length(errMsg) > 11L){
             errMsg <- paste0(paste(errMsg[1:11], collapse = "\n"),
-                             "\n\n (Only the first 10 duplicate records are displayed)")
+                             "\n\n",
+                             lang$errMsg$gdxio$errors$duplicateRecordsTruncated)
           }else{
             errMsg <- paste(errMsg, collapse = "\n")
           }

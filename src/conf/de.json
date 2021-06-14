@@ -19,11 +19,11 @@
       "inputScreen":"Eingabedaten",
       "outputScreen":"Ergebnisse",
       "gams":"GAMS Interaktion",
+      "load": "Szenarien laden",
       "scen":"Szenarien vergleichen",
       "hcube":{
         "configureRun": "Hypercube-Job konfigurieren",
         "import": "Jobs importieren",
-        "load": "Szenarien laden",
         "analyze": "Szenarienanalyse"
       }
     },
@@ -95,6 +95,7 @@
     "scen":{  
       "noScen":"Kein Szenario ausgewählt",
       "btLoad":"Laden",
+      "btCloseAll": "Alle schließen",
       "scenNameSandboxSuffix": "(Sandbox)",
       "tooltips":{  
         "btExport":"Exportiere Szenariodaten",
@@ -124,9 +125,10 @@
       "btManualImport": "Manueller Import",
       "btShowHistory": "Verlauf anzeigen"
     },
-    "hcubeLoad":{
+    "queryBuilder":{
       "title":"Lade Szenarien",
       "noData":"Für die von Ihnen abgesetzte Datenbankabfrage konnten keine Daten gefunden werden.",
+      "invalidCsvFilter": "'%s' dürfen kein ',' enthalten.",
       "showHashButton": "Hash anzeigen",
       "msgOnlyOneHash": "Bitte wählen Sie nur ein Szenario aus.",
       "msgNoHashFound": "Für das ausgewählte Szenario wurde kein Hash gefunden. Anscheinend wurde das Szenario nicht im Hypercube-Modus gelöst.",
@@ -135,6 +137,17 @@
       "chooseAllButton":"Wähle alle",
       "orButton": "ODER",
       "andButton": "UND",
+      "operators":{
+        "is": "ist",
+        "notis": "ist nicht",
+        "contains": "enthält",
+        "notcontains": "enthält nicht",
+        "startswith": "beginnt mit",
+        "endswith": "endet mit",
+        "exists": "existiert",
+        "notexists": "existiert nicht",
+        "between": "zwischen"
+      },
       "queryButton": "Ergebnisse abrufen",
       "showHashDialog":{
         "title": "Szenario Hash",
@@ -142,8 +155,9 @@
       },
       "metaColAliases":{
         "uid":"Eigentümer",
+        "sname": "Name",
         "stime":"Erstellungsdatum",
-        "stag": "Job-Tags"
+        "stag": "Tags"
       }
     },
     "hcubeAnalyze":{
@@ -218,6 +232,7 @@
       "newName": "New name",
       "badName": "Der von Ihnen gewählte Name ist ungültig (entweder zu lang oder zu kurz). Bitte wählen Sie einen anderen Namen.",
       "newTags":"Neue Tags",
+      "badTags": "Der/die eingegebene(n) Tag(s) sind ungültig. Stellen Sie sicher, dass die Tags nicht leer oder doppelt sind und nicht mehr als 1000 Zeichen enthalten.",
       "scenExists":"Es existiert bereits ein Szenario mit dem von Ihnen gewählten Namen.",
       "emptyPerm": "Szenario Zugriffsrechte dürfen nicht leer sein!",
       "incapOwner": "Du kannst dem Besitzer seine Zugriffsberechtigungen nicht entziehen.",
@@ -337,6 +352,12 @@
     "dialogCloseScen":{  
       "title":"Szenario schließen",
       "desc":"Sind Sie sicher, dass Sie das ausgewählte Szenario schließen möchten?",
+      "cancelButton":"Nein",
+      "okButton":"Ja"
+    },
+    "dialogCloseAllScen":{
+      "title":"Szenarien schließen",
+      "desc":"Sind Sie sicher, dass Sie alle Szenarien schließen wollen?",
       "cancelButton":"Nein",
       "okButton":"Ja"
     },
@@ -474,10 +495,10 @@
     },
     "dialogDownloadTmp":{
       "title": "Temporäre Dateien laden",
-      "desc": "Wählen Sie die zu ladende Datei aus",
+      "desc": "Wählen Sie die zu ladenden Dateien aus",
       "noFiles": "Es konnten keine Dateien gefunden werden",
-      "downloadZipButton":"Alle Dateien als zip laden",
-      "downloadButton":"Datei laden",
+      "downloadAllButton":"Alle Dateien herunterladen",
+      "downloadButton":"Herunterladen",
       "cancelButton":"Abbrechen"
     },
     "dialogJobSubmission":{
@@ -577,37 +598,40 @@
       "cancelButton": "Abbrechen",
       "okButton": "Jobs anzeigen"
     },
+    "dialogBatchLoad":{
+      "title": "Aktion auswählen",
+      "selectMethod": "Was möchtest du mit den ausgewählten Szenarien machen?",
+      "selExportType": "Wählen Sie einen Dateityp aus",
+      "maxScenWarning1": "Sie können nur bis zu: '%d' gleichzeitig für den Vergleich im interaktiven Modus laden.", 
+      "maxScenWarning2": " Wählen Sie weniger Szenarien aus oder verwenden Sie das Paver Modul zum Vergleich.",
+      "cancelButton": "Abbrechen",
+      "paverButton": "Analysieren",
+      "selAnalysisScript": "Wählen Sie das Skript aus, das Sie ausführen möchten.",
+      "tabScript": "Skripte",
+      "tabPaver": "PAVER",
+      "delTrace":"Hinweis: Die vorhandenen Trace-Dateien im aktuellen Arbeitsverzeichnis werden beim Start von Paver gelöscht.",
+      "tooManySolvers":"Die von Ihnen gewählten Attribute ergeben zu viele zu vergleichende Szenarien (maximal: %s Szenarien können verglichen werden). Bitte reduzieren Sie die Anzahl an Szenarien.",
+      "noTrc": "Für mindestens eines der ausgewählten Szenarien konnten keine Trace-Daten gefunden werden.",
+      "analysisRunScriptRunning": "Derzeit läuft eine Analyse. Bitte warten Sie, bis diese Analyse abgeschlossen ist oder unterbrechen Sie sie.",
+      "removeConfirm": "Sind Sie sicher, dass Sie die %s ausgewählten Szenarien löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden!",
+      "removeSuccess": "Die ausgewählten Szenarien wurden erfolgreich gelöscht.",
+      "selPaverAttribs":"Bitte wählen Sie die Attribute, welche Sie vergleichen möchten:",
+      "selIgnoreAttribs": "Wählen Sie Attribute aus, die ignoriert werden sollen:",
+      "selClArgs": "Geben Sie zusätzliche Argumente an, mit denen Sie PAVER aufrufen möchten.",
+      "runPaverButton": "Paver starten",
+      "runScriptButton": "Skript starten",
+      "downloadAnalysisButton": "Downloaden",
+      "interactiveButtonSb": "In Sandbox laden",
+      "interactiveButtonTab":"Vergleichen (Tab)",
+      "interactiveButtonPivot":"Vergleichen (Pivot)",
+      "interactiveButtonSplit": "Vergleichen (Split)",
+      "downloadButton":"Daten herunterladen",
+      "removeButton": "Szenarien löschen"
+    },
     "hcubeMode":{
       "sliderAllCombinations": "Alle Kombinationen?",
       "stepsize": "Schrittweite",
       "checkboxAliases":["Nein", "Ja"],
-      "hcubeLoadDialog":{
-        "title": "Aktion auswählen",
-        "selectMethod": "Was möchtest du mit den ausgewählten Szenarien machen?",
-        "selExportType": "Wählen Sie einen Dateityp aus",
-        "maxScenWarning1": "Sie können nur bis zu: '%d' gleichzeitig für den Vergleich im interaktiven Modus laden.", 
-        "maxScenWarning2": " Wählen Sie weniger Szenarien aus oder verwenden Sie das Paver Modul zum Vergleich.",
-        "cancelButton": "Abbrechen",
-        "paverButton": "Analysieren",
-        "selAnalysisScript": "Wählen Sie das Skript aus, das Sie ausführen möchten.",
-        "tabScript": "Skripte",
-        "tabPaver": "PAVER",
-        "delTrace":"Hinweis: Die vorhandenen Trace-Dateien im aktuellen Arbeitsverzeichnis werden beim Start von Paver gelöscht.",
-        "tooManySolvers":"Die von Ihnen gewählten Attribute ergeben zu viele zu vergleichende Szenarien (maximal: %s Szenarien können verglichen werden). Bitte reduzieren Sie die Anzahl an Szenarien.",
-        "noTrc": "Für mindestens eines der ausgewählten Szenarien konnten keine Trace-Daten gefunden werden.",
-        "analysisRunScriptRunning": "Derzeit läuft eine Analyse. Bitte warten Sie, bis diese Analyse abgeschlossen ist oder unterbrechen Sie sie.",
-        "removeConfirm": "Sind Sie sicher, dass Sie die %s ausgewählten Szenarien löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden!",
-        "removeSuccess": "Die ausgewählten Szenarien wurden erfolgreich gelöscht.",
-        "selPaverAttribs":"Bitte wählen Sie die Attribute, welche Sie vergleichen möchten:",
-        "selIgnoreAttribs": "Wählen Sie Attribute aus, die ignoriert werden sollen:",
-        "selClArgs": "Geben Sie zusätzliche Argumente an, mit denen Sie PAVER aufrufen möchten.",
-        "runPaverButton": "Paver starten",
-        "runScriptButton": "Skript starten",
-        "interactiveButtonTab":"Vergleichen (Tab)",
-        "interactiveButtonPivot":"Vergleichen (Pivot)",
-        "downloadButton":"Daten herunterladen",
-        "removeButton": "Szenarien löschen"
-      },
       "invalidScenDialog":{
         "title":"Ungültige Szenarien",
         "desc": "%d der Szenarien, die Sie hochladen möchten, sind ungültig (%s). Wollen Sie dennoch fortfahren?",
@@ -661,6 +685,40 @@
     },
     "hot":{
       "search": "Suche:"
+    },
+    "migrationModule": {
+      "title": "Datenbankmigration",
+      "desc": "Wir haben festgestellt, dass sich Ihr GAMS/MIRO-Datenvertrag auf eine Weise geändert hat, die mit dem aktuellen Datenbanklayout Ihrer App nicht kompatibel ist. Bitte geben Sie an, wie Ihre Daten migriert werden sollen.",
+      "backupWarning": "Wir empfehlen Ihnen dringend, vor der Migration ein Backup Ihrer Datenbank zu erstellen.",
+      "successMsg": "Ihre Daten wurden erfolgreich migriert! Bitte starten Sie die Anwendung neu.",
+      "labelSymbol": "Symbol: '%s'",
+      "selectTableToMap": "Migriere Daten von",
+      "selectColToMap": "Spalte: ",
+      "btCancelMigration": "Abbrechen",
+      "btConfirmMigration": "Migration bestätigen",
+      "errDuplicateTables": "Tabelle(n): '%s' können nicht dupliziert werden!",
+      "incompatibleTypeWarning": "Die vorhandenen Daten müssen in einen numerischen Wert gecastet werden, damit sie in die neue Datenbanktabelle passen. Werte, die nicht umgewandelt werden können, werden zu 0!",
+      "dialogConfirmDataLoss": {
+        "title": "Warnung: Verlust von Daten",
+        "descTables": "Achtung! Die folgenden Tabellen werden mit Ihrer aktuellen Migrationskonfiguration entfernt: '%s'!",
+        "descTableCols": "Achtung! Die Spalte(n): '%s' der Tabelle: '%s' werden mit Ihrer aktuellen Migrationskonfiguration entfernt!",
+        "cbConfirmDataLoss": "Ich bestätige",
+        "btCancel": "Abbrechen",
+        "btConfirm": "Daten entfernen"
+      },
+      "progress":{
+        "title": "Migriere Daten",
+        "desc": "Migriere Tabelle %s/%s"
+      },
+      "btRemoveTables":{
+        "label": "Alle Datenbanktabellen löschen",
+        "confirmTitle": "Alle Datenbanktabellen löschen",
+        "confirmDesc": "Sind Sie sicher, dass Sie alle zum Modell gehörenden Datenbanktabellen löschen wollen? Das kann nicht rückgängig gemacht werden! Möglicherweise möchten Sie zuerst die Datenbank sichern, bevor Sie fortfahren.",
+        "cbConfirm": "Alle Tabellen entfernen?",
+        "btCancel": "Abbrechen",
+        "btConfirm": "Tabellen entfernen",
+        "msgSuccess": "Datenbanktabellen erfolgreich entfernt. Bitte starten Sie die Anwendung neu."
+      }
     }
   },
   "progressBar":{  
@@ -725,9 +783,14 @@
       "rowTruncationWarning": "Die Daten wurden auf die ersten %s Zeilen gekürzt.",
       "newViewTitle": "Neuer view",
       "newViewLabel": "Bitte wählen Sie einen Namen für den View.",
+      "newViewChartTitle": "Diagrammtitel",
+      "newViewxTitle": "X-Achsen-Beschriftung",
+      "newViewyTitle": "Y-Achsen-Beschriftung",
       "newViewBtCancel": "Abbrechen",
       "newViewBtSave": "Speichern",
-      "errUniqueViewName": "Der von Ihnen eingegebene Viewname existiert bereits. Bitte wählen Sie einen anderen Namen.",
+      "newViewBtCancelOverwrite": "Nein",
+      "newViewBtOverwrite": "Ja",
+      "errUniqueViewName": "Der von Ihnen eingegebene Viewname existiert bereits. Wollen Sie den View überschreiben?",
       "duplicateRecordTitle": "Doppelter Datensatz",
       "duplicateRecordDesc": "Der von Ihnen eingegebene Datensatz ist bereits vorhanden.",
       "errPivotDuplicate": "Die Daten enthalten doppelte Datensätze und können daher nicht gepivoted werden.",
@@ -800,6 +863,12 @@
         "badDelim": "FEHLER: Konnte Begrenzungszeichen nicht ermitteln. Gültige Begrenzungszeichen sind: '%s'.",
         "duplicateCol": "FEHLER: Das mehrfache Auswählen derselben Spalte wird nicht unterstützt.",
         "badEncoding": "Die Datei, die Sie hochgeladen haben, ist nicht UTF-8 kodiert. Andere Kodierungen als UTF-8 werden nicht unterstützt!"
+      }
+    },
+    "gdxio": {
+      "errors": {
+        "duplicateRecords": "Doppelte Datensätze im Symbol: '%s'",
+        "duplicateRecordsTruncated": "(Es werden nur die ersten 10 doppelten Datensätze angezeigt)"
       }
     },
     "xlsio":{
@@ -927,7 +996,8 @@
     },
     "loadScen":{  
       "title":"Fehler beim Laden der Szenarien",
-      "desc":"Beim Laden der ausgewählten Szenarien ist ein Fehler aufgetreten."
+      "desc":"Beim Laden der ausgewählten Szenarien ist ein Fehler aufgetreten.",
+      "inconsistentDataWarning": "Das Szenario wurde geändert, während Sie es angesehen haben. Daher sind die Daten eventuell nicht konsistent. Möglicherweise möchten Sie das Szenario aktualisieren."
     },
     "deleteScen":{  
       "title":"Fehler beim Löschen des Szenarien",
@@ -1012,23 +1082,13 @@
       "btCancel": "Abbrechen"
     },
     "uiR":{
-      "adminPanel": "GAMS MIRO Administrationsoberfläche",
+      "configMode": "GAMS MIRO Konfigurationsmodus",
       "general": "Allgemeine Einstellungen",
       "table": "Tabellen konfigurieren",
       "widgets": "Widgets konfigurieren",
       "graphs": "Graphen konfigurieren",
       "database": "Datenbankverwaltung",
-      "custom":{
-        "skeleton": "Grundgerüst:",
-        "steps": "Schritte:",
-        "li1": "Erstellen Sie ein Verzeichnis renderer_%s in Ihrem Modellverzeichnis mit einer Datei %s_custom.R darin.",
-        "li2": "Kopiere den obenstehenden Code und füge ihn in die Datei %s_custom.R ein.",
-        "li3a": "Schreibe deinen eigenen Renderer! Für eine detaillierte Beschreibung, wie man einen solchen benutzerdefinierten Renderer schreibt, siehe ",
-        "li3b": "hier",
-        "description1": "Das nächste Mal, wenn die Applikation nach einem Klick auf speichern gestartet wird, sucht MIRO nach einer benutzerdefinierten Rendererfunktion in der Datei %s_custom.R. Wird diese nicht gefunden, startet die Anwendung nicht! Vergewissere dich also immer, dass du die benutzerdefinierte Rendererfunktion korrekt eingebunden hast. Es ist immer eine gute Idee, zunächst einen von MIRO isolierten Renderer zu entwickeln und ihn, sobald du mit dem Ergebnis zufrieden bist, in die MIRO-Anwendung zu integrieren.",
-        "description2": "Beachte:",
-        "description3": "Wenn deine Anwendung aus dem oben genannten Grund nicht startet, kannst du den konfigurierten Renderer hier jederzeit löschen."
-      }
+      "restartRequired": "Hinweis: Damit diese Änderungen wirksam werden, müssen Sie den Konfigurationsmodus neu starten!"
     },
     "general":{
       "ui":{
@@ -1038,6 +1098,7 @@
         "tabModules": "Module",
         "tabScripts": "Analyseskripte",
         "headerGeneral": "Allgemein",
+        "headerRenderers": "Standard-Renderer",
         "headerLogo": "Logo",
         "headerSymbolDisplay": "Symboldarstellung",
         "headerTabGrouping": "Tab-Gruppierung",
@@ -1050,7 +1111,7 @@
         "headerBaseScripts": "Basismodus",
         "headerOutputAttach": "Ergebnis-Anhänge",
         "baseScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte aus, die im Ausgabeabschnitt angezeigt werden",
-        "headerHcubeScripts": "Hypercube-Modus",
+        "headerHcubeScripts": "Batch-Analyse",
         "hcubeScriptsTooltip": "Führen Sie benutzerdefinierte Analyseskripte für mehrere Szenarien auf einmal aus",
         "headerScenData": "Szenario & Daten",
         "headerComputation": "Berechnung",
@@ -1094,7 +1155,7 @@
       },
       "scripts":{
         "base": "Spezifizieren Sie individuelle Analyseskripte für den Basismodus.",
-        "hcube": "Spezifizieren Sie individuelle Analyseskripte für den Hypercube-Modus."
+        "hcube": "Spezifizieren Sie individuelle Analyseskripte für die Batch-Analyse."
       },
       "outputAttach": {
         "label": "Neue Anlage hinzufügen"
@@ -1146,6 +1207,10 @@
       "decimal":{
         "label": "Anzahl der Dezimalstellen für das Runden von numerischen Werten (globale Option).",
         "tooltip": "Wirkt sich auf alle Ausgabetabellen, Eingabetabellen mit großen Datenmengen und die Tabelle für Laden von Szenarien im Hypercube-Modus aus. - Dokumentation öffnen."
+      },
+      "defaultRenderer":{
+        "labelOutput": "Standard-Renderer für Ausgabedaten",
+        "choicesOutput": ["Pivot-Tabelle", "Tabelle"]
       },
       "logo":{
         "header": "Logo Vorschau:",
@@ -1352,7 +1417,8 @@
         "val57": "Der Dateiname enthält ungültige Zeichen. Anhänge in Unterverzeichnissen werden nicht unterstützt!",
         "val58": "Das Dezimaltrennzeichen und das Tausender-Trennzeichen dürfen nicht identisch sein!",
         "val59": "Das GAMS-Symbol: %s ist als Tabelle deklariert. Dies bewirkt, dass die letzte Spalte in MIRO gepivoted wird. MIRO-Pivot kann nicht mit bereits gepivoteten Symbolen verwendet werden. Bitte deklarieren Sie das Symbol stattdessen als Parameter.",
-        "val60": "Jedes Gruppenmitglied darf nur in einer einzigen Gruppe auftreten!"
+        "val60": "Jedes Gruppenmitglied darf nur in einer einzigen Gruppe auftreten!",
+        "val61": "Die GAMS-Option darf nicht zu den reservierten Optionen: '%s' gehören."
       },
       "widgetOptions":{
         "slider": "Schieberegler",
@@ -1373,6 +1439,7 @@
         "readonly": "Soll die Tabelle schreibgeschützt sein?",
         "readonlyCols": "Wählen Sie Spalten aus, die schreibgeschützt sein sollen",
         "pivotCols": "Wählen Sie eine Spalte, die pivotiert werden soll",
+        "fixedColumnsLeft": "Spalten fixieren, die nicht pivotiert sind?",
         "heatmap": "Die Tabelle in eine Heatmap wandeln?"
       },
       "slider":{
@@ -1517,42 +1584,14 @@
     },
     "database":{
       "title": "Datenbankverwaltung",
-      "removeSuccess": "Datenbanktabellen erfolgreich entfernt",
-      "restoreSuccess": "Daten erfolgreich wiederhergestellt",
-      "restoreNoData": "Es wurden keine CSV-Dateien im Archiv gefunden. Nichts wurde wiederhergestellt.",
-      "restoreInvalidData": "Mindestens eine der Tabellen ist ungültig. Nichts wurde wiederhergestellt.",
-      "maxRowError": "Die maximale Anzahl der zu exportierenden Zeilen wurde für mindestens 1 Tabelle überschritten. Bitte sichern Sie die Datenbank manuell!",
+      "infoPostgres": "Sie verwenden GAMS MIRO Desktop mit einem <a href=\"https://www.postgresql.org\" target=\"_blank\">PostgreSQL</a>-Datenbank-Backend. Die verwendete Datenbank hat den Namen: %s und befindet sich unter: %s. Um Ihre Datenbank zu sichern, lesen Sie <a href=\"https://www.postgresql.org/docs/current/backup.html\" target=\"_blank\">hier</a>.",
+      "infoSQLite": "Sie verwenden GAMS MIRO Desktop mit einem <a href=\"https://sqlite.org\" target=\"_blank\">SQLite</a>-Datenbank-Backend. Die verwendete Datenbank befindet sich unter: %s.",
       "backup": "Datenbanksicherung",
-      "backupWrapper": "Sie möchten ein Backup der Datenbank erstellen? Klicken Sie auf die Schaltfläche unten, um ein Zip-Archiv mit allen in CSV-Dateien gespeicherten Datenbanktabellen zu erhalten. Beachten Sie, dass es schneller ist, Ihre Datenbank mit dem nativen Sicherungswerkzeug Ihres DBMS zu sichern. Das bedeutet, dass Sie bei großen Datenbanken Ihre Datenbank manuell sichern sollten!",
-      "dbSaveAll": "Datenbanktabellen speichern",
-      "restore": "Datenbank wiederherstellen",
-      "restoreWrapper": "Sie wollen die Datenbank mit Daten aus einer bestehenden Zip-Datei wiederherstellen? Bitte wählen Sie die Datei aus, die Sie für die Wiederherstellung der Datenbank verwenden möchten.",
-      "restoreDb": "Wiederherstellen",
+      "backupWrapper": "Sie möchten eine Sicherung der Datenbank erstellen?",
+      "btDownloadBackup": "Datenbank sichern",
+      "backupProgress": "Datenbank wird gesichert...",
       "remove": "Daten löschen",
-      "removeWrapper": "Sie wollen alle Tabellen entfernen, die zu dem Modell gehören (z.B. weil sich das Schema geändert hat)?",
-      "removeDialogBtn": "Alle Datenbanktabellen löschen",
-      "removeDialogTitle": "Datenbanktabellen entfernen",
-      "removeDialogDesc": "Sind Sie sicher, dass Sie alle zum Modell gehörenden Datenbanktabellen löschen wollen? Das kann nicht rückgängig gemacht werden! Möglicherweise möchten Sie zuerst die Datenbank speichern, bevor Sie fortfahren.",
-      "removeDialogCancel": "Abbrechen",
-      "removeDialogConfirm": "Tabellen entfernen",
-      "removeOrphansWrapper": "Sie wollen alle verwaisten Tabellen, die zu dem Modell gehören, entfernen?",
-      "removeOrphansDialogBtn": "Alle verwaisten Datenbanktabellen löschen",
-      "removeOrphansDialogDesc": "Sind Sie sicher, dass Sie alle verwaisten Datenbanktabellen, die zu Ihrem Modell gehören, löschen wollen? Das kann nicht rückgängig gemacht werden! Möglicherweise möchten Sie die Datenbank zuerst speichern, bevor Sie fortfahren.",
-      "removeInconsistent": "Wollen Sie alle inkonsistenten Datenbanktabellen löschen?",
-      "removeInconsistentConfirm": "Sind Sie sicher, dass Sie alle inkonsistenten Datenbanktabellen, die zu dem Modell gehören, löschen wollen?",
-      "cannotBeUndone": "Das kann nicht rückgängig gemacht werden! Möglicherweise möchten Sie die Datenbank zuerst speichern, bevor Sie fortfahren.",
-      "removeTitle": "Datenbanktabellen entfernen",
-      "removeCheck": "Alle Tabellen entfernen?",
-      "confirm": "Bestätigen",
-      "cancel": "Abbrechen",
-      "removeOrphansCheck": "Alle verwaisten Tabellen entfernen?",
-      "removeOrphansTitle": "Verwaiste Datenbanktabellen löschen",
-      "saveMsg": "Datenbank wird gespeichert...",
-      "compressMsg": "Dateien komprimieren...",
-      "decompressMsg": "Dateien dekomprimieren...",
-      "validateMsg": "Dateien validieren...",
-      "uploadMsg": "Dateien hochladen...",
-      "finishedMsg": "Beendet..."
+      "removeWrapper": "Sie wollen alle Tabellen entfernen, die zu dem Modell gehören (z.B. weil sich das Schema geändert hat)?"
     },
     "graphs":{
       "toolCategories": {
@@ -1575,6 +1614,7 @@
         "legend": "Legende",
         "markers": "Markierungen",
         "flows": "Flüsse",
+        "advanced": "Erweiterte Optionen",
         "minicharts": "Minicharts",
         "groupsLayers": "Gruppen & Ebenen",
         "data": "Daten"
@@ -1592,7 +1632,10 @@
         "choices": ["Kreisdiagramm", "Balkendiagramm", "Streudiagramm", "Liniendiagramm", "Blasendiagramm", "Histogramm", "Zeitreihen-Diagramm", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle und Pivot-Charts", "Wertebox für skalare Werte", "Eigener Renderer"],
         "deleteGraph": "Löschen",
         "saveGraph": "Speichern",
-        "toggleFullscreen": "Vollbild wechseln"
+        "toggleLeft": "Linken Bildbereich auf Vollbildmodus umschalten",
+        "toggleRight": "Rechten Bildbereich auf Vollbildmodus umschalten",
+        "previewError": "Es ist ein Fehler aufgetreten: '%s'",
+        "previewErrorObs": "In einem Observer ist ein Fehler aufgetreten: '%s'"
       },
       "graphOptions":{
         "pie": "Kreisdiagramm",
@@ -1610,6 +1653,7 @@
       },
       "validate":{
         "val1": "Der Bereich für die x-Achse konnte nicht eingestellt werden. Überprüfen Sie das korrekte Datenformat!",
+        "custom1": "Konnte zusätzliche Optionen nicht parsen. Bitte stellen Sie sicher, dass Sie eine gültige JSON-Syntax verwenden!",
         "pieValues": "Das ausgewählte Symbol hat zu viele Werte, um als Kuchendiagramm angezeigt zu werden. Die maximale Anzahl der Werte, die in einem Kuchendiagramm dargestellt werden können, beträgt 100.",
         "tableNeeded": "Ein Symbol, das als Karte konfiguriert werden soll, muss als GAMS-Tabelle deklariert werden (table statement), da mehrere Wertespalten benötigt werden (z.B. Breiten- und Längengradangaben)."
       },
@@ -1818,7 +1862,10 @@
         }
       },
       "customOptions":{
-        "name": "Name der benutzerdefinierten Rendererfunktion (ohne Leerzeichen)",
+        "btUpdate": "Aktualisieren",
+        "externalRenderer": "Renderer von anderem Symbol verwenden",
+        "symNotFoundSuffix": "(Symbol nicht gefunden)",
+        "options": "Zusätzliche Optionen, die an Renderer-Funktionen übergeben werden",
         "packages": "Benötigte Pakete für den Renderer",
         "additionalData": "Zusätzliche Datensätze, die mit dem benutzerdefinierten Renderer kommuniziert werden sollen"
       },
@@ -1866,6 +1913,7 @@
           "cmd": "Auszuführender Befehl",
           "args": "Argumente für den Befehl",
           "outFile": "Name der Ausgabedatei (inklusive Dateiendung)",
+          "markdown": "Ausgabedatei ist eine Markdown-Datei",
           "timeout": "Timeout (Sekunden, -1 für unendlich)"
         },
         "addOutAttach":{

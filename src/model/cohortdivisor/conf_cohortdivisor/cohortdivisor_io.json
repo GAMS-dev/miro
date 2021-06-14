@@ -1,0 +1,147 @@
+{
+	"modelTitle":	"G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m",
+	"inputSymbols":	{
+		"groupdata":	{
+			"alias":	"groupdata",
+			"symtype":	"parameter",
+			"headers":	{
+				"g":	{
+					"type":	"string",
+					"alias":	"groups"
+				},
+				"mode":	{
+					"type":	"string",
+					"alias":	"splitting mode"
+				},
+				"maxgroupsize":	{
+					"type":	"numeric",
+					"alias":	"maxgroupsize"
+				},
+				"priority":	{
+					"type":	"numeric",
+					"alias":	"priority"
+				}
+			}
+		},
+		"gsmap":	{
+			"alias":	"gsmap",
+			"symtype":	"set",
+			"headers":	{
+				"g":	{
+					"type":	"string",
+					"alias":	"groups"
+				},
+				"s":	{
+					"type":	"string",
+					"alias":	"students"
+				},
+				"text":	{
+					"type":	"string",
+					"alias":	"Set text "
+				}
+			}
+		},
+		"existingcohortgroupmap":	{
+			"alias":	"existingcohortgroupmap",
+			"symtype":	"set",
+			"headers":	{
+				"s":	{
+					"type":	"string",
+					"alias":	"students"
+				},
+				"g":	{
+					"type":	"string",
+					"alias":	"groups"
+				},
+				"c":	{
+					"type":	"string",
+					"alias":	"cohorts"
+				},
+				"text":	{
+					"type":	"string",
+					"alias":	"Set text "
+				}
+			}
+		},
+		"_scalars":	{
+			"alias":	"Input Scalars",
+			"symnames":	["priorityab"],
+			"symtext":	["priority to keep the input assignment"],
+			"symtypes":	["parameter"],
+			"headers":	{
+				"scalar":	{
+					"type":	"string",
+					"alias":	"Scalar Name"
+				},
+				"description":	{
+					"type":	"string",
+					"alias":	"Scalar Description"
+				},
+				"value":	{
+					"type":	"string",
+					"alias":	"Scalar Value"
+				}
+			}
+		}
+	},
+	"outputSymbols":	{
+		"studentgroupcohort":	{
+			"alias":	"Student assignment",
+			"symtype":	"set",
+			"headers":	{
+				"s":	{
+					"type":	"string",
+					"alias":	"students"
+				},
+				"gc":	{
+					"type":	"string",
+					"alias":	"Aliased with *"
+				},
+				"c":	{
+					"type":	"string",
+					"alias":	"cohorts"
+				},
+				"text":	{
+					"type":	"string",
+					"alias":	"Set text Student assignment"
+				}
+			}
+		},
+		"groupreport":	{
+			"alias":	"report on groups",
+			"symtype":	"parameter",
+			"headers":	{
+				"g":	{
+					"type":	"string",
+					"alias":	"groups"
+				},
+				"uni":	{
+					"type":	"string",
+					"alias":	"Universal set"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"report on groups"
+				}
+			}
+		},
+		"cohortreport":	{
+			"alias":	"report on cohort",
+			"symtype":	"parameter",
+			"headers":	{
+				"c":	{
+					"type":	"string",
+					"alias":	"cohorts"
+				},
+				"uni":	{
+					"type":	"string",
+					"alias":	"Universal set"
+				},
+				"value":	{
+					"type":	"numeric",
+					"alias":	"report on cohort"
+				}
+			}
+		}
+	}
+}

@@ -17,6 +17,26 @@ getCommandArg <- function(argName, exception = TRUE){
     }
   }
 }
+isBadScenName <- function(scenName){
+  return(nchar(scenName) > 63 || nchar(trimws(scenName, "both")) < 1L)
+}
+isBadScenTags <- function(scenTags = NULL, scenTagsV = NULL){
+  if(is.null(scenTags)){
+    scenTags <- vector2Csv(scenTagsV)
+  }else if(is.null(scenTagsV)){
+    scenTagsV <- trimws(csv2Vector(scenTags))
+  }
+  if(nchar(scenTags) > 1000){
+    return(TRUE)
+  }
+  if(length(scenTagsV) > 0L && any(nchar(trimws(scenTagsV, "both")) < 1L)){
+    return(TRUE)
+  }
+  if(any(duplicated(scenTagsV))){
+    return(TRUE)
+  }
+  return(FALSE)
+}
 isWindows <- function() .Platform$OS.type == 'windows'
 hasContent <- function(x){
   if(inherits(x, "data.frame") && nrow(x) == 0){
@@ -63,7 +83,7 @@ getModelPath <- function(modelPath = NULL, envVarPath = NULL){
     modelPath <- envName
   }
   gmsFileName  <- basename(modelPath)
-  modelNameRaw <- gsub("\\.[[:alpha:]]{2,3}$", "", gmsFileName)
+  modelNameRaw <- tools::file_path_sans_ext(gmsFileName)
   modelDir     <- dirname(modelPath)
   return(list(modelDir, gmsFileName, tolower(modelNameRaw), modelNameRaw))
 }
@@ -168,15 +188,24 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL){
   if(length(choices)){
     choices <- as.character(choices)
     elRaw <- choices
-    forwardDep  <- startsWith(choices, "$") & !startsWith(choices, "$$")
-    elRaw[forwardDep] <- stringi::stri_trim_left(elRaw[forwardDep], 
-                                                 pattern = "[^\\$]")
-    backwardDep <- endsWith(choices, "$") & !endsWith(choices, "$$")
-    elRaw[backwardDep] <- stringi::stri_trim_right(elRaw[backwardDep], 
+    forwardDep  <- startsWith(choices, "$")
+    backwardDep <- endsWith(choices, "$")
+    if(any(forwardDep | backwardDep)){
+      forwardDep  <- forwardDep & !startsWith(choices, "$$")
+      backwardDep <- backwardDep & !endsWith(choices, "$$")
+      elRaw[forwardDep] <- stringi::stri_trim_left(elRaw[forwardDep], 
                                                    pattern = "[^\\$]")
-    hasDep <- forwardDep | backwardDep
-    ddownDep$strings <- unlist(gsub("$$", "$", choices[!hasDep], 
-                                    fixed = TRUE), use.names = FALSE)
+      elRaw[backwardDep] <- stringi::stri_trim_right(elRaw[backwardDep], 
+                                                     pattern = "[^\\$]")
+      hasDep <- forwardDep | backwardDep
+      ddownDep$hasDep <- any(hasDep)
+      ddownDep$strings <- unlist(gsub("$$", "$", choices[!hasDep], 
+                                      fixed = TRUE), use.names = FALSE)
+    }else{
+      return(list(hasDep = FALSE,
+                  strings = unlist(gsub("$$", "$", choices, 
+                                        fixed = TRUE), use.names = FALSE)))
+    }
     lapply(seq_along(choices)[hasDep], function(i){
       #check for each element of "choices" if it contains a data reference in json (in the form of a string, e.g. "dataset_1$column_3") or a simple string or number
       # examples: "$a$b"   <- column b from sheet a are choices for dropdown
@@ -503,22 +532,6 @@ addCssDim <- function(x, y){
   return(paste0(dgts, tmp[2]))
 }
 
-getGMSPar <- function(inputNames, prefixPar){
-  # Finds compile time variables/GAMS options and returns them as a list
-  #
-  # Args:
-  #   inputNames:     vector of names of input sheets
-  #   prefixPar:      numeric that specifies additional height to be added (same unit as x)
-  #
-  # Returns:
-  #   vector of names of compile time variables
-  
-  inputNames       <- tolower(inputNames)
-  prefixPar        <- tolower(paste0("^", prefixPar))
-  isGMSPar         <- grepl(prefixPar, inputNames)
-  
-  return(inputNames[isGMSPar])
-}
 virtualActionButton <- function(...){
   o <- structure(sum(...), class = "shinyActionButtonValue")
   invisible(o)
@@ -547,15 +560,6 @@ readTraceData <- function(filePath, traceColNames){
   }else{
     stop("Trace data has incorrect length.", call. = FALSE)
   }
-}
-getIcon <- function(name, lib){
-  if(!identical(name, NULL)){
-    lib <- if(identical(lib, "glyphicon")) "glyphicon" else "font-awesome"
-    icon <- icon(name, lib)
-  }else{
-    icon <-  NULL
-  }
-  return(icon)
 }
 csv2Vector <- function(csv){
   if(!length(csv)){
@@ -678,8 +682,8 @@ getNestedDep <- function(depStr){
     return(depStr)
   }
 }
-genSpinner <- function(id = NULL, hidden = FALSE, absolute = TRUE, externalStyle = NULL){
-  div(id = id, class = "lds-ellipsis", 
+genSpinner <- function(id = NULL, hidden = FALSE, absolute = TRUE, externalStyle = NULL, extraClasses = NULL){
+  div(id = id, class = paste(c("lds-ellipsis", extraClasses), collapse = " "), 
       style = paste0(if(is.null(externalStyle))
         "top:50%;left:50%;z-index:1;margin-left:-32px;margin-top:-32px;" else
           externalStyle, 
@@ -1070,13 +1074,13 @@ setDbConfig <- function(){
     list(envVar = 'MIRO_DB_PASSWORD', keyName = 'password', desc = 'database password'),
     list(envVar = 'MIRO_DB_NAME', keyName = 'name', desc = 'database name'),
     list(envVar = 'MIRO_DB_HOST', keyName = 'host', desc = 'database host', default = 'localhost'),
-    list(envVar = 'MIRO_DB_PORT', keyName = 'port', desc = 'database port', numeric = TRUE, default = 5432))
+    list(envVar = 'MIRO_DB_PORT', keyName = 'port', desc = 'database port', numeric = TRUE, default = 5432),
+    list(envVar = 'MIRO_DB_SCHEMA', keyName = 'schema', desc = 'database schema', default = 'public'))
   
   for(i in seq_along(envNameDbDataMap)){
     metaData <- envNameDbDataMap[[i]]
     
     data <- Sys.getenv(metaData$envVar, unset = NA)
-    Sys.unsetenv(metaData$envVar)
     if(is.na(data)){
       if(length(metaData$default)){
         config[[metaData$keyName]] <- metaData$default
@@ -1219,16 +1223,11 @@ loadPfFileContent <- function(content, GMSOpt = character(0L), DDPar = character
     return(tibble())
   }
   content       <- content[tolower(content[[1]]) %in% 
-                             c(GMSOpt, 
-                               outer(DDPar, c("", "_lo", "_up"), FUN = "paste0")), , 
+                             c(GMSOpt, DDPar), , 
                            drop = FALSE]
-  clArgsTmp     <- stri_replace_first_regex(content[[1]], 
-                                            "_lo$", "\\$lo")
-  clArgsTmp     <- stri_replace_first_regex(clArgsTmp, "_up$", "\\$up")
-  if(!length(clArgsTmp)){
+  if(!length(content[[1]])){
     return(tibble())
   }
-  content[[1]]  <- clArgsTmp
   return(content)
 }
 
@@ -1585,4 +1584,103 @@ stop_custom <- function(.subclass, message, call = NULL, ...) {
     class = c(.subclass, "error", "condition")
   )
   stop(err)
+}
+formatScenList = function(scenList, uid, orderBy = NULL, desc = FALSE, limit = 100L){
+  # returns list of scenarios (formatted for dropdown menu)
+  #
+  # Args:
+  #   scenList:          dataframe with scenario metadata
+  #   uid:               name of currently logged in user
+  #   orderBy:           column to use for ordering data frame (optional)
+  #   desc:              boolean that specifies whether ordering should be 
+  #                      descending(FALSE) or ascending (TRUE) (optional)
+  #   limit:             maximum number of scenarios to format
+  #
+  # Returns:
+  #   character vector: named vector formatted to be used in dropdown menus, 
+  #   returns NULL in case no scenarios found
+  
+  #BEGIN error checks
+  if(!hasContent(scenList)){
+    return(NULL)
+  }
+  stopifnot(inherits(scenList, "data.frame"))
+  if(!is.null(orderBy)){
+    stopifnot(is.character(orderBy) && length(orderBy) == 1)
+  }
+  stopifnot(is.logical(desc), length(desc) == 1)
+  limit <- as.integer(limit)
+  stopifnot(!is.na(limit))
+  # END error checks
+  
+  limit <- min(nrow(scenList), limit)
+  scenList <- scenList[seq_len(limit), , drop = FALSE]
+  if(!is.null(orderBy)){
+    if(desc){
+      scenList <- dplyr::arrange(scenList, desc(!!as.name(orderBy)))
+    }else{
+      scenList <- dplyr::arrange(scenList, !!as.name(orderBy))
+    }
+  }
+  
+  return(setNames(paste0(scenList[["_sid"]], "_", 
+                         scenList[["_uid"]]), 
+                  paste0(vapply(scenList[["_uid"]], 
+                                function(el){ 
+                                  if(identical(el, uid)) "" else paste0(el, ": ")}, 
+                                character(1), USE.NAMES = FALSE), 
+                         scenList[["_sname"]], " (", 
+                         scenList[["_stime"]], ")")))
+}
+tabIdToRef <- function(tabId){
+  if(tabId == 0L){
+    return("cmpPivot")
+  }
+  if(tabId == 1L){
+    return("sb")
+  }
+  if(tabId == 2L){
+    return("cmpSplitL")
+  }
+  if(tabId == 3L){
+    return("cmpSplitR")
+  }
+  return(paste0("cmpTab_", as.character(tabId)))
+}
+clArgsDfToPf <- function(clArgsDf){
+  if(!length(clArgsDf) || !nrow(clArgsDf)){
+    return(character(0L))
+  }
+  isGAMSOption <- startsWith(clArgsDf[[1]], prefixGMSOpt)
+  pfContent <- vapply(seq_len(nrow(clArgsDf)), 
+                      function(i){
+                        if(clArgsDf[[3]][i] %in% CLARG_MISSING_VALUES)
+                          return(NA_character_)
+                        if(isGAMSOption[i])
+                          return(paste0(substring(clArgsDf[[1]][i], nchar(prefixGMSOpt) + 1L), '=', 
+                                        escapeGAMSCL(clArgsDf[[3]][i])))
+                        symbolTmp <- substring(clArgsDf[[1]][i], 
+                                               nchar(prefixDDPar) + 1L)
+                        if(endsWith(symbolTmp, "$lo")){
+                          symbolTmp <- paste0(substring(symbolTmp, 1, nchar(symbolTmp) - 3), "_lo")
+                        }else if(endsWith(symbolTmp, "$up")){
+                          symbolTmp <- paste0(substring(symbolTmp, 1, nchar(symbolTmp) - 3), "_up")
+                        }
+                        paste0('--', symbolTmp, '=', 
+                               escapeGAMSCL(clArgsDf[[3]][i]))
+                      }, character(1L), USE.NAMES = FALSE)
+  return(pfContent[!is.na(pfContent)])
+}
+accessPermInput <- function(inputId, label, choices, selected = NULL){
+  selectizeInput(inputId, label, "", multiple= TRUE,
+                 options = list(valueField = "value",
+                                labelField = "value",
+                                searchField = "value",
+                                options = lapply(choices, function(option){
+                                  list(isGroup = startsWith(option, "#"),
+                                       value = option)
+                                }),
+                                sortField = I("function(i1,i2) {return i1.value-i2.value;}"),
+                                items = I(toJSON(selected, auto_unbox = FALSE)),
+                                render = I("{option: function(d,e){return '<div>'+(d.isGroup?'<i class=\"fas fa-users\"></i> '+e(d.value.substring(1)):'<i class=\"fas fa-user\"></i> '+e(d.value))+'</div>';},item:function(d,e){return '<div>'+(d.isGroup?'<i class=\"fas fa-users\"></i> '+e(d.value.substring(1)):'<i class=\"fas fa-user\"></i> '+e(d.value))+'</div>';}}")))
 }

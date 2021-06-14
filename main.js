@@ -6,32 +6,23 @@ const { TouchBarButton, TouchBarSpacer } = TouchBar;
 const path = require('path');
 const fs = require('fs-extra');
 const yauzl = require('yauzl');
-const http = require('axios');
-const execa = require('execa');
 const util = require('util');
 const log = require('electron-log');
 const menu = require('./components/menu.js');
 const installRPackages = require('./components/install-r.js');
 
 const requiredAPIVersion = 1;
-const miroVersion = '1.3.2';
-const miroRelease = 'Mar 10 2021';
-const libVersion = '1.2';
+const miroVersion = '2.0.0';
+const miroRelease = 'Jun 15 2021';
+const libVersion = '1.3';
 const exampleAppsData = require('./components/example-apps.js')(miroVersion, requiredAPIVersion);
 const LangParser = require('./components/LangParser');
 const addModelData = require('./components/import-data');
 const addMiroscen = require('./components/miroscen-parser');
 const AppDataStore = require('./components/AppDataStore');
 const ConfigManager = require('./components/ConfigManager');
-const MiroDb = require('./components/MiroDb');
 const unzip = util.promisify(require('./components/Unzip'));
-const {
-  randomPort, waitFor, isNull, kill,
-} = require('./components/helpers');
-const {
-  getAppDbPath,
-  isFalse,
-} = require('./components/util');
+const MiroProcessManager = require('./components/MiroProcessManager');
 
 const isMac = process.platform === 'darwin';
 const DEVELOPMENT_MODE = !app.isPackaged;
@@ -86,8 +77,6 @@ const langParser = new LangParser(configData.getSync('language'));
 // Set global variables
 const lang = langParser.get();
 global.lang = lang;
-const miroProcesses = [];
-const processIdMap = {};
 
 let applicationMenu;
 let rPackagesInstalled = true;
@@ -97,6 +86,9 @@ let libPath = isMac && !DEVELOPMENT_MODE
 
 const miroResourcePath = DEVELOPMENT_MODE ? path.join(app.getAppPath(), 'src')
   : path.join(process.resourcesPath, 'src');
+
+const miroProcessManager = new MiroProcessManager(configData,
+  miroDevelopMode, miroBuildMode, miroResourcePath, appDataPath);
 
 log.info(`MIRO launcher is being started (rootDir: ${appRootDir}, pid: ${process.pid}, \
 platform: ${process.platform}, arch: ${process.arch}, \
@@ -109,176 +101,15 @@ let aboutDialogWindow;
 let fileToOpen;
 let appLoaded = false;
 
-function showErrorMsg(optionsTmp) {
-  if (mainWindow) {
+function showErrorMsg(optionsTmp, windowObj = mainWindow) {
+  if (windowObj) {
     const options = optionsTmp;
     if (!options.buttons) {
       options.buttons = ['OK'];
     }
-    dialog.showMessageBoxSync(mainWindow, options);
+    dialog.showMessageBoxSync(windowObj, options);
   }
 }
-
-/*
-MIT License
-
-Copyright (c) 2018 Dirk Schumacher, Noam Ross, Rich FitzJohn
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-const tryStartWebserver = async (progressCallback, onErrorStartup,
-  onErrorLater, appData, rpath, onSuccess) => {
-  let internalPid = processIdMap[appData.id];
-
-  if (internalPid) {
-    log.error('Process for this model already running. This should not happen. Reference not freed.');
-    return;
-  }
-  internalPid = miroProcesses.findIndex(isNull);
-  if (internalPid === -1) {
-    internalPid = miroProcesses.length;
-  }
-  log.debug(`Request to start web server with internal pid: ${internalPid} submitted.`);
-  processIdMap[appData.id] = internalPid;
-  if (miroProcesses[internalPid] != null) {
-    await onErrorStartup(appData.id);
-    return;
-  }
-  let shinyPort;
-  try {
-    shinyPort = await randomPort();
-  } catch (e) {
-    log.debug(`Process could not be started, as scanning open ports failed with error: ${e.message}`);
-    await onErrorStartup(appData.id);
-    return;
-  }
-  log.debug(`Process: ${internalPid} is being started on port: ${shinyPort}.`);
-  const gamspath = configData.get('gamspath');
-  const logpath = configData.get('logpath');
-  const dbPath = getAppDbPath(appData.dbpath);
-
-  const generalConfig = {
-    launchExternal: configData.get('launchExternal'),
-    remoteExecution: configData.get('remoteExecution'),
-    language: configData.get('language'),
-    logLevel: configData.get('logLevel'),
-  };
-  await progressCallback({ internalPid, code: 'start' });
-
-  const onError = async (e) => {
-    if (miroProcesses[internalPid] === null) {
-      return;
-    }
-    log.error(`Process: ${internalPid} crashed during startup. Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
-    miroProcesses[internalPid] = null;
-    delete processIdMap[appData.id];
-    if (miroBuildMode || miroDevelopMode) {
-      log.debug(`Exiting with error code: ${e.exitCode}.`);
-      app.exit(e.exitCode);
-    } else if (mainWindow) {
-      mainWindow.send('hide-loading-screen', appData.id);
-      showErrorMsg({
-        type: 'error',
-        title: lang.main.ErrorUnexpectedHdr,
-        message: lang.main.ErrorUnexpectedMsg,
-      });
-    }
-  };
-  log.info(`MIRO app: ${appData.id} launched at port: ${shinyPort} with dbPath: ${dbPath},\
-developMode: ${miroDevelopMode}.`);
-  let shinyProcessAlreadyDead = false;
-  let noError = false;
-  miroProcesses[internalPid] = execa(path.join(rpath, 'bin', 'R'),
-    ['--no-echo', '--no-restore', '--vanilla', '-f', path.join(miroResourcePath, 'start-shiny.R')],
-    {
-      env: {
-        WITHIN_ELECTRON: '1',
-        R_HOME_DIR: rpath,
-        RE_SHINY_PORT: shinyPort,
-        RE_SHINY_PATH: miroResourcePath,
-        R_LIBS: libPath,
-        R_LIBS_USER: libPath,
-        R_LIBS_SITE: libPath,
-        R_LIB_PATHS: libPath,
-        MIRO_NO_DEBUG: !miroDevelopMode,
-        MIRO_FORCE_SCEN_IMPORT: miroDevelopMode && appData.forceScenImport,
-        MIRO_USE_TMP: !isFalse(appData.usetmpdir) || appData.mode === 'hcube',
-        MIRO_WS_PATH: miroWorkspaceDir,
-        MIRO_DB_PATH: dbPath,
-        MIRO_BUILD: miroBuildMode,
-        MIRO_BUILD_ARCHIVE: appData.buildArchive === true,
-        GAMS_SYS_DIR: await gamspath,
-        MIRO_LOG_PATH: await logpath,
-        LAUNCHINBROWSER: await generalConfig.launchExternal,
-        MIRO_REMOTE_EXEC: await generalConfig.remoteExecution,
-        MIRO_LANG: await generalConfig.language,
-        MIRO_LOG_LEVEL: await generalConfig.logLevel,
-        MIRO_VERSION_STRING: appData.miroversion,
-        MIRO_MODE: appData.mode ? appData.mode : 'base',
-        MIRO_MODEL_PATH: miroDevelopMode ? appData.modelPath
-          : path.join(appDataPath, appData.id, `${appData.id}.gms`),
-      },
-      stdout: miroDevelopMode ? 'inherit' : 'pipe',
-      stderr: miroDevelopMode ? 'inherit' : 'pipe',
-      cleanup: false,
-    });
-  miroProcesses[internalPid].catch((e) => {
-    shinyProcessAlreadyDead = true;
-    onError(e);
-  }).then(async () => {
-    if (shinyProcessAlreadyDead) {
-      return;
-    }
-    shinyProcessAlreadyDead = true;
-    noError = true;
-    if (miroBuildMode) {
-      app.exit(0);
-    }
-  });
-  const url = `http://127.0.0.1:${shinyPort}`;
-  await waitFor(1500);
-  /* eslint-disable no-await-in-loop */
-  for (let i = 0; i <= 50; i += 1) {
-    if (shinyProcessAlreadyDead) {
-      if (noError) {
-        return;
-      }
-      break;
-    }
-    await waitFor(Math.min(i * 100, 1000));
-    try {
-      const res = await http.head(`${url}/shared/shiny.css`, { timeout: 10000 });
-      if (res.status === 200) {
-        await progressCallback({ code: 'success', port: shinyPort });
-        onSuccess(url);
-        return;
-      }
-    } catch (e) {
-      if (i > 10) {
-        log.debug(`Process: ${internalPid} not responding after ${i + 1} seconds.`);
-        await progressCallback({ code: 'notresponding' });
-      }
-    }
-  }
-  /* eslint-enable no-await-in-loop */
-  await onErrorStartup(appData.id);
-};
 
 function hideZoomMenu() {
   if (!applicationMenu) {
@@ -437,7 +268,7 @@ function validateMIROApp(filePathArg) {
             }
             if (!newAppConf.id) {
               [newAppConf.path] = filePath;
-              [, newAppConf.id,,, newAppConf.miroversion] = miroConfMatch;
+              [, newAppConf.id, , , newAppConf.miroversion] = miroConfMatch;
               newAppConf.apiversion = parseInt(miroConfMatch[3], 10);
               log.info(`New MIRO app successfully identified. Id: ${newAppConf.id}, \
   API version: ${newAppConf.apiversion}, \
@@ -474,7 +305,7 @@ function validateMIROApp(filePathArg) {
         return;
       }
       if (!newAppConf.apiversion
-          || newAppConf.apiversion !== requiredAPIVersion) {
+        || newAppConf.apiversion !== requiredAPIVersion) {
         mainWindow.setProgressBar(-1);
         showErrorMsg({
           type: 'info',
@@ -633,14 +464,11 @@ async function addMiroscenFile(filePath) {
     }
     mainWindow.send('toggle-loading-screen-progress', 'show');
     try {
-      await addMiroscen(miroscenPath, mainWindow, {
-        rpath: await configData.get('rpath'),
-        libPath,
-        miroResourcePath,
-        miroWorkspaceDir,
-        logpath: await configData.get('logpath'),
-        appDataPath,
-      }, appsData, miroProcesses);
+      await addMiroscen(miroProcessManager,
+        miroscenPath, mainWindow, {
+          libPath,
+          appDataPath,
+        }, appsData);
     } catch (e) {
       log.info(`Problems adding MIRO scenario. Error message: ${e.toString()}.`);
       showErrorMsg({
@@ -839,28 +667,6 @@ function openCheckUpdateWindow() {
     checkForUpdateWindow = null;
   });
 }
-async function terminateProcesses() {
-  const termPromises = miroProcesses.map((miroProcess) => {
-    if (!miroProcess) {
-      return { pid: null };
-    }
-    const { pid } = miroProcess;
-    return kill(pid);
-  });
-  for (let i = 0; i < miroProcesses.length; i += 1) {
-    miroProcesses[i] = null;
-  }
-
-  const resolvedTermPromises = await Promise.allSettled(termPromises);
-  resolvedTermPromises.forEach((termStatus) => {
-    if (termStatus.status === 'rejected') {
-      log.debug(`Problems killing R process.\
-Error message: ${termStatus.reason.message}.`);
-    } else if (termStatus.value.pid) {
-      log.debug(`R process with pid: ${termStatus.value.pid} successfully terminated.`);
-    }
-  });
-}
 function quitLauncher() {
   if (process.platform !== 'darwin') {
     app.quit();
@@ -929,7 +735,7 @@ function createMainWindow(showRunningApps = false, onSuccess = null) {
   mainWindow.webContents.on('did-finish-load', async () => {
     let appsActive = [];
     if (showRunningApps) {
-      appsActive = Object.keys(processIdMap);
+      appsActive = miroProcessManager.getActiveApps();
     }
     mainWindow.webContents.send('apps-received',
       appsData.apps, appDataPath, true, true, appsActive, lang.general);
@@ -1003,8 +809,8 @@ async function createMIROAppWindow(appData) {
   const progressCallback = async (event) => {
     log.info(event);
   };
-  if (processIdMap[appData.id] != null) {
-    log.info(`Process with internal pid: ${processIdMap[appData.id]} already running for MIRO app: ${appData.id}`);
+  if (miroProcessManager.getActiveApps().includes(appData.id)) {
+    log.info(`MIRO app: ${appData.id} is already running`);
     mainWindow.send('hide-loading-screen', appData.id);
     showErrorMsg({
       type: 'info',
@@ -1050,50 +856,15 @@ ${requiredAPIVersion}.`);
     return;
   }
 
-  const onErrorLater = async (appID) => {
-    log.debug(`Error after launching MIRO app with ID: ${appData.id}.`);
-    if (!miroAppWindows[appID]) {
-      return;
-    }
-    if (mainWindow) {
-      mainWindow.send('hide-loading-screen', appData.id);
-      showErrorMsg({
-        type: 'error',
-        title: 'Unexpected error',
-        message: 'The MIRO app could not be started. Please report to GAMS when this problem persists!',
-      });
-    }
-    miroProcesses[processIdMap[appID]] = null;
-    delete processIdMap[appID];
-    if (miroAppWindows[appID]) {
-      miroAppWindows[appID].destroy();
-      miroAppWindows[appID] = null;
-    }
-
-    if (miroDevelopMode) {
-      // in development mode terminate when R process finished
-      app.exit(1);
-    }
-  };
-
-  const onErrorStartup = async (appID, message) => {
-    log.debug(`Error during startup of MIRO app with ID: ${appData.id}. \
-${message ? `Message: ${message}` : ''}`);
-
-    try {
-      await kill(miroProcesses[processIdMap[appID]].pid);
-      miroProcesses[processIdMap[appID]] = null;
-      delete processIdMap[appID];
-    } catch (e) {
-      // continue regardless of error
-    }
+  const onErrorStartup = async (appID, e) => {
+    log.warn(`Error during startup of MIRO app with ID: ${appID}. Eror message: ${e}`);
 
     if (mainWindow && !miroDevelopMode) {
-      mainWindow.send('hide-loading-screen', appData.id);
+      mainWindow.send('hide-loading-screen', appID);
       showErrorMsg({
         type: 'error',
         title: lang.main.ErrorUnexpectedHdr,
-        message: message || lang.main.ErrorUnexpectedMsg,
+        message: e.message || lang.main.ErrorUnexpectedMsg,
       });
     }
     if (miroDevelopMode) {
@@ -1102,25 +873,89 @@ ${message ? `Message: ${message}` : ''}`);
     }
   };
 
-  const onProcessFinished = async (appID) => {
-    const internalPid = processIdMap[appID];
-    if (!Number.isInteger(internalPid) || !miroProcesses[internalPid]) {
+  const onErrorLater = async (appID, e) => {
+    log.warn(`App: ${appID} crashed during startup. \
+Stdout: ${e.stdout}.\nStderr: ${e.stderr}`);
+
+    if (miroBuildMode || miroDevelopMode) {
+      log.debug(`Exiting with error code: ${e.exitCode}.`);
+      app.exit(e.exitCode);
+    } else if (mainWindow) {
+      mainWindow.send('hide-loading-screen', appID);
+      showErrorMsg({
+        type: 'error',
+        title: lang.main.ErrorUnexpectedHdr,
+        message: lang.main.ErrorUnexpectedMsg,
+      });
+    }
+  };
+
+  const onSuccess = (url) => {
+    if (configData.getSync('launchExternal') === true) {
+      log.debug(`MIRO app with ID: ${appData.id} being opened in external browser.`);
+      if (mainWindow) {
+        mainWindow.send('hide-loading-screen', appData.id, true);
+      }
       return;
     }
-    if (miroProcesses[internalPid]) {
-      try {
-        await miroProcesses[internalPid];
-      } catch (e) {
-        if (e.signal !== 'SIGTERM') {
-          log.error(`Problems while waiting for process of MIRO app with ID: ${appID}\
-  to finish. Error message: ${e.message}`);
-        }
+    const appID = appData.id;
+    log.debug(`MIRO app with ID: ${appID} being opened in launcher.`);
+    miroAppWindows[appID] = new BrowserWindow({
+      width: 800,
+      height: 600,
+      minWidth: 800,
+      minHeight: 600,
+      show: false,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+      },
+    });
+
+    miroAppWindows[appID].loadURL(url, { extraHeaders: 'pragma: no-cache\n' });
+
+    miroAppWindows[appID].on('focus', () => {
+      if (!applicationMenu) {
+        return;
       }
-      log.debug(`Process of MIRO app with ID: ${appID} and internal pid ${internalPid} ended.`);
-      miroProcesses[processIdMap[appID]] = null;
-      delete processIdMap[appID];
-    }
-    if (miroDevelopMode) {
+      const editMenuId = isMac ? 3 : 2;
+      [1, 2, 3].forEach((i) => {
+        applicationMenu.items[editMenuId].submenu.items[i].enabled = true;
+        applicationMenu.items[editMenuId].submenu.items[i].visible = true;
+      });
+    });
+
+    miroAppWindows[appID].on('blur', () => {
+      hideZoomMenu();
+    });
+
+    miroAppWindows[appID].on('close', (e) => {
+      e.preventDefault();
+      log.debug(`Window of MIRO app with ID: ${appID} closed.`);
+      hideZoomMenu();
+      miroAppWindows[appID].destroy();
+    });
+
+    miroAppWindows[appID].on('closed', async () => {
+      try {
+        mainWindow.send('app-closed', appID);
+      } catch (e) {
+        // continue regardless of error
+      }
+    });
+    miroAppWindows[appID].once('ready-to-show', () => {
+      miroAppWindows[appID].show();
+      miroAppWindows[appID].maximize();
+      log.debug(`Window for MIRO app with ID: ${appID} created.`);
+      if (mainWindow) {
+        mainWindow.send('hide-loading-screen', appID, true);
+      }
+    });
+  };
+
+  const onProcessFinished = async (appID) => {
+    log.debug(`Process of MIRO app: ${appID} ended.`);
+    if (miroDevelopMode || miroBuildMode) {
       // in development mode terminate when R process finished
       app.exit(0);
       return;
@@ -1134,84 +969,9 @@ ${message ? `Message: ${message}` : ''}`);
     }
   };
   try {
-    await tryStartWebserver(progressCallback, onErrorStartup,
-      onErrorLater, appData, rpath, (url) => {
-        if (configData.getSync('launchExternal') === true) {
-          log.debug(`MIRO app with ID: ${appData.id} being opened in external browser.`);
-          if (mainWindow) {
-            mainWindow.send('hide-loading-screen', appData.id, true);
-            onProcessFinished(appData.id);
-          }
-          return;
-        }
-        const appID = appData.id;
-        log.debug(`MIRO app with ID: ${appID} being opened in launcher.`);
-        miroAppWindows[appID] = new BrowserWindow({
-          width: 800,
-          height: 600,
-          minWidth: 800,
-          minHeight: 600,
-          show: false,
-          webPreferences: {
-            nodeIntegration: false,
-            contextIsolation: true,
-          },
-        });
-
-        miroAppWindows[appID].loadURL(url, { extraHeaders: 'pragma: no-cache\n' });
-
-        miroAppWindows[appID].on('focus', () => {
-          if (!applicationMenu) {
-            return;
-          }
-          const editMenuId = isMac ? 3 : 2;
-          [1, 2, 3].forEach((i) => {
-            applicationMenu.items[editMenuId].submenu.items[i].enabled = true;
-            applicationMenu.items[editMenuId].submenu.items[i].visible = true;
-          });
-        });
-
-        miroAppWindows[appID].on('blur', () => {
-          hideZoomMenu();
-        });
-
-        miroAppWindows[appID].on('close', (e) => {
-          e.preventDefault();
-          log.debug(`Window of MIRO app with ID: ${appID} closed.`);
-          hideZoomMenu();
-          miroAppWindows[appID].destroy();
-        });
-
-        miroAppWindows[appID].on('closed', async () => {
-          try {
-            mainWindow.send('app-closed', appID);
-          } catch (e) {
-          // continue regardless of error
-          }
-          const internalPid = processIdMap[appID];
-          if (Number.isInteger(internalPid)) {
-            const { pid } = miroProcesses[internalPid];
-            miroProcesses[internalPid] = null;
-            try {
-              await kill(pid);
-              log.debug(`R process with pid: ${pid} killed.`);
-            } catch (e) {
-              log.debug(`Problems killing R process with pid: ${pid}. Error message: ${e.message}`);
-            }
-          }
-          delete processIdMap[appID];
-          miroAppWindows[appID] = null;
-        });
-        miroAppWindows[appID].once('ready-to-show', () => {
-          miroAppWindows[appID].show();
-          miroAppWindows[appID].maximize();
-          log.debug(`Window for MIRO app with ID: ${appID} created.`);
-          if (mainWindow) {
-            mainWindow.send('hide-loading-screen', appID, true);
-            onProcessFinished(appID);
-          }
-        });
-      });
+    await miroProcessManager.createNew(appData, libPath,
+      progressCallback, onErrorStartup, onErrorLater,
+      onSuccess, onProcessFinished);
   } catch (e) {
     try {
       await onErrorStartup(appData.id, `${lang.main.ErrorMsgLaunch} ${e.message}.`);
@@ -1323,6 +1083,56 @@ ipcMain.on('show-error-msg', (e, options) => {
   log.debug(`New error message received. Title: ${options.title}, message: ${options.message}.`);
   showErrorMsg(options);
 });
+ipcMain.on('import-miroenv', async () => {
+  if (!settingsWindow) {
+    return;
+  }
+  const pathSelected = dialog.showOpenDialogSync(settingsWindow, {
+    title: lang.settings.dialogImportEnvHdr,
+    message: lang.settings.dialogImportEnvHdr,
+    properties: ['openFile'],
+    filters: [{ name: 'JSON', extensions: ['json', 'JSON'] }],
+  });
+  if (!pathSelected) {
+    return;
+  }
+  try {
+    const envTxt = await fs.readFile(pathSelected[0]);
+    const newEnv = JSON.parse(envTxt);
+    configData.validate('miroEnv', newEnv);
+    settingsWindow.webContents.send('update-miroEnv', newEnv);
+  } catch (err) {
+    log.info(`Could not validate environment file. Error message: '${err.message}'`);
+    showErrorMsg({
+      type: 'info',
+      title: lang.settings.ErrorInvalidEnvFileHdr,
+      message: util.format(lang.settings.ErrorInvalidEnvFileMsg, err.message),
+    }, settingsWindow);
+  }
+});
+ipcMain.on('export-miroenv', async () => {
+  const pathSelected = dialog.showSaveDialogSync(settingsWindow, {
+    title: lang.settings.dialogExportEnvHdr,
+    message: lang.settings.dialogExportEnvHdr,
+    defaultPath: 'miro-env.json',
+    properties: ['createDirectory', 'showOverwriteConfirmation'],
+  });
+  if (!pathSelected) {
+    return;
+  }
+  try {
+    const currentEnv = await configData.get('miroEnv');
+    await fs.writeFile(pathSelected,
+      JSON.stringify(currentEnv == null ? {} : currentEnv, null, 2), 'utf-8');
+  } catch (err) {
+    log.info(`Problems fetching current environment. Error message: '${err.message}'`);
+    showErrorMsg({
+      type: 'error',
+      title: lang.main.ErrorUnexpectedHdr,
+      message: lang.main.ErrorUnexpectedMsg,
+    }, settingsWindow);
+  }
+});
 ipcMain.on('settings-select-new-path', async (e, id, defaultPath) => {
   if (settingsWindow) {
     const langData = {
@@ -1431,20 +1241,17 @@ ipcMain.on('add-app', async (e, newApp) => {
     await unzip(appConf.path, appDir);
 
     await addModelData(
+      miroProcessManager,
       {
-        rpath: await configData.get('rpath'),
         libPath,
-        miroResourcePath,
-        miroWorkspaceDir,
-        dbpath: getAppDbPath(appConf.dbpath),
-        logpath: await configData.get('logpath'),
+        dbpath: appConf.dbpath,
         appDir,
       },
       appConf.id,
       appConf.modesAvailable.includes('base') ? 'base' : 'hcube',
       appConf.miroversion,
       appConf.usetmpdir,
-      miroProcesses, mainWindow,
+      mainWindow,
     );
 
     delete appConf.path;
@@ -1474,15 +1281,7 @@ ipcMain.on('add-app', async (e, newApp) => {
       return;
     }
     log.error(`Add app request failed. Error message: ${err.message}`);
-    if (err.message === '404') {
-      dialog.showMessageBox(mainWindow, {
-        type: 'info',
-        title: lang.main.ErrorRNotFoundHdr,
-        message: lang.main.ErrorRNotFoundMsg,
-        buttons: [lang.main.BtnOk],
-      });
-      return;
-    } if (err.message === 'DuplicatedId') {
+    if (err.message === 'DuplicatedId') {
       showErrorMsg({
         type: 'info',
         title: lang.main.ErrorModelExistsHdr,
@@ -1614,10 +1413,6 @@ ipcMain.on('delete-app', async (e, appId) => {
     message: lang.main.DeleteDataMsg,
   }) === 1;
 
-  let appDbPath;
-  if (deleteAppData) {
-    appDbPath = appsData.getAppConfigValue(appId, 'dbPath');
-  }
   try {
     const rmPromise = fs.remove(path.join(appDataPath, appId));
     try {
@@ -1650,29 +1445,25 @@ ipcMain.on('delete-app', async (e, appId) => {
       showErrorMsg({
         type: 'error',
         title: lang.main.ErrorUnexpectedHdr,
-        message: lang.main.ErrorUnexpectedMsg2,
+        message: lang.main.ErrorUnexpectedMsg2 + err.message,
       });
     }
   } finally {
     if (deleteAppData) {
-      try {
-        const miroDb = new MiroDb(path.join(getAppDbPath(appDbPath),
-          'miro.sqlite3'));
-        try {
-          miroDb.removeAppDbTables(appId);
-        } finally {
-          miroDb.close();
-        }
-        const rmPromiseHcube = fs.remove(path.join(miroWorkspaceDir, 'hcube_jobs', appId));
-        const rmPromiseCred = fs.remove(path.join(miroWorkspaceDir, `.cred_${appId}`));
-        await rmPromiseHcube;
-        await rmPromiseCred;
-      } catch (err) {
-        log.error(`Problems removing data (app ID: ${appId}). Error message: ${err.message}`);
+      const rmPromises = [];
+      rmPromises.push(fs.remove(path.join(miroWorkspaceDir, 'app_data', `${appId}.sqlite3`)),
+        fs.remove(path.join(miroWorkspaceDir, 'hcube_jobs', appId)),
+        fs.remove(path.join(miroWorkspaceDir, `.cred_${appId}`)));
+      const deleteAppDataStatus = await Promise.allSettled(rmPromises);
+      const errorMsg = deleteAppDataStatus
+        .filter((value) => value.status === 'rejected')
+        .map((value) => value.reason.toString()).join('\n');
+      if (errorMsg) {
+        log.error(`Problems removing data (app ID: ${appId}). Error message: ${errorMsg}`);
         showErrorMsg({
           type: 'error',
           title: lang.main.ErrorUnexpectedHdr,
-          message: lang.main.ErrorUnexpectedMsg2,
+          message: lang.main.ErrorUnexpectedMsg2 + errorMsg,
         });
       }
     }
@@ -1818,7 +1609,7 @@ app.on('window-all-closed', () => {
 app.on('will-quit', async (e) => {
   e.preventDefault();
   log.debug('Terminating potentially open R processes.');
-  await terminateProcesses();
+  await miroProcessManager.terminateAll();
   app.exit(0);
 });
 app.on('activate', () => {

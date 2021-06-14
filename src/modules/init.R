@@ -1,7 +1,10 @@
 errMsg <- installAndRequirePackages("V8", installedPackages, RLibPath, CRANMirror, miroWorkspace)
 # check whether there exists a config file and if not create an empty one
 if(is.null(errMsg)){
-  if(!file.exists(paste0(currentModelDir, .Platform$file.sep, "conf_", modelName,
+  if(nchar(modelName) > 60){
+    errMsg <- sprintf("The MIRO app name: '%s' is too long! A maximum length of 60 characters is allowed!",
+                      modelName)
+  }else if(!file.exists(paste0(currentModelDir, .Platform$file.sep, "conf_", modelName,
                          .Platform$file.sep, modelName, ".json"))){
     tryCatch(cat("{}\n", file = paste0(currentModelDir, .Platform$file.sep, "conf_", modelName,
                                        .Platform$file.sep, modelName, ".json")),
@@ -122,7 +125,7 @@ if(is.null(errMsg)){
             invalidAliases <- c(invalidAliases, idx)
           }
           warning(sprintf("The alias of symbol: '%s' was selected to be overwritten. However, this symbol could not be found.", 
-                          overwriteSymNames[idx]))
+                          overwriteSymNames[idx]), call. = FALSE)
           next
         }
         modelOut[[i]]$alias <- config[["overwriteAliases"]][[idx]][["newAlias"]]
@@ -145,13 +148,13 @@ if(is.null(errMsg)){
             invalidHeaderAliases <- c(invalidHeaderAliases, idx)
           }
           warning(sprintf("The headers of symbol: '%s' were selected to be overwritten. However, this symbol could not be found.", 
-                          overwriteSymNames[idx]))
+                          overwriteSymNames[idx]), call. = FALSE)
           next
         }
         if(length(modelOut[[i]]$headers) != length(newHeaders)){
           if(!LAUNCHCONFIGMODE)
             warning(sprintf("The headers of symbol: '%s' were selected to be overwritten. However, the dimensions do not match!", 
-                            overwriteSymNames[idx]))
+                            overwriteSymNames[idx]), call. = FALSE)
           next
         }
         for (j in seq_along(modelOut[[i]]$headers)){
@@ -162,7 +165,7 @@ if(is.null(errMsg)){
       newHeaders <- config[["overwriteHeaderAliases"]][[idx]][["newHeaders"]]
       if(length(modelIn[[i]]$headers) != length(newHeaders)){
         warning(sprintf("The headers of symbol: '%s' were selected to be overwritten. However, the dimensions do not match!", 
-                        overwriteSymNames[idx]))
+                        overwriteSymNames[idx]), call. = FALSE)
         next
       }
       for (j in seq_along(modelIn[[i]]$headers)){
@@ -217,7 +220,6 @@ if(is.null(errMsg)){
             widgetConfig$clearValue  <- NULL
           }
         }
-        config$inputWidgets[[el]]     <- NULL
         modelIn[[el_l]][[widgetType]] <- widgetConfig
         modelIn[[tolower(scalarsFileName)]]$symnames <- modelIn[[tolower(scalarsFileName)]]$symnames[-c(j)]
         if(!length(modelIn[[tolower(scalarsFileName)]]$symnames)){
@@ -316,16 +318,29 @@ if(is.null(errMsg)){
                             sep = "\n")
           }
           hasErr <- FALSE
-          widgetConfig$dropdownCols <- lapply(widgetConfig$dropdownCols, function(dataSource){
+          widgetConfig$dropdownCols <- lapply(names(widgetConfig$dropdownCols), function(dropdownCol){
+            dataSource <- widgetConfig$dropdownCols[[dropdownCol]]
+            ddColId <- match(dropdownCol, names(modelIn[[i]]$headers))
+            if(length(widgetConfig$pivotCols) &&
+               match(widgetConfig$pivotCols[1], names(modelIn[[i]]$headers)) <= ddColId){
+              # need to adjust id in case column before is pivoted
+              ddColId <- ddColId - 1L
+            }
             if(length(dataSource$static)){
               return(list(static = dataSource$static,
                           type = if(identical(dataSource$colType, "dropdown"))
-                            "dropdown" else "autocomplete"))
+                            "dropdown" else "autocomplete",
+                          ddColId = ddColId))
             }
             if(!dataSource$symbol %in% names(modelIn)){
               errMsg <<- paste(errMsg, sprintf("The GAMS symbol: '%s' defined as data source for symbol: '%s' does not exist in data contract!", 
                                               dataSource$symbol, names(modelIn)[i]),
                               sep = "\n")
+              hasErr <<- TRUE
+              return(NULL)
+            }
+            if(identical(dataSource$symbol, names(modelIn)[i])){
+              errMsg <<- paste(errMsg, sprintf("The GAMS symbol: '%s' has a data source (dropdown column) defined on itself!", names(modelIn)[i]), sep = "\n")
               hasErr <<- TRUE
               return(NULL)
             }
@@ -355,7 +370,8 @@ if(is.null(errMsg)){
             }
             return(list(symbol = dataSource$symbol, colId = colId,
                         type = if(identical(dataSource$colType, "dropdown"))
-                          "dropdown" else "autocomplete"))
+                          "dropdown" else "autocomplete",
+                        ddColId = ddColId))
           })
           if(hasErr){
             next
@@ -390,6 +406,25 @@ if(is.null(errMsg)){
         }
         widgetConfig$rendererName  <- NULL
         widgetConfig$packages      <- NULL
+        if(identical(widgetConfig$apiVersion, 2L)){
+          modelIn[[i]]$apiVersion <- 2L
+        }else{
+          warningMsgTmp <- "API version 1 for custom input widgets is deprecated and will be removed with a future release of MIRO. Please migrate your input widgets to API version 2. Go here to find the latest documentation: https://gams.com/miro/customize.html#custom-input-widgets"
+          warning(warningMsgTmp, call. = FALSE)
+          warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
+        }
+        if(length(widgetConfig$additionalData)){
+          invalidDsNames <- !widgetConfig$additionalData %in% c(names(config$inputWidgets),
+                                                                names(modelOut))
+          if(any(invalidDsNames)){
+            errMsg <- paste(errMsg, sprintf("Invalid additional data for custom input widget: '%s' declared. The dataset(s): '%s' are not scalar input widgets. Currently, only scalar input widgets are supported as additional data for custom widgets.",
+                                            names(modelIn)[[i]],
+                                            paste(widgetConfig$additionalData[invalidDsNames], collapse = "', '")),
+                            sep = "\n")
+            next
+          }
+          modelIn[[i]]$additionalData <- widgetConfig$additionalData
+        }
       }
       if(!widgetType %in% c("table", "custom")){
         modelIn[[i]]$headers       <- NULL
@@ -415,6 +450,10 @@ if(is.null(errMsg)){
       if(!is.null(widgetConfig[["pivotCols"]])){
         modelIn[[i]]$pivotCols  <- widgetConfig$pivotCols
         widgetConfig$pivotCols  <- NULL
+      }
+      if(!is.null(widgetConfig[["fixedColumnsLeft"]])){
+        modelIn[[i]]$fixedColumnsLeft  <- widgetConfig$fixedColumnsLeft
+        widgetConfig$fixedColumnsLeft  <- NULL
       }
       if(!is.null(widgetConfig[["colWidths"]])){
         modelIn[[i]]$colWidths  <- widgetConfig$colWidths
@@ -442,6 +481,7 @@ if(is.null(errMsg)){
       }
     }
   }
+  config$inputWidgets <- NULL
   # make sure two input or output data sheets dont share the same name (case insensitive)
   if(any(duplicated(names(modelIn)))){
     errMsg <- "Two or more input datasets share the same name. Please make sure the identifiers are unique for each input datasheet!"
@@ -452,14 +492,14 @@ if(is.null(errMsg)){
 }
 
 if(is.null(errMsg)){
-  # declare GAMS compile time variables and GAMS options
-  DDPar               <- getGMSPar(names(modelIn), prefixDDPar)
-  GMSOpt              <- getGMSPar(names(modelIn), prefixGMSOpt)
-  if(any(c(vapply(DDPar, function(el){ identical(nchar(trimws(substring(el, nchar(prefixDDPar) + 1L))), 0L)}, 
-                logical(1L), USE.NAMES = FALSE),
-           vapply(GMSOpt, function(el){ identical(nchar(trimws(substring(el, nchar(prefixGMSOpt) + 1L))), 0L)}, 
-                  logical(1L), USE.NAMES = FALSE)))){
-    errMsg <- "Unnamed GAMS command line parameter(s) detected. Empty names are not allowed!"
+  # declare GAMS double dash parameters and GAMS options
+  DDPar               <- names(modelIn)[startsWith(names(modelIn), prefixDDPar)]
+  GMSOpt              <- names(modelIn)[startsWith(names(modelIn), prefixGMSOpt)]
+  if(any(nchar(DDPar) <= nchar(prefixDDPar))){
+    errMsg <- "Unnamed Double Dash Parameter(s) detected. Empty names are not allowed!"
+  }
+  if(any(nchar(GMSOpt) <= nchar(prefixGMSOpt) | GMSOpt %in% paste0(prefixGMSOpt, reservedGMSOpt))){
+    errMsg <- sprintf("Invalid GAMS option(s) detected. GAMS options must not be unnamed and must not be one of the reserved options: '%s'!", paste(reservedGMSOpt, collapse = "', '"))
   }
   
   modelInToImport     <- getInputToImport(modelIn, keywordsNoImport)
@@ -661,7 +701,7 @@ if(is.null(errMsg)){
                    if(identical(modelIn[[i]]$symtype, "set")){
                      warningMsgTmp <- sprintf("The dataset: '%s' is a set configured as a single dropdown menu. Single dropdown menus for sets are not expanded in Hypercube Mode! Use singleton set instead.", 
                                               names(modelIn)[i])
-                     warning(warningMsgTmp)
+                     warning(warningMsgTmp, call. = FALSE)
                      warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
                    }else{
                      # specify that dropdown menu is originally a single select menu
@@ -688,7 +728,7 @@ if(is.null(errMsg)){
                  warningMsgTmp <- sprintf("The dataset: '%s' uses a widget that is not supported in Hypercube Mode.
                                    Thus, it will not be transformed and stays static.", 
                                           names(modelIn)[i])
-                 warning(warningMsgTmp)
+                 warning(warningMsgTmp, call. = FALSE)
                  warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
                })
       }
@@ -799,13 +839,19 @@ if(is.null(errMsg)){
              tryCatch({
                choices <- getDependenciesDropdown(choices = modelIn[[i]]$dropdown$choices, modelIn = modelIn, name = name)
                if(!is.null(modelIn[[i]]$dropdown$aliases)){
-                 aliases <- getDependenciesDropdown(choices = modelIn[[i]]$dropdown$aliases, modelIn = modelIn, name = name)
+                 if(choices$hasDep){
+                   aliases <- getDependenciesDropdown(choices = modelIn[[i]]$dropdown$aliases, modelIn = modelIn, name = name)
+                 }else{
+                   aliases <- list(strings = unlist(gsub("$$", "$", modelIn[[i]]$dropdown$aliases, fixed = TRUE),
+                                                    use.names = FALSE))
+                 }
                }else{
                  aliases <- NULL
                }
              }, error = function(e){
                errMsg <<- paste(errMsg, paste0("'", modelInAlias[i], 
-                                               "' has no valid input type defined. Error message: ", e), sep = "\n")
+                                               "' has no valid input type defined. Error message: ",
+                                               conditionMessage(e)), sep = "\n")
              })
              if(!is.null(errMsg)){
                if(LAUNCHCONFIGMODE){
@@ -919,9 +965,18 @@ if(is.null(errMsg)){
                }
                # used to access default value inside lapply (in input_render_nontab.R)
                attributes(sliderValues[[name]]$def) <- list(ref = "def")
+               if(length(modelIn[[i]]$slider$default) > 1L &&
+                  !identical(modelIn[[i]]$slider$single, TRUE)){
+                 # double dash parameters declared as double sliders are automatically
+                 # expanded to 2 double dash parameters with suffixes _lo and _up
+                 # TODO: allow specifying any names for lower and upper limit 
+                 # (possibly even 2 GAMS scalars)
+                 DDPar <<- c(DDPar[DDPar != name], paste0(name, c("_lo", "_up")))
+               }
              }, error = function(e){
                errMsg <<- paste(errMsg,paste0("'", modelInAlias[i], 
-                                              "' has no valid input type defined. Error message: ", e), sep = "\n")
+                                              "' has no valid input type defined. Error message: ",
+                                              conditionMessage(e)), sep = "\n")
              })
              return(NULL)
            },
@@ -938,6 +993,11 @@ if(is.null(errMsg)){
                errMsg <<- paste(errMsg, paste0("The date range selector: '", modelInAlias[i], 
                                                "' uses a reserved name as its identifier. Please choose a different name."), sep = "\n")
              }
+             # double dash parameters declared as dateranges are automatically
+             # expanded to 2 double dash parameters with suffixes _lo and _up
+             # TODO: allow specifying any names for lower and upper limit 
+             # (possibly even 2 GAMS scalars)
+             DDPar <<- c(DDPar[DDPar != name], paste0(name, c("_lo", "_up")))
              # TODO : support dependency
              return(NULL)
            },
@@ -993,7 +1053,7 @@ if(is.null(errMsg)){
                 !identical(names(modelIn[[i]]$headers), scalarsFileHeaders)){
                warningMsgTmp <- paste0(modelInAlias[i], " is defined to be the scalar input dataset, ",
                                          "but has incorrect headers. The headers were adjusted accordingly.")
-               warning(warningMsgTmp)
+               warning(warningMsgTmp, call. = FALSE)
                warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
                names(modelIn[[i]]$headers) <- scalarsFileHeaders
              }
@@ -1036,11 +1096,11 @@ if(is.null(errMsg)){
     scalarInputSymToVerify <- unlist(lapply(scalarInputSym, function(el){
       if(identical(modelIn[[el]]$type, "slider") && length(modelIn[[el]]$slider$default) > 1){
         if(isTRUE(modelIn[[el]]$slider$double)){
-          return(paste0(el, c("","$lo", "$up", "$step", "$mode")))
+          return(paste0(el, c("","_lo", "_up", "$step", "$mode")))
         }
         return(paste0(el, c("", "$lo", "$up", "$step")))
       }else if(identical(modelIn[[el]]$type, "daterange")){
-        return(paste0(el, c("", "$lo", "$up")))
+        return(paste0(el, c("", "_lo", "_up")))
       }
       return(NULL)
     }), use.names = FALSE)
@@ -1297,8 +1357,12 @@ if(is.null(errMsg)){
     return(FALSE)
   }, logical(1L), USE.NAMES = FALSE)
   
-  scenDataTemplate <- c(modelOutTemplate, modelInTemplate[match(inputDsNames, names(modelIn))])
-  
+  scalarDsNameIdx <- match(inputDsNames, names(modelIn))
+  scenDataTemplate <- c(modelOutTemplate, modelInTemplate[scalarDsNameIdx])
+  if(length(scalarDsNameIdx[length(inputDsNames)]) && is.na(scalarDsNameIdx[length(inputDsNames)])){
+    # need to add scalars template manually
+    scenDataTemplate[[length(scenDataTemplate)]] <- scalarsInTemplate
+  }
   # get column types for tabular datasets
   for(i in seq_along(modelIn)){
     if(is.null(modelIn[[i]]$headers)){
@@ -1361,26 +1425,18 @@ if(is.null(errMsg)){
     config[["symbolLinks"]] <- NULL
   }
   if(length(config$scripts)){
-    if(LAUNCHHCUBEMODE){
-      if(any(duplicated(vapply(config$scripts$hcube, "[[", character(1L), "id", USE.NAMES = FALSE)))){
-        errMsg <- paste(errMsg, "Some of your Hypercube analysis scripts share the same id. Please make sure the ID is unique.")
-      }
-    }else{
-      if(any(duplicated(vapply(config$scripts$base, "[[", character(1L), "id", USE.NAMES = FALSE)))){
-        errMsg <- paste(errMsg, "Some of your analysis scripts share the same id. Please make sure the ID is unique.")
-      }
+    if(any(duplicated(vapply(config$scripts$base, "[[", character(1L), "id", USE.NAMES = FALSE)))){
+      errMsg <- paste(errMsg, "Some of your analysis scripts share the same id. Please make sure the ID is unique.")
+    }
+    if(any(duplicated(vapply(config$scripts$hcube, "[[", character(1L), "id", USE.NAMES = FALSE)))){
+      errMsg <- paste(errMsg, "Some of your Hypercube/batch analysis scripts share the same id. Please make sure the ID is unique.")
     }
   }
 }
 if(is.null(errMsg)){
-  # define table names (format: modelName_scen.prefix_table.name) where "name" is the name of the dataset
-  # scenario data is a concatenated list of outputData and inputData
-  scenTableNames    <- c(names(modelOut), inputDsNames)
-  if(!length(scenTableNames)){
+  if(length(modelOut) + length(inputDsNames) < 1L){
     errMsg <- "You have defined neither input nor output symbols. Please enter at least one external symbol!"
   }
-  scenTableNames    <- paste0(gsub("_", "", modelName, fixed = TRUE),
-                              "_", scenTableNames)
   # define scenario tables to display in interface
   inputIdsNotToDisplay <- vapply(inputDsNames, function(el){
     if(identical(modelIn[[el]]$dropdown$single, TRUE) || 
@@ -1470,8 +1526,8 @@ if(is.null(errMsg)){
         config$dataRendering[[elName]]$outType <- "datatable"
       }
     }else{
-      config$dataRendering[[elName]]$outType <- defOutType
-      if(identical(defOutType, "pivot")){
+      config$dataRendering[[elName]]$outType <- config$defaultRendererOutput
+      if(identical(config$defaultRendererOutput, "pivot")){
         config$dataRendering[[elName]]$pivottable <- prepopPivot(modelOut[[i]])
       }
     }
@@ -1510,7 +1566,7 @@ if(is.null(errMsg)){
         if(isTRUE(modelOut[[i]]$hidden)){
           warningMsgTmp <- sprintf("You specified chart options for the output symbol: %s. These options will be ignored as the symbol is hidden.",
                                    names(modelOut)[i])
-          warning(warningMsgTmp)
+          warning(warningMsgTmp, call. = FALSE)
           warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
           if(LAUNCHCONFIGMODE){
             invalidGraphsToRender <- c(invalidGraphsToRender, el)
@@ -1529,7 +1585,7 @@ if(is.null(errMsg)){
               errMsgTmp <- paste0("Invalid graph config for symbol '", names(modelOut)[i], 
                                   "': ", validGraphConfig, ".")
               if(LAUNCHCONFIGMODE){
-                warning(errMsgTmp)
+                warning(errMsgTmp, call. = FALSE)
                 next
               }
               errMsg <- paste(errMsg, paste0(errMsgTmp, " Start the Configuration Mode to reconfigure your app."), sep = "\n")
@@ -1563,7 +1619,7 @@ if(is.null(errMsg)){
                                   " are configured to be additional data for the renderer of symbol: ",
                                   names(modelOut)[i], 
                                   ". These symbols could not be found among the list of either input or output symbols!")
-          warning(warningMsgTmp)
+          warning(warningMsgTmp, call. = FALSE)
           warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
         }
         configGraphsOut[[i]]$additionalData <- configGraphsOut[[i]]$additionalData[!badAdditionalDataSheetNames]
@@ -1583,7 +1639,7 @@ if(is.null(errMsg)){
           errMsgTmp <- paste0("Invalid graph config for symbol '", names(modelIn)[i], 
                               "': ", validGraphConfig, ".")
           if(LAUNCHCONFIGMODE){
-            warning(errMsgTmp)
+            warning(errMsgTmp, call. = FALSE)
             next
           }
           errMsg <- paste(errMsg, paste0(errMsgTmp, " Start the Configuration Mode to reconfigure your app."), sep = "\n")
@@ -1641,7 +1697,7 @@ if(is.null(errMsg)){
   invalidSymbolConfig <- invalidSymbolConfig[is.na(invalidSymbolConfig)]
   if(length(invalidSymbolConfig)){
     warning(sprintf("You specified an output table for the symbol(s): '%s'. This/these symbol(s) is/are not part of the data contract between GAMS and MIRO", 
-                    paste(invalidSymbolConfig, collapse = "','")))
+                    paste(invalidSymbolConfig, collapse = "','")), call. = FALSE)
   }
   
   #sanitize file names of output attachments
@@ -1651,7 +1707,7 @@ if(is.null(errMsg)){
   })
   if(LAUNCHHCUBEMODE && length(config$outputAttachments)){
     warningMsgTmp <- "Output attachments are not supported and will be ignored in Hypercube Mode."
-    warning(warningMsgTmp)
+    warning(warningMsgTmp, call. = FALSE)
     warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
   }
   
@@ -1668,113 +1724,55 @@ if(is.null(errMsg)){
   installPackage$timevis <- LAUNCHCONFIGMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
                                                           function(conf){if(identical(conf$graph$tool, "timevis")) TRUE else FALSE}, 
                                                           logical(1L), USE.NAMES = FALSE))
-  
-  dbSchema <- list(tabName = c('_scenMeta' = scenMetadataTablePrefix %+% modelName, 
-                               '_scenLock' = scenLockTablePrefix %+% modelName,
-                               '_scenTrc' = tableNameTracePrefix %+% modelName,
-                               '_scenAttach' = tableNameAttachPrefix %+% modelName,
-                               '_scenScripts' = tableNameScriptsPrefix %+% modelName,
-                               '_jobMeta' = tableNameJobPrefix %+% modelName),
-                   colNames = list('_scenMeta' = c(sid = sidIdentifier, uid = uidIdentifier, sname = snameIdentifier,
-                                                   stime = stimeIdentifier, stag = stagIdentifier, accessR = accessIdentifier %+% "r",
-                                                   accessW = accessIdentifier %+% "w", accessX = accessIdentifier %+% "x", 
-                                                   scode = scodeIdentifier),
-                                   '_scenLock' = c(uid = uidIdentifier, sid = sidIdentifier, lock = slocktimeIdentifier),
-                                   '_scenTrc' = traceColNames,
-                                   '_scenAttach' = c(sid = sidIdentifier, fn = "fileName",
-                                                     fExt = "fileExt", 
-                                                     execPerm = "execPerm",
-                                                     content = "fileContent",
-                                                     time = "timestamp"),
-                                   '_scenScripts' = c(sid = sidIdentifier, id = "id",
-                                                     content = "scriptContent"),
-                                   '_jobMeta' = c(jid = '_jid', uid = uidIdentifier,  
-                                                  status = '_status', time = '_jtime', 
-                                                  tag = stagIdentifier, pid = '_pid', 
-                                                  sid = sidIdentifier, gamsret = '_gamsret',
-                                                  scode = scodeIdentifier, sname = snameIdentifier)),
-                   colTypes = c('_scenMeta' = "iccTcccci",
-                                '_scenLock' = "ciT", '_scenTrc' = "cccccdidddddiiiddddddc",
-                                '_scenAttach' = "icclbT", '_scenScripts' = "icc", '_jobMeta' = "iciTcciiic"))
-  
-  dbSchema$tabName  <- c(dbSchema$tabName, scenTableNames)
-  scenColNamesTmp   <- lapply(c(modelOut, modelIn), function(el) return(names(el$headers)))
-  scenColTypesTmp   <- lapply(c(modelOut, modelIn), "[[", "colTypes")
-  dsIsNoTable       <- vapply(scenColNamesTmp, is.null, logical(1L), USE.NAMES = FALSE)
-  if(any(dsIsNoTable)){
-    scenColNamesTmp[dsIsNoTable]       <- NULL
-    scenColTypesTmp[dsIsNoTable]       <- NULL
-    if(!scalarsFileName %in% names(modelIn)){
-      scenColNamesTmp[[scalarsFileName]] <- scalarsFileHeaders
-      scenColTypesTmp[scalarsFileName]   <- "ccc"
+  dbSchemaModel <- list(schema = setNames(lapply(seq_len(length(modelOut) + length(modelIn)), function(i){
+    if(i <= length(modelOut)){
+      el <- modelOut[[i]]
+      tabName <- names(modelOut)[i]
+    }else{
+      el <- modelIn[[i - length(modelOut)]]
+      tabName <- names(modelIn)[i - length(modelOut)]
     }
+    if(!length(el$headers) || isTRUE(el$dropdown$single) ||
+       isTRUE(el$dropdown$checkbox) ||
+       tabName %in% c(scalarsFileName, scalarsOutName)){
+      return(NA)
+    }
+    return(list(tabName = tabName,
+                colNames = names(el$headers),
+                colTypes = el$colTypes))
+  }), c(names(modelOut), names(modelIn))), views = list())
+  dbSchemaModel$schema[is.na(dbSchemaModel$schema)] <- NULL
+  if(scalarsOutName %in% names(modelOut)){
+    scalarMeta <- setNames(modelOut[[scalarsOutName]]$symtypes,
+                           modelOut[[scalarsOutName]]$symnames)
+    dbSchemaModel$schema <- c(dbSchemaModel$schema,
+                              setNames(lapply(names(scalarMeta), function(scalarName){
+                                list(tabName = scalarName,
+                                     colNames = scalarName,
+                                     colTypes = if(identical(scalarMeta[[scalarName]], "set")) "c" else "d")
+                              }), names(scalarMeta)))
+    dbSchemaModel$views[[scalarsOutName]] <- c(dbSchemaModel$views[[scalarsOutName]], names(scalarMeta))
   }
-  dbSchema$colNames  <- c(dbSchema$colNames, scenColNamesTmp)
-  dbSchema$colTypes  <- c(dbSchema$colTypes, unlist(scenColTypesTmp))
-  rm(dsIsNoTable, scenColNamesTmp, scenColTypesTmp)
-  
-  # generate GAMS return code map
-  GAMSReturnCodeMap <- c(
-    '-500' = "Internal error",
-    '-404' = "Host could not be reached",
-    '-401' = "Access denied",
-    '-400' = "License expired",
-    '-100' = "Model execution timed out",
-    '-15' = "Model execution was interrupted",
-    '-9' = "Model execution was interrupted",
-    '1' = "Solver is to be called, the system should never return this number", 
-    '2' = "There was a compilation error", 
-    '3' = "There was an execution error", 
-    '4' = "System limits were reached",
-    '5' = "There was a file error",
-    '6' = "There was a parameter error",
-    '7' = "There was a licensing error",
-    '8' = "There was a GAMS system error",
-    '9' = "GAMS could not be started",
-    '10' = "Out of memory",
-    '11' = "Out of disk",
-    '109' = "Could not create process/scratch directory",
-    '110' = "Too many process/scratch directories",
-    '112' = "Could not delete the process/scratch directory",
-    '113' = "Could not write the script gamsnext",
-    '114' = "Could not write the parameter file",
-    '115' = "Could not read environment variable",
-    '144' = "Could not spawn the GAMS language compiler (gamscmex)",
-    '400' = "Could not spawn the GAMS language compiler (gamscmex)",
-    '145' = "Current directory (curdir) does not exist",
-    '401' = "Current directory (curdir) does not exist",
-    '146' = "Cannot set current directory (curdir)",
-    '402' = "Cannot set current directory (curdir)",
-    '148' = "Blank in system directory (UNIX only)",
-    '404' = "Blank in system directory (UNIX only)",
-    '149' = "Blank in current directory (UNIX only)",
-    '405' = "Blank in current directory (UNIX only)",
-    '150' = "Blank in scratch extension (scrext)",
-    '406' = "Blank in scratch extension (scrext)",
-    '151' = "Unexpected cmexRC",
-    '407' = "Unexpected cmexRC",
-    '152' = "Could not find the process directory (procdir)",
-    '408' = "Could not find the process directory (procdir)",
-    '153' = "CMEX library could not be found (experimental)",
-    '409' = "CMEX library could not be found (experimental)",
-    '154' = "Entry point in CMEX library could not be found (experimental)",
-    '410' = "Entry point in CMEX library could not be found (experimental)",
-    '155' = "Blank in process directory (UNIX only)",
-    '411' = "Blank in process directory (UNIX only)",
-    '156' = "Blank in scratch directory (UNIX only)",
-    '412' = "Blank in scratch directory (UNIX only)",
-    '141' = "Cannot add path / unknown UNIX environment / cannot set environment variable",
-    '232' = "Driver error: incorrect command line parameters for gams",
-    '1000' = "Driver error: incorrect command line parameters for gams",
-    '208' = "Cannot add path / unknown UNIX environment / cannot set environment variable",
-    '2000' = "Cannot add path / unknown UNIX environment / cannot set environment variable",
-    '184' = "Driver error: problems getting current directory",
-    '3000' = "Driver error: problems getting current directory",
-    '160' = "Driver error: internal error: GAMS compile and execute module not found",
-    '4000' = "Driver error: internal error: GAMS compile and execute module not found",
-    '126' = "Driver error: internal error: cannot load option handling library",
-    '5000' = "Driver error: internal error: cannot load option handling library"
-  )
+  if(scalarsFileName %in% names(modelInRaw)){
+    scalarMeta <- setNames(modelInRaw[[scalarsFileName]]$symtypes,
+                           modelInRaw[[scalarsFileName]]$symnames)
+    dbSchemaModel$schema <- c(dbSchemaModel$schema,
+                              setNames(lapply(names(scalarMeta), function(scalarName){
+                                list(tabName = scalarName,
+                                     colNames = scalarName,
+                                     colTypes = if(identical(scalarMeta[[scalarName]], "set")) "c" else "d")
+                              }), names(scalarMeta)))
+    dbSchemaModel$views[[scalarsFileName]] <- c(dbSchemaModel$views[[scalarsFileName]], names(scalarMeta))
+  }
+  if(length(GMSOpt) || length(DDPar)){
+    dbSchemaModel$schema <- c(dbSchemaModel$schema,
+                              setNames(lapply(c(GMSOpt, DDPar), function(parName){
+                                list(tabName = parName,
+                                     colNames = parName,
+                                     colTypes = "c")
+                              }), c(GMSOpt, DDPar)))
+    dbSchemaModel$views[[scalarsFileName]] <- c(dbSchemaModel$views[[scalarsFileName]], c(GMSOpt, DDPar))
+  }
 }
 if(is.null(errMsg)){
   # parse README.md file 

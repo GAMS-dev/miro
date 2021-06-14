@@ -401,8 +401,6 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   loadErrors <- character(0L)
   source("./modules/input_load.R", local = TRUE)
   if(identical(fileType, "miroscen")){
-    scenMetaData[["scen_1_"]] <<- activeScen$
-      getMetadata(lang$nav$excelExport$metadataSheet)
     # update scenario name
     rv$activeSname  <<- activeScen$getScenName()
   }else{
@@ -413,26 +411,18 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   }
   errMsg <- NULL
   # save input data
-  idxMap <- match(modelInFileNames, names(scenInputData))
-  lapply(seq_along(modelInFileNames), function(i){
-    if(is.na(idxMap[i]) || is.null(scenInputData[[idxMap[i]]])){
-      scenData[["scen_1_"]][[i + length(modelOut)]] <<- scenDataTemplate[[i]]
-    }else{
-      scenData[["scen_1_"]][[i + length(modelOut)]] <<- scenInputData[[idxMap[i]]]
-    }
-  })
+  scenData$loadSandbox(scenInputData, names(scenInputData), activeScen$getMetadata())
   if(LAUNCHHCUBEMODE){
     noOutputData <<- TRUE
-  }else{
+  }else if(!identical(loadMode, "scsv")){
     prog$set(detail = lang$progressBar$importScen$renderOutput, value = 0.8)
     tryCatch({
-      outputData <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, 
-                                 workDir = loadModeWorkDir, 
-                                 modelName = modelName, errMsg = lang$errMsg$GAMSOutput$badOutputData,
-                                 scalarsFileHeaders = scalarsFileHeaders,
-                                 templates = modelOutTemplate, method = loadMode,
-                                 hiddenOutputScalars = config$hiddenOutputScalars, 
-                                 fileName = loadModeFileName, xlsio = xlsio)
+      outputData <- loadScenData(metaData = modelOut,
+                                 workDir = loadModeWorkDir,
+                                 templates = modelOutTemplate,
+                                 method = loadMode,
+                                 fileName = loadModeFileName,
+                                 xlsio = xlsio, csvio = csvio)
       loadErrors <- c(loadErrors, outputData$errors)
     }, error = function(e){
       flog.info("Problems loading output data. Error message: %s.", 
@@ -442,20 +432,13 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     if(is.null(showErrorMsg(lang$errMsg$GAMSOutput$title, errMsg))){
       return()
     }
-    scenData[["scen_1_"]][seq_along(modelOut)] <<- outputData$tabular
-    if(isFALSE(outputData$noTabularData)){
-      scalarData[["scen_1_"]] <<- outputData$scalar
-      renderOutputData(rendererEnv, views)
+    scenData$loadSandbox(outputData$tabular, names(modelOut))
+    renderOutputData()
+    if(scenData$getSandboxHasOutputData(scriptOutput)){
       noOutputData <<- FALSE
     }else{
       noOutputData <<- TRUE
     }
-    
-    scalarIdTmp <- match(scalarsFileName, tolower(names(scenInputData)))[[1L]]
-    if(!is.na(scalarIdTmp)){
-      scalarData[["scen_1_"]] <<- bind_rows(scenInputData[[scalarIdTmp]], scalarData[["scen_1_"]])
-    }
-    outputData <- NULL
   }
   
   if(newInputCount){

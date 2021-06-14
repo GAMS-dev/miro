@@ -4,17 +4,42 @@ export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export class LoadingScreen {
+  constructor() {
+    this.activeCount = 0;
+  }
+
+  show(delay) {
+    this.activeCount += 1;
+    setTimeout(() => {
+      if (this.activeCount > 0) {
+        $('#loading-screen').show();
+      }
+    }, delay);
+  }
+
+  hide() {
+    if (this.activeCount === 0) {
+      return;
+    }
+    this.activeCount -= 1;
+    if (this.activeCount === 0) {
+      $('#loading-screen').hide();
+    }
+  }
+}
+
 function changeChartjsTheme(dark = false) {
   if (typeof Chart === 'undefined') {
     return;
   }
   if (dark) {
-    Chart.defaults.global.defaultFontColor = 'white';
+    Chart.defaults.color = 'white';
   } else {
-    Chart.defaults.global.defaultFontColor = '#666';
+    Chart.defaults.color = '#666';
   }
   Chart.helpers.each(Chart.instances, (instance) => {
-    instance.chart.update();
+    instance.update();
   });
 }
 
@@ -131,7 +156,10 @@ export function rerenderHot(delay = 100) {
   setTimeout(() => {
     const el = $('.rhandsontable:visible').get(0);
     if (el !== undefined) {
-      HTMLWidgets.getInstance(el).hot.render();
+      const hotInstance = HTMLWidgets.getInstance(el);
+      if (hotInstance !== undefined) {
+        hotInstance.hot.render();
+      }
     }
   }, delay);
 }

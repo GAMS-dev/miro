@@ -1,6 +1,6 @@
 MiroDb <- R6::R6Class("MiroDb", public = list(
   initialize = function(dbConnectionInfo){
-    private$conn <- DBI::dbConnect(drv = RPostgres::Postgres(),
+    private$conn <- dbConnect(drv = RPostgres::Postgres(),
         dbname = dbConnectionInfo$name,
         host = dbConnectionInfo$host,
         port = dbConnectionInfo$port, 
@@ -10,46 +10,58 @@ MiroDb <- R6::R6Class("MiroDb", public = list(
     flog.debug("Db: MiroDb initialized.")
     return(invisible(self))
   },
-  getOrphans = function(appIds){
-    dbTables <- private$getAllTables();
-    return(dbTables[any(vapply(dbTables, private$tableBelongsToApp,
-        logical(length(appIds)), appIds, USE.NAMES = FALSE))])
-  },
-  removeAppDbTables = function(appId){
-    dbTables <- private$getAllTables()
-    tablesToRemove <- dbTables[vapply(dbTables, private$tableBelongsToApp,
-        logical(1), appId, USE.NAMES = FALSE)]
-    return(self$removeTables(tablesToRemove))
-  },
-  removeTables = function(tablesToRemove){
-    if(!length(tablesToRemove)){
-        return(invisible(self))
+  createAppSchema = function(appId){
+    if(nchar(appId) > 60L){
+      stop("App ID must not exceed 60 characters!", call. = FALSE)
     }
-    query <- paste0("DROP TABLE IF EXISTS ",
-        paste(DBI::dbQuoteIdentifier(private$conn, tablesToRemove),
-            collapse = ", "), " CASCADE;")
-    DBI::dbExecute(private$conn, query)
-    flog.info("Db: Database tables: '%s' deleted.", paste(tablesToRemove, collapse = "', '"))
-    return(invisible(self))
+    dbAppId <- private$getDbAppId(appId)
+    appDbCredentials <- list(user = dbAppId,
+      password = private$genPassword())
+    roleExistsQuery <- paste0("SELECT 1 FROM pg_roles WHERE rolname=",
+      dbQuoteString(private$conn, dbAppId))
+    if(length(dbGetQuery(private$conn, SQL(roleExistsQuery))[[1]]) > 0L){
+      private$runQuery(paste0("ALTER USER ",
+        dbQuoteIdentifier(private$conn, dbAppId),
+        " WITH PASSWORD ",
+        dbQuoteString(private$conn, appDbCredentials$password), ";"))
+    }else{
+      private$runQuery(paste0("CREATE ROLE ",
+        dbQuoteIdentifier(private$conn, dbAppId), " LOGIN PASSWORD ",
+        dbQuoteString(private$conn, appDbCredentials$password), ";"))
+    }
+    private$runQuery(paste0("CREATE SCHEMA IF NOT EXISTS AUTHORIZATION ",
+      dbQuoteIdentifier(private$conn, dbAppId), ";"))
+    # Make sure search path is set to user's schema only to exclude public tables
+    private$runQuery(paste0("ALTER ROLE ",
+      dbQuoteIdentifier(private$conn, dbAppId),
+      " SET search_path = ",
+      dbQuoteIdentifier(private$conn, dbAppId)))
+    return(appDbCredentials)
   },
-  appTablesExist = function(appId){
-    dbTables <- private$getAllTables();
-    return(any(vapply(dbTables, private$tableBelongsToApp,
-        logical(1), appId, USE.NAMES = FALSE)))
+  removeAppSchema = function(appId){
+    private$runQuery(paste0("DROP SCHEMA IF EXISTS ",
+      dbQuoteIdentifier(private$conn, private$getDbAppId(appId)), " CASCADE;"))
+    return(invisible(self))
   },
   finalize = function(){
     flog.debug("Db: Database connection ended as Db object was gced.")
-    DBI::dbDisconnect(private$conn)
+    dbDisconnect(private$conn)
   }), private = list(
     conn = NULL,
-    getAllTables = function(){
-        query <- DBI::SQL(paste0("SELECT table_name FROM information_schema.tables",
-            " WHERE table_schema='public' AND table_type='BASE TABLE';"))
-        return(DBI::dbGetQuery(private$conn, query)[[1L]])
+    runQuery = function(query){
+        flog.trace("Running query: '%s'", query)
+        return(dbExecute(private$conn, SQL(query)))
     },
-    tableBelongsToApp = function(tableName, appIds){
-        return(startsWith(tableName, paste0(escapeAppIds(appIds), "_")) | 
-            (startsWith(tableName, "_sys_") & endsWith(tableName, paste0("_", tolower(appIds)))))
+    getDbAppId = function(appId){
+      return(paste0("M_", toupper(appId)))
+    },
+    genPassword = function(){
+      passwordTmp <- system("tr -dc A-Za-z0-9 </dev/urandom | head -c 60 ; echo ''",
+        intern = TRUE)
+      if(!identical(nchar(passwordTmp), 60L)){
+        stop("Issues generating database password", call. = FALSE)
+      }
+      return(passwordTmp)
     }
   )
 )

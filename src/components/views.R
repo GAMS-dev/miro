@@ -53,6 +53,10 @@ Views <- R6Class("Views",
                      if(!is_tibble(viewConf) || length(viewConf) < 4L || nrow(viewConf) == 0){
                        if(sandbox){
                          private$scenViewConf[["1"]] <- list()
+                       }else{
+                         for(scenId in as.character(scenIds)){
+                           private$scenViewConf[[scenId]] <- list()
+                         }
                        }
                        return(invisible(self))
                      }
@@ -154,9 +158,13 @@ Views <- R6Class("Views",
                      if(!length(private$symbolAliases)){
                        outputSymAliases <- vapply(tabularOutputSymConfig,
                                                   "[[", character(1L), "alias", USE.NAMES = FALSE)
-                       inputSymAliases <- vapply(tabularInputSymConfig[match(private$tabularInputSymbols,
-                                                                             names(tabularInputSymConfig))],
-                                                 "[[", character(1L), "alias", USE.NAMES = FALSE)
+                       if(length(tabularInputSymConfig)){
+                         inputSymAliases <- vapply(tabularInputSymConfig[match(private$tabularInputSymbols,
+                                                                               names(tabularInputSymConfig))],
+                                                   "[[", character(1L), "alias", USE.NAMES = FALSE)
+                       }else{
+                         inputSymAliases <- character(0L)
+                       }
                        private$symbolAliases <- c(outputSymAliases, paste(lang$nav$scen$pivo$viewPrefix, outputSymAliases),
                                                   inputSymAliases, paste(lang$nav$scen$pivo$viewPrefix, inputSymAliases))
                      }

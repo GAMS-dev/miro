@@ -2,19 +2,11 @@ context("UI tests - MIRO log works")
 skip_if(identical(Sys.getenv("GAMS_SYS_DIR"), ""),
         "GAMS_SYS_DIR environment variable not set. Skipping tests.")
 
-testDir <- file.path(getwd(), "..")
-
 createTestDb()
 
 additionalGamsClArgs <- character(0L)
 if(!identical(Sys.getenv("MIRO_TEST_GAMS_LICE"), "")){
   additionalGamsClArgs <- paste0('license="', Sys.getenv("MIRO_TEST_GAMS_LICE"), '"')
-}
-Sys.setenv(MIRO_DB_PATH = testDir)
-if(file.exists(file.path(Sys.getenv("MIRO_DB_PATH"), "miro.sqlite3"))){
-  if(unlink(file.path(Sys.getenv("MIRO_DB_PATH"), "miro.sqlite3"), force = TRUE)){
-    stop("Could not remove old database SQLite file for tests")
-  }
 }
 miroModelDir <- file.path(testDir, "..", "model", "pickstock")
 Sys.setenv(MIRO_MODEL_PATH = file.path(miroModelDir,  "pickstock.gms"))

@@ -5,6 +5,11 @@ HTMLWidgets.widget({
   type: 'output',
 
   initialize: function(el, width, height) {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      Chart.defaults.color = 'white';
+    } else {
+      Chart.defaults.color = '#666';
+    }
     return {};
   },
 
@@ -39,15 +44,11 @@ HTMLWidgets.widget({
     if (x.scales != null){
       chartOptions.scales = {};
       if (x.scales.x != null) {
-        chartOptions.scales.xAxes = x.scales.x;
+        chartOptions.scales.x = x.scales.x;
       }
       if (x.scales.y != null) {
-        chartOptions.scales.yAxes = x.scales.y;
+        chartOptions.scales.y = x.scales.y;
       }
-    }
-
-    if (x.scale != null){
-      chartOptions.scale = x.scale;
     }
 //    chartOptions.dragData = true;
 //    chartOptions.dragX = false;
@@ -55,27 +56,27 @@ HTMLWidgets.widget({
 //    chartOptions.dragOptions = {
 //      showTooltip: true
 //    };
-    if(chartOptions.dragData === true){
-      chartOptions.onDrag = function (e, datasetIndex, index, value) {
-        // change cursor style to grabbing during drag action
-        e.target.style.cursor = 'grabbing';
-        // where e = event
-      };
-      chartOptions.onDragEnd = function (e, datasetIndex, index, value) {
-        // restore default cursor style upon drag release
-        e.target.style.cursor = 'default';
-        // where e = event
-        Shiny.onInputChange(el.id, {col: datasetIndex + 1, row: index + 1, value: value});
-      };
-      chartOptions.hover = {
-        onHover: function(e) {
-          // indicate that a datapoint is draggable by showing the 'grab' cursor when hovered
-          const point = this.getElementAtEvent(e);
-          if (point.length) e.target.style.cursor = 'grab';
-          else e.target.style.cursor = 'default';
-        }
-      };
-    }
+//    if(chartOptions.dragData === true){
+//      chartOptions.onDrag = function (e, datasetIndex, index, value) {
+//        // change cursor style to grabbing during drag action
+//        e.target.style.cursor = 'grabbing';
+//        // where e = event
+//      };
+//      chartOptions.onDragEnd = function (e, datasetIndex, index, value) {
+//        // restore default cursor style upon drag release
+//        e.target.style.cursor = 'default';
+//        // where e = event
+//        Shiny.onInputChange(el.id, {col: datasetIndex + 1, row: index + 1, value: value});
+//      };
+//      chartOptions.hover = {
+//        onHover: function(e) {
+//          // indicate that a datapoint is draggable by showing the 'grab' cursor when hovered
+//          const point = this.getElementAtEvent(e);
+//          if (point.length) e.target.style.cursor = 'grab';
+//          else e.target.style.cursor = 'default';
+//        }
+//      };
+//    }
 
     // Create actual chart
     instance.cjs = new Chart(ctx, {

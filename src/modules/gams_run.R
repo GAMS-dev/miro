@@ -88,7 +88,8 @@ storeGAMSOutputFiles <- function(workDir){
                                   paste(basename(filesToStore), collapse = "', '"))
              },
              {
-               flog.error("Problems while trying to store GAMS output files in the database. Error message: '%s'.", e)
+               flog.error("Problems while trying to store GAMS output files in the database. Error message: '%s'.",
+                          conditionMessage(e))
                errMsg <<- lang$errMsg$unknownError
              })
     })
@@ -101,22 +102,27 @@ prepareModelRun <- function(async = FALSE){
   prog$set(message = lang$progressBar$prepRun$title, value = 0)
   
   prog$inc(amount = 0.5, detail = lang$progressBar$prepRun$sendInput)
-  # save input data 
-  saveInputDb <- FALSE
-  source("./modules/input_save.R", local = TRUE)
-  if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
-    return(NULL)
+  # save input data
+  if(tryCatch({
+    dataTmp <- getInputDataFromSandbox(saveInputDb = FALSE)
+    FALSE
+  }, no_data = function(e){
+    flog.error(conditionMessage(e))
+    showErrorMsg(lang$errMsg$GAMSInput$title, conditionMessage(e))
+    return(TRUE)
+  }, error = function(e){
+    flog.error("Unexpected error while fetching input data from sandbox. Error message: '%s'", conditionMessage(e))
+    showErrorMsg(lang$errMsg$GAMSInput$title, lang$errMsg$unknownError)
+    return(TRUE)
+  })){
+    return()
   }
-  lapply(seq_along(dataTmp), function(i){
-    if(is.null(dataTmp[[i]])){
-      scenData[["scen_1_"]][[i + length(modelOut)]] <<- scenDataTemplate[[i + length(modelOut)]]
-    }else{
-      scenData[["scen_1_"]][[i + length(modelOut)]] <<- dataTmp[[i]]
-    }
-  })
-  pfFileContent <- NULL
+  scenData$loadSandbox(dataTmp, modelInFileNames, activeScen$getMetadata())
+  clArgsDf <- NULL
   inputData <- DataInstance$new(modelInFileNames, fileExchange = config$fileExchange,
-                                gdxio = gdxio, csvDelim = config$csvDelim)
+                                gdxio = gdxio, csvDelim = config$csvDelim,
+                                activeScen = activeScen, attachments = attachments,
+                                views = views)
   lapply(seq_along(dataTmp), function(id){
     # write compile time variable file and remove compile time variables from scalar dataset
     if(is.null(dataTmp[[id]])){
@@ -124,40 +130,13 @@ prepareModelRun <- function(async = FALSE){
     }
     if(identical(tolower(names(dataTmp)[[id]]), scalarsFileName)){
       # scalars file exists, so remove compile time variables from it
-      DDParIdx           <- dataTmp[[id]][[1]] %in% outer(DDPar, c("", "$lo", "$up"), 
-                                                         FUN = "paste0")
+      DDParIdx           <- dataTmp[[id]][[1]] %in% DDPar
       GMSOptIdx          <- dataTmp[[id]][[1]] %in% GMSOpt
-      DDParValues        <- dataTmp[[id]][DDParIdx, , drop = FALSE]
-      GMSOptValues       <- dataTmp[[id]][GMSOptIdx, , drop = FALSE]
-      if(nrow(DDParValues) || nrow(GMSOptValues)){
-        pfGMSPar      <- vapply(seq_along(DDParValues[[1]]), 
-                                function(i){
-                                  if(DDParValues[[3]][i] %in% CLARG_MISSING_VALUES)
-                                    return(NA_character_)
-                                  symbolTmp <- substring(DDParValues[[1]][i], 
-                                                         nchar(prefixDDPar) + 1L)
-                                  if(endsWith(symbolTmp, "$lo")){
-                                    symbolTmp <- paste0(substring(symbolTmp, 1, nchar(symbolTmp) - 3), "_lo")
-                                  }else if(endsWith(symbolTmp, "$up")){
-                                    symbolTmp <- paste0(substring(symbolTmp, 1, nchar(symbolTmp) - 3), "_up")
-                                  }
-                                  paste0('--', symbolTmp, '=', 
-                                         escapeGAMSCL(DDParValues[[3]][i]))
-                                }, character(1L), USE.NAMES = FALSE)
-        pfGMSPar      <- pfGMSPar[!is.na(pfGMSPar)]
-        # do not write '_' in pf file (no selection)
-        pfGMSOpt      <- vapply(seq_along(GMSOptValues[[1]]), 
-                                function(i){
-                                  if(!GMSOptValues[[3]][i] %in% CLARG_MISSING_VALUES) 
-                                    paste0(substring(GMSOptValues[[1]][i], nchar(prefixGMSOpt) + 1L), '=', 
-                                           escapeGAMSCL(GMSOptValues[[3]][i]))
-                                  else
-                                    NA_character_
-                                }, character(1L), USE.NAMES = FALSE)
-        pfGMSOpt      <- pfGMSOpt[!is.na(pfGMSOpt)]
-        pfFileContent <<- c(pfGMSPar, pfGMSOpt)
+      if(any(c(DDParIdx, GMSOptIdx))){
+        isClArg <- (DDParIdx | GMSOptIdx)
+        clArgsDf <<- dataTmp[[id]][isClArg, ]
         # remove those rows from scalars file that are compile time variables
-        inputData$push(names(dataTmp)[[id]], dataTmp[[id]][!(DDParIdx | GMSOptIdx), ])
+        inputData$push(names(dataTmp)[[id]], dataTmp[[id]][!isClArg, ])
       }else{
         inputData$push(names(dataTmp)[[id]], dataTmp[[id]])
       }
@@ -185,7 +164,7 @@ prepareModelRun <- function(async = FALSE){
   if(is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))){
     return(NULL)
   }
-  return(list(inputData = inputData, pfFileContent = pfFileContent))
+  return(list(inputData = inputData, clArgsDf = clArgsDf))
 }
 if(LAUNCHHCUBEMODE){
   idsToSolve <- NULL
@@ -310,8 +289,10 @@ if(LAUNCHHCUBEMODE){
                if(length(value) > 1){
                  if(identical(modelIn[[i]]$slider$double, TRUE)){
                    # double slider in single run mode
-                   return(paste0(parPrefix, "_lo= ", value[1], 
-                                 '|"""|', parPrefix, "_up= ", value[2]))
+                   if (!identical(input[["hcubeMode_" %+% i]], TRUE)){
+                     return(paste0(parPrefix, "_lo= ", value[1], 
+                                   '|"""|', parPrefix, "_up= ", value[2]))
+                   }
                  }else if(!identical(modelIn[[i]]$slider$single, TRUE)){
                    # double slider in base mode with noHcube=FALSE
                    return(paste0(parPrefix, "_lo= ", value[1], 
@@ -416,7 +397,7 @@ if(LAUNCHHCUBEMODE){
                  data <- fixColTypes(getInputDataset(i), modelIn[[i]]$colTypes)
                }, error = function(e){
                  flog.error("Dataset: '%s' could not be loaded. Error message: '%s'.", 
-                            modelInAlias[i], e)
+                            modelInAlias[i], conditionMessage(e))
                  errMsg <<- sprintf(lang$errMsg$GAMSInput$noData, 
                                     modelInAlias[i])
                })
@@ -569,30 +550,17 @@ if(LAUNCHHCUBEMODE){
   loadOutputData <- function(){
     storeGAMSOutputFiles(workDir)
     
-    GAMSResults <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, workDir = workDir, 
-                                modelName = modelName, errMsg = lang$errMsg$GAMSOutput$badOutputData,
-                                scalarsFileHeaders = scalarsFileHeaders, fileName = MIROGdxOutName,
-                                templates = modelOutTemplate, method = config$fileExchange, 
-                                csvDelim = config$csvDelim, hiddenOutputScalars = config$hiddenOutputScalars)
-    if(!is.null(GAMSResults$scalar)){
-      scalarData[["scen_1_"]] <<- GAMSResults$scalar
-    }
-    scalarIdTmp <- match(scalarsFileName, tolower(inputDsNames))[[1L]]
-    if(!is.na(scalarIdTmp)){
-      scalarData[["scen_1_"]] <<- bind_rows(scenData[["scen_1_"]][[scalarIdTmp + length(modelOut)]],
-                                            scalarData[["scen_1_"]])
-    }
-    if(!is.null(GAMSResults$tabular)){
-      scenData[["scen_1_"]][seq_along(modelOut)] <<- GAMSResults$tabular
-    }
+    scenData$loadSandbox(loadScenData(metaData = modelOut, workDir = workDir,
+                                      fileName = MIROGdxOutName,
+                                      templates = modelOutTemplate,
+                                      method = config$fileExchange,
+                                      csvDelim = config$csvDelim)$tabular, names(modelOut))
     if(config$saveTraceFile){
       tryCatch({
-        traceData <<- readTraceData(file.path(workDir, 
-                                              paste0(tableNameTracePrefix,
-                                                     modelName, ".trc")), 
+        traceData <<- readTraceData(file.path(workDir, "_scenTrc.trc"), 
                                     traceColNames)
       }, error = function(e){
-        flog.info("Problems loading trace data. Error message: %s.", e)
+        flog.info("Problems loading trace data. Error message: %s.", conditionMessage(e))
       })
     }
     tryCatch(
@@ -609,7 +577,7 @@ if(LAUNCHHCUBEMODE){
     tryCatch({
       loadOutputData()
     }, error = function(e){
-      flog.error("Problems loading output data. Error message: %s.", e)
+      flog.error("Problems loading output data. Error message: %s.", conditionMessage(e))
       errMsg <<- lang$errMsg$readOutput$desc
     })
     if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
@@ -620,7 +588,7 @@ if(LAUNCHHCUBEMODE){
     switchTab(session, "output")
     updateTabsetPanel(session, "scenTabset",
                       selected = "results.current")
-    renderOutputData(rendererEnv, views)
+    renderOutputData()
     markUnsaved()
   })
   observeEvent(virtualActionButton(input$btSubmitJob, rv$btSubmitJob), {
@@ -669,7 +637,7 @@ if(LAUNCHHCUBEMODE){
     tryCatch({
       hideEl(session, "#jobSubmissionWrapper")
       showEl(session, "#jobSubmissionLoad")
-      worker$runAsync(dataModelRun$inputData, dataModelRun$pfFileContent, sid, 
+      worker$runAsync(dataModelRun$inputData, dataModelRun$clArgsDf, sid, 
                       name = jobName)
       showHideEl(session, "#jobSubmitSuccess", 2000)
     }, error = function(e){
@@ -708,7 +676,7 @@ if(config$activateModules$lstFile){
       }
     }, error = function(e) {
       flog.warn("GAMS listing file could not be read (model: '%s'). Error message: %s.", 
-                modelName, e)
+                modelName, conditionMessage(e))
       showErrorMsg(lang$errMsg$readLst$title, errMsg)
       return("")
     })
@@ -730,7 +698,7 @@ if(config$activateModules$miroLogFile){
         miroLogContent <- miroLogContent$content
       }
     }, error = function(e){
-      flog.warn("MIRO log file could not be read. Error message: '%s'.", e)
+      flog.warn("MIRO log file could not be read. Error message: '%s'.", conditionMessage(e))
     })
     return(HTML(paste(miroLogContent, collapse = "\n")))
   }
@@ -742,6 +710,7 @@ if(config$activateModules$miroLogFile){
   }
 }
 
+logFilePath <- NULL
 if(config$activateModules$logFile ||
    config$activateModules$miroLogFile){
   logfileObs <- NULL
@@ -751,14 +720,15 @@ if(config$activateModules$logFile ||
   }else{
     logFilePath <- file.path(workDir, config$miroLogFile)
   }
+  writeLogFileToDisk <- TRUE
   if(config$activateModules$attachments && 
      config$storeLogFilesDuration > 0L &&
      !is.null(activeScen)){
     if(!config$activateModules$logFile){
-      logFilePath <- NULL
+      writeLogFileToDisk <- FALSE
     }
   }else{
-    logFilePath <- NULL
+    writeLogFileToDisk <- FALSE
   }
   
   logObs <- observe({
@@ -769,7 +739,7 @@ if(config$activateModules$logFile ||
     
     if(!length(logText)) return()
     
-    if(!is.null(logFilePath)){
+    if(writeLogFileToDisk){
       write_file(logText, logFilePath, append = TRUE)
     }
     appendEl(session, "#logStatusContainer", logText, 
@@ -811,7 +781,7 @@ output$modelStatus <- renderUI({
   }
   
   if(currModelStat < 0){
-    returnCodeText <- GAMSReturnCodeMap[as.character(currModelStat)]
+    returnCodeText <- GAMSRCMAP[as.character(currModelStat)]
     if(is.na(returnCodeText)){
       returnCodeText <- as.character(currModelStat)
     }
@@ -829,7 +799,7 @@ output$modelStatus <- renderUI({
   })
   
   if(currModelStat != 0){
-    returnCodeText <- GAMSReturnCodeMap[as.character(currModelStat)]
+    returnCodeText <- GAMSRCMAP[as.character(currModelStat)]
     if(is.na(returnCodeText)){
       returnCodeText <- as.character(currModelStat)
     }
@@ -869,7 +839,7 @@ output$modelStatus <- renderUI({
     tryCatch({
       loadOutputData()
     }, error = function(e){
-      flog.error("Problems loading output data. Error message: %s.", e)
+      flog.error("Problems loading output data. Error message: %s.", conditionMessage(e))
       errMsg <<- lang$errMsg$readOutput$desc
     })
     if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
@@ -879,7 +849,7 @@ output$modelStatus <- renderUI({
     switchTab(session, "output")
     updateTabsetPanel(session, "scenTabset",
                       selected = "results.current")
-    isolate(renderOutputData(rendererEnv, views))
+    isolate(renderOutputData())
     
     markUnsaved()
   }
@@ -945,8 +915,8 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     on.exit(suppressWarnings(prog$close()))
     prog$set(message = lang$progressBar$prepRun$title, value = 0)
     
-    idsSolved <<- db$importDataset(scenMetadataTable, colNames = snameIdentifier, 
-                                   tibble(scodeIdentifier, SCODEMAP[['scen']], ">"))
+    idsSolved <<- db$importDataset("_scenMeta", colNames = "_sname", 
+                                   tibble("_scode", SCODEMAP[['scen']], ">"))
     if(length(idsSolved)){
       idsSolved <<- unique(idsSolved[[1L]])
     }
@@ -955,7 +925,8 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     tryCatch(
       scenToSolve <- scenToSolve(),
       error = function(e){
-        flog.error("Problems getting list of scenarios to solve in Hypercube mode. Error message: '%s'.", e)
+        flog.error("Problems getting list of scenarios to solve in Hypercube mode. Error message: '%s'.",
+                   conditionMessage(e))
         errMsg <<- lang$errMsg$GAMSInput$desc
       })
     if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
@@ -974,8 +945,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
                            "lo=3")
     }
     if(config$saveTraceFile){
-      scenGmsPar <<- paste0(scenGmsPar, ' trace="', tableNameTracePrefix, modelName, '.trc"',
-                            " traceopt=3")
+      scenGmsPar <<- paste0(scenGmsPar, ' trace="_scenTrc.trc" traceopt=3')
     }
     
     sidsDiff <- setdiff(idsToSolve, idsSolved)
@@ -998,7 +968,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     if(length(activeScen) && length(activeScen$getSid())){
       jobSid <- activeScen$getSid()
     }
-    worker$run(dataModelRun$inputData, dataModelRun$pfFileContent, jobSid)
+    worker$run(dataModelRun$inputData, dataModelRun$clArgsDf, jobSid, name = activeScen$getScenName())
   }, error_duplicate_records = function(e){
     flog.info("Problems writing GDX file. Duplicate records found: %s", conditionMessage(e))
     errMsg <<- conditionMessage(e)
@@ -1048,7 +1018,8 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     logfileObs  <<- logRE$obs
     logfile     <<- logRE$re
   }, error = function(e) {
-    flog.error("GAMS log file could not be read (model: '%s'). Error message: %s.", modelName, e)
+    flog.error("GAMS log file could not be read (model: '%s'). Error message: %s.",
+               modelName, conditionMessage(e))
     errMsg <<- lang$errMsg$readLog$desc
   })
   showErrorMsg(lang$errMsg$readLog$title, errMsg)
@@ -1109,7 +1080,7 @@ if(!isShinyProxy && config$activateModules$remoteExecution){
       showEl(session, "#btRemoteExecLogin")
       hideEl(session, "#remoteExecLogoutDiv")
     }, error = function(e){
-      flog.error("Problems setting credentials: %s", e)
+      flog.error("Problems setting credentials: %s", conditionMessage(e))
       showErrorMsg(lang$errMsg$fileWrite$title, sprintf(lang$errMsg$fileWrite$desc,
                                                         rememberMeFileName))
     })

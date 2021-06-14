@@ -91,9 +91,13 @@ validateWidgetConfig <- function(widgetJSON){
      identical(nchar(trimws(currentWidgetSymbolName)), nchar(prefixDDPar))){
     return(lang$adminMode$widgets$validate[["val2"]])
   }
-  if(startsWith(currentWidgetSymbolName, prefixGMSOpt) && 
-     identical(nchar(trimws(currentWidgetSymbolName)), nchar(prefixGMSOpt))){
-    return(lang$adminMode$widgets$validate[["val3"]])
+  if(startsWith(currentWidgetSymbolName, prefixGMSOpt)){
+    if(identical(nchar(trimws(currentWidgetSymbolName)), nchar(prefixGMSOpt))){
+      return(lang$adminMode$widgets$validate[["val3"]])
+    }else if(trimws(tolower(currentWidgetSymbolName)) %in% paste0(prefixGMSOpt, reservedGMSOpt)){
+      return(sprintf(lang$adminMode$widgets$validate[["val61"]],
+                     paste(reservedGMSOpt, collapse = "', '")))
+    }
   }
   if(identical(grepl("\\s", currentWidgetSymbolName), TRUE)){
     return(lang$adminMode$widgets$validate$val39)

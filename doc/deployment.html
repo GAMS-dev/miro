@@ -84,7 +84,7 @@
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <b class="callout-title">Attention</b>
-                                            <p>In case you have specified <a href = "./customize.html#analysis-scripts">custom analysis scripts</a>, make sure to include these here as well!</p>
+                                            <p>Files or folders created by MIRO (e.g. <span class="code">conf_&lt;modelname&gt;</span>, <span class="code">data_&lt;modelname&gt;</span>, <span class="code">static_&lt;modelname&gt;</span>) do not need to be included in the assembly file. MIRO knows about these files and includes them automatically. Note that this is not the case for <a href = "./customize.html#analysis-scripts">custom analysis scripts</a>. These must be included in the assembly file!</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                     If you want to create the text file on your own, specify the relative paths to the files that are part of your model separated by a new line. An example for a model named <span class="code">example</span> can be found below:</p>
@@ -117,8 +117,8 @@ inc/inc2.inc
                                               <p>We advise you to test your MIRO app before distributing it. GAMS Studio offers an option <i>test deployment</i>. This simulates how your end users will experience the MIRO app (e.g. for the <i>Base Mode</i> MIRO is launched in the specified execution environment). In particular, you should check whether you forgot to include important files in the <a href="#model-assembly-file" class="scrollto">model assembly file</a>.</p>
                                           </div><!--//content-->
                                       </div><!--//callout-block-->
-                                    <h6>Bundling data with your app</h6>
-                                    <p>In case you want to distribute scenario data with your MIRO application, you can do so by simply placing GDX files in the <span class="code">data_&lt;modelname&gt;</span> directory. When your MIRO app is started for the first time, these datasets will be stored in the MIRO database. The filename is used as the scenario name. To learn more, read the chapter on <a href="./start.html#startup-import">importing multiple scenarios on startup</a>. Note that the owner of these scenarios is the user that launches the MIRO app for the first time!</p>
+                                    <h6 id="bundle-scenarios">Bundling data with your app</h6>
+                                    <p>In case you want to distribute scenario data with your MIRO application, you can do so by simply placing MIROSCEN, GDX, CSV or XLSX files in the <span class="code">data_&lt;modelname&gt;</span> directory. When your MIRO app is started for the first time, these datasets will be stored in the MIRO database. The filename is used as the scenario name. To learn more, read the chapter on <a href="./start.html#startup-import">importing multiple scenarios on startup</a>. Note that the owner of these scenarios is the user that launches the MIRO app for the first time!</p>
                                     <h6>Assign a default logo</h6>
                                     <p>When adding the MIRO app to the MIRO library, the user has the option to choose a logo to quickly identify your app. If you want to suggest a logo, simply place am image (format: png/jpg/jpeg; aspect ratio: 8 &times; 5 fits best) with the name <span class="code">app_logo</span> inside the <span class="code">static_&lt;modelname&gt;</span> folder before deploying. When a user imports your app, this logo will be suggested to them. If no such file is found, a default logo is used.</p>
                                     <div class="section-block" style="text-align:center;">
@@ -132,7 +132,7 @@ inc/inc2.inc
     "description": "This is my first MIRO app"
 }</code></pre>
                                     <p>If everything is set, click on <i>Deploy</i>. That's it! A new file <span class="code">&lt;modelname&gt;.miroapp</span> is created in your model directory. You can now distribute this MIRO app directly to your end users!</p>
-                                    <div style="outline: solid 1px black; outline-offset: 5px; margin-top:30px">
+                                    <div class="expandable-box-outline">
                                         <h3 id="export-cl"  class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Advanced: Export MIRO app using the command line</h3>
                                         <div class="section-block" style="display:none">
                                             <p>In case you want to use the command line instead of GAMS Studio to export your MIRO app, you should proceed as follows: First, set the environment variable <span class="code">MIRO_BUILD</span> to <span class="code">true</span> and <span class="code">MIRO_MODEL_PATH</span> to the absolute path of your main <span class="code">.gms</span> file (see <a href="./start.html#start-miro">here</a> for more information on how to set these environment variables on your operating system). The environment variables used to control what execution mode to choose and what MIRO modes to export are listed in the following tables:</p> 
@@ -226,8 +226,8 @@ inc/inc2.inc
                                 </div><!--//section-block-->
                                 <div class="section-block" id="sbs-customize-app">
                                     <h3>Customize your installed MIRO apps</h3>
-                                    <p>The MIRO Desktop interface offers several ways to control the behavior of your MIRO apps. To access these settings click on <span style="white-space: nowrap;"><i>File</i> &rarr; <i>Preferences</i></span> (or <span style="white-space: nowrap;"><i>GAMS MIRO</i> &rarr; <i>Preferences</i></span> if you are on macOS). Alternatively, press <span class="key">F7</span> (or <span class="key">⌘</span> + <span class="key">,</span> on macOS). You will notice that there are two categories of settings: <i>General</i> settings and settings related to <i>Paths</i>. In the <i>General</i> category you can specify whether you want to launch your MIRO apps in a new window of the MIRO Launcher or in your default browser. You can set the language, specify the level of detail of information to be logged as well as the number of days you want your log files to be stored for (-1 being no limit)</p>
-                                    <p>Furthermore, in the <i>Paths</i> section, you can control the location where your MIRO apps are stored/loaded from and the location where log files are kept. Additionally, in case you want to use a specific GAMS or R version or the MIRO Launcher was unable to locate GAMS (or R) automatically, you can set the path to GAMS (or R) here.</p>
+                                    <p>The MIRO Desktop interface offers several ways to control the behavior of your MIRO apps. To access these settings click on <span style="white-space: nowrap;"><i>File</i> &rarr; <i>Preferences</i></span> (or <span style="white-space: nowrap;"><i>GAMS MIRO</i> &rarr; <i>Preferences</i></span> if you are on macOS). Alternatively, press <span class="key">F7</span> (or <span class="key">⌘</span> + <span class="key">,</span> on macOS). You will notice that there are three categories of settings: <i>General</i> settings, settings related to <i>Paths</i> and to the <i>Environment</i>. In the <i>General</i> category you can specify whether you want to launch your MIRO apps in a new window of the MIRO Launcher or in your default browser. You can set the language, specify the level of detail of information to be logged as well as the number of days you want your log files to be stored for (-1 being no limit).</p>
+                                    <p>In the <i>Paths</i> section, you can control the location where your MIRO apps are stored/loaded from and the location where log files are kept. Additionally, in case you want to use a specific GAMS version or the MIRO Launcher was unable to locate GAMS automatically, you can set the path to GAMS here. On Linux, you can also specify the path to the required R installation here.</p>
                                     <div class="table-responsive">
                                         <table class="table table-striped" style="margin: 0px auto; margin-bottom:15px;">
                                             <thead>
@@ -280,12 +280,53 @@ inc/inc2.inc
                                                 </tr>
                                                 <tr>
                                                   <td></td>
-                                                  <td>R path</td>
+                                                  <td>R path (Linux only)</td>
                                                   <td>Path to the R location. A current R version (3.6 or later) is required for using GAMS MIRO. Since R is bundled with MIRO on Windows and MacOS, this option is only available on Linux systems.</td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div><!--//table-responsive-->
+                                    <p id="custom-environments">In the <i>Environment</i> section, you can import a customized environment to be used by your MIRO apps. This is useful, for example, if you want to run <a href="./customize.html#batch-analysis-scripts">custom analysis scripts</a> that require external software not in your PATH or to store credentials to be used by <a href="./customize.html#remote-import-export">remote data exchange modules</a>.</p>
+                                    <p>Environment files are JSON files of the following form:</p>
+                                    <pre><code class="language-json">{
+    "ENV_VAR_1": "VAL_1",
+    "ENV_VAR_2": "VAL_2"
+}</code></pre>
+                                    <p>Environment variables names must consist solely of uppercase letters, digits and  '_' (underscore) and must not start with a digit. Note that the <kbd>PATH</kbd> environment variable is special in that MIRO prepends it to the already existing <kbd>PATH</kbd>.</p>
+                                    <p>As an example, let's say we want to run the analysis script that comes with the <i>pickstock</i> example. We do this by first setting up a Python environment for it:</p>
+                                    <ul class="nav nav-tabs" id="pickstockVenv" role="tablist">
+                                      <li class="nav-item">
+                                        <a class="nav-link active" id="venv-win-tab" data-toggle="tab" href="#venv-win" role="tab" aria-controls="venv-win" aria-selected="true">Windows</a>
+                                      </li>
+                                      <li class="nav-item">
+                                        <a class="nav-link" id="venv-unix-tab" data-toggle="tab" href="#venv-unix" role="tab" aria-controls="venv-unix" aria-selected="false">macOS / Linux</a>
+                                      </li>
+                                    </ul>
+                                    <div class="tab-content tab-console-content">
+                                      <div class="tab-pane fade show active" id="venv-win" role="tabpanel" aria-labelledby="venv-win-tab">
+                                          <div class = "console-box">
+                                            <span class="console-content">
+                                                &gt; python -m venv venv<br>
+                                                &gt; venv\Scripts\activate.bat<br>
+                                                (venv) &gt; pip install jupyter pandas matplotlib<br>
+                                                (venv) &gt; python &lt;path_to_gams&gt;\apifiles\Python\api_39\setup.py build -b %TEMP% install<br>
+                                            </span>
+                                          </div>
+                                      </div>
+                                      <div class="tab-pane fade" id="venv-unix" role="tabpanel" aria-labelledby="venv-unix-tab">
+                                         <div class = "console-box">
+                                           <span class="console-content">
+                                            &gt; python -m venv venv<br>
+                                            &gt; source venv/bin/activate<br>
+                                            (venv) &gt; pip install jupyter pandas matplotlib<br>
+                                            (venv) &gt; python &lt;path_to_gams&gt;/apifiles/Python/api_39/setup.py build -b ${TMPDIR} install<br>
+                                           </span>
+                                         </div>
+                                      </div>
+                                    </div>
+                                    <p>Now all we have to do is tell MIRO to use this Python environment by adding it to the <kbd>PATH</kbd> via the following environment file:</p><pre><code class="language-json">{
+    "PATH": "&lt;path_to_venv&gt;/venv/bin"
+}</code></pre>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
                             <section id="deployment-collaboration" class="doc-section">
@@ -371,6 +412,28 @@ inc/inc2.inc
 }</code></pre>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
+                            <section id="db-migration" class="doc-section">
+                                <h2 class="section-title">Database migration</h2>
+                                <div class="section-block">
+                                    <p>From time to time, you may want to update your MIRO application. Most updates, such as changing the layout of your application, adjusting the renderers, or even improving your GAMS model, are not problematic. It gets more complicated when you change the GAMS/MIRO data contract, i.e. anything between the <code class="language-gams">$onExternalInput</code> / <code class="language-gams">$offExternalInput</code> or <code class="language-gams">$onExternalOutput</code> / <code class="language-gams">$offExternalOutput</code> tags. MIRO stores all of your application's data in a relational database. This means that every time you change the domains of a symbol (add/remove/rename indices) or remove/rename external input and/or output symbols, the database must be migrated to the new data contract. Fortunately, MIRO offers a <i>Migration Wizard</i> to assist you with this process.</p>
+                                    <p>Let's look at an example where we have added a time dimension to the <i>transport</i> example model:</p>
+                                    <div class="section-block" style="text-align:center;cursor: pointer;">
+                                        <img class="img-fluid" style="max-height:350pt" src="assets/images/deployment/migration-wizard.png" alt="Migration Wizard for transport model with added time dimension" onclick="window.open(this.src, '_blank');"/>
+                                    </div>
+                                    <p>You can see that we need to migrate data from the three symbols: <code class="language-gams">schedule</code>, <code class="language-gams">a0</code> and <code class="language-gams">b</code>. The symbols <code class="language-gams">schedule</code> and <code class="language-gams">b</code> now have an additional dimension <code class="language-gams">t</code>. Before this new version, we did not have this dimension, so we choose <kbd>-</kbd> here to indicate that this data is missing. If we were to load a scenario that was saved with an old version of our app, the data in these columns would be marked as <i>NA</i>.</p>
+                                    <p>As we renamed the symbol <code class="language-gams">a</code> to <code class="language-gams">a0</code>, we indicate that data for symbol <code class="language-gams">a0</code> should come from <code class="language-gams">a</code>.</p>
+                                    <p>Note that as an alternative to migrating existing data, we also have the option to remove all existing data by clicking the <kbd>Delete all database tables</kbd> button in the lower left corner.</p>
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Warning:</b>
+                                            <p>Before you migrate the data, you should perform a backup of your database. If you are using MIRO Desktop, you can do this via the <a href="./customize.html#database-management">Configuration Mode</a>. For MIRO Server, please refer to the official <a href="https://www.postgresql.org/docs/current/backup.html" target="_blank">PostgreSQL documentation</a>.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
                         </div><!--//content-inner-->
                     </div><!--//doc-content-->
                     <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
@@ -388,6 +451,7 @@ inc/inc2.inc
                                     <a class="nav-link scrollto" href="#collaboration-apps">Share MIRO apps</a>
                                     <a class="nav-link scrollto" href="#collaboration-settings">Share settings</a>
                                 </nav><!--//nav-->
+                                <a class="nav-link scrollto" href="#db-migration">Database migration</a>
                         </div>
                     </div><!--//doc-sidebar-->
                 </div><!--//doc-body-->
@@ -395,7 +459,7 @@ inc/inc2.inc
         </div><!--//doc-wrapper-->
     </div><!--//page-wrapper-->
     <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
-    <!--#include virtual="/footer.html" -->
+    <!--#include virtual="/footer_miro.html" -->
 
     <!-- Main Javascript -->
     <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
