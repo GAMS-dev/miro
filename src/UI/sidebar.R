@@ -2,13 +2,13 @@
 if(LAUNCHHCUBEMODE){
   sidebar <- dashboardSidebar(
     sidebarMenu(id="sidebarMenuId",
-                menuItem(lang$nav$sidebarMenu$hcube$configureRun, tabName="inputData", icon = icon("th")),
+                menuItem(lang$nav$sidebarMenu$hcube$configureRun, tabName="inputData", icon = icon("sliders-h")),
                 menuItem(lang$nav$sidebarMenu$hcube$import, tabName="importData", icon = icon("upload")),
-                menuItem(lang$nav$sidebarMenu$load, tabName = "loadResults", icon = icon("folder-open")),
-                menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("copy")),
-                menuItem(lang$nav$sidebarMenu$hcube$analyze, tabName="hcubeAnalyze", icon = icon("pie-chart")),
+                menuItem(lang$nav$sidebarMenu$load, tabName = "loadResults", icon = icon("database")),
+                menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("columns")),
+                menuItem(lang$nav$sidebarMenu$hcube$analyze, tabName="hcubeAnalyze", icon = icon("search")),
                 actionButton("btImport", lang$nav$sidebarButtons$importInput, width = "85%", 
-                             class = "bt-highlight-3", 
+                             class = "bt-highlight-3 btn-custom", 
                              style = "display:block;"),
                 actionButton("btSolve", lang$nav$sidebarButtons$solveHcube, width = "85%", 
                              class = "bt-highlight-2 btSolve", style = "display:block;"),
@@ -43,13 +43,13 @@ if(LAUNCHHCUBEMODE){
 }else{
   sidebar <- dashboardSidebar(
     sidebarMenu(id="sidebarMenuId",
-                menuItem(lang$nav$sidebarMenu$inputScreen, tabName="inputData", icon = icon("th")),
-                menuItem(lang$nav$sidebarMenu$outputScreen, tabName="outputData", icon = icon("dashboard")),
+                menuItem(lang$nav$sidebarMenu$inputScreen, tabName="inputData", icon = icon("sliders-h")),
+                menuItem(lang$nav$sidebarMenu$outputScreen, tabName="outputData", icon = icon("chart-pie")),
                 menuItem(lang$nav$sidebarMenu$gams, tabName="gamsinter", icon = icon("cog")),
-                menuItem(lang$nav$sidebarMenu$load, tabName = "loadResults", icon = icon("folder-open")),
-                menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("copy")),
+                menuItem(lang$nav$sidebarMenu$load, tabName = "loadResults", icon = icon("database")),
+                menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("columns")),
                 actionButton("btImport", lang$nav$sidebarButtons$importInput, width = "85%", 
-                             class = "bt-highlight-3",
+                             class = "bt-highlight-3 btn-custom",
                              style = "display:block;"),
                 if(config$activateModules$remoteExecution)
                   tags$div(class = "btn-group btSolve", style = "width:100%",
