@@ -376,7 +376,7 @@ $(document).ready(() => {
   });
   $(document).on('click', '.bt-highlight-1, .bt-highlight-2, .bt-highlight-3', function () {
     const btn = $(this);
-    if (btn.hasClass('dropdown-toggle')) {
+    if (btn.hasClass('dropdown-toggle') || btn.hasClass('bt-no-disable')) {
       return;
     }
     btn.prop('disabled', true);

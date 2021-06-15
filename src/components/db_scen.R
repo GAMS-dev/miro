@@ -6,7 +6,7 @@ Scenario <- R6Class("Scenario",
                                                                readPerm = NULL, writePerm = NULL, execPerm = NULL,
                                                                tags = NULL, overwrite = FALSE, isNewScen = FALSE, 
                                                                duplicatedMetadata = NULL, uid = NULL, views = NULL,
-                                                               attachments = NULL){
+                                                               attachments = NULL, scode = NULL){
                         # Initialize scenario class
                         #
                         # Args:
@@ -23,6 +23,7 @@ Scenario <- R6Class("Scenario",
                         #   uid:               can be used to declare owner of the scenario (default is current user)
                         #   views:             views object
                         #   attachments:       attachments object
+                        #   scode:             scenario code (optional)
                         
                         #BEGIN error checks 
                         stopifnot(is.R6(db), is.logical(isNewScen), length(isNewScen) == 1L)
@@ -77,10 +78,15 @@ Scenario <- R6Class("Scenario",
                         
                         savedAttachConfig <- NULL
                         
-                        if(private$hcubeActive)
-                          private$scode <- SCODEMAP[['hcube_jobconfig']]
-                        else
-                          private$scode <- SCODEMAP[['scen']]
+                        if(is.null(scode)){
+                          if(private$hcubeActive){
+                            private$scode <- SCODEMAP[['hcube_jobconfig']]
+                          }else{
+                            private$scode <- SCODEMAP[['scen']]
+                          }
+                        }else{
+                          private$scode <- scode
+                        }
                         
                         if(isNewScen){
                           private$stime     <- Sys.time()
@@ -129,7 +135,7 @@ Scenario <- R6Class("Scenario",
                           private$lock()
                         }
                         if(!is.null(private$attachments)){
-                          private$attachments$initScenData(private$sid)
+                          private$attachments$initScenData(private$sid, private$inDataSid)
                           if(!is.null(savedAttachConfig)){
                             private$attachments$setConfig(savedAttachConfig)
                           }
@@ -162,7 +168,6 @@ Scenario <- R6Class("Scenario",
                         invisible(self)
                       },
                       getMetadataInfo = function(discardAttach = FALSE, discardPerm = FALSE){
-                        stopifnot(length(private$sid) > 0L)
                         attachmentConfig <- list()
                         permissionConfig <- list()
                         if(!isTRUE(discardAttach) && !is.null(private$attachments)){
@@ -291,6 +296,17 @@ Scenario <- R6Class("Scenario",
                         private$saveViewData()
                         private$saveHash()
                         
+                        if(!is.na(private$inDataSid)){
+                          hcubeRefCount <- self$importDataset("_scenMeta",
+                                                              tibble("_scode",
+                                                                     private$inDataSid + 10000L),
+                                                              count = TRUE, limit = 1L)[[1]][1]
+                          if(identical(hcubeRefCount, 0L)){
+                            private$deleteBySid(private$inDataSid)
+                          }
+                          private$inDataSid <- NA_integer_
+                        }
+                        
                         private$scenSaved <- TRUE
                         # refresh lock for scenario
                         private$lock()
@@ -331,12 +347,7 @@ Scenario <- R6Class("Scenario",
                           stop("Scenario could not be removed as it is readonly (Scenario.delete).", call. = FALSE)
                         }
                         noErr <- TRUE
-                        self$deleteRows("_scenMeta", 
-                                        "_sid", 
-                                        private$sid)
-                        self$deleteRows("_scenAttach", 
-                                        "_sid", 
-                                        private$sid)
+                        private$deleteBySid(private$sid)
                         
                         private$unlock()
                         flog.debug("Scenario: '%s' unlocked.", private$sid)
@@ -485,6 +496,7 @@ Scenario <- R6Class("Scenario",
                       readPerm            = character(0L),
                       writePerm           = character(0L),
                       execPerm            = character(0L),
+                      inDataSid           = NA_integer_,
                       lockUid             = character(0L),
                       scode               = integer(1L),
                       scenSaved           = logical(1L),
@@ -523,8 +535,12 @@ Scenario <- R6Class("Scenario",
                             stop(sprintf("A scenario with ID: '%s' could not be found. This could be due to the scenario being deleted in the meantime or due to the user tampering with the app!", 
                                          sid), call. = FALSE)
                           }
-                          
-                          if(metadata[["_scode"]][1] != private$scode){
+                          if(metadata[["_scode"]][1] > 10000L){
+                            # Hypercube scenario
+                            private$scode <- SCODEMAP[["scen"]]
+                            private$inDataSid <- metadata[["_scode"]] - 10000L
+                          }
+                          if(metadata[["_scode"]][1] != private$scode && is.na(private$inDataSid)){
                             flog.debug("The scenario loaded was generated from a different mode. A copy will be created (Scen.fetchMetadata)")
                             private$sname     <- metadata[["_sname"]][1]
                             private$suid      <- private$uid
@@ -639,6 +655,21 @@ Scenario <- R6Class("Scenario",
                           if(private$isReadonly()){
                             stop("Db: Metadata could not be overwritten as scenario is readonly (Scenario.writeMetadata).", 
                                  call. = FALSE)
+                          }
+                          if(!is.na(private$inDataSid)){
+                            existingSids <- self$importDataset("_scenMeta", 
+                                                               colNames = "_sid",
+                                                               tibble(c("_uid",
+                                                                        "_sname",
+                                                                        "_scode"),
+                                                                      c(private$suid,
+                                                                        private$sname,
+                                                                        private$scode)),
+                                                               limit = 1L)[[1]]
+                            if(length(existingSids) > 0L){
+                              stop_custom("error_sname_exists", "A scenario with the same name already exists.",
+                                          call. = FALSE)
+                            }
                           }
                           self$deleteRows("_scenMeta", "_sid", private$sid)
                           metadata           <- tibble(`_sid` = private$sid,
@@ -918,6 +949,15 @@ Scenario <- R6Class("Scenario",
                                           private$sid)
                         }
                         invisible(self)
+                      },
+                      deleteBySid = function(scenId){
+                        self$deleteRows("_scenMeta", 
+                                        "_sid", 
+                                        scenId)
+                        self$deleteRows("_scenAttach", 
+                                        "_sid", 
+                                        scenId)
+                        return(invisible(self))
                       }
                     )
 )

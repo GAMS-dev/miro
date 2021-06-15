@@ -69,7 +69,12 @@ if(LAUNCHHCUBEMODE){
                                    tags$li(tags$a(href = "#", onclick = paste0("Miro.changeDDButtonEvent('", 
                                                                                htmltools::htmlEscape(lang$nav$sidebarButtons$submitJob),
                                                                                "', '#btSolve', 'btSubmitJob');"),
-                                                  lang$nav$sidebarButtons$submitJob))))
+                                                  lang$nav$sidebarButtons$submitJob)),
+                                   if(identical(config$activateModules$hcube, TRUE))
+                                     tags$li(tags$a(href = "#", onclick = paste0("Miro.changeDDButtonEvent('", 
+                                                                                 htmltools::htmlEscape(lang$nav$sidebarButtons$submitHcJob), 
+                                                                                 "', '#btSolve', 'btSubmitHcJob');"),
+                                                    lang$nav$sidebarButtons$submitHcJob))))
                 else
                   actionButton("btSolve", lang$nav$sidebarButtons$solve,
                                width = "85%", class = "bt-highlight-2 btSolve", style = "display:block;"), 

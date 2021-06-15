@@ -7,29 +7,6 @@ scalarInToVerify <- unlist(lapply(scalarInputSym, function(el){
     return(el)
   }
 }), use.names = FALSE)
-getCombinationsSlider <- function(lowerVal, upperVal, stepSize = 1){
-  # BEGIN error checks
-  stopifnot(is.numeric(lowerVal), length(lowerVal) == 1)
-  stopifnot(is.numeric(upperVal), length(upperVal) == 1)
-  stopifnot(is.numeric(stepSize), length(stepSize) == 1, stepSize > 0)
-  # END error checks
-  
-  ret <- list()
-  repeat{
-    lowTmp  <- seq(lowerVal, upperVal, stepSize)
-    ret$min <- c(ret$min, lowTmp)
-    ret$max  <- c(ret$max, rep.int(upperVal, length(lowTmp)))
-    upperVal <- upperVal - stepSize
-    if(upperVal < lowerVal){
-      if((upperVal + 1e-10) < lowerVal){
-        break 
-      }else{
-        upperVal <- lowerVal
-      }
-    }
-  }
-  return(ret)
-}
 additionalInputScalars <- inputDsNames[vapply(inputDsNames, function(el){
   return(isTRUE(modelIn[[el]]$dropdown$single) || 
            isTRUE(modelIn[[el]]$dropdown$checkbox))
@@ -227,7 +204,8 @@ observeEvent(input$btUploadHcube, {
   noErr <- TRUE
   tryCatch({
     jIDtmp <- worker$addJobDb("", NULL, tags = hcubeTags, 
-                              status = JOBSTATUSMAP[['corrupted(man)']])
+                              status = JOBSTATUSMAP[['corrupted(man)']],
+                              isHcube = TRUE)
     if(identical(jIDtmp, -1L)){
       stop(call. = FALSE)
     }
@@ -244,54 +222,6 @@ observeEvent(input$btUploadHcube, {
   manualJobImport <<- TRUE
   removeModal()
   rv$uploadHcube <- rv$uploadHcube + 1L
-})
-
-getJobProgress <- function(jID){
-  if(!identical(worker$getStatus(jID), JOBSTATUSMAP[['running']])){
-    return(NULL)
-  }
-  jobProgress <- worker$getHcubeJobProgress(jID)
-  
-  noJobsCompleted <- jobProgress[[1L]]
-  noJobs <- jobProgress[[2L]]
-  
-  if(identical(noJobsCompleted, noJobs)){
-    rv$jobListPanel <- rv$jobListPanel + 1L
-    removeModal()
-    return(NULL)
-  }
-  return(list(noCompleted = noJobsCompleted, noTotal = noJobs))
-}
-observeEvent(input$updateJobProgress, {
-  jID <- suppressWarnings(as.integer(isolate(input$updateJobProgress)))
-  flog.trace("Update Hypercube progress requested. Job ID: '%s'.", jID)
-  currentProgress <- tryCatch(getJobProgress(jID), error = function(e){
-    flog.error(conditionMessage(e))
-    return(NULL)
-  })
-  if(is.null(currentProgress)){
-    return()
-  }
-  session$sendCustomMessage("gms-updateJobProgress", 
-                            list(id = paste0("#hcubeProgress", jID), 
-                                 progress = currentProgress))
-})
-observeEvent(input$showJobProgress, {
-  jID <- suppressWarnings(as.integer(isolate(input$showJobProgress)))
-  flog.trace("Show Hypercube progress button clicked. Job ID: '%s'.", jID)
-  currentProgress <- tryCatch(getJobProgress(jID), error = function(e){
-    errMsg <- conditionMessage(e)
-    flog.error(errMsg)
-    showHideEl(session, "#fetchJobsError")
-    return()
-  })
-  if(is.null(currentProgress)){
-    return()
-  }
-  showJobProgressDialog(jID, currentProgress)
-  session$sendCustomMessage("gms-startUpdateJobProgress", 
-                            list(id = paste0("#hcubeProgress", jID),
-                                 jID = jID))
 })
 
 observeEvent(input$importJob, {

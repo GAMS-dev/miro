@@ -146,6 +146,7 @@ Worker <- R6Class("Worker", public = list(
   setWorkDir = function(workDir){
     private$workDir <- workDir
   },
+  getInputData = function() private$inputData,
   setInputData = function(inputData){
     private$inputData <- inputData
     return(invisible(self))
@@ -162,7 +163,7 @@ Worker <- R6Class("Worker", public = list(
   },
   runAsync = function(sid = NULL, tags = NULL, 
                       dynamicPar = NULL, name = NULL){
-    req(private$remote)
+    stopifnot(private$remote)
     
     private$runRemote(dynamicPar, name = name)
     tryCatch({
@@ -188,7 +189,8 @@ Worker <- R6Class("Worker", public = list(
       private$process <- remoteSubValue
       if(length(private$db)){
         tryCatch({
-          private$jID <- self$addJobDb(private$process, sid, tags = tags, name = name)
+          private$jID <- self$addJobDb(private$process, sid, tags = tags, name = name,
+                                       isHcJob = is.R6(dynamicPar))
         }, error = function(e){
           flog.warn("Could not add job to database. Error message; '%s'.", 
                     conditionMessage(e))
@@ -206,10 +208,10 @@ Worker <- R6Class("Worker", public = list(
     private$initRun(sid)
     
     if(private$remote){
-      pID <- self$runAsync(staticData, sid = sid, 
+      pID <- self$runAsync(sid = sid, 
                            tags = tags, dynamicPar = dynamicPar)
     }else{
-      private$jID <- self$addJobDb("", sid, tags = tags)
+      private$jID <- self$addJobDb("", sid, tags = tags, isHcJob = TRUE)
       if(identical(private$jID, -1L)){
         stop("Problems storing Hypercube job metadata.", call. = FALSE)
       }
@@ -269,12 +271,12 @@ Worker <- R6Class("Worker", public = list(
     }
     
     writeLines(scenGmsPar, file.path(workDir, tolower(private$metadata$modelName) %+% ".pf"))
-    dynamicPar$writeHcube(paste0(workDir, .Platform$file.sep))
+    dynamicPar$writeHcubeFile(paste0(workDir, .Platform$file.sep))
     flog.trace("New folder for Hypercube job was created: '%s'.", workDir)
     
     return(invisible(self))
   },
-  interrupt = function(hardKill = NULL, process = NULL){
+  interrupt = function(hardKill = NULL, process = NULL, isHcJob = FALSE){
     if(is.null(process)){
       if(is.null(private$process)){
         return()
@@ -291,9 +293,21 @@ Worker <- R6Class("Worker", public = list(
     }
     
     if(private$remote)
-      return(private$interruptRemote(hardKill, process))
+      return(private$interruptRemote(hardKill, process, isHcJob = isHcJob))
     
     return(private$interruptLocal(hardKill, process))
+  },
+  getInfoFromJobList = function(jID, key = NULL){
+    if(!length(private$jobList) || !nrow(private$jobList))
+      return(NULL)
+    jIDs <- private$jobList[[1]]
+    jIdx <- match(jID, jIDs)
+    if(is.na(jIdx))
+      return(NULL)
+    if(length(key)){
+      return(private$jobList[[key]][[jIdx]])
+    }
+    return(private$jobList[jIdx, ])
   },
   updateJobStatus = function(status, jID = NULL, tags = NULL, updatePid = FALSE){
     if(!private$hcube){
@@ -301,8 +315,10 @@ Worker <- R6Class("Worker", public = list(
         return()
       }
       tags <- NULL
+      isHcJob <- FALSE
     }else if(length(tags)){
       tags <- vector2Csv(tags)
+      isHcJob <- TRUE
     }
     if(is.null(jID)){
       req(length(private$process) > 0L)
@@ -315,6 +331,8 @@ Worker <- R6Class("Worker", public = list(
       }
     }else{
       pID <- self$getPid(jID)
+      isHcJob <- identical(self$getInfoFromJobList(jID, "_scode"),
+                           SCODEMAP[['hcube_jobconfig']])
     }
     if(!is.integer(jID) || jID < 0L){
       flog.warn("Could not update job status as job ID is invalid.")
@@ -327,7 +345,7 @@ Worker <- R6Class("Worker", public = list(
     gamsRetCode <- NULL
     if(status %in% c(JOBSTATUSMAP[['imported']], 
                      JOBSTATUSMAP[['discarded']])){
-      jobStatus   <- private$getJobStatus(pID, jID)
+      jobStatus   <- private$getJobStatus(pID, jID, isHcJob = isHcJob)
       gamsRetCode <- jobStatus$gamsRetCode
       if(identical(status, JOBSTATUSMAP[['discarded']])){
         if(jobStatus$status >= JOBSTATUSMAP[['corrupted']] &&
@@ -335,9 +353,12 @@ Worker <- R6Class("Worker", public = list(
           status <- JOBSTATUSMAP[['discarded(corrupted)']]
         }else if(identical(jobStatus$status, JOBSTATUSMAP[['running']]) ||
                  identical(jobStatus$status, JOBSTATUSMAP[['queued']])){
-          self$interrupt(hardKill = TRUE, process = pID)
+          self$interrupt(hardKill = TRUE, process = pID, isHcJob = isHcJob)
           status <- JOBSTATUSMAP[['discarded(running)']]
         }else if(identical(jobStatus$status, JOBSTATUSMAP[['completed']])){
+          if(private$remote){
+            private$removeJobResults(pID, isHcJob = isHcJob)
+          }
           status <- JOBSTATUSMAP[['discarded(completed)']]
         }
         if(private$hcube){
@@ -379,11 +400,9 @@ Worker <- R6Class("Worker", public = list(
                                                  private$dbColNames[['scode']]),
                                                c(private$metadata$uid,
                                                  JOBSTATUSMAP[['discarded']],
-                                                 if(private$hcube)
-                                                   SCODEMAP[['hcube_jobconfig']]
-                                                 else
-                                                   SCODEMAP[['scen']]), 
-                                               c('=', if(jobHist) '>=' else '<', '=')),
+                                                 SCODEMAP[['hcube_jobconfig']]), 
+                                               c('=', if(jobHist) '>=' else '<',
+                                                 if(private$hcube) '=' else '>=')),
                                         orderBy = private$dbColNames[['time']], orderAsc = FALSE)
     
     # TODO: allow import of jobs solved via Engine if in local mode and vice versa...
@@ -415,7 +434,9 @@ Worker <- R6Class("Worker", public = list(
       if(jStatus[i] > JOBSTATUSMAP[['running']])
         next
       
-      jobStatus   <- private$getJobStatus(pIDs[i], jIDs[i])
+      jobStatus   <- private$getJobStatus(pIDs[i], jIDs[i],
+                                          isHcJob = identical(private$jobList[["_scode"]][i],
+                                                              SCODEMAP[['hcube_jobconfig']]))
       gamsRetCode <- jobStatus$gamsRetCode
       newStatus   <- jobStatus$status
       
@@ -432,13 +453,7 @@ Worker <- R6Class("Worker", public = list(
     return(list(jobList = private$jobList, newCompleted = newCompleted))
   },
   getPid = function(jID){
-    if(!length(private$jobList) || !nrow(private$jobList))
-      return(NULL)
-    jIDs <- private$jobList[[1]]
-    jIdx <- match(jID, jIDs)
-    if(is.na(jIdx))
-      return(NULL)
-    return(private$jobList[[6]][[jIdx]])
+    return(self$getInfoFromJobList(jID, "_pid"))
   },
   getSid = function(jID){
     if(!length(private$jobList) || !nrow(private$jobList))
@@ -513,11 +528,12 @@ Worker <- R6Class("Worker", public = list(
   },
   getJobResults = function(jID){
     req(private$remote)
-    
+    isHcJob <- identical(self$getInfoFromJobList(jID, "_scode"),
+                         SCODEMAP[['hcube_jobconfig']])
     jIDChar <- as.character(jID)
     if(length(private$fJobRes[[jIDChar]]) && resolved(private$fJobRes[[jIDChar]])){
-      if(private$hcube){
-        private$removeJobResults(self$getPid(jID))
+      if(isHcJob){
+        private$removeJobResults(self$getPid(jID), isHcJob = isHcJob)
         if(!file.exists(private$jobResultsFile[[jIDChar]])){
           file.rename(paste0(private$jobResultsFile[[jIDChar]], ".dl"), 
                       private$jobResultsFile[[jIDChar]])
@@ -559,7 +575,7 @@ Worker <- R6Class("Worker", public = list(
         stop("Problems creating temporary directory for saving results.", 
              call. = FALSE)
       ret <- HEAD(url = paste0(private$metadata$url, 
-                               if(private$hcube) "/hypercube/" else "/jobs/", 
+                               if(isHcJob) "/hypercube/" else "/jobs/", 
                                self$getPid(jID), "/result"), 
                   add_headers(Authorization = private$authHeader,
                               Timestamp = as.character(Sys.time(), usetz = TRUE)), 
@@ -578,7 +594,7 @@ Worker <- R6Class("Worker", public = list(
       private$resultFileSize[[jIDChar]] <- fileSize
       private$jobResultsFile[[jIDChar]] <- jobResultsFile
       
-      if(private$hcube){
+      if(isHcJob){
         private$fJobRes[[jIDChar]] <- future({
           library(httr)
           private$getRemoteHcubeResults(resultsPath, pID)
@@ -678,7 +694,7 @@ Worker <- R6Class("Worker", public = list(
       private$status
     }))
   },
-  addJobDb = function(pid, sid, tags = NULL, status = NULL, name = NULL){
+  addJobDb = function(pid, sid, tags = NULL, status = NULL, name = NULL, isHcJob = FALSE){
     stopifnot(length(pid) == 1)
     
     if(!is.null(sid)){
@@ -728,7 +744,7 @@ Worker <- R6Class("Worker", public = list(
                       dbQuoteLiteral(private$conn, as.character(pid)), ",",
                       if(length(sid)) dbQuoteLiteral(private$conn, sid) else "NULL", ",", 
                       dbQuoteLiteral(private$conn, 
-                                     if(private$hcube) 
+                                     if(isHcJob) 
                                        SCODEMAP[['hcube_jobconfig']]
                                      else
                                        SCODEMAP[['scen']]), ",", 
@@ -864,8 +880,12 @@ Worker <- R6Class("Worker", public = list(
       if(is.R6(hcubeData)){
         gamsArgs <- c(gamsArgs, paste0('IDCGDXInput="', 
                                        metadata$MIROGdxInName, '"'))
-        requestBody$hypercube_file <- upload_file(hcubeData$writeHcube(workDir), 
+        requestBody$hypercube_file <- upload_file(hcubeData$writeHcubeFile(workDir), 
                                                   type = 'application/json')
+        filesToInclude <- c(dataFilesToFetch,
+                            metadata$text_entities,
+                            requestBody$stdout_filename)
+        filesToInclude <- filesToInclude[!filesToInclude %in% metadata$MIROGdxInName]
       }else{
         gamsArgs <- c(gamsArgs, paste0('IDCGDXInput="', metadata$MIROGdxInName, '"'))
         if(length(metadata$text_entities)){
@@ -876,19 +896,17 @@ Worker <- R6Class("Worker", public = list(
           requestBody$stream_entries <- metadata$miroLogFile
         }
         requestBody$stdout_filename <- paste0(metadata$modelNameRaw, ".log")
+        filesToInclude <- c(dataFilesToFetch,
+                            metadata$text_entities,
+                            requestBody$stdout_filename,
+                            "_miro_ws_/*")
       }
       pfFilePath <- gmsFilePath(file.path(workDir, paste0(tolower(metadata$modelName), ".pf")))
       writeLines(c(pfFileContent, gamsArgs), pfFilePath)
       
       requestBody$inex_file <- upload_file(inputData$
-                                             addInexFile(workDir, 
-                                                         if(is.R6(hcubeData))
-                                                           dataFilesToFetch 
-                                                         else
-                                                           c(dataFilesToFetch,
-                                                             metadata$text_entities,
-                                                             requestBody$stdout_filename,
-                                                             "_miro_ws_/*")),
+                                             addInexFile(workDir,
+                                                         filesToInclude),
                                            type = 'application/json')
       requestBody$data <- upload_file(inputData$
                                         addFilePaths(pfFilePath)$
@@ -925,7 +943,7 @@ Worker <- R6Class("Worker", public = list(
                       pfFileContent = clArgsDfToPf(private$inputData$getClArgsDf()),
                       inputData = private$inputData,
                       authHeader = private$authHeader,
-                      gmsFilePath = gmsFilePath, DataInstance = DataInstance, 
+                      gmsFilePath = gmsFilePath,
                       isWindows = isWindows, hcubeData = hcubeData))
     return(self)
   },
@@ -1200,7 +1218,7 @@ Worker <- R6Class("Worker", public = list(
     if(timeout){
       return(-100L)
     }
-    private$removeJobResults(jID)
+    private$removeJobResults(jID, isHcJob = FALSE)
     
     if(identical(status_code(ret), 200L)){
       unzip(resultsPath, exdir = workDir)
@@ -1273,30 +1291,30 @@ Worker <- R6Class("Worker", public = list(
     }
     return(0L)
   },
-  interruptRemote = function(hardKill = FALSE, process = NULL){
+  interruptRemote = function(hardKill = FALSE, process = NULL, isHcJob = FALSE){
     if(!length(process)){
       return("Process not started")
     }
     private$validateAPIResponse(DELETE(
       url = paste0(private$metadata$url, 
-                   if(private$hcube) "/hypercube/" else "/jobs/", process), 
+                   if(isHcJob) "/hypercube/" else "/jobs/", process), 
       body = list(hard_kill = hardKill),
       add_headers(Authorization = private$authHeader,
                   Timestamp = as.character(Sys.time(), usetz = TRUE)),
       timeout(10L)))
     return(0L)
   },
-  removeJobResults = function(jID){
+  removeJobResults = function(jID, isHcJob = FALSE){
     tryCatch(private$validateAPIResponse(
       DELETE(url = paste0(private$metadata$url,
-                          if(private$hcube) "/hypercube/" else "/jobs/",
+                          if(isHcJob) "/hypercube/" else "/jobs/",
                           jID, "/result"),
              add_headers(Authorization = private$authHeader,
                          Timestamp = as.character(Sys.time(), usetz = TRUE)),
              timeout(private$metadata$timeout))),
       error = function(e){
         warning(sprintf("Problems removing results of job: '%s'. Error message: '%s'.", 
-                        jID, conditionMessage(e)))
+                        jID, conditionMessage(e)), call. = FALSE)
       })
     return(invisible(self))
   },
@@ -1433,10 +1451,10 @@ Worker <- R6Class("Worker", public = list(
     
     return(invisible(self))
   },
-  getJobStatus = function(pID, jID = NULL){
-    if(private$hcube)
+  getJobStatus = function(pID, jID = NULL, isHcJob = FALSE){
+    if(isHcJob)
       return(private$getHcubeJobStatus(pID, jID))
-    req(private$remote)
+    stopifnot(private$remote)
     return(tryCatch({
       statusInfo <- private$validateAPIResponse(
         private$getRemoteStatus(pID))

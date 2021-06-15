@@ -46,7 +46,8 @@ ScenData <- R6Class("ScenData", public = list(
                                        scalar = tibble(scalar = character(),
                                                        description = character(),
                                                        value = character()),
-                                       meta = tibble())
+                                       meta = tibble(),
+                                       inDataSid = NA_integer_)
     return(invisible(self))
   },
   addRefId = function(refId, scenIds){
@@ -113,19 +114,30 @@ ScenData <- R6Class("ScenData", public = list(
         metaData <- private$getMetadata(scenId)
         private$cachedData[[scenIdChar]] <- list(data = list(),
                                                  meta = metaData,
-                                                 timestamp = metaData[["_stime"]][1])
+                                                 timestamp = metaData[["_stime"]][1],
+                                                 inDataSid = NA_integer_)
+        if(metaData[["_scode"]] > (SCODEMAP[["scen"]] + 10000L)){
+          # Hcube scenario, load input data from job config
+          private$cachedData[[scenIdChar]][["inDataSid"]] <- metaData[["_scode"]] - 10000L
+        }
         checkDirty <- FALSE
       }
       for(symName in symNames){
         if(identical(refId, "sb") ||
            is.null(private$cachedData[[scenIdChar]][["data"]]) ||
            is.null(private$cachedData[[scenIdChar]][["data"]][[symName]])){
+          if(is.na(private$cachedData[[scenIdChar]][["inDataSid"]]) ||
+             symName %in% names(ioConfig$modelOut)){
+            scenIdToFetch <- scenId
+          }else{
+            scenIdToFetch <- private$cachedData[[scenIdChar]][["inDataSid"]]
+          }
           if(identical(symName, scalarsOutName)){
             if(checkDirty){
               private$checkDirty(scenId)
             }
             dataTmp <- private$db$importDataset(tableName = symName, 
-                                                subsetSids = scenId,
+                                                subsetSids = scenIdToFetch,
                                                 limit = limit)
             if(length(dataTmp)){
               private$cachedData[[scenIdChar]][["scalar"]] <- select(dataTmp, -`_sid`)
@@ -149,7 +161,7 @@ ScenData <- R6Class("ScenData", public = list(
                                                   if(LAUNCHHCUBEMODE && isHcJobConfig
                                                      && identical(symName, scalarsFileName))
                                                     "_hc__scalars" else symName, 
-                                                subsetSids = scenId,
+                                                subsetSids = scenIdToFetch,
                                                 limit = limit)
             if(length(dataTmp)){
               private$cachedData[[scenIdChar]][["data"]][[symName]] <- select(dataTmp, -`_sid`)
@@ -169,6 +181,16 @@ ScenData <- R6Class("ScenData", public = list(
       self$addRefId(refId, scenIds)
     }
     return(invisible(self))
+  },
+  getInputDataSids = function(refId){
+    if(identical(refId, "sb")){
+      scenIds <- "sb"
+    }else{
+      scenIds <- private$refScenMap[[refId]]
+    }
+    return(vapply(as.character(scenIds), function(scenId){
+      private$cachedData[[scenId]][["inDataSid"]]
+    }, integer(1L), USE.NAMES = FALSE))
   },
   getAll = function(refId, symName = NULL, showProgress = TRUE){
     stopifnot(identical(length(symName), 1L))

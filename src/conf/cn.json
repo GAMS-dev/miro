@@ -30,7 +30,8 @@
     "sidebarButtons":{
       "importInput":"加载数据",
       "solve":"求解模型",
-      "submitJob": "提交作业",							
+      "submitJob": "提交作业",				
+      "submitHcJob": "提交Hypercube作业",
       "solveHcube":"提交作业",
       "splitView":"拆分视图",
       "pivotView": "枢轴检视",
@@ -669,6 +670,7 @@
       },
       "showJobProgressDialog":{
         "title": "正在处理作业",
+        "failedMsg": "%s 失败的",
         "cancelButton": "取消"
       },
       "jobsCompletedDialog":{
@@ -726,6 +728,13 @@
         "btCancel": "取消",
         "btConfirm": "删除表格",
         "msgSuccess": "数据库表已删除! 请重新启动应用程序。"
+      }
+    },
+    "hcModule": {
+      "submissionDialog":{
+        "title": "新的 HYPERCUBE 作业",
+        "btCancel": "取消",
+        "btSubmit": "提交"
       }
     }
   },

@@ -71,7 +71,13 @@ DbSchema <- R6Class("DbSchema", public = list(
       '_scenHash' = list(tabName = "_sys_shash_",
                          colNames = c(sid = "_sid",
                                       hash = "hash"),
-                         colTypes = "ic")
+                         colTypes = "ic"),
+      '_hcScalars' = list(tabName = "_sys__hc_scalars",
+                          colNames = c(sid = "_sid",
+                                       `_hash` = "_hash",
+                                       scalar = "scalar",
+                                       value = "value"),
+                          colTypes = "iccc")
     ), symbolSchema$schema)
     return(invisible(self))
   },

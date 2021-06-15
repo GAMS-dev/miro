@@ -377,7 +377,7 @@ BatchLoader <- R6Class("BatchLoader",
                                                collapse = " ")
                            }
                            subsetRows <- paste0(escapedMetaTableName,
-                                                "._scode != ", as.integer(SCODEMAP[['hcube_jobconfig']]),
+                                                "._scode >= ", as.integer(SCODEMAP[["scen"]]),
                                                 " AND (", private$db$getAccessPermSubQuery("_accessr"), ")")
                            if(length(subsetList) > 1L || length(subsetList[[1L]])){
                              subsetRows <- paste(subsetRows, "AND (",

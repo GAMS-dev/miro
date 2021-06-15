@@ -18,6 +18,7 @@ listOfOperators <- list("count" = "card", "max" = "max", "min" = "min",
 
 # scenario code mapping
 SCODEMAP <- c(
+  'hcube_inputs' = -2L,
   'hcube_jobconfig' = -1L,
   'scen' = 0L
 )

@@ -2,7 +2,7 @@
 Db <- R6Class("Db",
               public = list(
                 initialize        = function(uid, dbConf, slocktimeLimit, modelName,
-                                             traceColNames = NULL, hcubeActive = FALSE,
+                                             hcubeActive = FALSE,
                                              ugroups = character(0L), forceNew = FALSE){
                   # Initialize database class
                   #
@@ -194,7 +194,10 @@ Db <- R6Class("Db",
                 },
                 getScenWithSameHash = function(scenHashes, limit = 1L, count = FALSE){
                         if(!DBI::dbExistsTable(private$conn, dbSchema$getDbTableName("_scenHash"))){
-                                return(tibble())
+                                if(count){
+                                        return(tibble(count = 0L))
+                                }
+                                return(tibble(`_sid` = integer(), hash = character()))
                         }
                         escapedHashTableName <- DBI::dbQuoteIdentifier(private$conn,
                                                                        dbSchema$getDbTableName("_scenHash"))
@@ -211,7 +214,7 @@ Db <- R6Class("Db",
                         }
                         query <- paste0("SELECT ",
                                         if(count)
-                                                paste0("COUNT(", escapedHashTableName, "._sid)")
+                                                paste0("COUNT(DISTINCT(", escapedHashTableName, ".hash))")
                                         else
                                                 paste(paste0(escapedMetaTableName, ".",
                                                              c("_sid", "_uid", "_sname", "_stime", "_stag")),
@@ -225,7 +228,7 @@ Db <- R6Class("Db",
                                         escapedHashTableName, ".hash IN (",
                                         inClause, ")",
                                         " AND (", self$getAccessPermSubQuery("_accessr"), ")",
-                                        if(limit) paste0(" LIMIT ", as.integer(limit)))
+                                        if(length(limit)) paste0(" LIMIT ", as.integer(limit)))
                         return(as_tibble(DBI::dbGetQuery(private$conn, query)))
                 },
                 checkSnameExists      = function(sname, uid = NULL, checkNormalScen = FALSE){

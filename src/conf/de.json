@@ -31,6 +31,7 @@
       "importInput":"Daten laden",
       "solve":"Modell lösen",
       "submitJob": "Job senden",
+      "submitHcJob": "Hypercube-Job senden",
       "solveHcube":"Jobs absenden",
       "splitView":"Split Screen Ansicht",
       "pivotView": "Pivot Ansicht",
@@ -669,6 +670,7 @@
       },
       "showJobProgressDialog":{
         "title": "Jobfortschritt",
+        "failedMsg": "%s fehlgeschlagen",
         "cancelButton": "Abbrechen"
       },
       "jobsCompletedDialog":{
@@ -726,6 +728,13 @@
         "btCancel": "Abbrechen",
         "btConfirm": "Tabellen entfernen",
         "msgSuccess": "Datenbanktabellen erfolgreich entfernt. Bitte starten Sie die Anwendung neu."
+      }
+    },
+    "hcModule": {
+      "submissionDialog":{
+        "title": "Neuer Hypercube-Job",
+        "btCancel": "Abbrechen",
+        "btSubmit": "Senden"
       }
     }
   },
@@ -1276,6 +1285,9 @@
       "saveTrace":{
         "title": "Für die Leistungsanalyse mit dem integrierten Analysetool PAVER muss diese Option aktiviert sein.",
         "label": "Trace-Datei bei jedem GAMS-Lauf speichern (Hypercube-Modus)"
+      },
+      "hcubeModule":{
+        "label": "Hypercube-Modul aktivieren?"
       },
       "auto":{
         "label": "Automatisch Grafik für jedes Eingabesymbol generieren (Pivot-Tool)"

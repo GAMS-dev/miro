@@ -31,6 +31,7 @@
       "importInput":"Load data",
       "solve":"Solve model",
       "submitJob": "Submit job",
+      "submitHcJob": "Submit Hypercube",
       "solveHcube":"Submit job",
       "splitView":"Split view",
       "pivotView": "Pivot view",
@@ -233,7 +234,7 @@
       "badName": "The name you chose is invalid (either too long or too short). Please choose another name.",
       "newTags":"New tags",
       "badTags": "The tag(s) entered are invalid. Make sure that the tags are not empty or duplicated and do not contain more than 1000 characters.",
-      "scenExists":"A scenario already exists with the name you selected.",
+      "scenExists":"A scenario with the name you have chosen already exists.",
       "emptyPerm":"Scenario access permissions can not be empty!",
       "incapOwner": "You cannot revoke the owner's access permissions.",
       "attachmentsAdd": "Add attachments",
@@ -537,7 +538,7 @@
       },
       "exceedMaxNoDialog":{
         "title": "Maximum number scenarios exceeded",
-        "desc": "You have selected to solve %e scenarios for your Hypercube run. This exceeds the maximum allowed number that can be solved per run (%d). Please reduce the number of scenarios and try again."
+        "desc": "You have selected to solve %s scenarios for your Hypercube run. This exceeds the maximum allowed number that can be solved per run (%s). Please reduce the number of scenarios and try again."
       },
       "noScenSelectedDialog":{
         "title": "No scenarios selected",
@@ -669,6 +670,7 @@
       },
       "showJobProgressDialog":{
         "title": "Job progress",
+        "failedMsg": "%s failed",
         "cancelButton": "Cancel"
       },
       "jobsCompletedDialog":{
@@ -726,6 +728,13 @@
         "btCancel": "Cancel",
         "btConfirm": "Remove tables",
         "msgSuccess": "Database tables removed successfully! Please restart the application."
+      }
+    },
+    "hcModule": {
+      "submissionDialog":{
+        "title": "New Hypercube job",
+        "btCancel": "Cancel",
+        "btSubmit": "Submit"
       }
     }
   },

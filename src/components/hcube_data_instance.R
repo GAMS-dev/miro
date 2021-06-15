@@ -32,7 +32,7 @@ HcubeDataInstance <- R6Class("HcubeDataInstance", public = list(
     private$parValCombinations <- private$parValCombinations[subsetIds]
     return(invisible(self))
   },
-  writeHcube = function(workDir){
+  writeHcubeFile = function(workDir){
     if(!identical(length(private$jobIDs), length(private$parValCombinations))){
       stop("", call. = FALSE)
     }

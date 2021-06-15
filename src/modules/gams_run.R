@@ -588,19 +588,11 @@ if(LAUNCHHCUBEMODE){
   observeEvent(virtualActionButton(input$btSubmitJob, rv$btSubmitJob), {
     flog.debug("Submit new asynchronous job button clicked.")
     jobNameTmp <- character(1L)
-    if(length(activeScen)){
-      if(!activeScen$hasExecPerm()){
-        showErrorMsg(lang$nav$dialogNoExecPerm$title, 
-                     lang$nav$dialogNoExecPerm$desc)
-        flog.info("User has no execute permission for this scenario.")
-        return(NULL)
-      }
-      jobNameTmp <- activeScen$getScenName()
+    if(!verifyCanSolve(async = TRUE, buttonId = "btSubmitJob")){
+      return()
     }
-    if(identical(worker$validateCredentials(), FALSE)){
-      showLoginDialog(cred = worker$getCredentials(), 
-                      forwardOnSuccess = "btSubmitJob")
-      return(NULL)
+    if(length(activeScen)){
+      jobNameTmp <- activeScen$getScenName()
     }
     inputData <- prepareModelRun(async = TRUE)
     if(is.null(inputData)){
@@ -864,15 +856,15 @@ output$modelStatus <- renderUI({
 # refresh even when modelStatus message is hidden (i.e. user is on another tab)
 outputOptions(output, "modelStatus", suspendWhenHidden = FALSE)
 
-verifyCanSolve <- function(){
-  if(length(modelStatus)){
+verifyCanSolve <- function(async = FALSE, buttonId = "btSolve"){
+  if(!async && length(modelStatus)){
     showErrorMsg(lang$errMsg$jobRunning$title, 
                  lang$errMsg$jobRunning$desc)
     return(FALSE)
   }
   if(length(unzipModelFilesProcess)){
     if(length(unzipModelFilesProcess$get_exit_status())){
-      unzipModelFilesProcess <- NULL
+      unzipModelFilesProcess <<- NULL
     }else{
       showErrorMsg(lang$errMsg$unzipProcessRunning$title, 
                    lang$errMsg$unzipProcessRunning$desc)
@@ -892,7 +884,7 @@ verifyCanSolve <- function(){
   }
   if(identical(worker$validateCredentials(), FALSE)){
     showLoginDialog(cred = worker$getCredentials(), 
-                    forwardOnSuccess = "btSolve")
+                    forwardOnSuccess = buttonId)
     return(FALSE)
   }
   return(TRUE)
@@ -1127,4 +1119,282 @@ if(!isShinyProxy && config$activateModules$remoteExecution){
     })
   })
 }
-
+if(identical(config$activateModules$hcube, TRUE)){
+  hcubeBuilder <- NULL
+  generateHcInterface <- function(){
+    tagList(
+      tags$div(class = "container-fluid",
+               style = "max-height:600px;max-height:60vh;overflow:auto;padding-bottom:50px;",
+               tags$div(class = "row",
+                        lapply(seq_along(config$hcModule$scalarsConfig), function(widgetId){
+                          scalarConfig <- config$hcModule$scalarsConfig[[widgetId]]
+                          symId <- match(scalarConfig$name, names(modelIn))
+                          dependencyId <- match(scalarConfig$name, names(modelInWithDep))
+                          tags$div(class = "col-sm-6", {
+                            if(identical(scalarConfig$type, "dropdown")){
+                              if(identical(scalarConfig$baseType, "checkbox")){
+                                dropdownVal <- isolate(input[[paste0("cb_", symId)]])
+                              }else{
+                                dropdownVal <- isolate(input[[paste0("dropdown_", symId)]])
+                              }
+                              if(!is.na(dependencyId)){
+                                scalarConfig$choices <- isolate(getData[[dependencyId]]())
+                              }
+                              selectInput(paste0("hcWidget_", widgetId), 
+                                          label = scalarConfig$label, 
+                                          choices = scalarConfig$choices, 
+                                          selected = dropdownVal, 
+                                          multiple = TRUE,
+                                          width = "100%")
+                            }else if(identical(scalarConfig$type, "slider")){
+                              sliderVal <- isolate(input[[paste0("slider_", symId)]])
+                              if(length(sliderVal)){
+                                sliderVal <- c(sliderVal, sliderVal)
+                              }else{
+                                sliderVal <- c(scalarConfig$default, scalarConfig$default)
+                              }
+                              if(!is.na(dependencyId)){
+                                configTmp <- isolate(getData[[dependencyId]]())
+                                scalarConfig$min  <- configTmp$min
+                                scalarConfig$min  <- configTmp$max
+                                scalarConfig$step <- configTmp$step
+                              }
+                              tags$div(class = "row", style = "overflow:hidden;background:",
+                                       tags$div(class = if(scalarConfig$single) "col-sm-10" else "col-sm-8",
+                                                sliderInput(paste0("hcWidget_", widgetId), 
+                                                            label = scalarConfig$label,
+                                                            min = scalarConfig$min,
+                                                            max = scalarConfig$max,
+                                                            value = sliderVal,
+                                                            step = scalarConfig$step,
+                                                            ticks = scalarConfig$ticks,
+                                                            width = "100%")),
+                                       if(scalarConfig$single){
+                                         tags$div(class = "col-sm-2",
+                                                  numericInput(paste0("hcWidget_", widgetId, "_step"),
+                                                               lang$nav$hcubeMode$stepsize, 
+                                                               scalarConfig$step, min = scalarConfig$minStep,
+                                                               width = "100%"))
+                                       }else{
+                                         tagList(
+                                           tags$div(class = "col-sm-2",
+                                                    checkboxInput_MIRO(paste0("hcWidget_", widgetId, "_combinations"),
+                                                                       lang$nav$hcubeMode$sliderAllCombinations,
+                                                                       value = FALSE)),
+                                           tags$div(class = "col-sm-2",
+                                                    conditionalPanel(paste0("input.hcWidget_", widgetId, "_combinations===true"),
+                                                                     numericInput(paste0("hcWidget_", widgetId, "_step"),
+                                                                                  lang$nav$hcubeMode$stepsize, 
+                                                                                  scalarConfig$step, min = scalarConfig$minStep,
+                                                                                  width = "100%")))
+                                         )
+                                       }
+                              )
+                            }else{
+                              stop("HC widget type  not implemented (should never happen)", call. = FALSE)
+                            }
+                          })
+                        }))),
+      tags$div(class = "row", style = "text-align:center;",
+               actionButton("btSubmitHcJobConfirm", lang$nav$hcModule$submissionDialog$btSubmit,
+                            class = "bt-highlight-1 bt-gms-confirm bt-no-disable")))
+  }
+  noHcubeScen <- throttle(reactive({
+    req(input$btSubmitHcJob)
+    noScenTmp <- vapply(seq_along(config$hcModule$scalarsConfig), function(widgetId){
+      widgetVal <- input[[paste0("hcWidget_", widgetId)]]
+      if(is.null(widgetVal)){
+        return(NA_integer_)
+      }
+      scalarConfig <- config$hcModule$scalarsConfig[[widgetId]]
+      if(identical(scalarConfig$type, "slider")){
+        if(!scalarConfig$single){
+          if(!identical(input[[paste0("hcWidget_", widgetId, "_combinations")]], TRUE)){
+            hcubeBuilder$push(scalarConfig$name, widgetVal)
+            return(1L)
+          }
+        }
+        
+        stepSize <- input[[paste0("hcWidget_", widgetId, "_step")]]
+        if(is.null(stepSize)){
+          return(NA_integer_)
+        }
+        if(!is.numeric(stepSize) || stepSize <= 0){
+          # non valid step size selected
+          return(-1L)
+        }
+        hcRange <- floor((widgetVal[2] - widgetVal[1])/stepSize) + 1
+        
+        if(length(scalarConfig$minStep)){
+          if(stepSize < scalarConfig$minStep){
+            return(-1L)
+          }
+        }else if(stepSize < scalarConfig$step){
+          return(-1L)
+        }
+        if(scalarConfig$single){
+          hcubeBuilder$push(scalarConfig$name, seq(widgetVal[1], widgetVal[2], stepSize))
+          return(as.integer(hcRange))
+        }
+        # double slider all combinations
+        hcubeBuilder$push(scalarConfig$name, getCombinationsSlider(widgetVal[1], widgetVal[2], stepSize),
+                          allCombinations = TRUE)
+        return(as.integer(hcRange*(hcRange + 1) / 2))
+      }else{
+        hcubeBuilder$push(scalarConfig$name, widgetVal, ddChoices = scalarConfig$choices)
+        return(length(widgetVal))
+      }
+    }, integer(1L), USE.NAMES = FALSE)
+    if(any(is.na(noScenTmp))){
+      return()
+    }
+    if(any(noScenTmp == -1L)){
+      return(-1L)
+    }
+    return(prod(noScenTmp))
+  }), 1000L)
+  noHcubeScenSolved <- throttle(reactive({
+    req(input$btSubmitHcJob)
+    if(!length(noHcubeScen()) || noHcubeScen() < 1L || noHcubeScen() > MAX_NO_HCUBE){
+      return(0L)
+    }
+    tryCatch({
+      scenHashes <- hcubeBuilder$generateScenHashes()
+      return(db$getScenWithSameHash(scenHashes,
+                                    limit = NULL, count = TRUE)[[1]][1])
+    }, error = function(e) {
+      flog.error("Scenario hashes could not be looked up. Error message: %s.",
+                 conditionMessage(e))
+      return(-1L)
+    })
+  }), 1200L)
+  output$newHcJobInfo <- renderText({
+    noScenTmp <- noHcubeScen()
+    if(is.null(noScenTmp)){
+      return()
+    }
+    if(noScenTmp == -1){
+      showElReplaceTxt(session, "#newHcJobError",
+                       lang$nav$dialogHcube$badStepSizeDialog$desc)
+    }else if(noScenTmp == 0){
+      showElReplaceTxt(session, "#newHcJobError",
+                       lang$nav$dialogHcube$noScenSelectedDialog$desc)
+    }else if(noScenTmp > MAX_NO_HCUBE){
+      showElReplaceTxt(session, "#newHcJobError",
+                       sprintf(lang$nav$dialogHcube$exceedMaxNoDialog$desc, 
+                               format(noScenTmp, big.mark=","), format(MAX_NO_HCUBE, big.mark=",")))
+    }else{
+      hideEl(session, "#newHcJobError")
+    }
+    sprintf(lang$nav$dialogHcube$desc, noScenTmp, noHcubeScenSolved())
+  })
+  observeEvent(input$btSubmitHcJob, {
+    flog.trace("Submit new Hypercube job button clicked.")
+    jobNameTmp <- character(1L)
+    if(!verifyCanSolve(async = TRUE, buttonId = "btSubmitHcJob")){
+      return()
+    }
+    if(length(activeScen)){
+      jobNameTmp <- activeScen$getScenName()
+    }
+    inputData <- prepareModelRun(async = TRUE)
+    if(is.null(inputData)){
+      return(NULL)
+    }
+    worker$setInputData(inputData)
+    if(is.null(hcubeBuilder)){
+      hcubeBuilder <<- HcubeBuilder$new(inputData$getDataHashes())
+    }else{
+      hcubeBuilder$setDataHashes(inputData$getDataHashes())
+    }
+    
+    showModal(modalDialog(
+      title = lang$nav$hcModule$submissionDialog$title,
+      tags$div(id = "newHcJobError", class = "gmsalert gmsalert-error",
+               style = "position: relative;max-width: unset;"),
+      tags$div(id = "newHcJobInfo", class = "shiny-text-output lead"),
+      selectizeInput("newHcubeTags", lang$nav$dialogHcube$newTags, c(),
+                     multiple = TRUE, options = list(
+                       'create' = TRUE,
+                       'persist' = FALSE)),
+      tags$div(id = "newHcWrapper",
+               genSpinner(absolute = FALSE)),
+      easyClose = FALSE,
+      size = "l",
+      footer = tagList(
+        modalButton(lang$nav$hcModule$submissionDialog$btCancel)
+      )
+    ))
+    emptyEl(session, "#newHcWrapper")
+    tryCatch({
+      insertUI("#newHcWrapper", ui = generateHcInterface())
+      enableEl(session, "#btSubmitHcJobConfirm")
+    }, error = function(e){
+      flog.error("Unexpected error while generating Hypercube job interface. Error message: '%s'",
+                 conditionMessage(e))
+      showElReplaceTxt(session, "#newHcJobError", lang$errMsg$unknownError)
+    })
+  })
+  observeEvent(input$btSubmitHcJobConfirm, {
+    flog.trace("Button to confirm submission of new Hypercube job clicked.")
+    if(!verifyCanSolve(async = TRUE, buttonId = "btSubmitHcJob")){
+      return()
+    }
+    if(!length(noHcubeScen()) || noHcubeScen() < 1L || noHcubeScen() > MAX_NO_HCUBE){
+      return()
+    }
+    disableEl(session, "#btSubmitHcJobConfirm")
+    hideEl(session, "#newHcJobError")
+    tryCatch({
+      prog <- Progress$new()
+      on.exit(prog$close(), add = TRUE)
+      prog$set(message = lang$nav$dialogHcube$waitDialog$title, value = 0)
+      currentMetaTmp <- activeScen$getMetadataInfo()
+      attachmentsTmp <- Attachments$new(db, list(maxSize = attachMaxFileSize, maxNo = attachMaxNo),
+                                        workDir,
+                                        names(ioConfig$modelIn),
+                                        names(ioConfig$modelOut),
+                                        ioConfig$inputDsNamesBase)
+      if(length(currentMetaTmp$attach) && length(config$outputAttachments)){
+        outputAttachNames <- vapply(config$outputAttachments, "[[", character(1L),
+                                    "filename", USE.NAMES = FALSE)
+        currentMetaTmp$attach$attachmentsToRemove <- c(currentMetaTmp$attach$attachmentsToRemove,
+                                                       outputAttachNames)
+        localOutputAttach <- basename(currentMetaTmp$attach$localAttachments$filePaths) %in% outputAttachNames
+        if(any(localOutputAttach)){
+          currentMetaTmp$attach$localAttachments$filePaths <- currentMetaTmp$attach$localAttachments$filePaths[!localOutputAttach]
+          currentMetaTmp$attach$localAttachments$execPerm <- currentMetaTmp$attach$localAttachments$execPerm[!localOutputAttach]
+          updatesOutputAttach <- currentMetaTmp$attach$attachmentsUpdateExec$name %in% outputAttachNames
+          if(any(updatesOutputAttach)){
+            currentMetaTmp$attach$attachmentsUpdateExec$name <- currentMetaTmp$attach$attachmentsUpdateExec$name[!updatesOutputAttach]
+            currentMetaTmp$attach$attachmentsUpdateExec$execPerm <- currentMetaTmp$attach$attachmentsUpdateExec$execPerm[!updatesOutputAttach]
+          }
+        }
+      }
+      hcJobConfig <- Scenario$new(db = db, sname = paste(rv$activeSname, as.numeric(Sys.time())), 
+                                  tags = input$newHcubeTags, overwrite = FALSE,
+                                  isNewScen = TRUE,
+                                  duplicatedMetadata = currentMetaTmp,
+                                  views = views, attachments = attachmentsTmp,
+                                  scode = SCODEMAP[['hcube_inputs']])
+      hcScalarsTmp <- hcubeBuilder$getHcubeScalars()
+      hcJobConfig$save(scenData$get("sb", symNames = ioConfig$inputDsNames),
+                       msgProgress = lang$progressBar$saveScenDb)
+      sid <- hcJobConfig$getSid()
+      db$exportScenDataset(bind_cols(`_sid` = rep.int(sid, nrow(hcScalarsTmp)), 
+                                     hcScalarsTmp),
+                           "_hcScalars")
+      hcJobConfig$finalize()
+      worker$runHcube(dynamicPar = hcubeBuilder, 
+                      sid = sid, tags = input$newHcubeTags)
+      prog$inc(amount = 1, detail = lang$nav$dialogHcube$waitDialog$desc)
+      removeModal()
+      showHideEl(session, "#hcubeSubmitSuccess", 2000)
+    }, error = function(e){
+      flog.error("Unexpected error while generating new Hypercube job. Error message: '%s'",
+                 conditionMessage(e))
+      enableEl(session, "#btSubmitHcJobConfirm")
+      showElReplaceTxt(session, "#newHcJobError", lang$errMsg$unknownError)
+    })
+  })
+}

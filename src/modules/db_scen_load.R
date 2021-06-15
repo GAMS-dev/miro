@@ -261,11 +261,6 @@ observeEvent(input$btRefreshComp, {
     views$duplicateSandboxConf(tabsetId)
   }
   sidsToLoad <- as.integer(scenIds[!sbScenId])
-  if(length(sidsToLoad)){
-    views$loadConf(db$importDataset(tableName = "_scenViews", 
-                                    subsetSids = sidsToLoad), FALSE,
-                   tabsetId, sidsToLoad)
-  }
   if(length(config$scripts$base) && !identical(tabsetId, 0L)){
     if(any(sbScenId)){
       scriptOutput$loadResultsBase(scriptOutput$getResults(), tabsetId)
@@ -273,13 +268,20 @@ observeEvent(input$btRefreshComp, {
       scriptOutput$loadResultsBase(db$loadScriptResults(sidsToLoad)[[1]], tabsetId)
     }
   }
+  # initialize metadata
+  scenData$get(refId, symNames = character(), showProgress = FALSE)
+  if(length(sidsToLoad)){
+    inputDataSids <- scenData$getInputDataSids(refId)
+    inputDataSids[is.na(inputDataSids)] <- sidsToLoad[is.na(inputDataSids)]
+    views$loadConf(db$importDataset(tableName = "_scenViews", 
+                                    subsetSids = inputDataSids), FALSE,
+                   tabsetId, inputDataSids)
+  }
   sheetNames <- getSheetnamesByTabsetId(tabsetId)
   if(length(sheetNames)){
     loadDynamicTabContent(session, tabsetId,
                           sheetNames,
                           initEnv = TRUE)
-  }else{
-    scenData$get(refId, symNames = character(), showProgress = FALSE)
   }
   metaTmp <- scenData$getById("meta", refId = refId, drop = TRUE)
   showElReplaceTxt(session, paste0("#cmpScenTitle_", tabsetId),
@@ -493,13 +495,15 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         scenData$load(as.integer(sidsToLoadVector), refId = refId,
                       symNames = symToFetch,
                       isHcJobConfig = LAUNCHHCUBEMODE && isInSolveMode)
+        inputDataSids <- scenData$getInputDataSids(refId)
+        inputDataSids[is.na(inputDataSids)] <- sidsToLoadVector[is.na(inputDataSids)]
+        views$loadConf(db$importDataset(tableName = "_scenViews", 
+                                        subsetSids = inputDataSids), isInSolveMode,
+                       viewsSids, inputDataSids)
       }
       scriptDataTmp <- append(db$loadScriptResults(sidsToLoadVector,
                                                    msgProgress = lang$progressBar$loadScenDb),
                               scriptDataTmp, sandboxId - 1)
-      views$loadConf(db$importDataset(tableName = "_scenViews", 
-                                      subsetSids = sidsToLoadVector), isInSolveMode,
-                     viewsSids, sidsToLoadVector)
     }
   }, error = function(e){
     flog.error("Some error occurred loading scenarios: '%s' from database. Error message: %s.", 
@@ -623,10 +627,10 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   
   lapply(seq_along(sidsToLoad), function(i){
     tryCatch({
+      refIdToLoad <- NULL
       if(identical(currentCompMode, "tab")){
         scenId   <- which.min(occupiedSidSlots) + 3L
-        scenData$load(sidsToLoad[[i]], symNames = symToFetch,
-                      showProgress = TRUE, refId = paste0("cmpTab_", scenId))
+        refIdToLoad <- paste0("cmpTab_", scenId)
       }else{
         if(identical(length(sidsToLoad), 2L)){
           scenId <- i + 1L
@@ -643,6 +647,15 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
           insertUI(paste0("#scenSplit", scenId - 1L, "_content"), where = "afterBegin",
                    generateScenarioTabsetSplit(scenId), immediate = TRUE)
         }
+      }
+      if(length(refIdToLoad)){
+        scenData$load(sidsToLoad[[i]], symNames = symToFetch,
+                      showProgress = TRUE, refId = refIdToLoad)
+        inputDataSids <- scenData$getInputDataSids(refIdToLoad)
+        inputDataSids[is.na(inputDataSids)] <- sidsToLoad[[i]][is.na(inputDataSids)]
+        views$loadConf(db$importDataset(tableName = "_scenViews", 
+                                        subsetSids = inputDataSids), FALSE,
+                       viewsSids[[i]], inputDataSids)
       }
       renderScenInCompMode(scenId, refreshData = FALSE)
       # load script results

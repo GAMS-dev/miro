@@ -67,6 +67,8 @@ if(isTRUE(config$activateModules$remoteExecution)){
                 length(resDlIdx))
       return(showHideEl(session, "#fetchJobsMaxDownloads", 6000L))
     }
+    hideEl(session, paste0("#btDownloadJob_", jID))
+    showEl(session, paste0("#jobImportDlProgressWrapper_", jID))
     res <- tryCatch(worker$getJobResults(jID),
                     error = function(e){
                       errMsg <- conditionMessage(e)
@@ -96,10 +98,10 @@ if(isTRUE(config$activateModules$remoteExecution)){
                                      triggerImport = identical(length(activeDownloads), 0L)))
       return()
     }else if(!identical(res, 5L)){
+      showEl(session, paste0("#btDownloadJob_", jID))
+      hideEl(session, paste0("#jobImportDlProgressWrapper_", jID))
       return()
     }
-    showEl(session, paste0("#jobImportDlProgressWrapper_", jID))
-    
     if(!length(asyncResObs))
       asyncResObs <<- observe({
         invalidateLater(2000L, session)
@@ -173,9 +175,14 @@ observeEvent(input$discardJob, {
     return()
   }
   tryCatch({
+    jobMeta <- worker$getInfoFromJobList(jID)
     worker$updateJobStatus(JOBSTATUSMAP[['discarded']], 
                            jID, 
-                           tags = input[["jTag_" %+% jID]])
+                           tags = input[[paste0("jTag_", jID)]])
+    if(identical(jobMeta[["_scode"]][1], SCODEMAP[["hcube_jobconfig"]])){
+      db$deleteRows("_scenMeta", "_sid", jobMeta[["_sid"]][1])
+      db$deleteRows("_scenAttach", "_sid", jobMeta[["_sid"]][1])
+    }
     rv$jobListPanel <- rv$jobListPanel + 1L
   }, error = function(e){
     errMsg <- conditionMessage(e)
@@ -189,4 +196,57 @@ observeEvent(input$discardJob, {
   })
   if(err)
     return()
+})
+getJobProgress <- function(jID){
+  if(!identical(worker$getStatus(jID), JOBSTATUSMAP[['running']])){
+    return(NULL)
+  }
+  jobProgress <- worker$getHcubeJobProgress(jID)
+  
+  noJobsCompleted <- jobProgress[[1L]]
+  noJobs <- jobProgress[[2L]]
+  if(identical(length(jobProgress), 3L)){
+    noFail <- sprintf(lang$nav$hcubeMode$showJobProgressDialog$failedMsg,
+                      max(0L, noJobsCompleted - jobProgress[[3L]]))
+  }else{
+    noFail <- NULL
+  }
+  
+  if(identical(noJobsCompleted, noJobs)){
+    rv$jobListPanel <- rv$jobListPanel + 1L
+    removeModal()
+    return(NULL)
+  }
+  return(list(noCompleted = noJobsCompleted, noTotal = noJobs, noFail = noFail))
+}
+observeEvent(input$updateJobProgress, {
+  jID <- suppressWarnings(as.integer(isolate(input$updateJobProgress)))
+  flog.trace("Update Hypercube progress requested. Job ID: '%s'.", jID)
+  currentProgress <- tryCatch(getJobProgress(jID), error = function(e){
+    flog.error(conditionMessage(e))
+    return(NULL)
+  })
+  if(is.null(currentProgress)){
+    return()
+  }
+  session$sendCustomMessage("gms-updateJobProgress", 
+                            list(id = paste0("#hcubeProgress", jID), 
+                                 progress = currentProgress))
+})
+observeEvent(input$showJobProgress, {
+  jID <- suppressWarnings(as.integer(isolate(input$showJobProgress)))
+  flog.trace("Show Hypercube progress button clicked. Job ID: '%s'.", jID)
+  currentProgress <- tryCatch(getJobProgress(jID), error = function(e){
+    errMsg <- conditionMessage(e)
+    flog.error(errMsg)
+    showHideEl(session, "#fetchJobsError")
+    return()
+  })
+  if(is.null(currentProgress)){
+    return()
+  }
+  showJobProgressDialog(jID, currentProgress)
+  session$sendCustomMessage("gms-startUpdateJobProgress", 
+                            list(id = paste0("#hcubeProgress", jID),
+                                 jID = jID))
 })

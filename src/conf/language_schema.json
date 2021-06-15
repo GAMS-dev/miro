@@ -134,6 +134,10 @@
               "type": "string",
               "minLength": 1
             },
+            "submitHcJob": {
+              "type": "string",
+              "minLength": 1
+            },
             "solveHcube": {
               "type": "string",
               "minLength": 1
@@ -167,7 +171,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 11
+          "minProperties": 12
         },
         "header": {
           "type": "object",
@@ -1981,7 +1985,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 4
+          "minProperties": 5
         },
         "dialogJobSubmission": {
           "type": "object",
@@ -2611,12 +2615,16 @@
                   "type": "string",
                   "minLength": 1
                 },
+                "failedMsg": {
+                  "type": "string",
+                  "minLength": 1
+                },
                 "cancelButton": {
                   "type": "string",
                   "minLength": 1
                 }
               },
-              "minProperties": 2
+              "minProperties": 3
             },
             "jobsCompletedDialog": {
               "type": "object",
@@ -2835,9 +2843,30 @@
             }
           },
           "minProperties": 14
+        },
+        "hcModule": {
+          "submissionDialog": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "btCancel": {
+                "type": "string",
+                "minLength": 1
+              },
+              "btSubmit": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "minProperties": 3
+          }
         }
       },
-      "minProperties": 53
+      "minProperties": 54
     },
     "renderers": {
       "description": "language specific objects of renderers",
@@ -4960,6 +4989,17 @@
               },
               "minProperties": 2
             },
+            "hcubeModule": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "minProperties": 1
+            },
             "auto": {
               "type": "object",
               "additionalProperties": false,
@@ -4972,7 +5012,7 @@
               "minProperties": 1
             }
           },
-          "minProperties": 38
+          "minProperties": 39
         },
         "tables": {
           "type": "object",

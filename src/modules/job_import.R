@@ -150,7 +150,10 @@ observeEvent(input$importJob, {
     showHideEl(session, "#fetchJobsError")
     return()
   }
-  
+  jobMeta <- worker$getInfoFromJobList(jobImportID)
+  if(identical(jobMeta[["_scode"]][1], SCODEMAP[["hcube_jobconfig"]])){
+    return(importHcJob(worker$getJobResultsPath(jobImportID), jobMeta))
+  }
   if(rv$unsavedFlag){
     showRemoveScenDialog("importJobConfirm")
   }else{

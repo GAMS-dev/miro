@@ -86,7 +86,7 @@ filesToInclude <- c("./global.R", "./components/util.R", if(useGdx) "./component
                     "./components/load_scen_data.R", "./components/localfileio.R",
                     "./components/xlsio.R", "./components/csvio.R",
                     "./components/data_instance.R", "./components/worker.R", 
-                    "./components/dataio.R", "./components/hcube_data_instance.R", 
+                    "./components/dataio.R",
                     "./components/miro_tabsetpanel.R", "./modules/render_data.R", 
                     "./modules/generate_data.R", "./components/script_output.R",
                     "./components/js_util.R", "./components/scen_data.R", "./components/batch_loader.R")
@@ -787,7 +787,11 @@ if(is.null(errMsg)){
     if(length(errMsgTmp)){
       errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
     }
+    source("./components/hcube_data_instance.R")
     source("./components/db_hcubeimport.R")
+  }else if(identical(config$activateModules$hcube, TRUE)){
+    source("./components/hcube_builder.R")
+    source("./components/hcube_results.R")
   }
 }
 
@@ -1803,18 +1807,20 @@ if(!is.null(errMsg)){
       
       ####### Batch load module
       source("./modules/batch_load.R", local = TRUE)
-      
-      ####### Paver interaction
+
       if(LAUNCHHCUBEMODE){
         source("./modules/gams_job_list.R", local = TRUE)
         ####### Hcube import module
         source("./modules/hcube_import.R", local = TRUE)
-        # analyze button clicked
+        ####### Hcube analysis module
         source("./modules/analysis_run.R", local = TRUE)
       }else if(config$activateModules$remoteExecution){
         source("./modules/gams_job_list.R", local = TRUE)
         # remote job import
         source("./modules/job_import.R", local = TRUE)
+        if(identical(config$activateModules$hcube, TRUE)){
+          source("./modules/hcube_import_results.R", local = TRUE)
+        }
       }
       
       # delete scenario 

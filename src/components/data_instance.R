@@ -26,6 +26,7 @@ DataInstance <- R6Class("DataInstance", public = list(
     private$views        <- views
     return(invisible(self))
   },
+  getDataHashes = function() private$dataHashes,
   pushClArgs = function(data){
     if(!identical(length(data), 3)){
       return(invisible(self))
@@ -58,12 +59,28 @@ DataInstance <- R6Class("DataInstance", public = list(
       scalarVals <- data[[3]][match(scalarsConfig$symnames, data[[1]])]
       private$dataHashes[scalarsConfig$symnames] <- vapply(seq_along(scalarsConfig$symnames), function(scalarId){
         if(identical(scalarsConfig$symtypes[scalarId], "set")){
-          scalarVal <- strsplit(scalarVals[scalarId], "||", fixed = TRUE)[[1]]
-          if(length(scalarVal) > 1L){
-            scalarText <- paste0(" --HCUBE_SCALART_", scalarsConfig$symnames[scalarId], "= ",
-                                 escapeGAMSCL(paste0(scalarVal[-1], collapse = "||")))
+          ddConfig <- ioConfig$modelIn[[scalarsConfig$symnames[scalarId]]]$dropdown
+          if(length(ddConfig)){
+            scalarVal <- scalarVals[scalarId]
+            if(length(ddConfig$aliases)){
+              symText <- ddConfig$aliases[match(scalarVal, ddConfig$choices)]
+              if(identical(ddConfig$clearValue, TRUE)){
+                return(paste0("--HCUBE_SCALART_", scalarsConfig$symnames[scalarId], "= ",
+                              escapeGAMSCL(symText)))
+              }
+              scalarText <- paste0(" --HCUBE_SCALART_", scalarsConfig$symnames[scalarId], "= ",
+                                   escapeGAMSCL(symText))
+            }else{
+              symText <- ""
+            }
           }else{
-            scalarText <- ""
+            scalarVal <- strsplit(scalarVals[scalarId], "||", fixed = TRUE)[[1]]
+            if(length(scalarVal) > 1L){
+              scalarText <- paste0(" --HCUBE_SCALART_", scalarsConfig$symnames[scalarId], "= ",
+                                   escapeGAMSCL(paste0(scalarVal[-1], collapse = "||")))
+            }else{
+              scalarText <- ""
+            }
           }
           return(paste0("--HCUBE_SCALARV_", scalarsConfig$symnames[scalarId], "= ",
                         if(is.na(scalarVal[1])) "" else escapeGAMSCL(scalarVal[1]), scalarText))
@@ -81,7 +98,8 @@ DataInstance <- R6Class("DataInstance", public = list(
     hashesToOrder <- startsWith(names(private$dataHashes), "__")
     scenHashOrder <- order(names(private$dataHashes)[hashesToOrder])
     scenHash <- paste(c(unlist(private$dataHashes[!hashesToOrder], use.names = FALSE),
-                        unlist(private$dataHashes[hashesToOrder][scenHashOrder], use.names = FALSE)), collapse = " ")
+                        unlist(private$dataHashes[hashesToOrder][scenHashOrder], use.names = FALSE)),
+                      collapse = " ")
     return(digest::digest(scenHash, algo = "sha256", serialize = FALSE))
   },
   addInexFile = function(workDir, modelDataFiles){

@@ -1714,3 +1714,26 @@ colorPickerInput <- function(id, label = NULL, value = NULL, colorBox = FALSE){
     colorpicker
   ))
 }
+getCombinationsSlider <- function(lowerVal, upperVal, stepSize = 1){
+  # BEGIN error checks
+  stopifnot(is.numeric(lowerVal), length(lowerVal) == 1)
+  stopifnot(is.numeric(upperVal), length(upperVal) == 1)
+  stopifnot(is.numeric(stepSize), length(stepSize) == 1, stepSize > 0)
+  # END error checks
+  
+  ret <- list()
+  repeat{
+    lowTmp  <- seq(lowerVal, upperVal, stepSize)
+    ret$min <- c(ret$min, lowTmp)
+    ret$max  <- c(ret$max, rep.int(upperVal, length(lowTmp)))
+    upperVal <- upperVal - stepSize
+    if(upperVal < lowerVal){
+      if((upperVal + 1e-10) < lowerVal){
+        break 
+      }else{
+        upperVal <- lowerVal
+      }
+    }
+  }
+  return(ret)
+}

@@ -219,6 +219,9 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
       }
     }
     flog.debug("%s: Scenario saved to database (Scenario: %s).", uid, activeScen$getScenName())
+  }, error_sname_exists = function(e) {
+    flog.info("A scenario with the same name already exists. Please choose another name.")
+    errMsg <<- lang$nav$dialogEditMeta$scenExists
   }, error = function(e) {
     flog.error("Some error occurred saving scenario to database. Error message: %s.",
                conditionMessage(e))

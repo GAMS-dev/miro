@@ -1158,6 +1158,8 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, hcubeMode = TRUE, showLogFi
                           do.call("tagList", lapply(seq_len(nrow(hcubeMeta)), function(i){
                             jID     <- jobIds[i]
                             jStatus <- jStatuses[i]
+                            isHcJob <- identical(hcubeMeta[["_scode"]][i],
+                                                 SCODEMAP[["hcube_jobconfig"]])
                             tags$tr(
                               tags$td(jobOwners[i]),
                               tags$td(jobTimes[i]),
@@ -1176,7 +1178,14 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, hcubeMode = TRUE, showLogFi
                                 )
                               else
                                 tags$td(
-                                  hcubeMeta[[10]][i]
+                                  if(isHcJob){
+                                    tagList(
+                                      trimws(hcubeMeta[["_stag"]][i], whitespace = ","),
+                                      tags$span(class="badge badge-info", "HC")
+                                    )
+                                  }else{
+                                    hcubeMeta[["_sname"]][i]
+                                  }
                                 ),
                               if(identical(jStatus, JOBSTATUSMAP[['queued']])){
                                 tags$td(lang$nav$importJobsDialog$status$queued)
@@ -1263,14 +1272,14 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, hcubeMode = TRUE, showLogFi
                                                   onclick = paste0("Shiny.setInputValue('importJob',", 
                                                                    jID, ",{priority:\'event\'});"),
                                                   lang$nav$importJobsDialog$buttons$import),
-                                      if(!hcubeMode && showLogFileDialog)
+                                      if(!isHcJob && showLogFileDialog)
                                         tags$button(class = "btn btn-default", 
                                                     onclick = paste0("Shiny.setInputValue('showJobLog', '", 
                                                                      jID, "',{priority:\'event\'});"),
                                                     lang$nav$importJobsDialog$buttons$log)
                                     )
                                   },
-                                  if(hcubeMode && identical(jStatus, JOBSTATUSMAP[['running']]))
+                                  if(isHcJob && identical(jStatus, JOBSTATUSMAP[['running']]))
                                     tags$button(class = "btn btn-default", 
                                                 onclick = paste0("Shiny.setInputValue('showJobProgress', '", 
                                                                  jID, "',{priority:\'event\'});"),

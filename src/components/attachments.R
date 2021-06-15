@@ -14,10 +14,15 @@ Attachments <- R6Class("Attachments",
                            private$sid <- sid
                            return(invisible(self))
                          },
-                         initScenData = function(sid){
+                         initScenData = function(sid, inDataSid = NA_integer_){
                            self$clear()
                            private$sid <- sid
                            private$attachmentData <- NULL
+                           if(!is.na(inDataSid)){
+                             private$inDataSid <- inDataSid
+                           }else{
+                             private$inDataSid <- NULL
+                           }
                            return(invisible(self))
                          },
                          getConfig = function(){
@@ -62,7 +67,8 @@ Attachments <- R6Class("Attachments",
                            attachmentNamesDb <- character(0L)
                            attachmentExecPermDb <- logical(0L)
                            if(is.null(private$attachmentData)){
-                             private$attachmentData <- private$fetchDataFromDb(private$sid)
+                             private$attachmentData <- private$fetchDataFromDb(c(private$sid,
+                                                                                 private$inDataSid))
                            }
                            if(length(private$attachmentData) && nrow(private$attachmentData)){
                              attachmentNamesDb    <- private$attachmentData[[1]]
@@ -570,6 +576,7 @@ Attachments <- R6Class("Attachments",
                          }),
                        private = list(
                          sid = NULL,
+                         inDataSid = NULL,
                          db = NULL,
                          conn = NULL,
                          config = NULL,
@@ -601,10 +608,10 @@ Attachments <- R6Class("Attachments",
                            private$attachmentData <- NULL
                            return(invisible(self))
                          },
-                         fetchDataFromDb = function(sid){
+                         fetchDataFromDb = function(sids){
                            return(private$db$importDataset("_scenAttach", 
                                                            colNames = c("fileName", "execPerm"), 
-                                                           subsetSids = sid))
+                                                           subsetSids = sids))
                          },
                          getLocalData = function(){
                            # reads blob data and returns tibble with meta data and file content
