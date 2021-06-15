@@ -388,7 +388,7 @@ animation: none !important;
   background-color: #222D32;
   background-color: rgba(0,0,0,0);
   color: #fff;
-  transition: all 500ms ease; 
+  transition: all 350ms ease; 
 }
 .bt-highlight-3:hover{
   border: 2px solid #F39619;
@@ -458,18 +458,16 @@ animation: none !important;
   white-space: pre;
   display: block;
   padding: 9.5px;
-  margin: 0 0 10px;
   font-size: 13px;
   line-height: 1.42857143;
   .responsiveDark({
      color: @log-text;
      background-color: @log-bg;
-     border: 1px solid @log-border;
   },
   {
      color: @log-text-dark;
      background-color: @log-bg-dark;
-     border: 1px solid @log-border-dark;
+     border: unset;
   });
   word-break: break-all;
   word-wrap: break-word;
@@ -1443,12 +1441,12 @@ animation: none !important;
   padding: 5px;
   list-style-type: none;
   .responsiveDark({
-    box-shadow: rgba(0,0,0,.15) 0px 2px 4px 0px inset;
-    background-color: #f1f1f129;
+    box-shadow: rgba(0,0,0,.1) 0px 2px 4px 0px inset;
+    background-color: #f1f1f18f;
   },
   {
-    box-shadow: rgba(0,0,0,.15) 0px 2px 4px 0px inset;
-    background-color: fade(@highlight-bg-dark, 16%);
+    box-shadow: rgba(0,0,0,.1) 0px 2px 4px 0px inset;
+    background-color: fade(@highlight-bg-dark, 56%);
   });
 }
 .pivot-hdr-col {
@@ -1487,7 +1485,7 @@ animation: none !important;
      {
       background-color: @modal-bg-dark;
      });
-     box-shadow: rgba(0,0,0,.15) 0px 1px 4px;
+     box-shadow: rgba(0,0,0,.1) 0px 1px 4px;
 }
 .drop-index-item-selected {
   color: #000;
