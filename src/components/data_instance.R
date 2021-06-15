@@ -71,7 +71,7 @@ DataInstance <- R6Class("DataInstance", public = list(
               scalarText <- paste0(" --HCUBE_SCALART_", scalarsConfig$symnames[scalarId], "= ",
                                    escapeGAMSCL(symText))
             }else{
-              symText <- ""
+              scalarText <- ""
             }
           }else{
             scalarVal <- strsplit(scalarVals[scalarId], "||", fixed = TRUE)[[1]]
