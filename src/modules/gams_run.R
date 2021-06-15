@@ -191,15 +191,15 @@ if(LAUNCHHCUBEMODE){
       return(paste0("--HCUBE_SCALARV_", names(modelIn)[id]))
     }
   }
-  noScenToSolve <- reactive({
-    numberScenPerElement <- vapply(seq_along(modelIn), function(i){
+  getNoScenToSolve <- function(modelInIds = seq_along(modelIn)){
+    numberScenPerElement <- vapply(modelInIds, function(i){
       switch(modelIn[[i]]$type,
              slider = {
-               value <- input[["slider_" %+% i]]
+               value <- input[[paste0("slider_", i)]]
                if(length(value) > 1){
                  if(identical(modelIn[[i]]$slider$double, TRUE)){
                    # double slider in single run mode
-                   if (!identical(input[["hcubeMode_" %+% i]], TRUE)){
+                   if (!identical(input[[paste0("hcubeMode_", i)]], TRUE)){
                      return(1L)
                    }
                  }else if(!identical(modelIn[[i]]$slider$single, TRUE)){
@@ -207,7 +207,7 @@ if(LAUNCHHCUBEMODE){
                    return(1L)
                  }
                  
-                 stepSize <- input[["hcubeStep_" %+% i]]
+                 stepSize <- input[[paste0("hcubeStep_", i)]]
                  range <- floor((value[2] - value[1])/stepSize) + 1
                  if(!is.numeric(stepSize) || stepSize <= 0){
                    # non valid step size selected
@@ -236,7 +236,7 @@ if(LAUNCHHCUBEMODE){
              dropdown = {
                if(isTRUE(modelIn[[i]]$dropdown$single) || 
                   isTRUE(modelIn[[i]]$dropdown$checkbox)){
-                 return(length(input[["dropdown_" %+% i]]))
+                 return(length(input[[paste0("dropdown_", i)]]))
                }
                return(1L)
              },
@@ -247,7 +247,7 @@ if(LAUNCHHCUBEMODE){
                return(1L)
              },
              checkbox = {
-               return(length(input[["cb_" %+% i]]))
+               return(length(input[[paste0("cb_", i)]]))
              },
              textinput = {
                return(1L)
@@ -260,11 +260,6 @@ if(LAUNCHHCUBEMODE){
       return(-1L)
     }
     return(prod(numberScenPerElement))
-  })
-  
-  getUniqueCombinations <- function(vector){
-    combinations <- expand.grid(vector, vector, stringsAsFactors = FALSE)
-    combinations[combinations[, 1] <= combinations[, 2], ] 
   }
   
   scenToSolve <- reactive({
@@ -983,6 +978,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     return()
   }
   if(LAUNCHHCUBEMODE){
+    numberScenarios <- getNoScenToSolve()
     if(numberScenarios > MAX_NO_HCUBE){
       showModal(modalDialog(title = lang$nav$dialogHcube$exceedMaxNoDialog$title, 
                             sprintf(lang$nav$dialogHcube$exceedMaxNoDialog$desc, 
