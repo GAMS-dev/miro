@@ -95,6 +95,9 @@ DataInstance <- R6Class("DataInstance", public = list(
     return(invisible(self))
   },
   generateScenHash = function(){
+    if(!length(private$dataHashes)){
+      return(digest::digest("", algo = "sha256", serialize = FALSE))
+    }
     hashesToOrder <- startsWith(names(private$dataHashes), "__")
     scenHashOrder <- order(names(private$dataHashes)[hashesToOrder])
     scenHash <- paste(c(unlist(private$dataHashes[!hashesToOrder], use.names = FALSE),
