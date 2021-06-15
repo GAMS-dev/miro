@@ -1361,7 +1361,8 @@ showJobProgressDialog <- function(jID, progressStatus){
                       role = "progressbar", `aria-valuenow` = percentCompleted, 
                       `aria-valuemin` = 0, `aria-valuemax` = 100, 
                       style = paste0("width:", percentCompleted, "%;"),
-                      paste0(progressStatus$noCompleted, "/", progressStatus$noTotal))
+                      paste0(progressStatus$noCompleted, "/", progressStatus$noTotal,
+                             if(length(progressStatus$noFail)) paste0(" (", progressStatus$noFail, ")")))
     ),
     footer = modalButton(lang$nav$hcubeMode$showJobProgressDialog$cancelButton),
     fade = TRUE, easyClose = TRUE

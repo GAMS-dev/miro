@@ -569,7 +569,7 @@ font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
       Shiny.setInputValue('updateJobProgress', data.jID, {
         priority: 'event',
       });
-    }, 5000);
+    }, 2000);
   });
   Shiny.addCustomMessageHandler('gms-updateJobProgress', (data) => {
     if (!$(data.id).is(':visible')) {
@@ -580,7 +580,7 @@ font-size:15pt;text-align:center;'>${data.data}</div>` : data.data);
     $(data.id)
       .css('width', `${percentCompleted}%`)
       .attr('aria-valuenow', percentCompleted)
-      .text(`${data.progress.noCompleted}/${data.progress.noTotal}`);
+      .text(`${data.progress.noCompleted}/${data.progress.noTotal}${data.progress.noFail == null ? '' : ` (${data.progress.noFail})`}`);
   });
   Shiny.addCustomMessageHandler('gms-markJobDownloadComplete', (data) => {
     if (data.triggerImport === true

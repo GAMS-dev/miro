@@ -1324,11 +1324,11 @@ Worker <- R6Class("Worker", public = list(
   getHcubeJobProgressRemote = function(jID){
     jobProgress <- private$validateAPIResponse(
       GET(url = paste0(private$metadata$url, "/hypercube/?hypercube_token=", self$getPid(jID)), 
-          add_headers(`X-Fields` = "finished,job_count",
+          add_headers(`X-Fields` = "finished,job_count,successfully_finished",
                       Authorization = private$authHeader,
                       Timestamp = as.character(Sys.time(), usetz = TRUE)), 
           timeout(10L)))$results[[1]]
-    return(c(jobProgress$finished, jobProgress$job_count))
+    return(c(jobProgress$finished, jobProgress$job_count, jobProgress$successfully_finished))
   },
   getHcubeJobStatusLocal = function(pID, jID){
     jobDir <- file.path(hcubeDirName, jID)
@@ -1369,7 +1369,7 @@ Worker <- R6Class("Worker", public = list(
     if(length(jobProgress) == 1L &&
              jobProgress %in% c(-404L, -405L)){
       status <- JOBSTATUSMAP[['corrupted(noProcess)']]
-    }else if(length(jobProgress) == 2L &&
+    }else if(length(jobProgress) >= 2L &&
              identical(jobProgress[[1L]], jobProgress[[2L]])){
       status <- JOBSTATUSMAP[['completed']]
     }else{
