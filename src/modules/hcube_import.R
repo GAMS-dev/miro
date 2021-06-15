@@ -205,7 +205,7 @@ observeEvent(input$btUploadHcube, {
   tryCatch({
     jIDtmp <- worker$addJobDb("", NULL, tags = hcubeTags, 
                               status = JOBSTATUSMAP[['corrupted(man)']],
-                              isHcube = TRUE)
+                              isHcJob = TRUE)
     if(identical(jIDtmp, -1L)){
       stop(call. = FALSE)
     }
