@@ -12,7 +12,7 @@ pipeline {
     parameters {
         booleanParam(
             defaultValue: false,
-            description: 'Run tests? (Will always run on rc, develop and master)',
+            description: 'Run tests? (Use SKIP_TESTS to skip tests on rc, develop and master)',
             name: 'RUN_TESTS')
         booleanParam(
             defaultValue: false,
@@ -30,6 +30,10 @@ pipeline {
             defaultValue: true,
             description: 'Build Mac?',
             name: 'BUILD_MAC')
+        booleanParam(
+            defaultValue: false,
+            description: 'Skip tests? (Only relevant on rc, develop and master)',
+            name: 'SKIP_TESTS')
         booleanParam(
             defaultValue: false,
             description: 'Force release (even if tests fail)?',
@@ -183,7 +187,7 @@ pipeline {
         }
         stage('Test') {
             when {
-                expression { params.RUN_TESTS || env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'rc' || env.BRANCH_NAME == 'develop' }
+                expression { params.RUN_TESTS || ((env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'rc' || env.BRANCH_NAME == 'develop') && !params.SKIP_TESTS) }
             }
             parallel {
                 stage ('windowsX64') {
@@ -403,7 +407,8 @@ pipeline {
                         git config user.name 'jenkins'
                         git config user.email 'jenkins@berlin.noreply.gams.com'
                         git checkout -B $BRANCH_NAME
-                        git pull --allow-unrelated-histories
+                        git fetch --unshallow
+                        git pull
 
                         MIRO_VERSION_FULL=$(grep -e '"version": .*' package.json |cut -f4 -d"\\"")
                         pushd src > /dev/null
