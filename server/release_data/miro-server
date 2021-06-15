@@ -92,13 +92,13 @@ install (){
         }
     fi
 
-    printf "GAMS MIRO server installed successfully!\nUse './miro-compose start' to start now.\n"
+    printf "GAMS MIRO server installed successfully!\nUse './miro-server start' to start now.\n"
     return 0
 }
 
 build (){
     echo "Building custom MIRO Docker image"
-    docker build -t hub.gams.com/gamsmiro-ui:latest -f Dockerfile-extend-miro .
+    docker build -t gams/miro-ui:latest -f Dockerfile-extend-miro .
 }
 
 pull_images (){
@@ -113,13 +113,13 @@ start (){
 }
 
 stop_proxies (){
-    local orphaned_adminc=$(docker container ls -f "network=miroserver-network" -f "ancestor=hub.gams.com/gamsmiro-admin" --format "{{.ID}}")
+    local orphaned_adminc=$(docker container ls -f "network=miroserver-network" -f "ancestor=gams/miro-admin" --format "{{.ID}}")
     [ -z "${orphaned_adminc}" ] || {
         docker stop ${orphaned_adminc}
         docker rm ${orphaned_adminc}
     }
     
-    local orphaned_uic=$(docker container ls -f "network=miroserver-network" -f "ancestor=hub.gams.com/gamsmiro-ui" --format "{{.ID}}")
+    local orphaned_uic=$(docker container ls -f "network=miroserver-network" -f "ancestor=gams/miro-ui" --format "{{.ID}}")
     [ -z "${orphaned_uic}" ] || {
         docker stop ${orphaned_uic}
         docker rm ${orphaned_uic}

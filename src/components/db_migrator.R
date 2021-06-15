@@ -37,7 +37,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     })
     return(badTables[!is.na(badTables)])
   },
-  createMissingScalarTables = function(){
+  createMissingScalarTables = function(missingViewNames = character()){
     scalarViews <- dbSchema$getDbViews()
     for(scalarViewName in names(scalarViews)){
       newScalarTables <- scalarViews[[scalarViewName]] %in% private$newTables
@@ -54,6 +54,8 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
           private$existingTables <- c(private$existingTables, newScalarTable)
         }
         private$dropScalarTableViews(scalarViewName)
+        private$updateScalarTableViews(scalarViewName, scalarViews[[scalarViewName]])
+      }else if(scalarViewName %in% missingViewNames){
         private$updateScalarTableViews(scalarViewName, scalarViews[[scalarViewName]])
       }
     }
@@ -261,10 +263,7 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     # TODO: Do this only if scalar tables have changed
     private$existingTables <- self$getDbTableNamesModel()
     private$newTables <- private$dbTableNames[!private$dbTableNames %in% private$existingTables]
-    self$createMissingScalarTables()
-    for(scalarViewName in names(scalarViews)){
-      private$updateScalarTableViews(scalarViewName, scalarViews[[scalarViewName]])
-    }
+    self$createMissingScalarTables(names(dbSchema$getDbViews()))
     return(invisible(self))
   }
 ), private = list(
@@ -339,6 +338,15 @@ DbMigrator <- R6::R6Class("DbMigrator", public = list(
     colMapping <- colNames
     names(colMapping) <- newColNames
     colMapping <- colMapping[colMapping != "-"]
+    
+    if(!length(colMapping)){
+      dbTableName <- dbSchema$getDbTableName(tableName)
+      private$db$runQuery(paste0("DROP TABLE IF EXISTS ",  
+                                 dbQuoteIdentifier(private$conn,
+                                                   dbTableName), " ;"))
+      flog.info("Database table: '%s' deleted.", dbTableName)
+      return(invisible(self))
+    }
     
     if(inherits(private$conn, "PqConnection")){
       return(private$remapTablePostgres(tableName, colMapping))

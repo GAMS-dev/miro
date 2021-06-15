@@ -10,7 +10,7 @@ GAMS MIRO Server makes use of GAMS Engine, a server software that allows you to 
    2.  Open a terminal and `cd` into that folder.
    3.  In case MIRO Server and GAMS Engine run on the same machine: 
        Get IP of `docker0` network interface via: `sudo ip addr show docker0 |grep -Po 'inet \K[\d.]+'`.
-   4.  Install MIRO Sever by running `./miro-compose install`. You will be asked to enter the GAMS Engine host and the [namespace](https://gams.com/engine/administration.html#namespaces) to be used by MIRO Server. For the host enter: `http://<IP extracted from previous step>/engine/api`. If you specified a port when installing GAMS Engine, this port must also be specified here: `http://<IP extracted from previous step>:<engine port>/engine/api`. The default namespace is `global`. You can also specify any other namespace created in GAMS Engine. You can change the GAMS Engine connection info at any time by modifying the `.env` file that is located inside the miro_server directory. The following environment variables have to be set:
+   4.  Install MIRO Sever by running `./miro-server install`. You will be asked to enter the GAMS Engine host and the [namespace](https://gams.com/engine/administration.html#namespaces) to be used by MIRO Server. For the host enter: `http://<IP extracted from previous step>/engine/api`. If you specified a port when installing GAMS Engine, this port must also be specified here: `http://<IP extracted from previous step>:<engine port>/engine/api`. The default namespace is `global`. You can also specify any other namespace created in GAMS Engine. You can change the GAMS Engine connection info at any time by modifying the `.env` file that is located inside the miro_server directory. The following environment variables have to be set:
 
    |Environment variable name|Environment variable value| Example |
    |-------------------------|--------------------------|---------|
@@ -22,16 +22,16 @@ GAMS MIRO Server makes use of GAMS Engine, a server software that allows you to 
     The installation script will inform you whether the installation was successful or not.
 
 # Start GAMS MIRO Server
-Once you have GAMS MIRO Server installed, you can launch it via `./miro-compose start`. GAMS MIRO Server will now listen on port 8080. You can log in with any GAMS Engine user that has at least execute permissions on the namespace provided. A user with full access to that namespace will be considered as administrator by MIRO Server and can add/remove applications. To access the admin panel, go to `/app/admin`. Add your MIRO applications here. To access a MIRO application that has been added to MIRO Server, go to `/app_direct/<appId>`, where `appId` is the lowercase name of your main gms file.
+Once you have GAMS MIRO Server installed, you can launch it via `./miro-server start`. GAMS MIRO Server will now listen on port 8080. You can log in with any GAMS Engine user that has at least execute permissions on the namespace provided. A user with full access to that namespace will be considered as administrator by MIRO Server and can add/remove applications. To access the admin panel, go to `/app/admin`. Add your MIRO applications here. To access a MIRO application that has been added to MIRO Server, go to `/app_direct/<appId>`, where `appId` is the lowercase name of your main gms file.
 
 # Update GAMS MIRO Server
-To update GAMS MIRO Server to the latest version, run `./miro-compose update`. Note that this will pull new images and launch them. If you only want to pull new images, run `./miro-compose pull`.
+To update GAMS MIRO Server to the latest version, run `./miro-server update`. Note that this will pull new images and launch them. If you only want to pull new images, run `./miro-server pull`.
 
 # Stop GAMS MIRO Server
-To stop a running instance of GAMS MIRO Server, run `./miro-compose stop`.
+To stop a running instance of GAMS MIRO Server, run `./miro-server stop`.
 
 # Uninstall GAMS MIRO Server
-To remove GAMS MIRO Server including all data associated with it from your server, run `./miro-compose uninstall`. Additionally you can remove the directory where you extracted the configuration files of GAMS MIRO server.
+To remove GAMS MIRO Server including all data associated with it from your server, run `./miro-server uninstall`. Additionally you can remove the directory where you extracted the configuration files of GAMS MIRO server.
 
 # Nginx example configuration
 We suggest you run GAMS MIRO Server behind a reverse proxy such as nginx. You can find an example configuration in the file `miro.conf` located inside this directory. To apply this configuration, simply copy it to the configuration location of your nginx (e.g. `sudo cp miro.conf /etc/nginx/conf.d/`). Note that you will have to reload nginx afterwards using `sudo nginx -s reload`.
@@ -80,7 +80,8 @@ Note that even though both GAMS Engine and MIRO Server run on the same host, the
 You may want to host MIRO Server on a different path. To do this, you must adjust the context path in the file 'application.yml' accordingly (`server.servlet.context-path`). This path must be identical to the location specified in the nginx configuration.
 
 # Extending the MIRO Docker image
-In case your MIRO applications need additional packages, you have to extend the Docker UI image (https://github.com/GAMS-dev/miro_desktop/blob/master/Dockerfile). You can do so by adding the additional packages required by your custom renderers to the file `additional_packages` located inside this directory. Each package name must be on a new line. Once all packages are added to this file, run `./miro-compose build`. 
+In case your MIRO applications need additional packages, you have to extend the [MIRO UI Docker image](https://github.com/GAMS-dev/miro/tree/master/server/ui/Dockerfile). You can do so by adding the additional packages required by your custom renderers to the file `additional_packages` located inside this directory. Each package name must be on a new line. Once all packages are added to this file, run `./miro-server build`.
+Please note that additional packages may cause version conflicts with packages used internally by MIRO. We therefore recommend trying to keep the number of additional packages to a minimum.
 
 # Authentication and User Management
 By default MIRO Server uses the authentication service of GAMS Engine. Every user who wants to solve GAMS jobs with MIRO Server needs a GAMS Engine user account with at least execute permissions in the [namespace](https://gams.com/engine/administration.html#namespaces) to be used. If you are GAMS Engine administrator, you can manage users and namespaces for MIRO Server directly in the [Engine UI](https://www.gams.com/engine/administration.html#user-management).

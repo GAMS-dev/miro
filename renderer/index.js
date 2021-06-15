@@ -63,7 +63,7 @@ function resetAppConfig(appID) {
     logoPath = path.join(dataPath, appID, oldAppData.logoPath);
   }
   newAppConfig = null;
-  $(`#appLogo_${appID}`).css('background-image', `url('${pathToFileURL(logoPath)}')`);
+  $(`#appLogo_${appID}`).css('background-image', `url('${pathToFileURL(logoPath)}?v=${new Date().getTime()}')`);
   $(`#appTitle_${appID}`).text(oldAppData.title);
   $(`#appDesc_${appID}`).text(oldAppData.description);
   $(`#appDbPathLabel_${appID}`).text(appDbPath);
@@ -664,7 +664,7 @@ ipcRenderer.on('validated-logopath-received', (e, logoData) => {
   }
   newAppConfig.logoPath = logoData.path;
   newAppConfig.logoNeedsMove = true;
-  logoEl.css('background-image', `url('${pathToFileURL(newAppConfig.logoPath)}')`);
+  logoEl.css('background-image', `url('${pathToFileURL(newAppConfig.logoPath)}?v=${new Date().getTime()}')`);
 });
 ipcRenderer.on('validated-logo-received', (e, logoData) => {
   if (!newAppConfig) {
@@ -677,7 +677,7 @@ ipcRenderer.on('validated-logo-received', (e, logoData) => {
   } else {
     logoEl = $(`appLogo_${appID}`);
   }
-  logoEl.css('background-image', `url('${pathToFileURL(logoData.path)}')`);
+  logoEl.css('background-image', `url('${pathToFileURL(logoData.path)}?v=${new Date().getTime()}')`);
 });
 ipcRenderer.on('app-validated', (e, appConf) => {
   expandAddAppForm();
@@ -686,7 +686,7 @@ ipcRenderer.on('app-validated', (e, appConf) => {
   const appDescField = $('#newAppDesc');
   $('#btAddApp').disabled = false;
   if (appConf.logoPathTmp) {
-    $('#newAppLogo').css('background-image', `url('${pathToFileURL(appConf.logoPathTmp)}')`);
+    $('#newAppLogo').css('background-image', `url('${pathToFileURL(appConf.logoPathTmp)}?v=${new Date().getTime()}')`);
     delete newAppConfig.logoPathTmp;
   }
   if (appNameField.text().trim() === lang.appNamePlaceholder) {

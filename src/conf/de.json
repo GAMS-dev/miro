@@ -157,7 +157,7 @@
         "uid":"Eigentümer",
         "sname": "Name",
         "stime":"Erstellungsdatum",
-        "stag": "Job-Tags"
+        "stag": "Tags"
       }
     },
     "hcubeAnalyze":{
@@ -232,6 +232,7 @@
       "newName": "New name",
       "badName": "Der von Ihnen gewählte Name ist ungültig (entweder zu lang oder zu kurz). Bitte wählen Sie einen anderen Namen.",
       "newTags":"Neue Tags",
+      "badTags": "Der/die eingegebene(n) Tag(s) sind ungültig. Stellen Sie sicher, dass die Tags nicht leer oder doppelt sind und nicht mehr als 1000 Zeichen enthalten.",
       "scenExists":"Es existiert bereits ein Szenario mit dem von Ihnen gewählten Namen.",
       "emptyPerm": "Szenario Zugriffsrechte dürfen nicht leer sein!",
       "incapOwner": "Du kannst dem Besitzer seine Zugriffsberechtigungen nicht entziehen.",

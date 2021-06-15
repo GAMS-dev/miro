@@ -434,7 +434,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     }
     scenData$loadSandbox(outputData$tabular, names(modelOut))
     renderOutputData()
-    if(scenData$getSandboxHasOutputData()){
+    if(scenData$getSandboxHasOutputData(scriptOutput)){
       noOutputData <<- FALSE
     }else{
       noOutputData <<- TRUE

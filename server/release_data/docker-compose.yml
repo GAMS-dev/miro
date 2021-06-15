@@ -1,25 +1,25 @@
 version: "3.7"
 services:
-  miro_admin:
-    image: hub.gams.com/gamsmiro-admin:latest
+  admin:
+    image: gams/miro-admin:latest
     restart: "no"
     command: /bin/true
-  miro_ui:
-    image: hub.gams.com/gamsmiro-ui:latest
+  ui:
+    image: gams/miro-ui:latest
     restart: "no"
     command: /bin/true
   auth:
-    image: hub.gams.com/gamsmiro-auth:latest
+    image: gams/miro-auth:latest
     environment:
       PORT: 1234
       ENGINE_URL: ${GMS_MIRO_ENGINE_HOST}
       ENGINE_NS: ${GMS_MIRO_ENGINE_NS}
-      SESSION_TIMEOUT: 18000
+      SESSION_TIMEOUT: 43200
     restart: always
     networks:
       - gamsmiro-network
   dockerproxy:
-    image: hub.gams.com/gamsmiro-sproxy:latest
+    image: gams/miro-sproxy:latest
     environment:
       - CONTAINERS=1
       - CONTAINERS_CREATE=1
@@ -31,7 +31,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - gamsmiro-internal-network
-  mirodb:
+  db:
     image: postgres:12.1-alpine
     restart: always
     environment:
@@ -45,7 +45,7 @@ services:
         aliases:
         - miroserver-db
   proxy:
-    image: hub.gams.com/gamsmiro-proxy:latest
+    image: gams/miro-proxy:latest
     ports:
       - 8080:8080
     volumes:
@@ -57,8 +57,8 @@ services:
       GMS_MIRO_DATABASE: gamsmiro
       GMS_MIRO_DATABASE_USER: GMSMASTER
       GMS_MIRO_DATABASE_PWD:  ${GMS_MIRO_DATABASE_PWD}
-      GMS_MIRO_UI_IMAGE: hub.gams.com/gamsmiro-ui
-      GMS_MIRO_ADMIN_IMAGE: hub.gams.com/gamsmiro-admin
+      GMS_MIRO_UI_IMAGE: gams/miro-ui
+      GMS_MIRO_ADMIN_IMAGE: gams/miro-admin
       GMS_MIRO_MODEL_DIR: ${PWD}/models
       GMS_MIRO_DATADIR: ${PWD}/data
       GMS_MIRO_ENGINE_HOST: ${GMS_MIRO_ENGINE_HOST}

@@ -36,8 +36,8 @@ app$uploadFile(localInput = "../data/transport.gdx")
 app$setInputs(btImportLocal = "click")
 app$setInputs(inputTabset = "inputTabset_3")
 colDef <- jsonlite::fromJSON(app$getAllValues()$output[["in_3"]])$x$columns
-expect_identical(colDef$type, c("text", "autocomplete", "numeric"))
-expect_identical(colDef$source, list(NULL, letters, NULL))
+expect_identical(colDef$type, c("autocomplete", "numeric", "numeric"))
+expect_identical(colDef$source, list(letters, NULL, NULL))
 app$stop()
 
 configNew <- configOld
@@ -53,8 +53,8 @@ app$uploadFile(localInput = "../data/transport.gdx")
 app$setInputs(btImportLocal = "click")
 app$setInputs(inputTabset = "inputTabset_3")
 colDef <- jsonlite::fromJSON(app$getAllValues()$output[["in_3"]])$x$columns
-expect_identical(colDef$type, c("text", "dropdown", "numeric"))
-expect_identical(colDef$source, list(NULL, letters, NULL))
+expect_identical(colDef$type, c("dropdown", "numeric", "numeric"))
+expect_identical(colDef$source, list(letters, NULL, NULL))
 app$stop()
 
 configNew <- configOld
@@ -70,8 +70,8 @@ app$uploadFile(localInput = "../data/transport.gdx")
 app$setInputs(btImportLocal = "click")
 app$setInputs(inputTabset = "inputTabset_3")
 colDef <- jsonlite::fromJSON(app$getAllValues()$output[["in_3"]])$x$columns
-expect_identical(colDef$type, c("text", "autocomplete", "numeric"))
-expect_identical(colDef$source, list(NULL, c("Seattle", "San-Diego"), NULL))
+expect_identical(colDef$type, c("autocomplete", "numeric", "numeric"))
+expect_identical(colDef$source, list(c("Seattle", "San-Diego"), NULL, NULL))
 app$stop()
 
 configNew <- configOld
@@ -87,8 +87,8 @@ app$uploadFile(localInput = "../data/transport.gdx")
 app$setInputs(btImportLocal = "click")
 app$setInputs(inputTabset = "inputTabset_3")
 colDef <- jsonlite::fromJSON(app$getAllValues()$output[["in_3"]])$x$columns
-expect_identical(colDef$type, c("text", "dropdown", "numeric"))
-expect_identical(colDef$source, list(NULL, c("Seattle", "San-Diego"), NULL))
+expect_identical(colDef$type, c("dropdown", "numeric", "numeric"))
+expect_identical(colDef$source, list(c("Seattle", "San-Diego"), NULL, NULL))
 app$setInputs(btSave = "click")
 Sys.sleep(1)
 app$findElement(".modal-footer .bt-gms-confirm")$click()

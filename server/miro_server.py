@@ -27,6 +27,20 @@ def gen_env_file(env_path):
     f.write(f'GMS_MIRO_DATABASE_PWD={gen_password(40)}\nGMS_MIRO_ENGINE_ANONYMOUS_USER=miro_server_anonymous\nGMS_MIRO_ENGINE_ANONYMOUS_PWD={gen_password(40)}\n')
 
 
+DOCKERHUB_IMAGE_CONFIG = {
+    'miro-ui': {'short_desc': 'GAMS MIRO Server UI',
+                'readme_loc': f'{os.getcwd()}/image-docs/miro-ui'},
+    'miro-admin': {'short_desc': 'GAMS MIRO Server Admin Panel',
+                   'readme_loc': f'{os.getcwd()}/image-docs/miro-admin'},
+    'miro-auth': {'short_desc': 'GAMS MIRO Server Authentication Module',
+                  'readme_loc': f'{os.getcwd()}/image-docs/miro-auth'},
+    'miro-dockerproxy': {'short_desc': 'GAMS MIRO Server Docker Socket Proxy',
+                         'readme_loc': f'{os.getcwd()}/image-docs/miro-dockerproxy'},
+    'miro-proxy': {'short_desc': 'GAMS MIRO Server Container Proxy',
+                   'readme_loc': f'{os.getcwd()}/image-docs/miro-proxy'}
+}
+
+
 class MiroServer(object):
   def __init__(self):
     parser = argparse.ArgumentParser(prog='miro_server.py',
@@ -41,12 +55,13 @@ class MiroServer(object):
 
     args = parser.parse_args(sys.argv[1:2])
 
+    with open(os.path.join('..', 'build-config.json'), 'r') as f:
+        r_base_version = json.loads(f.read())['rVersion'].strip()
+
     self.__compose_env = os.environ.copy()
     self.__compose_env['COMPOSE_PROJECT_NAME'] = 'miro_server'
     self.__compose_env['COMPOSE_IGNORE_ORPHANS'] = 'True'
-
-    with open(os.path.join('..', 'package.json'), 'r') as f:
-      self.__version_string = json.loads(f.read())['version'].strip()
+    self.__compose_env['R_BASE_VERSION'] = r_base_version
 
     getattr(self, args.command)()
 
@@ -57,9 +72,9 @@ class MiroServer(object):
     parser.add_argument('--module',
       type=str,
       help='Module to build',
-      choices=['dockerproxy', 'proxy', 'auth'])
+      choices=['dockerproxy', 'proxy', 'auth', 'admin', 'ui'])
 
-    parser.add_argument('--pull', help='Pull images from hub.gams.com', 
+    parser.add_argument('--no-prep', help='Skips downloading required R packages (e.g. because they are already downloaded)', 
       action='store_true')
 
     args = parser.parse_args(sys.argv[2:])
@@ -67,36 +82,39 @@ class MiroServer(object):
     if not os.path.isfile('.env'):
       gen_env_file('.env')
 
-    if args.pull:
-      subprocess.check_call(['docker', 'login', 'hub.gams.com'])
-      subprocess.check_call(['docker-compose', 'pull'], env=self.__compose_env)
-
     if args.module is None:
+      if not args.no_prep:
+        subprocess.check_call(['yarn', 'docker-prepare'], cwd='..')
       subprocess.check_call(['docker-compose', 'build'], env=self.__compose_env)
     else:
+      if args.module == 'ui' and not args.no_prep:
+        subprocess.check_call(['yarn', 'docker-prepare'], cwd='..')
       subprocess.check_call(['docker-compose', 'build', args.module], env=self.__compose_env)
 
 
   def up(self):
     parser = argparse.ArgumentParser(
-          description='Launches GAMS MIRO Server')
+          description='Starts GAMS MIRO Server')
 
     subprocess.check_call(['docker-compose', 'up', '-d'], env=self.__compose_env)
 
 
   def down(self):
     parser = argparse.ArgumentParser(
-          description='Launches GAMS MIRO Server')
+          description='Stops GAMS MIRO Server')
     parser.add_argument('-v', '--volumes', help='Removes volumes and networks', 
       action='store_true')
 
     args = parser.parse_args(sys.argv[2:])
 
     dc_args_miro = ['docker-compose', 'down']
-    dc_args_engine = ['docker-compose', '-f', 'docker-compose.miro.yml', 'down']
 
-    self.stop_proxies('hub.gams.com/gamsmiro-admin')
-    self.stop_proxies('hub.gams.com/gamsmiro-ui')
+    self.stop_proxies('hub.gams.com/miro-admin')
+    self.stop_proxies('hub.gams.com/miro-ui')
+    self.stop_proxies('gams/miro-admin')
+    self.stop_proxies('gams/miro-ui')
+    self.stop_proxies('miro-admin')
+    self.stop_proxies('miro-ui')
 
     if args.volumes:
       dc_args_miro.append('-v')
@@ -105,10 +123,20 @@ class MiroServer(object):
 
 
   def push(self):
-    for image in [('gamsmiro-sproxy', 'gamsmiro-sproxy'),
-                  ('gamsmiro-proxy', 'gamsmiro-proxy'),
-                  ('gamsmiro-auth', 'gamsmiro-auth')]:
-      self.push_image(*image)
+    parser = argparse.ArgumentParser(
+          description='Publishes GAMS MIRO Server Docker images')
+    parser.add_argument('--unstable',
+      help='Unstable build',
+      action='store_true')
+
+    args = parser.parse_args(sys.argv[2:])
+
+    for image in [('miro-sproxy', 'miro-sproxy'),
+                  ('miro-proxy', 'miro-proxy'),
+                  ('miro-auth', 'miro-auth'),
+                  ('miro-admin', 'miro-admin'),
+                  ('miro-ui', 'miro-ui')]:
+      self.push_image(*image, unstable=args.unstable)
 
 
   def release(self):
@@ -151,8 +179,8 @@ class MiroServer(object):
 
             name_in_zip = os.path.join('miro_server',
                                        os.path.relpath(os.path.join(root, file), 'release'))
-            if os.name == 'nt' and file == 'miro-compose':
-                # we have to manually set executable bit of miro-compose on Windows
+            if os.name == 'nt' and file == 'miro-server':
+                # we have to manually set executable bit of miro-server on Windows
                 upsh = zipfile.ZipInfo(name_in_zip)
                 upsh.date_time = time.localtime()
                 upsh.external_attr = 0o100755 << 16
@@ -187,11 +215,57 @@ class MiroServer(object):
       subprocess.check_call([*['docker', 'rm'], *active_admin_containers])
 
 
-  def push_image(self, image_name_local, image_name_hub):
-    subprocess.check_call(['docker', 'tag', image_name_local, f'hub.gams.com/{image_name_hub}'])
-    subprocess.check_call(['docker', 'tag', image_name_local, f'hub.gams.com/{image_name_hub}:{self.__version_string}'])
-    subprocess.check_call(['docker', 'push', f'hub.gams.com/{image_name_hub}'])
-    subprocess.check_call(['docker', 'push', f'hub.gams.com/{image_name_hub}:{self.__version_string}'])
+  def append_tag_readme(self, file_name, tag):
+    with open(file_name, 'r') as f:
+        content = f.readlines()
+        for i, line in enumerate(content):
+            if '[`latest`' in line and not f'[`latest`, `{tag}`' in line:
+                index = line.index('[') + 9
+                content[i] = content[i][0:index] + f', `{tag}`' + content[i][index:]
+
+    with open(file_name, 'w') as f:
+        f.writelines(content)
+
+
+  def push_image(self, image_name_local, image_name_hub, unstable=False):
+    if unstable:
+      dhost = 'hub.gams.com'
+      version_string = 'unstable'
+    else:
+      dhost = 'gams'
+      with open(os.path.join('..', 'package.json'), 'r') as f:
+        version_string = json.loads(f.read())['version'].strip()
+
+    if not unstable:
+      subprocess.check_call(['docker', 'tag', image_name_local, f'{dhost}/{image_name_hub}'])
+
+    subprocess.check_call(['docker', 'tag', image_name_local, f'{dhost}/{image_name_hub}:{version_string}'])
+    if not unstable:
+      subprocess.check_call(['docker', 'push', f'{dhost}/{image_name_hub}'])
+
+    subprocess.check_call(['docker', 'push', f'{dhost}/{image_name_hub}:{version_string}'])
+
+    # publish README
+    if (not unstable and image_name_hub in DOCKERHUB_IMAGE_CONFIG and
+        os.path.isfile(os.path.join(DOCKERHUB_IMAGE_CONFIG[image_name_hub]['readme_loc'], 'README.md'))):
+      self.append_tag_readme(os.path.join(DOCKERHUB_IMAGE_CONFIG[image_name_hub]['readme_loc'], 'README.md'),
+                             version_string)
+      subprocess.check_call(['docker',
+                              'run',
+                              '--rm',
+                              '-v',
+                              f'{DOCKERHUB_IMAGE_CONFIG[image_name_hub]["readme_loc"]}:/myvol',
+                              '-e',
+                              f'DOCKER_USER={os.getenv("DOCKERHUB_USER")}',
+                              '-e',
+                              f'DOCKER_PASS={os.getenv("DOCKERHUB_PASS")}',
+                              'chko/docker-pushrm:1',
+                              '--file',
+                              'myvol/README.md',
+                              '--short',
+                              f'gams/{DOCKERHUB_IMAGE_CONFIG[image_name_hub]["short_desc"]}',
+                              '--debug',
+                              f'gams/{image_name_hub}'])
 
 
 if __name__ == '__main__':

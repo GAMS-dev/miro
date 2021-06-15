@@ -58,9 +58,17 @@ ScenData <- R6Class("ScenData", public = list(
     private$refScenMap[[refId]] <- unique(c(private$refScenMap[[refId]], as.character(scenIds)))
     return(invisible(self))
   },
-  getSandboxHasOutputData = function(){
-    for(data in private$cachedData[["sb"]][["data"]][names(ioConfig$modelOut)]){
-      if(nrow(data) > 0L){
+  getSandboxHasOutputData = function(scriptOutput){
+    if(!is.null(scriptOutput) && scriptOutput$hasResults()){
+      return(TRUE)
+    }
+    for(dsName in names(ioConfig$modelOut)){
+      if(identical(dsName, scalarsOutName)){
+        if(identical(length(private$cachedData[["sb"]][["data"]][[dsName]]), 3L) &&
+           !all(is.na(private$cachedData[["sb"]][["data"]][[dsName]][[3]]))){
+          return(TRUE)
+        }
+      }else if(nrow(private$cachedData[["sb"]][["data"]][[dsName]]) > 0L){
         return(TRUE)
       }
     }

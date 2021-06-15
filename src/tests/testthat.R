@@ -27,8 +27,8 @@ if(!dependenciesInstalled()){
 }
 
 reporter <- MultiReporter$new(list(
-    ProgressReporter$new(max_failures = 100),
-    JunitReporter$new(file = "test-out.xml")
+  ProgressReporter$new(max_failures = 100),
+  JunitReporter$new(file = file.path(getwd(), "test-out.xml"))
 ))
 
 stopOnFailure <- identical(commandArgs(trailingOnly=TRUE), "--stop")

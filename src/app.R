@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "1.3.99"
+MIROVersion <- "2.0.0"
 APIVersion  <- "1"
-MIRORDate   <- "Mar 10 2021"
+MIRORDate   <- "Jun 15 2021"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -43,12 +43,12 @@ if(R.version[["major"]] < 3 ||
 isShinyProxy <<- !identical(Sys.getenv("SHINYPROXY_USERNAME"), "")
 debugMode <- TRUE
 RLibPath <- NULL
-miroBuildonly <- identical(Sys.getenv("MIRO_BUILD"), "true")
+miroBuildOnly <- identical(Sys.getenv("MIRO_BUILD"), "true")
 miroStoreDataOnly <- identical(Sys.getenv("MIRO_POPULATE_DB"), "true")
-miroDeploy <- miroBuildonly
+miroDeploy <- miroBuildOnly
 if(identical(Sys.getenv("MIRO_TEST_DEPLOY"), "true")){
   miroDeploy <- TRUE
-  miroBuildonly <- FALSE
+  miroBuildOnly <- FALSE
 }
 logToConsole <- TRUE
 if(identical(Sys.getenv("MIRO_NO_DEBUG"), "true") && !miroDeploy){
@@ -60,7 +60,7 @@ if(identical(Sys.getenv("MIRO_NO_DEBUG"), "true") && !miroDeploy){
 tmpFileDir <- tempdir(check = TRUE)
 # required packages
 requiredPackages <- c("R6", "jsonlite", "zip", "tibble", "readr", "futile.logger")
-if(!miroBuildonly){
+if(!miroBuildOnly){
   requiredPackages <- c(requiredPackages, "shiny", "shinydashboard", "rhandsontable", 
                         "rpivotTable", "stringi", "processx", 
                         "dplyr", "readxl", "writexl", "tidyr",
@@ -157,9 +157,9 @@ if(is.null(errMsg)){
       errMsg <- paste(errMsg, "No user groups specified (shinyproxy).", sep = "\n")
     }
     if(!identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true") && 
-       any(!grepl("^[a-zA-Z0-9][a-zA-Z0-9!%\\(\\)\\-_~]{3,69}$", c(uid, ugroups), perl = TRUE))){
+       any(!grepl("^[a-zA-Z0-9_]{4,70}$", c(uid, ugroups), perl = TRUE))){
       errMsg <- paste(errMsg, 
-                      "Invalid user ID or user group specified. The following rules apply for user IDs and groups:\n- must be at least 4 and not more than 70 characters long\n- must start with a number or letter (upper or lowercase) {a-z}, {A-Z}, {0-9}\n- may container numbers, letters and the following additional characters: {!%()-_~}",
+                      "Invalid user ID or user group specified. The following rules apply for user IDs and groups:\n- must be at least 4 and not more than 70 characters long\n- may contain only a-z A-Z 0-9 _",
                       sep = "\n")
     }
   }else{
@@ -246,7 +246,7 @@ if(is.null(errMsg)){
       # legacy app, need to convert to new format
       dbSchemaModel <- substring(dbSchema$tabName[-seq_len(6)],
                                  nchar(gsub("_", "", modelName, fixed = TRUE)) + 2L)
-      dbSchemaModel <- list(schema = setNames(lapply(seq_along(dbSchemaModel), function(i){
+      dbSchemaModel <- lapply(seq_along(dbSchemaModel), function(i){
         if(dbSchemaModel[i] %in% c(scalarsFileName, scalarsOutName)){
           return(NA)
         }
@@ -263,8 +263,12 @@ if(is.null(errMsg)){
         list(tabName = dbSchemaModel[i],
              colNames = dbSchema$colNames[[i + 6L]],
              colTypes = dbSchema$colTypes[[i + 6L]])
-      }), dbSchemaModel), views = list())
-      dbSchemaModel$schema[is.na(dbSchemaModel$schema)] <- NULL
+      })
+      dbSchemaModel[is.na(dbSchemaModel)] <- NULL
+      dbSchemaModel <- list(schema = setNames(dbSchemaModel,
+                                              vapply(dbSchemaModel, "[[", character(1L),
+                                                     "tabName", USE.NAMES = FALSE)),
+                            views = list())
       if(scalarsOutName %in% names(modelOut)){
         scalarMeta <- setNames(modelOut[[scalarsOutName]]$symtypes,
                                modelOut[[scalarsOutName]]$symnames)
@@ -318,7 +322,7 @@ if(is.null(errMsg)){
                     GMSOpt = GMSOpt,
                     inputDsNamesBase = inputDsNames[!inputDsNames %in% hcubeScalars],
                     scenTableNamesToDisplay = scenTableNamesToDisplay)
-  if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildonly){
+  if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildOnly){
     errMsg <- paste(errMsg, 
                     sprintf("Can not use 'gdx' as file exchange with GAMS if gdxrrw library is not installed.\n
 Please make sure you have a valid gdxrrwMIRO (https://github.com/GAMS-dev/gdxrrw-miro) installation in your R library: '%s'.", .libPaths()[1]),
@@ -509,7 +513,7 @@ if(is.null(errMsg) && debugMode){
   listOfCustomRenderers <- Set$new()
   requiredPackagesCR <<- NULL
   
-  for(customRendererConfig in c(configGraphsOut, configGraphsIn, config$inputWidgets)){
+  for(customRendererConfig in c(configGraphsOut, configGraphsIn, modelIn)){
     # check whether non standard renderers were defined in graph config
     if(!is.null(customRendererConfig$rendererName)){
       customRendererConfig$outType <- customRendererConfig$rendererName
@@ -544,6 +548,15 @@ if(is.null(errMsg) && debugMode){
       }
     }
   }
+  if(miroBuildOnly){
+    for(el in c(externalInputConfig, datasetsRemoteExport)){
+      for(sym in el){
+        if(length(sym$functionName)){
+          listOfCustomRenderers$push(sym$functionName)
+        }
+      }
+    }
+  }
   requiredPackagesCR <- unique(requiredPackagesCR)
   customRendererNames <- listOfCustomRenderers$get()
   rm(listOfCustomRenderers)
@@ -564,7 +577,7 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
                           "For more information about third-party software included in MIRO, see ",
                           "<a href=\\'http://www.gams.com/miro/license.html\\' target=\\'_blank\\'>here</a>.")
-if(miroBuildonly){
+if(miroBuildOnly){
   if(!is.null(errMsg)){
     if(file.exists(file.path(currentModelDir,
                              paste0(modelNameRaw, ".miroapp"))) &&
@@ -690,7 +703,7 @@ if(is.null(errMsg)){
   }
   errMsg <- installAndRequirePackages(unique(requiredPackages), installedPackages, RLibPath, CRANMirror, miroWorkspace)
   
-  if(!is.null(requiredPackagesCR)){
+  if(!is.null(requiredPackagesCR) && !miroStoreDataOnly && !miroBuildOnly){
     # add custom library path to libPaths
     .libPaths(c(.libPaths(), file.path(miroWorkspace, "custom_packages")))
     installedPackages <<- installed.packages()[, "Package"]
@@ -911,7 +924,11 @@ if(!is.null(errMsg)){
     warning(errMsg, call. = FALSE)
   }
   if(isShinyProxy){
-    stop('An error occured. Check log for more information!', call. = FALSE)
+    if(miroStoreDataOnly){
+      stop(sprintf("An error occured. Error message: %s",
+                   errMsg), call. = FALSE)
+    }
+    stop("An error occured. Check log for more information!", call. = FALSE)
   }else if(miroStoreDataOnly){
     if(interactive())
       stop()
@@ -1345,7 +1362,14 @@ if(!is.null(errMsg)){
       # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
       sidCompOrder     <- NULL
       
+      if(config$activateModules$remoteExecution){
+        remoteModelId <- Sys.getenv("MIRO_ENGINE_MODELNAME", modelName)
+      }else{
+        remoteModelId <- modelName
+      }
+      
       worker <- Worker$new(metadata = list(uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
+                                           modelId = remoteModelId,
                                            maxSizeToRead = 5000,
                                            modelDataFiles = c(if(identical(config$fileExchange, "gdx")) 
                                              c(MIROGdxInName, MIROGdxOutName) else 
@@ -1353,7 +1377,7 @@ if(!is.null(errMsg)){
                                              if(!LAUNCHHCUBEMODE) vapply(config$outputAttachments, "[[", character(1L), "filename", USE.NAMES = FALSE)),
                                            MIROGdxInName = MIROGdxInName,
                                            clArgs = GAMSClArgs, 
-                                           text_entities = c(paste0(modelNameRaw, ".lst"), 
+                                           text_entities = c(if(config$activateModules$lstFile) paste0(modelNameRaw, ".lst"), 
                                                              if(config$activateModules$miroLogFile) config$miroLogFile),
                                            miroLogFile = config$miroLogFile,
                                            extraClArgs = config$extraClArgs, 

@@ -169,11 +169,13 @@ createDirIfNonExistent <- function(dirs){
 }
 
 file.move <- function(from, to){
-  createDirIfNonExistent(to)
-  file.copy2(from = from,  to = to)
+  if(!file.copy2(from = from, to = to)){
+    return(FALSE)
+  }
   if(unlink(from, recursive = TRUE, force = TRUE) != 0){
     flog.warn("Problems removing directory: %s", from)
   }
+  return(TRUE)
 }
 
 file.copy2 <- function(from, to){

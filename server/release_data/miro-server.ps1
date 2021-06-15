@@ -3,11 +3,14 @@ param([string]$action)
 function install
 {
     if (!(Test-Path .env)) {
-        [Reflection.Assembly]::LoadWithPartialName("System.Web")
+        [Reflection.Assembly]::LoadWithPartialName("System.Web") | out-null
         $db_password = [System.Web.Security.Membership]::GeneratePassword(40,0)
+		$pwd_docker = "$pwd" -replace "\\", "/"
+		$drive, $pwd_docker = "$pwd_docker".Split(':')
+		$pwd_docker = "/" + $drive.toLower() + $pwd_docker
         "A new master password for your MIRO Server database was generated: $db_password"
         'Please keep this password in a safe place.'
-        Add-Content -Value "GMS_MIRO_DATABASE_PWD=$db_password" .env
+        Add-Content -Value "PWD=$pwd_docker`r`nGMS_MIRO_DATABASE_PWD=$db_password" .env
     }
 
     if (!(type .env | Select-String -Pattern "GMS_MIRO_ENGINE_HOST" -SimpleMatch)) {
@@ -19,7 +22,7 @@ function install
         Add-Content -Value "GMS_MIRO_ENGINE_HOST=$ENGINE_HOST" .env
     }
     if (!(type .env | Select-String -Pattern "GMS_MIRO_ENGINE_NS" -SimpleMatch)) {
-        $ENGINE_NS = Read-Host -Prompt "Please enter namespace where this user is inviter on"
+        $ENGINE_NS = Read-Host -Prompt "Please specify the namespace to be connected to MIRO Server: "
         if (!$ENGINE_NS) {
             "Invalid GAMS Engine namespace!"
             exit 1
@@ -76,13 +79,13 @@ function install
         mkdir models
     }
 
-    "GAMS MIRO server installed successfully! Use './miro-compose.ps1 start' to start now."
+    "GAMS MIRO server installed successfully! Use './miro-server.cmd start' to start now."
 }
 
-function install
+function build
 {
     "Building custom MIRO Docker image"
-    docker build -t hub.gams.com/gamsmiro-ui:latest -f Dockerfile-extend-miro .
+    docker build -t gams/miro-ui:latest -f Dockerfile-extend-miro .
     if (!$?) { exit 1 }
 }
 
@@ -103,13 +106,13 @@ function launch
 
 function stop_proxies
 {
-    $orphaned_adminc = docker container ls -f "network=miroserver-network" -f "ancestor=hub.gams.com/gamsmiro-admin" --format "{{.ID}}"
+    $orphaned_adminc = docker container ls -f "network=miroserver-network" -f "ancestor=gams/miro-admin" --format "{{.ID}}"
     if ($orphaned_adminc) {
         docker stop $orphaned_adminc | Out-Null
         docker rm $orphaned_adminc | Out-Null
     }
     
-    $orphaned_uic = docker container ls -f "network=miroserver-network" -f "ancestor=hub.gams.com/gamsmiro-ui" --format "{{.ID}}"
+    $orphaned_uic = docker container ls -f "network=miroserver-network" -f "ancestor=gams/miro-ui" --format "{{.ID}}"
     if ($orphaned_uic) {
         docker stop $orphaned_uic | Out-Null
         docker rm $orphaned_uic | Out-Null

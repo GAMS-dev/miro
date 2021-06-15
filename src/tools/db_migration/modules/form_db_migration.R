@@ -148,7 +148,7 @@ dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
             updateSelectInput(session, paste0("dbMigrateTable_", i, "_", j),
                               choices = colChoices,
                               selected = if(tableInfo$colNames[j] %in% colChoices)
-                                tableInfo$colNames[j] else "-")
+                                tableInfo$colNames[j] else colChoices[1])
           }
         })
       })
@@ -272,7 +272,7 @@ dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
           progress$set(message = lang$nav$migrationModule$progress$title, value = 0)
           updateProgress <- function(){
             progress$inc(1/length(inconsistentTablesInfo),
-                         detail = sprintf(lang$nav$migrationModule$progress$title,
+                         detail = sprintf(lang$nav$migrationModule$progress$desc,
                                           progress$getValue() + 1L, length(inconsistentTablesInfo)))
           }
           tryCatch({

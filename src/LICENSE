@@ -117,7 +117,8 @@ these components are included below):
 - bit https://github.com/truecluster/bit or https://cran.r-project.org/web/packages/bit/index.html
 - bit64 https://github.com/truecluster/bit64 or https://cran.r-project.org/web/packages/bit64/index.html
 - RSQLite https://github.com/r-dbi/RSQLite or https://cran.r-project.org/web/packages/RSQLite/index.html
-- memoise https://github.com/r-lib/memoise https://cran.r-project.org/web/packages/memoise/index.html
+- memoise https://github.com/r-lib/memoise or https://cran.r-project.org/web/packages/memoise/index.html
+- cachem https://github.com/r-lib/cachem or https://cran.r-project.org/web/packages/cachem/index.html
 - gdxrrwMIRO https://github.com/GAMS-dev/gdxrrw-miro
 
 - bindr https://github.com/krlmlr/bindr or https://cran.r-project.org/web/packages/bindr/index.html
@@ -685,6 +686,10 @@ Section 8 -- Interpretation.
         - httr, Copyright (c) 2014 Hadley Wickham; RStudio
         - viridisLite, Copyright (c) 2015 Simon Garnier
         - memoise, Copyright (c) 2010-2017 Hadley Wickham
+        - cachem, Copyright (c) 2020 Winston Chang [aut, cre], RStudio [cph, fnd]
+        - rlang, Copyright (c) Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
+        - withr, Copyright (c)
+            Jim Hester [aut, cre], Kirill Müller [aut], Kevin Ushey [aut], Hadley Wickham [aut], Winston Chang [aut], Jennifer Bryan [ctb], Richard Cotton [ctb], RStudio [cph]
         - bindr, Copyright (c) 2016 RStudio
         - cli, Copyright (c) 2017 Gábor Csárdi
         - progress, Copyright (c) 2015-2018 Gábor Csárdi, RStudio Inc.
@@ -1043,7 +1048,6 @@ Library.
             Joe Cheng [aut, cre], RStudio [cph], 
             Marcus Geelnard [ctb, cph] (TinyCThread library, https://tinycthread.github.io/), 
             Evan Nemerson [ctb, cph] (TinyCThread library, https://tinycthread.github.io/)
-        - rlang, Copyright (c) Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
         - assertthat, Copyright (c) Hadley Wickham [aut, cre]
         - tidyselect, Copyright (c) Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
         - clipr, Copyright (c) Matthew Lincoln [aut, cre], Louis Maddox [ctb], 
@@ -1058,9 +1062,6 @@ Library.
             Joshua M. Ulrich [cre, aut], Ross Bennett [ctb], Corwin Joy [ctb]
         - formatR, Copyright (c) Yihui Xie [aut, cre], Eugene Ha [ctb], 
             Kohske Takahashi [ctb], Ed Lee [ctb]
-        - withr [expanded from: GPL (≥ 2)], Copyright (c)
-            Jim Hester [aut, cre], Kirill Müller [aut], Kevin Ushey [aut], Hadley Wickham [aut], 
-            Winston Chang [aut], Richard Cotton [ctb], RStudio [cph]
         - leaflet, Copyright (c) Joe Cheng [aut, cre], Bhaskar Karambelkar [aut], 
             Yihui Xie [aut], Hadley Wickham [ctb], Kenton Russell [ctb], Kent Johnson [ctb], 
             Barret Schloerke [ctb], jQuery Foundation and contributors [ctb, cph] (jQuery library), 
@@ -1087,7 +1088,7 @@ Library.
         - gridExtra, Copyright (c)  Baptiste Auguie [aut, cre], Anton Antonov [ctb]
         - lattice, Copyright (c)  Deepayan Sarkar [aut, cre], Felix Andrews [ctb], Kevin Wright [ctb] (documentation), Neil Klepeis [ctb], Paul Murrell [ctb]
         - RGraphics, Copyright (c) 	Paul Murrell
-        - lifecycle, Copyright (c) 	Lionel Henry [aut, cre], RStudio [cph]
+        - lifecycle, Copyright (c) 	Lionel Henry [aut, cre], Hadley Wickham [aut], RStudio [cph]
         - backports, Copyright (c)  Michel Lang [cre, aut], R Core Team [aut]
         - bit, Copyright (c) Jens Oehlschlägel [aut, cre], Brian Ripley [ctb]
         - bit64, Copyright (c) Jens Oehlschlägel [aut, cre], Leonardo Silvestri [ctb]

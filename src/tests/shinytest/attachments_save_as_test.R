@@ -39,8 +39,8 @@ Sys.sleep(1)
 #get user name
 app$setInputs(btEditMeta = "click")
 Sys.sleep(0.5)
-app$findElement("a[data-value='Access permissions']")$click()
-Sys.sleep(0.1)
+app$findElement("a[data-value='accessPerm']")$click()
+Sys.sleep(1)
 user <-app$getValue("editMetaWritePerm")[[1]]
 app$setInputs(btUpdateMeta = "click")
 Sys.sleep(0.5)

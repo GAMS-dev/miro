@@ -101,6 +101,7 @@ a:hover {
 }
 .btn-default{
   border: 2px solid #ADADAD;
+  color:#000;
   background-color: #FFF;
   background-color: rgba(0,0,0,0);
   transition: all 500ms ease; 
@@ -426,6 +427,18 @@ a:hover {
 .app-desc {
   overflow: hidden;
   text-align: left;
+}
+.app-env-file-input-label {
+  width: 100%;
+  cursor: pointer!important;
+}
+@media (prefers-color-scheme: dark) {
+  .app-env-file-input-label {
+    background: #292D33!important;
+  }
+}
+.app-env-file-input {
+  display: none;
 }
 .app-title-fixed {
   display: -webkit-box;

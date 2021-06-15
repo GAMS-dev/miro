@@ -1,6 +1,19 @@
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("hcube_engine_test")
 
+authHeader <- paste0("Basic ", 
+                     processx::base64_encode(charToRaw(
+                       paste0(Sys.getenv("ENGINE_USER"), 
+                              ":", Sys.getenv("ENGINE_PASSWORD")))))
+getLatestJobDetails <- function(token = NULL){
+  httr::content(httr::GET(paste0(Sys.getenv("ENGINE_URL"), "/hypercube/",
+                                 if(length(token)) paste0("?hypercube_token=", token)),
+                          httr::add_headers(Authorization = authHeader),
+                          httr::timeout(2L)),
+                type = "application/json", 
+                encoding = "utf-8")$results[[1]]
+}
+
 context("UI tests - Hypercube Mode with Engine")
 
 #load base scenario
@@ -64,7 +77,21 @@ expect_error(app$findElements("#jImport_output button[onclick*='showJobProgress'
 Sys.sleep(1)
 expect_true(app$waitFor("$('#shiny-modal .progress-bar.progress-bar-striped.active').is(':visible');", 50))
 expect_error(app$findElement("#shiny-modal .btn-default")$click(), NA)
-Sys.sleep(20)
+token <- getLatestJobDetails()$token
+timeout <- 600L
+repeat{
+  if(getLatestJobDetails(token)$status == 10L){
+    break
+  }
+  if(timeout < 560L){
+    print("Engine busy.. Waiting..")
+  }
+  Sys.sleep(2L)
+  timeout <- timeout - 2L
+  if(timeout <= 0L){
+    stop("Engine seems to be busy. Try again later..")
+  }
+}
 app$findElement('#refreshActiveJobs')$click()
 Sys.sleep(1)
 expect_error(app$findElements("#jImport_output button[onclick*='downloadJob']")[[1]]$click(), NA)
