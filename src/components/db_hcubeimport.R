@@ -308,7 +308,7 @@ HcubeImport <- R6Class("HcubeImport",
                              filePath <- filePaths[[i]]
                              tryCatch({
                                if(endsWith(tolower(filePath), ".trc")){
-                                 return(list(readTraceData(filePath, traceColNames)[1, ]))
+                                 return(list(readTraceData(filePath)[1, ]))
                                }
                                symNames <- scenDataNames[[i]]
                                return(lapply(symNames, function(symName){

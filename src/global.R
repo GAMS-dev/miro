@@ -82,18 +82,18 @@ hcubeDirName <- "hcube_jobs"
 # filename of hcube submission file (will be called when hypercube jobs are to be launched)
 hcubeSubmissionFile <- "hcube_submission"
 # maximum number of scenarios that can be solved per hcube run
-maxNoHcube <- 10000L
+MAX_NO_HCUBE <- 10000L
 # maximum number of scenarios to fetch when querying the database
 hcubeLoadMaxScen <- 5e5
 # maximum number of scenarios that can be loaded to scenario
 # comparison mode at the same time
 maxConcurentLoad <- 10L
 maxSolversPaver  <- 15L
-traceColNames <- c("InputFileName","ModelType","SolverName","NLP","MIP","JulianDate","Direction"
-                   ,"NumberOfEquations","NumberOfVariables","NumberOfDiscreteVariables",
-                   "NumberOfNonZeros","NumberOfNonlinearNonZeros","OptionFile",
-                   "ModelStatus","SolverStatus","ObjectiveValue","ObjectiveValueEstimate",
-                   "SolverTime","NumberOfIterations","NumberOfDomainViolations","NumberOfNodes","#User1")
+TRACE_COL_NAMES <- c("InputFileName","ModelType","SolverName","NLP","MIP","JulianDate","Direction"
+                     ,"NumberOfEquations","NumberOfVariables","NumberOfDiscreteVariables",
+                     "NumberOfNonZeros","NumberOfNonlinearNonZeros","OptionFile",
+                     "ModelStatus","SolverStatus","ObjectiveValue","ObjectiveValueEstimate",
+                     "SolverTime","NumberOfIterations","NumberOfDomainViolations","NumberOfNodes","#User1")
 exclTraceCols <- c("NLP", "MIP", "NumberOfEquations", "NumberOfVariables", "NumberOfDiscreteVariables",
                    "NumberOfNonZeros", "NumberOfNonlinearNonZeros")
 

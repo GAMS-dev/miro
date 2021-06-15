@@ -550,12 +550,12 @@ showErrorMsg <- function(title, errMsg){
   }
   return(invisible(1))
 }
-readTraceData <- function(filePath, traceColNames){
+readTraceData <- function(filePath){
   traceData <- suppressWarnings(read_csv(filePath, col_names = FALSE,
                                          skip = 5, col_types = "cccccdidddddiiiddddddc"))
   traceData <- traceData[nrow(traceData), ]
-  if(length(traceData) == length(traceColNames)){
-    names(traceData) <- traceColNames
+  if(length(traceData) == length(TRACE_COL_NAMES)){
+    names(traceData) <- TRACE_COL_NAMES
     return(traceData)
   }else{
     stop("Trace data has incorrect length.", call. = FALSE)

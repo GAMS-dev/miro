@@ -557,8 +557,7 @@ if(LAUNCHHCUBEMODE){
                                       csvDelim = config$csvDelim)$tabular, names(modelOut))
     if(config$saveTraceFile){
       tryCatch({
-        traceData <<- readTraceData(file.path(workDir, "_scenTrc.trc"), 
-                                    traceColNames)
+        traceData <<- readTraceData(file.path(workDir, "_scenTrc.trc"))
       }, error = function(e){
         flog.info("Problems loading trace data. Error message: %s.", conditionMessage(e))
       })
@@ -984,11 +983,11 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     return()
   }
   if(LAUNCHHCUBEMODE){
-    numberScenarios <- noScenToSolve()
-    if(numberScenarios > maxNoHcube){
+    if(numberScenarios > MAX_NO_HCUBE){
       showModal(modalDialog(title = lang$nav$dialogHcube$exceedMaxNoDialog$title, 
                             sprintf(lang$nav$dialogHcube$exceedMaxNoDialog$desc, 
-                                    numberScenarios, maxNoHcube)))
+                                    format(numberScenarios, big.mark=","),
+                                    format(MAX_NO_HCUBE, big.mark=","))))
       return(NULL)
     }else if(numberScenarios == -1){
       showModal(modalDialog(title = lang$nav$dialogHcube$badStepSizeDialog$title, 

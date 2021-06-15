@@ -24,7 +24,7 @@ DbSchema <- R6Class("DbSchema", public = list(
                          colTypes = "ciT"
       ),
       '_scenTrc' = list(tabName = "_sys_trace_",
-                        colNames = c("_sid", traceColNames),
+                        colNames = c("_sid", TRACE_COL_NAMES),
                         colTypes = "icccccdidddddiiiddddddc"
       ),
       '_scenAttach' = list(tabName = "_sys_attach_",

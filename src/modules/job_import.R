@@ -268,8 +268,7 @@ observeEvent(virtualActionButton(
     }
     if(config$saveTraceFile){
       tryCatch({
-        traceData <<- readTraceData(file.path(tmpdir, "_scenTrc.trc"), 
-                                    traceColNames)
+        traceData <<- readTraceData(file.path(tmpdir, "_scenTrc.trc"))
       }, error = function(e){
         errMsg <<- conditionMessage(e)
         flog.info("Problems loading trace data. Error message: %s.", conditionMessage(e))
