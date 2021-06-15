@@ -537,7 +537,7 @@
       },
       "exceedMaxNoDialog":{
         "title": "Maximale Anzahl Szenarien überschritten",
-        "desc": "Sie haben %e Szenarien für ihren Bacthlauf gewählt. Dies überschreitet die maximale Anzahl von %d Szenarien pro Hypercube-Job. Bitte reduzieren Sie die Anzahl Szenarien und versuchen es erneut."
+        "desc": "Sie haben %s Szenarien für ihren Bacthlauf gewählt. Dies überschreitet die maximale Anzahl von %s Szenarien pro Hypercube-Job. Bitte reduzieren Sie die Anzahl Szenarien und versuchen es erneut."
       },
       "noScenSelectedDialog":{
         "title": "Keine Szenarien ausgewählt",

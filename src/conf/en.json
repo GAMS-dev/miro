@@ -521,7 +521,7 @@
     },
     "dialogHcube":{
       "title": "Hypercube configuration",
-      "desc": "You selected %d scenarios to be solved in Hypercube Mode. Out of these, %d scenarios have already been solved either by yourself or someone else.",
+      "desc": "You have selected %d scenarios to be solved in Hypercube mode. Of these, %s scenarios have already been solved either by yourself or by someone else.",
       "descSolveAgain": "Do you want to solve all scenarios again or only those that have not yet been solved?",
       "descJobSubmission": "Please wait while the job is being submitted...",
       "newTags": "Assign one or more tags to your job:",

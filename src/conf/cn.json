@@ -537,7 +537,7 @@
       },
       "exceedMaxNoDialog":{
         "title":"超出最大允许场景数量",
-        "desc":"在Hypercube运行中，您已选中%e个场景，该数量已超出每次可运行最大量（%d个）。请减少场景数量,再重试。"
+        "desc":"在Hypercube运行中，您已选中%s个场景，该数量已超出每次可运行最大量（%s个）。请减少场景数量,再重试。"
       },
       "noScenSelectedDialog":{
         "title":"未选择任何场景",
