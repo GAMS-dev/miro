@@ -991,7 +991,23 @@ font-size: 12px;
                                                                                                      role = "presentation",
                                                                                                      `aria-label` = "More information"), target="_blank")),
                                                                            choices = configJSON$extraClArgs, selected = configJSON$extraClArgs, 
-                                                                           multiple = TRUE, options = list('create' = TRUE,'persist' = FALSE)))
+                                                                           multiple = TRUE, options = list('create' = TRUE,'persist' = FALSE))),
+                                                   tags$div(
+                                                     tags$label(class = "cb-label", "for" = "general_act_hcube", 
+                                                                lang$adminMode$general$hcubeModule$label, 
+                                                                tags$a("", title = lang$adminMode$general$ui$tooltipDocs,
+                                                                       class="info-wrapper",
+                                                                       href="https://gams.com/miro/customize.html#activate-hcube", 
+                                                                       tags$span(class="fas fa-info-circle", class="info-icon",
+                                                                                 role = "presentation",
+                                                                                 `aria-label` = "More information"), target="_blank")),
+                                                     tags$div(
+                                                       tags$label(class = "checkbox-material", 
+                                                                  checkboxInput("general_act_hcube", 
+                                                                                value = isTRUE(configJSON$activateModules$hcube), 
+                                                                                label = NULL)
+                                                       ))
+                                                   )
                                                  )),
                                                  tags$div(class = "space")
                                         )      

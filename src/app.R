@@ -310,6 +310,11 @@ if(is.null(errMsg)){
   if(isShinyProxy || identical(Sys.getenv("MIRO_REMOTE_EXEC"), "true")){
     config$activateModules$remoteExecution <- TRUE
   }
+  if(identical(config$activateModules$hcube, TRUE) &&
+    !config$activateModules$remoteExecution){
+    flog.info("The Hypercube module is only available with a GAMS Engine backend. Therefore, it has been disabled.")
+    config$activateModules$hcube <- FALSE
+  }
 }
 if(is.null(errMsg)){
   hcubeScalars <- getHcubeScalars(modelIn)

@@ -457,6 +457,8 @@ putclose;
                                   This can be GAMS options like <span class="code">limrow=10</span> or <span class="code">threads=4</span> but also custom double-dash parameters.
                                   Note, that the these command line arguments are static; they can not be changed by the user from MIRO.
                                   <br>For more information about command line parameters that can be set from MIRO using widgets like sliders, dropdown menus, checkboxes etc. click <a href="./model.html#command-line">here</a>.</p>
+                                  <h6 id="activate-hcube" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Activate Hypercube module?</h6>
+                                  <p class="expanded">TODO: Add documentation/link to Hcube module</p>
                                   <h4 id="analysis-scripts" class="docu-general-header">Analysis scripts</h4>
                                   <p>MIRO allows you to run custom analysis scripts in both Base and Hypercube Mode. These scripts have to generate HTML or Markdown output which will be displayed in the interface once the script finished. Scripts need to be placed in a folder called <span class="code">scripts_&lt;modelname&gt;</span>; this is also where MIRO executes them (important when you use relative paths in your script).</p>
                                     <div class="callout-block callout-warning">

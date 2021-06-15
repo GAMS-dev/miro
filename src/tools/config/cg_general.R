@@ -212,6 +212,9 @@ observeEvent(input$general_act_lst, {
 observeEvent(input$general_act_attach, {
   rv$generalConfig$activateModules$attachments <<- input$general_act_attach
 })
+observeEvent(input$general_act_hcube, {
+  rv$generalConfig$activateModules$hcube <<- input$general_act_hcube
+})
 observeEvent(input$general_aggregate, {
   rv$generalConfig$aggregateWidgets <<- input$general_aggregate
 })

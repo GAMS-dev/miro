@@ -700,7 +700,66 @@ if(is.null(errMsg)){
   })
   
   # Hypercube Mode configuration
-  if(LAUNCHHCUBEMODE){
+  if(config$activateModules$hcube){
+    config$hcModule$scalarsConfig <- lapply(names(modelIn), function(el){
+      if(isTRUE(modelIn[[el]]$noHcube)){
+        return(NA)
+      }
+      if(identical(modelIn[[el]]$type, "checkbox")){
+        return(list(type = "dropdown",
+                    baseType = "checkbox",
+                    alias = modelIn[[el]]$checkbox$alias,
+                    name = el,
+                    label = modelIn[[el]]$checkbox$label,
+                    choices = c(0L, 1L),
+                    selected = modelIn[[el]]$checkbox$value,
+                    multiple = TRUE))
+      }
+      if(identical(modelIn[[el]]$type, "dropdown")){
+        if(isTRUE(modelIn[[el]]$dropdown$multiple)){
+          return(NA)
+        }
+        if(identical(modelIn[[el]]$symtype, "set")){
+          return(NA)
+        }
+        ret <- modelIn[[el]]$dropdown
+        ret$type <- "dropdown"
+        ret$baseType <- "dropdown"
+        ret$multiple <- TRUE
+        ret$name <- el
+        if(length(ret$aliases)){
+          ret$choices <- setNames(ret$choices, ret$aliases)
+        }
+        return(ret)
+      }
+      if(identical(modelIn[[el]]$type, "slider")){
+        ret <- modelIn[[el]]$slider
+        ret$type <- "slider"
+        ret$baseType <- "slider"
+        ret$name <- el
+        ret$ticks <- !isFALSE(ret$ticks)
+        if(!length(ret$minStep)){
+          ret$minStep <- 0L
+        }
+        if(length(ret$default) == 1){
+          ret$single <- TRUE
+          ret$default <-  rep(ret$default, 2L)
+        }else{
+          ret$single <- FALSE
+        }
+        return(ret)
+      }
+      return(NA)
+    })
+    config$hcModule$scalarsConfig <- config$hcModule$scalarsConfig[!is.na(config$hcModule$scalarsConfig)]
+    if(!length(config$hcModule$scalarsConfig)){
+      warningMsgTmp <- "You have selected to enable the Hypercube module, but no widgets could be found that are suitable for use with the Hypercube module. Hypercube module has therefore been disabled..."
+      warning(warningMsgTmp)
+      warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
+      config$activateModules$hcube <- FALSE
+    }
+    scalarSymbolsBase <- character(0L)
+  }else if(LAUNCHHCUBEMODE){
     hasExpandedWidgets <- FALSE
     scalarSymbolsBase <- lapply(seq_along(modelIn), function(i){
       if(!isTRUE(modelIn[[i]]$noHcube)){

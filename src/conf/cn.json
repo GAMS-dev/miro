@@ -1276,6 +1276,9 @@
         "title": "对于使用集成分析工具PAVER进行性能分析，需要激活此选项。",
         "label": "每次运行GAMS时保存跟踪文件（仅适用于Hypercube模式）"
       },
+      "hcubeModule":{
+        "label": "激活 Hypercube 模块？"
+      },
       "auto":{
         "label": "自动生成每个输入表格的图形（数据透视工具）"
       }
