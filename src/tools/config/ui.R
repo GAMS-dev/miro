@@ -1003,7 +1003,7 @@ font-size: 12px;
                                                          tags$a("", title = paste0(lang$adminMode$general$ui$baseScriptsTooltip, " - ", 
                                                                                    tolower(lang$adminMode$general$ui$tooltipDocs)), 
                                                                 class="info-header",
-                                                                href="https://gams.com/miro/start.html#analysis-scripts", 
+                                                                href="https://gams.com/miro/customize.html#analysis-scripts", 
                                                                 tags$span(class="fas fa-info-circle", class="info-icon",
                                                                           role = "presentation",
                                                                           `aria-label` = "More information"), target="_blank")),

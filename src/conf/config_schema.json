@@ -289,12 +289,17 @@
                "default":true
             },
             "remoteExecution":{
-               "description": "Should model be solved remotely (note that credentials/location needs to be specified via environment variables!)?",
+               "description": "Should model be solved remotely (note that credentials/location need to be specified via environment variables!)?",
                "type": "boolean",
                "default":false
             },
             "downloadTempFiles":{
                "description": "Should users be allowed to access the temporary directory out of MIRO?",
+               "type": "boolean",
+               "default":false
+            },
+            "hcModule":{
+              "description": "Allow submitting Hypercube jobs (requires remote execution to be enabled)?",
                "type": "boolean",
                "default":false
             }
