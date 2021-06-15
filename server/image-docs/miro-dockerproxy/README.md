@@ -16,7 +16,7 @@ Docker socket proxy for GAMS MIRO server. It is based on [Docker Socket Proxy](h
 
 # What is GAMS MIRO Server?
 
-![GAMS MIRO Server Logo](https://gams.com/miro/assets/images/logo.png)
+![GAMS MIRO Server Logo](https://gams.com/miro/assets/images/logo-readme.png)
 
 GAMS MIRO is a deployment environment which allows you to easily turn your GAMS models into fully interactive applications.
 

@@ -16,7 +16,7 @@ Authentication proxy of GAMS MIRO server. This container connects to [GAMS Engin
 
 # What is GAMS MIRO Server?
 
-![GAMS MIRO Server Logo](https://gams.com/miro/assets/images/logo.png)
+![GAMS MIRO Server Logo](https://gams.com/miro/assets/images/logo-readme.png)
 
 GAMS MIRO is a deployment environment which allows you to easily turn your GAMS models into fully interactive applications.
 
