@@ -28,7 +28,7 @@ DataInstance <- R6Class("DataInstance", public = list(
   },
   getDataHashes = function() private$dataHashes,
   pushClArgs = function(data){
-    if(!identical(length(data), 3)){
+    if(!identical(length(data), 3L)){
       return(invisible(self))
     }
     clArgs <- sort(c(ioConfig$DDPar, ioConfig$GMSOpt))
