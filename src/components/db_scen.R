@@ -158,6 +158,8 @@ Scenario <- R6Class("Scenario",
                                                             subsetSids = private$sid)
                           if(length(scenHashTmp) && nrow(scenHashTmp) > 0L){
                             scenHashTmp <- scenHashTmp[["hash"]][1]
+                          }else{
+                            scenHashTmp <- character()
                           }
                           private$scenHash <- scenHashTmp
                         }
