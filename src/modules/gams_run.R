@@ -458,8 +458,10 @@ if(LAUNCHHCUBEMODE){
         workDirHcube <- file.path(tempdir(), "hcube")
         on.exit(unlink(workDirHcube, recursive = TRUE, force = TRUE), 
                 add = TRUE)
-        worker$createHcubeWorkDir(workDirHcube, hcubeData, staticData, 
-                                  attachmentFilePaths)
+        worker$
+          setInputData(staticData)$
+          createHcubeWorkDir(workDirHcube, hcubeData, 
+                             attachmentFilePaths)
         removeModal()
         if(!file.copy(file.path(getwd(), "resources", hcubeSubmissionFile %+% ".gms"), 
                       workDirHcube)){
@@ -470,9 +472,11 @@ if(LAUNCHHCUBEMODE){
         updateProgress(incAmount = 0.9, detail = lang$nav$dialogHcube$waitDialog$desc)
         return(zipr(downloadFile, workDirHcube, compression_level = 6))
       }
-      worker$runHcube(staticData, hcubeData, 
-                      sid, tags = isolate(input$newHcubeTags), 
-                      attachmentFilePaths = attachmentFilePaths)
+      worker$
+        setInputData(staticData)$
+        runHcube(dynamicPar = hcubeData, 
+                 sid = sid, tags = isolate(input$newHcubeTags), 
+                 attachmentFilePaths = attachmentFilePaths)
       updateProgress(incAmount = 1, detail = lang$nav$dialogHcube$waitDialog$desc)
       showHideEl(session, "#hcubeSubmitSuccess", 2000)
     }, error = function(e){

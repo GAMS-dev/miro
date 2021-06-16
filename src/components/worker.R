@@ -201,7 +201,7 @@ Worker <- R6Class("Worker", public = list(
     private$fRemoteSub <- NULL
     return(private$process)
   },
-  runHcube = function(staticData = NULL, dynamicPar = NULL, sid = NULL, tags = NULL, 
+  runHcube = function(dynamicPar = NULL, sid = NULL, tags = NULL, 
                       attachmentFilePaths = NULL){
     req(length(private$db) > 0L)
     
@@ -217,7 +217,7 @@ Worker <- R6Class("Worker", public = list(
       }
       flog.trace("Metadata for Hypercube job was written to database. Hypercube job ID: '%d' was assigned to job.", 
                  private$jID)
-      private$runHcubeLocal(dynamicPar, staticData, attachmentFilePaths)
+      private$runHcubeLocal(dynamicPar, attachmentFilePaths)
       pID <- private$process$get_pid()
       flog.trace("Hypercube job submitted successfuly. Hypercube job process ID: '%d'.", pID)
     }
@@ -226,7 +226,7 @@ Worker <- R6Class("Worker", public = list(
     flog.trace("Process ID: '%s' added to Hypercube job ID: '%s'.", pID, private$jID)
     return(0L)
   },
-  createHcubeWorkDir = function(workDir, dynamicPar, staticData = NULL,
+  createHcubeWorkDir = function(workDir, dynamicPar,
                                 attachmentFilePaths = NULL){
     
     if(dir.exists(workDir)){
@@ -243,8 +243,8 @@ Worker <- R6Class("Worker", public = list(
     if(!dir.create(staticDir))
       stop(sprintf("Problems creating static directory: '%s'.", staticDir), call. = FALSE)
     
-    if(length(staticData))
-      staticData$writeDisk(staticDir, fileName = private$metadata$MIROGdxInName)
+    if(length(private$inputData))
+      private$inputData$writeDisk(staticDir, fileName = private$metadata$MIROGdxInName)
     
     if(length(attachmentFilePaths)){
       if(!all(file.copy(attachmentFilePaths, staticDir)))
@@ -821,9 +821,9 @@ Worker <- R6Class("Worker", public = list(
                                    env = private$getProcEnv())
     return(self)
   },
-  runHcubeLocal = function(dynamicPar, staticData = NULL, attachmentFilePaths = NULL){
+  runHcubeLocal = function(dynamicPar, attachmentFilePaths = NULL){
     hcubeDir <- file.path(hcubeDirName, private$jID)
-    self$createHcubeWorkDir(hcubeDir, dynamicPar, staticData, attachmentFilePaths)
+    self$createHcubeWorkDir(hcubeDir, dynamicPar, attachmentFilePaths)
     # create daemon to execute Hypercube job
     hcubeSubmDir <- gmsFilePath(file.path(getwd(), "resources", hcubeSubmissionFile %+% ".gms"))
     curdir       <- gmsFilePath(hcubeDir)
@@ -882,10 +882,15 @@ Worker <- R6Class("Worker", public = list(
                                        metadata$MIROGdxInName, '"'))
         requestBody$hypercube_file <- upload_file(hcubeData$writeHcubeFile(workDir), 
                                                   type = 'application/json')
-        filesToInclude <- c(dataFilesToFetch,
-                            metadata$text_entities,
-                            requestBody$stdout_filename)
-        filesToInclude <- filesToInclude[!filesToInclude %in% metadata$MIROGdxInName]
+        if(hcube){
+          # in Hypercube Mode, we don't include output attachments, but have to include input GDX
+          filesToInclude <- dataFilesToFetch
+        }else{
+          filesToInclude <- c(dataFilesToFetch,
+                              metadata$text_entities,
+                              requestBody$stdout_filename)
+          filesToInclude <- filesToInclude[!filesToInclude %in% metadata$MIROGdxInName]
+        }
       }else{
         gamsArgs <- c(gamsArgs, paste0('IDCGDXInput="', metadata$MIROGdxInName, '"'))
         if(length(metadata$text_entities)){
@@ -941,7 +946,7 @@ Worker <- R6Class("Worker", public = list(
       }
     }, globals = list(metadata = private$metadata, workDir = private$workDir,
                       pfFileContent = clArgsDfToPf(private$inputData$getClArgsDf()),
-                      inputData = private$inputData,
+                      inputData = private$inputData, hcube = private$hcube,
                       authHeader = private$authHeader,
                       gmsFilePath = gmsFilePath,
                       isWindows = isWindows, hcubeData = hcubeData))
