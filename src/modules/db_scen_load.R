@@ -269,7 +269,17 @@ observeEvent(input$btRefreshComp, {
     }
   }
   # initialize metadata
-  scenData$get(refId, symNames = character(), showProgress = FALSE)
+  if(tryCatch({
+    scenData$load(sidsToLoad, symNames = character(), showProgress = FALSE,
+                  refId = refId, registerRef = FALSE)
+    FALSE
+  }, error = function(e){
+    flog.error("Unexpected error while refreshing data. Error message: '%s'", conditionMessage(e))
+    showErrorMsg(lang$errMsg$GAMSInput$title, lang$errMsg$unknownError)
+    return(TRUE)
+  })){
+    return()
+  }
   if(length(sidsToLoad)){
     inputDataSids <- scenData$getInputDataSids(sidsToLoad)
     inputDataSids[is.na(inputDataSids)] <- sidsToLoad[is.na(inputDataSids)]
@@ -484,7 +494,10 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       if(length(config$scripts$base)){
         scriptDataTmp <- scriptOutput$getResults()
       }
-      viewsSids <- viewsSids[-sandboxId]
+      if(length(refId)){
+        # for tab compare mode, we skip sandbox id in loop
+        viewsSids <- viewsSids[-sandboxId]
+      }
       snameTmp <- if(length(rv$activeSname)) rv$activeSname
       else lang$nav$dialogNewScen$newScenName
       snameTmp <- paste(snameTmp, lang$nav$scen$scenNameSandboxSuffix)
@@ -655,11 +668,13 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       if(length(refIdToLoad)){
         scenData$load(sidsToLoad[[i]], symNames = symToFetch,
                       showProgress = TRUE, refId = refIdToLoad)
-        inputDataSids <- scenData$getInputDataSids(sidsToLoad[[i]])
-        inputDataSids[is.na(inputDataSids)] <- sidsToLoad[[i]][is.na(inputDataSids)]
-        views$loadConf(db$importDataset(tableName = "_scenViews", 
-                                        subsetSids = inputDataSids), FALSE,
-                       viewsSids[[i]], inputDataSids)
+        if(!identical(sidsToLoad[[i]], "sb")){
+          inputDataSids <- scenData$getInputDataSids(sidsToLoad[[i]])
+          inputDataSids[is.na(inputDataSids)] <- sidsToLoad[[i]][is.na(inputDataSids)]
+          views$loadConf(db$importDataset(tableName = "_scenViews", 
+                                          subsetSids = inputDataSids), FALSE,
+                         viewsSids[[i]], inputDataSids)
+        }
       }
       renderScenInCompMode(scenId, refreshData = FALSE)
       # load script results
