@@ -495,8 +495,12 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         scenData$load(as.integer(sidsToLoadVector), refId = refId,
                       symNames = symToFetch,
                       isHcJobConfig = LAUNCHHCUBEMODE && isInSolveMode)
-        inputDataSids <- scenData$getInputDataSids(sidsToLoadVector)
-        inputDataSids[is.na(inputDataSids)] <- sidsToLoadVector[is.na(inputDataSids)]
+        if(identical(refId, "sb")){
+          inputDataSids <- sidsToLoadVector
+        }else{
+          inputDataSids <- scenData$getInputDataSids(sidsToLoadVector)
+          inputDataSids[is.na(inputDataSids)] <- sidsToLoadVector[is.na(inputDataSids)]
+        }
         views$loadConf(db$importDataset(tableName = "_scenViews", 
                                         subsetSids = inputDataSids), isInSolveMode,
                        viewsSids, inputDataSids)
