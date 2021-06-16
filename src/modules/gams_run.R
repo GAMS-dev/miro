@@ -1274,6 +1274,7 @@ if(identical(config$activateModules$hcube, TRUE)){
   }), 1200L)
   output$newHcJobInfo <- renderText({
     noScenTmp <- noHcubeScen()
+    disableEl(session, "#btSubmitHcJobConfirm")
     if(is.null(noScenTmp)){
       return()
     }
@@ -1288,6 +1289,7 @@ if(identical(config$activateModules$hcube, TRUE)){
                        sprintf(lang$nav$dialogHcube$exceedMaxNoDialog$desc, 
                                format(noScenTmp, big.mark=","), format(MAX_NO_HCUBE, big.mark=",")))
     }else{
+      enableEl(session, "#btSubmitHcJobConfirm")
       hideEl(session, "#newHcJobError")
     }
     sprintf(lang$nav$dialogHcube$desc, noScenTmp, noHcubeScenSolved())
@@ -1332,7 +1334,6 @@ if(identical(config$activateModules$hcube, TRUE)){
     emptyEl(session, "#newHcWrapper")
     tryCatch({
       insertUI("#newHcWrapper", ui = generateHcInterface())
-      enableEl(session, "#btSubmitHcJobConfirm")
     }, error = function(e){
       flog.error("Unexpected error while generating Hypercube job interface. Error message: '%s'",
                  conditionMessage(e))
