@@ -1160,7 +1160,7 @@ if(identical(config$activateModules$hcube, TRUE)){
                               if(!is.na(dependencyId)){
                                 configTmp <- isolate(getData[[dependencyId]]())
                                 scalarConfig$min  <- configTmp$min
-                                scalarConfig$min  <- configTmp$max
+                                scalarConfig$max  <- configTmp$max
                                 scalarConfig$step <- configTmp$step
                               }
                               tags$div(class = "row", style = "overflow:hidden;background:",
