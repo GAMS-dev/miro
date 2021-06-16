@@ -12,6 +12,7 @@ observe({
   isolate({
     flog.debug("Job list tab clicked. Job list is being reloaded")
     if(!worker$validateCredentials()){
+      flog.debug("User is not logged in. Login dialog is opened.")
       showLoginDialog(cred = worker$getCredentials(), forward = "jobListPanel")
       hideEl(session, "#jImport_load")
       return(NULL)
@@ -33,6 +34,7 @@ observe({
         return(showHideEl(session, "#fetchJobsUnknownHost", 6000L))
       
       if(errMsg == 401L || errMsg == 403L){
+        flog.debug("User is not logged in. Login dialog is opened.")
         showLoginDialog(cred = worker$getCredentials(), forward = "jobListPanel")
         redirect <<- TRUE
         return(showHideEl(session, "#fetchJobsAccessDenied", 6000L))
@@ -61,6 +63,10 @@ if(isTRUE(config$activateModules$remoteExecution)){
     if(!is.integer(jID) || length(jID) != 1L){
       flog.error("Invalid job ID: '%s'.", jID)
       return(showHideEl(session, "#fetchJobsError", 6000L))
+    }
+    if(identical(worker$validateCredentials(), FALSE)){
+      flog.debug("User is not logged in. Login dialog is opened.")
+      return(showLoginDialog(cred = worker$getCredentials(), forward = "jobListPanel"))
     }
     if(length(worker$getActiveDownloads()) > 10L){
       flog.info("Can not download job as maximum number of: %d parallel downloads is reached.", 
@@ -151,7 +157,8 @@ observeEvent(input$btShowHistory, {
   }, error = function(e){
     errMsg <- conditionMessage(e)
     if(errMsg == 401L || errMsg == 403L){
-      showLoginDialog(cred = worker$getCredentials())
+      flog.debug("User is not logged in. Login dialog is opened.")
+      showLoginDialog(cred = worker$getCredentials(), forward = "jobListPanel")
       err <<- TRUE
       return()
     }
@@ -174,6 +181,10 @@ observeEvent(input$discardJob, {
     showHideEl(session, "#fetchJobsError")
     return()
   }
+  if(identical(worker$validateCredentials(), FALSE)){
+    flog.debug("User is not logged in. Login dialog is opened.")
+    return(showLoginDialog(cred = worker$getCredentials(), forward = "jobListPanel"))
+  }
   tryCatch({
     jobMeta <- worker$getInfoFromJobList(jID)
     worker$updateJobStatus(JOBSTATUSMAP[['discarded']], 
@@ -187,7 +198,8 @@ observeEvent(input$discardJob, {
   }, error = function(e){
     errMsg <- conditionMessage(e)
     if(errMsg == 401L || errMsg == 403L){
-      showLoginDialog(cred = worker$getCredentials())
+      flog.debug("User is not logged in. Login dialog is opened.")
+      showLoginDialog(cred = worker$getCredentials(), forward = "jobListPanel")
       err <<- TRUE
       return()
     }

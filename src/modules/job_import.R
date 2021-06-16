@@ -1,5 +1,9 @@
 observeEvent(input$showJobLog, {
   flog.trace("Show job log button clicked.")
+  if(identical(worker$validateCredentials(), FALSE)){
+    flog.debug("User is not logged in. Login dialog is opened.")
+    return(showLoginDialog(cred = worker$getCredentials()))
+  }
   asyncLogLoaded[] <<- FALSE
   showJobLogFileDialog(input$showJobLog)
 })
@@ -143,6 +147,10 @@ observeEvent(input$importJob, {
     flog.error("Invalid job ID: '%s'.", jobImportID)
     showHideEl(session, "#fetchJobsError")
     return()
+  }
+  if(identical(worker$validateCredentials(), FALSE)){
+    flog.debug("User is not logged in. Login dialog is opened.")
+    return(showLoginDialog(cred = worker$getCredentials()))
   }
   if(!worker$getStatus(jobImportID) %in% c(JOBSTATUSMAP[['completed']], JOBSTATUSMAP[['downloaded']])){
     flog.error("Import button was clicked but job is not yet marked as 'completed' or 'downloaded' (Job ID: '%s'). The user probably tampered with the app.", 
