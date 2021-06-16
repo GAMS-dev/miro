@@ -297,6 +297,7 @@
       "okButton": "Ok",
       "hostNotFound": "GAMS Engine konnte unter der angegebenen URL nicht erreicht werden.",
       "nsNotFound": "Der von Ihnen angegebene Namensraum konnte nicht gefunden werden.",
+      "modelNotFound": "Modell konnte im angegebenen Namensraum nicht gefunden werden.",
       "invalidCred": "Die von Ihnen eingegebenen Zugangsdaten sind ungültig.",
       "insuffPerm": "Sie haben nicht genügend Berechtigungen, um das Modell auszuführen.",
       "invalidProtocol": "Das von Ihnen angegebene Protokoll ist ungültig. Nur HTTPS wird unterstützt.",

@@ -297,6 +297,7 @@
       "okButton": "Ok",
       "hostNotFound": "GAMS Engine could not be reached under the given URL.",
       "nsNotFound": "The namespace you entered could not be found.",
+      "modelNotFound": "Model could not be found in the specified namespace.",
       "invalidCred": "The credentials you entered are invalid.",
       "insuffPerm": "You don't have sufficient permissions to execute the model.",
       "invalidProtocol": "The protocol you specified is invalid. Only HTTPS supported.",

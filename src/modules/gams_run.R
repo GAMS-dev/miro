@@ -1095,6 +1095,9 @@ if(!isShinyProxy && config$activateModules$remoteExecution){
       if(identical(errMsg, '444'))
         return(showHideEl(session, "#remoteLoginNsNotFound", 6000))
       
+      if(identical(errMsg, '445'))
+        return(showHideEl(session, "#remoteLoginModelNotFound", 6000))
+      
       if(identical(errMsg, '400'))
         return(showHideEl(session, "#remoteLoginNsNotFound", 6000))
       

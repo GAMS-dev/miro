@@ -103,6 +103,26 @@ Worker <- R6Class("Worker", public = list(
       if(identical(useRegistered, TRUE)){
         if(permissionLevel < 5L)
           stop(403L, call. = FALSE)
+        
+        ret <- GET(url = paste0(private$metadata$url, "/namespaces/", namespace, "?model=",
+                                URLencode(private$metadata$modelId)), 
+                   add_headers(Authorization = private$authHeader,
+                               Timestamp = as.character(Sys.time(), usetz = TRUE),
+                               "X-Fields" = "name"), 
+                   timeout(3L))
+        retContent <- tryCatch({
+          content(ret, type = "application/json", 
+                  encoding = "utf-8")
+        }, error = function(e){
+          return("Invalid JSON")
+        })
+        if(!identical(status_code(ret), 200L)){
+          stop(sprintf("Problems fetching models on namespace: %s, Error message: %s",
+                       namespace, retContent), call. = FALSE)
+        }
+        if(length(retContent) < 1L){
+          stop(445L, call. = FALSE)
+        }
         if(rememberMeFlag){
           private$saveLoginCredentials(private$metadata$url, username, 
                                        namespace, 

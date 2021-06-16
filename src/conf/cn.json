@@ -297,6 +297,7 @@
       "okButton": "确认",
       "hostNotFound": "GAMS Engine无法从本网站访问。",
       "nsNotFound": "找不到该命名空间。",
+      "modelNotFound": "模型无法在指定的命名空间中找到。",
       "invalidCred": "该密匙无效",
       "insuffPerm": "没有足够的权限来执行该模型。",
       "invalidProtocol": "指定的协议无效，仅支持HTTPS。",

@@ -63,45 +63,37 @@ Sys.sleep(0.5)
 app$findElement("#shiny-modal .bt-gms-confirm")$click()
 Sys.sleep(2)
 expect_true(app$waitFor("$('#remoteLoginHostNotFound').is(':visible');", timeout = 50))
-Sys.sleep(5)
+Sys.sleep(1)
 app$setInputs(remoteCredUrl = Sys.getenv("ENGINE_URL"))
 app$setInputs(remoteCredUser = paste0(Sys.getenv("ENGINE_USER"), "s"))
 app$findElement("#shiny-modal .bt-gms-confirm")$click()
 Sys.sleep(2)
 expect_true(app$waitFor("$('#remoteLoginInvalidCred').is(':visible');", timeout = 50))
-Sys.sleep(5)
+Sys.sleep(1)
 app$setInputs(remoteCredUser = Sys.getenv("ENGINE_USER"))
 app$setInputs(remoteCredPass = paste0(Sys.getenv("ENGINE_PASSWORD"), "s"))
 app$findElement("#shiny-modal .bt-gms-confirm")$click()
 Sys.sleep(2)
 expect_true(app$waitFor("$('#remoteLoginInvalidCred').is(':visible');", timeout = 50))
-Sys.sleep(5)
+Sys.sleep(1)
 app$setInputs(remoteCredPass = Sys.getenv("ENGINE_PASSWORD"))
 app$setInputs(remoteCredNs = paste0(Sys.getenv("ENGINE_NS"), "s"))
 app$findElement("#shiny-modal .bt-gms-confirm")$click()
 Sys.sleep(2)
 expect_true(app$waitFor("$('#remoteLoginNsNotFound').is(':visible');", timeout = 50))
-Sys.sleep(5)
+Sys.sleep(1)
 #check that model is registered (it's not) and try to solve
 app$setInputs(remoteCredNs = Sys.getenv("ENGINE_NS"))
 app$setInputs(remoteCredReg = TRUE)
 Sys.sleep(1)
 app$findElement("#shiny-modal .bt-gms-confirm")$click()
 Sys.sleep(1)
-app$findElement(".btSolve .dropdown-toggle")$click()
-app$findElement(".sidebar-menu a[onclick*='Solve model']")$click()
-Sys.sleep(8)
-app$snapshot(items = list(output = c("modelStatus")), screenshot = FALSE)
+expect_true(app$waitFor("$('#remoteLoginModelNotFound').is(':visible');", timeout = 50))
+Sys.sleep(1)
 # expect_identical(app$waitFor("if ($('#modelStatus')[0].textContent.match('^Run did not terminate successfully: Host could not be reached').length) true", timeout = 50), TRUE)
 
 #correctly login and remember credentials
 context("UI tests - asynchronous solve - login and solve both synchronous and asynchronous")
-app$findElement("#remoteExecLogoutDiv")$click()
-Sys.sleep(1)
-app$findElement("#confirmModal .bt-gms-confirm")$click()
-Sys.sleep(1)
-app$findElement("#btRemoteExecLogin")$click()
-Sys.sleep(1)
 app$setInputs(remoteCredUrl = Sys.getenv("ENGINE_URL"))
 app$setInputs(remoteCredUser = Sys.getenv("ENGINE_USER"))
 app$setInputs(remoteCredPass = Sys.getenv("ENGINE_PASSWORD"))
@@ -117,7 +109,18 @@ expect_false(app$waitFor("$('#shiny-modal .btn-default').is(':visible');", timeo
 app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
 app$findElement(".btSolve .dropdown-toggle")$click()
 app$findElement(".sidebar-menu a[onclick*='Solve model']")$click()
-Sys.sleep(3)
+timeout <- 10
+repeat{
+  isRunning <- app$waitFor("$('#modelStatus').is(':visible') && $('#modelStatus').text().startsWith('Model execution phase');", timeout = 50)
+  if(isRunning){
+    break
+  }
+  Sys.sleep(0.5)
+  timeout <- timeout - 0.5
+  if(timeout <= 0L){
+    stop("Engine seems to be busy. Try again later..")
+  }
+}
 app$findElement("#btInterrupt")$click()
 timeout <- 600L
 repeat{

@@ -36,6 +36,8 @@ showLoginDialog <- function(cred, forwardOnSuccess = NULL){
              lang$nav$dialogRemoteLogin$invalidCred),
     tags$div(class = "gmsalert gmsalert-error", id = "remoteLoginNsNotFound", 
              lang$nav$dialogRemoteLogin$nsNotFound),
+    tags$div(class = "gmsalert gmsalert-error", id = "remoteLoginModelNotFound", 
+             lang$nav$dialogRemoteLogin$modelNotFound),
     tags$div(class = "gmsalert gmsalert-error", id = "remoteLoginInsuffPerm", 
              lang$nav$dialogRemoteLogin$insuffPerm),
     tags$div(class = "gmsalert gmsalert-error", id = "remoteLoginInvalidProt", 
