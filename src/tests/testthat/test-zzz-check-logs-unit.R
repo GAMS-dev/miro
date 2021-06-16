@@ -3,8 +3,7 @@ context("Unit tests - check log files")
 logFilePath <- Sys.getenv("MIRO_LOG_PATH")
 
 logFiles <- list.files(logFilePath, pattern = ".log$", full.names = TRUE)
-print(logFilePath)
-print(logFiles)
+
 for(logFile in logFiles){
   logContent <- readr::read_lines(logFile)
   errorsInLog <- startsWith("ERROR", logContent) | startsWith("FATAL", logContent)
