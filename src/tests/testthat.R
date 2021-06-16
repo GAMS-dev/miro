@@ -50,7 +50,8 @@ reporter <- MultiReporter$new(list(
 stopOnFailure <- identical(commandArgs(trailingOnly=TRUE), "--stop")
 testDir <- file.path(getwd(), "tests")
 
-#test_file("tests/testthat/test-attachments-ui.R", reporter = reporter)
+#test_file("tests/testthat/test-lang-ui.R", reporter = reporter)
 test_dir("tests/testthat", reporter = reporter, stop_on_failure = stopOnFailure)
 
+zip::zipr(file.path(testDir, "log-files.zip"), logPathTests)
 Sys.unsetenv("MIRO_LOG_PATH")

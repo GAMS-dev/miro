@@ -39,6 +39,9 @@ test_job:
     when: always
     reports:
       junit: src/tests/testthat/test-out.xml
+    paths:
+      - src/tests/log-files.zip
+    expire_in: 1 week
   rules:
     - if: $CI_MERGE_REQUEST_TITLE =~ /^Draft:/
       when: manual
