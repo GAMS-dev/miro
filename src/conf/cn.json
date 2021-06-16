@@ -475,6 +475,7 @@
     },
     "dialogReadonly":{
       "title":"无写入权限",
+      "descErr":"没有该场景的写入权限。",
       "desc":"没有该场景的写入权限，另存为新场景？",
       "okButton":"另存为",
       "cancelButton":"取消"

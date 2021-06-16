@@ -1857,6 +1857,10 @@
               "type": "string",
               "minLength": 1
             },
+            "descErr": {
+              "type": "string",
+              "minLength": 1
+            },
             "okButton": {
               "type": "string",
               "minLength": 1
@@ -1866,7 +1870,7 @@
               "minLength": 1
             }
           },
-          "minProperties": 4
+          "minProperties": 5
         },
         "dialogReadonlyHC": {
           "type": "object",

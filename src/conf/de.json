@@ -475,6 +475,7 @@
     },
     "dialogReadonly":{
       "title": "Keine Schreibberechtigung",
+      "descErr": "Sie habe keine Schreibrechte für dieses Szenario.",
       "desc": "Sie habe keine Schreibrechte für dieses Szenario. Möchten Sie es stattdessen als neues Szenario speichern?",
       "okButton": "Speichern als",
       "cancelButton": "Abbrechen"
