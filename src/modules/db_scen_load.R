@@ -271,7 +271,7 @@ observeEvent(input$btRefreshComp, {
   # initialize metadata
   scenData$get(refId, symNames = character(), showProgress = FALSE)
   if(length(sidsToLoad)){
-    inputDataSids <- scenData$getInputDataSids(refId)
+    inputDataSids <- scenData$getInputDataSids(sidsToLoad)
     inputDataSids[is.na(inputDataSids)] <- sidsToLoad[is.na(inputDataSids)]
     views$loadConf(db$importDataset(tableName = "_scenViews", 
                                     subsetSids = inputDataSids), FALSE,
@@ -495,7 +495,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         scenData$load(as.integer(sidsToLoadVector), refId = refId,
                       symNames = symToFetch,
                       isHcJobConfig = LAUNCHHCUBEMODE && isInSolveMode)
-        inputDataSids <- scenData$getInputDataSids(refId)
+        inputDataSids <- scenData$getInputDataSids(sidsToLoadVector)
         inputDataSids[is.na(inputDataSids)] <- sidsToLoadVector[is.na(inputDataSids)]
         views$loadConf(db$importDataset(tableName = "_scenViews", 
                                         subsetSids = inputDataSids), isInSolveMode,
@@ -651,7 +651,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       if(length(refIdToLoad)){
         scenData$load(sidsToLoad[[i]], symNames = symToFetch,
                       showProgress = TRUE, refId = refIdToLoad)
-        inputDataSids <- scenData$getInputDataSids(refIdToLoad)
+        inputDataSids <- scenData$getInputDataSids(sidsToLoad[[i]])
         inputDataSids[is.na(inputDataSids)] <- sidsToLoad[[i]][is.na(inputDataSids)]
         views$loadConf(db$importDataset(tableName = "_scenViews", 
                                         subsetSids = inputDataSids), FALSE,

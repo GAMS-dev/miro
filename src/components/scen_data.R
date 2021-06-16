@@ -182,12 +182,7 @@ ScenData <- R6Class("ScenData", public = list(
     }
     return(invisible(self))
   },
-  getInputDataSids = function(refId){
-    if(identical(refId, "sb")){
-      scenIds <- "sb"
-    }else{
-      scenIds <- private$refScenMap[[refId]]
-    }
+  getInputDataSids = function(scenIds){
     return(vapply(as.character(scenIds), function(scenId){
       private$cachedData[[scenId]][["inDataSid"]]
     }, integer(1L), USE.NAMES = FALSE))
