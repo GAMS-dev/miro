@@ -2,7 +2,7 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
   initialize = function(dataHashes){
     hashesToOrder <- startsWith(names(dataHashes), "__")
     scenHashOrder <- order(names(dataHashes)[hashesToOrder])
-    allParValCombinations <- c(dataHashes[!hashesToOrder],
+    dataHashes <- c(dataHashes[!hashesToOrder],
                                dataHashes[hashesToOrder][scenHashOrder])
     private$colsNeedSplit <- vector("logical", length(dataHashes))
     names(private$colsNeedSplit) <- names(dataHashes)
@@ -10,9 +10,10 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
     names(private$isDynamicCol) <- names(dataHashes)
     private$dataHashes <- dataHashes
     private$dataRaw <- dataHashes
-    if(scalarsFileName %in% names(ioConfig$modelIn)){
-      private$scalarTypes <- setNames(ioConfig$modelIn[[scalarsFileName]]$symtypes,
-                                      ioConfig$modelIn[[scalarsFileName]]$symnames)
+    if(scalarsFileName %in% names(ioConfig$modelInRaw)){
+      scalarsConfig <- ioConfig$modelInRaw[[scalarsFileName]]$symtypes
+      names(scalarsConfig) <- ioConfig$modelInRaw[[scalarsFileName]]$symnames
+      private$scalarsConfig <- scalarsConfig
     }
     return(invisible(self))
   },
@@ -78,7 +79,11 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
       private$dataHashes[[dsId]] <- paste0(dsPrefix, escapeGAMSCL(data))
       return(invisible(self))
     }
+    if(identical(private$scalarsConfig[[dsId]], "set")){
+      private$dataHashes[[dsId]] <- paste0(dsPrefix, escapeGAMSCL(data))
+    }else{
     private$dataHashes[[dsId]] <- paste0(dsPrefix, data)
+    }
     return(invisible(self))
   },
   generateScenHashes = function(){
