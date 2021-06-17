@@ -1369,6 +1369,7 @@ if(!is.null(errMsg)){
                            btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
                            noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L, updateBatchLoadData = 0L,
                            jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L, importCSV = 0L,
+                           refreshHcubeHashes = 0L,
                            refreshLogs = NULL, triggerAsyncProcObserver = NULL)
       
       xlsio              <- XlsIO$new()

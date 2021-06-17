@@ -1264,7 +1264,7 @@ if(identical(config$activateModules$hcube, TRUE)){
     return(prod(noScenTmp))
   }), 1000L)
   noHcubeScenSolved <- throttle(reactive({
-    req(input$btSubmitHcJob)
+    req(rv$refreshHcubeHashes > 0L)
     if(!length(noHcubeScen()) || noHcubeScen() < 1L || noHcubeScen() > MAX_NO_HCUBE){
       return(0L)
     }
@@ -1319,6 +1319,7 @@ if(identical(config$activateModules$hcube, TRUE)){
     }else{
       hcubeBuilder$setDataHashes(inputData$getDataHashes())
     }
+    rv$refreshHcubeHashes <- rv$refreshHcubeHashes + 1L
     
     showModal(modalDialog(
       title = lang$nav$hcModule$submissionDialog$title,
