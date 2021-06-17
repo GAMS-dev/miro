@@ -115,6 +115,11 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
                                         c(unname(private$dataRaw[which(private$isDynamicCol)]),
                                           stringsAsFactors = FALSE))
     names(allParValCombinationsRaw) <- names(private$dataRaw)[which(private$isDynamicCol)]
+    for(dynamicRangeCol in private$dynamicRangeCols){
+      allParValCombinationsRaw <- separate(allParValCombinationsRaw,
+                                           !!dynamicRangeCol$id,
+                                           dynamicRangeCol$colNames, sep = '\\|"""\\|')
+    }
     return(allParValCombinationsRaw %>%
              bind_cols(`_hash` = names(private$parValCombinations)) %>%
              mutate_if(~ !is.character(.), as.character) %>%
@@ -137,5 +142,7 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
   dataRaw = NULL,
   dataHashes = NULL,
   isDynamicCol = NULL,
+  dynamicRangeCols = list(),
+  scalarsConfig = list(),
   colsNeedSplit = NULL
 ))
