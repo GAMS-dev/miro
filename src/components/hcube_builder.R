@@ -18,8 +18,16 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
     return(invisible(self))
   },
   setDataHashes = function(dataHashes){
+    isAttach <- startsWith(names(private$dataHashes), "__xattach_")
+    private$dataHashes[isAttach] <- NULL
+    isNewAttach <- startsWith(names(dataHashes), "__xattach_")
+    private$dataHashes <- c(private$dataHashes,
+                            dataHashes[isNewAttach][order(names(dataHashes)[isNewAttach])])
+    dataHashes <- dataHashes[!isNewAttach]
     for(dsId in names(dataHashes)){
-      private$dataHashes[[dsId]] <- dataHashes[[dsId]]
+      if(!private$isDynamicCol[[dsId]]){
+        private$dataHashes[[dsId]] <- dataHashes[[dsId]]
+      }
     }
     return(invisible(self))
   },

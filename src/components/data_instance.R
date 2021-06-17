@@ -143,7 +143,7 @@ DataInstance <- R6Class("DataInstance", public = list(
   addFilePaths = function(filePaths){
     if(is.character(filePaths) && length(filePaths)){
       private$filePaths <- c(private$filePaths, filePaths)
-      private$dataHashes[paste0("__attach_", basename(filePaths))] <- vapply(filePaths, function(filePath){
+      private$dataHashes[paste0("__xattach_", basename(filePaths))] <- vapply(filePaths, function(filePath){
         paste0("--HCUBE_STATIC_", basename(filePath), "= ", digest::digest(file = filePath, algo = "md5"))
       }, character(1L), USE.NAMES = FALSE)
     }
