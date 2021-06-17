@@ -326,7 +326,8 @@ if(is.null(errMsg)){
                     DDPar = DDPar,
                     GMSOpt = GMSOpt,
                     inputDsNamesBase = inputDsNames[!inputDsNames %in% hcubeScalars],
-                    scenTableNamesToDisplay = scenTableNamesToDisplay)
+                    scenTableNamesToDisplay = scenTableNamesToDisplay,
+                    textOnlySymbols = config$textOnlySymbols)
   if(!useGdx && identical(config$fileExchange, "gdx") && !miroBuildOnly){
     errMsg <- paste(errMsg, 
                     sprintf("Can not use 'gdx' as file exchange with GAMS if gdxrrw library is not installed.\n
@@ -804,7 +805,7 @@ if(is.null(errMsg)){
                                       file.path("bin", "x64") else "bin"), 
                           c(modelInRaw, modelOut), scalarsFileName,
                           scalarsOutName, scalarEquationsName, scalarEquationsOutName,
-                          dropdownAliases, config$textOnlySymbols)
+                          dropdownAliases)
     }
   }, error = function(e){
     flog.error(conditionMessage(e))

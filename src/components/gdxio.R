@@ -3,8 +3,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
                         scalarsFileName, scalarsOutName, 
                         scalarEquationsName, 
                         scalarEquationsOutName,
-                        dropdownAliases,
-                        textOnlySymbols = NULL){
+                        dropdownAliases){
     stopifnot(is.list(metaData), length(metaData) > 0L,
               is.character(libDir), identical(length(libDir), 1L))
     if(gdxrrwMIRO::igdx(libDir, silent = TRUE, returnStr = FALSE)){
@@ -19,7 +18,6 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     private$scalarEquationsName <- scalarEquationsName
     private$scalarEquationsOutName <- scalarEquationsOutName
     private$dropdownAliases <- dropdownAliases
-    private$textOnlySymbols <- textOnlySymbols
     return(invisible(self))
   },
   getSymbols = function(gdxName = NULL){
@@ -256,7 +254,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
               uels    <- list(symVal[1])
               te      <- private$dropdownAliases[[symName]]$aliases[[aliasId]]
             }
-          }else if(symName %in% private$textOnlySymbols){ 
+          }else if(symName %in% ioConfig$textOnlySymbols){ 
             uels    <- list("")
             te      <- symValsRaw[[j]]
           }else{
@@ -321,7 +319,6 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
   scalarEquationsName = character(1L),
   scalarEquationsOutName = character(1L),
   dropdownAliases = list(),
-  textOnlySymbols = NULL,
   rgdxVe = function(symName, names = NULL){
     sym <- gdxrrwMIRO::rgdx(private$rgdxName, 
                             list(name = symName, 
@@ -455,7 +452,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     names(dflist) <- seq_along(dflist)
     symDF <- tibble::as_tibble(dflist)
     symDF <- dplyr::mutate_if(symDF, is.factor, as.character)
-    if(symName %in% private$textOnlySymbols){
+    if(symName %in% ioConfig$textOnlySymbols){
       symDF <- symDF[, c(2, 1)]
     }
     if(length(names)){

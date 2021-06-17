@@ -198,12 +198,12 @@ test_that("Writing of singleton set with data from dropdown works", {
 })
 
 test_that("Writing of singleton set with data from dropdown and clearValue=TRUE works", {
+  ioConfig <<- list(textOnlySymbols = "sub_i")
   gdxio <- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", "bin"),
                      c(modelInRaw, modelOut),
                      scalarsFileName, scalarsOutName,
                      scalarEquationsName,
                      scalarEquationsOutName,
-                     textOnlySymbols = "sub_i",
                      list(sub_i = list(aliases = c("test", "bla"),
                                        choices = c("seattle", "san-diego"),
                                        clearValue = TRUE)))
@@ -227,13 +227,13 @@ test_that("Writing of singleton set with data from dropdown and clearValue=TRUE 
 })
 
 test_that("Reading / writing of textOnlySymbols works", {
+  ioConfig <<- list(textOnlySymbols = "sub_i")
   gdxio <- GdxIO$new(file.path(.libPaths()[1], "gdxrrwMIRO", "bin"),
                      c(modelInRaw, modelOut),
                      scalarsFileName, scalarsOutName,
                      scalarEquationsName,
                      scalarEquationsOutName,
-                     list(),
-                     textOnlySymbols = c("sub_i"))
+                     list())
   scalarData <- tibble::tibble(`scalarSymbols$symnames` = 'sub_i',
                                `scalarSymbols$symtext` = 'sub_i',
                                `vapply(...)` = 'test')
