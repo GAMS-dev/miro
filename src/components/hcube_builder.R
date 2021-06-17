@@ -3,7 +3,7 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
     hashesToOrder <- startsWith(names(dataHashes), "__")
     scenHashOrder <- order(names(dataHashes)[hashesToOrder])
     dataHashes <- c(dataHashes[!hashesToOrder],
-                               dataHashes[hashesToOrder][scenHashOrder])
+                    dataHashes[hashesToOrder][scenHashOrder])
     private$colsNeedSplit <- vector("logical", length(dataHashes))
     names(private$colsNeedSplit) <- names(dataHashes)
     private$isDynamicCol <- vector("logical", length(dataHashes))
@@ -82,7 +82,7 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
     if(identical(private$scalarsConfig[[dsId]], "set")){
       private$dataHashes[[dsId]] <- paste0(dsPrefix, escapeGAMSCL(data))
     }else{
-    private$dataHashes[[dsId]] <- paste0(dsPrefix, data)
+      private$dataHashes[[dsId]] <- paste0(dsPrefix, data)
     }
     return(invisible(self))
   },
