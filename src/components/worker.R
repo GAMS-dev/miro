@@ -799,7 +799,8 @@ Worker <- R6Class("Worker", public = list(
     
     private$process <- process$new(file.path(private$metadata$gamsSysDir, "gams"), 
                                    args = c(private$metadata$modelGmsName, "pf", pfFilePath), 
-                                   stdout = "|", windows_hide_window = TRUE, 
+                                   stdout = if(private$metadata$hiddenLogFile) NULL else "|",
+                                   windows_hide_window = TRUE, 
                                    env = private$getProcEnv())
     return(self)
   },
