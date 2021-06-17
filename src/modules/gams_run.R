@@ -1217,7 +1217,8 @@ if(identical(config$activateModules$hcube, TRUE)){
       if(identical(scalarConfig$type, "slider")){
         if(!scalarConfig$single){
           if(!identical(input[[paste0("hcWidget_", widgetId, "_combinations")]], TRUE)){
-            hcubeBuilder$push(scalarConfig$name, widgetVal)
+            hcubeBuilder$pushRange(paste0(scalarConfig$name, "_lo"),
+                                   paste0(scalarConfig$name, "_up"), widgetVal)
             return(1L)
           }
         }
@@ -1244,8 +1245,10 @@ if(identical(config$activateModules$hcube, TRUE)){
           return(as.integer(hcRange))
         }
         # double slider all combinations
-        hcubeBuilder$push(scalarConfig$name, getCombinationsSlider(widgetVal[1], widgetVal[2], stepSize),
-                          allCombinations = TRUE)
+        hcubeBuilder$pushRange(paste0(scalarConfig$name, "_lo"),
+                               paste0(scalarConfig$name, "_up"),
+                               getCombinationsSlider(widgetVal[1], widgetVal[2], stepSize),
+                               allCombinations = TRUE)
         return(as.integer(hcRange*(hcRange + 1) / 2))
       }else{
         hcubeBuilder$push(scalarConfig$name, widgetVal, ddChoices = scalarConfig$choices)

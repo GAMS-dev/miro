@@ -22,7 +22,31 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
     }
     return(invisible(self))
   },
-  push = function(datasetName, data, ddChoices = NULL, allCombinations = FALSE){
+  pushRange = function(datasetNameLo, datasetNameUp, data, allCombinations = FALSE){
+    if(datasetNameLo %in% ioConfig$DDPar){
+      stopifnot(datasetNameUp %in% ioConfig$DDPar)
+    }else{
+      stop("HcubeBuilder: Ranges only supported for double-dash parameters", call. = FALSE)
+    }
+    dsPrefixes <- paste0("--", substring(c(datasetNameLo, datasetNameUp), 9L), "= ")
+    dsIds <- paste0("__cl_", c(datasetNameLo, datasetNameUp))
+    if(allCombinations){
+      private$isDynamicCol[[dsIds[1]]] <- TRUE
+      private$dataRaw[[dsIds[1]]] <- paste0(data$min, '|"""|', data$max)
+      private$dynamicRangeCols[[dsIds[1]]] <- list(id = dsIds[1], colNames = dsIds)
+      private$colsNeedSplit[[dsIds[1]]] <- TRUE
+      private$dataHashes[[dsIds[1]]] <- paste0(dsPrefixes[1], escapeGAMSCL(data$min),
+                                               '|"""|', dsPrefixes[2], escapeGAMSCL(data$max))
+      private$dataHashes[[dsIds[2]]] <- NA_character_
+    }else{
+      stopifnot(identical(length(data), 2L))
+      private$isDynamicCol[dsIds] <- TRUE
+      private$dataRaw[dsIds] <- data
+      private$dataHashes[dsIds] <- paste0(dsPrefixes, escapeGAMSCL(data))
+    }
+    return(invisible(self))
+  },
+  push = function(datasetName, data, ddChoices = NULL){
     if(datasetName %in% ioConfig$DDPar){
       dsPrefix <- paste0("--", substring(datasetName, 9L), "= ")
       dsId <- paste0("__cl_", datasetName)
