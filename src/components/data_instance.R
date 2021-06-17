@@ -33,14 +33,15 @@ DataInstance <- R6Class("DataInstance", public = list(
     }
     clArgs <- sort(c(ioConfig$DDPar, ioConfig$GMSOpt))
     clArgVals <- data[[3]][match(clArgs, data[[1]])]
+    names(clArgVals) <- clArgs
     private$dataHashes[paste0("__cl_", clArgs)] <- vapply(clArgs, function(clArg){
-      if(is.na(clArgVals[clArgs]) || clArgVals[clArgs] %in% CLARG_MISSING_VALUES){
+      if(is.na(clArgVals[clArg]) || clArgVals[clArg] %in% CLARG_MISSING_VALUES){
         return(NA_character_)
       }
       if(clArg %in% ioConfig$DDPar){
-        return(paste0("--", clArg, "= ", escapeGAMSCL(clArgVals[clArgs])))
+        return(paste0("--", substring(clArg, 9L), "= ", escapeGAMSCL(clArgVals[clArg])))
       }
-      return(paste0(clArg, "= ", escapeGAMSCL(clArgVals[clArgs])))
+      return(paste0(substring(clArg, 9L), "= ", escapeGAMSCL(clArgVals[clArg])))
     }, character(1L), USE.NAMES = FALSE)
     private$clArgsDf <- data
     return(invisible(self))
