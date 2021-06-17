@@ -87,12 +87,16 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
     return(invisible(self))
   },
   generateScenHashes = function(){
+    dataHashesToUse <- !is.na(private$dataHashes)
+    dataHashes <- private$dataHashes[dataHashesToUse]
+    isDynamicCol <- private$isDynamicCol[dataHashesToUse]
+    colsNeedSplit <- private$colsNeedSplit[dataHashesToUse]
     allParValCombinations <- do.call("expand.grid", 
-                                     c(unname(private$dataHashes),
+                                     c(unname(dataHashes),
                                        stringsAsFactors = FALSE))
     private$parValCombinations <- do.call(function(...) Map(list,...),
-                                          allParValCombinations[which(private$isDynamicCol)])
-    for(colIdx in which(private$colsNeedSplit)){
+                                          allParValCombinations[which(isDynamicCol)])
+    for(colIdx in which(colsNeedSplit)){
       allParValCombinations[[colIdx]] <- gsub('|"""|', " ", allParValCombinations[[colIdx]],
                                               fixed = TRUE)
     }
