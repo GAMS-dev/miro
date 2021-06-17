@@ -1073,10 +1073,10 @@ if(!isShinyProxy && config$activateModules$remoteExecution){
   })
   observeEvent(input$btSaveCredentials, {
     tryCatch({
-      worker$login(url = input$remoteCredUrl, 
-                   username = input$remoteCredUser, 
-                   password = input$remoteCredPass, 
-                   namespace = input$remoteCredNs, 
+      worker$login(url = input$remoteCredUrl,
+                   username = input$remoteCredUser,
+                   password = input$remoteCredPass,
+                   namespace = input$remoteCredNs,
                    useRegistered = input$remoteCredReg,
                    rememberMe = input$remoteCredRemember)
       hideEl(session, "#btRemoteExecLogin")
