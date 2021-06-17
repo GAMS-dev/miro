@@ -74,6 +74,9 @@ DataInstance <- R6Class("DataInstance", public = list(
             }else{
               scalarText <- ""
             }
+          }else if(scalarsConfig$symnames[scalarId] %in% ioConfig$textOnlySymbols){
+            return(paste0("--HCUBE_SCALART_", scalarsConfig$symnames[scalarId], "= ",
+                          escapeGAMSCL(scalarVals[scalarId])))
           }else{
             scalarVal <- strsplit(scalarVals[scalarId], "||", fixed = TRUE)[[1]]
             if(length(scalarVal) > 1L){
