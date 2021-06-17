@@ -1140,7 +1140,7 @@ if(identical(config$activateModules$hcube, TRUE)){
                           tags$div(class = "col-sm-6", {
                             if(identical(scalarConfig$type, "dropdown")){
                               if(identical(scalarConfig$baseType, "checkbox")){
-                                dropdownVal <- isolate(input[[paste0("cb_", symId)]])
+                                dropdownVal <- suppressWarnings(as.integer(isolate(input[[paste0("cb_", symId)]])))
                               }else{
                                 dropdownVal <- isolate(input[[paste0("dropdown_", symId)]])
                               }
