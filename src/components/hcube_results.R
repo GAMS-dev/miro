@@ -38,8 +38,6 @@ HcubeResults <- R6Class("HcubeResults", public = list(
     hashesInZip    <- sort(unique(unique(vapply(strsplit(fileNamesZip, "/"),
                                                 "[[",character(1L), 1L))))
     hashesInDb     <- sort(unique(private$hcScalars[[1]]))
-    print(hashesInDb)
-    print(hashesInZip)
     if(!identical(length(hashesInDb), length(hashesInZip)) ||
        any(hashesInDb != hashesInZip)){
       flog.error("HcubeResults: The Hypercube results zip file does not match the configuration stored in the database.")
@@ -134,7 +132,8 @@ HcubeResults <- R6Class("HcubeResults", public = list(
         scenHash <- private$scenHashes[[scenIdx]]
         scenFilesExist <- setNames(file.exists(file.path(private$exdir, scenHash, scenFiles)),
                                    scenFiles)
-        hcScalarsTmp <- add_column(filter(private$hcScalars, `_hash` == scenHash)[-1], description = "", .after = 1L)
+        hcScalarsTmp <- add_column(filter(private$hcScalars, `_hash` == scenHash)[-1],
+                                   description = "", .after = 1L)
         private$db$exportScenDataset(
           bind_cols(`_sid` = rep.int(firstScenId + scenIdx - 1L, nrow(hcScalarsTmp)),
                     hcScalarsTmp),
