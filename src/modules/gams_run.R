@@ -1326,9 +1326,9 @@ if(identical(config$activateModules$hcube, TRUE)){
     }
     worker$setInputData(inputData)
     if(is.null(hcubeBuilder)){
-      hcubeBuilder <<- HcubeBuilder$new(inputData$getDataHashes())
+      hcubeBuilder <<- HcubeBuilder$new(inputData$getDataHashes(), inputData$getScalarData())
     }else{
-      hcubeBuilder$setDataHashes(inputData$getDataHashes())
+      hcubeBuilder$setDataHashes(inputData$getDataHashes(), inputData$getScalarData())
     }
     rv$refreshHcubeHashes <- rv$refreshHcubeHashes + 1L
     

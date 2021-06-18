@@ -27,6 +27,19 @@ DataInstance <- R6Class("DataInstance", public = list(
     return(invisible(self))
   },
   getDataHashes = function() private$dataHashes,
+  getScalarData = function(){
+    emptyScalarTibble <- tibble(scalar = character(), value = character())
+    if(length(private$clArgsDf)){
+      clArgs <- private$clArgsDf[c(1,3)]
+    }else{
+      clArgs <- emptyScalarTibble
+    }
+    inputScalars <- tryCatch(self$get(scalarsFileName)[c(1,3)], error = function(e){
+      emptyScalarTibble
+    })
+    return(pivot_wider(bind_rows(clArgs, inputScalars), 
+                       names_from = "scalar", values_from = "value"))
+  },
   pushClArgs = function(data){
     if(!identical(length(data), 3L)){
       return(invisible(self))
@@ -138,7 +151,7 @@ DataInstance <- R6Class("DataInstance", public = list(
   },
   get = function(datasetName = NULL){
     if(length(datasetName)){
-      stopifnot(is.character(datasetName), identical(datasetName, 1L))
+      stopifnot(is.character(datasetName), identical(length(datasetName), 1L))
       if(length(private$data) && datasetName %in% names(private$data)){
         return(private$data[[datasetName]])
       }

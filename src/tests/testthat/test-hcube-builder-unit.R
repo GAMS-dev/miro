@@ -13,6 +13,18 @@ ioConfig <<- list(modelInRaw = list(`_scalars` = list(symnames = c("maxstock", "
                             "_gmspar_sliderrange_lo",
                             "_gmspar_sliderrange_up"),
                   GMSOpt = c("_gmsopt_lsttitleleftaligned"))
+scalarDf <- tibble(`_gmsopt_lsttitleleftaligned` = "1",
+                   `_gmspar_date` = "2020-07-15",
+                   `_gmspar_daterange_lo` = NA_character_,
+                   `_gmspar_daterange_up` = NA_character_,
+                   `_gmspar_numericinput` = "4000.56",
+                   `_gmspar_sliderrange_lo` = "7",
+                   `_gmspar_sliderrange_up` = "22",
+                   `_gmspar_textinput` = NA_character_,
+                   maxstock = "3",
+                   trainingdays = "7",
+                   solver = "CPLEX",
+                   clearvalueset = "element text")
 
 test_that("Generating hashes works", {
   hcubeBuilder <- HcubeBuilder$new(list(price = "--HCUBE_STATIC_price= 52d53711271c55d29fa6e21806171679", 
@@ -30,7 +42,8 @@ test_that("Generating hashes works", {
                                         solver = "--HCUBE_SCALARV_solver= \"CPLEX\"", 
                                         clearvalueset = "--HCUBE_SCALARV_clearvalueset= \"element text\"",
                                         `__xattach_doW_vs_index.csv` = "--HCUBE_STATIC_doW_vs_index.csv= 19e47bfcc0e7d456f945ffb04fe5dba0",
-                                        `__xattach_a.csv` = "--HCUBE_STATIC_a.csv= 19e47bfcc0e7d456f945ffb04fe5dba0"))
+                                        `__xattach_a.csv` = "--HCUBE_STATIC_a.csv= 19e47bfcc0e7d456f945ffb04fe5dba0"),
+                                   scalarDf)
   hcubeBuilder$push("solver", c("CBC", "CONOPT"))
   # scrambling order of cl args/attachments should not change hashes
   expectedHashes <- c("c1d7921fac38e27f5db15a8ed404900063be7c368dcd78634eefcef8be42a1d0",
@@ -51,7 +64,8 @@ test_that("Generating hashes works", {
                                   `__cl__gmspar_textinput` = NA_character_,
                                   `__cl__gmspar_daterange_lo` = NA_character_,
                                   `__cl__gmspar_numericinput` = "--numericinput= \"4000.56\"",
-                                  `__cl__gmsopt_lsttitleleftaligned` = "lsttitleleftaligned= \"1\""))
+                                  `__cl__gmsopt_lsttitleleftaligned` = "lsttitleleftaligned= \"1\""),
+                             scalarDf)
   expect_identical(hcubeBuilder$generateScenHashes(),
                    expectedHashes)
   hcubeBuilder <- HcubeBuilder$new(list(price = "--HCUBE_STATIC_price= 52d53711271c55d29fa6e21806171679", 
@@ -69,7 +83,8 @@ test_that("Generating hashes works", {
                                         `__cl__gmspar_textinput` = NA_character_,
                                         `__cl__gmspar_daterange_lo` = NA_character_,
                                         `__cl__gmspar_numericinput` = "--numericinput= \"4000.56\"",
-                                        `__cl__gmsopt_lsttitleleftaligned` = "lsttitleleftaligned= \"1\""))
+                                        `__cl__gmsopt_lsttitleleftaligned` = "lsttitleleftaligned= \"1\""),
+                                   scalarDf)
   hcubeBuilder$push("solver", c("CBC", "CONOPT"))
   expect_identical(hcubeBuilder$generateScenHashes(),
                    expectedHashes)
@@ -102,48 +117,47 @@ test_that("Getting scalars table works", {
                                         solver = "--HCUBE_SCALARV_solver= \"CPLEX\"", 
                                         clearvalueset = "--HCUBE_SCALARV_clearvalueset= \"element text\"",
                                         `__xattach_doW_vs_index.csv` = "--HCUBE_STATIC_doW_vs_index.csv= 19e47bfcc0e7d456f945ffb04fe5dba0",
-                                        `__xattach_a.csv` = "--HCUBE_STATIC_a.csv= 19e47bfcc0e7d456f945ffb04fe5dba0"))
+                                        `__xattach_a.csv` = "--HCUBE_STATIC_a.csv= 19e47bfcc0e7d456f945ffb04fe5dba0"),
+                                   scalarDf)
   hcubeBuilder$push("solver", c("CBC", "CONOPT"))$generateScenHashes()
   expectedHashes <- c("c1d7921fac38e27f5db15a8ed404900063be7c368dcd78634eefcef8be42a1d0",
                       "e64efedd378b24591a3d468b1c64af9afecc8e213dc821bed8e4dc26ec19f99a")
-  expect_identical(hcubeBuilder$getHcubeScalars(),
-                   tibble(`_hash` = expectedHashes,
-                          scalar = c("solver", "solver"),
-                          value = c("CBC", "CONOPT")))
+  scalars <- hcubeBuilder$getHcubeScalars()
+  expect_identical(nrow(scalars), 12L * 2L)
+  expect_identical(unique(scalars[[1]]), expectedHashes)
+  expect_identical(dplyr::select(tidyr::pivot_wider(scalars, names_from = "scalar", values_from = "value"),
+                                 solver)[[1]], c("CBC", "CONOPT"))
+  expect_identical( dplyr::distinct(
+    dplyr::select(
+      tidyr::pivot_wider(scalars, names_from = "scalar", values_from = "value"),
+      -c(solver, `_hash`))), dplyr::select(scalarDf, !solver))
+  
   hcubeBuilder$push("trainingdays", c(1.123,10000))$push("maxstock", c(2.8,3.8))$generateScenHashes()
-  expect_identical(hcubeBuilder$getHcubeScalars(),
-                   tibble(`_hash` = c("ed1eb93a9339bf3c5aca3f010745c16768240bcfd52e21d397d04e256e79b30e", 
-                                      "ed1eb93a9339bf3c5aca3f010745c16768240bcfd52e21d397d04e256e79b30e", 
-                                      "ed1eb93a9339bf3c5aca3f010745c16768240bcfd52e21d397d04e256e79b30e", 
-                                      "f89674b63acd3771a98f6cdf340610c1b51d001ee8205cf22d009403006aa863", 
-                                      "f89674b63acd3771a98f6cdf340610c1b51d001ee8205cf22d009403006aa863", 
-                                      "f89674b63acd3771a98f6cdf340610c1b51d001ee8205cf22d009403006aa863", 
-                                      "138f960e39e811660b350c106ca697071f6c84ad14e97edfee2f1ed008f33711", 
-                                      "138f960e39e811660b350c106ca697071f6c84ad14e97edfee2f1ed008f33711", 
-                                      "138f960e39e811660b350c106ca697071f6c84ad14e97edfee2f1ed008f33711", 
-                                      "26611485fde3356b62b16266014d0f5bda1eec2420480061e80674a57b3184f8", 
-                                      "26611485fde3356b62b16266014d0f5bda1eec2420480061e80674a57b3184f8", 
-                                      "26611485fde3356b62b16266014d0f5bda1eec2420480061e80674a57b3184f8", 
-                                      "d82b1588a9a53edd6dd733896bcc8c189fbf686f3238c28ddbe23283dd35871f", 
-                                      "d82b1588a9a53edd6dd733896bcc8c189fbf686f3238c28ddbe23283dd35871f", 
-                                      "d82b1588a9a53edd6dd733896bcc8c189fbf686f3238c28ddbe23283dd35871f", 
-                                      "c8070d029311ce8aff7fbe724916137f45088098d06fbe00cc55b206fc2cdcad", 
-                                      "c8070d029311ce8aff7fbe724916137f45088098d06fbe00cc55b206fc2cdcad", 
-                                      "c8070d029311ce8aff7fbe724916137f45088098d06fbe00cc55b206fc2cdcad", 
-                                      "df6161041e1f1bd560f37b63b3a76bee67bbd38d7fb269de329353adbf4c3489", 
-                                      "df6161041e1f1bd560f37b63b3a76bee67bbd38d7fb269de329353adbf4c3489", 
-                                      "df6161041e1f1bd560f37b63b3a76bee67bbd38d7fb269de329353adbf4c3489", 
-                                      "9a4e8d6a5c6eaea2593bf754b471cba575f7ca366e0f0f6f16e8343c4c4ea176", 
-                                      "9a4e8d6a5c6eaea2593bf754b471cba575f7ca366e0f0f6f16e8343c4c4ea176", 
-                                      "9a4e8d6a5c6eaea2593bf754b471cba575f7ca366e0f0f6f16e8343c4c4ea176"),
-                          scalar = c("maxstock", "trainingdays", "solver", "maxstock", 
-                                     "trainingdays", "solver", "maxstock", "trainingdays", "solver", 
-                                     "maxstock", "trainingdays", "solver", "maxstock", "trainingdays", 
-                                     "solver", "maxstock", "trainingdays", "solver", "maxstock", "trainingdays", 
-                                     "solver", "maxstock", "trainingdays", "solver"),
-                          value = c("2.8", "1.123", "CBC", "3.8", "1.123", "CBC", "2.8", "10000", "CBC",
-                                    "3.8", "10000", "CBC", "2.8", "1.123", "CONOPT", "3.8", "1.123",
-                                    "CONOPT", "2.8", "10000", "CONOPT", "3.8", "10000", "CONOPT")))
+  expectedHashes <- c("ed1eb93a9339bf3c5aca3f010745c16768240bcfd52e21d397d04e256e79b30e",
+                      "f89674b63acd3771a98f6cdf340610c1b51d001ee8205cf22d009403006aa863",
+                      "138f960e39e811660b350c106ca697071f6c84ad14e97edfee2f1ed008f33711",
+                      "26611485fde3356b62b16266014d0f5bda1eec2420480061e80674a57b3184f8",
+                      "d82b1588a9a53edd6dd733896bcc8c189fbf686f3238c28ddbe23283dd35871f",
+                      "c8070d029311ce8aff7fbe724916137f45088098d06fbe00cc55b206fc2cdcad",
+                      "df6161041e1f1bd560f37b63b3a76bee67bbd38d7fb269de329353adbf4c3489",
+                      "9a4e8d6a5c6eaea2593bf754b471cba575f7ca366e0f0f6f16e8343c4c4ea176")
+  scalars <- hcubeBuilder$getHcubeScalars()
+  expect_identical(nrow(scalars), 12L * 8L)
+  expect_identical(unique(scalars[[1]]), expectedHashes)
+  expect_identical(dplyr::select(tidyr::pivot_wider(scalars, names_from = "scalar", values_from = "value"),
+                                 solver)[[1]],
+                   c("CBC", "CBC", "CBC", "CBC", "CONOPT", "CONOPT", "CONOPT", "CONOPT"))
+  expect_identical(dplyr::select(tidyr::pivot_wider(scalars, names_from = "scalar", values_from = "value"),
+                                 trainingdays)[[1]],
+                   c("1.123", "1.123", "10000", "10000", "1.123", "1.123", "10000", "10000"))
+  expect_identical(dplyr::select(tidyr::pivot_wider(scalars, names_from = "scalar", values_from = "value"),
+                                 maxstock)[[1]],
+                   c("2.8", "3.8", "2.8", "3.8", "2.8", "3.8", "2.8", "3.8"))
+  expect_identical(dplyr::distinct(
+    dplyr::select(
+      tidyr::pivot_wider(scalars, names_from = "scalar", values_from = "value"),
+      -c(trainingdays, maxstock, solver, `_hash`))),
+    dplyr::select(scalarDf, !c(trainingdays, solver, maxstock)))
 })
 
 test_that("Slider ranges work", {
@@ -162,7 +176,8 @@ test_that("Slider ranges work", {
                                         solver = "--HCUBE_SCALARV_solver= \"CPLEX\"", 
                                         clearvalueset = "--HCUBE_SCALARV_clearvalueset= \"element text\"",
                                         `__xattach_doW_vs_index.csv` = "--HCUBE_STATIC_doW_vs_index.csv= 19e47bfcc0e7d456f945ffb04fe5dba0",
-                                        `__xattach_a.csv` = "--HCUBE_STATIC_a.csv= 19e47bfcc0e7d456f945ffb04fe5dba0"))
+                                        `__xattach_a.csv` = "--HCUBE_STATIC_a.csv= 19e47bfcc0e7d456f945ffb04fe5dba0"),
+                                   scalarDf)
   hcubeBuilder$pushRange("_gmspar_sliderrange_lo", "_gmspar_sliderrange_up",
                          c(3.3,7.901), allCombinations = FALSE)
   expect_identical(hcubeBuilder$generateScenHashes(), "760739f9efeae17d714ca083f2b10b8f300716eb3bcf6bcdd29230cc8420c1aa")
@@ -172,26 +187,25 @@ test_that("Slider ranges work", {
   hcubeBuilder$pushRange("_gmspar_sliderrange_lo", "_gmspar_sliderrange_up",
                          combinations, allCombinations = TRUE)$generateScenHashes()
   expect_identical(hcubeBuilder$getNoScen(), 6L)
-  expect_identical(hcubeBuilder$getHcubeScalars(),
-                   tibble(`_hash` = c("a18852ec481a49db2ffbc4781a3529970ed8e079d5b02307da787fcae66c48e4", 
-                                      "a18852ec481a49db2ffbc4781a3529970ed8e079d5b02307da787fcae66c48e4", 
-                                      "8349bf7e2f06adc7d48e134f29e4f18f2690b0c2efe8e1e0e816e148df47e870", 
-                                      "8349bf7e2f06adc7d48e134f29e4f18f2690b0c2efe8e1e0e816e148df47e870", 
-                                      "c36610cf83ec456de62f371198473b9fb3da7ac504b000c4972b631dd7307e85", 
-                                      "c36610cf83ec456de62f371198473b9fb3da7ac504b000c4972b631dd7307e85", 
-                                      "db12d6d2693e8aeb9c163ead52feb71da052c592aadb0c4c5aefbcd1d3e01a5a", 
-                                      "db12d6d2693e8aeb9c163ead52feb71da052c592aadb0c4c5aefbcd1d3e01a5a", 
-                                      "0b957a2d40ffb1e5aafdd384dc2e00b1a82a8cdc96983d9d44198166e2100a0d", 
-                                      "0b957a2d40ffb1e5aafdd384dc2e00b1a82a8cdc96983d9d44198166e2100a0d", 
-                                      "87cc681689777a2e8add35ec9ad39bc06e560c1e516ae9f6a76564ed38190c13", 
-                                      "87cc681689777a2e8add35ec9ad39bc06e560c1e516ae9f6a76564ed38190c13"),
-                          scalar = c("__cl__gmspar_sliderrange_lo", "__cl__gmspar_sliderrange_up", 
-                                     "__cl__gmspar_sliderrange_lo", "__cl__gmspar_sliderrange_up", 
-                                     "__cl__gmspar_sliderrange_lo", "__cl__gmspar_sliderrange_up", 
-                                     "__cl__gmspar_sliderrange_lo", "__cl__gmspar_sliderrange_up", 
-                                     "__cl__gmspar_sliderrange_lo", "__cl__gmspar_sliderrange_up", 
-                                     "__cl__gmspar_sliderrange_lo", "__cl__gmspar_sliderrange_up"),
-                          value = c("1", "2", "1.5", "2", "2", "2", "1", "1.5", "1.5", "1.5", "1", "1")))
+  
+  expectedHashes <- c("a18852ec481a49db2ffbc4781a3529970ed8e079d5b02307da787fcae66c48e4",
+                      "8349bf7e2f06adc7d48e134f29e4f18f2690b0c2efe8e1e0e816e148df47e870",
+                      "c36610cf83ec456de62f371198473b9fb3da7ac504b000c4972b631dd7307e85",
+                      "db12d6d2693e8aeb9c163ead52feb71da052c592aadb0c4c5aefbcd1d3e01a5a",
+                      "0b957a2d40ffb1e5aafdd384dc2e00b1a82a8cdc96983d9d44198166e2100a0d",
+                      "87cc681689777a2e8add35ec9ad39bc06e560c1e516ae9f6a76564ed38190c13")
+  scalars <- hcubeBuilder$getHcubeScalars()
+  expect_identical(nrow(scalars), 12L * 6L)
+  expect_identical(unique(scalars[[1]]), expectedHashes)
+  expect_identical(dplyr::select(tidyr::pivot_wider(scalars, names_from = "scalar", values_from = "value"),
+                                 `_gmspar_sliderrange_lo`)[[1]], c("1", "1.5", "2", "1", "1.5", "1"))
+  expect_identical(dplyr::select(tidyr::pivot_wider(scalars, names_from = "scalar", values_from = "value"),
+                                 `_gmspar_sliderrange_up`)[[1]], c("2", "2", "2", "1.5", "1.5", "1"))
+  expect_identical(dplyr::distinct(
+    dplyr::select(
+      tidyr::pivot_wider(scalars, names_from = "scalar", values_from = "value"),
+      -c(`_gmspar_sliderrange_lo`, `_gmspar_sliderrange_up`, `_hash`))),
+    dplyr::select(scalarDf, !c(`_gmspar_sliderrange_lo`, `_gmspar_sliderrange_up`)))
 })
 
 test_that("Subsetting scenario hashes works", {
@@ -210,14 +224,23 @@ test_that("Subsetting scenario hashes works", {
                                           solver = "--HCUBE_SCALARV_solver= \"CPLEX\"", 
                                           clearvalueset = "--HCUBE_SCALARV_clearvalueset= \"element text\"",
                                           `__xattach_doW_vs_index.csv` = "--HCUBE_STATIC_doW_vs_index.csv= 19e47bfcc0e7d456f945ffb04fe5dba0",
-                                          `__xattach_a.csv` = "--HCUBE_STATIC_a.csv= 19e47bfcc0e7d456f945ffb04fe5dba0"))
+                                          `__xattach_a.csv` = "--HCUBE_STATIC_a.csv= 19e47bfcc0e7d456f945ffb04fe5dba0"),
+                                     scalarDf)
     scenHashes <- hcubeBuilder$push("solver", c("CBC", "CONOPT"))$push("maxstock", c(1, 3, 5, 12))$generateScenHashes()
     hcubeBuilder$removeScen(scenHashes[c(2,4,7)])
     expect_identical(hcubeBuilder$getNoScen(), length(scenHashes) - 3L)
-    scenHashesScalars <- hcubeBuilder$getHcubeScalars()[["_hash"]]
+    scalars <- hcubeBuilder$getHcubeScalars()
+    scenHashesScalars <- scalars[["_hash"]]
     expect_identical(length(unique(scenHashesScalars)), length(scenHashes) - 3L)
     expect_identical(unique(scenHashesScalars), scenHashes[c(1, 3, 5, 6, 8)])
-    expect_identical(hcubeBuilder$getHcubeScalars()[["value"]], c("1", "CBC", "5", "CBC", "1", "CONOPT",
-                                                                  "3", "CONOPT", "12", "CONOPT"))
+    expect_identical(dplyr::select(tidyr::pivot_wider(scalars, names_from = "scalar", values_from = "value"),
+                                   solver)[[1]], c("CBC", "CBC", "CONOPT", "CONOPT", "CONOPT"))
+    expect_identical(dplyr::select(tidyr::pivot_wider(scalars, names_from = "scalar", values_from = "value"),
+                                   maxstock)[[1]], c("1", "5", "1", "3", "12"))
+    expect_identical(dplyr::distinct(
+      dplyr::select(
+        tidyr::pivot_wider(scalars, names_from = "scalar", values_from = "value"),
+        -c(maxstock, solver, `_hash`))),
+      dplyr::select(scalarDf, !c(maxstock, solver)))
 })
 

@@ -1,5 +1,5 @@
 HcubeBuilder <- R6Class("HcubeBuilder", public = list(
-  initialize = function(dataHashes){
+  initialize = function(dataHashes, scalarData){
     hashesToOrder <- startsWith(names(dataHashes), "__")
     scenHashOrder <- order(names(dataHashes)[hashesToOrder])
     dataHashes <- c(dataHashes[!hashesToOrder],
@@ -10,6 +10,7 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
     names(private$isDynamicCol) <- names(dataHashes)
     private$dataHashes <- dataHashes
     private$dataRaw <- dataHashes
+    private$scalarData <- scalarData
     if(scalarsFileName %in% names(ioConfig$modelInRaw)){
       scalarsConfig <- ioConfig$modelInRaw[[scalarsFileName]]$symtypes
       names(scalarsConfig) <- ioConfig$modelInRaw[[scalarsFileName]]$symnames
@@ -17,7 +18,8 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
     }
     return(invisible(self))
   },
-  setDataHashes = function(dataHashes){
+  setDataHashes = function(dataHashes, scalarData){
+    private$scalarData <- scalarData
     isAttach <- startsWith(names(private$dataHashes), "__xattach_")
     private$dataHashes[isAttach] <- NULL
     isNewAttach <- startsWith(names(dataHashes), "__xattach_")
@@ -42,7 +44,8 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
     if(allCombinations){
       private$isDynamicCol[[dsIds[1]]] <- TRUE
       private$dataRaw[[dsIds[1]]] <- paste0(data$min, '|"""|', data$max)
-      private$dynamicRangeCols[[dsIds[1]]] <- list(id = dsIds[1], colNames = dsIds)
+      private$dynamicRangeCols[[dsIds[1]]] <- list(id = datasetNameLo,
+                                                   colNames = c(datasetNameLo, datasetNameUp))
       private$colsNeedSplit[[dsIds[1]]] <- TRUE
       private$dataHashes[[dsIds[1]]] <- paste0(dsPrefixes[1], escapeGAMSCL(data$min),
                                                '|"""|', dsPrefixes[2], escapeGAMSCL(data$max))
@@ -134,14 +137,19 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
       stopifnot(identical(length(private$scenToRemove), nrow(allParValCombinationsRaw)))
       allParValCombinationsRaw <- allParValCombinationsRaw[which(!private$scenToRemove), ]
     }
-    names(allParValCombinationsRaw) <- names(private$dataRaw)[which(private$isDynamicCol)]
+    namesTmp <- names(private$dataRaw)[which(private$isDynamicCol)]
+    isClArg <- startsWith(namesTmp, "__cl_")
+    namesTmp[isClArg] <- substring(namesTmp[isClArg], 6L)
+    names(allParValCombinationsRaw) <- namesTmp
     for(dynamicRangeCol in private$dynamicRangeCols){
       allParValCombinationsRaw <- separate(allParValCombinationsRaw,
                                            !!dynamicRangeCol$id,
                                            dynamicRangeCol$colNames, sep = '\\|"""\\|')
     }
+    staticScalars <- as_tibble(private$scalarData[!names(private$scalarData) %in% names(allParValCombinationsRaw)])
     return(allParValCombinationsRaw %>%
-             bind_cols(`_hash` = names(private$parValCombinations)) %>%
+             bind_cols(`_hash` = names(private$parValCombinations),
+                       staticScalars[rep(1, nrow(allParValCombinationsRaw)), ]) %>%
              mutate_if(~ !is.character(.), as.character) %>%
              pivot_longer(!`_hash`,
                           names_to = "scalar", values_to = "value"))
@@ -162,6 +170,7 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
   dataRaw = NULL,
   dataHashes = NULL,
   isDynamicCol = NULL,
+  scalarData = NULL,
   dynamicRangeCols = list(),
   scalarsConfig = list(),
   colsNeedSplit = NULL,
