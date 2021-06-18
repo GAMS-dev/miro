@@ -94,6 +94,14 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
     }
     return(invisible(self))
   },
+  getScenHashes = function(){
+    return(names(private$parValCombinations))
+  },
+  removeScen = function(hashesToRemove){
+    private$scenToRemove <- names(private$parValCombinations) %in% hashesToRemove
+    private$parValCombinations[private$scenToRemove] <- NULL
+    return(invisible(self))
+  },
   generateScenHashes = function(){
     dataHashesToUse <- !is.na(private$dataHashes)
     dataHashes <- private$dataHashes[dataHashesToUse]
@@ -122,6 +130,10 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
     allParValCombinationsRaw <- do.call("expand.grid", 
                                         c(unname(private$dataRaw[which(private$isDynamicCol)]),
                                           stringsAsFactors = FALSE))
+    if(length(private$scenToRemove)){
+      stopifnot(identical(length(private$scenToRemove), nrow(allParValCombinationsRaw)))
+      allParValCombinationsRaw <- allParValCombinationsRaw[which(!private$scenToRemove), ]
+    }
     names(allParValCombinationsRaw) <- names(private$dataRaw)[which(private$isDynamicCol)]
     for(dynamicRangeCol in private$dynamicRangeCols){
       allParValCombinationsRaw <- separate(allParValCombinationsRaw,
@@ -152,5 +164,6 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
   isDynamicCol = NULL,
   dynamicRangeCols = list(),
   scalarsConfig = list(),
-  colsNeedSplit = NULL
+  colsNeedSplit = NULL,
+  scenToRemove = NULL
 ))

@@ -2861,12 +2861,16 @@
                 "type": "string",
                 "minLength": 1
               },
-              "btSubmit": {
+              "btSubmitAll": {
+                "type": "string",
+                "minLength": 1
+              },
+              "btSubmitUnsolved": {
                 "type": "string",
                 "minLength": 1
               }
             },
-            "minProperties": 3
+            "minProperties": 4
           }
         }
       },

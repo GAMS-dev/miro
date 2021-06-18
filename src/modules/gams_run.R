@@ -1203,8 +1203,11 @@ if(identical(config$activateModules$hcube, TRUE)){
                           })
                         }))),
       tags$div(class = "row", style = "text-align:center;",
-               actionButton("btSubmitHcJobConfirm", lang$nav$hcModule$submissionDialog$btSubmit,
-                            class = "bt-highlight-1 bt-gms-confirm bt-no-disable")))
+               actionButton("btSubmitHcJobConfirm", lang$nav$hcModule$submissionDialog$btSubmitAll,
+                            class = "bt-highlight-1 bt-gms-confirm bt-no-disable"),
+               actionButton("btSubmitHcJobConfirmUnsolved", lang$nav$hcModule$submissionDialog$btSubmitUnsolved,
+                            class = "bt-highlight-1 bt-gms-confirm bt-no-disable",
+                            style = "display:none;")))
   }
   noHcubeScen <- throttle(reactive({
     req(input$btSubmitHcJob)
@@ -1281,6 +1284,8 @@ if(identical(config$activateModules$hcube, TRUE)){
   output$newHcJobInfo <- renderText({
     noScenTmp <- noHcubeScen()
     disableEl(session, "#btSubmitHcJobConfirm")
+    disableEl(session, "#btSubmitHcJobConfirmUnsolved")
+    hideEl(session, "#btSubmitHcJobConfirmUnsolved")
     if(is.null(noScenTmp)){
       return()
     }
@@ -1297,6 +1302,12 @@ if(identical(config$activateModules$hcube, TRUE)){
     }else{
       enableEl(session, "#btSubmitHcJobConfirm")
       hideEl(session, "#newHcJobError")
+    }
+    if(noHcubeScenSolved() > 0L){
+      showEl(session, "#btSubmitHcJobConfirmUnsolved")
+      if(noHcubeScenSolved() < noScenTmp){
+        enableEl(session, "#btSubmitHcJobConfirmUnsolved")
+      }
     }
     sprintf(lang$nav$dialogHcube$desc, noScenTmp, noHcubeScenSolved())
   })
@@ -1347,14 +1358,42 @@ if(identical(config$activateModules$hcube, TRUE)){
       showElReplaceTxt(session, "#newHcJobError", lang$errMsg$unknownError)
     })
   })
-  observeEvent(input$btSubmitHcJobConfirm, {
-    flog.trace("Button to confirm submission of new Hypercube job clicked.")
+  observeEvent(input$btSubmitHcJobConfirmUnsolved, {
+    flog.trace("Button to confirm submission of new Hypercube job (unsolved scenarios only) clicked.")
     if(!verifyCanSolve(async = TRUE, buttonId = "btSubmitHcJob")){
       return()
     }
     if(!length(noHcubeScen()) || noHcubeScen() < 1L || noHcubeScen() > MAX_NO_HCUBE){
       return()
     }
+    if(tryCatch({
+      existingHashes <- db$getScenWithSameHash(hcubeBuilder$getScenHashes(),
+                                               limit = NULL, count = FALSE, distinctHashes = TRUE)[[1]]
+      FALSE
+    }, error = function(e){
+      flog.error("Problems fetching existing hashes from database. Error message: %s",
+                 conditionMessage(e))
+      return(TRUE)
+    })){
+      return()
+    }
+    hcubeBuilder$removeScen(existingHashes)
+    rv$submitHCJobConfirm <- rv$submitHCJobConfirm + 1L
+  })
+  observeEvent(virtualActionButton(input$btSubmitHcJobConfirm, rv$submitHCJobConfirm), {
+    flog.trace("Button to confirm submission of new Hypercube job (all scenarios) clicked.")
+    if(!verifyCanSolve(async = TRUE, buttonId = "btSubmitHcJob")){
+      return()
+    }
+    if(!length(noHcubeScen()) || noHcubeScen() < 1L || noHcubeScen() > MAX_NO_HCUBE){
+      return()
+    }
+    if(hcubeBuilder$getNoScen() < 1L){
+      flog.error("Hypercube submission button clicked without scenarios available in HcubeBuilder. This should never happen and is likely an attempt to tamper with the app!")
+      showElReplaceTxt(session, "#newHcJobError", lang$errMsg$unknownError)
+      return()
+    }
+    disableEl(session, "#btSubmitHcJobConfirmUnsolved")
     disableEl(session, "#btSubmitHcJobConfirm")
     hideEl(session, "#newHcJobError")
     tryCatch({
@@ -1406,6 +1445,7 @@ if(identical(config$activateModules$hcube, TRUE)){
       flog.error("Unexpected error while generating new Hypercube job. Error message: '%s'",
                  conditionMessage(e))
       enableEl(session, "#btSubmitHcJobConfirm")
+      enableEl(session, "#btSubmitHcJobConfirmUnsolved")
       showElReplaceTxt(session, "#newHcJobError", lang$errMsg$unknownError)
     })
   })

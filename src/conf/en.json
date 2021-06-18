@@ -735,7 +735,8 @@
       "submissionDialog":{
         "title": "New Hypercube job",
         "btCancel": "Cancel",
-        "btSubmit": "Submit"
+        "btSubmitAll": "Submit all",
+        "btSubmitUnsolved": "Submit unsolved"
       }
     }
   },

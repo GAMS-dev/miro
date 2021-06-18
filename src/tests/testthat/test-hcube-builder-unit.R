@@ -194,3 +194,30 @@ test_that("Slider ranges work", {
                           value = c("1", "2", "1.5", "2", "2", "2", "1", "1.5", "1.5", "1.5", "1", "1")))
 })
 
+test_that("Subsetting scenario hashes works", {
+    hcubeBuilder <- HcubeBuilder$new(list(price = "--HCUBE_STATIC_price= 52d53711271c55d29fa6e21806171679", 
+                                          maptest = "--HCUBE_STATIC_maptest= 19e47bfcc0e7d456f945ffb04fe5dba0", 
+                                          `__cl__gmsopt_lsttitleleftaligned` = "lsttitleleftaligned= \"1\"", 
+                                          `__cl__gmspar_date` = "--date= \"2020-07-15\"",
+                                          `__cl__gmspar_daterange_lo` = NA_character_, 
+                                          `__cl__gmspar_daterange_up` = NA_character_,
+                                          `__cl__gmspar_numericinput` = "--numericinput= \"4000.56\"", 
+                                          `__cl__gmspar_sliderrange_lo` = "--sliderrange_lo= \"7\"", 
+                                          `__cl__gmspar_sliderrange_up` = "--sliderrange_up= \"22\"", 
+                                          `__cl__gmspar_textinput` = NA_character_,
+                                          maxstock = "--HCUBE_SCALARV_maxstock= 3", 
+                                          trainingdays = "--HCUBE_SCALARV_trainingdays= 99",
+                                          solver = "--HCUBE_SCALARV_solver= \"CPLEX\"", 
+                                          clearvalueset = "--HCUBE_SCALARV_clearvalueset= \"element text\"",
+                                          `__xattach_doW_vs_index.csv` = "--HCUBE_STATIC_doW_vs_index.csv= 19e47bfcc0e7d456f945ffb04fe5dba0",
+                                          `__xattach_a.csv` = "--HCUBE_STATIC_a.csv= 19e47bfcc0e7d456f945ffb04fe5dba0"))
+    scenHashes <- hcubeBuilder$push("solver", c("CBC", "CONOPT"))$push("maxstock", c(1, 3, 5, 12))$generateScenHashes()
+    hcubeBuilder$removeScen(scenHashes[c(2,4,7)])
+    expect_identical(hcubeBuilder$getNoScen(), length(scenHashes) - 3L)
+    scenHashesScalars <- hcubeBuilder$getHcubeScalars()[["_hash"]]
+    expect_identical(length(unique(scenHashesScalars)), length(scenHashes) - 3L)
+    expect_identical(unique(scenHashesScalars), scenHashes[c(1, 3, 5, 6, 8)])
+    expect_identical(hcubeBuilder$getHcubeScalars()[["value"]], c("1", "CBC", "5", "CBC", "1", "CONOPT",
+                                                                  "3", "CONOPT", "12", "CONOPT"))
+})
+

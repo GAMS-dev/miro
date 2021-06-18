@@ -735,7 +735,8 @@
       "submissionDialog":{
         "title": "新的 HYPERCUBE 作业",
         "btCancel": "取消",
-        "btSubmit": "提交"
+        "btSubmitAll": "提交所有",
+        "btSubmitUnsolved": "仅提交未解决的"
       }
     }
   },

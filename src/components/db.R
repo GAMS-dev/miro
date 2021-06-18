@@ -192,7 +192,7 @@ Db <- R6Class("Db",
                                                              private$userAccessGroups)),
                                 " OR "))
                 },
-                getScenWithSameHash = function(scenHashes, limit = 1L, count = FALSE){
+                getScenWithSameHash = function(scenHashes, limit = 1L, count = FALSE, distinctHashes = FALSE){
                         if(!DBI::dbExistsTable(private$conn, dbSchema$getDbTableName("_scenHash"))){
                                 if(count){
                                         return(tibble(count = 0L))
@@ -215,12 +215,13 @@ Db <- R6Class("Db",
                         query <- paste0("SELECT ",
                                         if(count)
                                                 paste0("COUNT(DISTINCT(", escapedHashTableName, ".hash))")
+                                        else if(distinctHashes)
+                                                paste0("DISTINCT(", escapedHashTableName, ".hash)")
                                         else
                                                 paste(paste0(escapedMetaTableName, ".",
                                                              c("_sid", "_uid", "_sname", "_stime", "_stag")),
                                                       collapse = ", "), " FROM ",
-                                        escapedHashTableName,
-                                        " INNER JOIN ",
+                                        escapedHashTableName, " INNER JOIN ",
                                         escapedMetaTableName,
                                         " ON ",
                                         escapedHashTableName, "._sid=",
