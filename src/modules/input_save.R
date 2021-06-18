@@ -1,6 +1,6 @@
 # save input data to dataTmp list
 
-getInputDataFromSandbox <- function(saveInputDb = FALSE){
+getInputDataFromSandbox <- function(){
   # define temporary list to save input data to
   dataTmp <- vector(mode = "list", length = length(modelInFileNames))
   names(dataTmp) <- modelInFileNames
@@ -20,11 +20,6 @@ getInputDataFromSandbox <- function(saveInputDb = FALSE){
   }
   addScalarVal <- function(scalar, description, value){
     value <- as.character(value)
-    if(!saveInputDb){
-      if(!length(value) || !nchar(value))
-        value <- "system.empty"
-    }
-    
     # generate data frame
     if(is.null(dataTmp[[length(modelInFileNames)]])){
       # no scalar data was written yet, so add headers

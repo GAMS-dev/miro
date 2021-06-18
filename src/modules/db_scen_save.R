@@ -138,8 +138,9 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
     if(!saveOutput){
       scenData$clearSandbox()
     }
-    scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE),
-                         if(length(modelInFileNames)) modelInFileNames else character(), activeScen$getMetadata())
+    scenData$loadSandbox(getInputDataFromSandbox(),
+                         if(length(modelInFileNames)) modelInFileNames else character(),
+                         activeScen$getMetadata())
     FALSE
   }, no_data = function(e){
     flog.error(conditionMessage(e))

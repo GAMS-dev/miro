@@ -244,7 +244,7 @@ observeEvent(input$btRefreshComp, {
   sbScenId <- startsWith(as.character(scenIds), "sb")
   if(any(sbScenId)){
     if(tryCatch({
-      scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE),
+      scenData$loadSandbox(getInputDataFromSandbox(),
                            modelInFileNames, activeScen$getMetadata())
       FALSE
     }, no_data = function(e){
@@ -470,7 +470,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     sandboxId <- 1L
     if("sb" %in% sidsToLoadVector){
       if(tryCatch({
-        scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE),
+        scenData$loadSandbox(getInputDataFromSandbox(),
                              modelInFileNames, activeScen$getMetadata())
         if(length(refId)){
           # there are multiple ref ids in tab comparison mode.

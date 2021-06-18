@@ -31,11 +31,14 @@ DataInstance <- R6Class("DataInstance", public = list(
     if(!identical(length(data), 3L)){
       return(invisible(self))
     }
+    private$clArgsDf <- data
+    isEmptyClArg <- is.na(data[[3]]) | nchar(data[[3]]) == 0L | data[[3]] %in% CLARG_MISSING_VALUES
+    data[isEmptyClArg, 3] <- NA_character_
     clArgs <- sort(c(ioConfig$DDPar, ioConfig$GMSOpt))
     clArgVals <- data[[3]][match(clArgs, data[[1]])]
     names(clArgVals) <- clArgs
     private$dataHashes[paste0("__cl_", clArgs)] <- vapply(clArgs, function(clArg){
-      if(is.na(clArgVals[clArg]) || clArgVals[clArg] %in% CLARG_MISSING_VALUES){
+      if(is.na(clArgVals[clArg])){
         return(NA_character_)
       }
       if(clArg %in% ioConfig$DDPar){
@@ -43,10 +46,13 @@ DataInstance <- R6Class("DataInstance", public = list(
       }
       return(paste0(substring(clArg, 9L), "= ", escapeGAMSCL(clArgVals[clArg])))
     }, character(1L), USE.NAMES = FALSE)
-    private$clArgsDf <- data
     return(invisible(self))
   },
-  getClArgsDf = function() private$clArgsDf,
+  getClArgs = function(){
+    clArgsTmp <- unlist(private$dataHashes[startsWith(names(private$dataHashes), "__cl_")],
+                        use.names = FALSE)
+    return(clArgsTmp[!is.na(clArgsTmp)])
+  },
   push = function(datasetName, data){
     stopifnot(is.character(datasetName), 
               identical(length(datasetName), 1L),

@@ -104,7 +104,7 @@ prepareModelRun <- function(async = FALSE){
   prog$inc(amount = 0.5, detail = lang$progressBar$prepRun$sendInput)
   # save input data
   if(tryCatch({
-    dataTmp <- getInputDataFromSandbox(saveInputDb = FALSE)
+    dataTmp <- getInputDataFromSandbox()
     FALSE
   }, no_data = function(e){
     flog.error(conditionMessage(e))

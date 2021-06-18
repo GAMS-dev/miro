@@ -142,7 +142,7 @@ output[["scenExportHandler"]] <- downloadHandler(
     if(tabsetId == 1){
       # active scenario (editable)
       errMsg <- tryCatch({
-        scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE),
+        scenData$loadSandbox(getInputDataFromSandbox(),
                              modelInFileNames, activeScen$getMetadata())
         NULL
       }, no_data = function(e){
@@ -285,7 +285,7 @@ observeEvent(input[["scenRemoteExportHandler"]], {
     if(tabsetId == 1){
       # active scenario (editable)
       if(tryCatch({
-        scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE),
+        scenData$loadSandbox(getInputDataFromSandbox(),
                              modelInFileNames, activeScen$getMetadata())
         FALSE
       }, no_data = function(e){

@@ -832,7 +832,7 @@ Worker <- R6Class("Worker", public = list(
       gamsArgs <- c(gamsArgs, 'trace="_scenTrc.trc"', "traceopt=3")
     }
     pfFilePath <- gmsFilePath(file.path(private$workDir, tolower(private$metadata$modelName) %+% ".pf"))
-    writeLines(c(clArgsDfToPf(private$inputData$getClArgsDf()), gamsArgs), pfFilePath)
+    writeLines(c(private$inputData$getClArgs(), gamsArgs), pfFilePath)
     
     private$process <- process$new(file.path(private$metadata$gamsSysDir, "gams"), 
                                    args = c(private$metadata$modelGmsName, "pf", pfFilePath), 
@@ -965,7 +965,7 @@ Worker <- R6Class("Worker", public = list(
         return(paste0("error:", statusCode, msg))
       }
     }, globals = list(metadata = private$metadata, workDir = private$workDir,
-                      pfFileContent = clArgsDfToPf(private$inputData$getClArgsDf()),
+                      pfFileContent = private$inputData$getClArgs(),
                       inputData = private$inputData, hcube = private$hcube,
                       authHeader = private$authHeader,
                       gmsFilePath = gmsFilePath,

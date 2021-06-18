@@ -42,7 +42,7 @@ observeEvent(input$btScenSplit2_open, {
 })
 loadSandboxScen <- function(scenId, refresh = FALSE){
   if(tryCatch({
-    scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE),
+    scenData$loadSandbox(getInputDataFromSandbox(),
                          modelInFileNames, activeScen$getMetadata())
     FALSE
   }, no_data = function(e){
