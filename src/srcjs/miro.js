@@ -8,6 +8,8 @@ import {
   changeTheme, LoadingScreen,
 } from './util';
 
+import { activateMiroPivotPresentation, deactivateMiroPivotPresentation } from './miro_pivot';
+
 const loadingScreen = new LoadingScreen();
 
 export function changeTab(object, idActive, idRefer) {
@@ -273,6 +275,13 @@ $(document).ready(() => {
       }());
     });
   }
+  $(document).on('click', '.activate-pivot-controls', function () {
+    activateMiroPivotPresentation(this.dataset.id);
+  });
+  $(document).on('click', '.deactivate-pivot-controls', function () {
+    deactivateMiroPivotPresentation(this.dataset.id);
+  });
+
   $('.toggle-config-view-left').click(() => {
     $('#config-right-graph')[0].setAttribute('style', '-webkit-transition: width 0.3s ease;-moz-transition: width 0.3s ease;-o-transition: width 0.3s ease;transition: width 0.3s ease;');
     $('#config-left-graph')[0].setAttribute('style', '-webkit-transition: margin 0.3s ease;-moz-transition: margin 0.3s ease;-o-transition: margin 0.3s ease;transition: margin 0.3s ease;');

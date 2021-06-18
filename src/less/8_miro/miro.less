@@ -378,7 +378,7 @@ animation: none !important;
   background-color: #222d32;
   background-color: rgba(0,0,0,0);
   color: #fff;
-  transition: all 500ms ease; 
+  transition: all 350ms ease; 
 }
 .bt-highlight-2:hover{
   border: 2px solid #ADADAD;
@@ -779,6 +779,14 @@ animation: none !important;
 }
 .item-delete {
   text-align: right;
+}
+.btn-item-delete {
+  .responsiveDark({
+    background-color: @modal-bg;
+ },
+ {
+    background-color: @modal-bg-dark;
+ });
 }
 .item-add-block{
   display: grid;
@@ -1495,6 +1503,91 @@ animation: none !important;
 }
 .drop-index-item:hover {
   .drop-index-item-selected;
+}
+.data-section {
+  margin:0;
+  margin-top: 10pt;
+  padding-top: 5pt;
+  border-bottom: 1px solid #e7e7e7;
+  border-top: 1px solid #e7e7e7;
+  
+}
+.data-section-header {
+  font-weight: 600;
+}
+.toggle-custom {
+  position: absolute;
+  left: 6px;
+}
+.drop-index-list-presentation {
+  padding: 0px;
+}
+.drop-index-item-presentation {
+  line-height: 10px;
+  font-size: 12px;
+  text-align: center;
+  .responsiveDark({
+     border: 1px solid #e0e0e0;
+  },
+  {
+     border: 1px solid #5a5b5f;
+  });
+  border-radius: 20px;
+  padding: 5px;
+  display: block;
+  .responsiveDark({
+    background-color: @modal-bg;
+  },
+  {
+    background-color: @modal-bg-dark;
+  });
+  box-shadow: rgba(0,0,0,.08) 0px 1px 4px;
+}
+.uel-item-presentation {
+  display: block;
+  padding: 5px 0px;
+  line-height: 16px;
+  margin: 0 3px 3px 0;
+  padding: 1px 3px;
+  .responsiveDark({
+    background: @modal-bg;
+  },
+  {
+    background: @modal-bg-dark;
+  });
+  color: #333;
+  border: 0 solid transparent;
+  border-radius: 3px;
+  display: inline-block;
+  vertical-align: baseline;
+  font-family: inherit;
+  font-size: 12px;
+  -webkit-font-smoothing: inherit;
+}
+.row-presentation {
+  margin: 3px;
+}
+.col-sm-4.column-presentation {
+  min-width: 50pt;
+  padding: 0px 15px 0px 0px;
+}
+.col-sm-8.column-presentation {
+  padding: 0px;
+}
+@media (max-width: 1024px) {
+  .column-presentation {
+    margin-bottom: 3pt;
+  }
+  .col-sm-4.column-presentation {
+    width: 100%;
+  }
+  .col-sm-8.column-presentation {
+    padding: 0px 15px 0px 0px;
+    width: 100%;
+  }
+}
+.list-presentation {
+  list-style-type: none;
 }
 .dropdown-item-wrapper {
   display: flex;
