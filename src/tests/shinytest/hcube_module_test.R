@@ -39,6 +39,7 @@ expect_identical(app$findElement("#hcWidget_2")$getValue(), "CPLEX")
 expect_identical(app$findElement("#hcWidget_4")$getValue(), "1")
 expect_identical(app$getValue("hcWidget_3"), c(7,22))
 expect_true(grepl("0 scenarios have already been solved", app$getValue("newHcJobInfo"), fixed = TRUE))
+expect_true(app$waitFor("$('#btSubmitHcJobConfirmUnsolved').is(':visible') === false", timeout = 50L))
 app$waitFor('$(\'button[data-dismiss="modal"]:visible\').click();true;', timeout = 50)
 Sys.sleep(2L)
 
@@ -93,5 +94,94 @@ app$findElement(".btSolve .dropdown-toggle")$click()
 app$findElement(".sidebar-menu a[onclick*='Submit Hypercube']")$click()
 Sys.sleep(3L)
 expect_true(grepl("1 scenarios have already been solved", app$getValue("newHcJobInfo"), fixed = TRUE))
+expect_true(app$waitFor("$('#btSubmitHcJobConfirmUnsolved').is(':visible') === true", timeout = 50L))
+expect_true(app$waitFor("$('#btSubmitHcJobConfirmUnsolved').is(':enabled')===false", timeout = 50L))
+
+app$setInputs(hcWidget_1 = c(2, 7))
+app$setInputs(hcWidget_1_step = c(2))
+app$setInputs(hcWidget_4 = c("0", "1"))
+Sys.sleep(2L)
+expect_true(grepl("selected 6 scenarios", app$getValue("newHcJobInfo"), fixed = TRUE))
+expect_true(grepl("1 scenarios have already been solved", app$getValue("newHcJobInfo"), fixed = TRUE))
+app$setInputs(hcWidget_3_combinations = TRUE)
+Sys.sleep(1L)
+expect_true(app$waitFor("$('#hcWidget_3_step').is(':visible') === true", timeout = 50L))
+expect_true(grepl("selected 126 scenarios", app$getValue("newHcJobInfo"), fixed = TRUE))
+app$setInputs(hcWidget_3_step = 9)
+Sys.sleep(1)
+expect_true(grepl("selected 18 scenarios", app$getValue("newHcJobInfo"), fixed = TRUE))
+app$setInputs(hcWidget_3_combinations = FALSE)
+Sys.sleep(1)
+expect_true(grepl("selected 6 scenarios", app$getValue("newHcJobInfo"), fixed = TRUE))
+Sys.sleep(2L)
+expect_true(app$waitFor("$('#btSubmitHcJobConfirmUnsolved').is(':enabled')===true", timeout = 50L))
+addSelectizeOption(app, "#newHcubeTags", "bla")
+addSelectizeOption(app, "#newHcubeTags", "blub")
+selectSelectizeOption(app, "#newHcubeTags", "bla")
+selectSelectizeOption(app, "#newHcubeTags", "blub")
+app$findElement("#btSubmitHcJobConfirmUnsolved")$click()
+timeout <- 20L
+repeat{
+  if(app$waitFor("$('#shiny-modal').is(':visible')", timeout = 50L)){
+    break
+  }
+  Sys.sleep(1L)
+  timeout <- timeout - 1L
+  if(timeout <= 0L){
+    app$snapshot()
+    stop("Timeout reached. Could not submit HC job.", call. = FALSE)
+  }
+}
+app$findElement("#sidebarItemExpanded a[data-value='gamsinter']")$click()
+app$findElement('#shiny-tab-gamsinter a[data-value="joblist"]')$click()
+app$findElement('#refreshActiveJobs')$click()
+Sys.sleep(3)
+
+app$snapshot()
+expect_true(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().includes('badge-info\">HC')", timeout = 50))
+expect_true(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().startsWith('bla,blub')", timeout = 50))
+expect_error(app$findElements("#jImport_output button[onclick*='showJobProgress']")[[1]]$click(), NA)
+Sys.sleep(1)
+expect_true(app$waitFor("$('#shiny-modal .progress-bar.progress-bar-striped.active').is(':visible');", 50))
+timeout <- 600L
+repeat{
+  if(app$waitFor("$('#shiny-modal .progress-bar.progress-bar-striped.active').is(':visible')===false;", 50)){
+    break
+  }
+  Sys.sleep(4L)
+  timeout <- timeout - 4L
+  if(timeout <= 0L){
+    stop("Timeout reached. Engine server seems busy. Try again later.", call. = FALSE)
+  }
+}
+expect_error(app$findElements("#jImport_output button[onclick*='downloadJobData']")[[1]]$click(), NA)
+timeout <- 30L
+repeat{
+  if(app$waitFor("$('#jImport_output td').length === 0", 50)){
+    break
+  }
+  Sys.sleep(2L)
+  timeout <- timeout - 2L
+  if(timeout <= 0L){
+    stop("Timeout reached. Could not import HC job.", call. = FALSE)
+  }
+}
+app$setInputs(btShowHistory = "click")
+Sys.sleep(2L)
+expect_true(app$waitFor("$('.cJob-wrapper td').get(2).innerHTML.trim().includes('badge-info\">HC')", timeout = 50))
+expect_true(app$waitFor("$('.cJob-wrapper td').get(2).innerHTML.trim().startsWith('bla,blub')", timeout = 50))
+expect_true(app$waitFor("$('.cJob-wrapper td').get(3).textContent.trim().includes('Imported')", timeout = 50))
+app$waitFor('$(\'button[data-dismiss="modal"]:visible\').click();true;', timeout = 50)
+Sys.sleep(2L)
+app$findElement("#sidebarItemExpanded a[data-value='loadResults']")$click()
+Sys.sleep(0.5)
+
+# use batch loder module to fetch HC scenarios
+context("UI tests - Hypercube module - load")
+app$setInputs(newLine_1 = "_sys_metadata_._stag")
+Sys.sleep(0.5)
+app$setInputs(val_1_1 = "blub")
+app$setInputs(btSendQuery = "click")
+Sys.sleep(2)
 
 app$stop()
