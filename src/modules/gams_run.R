@@ -119,10 +119,10 @@ prepareModelRun <- function(async = FALSE){
   }
   scenData$loadSandbox(dataTmp, if(length(modelInFileNames)) modelInFileNames else character(),
                        activeScen$getMetadata())
-  inputData <- DataInstance$new(modelInFileNames, fileExchange = config$fileExchange,
-                                gdxio = gdxio, csvDelim = config$csvDelim,
-                                activeScen = activeScen, attachments = attachments,
-                                views = views)
+  inputData <- InputDataInstance$new(modelInFileNames, fileExchange = config$fileExchange,
+                                     gdxio = gdxio, csvDelim = config$csvDelim,
+                                     activeScen = activeScen, attachments = attachments,
+                                     views = views)
   lapply(seq_along(dataTmp), function(id){
     # write compile time variable file and remove compile time variables from scalar dataset
     if(is.null(dataTmp[[id]])){
@@ -270,9 +270,9 @@ if(LAUNCHHCUBEMODE){
       prog$inc(amount = incAmount, detail = detail)
     }
     hcubeData <<- HcubeDataInstance$new(modelGmsName)
-    staticData <<- DataInstance$new(fileExchange = config$fileExchange,
-                                    gdxio = gdxio, csvDelim = config$csvDelim,
-                                    sortedNames = names(modelIn))
+    staticData <<- InputDataInstance$new(fileExchange = config$fileExchange,
+                                         gdxio = gdxio, csvDelim = config$csvDelim,
+                                         sortedNames = names(modelIn))
     modelInSorted <- sort(names(modelIn))
     elementValues <- lapply(seq_along(modelIn), function(j){
       updateProgress(incAmount = 1/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)

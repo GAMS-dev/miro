@@ -1,4 +1,4 @@
-DataInstance <- R6Class("DataInstance", public = list(
+InputDataInstance <- R6Class("InputDataInstance", public = list(
   initialize = function(datasetNames = character(0L), 
                         fileExchange = c("csv", "gdx"), 
                         gdxio = NULL,
