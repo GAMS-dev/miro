@@ -92,6 +92,24 @@ get_downloaded_file_content <- function(app, id, raw = FALSE){
   return(rawToChar(req$content))
 }
 
+connectDb <- function(modelName = NULL, dbPath = file.path(getwd(), "..", "testdb")){
+  if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
+    conn <- DBI::dbConnect(drv = RPostgres::Postgres(),
+                           dbname = Sys.getenv("MIRO_DB_NAME"), 
+                           host = Sys.getenv("MIRO_DB_HOST"),
+                           port = 5432, 
+                           user = Sys.getenv("MIRO_DB_USERNAME"),
+                           password = Sys.getenv("MIRO_DB_PASSWORD"),
+                           bigint = "integer")
+    DBI::dbExecute(conn, paste0("SET search_path TO ",
+                                Sys.getenv("MIRO_DB_SCHEMA"),
+                                ";"))
+    return(conn)
+  }
+  return(DBI::dbConnect(drv = RSQLite::SQLite(),
+                        dbname = file.path(dbPath, paste0(modelName, ".sqlite3")), bigint = "integer"))
+}
+
 createTestDb <- function(dbPath = file.path(getwd(), "..", "testdb")){
   if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
     # need to clean db tables

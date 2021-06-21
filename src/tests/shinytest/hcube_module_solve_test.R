@@ -1,5 +1,5 @@
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
-app$snapshotInit("hcube_module_test")
+app$snapshotInit("hcube_module_solve_test")
 
 context("UI tests - Hypercube module - solve/discard/import")
 
@@ -137,7 +137,6 @@ app$findElement('#shiny-tab-gamsinter a[data-value="joblist"]')$click()
 app$findElement('#refreshActiveJobs')$click()
 Sys.sleep(3)
 
-app$snapshot()
 expect_true(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().includes('badge-info\">HC')", timeout = 50))
 expect_true(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().startsWith('bla,blub')", timeout = 50))
 expect_error(app$findElements("#jImport_output button[onclick*='showJobProgress']")[[1]]$click(), NA)
@@ -173,15 +172,128 @@ expect_true(app$waitFor("$('.cJob-wrapper td').get(2).innerHTML.trim().startsWit
 expect_true(app$waitFor("$('.cJob-wrapper td').get(3).textContent.trim().includes('Imported')", timeout = 50))
 app$waitFor('$(\'button[data-dismiss="modal"]:visible\').click();true;', timeout = 50)
 Sys.sleep(2L)
-app$findElement("#sidebarItemExpanded a[data-value='loadResults']")$click()
-Sys.sleep(0.5)
 
-# use batch loder module to fetch HC scenarios
-context("UI tests - Hypercube module - load")
-app$setInputs(newLine_1 = "_sys_metadata_._stag")
+# Submit same HC job again and discard it
+app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
 Sys.sleep(0.5)
-app$setInputs(val_1_1 = "blub")
-app$setInputs(btSendQuery = "click")
+app$findElement(".btSolve .dropdown-toggle")$click()
+app$findElement(".sidebar-menu a[onclick*='Submit Hypercube']")$click()
+Sys.sleep(3L)
+expect_true(grepl("1 scenarios have already been solved", app$getValue("newHcJobInfo"), fixed = TRUE))
+expect_true(app$waitFor("$('#btSubmitHcJobConfirmUnsolved').is(':visible') === true", timeout = 50L))
+expect_true(app$waitFor("$('#btSubmitHcJobConfirmUnsolved').is(':enabled')===false", timeout = 50L))
+
+app$setInputs(hcWidget_1 = c(2, 7))
+app$setInputs(hcWidget_1_step = c(2))
+app$setInputs(hcWidget_4 = c("0", "1"))
+Sys.sleep(2L)
+expect_true(grepl("selected 6 scenarios", app$getValue("newHcJobInfo"), fixed = TRUE))
+expect_true(grepl("6 scenarios have already been solved", app$getValue("newHcJobInfo"), fixed = TRUE))
+expect_true(app$waitFor("$('#btSubmitHcJobConfirmUnsolved').is(':enabled')===false", timeout = 50L))
+addSelectizeOption(app, "#newHcubeTags", "<>")
+addSelectizeOption(app, "#newHcubeTags", "&&")
+selectSelectizeOption(app, "#newHcubeTags", "<>")
+selectSelectizeOption(app, "#newHcubeTags", "&&")
+app$findElement("#btSubmitHcJobConfirm")$click()
+timeout <- 20L
+repeat{
+  if(app$waitFor("$('#shiny-modal').is(':visible')", timeout = 50L)){
+    break
+  }
+  Sys.sleep(1L)
+  timeout <- timeout - 1L
+  if(timeout <= 0L){
+    app$snapshot()
+    stop("Timeout reached. Could not submit HC job.", call. = FALSE)
+  }
+}
+app$findElement("#sidebarItemExpanded a[data-value='gamsinter']")$click()
+app$findElement('#shiny-tab-gamsinter a[data-value="joblist"]')$click()
+app$findElement('#refreshActiveJobs')$click()
+Sys.sleep(3)
+expect_true(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().includes('badge-info\">HC')", timeout = 50))
+expect_true(app$waitFor("$('#jImport_output td').get(2).innerHTML.trim().startsWith('&lt;&gt;,&amp;&amp;');", timeout = 50))
+expect_error(app$findElements("#jImport_output button[onclick*='discardJob']")[[1]]$click(), NA)
 Sys.sleep(2)
+app$findElement("#confirmModal .bt-gms-confirm")$click()
+Sys.sleep(2)
+app$setInputs(btShowHistory = "click")
+Sys.sleep(2L)
+expect_true(app$waitFor("$('.cJob-wrapper td').get(2).innerHTML.trim().includes('badge-info\">HC')", timeout = 50))
+expect_true(app$waitFor("$('.cJob-wrapper td').get(2).innerHTML.trim().startsWith('&lt;&gt;,&amp;&amp;');", timeout = 50))
+expect_true(app$waitFor("$('.cJob-wrapper td').get(3).textContent.trim().startsWith('Discarded') && $('.cJob-wrapper td').get(3).textContent.trim().endsWith('The job was still active.')", timeout = 50))
+app$waitFor('$(\'button[data-dismiss="modal"]:visible\').click();true;', timeout = 50)
+Sys.sleep(2L)
+
+conn <- connectDb(modelName = "pickstock_configuration")
+tryCatch({
+  # discarding job should also clean up scen data
+  expect_identical(nrow(DBI::dbGetQuery(conn, paste0("SELECT * FROM ",
+                                                     DBI::dbQuoteIdentifier(conn, "_sys__hc_scalars"),
+                                                     " WHERE ",
+                                                     DBI::dbQuoteIdentifier(conn, "_sid"), ">2"))), 0L)
+}, error = function(e){
+  warning(conditionMessage(e), call. = FALSE)
+}, finally = {
+  DBI::dbDisconnect(conn)
+})
+
+# need to submit 1 more HC job with only two scenarios (needed for load test)
+app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
+Sys.sleep(0.5)
+app$findElement(".btSolve .dropdown-toggle")$click()
+app$findElement(".sidebar-menu a[onclick*='Submit Hypercube']")$click()
+Sys.sleep(3L)
+app$setInputs(hcWidget_1 = c(4, 8))
+app$setInputs(hcWidget_1_step = c(4))
+app$setInputs(hcWidget_4 = c("0"))
+Sys.sleep(2L)
+expect_true(grepl("selected 2 scenarios", app$getValue("newHcJobInfo"), fixed = TRUE))
+expect_true(grepl("1 scenarios have already been solved", app$getValue("newHcJobInfo"), fixed = TRUE))
+expect_true(app$waitFor("$('#btSubmitHcJobConfirmUnsolved').is(':enabled')===true", timeout = 50L))
+addSelectizeOption(app, "#newHcubeTags", "woff")
+selectSelectizeOption(app, "#newHcubeTags", "woff")
+app$findElement("#btSubmitHcJobConfirm")$click()
+timeout <- 20L
+repeat{
+  if(app$waitFor("$('#shiny-modal').is(':visible')", timeout = 50L)){
+    break
+  }
+  Sys.sleep(1L)
+  timeout <- timeout - 1L
+  if(timeout <= 0L){
+    app$snapshot()
+    stop("Timeout reached. Could not submit HC job.", call. = FALSE)
+  }
+}
+app$findElement("#sidebarItemExpanded a[data-value='gamsinter']")$click()
+app$findElement('#shiny-tab-gamsinter a[data-value="joblist"]')$click()
+app$findElement('#refreshActiveJobs')$click()
+Sys.sleep(3)
+timeout <- 200L
+repeat{
+  app$findElement('#refreshActiveJobs')$click()
+  if(app$waitFor("$(\"#jImport_output button[onclick*='downloadJobData']\").length>0", timeout = 50L)){
+    break
+  }
+  Sys.sleep(2L)
+  timeout <- timeout - 2L
+  if(timeout <= 0L){
+    app$snapshot()
+    stop("Timeout reached. Engine server seems busy. Try again later.", call. = FALSE)
+  }
+}
+expect_error(app$findElements("#jImport_output button[onclick*='downloadJobData']")[[1]]$click(), NA)
+timeout <- 30L
+repeat{
+  if(app$waitFor("$('#jImport_output td').length === 0", 50)){
+    break
+  }
+  Sys.sleep(2L)
+  timeout <- timeout - 2L
+  if(timeout <= 0L){
+    stop("Timeout reached. Could not import HC job.", call. = FALSE)
+  }
+}
 
 app$stop()

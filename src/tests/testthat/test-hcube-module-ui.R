@@ -51,8 +51,8 @@ if(file.exists(file.path("~", ".miro", paste0(".cred_", tolower(modelToTest)))))
   unlink(file.path("~", ".miro", paste0(".cred_", tolower(modelToTest))), force = TRUE)
 }
 
-test_that("Hypercube Module works",
-          expect_pass(testApp(file.path(testDir, ".."), "hcube_module_test",
+test_that("Solving Hypercube jobs works",
+          expect_pass(testApp(file.path(testDir, ".."), "hcube_module_solve_test",
                               compareImages = FALSE)))
 
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_REMOTE_EXEC"))
