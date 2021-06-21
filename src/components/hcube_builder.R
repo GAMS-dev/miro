@@ -20,6 +20,7 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
   },
   setDataHashes = function(dataHashes, scalarData){
     private$scalarData <- scalarData
+    private$scenToRemove <- NULL
     isAttach <- startsWith(names(private$dataHashes), "__xattach_")
     private$dataHashes[isAttach] <- NULL
     isNewAttach <- startsWith(names(dataHashes), "__xattach_")
