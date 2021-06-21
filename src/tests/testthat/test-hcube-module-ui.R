@@ -55,4 +55,12 @@ test_that("Solving Hypercube jobs works",
           expect_pass(testApp(file.path(testDir, ".."), "hcube_module_solve_test",
                               compareImages = FALSE)))
 
+test_that("Loading Hypercube jobs works",
+          expect_pass(testApp(file.path(testDir, ".."), "hcube_module_load_test",
+                              compareImages = FALSE)))
+
+test_that("Compare Mode works with Hypercube jobs",
+          expect_pass(testApp(file.path(testDir, ".."), "hcube_module_compare_test",
+                              compareImages = FALSE)))
+
 Sys.unsetenv(c("MIRO_MODEL_PATH", "MIRO_DB_PATH", "MIRO_REMOTE_EXEC"))

@@ -10,6 +10,12 @@ getSelectizeAliases <- function(app, selector){
   options <- app$getDebugLog("browser")$message
   return(rev(substr(options, 1, nchar(options) -4)))
 }
+getVisibleDtData <- function(app, id){
+  app$waitFor(paste0("console.log(JSON.stringify($('#", id, "').data('datatable').data().toArray()))"), timeout = 50L)
+  dtData <- app$getDebugLog("browser")$message
+  return(tibble::as_tibble(jsonlite::fromJSON(substr(dtData, 1, nchar(dtData) -4)),
+                           .name_repair = "universal"))
+}
 getHotData <- function(app, id){
   hotToR <- function(data){
     return(suppressWarnings(as_tibble(
