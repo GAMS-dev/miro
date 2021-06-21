@@ -127,7 +127,7 @@ ScenData <- R6Class("ScenData", public = list(
            is.null(private$cachedData[[scenIdChar]][["data"]]) ||
            is.null(private$cachedData[[scenIdChar]][["data"]][[symName]])){
           if(is.na(private$cachedData[[scenIdChar]][["inDataSid"]]) ||
-             symName %in% names(ioConfig$modelOut)){
+             symName %in% c(scalarsFileName, names(ioConfig$modelOut))){
             scenIdToFetch <- scenId
           }else{
             scenIdToFetch <- private$cachedData[[scenIdChar]][["inDataSid"]]
