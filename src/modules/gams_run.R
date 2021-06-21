@@ -1445,7 +1445,10 @@ if(identical(config$activateModules$hcube, TRUE)){
       flog.error("Unexpected error while generating new Hypercube job. Error message: '%s'",
                  conditionMessage(e))
       enableEl(session, "#btSubmitHcJobConfirm")
-      enableEl(session, "#btSubmitHcJobConfirmUnsolved")
+      hasUnsolvedHcScen <- noHcubeScenSolved() < noHcubeScen()
+      if(identical(length(hasUnsolvedHcScen), 1L) && hasUnsolvedHcScen){
+        enableEl(session, "#btSubmitHcJobConfirmUnsolved")
+      }
       showElReplaceTxt(session, "#newHcJobError", lang$errMsg$unknownError)
     })
   })
