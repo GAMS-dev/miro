@@ -44,6 +44,7 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
     dsIds <- paste0("__cl_", c(datasetNameLo, datasetNameUp))
     if(allCombinations){
       private$isDynamicCol[[dsIds[1]]] <- TRUE
+      private$isDynamicCol[[dsIds[2]]] <- FALSE
       private$dataRaw[[dsIds[1]]] <- paste0(data$min, '|"""|', data$max)
       private$dynamicRangeCols[[dsIds[1]]] <- list(id = datasetNameLo,
                                                    colNames = c(datasetNameLo, datasetNameUp))
@@ -54,6 +55,7 @@ HcubeBuilder <- R6Class("HcubeBuilder", public = list(
     }else{
       stopifnot(identical(length(data), 2L))
       private$isDynamicCol[dsIds] <- TRUE
+      private$dynamicRangeCols[dsIds] <- NULL
       private$dataRaw[dsIds] <- data
       private$dataHashes[dsIds] <- paste0(dsPrefixes, escapeGAMSCL(data))
     }

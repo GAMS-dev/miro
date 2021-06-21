@@ -206,6 +206,12 @@ test_that("Slider ranges work", {
       tidyr::pivot_wider(scalars, names_from = "scalar", values_from = "value"),
       -c(`_gmspar_sliderrange_lo`, `_gmspar_sliderrange_up`, `_hash`))),
     dplyr::select(scalarDf, !c(`_gmspar_sliderrange_lo`, `_gmspar_sliderrange_up`)))
+  hcubeBuilder$pushRange("_gmspar_sliderrange_lo", "_gmspar_sliderrange_up",
+                         c(3.3,7.901), allCombinations = FALSE)
+  expect_identical(hcubeBuilder$generateScenHashes(), "760739f9efeae17d714ca083f2b10b8f300716eb3bcf6bcdd29230cc8420c1aa")
+  expect_identical(hcubeBuilder$getNoScen(), 1L)
+  scalars <- hcubeBuilder$getHcubeScalars()
+  expect_identical(dplyr::filter(scalars, scalar == "_gmspar_sliderrange_up")[[3]], "7.901")
 })
 
 test_that("Subsetting scenario hashes works", {
