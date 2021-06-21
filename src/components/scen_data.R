@@ -121,6 +121,8 @@ ScenData <- R6Class("ScenData", public = list(
           private$cachedData[[scenIdChar]][["inDataSid"]] <- metaData[["_scode"]] - 10000L
         }
         checkDirty <- FALSE
+      }else if(identical(refId, "sb")){
+        private$cachedData[["sb"]][["inDataSid"]] <- private$cachedData[[as.character(scenId)]][["inDataSid"]]
       }
       for(symName in symNames){
         if(identical(refId, "sb") ||
