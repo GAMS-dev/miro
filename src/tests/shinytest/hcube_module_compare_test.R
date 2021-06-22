@@ -9,9 +9,9 @@ app$findElement("#sidebarItemExpanded a[data-value='loadResults']")$click()
 Sys.sleep(0.5)
 app$setInputs(btSendQuery = "click")
 expect_true(app$waitFor("$('#batchLoadResults').data('datatable').data().length===8", timeout = 50L))
-app$setInputs(batchLoadResults_rows_selected = c(1, 2), allowInputNoBinding_ = TRUE)
+app$setInputs(batchLoadResults_rows_selected = c(1, 6), allowInputNoBinding_ = TRUE)
 scenData <- getVisibleDtData(app, "batchLoadResults")
-scenHashTmp <- scenData[[2]][2]
+scenHashTmp <- scenData[[2]][6]
 
 app$setInputs(hcubeLoadSelected = "click")
 Sys.sleep(2L)
@@ -24,7 +24,7 @@ expect_identical(length(graphData), 756L)
 expect_identical(graphData[, 1], c("2016-01-04T00:00:00.000Z", "100.572928794899", "101.703327363261"))
 app$setInputs(contentScen_5 = "contentScen_5_11")
 expect_true(app$waitFor(paste0("$('.small-box:visible')[0].textContent.trim().startsWith('",
-                               scenData[[14]][2], "')"), timeout = 50L))
+                               scenData[[14]][6], "')"), timeout = 50L))
 expect_true(app$waitFor("$('.small-box:visible')[1].textContent.trim().startsWith('99')", timeout = 50))
 
 
@@ -33,7 +33,7 @@ app$findElement("#sidebarItemExpanded a[data-value='loadResults']")$click()
 Sys.sleep(0.5)
 app$setInputs(btSendQuery = "click")
 expect_true(app$waitFor("$('#batchLoadResults').data('datatable').data().length===8", timeout = 50L))
-app$setInputs(batchLoadResults_rows_selected = c(2), allowInputNoBinding_ = TRUE)
+app$setInputs(batchLoadResults_rows_selected = c(6), allowInputNoBinding_ = TRUE)
 app$setInputs(hcubeLoadSelected = "click")
 Sys.sleep(2L)
 app$setInputs(btBatchLoadSb = "click")
