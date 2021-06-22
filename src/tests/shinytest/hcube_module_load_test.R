@@ -133,7 +133,7 @@ tryCatch({
   hcJobData <- DBI::dbGetQuery(conn, paste0("SELECT * FROM ",
                                             DBI::dbQuoteIdentifier(conn, "_sys_metadata_"),
                                             " WHERE ",
-                                            DBI::dbQuoteIdentifier(conn, "_scode"), "==-2"))
+                                            DBI::dbQuoteIdentifier(conn, "_scode"), "=-2"))
   expect_identical(nrow(hcJobData), 1L)
 }, error = function(e){
   warning(conditionMessage(e), call. = FALSE)
