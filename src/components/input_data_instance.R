@@ -1,18 +1,11 @@
 InputDataInstance <- R6Class("InputDataInstance", public = list(
-  initialize = function(datasetNames = character(0L), 
-                        fileExchange = c("csv", "gdx"), 
+  initialize = function(fileExchange = c("csv", "gdx"), 
                         gdxio = NULL,
                         csvDelim = ",",
                         sortedNames = character(0L),
                         activeScen = NULL,
                         attachments = NULL,
                         views = NULL){
-    if(!length(datasetNames)){
-      private$datasetNames <- character(0L)
-    }else{
-      stopifnot(is.character(datasetNames))
-      private$datasetNames <- datasetNames
-    }
     if(length(gdxio)){
       private$gdxio <- gdxio
     }
@@ -70,9 +63,6 @@ InputDataInstance <- R6Class("InputDataInstance", public = list(
     stopifnot(is.character(datasetName), 
               identical(length(datasetName), 1L),
               inherits(data, "data.frame"))
-    if(!datasetName %in% private$datasetNames){
-      private$datasetNames <- c(private$datasetNames, datasetName)
-    }
     private$data[[datasetName]] <- data
     if(identical(datasetName, scalarsFileName)){
       scalarsConfig <- ioConfig$modelInRaw[[scalarsFileName]]
@@ -227,7 +217,6 @@ InputDataInstance <- R6Class("InputDataInstance", public = list(
   gdxio = NULL,
   filePaths = character(0L),
   dirPaths = character(0L),
-  datasetNames = character(0L),
   fileExchange = character(1L),
   csvDelim = character(1L),
   sortedNames = character(0L),

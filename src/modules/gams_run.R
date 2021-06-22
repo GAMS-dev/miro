@@ -119,7 +119,7 @@ prepareModelRun <- function(async = FALSE){
   }
   scenData$loadSandbox(dataTmp, if(length(modelInFileNames)) modelInFileNames else character(),
                        activeScen$getMetadata())
-  inputData <- InputDataInstance$new(modelInFileNames, fileExchange = config$fileExchange,
+  inputData <- InputDataInstance$new(fileExchange = config$fileExchange,
                                      gdxio = gdxio, csvDelim = config$csvDelim,
                                      activeScen = activeScen, attachments = attachments,
                                      views = views)
