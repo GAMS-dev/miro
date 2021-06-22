@@ -1380,8 +1380,11 @@ if(identical(config$activateModules$hcube, TRUE)){
     hcubeBuilder$removeScen(existingHashes)
     rv$submitHCJobConfirm <- rv$submitHCJobConfirm + 1L
   })
-  observeEvent(virtualActionButton(input$btSubmitHcJobConfirm, rv$submitHCJobConfirm), {
+  observeEvent(input$btSubmitHcJobConfirm, {
     flog.trace("Button to confirm submission of new Hypercube job (all scenarios) clicked.")
+    rv$submitHCJobConfirm <- rv$submitHCJobConfirm + 1L
+  })
+  observeEvent(rv$submitHCJobConfirm, {
     if(!verifyCanSolve(async = TRUE, buttonId = "btSubmitHcJob")){
       return()
     }
