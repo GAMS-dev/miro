@@ -15,6 +15,9 @@ Sys.setenv(MIRO_MODEL_PATH = file.path(testModelDir, paste0(modelToTest, ".gms")
 Sys.setenv(MIRO_MODEL_NAME = modelToTest)
 Sys.setenv(MIRO_MODE="hcube")
 
+if(file.exists(file.path("~", ".miro", paste0(".cred_", tolower(modelToTest))))){
+  unlink(file.path("~", ".miro", paste0(".cred_", tolower(modelToTest))), force = TRUE)
+}
 
 #activate local upload module, deactivate 
 file.copy(file.path(dirname(configJSONFileName), paste0(tolower(modelToTest), "_expected.json")), 
