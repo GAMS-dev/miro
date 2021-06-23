@@ -1417,15 +1417,6 @@ animation: none !important;
 .miro-pivot-filter .form-group label {
   margin-bottom: 0;
 }
-.filter-index-list::after,
-.aggregation-index-list::after {
-    .responsiveDark({
-       background-color: @modal-bg;
-    },
-    {
-       background-color: @modal-bg-dark;
-    });
-}
 .dropdown-menu .miro-pivot-delete-view-button {
   width: 20px;
   padding-left: 10px;
@@ -1434,13 +1425,9 @@ animation: none !important;
   color: #F39619;
   background-color: unset;
 }
-.drop-index-list::after {
-    margin: 5px;
-    position:absolute;
-    left: 0;
-    top: -25px;
-    font-size: 10pt;
-    font-weight: 600;
+.drop-index-header {
+    font-size: 14px;
+    font-weight: 700;
 }
 .drop-index-list {
   position: relative;
@@ -1505,10 +1492,8 @@ animation: none !important;
   .drop-index-item-selected;
 }
 .data-section {
-  margin:0;
-  margin-top: 10pt;
+  margin:25pt 0 0;
   padding-top: 5pt;
-  border-bottom: 1px solid #e7e7e7;
   border-top: 1px solid #e7e7e7;
   
 }
@@ -1523,7 +1508,7 @@ animation: none !important;
   padding: 0px;
 }
 .drop-index-item-presentation {
-  line-height: 10px;
+  line-height: 12px;
   font-size: 12px;
   text-align: center;
   .responsiveDark({
@@ -1532,7 +1517,7 @@ animation: none !important;
   {
      border: 1px solid #5a5b5f;
   });
-  border-radius: 20px;
+  border-radius: 10px;
   padding: 5px;
   display: block;
   .responsiveDark({
@@ -1550,14 +1535,14 @@ animation: none !important;
   margin: 0 3px 3px 0;
   padding: 1px 3px;
   .responsiveDark({
-    background: @modal-bg;
+    background: #efefef;
   },
   {
     background: @modal-bg-dark;
   });
   color: #333;
   border: 0 solid transparent;
-  border-radius: 3px;
+  border-radius: 5px;
   display: inline-block;
   vertical-align: baseline;
   font-family: inherit;

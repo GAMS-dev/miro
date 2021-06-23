@@ -746,12 +746,6 @@ if(buildUI){
         # Logo ratio should be 4,6 (width/height)
         tags$style(HTML(
           paste0('
-.filter-index-list::after {
-    content: "', lang$renderers$miroPivot$filterLabel, '";
-}
-.aggregation-index-list::after {
-    content: "', lang$renderers$miroPivot$aggregateLabel, '";
-}
 .main-header .logo {
   background-image: url("', 
 if(!identical(config$UILogo, "gams_logo.png") && 
