@@ -37,19 +37,30 @@ function updatePivotPresentationData(id) {
 }
 
 export function activateMiroPivotPresentation(id) {
-  $(`#${id}pivotTable`).on('shiny:value', () => {
-    updatePivotPresentationData(id);
+  $(`#${id}pivotTable`).on('shiny:value', (e) => {
+    if (e.value.x != null) {
+      $(`#${id}container .presentation-show .bt-export-canvas`).hide();
+      updatePivotPresentationData(id);
+    }
   });
-  $(`#${id}pivotChart`).on('shiny:value', () => {
-    updatePivotPresentationData(id);
+  $(`#${id}pivotChart`).on('shiny:value', (e) => {
+    if (e.value.x != null) {
+      $(`#${id}container .presentation-show .bt-export-canvas`).show();
+      updatePivotPresentationData(id);
+    }
   });
+
+  if (document.getElementById(`${id}pivotTable`).getElementsByClassName('dataTable').length > 0) {
+    $(`#${id}container .presentation-show .bt-export-canvas`).hide();
+  } else {
+    $(`#${id}container .presentation-show .bt-export-canvas`).show();
+  }
+
   updatePivotPresentationData(id);
   $(`#${id}container .row`).slice(2, 3).children('.col-sm-2').animate({ width: 'hide' }, 350, () => {
     $(`#${id}container .row`).slice(2, 3).children('.col-sm-10').toggleClass('col-sm-10 col-12', 750);
     $(`#${id}container .row`).slice(0, 2).slideUp(500, () => {
       $(`#${id}container .row`).slice(0, 1).find('.presentation-hide').hide();
-      $(`#${id}downloadCsv`).css({ position: 'absolute', top: '-500pt' });
-      $(`#${id}downloadPng`).css({ position: 'absolute', top: '-500pt' });
       $(`#${id}container .row`).slice(0, 1).children('.col-sm-2')[0].setAttribute('style', 'padding: 0px');
       $(`#${id}container .row`).slice(0, 1).find('.dropdown.presentation')[0].setAttribute('style', 'margin-top: 0px');
       $(`#${id}container .row`).slice(0, 1).find('.presentation-show').show(0, () => {
@@ -72,13 +83,9 @@ export function deactivateMiroPivotPresentation(id) {
     $(`#${id}container .row`).slice(0, 1).children('.col-sm-2')[0].setAttribute('style', 'padding: 1em');
     $(`#${id}container .row`).slice(0, 1).find('.presentation-hide').show();
 
-    $(`#${id}downloadCsv`).css({ position: '', top: '' });
-    $(`#${id}downloadPng`).css({ position: '', top: '' });
     if (['table', 'heatmap'].includes(Shiny.shinyapp.$inputValues[$(`#${id}pivotRenderer`)])) {
-      $(`#${id}container .row`).slice(0, 1).find($(`#${id}downloadCsv`)).show();
       $(`#${id}container .row`).slice(0, 1).find($(`#${id}downloadPng`)).hide();
     } else {
-      $(`#${id}container .row`).slice(0, 1).find($(`#${id}downloadCsv`)).hide();
       $(`#${id}container .row`).slice(0, 1).find($(`#${id}downloadPng`)).show();
     }
     $(`#${id}container .row`).slice(0, 1).find('.presentation-show').slideUp(0, () => {

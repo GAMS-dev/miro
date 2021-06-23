@@ -53,8 +53,8 @@ switchCompareMode <- function(session, mode, numberScenTabs){
 hideEl <- function(session, id){
   session$sendCustomMessage("gms-hideEl", id)
 }
-changeHeightEl <- function(session, id, height, delay = NULL){
-  session$sendCustomMessage("gms-changeHeightEl", list(id = id, height = height, delay = delay))
+setCssEl <- function(session, id, css){
+  session$sendCustomMessage("gms-setCss", list(id = id, css = css))
 }
 showHideEl <- function(session, id, delay = 2000, msg = NULL){
   session$sendCustomMessage("gms-showHideEl", list(id = id, delay = delay, msg = msg))

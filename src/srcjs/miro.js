@@ -281,6 +281,11 @@ $(document).ready(() => {
   $(document).on('click', '.deactivate-pivot-controls', function () {
     deactivateMiroPivotPresentation(this.dataset.id);
   });
+  $(document).on('click', '.btn-proxy', function () {
+    setTimeout(() => {
+      $(`#${this.dataset.proxyId}`)[0].click();
+    }, 200);
+  });
 
   $('.toggle-config-view-left').click(() => {
     $('#config-right-graph')[0].setAttribute('style', '-webkit-transition: width 0.3s ease;-moz-transition: width 0.3s ease;-o-transition: width 0.3s ease;transition: width 0.3s ease;');
@@ -403,14 +408,8 @@ $(document).ready(() => {
     }
     $(data.id).trigger('shown');
   });
-  Shiny.addCustomMessageHandler('gms-changeHeightEl', (data) => {
-    if (data.delay != null) {
-      setTimeout(() => {
-        $(data.id).height(data.height);
-      }, data.delay);
-    } else {
-      $(data.id).height(data.height);
-    }
+  Shiny.addCustomMessageHandler('gms-setCss', (data) => {
+    $(data.id).css(data.css);
   });
   Shiny.addCustomMessageHandler('gms-scriptExecuted', (data) => {
     let scriptOutputContainer;

@@ -95,22 +95,27 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                            ),
                            if(!isFALSE(options$enablePersistentViews)){
                              tagList(
-                               actionButton(ns("saveView"), label = NULL, icon = icon("plus-square"), 
-                                            title = lang$renderers$miroPivot$btNewView,
-                                            class="btn-custom presentation-hide"),
-                               downloadButton(ns("downloadCsv"), label = NULL,
-                                              title = lang$renderers$miroPivot$btDownloadCsv,
-                                              class="btn-custom presentation-hide"),
-                               tags$a(id = ns("downloadPng"),
-                                      class = "btn btn-default bt-export-canvas btn-custom presentation-hide",
-                                      download = "chart.png",
-                                      href = "#",
-                                      `data-canvasid` = ns("pivotChart"),
-                                      tags$i(class = "fa fa-download"),
-                                      title = lang$renderers$miroPivot$btDownloadPng,
-                                      style = "display:none;"),
-                               tags$div(id = ns("hidePivotControls"), class = "btn btn-default btn-custom activate-pivot-controls presentation-hide", 
-                                      icon("table"), title = "Hide pivot Controls", `data-id` = ns("")),
+                               tags$div(class = "presentation-hide",
+                                        actionButton(ns("saveView"), label = NULL, icon = icon("plus-square"), 
+                                                     title = lang$renderers$miroPivot$btNewView,
+                                                     class="btn-custom"),
+                                        tags$a(id = ns("downloadCsv"),
+                                               class = "btn btn-default shiny-download-link btn-custom",
+                                               href = "",
+                                               target = "_blank",
+                                               download = NA,
+                                               title = lang$renderers$miroPivot$btDownloadCsv,
+                                               tags$i(class = "fa fa-file-csv")),
+                                        tags$a(id = ns("downloadPng"),
+                                               class = "btn btn-default bt-export-canvas btn-custom",
+                                               download = "chart.png",
+                                               href = "#",
+                                               `data-canvasid` = ns("pivotChart"),
+                                               tags$i(class = "fa fa-file-image"),
+                                               title = lang$renderers$miroPivot$btDownloadPng,
+                                               style = "display:none;"),
+                                        tags$div(id = ns("hidePivotControls"), class = "btn btn-default btn-custom activate-pivot-controls", 
+                                                 icon("table"), title = "Hide pivot Controls", `data-id` = ns(""))),
                                tags$div(class="dropdown presentation", style = "margin-top:10px;",
                                         tags$button(class="btn btn-default dropdown-toggle btn-dropdown",
                                                     type = "button", id = ns("toggleViewButton"),
@@ -124,17 +129,33 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                                         ))
                              )
                            }else{
-                             downloadButton(ns("downloadCsv"), label = lang$renderers$miroPivot$btDownloadCsv)
+                             tags$div(class = "presentation-hide",
+                               tags$a(id = ns("downloadCsv"),
+                                      class = "btn btn-default shiny-download-link btn-custom",
+                                      href = "",
+                                      target = "_blank",
+                                      download = NA,
+                                      title = lang$renderers$miroPivot$btDownloadCsv,
+                                      tags$i(class = "fa fa-file-csv")),
+                               tags$a(id = ns("downloadPng"),
+                                      class = "btn btn-default bt-export-canvas btn-custom",
+                                      download = "chart.png",
+                                      href = "#",
+                                      `data-canvasid` = ns("pivotChart"),
+                                      tags$i(class = "fa fa-file-image"),
+                                      title = lang$renderers$miroPivot$btDownloadPng,
+                                      style = "display:none;"),
+                               tags$div(id = ns("hidePivotControls"), class = "btn btn-default btn-custom activate-pivot-controls", 
+                                        icon("table"), title = "Hide pivot Controls", `data-id` = ns(""))
+                             )
                            }
                     ),
                     column(width = 10L, class = "presentation-show", style = "display:none;",
-                           tags$a(id = ns("downloadCsvPresentation"), 
-                                  class = "btn btn-default shiny-download-link btn-custom", 
-                                  href = "", target = "_blank", download = NA, 
-                                  tags$i(class = "fa fa-file-csv"),
+                           tags$a(`data-proxy-id` = ns("downloadCsv"), 
+                                  class = "btn btn-default shiny-download-link btn-custom btn-proxy", 
+                                  href = "#", tags$i(class = "fa fa-file-csv"),
                                   title = lang$renderers$miroPivot$btDownloadCsv),
-                           tags$a(id = ns("downloadPngPresentation"),
-                                  class = "btn btn-default bt-export-canvas btn-custom",
+                           tags$a(class = "btn btn-default bt-export-canvas btn-custom",
                                   download = "chart.png",
                                   href = "#",
                                   `data-canvasid` = ns("pivotChart"),
@@ -1072,6 +1093,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           dataTmp <- slice(dataTmp, 1:500L)
           noError <- FALSE
         }
+        setCssEl(session, paste0("#", ns("pivotChart")),
+                 list(position = "", top = ""))
         if(noError){
           hideEl(session, paste0("#", ns("errMsg")))
         }
@@ -1139,16 +1162,15 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if(!identical(pivotRenderer, "table")){
           if(!identical(pivotRenderer, "heatmap")){
             showEl(session, paste0("#", ns("downloadPng")))
-            hideEl(session, paste0("#", ns("downloadCsv")))
             return()
           }
           isHeatmap <- TRUE
           isEditableTable <- FALSE
         }
         hideEl(session, paste0("#", ns("downloadPng")))
-        showEl(session, paste0("#", ns("downloadCsv")))
         
-        changeHeightEl(session, paste0("#", ns("pivotChart")), 1, 500)
+        setCssEl(session, paste0("#", ns("pivotChart")),
+                 list(position = "absolute", top = "-2000pt"))
         showEl(session, paste0("#", ns("loadPivotTable")))
         dataTmp <- dataToRender()
         if(!length(dataTmp)){
