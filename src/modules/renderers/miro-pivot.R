@@ -346,6 +346,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       isEditable <- FALSE
       bigData <- FALSE
       
+      hiddenEmptyCols <- NULL
+      
       if(isInput){
         dataUpdated <- reactiveVal(1L)
         if(nrow(data) < 5e+05){
@@ -838,7 +840,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                               if(isInput){
                                                 dataUpdated()
                                               }
-                                              write_csv(dataToRender(), file, na = "")
+                                              if(length(hiddenEmptyCols)){
+                                                return(write_csv(dataToRender()[-hiddenEmptyCols],
+                                                                 file, na = ""))
+                                              }
+                                              return(write_csv(dataToRender(), file, na = ""))
                                             })
       rendererEnv[[ns("filterDropdowns")]] <- observe({
         filterElements <- filteredData()$filterElements
@@ -1220,13 +1226,16 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
           hideEl(session, paste0("#", ns("errMsg")))
         }
         if(isTRUE(options$enableHideEmptyCols) && isTRUE(input$hideEmptyCols)){
-          labels <- do.call(paste, c(dataTmp[which(vapply(dataTmp[seq_len(rowHeaderLen)],
-                                                                        function(x) !identical(as.character(unique(x)),
-                                                                                               if(length(options$emptyUEL))
-                                                                                                 options$emptyUEL else "-"),
-                                                                        logical(1L), USE.NAMES = FALSE))],
-                                                   list(sep = ".")))
+          hiddenEmptyColsTmp <- vapply(dataTmp[seq_len(rowHeaderLen)],
+                                       function(x) identical(as.character(unique(x)),
+                                                             if(length(options$emptyUEL))
+                                                               options$emptyUEL else "-"),
+                                       logical(1L), USE.NAMES = FALSE)
+          hiddenEmptyCols <<- which(hiddenEmptyColsTmp)
+          labels <- do.call(paste, c(dataTmp[which(!hiddenEmptyCols)],
+                                     list(sep = ".")))
         }else{
+          hiddenEmptyCols <<- NULL
           labels <- do.call(paste, c(dataTmp[seq_len(rowHeaderLen)], list(sep = ".")))
         }
         if(!length(labels)){
@@ -1337,6 +1346,19 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         hideEl(session, paste0("#", ns("loadPivotTable")))
         
+        if(isTRUE(options$enableHideEmptyCols) && isTRUE(input$hideEmptyCols)){
+          hiddenEmptyCols <<- which(vapply(dataTmp[seq_len(noRowHeaders)],
+                                           function(x) identical(as.character(unique(x)),
+                                                                 if(length(options$emptyUEL))
+                                                                   options$emptyUEL else "-"),
+                                           logical(1L), USE.NAMES = FALSE))
+          columnDefsTmp <- list(list(visible = FALSE,
+                                     targets = hiddenEmptyCols - 1L))
+        }else{
+          hiddenEmptyCols <<- NULL
+          columnDefsTmp <- NULL
+        }
+        
         ret <- datatable(dataTmp, extensions = c("Scroller", "FixedColumns"), 
                   selection = if(isEditableTable) "multiple" else "none", editable = isEditableTable,
                   callback = JS("setTimeout(function() { table.draw(true); }, 500);"),
@@ -1372,13 +1394,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                  scrollY = 400, scrollX = TRUE, scrollCollapse = TRUE,
                                  scroller = list(loadingIndicator = FALSE), dom = 'Bfrtip',
                                  fixedColumns = list(leftColumns = noRowHeaders),
-                                 columnDefs = if(isTRUE(options$enableHideEmptyCols) && isTRUE(input$hideEmptyCols))
-                                   list(list(visible = FALSE,
-                                             targets = which(vapply(dataTmp[seq_len(noRowHeaders)],
-                                                                    function(x) identical(as.character(unique(x)),
-                                                                                          if(length(options$emptyUEL))
-                                                                                            options$emptyUEL else "-"),
-                                                                    logical(1L), USE.NAMES = FALSE)) - 1L))), rownames = FALSE) %>%
+                                 columnDefs = columnDefsTmp), rownames = FALSE) %>%
           formatRound(seq(noRowHeaders + 1, length(dataTmp)), 
                       digits = roundPrecision)
         if(!isHeatmap){
