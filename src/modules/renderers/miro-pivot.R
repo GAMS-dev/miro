@@ -1232,7 +1232,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                                                options$emptyUEL else "-"),
                                        logical(1L), USE.NAMES = FALSE)
           hiddenEmptyCols <<- which(hiddenEmptyColsTmp)
-          labels <- do.call(paste, c(dataTmp[which(!hiddenEmptyCols)],
+          labels <- do.call(paste, c(dataTmp[which(!hiddenEmptyColsTmp)],
                                      list(sep = ".")))
         }else{
           hiddenEmptyCols <<- NULL
