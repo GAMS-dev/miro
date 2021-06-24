@@ -1232,10 +1232,19 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                                                options$emptyUEL else "-"),
                                        logical(1L), USE.NAMES = FALSE)
           hiddenEmptyCols <<- which(hiddenEmptyColsTmp)
+          hiddenEmptyColsJs <- rep.int("false", rowHeaderLen)
+          hiddenEmptyColsJs[hiddenEmptyColsTmp] <- "true"
+          setAttributes(session, paste0("#", ns("rowIndexList .drop-index-item:nth-child("),
+                                        seq_len(rowHeaderLen), ")"),
+                        "data-col-hidden", hiddenEmptyColsJs)
           labels <- do.call(paste, c(dataTmp[which(!hiddenEmptyColsTmp)],
                                      list(sep = ".")))
         }else{
           hiddenEmptyCols <<- NULL
+          if(isTRUE(options$enableHideEmptyCols)){
+            setAttributes(session, paste0("#", ns("rowIndexList .drop-index-item")),
+                          "data-col-hidden", "false")
+          }
           labels <- do.call(paste, c(dataTmp[seq_len(rowHeaderLen)], list(sep = ".")))
         }
         if(!length(labels)){
@@ -1352,10 +1361,19 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                                                  if(length(options$emptyUEL))
                                                                    options$emptyUEL else "-"),
                                            logical(1L), USE.NAMES = FALSE))
+          hiddenEmptyColsJs <- rep.int("false", noRowHeaders)
+          hiddenEmptyColsJs[hiddenEmptyCols] <- "true"
+          setAttributes(session, paste0("#", ns("rowIndexList .drop-index-item:nth-child("),
+                                        seq_len(noRowHeaders), ")"),
+                        "data-col-hidden", hiddenEmptyColsJs)
           columnDefsTmp <- list(list(visible = FALSE,
                                      targets = hiddenEmptyCols - 1L))
         }else{
           hiddenEmptyCols <<- NULL
+          if(isTRUE(options$enableHideEmptyCols)){
+            setAttributes(session, paste0("#", ns("rowIndexList .drop-index-item")),
+                          "data-col-hidden", "false")
+          }
           columnDefsTmp <- NULL
         }
         
