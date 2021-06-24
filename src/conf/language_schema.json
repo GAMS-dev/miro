@@ -2860,6 +2860,18 @@
               "type": "string",
               "minLength": 1
             },
+            "rows": {
+              "type": "string",
+              "minLength": 1
+            },
+            "columns": {
+              "type": "string",
+              "minLength": 1
+            },
+            "aggregation": {
+              "type": "string",
+              "minLength": 1
+            },
             "aggregateLabel": {
               "type": "string",
               "minLength": 1
@@ -3053,7 +3065,7 @@
               "minProperties": 2
             }
           },
-          "minProperties": 34
+          "minProperties": 37
         },
         "datatable": {
           "type": "object",
