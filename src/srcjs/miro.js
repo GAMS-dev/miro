@@ -392,8 +392,11 @@ $(document).ready(() => {
       e.returnValue = 'Are you sure you want to leave? Unsaved changes will be lost!';
     }
   });
-  Shiny.addCustomMessageHandler('gms-setAttrib', (data) => {
-    $(data.selector).attr(data.attr, data.val);
+  Shiny.addCustomMessageHandler('gms-setAttribs', (data) => {
+    console.log(data);
+    for (let i = 0; i < data.selectors.length; i += 1) {
+      $(data.selectors[i]).attr(data.attr, data.vals[i]);
+    }
   });
   Shiny.addCustomMessageHandler('gms-showLoadingScreen', (delay) => {
     loadingScreen.show(delay);
