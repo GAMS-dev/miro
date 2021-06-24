@@ -254,7 +254,8 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                                                              tags$div(class = "data-section-header", 
                                                                       lang$renderers$miroPivot$aggregation)),
                                                       column(width = 8L, class="column-presentation",
-                                                             tags$div(class = "data-section-header"))))),
+                                                             tags$div(class = "data-section-header", 
+                                                                      lang$renderers$miroPivot$filterLabel))))),
                              tags$ul(id = ns("aggPresentation"), class = "drop-index-list-presentation")
                       )),
                     if(length(options$domainFilter$domains)){

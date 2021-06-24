@@ -36,8 +36,9 @@ function updatePivotPresentationData(id) {
   $(`#${id}colsPresentation`).html(domainConfig.indexHTML.col);
   $(`#${id}aggPresentation`).html(domainConfig.indexHTML.aggregation);
 
-  const aggregationType = $(`#${id}aggregationFunction`).next().find('.item')[0].innerText;
-  $(`#${id}container .data-section-header`).slice(-1).html(aggregationType);
+  const aggregationType = ` (${$(`#${id}aggregationFunction`).next().find('.item')[0].innerText})`;
+  const aggregation = $(`#${id}container .data-section-header`).slice(-2, -1)[0].innerText.split(' (')[0];
+  $(`#${id}container .data-section-header`).slice(-2, -1).html(aggregation + aggregationType);
 }
 
 export function activateMiroPivotPresentation(id) {
