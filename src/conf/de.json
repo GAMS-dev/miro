@@ -789,6 +789,8 @@
       "newViewChartTitle": "Diagrammtitel",
       "newViewxTitle": "X-Achsen-Beschriftung",
       "newViewyTitle": "Y-Achsen-Beschriftung",
+      "newViewCbCustomColors": "Benutzerdefinierte Farben verwenden?",
+      "newViewCbManualColors": "Farben manuell eingeben?",
       "newViewBtCancel": "Abbrechen",
       "newViewBtSave": "Speichern",
       "newViewBtCancelOverwrite": "Nein",

@@ -1684,3 +1684,27 @@ accessPermInput <- function(inputId, label, choices, selected = NULL){
                                 items = I(toJSON(selected, auto_unbox = FALSE)),
                                 render = I("{option: function(d,e){return '<div>'+(d.isGroup?'<i class=\"fas fa-users\"></i> '+e(d.value.substring(1)):'<i class=\"fas fa-user\"></i> '+e(d.value))+'</div>';},item:function(d,e){return '<div>'+(d.isGroup?'<i class=\"fas fa-users\"></i> '+e(d.value.substring(1)):'<i class=\"fas fa-user\"></i> '+e(d.value))+'</div>';}}")))
 }
+colorPickerInput <- function(id, label = NULL, value = NULL, colorBox = FALSE){
+  if(colorBox){
+    colorpicker <- tags$div(class = "shiny-input-container miro-color-picker",
+                            tags$label(`for` = id, label),
+                            tags$span(class = "input-group-addon",
+                                      tags$i(style = paste0("background-color:",
+                                                            if(length(value) && !identical(value, ""))
+                                                              value else "#000000"))),
+                            tags$input(id = id, type = "text",
+                                       class = "form-control",
+                                       value = value))
+  }else{
+    colorpicker <- tags$div(class = "form-group shiny-input-container",
+                            tags$label(`for` = id, label),
+                            tags$input(id = id, type = "text",
+                                       class = "form-control miro-color-picker",
+                                       value = value))
+  }
+  return(tagList(
+    singleton(tags$head(tags$script(src = "bootstrap-colorpicker.min.js"))),
+    singleton(tags$head(tags$link(href = "bootstrap-colorpicker.min.css", rel = "stylesheet"))),
+    colorpicker
+  ))
+}
