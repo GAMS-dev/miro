@@ -41,7 +41,9 @@ function updatePivotPresentationData(id) {
   $(`#${id}container .data-section-header`).slice(-2, -1).html(aggregation + aggregationType);
 }
 
-export function activateMiroPivotPresentation(id) {
+export function activateMiroPivotPresentationObservers(id) {
+  $(`#${id}pivotTable`).off('shiny:value');
+  $(`#${id}pivotChart`).off('shiny:value');
   $(`#${id}pivotTable`).on('shiny:value', (e) => {
     if (e.value.x != null) {
       $(`#${id}container .presentation-show .bt-export-canvas`).hide();
@@ -54,6 +56,10 @@ export function activateMiroPivotPresentation(id) {
       updatePivotPresentationData(id);
     }
   });
+}
+
+export function activateMiroPivotPresentation(id) {
+  activateMiroPivotPresentationObservers(id);
 
   if (document.getElementById(`${id}pivotTable`).getElementsByClassName('dataTable').length > 0) {
     $(`#${id}container .presentation-show .bt-export-canvas`).hide();
@@ -62,14 +68,18 @@ export function activateMiroPivotPresentation(id) {
   }
 
   updatePivotPresentationData(id);
-  $(`#${id}container .row`).slice(2, 3).children('.col-sm-2').animate({ width: 'hide' }, 250, () => {
-    $(`#${id}container .row`).slice(2, 3).children('.col-sm-10').toggleClass('col-sm-10 col-12', 500);
-    $(`#${id}container .row`).slice(0, 2).slideUp(500, () => {
-      $(`#${id}container .row`).slice(0, 1).find('.presentation-hide').hide();
-      $(`#${id}container .row`).slice(0, 1).children('.col-sm-2')[0].setAttribute('style', 'padding: 0px');
-      $(`#${id}container .row`).slice(0, 1).find('.dropdown.presentation')[0].setAttribute('style', 'margin-top: 0px');
-      $(`#${id}container .row`).slice(0, 1).find('.presentation-show').show(0, () => {
-        $(`#${id}container .row`).slice(0, 1).slideDown(500, () => {
+  $(`#${id}container .row.table-chart`).children('.col-sm-2').animate({ width: 'hide' }, 250, () => {
+    $(`#${id}container .row.table-chart`).children('.col-sm-10').toggleClass('col-sm-10 col-sm-12', 500);
+    $(`#${id}container .row.row-agg-filter`).slideUp(500);
+    if ($(`#${id}container .row.table-chart .has-edit-buttons`).length > 0) {
+      $(`#${id}container .row.table-chart`).children('.col-sm-12').animate({ 'margin-top': '30px' }, 500);
+    }
+    $(`#${id}container .row.col-filter`).slideUp(500, () => {
+      $(`#${id}container .row.row-agg-filter`).find('.presentation-hide').hide();
+      $(`#${id}container .row.row-agg-filter`).children('.col-sm-2')[0].setAttribute('style', 'padding: 0px');
+      $(`#${id}container .row.row-agg-filter`).find('.dropdown.presentation')[0].setAttribute('style', 'margin-top: 0px');
+      $(`#${id}container .row.row-agg-filter`).find('.presentation-show').show(0, () => {
+        $(`#${id}container .row.row-agg-filter`).slideDown(500, () => {
           $(`#${id}pivotTable`).data('datatable').draw();
         });
       });
@@ -83,20 +93,20 @@ export function deactivateMiroPivotPresentation(id) {
   $(`#${id}pivotChart`).off('shiny:value');
   $(`#${id}container .row.data-section`).slideUp(350);
 
-  $(`#${id}container .row`).slice(0, 1).slideUp(350, () => {
-    $(`#${id}container .row`).slice(0, 1).find('.dropdown.presentation')[0].setAttribute('style', 'margin-top: 10px');
-    $(`#${id}container .row`).slice(0, 1).children('.col-sm-2')[0].setAttribute('style', 'padding: 1em');
-    $(`#${id}container .row`).slice(0, 1).find('.presentation-hide').show();
-
-    if (['table', 'heatmap'].includes(Shiny.shinyapp.$inputValues[$(`#${id}pivotRenderer`)])) {
-      $(`#${id}container .row`).slice(0, 1).find($(`#${id}downloadPng`)).hide();
-    } else {
-      $(`#${id}container .row`).slice(0, 1).find($(`#${id}downloadPng`)).show();
+  $(`#${id}container .row.row-agg-filter`).slideUp(350, () => {
+    if ($(`#${id}container .row.table-chart .has-edit-buttons`).length > 0) {
+      $(`#${id}container .row.table-chart`).children('.col-sm-12').animate({ 'margin-top': '' }, 350, () => {
+        $(`#${id}container .row.table-chart`).children('.col-sm-12').css('margin-top', '');
+      });
     }
-    $(`#${id}container .row`).slice(0, 1).find('.presentation-show').slideUp(0, () => {
-      $(`#${id}container .row`).slice(0, 2).slideDown(500, () => {
-        $(`#${id}container .row`).slice(2, 3).children('.col-12').toggleClass('col-12 col-sm-10');
-        $(`#${id}container .row`).slice(2, 3).children('.col-sm-2').animate({ width: 'show' }, 500, () => {
+    $(`#${id}container .row.row-agg-filter`).find('.dropdown.presentation')[0].setAttribute('style', 'margin-top: 10px');
+    $(`#${id}container .row.row-agg-filter`).children('.col-sm-2')[0].setAttribute('style', 'padding: 1em');
+    $(`#${id}container .row.row-agg-filter`).find('.presentation-hide').show();
+    $(`#${id}container .row.row-agg-filter`).find('.presentation-show').slideUp(0, () => {
+      $(`#${id}container .row.col-filter`).slideDown(500);
+      $(`#${id}container .row.row-agg-filter`).slideDown(500, () => {
+        $(`#${id}container .row.table-chart`).children('.col-sm-12').toggleClass('col-sm-12 col-sm-10');
+        $(`#${id}container .row.table-chart`).children('.col-sm-2').animate({ width: 'show' }, 500, () => {
           $(`#${id}pivotTable`).data('datatable').draw();
         });
       });

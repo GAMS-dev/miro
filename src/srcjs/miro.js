@@ -8,7 +8,10 @@ import {
   changeTheme, LoadingScreen, colorPickerBinding,
 } from './util';
 
-import { activateMiroPivotPresentation, deactivateMiroPivotPresentation } from './miro_pivot';
+import {
+  activateMiroPivotPresentation, deactivateMiroPivotPresentation,
+  activateMiroPivotPresentationObservers,
+} from './miro_pivot';
 
 const loadingScreen = new LoadingScreen();
 
@@ -281,6 +284,9 @@ $(document).ready(() => {
   $(document).on('click', '.deactivate-pivot-controls', function () {
     deactivateMiroPivotPresentation(this.dataset.id);
   });
+  Shiny.addCustomMessageHandler('gms-activateMiroPivotPresentationObservers', (id) => {
+    activateMiroPivotPresentationObservers(id);
+  });
   $(document).on('click', '.btn-proxy', function () {
     setTimeout(() => {
       $(`#${this.dataset.proxyId}`)[0].click();
@@ -393,7 +399,6 @@ $(document).ready(() => {
     }
   });
   Shiny.addCustomMessageHandler('gms-setAttribs', (data) => {
-    console.log(data);
     for (let i = 0; i < data.selectors.length; i += 1) {
       $(data.selectors[i]).attr(data.attr, data.vals[i]);
     }
