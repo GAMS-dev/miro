@@ -80,7 +80,9 @@ export function activateMiroPivotPresentation(id) {
       $(`#${id}container .row.row-agg-filter`).find('.dropdown.presentation')[0].setAttribute('style', 'margin-top: 0px');
       $(`#${id}container .row.row-agg-filter`).find('.presentation-show').show(0, () => {
         $(`#${id}container .row.row-agg-filter`).slideDown(500, () => {
-          $(`#${id}pivotTable`).data('datatable').draw();
+          if (document.getElementById(`${id}pivotTable`).getElementsByClassName('dataTable').length > 0) {
+            $(`#${id}pivotTable`).data('datatable').draw();
+          }
         });
       });
     });
@@ -107,7 +109,9 @@ export function deactivateMiroPivotPresentation(id) {
       $(`#${id}container .row.row-agg-filter`).slideDown(500, () => {
         $(`#${id}container .row.table-chart`).children('.col-sm-12').toggleClass('col-sm-12 col-sm-10');
         $(`#${id}container .row.table-chart`).children('.col-sm-2').animate({ width: 'show' }, 500, () => {
-          $(`#${id}pivotTable`).data('datatable').draw();
+          if (document.getElementById(`${id}pivotTable`).getElementsByClassName('dataTable').length > 0) {
+            $(`#${id}pivotTable`).data('datatable').draw();
+          }
         });
       });
     });
