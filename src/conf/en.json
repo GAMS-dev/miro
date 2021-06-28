@@ -728,6 +728,7 @@
      "miroPivot":{
       "btDownloadCsv": "Download CSV",
       "btDownloadPng": "Download PNG",
+      "btHidePivotControls": "Hide pivot Controls (presentation mode)",
       "btLoadView": "Load view",
       "btNewView": "Add view",
       "btEnableEdit": "Enable editing",
@@ -1846,6 +1847,7 @@
         "hideEmptyColsSwitch": "Activate switch to hide empty columns",
         "pivotCompHideEmptyColsSwitch": "Pivot Compare Mode: Activate switch to hide empty columns",
         "emptyUEL": "UEL, which indicates a missing value (must not be empty string)",
+        "hidePivotControlsSwitch": "Show presentation mode by default",
         "infoMsgDummyData": "Currently the preview uses dummy data. This means that the filters will have dummy values. If you want to change these, you have to edit the JSON configuration file manually."
       },
       "datatableOptions":{

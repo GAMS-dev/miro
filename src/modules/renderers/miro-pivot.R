@@ -94,26 +94,26 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
            fluidRow(class = "row-agg-filter",
                     style = "margin:0;padding-top: 5pt;", 
                     column(width = 2L, style = "padding: 1em;",
-                           style = if(isTRUE(options$showPivotPresentation)) "padding: 0;" 
+                           style = if(isTRUE(options$hidePivotControls)) "padding: 0;" 
                            else "padding: 1em;",
                            tags$div(class = "drop-index-header presentation-hide", 
-                                    style = if(isTRUE(options$showPivotPresentation)) "display:none;",
+                                    style = if(isTRUE(options$hidePivotControls)) "display:none;",
                                     lang$renderers$miroPivot$filterLabel),
                            tags$ul(id = ns("filterIndexList"), 
                                    class="drop-index-list filter-index-list presentation-hide",
-                                   style = if(isTRUE(options$showPivotPresentation)) "display:none;",
+                                   style = if(isTRUE(options$hidePivotControls)) "display:none;",
                                    genIndexList(indices$filter)
                            ),
                            if(!isFALSE(options$enablePersistentViews)){
                              tagList(
-                               tags$div(class = "presentation-hide", style = if(isTRUE(options$showPivotPresentation)) "display:none;",
+                               tags$div(class = "presentation-hide", style = if(isTRUE(options$hidePivotControls)) "display:none;",
                                         actionButton(ns("saveView"), label = NULL, icon = icon("plus-square"), 
                                                      title = lang$renderers$miroPivot$btNewView,
                                                      class="btn-custom",
-                                                     style = "margin-bottom: 5px;"),
+                                                     style = "margin-bottom: 5px;width:38.25px;"),
                                         tags$a(id = ns("downloadCsv"),
                                                class = "btn btn-default shiny-download-link btn-custom", 
-                                               style = "margin-bottom: 5px;",
+                                               style = "margin-bottom: 5px;width:38.25px;",
                                                href = "",
                                                target = "_blank",
                                                download = NA,
@@ -121,7 +121,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                                                tags$i(class = "fa fa-file-csv")),
                                         tags$a(id = ns("downloadPng"),
                                                class = "btn btn-default bt-export-canvas btn-custom", 
-                                               style = "margin-bottom: 5px;",
+                                               style = "margin-bottom: 5px;width:38.25px;",
                                                download = "chart.png",
                                                href = "#",
                                                `data-canvasid` = ns("pivotChart"),
@@ -129,10 +129,10 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                                                title = lang$renderers$miroPivot$btDownloadPng,
                                                style = "display:none;"),
                                         tags$div(id = ns("hidePivotControls"), class = "btn btn-default btn-custom activate-pivot-controls", 
-                                                 style = "margin-bottom: 5px;",
-                                                 icon("table"), title = "Hide pivot Controls", `data-id` = ns(""))),
+                                                 style = "margin-bottom: 5px;width:38.25px;",
+                                                 icon("table"), title = lang$renderers$miroPivot$btHidePivotControls, `data-id` = ns(""))),
                                tags$div(class="dropdown presentation", 
-                                        style = if(isTRUE(options$showPivotPresentation)) "margin-top: 0;",
+                                        style = if(isTRUE(options$hidePivotControls)) "margin-top: 0;",
                                         tags$button(class="btn btn-default dropdown-toggle btn-dropdown",
                                                     style = "width:100%",
                                                     type = "button", id = ns("toggleViewButton"),
@@ -149,7 +149,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                              tags$div(class = "presentation-hide",
                                tags$a(id = ns("downloadCsv"),
                                       class = "btn btn-default shiny-download-link btn-custom",
-                                      style = if(isTRUE(options$showPivotPresentation)) "display:none;",
+                                      style = if(isTRUE(options$hidePivotControls)) "display:none;",
                                       href = "",
                                       target = "_blank",
                                       download = NA,
@@ -164,13 +164,13 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                                       title = lang$renderers$miroPivot$btDownloadPng,
                                       style = "display:none;"),
                                tags$div(id = ns("hidePivotControls"), class = "btn btn-default btn-custom activate-pivot-controls", 
-                                        style = if(isTRUE(options$showPivotPresentation)) "display:none;",
+                                        style = if(isTRUE(options$hidePivotControls)) "display:none;",
                                         icon("table"), title = "Hide pivot Controls", `data-id` = ns(""))
                              )
                            }
                     ),
                     column(width = 10L, class = "presentation-show", 
-                           style = if(!isTRUE(options$showPivotPresentation)) "display:none;",
+                           style = if(!isTRUE(options$hidePivotControls)) "display:none;",
                            tags$a(`data-proxy-id` = ns("downloadCsv"), 
                                   class = "btn btn-default shiny-download-link btn-custom btn-proxy", 
                                   href = "#", tags$i(class = "fa fa-file-csv"),
@@ -187,13 +187,13 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                                     icon("table"), title = "Show pivot Controls", `data-id` = ns(""))
                     ),
                     column(width = 4L, class = "presentation-hide", 
-                           style = if(isTRUE(options$showPivotPresentation)) "padding: 1em;display:none;" else "padding: 1em;",
+                           style = if(isTRUE(options$hidePivotControls)) "padding: 1em;display:none;" else "padding: 1em;",
                            tags$div(id = ns("filterDropdowns"), class = "miro-pivot-filter")),
                     column(width = 4L, class = "presentation-hide", 
-                           style = if(isTRUE(options$showPivotPresentation)) "padding: 1em;display:none;" else "padding: 1em;",
+                           style = if(isTRUE(options$hidePivotControls)) "padding: 1em;display:none;" else "padding: 1em;",
                            tags$div(id = ns("aggregateDropdowns"), class = "miro-pivot-filter")),
                     column(width = 2L, 
-                           style = if(isTRUE(options$showPivotPresentation)) "padding: 1em;display:none;" else "padding: 1em;", 
+                           style = if(isTRUE(options$hidePivotControls)) "padding: 1em;display:none;" else "padding: 1em;", 
                            class = "presentation-hide",
                            tags$div(class = "drop-index-header", lang$renderers$miroPivot$aggregateLabel),
                            tags$ul(id = ns("aggregationIndexList"), class="drop-index-list aggregation-index-list",
@@ -201,7 +201,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                            selectInput(ns("aggregationFunction"), label = NULL, 
                                        choices = c()))),
            fluidRow(class = "col-filter",
-                    style = if(isTRUE(options$showPivotPresentation)) "margin:0;display:none;" else "margin:0;",
+                    style = if(isTRUE(options$hidePivotControls)) "margin:0;display:none;" else "margin:0;",
                     column(width = 2L,
                            selectInput(ns("pivotRenderer"), "", 
                                        setNames(c("table", "heatmap", "bar", "stackedbar", "line", "radar"),
@@ -223,13 +223,13 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                            tags$div(id = ns("colDropdowns"), class = "miro-pivot-filter"))),
            fluidRow(class = "table-chart", style = "margin:0", 
                     column(width = 2L, 
-                           style = if(isTRUE(options$showPivotPresentation)) "padding: 1em;padding-top: 31px;display:none;" 
+                           style = if(isTRUE(options$hidePivotControls)) "padding: 1em;padding-top: 31px;display:none;" 
                            else "padding: 1em;padding-top: 31px;",
                            tags$ul(id = ns("rowIndexList"), class="drop-index-list",
                                    genIndexList(indices$rows))),
-                    column(width = if(isTRUE(options$showPivotPresentation)) 12L else 10L,
+                    column(width = if(isTRUE(options$hidePivotControls)) 12L else 10L,
                            class = if(isTRUE(options[["_input_"]])) "has-edit-buttons",
-                           style = if(isTRUE(options[["_input_"]]) && isTRUE(options$showPivotPresentation)) "min-height: 400px;margin-top:30px;" 
+                           style = if(isTRUE(options[["_input_"]]) && isTRUE(options$hidePivotControls)) "min-height: 400px;margin-top:30px;" 
                              else "min-height: 400px;",
                            if(isTRUE(options[["_input_"]])){
                              tags$div(style = "position: absolute; top: -10px;z-index: 1;",
@@ -246,7 +246,7 @@ miroPivotOutput <- function(id, height = NULL, options = NULL, path = NULL){
                            chartjsOutput(ns("pivotChart"), height = "40px")
                     )),
            fluidRow(id = ns("dataView"), class = "data-section", 
-                    style = if(!isTRUE(options$showPivotPresentation)) "display:none;",
+                    style = if(!isTRUE(options$hidePivotControls)) "display:none;",
                     fluidRow(style = "margin:0;display:flex;", 
                       column(width = 4L, class = "data-section-block",
                              tags$ul(class = "drop-index-list-presentation",
@@ -460,7 +460,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                "#df7192", "#8b1e3f", "#95D86B", "#3E721D")
       }
       
-      if(isTRUE(options$showPivotPresentation)){
+      if(isTRUE(options$hidePivotControls)){
         session$sendCustomMessage("gms-activateMiroPivotPresentationObservers", ns(""))
       }
         
