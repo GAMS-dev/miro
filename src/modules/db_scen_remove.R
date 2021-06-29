@@ -139,6 +139,10 @@ observeEvent(input$btDeleteConfirm, {
     flog.error("No active scenario ID found to delete.")
     return()
   }
+  if(activeScen$isReadonlyOrLocked){
+    flog.info("Scenario can't be removed as it is readonly or locked.")
+    return(showErrorMsg(lang$nav$dialogReadonly$title, lang$nav$dialogReadonly$descErr))
+  }
   errMsg <- NULL
   tryCatch({
     activeScen$delete()

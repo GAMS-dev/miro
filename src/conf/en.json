@@ -475,6 +475,7 @@
     },
     "dialogReadonly":{
       "title": "No write permissions",
+      "descErr": "You do not have write permissions for this scenario.",
       "desc": "You do not have write permissions for this scenario. Do you want to save the scenario as a new scenario  instead?",
       "okButton": "Save as",
       "cancelButton": "Cancel"
