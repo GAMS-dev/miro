@@ -472,13 +472,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                                          lang$renderers$miroPivot$newViewyTitle)))
             }
             additionalOptionsContent <- tags$div(id = ns("newViewOptionsWrapper"), style = "text-align:left;",
-                                                 tags$i(class="fas fa-arrow-down",
-                                                        role = "presentation",
-                                                        `aria-label` = "More options",
-                                                        onclick = "$(this).next().slideToggle();$(this).toggleClass('fa-arrow-up');$(this).toggleClass('fa-arrow-down');", 
-                                                        style = "cursor: pointer;"),
-                                                 tags$div(style = "display:none;",
-                                                          moreOptions,
+                                                 tags$div(moreOptions,
                                                           tags$div(class = "row",
                                                                    tags$div(class = "col-sm-6",
                                                                             checkboxInput_MIRO(ns("useCustomChartColors"),
