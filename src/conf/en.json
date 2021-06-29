@@ -728,7 +728,7 @@
      "miroPivot":{
       "btDownloadCsv": "Download CSV",
       "btDownloadPng": "Download PNG",
-      "btHidePivotControls": "Hide pivot Controls (presentation mode)",
+      "btHidePivotControls": "Hide pivot controls (presentation mode)",
       "btLoadView": "Load view",
       "btNewView": "Add view",
       "btEnableEdit": "Enable editing",
