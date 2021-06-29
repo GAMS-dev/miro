@@ -421,6 +421,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       setIndexAliases <- as.list(setIndexAliases)
       names(setIndexAliases) <- setIndices
       currentView <- options
+      if(!is.null(rendererEnv[[ns("chartOptions")]])){
+        currentView$chartOptions <- rendererEnv[[ns("chartOptions")]]
+        rendererEnv[[ns("chartOptions")]] <- NULL
+      }
       
       currentSeriesLabels <- NULL
       
@@ -1024,6 +1028,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       output$pivotChart <- renderChartjs({
         updateRenderer()
         pivotRenderer <- input$pivotRenderer
+        if(!is.null(rendererEnv[[ns("chartOptions")]])){
+          # reset chart options
+          rendererEnv[[ns("chartOptions")]] <- NULL
+        }
         if(initRenderer && isTRUE(options$resetOnInit)){
           if(length(currentView[["pivotRenderer"]])){
             initRenderer <<- FALSE
@@ -1108,6 +1116,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         if(length(currentView$chartOptions)){
           # reset chart options
+          rendererEnv[[ns("chartOptions")]] <- currentView$chartOptions
           currentView$chartOptions <<- NULL
         }
         for(i in seq_len(min(noSeries, 40L))){
