@@ -33,7 +33,9 @@ for(j in seq_along(modelIn)){
                                                            type = "string",
                                                            alias = paste0(modelInAlias[[i]], " (upper)"))
     k <- k + 2L
-  }else if(identical(modelIn[[i]]$slider$double, TRUE)){
+  }else if((LAUNCHHCUBEMODE && identical(modelIn[[i]]$slider$double, TRUE)) ||
+           (!LAUNCHHCUBEMODE && length(modelIn[[i]]$slider$default) > 1L)){
+    # slider range
     scalarKeyTypeList[[scalarsFileName]][[k]] <- list(key = paste0(names(modelIn)[[i]], "_lo"),
                                                       type = "number",
                                                       alias = paste0(modelInAlias[[i]], " (lower)"))

@@ -64,6 +64,14 @@
                           <section id="v20" class="doc-section">
                               <h2 class="section-title" style="display:inline-block">GAMS MIRO 2.0</h2> <div style="display:inline-block; padding-left:15px;">(2021-06-15)</div>
                               <div class="section-block">
+                                   <h5 style="display:inline-block">GAMS MIRO 2.0.1</h5><div style="display:inline-block; padding-left:15px;">(xxxx-xx-xx)</div>
+                                   <ul>
+                                     <li>Fix issue with loading values of slider ranges via the <a href="./start.html#scenario-loading">Batch Load module</a>.</li>
+                                     <li>Fix issue where the model sometimes did not terminate when the log file was hidden.</li>
+                                     <li>Some internal database changes for MIRO Server.</li>
+                                   </ul>
+                              </div>
+                              <div class="section-block">
                                    <h3>Breaking changes</h3>
                                    <ul>
                                      <li>The database layout that MIRO uses internally has been changed significantly. At the first start MIRO checks if there is an existing MIRO database and tries to migrate this database automatically to the new layout. A backup of the old database is kept in case something goes wrong. Some data can not be migrated automatically. The first time you start your MIRO app, you will be prompted with a migration dialog if some data needs to be migrated manually. Sliders that have been expanded in Hypercube Mode job configurations cannot be migrated!</li>
