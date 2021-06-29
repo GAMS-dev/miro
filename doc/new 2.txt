@@ -1,6 +1,0 @@
-wenn noauth: in admin panel via app/admin: inkl header handle bar ()
-                 app_direct/(admin): ohne handle bar (roher link)
-				 unterschied app/app_direct erklaeren 
-				 app: miro app eingebettet in iframe inkl header bar
-				 app_direct: barbone link - nur MIRO app
- 
