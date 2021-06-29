@@ -275,7 +275,7 @@ DbSchema <- R6Class("DbSchema", public = list(
                   dbQuoteIdentifier(private$conn, schema$colNames[['accessX']]),
                   " text NOT NULL,",
                   dbQuoteIdentifier(private$conn, schema$colNames[['scode']]),
-                  if(inherits(private$conn, "PqConnection")) " smallint);" else " integer);"))
+                  " integer);"))
   },
   getCreateJobMetaTableQuery = function(){
     schema <- private$schema[["_jobMeta"]]
@@ -298,8 +298,7 @@ DbSchema <- R6Class("DbSchema", public = list(
                   dbQuoteIdentifier(private$conn, schema$colNames[["pid"]]), 
                   " varchar(255) NOT NULL,",
                   dbQuoteIdentifier(private$conn, schema$colNames[["sid"]]),
-                  if(inherits(private$conn, "PqConnection")) 
-                    " smallint," else " integer,",
+                  " integer,",
                   dbQuoteIdentifier(private$conn, schema$colNames[["gamsret"]]),
                   if(inherits(private$conn, "PqConnection")) 
                     " smallint," else " integer,",
