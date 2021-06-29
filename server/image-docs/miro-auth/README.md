@@ -8,7 +8,7 @@
 
 # Supported tags
 
--  [`latest`, `2.0.0`](./tags)
+-  [`latest`, `2.0.1`, `2.0.0`](./tags)
 
 # What is miro-auth?
 
