@@ -422,8 +422,11 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       names(setIndexAliases) <- setIndices
       currentView <- options
       if(!is.null(rendererEnv[[ns("chartOptions")]])){
-        currentView$chartOptions <- rendererEnv[[ns("chartOptions")]]
-        rendererEnv[[ns("chartOptions")]] <- NULL
+        if(isTRUE(options$resetOnInit)){
+          rendererEnv[[ns("chartOptions")]] <- NULL
+        }else{
+          currentView$chartOptions <- rendererEnv[[ns("chartOptions")]]
+        }
       }
       
       currentSeriesLabels <- NULL
