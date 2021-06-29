@@ -140,15 +140,12 @@
                                   <h6 id="show-log" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Show log file in UI</h6>
                                   <div class="expanded"><p>Determine whether the GAMS <i>log</i> file is displayed in the section <i>GAMS interaction</i> or not.</p>
                                       <div class="section-block">
-                                          <img class="img-fluid" style= "max-height:350pt;padding-bottom:25pt;" src="assets/images/configuration_mode/log_file.png" alt="GAMS Log file" />
+                                          <img class="img-fluid" src="assets/images/gams-inter.png" alt="GAMS Log file" />
                                       </div>
                                       <p></p>
                                   </div>
                                   <h6 id="show-lst" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Show listing (lst) file in UI</h6>
                                   <div class="expanded"><p>Determine whether the GAMS listing (<i>lst</i>) file is displayed in the section <i>GAMS interaction</i> or not.</p>
-                                      <div class="section-block">
-                                          <img class="img-fluid" style= "max-height:350pt;padding-bottom:25pt;" src="assets/images/configuration_mode/lst_file.png" alt="GAMS Log file" />
-                                      </div>
                                       <p></p>
                                   </div>
                                   <h6 id="miro-log" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Use custom MIRO log</h6>
@@ -285,7 +282,7 @@ putclose log;
                                   Its content is displayed in the input section in the first tab and is therefore the first thing the user sees after starting the application. This tab can be used by the developer
                                   to introduce and explain the MIRO application or the underlying GAMS model before the user starts working with it.</p>
                                   <div class="section-block">
-                                      <img class="img-fluid" style= "max-height:300pt;" src="assets/images/configuration_mode/readme.png" alt="README file" />
+                                      <img class="img-fluid" style= "max-height:500pt;" src="assets/images/configuration_mode/readme.png" alt="README file" />
                                   </div>
                                   <p><b>Usage:</b><br>
                                   The readme file must be a <a href = "https://guides.github.com/features/mastering-markdown/" target = "_blank">Markdown</a> or HTML
@@ -450,7 +447,7 @@ putclose;
                                   If set to true, the files can be downloaded individually or as a ZIP archive with a click on the
                                   <img class="img-fluid" width="25" height="25" align="middle" src="assets/images/advanced-button.png" alt="Download temporary files" /> button.</p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                             <img class="img-fluid" style="max-height:325pt;" src="assets/images/advanced-options.png" alt="Output data screen - scalars" />
+                                             <img class="img-fluid" style="max-height:325pt;" src="assets/images/download-tmp-files.png" alt="Output data screen - scalars" />
                                         </div>
                                   </div>
                                   <h6 id = "save-trace-file" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Save trace file with each GAMS run (Hypercube Mode)</h6>
@@ -1174,6 +1171,151 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
   }</code></pre>
   <p>The full version of the custom renderer described here as well as the corresponding GAMS model <i>Sudoku</i> can be found in the MIRO model library. There you will also find an example of how to access values of (other) scalar input widgets from within your code. Note that MIRO currently supports only scalar input widgets as <code class="language-json">"additionalData"</code>.</p>
                                 </div>
+								<h6 id = "table-dropdown" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Drop-down menu in input table</h6>
+                                <div class="expanded"><p>An input table can be configured so that the cells are not freely editable by the user, but can only be modified via a drop-down menu. This can greatly simplify the usability of input tables. When used properly, another advantage of providing dropdown menus is the prevention of invalid or inconsistent user input data. 
+								</p>
+								<p>The configuration of the drop-down menus is done column by column. In the following figure the column 'canning plants' (GAMS symbol <code class="language-gams">Table d(i,j) 'distance in thousands of miles'</code>) has been configured to use a drop-down menu:
+								    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/configuration_mode/dropdown-columns.png" alt="Dropdown menu instead of normal cell"/>
+                                    </div>
+								The choices of a drop-down menu can be either predefined (static choices) or filled dynamically:
+								<ul>
+								  <li><b>Static choices:</b></br>
+								  <P>Static choices are predefined in the <a href="#jsonfiles" class="scrollto"><span class="code">&lt;modelname&gt;.json</span></a> file by the app developer. The following configuration results in the drop-down menu in the figure above: 
+								  <div class="code-block">
+                                          <pre><code class="language-json">{
+  &#x22;inputWidgets&#x22;: {
+    "d": {
+      "widgetType": "table",
+      "alias": "distance in thousands of miles",
+	  "pivotCols": "j",
+	  "dropdownCols": {
+        "i": {
+          "static": ["Seattle", "San-Diego", "Los Angeles", "Houston", "Philadelphia"],
+		  "colType": "dropdown"
+        }
+      }
+    }
+}</code></pre>
+                                      </div><!--//code-block-->
+								  The configuration is done in section "inputWidgets" for each input table (here: <i>d</i>) separately. In "dropdownCols" the individual table columns are specified (here: column "i"), which should have drop-down menus. The key "static" followed by an array defines the static drop-down choices. For the "colType" key you can choose between "dropdown" and "autocomplete" (default). While "dropdown" always displays all choices at once, "autocomplete" updates the displayed choices according to an autocomplete.</p>
+								  <p>
+                                  <div class="callout-block callout-success">
+                                      <div class="icon-holder">
+                                          <i class="fas fa-thumbs-up"></i>
+                                      </div><!--//icon-holder-->
+                                      <div class="content">
+                                          <b class="callout-title">Tip:</b>
+                                          <p>If your configuration file does not yet have any entries for the table to be configured, you can simply create an initial configuration using the Configuration Mode. Select the desired symbol under "Configure tables" &rarr; "Symbol tables" and click on save. Make sure that "default" is selected as table type to be used.</p>
+										  <div class="section-block">
+                                              <img class="img-fluid" style= "max-height:350pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/configuration_mode/table-config.png" alt="Table configuration"/>
+                                          </div>
+                                      </div><!--//content-->
+                                  </div><!--//callout-block-->
+								  
+								  
+								  </li>
+								  <li><b>Dynamic choices:</b></br>
+								  <p>Choices are dynamically filled by the cells of a column in another table. In the following example, the GAMS symbol <code class="language-gams">Table d(i,j) 'distance in thousands of miles'</code> is configured so that the column <i>i</i> ("canning plants") displays a drop-down menu whose choices are fetched from the entries in the column of the same name in the symbol table <i>a</i> ("Capacity").
+								  <p>This is what happens in the app: In the table "Capacity" the user can make any entries. If she edits the column "canning plants", the entries there are passed as choices to the dropdown menu of the "distance in thousands of miles" table:
+								  <div class="section-block" style="text-align:left;padding-top:0pt;">
+                                      <img class="img-fluid gifplayer" style= "max-height:250pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/configuration_mode/dynamic-choices.gif" alt="Dynamic dropdown choices" />
+                                  </div></p>
+								  <p>The configuration of this table looks as follows:</p>
+								  <div class="code-block">
+                                          <pre><code class="language-json">{
+  &#x22;inputWidgets&#x22;: {
+    "d": {
+      "widgetType": "table",
+      "alias": "distance in thousands of miles",
+	  "pivotCols": "j",
+	  "dropdownCols": {
+        "i": {
+          "symbol": "a",
+          "column": "i",
+		  "colType": "dropdown"
+        }
+      }
+    }
+}</code></pre>
+                                      </div><!--//code-block-->
+								  Instead of a "static" key, there are now two keys "symbol" and "column". The value of the "symbol" key ("a" &rarr; "capacity" table) defines the symbol table whose "column" ("i" &rarr; "canning plants") is to be used to fill the drop-down menu.
+								  </p>
+								  </li>
+								</ul> 
+								<h6 id="dropdownCols-json-schema" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i>Advanced: JSON validation schema for dropdown menu columns</h6>
+                                <div class="expanded"><pre><code class="language-json">"dropdownCols":{
+  "description":"Columns where only certain values are allowed to be selected (only supported for default tables)",
+  "type":"object",
+   "additionalProperties":{  
+      "type":"object",
+      "properties":{
+        "colType":{
+          "description": "Column type (default is 'autocomplete')",
+          "type":"string",
+          "enum":["autocomplete", "dropdown"]
+        },
+        "static":{
+          "description": "Arrays of static choices allowed for this column",
+          "type":["array", "string"],
+          "minLength":1,
+          "items":{
+            "type":"string",
+            "minLength":1
+          }
+        },
+        "symbol":{
+          "description": "Symbol to fetch choices from",
+          "type":"string",
+          "minLength":1
+        },
+        "column":{
+          "description": "Column (of symbol) to fetch choices from",
+          "type":"string",
+          "minLength":1
+        }
+      }
+   }
+}</code></pre></div>
+								    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Note:</b>
+                                            <p><ul>
+											  <li>The drop-down menu feature is only supported for the default input table type, not for big data tables or pivot tables.</li>
+											  <li>User data is validated only during manual edits, i.e. when the user directly edits the values of individual cells. When the data is imported from external files or the database, there is no validation between the data and the drop-down menu choices.</li>
+											  <li>If you have edited the table configuration of a symbol manually in the <a href="#jsonfiles" class="scrollto"><span class="code">&lt;modelname&gt;.json</span></a> file, you should not use the Configuration mode for this symbol anymore. This could overwrite your manual edits!</li>
+											</ul></p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+								</div>
+								<h6 id = "table-colwidths" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Column width of an input table</h6>
+                                <div class="expanded"><p>With the <i>colWidths</i> option it is possible to adjust the column width of individual tables (in pixels). Note that this a configuration always affects all columns of a table.</p>
+								<p>Example:
+								<div class="code-block">
+                                          <pre><code class="language-json">{
+  &#x22;inputWidgets&#x22;: {
+    "d": {
+      "widgetType": "table",
+      "alias": "distance in thousands of miles",
+	  "pivotCols": "j",
+	  "dropdownCols": {
+        "i": {
+          "symbol": "a",
+          "column": "i",
+		  "colType": "dropdown"
+        }
+      }
+    }
+}</code></pre></div><!--//code-block-->
+								Results in:
+								<div class="section-block">
+                                    <img class="img-fluid" style= "max-height:350pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/configuration_mode/colwidths.png" alt="Custom column widths"/>
+                                </div>
+								</p>
+								</div>
                             </section>
                             <section id="jsonfiles" class="doc-section">
                                 <h2 class="section-title">Configuration via JSON files</h2>
@@ -1205,7 +1347,7 @@ renderMirowidget_initial_state &#x3C;- function(input, output, session, data, op
                                          </div><!--//content-->
                                      </div><!--//callout-block-->
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/config-img.png" alt="Custom visualization options"/>
+                                        <img class="img-fluid" style= "max-height:350pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/gams_miro.png" alt="Custom visualization options"/>
                                     </div>
                                     <p>In case you want to change the language of MIRO or display a scalar input symbol as a slider, this information must be stored in the <span class="code">&lt;modelname&gt;.json</span> file in JSON syntax.
                                     When you first launch MIRO for a new model, the <span class="code">&lt;modelname&gt;.json</span> file is almost empty:</p>

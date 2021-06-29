@@ -43,7 +43,7 @@ Db <- R6Class("Db",
                   
                   private$uid                         <- uid
                   if(length(ugroups) >= 1L && is.character(ugroups)){
-                    private$userAccessGroups <- paste0("_", ugroups)
+                    private$userAccessGroups <- paste0("#", ugroups)
                   }else{
                     private$userAccessGroups <- character(0L)
                   }
@@ -101,6 +101,11 @@ Db <- R6Class("Db",
                 getConn               = function() private$conn,
                 getUid                = function() private$uid,
                 getUserAccessGroups   = function() c(private$uid, private$userAccessGroups),
+                getRemoteUsers        = function() private$remoteUsers,
+                setRemoteUsers        = function(remoteUsers){
+                        private$remoteUsers <- remoteUsers
+                        return(invisible(self))
+                },
                 getSlocktimeLimit     = function() private$slocktimeLimit,
                 getHcubeActive        = function() private$hcubeActive,
                 getInfo               = function(){
@@ -187,13 +192,15 @@ Db <- R6Class("Db",
                                                              private$userAccessGroups)),
                                 " OR "))
                 },
-                checkSnameExists      = function(sname, uid = NULL){
+                checkSnameExists      = function(sname, uid = NULL, checkNormalScen = FALSE){
                   # test whether scenario with the given name already exists 
                   # for the user specified
                   # 
                   # Args:
                   #   sname:                scenario name
                   #   uid:                  user ID (optional)
+                  #   checkNormalScen:      relevant in HC mode: whether to check HC job config (FALSE)
+                  #                         or all normal scenarios (TRUE)
                   #
                   # Returns: 
                   #   boolean:              TRUE if id exists, FALSE otherwise, 
@@ -215,7 +222,9 @@ Db <- R6Class("Db",
                                                        "_sname",
                                                        "_scode"), 
                                                      c(uid, sname,
-                                                       if(private$hcubeActive) -1L else 0L)),
+                                                       if(private$hcubeActive && !checkNormalScen) -1L else 0L),
+                                                     c("=", "=",
+                                                       if(private$hcubeActive && !checkNormalScen) "=" else ">=")),
                                                    count = TRUE, limit = 1L)
                   if(length(scenExists) && scenExists[[1]] >= 1){
                     flog.trace("Db: Scenario with name: '%s' already exists for user: '%s' " %+%
@@ -709,7 +718,7 @@ Db <- R6Class("Db",
                                                   source("./components/db_migrator.R")
                                           }
                                           dbMigrator <- DbMigrator$new(self)
-                                          dbMigrator$createMissingScalarTables()
+                                          dbMigrator$createMissingScalarTables(tableName)
                                   }, error = function(e){
                                           stop(sprintf("Table: '%s' could not be created (Db.exportScenDataset). Error message: %s.",
                                                        tableNameDb, conditionMessage(e)), call. = FALSE)
@@ -889,6 +898,7 @@ Db <- R6Class("Db",
           modelName           = character(1L),
           dbSchema            = vector("list", 3L),
           userAccessGroups    = character(1L),
+          remoteUsers         = character(),
           slocktimeLimit      = character(1L),
           hcubeActive         = logical(1L),
           info                = new.env(),

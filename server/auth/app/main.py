@@ -34,9 +34,9 @@ async def login(auth_request: AuthRequest, response: Response):
     logger.info("Login request received for user: %s.", auth_request.username)
     try:
         r = requests.post(f"{settings.engine_url}/auth/login",
-            data={"expires_in": settings.session_timeout,
-                "username": auth_request.username,
-                "password": auth_request.password})
+                          data={"expires_in": settings.session_timeout,
+                                "username": auth_request.username,
+                                "password": auth_request.password})
         if r.status_code != 200:
             logger.info("Invalid return code (%s) when requesting token from GAMS Engine",
                         str(r.status_code))
@@ -55,7 +55,8 @@ async def login(auth_request: AuthRequest, response: Response):
 
     try:
         r = requests.get(
-            f"{settings.engine_url}/namespaces/{settings.engine_ns}/permissions/me",
+            f"{settings.engine_url}/namespaces/{settings.engine_ns}/permissions",
+            params={"username": auth_request.username},
             auth=(auth_request.username, auth_request.password))
         if r.status_code != 200:
             logger.info("Invalid return code (%s) when requesting permissions for namespace: %s",
@@ -83,6 +84,33 @@ async def login(auth_request: AuthRequest, response: Response):
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {"message": "Internal server error"}
 
+    try:
+        r = requests.get(
+            f"{settings.engine_url}/namespaces/{settings.engine_ns}/user-groups",
+            auth=(auth_request.username, auth_request.password))
+        if r.status_code != 200:
+            logger.info("Invalid return code (%s) when requesting user groups for namespace: %s",
+                        str(r.status_code), settings.engine_ns)
+            response.status_code = r.status_code
+            return r.json()
+
+        user_groups = [x["label"] for x in r.json() if x["label"].lower() not in ["admins", "users"]]
+
+        user_groups.append("users")
+
+        if is_admin:
+            user_groups.append("admins")
+    except requests.exceptions.ConnectionError:
+        logger.info(
+            "ConnectionError when requesting user groups for namespace: %s.", settings.engine_ns)
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"message": "Internal server error"}
+    except:
+        logger.exception(
+            "Internal error when requesting user groups for namespace: %s.", settings.engine_ns)
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"message": "Internal server error"}
+
     logger.info("User: %s successfully logged in (is_admin:%s).",
                 auth_request.username, str(is_admin))
-    return {"token": token, "roles": ["admins", "users"] if is_admin else ["users"]}
+    return {"token": token, "roles": user_groups}

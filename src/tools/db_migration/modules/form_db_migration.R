@@ -148,7 +148,7 @@ dbMigrationServer <- function(id, inconsistentTablesInfo, orphanedTablesInfo,
             updateSelectInput(session, paste0("dbMigrateTable_", i, "_", j),
                               choices = colChoices,
                               selected = if(tableInfo$colNames[j] %in% colChoices)
-                                tableInfo$colNames[j] else "-")
+                                tableInfo$colNames[j] else colChoices[1])
           }
         })
       })

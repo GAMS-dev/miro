@@ -33,7 +33,9 @@ for(j in seq_along(modelIn)){
                                                            type = "string",
                                                            alias = paste0(modelInAlias[[i]], " (upper)"))
     k <- k + 2L
-  }else if(identical(modelIn[[i]]$slider$double, TRUE)){
+  }else if((LAUNCHHCUBEMODE && identical(modelIn[[i]]$slider$double, TRUE)) ||
+           (!LAUNCHHCUBEMODE && length(modelIn[[i]]$slider$default) > 1L)){
+    # slider range
     scalarKeyTypeList[[scalarsFileName]][[k]] <- list(key = paste0(names(modelIn)[[i]], "_lo"),
                                                       type = "number",
                                                       alias = paste0(modelInAlias[[i]], " (lower)"))
@@ -321,15 +323,25 @@ observeEvent(input$btSendQuery, {
 
 batchLoadResultsProxy <- dataTableProxy("batchLoadResults")
 observeEvent(input$batchLoadResults_cell_edit, {
-  newNameInfo <- input$batchLoadResults_cell_edit
-  scenInfo <- batchLoadData[newNameInfo$row, c(1,2)]
-  flog.trace("Batch Load: New scenario name for sid: %s entered: %s",
-             scenInfo[["_sid"]][1], newNameInfo$value)
+  newValInfo <- input$batchLoadResults_cell_edit
+  scenInfo <- batchLoadData[newValInfo$row, c(1,2)]
   if(tryCatch({
-    batchLoader$renameScen(scenInfo[["_sid"]][1],
-                           scenInfo[["_uid"]][1],
-                           newNameInfo$value)
-    batchLoadData[newNameInfo$row, 3L] <<- newNameInfo$value
+    if(identical(newValInfo$col, 1L)){
+      flog.trace("Batch Load: New scenario name for sid: %s entered: %s",
+                 scenInfo[["_sid"]][1], newValInfo$value)
+      batchLoader$renameScen(scenInfo[["_sid"]][1],
+                             scenInfo[["_uid"]][1],
+                             newValInfo$value)
+    }else if(identical(newValInfo$col, 3L)){
+      flog.trace("Batch Load: New scenario tag(s) for sid: %s entered: %s",
+                 scenInfo[["_sid"]][1], newValInfo$value)
+      batchLoader$editScenTags(scenInfo[["_sid"]][1],
+                               newValInfo$value)
+    }else{
+      stop("Invalid column edited. This should never happen and is likely an attempt to tamper with the app!",
+           call. = FALSE)
+    }
+    batchLoadData[newValInfo$row, newValInfo$col + 2L] <<- newValInfo$value
     replaceData(batchLoadResultsProxy,
                 batchLoadData[, -1],
                 resetPaging = FALSE, rownames = FALSE)
@@ -339,8 +351,13 @@ observeEvent(input$batchLoadResults_cell_edit, {
     showHideEl(session, "#queryBuilderError", 4000L,
                lang$nav$dialogEditMeta$badName)
     return(TRUE)
+  }, error_bad_tags = function(e){
+    flog.debug("Invalid scenario tags entered")
+    showHideEl(session, "#queryBuilderError", 4000L,
+               lang$nav$dialogEditMeta$badTags)
+    return(TRUE)
   }, error_scen_exists = function(e){
-    flog.debug("Invalid scenario name entered")
+    flog.debug("Scenario with same name already exists")
     showHideEl(session, "#queryBuilderError", 4000L,
                lang$nav$dialogEditMeta$scenExists)
     return(TRUE)
@@ -350,7 +367,7 @@ observeEvent(input$batchLoadResults_cell_edit, {
                lang$errMsg$permErr)
     return(TRUE)
   }, error = function(e){
-    flog.error("Unexpected error while renaming scenario. Error message: '%s'",
+    flog.error("Unexpected error while renaming scenario/editing scenario tags. Error message: '%s'",
                conditionMessage(e))
     showHideEl(session, "#queryBuilderError", 4000L,
                lang$errMsg$unknownError)
@@ -373,7 +390,7 @@ output$batchLoadResults <- renderDataTable(
     data <- batchLoadData[, -1]
     dtObj <- datatable(
       data, filter = "bottom", colnames = names(batchLoadFilters)[-1], rownames = FALSE,
-      editable = list(target = "cell", disable = list(columns = seq_along(data)[-2L] - 1L)),
+      editable = list(target = "cell", disable = list(columns = seq_along(data)[-c(2L, 4L)] - 1L)),
       options = list(scrollX = TRUE, columnDefs = list(list(
         targets = "_all",
         render = JS(
@@ -512,7 +529,7 @@ observeEvent(input$btBatchRemove, {
                           conditionMessage(e))
                errMsg <<- TRUE
              })
-    if(!is.null(errMsg) || affectedRows < sidsToLoad){
+    if(!is.null(errMsg) || affectedRows < length(sidsToLoad)){
       showHideEl(session, "#batchRemoveError", 4000L)
       return(NULL)
     }

@@ -2,8 +2,11 @@ FROM maven:3.6.3-jdk-8 as builder
 
 WORKDIR /app
 
+COPY containerproxy/pom.xml containerproxy/pom.xml
+RUN cd containerproxy && mvn -U verify clean --fail-never
+
 COPY containerproxy containerproxy
-RUN cd containerproxy && mvn -U clean install -DskipTests
+RUN cd containerproxy && mvn -U install -DskipTests
 
 COPY shinyproxy shinyproxy
 COPY proxy/build.sh .

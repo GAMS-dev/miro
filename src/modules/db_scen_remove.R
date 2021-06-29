@@ -116,6 +116,7 @@ closeScenario <- function(clearMeta = TRUE){
   if(!LAUNCHHCUBEMODE && length(config$scripts$base)){
     scriptOutput$clearContent()
   }
+  renderOutputData()
   
   markSaved()
   clearLogs(session)
@@ -138,6 +139,10 @@ observeEvent(input$btDeleteConfirm, {
   if(is.null(activeScen) || !length(activeScen$getSid())){
     flog.error("No active scenario ID found to delete.")
     return()
+  }
+  if(activeScen$isReadonlyOrLocked){
+    flog.info("Scenario can't be removed as it is readonly or locked.")
+    return(showErrorMsg(lang$nav$dialogReadonly$title, lang$nav$dialogReadonly$descErr))
   }
   errMsg <- NULL
   tryCatch({

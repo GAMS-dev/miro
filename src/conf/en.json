@@ -232,6 +232,7 @@
       "newName": "New name",
       "badName": "The name you chose is invalid (either too long or too short). Please choose another name.",
       "newTags":"New tags",
+      "badTags": "The tag(s) entered are invalid. Make sure that the tags are not empty or duplicated and do not contain more than 1000 characters.",
       "scenExists":"A scenario already exists with the name you selected.",
       "emptyPerm":"Scenario access permissions can not be empty!",
       "incapOwner": "You cannot revoke the owner's access permissions.",
@@ -474,6 +475,7 @@
     },
     "dialogReadonly":{
       "title": "No write permissions",
+      "descErr": "You do not have write permissions for this scenario.",
       "desc": "You do not have write permissions for this scenario. Do you want to save the scenario as a new scenario  instead?",
       "okButton": "Save as",
       "cancelButton": "Cancel"

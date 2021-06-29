@@ -1000,3 +1000,7 @@ a:hover {
     color: #fff;
   }
 }
+select.form-control, select.form-control:focus {
+  color: unset;
+  background-color: unset;
+}

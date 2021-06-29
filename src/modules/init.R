@@ -318,11 +318,19 @@ if(is.null(errMsg)){
                             sep = "\n")
           }
           hasErr <- FALSE
-          widgetConfig$dropdownCols <- lapply(widgetConfig$dropdownCols, function(dataSource){
+          widgetConfig$dropdownCols <- lapply(names(widgetConfig$dropdownCols), function(dropdownCol){
+            dataSource <- widgetConfig$dropdownCols[[dropdownCol]]
+            ddColId <- match(dropdownCol, names(modelIn[[i]]$headers))
+            if(length(widgetConfig$pivotCols) &&
+               match(widgetConfig$pivotCols[1], names(modelIn[[i]]$headers)) <= ddColId){
+              # need to adjust id in case column before is pivoted
+              ddColId <- ddColId - 1L
+            }
             if(length(dataSource$static)){
               return(list(static = dataSource$static,
                           type = if(identical(dataSource$colType, "dropdown"))
-                            "dropdown" else "autocomplete"))
+                            "dropdown" else "autocomplete",
+                          ddColId = ddColId))
             }
             if(!dataSource$symbol %in% names(modelIn)){
               errMsg <<- paste(errMsg, sprintf("The GAMS symbol: '%s' defined as data source for symbol: '%s' does not exist in data contract!", 
@@ -362,7 +370,8 @@ if(is.null(errMsg)){
             }
             return(list(symbol = dataSource$symbol, colId = colId,
                         type = if(identical(dataSource$colType, "dropdown"))
-                          "dropdown" else "autocomplete"))
+                          "dropdown" else "autocomplete",
+                        ddColId = ddColId))
           })
           if(hasErr){
             next

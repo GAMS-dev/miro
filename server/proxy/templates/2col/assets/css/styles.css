@@ -118,12 +118,21 @@
     transform: translate(19px, 0);
   }
 }
+.navbar-handle-wrapper{
+  height: 8px;
+  width: -moz-calc(50% + 50px);
+  width: -webkit-calc(50% + 50px);
+  width: -o-calc(50% + 50px);
+  width: calc(50% + 50px);
+  position: absolute;
+  z-index: 200;
+}
 .navbar-handle{
   background-color:#000;
   width:100px;
   height:100%;
   border-radius:5px;
-  margin:auto;
+  margin-left:auto;
 }
 @media (prefers-color-scheme: dark) {
   .navbar-handle{

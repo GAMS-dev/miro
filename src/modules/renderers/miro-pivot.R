@@ -945,7 +945,8 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         if(is.null(rowIndexList)){
           rowIndexList <- setIndices
         }
-        if(length(rowIndexList) + length(filteredData()$filterElements) != length(setIndices)){
+        if(length(rowIndexList) + length(filteredData()$filterElements) != length(setIndices)
+           || any(rowIndexList %in% names(filteredData()$filterElements))){
           return()
         }
         rowIndexList <- c(rowIndexList, 

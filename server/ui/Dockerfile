@@ -3,12 +3,12 @@
 FROM ubuntu:focal
 
 LABEL com.gamsmiro.vendor="GAMS Development Corp."\
-com.gamsmiro.version="1.9.99"\
+com.gamsmiro.version="2.0.1"\
 com.gamsmiro.license="GPL-3.0"\
 com.gamsmiro.description="GAMS MIRO Docker image"\
 maintainer="rschuchmann@gams.com"
 
-ARG R_BASE_VERSION=4.0.3
+ARG R_BASE_VERSION=4.0.5
 ARG BUILD_DOCKER=true
 ARG SCRIPTS_PATH=/home/miro/scripts
 

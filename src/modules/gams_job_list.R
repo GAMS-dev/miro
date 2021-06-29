@@ -57,7 +57,7 @@ observe({
 if(isTRUE(config$activateModules$remoteExecution)){
   observeEvent(input$downloadJobData, {
     jID <- isolate(input$downloadJobData)
-    flog.trace("Download Hypercube job data button clicked. Job ID: '%s'.", jID)
+    flog.trace("Download job data button clicked. Job ID: '%s'.", jID)
     if(!is.integer(jID) || length(jID) != 1L){
       flog.error("Invalid job ID: '%s'.", jID)
       return(showHideEl(session, "#fetchJobsError", 6000L))
