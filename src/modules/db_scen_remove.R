@@ -98,7 +98,6 @@ closeScenario <- function(clearMeta = TRUE){
   })
   
   # reset model output data
-  renderOutputData()
   if(length(activeScen)){
     if(clearMeta){
       scenData$clearSandbox()
@@ -107,6 +106,7 @@ closeScenario <- function(clearMeta = TRUE){
     }
     activeScen$finalize()
   }
+  renderOutputData()
   activeScen        <<- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
                                      isNewScen = TRUE, views = views, attachments = attachments)
   rv$activeSname    <<- NULL
