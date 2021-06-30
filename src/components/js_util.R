@@ -16,22 +16,24 @@ setContent <- function(session, selector, htmlContent){
 setTextContent <- function(session, selector, htmlContent){
   session$sendCustomMessage("gms-setTextContent", list(selector = selector, content = htmlContent))
 }
+setAttributes <- function(session, selectors, attribute, values){
+  stopifnot(identical(length(selectors), length(values)))
+  session$sendCustomMessage("gms-setAttribs",
+                            list(selectors = I(selectors),
+                                 attr = attribute, vals = I(values)))
+}
 switchCompareMode <- function(session, mode, numberScenTabs){
   if(identical(mode, "pivotView")){
     hideEl(session, "#scen-split-view")
     hideEl(session, "#scen-tab-view")
     showEl(session, "#scen-pivot-view")
     hideEl(session, "#btCompareScen")
-    session$sendCustomMessage("gms-setAttrib",
-                              list(selector = "#btCompareScen",
-                                   attr = "data-noshow", val = "true"))
+    setAttributes(session, "#btCompareScen", "data-noshow", "true")
     setTextContent(session, "#btSelectCompareMode", lang$nav$sidebarButtons$pivotView)
     return()
   }
   showEl(session, "#btCompareScen")
-  session$sendCustomMessage("gms-setAttrib",
-                            list(selector = "#btCompareScen",
-                                 attr = "data-noshow", val = "false"))
+  setAttributes(session, "#btCompareScen", "data-noshow", "false")
   if(identical(mode, "splitView")){
     enableEl(session, "#btCompareScen")
     showEl(session, "#scen-split-view")
@@ -53,8 +55,8 @@ switchCompareMode <- function(session, mode, numberScenTabs){
 hideEl <- function(session, id){
   session$sendCustomMessage("gms-hideEl", id)
 }
-changeHeightEl <- function(session, id, height, delay = NULL){
-  session$sendCustomMessage("gms-changeHeightEl", list(id = id, height = height, delay = delay))
+setCssEl <- function(session, id, css){
+  session$sendCustomMessage("gms-setCss", list(id = id, css = css))
 }
 showHideEl <- function(session, id, delay = 2000, msg = NULL){
   session$sendCustomMessage("gms-showHideEl", list(id = id, delay = delay, msg = msg))

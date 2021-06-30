@@ -168,6 +168,9 @@ getMIROPivotOptions <- function(currentConfig, prefix = "", pivotComp = FALSE){
                                          type = "text",
                                          value = if(length(currentConfig$emptyUEL))
                                            currentConfig$emptyUEL else "-"))),
+    checkboxInput_MIRO(paste0(prefix, "hidePivotControls"),
+                       lang$adminMode$graphs$miroPivotOptions$hidePivotControlsSwitch,
+                       value = isTRUE(currentConfig$hidePivotControls)),
     if(!pivotComp)
       tags$div(id = "miroPivotInfoMsg", class="config-message", 
                style = "display:block;",

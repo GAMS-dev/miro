@@ -770,12 +770,16 @@
     "miroPivot":{
       "btDownloadCsv": "下载CSV",
       "btDownloadPng": "下载PNG",
+      "btHidePivotControls": "隐藏枢纽控制（演示模式）。",
       "btLoadView": "加载视图",
       "btNewView": "添加视图",
       "btEnableEdit": "激活编辑",
       "btAddRow": "添加行",
       "btRemoveRows": "删除行",
       "cbHideEmptyCols": "隐藏空列",
+      "rows": "行数",
+      "columns": "专栏",
+      "aggregation": "汇总",
       "aggregateLabel": "汇总",
       "filterLabel": "过滤",
       "allPlaceholder": "全部",
@@ -1843,6 +1847,7 @@
         "hideEmptyColsSwitch": "激活开关以隐藏空列",
         "pivotCompHideEmptyColsSwitch": "枢轴比较模式：激活开关以隐藏空列",
         "emptyUEL": "UEL，指示缺少值（不得为空字符串）",
+        "hidePivotControlsSwitch": "默认显示演示模式",
         "infoMsgDummyData": "当前，预览使用伪数据。 这意味着过滤器将具有伪值。 如果要更改它们，则必须手动编辑JSON配置文件。"
       },
       "datatableOptions":{

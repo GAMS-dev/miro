@@ -669,6 +669,7 @@ showEditMetaDialog <- function(metadata,
                              tags$button(class = "btn btn-default bt-remove",
                                          type = "button",
                                          onClick = "Miro.sendSelectedRowsRequest('currentViewsTable','removeViews','viewsNoneSelected')",
+                                         icon("trash"),
                                          lang$nav$dialogEditMeta$viewsRemove),
                              genSpinner(id = "addViewsLoading", hidden = TRUE, absolute = FALSE,
                                         extraClasses = "gen-spinner-black")
@@ -1385,7 +1386,7 @@ generateLine <- function(i, j, type, label){
                     
            ),
            tags$div(class = "item-delete",
-                    actionButton(paste0("btRemoveLine", i, "_", j), label = "-")
+                    actionButton(paste0("btRemoveLine", i, "_", j), label = HTML("&minus;"), class = "btn-custom btn-item-delete")
            )
   )
 }
@@ -1412,7 +1413,7 @@ addQueryBuilderBlock <- function(id, choices){
                       ),
                       if(id > 1L){
                         tags$div(class = "item-delete",
-                                 actionButton(paste0("btRemoveBlock", id), label = "-"))
+                                 actionButton(paste0("btRemoveBlock", id), label = HTML("&minus;"), class = "btn-custom btn-item-delete"))
                       }
              )
     ))

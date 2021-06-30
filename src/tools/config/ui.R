@@ -87,12 +87,6 @@ body_admin <- dashboardBody({
       tags$script(type = "application/javascript", `defer src`="katex.min.js"),
       tags$script(type = "application/javascript", `defer src`="auto-render.min.js"),
       tags$style(HTML(paste0('
-.filter-index-list::after {
-    content: "', lang$renderers$miroPivot$filterLabel, '";
-}
-.aggregation-index-list::after {
-    content: "', lang$renderers$miroPivot$aggregateLabel, '";
-}
 .main-header .logo {
                              background-image: url("gams_logo.png");
 }

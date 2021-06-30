@@ -8,6 +8,11 @@ import {
   changeTheme, LoadingScreen, colorPickerBinding,
 } from './util';
 
+import {
+  activateMiroPivotPresentation, deactivateMiroPivotPresentation,
+  activateMiroPivotPresentationObservers,
+} from './miro_pivot';
+
 const loadingScreen = new LoadingScreen();
 
 export function changeTab(object, idActive, idRefer) {
@@ -273,6 +278,21 @@ $(document).ready(() => {
       }());
     });
   }
+  $(document).on('click', '.activate-pivot-controls', function () {
+    activateMiroPivotPresentation(this.dataset.id);
+  });
+  $(document).on('click', '.deactivate-pivot-controls', function () {
+    deactivateMiroPivotPresentation(this.dataset.id);
+  });
+  Shiny.addCustomMessageHandler('gms-activateMiroPivotPresentationObservers', (id) => {
+    activateMiroPivotPresentationObservers(id);
+  });
+  $(document).on('click', '.btn-proxy', function () {
+    setTimeout(() => {
+      $(`#${this.dataset.proxyId}`)[0].click();
+    }, 200);
+  });
+
   $('.toggle-config-view-left').click(() => {
     $('#config-right-graph')[0].setAttribute('style', '-webkit-transition: width 0.3s ease;-moz-transition: width 0.3s ease;-o-transition: width 0.3s ease;transition: width 0.3s ease;');
     $('#config-left-graph')[0].setAttribute('style', '-webkit-transition: margin 0.3s ease;-moz-transition: margin 0.3s ease;-o-transition: margin 0.3s ease;transition: margin 0.3s ease;');
@@ -378,8 +398,10 @@ $(document).ready(() => {
       e.returnValue = 'Are you sure you want to leave? Unsaved changes will be lost!';
     }
   });
-  Shiny.addCustomMessageHandler('gms-setAttrib', (data) => {
-    $(data.selector).attr(data.attr, data.val);
+  Shiny.addCustomMessageHandler('gms-setAttribs', (data) => {
+    for (let i = 0; i < data.selectors.length; i += 1) {
+      $(data.selectors[i]).attr(data.attr, data.vals[i]);
+    }
   });
   Shiny.addCustomMessageHandler('gms-showLoadingScreen', (delay) => {
     loadingScreen.show(delay);
@@ -401,14 +423,8 @@ $(document).ready(() => {
     }
     $(data.id).trigger('shown');
   });
-  Shiny.addCustomMessageHandler('gms-changeHeightEl', (data) => {
-    if (data.delay != null) {
-      setTimeout(() => {
-        $(data.id).height(data.height);
-      }, data.delay);
-    } else {
-      $(data.id).height(data.height);
-    }
+  Shiny.addCustomMessageHandler('gms-setCss', (data) => {
+    $(data.id).css(data.css);
   });
   Shiny.addCustomMessageHandler('gms-scriptExecuted', (data) => {
     let scriptOutputContainer;

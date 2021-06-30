@@ -770,14 +770,18 @@
     "miroPivot":{
       "btDownloadCsv": "CSV herunterladen",
       "btDownloadPng": "PNG herunterladen",
+      "btHidePivotControls": "Pivot-Steuerelemente ausblenden (Präsentationsmodus)",
       "btLoadView": "View laden",
       "btNewView": "View hinzufügen",
       "btEnableEdit": "Bearbeitung aktivieren",
       "btAddRow": "Zeile hinzufügen",
       "btRemoveRows": "Zeilen entfernen",
       "cbHideEmptyCols": "Leere Spalten ausblenden",
-      "aggregateLabel": "aggregieren",
-      "filterLabel": "filtern",
+      "rows": "Zeilen",
+      "columns": "Spalten",
+      "aggregation": "Aggregation",
+      "aggregateLabel": "Aggregieren",
+      "filterLabel": "Filtern",
       "allPlaceholder": "Alle",
       "defaultViewName": "Standardeinstellung",
       "colTruncationWarning": "Die Daten wurden auf die ersten %s Spalten gekürzt.",
@@ -1844,6 +1848,7 @@
          "hideEmptyColsSwitch": "Schalter zum Ausblenden leerer Spalten aktivieren",
          "pivotCompHideEmptyColsSwitch": "Pivot-Vergleichsmodus: Schalter zum Ausblenden leerer Spalten aktivieren",
          "emptyUEL": "UEL, die einen fehlenden Wert anzeigt (darf kein leerer String sein)",
+         "hidePivotControlsSwitch": "Präsentationsmodus standardmäßig anzeigen",
          "infoMsgDummyData": "Derzeit verwendet die Vorschau Dummy-Daten. Das bedeutet, dass die Filter Dummy-Werte haben werden. Wenn Sie diese ändern möchten, müssen Sie die JSON-Konfigurationsdatei manuell bearbeiten."
       },
       "datatableOptions":{

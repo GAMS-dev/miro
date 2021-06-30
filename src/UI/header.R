@@ -23,24 +23,25 @@ header <- dashboardHeader(
                  if(LAUNCHHCUBEMODE) lang$nav$header$scenario$titleHC
                  else lang$nav$header$scenario$title, tags$span(class="caret")),
           tags$ul(class = "dropdown-menu", role="menu",
-                  tags$li(actionLink("btEditMeta", lang$nav$header$scenario$edit)),
-                  tags$li(actionLink("btSave", lang$nav$header$scenario$save)),
-                  tags$li(actionLink("btSaveAs", lang$nav$header$scenario$saveAs)),
+                  tags$li(actionLink("btEditMeta", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-edit"></i></div> ', lang$nav$header$scenario$edit)))),
+                  tags$li(actionLink("btSave", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-save"></i></div> ', lang$nav$header$scenario$save)))),
+                  tags$li(actionLink("btSaveAs", HTML(paste0('<div class="menu-icon-align"></div> ', lang$nav$header$scenario$saveAs)))),
                   tags$li(HTML(paste0('<a href="#" class="action-button" 
-                                      onclick="Shiny.setInputValue(\'btExportScen\', 1, {priority: \'event\'})">',
+                                      onclick="Shiny.setInputValue(\'btExportScen\', 1, {priority: \'event\'})">
+                                      <div class="menu-icon-align"><i class="fa fa-file-export"></i></div> ',
                                       lang$nav$header$scenario$export, '</a>'))),
-                  tags$li(actionLink("btDelete", lang$nav$header$scenario$delete)))),
+                  tags$li(actionLink("btDelete", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-trash"></i></div> ', lang$nav$header$scenario$delete)))))),
   tags$li(class = "dropdown", 
           tags$a(href="#", class="dropdown-toggle", "data-toggle" = "dropdown", 
                  lang$nav$header$help$title, tags$span(class="caret")),
             tags$ul(class = "dropdown-menu", role="menu",
                     tags$li(tags$a(href = "https://www.gams.com/miro/", 
-                           target = "_blank", lang$nav$header$help$doc)),
+                           target = "_blank", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-book"></i></div> ', lang$nav$header$help$doc)))),
                     tags$li(tags$a(href = "https://forum.gamsworld.org/viewforum.php?f=14", 
-                                   target = "_blank", lang$nav$header$help$forum)),
+                                   target = "_blank", HTML(paste0('<div class="menu-icon-align"><i class="fa fa-globe"></i></div> ', lang$nav$header$help$forum)))),
                     tags$li(HTML(paste0('<a href="#" class="action-button" onclick="Miro.confirmModalShow(\'',
                                         'About GAMS MIRO\', \'', 
                                         htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\');">',
-                                        lang$nav$header$help$about, '</a>'))
+                                        '<div class="menu-icon-align"><i class="fa fa-question"></i></div> ', lang$nav$header$help$about, '</a>'))
                     ))),
   title = config$pageTitle, disable = FALSE)
