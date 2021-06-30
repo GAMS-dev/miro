@@ -1,14 +1,14 @@
-FROM gamsmiro-ui
+FROM miro-ui
 
 LABEL com.gamsmiroadmin.vendor="GAMS Development Corp."\
-com.gamsmiroadmin.version="1.9.99"\
+com.gamsmiroadmin.version="2.0.1"\
 com.gamsmiroadmin.license="GPL-3.0"\
 com.gamsmiroadmin.description="GAMS MIRO Docker image for admin panel"\
 maintainer="fproske@gams.com"
 
 
 # copy MIRO admin app to the image
-COPY server/admin /home/miro/admin/
+COPY . /home/miro/admin/
 
 WORKDIR /home/miro/admin
 

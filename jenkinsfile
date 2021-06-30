@@ -12,7 +12,7 @@ pipeline {
     parameters {
         booleanParam(
             defaultValue: false,
-            description: 'Run tests? (Will always run on rc, develop and master)',
+            description: 'Run tests? (Use SKIP_TESTS to skip tests on rc, develop and master)',
             name: 'RUN_TESTS')
         booleanParam(
             defaultValue: false,
@@ -32,8 +32,16 @@ pipeline {
             name: 'BUILD_MAC')
         booleanParam(
             defaultValue: false,
+            description: 'Skip tests? (Only relevant on rc, develop and master)',
+            name: 'SKIP_TESTS')
+        booleanParam(
+            defaultValue: false,
             description: 'Force release (even if tests fail)?',
             name: 'FORCE_RELEASE')
+        booleanParam(
+            defaultValue: false,
+            description: 'Push MIRO Server images to hub.gams.com (tagged as unstable)?',
+            name: 'PUSH_UNSTABLE_SERVER_IMAGES')
     }
 
     stages {
@@ -81,13 +89,12 @@ pipeline {
                         script{
                             if (params.BUILD_CI) {
                                 sh '''
-                                    yarn docker-build --ci
+                                    yarn docker-build-ci
                                 '''
                             }
-                            if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
+                            if (params.PUSH_UNSTABLE_SERVER_IMAGES || env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
                                 sh '''#!/bin/bash -xe
                                     ## build MIRO server images
-                                    yarn docker-build
                                     pushd server > /dev/null
                                         python3 miro_server.py build
                                     popd > /dev/null
@@ -97,7 +104,7 @@ pipeline {
                         sshagent(['a2576ca5-f8e0-4e28-9d42-b0c5603b213d']) {
                             sh '''#!/bin/bash -xe
                                git status
-                               git add ./main.js ./package.json ./scripts/globals.R ./Dockerfile ./Dockerfile-admin
+                               git add ./main.js ./package.json ./scripts/globals.R ./server/ui/Dockerfile ./server/admin/Dockerfile
                                git status
                                git config user.name 'jenkins'
                                git config user.email 'jenkins@berlin.noreply.gams.com'
@@ -180,7 +187,7 @@ pipeline {
         }
         stage('Test') {
             when {
-                expression { params.RUN_TESTS || env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'rc' || env.BRANCH_NAME == 'develop' }
+                expression { params.RUN_TESTS || ((env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'rc' || env.BRANCH_NAME == 'develop') && !params.SKIP_TESTS) }
             }
             parallel {
                 stage ('windowsX64') {
@@ -269,16 +276,39 @@ pipeline {
                                 }
                             }
                             if (env.BRANCH_NAME == 'master' && (currentBuild.currentResult == "SUCCESS" || params.FORCE_RELEASE)) {
+                                withCredentials([usernamePassword(credentialsId: '6a4cd702-946f-4003-b4ab-bbf0296e56db', passwordVariable: 'DOCKERHUB_PASS', usernameVariable: 'DOCKERHUB_USER')]){
+                                    sh '''#!/bin/bash -xe
+                                        docker login --username="${DOCKERHUB_USER}" --password="${DOCKERHUB_PASS}"
+                                        ## build MIRO server images
+                                        pushd server > /dev/null
+                                            python3 miro_server.py push
+                                        popd > /dev/null
+                                    '''
+                                }
+                                sshagent(['a2576ca5-f8e0-4e28-9d42-b0c5603b213d']) {
+                                    sh '''#!/bin/bash -xe
+                                       git status
+                                       git add ./server/image-docs/*
+                                       git status
+                                       git config user.name 'jenkins'
+                                       git config user.email 'jenkins@berlin.noreply.gams.com'
+                                       git checkout -B $BRANCH_NAME
+                                       git commit -m "[CI skip] Update MIRO Server image README files" || {
+                                         true
+                                       } && {
+                                           set +x
+                                           export GIT_SSH_COMMAND="ssh -oStrictHostKeyChecking=no"
+                                           git push origin HEAD:$BRANCH_NAME
+                                           set -x
+                                       }
+                                    '''
+                                }
+                            } else if (params.PUSH_UNSTABLE_SERVER_IMAGES || env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
                                 sh '''#!/bin/bash -xe
-                                    yarn docker-publish
                                     ## build MIRO server images
                                     pushd server > /dev/null
-                                        python3 miro_server.py push
+                                        python3 miro_server.py push --unstable
                                     popd > /dev/null
-                                '''
-                            } else if (env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'rc') {
-                                sh '''
-                                    yarn docker-publish-unstable
                                 '''
                             }
                         }
@@ -355,10 +385,10 @@ pipeline {
                         mv *.exe $FOLDER_NAME/windows/GAMS-MIRO-Setup-${MIRO_VERSION_MAJOR}.${MIRO_VERSION_MINOR}.${MIRO_VERSION_PATCH}.exe
 
                         ## S3 upload to gams.com
-                        s3cmd sync --acl-public ./ ${S3_URL} --access_key=${S3_ACCESS_KEY} --secret_key=${S3_SECRET_KEY}
+                        s3cmd sync --no-check-certificate --acl-public ./ ${S3_URL} --access_key=${S3_ACCESS_KEY} --secret_key=${S3_SECRET_KEY}
 
                         ## S3 content listing
-                        s3cmd ls -r ${S3_URL} --access_key=${S3_ACCESS_KEY} --secret_key=${S3_SECRET_KEY}
+                        s3cmd ls --no-check-certificate -r ${S3_URL} --access_key=${S3_ACCESS_KEY} --secret_key=${S3_SECRET_KEY}
 
                         popd > /dev/null
                     '''
@@ -377,6 +407,7 @@ pipeline {
                         git config user.name 'jenkins'
                         git config user.email 'jenkins@berlin.noreply.gams.com'
                         git checkout -B $BRANCH_NAME
+                        git fetch --unshallow
                         git pull
 
                         MIRO_VERSION_FULL=$(grep -e '"version": .*' package.json |cut -f4 -d"\\"")

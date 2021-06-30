@@ -1,6 +1,6 @@
 {
   "name": "com.gams.miro",
-  "version": "1.9.99",
+  "version": "2.0.1",
   "description": "GAMS MIRO is an interactive web application for GAMS models. It is designed for people working with GAMS looking for an easy and automated way to deploy their models. Extensive visualization options support you to make decisions based on optimization.",
   "homepage": "https://gams.com/miro",
   "main": "main.js",
@@ -10,9 +10,8 @@
     "start": "electron .",
     "pack": "node ./build/scripts/pre-pack.js && electron-builder --dir --publish never",
     "dist": "node ./build/scripts/pre-pack.js && electron-builder --publish never",
-    "docker-build": "node ./build/scripts/pre-pack.js --docker",
-    "docker-publish": "node ./build/scripts/docker-publish.js",
-    "docker-publish-unstable": "node ./build/scripts/docker-publish.js --unstable"
+    "docker-prepare": "node ./build/scripts/pre-pack.js --docker",
+    "docker-build-ci": "node ./build/scripts/pre-pack.js --docker --ci"
   },
   "build": {
     "appId": "com.gams.miro",
@@ -74,6 +73,7 @@
         "r/**"
       ],
       "target": "nsis",
+      "timeStampServer": "http://timestamp.comodoca.com",
       "rfc3161TimeStampServer": "http://timestamp.apple.com/ts01",
       "icon": "./build/icon.ico"
     },

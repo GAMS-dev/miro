@@ -214,7 +214,7 @@ if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
   createTestDb()
 }
 
-ioConfig <<- list(modelOut = list(dowvsindex = NULL, stock_weight = NULL),
+ioConfig <<- list(modelOut = list(dowvsindex = NULL, stock_weight = NULL, `_scalars_out` = NULL),
                   inputDsNames = character(),
                   hcubeScalars = character())
 
@@ -223,7 +223,11 @@ dbSchema <<- DbSchema$new(list(schema = list(dowvsindex = list(tabName = "dowvsi
                                                             colTypes = "cd"),
                                              stock_weight = list(tabName = "stock_weight",
                                                                  colNames = c("symbol", "value"),
-                                                                 colTypes = "cd"))))
+                                                                 colTypes = "cd"),
+                                             error_train2 = list(tabName = "error_train2",
+                                                                 colNames = "error_train2",
+                                                                 colTypes = "d")),
+                               views = list(`_scalars_out` = "error_train2")))
 
 for(dbType in c("sqlite", "postgres")){
   if(dbType == "postgres" && skipPostgres){
@@ -270,7 +274,9 @@ for(dbType in c("sqlite", "postgres")){
     migrationConfig <- list(dowvsindex = list(oldTableName  = "dowvsindex",
                                               colNames = c("date", "index fund")),
                             stock_weight = list(oldTableName = "stock_weight",
-                                                colNames = c("-", "-")))
+                                                colNames = c("-", "-")),
+                            error_train2 = list(oldTableName = "error_train",
+                                                colNames = "-"))
     expect_error(dbMigrator$migrateDb(migrationConfig,
                                       forceRemove = TRUE), NA)
     expect_equal(dbReadTable(conn, "dowvsindex")[-1][1:2, ],
@@ -278,6 +284,8 @@ for(dbType in c("sqlite", "postgres")){
                             "index fund" = c(98.3977098527647, 
                                              99.9596599723713)))
     expect_false(dbExistsTable(conn, "stock_weight"))
+    expect_equal(dbReadTable(conn, "_scalars_out")[-1],
+                 data.frame(error_train2 = NA_real_))
   })
 }
 

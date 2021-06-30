@@ -57,6 +57,9 @@ expect_identical(configRaw$overwriteAliases$abserror$newAlias, configNew$overwri
 expect_identical(configRaw$overwriteAliases$pricemerge$newAlias, configNew$overwriteAliases$pricemerge$newAlias)
 expect_identical(configRaw$overwriteHeaderAliases$price$newHeaders, configNew$overwriteHeaderAliases$price$newHeaders)
 expect_identical(configRaw$overwriteHeaderAliases[["_scalars_out"]]$newHeaders, configNew$overwriteHeaderAliases[["_scalars_out"]]$newHeaders)
+expect_identical(configRaw$overwriteHeaderAliases[["_scalars_out"]]$newHeaders, configNew$overwriteHeaderAliases[["_scalars_out"]]$newHeaders)
+expect_identical(configRaw$overwriteHeaderAliases[["error_ratio"]]$newHeaders, configNew$overwriteHeaderAliases[["error_ratio"]]$newHeaders)
+expect_identical(configRaw$overwriteHeaderAliases[["trainingdays"]]$newHeaders, configNew$overwriteHeaderAliases[["trainingdays"]]$newHeaders)
 
 #symbol configuration tab (II: Ordering, tab grouping, symbol display, Use output data as input data)
 expect_identical(configRaw$overwriteSheetOrder$input, configNew$overwriteSheetOrder$input)

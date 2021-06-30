@@ -68,16 +68,26 @@
                                    <ul>
                                      <li><a href="./charts.html#pivot-chart">MIRO Pivot Tables</a>: When adding new views for bar charts, stacked bar charts, line charts and radar charts, you now have the option to assign custom colors to the different series.</li>
                                      <li><a href="./charts.html#pivot-chart">MIRO Pivot Tables</a>: Views can now be edited.</li>
+                                     <li>It is now possible to overwrite aliases of scalars in Configuration Mode.</li>
                                    </ul>
                               </div>
                           </section>
                           <section id="v20" class="doc-section">
-                              <h2 class="section-title" style="display:inline-block">GAMS MIRO 2.0</h2> <div style="display:inline-block; padding-left:15px;">(xxxx-xx-xx)</div>
+                              <h2 class="section-title" style="display:inline-block">GAMS MIRO 2.0</h2> <div style="display:inline-block; padding-left:15px;">(2021-06-15)</div>
+                              <div class="section-block">
+                                   <h5 style="display:inline-block">GAMS MIRO 2.0.1</h5><div style="display:inline-block; padding-left:15px;">(xxxx-xx-xx)</div>
+                                   <ul>
+                                     <li>Fix issue with loading values of slider ranges via the <a href="./start.html#scenario-loading">Batch Load module</a>.</li>
+                                     <li>Fix issue where the model sometimes did not terminate when the log file was hidden.</li>
+                                     <li>Some internal database changes for MIRO Server.</li>
+                                   </ul>
+                              </div>
                               <div class="section-block">
                                    <h3>Breaking changes</h3>
                                    <ul>
                                      <li>The database layout that MIRO uses internally has been changed significantly. At the first start MIRO checks if there is an existing MIRO database and tries to migrate this database automatically to the new layout. A backup of the old database is kept in case something goes wrong. Some data can not be migrated automatically. The first time you start your MIRO app, you will be prompted with a migration dialog if some data needs to be migrated manually. Sliders that have been expanded in Hypercube Mode job configurations cannot be migrated!</li>
                                      <li>An error is now issued if the MIRO app name (filename of the main .gms file) is longer than 60 characters.</li>
+                                     <li>Apps that use the (previously undocumented) <i>dropdown columns</i> feature in input tables must be redeployed.</li>
 </ul>
                                    <h3>Deprecated features</h3>
                                    <ul>
@@ -85,8 +95,9 @@
                                    </ul>
                                    <h3>New features</h3>
                                    <ul>
+                                     <li><a href="./server.html">MIRO Server</a> is officially released.</li>
                                      <li>Custom renderers can now be edited with a <a href="./charts.html#custom-graphics">live preview via the Configuration Mode</a>. This should increase productivity when developing custom renderers. Your existing renderers will still work, but will not be recognized by this new editor. To learn how to migrate them to be compatible with the new editor, see <a href="./customize.html#migrate-custom-renderers">here</a>.</li>
-                                     <li>Scenarios in Base Mode can now be queried, loaded and exported via the new Batch Load module that was previously only available in Hypercube Mode.</li>
+                                     <li>Scenarios in Base Mode can now be queried, loaded and exported via the new <a href="./start.html#scenario-loading">Batch Load module</a> that was previously only available in Hypercube Mode.</li>
                                    </ul>
                                    <h3>Minor new features and improvements</h3>
                                    <ul>
@@ -99,7 +110,7 @@
                                      <li><a href="./charts.html#pivot-chart">MIRO Pivot Tables</a>: When adding new views, existing views with the same name can now be overwritten.</li>
                                      <li><a href="./charts.html#pivot-chart">MIRO Pivot Tables</a>: When adding new views for bar charts, stacked bar charts or line charts, you now have the option to assign a chart title as well as labels for the x- and y-axis.</li>
                                      <li>Improve performance when starting MIRO: input graphs/output tables are now generated dynamically.</li>
-                                     <li>Improved performance when loading scenarios in scenario comparison mode: Data is now only fetched and graphs only rendered when required.</li>
+                                     <li>Improve performance when loading scenarios in scenario comparison mode: Data is now only fetched and graphs only rendered when required.</li>
                                      <li>Add "Close All" button in the tab view comparison mode to close all currently opened scenarios.</li>
                                      <li>Windows: Removed progress bar when starting MIRO.</li>
                                      <li>When submitting a job to <a href="https://gams.com/engine" target="_blank">GAMS Engine</a>, the MIRO sandbox is now restored when importing the results. This means that attachments, views, tags, etc. are preserved.</li>
@@ -110,6 +121,7 @@
                                      <li>It is now possible to <a href="./customize.html#general-temp-dir">select and download multiple files from the temporary directory</a>.</li>
                                      <li>Add option to <a href="./customize.html#table-option-fixedColumnsLeft">fix table columns to the left</a> when scrolling horizontally.</li>
                                      <li>You can now specify a <a href="./deployment.html#custom-environments">custom environment</a> for your MIRO apps.</li>
+                                     <li>Scenario name and tags can now be edited via the <a href="./start.html#scenario-loading">Batch Load module</a>.</li>
                                    </ul>
                                    <h3>Bug fixes</h3>
                                    <ul>

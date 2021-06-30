@@ -20,6 +20,23 @@ getCommandArg <- function(argName, exception = TRUE){
 isBadScenName <- function(scenName){
   return(nchar(scenName) > 63 || nchar(trimws(scenName, "both")) < 1L)
 }
+isBadScenTags <- function(scenTags = NULL, scenTagsV = NULL){
+  if(is.null(scenTags)){
+    scenTags <- vector2Csv(scenTagsV)
+  }else if(is.null(scenTagsV)){
+    scenTagsV <- trimws(csv2Vector(scenTags))
+  }
+  if(nchar(scenTags) > 1000){
+    return(TRUE)
+  }
+  if(length(scenTagsV) > 0L && any(nchar(trimws(scenTagsV, "both")) < 1L)){
+    return(TRUE)
+  }
+  if(any(duplicated(scenTagsV))){
+    return(TRUE)
+  }
+  return(FALSE)
+}
 isWindows <- function() .Platform$OS.type == 'windows'
 hasContent <- function(x){
   if(inherits(x, "data.frame") && nrow(x) == 0){
@@ -66,7 +83,7 @@ getModelPath <- function(modelPath = NULL, envVarPath = NULL){
     modelPath <- envName
   }
   gmsFileName  <- basename(modelPath)
-  modelNameRaw <- gsub("\\.[[:alpha:]]{2,3}$", "", gmsFileName)
+  modelNameRaw <- tools::file_path_sans_ext(gmsFileName)
   modelDir     <- dirname(modelPath)
   return(list(modelDir, gmsFileName, tolower(modelNameRaw), modelNameRaw))
 }
@@ -1660,7 +1677,7 @@ accessPermInput <- function(inputId, label, choices, selected = NULL){
                                 labelField = "value",
                                 searchField = "value",
                                 options = lapply(choices, function(option){
-                                  list(isGroup = startsWith(option, "_"),
+                                  list(isGroup = startsWith(option, "#"),
                                        value = option)
                                 }),
                                 sortField = I("function(i1,i2) {return i1.value-i2.value;}"),

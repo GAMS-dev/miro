@@ -51,5 +51,5 @@ spring:
 server:
   forward-headers-strategy: native
   servlet:
-    session.timeout: 0
+    session.timeout: 21600
     context-path: /

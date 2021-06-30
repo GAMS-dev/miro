@@ -73,11 +73,27 @@ BatchLoader <- R6Class("BatchLoader",
                            }
                            scenId <- as.integer(scenId)
                            stopifnot(identical(length(scenId), 1L), !is.na(scenId))
-                           if(private$db$checkSnameExists(newName, suid)){
+                           if(private$db$checkSnameExists(newName, suid, checkNormalScen = TRUE)){
                              stop_custom("error_scen_exists", "Scenario exists", call. = FALSE)
                            }
                            wasUpdated <- private$db$updateRows("_scenMeta", colNames = "_sname",
                                                                values = newName,
+                                                               subsetSids = scenId)
+                           if(identical(wasUpdated, 0L)){
+                             stop_custom("error_perm", "No write permissions for scenario",
+                                         call. = FALSE)
+                           }
+                           return(invisible(self))
+                         },
+                         editScenTags = function(scenId, newTags){
+                           newTagsV <- trimws(csv2Vector(newTags))
+                           if(isBadScenTags(newTags, newTagsV)){
+                             stop_custom("error_bad_tags", "Invalid scenario tags", call. = FALSE)
+                           }
+                           scenId <- as.integer(scenId)
+                           stopifnot(identical(length(scenId), 1L), !is.na(scenId))
+                           wasUpdated <- private$db$updateRows("_scenMeta", colNames = "_stag",
+                                                               values = vector2Csv(newTagsV),
                                                                subsetSids = scenId)
                            if(identical(wasUpdated, 0L)){
                              stop_custom("error_perm", "No write permissions for scenario",

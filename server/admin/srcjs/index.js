@@ -2,6 +2,21 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import bootbox from 'bootbox';
+import Ajv from 'ajv';
+
+const ajv = new Ajv({ allErrors: true });
+
+const envSchema = {
+  type: 'object',
+  propertyNames: {
+    pattern: '^[A-Z_][A-Z0-9_]*$',
+  },
+  additionalProperties: {
+    type: 'string',
+  },
+};
+
+const validateEnvSchema = ajv.compile(envSchema);
 
 // taken from bjornd: https://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
 function escapeHtml(unsafe) {
@@ -19,6 +34,7 @@ const $appsWrapper = $('#appsWrapper');
 const appFilesPlaceholder = 'Drop your MIRO app here.';
 const appNamePlaceholder = 'App title';
 const appDescPlaceholder = 'Short model description (optional)';
+const appEnvPlaceholder = 'App environment (JSON, optional)';
 const appGroupsPlaceholder = 'Access groups (optional)';
 const appLogoPlaceholder = 'Different app logo? Drop your MIRO app logo here.';
 let reorderAppsMode = false;
@@ -39,10 +55,40 @@ const addAppWrapperHTML = `<div id="addAppBox" class="add-app-box app-box-fixed-
                             <a class="btn-add-app" id="addApp"><i class="fas fa-plus-circle"></i></a>
                           </div>`;
 
+function validateAppEnv(envContentRaw) {
+  if (envContentRaw.trim() === '') {
+    return true;
+  }
+  try {
+    const envContent = JSON.parse(envContentRaw);
+    const valid = validateEnvSchema(envContent);
+    if (!valid) {
+      bootbox.alert({
+        title: 'Problems validating app environment',
+        message: `The app environment could not be validated.\nValidation errors: ${ajv.errorsText(validateEnvSchema.errors)}.`,
+        centerVertical: true,
+      });
+      return false;
+    }
+    return true;
+  } catch (err) {
+    bootbox.alert({
+      title: 'Problems parsing app environment',
+      message: 'The app environment could not be parsed.\nPlease make sure that you have entered valid JSON syntax.',
+      centerVertical: true,
+    });
+    return false;
+  }
+}
+
 function sendAddRequest() {
   const newAppTitle = document.getElementById('newAppName').value;
   if (!newAppTitle || newAppTitle.trim() === '') {
     bootbox.alert({ title: 'Missing App title', message: 'Please enter an app title.', centerVertical: true });
+    return;
+  }
+  const appEnv = document.getElementById('newAppEnv').value;
+  if (validateAppEnv(appEnv) !== true) {
     return;
   }
   $('#addAppSpinner').show();
@@ -50,6 +96,7 @@ function sendAddRequest() {
   Shiny.setInputValue('addApp', {
     title: newAppTitle,
     desc: document.getElementById('newAppDesc').value,
+    env: appEnv,
     groups: $('#newAppGroups').val(),
   }, {
     priority: 'event',
@@ -66,11 +113,16 @@ function sendUpdateRequest(index) {
   if (!newAppDesc || newAppDesc === appDescPlaceholder) {
     newAppDesc = '';
   }
+  const appEnv = document.getElementById(`appEnv_${index}`).value.trim();
+  if (validateAppEnv(appEnv) !== true) {
+    return;
+  }
   $loadingScreen.fadeIn(200);
   Shiny.setInputValue('updateApp', {
     index,
     title: newAppTitle,
     desc: newAppDesc,
+    env: appEnv,
     newLogo: currentAppLogo !== null,
     groups: $(`#appGroups_${index}`).val(),
   }, {
@@ -122,7 +174,8 @@ function refreshConfigList() {
   currentAppLogo = null;
   const appsList = currentConfigList.reduce((html, configData, indexRaw) => {
     const appNameSafe = escapeHtml(configData.alias);
-    const descSave = escapeHtml(configData.desc);
+    const descSafe = escapeHtml(configData.desc);
+    const appEnvSafe = escapeHtml(configData.appEnv);
     const { id } = configData;
     const index = indexRaw + 1;
     let groupOptions = configData.groups != null ? configData.groups.reduce((optionsHTML, groupName) => (`${optionsHTML}<option value="${groupName}" selected>${groupName}</option>`), '') : '';
@@ -142,16 +195,17 @@ function refreshConfigList() {
               </div>
             </div>
             <div>
-            <div style="height:200px">
+            <div>
               <h3 title="${appNameSafe}" id="staticAppTitle_${index}" class="app-title app-title-fixed app-item-title" style="margin-top:15pt;width:100%;">${appNameSafe}</h3>
               <input id="appTitle_${index}" value="${appNameSafe}" required="required" type="text" name="alias" class="app-title editable h3-style" style="margin-top:15pt;width:100%;display:none;" placeholder="${appNamePlaceholder}">
-              <p title="${descSave}" id="staticAppDesc_${index}" class="app-desc app-desc-fixed app-item-desc">${descSave}</p>
-              <textarea id="appDesc_${index}" rows="3" name="desc" class="app-desc editable" style="margin-bottom:1rem;width:100%;display:none;" placeholder="${appDescPlaceholder}">${descSave}</textarea>
+              <p title="${descSafe}" id="staticAppDesc_${index}" class="app-desc app-desc-fixed app-item-desc">${descSafe}</p>
+              <textarea id="appDesc_${index}" rows="3" name="desc" class="app-desc editable" style="margin-bottom:1rem;width:100%;display:none;" placeholder="${appDescPlaceholder}">${descSafe}</textarea>
               <div id="appGroupsWrapper_${index}" style="display:none;">
                 <label for="appGroups_${index}">${appGroupsPlaceholder}</label>
                 <select id="appGroups_${index}" multiple>${groupOptions}</select>
                 <div style="height:1rem"></div>
               </div>
+              <textarea id="appEnv_${index}" rows="1" name="appEnv" class="editable" style="width:100%;display:none;" placeholder="${appEnvPlaceholder}">${appEnvSafe}</textarea>
             </div>
           </div>
         </div>
@@ -213,10 +267,11 @@ function expandAddAppForm() {
                         <div>
                         <input id="newAppName" type="text" required="required" name="alias" class="app-title editable h3-style" style="margin-top:15pt;width:100%;" placeholder="${appNamePlaceholder}">
                         <textarea id="newAppDesc" rows="3" name="desc" class="app-desc editable" style="margin-bottom: 1rem;width: 100%;" placeholder="${appDescPlaceholder}"></textarea>
-                        <div style="display:none">
+                        <div>
                           <label for="newAppGroups">${appGroupsPlaceholder}</label>
                           <select id="newAppGroups" style="margin-bottom: 1rem;width: 100%;" multiple>${groupOptions}</select>
                         </div>
+                        <textarea id="newAppEnv" rows="1" name="appEnv" class="editable" style="width:100%;" placeholder="${appEnvPlaceholder}"></textarea>
                         <div style="height:1rem"></div>
                         </div>
                         <div style = "text-align:right;">
@@ -385,8 +440,9 @@ $appsWrapper.on('click', '.app-box', function (e) {
     $(`#appTitle_${appIndex}`).show();
     $(`#staticAppTitle_${appIndex}`).hide();
     $(`#appDesc_${appIndex}`).show();
+    $(`#appEnv_${appIndex}`).show();
     $(`#staticAppDesc_${appIndex}`).hide();
-    // $(`#appGroupsWrapper_${appIndex}`).show();
+    $(`#appGroupsWrapper_${appIndex}`).show();
     Shiny.bindAll(document.getElementById(`appBox_${appID}`));
   }
   $(`#appBox_${appID} .edit-bt-group`).slideDown(200);
@@ -423,7 +479,7 @@ $appsWrapper.on('click', '.delete-app-button', function () {
       bootbox.prompt({
         required: true,
         title: 'Remove data',
-        message: `Do you want to permanently remove all data belonging to this app? Please type <b>${escapeHtml(appId)}</b> to confirm.`,
+        message: `Do you want to permanently remove all data belonging to this app? Please type <b>${escapeHtml(appId)}</b> to confirm or press 'Cancel' to keep the data.`,
         centerVertical: true,
         onEscape: false,
         callback: (result) => {
@@ -639,7 +695,7 @@ $(document).ready(() => {
     if (e.requestType === 'addApp') {
       $('#addAppSpinner').hide();
       $('#addAppProgress').css('width', '0%').attr('aria-valuenow', '0');
-      $('#btAddApp').attr('disabled', false);
+      $('#btAddApp').attr('disabled', true);
     } else if (e.requestType === 'loginRequest') {
       $('#loginFormWrapper').show();
       $('#loginLoadingIndicator').hide();
@@ -653,6 +709,10 @@ $(document).ready(() => {
       $('#loadingScreenProgress').css('width', '0%').attr('aria-valuenow', '0');
       $('#migrationFormErrors').show();
       return;
+    } else if (e.requestType === 'updateLogoAddApp') {
+      $('#btAddApp').attr('disabled', false);
+    } else if (e.requestType === 'updateLogo') {
+      $('.btn-save-changes').attr('disabled', false);
     }
     bootbox.alert({
       title: 'Error',

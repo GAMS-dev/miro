@@ -76,7 +76,7 @@ MIROGdxOutName <- "_miro_gdxout_.gdx"
 # default access group
 defaultGroup <- "users"
 # list all supported standard renderers
-standardRenderers <- c("datatable", "dtgraph", "pivot", "graph", "valuebox")
+standardRenderers <- c("datatable", "dtgraph", "pivot", "graph", "valuebox", "miropivot")
 # name of the folder where hcube jobs will be executed
 hcubeDirName <- "hcube_jobs"
 # filename of hcube submission file (will be called when hypercube jobs are to be launched)

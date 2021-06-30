@@ -118,20 +118,31 @@ if(is.null(errMsg)){
     overwriteSymNames <- names(config[["overwriteAliases"]])
     for (idx in seq_along(config[["overwriteAliases"]])){
       i <- match(overwriteSymNames[idx], names(modelIn))
-      if(is.na(i)){
-        i <- match(overwriteSymNames[idx], names(modelOut))
-        if(is.na(i)){
-          if(LAUNCHCONFIGMODE){
-            invalidAliases <- c(invalidAliases, idx)
-          }
-          warning(sprintf("The alias of symbol: '%s' was selected to be overwritten. However, this symbol could not be found.", 
-                          overwriteSymNames[idx]), call. = FALSE)
-          next
-        }
+      if(!is.na(i)){
+        modelIn[[i]]$alias <- config[["overwriteAliases"]][[idx]][["newAlias"]]
+        next
+      }
+      i <- match(overwriteSymNames[idx], names(modelOut))
+      if(!is.na(i)){
         modelOut[[i]]$alias <- config[["overwriteAliases"]][[idx]][["newAlias"]]
         next
       }
-      modelIn[[i]]$alias <- config[["overwriteAliases"]][[idx]][["newAlias"]]
+      i <- match(overwriteSymNames[idx], modelIn[[scalarsFileName]]$symnames)
+      if(!is.na(i)){
+        modelIn[[scalarsFileName]]$symtext[i] <- config[["overwriteAliases"]][[idx]][["newAlias"]]
+        next
+      }
+      i <- match(overwriteSymNames[idx], modelOut[[scalarsOutName]]$symnames)
+      if(!is.na(i)){
+        modelOut[[scalarsOutName]]$symtext[i] <- config[["overwriteAliases"]][[idx]][["newAlias"]]
+        next
+      }
+      if(LAUNCHCONFIGMODE){
+        invalidAliases <- c(invalidAliases, idx)
+      }
+      warning(sprintf("The alias of symbol: '%s' was selected to be overwritten. However, this symbol could not be found.", 
+                      overwriteSymNames[idx]), call. = FALSE)
+      next
     }
     config[["overwriteAliases"]] <- NULL
   }
@@ -318,11 +329,19 @@ if(is.null(errMsg)){
                             sep = "\n")
           }
           hasErr <- FALSE
-          widgetConfig$dropdownCols <- lapply(widgetConfig$dropdownCols, function(dataSource){
+          widgetConfig$dropdownCols <- lapply(names(widgetConfig$dropdownCols), function(dropdownCol){
+            dataSource <- widgetConfig$dropdownCols[[dropdownCol]]
+            ddColId <- match(dropdownCol, names(modelIn[[i]]$headers))
+            if(length(widgetConfig$pivotCols) &&
+               match(widgetConfig$pivotCols[1], names(modelIn[[i]]$headers)) <= ddColId){
+              # need to adjust id in case column before is pivoted
+              ddColId <- ddColId - 1L
+            }
             if(length(dataSource$static)){
               return(list(static = dataSource$static,
                           type = if(identical(dataSource$colType, "dropdown"))
-                            "dropdown" else "autocomplete"))
+                            "dropdown" else "autocomplete",
+                          ddColId = ddColId))
             }
             if(!dataSource$symbol %in% names(modelIn)){
               errMsg <<- paste(errMsg, sprintf("The GAMS symbol: '%s' defined as data source for symbol: '%s' does not exist in data contract!", 
@@ -362,7 +381,8 @@ if(is.null(errMsg)){
             }
             return(list(symbol = dataSource$symbol, colId = colId,
                         type = if(identical(dataSource$colType, "dropdown"))
-                          "dropdown" else "autocomplete"))
+                          "dropdown" else "autocomplete",
+                        ddColId = ddColId))
           })
           if(hasErr){
             next

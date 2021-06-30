@@ -211,7 +211,7 @@
                                     <h3 class="block-title">Structure of GAMS MIRO</h3>
                                     <p>Below you see the input mask as it appears after the launch.
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                        <img class="img-fluid" src="assets/images/initial-screen.png" alt="initial GAMS MIRO screen" />
+                                        <img class="img-fluid" src="assets/images/initial-screen-configured.png" alt="initial GAMS MIRO screen" />
                                     </div>
                                     <p>The screen is essentially divided into two parts:</p>
                                     <h6>Navigation bar:</h6>
@@ -245,7 +245,7 @@
                                     </ol>
 
                                     <h6>Main window:</h6>
-                                    <p>The main window always displays the content of the section selected by the user in the navigation bar. Here, for example, data is visualized, scenarios are compared and analyses are carried out.</p>
+                                    <p>The main window always displays the content of the section selected by the user in the navigation bar. Here, for example, data is visualized, scenarios are compared and analyses are carried out. In the screenshot above you can also see a <a href="./customize.html#app-readme">README</a> section that is displayed to the user. </p>
                                     <p>Besides navigation bar and main window, some functions are accessible in the header bar:</p>
                                     <ul>
                                       <li><b>Scenario:</b><br/>
@@ -272,7 +272,7 @@
                                         <p>There are several ways to use GAMS MIRO. However, a typical workflow could look like this:</p>
                                         <ol>
                                         <li>Import input data</li>
-                                        <li>Modify the data if desired</li>
+                                        <li>Modify the data</li>
                                         <li>Solve GAMS model</li>
                                         <li>Inspect the results (in the form of tables and/or charts)</li>
                                         <li>Save the scenario data or discard the results</li>
@@ -518,7 +518,7 @@
                                               <img class="img-fluid" src="assets/images/output-data.png" alt="Output data screen" />
                                         </div>
                                         <p>With a click on the <img class="img-fluid" src="assets/images/tabular-btn.png" width="25" height="25" align="middle" alt="Switch to tabular view button" /> button in the upper right corner you can switch between a plot and the tabular representation of the data.</p>
-                                        <p>All scalar results are summarized in <i>Output Scalars</i>. The default visualization selected here are tiles. Like before, you can switch between graphical and tabular representation with a click on the <img class="img-fluid" src="assets/images/tabular-btn.png" width="25" height="25" align="middle" alt="Switch to tabular view button" /> button.</p>
+                                        <p>The <i>Costs</i> tab shows the objective function value of the model calculation in a tile. Like before, you can switch between graphical and tabular representation with a click on the <img class="img-fluid" src="assets/images/tabular-btn.png" width="25" height="25" align="middle" alt="Switch to tabular view button" /> button.</p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                               <img class="img-fluid" style="max-height:175pt;" src="assets/images/output-data2.png" alt="Output data screen - scalars" />
                                         </div>
@@ -526,7 +526,7 @@
                                         <h6 class="callout-title">Download temporary files:</h6>
                                         <p>If this <a href = "./customize.html#general-temp-dir">option</a> is enabled, all temporarily created files of the model run (like solution reports or the <span class="code">lst</span> and <span class="code">log</span> files) can be downloaded either separately or as a ZIP archive with a click on the <img class="img-fluid" width="25" height="25" align="middle" src="assets/images/advanced-button.png" alt="Download temporary files" /> button.</p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                             <img class="img-fluid" style="max-height:325pt;" src="assets/images/advanced-options.png" alt="Output data screen - scalars" />
+                                             <img class="img-fluid" style="max-height:325pt;" src="assets/images/download-tmp-files.png" alt="Output data screen - scalars" />
                                         </div>
                                     </div><!--//section-block-->
                                     <div id="save-export-delete"  class="section-block">
@@ -633,9 +633,6 @@
                                             <h5 class="block-title">Split view</h5>
                                             <p>If two scenarios are to be compared, the split-screen view is particularly suitable. Here the data of two scenarios can be compared side by side.</p>
                                             <div class="section-block" style="text-align:center;">
-                                                  <img class="img-fluid" src="assets/images/batch_img/split_screen_mode.png" alt="Integrated scenario comparison - split view" />
-                                            </div>
-                                            <div class="section-block" style="text-align:center;">
                                                   <img class="img-fluid" src="assets/images/compare_split.png" alt="Split view" />
                                             </div>
                                             <p>You can choose between:</p>
@@ -704,8 +701,8 @@
                                         <li> Afterwards the results are sent to MIRO and displayed in the output section. From there, data can be saved in the internal database and/or exported as a file.</li>
                                     </ol></p>
                                     <p>A little more detail:</p>
-                                    <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                        <img class="img-fluid" src="assets/images/concept_data.png" alt="GAMS MIRO data concept" />
+                                    <div class="section-block" style="display:block; margin:auto; text-align:center;cursor: pointer;">
+                                        <img class="img-fluid" src="assets/images/concept_data.png" alt="GAMS MIRO data concept" onclick="window.open(this.src, '_blank');"/>
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="expandable-box-outline">
@@ -808,42 +805,24 @@
                                         </div>
                                     </div>
                                     <div id="access-permissions"  class="section-block">
-                                        <h3 class="block-title">Access permissions</h3>
-                                        <p>Access permissions are relevant if more than one user has access to a MIRO database. This can be the case, for example, if several MIRO users work on the same computer. Scenarios can then be shared between MIRO applications. By specifying permissions you can determine who can access your scenario. </p>
-                                        <div class="callout-block callout-warning" style="padding-top:10pt;">
+                                        <h3 class="block-title">Access permissions / Scenario sharing</h3>
+                                        <p>If multiple users have access to the same MIRO app, they can share scenarios. Shared scenarios can be loaded from the database into the sandbox in the same way as your own scenarios.
+										    <div class="section-block">
+                                                <img class="img-fluid" style= "max-height:350pt; display: block; margin-left: auto; margin-right: auto;cursor: pointer;" src="assets/images/server/shared-scenarios.png" alt="Shared scenarios" onclick="window.open(this.src, '_blank');" />
+                                            </div>
+										</p>
+										<p>Since scenario sharing is much more powerful using MIRO Server, you can find more information about this in the <a href="./server.html#scenario-sharing">MIRO Server section</a>.</p>
+										<p><b>Scenario sharing using MIRO Desktop:</b></br>
+										Scenarios can also be shared in MIRO Desktop. However, unlike MIRO Server, MIRO Desktop does not offer sophisticated user management including user groups. Users of a local MIRO Desktop application are automatically assigned to the only group available, 'users'. As a consequence, scenarios can be shared either with all users ('users' group) or with no users.</p>
+										<div class="callout-block callout-warning" style="padding-top:10pt;">
                                             <div class="icon-holder">
                                                 <i class="fas fa-info-circle"></i>
                                             </div><!--//icon-holder-->
                                             <div class="content">
                                                 <b class="callout-title">Note:</b>
-                                                <p>In contrast to the database used by GAMS MIRO Server, the database for MIRO Desktop is not designed for concurrent use. We therefore recommend to use one database per user for MIRO Desktop applications.</p>
+                                                <p>In contrast to the database used by <a href="./server.html">GAMS MIRO Server</a>, the database for MIRO Desktop is not designed for concurrent use. We therefore recommend to use one database per user for MIRO Desktop applications.</p>
                                             </div><!--//content-->
                                         </div><!--//callout-block-->
-                                        
-                                        <p>MIRO distinguishes between 3 access permissions:
-                                        <ul>
-                                            <li>Read permissions: Users that only have read permissions can load the owner's scenario but are not authorized to edit or execute it. The scenario is marked with a lock symbol.</p>
-                                            <div class="section-block" style="text-align:left;padding-top:0pt;">
-                                                <img class="img-fluid" style= "max-height:100pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/readonly_scenario.png" alt="Scenario in readonly mode" />
-                                            </div>
-                                            <p>Note that users can only not <i>overwrite</i> the owner's scenario. However, he or she can save it under a new name with self-defined access permissions.
-                                            </li>
-                                            <li>Write permissions: Users can edit the owner's scenario.</li>
-                                            <li>Execution permissions: Users can solve the model with the owner's scenario data.</li>
-                                        </ul>
-                                        The user who first saves a new scenario is its owner. When other users load this scenario, the name of the owner is displayed. It is not possible to revoke the owner's permissions of a scenario.
-                                        </p>
-                                        <p id="scenario-lock" ><b>Locked scenarios</b><br>
-                                            For the time a scenario is opened in MIRO, it is locked for other users. This prevents conflicts arising when a scenario is used concurrently. Locked scenarios can be opened in readonly mode by others. If you open such a scenario, a lock symbol next to the scenario name indicates the readonly status. If you have write permissions for the scenario, a notification in the lower right corner of the screen informs you about the lock status additionally. 
-                                        </p>
-                                        <div class="row">
-                                          <div class="col-sm-12 col-md-12 col-lg-6" style="padding:10pt;">
-                                            <img class="img-fluid center-image-lg" style= "max-height:100pt; display: block;" src="assets/images/readonly_scenario.png" alt="Scenario in readonly mode" />
-                                          </div>
-                                          <div class="col-sm-12 col-md-12 col-lg-6" style="padding:10pt;">
-                                            <img class="img-fluid center-image-lg" style= "max-height:100pt; display: block;" src="assets/images/locked_scenario.png" alt="Locked scenario notification" />
-                                          </div>
-                                        </div>
                                     </div>
                                 </div><!--//section-block-->
                             </section>
@@ -917,7 +896,7 @@
                                           <a class="nav-link scrollto" href="#metadata-general">General options</a>
                                           <a class="nav-link scrollto" href="#file-attachments">Attachments</a>
                                           <a class="nav-link scrollto" href="#metadata-views">Views</a>
-                                          <a class="nav-link scrollto" href="#access-permissions">Access permissions</a>
+                                          <a class="nav-link scrollto" href="#access-permissions">Access permissions / Scenario sharing</a>
                                     </nav>
                                     <a class="nav-link scrollto" href="#performance-aspects">Performance Aspects</a>
                                     <a class="nav-link scrollto" href="#additional-features">Additional features</a>

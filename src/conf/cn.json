@@ -232,6 +232,7 @@
       "newName":"新建名称",
       "badName":"该名称无效（太长或太短），请选择其他名称。",
       "newTags":"新建标签",
+      "badTags": "输入的标签无效。 确保标记不为空或复制，不包含1000多个字符。",
       "scenExists":"带有该名称的场景已存在。",
       "emptyPerm":"场景的访问权限不能为空!",
       "incapOwner": "无法撤销该文件所有者的访问权限。",
@@ -474,6 +475,7 @@
     },
     "dialogReadonly":{
       "title":"无写入权限",
+      "descErr":"没有该场景的写入权限。",
       "desc":"没有该场景的写入权限，另存为新场景？",
       "okButton":"另存为",
       "cancelButton":"取消"
@@ -782,9 +784,9 @@
       "rowTruncationWarning": "数据被截断到前%s行。",
       "newViewTitle": "新增检视",
       "newViewLabel": "请为该视图选择一个名称。",
-      "newViewChartTitle": "图表标题",
-      "newViewxTitle": "X轴标签",
-      "newViewyTitle": "Y轴标签",
+      "newViewChartTitle": "图表标题（可选的）",
+      "newViewxTitle": "X轴标签（可选的）",
+      "newViewyTitle": "Y轴标签（可选的）",
       "newViewCbCustomColors": "使用自定义颜色？",
       "newViewCbManualColors": "手动输入颜色？",
       "newViewBtCancel": "取消",

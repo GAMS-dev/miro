@@ -119,32 +119,19 @@ const tryInstallRPackages = async (attempt = 0) => {
       process.exit(1);
     }
   }
-  if (buildDocker) {
+  if (buildDocker && process.argv[3] === '--ci') {
     try {
-      console.log('Building Docker images...');
-      // `gamsmiro-ui:${process.env.npm_package_version}`
-      const subproc = execa('docker', ['build',
-        '--build-arg', `R_BASE_VERSION=${buildConfig.rVersion}`,
-        '-t', 'gamsmiro-ui', '.']);
-      subproc.stderr.pipe(process.stderr);
-      subproc.stdout.pipe(process.stderr);
-      await subproc;
-      const subprocAdmin = execa('docker', ['build', '-t', 'gamsmiro-admin', '-f', 'Dockerfile-admin', '.']);
-      subprocAdmin.stderr.pipe(process.stderr);
-      subprocAdmin.stdout.pipe(process.stderr);
-      await subprocAdmin;
-      if (process.argv[3] === '--ci') {
-        const subprocCi = execa('docker', ['build',
-          '--build-arg', `GAMS_MAJOR=${buildConfig.gamsVersion.split('.')[0]}`,
-          '--build-arg', `GAMS_MINOR=${buildConfig.gamsVersion.split('.')[1]}`,
-          '--build-arg', `GAMS_MAINT=${buildConfig.gamsVersion.split('.')[2]}`,
-          '-t', 'gamsmiro-ci', '-f', 'ci/Dockerfile', '.']);
-        subprocCi.stderr.pipe(process.stderr);
-        subprocCi.stdout.pipe(process.stderr);
-        await subprocCi;
-      }
+      console.log('Building CI Docker image...');
+      const subprocCi = execa('docker', ['build',
+        '--build-arg', `GAMS_MAJOR=${buildConfig.gamsVersion.split('.')[0]}`,
+        '--build-arg', `GAMS_MINOR=${buildConfig.gamsVersion.split('.')[1]}`,
+        '--build-arg', `GAMS_MAINT=${buildConfig.gamsVersion.split('.')[2]}`,
+        '-t', 'gamsmiro-ci', '-f', 'ci/Dockerfile', '.']);
+      subprocCi.stderr.pipe(process.stderr);
+      subprocCi.stdout.pipe(process.stderr);
+      await subprocCi;
     } catch (e) {
-      console.log(`Problems building Docker images. Error message: ${e.message}`);
+      console.log(`Problems building CI Docker image. Error message: ${e.message}`);
       process.exit(1);
     }
   }

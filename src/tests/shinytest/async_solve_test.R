@@ -1,6 +1,25 @@
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 app$snapshotInit("async_solve_test")
 
+authHeader <- paste0("Basic ", 
+                     processx::base64_encode(charToRaw(
+                       paste0(Sys.getenv("ENGINE_USER"), 
+                              ":", Sys.getenv("ENGINE_PASSWORD")))))
+getLatestJobToken <- function(){
+  httr::content(httr::GET(paste0(Sys.getenv("ENGINE_URL"), "/jobs/"),
+                          httr::add_headers(Authorization = authHeader),
+                          httr::timeout(2L)),
+                type = "application/json", 
+                encoding = "utf-8")$results[[1]]$token
+}
+getJobStatus <- function(token){
+  httr::content(httr::GET(paste0(Sys.getenv("ENGINE_URL"), "/jobs/", token),
+                          httr::add_headers(Authorization = authHeader),
+                          httr::timeout(2L)),
+                type = "application/json", 
+                encoding = "utf-8")$status
+}
+
 context("UI tests - asynchronous solve - solve without login")
 #expect login screen to appear. Don't log in first.
 Sys.sleep(1)
@@ -8,7 +27,6 @@ app$snapshot(items = list(output = "outputDataTitle"), screenshot = TRUE)
 expect_true(app$waitFor("$('#shiny-modal .bt-gms-confirm').is(':visible');", timeout = 50))
 app$findElement("#shiny-modal .btn-default")$click()
 Sys.sleep(1)
-
 #load data
 app$findElement("#btRemove1")$click()
 Sys.sleep(0.5)
@@ -101,29 +119,71 @@ app$findElement(".btSolve .dropdown-toggle")$click()
 app$findElement(".sidebar-menu a[onclick*='Solve model']")$click()
 Sys.sleep(3)
 app$findElement("#btInterrupt")$click()
-Sys.sleep(8)
+timeout <- 600L
+repeat{
+  isTerminated <- app$waitFor("$('#modelStatus').text().startsWith('Run did not')", timeout = 50)
+  if(isTerminated){
+    break
+  }
+  if(timeout < 560L){
+    print("Engine busy.. Waiting..")
+  }
+  Sys.sleep(2L)
+  timeout <- timeout - 2L
+  if(timeout <= 0L){
+    stop("Engine seems to be busy. Try again later..")
+  }
+}
 app$findElement("#sidebarItemExpanded a[data-value='gamsinter']")$click()
 app$findElement("#logFileTabsset a[data-value='mirolog']")$click()
 expect_identical(app$waitFor("$('#logStatusContainer')[0].textContent.length == 0", timeout = 50), TRUE)
 app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
 app$findElement(".btSolve .dropdown-toggle")$click()
 app$findElement(".sidebar-menu a[onclick*='Solve model']")$click()
-Sys.sleep(40)
+timeout <- 600L
+repeat{
+  outputTableVisible <- app$waitFor("$('#outputTableView').is(':visible')", timeout = 50)
+  if(outputTableVisible){
+    break
+  }
+  if(timeout < 560L){
+    print("Engine busy.. Waiting..")
+  }
+  Sys.sleep(2L)
+  timeout <- timeout - 2L
+  if(timeout <= 0L){
+    stop("Engine seems to be busy. Try again later..")
+  }
+}
 expect_error(app$findElement("#outputTableView")$click(), NA)
 app$findElement("#sidebarItemExpanded a[data-value='inputData']")$click()
 app$findElement(".btSolve .dropdown-toggle")$click()
 app$findElement(".sidebar-menu a[onclick*='Solve model']")$click()
 Sys.sleep(3)
 app$stop()
-Sys.sleep(22)
+token <- getLatestJobToken()
+timeout <- 600L
+repeat{
+  if(getJobStatus(token) == 10L){
+    break
+  }
+  if(timeout < 560L){
+    print("Engine busy.. Waiting..")
+  }
+  Sys.sleep(2L)
+  timeout <- timeout - 2L
+  if(timeout <= 0L){
+    stop("Engine seems to be busy. Try again later..")
+  }
+}
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
 Sys.sleep(5)
 expect_error(app$findElement("#shiny-modal button[onclick*='showJobsDialog']")$click(), NA)
-Sys.sleep(1)
+Sys.sleep(2)
 expect_error(app$findElements("#jImport_output button[onclick*='discardJob']")[[1]]$click(), NA)
-Sys.sleep(1)
+Sys.sleep(2)
 app$findElement("#confirmModal .bt-gms-confirm")$click()
-Sys.sleep(3)
+Sys.sleep(2)
 
 # modify metadata (add attachments, views, tags)
 app$setInputs(btEditMeta = "click")
@@ -164,9 +224,11 @@ Sys.sleep(5)
 app$findElement(".btSolve .dropdown-toggle")$click()
 app$findElement(".sidebar-menu a[onclick*='Submit job']")$click()
 Sys.sleep(1)
+token1 <- getLatestJobToken()
 app$setInputs(jobSubmissionName = "test4")
 app$findElement("#btSubmitAsyncJob")$click()
 Sys.sleep(5)
+token2 <- getLatestJobToken()
 
 #joblist section
 context("UI tests - asynchronous solve - joblist section")
@@ -188,9 +250,22 @@ expect_true(app$waitFor("$('#jImport_output td')[2].textContent==='test3'", time
 
 #restart app
 app$stop()
-Sys.sleep(20)
+timeout <- 600L
+repeat{
+  if(getJobStatus(token1) %in% c(10L, -3L) && getJobStatus(token2) %in% c(10L, -3L)){
+    break
+  }
+  if(timeout < 550L){
+    print("Engine busy.. Waiting..")
+  }
+  Sys.sleep(4L)
+  timeout <- timeout - 4L
+  if(timeout <= 0L){
+    stop("Engine seems to be busy. Try again later..")
+  }
+}
 app <- ShinyDriver$new("../../", loadTimeout = 20000)
-Sys.sleep(5)
+Sys.sleep(3)
 expect_error(app$findElement("#shiny-modal button[onclick*='showJobsDialog']")$click(), NA)
 Sys.sleep(1)
 
@@ -234,13 +309,16 @@ app$findElement("#shiny-modal .bt-gms-confirm")$click()
 Sys.sleep(1)
 
 #download job test3 and test2 directly one after the other. test3 will be imported to sandbox test2 can be imported afterwards
+app$snapshot()
 app$findElements("#jImport_output button[onclick*='downloadJobData']")[[1]]$click()
 Sys.sleep(8)
 expect_error(app$findElement("#outputTableView")$click(), NA)
+app$snapshot()
 app$findElement("#sidebarItemExpanded a[data-value='gamsinter']")$click()
 app$findElement('#shiny-tab-gamsinter a[data-value="joblist"]')$click()
 app$findElement('#refreshActiveJobs')$click()
 Sys.sleep(3)
+app$snapshot()
 app$findElements("#jImport_output button[onclick*='downloadJobData']")[[1]]$click()
 Sys.sleep(3)
 app$findElement("#shiny-modal button[data-dismiss='modal']")$click()
@@ -251,6 +329,7 @@ expect_error(app$findElement("#shiny-modal .bt-gms-confirm")$click(), NA)
 Sys.sleep(2)
 
 #show test1 log 
+app$snapshot()
 expect_error(app$findElement("#outputTableView")$click(), NA)
 app$findElement("#sidebarItemExpanded a[data-value='gamsinter']")$click()
 app$findElement('#shiny-tab-gamsinter a[data-value="joblist"]')$click()

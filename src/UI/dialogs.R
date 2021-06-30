@@ -563,10 +563,8 @@ showEditMetaDialog <- function(metadata,
   )
   writePerm <- csv2Vector(metadata[["_accessw"]][[1]])
   if(!isLocked && length(ugroups) && any(ugroups %in% writePerm)){
-    readPerm  <- csv2Vector(metadata[["_accessr"]][[1]])
-    execPerm <- csv2Vector(metadata[["_accessx"]][[1]])
-    
-    contentAccessPerm <- tabPanel(langData$categoryAccessPerm, 
+    contentAccessPerm <- tabPanel(langData$categoryAccessPerm,
+                                  value = "accessPerm",
                                   tags$div(class = "gmsalert gmsalert-error", id = "editMetaEmptyPerm",
                                            langData$emptyPerm),
                                   tags$div(class = "gmsalert gmsalert-error", id = "editMetaIncapOwner",
@@ -574,12 +572,10 @@ showEditMetaDialog <- function(metadata,
                                   tags$div(class = "gmsalert gmsalert-error", id = "editAccessRightsError", 
                                            langData$errMsg),
                                   tags$div(class = "space"),
-                                  accessPermInput("editMetaReadPerm", lang$nav$excelExport$metadataSheet$readPerm, 
-                                                 sort(unique(c(readPerm, ugroups))), selected = readPerm),
-                                  accessPermInput("editMetaWritePerm", lang$nav$excelExport$metadataSheet$writePerm, 
-                                                  sort(unique(c(writePerm, ugroups))), selected = writePerm),
-                                  accessPermInput("editMetaExecPerm", lang$nav$excelExport$metadataSheet$execPerm, 
-                                                  sort(unique(c(execPerm, ugroups))), selected = execPerm)
+                                  tags$div(id = "contentAccessPerm",
+                                           genSpinner(id = "contentAccessPermSpinner",
+                                                      absolute = FALSE,
+                                                      extraClasses = "gen-spinner-black"))
     )
   }
   if(allowAttachments){
@@ -677,14 +673,16 @@ showEditMetaDialog <- function(metadata,
                              genSpinner(id = "addViewsLoading", hidden = TRUE, absolute = FALSE,
                                         extraClasses = "gen-spinner-black")
     )
-    contentList <- list(tabPanel(langData$categoryGeneral, 
+    contentList <- list(id = "tpEditMeta",
+                        tabPanel(langData$categoryGeneral, 
                                  content), contentAttachments, contentViews)
     if(length(contentAccessPerm)){
-      contentList[[4L]] <- contentAccessPerm
+      contentList[[5L]] <- contentAccessPerm
     }
     content <- do.call(tabsetPanel, contentList)
   }else if(length(contentAccessPerm)){
-    content <- tabsetPanel(tabPanel(langData$categoryGeneral, 
+    content <- tabsetPanel(id = "tpEditMeta",
+                           tabPanel(langData$categoryGeneral, 
                                     content),
                            contentAccessPerm)
   }

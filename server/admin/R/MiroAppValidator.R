@@ -2,9 +2,6 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
   initialize = function(){
     return(invisible(self))
   },
-  getModesSupported = function(){
-    return(private$modesSupported)
-  },
   getMIROVersion = function(){
     return(private$miroVersion)
   },
@@ -12,7 +9,10 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     return(private$modelName)
   },
   getAppId = function(){
-    return(tolower(private$modelName))
+    return(private$appId)
+  },
+  getModelId = function(){
+    return(tolower(tools::file_path_sans_ext(private$modelName)))
   },
   getLogoB64 = function(){
     return(private$logoB64)
@@ -24,7 +24,7 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     if (length(private$appTitle)){
         return(private$appTitle)
     }
-    return(private$modelName)
+    return(private$appId)
   },
   getAppDesc = function(){
     return(private$appDesc)
@@ -33,12 +33,15 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     if(!length(logoPath) || !file.exists(logoPath)){
         stop("App logo does not exist.", call. = FALSE)
     }
+    if(file.size(logoPath) > MAX_LOGO_SIZE){
+        stop(sprintf("Logo exceeds maximum size of %s bytes.",
+          as.character(MAX_LOGO_SIZE)), call. = FALSE)
+    }
     private$logoFile <- logoPath
     private$logoB64  <- getLogoB64(logoPath)
     return(invisible(self))
   },
   validate = function(miroAppFile){
-    private$modesSupported <- NULL
     private$modelName <- NULL
     private$appTitle <- NULL
     private$appDesc <- NULL
@@ -51,15 +54,41 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
         flog.info("Invalid miroapp file uploaded.")
         stop("Not a valid MIRO app file.", call. = FALSE)
     }
-    filesInBundle  <- tryCatch(zip::zip_list(miroAppFile)[["filename"]], error = function(e){
+    filesInBundleRaw  <- tryCatch(zip::zip_list(miroAppFile), error = function(e){
         flog.info("Invalid miroapp file uploaded. Files is not a valid zip archive. Error message: %s", conditionMessage(e))
         stop("Not a valid MIRO app file.", call. = FALSE)
     })
+    filesInBundle <- filesInBundleRaw[["filename"]]
     if(any(grepl("..", filesInBundle, fixed = TRUE))){
         flog.warn("Invalid miroapp file uploaded. Archive includes files with .. in their filename: %s",
             paste(filesInBundle[grepl("..", filesInBundle, fixed = TRUE)], collapse = ", "))
         stop("Not a valid MIRO app file.", call. = FALSE)
     }
+    appMetadata <- private$readAppMeta(miroAppFile, filesInBundle)
+
+    if(!identical(appMetadata[["use_temp_dir"]], TRUE)){
+        stop("Invalid MIRO app uploaded. Model not deployed for multi-user environment!", call. = FALSE)
+    }
+
+    if(identical(tolower(as.character(appMetadata[["modes_included"]])), "hcube")){
+        stop("MIRO Server does not support the MIRO Hypercube Mode. Please deploy your app for the Base Mode!", call. = FALSE)
+    }
+
+    if(!identical(as.character(appMetadata[["api_version"]]), as.character(REQUIRED_API_VERSION))){
+        stop(sprintf("Invalid MIRO app uploaded. API version: %s of uploaded app does not match the version required by MIRO server: %s!",
+            as.character(appMetadata[["api_version"]]), REQUIRED_API_VERSION), call. = FALSE)
+    }
+
+    appMiroVersion <- MiroVersion$new(as.character(appMetadata[["miro_version"]]))
+    if(appMiroVersion$laterThan(MIRO_VERSION)){
+        stop(sprintf("The MIRO app you uploaded was deployed with a MIRO version (%s) more recent than the one installed (%s). Please update MIRO Server and try again.",
+            as.character(appMetadata[["miro_version"]]), MIRO_VERSION), call. = FALSE)
+    }
+
+    private$modelName <- private$validateModelname(appMetadata[["main_gms_name"]])
+    private$apiVersion <- as.character(appMetadata[["api_version"]])
+    private$miroVersion <- as.character(appMetadata[["miro_version"]])
+
     miroConfFormat <- "(.*)_(\\d)_(\\d+)_(\\d+\\.\\d+\\.\\d+)(_hcube)?\\.miroconf$"
     miroconfFiles  <- stringi::stri_match_all_regex(filesInBundle, miroConfFormat,
         omit_no_match = TRUE)
@@ -70,48 +99,30 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     if(!length(miroconfFiles)){
         stop("No valid miroconf file found in bundle.", call. = FALSE)
     }
-
-    for(miroconfFile in miroconfFiles){
-        if(!length(private$modelName)){
-            if(!identical(miroconfFile[3], "1")){
-                stop("Invalid MIRO app uploaded. Model not deployed for multi user environment!", call. = FALSE)
-            }
-            if(!identical(miroconfFile[4], as.character(REQUIRED_API_VERSION))){
-                stop(sprintf("Invalid MIRO app uploaded. API version: %s of uploaded app does not match the version required by MIRO server: %s!",
-                    miroconfFile[4], REQUIRED_API_VERSION), call. = FALSE)
-            }
-            appMiroVersion <- MiroVersion$new(miroconfFile[5])
-            if(appMiroVersion$laterThan(MIRO_VERSION)){
-                stop(sprintf("The MIRO app you uploaded was deployed with a MIRO version (%s) more recent than the one installed (%s). Please update MIRO Server and try again.",
-                    miroconfFile[5], MIRO_VERSION), call. = FALSE)
-            }
-            private$modelName <- miroconfFile[2]
-            private$apiVersion <- miroconfFile[4]
-            private$miroVersion <- miroconfFile[5]
-        }
-        if(is.na(miroconfFile[6])){
-            private$modesSupported <- c(private$modesSupported, "base")
-        }else{
-            private$modesSupported <- c(private$modesSupported, "hcube")
-        }
-    }
-    if(!length(private$modesSupported)){
-        stop("Invalid MIRO app uploaded: no miroconf file could be found.", call. = FALSE)
-    }
-    if(length(private$modesSupported) > 2){
+    if(length(miroconfFiles) > 2){
         stop("Invalid MIRO app uploaded: too many miroconf files were found.", call. = FALSE)
     }
-    if(!paste0(self$getAppId(), ".zip") %in% filesInBundle){
+    if(!paste0(self$getModelId(), ".zip") %in% filesInBundle){
         stop(sprintf("Invalid MIRO app uploaded: %s.zip not in bundle."),
-            self$getAppId(), call. = FALSE)
+            self$getModelId(), call. = FALSE)
     }
-    private$logoB64 <- private$readLogo(miroAppFile, filesInBundle)
+    private$logoB64 <- private$readLogo(miroAppFile, filesInBundleRaw)
     appInfo <- private$readAppInfo(miroAppFile, filesInBundle)
     private$appTitle <- appInfo$title
     private$appDesc <- paste(appInfo$description, collapse = "\n")
+
+    appIdTmp <- private$validateAppId(appInfo$appId)
+    if(is.null(appIdTmp)){
+        private$appId <- self$getModelId()
+    }else{
+        private$appId <- appIdTmp
+    }
+    if(nchar(private$appId) > 60L){
+        stop("The App ID must not be longer than 60 characters!", call. = FALSE)
+    }
     return(invisible(self))
   }), private = list(
-    modesSupported = NULL,
+    appId = NULL,
     modelName = NULL,
     appTitle = NULL,
     appDesc = NULL,
@@ -120,17 +131,23 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
     logoB64 = NULL,
     logoFile = NULL,
     getStaticFilePath = function(){
-        return(file.path(paste0("static_", self$getAppId())))
+        return(file.path(paste0("static_", self$getModelId())))
     },
-    readLogo = function(miroAppFile, filesInBundle){
+    readLogo = function(miroAppFile, filesInBundleRaw){
+        filesInBundle <- filesInBundleRaw[["filename"]]
         logoCandidates <- startsWith(filesInBundle, file.path(private$getStaticFilePath(), 
-            paste0(self$getAppId(), "_logo."))) | 
+            paste0(self$getModelId(), "_logo."))) | 
             startsWith(filesInBundle, file.path(private$getStaticFilePath(), "app_logo."))
         if(sum(logoCandidates) == 0){
             return(DEFAULT_LOGO_B64)
         }
         if(sum(logoCandidates) > 1){
             flog.info("Multiple app logos were found. The first one will be used.")
+        }
+        if(filesInBundleRaw[["uncompressed_size"]][which(logoCandidates)[1]] > MAX_LOGO_SIZE){
+            flog.warn("The logo exceeds the maximum logo size of %s bytes. The default logo will be used.",
+                as.character(MAX_LOGO_SIZE))
+            return(DEFAULT_LOGO_B64)
         }
         private$logoFile <- filesInBundle[logoCandidates][1]
         logoPath <- unzip(miroAppFile, files = private$logoFile, 
@@ -139,6 +156,18 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
         return(tryCatch(getLogoB64(logoPath), error = function(e){
             flog.info("Problems reading app logo. Default logo will be used. Error: %s", conditionMessage(e))
             return(DEFAULT_LOGO_B64)
+        }))
+    },
+    readAppMeta = function(miroAppFile, filesInBundle){
+        appMetaFile <- tolower(filesInBundle) == "miroapp.json"
+        if(sum(appMetaFile) == 0){
+            stop("No app metadata found. Please make sure to deploy your app with MIRO 2.0 or later!", call. = FALSE)
+        }
+        appMetaPath <- unzip(miroAppFile, files = filesInBundle[appMetaFile][1], 
+            junkpaths = TRUE, exdir = tempdir(check = TRUE))
+
+        return(tryCatch(jsonlite::fromJSON(appMetaPath), error = function(e){
+            stop(sprintf("Invalid App Meta file in bundle. Error message: %s", conditionMessage(e)), call. = FALSE)
         }))
     },
     readAppInfo = function(miroAppFile, filesInBundle){
@@ -153,6 +182,26 @@ MiroAppValidator <- R6::R6Class("MiroAppValidator", public = list(
             flog.info("Invalid App Info file in bundle. Error message: %s", conditionMessage(e))
             return(list())
         }))
+    },
+    validateModelname = function(modelNameRaw){
+        if(!identical(length(modelNameRaw), 1L) || !is.character(modelNameRaw) ||
+            !identical(tools::file_path_sans_ext(modelNameRaw),
+                gsub("[/\\\\\\?%*:|\"<>]", "", tools::file_path_sans_ext(modelNameRaw)))){
+            stop("Invalid model name found in MIRO metadata file!", call. = FALSE)
+        }
+        return(modelNameRaw)
+    },
+    validateAppId = function(appIdRaw){
+        if(is.null(appIdRaw)){
+            return(NULL)
+        }
+        if(!identical(length(appIdRaw), 1L) || !is.character(appIdRaw)){
+            stop("Invalid app id in app_info.json", call. = FALSE)
+        }
+        if(!identical(gsub("[/\\\\\\?%*:|\"<>]", "", appIdRaw), appIdRaw)){
+            stop("Invalid app id in app_info.json", call. = FALSE)
+        }
+        return(appIdRaw)
     }
   )
 )

@@ -232,6 +232,7 @@
       "newName": "New name",
       "badName": "Der von Ihnen gewählte Name ist ungültig (entweder zu lang oder zu kurz). Bitte wählen Sie einen anderen Namen.",
       "newTags":"Neue Tags",
+      "badTags": "Der/die eingegebene(n) Tag(s) sind ungültig. Stellen Sie sicher, dass die Tags nicht leer oder doppelt sind und nicht mehr als 1000 Zeichen enthalten.",
       "scenExists":"Es existiert bereits ein Szenario mit dem von Ihnen gewählten Namen.",
       "emptyPerm": "Szenario Zugriffsrechte dürfen nicht leer sein!",
       "incapOwner": "Du kannst dem Besitzer seine Zugriffsberechtigungen nicht entziehen.",
@@ -474,6 +475,7 @@
     },
     "dialogReadonly":{
       "title": "Keine Schreibberechtigung",
+      "descErr": "Sie habe keine Schreibrechte für dieses Szenario.",
       "desc": "Sie habe keine Schreibrechte für dieses Szenario. Möchten Sie es stattdessen als neues Szenario speichern?",
       "okButton": "Speichern als",
       "cancelButton": "Abbrechen"
@@ -782,9 +784,9 @@
       "rowTruncationWarning": "Die Daten wurden auf die ersten %s Zeilen gekürzt.",
       "newViewTitle": "Neuer view",
       "newViewLabel": "Bitte wählen Sie einen Namen für den View.",
-      "newViewChartTitle": "Diagrammtitel",
-      "newViewxTitle": "X-Achsen-Beschriftung",
-      "newViewyTitle": "Y-Achsen-Beschriftung",
+      "newViewChartTitle": "Diagrammtitel (optional)",
+      "newViewxTitle": "X-Achsen-Beschriftung (optional)",
+      "newViewyTitle": "Y-Achsen-Beschriftung (optional)",
       "newViewCbCustomColors": "Benutzerdefinierte Farben verwenden?",
       "newViewCbManualColors": "Farben manuell eingeben?",
       "newViewBtCancel": "Abbrechen",

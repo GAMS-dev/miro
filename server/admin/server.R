@@ -13,24 +13,23 @@ db               <- MiroDb$new(list(host = Sys.getenv("MIRO_DB_HOST", "localhost
     password = Sys.getenv("MIRO_DB_PASSWORD")))
 DEFAULT_LOGO_B64 <<- getLogoB64(file.path("www", "default_logo.png"))
 
-initCallback <- function(session, modelConfigList){
+initCallback <- function(session, appIds){
     modelListEngine <- engineClient$getModelList()
-    modelListSp <- vapply(modelConfigList, function(modelObj){
-        return(modelObj[["id"]])
-    }, character(1L), USE.NAMES = FALSE)
 
     errors <- list()
 
-    appIdsNotOnEngine <- !modelListSp %in% modelListEngine
+    appIds <- appIds[appIds != "admin"]
+
+    appIdsNotOnEngine <- !appIds %in% modelListEngine
 
     if(any(appIdsNotOnEngine)){
-        engineClient$setAppsNotOnEngine(modelListSp[appIdsNotOnEngine])
+        engineClient$setAppsNotOnEngine(appIds[appIdsNotOnEngine])
         errors$appsNotOnEngine <- I(engineClient$getAppsNotOnEngine())
         flog.info("Some apps are not registered on Engine: '%s'. They will be marked CORRUPTED!",
             paste(errors$appsNotOnEngine, collapse = "', '"))
     }
 
-    appIdsNotOnMIROServer <- !modelListEngine %in% modelListSp
+    appIdsNotOnMIROServer <- !modelListEngine %in% appIds
 
     if(any(appIdsNotOnMIROServer)){
         engineClient$setAppsNotOnMIRO(modelListEngine[appIdsNotOnMIROServer])
@@ -63,7 +62,7 @@ server <- function(input, output, session){
                 flog.info("User: %s successfully logged in.", input$loginRequest$user)
                 isLoggedIn <<- TRUE
                 session$sendCustomMessage("onLoginSuccessful", 1)
-                initCallback(session, modelConfigList)
+                initCallback(session, modelConfig$getAllAppIds())
                 return()
             }
             flog.info("Wrong log in attempt.")
@@ -72,7 +71,7 @@ server <- function(input, output, session){
         })
     }else{
         engineClient$setAuthHeader(ENGINE_TOKEN)
-        initCallback(session, modelConfigList)
+        initCallback(session, modelConfig$getAllAppIds())
     }
 
     observeEvent(input$miroAppFile, {
@@ -106,7 +105,7 @@ server <- function(input, output, session){
             errMsg <- sprintf("Invalid app logo. Error message: %s", 
                     conditionMessage(e))
             flog.info(errMsg)
-            session$sendCustomMessage("onError", list(requestType = "updateLogo", message = errMsg))
+            session$sendCustomMessage("onError", list(requestType = "updateLogoAddApp", message = errMsg))
         })
     })
     observeEvent(input$updateMiroAppLogo, {
@@ -132,11 +131,12 @@ server <- function(input, output, session){
         tryCatch({
             if(!length(miroAppValidator$getAppTitle())){
                 flog.error("Add App request sent without the miroapp file being validated. This should never happen and is likely an attempt to tamper with the app.")
-                stop("Internal error.", call. = FALSE)
+                stop("Internal error. Check log for more information.", call. = FALSE)
             }
             currentConfigList <- modelConfig$getConfigList()
             newAppTitle <- trimws(input$addApp$title)
             newAppDesc  <- trimws(input$addApp$desc)
+            newAppEnv   <- trimws(input$addApp$env)
             newGroups   <- csv2Vector(input$addApp$groups)
             if(!length(newAppTitle) || nchar(newAppTitle) == 0){
                 flog.error("Add app request with empty app title received. This should never happen and is likely an attempt to tamper with the app.")
@@ -145,11 +145,10 @@ server <- function(input, output, session){
 
             appId <- miroAppValidator$getAppId()
 
-            if(appId %in% vapply(currentConfigList, "[[", character(1L), "id", USE.NAMES = FALSE)){
-                stop("A MIRO App with the same id already exists.", call. = FALSE)
+            if(appId %in% modelConfig$getAllAppIds(includeNoAccess = TRUE)){
+                stop("A MIRO app with the same name already exists.", call. = FALSE)
             }
 
-            supportedModes <- miroAppValidator$getModesSupported()
             logoPath <- miroAppValidator$getLogoFile()
             logoURL  <- "default_logo.png"
             if(length(logoPath)){
@@ -163,10 +162,11 @@ server <- function(input, output, session){
                 containerVolumes = c(sprintf("/%s:/home/miro/app/model/%s:ro", appId, appId), 
                     sprintf("/data_%s:%s", appId, MIRO_CONTAINER_DATA_DIR)),
                 containerEnv = list(
-                    MIRO_MODEL_PATH = paste0("/home/miro/app/model/", appId, "/", modelName, ".gms"), 
+                    MIRO_MODEL_PATH = paste0("/home/miro/app/model/", appId, "/", modelName), 
                     MIRO_DATA_DIR = MIRO_CONTAINER_DATA_DIR, 
                     MIRO_VERSION_STRING = miroAppValidator$getMIROVersion(),
-                    MIRO_MODE = supportedModes[1]))
+                    MIRO_MODE = "base",
+                    MIRO_ENGINE_MODELNAME = appId))
 
             if(length(newGroups)){
                 newAppConfig[["accessGroups"]] <- as.list(newGroups)
@@ -177,10 +177,28 @@ server <- function(input, output, session){
             newAppConfig[["containerEnv"]][["MIRO_DB_PASSWORD"]] <- appDbCredentials$password
             newAppConfig[["containerEnv"]][["MIRO_DB_SCHEMA"]]   <- appDbCredentials$user
 
+            if(identical(length(newAppEnv), 1L) && !identical(newAppEnv, "")){
+                if (!jsonlite::validate(newAppEnv)) {
+                    stop("Argument 'txt' is not a valid JSON string.")
+                }
+                newAppEnv <- jsonlite::fromJSON(newAppEnv)
+                for(envName in names(newAppEnv)){
+                    if(envName %in% names(newAppConfig[["containerEnv"]])){
+                        flog.warn("Invalid environment variable name: %s in custom environment file. It was ignored.", envName)
+                    }else if(length(newAppEnv[[envName]]) != 1L){
+                        flog.error("Invalid environment variable value for variable: %s. Probably an attempt to tamper with the app!", envName)
+                    }else{
+                        newAppConfig[["containerEnv"]][[envName]] <- as.character(newAppEnv[[envName]])
+                    }
+                }
+            }
+
             appDir   <- file.path(getwd(), MIRO_MODEL_DIR, appId)
             dataDir  <- file.path(getwd(), MIRO_DATA_DIR, paste0("data_", appId))
 
-            extractAppData(isolate(input$miroAppFile$datapath), appId,
+            modelId <- miroAppValidator$getModelId()
+
+            extractAppData(isolate(input$miroAppFile$datapath), appId, modelId,
                         logoPath)
 
             miroProc$
@@ -190,9 +208,10 @@ server <- function(input, output, session){
                     appDir, dataDir, progressSelector = "#addAppProgress",
                     overwriteScen = TRUE, requestType = "addApp",
                     launchDbMigrationManager = launchDbMigrationManager, function(){
+                        flog.trace("Data for app: %s added successfully", appId)
                     tryCatch({
-                        engineClient$registerModel(appId, paste0(modelName, ".gms"), appDir, overwrite = TRUE)
-                        flog.debug("New MIRO app: %s registered at Engine.", modelName)
+                        engineClient$registerModel(appId, modelId, modelName, appDir, overwrite = TRUE)
+                        flog.debug("New MIRO app: %s registered at Engine.", appId)
 
                         modelConfig$add(newAppConfig)
                         flog.debug("New MIRO app: %s added.", appId)
@@ -234,7 +253,7 @@ server <- function(input, output, session){
                 flog.info("Data for MIRO app: %s removed successfully.", appId)
             }
 
-            removeAppData(appIndex, modelConfig$getAppLogo(appIndex))
+            removeAppData(appId, modelConfig$getAppLogo(appIndex))
 
             engineClient$deregisterModel(appId)
 
@@ -273,15 +292,31 @@ server <- function(input, output, session){
                 newLogoName <- getLogoName(appId, logoPath)
                 addAppLogo(appId, logoPath)
             }
+
+            newAppEnv <- NULL
+            if(identical(length(input$updateApp$env), 1L) && !identical(trimws(input$updateApp$env), "")){
+                if (!jsonlite::validate(input$updateApp$env)) {
+                    stop("Argument 'txt' is not a valid JSON string.")
+                }
+                newAppEnv <- jsonlite::fromJSON(input$updateApp$env)
+                for(envName in names(newAppEnv)){
+                    if(length(newAppEnv[[envName]]) != 1L){
+                        stop("Invalid environment variable value for variable: %s.", envName)
+                    }else{
+                        newAppEnv[[envName]] <- as.character(newAppEnv[[envName]])
+                    }
+                }
+            }
             
             modelConfig$update(appIndex, list(displayName = input$updateApp$title,
-                logoURL = newLogoName,
+                logoURL = newLogoName, 
+                containerEnv = newAppEnv,
                 description = input$updateApp$desc,
                 accessGroups = csv2Vector(input$updateApp$groups)))
 
             flog.info("MIRO app: %s updated successfully.", appId)
             session$sendCustomMessage("onSuccess", 
-                    list(requestType = "updateApp", 
+                    list(requestType = "updateApp",
                         configList = modelConfig$getConfigList(), 
                         groupList = modelConfig$getAccessGroupUnion()))
         }, error = function(e){
@@ -325,7 +360,10 @@ server <- function(input, output, session){
                 flog.warn("The main gms file name in the MIRO scenario is different from the one uploaded to MIRO server (MIRO scen: %s, App: %s).",
                     modelName, appModelName)
             }
-            miroProc$run(appId, appModelName,
+            appDbCredentials <- modelConfig$getAppDbConf(appId)
+            miroProc$
+                setDbCredentials(appDbCredentials$user,
+                    appDbCredentials$password)$run(appId, appModelName,
                 appConfig$containerEnv[["MIRO_VERSION_STRING"]],
                 file.path(getwd(), MIRO_MODEL_DIR, appId), dataPath,
                 progressSelector = "#loadingScreenProgress",
