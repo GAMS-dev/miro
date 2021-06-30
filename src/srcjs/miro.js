@@ -5,7 +5,7 @@ import AutoNumeric from 'autonumeric';
 import {
   sleep, changeActiveButtons, switchTabInTabset, removeModal,
   switchTab, isInputEl, rerenderDygraph, rerenderHot, showHideEl, scrollDown,
-  changeTheme, LoadingScreen,
+  changeTheme, LoadingScreen, colorPickerBinding,
 } from './util';
 
 const loadingScreen = new LoadingScreen();
@@ -339,6 +339,13 @@ $(document).ready(() => {
 
   Shiny.addCustomMessageHandler('gms-switchTab', (el) => {
     switchTab(el);
+  });
+  $(document).on('click', '#miroPivotCbCustomColorInputs', function () {
+    if (this.checked) {
+      $('.miro-pivot-custom-colors-wrapper .miro-color-picker input').show();
+    } else {
+      $('.miro-pivot-custom-colors-wrapper .miro-color-picker input').hide();
+    }
   });
   $(document).on('click', '.bt-highlight-1, .bt-highlight-2, .bt-highlight-3', function () {
     const btn = $(this);
@@ -723,6 +730,7 @@ ${data.data}</div>` : data.data);
     },
   });
   Shiny.inputBindings.register(autoNumericBinding);
+  Shiny.inputBindings.register(colorPickerBinding);
 });
 
 // counter

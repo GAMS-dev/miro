@@ -16,7 +16,7 @@ createArray <- function(session, arrayID, label, plotlyChartType = "", autoCreat
   arrayID <- paste0(arrayID, plotlyChartType)
   HTML(paste0('<div id="', arrayID, '_wrapper" ', 
               if(length(symbolName)) paste0('data-symbol="', symbolName, '" ') else '',
-              'class="shiny-input-container ', class_outer, '">\n', 
+              'class="shiny-input-container ', class_outer, '">\n',
               if ( hr ) "<hr>\n" else '',
               '<div class="array-wrapper"></div>\n
    <div onclick="Miro.addArrayDataEl(\'', arrayID, '\')" style="cursor:pointer">\n
@@ -60,12 +60,6 @@ optionSection <- function(title, ..., collapsed = FALSE){
                    onclick = "$(this).next().toggle();$(this).children('.fa').toggleClass('fa-plus fa-minus');"),
            tags$div(class = "option-section", ..., style = if(collapsed) "display:none;" else "")
   )
-}
-colorPickerInput <- function(id, label = NULL, value = NULL){
-  HTML(paste0('<div class="form-group shiny-input-container">\n
-    <label for="', id, '">', label, '</label>\n
-      <input id="', id, '" type="text" class="form-control miro-color-picker" value="', value, '" />\n
-    </div>'))
 }
 isNonemptyDataset <- function(datasets){
   vapply(datasets, function(el){

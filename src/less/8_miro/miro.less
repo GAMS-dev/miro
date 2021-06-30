@@ -1623,6 +1623,29 @@ animation: none !important;
 }
 .label-wrapper[style*="height"] {
   max-height: unset; 
+}
+// Color picker
+.miro-pivot-custom-colors-wrapper {
+  max-height: 300px;
+  overflow-y: auto;
+}
+.miro-color-picker input {
+  display: none;
+  width: unset;
+}
+.miro-color-picker span {
+  display: inline-block;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  width: unset;
+}
+.miro-color-picker label {
+  margin-right: 5px;
+  display: inline-block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  vertical-align: text-top;
 } 
 // fullscreen modal (used e.g. for analysis scripts)
 #batchLoadModal {
