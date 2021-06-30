@@ -477,6 +477,12 @@ lapply(modelInTabularData, function(sheet){
                         allowInvalid = FALSE)
         }
       }
+      for(colOption in modelIn[[i]]$colFormat){
+        ht$x$columns[[colOption$colId]]$numericFormat <- list(pattern = colOption$format)
+        if(length(colOption$language)){
+          ht$x$columns[[colOption$colId]]$numericFormat$culture <- colOption$language
+        }
+      }
       if(length(colsReadonly))
         ht <- hot_col(ht, colsReadonly, readOnly = TRUE)
       if(identical(modelIn[[i]]$heatmap, TRUE))
