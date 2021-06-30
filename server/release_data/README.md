@@ -44,7 +44,16 @@ map $http_upgrade $connection_upgrade {
    default upgrade;
    ''      close;
 }
+# redirect http to https (optional)
+#server {
+#    listen 80;
+#    return 301 https://$host$request_uri;
+#}
 server {
+# SSL setup (optional)
+#    listen 443 ssl;
+#    ssl_certificate /path/to/certificate/file.pem;
+#    ssl_certificate_key /path/to/key/file.key.pem;
     listen 80;
     location / {
         proxy_pass http://127.0.0.1:8080;
@@ -61,7 +70,7 @@ server {
         proxy_set_header  X-Forwarded-Proto $scheme;
     }
     location /engine {
-        proxy_pass http://127.0.0.1:5000;
+        proxy_pass http://127.0.0.1:5000/engine;
         
         proxy_redirect    off;
         proxy_set_header  Host             $http_host;

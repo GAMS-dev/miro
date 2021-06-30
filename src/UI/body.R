@@ -399,7 +399,8 @@ if(buildUI){
                            tags$div(id = "selectorsWrapper"
                            ),
                            tags$div(id = "buttonsWrapper", class = "item-or-query",
-                                    actionButton("btNewBlock", label = lang$nav$queryBuilder$orButton)),
+                                    actionButton("btNewBlock", label = lang$nav$queryBuilder$orButton,
+                                                 class = "btn-custom")),
                            tags$div(class = "item-or-query",
                                     actionButton("btSendQuery", label = lang$nav$queryBuilder$queryButton, 
                                                  class = "bt-highlight-1")
@@ -536,7 +537,7 @@ if(buildUI){
   }else{
     outputTabset <- tagList(
       fluidRow(
-        box(title=lang$nav$gams$boxModelStatus$title, status="warning", solidHeader = TRUE, width=12,
+        box(title=lang$nav$gams$boxModelStatus$title, status="primary", solidHeader = TRUE, width=12,
             uiOutput("modelStatus"))
       ),
       if(any(config$activateModules$logFile, config$activateModules$lstFile, 
@@ -573,7 +574,7 @@ if(buildUI){
         logTabsetList <- unname(logTabsetList)
         logTabsetList$id <- "logFileTabsset"
         fluidRow(
-          box(title=lang$nav$gams$boxGamsOutput$title, status="warning", solidHeader = TRUE, 
+          box(title=lang$nav$gams$boxGamsOutput$title, status="primary", solidHeader = TRUE, 
               width=12, collapsible = TRUE,
               do.call(tabsetPanel, logTabsetList)
           )
@@ -656,7 +657,7 @@ if(buildUI){
                                                                  actionButton(inputId = "refreshActiveJobs", 
                                                                               class = "bt-icon", 
                                                                               icon = icon("refresh"), label = NULL))),
-                                        status="warning", solidHeader = TRUE, width = 12,
+                                        status="primary", solidHeader = TRUE, width = 12,
                                         genSpinner("jImport_load", absolute = FALSE),
                                         getJobsTableSkeleton(id = "jImport_output"),
                                         tags$div(class = "col-sm-6",
@@ -745,12 +746,6 @@ if(buildUI){
         # Logo ratio should be 4,6 (width/height)
         tags$style(HTML(
           paste0('
-.filter-index-list::after {
-    content: "', lang$renderers$miroPivot$filterLabel, '";
-}
-.aggregation-index-list::after {
-    content: "', lang$renderers$miroPivot$aggregateLabel, '";
-}
 .main-header .logo {
   background-image: url("', 
 if(!identical(config$UILogo, "gams_logo.png") && 

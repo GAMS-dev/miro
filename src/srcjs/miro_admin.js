@@ -1,7 +1,7 @@
 import InputArrayFactory from './input_array';
-import { debounce } from './util';
+import { debounce, colorPickerBinding } from './util';
 
-export { confirmModalShow, slideToggleEl } from './miro';
+export { confirmModalShow, slideToggleEl, resetDropdownFilter } from './miro';
 
 /* global $:false Shiny:false showdown:false renderMathInElement:false */
 
@@ -732,38 +732,5 @@ $(document).ready(() => {
     Shiny.setInputValue(this.dataset.bindingId,
       { id: this.dataset.inputId, val: $(this).val() }, { priority: 'event' });
   }, 300));
-  const colorPickerBinding = new Shiny.InputBinding();
-  $.extend(colorPickerBinding, {
-    find(scope) {
-      return $(scope).find('.miro-color-picker');
-    },
-    getValue(el) {
-      return $(el).val();
-    },
-    setValue(el, value) {
-      $(el).setColor(value);
-    },
-    subscribe(el, callback) {
-      $(el).on('change.colorPickerBinding', () => {
-        callback(true);
-      });
-    },
-    getRatePolicy() {
-      return {
-        policy: 'debounce',
-        delay: 250,
-      };
-    },
-    initialize(el) {
-      $(el).colorpicker({
-        align: 'left',
-      });
-    },
-    unsubscribe(el) {
-      $(el).colorpicker('destroy');
-      $(el).off('.colorPickerBinding');
-    },
-  });
-
   Shiny.inputBindings.register(colorPickerBinding);
 });

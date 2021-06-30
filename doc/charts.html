@@ -883,6 +883,7 @@ dowVSindex(d,'index fund')     = fund(d);
                                 <h2 class="section-title">Pivot table</h2>
                                 <div class="section-block">
                                   <p>MIRO comes with a powerful pivot table renderer that allows you to filter, aggregate and pivot data. In addition to a table, the MIRO pivot table renderer also supports the visualization of data in the form of a heatmap or as chart (line chart, bar chart, etc.). Each slice, or "view" of data can be exported by clicking the <img class="img-fluid" src="assets/images/configuration_mode/miropivot_exportview_btn.png" width="25" height="25" align="middle" alt="Export as CSV/PNG" /> button. If you are currently viewing a chart, the view is exported as a PNG file; if you are viewing a table or heatmap, the data is exported as a CSV file.</p>
+                                  <p>A click on the <img class="img-fluid" src="assets/images/configuration_mode/miropivot_presentationmode_btn.png" width="25" height="25" align="middle" alt="Export Show/hide pivot controls" /> button toggles the <a href ="#presentation-mode">presentation mode</a>.</p>
                                   <p>The MIRO pivot table renderer allows you to store "views" - the current representation of the data - to the database and load it together with the scenario data. Simply click the <img class="img-fluid" src="assets/images/configuration_mode/miropivot_addview_btn.png" width="25" height="25" align="middle" alt="Add view" /> button and assign a name to the view. When you save the scenario, all your views are automatically stored as well. Load a view by first clicking on the "Load view" button and then selecting which view to load.</p>
                                   <div class="section-block">
                                       <img class="img-fluid" src="assets/images/configuration_mode/miropivot_loadview_btn.png" alt="Load views"/>
@@ -891,8 +892,8 @@ dowVSindex(d,'index fund')     = fund(d);
                                     <p>You can specify the default view as well as the default renderer (table/chart) of the pivot table renderer in the Configuration Mode. Note that unlike other charting tools, you configure most of the MIRO pivot table directly in the preview on the right. Drag and drop the domains where you want them to be and click on "Save". The symbol is loaded in MIRO with the same view that you have set up in the Configuration Mode.</p>
                                     <p>Example: Model <i>Transport</i>, parameter <i>shipment quantities in cases</i></p>
                                     <p>For an example in GAMS, see the <a href="#map-chart" class="scrollto">map example</a>.</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" src="assets/images/configuration_mode/graphs_miropivot_config.png" alt="Pivottable configuration"/>
+                                    <div class="section-block" style = "cursor: pointer;">
+                                        <img class="img-fluid" src="assets/images/configuration_mode/graphs_miropivot_config.png" alt="Pivottable configuration" onclick="window.open(this.src, '_blank');"/>
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block">
@@ -902,22 +903,28 @@ dowVSindex(d,'index fund')     = fund(d);
   "dataRendering": {
     "schedule": {
       "outType": "miroPivot",
+      "height": 700,
       "options": {
+        "aggregationFunction": "sum",
+        "pivotRenderer": "stackedbar",
+        "enableHideEmptyCols": false,
+        "hidePivotControls": true,
         "rows": "i",
-        "cols": "j",
         "filter": {
           "Hdr": "quantities"
         },
-        "renderer": "bar"
-      },
-      "height": 700
+        "cols": {
+          "j": null
+        }
+      }
     }
   }
 }
                                     </code></pre>
                                 </div><!--//section-block-->
                                 <div class="section-block">
-                                  <p>In addition to the configuration of the default view, there is also the possibility to activate a switch that allows to hide <i>empty</i> columns. This is especially useful if you use the MIRO Pivot Table for a <i>data cube</i>. A <i>data cube</i> is a collection of GAMS parameters that are combined to form a large cube. For example, if you have location information in the two parameters: <code class="language-gams">ilocData(i,locHdr)</code> and <code class="language-gams">jlocData(j,locHdr)</code>, you can combine them into a cube with four dimensions: one dimension to store the name of the GAMS symbols: <code class="language-gams">symname</code> and the three dimensions <code class="language-gams">i</code>, <code class="language-gams">j</code> and <code class="language-gams">locHdr</code>. Note that the dimension <code class="language-gams">i</code> is missing in the parameter <code class="language-gams">jlocData</code> and vice versa. So we end up with a sparse cube:</p>
+                                  <p><b>Hide empty columns:</b><br>
+                                  In addition to the configuration of the default view, there is also the possibility to activate a switch that allows to hide <i>empty</i> columns. This is especially useful if you use the MIRO Pivot Table for a <i>data cube</i>. A <i>data cube</i> is a collection of GAMS parameters that are combined to form a large cube. For example, if you have location information in the two parameters: <code class="language-gams">ilocData(i,locHdr)</code> and <code class="language-gams">jlocData(j,locHdr)</code>, you can combine them into a cube with four dimensions: one dimension to store the name of the GAMS symbols: <code class="language-gams">symname</code> and the three dimensions <code class="language-gams">i</code>, <code class="language-gams">j</code> and <code class="language-gams">locHdr</code>. Note that the dimension <code class="language-gams">i</code> is missing in the parameter <code class="language-gams">jlocData</code> and vice versa. So we end up with a sparse cube:</p>
                                   <div class="table-responsive">
                                     <table class="table table-striped">
                                         <thead>
@@ -967,6 +974,11 @@ dowVSindex(d,'index fund')     = fund(d);
                                 </div>
                                 <div class="section-block">
                                     <img class="img-fluid" src="assets/images/configuration_mode/miropivot_empty_col_hidden.png" alt="MIRO Pivot Table with empty column hidden"/>
+                                </div>
+                                <p id="presentation-mode"><b>Hide pivot controls (presentation mode):</b><br>
+                                This option activates the presentation mode by default. In this mode, all pivot controls are hidden so that the chart or table takes center stage. Only configured views and export buttons remain visible. The presentation mode can be very useful for users who do not want to play around with the data in the pivot tool, but only want to view predefined views/reports. </p>
+                                <div class="section-block" style = "cursor: pointer;">
+                                    <img class="img-fluid" src="assets/images/configuration_mode/graphs_miropivot_presentation.png" alt="Presentation mode" onclick="window.open(this.src, '_blank');"/>
                                 </div>
                             </section>
                             <section id="gantt-chart" class="doc-section">

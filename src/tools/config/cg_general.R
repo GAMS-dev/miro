@@ -239,6 +239,27 @@ observeEvent(input$general_overwriteSheetOrderOutput, {
     rv$generalConfig$overwriteSheetOrder$output <<- input$general_overwriteSheetOrderOutput
   }
 })
+lapply(c(modelInRaw[[scalarsFileName]]$symnames,
+         modelOut[[scalarsOutName]]$symnames), function(name){
+           observeEvent(input[[paste0("general_overwriteSymAlias_", name)]], {
+             if(length(input[[paste0("general_overwriteSymAlias_", name)]]) && 
+                nchar(input[[paste0("general_overwriteSymAlias_", name)]]) > 0L){
+               newAlias <- input[[paste0("general_overwriteSymAlias_", name)]]
+               if(!length(rv$generalConfig$overwriteAliases)){
+                 rv$generalConfig$overwriteAliases <- list()
+               }
+               rv$generalConfig$overwriteAliases[[name]] <<- list(newAlias = newAlias)
+             }else{
+               rv$generalConfig$overwriteAliases[[name]] <<- NULL
+               configJSON$overwriteAliases[[name]] <<- NULL
+               if(!length(rv$generalConfig$overwriteAliases)){
+                 rv$generalConfig$overwriteAliases <<- NULL
+                 configJSON$overwriteAliases <<- NULL
+               }
+               return()
+             }
+           })
+         })
 lapply(c(names(modelInRaw), names(modelOut)), function(name){
   observeEvent(input[[paste0("general_overwriteSymAlias_", name)]], {
     if(length(input[[paste0("general_overwriteSymAlias_", name)]]) && 

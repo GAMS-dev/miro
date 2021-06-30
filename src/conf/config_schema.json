@@ -96,6 +96,10 @@
            "description":"Enable persistent views.",
            "type": "boolean"
          },
+         "hidePivotControls": {
+           "description":"Show pivot presentation mode/hide pivot controls per default.",
+           "type": "boolean"
+         },
          "customChartColors": {
            "description": "Custom color palette. Every second color is the hover color of previous one.",
            "type":"array"

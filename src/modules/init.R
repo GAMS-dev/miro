@@ -118,20 +118,31 @@ if(is.null(errMsg)){
     overwriteSymNames <- names(config[["overwriteAliases"]])
     for (idx in seq_along(config[["overwriteAliases"]])){
       i <- match(overwriteSymNames[idx], names(modelIn))
-      if(is.na(i)){
-        i <- match(overwriteSymNames[idx], names(modelOut))
-        if(is.na(i)){
-          if(LAUNCHCONFIGMODE){
-            invalidAliases <- c(invalidAliases, idx)
-          }
-          warning(sprintf("The alias of symbol: '%s' was selected to be overwritten. However, this symbol could not be found.", 
-                          overwriteSymNames[idx]), call. = FALSE)
-          next
-        }
+      if(!is.na(i)){
+        modelIn[[i]]$alias <- config[["overwriteAliases"]][[idx]][["newAlias"]]
+        next
+      }
+      i <- match(overwriteSymNames[idx], names(modelOut))
+      if(!is.na(i)){
         modelOut[[i]]$alias <- config[["overwriteAliases"]][[idx]][["newAlias"]]
         next
       }
-      modelIn[[i]]$alias <- config[["overwriteAliases"]][[idx]][["newAlias"]]
+      i <- match(overwriteSymNames[idx], modelIn[[scalarsFileName]]$symnames)
+      if(!is.na(i)){
+        modelIn[[scalarsFileName]]$symtext[i] <- config[["overwriteAliases"]][[idx]][["newAlias"]]
+        next
+      }
+      i <- match(overwriteSymNames[idx], modelOut[[scalarsOutName]]$symnames)
+      if(!is.na(i)){
+        modelOut[[scalarsOutName]]$symtext[i] <- config[["overwriteAliases"]][[idx]][["newAlias"]]
+        next
+      }
+      if(LAUNCHCONFIGMODE){
+        invalidAliases <- c(invalidAliases, idx)
+      }
+      warning(sprintf("The alias of symbol: '%s' was selected to be overwritten. However, this symbol could not be found.", 
+                      overwriteSymNames[idx]), call. = FALSE)
+      next
     }
     config[["overwriteAliases"]] <- NULL
   }

@@ -80,21 +80,13 @@ body_admin <- dashboardBody({
       tags$meta(name = "color-scheme",
                 content = if(identical(config$theme, "browser")) "dark light" else "normal"),
       tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
-      tags$link(type = "text/css", rel = "stylesheet", href = "bootstrap-colorpicker.min.css"),
       tags$script(`defer src` = "showdown.min.js", type = "application/javascript"),
       tags$script(`defer src` = "mathjax-extension.js", type = "application/javascript"),
-      tags$script(`defer src` = "bootstrap-colorpicker.min.js", type = "application/javascript"),
       tags$script(`defer src` = "miro_admin.js", type = "application/javascript"),
       tags$link(type = "text/css", rel="stylesheet", href="katex.min.css"),
       tags$script(type = "application/javascript", `defer src`="katex.min.js"),
       tags$script(type = "application/javascript", `defer src`="auto-render.min.js"),
       tags$style(HTML(paste0('
-.filter-index-list::after {
-    content: "', lang$renderers$miroPivot$filterLabel, '";
-}
-.aggregation-index-list::after {
-    content: "', lang$renderers$miroPivot$aggregateLabel, '";
-}
 .main-header .logo {
                              background-image: url("gams_logo.png");
 }
@@ -662,6 +654,20 @@ font-size: 12px;
                                                      )
                                                    )
                                                  }),
+                                                 lapply(seq_along(modelInRaw[[scalarsFileName]]$symnames), function(idx){
+                                                   name <- modelInRaw[[scalarsFileName]]$symnames[idx]
+                                                   if(name %in% names(configJSON$overwriteAliases)){
+                                                     symAlias <- configJSON$overwriteAliases[[name]]$newAlias
+                                                   }else{
+                                                     symAlias <- modelInRaw[[scalarsFileName]]$symtext[idx]
+                                                   }
+                                                   tags$div(
+                                                     column(6L, tags$div(name)),
+                                                     column(6L, 
+                                                            textInput(paste0("general_overwriteSymAlias_", name), 
+                                                                      lang$adminMode$general$overwriteSymbolAliases$label,
+                                                                      symAlias)))
+                                                 }),
                                                  tags$div(class = "space"),
                                                  tags$h4(lang$adminMode$general$overwriteSymbolAliases$output, class="option-category"),
                                                  tags$div(class = "small-space"),
@@ -697,6 +703,20 @@ font-size: 12px;
                                                                      }))
                                                             )
                                                    )
+                                                 }),
+                                                 lapply(seq_along(modelOut[[scalarsOutName]]$symnames), function(idx){
+                                                   name <- modelOut[[scalarsOutName]]$symnames[idx]
+                                                   if(name %in% names(configJSON$overwriteAliases)){
+                                                     symAlias <- configJSON$overwriteAliases[[name]]$newAlias
+                                                   }else{
+                                                     symAlias <- modelOut[[scalarsOutName]]$symtext[idx]
+                                                   }
+                                                   tags$div(
+                                                     column(6L, tags$div(name)),
+                                                     column(6L, 
+                                                            textInput(paste0("general_overwriteSymAlias_", name), 
+                                                                      lang$adminMode$general$overwriteSymbolAliases$label,
+                                                                      symAlias)))
                                                  }),
                                                  tags$div(class = "space")
                                         )
