@@ -9,6 +9,7 @@ if(length(tableSymbols)){
   noTableSymbols <- FALSE
 }
 configuredTable <- FALSE
+currentColFormatConfig <- NULL
 
 data <- tibble("Column 1" = 1:10, "Column 2" = 11:20, "Column 3" = letters[1:10], "Column 4" = letters[11:20])
 attr(data, "aliases") <- c("Column 1", "Column 2", "Column 3", "Column 4")
@@ -149,12 +150,7 @@ observeEvent({input$table_symbol
     req(identical(input$table_type, "symbol"),
         length(input$table_symbol) > 0L,
         nchar(input$table_symbol) > 0L)
-    
-    #do not keep configuration of other symbol when triggering rv$refreshInputTableType (below)
-    refreshSameSymbol <<- FALSE
-    if(identical(currentTableSymbolName, input$table_symbol)){
-      refreshSameSymbol <<- TRUE
-    }
+
     currentTableSymbolName <<- input$table_symbol
     rv$tableWidgetConfig <- list() 
     currentConfig <- NULL
@@ -213,13 +209,15 @@ observeEvent({input$table_symbol
                                      hideIndexCol = checkLength(configuredTable, currentConfig$hideIndexCol, FALSE),
                                      heatmap = checkLength(configuredTable, currentConfig$heatmap, FALSE),
                                      pivotCols = checkLength(configuredTable, currentConfig$pivotCols, "_"),
+                                     colFormat = checkLength(configuredTable, currentConfig$colFormat, NULL),
                                      fixedColumnsLeft = checkLength(configuredTable, currentConfig$fixedColumnsLeft, NULL))
       }
+      currentColFormatConfig <<- rv$tableWidgetConfig$colFormat
       insertUI(selector = "#table_wrapper", getSymbolHotOptions(), where = "beforeEnd")
       hideEl(session, "#outputTable_preview")
       if(identical(rv$tableWidgetConfig$tableType, input$inputTable_type)){
         # need to trigger observer as it is lazy..
-        rv$refreshInputTableType <- rv$refreshInputTableType + 1L
+        refreshTableType(refreshSameSymbol = identical(currentTableSymbolName, input$table_symbol))
       }
     }else if(currentTableSymbolName %in% outputSymMultiDimChoices){
       pivotCols <<- NULL
@@ -298,11 +296,30 @@ getSymbolHotOptions <- function(){
                               checkboxInput_MIRO("table_fixedColumnsLeft", lang$adminMode$widgets$table$fixedColumnsLeft, 
                                                  value = if(length(rv$tableWidgetConfig$fixedColumnsLeft)) TRUE else FALSE))
     ),
-    conditionalPanel(condition = "input.inputTable_type==='default' && (input.table_pivotCols==null || input.table_pivotCols==='_')",
+    conditionalPanel(condition = paste0("input.inputTable_type==='default' && ((input.table_pivotCols==null || input.table_pivotCols==='_')
+                                        ||", tolower(isGamsTable), ")"),
                      tags$div(class="option-wrapper",
                               selectInput("table_readonlyCols", lang$adminMode$widgets$table$readonlyCols, 
                                           choices = inputSymHeaders[[input$table_symbol]], 
-                                          selected = rv$tableWidgetConfig$readonlyCols, multiple = TRUE))
+                                          selected = rv$tableWidgetConfig$readonlyCols, multiple = TRUE)),
+                     tags$div(class="option-wrapper",
+                              lapply(names(modelIn[[input$table_symbol]]$headers), function(headerName){
+                                if(identical(modelIn[[input$table_symbol]]$headers[[headerName]]$type, "numeric")){
+                                  defaultVal <- "2"
+                                  if(length(rv$tableWidgetConfig$colFormat) &&
+                                     headerName %in% names(rv$tableWidgetConfig$colFormat)){
+                                    defaultVal <- as.character(nchar(strsplit(rv$tableWidgetConfig$colFormat[[headerName]]$format, ".",
+                                                                              fixed = TRUE)[[1]][2]))
+                                    if(is.na(defaultVal)){
+                                      defaultVal <- "2"
+                                    }
+                                  }
+                                  tags$div(class = "form-group shiny-input-container",
+                                           tags$label(class = "control-label", sprintf(lang$adminMode$widgets$table$colDecimals,
+                                                                                       modelIn[[input$table_symbol]]$headers[[headerName]]$alias)),
+                                           tags$input(type = "number", class = "form-control miro-dynamic-input-id", `data-binding-id` = "table_colDecimals",
+                                                      `data-input-id` = headerName, value = defaultVal,  min = "0"))
+                                }}))
     ),
     conditionalPanel(condition = "input.inputTable_type==='default'",
                      tags$div(class="option-wrapper",
@@ -397,11 +414,18 @@ createTableData <- function(symbol, pivotCol = NULL, createColNames = FALSE){
   if(symbol %in% outputSymMultiDimChoices){
     headersRaw <- outputSymHeaders[[symbol]]
     headersTmp <- headersRaw
-  }  
-  data        <- data.frame(matrix(c(replicate(length(headersTmp) - 1L,
-                                               letters[1:10]), 1:10),
+  }
+  noNumericCols <- sum(vapply(modelIn[[symbol]]$headers, function(hdr) identical(hdr$type, "numeric"), logical(1), USE.NAMES = FALSE))
+  numericColValues <- c(1.123456789, 2.123456789, 3.123456789, 4.123456789,
+                        5.123456789, 6.123456789, 7.123456789, 8.123456789,
+                        9.123456789, 10.123456789)
+  data        <- data.frame(matrix(c(replicate(length(headersTmp) - noNumericCols,
+                                               letters[1:10]),
+                                     if(noNumericCols > 0L) replicate(noNumericCols, numericColValues)),
                                    10))
-  data[length(data)] <- as.integer(data[[length(data)]])
+  if(noNumericCols > 0L){
+    data <- dplyr::mutate(data, dplyr::across(!!seq(length(data) - noNumericCols + 1L, length(data)),  as.numeric))
+  }
   isPivotTable <- FALSE
   if(length(pivotCol) && pivotCol != "_"){
     isPivotTable <- TRUE
@@ -435,10 +459,10 @@ output$hot_preview <- renderRHandsontable({
   colHeaders <- data$headers
   pivotTable <- data$isPivotTable
   data <- data$data
-  colsReadonly <- match(input$table_readonlyCols, headersUnnamed)
+  colsReadonly <- match(rv$tableWidgetConfig$readonlyCols, headersUnnamed)
   colsReadonly <- colsReadonly[!is.na(colsReadonly)]
   fixedColumnsLeft <- isolate(rv$tableWidgetConfig$fixedColumnsLeft)
-  if(is.null(fixedColumnsLeft)) fixedColumnsLeft <- 0 
+  if(is.null(fixedColumnsLeft)) fixedColumnsLeft <- 0
 
   ht <- rhandsontable(data = data,
                       rowHeaders = if(isTRUE(input$table_hideIndexCol)) NULL else rownames(data),
@@ -446,6 +470,12 @@ output$hot_preview <- renderRHandsontable({
                       readOnly = input$table_readonly,
                       digits = NA,
                       naAsNull = pivotTable)
+  if(!pivotTable){
+    for(colName in names(rv$tableWidgetConfig$colFormat)){
+      ht <- hot_col(ht, match(colName, headersUnnamed),
+                    format = rv$tableWidgetConfig$colFormat[[colName]]$format)
+    }
+  }
   if(!pivotTable && length(colsReadonly)){
     ht <- hot_col(ht, colsReadonly, readOnly = TRUE)
   }
@@ -626,9 +656,8 @@ observe({
 #   else
 #     rv$tableWidgetConfig$alias <<- NULL
 # })
-observeEvent({rv$refreshInputTableType
-  input$inputTable_type}, {
-  labelTmp <-rv$tableWidgetConfig$label
+refreshTableType <- function(refreshSameSymbol = FALSE){
+  labelTmp <- rv$tableWidgetConfig$label
   if(identical(input$inputTable_type, "bigdata")){
     rv$tableWidgetConfig$tableType <- "bigdata"
     hideEl(session, "#pivotColsRestriction")
@@ -689,18 +718,19 @@ observeEvent({rv$refreshInputTableType
         hideIndexCol = input$table_hideIndexCol,
         heatmap      = input$table_heatmap
       )
+      numericColsTmp <- sum(vapply(modelIn[[input$table_symbol]]$headers, 
+                                   function(header) identical(header$type, "numeric"), 
+                                   logical(1L), USE.NAMES = FALSE))
       if(isTRUE(input$table_fixedColumnsLeft)){
-        numericColsTmp <- sum(vapply(modelIn[[input$table_symbol]]$headers, 
-                                     function(header) identical(header$type, "numeric"), 
-                                     logical(1L), USE.NAMES = FALSE))
         if(isGamsTable){
           fixedColumnsLeftTmp <- length(inputSymHeaders[[input$table_symbol]]) - numericColsTmp
         }else{
           fixedColumnsLeftTmp <- length(inputSymHeaders[[input$table_symbol]]) - numericColsTmp - 1L
         }
         rv$tableWidgetConfig$fixedColumnsLeft <<- fixedColumnsLeftTmp
-      }else{
-        rv$tableWidgetConfig$fixedColumnsLeft <<- NULL
+      }
+      if(length(currentColFormatConfig)){
+        rv$tableWidgetConfig$colFormat <- currentColFormatConfig
       }
     }else{
       rv$tableWidgetConfig <- list(widgetType = "table",
@@ -711,6 +741,8 @@ observeEvent({rv$refreshInputTableType
                                    heatmap = checkLength(configuredTable, configJSON$inputWidgets[[currentTableSymbolName]]$heatmap, FALSE),
                                    pivotCols = checkLength(configuredTable, configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols, "_"))
       rv$tableWidgetConfig$fixedColumnsLeft <- checkLength(configuredTable, configJSON$inputWidgets[[currentTableSymbolName]]$fixedColumnsLeft, NULL)
+      rv$tableWidgetConfig$colFormat <- checkLength(configuredTable, configJSON$inputWidgets[[currentTableSymbolName]]$colFormat, NULL)
+      currentColFormatConfig <<- NULL
     }
     if(length(labelTmp)){
       rv$tableWidgetConfig$label <- labelTmp
@@ -722,6 +754,9 @@ observeEvent({rv$refreshInputTableType
       hideEl(session, "#pivotColsRestriction")
     }
   }
+}
+observeEvent(input$inputTable_type, {
+    refreshTableType(refreshSameSymbol = TRUE)
 })
 observeEvent(input$table_hideIndexCol, {
   rv$tableWidgetConfig$hideIndexCol <<- input$table_hideIndexCol
@@ -778,6 +813,25 @@ observeEvent(input$table_fixedColumnsLeft, {
 observeEvent(input$table_heatmap, {
   rv$tableWidgetConfig$heatmap <<- input$table_heatmap
 })
+observeEvent(input$table_colDecimals, {
+  noDecimals <- suppressWarnings(as.integer(input$table_colDecimals$val))
+  if(is.na(noDecimals)){
+    noDecimals <- 2L
+  }
+  if(identical(noDecimals, 2L)){
+    if(length(rv$tableWidgetConfig$colFormat)){
+      rv$tableWidgetConfig$colFormat[[input$table_colDecimals$id]] <<- NULL
+    }else{
+      rv$tableWidgetConfig$colFormat <<- list()
+    }
+  }else{
+    if(!length(rv$tableWidgetConfig$colFormat)){
+      rv$tableWidgetConfig$colFormat <<- list()
+    }
+    rv$tableWidgetConfig$colFormat[[input$table_colDecimals$id]] <- list(format = if(noDecimals > 0) paste0("0,0.", strrep("0", noDecimals)) else "0,0a")
+  }
+  currentColFormatConfig <<- rv$tableWidgetConfig$colFormat
+})
 observeEvent(c(input$table_pivotCols, input$table_readonly, input$table_heatmap), {
   if(!identical(input$table_pivotCols, "_") && 
      (isTRUE(input$table_readonly) || isTRUE(input$table_heatmap))){
@@ -825,7 +879,7 @@ observeEvent(input$inputpivot_emptyUEL, {
   }else{
     rv$tableWidgetConfig$options$emptyUEL <- input$inputpivot_emptyUEL
   }
-  rv$refreshInputTableType <- rv$refreshInputTableType + 1L
+  refreshTableType(refreshSameSymbol = FALSE)
 })
 
 #  =====================================================================
@@ -912,6 +966,8 @@ observeEvent(virtualActionButton(input$saveTableConfirm, rv$saveTableConfirm), {
       }
       if(identical(configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols, "_")){
         configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols <<- NULL
+      }else{
+        configJSON$inputWidgets[[currentTableSymbolName]]$colFormat <<- NULL
       }
     }
   }else if(currentTableSymbolName %in% outputSymMultiDimChoices){

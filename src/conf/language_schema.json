@@ -5637,9 +5637,13 @@
                 "heatmap": {
                   "type": "string",
                   "minLength": 1
+                },
+                "colDecimals": {
+                  "type": "string",
+                  "minLength": 1
                 }
               },
-              "minProperties": 9
+              "minProperties": 10
             },
             "slider": {
               "type": "object",

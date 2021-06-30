@@ -1440,7 +1440,8 @@
         "readonlyCols": "设定表格的某些列为只读",
 		"pivotCols": "选择要旋转的列",
         "fixedColumnsLeft": "是否应该将所有非枢轴列固定下来？",
-        "heatmap": "把表格转换成热图？"
+        "heatmap": "把表格转换成热图？",
+        "colDecimals": "指定列“%s”列的小数位数。"
       },
       "slider":{
         "label": "选择一个标签",

@@ -1441,7 +1441,8 @@
         "readonlyCols": "Select columns to be readonly",
         "pivotCols": "Select a column to pivot",
         "fixedColumnsLeft": "Fix columns that are not pivoted?",
-        "heatmap": "Turn table into a heatmap?"
+        "heatmap": "Turn table into a heatmap?",
+        "colDecimals": "Specify the number of decimal places for the column: '%s'."
       },
       "slider":{
         "label": "Choose a label",
