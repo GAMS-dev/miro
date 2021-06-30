@@ -1448,7 +1448,7 @@
         "pivotCols": "Wählen Sie eine Spalte, die pivotiert werden soll",
         "fixedColumnsLeft": "Spalten fixieren, die nicht pivotiert sind?",
         "heatmap": "Die Tabelle in eine Heatmap wandeln?",
-        "colDecimals": "Geben Sie die Anzahl der Dezimalstellen für die Spalte: '%s' an."
+        "colDecimals": "Geben Sie die Anzahl der Dezimalstellen für die Spalte: '%s' an"
       },
       "slider":{
         "label": "Wählen Sie eine Widget-Beschriftung",
