@@ -475,6 +475,7 @@
     },
     "dialogReadonly":{
       "title":"无写入权限",
+      "descErr":"没有该场景的写入权限。",
       "desc":"没有该场景的写入权限，另存为新场景？",
       "okButton":"另存为",
       "cancelButton":"取消"
@@ -787,9 +788,9 @@
       "rowTruncationWarning": "数据被截断到前%s行。",
       "newViewTitle": "新增检视",
       "newViewLabel": "请为该视图选择一个名称。",
-      "newViewChartTitle": "图表标题",
-      "newViewxTitle": "X轴标签",
-      "newViewyTitle": "Y轴标签",
+      "newViewChartTitle": "图表标题（可选的）",
+      "newViewxTitle": "X轴标签（可选的）",
+      "newViewyTitle": "Y轴标签（可选的）",
       "newViewCbCustomColors": "使用自定义颜色？",
       "newViewCbManualColors": "手动输入颜色？",
       "newViewBtCancel": "取消",

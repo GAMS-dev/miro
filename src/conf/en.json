@@ -475,6 +475,7 @@
     },
     "dialogReadonly":{
       "title": "No write permissions",
+      "descErr": "You do not have write permissions for this scenario.",
       "desc": "You do not have write permissions for this scenario. Do you want to save the scenario as a new scenario  instead?",
       "okButton": "Save as",
       "cancelButton": "Cancel"
@@ -746,9 +747,9 @@
       "rowTruncationWarning": "Data was truncated to the first %s rows.",
       "newViewTitle": "New view",
       "newViewLabel": "Please choose a name for the view.",
-      "newViewChartTitle": "Chart title",
-      "newViewxTitle": "X-axis label",
-      "newViewyTitle": "Y-axis label",
+      "newViewChartTitle": "Chart title (optional)",
+      "newViewxTitle": "X-axis label (optional)",
+      "newViewyTitle": "Y-axis label (optional)",
       "newViewCbCustomColors": "Use custom colors?",
       "newViewCbManualColors": "Enter colors manually?",
       "newViewBtCancel": "Cancel",

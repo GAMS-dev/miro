@@ -547,6 +547,13 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       setIndexAliases <- as.list(setIndexAliases)
       names(setIndexAliases) <- setIndices
       currentView <- options
+      if(!is.null(rendererEnv[[ns("chartOptions")]])){
+        if(isTRUE(options$resetOnInit)){
+          rendererEnv[[ns("chartOptions")]] <- NULL
+        }else{
+          currentView$chartOptions <- rendererEnv[[ns("chartOptions")]]
+        }
+      }
       
       miroPivotState <- list(currentSeriesLabels = character(),
                              triggerEditViewDialog = FALSE,
@@ -618,17 +625,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                                         colorBox = TRUE))
             })
             additionalOptionsContent <- tags$div(id = ns("newViewOptionsWrapper"), style = "text-align:left;",
-                                                 tags$i(class = paste0("fas ",
-                                                                       if(length(viewOptions$chartOptions))
-                                                                         "fa-arrow-up" else
-                                                                           "fa-arrow-down"),
-                                                        role = "presentation",
-                                                        `aria-label` = "More options",
-                                                        onclick = "$(this).next().slideToggle();$(this).toggleClass('fa-arrow-up');$(this).toggleClass('fa-arrow-down');", 
-                                                        style = "cursor: pointer;"),
-                                                 tags$div(style = if(!length(viewOptions$chartOptions))
-                                                   "display:none;",
-                                                          moreOptions,
+                                                 tags$div(moreOptions,
                                                           tags$div(class = "row",
                                                                    tags$div(class = "col-sm-6",
                                                                             checkboxInput_MIRO(ns("useCustomChartColors"),
@@ -1217,6 +1214,10 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
       output$pivotChart <- renderChartjs({
         updateRenderer()
         pivotRenderer <- input$pivotRenderer
+        if(!is.null(rendererEnv[[ns("chartOptions")]])){
+          # reset chart options
+          rendererEnv[[ns("chartOptions")]] <- NULL
+        }
         if(initRenderer && isTRUE(options$resetOnInit)){
           if(length(currentView[["pivotRenderer"]])){
             initRenderer <<- FALSE
@@ -1323,6 +1324,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
         }
         if(length(currentView$chartOptions)){
           # reset chart options
+          rendererEnv[[ns("chartOptions")]] <- currentView$chartOptions
           currentView$chartOptions <<- NULL
         }
         for(i in seq_len(min(noSeries, 40L))){
