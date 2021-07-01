@@ -21,7 +21,6 @@ observeEvent(input$btLoadScen, {
   flog.debug("Load Scenario button clicked (multiple scenarios view).")
   rv$btLoadScen <<- isolate(rv$btLoadScen + 1L)
 })
-
 observeEvent(input$selLoadScenTags, {
   oderByIdentifier <- if(btSortTime) "_stime" else "_sname"
   desc <- if(btSortNameDesc || btSortTimeDesc) TRUE else FALSE
@@ -35,14 +34,16 @@ observeEvent(input$selLoadScenTags, {
     }
     updateSelectInput(session, "selLoadScen", 
                       choices = formatScenList(scenMetaDbSubset, uid, oderByIdentifier, 
-                                               desc = desc))
+                                               desc = desc),
+                      selected = input$selLoadScen)
     return()
   }
   scenMetaDbSubset <<- scenMetaDb[vapply(scenMetaDb[["_stag"]], function(tags){
     any(csv2Vector(tags) %in% input$selLoadScenTags)}, logical(1L), USE.NAMES = FALSE), ]
   updateSelectInput(session, "selLoadScen", 
                     choices = formatScenList(scenMetaDbSubset, uid, 
-                                             oderByIdentifier, desc = desc))
+                                             oderByIdentifier, desc = desc),
+                    selected = input$selLoadScen)
 }, ignoreNULL = FALSE)
 
 #load scenario button clicked
