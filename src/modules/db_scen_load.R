@@ -310,9 +310,6 @@ observeEvent(input$btLoadScenConfirm, {
     scenSelected <- isolate(input$selLoadScenUI)
   }else{
     scenSelected <- isolate(input$selLoadScen)
-    if(!isInSolveMode && !LAUNCHHCUBEMODE && identical(currentCompMode, "pivot")){
-      scenSelected <- c("sb", scenSelected)
-    }
   }
   if(!length(scenSelected)){
     return()
@@ -400,6 +397,9 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   suppressCloseModal      <<- FALSE
   if(!length(sidsToLoad)){
     return()
+  }
+  if(!isInSolveMode && !LAUNCHHCUBEMODE && identical(currentCompMode, "pivot")){
+    sidsToLoad <<- c("sb", sidsToLoad)
   }
   sidsToLoadVector <- unlist(sidsToLoad, use.names = FALSE)
   
