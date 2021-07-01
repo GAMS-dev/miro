@@ -349,9 +349,9 @@
                                 <div  id="server-customize"  class="section-block">
                                     <h5 class="block-title">Customize MIRO Server</h5> 
 									<p>After setting up MIRO Server, some basic configurations can be made. This includes, among other things, setting a logo for the login screen or adjusting the authentication method.</p>
-									<p>Most of the settings can be done in the <i>data/application.yml</i> file in the <i>miro_server</i> directory. Note that you must stay with the file's YAML format. It is also important that no adjustments are made to the file other than the following settings. Changes directly affect the functionality of MIRO Server!
+									<p>Most of the settings can be done in the <i>data/application.yml</i> file in the <i>miro_server</i> directory. Note that you must stay with the file's YAML format. It is also important that no adjustments are made to the file other than the following settings. Changes directly affect the functionality of MIRO Server!</p>
 									  <h6 id="application-yml" class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> application.yml example</h6>
-                                      <div class="expanded"><p><pre><code class="language-yaml">proxy:
+                                      <div class="expanded"><pre><code class="language-yaml">proxy:
   title: GAMS MIRO Server
   template-path: ./templates/2col
   favicon-path: ./favicon.ico
@@ -406,12 +406,13 @@ server:
   servlet:
     session.timeout: 21600
     context-path: /
-</code></pre></p>
+</code></pre>
 								      </div>
-									The following settings can be made in the <i>data/application.yml</i> file:
+                                      <p>
+									The following settings can be made in the <i>data/application.yml</i> file:</p>
 									<ul>
 									  <li><b>Title (<i>proxy.title</i>):</b><br>Sets the title that is visible in the browser tab.</li>
-									  <li id="global-language"><b>Language (<i>proxy.miro-lang</i>):</b><br><p>With this setting you can set the global language for all deployed MIRO apps. Currently, the languages available are English ('en'), Chinese ('cn') and German ('de'). This global language setting initially applies to all apps. You can still set a different language individually for each app, which overrides the global setting. This allows to host apps in different languages. Read more about <a href="#admin-panel-lang" class = "scrollto">how to change the language for an individual app.</a></p>
+									  <li><a id="global-language" class="anchor"></a><b>Language (<i>proxy.miro-lang</i>):</b><br><p>With this setting you can set the global language for all deployed MIRO apps. Currently, the languages available are English ('en'), Chinese ('cn') and German ('de'). This global language setting initially applies to all apps. You can still set a different language individually for each app, which overrides the global setting. This allows to host apps in different languages. Read more about <a href="#admin-panel-lang" class = "scrollto">how to change the language for an individual app.</a></p>
 									  </li>
 									  <li><b>Authentication method (<i>proxy.authentication</i>):</b><br>
 									  When you set up MIRO Server as a server administrator, you can choose to use the service <a href="#authentication-user-management" class="scrollto">with or without authentication</a>. This decides whether anyone with access to the MIRO Server URL is allowed to access the MIRO apps, or whether GAMS Engine credentials are used. In the <i>data/application.yml</i> file you can change this setting. The following options are available: 
@@ -424,7 +425,8 @@ server:
 									  <li><b>Context-path (<i>server.servlet.context-path</i>):</b><br>
 									  If you want to host MIRO Server on a different path than root, you must adjust the context path under <i>server.servlet.context-path</i>. For example, if you want to access the MIRO apps at <a href="https://mydomain.com/miroapps">https://mydomain.com/miroapps</a>, then the context-path must be set to <kbd>/miroapps</kbd>. Beside the adjustment of the path in the <i>application.yml</i> file, the configuration of the reverse proxy (<a href="#server-nginx" class="scrollto">Nginx</a>: <i>location</i> property) has to be adjusted as well.  </li>
 									</ul>
-									Other settings: 
+                                    <p>
+									Other settings: </p>
 									<ul>
 									  <li><b>Logo:</b><br>
 									  In addition to the settings in the <i>application.yml</i>, the logo that is displayed in the login screen can also be customized. To change the logo, replace the <i>logo.png</i> and <i>logo.svg</i> under <kbd>data/img/</kbd> in the <i>miro_server</i> directory.</li>
@@ -453,7 +455,6 @@ server:
                                       </div><!--//callout-block-->
 									  </li>
 									</ul>
-									</p>
 									<p>All changes will take effect after a <a href="#miro-server-restart" class="scrollto">restart of MIRO Server</a>. If you make changes to the <i>docker-compose.yml</i> configuration you need to do a <kbd>./miro-server stop</kbd> and <kbd>./miro-server start</kbd>.</p>
                                     <div class="expandable-box-outline" style="margin:30px 0px">
                                           <h3 id="session-timeout"  class="block-title" onclick="$(this).next().slideToggle();$(this).find('.slide-toggle').toggleClass( 'fa-plus fa-minus' );" style="cursor:pointer;"><i class="fas fa-plus slide-toggle"></i> Advanced: Session timeout</h3>

@@ -584,6 +584,12 @@ body{
   visibility: hidden; 
   pointer-events: none;
 }
+.page-wrapper .doc-wrapper a.anchor {
+  display: block;
+  position: relative;
+  top: -60.3px;
+  visibility: hidden;
+}
 .page-wrapper .doc-body {
   position: relative;
 }
