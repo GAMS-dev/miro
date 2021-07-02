@@ -182,7 +182,6 @@ export function scrollDown(id, delay = 500) {
 export function debounce(fn, ms = 0) {
   let timeoutId;
   return function (...args) {
-    console.log('kaka');
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => fn.apply(this, args), ms);
   };
