@@ -969,7 +969,8 @@ observeEvent(virtualActionButton(input$saveTableConfirm, rv$saveTableConfirm), {
       if(!length(configJSON$inputWidgets[[currentTableSymbolName]]$readonlyCols)){
         configJSON$inputWidgets[[currentTableSymbolName]]$readonlyCols <<- NULL
       }
-      if(identical(configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols, "_")){
+      if(is.null(configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols) ||
+         identical(configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols, "_")){
         configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols <<- NULL
       }else{
         configJSON$inputWidgets[[currentTableSymbolName]]$colFormat <<- NULL
@@ -977,7 +978,8 @@ observeEvent(virtualActionButton(input$saveTableConfirm, rv$saveTableConfirm), {
     }
   }else if(currentTableSymbolName %in% outputSymMultiDimChoices){
     configJSON$outputTables[[currentTableSymbolName]] <<- rv$tableWidgetConfig
-    if(identical(configJSON$outputTables[[currentTableSymbolName]]$pivotCols, "_")){
+    if(is.null(configJSON$outputTables[[currentTableSymbolName]]$pivotCols) ||
+       identical(configJSON$outputTables[[currentTableSymbolName]]$pivotCols, "_")){
       configJSON$outputTables[[currentTableSymbolName]]$pivotCols <<- NULL
     }
     if(isTRUE(input$outputTable_noGraph)){
