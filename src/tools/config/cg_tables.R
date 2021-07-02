@@ -308,10 +308,15 @@ getSymbolHotOptions <- function(){
                                   defaultVal <- "2"
                                   if(length(rv$tableWidgetConfig$colFormat) &&
                                      headerName %in% names(rv$tableWidgetConfig$colFormat)){
-                                    defaultVal <- as.character(nchar(strsplit(rv$tableWidgetConfig$colFormat[[headerName]]$format, ".",
-                                                                              fixed = TRUE)[[1]][2]))
-                                    if(is.na(defaultVal)){
-                                      defaultVal <- "2"
+                                    if(identical(rv$tableWidgetConfig$colFormat[[headerName]]$format,
+                                                 "0,0a")){
+                                      defaultVal <- "0"
+                                    }else{
+                                      defaultVal <- as.character(nchar(strsplit(rv$tableWidgetConfig$colFormat[[headerName]]$format, ".",
+                                                                                fixed = TRUE)[[1]][2]))
+                                      if(is.na(defaultVal)){
+                                        defaultVal <- "2"
+                                      }
                                     }
                                   }
                                   tags$div(class = "form-group shiny-input-container",
