@@ -1779,6 +1779,16 @@ animation: none !important;
   overflow: hidden;
   vertical-align: text-top;
 } 
+.color-picker-element {
+  .responsiveDark({
+    background: @pivot-presentation-bg;
+  },
+  {
+    background: @pivot-presentation-bg-dark;
+  });
+  margin: 1px;
+  padding: 5px 0 0 0;
+}
 // fullscreen modal (used e.g. for analysis scripts)
 #batchLoadModal {
   -webkit-transition: all 0.5s ease;
