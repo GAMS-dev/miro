@@ -826,8 +826,9 @@ observeEvent(input$table_colDecimals, {
   if(identical(noDecimals, 2L)){
     if(length(rv$tableWidgetConfig$colFormat)){
       rv$tableWidgetConfig$colFormat[[input$table_colDecimals$id]] <<- NULL
-    }else{
-      rv$tableWidgetConfig$colFormat <<- list()
+    }
+    if(!length(rv$tableWidgetConfig$colFormat)){
+      rv$tableWidgetConfig$colFormat <- NULL
     }
   }else{
     if(!length(rv$tableWidgetConfig$colFormat)){
