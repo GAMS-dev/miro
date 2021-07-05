@@ -622,8 +622,7 @@ renderMiroPivot <- function(id, data, options = NULL, path = NULL, roundPrecisio
                        colorPickerInput(ns(paste0("customChartColor_", labelId)),
                                         colorLabel,
                                         colorVal,
-                                        colorBox = TRUE,
-                                        modal = TRUE))
+                                        colorBox = TRUE))
             })
             additionalOptionsContent <- tags$div(id = ns("newViewOptionsWrapper"), style = "text-align:left;",
                                                  tags$div(moreOptions,
