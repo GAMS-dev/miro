@@ -111,14 +111,6 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
   }
   
   maxNoScenExceeded <- FALSE
-  if(nrow(scenMetaDb) > maxNoScenToShow){
-    scenMetaDbSubset <<- scenMetaDb[order(scenMetaDb[["_stime"]], 
-                                          decreasing = TRUE), ][seq_len(maxNoScenToShow), ]
-    maxNoScenExceeded <- TRUE
-  }else{
-    scenMetaDbSubset <<- scenMetaDb
-    maxNoScenExceeded <- FALSE
-  }
   dbTagList <- scenMetaDb[["_stag"]]
   dbTagList <- csv2Vector(dbTagList[dbTagList != ""])
   if(!LAUNCHHCUBEMODE && includeSandboxScen){
@@ -136,18 +128,19 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
     if(is.character(scenMetaDb[["_stime"]])){
       sandboxMeta[["_stime"]] <- as.character(sandboxMeta[["_stime"]])
     }
-    scenMetaDbSubset <- bind_rows(mutate(scenMetaDbSubset, `_sid` = as.character(`_sid`)),
-                                  sandboxMeta)
+    scenMetaDb <<- bind_rows(mutate(scenMetaDb, `_sid` = as.character(`_sid`)),
+                             sandboxMeta)
   }
   if(!is.null(uiSidList)){
     uiSidList <- uiSidList[!startsWith(as.character(uiSidList), "sb")]
     if(length(uiSidList)){
       uiSidList <- bind_rows(scenData$getById("meta", scenIds = uiSidList))
-      if(LAUNCHHCUBEMODE){
-        # Hypercube scenarios are not part of dbSidList, so we need to append them
-        scenMetaDbSubset <- bind_rows(scenMetaDbSubset,
-                                      uiSidList[uiSidList[["_scode"]] != SCODEMAP["scen"], ])
+      # Hypercube scenarios are not part of dbSidList, so we need to append them
+      if(!LAUNCHHCUBEMODE && includeSandboxScen){
+        uiSidList <- mutate(uiSidList, `_sid` = as.character(`_sid`))
       }
+      scenMetaDb <<- bind_rows(scenMetaDb,
+                               uiSidList[uiSidList[["_scode"]] != SCODEMAP["scen"], ])
       if(identical(currentCompMode, "split")){
         uiSidList <- formatScenList(uiSidList,
                                     uid, "_stime", desc = TRUE)
@@ -157,6 +150,14 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
     }else{
       uiSidList <- NULL
     }
+  }
+  if(nrow(scenMetaDb) > maxNoScenToShow){
+    scenMetaDbSubset <<- scenMetaDb[order(scenMetaDb[["_stime"]], 
+                                          decreasing = TRUE), ][seq_len(maxNoScenToShow), ]
+    maxNoScenExceeded <- TRUE
+  }else{
+    scenMetaDbSubset <<- scenMetaDb
+    maxNoScenExceeded <- FALSE
   }
   # by default, put most recently saved scenario first
   dbSidList <- formatScenList(scenMetaDbSubset, uid, "_stime", desc = TRUE)
