@@ -426,12 +426,14 @@ Worker <- R6Class("Worker", public = list(
                                         orderBy = private$dbColNames[['time']], orderAsc = FALSE)
     
     # TODO: allow import of jobs solved via Engine if in local mode and vice versa...
-    if(private$remote){
-      jobList <- filter(jobList, grepl("-", !!sym(private$dbColNames[['pid']]), fixed = TRUE))
-    }else{
-      jobList <- filter(jobList, !grepl("-", !!sym(private$dbColNames[['pid']]), fixed = TRUE))
+    if(length(jobList)){
+      if(private$remote){
+        jobList <- filter(jobList, grepl("-", !!sym(private$dbColNames[['pid']]), fixed = TRUE))
+      }else{
+        jobList <- filter(jobList, !grepl("-", !!sym(private$dbColNames[['pid']]), fixed = TRUE))
+      }
+      
     }
-    
     if(jobHist)
       return(list(jobList = jobList, newCompleted = FALSE))
     
