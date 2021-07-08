@@ -232,7 +232,7 @@ ScenData <- R6Class("ScenData", public = list(
     }
     self$get(refId, symNames = scalarsOutName)
     outputScalarsFull <- private$cachedData[[as.character(scenId)]][["scalar"]]
-    inputScalars <- self$get(refId, symNames = scalarsFileName)
+    inputScalars <- self$get(refId, symNames = scalarsFileName, drop = TRUE)
     if(length(outputScalarsFull)){
       if(!outputScalarsOnly && length(inputScalars)){
         return(bind_rows(inputScalars,
