@@ -471,50 +471,60 @@ observeEvent(input$hcubeLoadAll, {
                       exclAttribChoices = exclAttribChoices,
                       customScripts = config$scripts$hcube)
 })
-
-output$btBatchDownloadConfirm <- downloadHandler(
+downloadBatchData <- function(file, sids, type){
+  if(!length(sids)){
+    flog.warn("No scenario IDs to download could be found.")
+    return(downloadHandlerError(file))
+  }
+  if(length(sids) > hcubeLoadMaxScen){
+    flog.warn("Maximum number of scenarios to download is exceeded.")
+    return(downloadHandlerError(file))
+  }
+  tmpDir      <- file.path(tempdir(), paste0("dl_batch_", uid))
+  on.exit(unlink(tmpDir, recursive = TRUE, force = TRUE), add = TRUE)
+  if(dir.exists(tmpDir)){
+    unlink(tmpDir, recursive = TRUE, force = TRUE)
+  }
+  if(!dir.create(tmpDir)){
+    flog.error("Temporary folder could not be created")
+    return(downloadHandlerError(file))
+  }
+  prog <- Progress$new()
+  on.exit(prog$close(), add = TRUE)
+  prog$set(message = lang$nav$dialogHcube$waitDialog$title, value = 0)
+  updateProgress <- function(incAmount, detail = NULL) {
+    prog$inc(amount = incAmount, detail = detail)
+  }
+  tryCatch({
+    if(identical(type, "csv")){
+      batchLoader$genCsvFiles(sidsToLoad, tmpDir, prog)
+    }else{
+      batchLoader$genGdxFiles(sidsToLoad, tmpDir, gdxio, prog)
+    }
+    return(zipr(file, list.files(tmpDir, full.names = TRUE), 
+                compression_level = 6))
+  }, error = function(e){
+    flog.error(sprintf("Problems generating the data archive for download. Error message: %s",
+                       conditionMessage(e)))
+  })
+  return(downloadHandlerError(file))
+}
+output$btBatchDownloadGDX <- downloadHandler(
   filename = function() {
-    tolower(modelName) %+% "_data.zip"
+    paste0(modelName, "_data.zip")
   },
   content = function(file) {
-    flog.debug("Button to download batch of scenarios clicked.")
-    
-    if(!length(sidsToLoad)){
-      flog.warn("No scenario IDs to download could be found.")
-      return(downloadHandlerError(file))
-    }
-    if(length(sidsToLoad) > hcubeLoadMaxScen){
-      flog.warn("Maximum number of scenarios to download is exceeded.")
-      return(downloadHandlerError(file))
-    }
-    tmpDir      <- file.path(tempdir(), "scenDL")
-    on.exit(unlink(tmpDir, recursive = TRUE, force = TRUE), add = TRUE)
-    if(dir.exists(tmpDir)){
-      unlink(tmpDir, recursive = TRUE, force = TRUE)
-    }
-    if(!dir.create(tmpDir)){
-      flog.error("Temporary folder could not be created")
-      return(downloadHandlerError(file))
-    }
-    
-    prog <- Progress$new()
-    on.exit(prog$close(), add = TRUE)
-    prog$set(message = lang$nav$dialogHcube$waitDialog$title, value = 0)
-    updateProgress <- function(incAmount, detail = NULL) {
-      prog$inc(amount = incAmount, detail = detail)
-    }
-    tryCatch({
-      if(identical(isolate(input$selExportFiletype), "csv")){
-        batchLoader$genCsvFiles(sidsToLoad, tmpDir, prog)
-      }else{
-        batchLoader$genGdxFiles(sidsToLoad, tmpDir, gdxio, prog)
-      }
-      return(zipr(file, list.files(tmpDir, full.names = TRUE), 
-                  compression_level = 6))
-    }, error = function(e){
-      flog.error(e)
-    })
-    return(downloadHandlerError(file))
+    flog.debug("Button to download batch of scenarios (GDX) clicked.")
+    return(downloadBatchData(file, sidsToLoad, "gdx"))
+  },
+  contentType = "application/zip")
+output$btBatchDownloadCSV <- downloadHandler(
+  filename = function() {
+    paste0(modelName, "_data.zip")
+  },
+  content = function(file) {
+    flog.debug("Button to download batch of scenarios (CSV) clicked.")
+    return(downloadBatchData(file, sidsToLoad, "csv"))
   },
   contentType = "application/zip")
 
