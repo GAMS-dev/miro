@@ -153,6 +153,7 @@ repeat{
     stop("Timeout reached. Engine server seems busy. Try again later.", call. = FALSE)
   }
 }
+Sys.sleep(1)
 expect_error(app$findElements("#jImport_output button[onclick*='downloadJobData']")[[1]]$click(), NA)
 timeout <- 30L
 repeat{
