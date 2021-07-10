@@ -117,7 +117,8 @@ prepareModelRun <- function(async = FALSE){
   })){
     return()
   }
-  scenData$loadSandbox(dataTmp, modelInFileNames, activeScen$getMetadata())
+  scenData$loadSandbox(dataTmp, if(length(modelInFileNames)) modelInFileNames else character(),
+                       activeScen$getMetadata())
   clArgsDf <- NULL
   inputData <- DataInstance$new(modelInFileNames, fileExchange = config$fileExchange,
                                 gdxio = gdxio, csvDelim = config$csvDelim,

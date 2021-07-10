@@ -1,0 +1,57 @@
+{
+	"modelTitle":	"Indus Basin Model Revised - IBMR (INDUS89,SEQ=181)",
+	"inputSymbols":	{
+	},
+	"outputSymbols":	{
+		"x":	{
+			"alias":	"cropped area by technology                                      (thousand acres)",
+			"symtype":	"variable",
+			"headers":	{
+				"z":	{
+					"type":	"string",
+					"alias":	"agroclimatic zones"
+				},
+				"g":	{
+					"type":	"string",
+					"alias":	"ground water quality types"
+				},
+				"c":	{
+					"type":	"string",
+					"alias":	"crops"
+				},
+				"t":	{
+					"type":	"string",
+					"alias":	"technology"
+				},
+				"s":	{
+					"type":	"string",
+					"alias":	"sequence"
+				},
+				"w":	{
+					"type":	"string",
+					"alias":	"water stress level"
+				},
+				"level":	{
+					"type":	"numeric",
+					"alias":	"Level"
+				},
+				"marginal":	{
+					"type":	"numeric",
+					"alias":	"Marginal"
+				},
+				"lower":	{
+					"type":	"numeric",
+					"alias":	"Lower"
+				},
+				"upper":	{
+					"type":	"numeric",
+					"alias":	"Upper"
+				},
+				"scale":	{
+					"type":	"numeric",
+					"alias":	"Scale"
+				}
+			}
+		}
+	}
+}

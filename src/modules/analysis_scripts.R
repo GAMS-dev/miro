@@ -57,7 +57,7 @@ if(length(config$scripts$base)){
     errMsg <- NULL
     
     tryCatch({
-      scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE), modelInFileNames)
+      scenData$loadSandbox(getInputDataFromSandbox(saveInputDb = TRUE), if(length(modelInFileNames)) modelInFileNames else character())
       gdxio$wgdx(file.path(workDir, paste0("scripts_", modelName), "data.gdx"), 
                  scenData$get("sb"), squeezeZeros = 'n')
     }, error = function(e){
