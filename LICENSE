@@ -23,7 +23,7 @@ in a sepeare LICENSE filed located in src/LICENSE or online at: https://gams.com
 "@sindresorhus/is@0.14.0","MIT","https://github.com/sindresorhus/is","https://github.com/sindresorhus/is/raw/master/license","com.gams.miro"
 "@szmarczak/http-timer@1.1.2","MIT","https://github.com/szmarczak/http-timer","https://github.com/szmarczak/http-timer/raw/master/LICENSE","com.gams.miro"
 "@types/debug@4.1.5","MIT","https://github.com/DefinitelyTyped/DefinitelyTyped","https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE","com.gams.miro"
-"@types/fs-extra@9.0.11","MIT","https://github.com/DefinitelyTyped/DefinitelyTyped","https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE","com.gams.miro"
+"@types/fs-extra@9.0.12","MIT","https://github.com/DefinitelyTyped/DefinitelyTyped","https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE","com.gams.miro"
 "@types/glob@7.1.3","MIT","https://github.com/DefinitelyTyped/DefinitelyTyped","https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE","com.gams.miro"
 "@types/json5@0.0.29","MIT","https://wwwhub.com/DefinitelyTyped/DefinitelyTyped","https://wwwhub.com/DefinitelyTyped/DefinitelyTyped","com.gams.miro"
 "@types/minimatch@3.0.4","MIT","https://github.com/DefinitelyTyped/DefinitelyTyped","https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE","com.gams.miro"
